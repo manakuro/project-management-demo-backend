@@ -3,10 +3,15 @@ linters:
   enable:
     - goimports
     - revive
+    - govet
+
 issues:
   exclude-use-default: false
 
 linters-settings:
+  govet:
+    check-shadowing: true
+
   revive:
     # Use recommended configuration
     # @see https://github.com/mgechev/revive#recommended-configuration
