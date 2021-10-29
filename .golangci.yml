@@ -4,6 +4,12 @@ linters:
     - goimports
     - revive
     - govet
+    - errcheck
+    - ineffassign
+    - unconvert
+    - misspell
+    - prealloc
+    - gosec
 
 issues:
   exclude-use-default: false
