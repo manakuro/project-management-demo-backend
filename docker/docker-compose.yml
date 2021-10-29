@@ -1,0 +1,39 @@
+version: '3'
+services:
+  mysql:
+    #platform: linux/x86_64
+    #image: mysql:8.0.23
+    image: mysql@sha256:43bf7db32d11e75d8463a8bc077f09af5fb5b84b182b1d74124ddca633093bfa
+    volumes:
+      - mysql-db:/var/lib/mysql
+    command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_0900_as_ci --default-authentication-plugin=mysql_native_password
+    environment:
+      TZ:  "/usr/share/zoneinfo/Asia/Tokyo"
+      MYSQL_USER: root
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - '3306:3306'
+  redis:
+    # platform: linux/x86_64
+    # image: redis:5.0.7
+    image: redis@sha256:cf95a60840a8a31adf586af0dd08b42c3594e439577826dc0f5a141fdd5654a9
+    volumes:
+      - redis-data:/data
+    ports:
+      - '6379:6379'
+volumes:
+  mysql-db:
+    driver: local
+  redis-data:
+    driver: local
+
+#  cloudsql_proxy:
+#    image: gcr.io/cloudsql-docker/gce-proxy
+#    command:
+#      ["/cloud_sql_proxy",
+#       "-instances=freesume:asia-northeast1:freesume=tcp:0.0.0.0:3306",
+#       "-credential_file=/config"]
+#    volumes:
+#      - ~/.keys/freesume.json:/config
+#    ports:
+#      - 3308:3306
