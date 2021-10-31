@@ -8,7 +8,7 @@ $ cd docker
 $ docker-comopse up
 ```
 
-## Set up 
+## Install
 
 ```
 $ make install
