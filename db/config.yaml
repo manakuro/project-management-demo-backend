@@ -1,0 +1,11 @@
+development:
+  path: db/migrations
+  database: mysql://root:root@tcp(127.0.0.1:3306)/project_management_demo
+
+staging:
+  path: db/migrations
+  database: mysql://root:root@tcp(127.0.0.1:3306)/project_management_demo
+
+production:
+  path: db/migrations
+  database: mysql://root:root@tcp(127.0.0.1:3306)/project_management_demo

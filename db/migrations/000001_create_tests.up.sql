@@ -1,0 +1,8 @@
+CREATE TABLE tests (
+    id INT NOT NULL AUTO_INCREMENT,
+    name varchar(255) NOT NULL DEFAULT '' COMMENT 'ユーザ名',
+    created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '作成日時',
+    updated_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新日時',
+    INDEX test_id (id),
+    PRIMARY KEY(id)
+) ENGINE = InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='テストデータ';
