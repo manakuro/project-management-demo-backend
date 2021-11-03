@@ -19,3 +19,8 @@ $ make install
 ```
 $ make setup_db
 ```
+
+```
+$ make migrate_up
+```
+
