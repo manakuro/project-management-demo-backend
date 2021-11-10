@@ -7,6 +7,11 @@ import (
 	"net/http"
 	"project-management-demo-backend/ent"
 	"project-management-demo-backend/ent/migrate"
+	"project-management-demo-backend/graph/resolver"
+	"time"
+
+	"github.com/99designs/gqlgen/graphql/handler"
+	"github.com/99designs/gqlgen/graphql/playground"
 
 	"github.com/go-sql-driver/mysql"
 
@@ -18,6 +23,11 @@ func main() {
 	var entOptions []ent.Option
 	entOptions = append(entOptions, ent.Debug())
 
+	loc, err := time.LoadLocation("Local")
+	if !errors.Is(err, nil) {
+		log.Fatalf("failed loading time location: %v\n", err)
+	}
+
 	mc := mysql.Config{
 		User:                 "root",
 		Passwd:               "root",
@@ -26,6 +36,7 @@ func main() {
 		DBName:               "project_management_demo",
 		AllowNativePasswords: true,
 		ParseTime:            true,
+		Loc:                  loc,
 	}
 	client, err := ent.Open("mysql", mc.FormatDSN(), entOptions...)
 	if !errors.Is(err, nil) {
@@ -53,6 +64,18 @@ func main() {
 	e.GET("/", func(c echo.Context) error {
 		return c.String(http.StatusOK, "Welcome!")
 	})
+
+	srv := handler.NewDefaultServer(resolver.NewSchema(client))
+	{
+		e.POST("/query", func(c echo.Context) error {
+			srv.ServeHTTP(c.Response(), c.Request())
+			return nil
+		})
+		e.GET("/playground", func(c echo.Context) error {
+			playground.Handler("GraphQL", "/query").ServeHTTP(c.Response(), c.Request())
+			return nil
+		})
+	}
 
 	e.Logger.Fatal(e.Start(":8080"))
 }

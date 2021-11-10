@@ -1,0 +1,10 @@
+type TestUser {
+  id: ID!
+  name: String!
+  age: Int!
+  createdAt: String!
+}
+
+extend type Query {
+  user: TestUser
+}
