@@ -4,15 +4,15 @@ package ent
 
 import (
 	"fmt"
-	"project-management-demo-backend/ent/test"
+	"project-management-demo-backend/ent/testuser"
 	"strings"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
 )
 
-// Test is the model entity for the Test schema.
-type Test struct {
+// TestUser is the model entity for the TestUser schema.
+type TestUser struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID int `json:"id,omitempty"`
@@ -25,98 +25,98 @@ type Test struct {
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
-func (*Test) scanValues(columns []string) ([]interface{}, error) {
+func (*TestUser) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case test.FieldID, test.FieldAge:
+		case testuser.FieldID, testuser.FieldAge:
 			values[i] = new(sql.NullInt64)
-		case test.FieldName:
+		case testuser.FieldName:
 			values[i] = new(sql.NullString)
-		case test.FieldCreatedAt:
+		case testuser.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type Test", columns[i])
+			return nil, fmt.Errorf("unexpected column %q for type TestUser", columns[i])
 		}
 	}
 	return values, nil
 }
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
-// to the Test fields.
-func (t *Test) assignValues(columns []string, values []interface{}) error {
+// to the TestUser fields.
+func (tu *TestUser) assignValues(columns []string, values []interface{}) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
 	for i := range columns {
 		switch columns[i] {
-		case test.FieldID:
+		case testuser.FieldID:
 			value, ok := values[i].(*sql.NullInt64)
 			if !ok {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
-			t.ID = int(value.Int64)
-		case test.FieldName:
+			tu.ID = int(value.Int64)
+		case testuser.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field name", values[i])
 			} else if value.Valid {
-				t.Name = value.String
+				tu.Name = value.String
 			}
-		case test.FieldAge:
+		case testuser.FieldAge:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field age", values[i])
 			} else if value.Valid {
-				t.Age = int(value.Int64)
+				tu.Age = int(value.Int64)
 			}
-		case test.FieldCreatedAt:
+		case testuser.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
-				t.CreatedAt = value.Time
+				tu.CreatedAt = value.Time
 			}
 		}
 	}
 	return nil
 }
 
-// Update returns a builder for updating this Test.
-// Note that you need to call Test.Unwrap() before calling this method if this Test
+// Update returns a builder for updating this TestUser.
+// Note that you need to call TestUser.Unwrap() before calling this method if this TestUser
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (t *Test) Update() *TestUpdateOne {
-	return (&TestClient{config: t.config}).UpdateOne(t)
+func (tu *TestUser) Update() *TestUserUpdateOne {
+	return (&TestUserClient{config: tu.config}).UpdateOne(tu)
 }
 
-// Unwrap unwraps the Test entity that was returned from a transaction after it was closed,
+// Unwrap unwraps the TestUser entity that was returned from a transaction after it was closed,
 // so that all future queries will be executed through the driver which created the transaction.
-func (t *Test) Unwrap() *Test {
-	tx, ok := t.config.driver.(*txDriver)
+func (tu *TestUser) Unwrap() *TestUser {
+	tx, ok := tu.config.driver.(*txDriver)
 	if !ok {
-		panic("ent: Test is not a transactional entity")
+		panic("ent: TestUser is not a transactional entity")
 	}
-	t.config.driver = tx.drv
-	return t
+	tu.config.driver = tx.drv
+	return tu
 }
 
 // String implements the fmt.Stringer.
-func (t *Test) String() string {
+func (tu *TestUser) String() string {
 	var builder strings.Builder
-	builder.WriteString("Test(")
-	builder.WriteString(fmt.Sprintf("id=%v", t.ID))
+	builder.WriteString("TestUser(")
+	builder.WriteString(fmt.Sprintf("id=%v", tu.ID))
 	builder.WriteString(", name=")
-	builder.WriteString(t.Name)
+	builder.WriteString(tu.Name)
 	builder.WriteString(", age=")
-	builder.WriteString(fmt.Sprintf("%v", t.Age))
+	builder.WriteString(fmt.Sprintf("%v", tu.Age))
 	builder.WriteString(", created_at=")
-	builder.WriteString(t.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(tu.CreatedAt.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }
 
-// Tests is a parsable slice of Test.
-type Tests []*Test
+// TestUsers is a parsable slice of TestUser.
+type TestUsers []*TestUser
 
-func (t Tests) config(cfg config) {
-	for _i := range t {
-		t[_i].config = cfg
+func (tu TestUsers) config(cfg config) {
+	for _i := range tu {
+		tu[_i].config = cfg
 	}
 }

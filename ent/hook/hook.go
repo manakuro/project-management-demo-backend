@@ -8,15 +8,15 @@ import (
 	"project-management-demo-backend/ent"
 )
 
-// The TestFunc type is an adapter to allow the use of ordinary
-// function as Test mutator.
-type TestFunc func(context.Context, *ent.TestMutation) (ent.Value, error)
+// The TestUserFunc type is an adapter to allow the use of ordinary
+// function as TestUser mutator.
+type TestUserFunc func(context.Context, *ent.TestUserMutation) (ent.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f TestFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	mv, ok := m.(*ent.TestMutation)
+func (f TestUserFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.TestUserMutation)
 	if !ok {
-		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.TestMutation", m)
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.TestUserMutation", m)
 	}
 	return f(ctx, mv)
 }

@@ -8,22 +8,22 @@ import (
 )
 
 var (
-	// TestsColumns holds the columns for the "tests" table.
-	TestsColumns = []*schema.Column{
+	// TestUsersColumns holds the columns for the "test_users" table.
+	TestUsersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "name", Type: field.TypeString, Default: ""},
 		{Name: "age", Type: field.TypeInt},
 		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
 	}
-	// TestsTable holds the schema information for the "tests" table.
-	TestsTable = &schema.Table{
-		Name:       "tests",
-		Columns:    TestsColumns,
-		PrimaryKey: []*schema.Column{TestsColumns[0]},
+	// TestUsersTable holds the schema information for the "test_users" table.
+	TestUsersTable = &schema.Table{
+		Name:       "test_users",
+		Columns:    TestUsersColumns,
+		PrimaryKey: []*schema.Column{TestUsersColumns[0]},
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
-		TestsTable,
+		TestUsersTable,
 	}
 )
 

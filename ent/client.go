@@ -9,7 +9,7 @@ import (
 
 	"project-management-demo-backend/ent/migrate"
 
-	"project-management-demo-backend/ent/test"
+	"project-management-demo-backend/ent/testuser"
 
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
@@ -20,8 +20,8 @@ type Client struct {
 	config
 	// Schema is the client for creating, migrating and dropping schema.
 	Schema *migrate.Schema
-	// Test is the client for interacting with the Test builders.
-	Test *TestClient
+	// TestUser is the client for interacting with the TestUser builders.
+	TestUser *TestUserClient
 }
 
 // NewClient creates a new client configured with the given options.
@@ -35,7 +35,7 @@ func NewClient(opts ...Option) *Client {
 
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
-	c.Test = NewTestClient(c.config)
+	c.TestUser = NewTestUserClient(c.config)
 }
 
 // Open opens a database/sql.DB specified by the driver name and
@@ -67,9 +67,9 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:    ctx,
-		config: cfg,
-		Test:   NewTestClient(cfg),
+		ctx:      ctx,
+		config:   cfg,
+		TestUser: NewTestUserClient(cfg),
 	}, nil
 }
 
@@ -87,15 +87,15 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		config: cfg,
-		Test:   NewTestClient(cfg),
+		config:   cfg,
+		TestUser: NewTestUserClient(cfg),
 	}, nil
 }
 
 // Debug returns a new debug-client. It's used to get verbose logging on specific operations.
 //
 //	client.Debug().
-//		Test.
+//		TestUser.
 //		Query().
 //		Count(ctx)
 //
@@ -118,87 +118,87 @@ func (c *Client) Close() error {
 // Use adds the mutation hooks to all the entity clients.
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
-	c.Test.Use(hooks...)
+	c.TestUser.Use(hooks...)
 }
 
-// TestClient is a client for the Test schema.
-type TestClient struct {
+// TestUserClient is a client for the TestUser schema.
+type TestUserClient struct {
 	config
 }
 
-// NewTestClient returns a client for the Test from the given config.
-func NewTestClient(c config) *TestClient {
-	return &TestClient{config: c}
+// NewTestUserClient returns a client for the TestUser from the given config.
+func NewTestUserClient(c config) *TestUserClient {
+	return &TestUserClient{config: c}
 }
 
 // Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `test.Hooks(f(g(h())))`.
-func (c *TestClient) Use(hooks ...Hook) {
-	c.hooks.Test = append(c.hooks.Test, hooks...)
+// A call to `Use(f, g, h)` equals to `testuser.Hooks(f(g(h())))`.
+func (c *TestUserClient) Use(hooks ...Hook) {
+	c.hooks.TestUser = append(c.hooks.TestUser, hooks...)
 }
 
-// Create returns a create builder for Test.
-func (c *TestClient) Create() *TestCreate {
-	mutation := newTestMutation(c.config, OpCreate)
-	return &TestCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Create returns a create builder for TestUser.
+func (c *TestUserClient) Create() *TestUserCreate {
+	mutation := newTestUserMutation(c.config, OpCreate)
+	return &TestUserCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// CreateBulk returns a builder for creating a bulk of Test entities.
-func (c *TestClient) CreateBulk(builders ...*TestCreate) *TestCreateBulk {
-	return &TestCreateBulk{config: c.config, builders: builders}
+// CreateBulk returns a builder for creating a bulk of TestUser entities.
+func (c *TestUserClient) CreateBulk(builders ...*TestUserCreate) *TestUserCreateBulk {
+	return &TestUserCreateBulk{config: c.config, builders: builders}
 }
 
-// Update returns an update builder for Test.
-func (c *TestClient) Update() *TestUpdate {
-	mutation := newTestMutation(c.config, OpUpdate)
-	return &TestUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Update returns an update builder for TestUser.
+func (c *TestUserClient) Update() *TestUserUpdate {
+	mutation := newTestUserMutation(c.config, OpUpdate)
+	return &TestUserUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOne returns an update builder for the given entity.
-func (c *TestClient) UpdateOne(t *Test) *TestUpdateOne {
-	mutation := newTestMutation(c.config, OpUpdateOne, withTest(t))
-	return &TestUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *TestUserClient) UpdateOne(tu *TestUser) *TestUserUpdateOne {
+	mutation := newTestUserMutation(c.config, OpUpdateOne, withTestUser(tu))
+	return &TestUserUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *TestClient) UpdateOneID(id int) *TestUpdateOne {
-	mutation := newTestMutation(c.config, OpUpdateOne, withTestID(id))
-	return &TestUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *TestUserClient) UpdateOneID(id int) *TestUserUpdateOne {
+	mutation := newTestUserMutation(c.config, OpUpdateOne, withTestUserID(id))
+	return &TestUserUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// Delete returns a delete builder for Test.
-func (c *TestClient) Delete() *TestDelete {
-	mutation := newTestMutation(c.config, OpDelete)
-	return &TestDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Delete returns a delete builder for TestUser.
+func (c *TestUserClient) Delete() *TestUserDelete {
+	mutation := newTestUserMutation(c.config, OpDelete)
+	return &TestUserDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // DeleteOne returns a delete builder for the given entity.
-func (c *TestClient) DeleteOne(t *Test) *TestDeleteOne {
-	return c.DeleteOneID(t.ID)
+func (c *TestUserClient) DeleteOne(tu *TestUser) *TestUserDeleteOne {
+	return c.DeleteOneID(tu.ID)
 }
 
 // DeleteOneID returns a delete builder for the given id.
-func (c *TestClient) DeleteOneID(id int) *TestDeleteOne {
-	builder := c.Delete().Where(test.ID(id))
+func (c *TestUserClient) DeleteOneID(id int) *TestUserDeleteOne {
+	builder := c.Delete().Where(testuser.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
-	return &TestDeleteOne{builder}
+	return &TestUserDeleteOne{builder}
 }
 
-// Query returns a query builder for Test.
-func (c *TestClient) Query() *TestQuery {
-	return &TestQuery{
+// Query returns a query builder for TestUser.
+func (c *TestUserClient) Query() *TestUserQuery {
+	return &TestUserQuery{
 		config: c.config,
 	}
 }
 
-// Get returns a Test entity by its id.
-func (c *TestClient) Get(ctx context.Context, id int) (*Test, error) {
-	return c.Query().Where(test.ID(id)).Only(ctx)
+// Get returns a TestUser entity by its id.
+func (c *TestUserClient) Get(ctx context.Context, id int) (*TestUser, error) {
+	return c.Query().Where(testuser.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *TestClient) GetX(ctx context.Context, id int) *Test {
+func (c *TestUserClient) GetX(ctx context.Context, id int) *TestUser {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -207,6 +207,6 @@ func (c *TestClient) GetX(ctx context.Context, id int) *Test {
 }
 
 // Hooks returns the client hooks.
-func (c *TestClient) Hooks() []Hook {
-	return c.hooks.Test
+func (c *TestUserClient) Hooks() []Hook {
+	return c.hooks.TestUser
 }

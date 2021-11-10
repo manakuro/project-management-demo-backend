@@ -6,5 +6,5 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
-// Test is the predicate function for test builders.
-type Test func(*sql.Selector)
+// TestUser is the predicate function for testuser builders.
+type TestUser func(*sql.Selector)

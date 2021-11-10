@@ -8,13 +8,13 @@ import (
 	"entgo.io/ent/schema/field"
 )
 
-// Test holds the schema definition for the Test entity.
-type Test struct {
+// TestUser holds the schema definition for the Test entity.
+type TestUser struct {
 	ent.Schema
 }
 
 // Fields of the Test.
-func (Test) Fields() []ent.Field {
+func (TestUser) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("name").Default(""),
 		field.Int("age"),
@@ -27,6 +27,6 @@ func (Test) Fields() []ent.Field {
 }
 
 // Edges of the Test.
-func (Test) Edges() []ent.Edge {
+func (TestUser) Edges() []ent.Edge {
 	return nil
 }

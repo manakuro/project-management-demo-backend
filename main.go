@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"project-management-demo-backend/ent"
+	"project-management-demo-backend/ent/migrate"
 
 	"github.com/go-sql-driver/mysql"
 
@@ -37,7 +38,11 @@ func main() {
 		}
 	}(client)
 
-	if err = client.Schema.Create(context.Background()); !errors.Is(err, nil) {
+	if err = client.Schema.Create(
+		context.Background(),
+		migrate.WithDropIndex(true),
+		migrate.WithDropColumn(true),
+	); !errors.Is(err, nil) {
 		log.Fatalf("failed creating schema resources: %v", err)
 	}
 

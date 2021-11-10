@@ -4,7 +4,7 @@ package ent
 
 import (
 	"project-management-demo-backend/ent/schema"
-	"project-management-demo-backend/ent/test"
+	"project-management-demo-backend/ent/testuser"
 	"time"
 )
 
@@ -12,14 +12,14 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
-	testFields := schema.Test{}.Fields()
-	_ = testFields
-	// testDescName is the schema descriptor for name field.
-	testDescName := testFields[0].Descriptor()
-	// test.DefaultName holds the default value on creation for the name field.
-	test.DefaultName = testDescName.Default.(string)
-	// testDescCreatedAt is the schema descriptor for created_at field.
-	testDescCreatedAt := testFields[2].Descriptor()
-	// test.DefaultCreatedAt holds the default value on creation for the created_at field.
-	test.DefaultCreatedAt = testDescCreatedAt.Default.(func() time.Time)
+	testuserFields := schema.TestUser{}.Fields()
+	_ = testuserFields
+	// testuserDescName is the schema descriptor for name field.
+	testuserDescName := testuserFields[0].Descriptor()
+	// testuser.DefaultName holds the default value on creation for the name field.
+	testuser.DefaultName = testuserDescName.Default.(string)
+	// testuserDescCreatedAt is the schema descriptor for created_at field.
+	testuserDescCreatedAt := testuserFields[2].Descriptor()
+	// testuser.DefaultCreatedAt holds the default value on creation for the created_at field.
+	testuser.DefaultCreatedAt = testuserDescCreatedAt.Default.(func() time.Time)
 }
