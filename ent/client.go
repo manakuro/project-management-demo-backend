@@ -22,6 +22,8 @@ type Client struct {
 	Schema *migrate.Schema
 	// TestUser is the client for interacting with the TestUser builders.
 	TestUser *TestUserClient
+	// additional fields for node api
+	tables tables
 }
 
 // NewClient creates a new client configured with the given options.
