@@ -1,12 +1,10 @@
 package main
 
 import (
-	"context"
 	"errors"
 	"log"
 	"project-management-demo-backend/config"
 	"project-management-demo-backend/ent"
-	"project-management-demo-backend/ent/migrate"
 	"project-management-demo-backend/graph/resolver"
 	"project-management-demo-backend/infrastructure/datastore"
 	"project-management-demo-backend/infrastructure/router"
@@ -19,7 +17,6 @@ func main() {
 
 	client := newDBClient()
 	defer client.Close()
-	createDBSchema(client)
 
 	srv := newGraphQLServer(client)
 
@@ -35,16 +32,6 @@ func newDBClient() *ent.Client {
 	}
 
 	return client
-}
-
-func createDBSchema(client *ent.Client) {
-	if err := client.Schema.Create(
-		context.Background(),
-		migrate.WithDropIndex(true),
-		migrate.WithDropColumn(true),
-	); !errors.Is(err, nil) {
-		log.Fatalf("failed creating schema resources: %v", err)
-	}
 }
 
 func newGraphQLServer(client *ent.Client) *handler.Server {
