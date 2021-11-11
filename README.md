@@ -24,3 +24,8 @@ $ make setup_db
 $ make migrate_up
 ```
 
+## Start server
+
+```
+$ make start
+```
