@@ -4,18 +4,14 @@ import (
 	"context"
 	"errors"
 	"log"
-	"net/http"
 	"project-management-demo-backend/config"
 	"project-management-demo-backend/ent"
 	"project-management-demo-backend/ent/migrate"
 	"project-management-demo-backend/graph/resolver"
 	"project-management-demo-backend/infrastructure/datastore"
+	"project-management-demo-backend/infrastructure/router"
 
 	"github.com/99designs/gqlgen/graphql/handler"
-	"github.com/99designs/gqlgen/graphql/playground"
-
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 )
 
 func main() {
@@ -25,25 +21,9 @@ func main() {
 	defer client.Close()
 	createDBSchema(client)
 
-	e := echo.New()
+	srv := newGraphQLServer(client)
 
-	e.Use(middleware.Logger())
-	e.Use(middleware.Recover())
-	e.GET("/", func(c echo.Context) error {
-		return c.String(http.StatusOK, "Welcome!")
-	})
-
-	srv := handler.NewDefaultServer(resolver.NewSchema(client))
-	{
-		e.POST("/query", func(c echo.Context) error {
-			srv.ServeHTTP(c.Response(), c.Request())
-			return nil
-		})
-		e.GET("/playground", func(c echo.Context) error {
-			playground.Handler("GraphQL", "/query").ServeHTTP(c.Response(), c.Request())
-			return nil
-		})
-	}
+	e := router.NewRouter(srv)
 
 	e.Logger.Fatal(e.Start(":8080"))
 }
@@ -65,4 +45,8 @@ func createDBSchema(client *ent.Client) {
 	); !errors.Is(err, nil) {
 		log.Fatalf("failed creating schema resources: %v", err)
 	}
+}
+
+func newGraphQLServer(client *ent.Client) *handler.Server {
+	return handler.NewDefaultServer(resolver.NewSchema(client))
 }
