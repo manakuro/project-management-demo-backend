@@ -18,6 +18,9 @@ linters-settings:
   govet:
     check-shadowing: true
 
+  errcheck:
+      ignore: "fmt:.*,Close"
+
   revive:
     # Use recommended configuration
     # @see https://github.com/mgechev/revive#recommended-configuration

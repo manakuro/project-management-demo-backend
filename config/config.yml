@@ -1,0 +1,17 @@
+database:
+  user: root
+  password: root
+  net: tcp
+  addr: 127.0.0.1:3308
+  dbname: project_management_demo
+  allowNativePasswords: true
+  params:
+    parseTime: true
+    charset: utf8mb4
+    loc: Asia/Tokyo
+
+firebase:
+  serviceKey: /Users/kurodamanato/.keys/firebase-service-key.json
+
+server:
+  address: 8080
