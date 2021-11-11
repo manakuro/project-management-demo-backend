@@ -8,7 +8,7 @@ import (
 
 	"github.com/spf13/viper"
 
-	"project-management-demo-backend/utils"
+	"project-management-demo-backend/utils/environment"
 )
 
 type config struct {
@@ -40,7 +40,7 @@ var C config
 func ReadConfig() {
 	Config := &C
 
-	if utils.IsDev() {
+	if environment.IsDev() {
 		viper.AddConfigPath(filepath.Join("./", "config"))
 	} else {
 		viper.AddConfigPath(filepath.Join("/srv", "config"))
