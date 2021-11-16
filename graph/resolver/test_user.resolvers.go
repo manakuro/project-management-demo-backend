@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-func (r *queryResolver) User(ctx context.Context) (*ent.TestUser, error) {
+func (r *queryResolver) TestUser(ctx context.Context) (*ent.TestUser, error) {
 	return r.client.TestUser.Query().Where(testuser.IDEQ(1)).Only(ctx)
 }
 

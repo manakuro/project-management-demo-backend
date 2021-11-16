@@ -6,5 +6,5 @@ type TestUser {
 }
 
 extend type Query {
-  user: TestUser
+  testUser: TestUser
 }
