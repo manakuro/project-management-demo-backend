@@ -28,4 +28,7 @@ migrate_up:
 migrate_down:
 	migrate -path $$(yq e '.development.path' db/config.yaml) -database $$(yq e '.development.database' db/config.yaml) down
 
-.PHONY: install setup_db migrate_up migrate_down start migrate_schema
+schema_description:
+	ent describe ./ent/schema
+
+.PHONY: install setup_db migrate_up migrate_down start migrate_schema schema_description
