@@ -5,7 +5,7 @@ import (
 	"log"
 	"project-management-demo-backend/config"
 	"project-management-demo-backend/ent"
-	"project-management-demo-backend/graph/resolver"
+	"project-management-demo-backend/pkg/adapter/resolver"
 	"project-management-demo-backend/pkg/infrastructure/datastore"
 	"project-management-demo-backend/pkg/infrastructure/router"
 
