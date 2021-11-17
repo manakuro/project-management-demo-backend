@@ -9,6 +9,7 @@ import (
 // TestUserController is an interface of controller
 type TestUserController interface {
 	Get(ctx context.Context) (*model.TestUser, error)
+	Create(ctx context.Context, input model.CreateTestUserInput) (*model.TestUser, error)
 }
 
 type testUserController struct {
@@ -24,4 +25,8 @@ func NewTestUserController(tu usecase.TestUserUsecase) TestUserController {
 
 func (c *testUserController) Get(ctx context.Context) (*model.TestUser, error) {
 	return c.testUserUsecase.Get()
+}
+
+func (c *testUserController) Create(ctx context.Context, input model.CreateTestUserInput) (*model.TestUser, error) {
+	return c.testUserUsecase.Create(input)
 }

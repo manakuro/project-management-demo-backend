@@ -13,6 +13,7 @@ type testUserUsecase struct {
 // TestUserUsecase is an interface of test user
 type TestUserUsecase interface {
 	Get() (*model.TestUser, error)
+	Create(input model.CreateTestUserInput) (*model.TestUser, error)
 }
 
 // NewTestUserUsecase generates test user repository
@@ -27,4 +28,13 @@ func (r *testUserUsecase) Get() (*model.TestUser, error) {
 	}
 
 	return u, nil
+}
+
+func (r *testUserUsecase) Create(input model.CreateTestUserInput) (*model.TestUser, error) {
+	u, err := r.testUserRepository.Create(input)
+	if !errors.Is(err, nil) {
+		return nil, err
+	}
+
+	return u, err
 }

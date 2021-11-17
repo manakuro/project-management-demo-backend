@@ -28,3 +28,14 @@ func (r *testUserRepository) Find() (*model.TestUser, error) {
 
 	return &model.TestUser{TestUser: u}, nil
 }
+
+func (r *testUserRepository) Create(input model.CreateTestUserInput) (*model.TestUser, error) {
+	ctx := context.Background()
+	u, err := r.client.
+		TestUser.
+		Create().
+		SetInput(input.CreateTestUserInput).
+		Save(ctx)
+
+	return &model.TestUser{TestUser: u}, err
+}

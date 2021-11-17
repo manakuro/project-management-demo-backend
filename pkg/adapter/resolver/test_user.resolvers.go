@@ -12,13 +12,7 @@ import (
 )
 
 func (r *mutationResolver) CreateTestUser(ctx context.Context, input model.CreateTestUserInput) (*model.TestUser, error) {
-	u, err := r.client.
-		TestUser.
-		Create().
-		SetInput(input.CreateTestUserInput).
-		Save(ctx)
-
-	return &model.TestUser{TestUser: u}, err
+	return r.controller.TestUser.Create(ctx, input)
 }
 
 func (r *mutationResolver) UpdateTestUser(ctx context.Context, id string, input model.UpdateTestUserInput) (*model.TestUser, error) {
