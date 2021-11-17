@@ -5,10 +5,9 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"project-management-demo-backend/pkg/utils/environment"
 
 	"github.com/spf13/viper"
-
-	"project-management-demo-backend/utils/environment"
 )
 
 type config struct {

@@ -7,7 +7,7 @@ import (
 	"project-management-demo-backend/config"
 	"project-management-demo-backend/ent"
 	"project-management-demo-backend/ent/migrate"
-	"project-management-demo-backend/infrastructure/datastore"
+	"project-management-demo-backend/pkg/infrastructure/datastore"
 )
 
 func main() {
