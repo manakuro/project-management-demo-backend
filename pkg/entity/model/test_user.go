@@ -2,7 +2,7 @@ package model
 
 import (
 	"project-management-demo-backend/ent"
-	"project-management-demo-backend/pkg/utils/datetime"
+	"project-management-demo-backend/pkg/util/datetime"
 )
 
 // TestUser is the model entity for the TestUser schema.

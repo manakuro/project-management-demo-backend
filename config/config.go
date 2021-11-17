@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"project-management-demo-backend/pkg/utils/environment"
+	"project-management-demo-backend/pkg/util/environment"
 
 	"github.com/spf13/viper"
 )
