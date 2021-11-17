@@ -9,6 +9,10 @@ input CreateTestUserInput {
   name: String!
   age: Int!
 }
+input UpdateTestUserInput {
+  name: String
+  age: Int
+}
 
 extend type Query {
   testUser: TestUser
@@ -16,4 +20,5 @@ extend type Query {
 
 extend type Mutation {
   createTestUser(input: CreateTestUserInput!): TestUser!
+  updateTestUser(id: ID!, input: UpdateTestUserInput!): TestUser!
 }

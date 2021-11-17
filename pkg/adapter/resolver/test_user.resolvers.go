@@ -5,8 +5,10 @@ package resolver
 
 import (
 	"context"
+	"errors"
 	"project-management-demo-backend/graph/generated"
 	"project-management-demo-backend/pkg/entity/model"
+	"strconv"
 )
 
 func (r *mutationResolver) CreateTestUser(ctx context.Context, input model.CreateTestUserInput) (*model.TestUser, error) {
@@ -15,6 +17,16 @@ func (r *mutationResolver) CreateTestUser(ctx context.Context, input model.Creat
 		Create().
 		SetInput(input.CreateTestUserInput).
 		Save(ctx)
+
+	return &model.TestUser{TestUser: u}, err
+}
+
+func (r *mutationResolver) UpdateTestUser(ctx context.Context, id string, input model.UpdateTestUserInput) (*model.TestUser, error) {
+	i, err := strconv.ParseInt(id, 10, 64)
+	if !errors.Is(err, nil) {
+		return nil, err
+	}
+	u, err := r.client.TestUser.UpdateOneID(int(i)).SetInput(input.UpdateTestUserInput).Save(ctx)
 
 	return &model.TestUser{TestUser: u}, err
 }
