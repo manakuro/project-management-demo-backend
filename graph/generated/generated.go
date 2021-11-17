@@ -46,7 +46,7 @@ type DirectiveRoot struct {
 type ComplexityRoot struct {
 	Mutation struct {
 		CreateTestUser func(childComplexity int, input model.CreateTestUserInput) int
-		UpdateTestUser func(childComplexity int, id string, input model.UpdateTestUserInput) int
+		UpdateTestUser func(childComplexity int, input model.UpdateTestUserInput) int
 	}
 
 	Query struct {
@@ -64,7 +64,7 @@ type ComplexityRoot struct {
 
 type MutationResolver interface {
 	CreateTestUser(ctx context.Context, input model.CreateTestUserInput) (*model.TestUser, error)
-	UpdateTestUser(ctx context.Context, id string, input model.UpdateTestUserInput) (*model.TestUser, error)
+	UpdateTestUser(ctx context.Context, input model.UpdateTestUserInput) (*model.TestUser, error)
 }
 type QueryResolver interface {
 	TestUser(ctx context.Context) (*model.TestUser, error)
@@ -111,7 +111,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.UpdateTestUser(childComplexity, args["id"].(string), args["input"].(model.UpdateTestUserInput)), true
+		return e.complexity.Mutation.UpdateTestUser(childComplexity, args["input"].(model.UpdateTestUserInput)), true
 
 	case "Query.testUser":
 		if e.complexity.Query.TestUser == nil {
@@ -237,6 +237,7 @@ input CreateTestUserInput {
   age: Int!
 }
 input UpdateTestUserInput {
+  id: ID!
   name: String
   age: Int
 }
@@ -247,7 +248,7 @@ extend type Query {
 
 extend type Mutation {
   createTestUser(input: CreateTestUserInput!): TestUser!
-  updateTestUser(id: ID!, input: UpdateTestUserInput!): TestUser!
+  updateTestUser(input: UpdateTestUserInput!): TestUser!
 }
 `, BuiltIn: false},
 }
@@ -275,24 +276,15 @@ func (ec *executionContext) field_Mutation_createTestUser_args(ctx context.Conte
 func (ec *executionContext) field_Mutation_updateTestUser_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["id"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-		arg0, err = ec.unmarshalNID2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["id"] = arg0
-	var arg1 model.UpdateTestUserInput
+	var arg0 model.UpdateTestUserInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg1, err = ec.unmarshalNUpdateTestUserInput2projectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐUpdateTestUserInput(ctx, tmp)
+		arg0, err = ec.unmarshalNUpdateTestUserInput2projectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐUpdateTestUserInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["input"] = arg1
+	args["input"] = arg0
 	return args, nil
 }
 
@@ -416,7 +408,7 @@ func (ec *executionContext) _Mutation_updateTestUser(ctx context.Context, field 
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().UpdateTestUser(rctx, args["id"].(string), args["input"].(model.UpdateTestUserInput))
+		return ec.resolvers.Mutation().UpdateTestUser(rctx, args["input"].(model.UpdateTestUserInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1873,6 +1865,14 @@ func (ec *executionContext) unmarshalInputUpdateTestUserInput(ctx context.Contex
 
 	for k, v := range asMap {
 		switch k {
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			it.ID, err = ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		case "name":
 			var err error
 

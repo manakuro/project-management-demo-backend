@@ -10,6 +10,7 @@ import (
 type TestUserController interface {
 	Get(ctx context.Context) (*model.TestUser, error)
 	Create(ctx context.Context, input model.CreateTestUserInput) (*model.TestUser, error)
+	Update(ctx context.Context, input model.UpdateTestUserInput) (*model.TestUser, error)
 }
 
 type testUserController struct {
@@ -29,4 +30,8 @@ func (c *testUserController) Get(ctx context.Context) (*model.TestUser, error) {
 
 func (c *testUserController) Create(ctx context.Context, input model.CreateTestUserInput) (*model.TestUser, error) {
 	return c.testUserUsecase.Create(input)
+}
+
+func (c *testUserController) Update(ctx context.Context, input model.UpdateTestUserInput) (*model.TestUser, error) {
+	return c.testUserUsecase.Update(input)
 }

@@ -10,6 +10,7 @@ input CreateTestUserInput {
   age: Int!
 }
 input UpdateTestUserInput {
+  id: ID!
   name: String
   age: Int
 }
@@ -20,5 +21,5 @@ extend type Query {
 
 extend type Mutation {
   createTestUser(input: CreateTestUserInput!): TestUser!
-  updateTestUser(id: ID!, input: UpdateTestUserInput!): TestUser!
+  updateTestUser(input: UpdateTestUserInput!): TestUser!
 }

@@ -7,6 +7,7 @@ import (
 	"project-management-demo-backend/ent/testuser"
 	"project-management-demo-backend/pkg/entity/model"
 	ur "project-management-demo-backend/pkg/usecase/repository"
+	"strconv"
 )
 
 type testUserRepository struct {
@@ -37,5 +38,28 @@ func (r *testUserRepository) Create(input model.CreateTestUserInput) (*model.Tes
 		SetInput(input.CreateTestUserInput).
 		Save(ctx)
 
-	return &model.TestUser{TestUser: u}, err
+	if !errors.Is(err, nil) {
+		return nil, err
+	}
+
+	return &model.TestUser{TestUser: u}, nil
+}
+
+func (r *testUserRepository) Update(input model.UpdateTestUserInput) (*model.TestUser, error) {
+	ctx := context.Background()
+	id, err := strconv.ParseInt(input.ID, 10, 64)
+	if !errors.Is(err, nil) {
+		return nil, err
+	}
+
+	u, err := r.client.
+		TestUser.UpdateOneID(int(id)).
+		SetInput(input.UpdateTestUserInput).
+		Save(ctx)
+
+	if !errors.Is(err, nil) {
+		return nil, err
+	}
+
+	return &model.TestUser{TestUser: u}, nil
 }
