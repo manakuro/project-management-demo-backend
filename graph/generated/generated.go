@@ -6,7 +6,7 @@ import (
 	"bytes"
 	"context"
 	"errors"
-	"project-management-demo-backend/ent"
+	"project-management-demo-backend/pkg/entity/model"
 	"strconv"
 	"sync"
 	"sync/atomic"
@@ -56,10 +56,10 @@ type ComplexityRoot struct {
 }
 
 type QueryResolver interface {
-	TestUser(ctx context.Context) (*ent.TestUser, error)
+	TestUser(ctx context.Context) (*model.TestUser, error)
 }
 type TestUserResolver interface {
-	CreatedAt(ctx context.Context, obj *ent.TestUser) (string, error)
+	CreatedAt(ctx context.Context, obj *model.TestUser) (string, error)
 }
 
 type executableSchema struct {
@@ -265,9 +265,9 @@ func (ec *executionContext) _Query_testUser(ctx context.Context, field graphql.C
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(*ent.TestUser)
+	res := resTmp.(*model.TestUser)
 	fc.Result = res
-	return ec.marshalOTestUser2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTestUser(ctx, field.Selections, res)
+	return ec.marshalOTestUser2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐTestUser(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -341,7 +341,7 @@ func (ec *executionContext) _Query___schema(ctx context.Context, field graphql.C
 	return ec.marshalO__Schema2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐSchema(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _TestUser_id(ctx context.Context, field graphql.CollectedField, obj *ent.TestUser) (ret graphql.Marshaler) {
+func (ec *executionContext) _TestUser_id(ctx context.Context, field graphql.CollectedField, obj *model.TestUser) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -376,7 +376,7 @@ func (ec *executionContext) _TestUser_id(ctx context.Context, field graphql.Coll
 	return ec.marshalNID2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _TestUser_name(ctx context.Context, field graphql.CollectedField, obj *ent.TestUser) (ret graphql.Marshaler) {
+func (ec *executionContext) _TestUser_name(ctx context.Context, field graphql.CollectedField, obj *model.TestUser) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -411,7 +411,7 @@ func (ec *executionContext) _TestUser_name(ctx context.Context, field graphql.Co
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _TestUser_age(ctx context.Context, field graphql.CollectedField, obj *ent.TestUser) (ret graphql.Marshaler) {
+func (ec *executionContext) _TestUser_age(ctx context.Context, field graphql.CollectedField, obj *model.TestUser) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -446,7 +446,7 @@ func (ec *executionContext) _TestUser_age(ctx context.Context, field graphql.Col
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _TestUser_createdAt(ctx context.Context, field graphql.CollectedField, obj *ent.TestUser) (ret graphql.Marshaler) {
+func (ec *executionContext) _TestUser_createdAt(ctx context.Context, field graphql.CollectedField, obj *model.TestUser) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -1654,7 +1654,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 
 var testUserImplementors = []string{"TestUser"}
 
-func (ec *executionContext) _TestUser(ctx context.Context, sel ast.SelectionSet, obj *ent.TestUser) graphql.Marshaler {
+func (ec *executionContext) _TestUser(ctx context.Context, sel ast.SelectionSet, obj *model.TestUser) graphql.Marshaler {
 	fields := graphql.CollectFields(ec.OperationContext, sel, testUserImplementors)
 
 	out := graphql.NewFieldSet(fields)
@@ -2318,7 +2318,7 @@ func (ec *executionContext) marshalOString2ᚖstring(ctx context.Context, sel as
 	return graphql.MarshalString(*v)
 }
 
-func (ec *executionContext) marshalOTestUser2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTestUser(ctx context.Context, sel ast.SelectionSet, v *ent.TestUser) graphql.Marshaler {
+func (ec *executionContext) marshalOTestUser2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐTestUser(ctx context.Context, sel ast.SelectionSet, v *model.TestUser) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}

@@ -5,17 +5,19 @@ package resolver
 
 import (
 	"context"
-	"project-management-demo-backend/ent"
 	"project-management-demo-backend/ent/testuser"
 	"project-management-demo-backend/graph/generated"
+	"project-management-demo-backend/pkg/entity/model"
 	"time"
 )
 
-func (r *queryResolver) TestUser(ctx context.Context) (*ent.TestUser, error) {
-	return r.client.TestUser.Query().Where(testuser.IDEQ(1)).Only(ctx)
+func (r *queryResolver) TestUser(ctx context.Context) (*model.TestUser, error) {
+	u, err := r.client.TestUser.Query().Where(testuser.IDEQ(1)).Only(ctx)
+
+	return &model.TestUser{TestUser: u}, err
 }
 
-func (r *testUserResolver) CreatedAt(_ context.Context, obj *ent.TestUser) (string, error) {
+func (r *testUserResolver) CreatedAt(_ context.Context, obj *model.TestUser) (string, error) {
 	return obj.CreatedAt.Format(time.RFC3339), nil
 }
 
