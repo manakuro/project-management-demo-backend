@@ -10,6 +10,16 @@ type TestUser struct {
 	*ent.TestUser
 }
 
+// CreateTestUserInput represents a mutation input for creating test users.
+type CreateTestUserInput struct {
+	ent.CreateTestUserInput
+}
+
+// UpdateTestUserInput represents a mutation input for updating test users.
+type UpdateTestUserInput struct {
+	ent.UpdateTestUserInput
+}
+
 // FormattedCreatedAt returns formatted created_at
 func (t *TestUser) FormattedCreatedAt() string {
 	return datetime.FormatDate(t.CreatedAt)

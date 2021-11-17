@@ -9,6 +9,16 @@ import (
 	"project-management-demo-backend/pkg/entity/model"
 )
 
+func (r *mutationResolver) CreateTestUser(ctx context.Context, input model.CreateTestUserInput) (*model.TestUser, error) {
+	u, err := r.client.
+		TestUser.
+		Create().
+		SetInput(input.CreateTestUserInput).
+		Save(ctx)
+
+	return &model.TestUser{TestUser: u}, err
+}
+
 func (r *queryResolver) TestUser(ctx context.Context) (*model.TestUser, error) {
 	return r.controller.TestUser.Get(ctx)
 }
