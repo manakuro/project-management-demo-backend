@@ -22,4 +22,8 @@ func init() {
 	testuserDescCreatedAt := testuserFields[2].Descriptor()
 	// testuser.DefaultCreatedAt holds the default value on creation for the created_at field.
 	testuser.DefaultCreatedAt = testuserDescCreatedAt.Default.(func() time.Time)
+	// testuserDescUpdatedAt is the schema descriptor for updated_at field.
+	testuserDescUpdatedAt := testuserFields[3].Descriptor()
+	// testuser.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	testuser.DefaultUpdatedAt = testuserDescUpdatedAt.Default.(func() time.Time)
 }

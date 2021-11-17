@@ -14,3 +14,8 @@ type TestUser struct {
 func (t *TestUser) FormattedCreatedAt() string {
 	return datetime.FormatDate(t.CreatedAt)
 }
+
+// FormattedUpdatedAt returns formatted updated_at
+func (t *TestUser) FormattedUpdatedAt() string {
+	return datetime.FormatDate(t.UpdatedAt)
+}

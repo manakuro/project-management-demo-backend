@@ -17,6 +17,10 @@ func (r *testUserResolver) CreatedAt(ctx context.Context, obj *model.TestUser) (
 	return obj.FormattedCreatedAt(), nil
 }
 
+func (r *testUserResolver) UpdatedAt(ctx context.Context, obj *model.TestUser) (string, error) {
+	return obj.FormattedUpdatedAt(), nil
+}
+
 // TestUser returns generated.TestUserResolver implementation.
 func (r *Resolver) TestUser() generated.TestUserResolver { return &testUserResolver{r} }
 

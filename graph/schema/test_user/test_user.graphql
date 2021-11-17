@@ -3,6 +3,7 @@ type TestUser {
   name: String!
   age: Int!
   createdAt: String!
+  updatedAt: String!
 }
 
 extend type Query {

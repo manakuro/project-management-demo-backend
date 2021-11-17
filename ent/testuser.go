@@ -22,6 +22,8 @@ type TestUser struct {
 	Age int `json:"age,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
+	// UpdatedAt holds the value of the "updated_at" field.
+	UpdatedAt time.Time `json:"updated_at,omitempty"`
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -33,7 +35,7 @@ func (*TestUser) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullInt64)
 		case testuser.FieldName:
 			values[i] = new(sql.NullString)
-		case testuser.FieldCreatedAt:
+		case testuser.FieldCreatedAt, testuser.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type TestUser", columns[i])
@@ -74,6 +76,12 @@ func (tu *TestUser) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				tu.CreatedAt = value.Time
 			}
+		case testuser.FieldUpdatedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
+			} else if value.Valid {
+				tu.UpdatedAt = value.Time
+			}
 		}
 	}
 	return nil
@@ -108,6 +116,8 @@ func (tu *TestUser) String() string {
 	builder.WriteString(fmt.Sprintf("%v", tu.Age))
 	builder.WriteString(", created_at=")
 	builder.WriteString(tu.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(", updated_at=")
+	builder.WriteString(tu.UpdatedAt.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }

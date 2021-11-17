@@ -68,6 +68,20 @@ func (tuu *TestUserUpdate) SetNillableCreatedAt(t *time.Time) *TestUserUpdate {
 	return tuu
 }
 
+// SetUpdatedAt sets the "updated_at" field.
+func (tuu *TestUserUpdate) SetUpdatedAt(t time.Time) *TestUserUpdate {
+	tuu.mutation.SetUpdatedAt(t)
+	return tuu
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (tuu *TestUserUpdate) SetNillableUpdatedAt(t *time.Time) *TestUserUpdate {
+	if t != nil {
+		tuu.SetUpdatedAt(*t)
+	}
+	return tuu
+}
+
 // Mutation returns the TestUserMutation object of the builder.
 func (tuu *TestUserUpdate) Mutation() *TestUserMutation {
 	return tuu.mutation
@@ -173,6 +187,13 @@ func (tuu *TestUserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: testuser.FieldCreatedAt,
 		})
 	}
+	if value, ok := tuu.mutation.UpdatedAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: testuser.FieldUpdatedAt,
+		})
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, tuu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{testuser.Label}
@@ -229,6 +250,20 @@ func (tuuo *TestUserUpdateOne) SetCreatedAt(t time.Time) *TestUserUpdateOne {
 func (tuuo *TestUserUpdateOne) SetNillableCreatedAt(t *time.Time) *TestUserUpdateOne {
 	if t != nil {
 		tuuo.SetCreatedAt(*t)
+	}
+	return tuuo
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (tuuo *TestUserUpdateOne) SetUpdatedAt(t time.Time) *TestUserUpdateOne {
+	tuuo.mutation.SetUpdatedAt(t)
+	return tuuo
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (tuuo *TestUserUpdateOne) SetNillableUpdatedAt(t *time.Time) *TestUserUpdateOne {
+	if t != nil {
+		tuuo.SetUpdatedAt(*t)
 	}
 	return tuuo
 }
@@ -360,6 +395,13 @@ func (tuuo *TestUserUpdateOne) sqlSave(ctx context.Context) (_node *TestUser, er
 			Type:   field.TypeTime,
 			Value:  value,
 			Column: testuser.FieldCreatedAt,
+		})
+	}
+	if value, ok := tuuo.mutation.UpdatedAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: testuser.FieldUpdatedAt,
 		})
 	}
 	_node = &TestUser{config: tuuo.config}
