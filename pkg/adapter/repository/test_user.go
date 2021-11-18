@@ -2,12 +2,13 @@ package repository
 
 import (
 	"context"
-	"errors"
 	"project-management-demo-backend/ent"
 	"project-management-demo-backend/ent/testuser"
 	"project-management-demo-backend/pkg/entity/model"
 	ur "project-management-demo-backend/pkg/usecase/repository"
 	"strconv"
+
+	"github.com/pkg/errors"
 )
 
 type testUserRepository struct {
@@ -49,7 +50,7 @@ func (r *testUserRepository) Update(input model.UpdateTestUserInput) (*model.Tes
 	ctx := context.Background()
 	id, err := strconv.ParseInt(input.ID, 10, 64)
 	if !errors.Is(err, nil) {
-		return nil, model.NewInvalidParamError(err.Error())
+		return nil, model.NewInvalidParamError(err)
 	}
 
 	u, err := r.client.
@@ -58,7 +59,7 @@ func (r *testUserRepository) Update(input model.UpdateTestUserInput) (*model.Tes
 		Save(ctx)
 
 	if !errors.Is(err, nil) {
-		return nil, model.NewDBError(err.Error())
+		return nil, model.NewDBError(err)
 	}
 
 	return &model.TestUser{TestUser: u}, nil
