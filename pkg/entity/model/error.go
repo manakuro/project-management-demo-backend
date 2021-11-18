@@ -33,6 +33,15 @@ func NewDBError(e error) error {
 	)
 }
 
+// NewNotFoundError returns error message related not found
+func NewNotFoundError(e error) error {
+	return newError(
+		NotFoundError,
+		fmt.Sprintf("[Not Found Error]: %s", e.Error()),
+		e,
+	)
+}
+
 // NewInvalidParamError returns error message related param
 func NewInvalidParamError(e error) error {
 	return newError(

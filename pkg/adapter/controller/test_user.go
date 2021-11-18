@@ -6,32 +6,32 @@ import (
 	"project-management-demo-backend/pkg/usecase/usecase"
 )
 
-// TestUserController is an interface of controller
-type TestUserController interface {
-	Get(ctx context.Context) (*model.TestUser, error)
+// TestUser is an interface of controller
+type TestUser interface {
+	Get(ctx context.Context, id *string) (*model.TestUser, error)
 	Create(ctx context.Context, input model.CreateTestUserInput) (*model.TestUser, error)
 	Update(ctx context.Context, input model.UpdateTestUserInput) (*model.TestUser, error)
 }
 
-type testUserController struct {
-	testUserUsecase usecase.TestUserUsecase
+type testUser struct {
+	testUserUsecase usecase.TestUser
 }
 
 // NewTestUserController generates test user controller
-func NewTestUserController(tu usecase.TestUserUsecase) TestUserController {
-	return &testUserController{
+func NewTestUserController(tu usecase.TestUser) TestUser {
+	return &testUser{
 		testUserUsecase: tu,
 	}
 }
 
-func (c *testUserController) Get(ctx context.Context) (*model.TestUser, error) {
-	return c.testUserUsecase.Get()
+func (c *testUser) Get(ctx context.Context, id *string) (*model.TestUser, error) {
+	return c.testUserUsecase.Get(id)
 }
 
-func (c *testUserController) Create(ctx context.Context, input model.CreateTestUserInput) (*model.TestUser, error) {
+func (c *testUser) Create(ctx context.Context, input model.CreateTestUserInput) (*model.TestUser, error) {
 	return c.testUserUsecase.Create(input)
 }
 
-func (c *testUserController) Update(ctx context.Context, input model.UpdateTestUserInput) (*model.TestUser, error) {
+func (c *testUser) Update(ctx context.Context, input model.UpdateTestUserInput) (*model.TestUser, error) {
 	return c.testUserUsecase.Update(input)
 }

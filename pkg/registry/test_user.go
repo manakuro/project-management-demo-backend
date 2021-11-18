@@ -6,7 +6,7 @@ import (
 	"project-management-demo-backend/pkg/usecase/usecase"
 )
 
-func (r *registry) NewTestUserController() controller.TestUserController {
+func (r *registry) NewTestUserController() controller.TestUser {
 	repo := repository.NewTestUserRepository(r.client)
 	u := usecase.NewTestUserUsecase(repo)
 

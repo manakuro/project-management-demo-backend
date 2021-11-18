@@ -20,11 +20,24 @@ func NewTestUserRepository(client *ent.Client) ur.TestUser {
 	return &testUserRepository{client: client}
 }
 
-func (r *testUserRepository) Find() (*model.TestUser, error) {
+func (r *testUserRepository) FindBy(id *string) (*model.TestUser, error) {
 	ctx := context.Background()
-	u, err := r.client.TestUser.Query().Where(testuser.IDEQ(1)).Only(ctx)
+
+	q := r.client.TestUser.Query()
+	if id != nil {
+		i, err := strconv.ParseInt(*id, 10, 64)
+		if !errors.Is(err, nil) {
+			return nil, model.NewInvalidParamError(err)
+		}
+		q.Where(testuser.IDEQ(int(i)))
+	}
+
+	u, err := q.Only(ctx)
 
 	if !errors.Is(err, nil) {
+		if ent.IsNotSingular(err) {
+			return nil, model.NewNotFoundError(err)
+		}
 		return nil, err
 	}
 
@@ -40,7 +53,7 @@ func (r *testUserRepository) Create(input model.CreateTestUserInput) (*model.Tes
 		Save(ctx)
 
 	if !errors.Is(err, nil) {
-		return nil, err
+		return nil, model.NewDBError(err)
 	}
 
 	return &model.TestUser{TestUser: u}, nil
