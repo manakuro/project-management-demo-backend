@@ -1,7 +1,6 @@
 package usecase
 
 import (
-	"errors"
 	"project-management-demo-backend/pkg/entity/model"
 	"project-management-demo-backend/pkg/usecase/repository"
 )
@@ -23,28 +22,13 @@ func NewTestUserUsecase(r repository.TestUser) TestUserUsecase {
 }
 
 func (r *testUserUsecase) Get() (*model.TestUser, error) {
-	u, err := r.testUserRepository.Find()
-	if !errors.Is(err, nil) {
-		return nil, err
-	}
-
-	return u, nil
+	return r.testUserRepository.Find()
 }
 
 func (r *testUserUsecase) Create(input model.CreateTestUserInput) (*model.TestUser, error) {
-	u, err := r.testUserRepository.Create(input)
-	if !errors.Is(err, nil) {
-		return nil, err
-	}
-
-	return u, nil
+	return r.testUserRepository.Create(input)
 }
 
 func (r *testUserUsecase) Update(input model.UpdateTestUserInput) (*model.TestUser, error) {
-	u, err := r.testUserRepository.Update(input)
-	if !errors.Is(err, nil) {
-		return nil, err
-	}
-
-	return u, nil
+	return r.testUserRepository.Update(input)
 }

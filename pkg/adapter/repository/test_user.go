@@ -49,7 +49,7 @@ func (r *testUserRepository) Update(input model.UpdateTestUserInput) (*model.Tes
 	ctx := context.Background()
 	id, err := strconv.ParseInt(input.ID, 10, 64)
 	if !errors.Is(err, nil) {
-		return nil, err
+		return nil, model.NewInvalidParamError(err.Error())
 	}
 
 	u, err := r.client.
@@ -58,7 +58,7 @@ func (r *testUserRepository) Update(input model.UpdateTestUserInput) (*model.Tes
 		Save(ctx)
 
 	if !errors.Is(err, nil) {
-		return nil, err
+		return nil, model.NewDBError(err.Error())
 	}
 
 	return &model.TestUser{TestUser: u}, nil
