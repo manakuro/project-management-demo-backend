@@ -15,6 +15,8 @@ import (
 
 // NewServer generates graphql server
 func NewServer(client *ent.Client, controller controller.Controller) *handler.Server {
+	// Add extensions to error
+	// @see https://github.com/99designs/gqlgen/issues/1354
 	srv := handler.NewDefaultServer(resolver.NewSchema(client, controller))
 
 	srv.SetErrorPresenter(func(ctx context.Context, e error) *gqlerror.Error {
