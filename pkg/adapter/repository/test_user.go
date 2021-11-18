@@ -20,7 +20,7 @@ func NewTestUserRepository(client *ent.Client) ur.TestUser {
 	return &testUserRepository{client: client}
 }
 
-func (r *testUserRepository) FindBy(id *string) (*model.TestUser, error) {
+func (r *testUserRepository) FindBy(id *string, age *int) (*model.TestUser, error) {
 	ctx := context.Background()
 
 	q := r.client.TestUser.Query()
@@ -30,6 +30,9 @@ func (r *testUserRepository) FindBy(id *string) (*model.TestUser, error) {
 			return nil, model.NewInvalidParamError(err)
 		}
 		q.Where(testuser.IDEQ(int(i)))
+	}
+	if age != nil {
+		q.Where(testuser.AgeEQ(*age))
 	}
 
 	u, err := q.Only(ctx)

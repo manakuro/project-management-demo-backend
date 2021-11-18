@@ -17,8 +17,8 @@ func (r *mutationResolver) UpdateTestUser(ctx context.Context, input model.Updat
 	return r.controller.TestUser.Update(ctx, input)
 }
 
-func (r *queryResolver) TestUser(ctx context.Context, id *string) (*model.TestUser, error) {
-	return r.controller.TestUser.Get(ctx, id)
+func (r *queryResolver) TestUser(ctx context.Context, id *string, age *int) (*model.TestUser, error) {
+	return r.controller.TestUser.Get(ctx, id, age)
 }
 
 func (r *testUserResolver) CreatedAt(ctx context.Context, obj *model.TestUser) (string, error) {

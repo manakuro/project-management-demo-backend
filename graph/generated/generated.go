@@ -50,7 +50,7 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		TestUser func(childComplexity int, id *string) int
+		TestUser func(childComplexity int, id *string, age *int) int
 	}
 
 	TestUser struct {
@@ -67,7 +67,7 @@ type MutationResolver interface {
 	UpdateTestUser(ctx context.Context, input model.UpdateTestUserInput) (*model.TestUser, error)
 }
 type QueryResolver interface {
-	TestUser(ctx context.Context, id *string) (*model.TestUser, error)
+	TestUser(ctx context.Context, id *string, age *int) (*model.TestUser, error)
 }
 type TestUserResolver interface {
 	CreatedAt(ctx context.Context, obj *model.TestUser) (string, error)
@@ -123,7 +123,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.TestUser(childComplexity, args["id"].(*string)), true
+		return e.complexity.Query.TestUser(childComplexity, args["id"].(*string), args["age"].(*int)), true
 
 	case "TestUser.age":
 		if e.complexity.TestUser.Age == nil {
@@ -248,7 +248,7 @@ input UpdateTestUserInput {
 }
 
 extend type Query {
-  testUser(id: ID): TestUser
+  testUser(id: ID, age: Int): TestUser
 }
 
 extend type Mutation {
@@ -320,6 +320,15 @@ func (ec *executionContext) field_Query_testUser_args(ctx context.Context, rawAr
 		}
 	}
 	args["id"] = arg0
+	var arg1 *int
+	if tmp, ok := rawArgs["age"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("age"))
+		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["age"] = arg1
 	return args, nil
 }
 
@@ -470,7 +479,7 @@ func (ec *executionContext) _Query_testUser(ctx context.Context, field graphql.C
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().TestUser(rctx, args["id"].(*string))
+		return ec.resolvers.Query().TestUser(rctx, args["id"].(*string), args["age"].(*int))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
