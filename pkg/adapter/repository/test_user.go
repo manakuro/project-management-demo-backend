@@ -41,7 +41,10 @@ func (r *testUserRepository) FindBy(id *string, age *int) (*model.TestUser, erro
 		if ent.IsNotSingular(err) {
 			return nil, model.NewNotFoundError(err)
 		}
-		return nil, err
+		if ent.IsNotFound(err) {
+			return nil, nil
+		}
+		return nil, model.NewDBError(err)
 	}
 
 	return &model.TestUser{TestUser: u}, nil

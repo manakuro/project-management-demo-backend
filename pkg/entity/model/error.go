@@ -8,15 +8,15 @@ import (
 
 const (
 	// DBError is error code of database
-	DBError = "000001"
+	DBError = "DB_ERROR"
 	// NotFoundError is error code of not found
-	NotFoundError = "000002"
+	NotFoundError = "NOT_FOUND_ERROR"
 	// ValidationError is error code of validation
-	ValidationError = "000100"
+	ValidationError = "VALIDATION_ERROR"
 	// BadRequestError is error code of request
-	BadRequestError = "000400"
+	BadRequestError = "BAD_REQUEST_ERROR"
 	// InternalServerError is error code of server error
-	InternalServerError = "009999"
+	InternalServerError = "INTERNAL_SERVER_ERROR"
 )
 
 // StackTrace is in an interface to check to see if the error has already been wrapped by errors.WithStack
@@ -37,7 +37,7 @@ func NewDBError(e error) error {
 func NewNotFoundError(e error) error {
 	return newError(
 		NotFoundError,
-		fmt.Sprintf("[Not Found Error]: %s", e.Error()),
+		fmt.Sprintf("[NOT FOUND ERROR]: %s", e.Error()),
 		e,
 	)
 }
