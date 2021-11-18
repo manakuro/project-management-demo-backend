@@ -6,12 +6,10 @@ import (
 	"project-management-demo-backend/config"
 	"project-management-demo-backend/ent"
 	"project-management-demo-backend/pkg/adapter/controller"
-	"project-management-demo-backend/pkg/adapter/resolver"
 	"project-management-demo-backend/pkg/infrastructure/datastore"
+	"project-management-demo-backend/pkg/infrastructure/graphql"
 	"project-management-demo-backend/pkg/infrastructure/router"
 	"project-management-demo-backend/pkg/registry"
-
-	"github.com/99designs/gqlgen/graphql/handler"
 )
 
 func main() {
@@ -21,7 +19,7 @@ func main() {
 	defer client.Close()
 
 	c := newController(client)
-	srv := newGraphQLServer(client, c)
+	srv := graphql.NewServer(client, c)
 
 	e := router.NewRouter(srv)
 
@@ -35,10 +33,6 @@ func newDBClient() *ent.Client {
 	}
 
 	return client
-}
-
-func newGraphQLServer(client *ent.Client, controller controller.Controller) *handler.Server {
-	return handler.NewDefaultServer(resolver.NewSchema(client, controller))
 }
 
 func newController(client *ent.Client) controller.Controller {

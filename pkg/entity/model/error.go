@@ -76,6 +76,11 @@ type err struct {
 
 func (e *err) Error() string { return e.message }
 func (e *err) Code() string  { return e.code }
+func (e *err) Extensions() map[string]interface{} {
+	return map[string]interface{}{
+		"code": e.code,
+	}
+}
 
 func newError(code string, message string, e error) error {
 	newErr := &err{
