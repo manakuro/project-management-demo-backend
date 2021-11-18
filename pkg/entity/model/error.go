@@ -8,7 +8,7 @@ import (
 
 const (
 	// DBError is error code of database
-	DBError = "00001"
+	DBError = "000001"
 	// NotFoundError is error code of not found
 	NotFoundError = "000002"
 	// ValidationError is error code of validation
@@ -18,6 +18,11 @@ const (
 	// InternalServerError is error code of server error
 	InternalServerError = "009999"
 )
+
+// StackTrace is in an interface to check to see if the error has already been wrapped by errors.WithStack
+type StackTrace interface {
+	StackTrace() errors.StackTrace
+}
 
 // NewDBError returns error message related database
 func NewDBError(e error) error {
@@ -68,8 +73,7 @@ func newError(code string, message string, e error) error {
 		code:    code,
 		message: message,
 	}
-	ok := hasStackTrace(e)
-	if ok {
+	if hasStackTrace(e) {
 		return newErr
 	}
 
@@ -85,6 +89,6 @@ func withStackTrace(e error) error {
 }
 
 func hasStackTrace(e error) bool {
-	_, ok := e.(interface{ StackTrace() errors.StackTrace })
+	_, ok := e.(StackTrace)
 	return ok
 }
