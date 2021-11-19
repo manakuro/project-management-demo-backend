@@ -19,16 +19,24 @@ const (
 	InternalServerError = "INTERNAL_SERVER_ERROR"
 )
 
-// StackTrace is in an interface to check to see if the error has already been wrapped by errors.WithStack
+// StackTrace is used to check to see if the error has already been wrapped by errors.WithStack
 type StackTrace interface {
 	StackTrace() errors.StackTrace
+}
+
+// Error is the standard error type
+type Error interface {
+	Error() string
+	Code() string
+	Extensions() map[string]interface{}
+	Unwrap() error
 }
 
 // NewDBError returns error message related database
 func NewDBError(e error) error {
 	return newError(
 		DBError,
-		fmt.Sprintf("[DB ERROR]: %s", e.Error()),
+		fmt.Sprintf("%s", e.Error()),
 		e,
 	)
 }
@@ -37,7 +45,7 @@ func NewDBError(e error) error {
 func NewNotFoundError(e error) error {
 	return newError(
 		NotFoundError,
-		fmt.Sprintf("[NOT FOUND ERROR]: %s", e.Error()),
+		fmt.Sprintf("%s", e.Error()),
 		e,
 	)
 }
@@ -46,7 +54,7 @@ func NewNotFoundError(e error) error {
 func NewInvalidParamError(e error) error {
 	return newError(
 		BadRequestError,
-		fmt.Sprintf("[INVALID PARAMETER]: %s", e.Error()),
+		fmt.Sprintf("%s", e.Error()),
 		e,
 	)
 }
@@ -55,7 +63,7 @@ func NewInvalidParamError(e error) error {
 func NewValidationError(e error) error {
 	return newError(
 		ValidationError,
-		fmt.Sprintf("[VALIDATION ERROR]: %s", e.Error()),
+		fmt.Sprintf("%s", e.Error()),
 		e,
 	)
 }
@@ -64,12 +72,13 @@ func NewValidationError(e error) error {
 func NewInternalServerError(e error) error {
 	return newError(
 		InternalServerError,
-		fmt.Sprintf("[INTERNAL SERVER ERROR]: %s", e.Error()),
+		fmt.Sprintf("%s", e.Error()),
 		e,
 	)
 }
 
 type err struct {
+	err     error
 	code    string
 	message string
 }
@@ -81,9 +90,11 @@ func (e *err) Extensions() map[string]interface{} {
 		"code": e.code,
 	}
 }
+func (e *err) Unwrap() error { return e.err }
 
 func newError(code string, message string, e error) error {
 	newErr := &err{
+		err:     e,
 		code:    code,
 		message: message,
 	}
@@ -97,7 +108,7 @@ func newError(code string, message string, e error) error {
 func withStackTrace(e error) error {
 	ews := errors.WithStack(e)
 
-	fmt.Printf("%+v", ews)
+	fmt.Printf("%+v\n", ews)
 
 	return ews
 }
