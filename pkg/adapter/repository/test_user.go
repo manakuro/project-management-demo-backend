@@ -7,8 +7,6 @@ import (
 	"project-management-demo-backend/pkg/entity/model"
 	ur "project-management-demo-backend/pkg/usecase/repository"
 	"strconv"
-
-	"github.com/pkg/errors"
 )
 
 type testUserRepository struct {
@@ -26,7 +24,7 @@ func (r *testUserRepository) FindBy(id *string, age *int) (*model.TestUser, erro
 	q := r.client.TestUser.Query()
 	if id != nil {
 		i, err := strconv.ParseInt(*id, 10, 64)
-		if !errors.Is(err, nil) {
+		if err != nil {
 			return nil, model.NewInvalidParamError(err)
 		}
 		q.Where(testuser.IDEQ(int(i)))
@@ -37,7 +35,7 @@ func (r *testUserRepository) FindBy(id *string, age *int) (*model.TestUser, erro
 
 	u, err := q.Only(ctx)
 
-	if !errors.Is(err, nil) {
+	if err != nil {
 		if ent.IsNotSingular(err) {
 			return nil, model.NewNotFoundError(err)
 		}
@@ -58,7 +56,7 @@ func (r *testUserRepository) Create(input model.CreateTestUserInput) (*model.Tes
 		SetInput(input.CreateTestUserInput).
 		Save(ctx)
 
-	if !errors.Is(err, nil) {
+	if err != nil {
 		return nil, model.NewDBError(err)
 	}
 
@@ -68,7 +66,7 @@ func (r *testUserRepository) Create(input model.CreateTestUserInput) (*model.Tes
 func (r *testUserRepository) Update(input model.UpdateTestUserInput) (*model.TestUser, error) {
 	ctx := context.Background()
 	id, err := strconv.ParseInt(input.ID, 10, 64)
-	if !errors.Is(err, nil) {
+	if err != nil {
 		return nil, model.NewInvalidParamError(err)
 	}
 
@@ -77,7 +75,7 @@ func (r *testUserRepository) Update(input model.UpdateTestUserInput) (*model.Tes
 		SetInput(input.UpdateTestUserInput).
 		Save(ctx)
 
-	if !errors.Is(err, nil) {
+	if err != nil {
 		return nil, model.NewDBError(err)
 	}
 

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"log"
 	"project-management-demo-backend/config"
 	"project-management-demo-backend/ent"
@@ -28,7 +27,7 @@ func main() {
 
 func newDBClient() *ent.Client {
 	client, err := datastore.NewDB()
-	if !errors.Is(err, nil) {
+	if err != nil {
 		log.Fatalf("failed opening mysql client: %v", err)
 	}
 
