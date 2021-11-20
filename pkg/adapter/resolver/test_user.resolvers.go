@@ -6,6 +6,7 @@ package resolver
 import (
 	"context"
 	"project-management-demo-backend/graph/generated"
+	"project-management-demo-backend/pkg/adapter/handler"
 	"project-management-demo-backend/pkg/entity/model"
 )
 
@@ -14,7 +15,11 @@ func (r *mutationResolver) CreateTestUser(ctx context.Context, input model.Creat
 }
 
 func (r *mutationResolver) UpdateTestUser(ctx context.Context, input model.UpdateTestUserInput) (*model.TestUser, error) {
-	return r.controller.TestUser.Update(ctx, input)
+	u, err := r.controller.TestUser.Update(ctx, input)
+	if err != nil {
+		return nil, handler.HandleError(ctx, err)
+	}
+	return u, nil
 }
 
 func (r *queryResolver) TestUser(ctx context.Context, id *string, age *int) (*model.TestUser, error) {
