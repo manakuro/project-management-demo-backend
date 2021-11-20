@@ -76,6 +76,10 @@ func (r *testUserRepository) Update(input model.UpdateTestUserInput) (*model.Tes
 		Save(ctx)
 
 	if err != nil {
+		if ent.IsNotFound(err) {
+			return nil, model.NewNotFoundError(err)
+		}
+
 		return nil, model.NewDBError(err)
 	}
 
