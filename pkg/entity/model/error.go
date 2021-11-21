@@ -37,24 +37,35 @@ func NewDBError(e error) error {
 	return newError(
 		DBError,
 		fmt.Sprintf("%s", e.Error()),
+		map[string]interface{}{
+			"code": DBError,
+		},
 		e,
 	)
 }
 
 // NewNotFoundError returns error message related not found
-func NewNotFoundError(e error) error {
+func NewNotFoundError(e error, value interface{}) error {
 	return newError(
 		NotFoundError,
 		fmt.Sprintf("%s", e.Error()),
+		map[string]interface{}{
+			"code":  NotFoundError,
+			"value": value,
+		},
 		e,
 	)
 }
 
 // NewInvalidParamError returns error message related param
-func NewInvalidParamError(e error) error {
+func NewInvalidParamError(e error, value interface{}) error {
 	return newError(
 		BadRequestError,
 		fmt.Sprintf("%s", e.Error()),
+		map[string]interface{}{
+			"code":  BadRequestError,
+			"value": value,
+		},
 		e,
 	)
 }
@@ -64,6 +75,9 @@ func NewValidationError(e error) error {
 	return newError(
 		ValidationError,
 		fmt.Sprintf("%s", e.Error()),
+		map[string]interface{}{
+			"code": ValidationError,
+		},
 		e,
 	)
 }
@@ -73,24 +87,24 @@ func NewInternalServerError(e error) error {
 	return newError(
 		InternalServerError,
 		fmt.Sprintf("%s", e.Error()),
+		map[string]interface{}{
+			"code": InternalServerError,
+		},
 		e,
 	)
 }
 
 type err struct {
-	err     error
-	code    string
-	message string
+	err        error
+	code       string
+	message    string
+	extensions map[string]interface{}
 }
 
-func (e *err) Error() string { return e.message }
-func (e *err) Code() string  { return e.code }
-func (e *err) Extensions() map[string]interface{} {
-	return map[string]interface{}{
-		"code": e.code,
-	}
-}
-func (e *err) Unwrap() error { return e.err }
+func (e *err) Error() string                      { return e.message }
+func (e *err) Code() string                       { return e.code }
+func (e *err) Extensions() map[string]interface{} { return e.extensions }
+func (e *err) Unwrap() error                      { return e.err }
 
 // IsStackTrace checks to see if the error with stack strace
 func IsStackTrace(e error) bool {
@@ -104,11 +118,12 @@ func IsError(e error) bool {
 	return ok
 }
 
-func newError(code string, message string, e error) error {
+func newError(code string, message string, extensions map[string]interface{}, e error) error {
 	newErr := &err{
-		err:     e,
-		code:    code,
-		message: message,
+		err:        e,
+		code:       code,
+		message:    message,
+		extensions: extensions,
 	}
 	if IsStackTrace(e) {
 		return newErr

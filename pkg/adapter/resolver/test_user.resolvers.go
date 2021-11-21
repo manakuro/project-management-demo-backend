@@ -11,7 +11,11 @@ import (
 )
 
 func (r *mutationResolver) CreateTestUser(ctx context.Context, input model.CreateTestUserInput) (*model.TestUser, error) {
-	return r.controller.TestUser.Create(ctx, input)
+	u, err := r.controller.TestUser.Create(ctx, input)
+	if err != nil {
+		return nil, handler.HandleError(ctx, err)
+	}
+	return u, nil
 }
 
 func (r *mutationResolver) UpdateTestUser(ctx context.Context, input model.UpdateTestUserInput) (*model.TestUser, error) {
@@ -23,7 +27,11 @@ func (r *mutationResolver) UpdateTestUser(ctx context.Context, input model.Updat
 }
 
 func (r *queryResolver) TestUser(ctx context.Context, id *string, age *int) (*model.TestUser, error) {
-	return r.controller.TestUser.Get(ctx, id, age)
+	u, err := r.controller.TestUser.Get(ctx, id, age)
+	if err != nil {
+		return nil, handler.HandleError(ctx, err)
+	}
+	return u, nil
 }
 
 func (r *testUserResolver) CreatedAt(ctx context.Context, obj *model.TestUser) (string, error) {

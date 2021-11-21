@@ -25,7 +25,7 @@ func (r *testUserRepository) FindBy(id *string, age *int) (*model.TestUser, erro
 	if id != nil {
 		i, err := strconv.ParseInt(*id, 10, 64)
 		if err != nil {
-			return nil, model.NewInvalidParamError(err)
+			return nil, model.NewInvalidParamError(err, id)
 		}
 		q.Where(testuser.IDEQ(int(i)))
 	}
@@ -37,7 +37,10 @@ func (r *testUserRepository) FindBy(id *string, age *int) (*model.TestUser, erro
 
 	if err != nil {
 		if ent.IsNotSingular(err) {
-			return nil, model.NewNotFoundError(err)
+			return nil, model.NewNotFoundError(err, map[string]interface{}{
+				"id":  id,
+				"age": age,
+			})
 		}
 		if ent.IsNotFound(err) {
 			return nil, nil
@@ -67,7 +70,7 @@ func (r *testUserRepository) Update(input model.UpdateTestUserInput) (*model.Tes
 	ctx := context.Background()
 	id, err := strconv.ParseInt(input.ID, 10, 64)
 	if err != nil {
-		return nil, model.NewInvalidParamError(err)
+		return nil, model.NewInvalidParamError(err, id)
 	}
 
 	u, err := r.client.
@@ -77,7 +80,7 @@ func (r *testUserRepository) Update(input model.UpdateTestUserInput) (*model.Tes
 
 	if err != nil {
 		if ent.IsNotFound(err) {
-			return nil, model.NewNotFoundError(err)
+			return nil, model.NewNotFoundError(err, id)
 		}
 
 		return nil, model.NewDBError(err)
