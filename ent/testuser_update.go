@@ -34,14 +34,6 @@ func (tuu *TestUserUpdate) SetName(s string) *TestUserUpdate {
 	return tuu
 }
 
-// SetNillableName sets the "name" field if the given value is not nil.
-func (tuu *TestUserUpdate) SetNillableName(s *string) *TestUserUpdate {
-	if s != nil {
-		tuu.SetName(*s)
-	}
-	return tuu
-}
-
 // SetAge sets the "age" field.
 func (tuu *TestUserUpdate) SetAge(i int) *TestUserUpdate {
 	tuu.mutation.ResetAge()
@@ -131,12 +123,18 @@ func (tuu *TestUserUpdate) Save(ctx context.Context) (int, error) {
 		affected int
 	)
 	if len(tuu.hooks) == 0 {
+		if err = tuu.check(); err != nil {
+			return 0, err
+		}
 		affected, err = tuu.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*TestUserMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
+			}
+			if err = tuu.check(); err != nil {
+				return 0, err
 			}
 			tuu.mutation = mutation
 			affected, err = tuu.sqlSave(ctx)
@@ -176,6 +174,16 @@ func (tuu *TestUserUpdate) ExecX(ctx context.Context) {
 	if err := tuu.Exec(ctx); err != nil {
 		panic(err)
 	}
+}
+
+// check runs all checks and user-defined validators on the builder.
+func (tuu *TestUserUpdate) check() error {
+	if v, ok := tuu.mutation.Name(); ok {
+		if err := testuser.NameValidator(v); err != nil {
+			return &ValidationError{Name: "name", err: fmt.Errorf("ent: validator failed for field \"name\": %w", err)}
+		}
+	}
+	return nil
 }
 
 func (tuu *TestUserUpdate) sqlSave(ctx context.Context) (n int, err error) {
@@ -310,14 +318,6 @@ func (tuuo *TestUserUpdateOne) SetName(s string) *TestUserUpdateOne {
 	return tuuo
 }
 
-// SetNillableName sets the "name" field if the given value is not nil.
-func (tuuo *TestUserUpdateOne) SetNillableName(s *string) *TestUserUpdateOne {
-	if s != nil {
-		tuuo.SetName(*s)
-	}
-	return tuuo
-}
-
 // SetAge sets the "age" field.
 func (tuuo *TestUserUpdateOne) SetAge(i int) *TestUserUpdateOne {
 	tuuo.mutation.ResetAge()
@@ -414,12 +414,18 @@ func (tuuo *TestUserUpdateOne) Save(ctx context.Context) (*TestUser, error) {
 		node *TestUser
 	)
 	if len(tuuo.hooks) == 0 {
+		if err = tuuo.check(); err != nil {
+			return nil, err
+		}
 		node, err = tuuo.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 			mutation, ok := m.(*TestUserMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
+			}
+			if err = tuuo.check(); err != nil {
+				return nil, err
 			}
 			tuuo.mutation = mutation
 			node, err = tuuo.sqlSave(ctx)
@@ -459,6 +465,16 @@ func (tuuo *TestUserUpdateOne) ExecX(ctx context.Context) {
 	if err := tuuo.Exec(ctx); err != nil {
 		panic(err)
 	}
+}
+
+// check runs all checks and user-defined validators on the builder.
+func (tuuo *TestUserUpdateOne) check() error {
+	if v, ok := tuuo.mutation.Name(); ok {
+		if err := testuser.NameValidator(v); err != nil {
+			return &ValidationError{Name: "name", err: fmt.Errorf("ent: validator failed for field \"name\": %w", err)}
+		}
+	}
+	return nil
 }
 
 func (tuuo *TestUserUpdateOne) sqlSave(ctx context.Context) (_node *TestUser, err error) {

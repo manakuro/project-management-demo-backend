@@ -18,7 +18,8 @@ type TestUser struct {
 // Fields of the Test.
 func (TestUser) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("name").Default(""),
+		field.String("name").
+			NotEmpty(),
 		field.Int("age"),
 		field.Time("created_at").
 			Default(time.Now).

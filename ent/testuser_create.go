@@ -27,14 +27,6 @@ func (tuc *TestUserCreate) SetName(s string) *TestUserCreate {
 	return tuc
 }
 
-// SetNillableName sets the "name" field if the given value is not nil.
-func (tuc *TestUserCreate) SetNillableName(s *string) *TestUserCreate {
-	if s != nil {
-		tuc.SetName(*s)
-	}
-	return tuc
-}
-
 // SetAge sets the "age" field.
 func (tuc *TestUserCreate) SetAge(i int) *TestUserCreate {
 	tuc.mutation.SetAge(i)
@@ -155,10 +147,6 @@ func (tuc *TestUserCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (tuc *TestUserCreate) defaults() {
-	if _, ok := tuc.mutation.Name(); !ok {
-		v := testuser.DefaultName
-		tuc.mutation.SetName(v)
-	}
 	if _, ok := tuc.mutation.CreatedAt(); !ok {
 		v := testuser.DefaultCreatedAt()
 		tuc.mutation.SetCreatedAt(v)
@@ -173,6 +161,11 @@ func (tuc *TestUserCreate) defaults() {
 func (tuc *TestUserCreate) check() error {
 	if _, ok := tuc.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "name"`)}
+	}
+	if v, ok := tuc.mutation.Name(); ok {
+		if err := testuser.NameValidator(v); err != nil {
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "name": %w`, err)}
+		}
 	}
 	if _, ok := tuc.mutation.Age(); !ok {
 		return &ValidationError{Name: "age", err: errors.New(`ent: missing required field "age"`)}

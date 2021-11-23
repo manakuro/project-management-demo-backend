@@ -35,8 +35,8 @@ func init() {
 	_ = testuserFields
 	// testuserDescName is the schema descriptor for name field.
 	testuserDescName := testuserFields[0].Descriptor()
-	// testuser.DefaultName holds the default value on creation for the name field.
-	testuser.DefaultName = testuserDescName.Default.(string)
+	// testuser.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	testuser.NameValidator = testuserDescName.Validators[0].(func(string) error)
 	// testuserDescCreatedAt is the schema descriptor for created_at field.
 	testuserDescCreatedAt := testuserFields[2].Descriptor()
 	// testuser.DefaultCreatedAt holds the default value on creation for the created_at field.

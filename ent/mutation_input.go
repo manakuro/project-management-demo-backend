@@ -85,7 +85,7 @@ func (u *TestTodoUpdateOne) SetInput(i UpdateTestTodoInput) *TestTodoUpdateOne {
 
 // CreateTestUserInput represents a mutation input for creating testusers.
 type CreateTestUserInput struct {
-	Name        *string
+	Name        string
 	Age         int
 	CreatedAt   *time.Time
 	UpdatedAt   *time.Time
@@ -94,9 +94,7 @@ type CreateTestUserInput struct {
 
 // Mutate applies the CreateTestUserInput on the TestUserCreate builder.
 func (i *CreateTestUserInput) Mutate(m *TestUserCreate) {
-	if v := i.Name; v != nil {
-		m.SetName(*v)
-	}
+	m.SetName(i.Name)
 	m.SetAge(i.Age)
 	if v := i.CreatedAt; v != nil {
 		m.SetCreatedAt(*v)
