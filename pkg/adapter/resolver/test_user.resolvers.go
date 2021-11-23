@@ -34,6 +34,14 @@ func (r *queryResolver) TestUser(ctx context.Context, id *string, age *int) (*mo
 	return u, nil
 }
 
+func (r *queryResolver) TestUsers(ctx context.Context) ([]*model.TestUser, error) {
+	us, err := r.controller.TestUser.List(ctx)
+	if err != nil {
+		return nil, handler.HandleError(ctx, err)
+	}
+	return us, nil
+}
+
 func (r *testUserResolver) CreatedAt(ctx context.Context, obj *model.TestUser) (string, error) {
 	return obj.FormattedCreatedAt(), nil
 }

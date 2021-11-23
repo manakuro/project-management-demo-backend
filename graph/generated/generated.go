@@ -54,8 +54,9 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		TestTodo func(childComplexity int, id *string) int
-		TestUser func(childComplexity int, id *string, age *int) int
+		TestTodo  func(childComplexity int, id *string) int
+		TestUser  func(childComplexity int, id *string, age *int) int
+		TestUsers func(childComplexity int) int
 	}
 
 	TestTodo struct {
@@ -85,6 +86,7 @@ type MutationResolver interface {
 type QueryResolver interface {
 	TestTodo(ctx context.Context, id *string) (*model.TestTodo, error)
 	TestUser(ctx context.Context, id *string, age *int) (*model.TestUser, error)
+	TestUsers(ctx context.Context) ([]*model.TestUser, error)
 }
 type TestTodoResolver interface {
 	CreatedAt(ctx context.Context, obj *model.TestTodo) (string, error)
@@ -181,6 +183,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.TestUser(childComplexity, args["id"].(*string), args["age"].(*int)), true
+
+	case "Query.testUsers":
+		if e.complexity.Query.TestUsers == nil {
+			break
+		}
+
+		return e.complexity.Query.TestUsers(childComplexity), true
 
 	case "TestTodo.createdAt":
 		if e.complexity.TestTodo.CreatedAt == nil {
@@ -382,6 +391,7 @@ input UpdateTestUserInput {
 
 extend type Query {
   testUser(id: ID, age: Int): TestUser
+  testUsers: [TestUser!]
 }
 
 extend type Mutation {
@@ -792,6 +802,38 @@ func (ec *executionContext) _Query_testUser(ctx context.Context, field graphql.C
 	res := resTmp.(*model.TestUser)
 	fc.Result = res
 	return ec.marshalOTestUser2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐTestUser(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_testUsers(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().TestUsers(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*model.TestUser)
+	fc.Result = res
+	return ec.marshalOTestUser2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐTestUserᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -2623,6 +2665,17 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 				res = ec._Query_testUser(ctx, field)
 				return res
 			})
+		case "testUsers":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_testUsers(ctx, field)
+				return res
+			})
 		case "__type":
 			out.Values[i] = ec._Query___type(ctx, field)
 		case "__schema":
@@ -3554,6 +3607,53 @@ func (ec *executionContext) marshalOTestTodoStatus2ᚖprojectᚑmanagementᚑdem
 		return graphql.Null
 	}
 	return v
+}
+
+func (ec *executionContext) marshalOTestUser2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐTestUserᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.TestUser) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNTestUser2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐTestUser(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
 }
 
 func (ec *executionContext) marshalOTestUser2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐTestUser(ctx context.Context, sel ast.SelectionSet, v *model.TestUser) graphql.Marshaler {

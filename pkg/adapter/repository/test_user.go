@@ -18,7 +18,7 @@ func NewTestUserRepository(client *ent.Client) ur.TestUser {
 	return &testUserRepository{client: client}
 }
 
-func (r *testUserRepository) FindBy(id *string, age *int) (*model.TestUser, error) {
+func (r *testUserRepository) Get(id *string, age *int) (*model.TestUser, error) {
 	ctx := context.Background()
 
 	q := r.client.TestUser.Query()
@@ -49,6 +49,25 @@ func (r *testUserRepository) FindBy(id *string, age *int) (*model.TestUser, erro
 	}
 
 	return &model.TestUser{TestUser: u}, nil
+}
+
+func (r *testUserRepository) List() ([]*model.TestUser, error) {
+	ctx := context.Background()
+
+	us, err := r.client.
+		TestUser.Query().All(ctx)
+	if err != nil {
+		return nil, model.NewDBError(err)
+	}
+
+	res := make([]*model.TestUser, len(us))
+	for i, u := range us {
+		res[i] = &model.TestUser{
+			TestUser: u,
+		}
+	}
+
+	return res, nil
 }
 
 func (r *testUserRepository) Create(input model.CreateTestUserInput) (*model.TestUser, error) {

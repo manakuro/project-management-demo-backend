@@ -21,14 +21,14 @@ func NewTestTodoUsecase(r repository.TestTodo) TestTodo {
 	return &testTodo{testTodoRepository: r}
 }
 
-func (r *testTodo) Get(id *string) (*model.TestTodo, error) {
-	return r.testTodoRepository.FindBy(id)
+func (t *testTodo) Get(id *string) (*model.TestTodo, error) {
+	return t.testTodoRepository.FindBy(id)
 }
 
-func (r *testTodo) Create(input model.CreateTestTodoInput) (*model.TestTodo, error) {
-	return r.testTodoRepository.Create(input)
+func (t *testTodo) Create(input model.CreateTestTodoInput) (*model.TestTodo, error) {
+	return t.testTodoRepository.Create(input)
 }
 
-func (r *testTodo) Update(input model.UpdateTestTodoInput) (*model.TestTodo, error) {
-	return r.testTodoRepository.Update(input)
+func (t *testTodo) Update(input model.UpdateTestTodoInput) (*model.TestTodo, error) {
+	return t.testTodoRepository.Update(input)
 }

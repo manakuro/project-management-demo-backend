@@ -9,6 +9,7 @@ import (
 // TestUser is an interface of controller
 type TestUser interface {
 	Get(ctx context.Context, id *string, age *int) (*model.TestUser, error)
+	List(ctx context.Context) ([]*model.TestUser, error)
 	Create(ctx context.Context, input model.CreateTestUserInput) (*model.TestUser, error)
 	Update(ctx context.Context, input model.UpdateTestUserInput) (*model.TestUser, error)
 }
@@ -24,14 +25,18 @@ func NewTestUserController(tu usecase.TestUser) TestUser {
 	}
 }
 
-func (c *testUser) Get(ctx context.Context, id *string, age *int) (*model.TestUser, error) {
-	return c.testUserUsecase.Get(id, age)
+func (t *testUser) Get(ctx context.Context, id *string, age *int) (*model.TestUser, error) {
+	return t.testUserUsecase.Get(id, age)
 }
 
-func (c *testUser) Create(ctx context.Context, input model.CreateTestUserInput) (*model.TestUser, error) {
-	return c.testUserUsecase.Create(input)
+func (t *testUser) List(ctx context.Context) ([]*model.TestUser, error) {
+	return t.testUserUsecase.List()
 }
 
-func (c *testUser) Update(ctx context.Context, input model.UpdateTestUserInput) (*model.TestUser, error) {
-	return c.testUserUsecase.Update(input)
+func (t *testUser) Create(ctx context.Context, input model.CreateTestUserInput) (*model.TestUser, error) {
+	return t.testUserUsecase.Create(input)
+}
+
+func (t *testUser) Update(ctx context.Context, input model.UpdateTestUserInput) (*model.TestUser, error) {
+	return t.testUserUsecase.Update(input)
 }
