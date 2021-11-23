@@ -26,7 +26,7 @@ func (TestUser) Fields() []ent.Field {
 		field.Time("updated_at").
 			Default(time.Now).
 			SchemaType(map[string]string{
-				dialect.MySQL: "datetime DEFAULT CURRENT_TIMESTAMP",
+				dialect.MySQL: "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
 			}),
 	}
 }
