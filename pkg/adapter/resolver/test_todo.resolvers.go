@@ -5,29 +5,41 @@ package resolver
 
 import (
 	"context"
-	"fmt"
 	"project-management-demo-backend/graph/generated"
+	"project-management-demo-backend/pkg/adapter/handler"
 	"project-management-demo-backend/pkg/entity/model"
 )
 
 func (r *mutationResolver) CreateTestTodo(ctx context.Context, input model.CreateTestTodoInput) (*model.TestTodo, error) {
-	panic(fmt.Errorf("not implemented"))
+	t, err := r.controller.TestTodo.Create(ctx, input)
+	if err != nil {
+		return nil, handler.HandleError(ctx, err)
+	}
+	return t, nil
 }
 
 func (r *mutationResolver) UpdateTestTodo(ctx context.Context, input model.UpdateTestTodoInput) (*model.TestTodo, error) {
-	panic(fmt.Errorf("not implemented"))
+	t, err := r.controller.TestTodo.Update(ctx, input)
+	if err != nil {
+		return nil, handler.HandleError(ctx, err)
+	}
+	return t, nil
 }
 
 func (r *queryResolver) TestTodo(ctx context.Context, id *string) (*model.TestTodo, error) {
-	panic(fmt.Errorf("not implemented"))
+	t, err := r.controller.TestTodo.Get(ctx, id)
+	if err != nil {
+		return nil, handler.HandleError(ctx, err)
+	}
+	return t, nil
 }
 
 func (r *testTodoResolver) CreatedAt(ctx context.Context, obj *model.TestTodo) (string, error) {
-	panic(fmt.Errorf("not implemented"))
+	return obj.FormattedCreatedAt(), nil
 }
 
 func (r *testTodoResolver) UpdatedAt(ctx context.Context, obj *model.TestTodo) (string, error) {
-	panic(fmt.Errorf("not implemented"))
+	return obj.FormattedUpdatedAt(), nil
 }
 
 // TestTodo returns generated.TestTodoResolver implementation.
