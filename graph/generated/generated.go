@@ -344,7 +344,7 @@ type TestTodo {
 }
 input CreateTestTodoInput {
   name: String!
-  status: TestTodoStatus! = IN_PROGRESS
+  status: TestTodoStatus = IN_PROGRESS
   priority: Int!
 }
 input UpdateTestTodoInput {
@@ -2397,7 +2397,7 @@ func (ec *executionContext) unmarshalInputCreateTestTodoInput(ctx context.Contex
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("status"))
-			it.Status, err = ec.unmarshalNTestTodoStatus2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋtesttodoᚐStatus(ctx, v)
+			it.Status, err = ec.unmarshalOTestTodoStatus2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋtesttodoᚐStatus(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -3171,22 +3171,6 @@ func (ec *executionContext) unmarshalNTestTodoStatus2projectᚑmanagementᚑdemo
 }
 
 func (ec *executionContext) marshalNTestTodoStatus2projectᚑmanagementᚑdemoᚑbackendᚋentᚋtesttodoᚐStatus(ctx context.Context, sel ast.SelectionSet, v testtodo.Status) graphql.Marshaler {
-	return v
-}
-
-func (ec *executionContext) unmarshalNTestTodoStatus2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋtesttodoᚐStatus(ctx context.Context, v interface{}) (*testtodo.Status, error) {
-	var res = new(testtodo.Status)
-	err := res.UnmarshalGQL(v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) marshalNTestTodoStatus2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋtesttodoᚐStatus(ctx context.Context, sel ast.SelectionSet, v *testtodo.Status) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
 	return v
 }
 

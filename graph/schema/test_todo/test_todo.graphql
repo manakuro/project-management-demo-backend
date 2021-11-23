@@ -13,7 +13,7 @@ type TestTodo {
 }
 input CreateTestTodoInput {
   name: String!
-  status: TestTodoStatus! = IN_PROGRESS
+  status: TestTodoStatus = IN_PROGRESS
   priority: Int!
 }
 input UpdateTestTodoInput {

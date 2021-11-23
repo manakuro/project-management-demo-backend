@@ -18,8 +18,8 @@ func (TestTodo) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("name").NotEmpty(),
 		field.Enum("status").
-			Values("in_progress", "completed").
-			Default("in_progress"),
+			Values("IN_PROGRESS", "COMPLETED").
+			Default("IN_PROGRESS"),
 		field.Int("priority").Default(0),
 		field.Time("created_at").
 			Immutable().
