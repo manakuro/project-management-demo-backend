@@ -74,6 +74,7 @@ type ComplexityRoot struct {
 		CreatedAt func(childComplexity int) int
 		ID        func(childComplexity int) int
 		Name      func(childComplexity int) int
+		TestTodos func(childComplexity int) int
 		UpdatedAt func(childComplexity int) int
 	}
 }
@@ -95,6 +96,7 @@ type TestTodoResolver interface {
 	UpdatedAt(ctx context.Context, obj *model.TestTodo) (string, error)
 }
 type TestUserResolver interface {
+	TestTodos(ctx context.Context, obj *model.TestUser) ([]*model.TestTodo, error)
 	CreatedAt(ctx context.Context, obj *model.TestUser) (string, error)
 	UpdatedAt(ctx context.Context, obj *model.TestUser) (string, error)
 }
@@ -270,6 +272,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.TestUser.Name(childComplexity), true
 
+	case "TestUser.testTodos":
+		if e.complexity.TestUser.TestTodos == nil {
+			break
+		}
+
+		return e.complexity.TestUser.TestTodos(childComplexity), true
+
 	case "TestUser.updatedAt":
 		if e.complexity.TestUser.UpdatedAt == nil {
 			break
@@ -386,6 +395,7 @@ extend type Mutation {
   id: ID!
   name: String!
   age: Int!
+  testTodos: [TestTodo!]!
   createdAt: String!
   updatedAt: String!
 }
@@ -1265,6 +1275,41 @@ func (ec *executionContext) _TestUser_age(ctx context.Context, field graphql.Col
 	res := resTmp.(int)
 	fc.Result = res
 	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _TestUser_testTodos(ctx context.Context, field graphql.CollectedField, obj *model.TestUser) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "TestUser",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.TestUser().TestTodos(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.TestTodo)
+	fc.Result = res
+	return ec.marshalNTestTodo2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐTestTodoᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _TestUser_createdAt(ctx context.Context, field graphql.CollectedField, obj *model.TestUser) (ret graphql.Marshaler) {
@@ -2846,6 +2891,20 @@ func (ec *executionContext) _TestUser(ctx context.Context, sel ast.SelectionSet,
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)
 			}
+		case "testTodos":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._TestUser_testTodos(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
 		case "createdAt":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {

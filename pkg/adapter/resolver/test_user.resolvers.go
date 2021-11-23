@@ -42,6 +42,19 @@ func (r *queryResolver) TestUsers(ctx context.Context) ([]*model.TestUser, error
 	return us, nil
 }
 
+func (r *testUserResolver) TestTodos(ctx context.Context, obj *model.TestUser) ([]*model.TestTodo, error) {
+	ts, err := obj.TestTodos(ctx)
+	if err != nil {
+		return nil, handler.HandleError(ctx, err)
+	}
+	res := make([]*model.TestTodo, len(ts))
+	for i, t := range ts {
+		res[i] = &model.TestTodo{TestTodo: t}
+	}
+
+	return res, nil
+}
+
 func (r *testUserResolver) CreatedAt(ctx context.Context, obj *model.TestUser) (string, error) {
 	return obj.FormattedCreatedAt(), nil
 }

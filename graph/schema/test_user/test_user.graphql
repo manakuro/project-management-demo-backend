@@ -2,6 +2,7 @@ type TestUser {
   id: ID!
   name: String!
   age: Int!
+  testTodos: [TestTodo!]!
   createdAt: String!
   updatedAt: String!
 }
