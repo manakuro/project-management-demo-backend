@@ -9,6 +9,7 @@ import (
 // TestTodo is an interface of controller
 type TestTodo interface {
 	Get(ctx context.Context, id *string) (*model.TestTodo, error)
+	List(ctx context.Context) ([]*model.TestTodo, error)
 	Create(ctx context.Context, input model.CreateTestTodoInput) (*model.TestTodo, error)
 	Update(ctx context.Context, input model.UpdateTestTodoInput) (*model.TestTodo, error)
 }
@@ -24,14 +25,18 @@ func NewTestTodoController(tu usecase.TestTodo) TestTodo {
 	}
 }
 
-func (c *testTodo) Get(ctx context.Context, id *string) (*model.TestTodo, error) {
-	return c.testTodoUsecase.Get(id)
+func (t *testTodo) Get(ctx context.Context, id *string) (*model.TestTodo, error) {
+	return t.testTodoUsecase.Get(id)
 }
 
-func (c *testTodo) Create(ctx context.Context, input model.CreateTestTodoInput) (*model.TestTodo, error) {
-	return c.testTodoUsecase.Create(input)
+func (t *testTodo) List(ctx context.Context) ([]*model.TestTodo, error) {
+	return t.testTodoUsecase.List()
 }
 
-func (c *testTodo) Update(ctx context.Context, input model.UpdateTestTodoInput) (*model.TestTodo, error) {
-	return c.testTodoUsecase.Update(input)
+func (t *testTodo) Create(ctx context.Context, input model.CreateTestTodoInput) (*model.TestTodo, error) {
+	return t.testTodoUsecase.Create(input)
+}
+
+func (t *testTodo) Update(ctx context.Context, input model.UpdateTestTodoInput) (*model.TestTodo, error) {
+	return t.testTodoUsecase.Update(input)
 }

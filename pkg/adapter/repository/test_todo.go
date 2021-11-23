@@ -18,7 +18,7 @@ func NewTestTodoRepository(client *ent.Client) ur.TestTodo {
 	return &testTodoRepository{client: client}
 }
 
-func (r *testTodoRepository) FindBy(id *string) (*model.TestTodo, error) {
+func (r *testTodoRepository) Get(id *string) (*model.TestTodo, error) {
 	ctx := context.Background()
 
 	q := r.client.TestTodo.Query()
@@ -45,6 +45,24 @@ func (r *testTodoRepository) FindBy(id *string) (*model.TestTodo, error) {
 	}
 
 	return &model.TestTodo{TestTodo: u}, nil
+}
+
+func (r *testTodoRepository) List() ([]*model.TestTodo, error) {
+	ctx := context.Background()
+
+	ts, err := r.client.
+		TestTodo.
+		Query().
+		All(ctx)
+	if err != nil {
+		return nil, model.NewDBError(err)
+	}
+
+	res := make([]*model.TestTodo, len(ts))
+	for i, v := range ts {
+		res[i] = &model.TestTodo{TestTodo: v}
+	}
+	return res, nil
 }
 
 func (r *testTodoRepository) Create(input model.CreateTestTodoInput) (*model.TestTodo, error) {

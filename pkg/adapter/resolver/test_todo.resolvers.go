@@ -34,6 +34,14 @@ func (r *queryResolver) TestTodo(ctx context.Context, id *string) (*model.TestTo
 	return t, nil
 }
 
+func (r *queryResolver) TestTodos(ctx context.Context) ([]*model.TestTodo, error) {
+	ts, err := r.controller.TestTodo.List(ctx)
+	if err != nil {
+		return nil, handler.HandleError(ctx, err)
+	}
+	return ts, nil
+}
+
 func (r *testTodoResolver) CreatedAt(ctx context.Context, obj *model.TestTodo) (string, error) {
 	return obj.FormattedCreatedAt(), nil
 }

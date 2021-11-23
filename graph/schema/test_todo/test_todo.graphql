@@ -25,6 +25,7 @@ input UpdateTestTodoInput {
 
 extend type Query {
   testTodo(id: ID): TestTodo
+  testTodos: [TestTodo!]!
 }
 
 extend type Mutation {

@@ -12,6 +12,7 @@ type testTodo struct {
 // TestTodo is an interface of test user
 type TestTodo interface {
 	Get(id *string) (*model.TestTodo, error)
+	List() ([]*model.TestTodo, error)
 	Create(input model.CreateTestTodoInput) (*model.TestTodo, error)
 	Update(input model.UpdateTestTodoInput) (*model.TestTodo, error)
 }
@@ -22,7 +23,11 @@ func NewTestTodoUsecase(r repository.TestTodo) TestTodo {
 }
 
 func (t *testTodo) Get(id *string) (*model.TestTodo, error) {
-	return t.testTodoRepository.FindBy(id)
+	return t.testTodoRepository.Get(id)
+}
+
+func (t *testTodo) List() ([]*model.TestTodo, error) {
+	return t.testTodoRepository.List()
 }
 
 func (t *testTodo) Create(input model.CreateTestTodoInput) (*model.TestTodo, error) {
