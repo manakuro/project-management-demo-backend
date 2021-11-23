@@ -6,6 +6,7 @@ import (
 	"context"
 	"fmt"
 	"project-management-demo-backend/ent/predicate"
+	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/ent/testuser"
 	"sync"
 	"time"
@@ -22,8 +23,553 @@ const (
 	OpUpdateOne = ent.OpUpdateOne
 
 	// Node types.
+	TypeTestTodo = "TestTodo"
 	TypeTestUser = "TestUser"
 )
+
+// TestTodoMutation represents an operation that mutates the TestTodo nodes in the graph.
+type TestTodoMutation struct {
+	config
+	op            Op
+	typ           string
+	id            *int
+	name          *string
+	status        *testtodo.Status
+	priority      *int
+	addpriority   *int
+	created_at    *time.Time
+	updated_at    *time.Time
+	clearedFields map[string]struct{}
+	done          bool
+	oldValue      func(context.Context) (*TestTodo, error)
+	predicates    []predicate.TestTodo
+}
+
+var _ ent.Mutation = (*TestTodoMutation)(nil)
+
+// testtodoOption allows management of the mutation configuration using functional options.
+type testtodoOption func(*TestTodoMutation)
+
+// newTestTodoMutation creates new mutation for the TestTodo entity.
+func newTestTodoMutation(c config, op Op, opts ...testtodoOption) *TestTodoMutation {
+	m := &TestTodoMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeTestTodo,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withTestTodoID sets the ID field of the mutation.
+func withTestTodoID(id int) testtodoOption {
+	return func(m *TestTodoMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *TestTodo
+		)
+		m.oldValue = func(ctx context.Context) (*TestTodo, error) {
+			once.Do(func() {
+				if m.done {
+					err = fmt.Errorf("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().TestTodo.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withTestTodo sets the old TestTodo of the mutation.
+func withTestTodo(node *TestTodo) testtodoOption {
+	return func(m *TestTodoMutation) {
+		m.oldValue = func(context.Context) (*TestTodo, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m TestTodoMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m TestTodoMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, fmt.Errorf("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *TestTodoMutation) ID() (id int, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// SetName sets the "name" field.
+func (m *TestTodoMutation) SetName(s string) {
+	m.name = &s
+}
+
+// Name returns the value of the "name" field in the mutation.
+func (m *TestTodoMutation) Name() (r string, exists bool) {
+	v := m.name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldName returns the old "name" field's value of the TestTodo entity.
+// If the TestTodo object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TestTodoMutation) OldName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldName: %w", err)
+	}
+	return oldValue.Name, nil
+}
+
+// ResetName resets all changes to the "name" field.
+func (m *TestTodoMutation) ResetName() {
+	m.name = nil
+}
+
+// SetStatus sets the "status" field.
+func (m *TestTodoMutation) SetStatus(t testtodo.Status) {
+	m.status = &t
+}
+
+// Status returns the value of the "status" field in the mutation.
+func (m *TestTodoMutation) Status() (r testtodo.Status, exists bool) {
+	v := m.status
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStatus returns the old "status" field's value of the TestTodo entity.
+// If the TestTodo object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TestTodoMutation) OldStatus(ctx context.Context) (v testtodo.Status, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldStatus is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldStatus requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStatus: %w", err)
+	}
+	return oldValue.Status, nil
+}
+
+// ResetStatus resets all changes to the "status" field.
+func (m *TestTodoMutation) ResetStatus() {
+	m.status = nil
+}
+
+// SetPriority sets the "priority" field.
+func (m *TestTodoMutation) SetPriority(i int) {
+	m.priority = &i
+	m.addpriority = nil
+}
+
+// Priority returns the value of the "priority" field in the mutation.
+func (m *TestTodoMutation) Priority() (r int, exists bool) {
+	v := m.priority
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPriority returns the old "priority" field's value of the TestTodo entity.
+// If the TestTodo object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TestTodoMutation) OldPriority(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldPriority is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldPriority requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPriority: %w", err)
+	}
+	return oldValue.Priority, nil
+}
+
+// AddPriority adds i to the "priority" field.
+func (m *TestTodoMutation) AddPriority(i int) {
+	if m.addpriority != nil {
+		*m.addpriority += i
+	} else {
+		m.addpriority = &i
+	}
+}
+
+// AddedPriority returns the value that was added to the "priority" field in this mutation.
+func (m *TestTodoMutation) AddedPriority() (r int, exists bool) {
+	v := m.addpriority
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetPriority resets all changes to the "priority" field.
+func (m *TestTodoMutation) ResetPriority() {
+	m.priority = nil
+	m.addpriority = nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *TestTodoMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *TestTodoMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the TestTodo entity.
+// If the TestTodo object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TestTodoMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *TestTodoMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *TestTodoMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *TestTodoMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the TestTodo entity.
+// If the TestTodo object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TestTodoMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *TestTodoMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// Where appends a list predicates to the TestTodoMutation builder.
+func (m *TestTodoMutation) Where(ps ...predicate.TestTodo) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// Op returns the operation name.
+func (m *TestTodoMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (TestTodo).
+func (m *TestTodoMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *TestTodoMutation) Fields() []string {
+	fields := make([]string, 0, 5)
+	if m.name != nil {
+		fields = append(fields, testtodo.FieldName)
+	}
+	if m.status != nil {
+		fields = append(fields, testtodo.FieldStatus)
+	}
+	if m.priority != nil {
+		fields = append(fields, testtodo.FieldPriority)
+	}
+	if m.created_at != nil {
+		fields = append(fields, testtodo.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, testtodo.FieldUpdatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *TestTodoMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case testtodo.FieldName:
+		return m.Name()
+	case testtodo.FieldStatus:
+		return m.Status()
+	case testtodo.FieldPriority:
+		return m.Priority()
+	case testtodo.FieldCreatedAt:
+		return m.CreatedAt()
+	case testtodo.FieldUpdatedAt:
+		return m.UpdatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *TestTodoMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case testtodo.FieldName:
+		return m.OldName(ctx)
+	case testtodo.FieldStatus:
+		return m.OldStatus(ctx)
+	case testtodo.FieldPriority:
+		return m.OldPriority(ctx)
+	case testtodo.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case testtodo.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown TestTodo field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *TestTodoMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case testtodo.FieldName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetName(v)
+		return nil
+	case testtodo.FieldStatus:
+		v, ok := value.(testtodo.Status)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStatus(v)
+		return nil
+	case testtodo.FieldPriority:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPriority(v)
+		return nil
+	case testtodo.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case testtodo.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown TestTodo field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *TestTodoMutation) AddedFields() []string {
+	var fields []string
+	if m.addpriority != nil {
+		fields = append(fields, testtodo.FieldPriority)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *TestTodoMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case testtodo.FieldPriority:
+		return m.AddedPriority()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *TestTodoMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case testtodo.FieldPriority:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddPriority(v)
+		return nil
+	}
+	return fmt.Errorf("unknown TestTodo numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *TestTodoMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *TestTodoMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *TestTodoMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown TestTodo nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *TestTodoMutation) ResetField(name string) error {
+	switch name {
+	case testtodo.FieldName:
+		m.ResetName()
+		return nil
+	case testtodo.FieldStatus:
+		m.ResetStatus()
+		return nil
+	case testtodo.FieldPriority:
+		m.ResetPriority()
+		return nil
+	case testtodo.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case testtodo.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown TestTodo field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *TestTodoMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *TestTodoMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *TestTodoMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *TestTodoMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *TestTodoMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *TestTodoMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *TestTodoMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown TestTodo unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *TestTodoMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown TestTodo edge %s", name)
+}
 
 // TestUserMutation represents an operation that mutates the TestUser nodes in the graph.
 type TestUserMutation struct {

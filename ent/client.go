@@ -9,6 +9,7 @@ import (
 
 	"project-management-demo-backend/ent/migrate"
 
+	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/ent/testuser"
 
 	"entgo.io/ent/dialect"
@@ -20,6 +21,8 @@ type Client struct {
 	config
 	// Schema is the client for creating, migrating and dropping schema.
 	Schema *migrate.Schema
+	// TestTodo is the client for interacting with the TestTodo builders.
+	TestTodo *TestTodoClient
 	// TestUser is the client for interacting with the TestUser builders.
 	TestUser *TestUserClient
 	// additional fields for node api
@@ -37,6 +40,7 @@ func NewClient(opts ...Option) *Client {
 
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
+	c.TestTodo = NewTestTodoClient(c.config)
 	c.TestUser = NewTestUserClient(c.config)
 }
 
@@ -71,6 +75,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	return &Tx{
 		ctx:      ctx,
 		config:   cfg,
+		TestTodo: NewTestTodoClient(cfg),
 		TestUser: NewTestUserClient(cfg),
 	}, nil
 }
@@ -90,6 +95,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
 		config:   cfg,
+		TestTodo: NewTestTodoClient(cfg),
 		TestUser: NewTestUserClient(cfg),
 	}, nil
 }
@@ -97,7 +103,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 // Debug returns a new debug-client. It's used to get verbose logging on specific operations.
 //
 //	client.Debug().
-//		TestUser.
+//		TestTodo.
 //		Query().
 //		Count(ctx)
 //
@@ -120,7 +126,98 @@ func (c *Client) Close() error {
 // Use adds the mutation hooks to all the entity clients.
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
+	c.TestTodo.Use(hooks...)
 	c.TestUser.Use(hooks...)
+}
+
+// TestTodoClient is a client for the TestTodo schema.
+type TestTodoClient struct {
+	config
+}
+
+// NewTestTodoClient returns a client for the TestTodo from the given config.
+func NewTestTodoClient(c config) *TestTodoClient {
+	return &TestTodoClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `testtodo.Hooks(f(g(h())))`.
+func (c *TestTodoClient) Use(hooks ...Hook) {
+	c.hooks.TestTodo = append(c.hooks.TestTodo, hooks...)
+}
+
+// Create returns a create builder for TestTodo.
+func (c *TestTodoClient) Create() *TestTodoCreate {
+	mutation := newTestTodoMutation(c.config, OpCreate)
+	return &TestTodoCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of TestTodo entities.
+func (c *TestTodoClient) CreateBulk(builders ...*TestTodoCreate) *TestTodoCreateBulk {
+	return &TestTodoCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for TestTodo.
+func (c *TestTodoClient) Update() *TestTodoUpdate {
+	mutation := newTestTodoMutation(c.config, OpUpdate)
+	return &TestTodoUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *TestTodoClient) UpdateOne(tt *TestTodo) *TestTodoUpdateOne {
+	mutation := newTestTodoMutation(c.config, OpUpdateOne, withTestTodo(tt))
+	return &TestTodoUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *TestTodoClient) UpdateOneID(id int) *TestTodoUpdateOne {
+	mutation := newTestTodoMutation(c.config, OpUpdateOne, withTestTodoID(id))
+	return &TestTodoUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for TestTodo.
+func (c *TestTodoClient) Delete() *TestTodoDelete {
+	mutation := newTestTodoMutation(c.config, OpDelete)
+	return &TestTodoDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *TestTodoClient) DeleteOne(tt *TestTodo) *TestTodoDeleteOne {
+	return c.DeleteOneID(tt.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *TestTodoClient) DeleteOneID(id int) *TestTodoDeleteOne {
+	builder := c.Delete().Where(testtodo.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &TestTodoDeleteOne{builder}
+}
+
+// Query returns a query builder for TestTodo.
+func (c *TestTodoClient) Query() *TestTodoQuery {
+	return &TestTodoQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a TestTodo entity by its id.
+func (c *TestTodoClient) Get(ctx context.Context, id int) (*TestTodo, error) {
+	return c.Query().Where(testtodo.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *TestTodoClient) GetX(ctx context.Context, id int) *TestTodo {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *TestTodoClient) Hooks() []Hook {
+	return c.hooks.TestTodo
 }
 
 // TestUserClient is a client for the TestUser schema.

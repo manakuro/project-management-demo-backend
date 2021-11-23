@@ -8,6 +8,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/ent/testuser"
 	"strconv"
 	"strings"
@@ -231,6 +232,233 @@ const (
 	pageInfoField   = "pageInfo"
 	totalCountField = "totalCount"
 )
+
+// TestTodoEdge is the edge representation of TestTodo.
+type TestTodoEdge struct {
+	Node   *TestTodo `json:"node"`
+	Cursor Cursor    `json:"cursor"`
+}
+
+// TestTodoConnection is the connection containing edges to TestTodo.
+type TestTodoConnection struct {
+	Edges      []*TestTodoEdge `json:"edges"`
+	PageInfo   PageInfo        `json:"pageInfo"`
+	TotalCount int             `json:"totalCount"`
+}
+
+// TestTodoPaginateOption enables pagination customization.
+type TestTodoPaginateOption func(*testTodoPager) error
+
+// WithTestTodoOrder configures pagination ordering.
+func WithTestTodoOrder(order *TestTodoOrder) TestTodoPaginateOption {
+	if order == nil {
+		order = DefaultTestTodoOrder
+	}
+	o := *order
+	return func(pager *testTodoPager) error {
+		if err := o.Direction.Validate(); err != nil {
+			return err
+		}
+		if o.Field == nil {
+			o.Field = DefaultTestTodoOrder.Field
+		}
+		pager.order = &o
+		return nil
+	}
+}
+
+// WithTestTodoFilter configures pagination filter.
+func WithTestTodoFilter(filter func(*TestTodoQuery) (*TestTodoQuery, error)) TestTodoPaginateOption {
+	return func(pager *testTodoPager) error {
+		if filter == nil {
+			return errors.New("TestTodoQuery filter cannot be nil")
+		}
+		pager.filter = filter
+		return nil
+	}
+}
+
+type testTodoPager struct {
+	order  *TestTodoOrder
+	filter func(*TestTodoQuery) (*TestTodoQuery, error)
+}
+
+func newTestTodoPager(opts []TestTodoPaginateOption) (*testTodoPager, error) {
+	pager := &testTodoPager{}
+	for _, opt := range opts {
+		if err := opt(pager); err != nil {
+			return nil, err
+		}
+	}
+	if pager.order == nil {
+		pager.order = DefaultTestTodoOrder
+	}
+	return pager, nil
+}
+
+func (p *testTodoPager) applyFilter(query *TestTodoQuery) (*TestTodoQuery, error) {
+	if p.filter != nil {
+		return p.filter(query)
+	}
+	return query, nil
+}
+
+func (p *testTodoPager) toCursor(tt *TestTodo) Cursor {
+	return p.order.Field.toCursor(tt)
+}
+
+func (p *testTodoPager) applyCursors(query *TestTodoQuery, after, before *Cursor) *TestTodoQuery {
+	for _, predicate := range cursorsToPredicates(
+		p.order.Direction, after, before,
+		p.order.Field.field, DefaultTestTodoOrder.Field.field,
+	) {
+		query = query.Where(predicate)
+	}
+	return query
+}
+
+func (p *testTodoPager) applyOrder(query *TestTodoQuery, reverse bool) *TestTodoQuery {
+	direction := p.order.Direction
+	if reverse {
+		direction = direction.reverse()
+	}
+	query = query.Order(direction.orderFunc(p.order.Field.field))
+	if p.order.Field != DefaultTestTodoOrder.Field {
+		query = query.Order(direction.orderFunc(DefaultTestTodoOrder.Field.field))
+	}
+	return query
+}
+
+// Paginate executes the query and returns a relay based cursor connection to TestTodo.
+func (tt *TestTodoQuery) Paginate(
+	ctx context.Context, after *Cursor, first *int,
+	before *Cursor, last *int, opts ...TestTodoPaginateOption,
+) (*TestTodoConnection, error) {
+	if err := validateFirstLast(first, last); err != nil {
+		return nil, err
+	}
+	pager, err := newTestTodoPager(opts)
+	if err != nil {
+		return nil, err
+	}
+
+	if tt, err = pager.applyFilter(tt); err != nil {
+		return nil, err
+	}
+
+	conn := &TestTodoConnection{Edges: []*TestTodoEdge{}}
+	if !hasCollectedField(ctx, edgesField) || first != nil && *first == 0 || last != nil && *last == 0 {
+		if hasCollectedField(ctx, totalCountField) ||
+			hasCollectedField(ctx, pageInfoField) {
+			count, err := tt.Count(ctx)
+			if err != nil {
+				return nil, err
+			}
+			conn.TotalCount = count
+			conn.PageInfo.HasNextPage = first != nil && count > 0
+			conn.PageInfo.HasPreviousPage = last != nil && count > 0
+		}
+		return conn, nil
+	}
+
+	if (after != nil || first != nil || before != nil || last != nil) && hasCollectedField(ctx, totalCountField) {
+		count, err := tt.Clone().Count(ctx)
+		if err != nil {
+			return nil, err
+		}
+		conn.TotalCount = count
+	}
+
+	tt = pager.applyCursors(tt, after, before)
+	tt = pager.applyOrder(tt, last != nil)
+	var limit int
+	if first != nil {
+		limit = *first + 1
+	} else if last != nil {
+		limit = *last + 1
+	}
+	if limit > 0 {
+		tt = tt.Limit(limit)
+	}
+
+	if field := getCollectedField(ctx, edgesField, nodeField); field != nil {
+		tt = tt.collectField(graphql.GetOperationContext(ctx), *field)
+	}
+
+	nodes, err := tt.All(ctx)
+	if err != nil || len(nodes) == 0 {
+		return conn, err
+	}
+
+	if len(nodes) == limit {
+		conn.PageInfo.HasNextPage = first != nil
+		conn.PageInfo.HasPreviousPage = last != nil
+		nodes = nodes[:len(nodes)-1]
+	}
+
+	var nodeAt func(int) *TestTodo
+	if last != nil {
+		n := len(nodes) - 1
+		nodeAt = func(i int) *TestTodo {
+			return nodes[n-i]
+		}
+	} else {
+		nodeAt = func(i int) *TestTodo {
+			return nodes[i]
+		}
+	}
+
+	conn.Edges = make([]*TestTodoEdge, len(nodes))
+	for i := range nodes {
+		node := nodeAt(i)
+		conn.Edges[i] = &TestTodoEdge{
+			Node:   node,
+			Cursor: pager.toCursor(node),
+		}
+	}
+
+	conn.PageInfo.StartCursor = &conn.Edges[0].Cursor
+	conn.PageInfo.EndCursor = &conn.Edges[len(conn.Edges)-1].Cursor
+	if conn.TotalCount == 0 {
+		conn.TotalCount = len(nodes)
+	}
+
+	return conn, nil
+}
+
+// TestTodoOrderField defines the ordering field of TestTodo.
+type TestTodoOrderField struct {
+	field    string
+	toCursor func(*TestTodo) Cursor
+}
+
+// TestTodoOrder defines the ordering of TestTodo.
+type TestTodoOrder struct {
+	Direction OrderDirection      `json:"direction"`
+	Field     *TestTodoOrderField `json:"field"`
+}
+
+// DefaultTestTodoOrder is the default ordering of TestTodo.
+var DefaultTestTodoOrder = &TestTodoOrder{
+	Direction: OrderDirectionAsc,
+	Field: &TestTodoOrderField{
+		field: testtodo.FieldID,
+		toCursor: func(tt *TestTodo) Cursor {
+			return Cursor{ID: tt.ID}
+		},
+	},
+}
+
+// ToEdge converts TestTodo into TestTodoEdge.
+func (tt *TestTodo) ToEdge(order *TestTodoOrder) *TestTodoEdge {
+	if order == nil {
+		order = DefaultTestTodoOrder
+	}
+	return &TestTodoEdge{
+		Node:   tt,
+		Cursor: order.Field.toCursor(tt),
+	}
+}
 
 // TestUserEdge is the edge representation of TestUser.
 type TestUserEdge struct {
