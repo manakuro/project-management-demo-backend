@@ -1,0 +1,33 @@
+enum TestTodoStatus {
+  IN_PROGRESS
+  COMPLETED
+}
+
+type TestTodo {
+  id: ID!
+  name: String!
+  status: TestTodoStatus!
+  priority: Int!
+  createdAt: String!
+  updatedAt: String!
+}
+input CreateTestTodoInput {
+  name: String!
+  status: TestTodoStatus! = IN_PROGRESS
+  priority: Int!
+}
+input UpdateTestTodoInput {
+  id: ID!
+  name: String
+  status: TestTodoStatus
+  priority: Int
+}
+
+extend type Query {
+  testTodo(id: ID): TestTodo
+}
+
+extend type Mutation {
+  createTestTodo(input: CreateTestTodoInput!): TestTodo!
+  updateTestTodo(input: UpdateTestTodoInput!): TestTodo!
+}

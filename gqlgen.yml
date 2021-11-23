@@ -57,7 +57,7 @@ models:
   Node:
       model:
         - project-management-demo-backend/ent.Noder
-  Status:
+  TestTodoStatus:
       model:
         - project-management-demo-backend/ent/testtodo.Status
 
