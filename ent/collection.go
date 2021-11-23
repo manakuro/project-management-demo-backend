@@ -9,6 +9,18 @@ import (
 )
 
 // CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
+func (tt *TestTodoQuery) CollectFields(ctx context.Context, satisfies ...string) *TestTodoQuery {
+	if fc := graphql.GetFieldContext(ctx); fc != nil {
+		tt = tt.collectField(graphql.GetOperationContext(ctx), fc.Field, satisfies...)
+	}
+	return tt
+}
+
+func (tt *TestTodoQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *TestTodoQuery {
+	return tt
+}
+
+// CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
 func (tu *TestUserQuery) CollectFields(ctx context.Context, satisfies ...string) *TestUserQuery {
 	if fc := graphql.GetFieldContext(ctx); fc != nil {
 		tu = tu.collectField(graphql.GetOperationContext(ctx), fc.Field, satisfies...)

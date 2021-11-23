@@ -3,8 +3,23 @@ type TestUser {
   name: String!
   age: Int!
   createdAt: String!
+  updatedAt: String!
+}
+input CreateTestUserInput {
+  name: String!
+  age: Int!
+}
+input UpdateTestUserInput {
+  id: ID!
+  name: String
+  age: Int
 }
 
 extend type Query {
-  testUser: TestUser
+  testUser(id: ID, age: Int): TestUser
+}
+
+extend type Mutation {
+  createTestUser(input: CreateTestUserInput!): TestUser!
+  updateTestUser(input: UpdateTestUserInput!): TestUser!
 }

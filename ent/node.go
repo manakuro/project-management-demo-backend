@@ -6,6 +6,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/ent/testuser"
 	"sync"
 	"sync/atomic"
@@ -46,11 +47,62 @@ type Edge struct {
 	IDs  []int  `json:"ids,omitempty"`  // node ids (where this edge point to).
 }
 
+func (tt *TestTodo) Node(ctx context.Context) (node *Node, err error) {
+	node = &Node{
+		ID:     tt.ID,
+		Type:   "TestTodo",
+		Fields: make([]*Field, 5),
+		Edges:  make([]*Edge, 0),
+	}
+	var buf []byte
+	if buf, err = json.Marshal(tt.Name); err != nil {
+		return nil, err
+	}
+	node.Fields[0] = &Field{
+		Type:  "string",
+		Name:  "name",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(tt.Status); err != nil {
+		return nil, err
+	}
+	node.Fields[1] = &Field{
+		Type:  "testtodo.Status",
+		Name:  "status",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(tt.Priority); err != nil {
+		return nil, err
+	}
+	node.Fields[2] = &Field{
+		Type:  "int",
+		Name:  "priority",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(tt.CreatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[3] = &Field{
+		Type:  "time.Time",
+		Name:  "created_at",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(tt.UpdatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[4] = &Field{
+		Type:  "time.Time",
+		Name:  "updated_at",
+		Value: string(buf),
+	}
+	return node, nil
+}
+
 func (tu *TestUser) Node(ctx context.Context) (node *Node, err error) {
 	node = &Node{
 		ID:     tu.ID,
 		Type:   "TestUser",
-		Fields: make([]*Field, 3),
+		Fields: make([]*Field, 4),
 		Edges:  make([]*Edge, 0),
 	}
 	var buf []byte
@@ -76,6 +128,14 @@ func (tu *TestUser) Node(ctx context.Context) (node *Node, err error) {
 	node.Fields[2] = &Field{
 		Type:  "time.Time",
 		Name:  "created_at",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(tu.UpdatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[3] = &Field{
+		Type:  "time.Time",
+		Name:  "updated_at",
 		Value: string(buf),
 	}
 	return node, nil
@@ -148,6 +208,15 @@ func (c *Client) Noder(ctx context.Context, id int, opts ...NodeOption) (_ Noder
 
 func (c *Client) noder(ctx context.Context, table string, id int) (Noder, error) {
 	switch table {
+	case testtodo.Table:
+		n, err := c.TestTodo.Query().
+			Where(testtodo.ID(id)).
+			CollectFields(ctx, "TestTodo").
+			Only(ctx)
+		if err != nil {
+			return nil, err
+		}
+		return n, nil
 	case testuser.Table:
 		n, err := c.TestUser.Query().
 			Where(testuser.ID(id)).
@@ -230,6 +299,19 @@ func (c *Client) noders(ctx context.Context, table string, ids []int) ([]Noder, 
 		idmap[id] = append(idmap[id], &noders[i])
 	}
 	switch table {
+	case testtodo.Table:
+		nodes, err := c.TestTodo.Query().
+			Where(testtodo.IDIn(ids...)).
+			CollectFields(ctx, "TestTodo").
+			All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, node := range nodes {
+			for _, noder := range idmap[node.ID] {
+				*noder = node
+			}
+		}
 	case testuser.Table:
 		nodes, err := c.TestUser.Query().
 			Where(testuser.IDIn(ids...)).

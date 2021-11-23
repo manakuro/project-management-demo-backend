@@ -54,6 +54,20 @@ func (tuc *TestUserCreate) SetNillableCreatedAt(t *time.Time) *TestUserCreate {
 	return tuc
 }
 
+// SetUpdatedAt sets the "updated_at" field.
+func (tuc *TestUserCreate) SetUpdatedAt(t time.Time) *TestUserCreate {
+	tuc.mutation.SetUpdatedAt(t)
+	return tuc
+}
+
+// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
+func (tuc *TestUserCreate) SetNillableUpdatedAt(t *time.Time) *TestUserCreate {
+	if t != nil {
+		tuc.SetUpdatedAt(*t)
+	}
+	return tuc
+}
+
 // Mutation returns the TestUserMutation object of the builder.
 func (tuc *TestUserCreate) Mutation() *TestUserMutation {
 	return tuc.mutation
@@ -133,6 +147,10 @@ func (tuc *TestUserCreate) defaults() {
 		v := testuser.DefaultCreatedAt()
 		tuc.mutation.SetCreatedAt(v)
 	}
+	if _, ok := tuc.mutation.UpdatedAt(); !ok {
+		v := testuser.DefaultUpdatedAt()
+		tuc.mutation.SetUpdatedAt(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -145,6 +163,9 @@ func (tuc *TestUserCreate) check() error {
 	}
 	if _, ok := tuc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
+	}
+	if _, ok := tuc.mutation.UpdatedAt(); !ok {
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
 	}
 	return nil
 }
@@ -196,6 +217,14 @@ func (tuc *TestUserCreate) createSpec() (*TestUser, *sqlgraph.CreateSpec) {
 			Column: testuser.FieldCreatedAt,
 		})
 		_node.CreatedAt = value
+	}
+	if value, ok := tuc.mutation.UpdatedAt(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: testuser.FieldUpdatedAt,
+		})
+		_node.UpdatedAt = value
 	}
 	return _node, _spec
 }

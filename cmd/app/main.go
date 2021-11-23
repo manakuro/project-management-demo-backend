@@ -1,15 +1,14 @@
 package main
 
 import (
-	"errors"
 	"log"
 	"project-management-demo-backend/config"
 	"project-management-demo-backend/ent"
-	"project-management-demo-backend/graph/resolver"
-	"project-management-demo-backend/infrastructure/datastore"
-	"project-management-demo-backend/infrastructure/router"
-
-	"github.com/99designs/gqlgen/graphql/handler"
+	"project-management-demo-backend/pkg/adapter/controller"
+	"project-management-demo-backend/pkg/infrastructure/datastore"
+	"project-management-demo-backend/pkg/infrastructure/graphql"
+	"project-management-demo-backend/pkg/infrastructure/router"
+	"project-management-demo-backend/pkg/registry"
 )
 
 func main() {
@@ -18,7 +17,8 @@ func main() {
 	client := newDBClient()
 	defer client.Close()
 
-	srv := newGraphQLServer(client)
+	c := newController(client)
+	srv := graphql.NewServer(client, c)
 
 	e := router.NewRouter(srv)
 
@@ -27,13 +27,14 @@ func main() {
 
 func newDBClient() *ent.Client {
 	client, err := datastore.NewDB()
-	if !errors.Is(err, nil) {
+	if err != nil {
 		log.Fatalf("failed opening mysql client: %v", err)
 	}
 
 	return client
 }
 
-func newGraphQLServer(client *ent.Client) *handler.Server {
-	return handler.NewDefaultServer(resolver.NewSchema(client))
+func newController(client *ent.Client) controller.Controller {
+	r := registry.NewRegistry(client)
+	return r.NewController()
 }

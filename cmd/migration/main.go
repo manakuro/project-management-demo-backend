@@ -2,19 +2,18 @@ package main
 
 import (
 	"context"
-	"errors"
 	"log"
 	"project-management-demo-backend/config"
 	"project-management-demo-backend/ent"
 	"project-management-demo-backend/ent/migrate"
-	"project-management-demo-backend/infrastructure/datastore"
+	"project-management-demo-backend/pkg/infrastructure/datastore"
 )
 
 func main() {
 	config.ReadConfig()
 
 	client, err := datastore.NewDB()
-	if !errors.Is(err, nil) {
+	if err != nil {
 		log.Fatalf("failed opening mysql client: %v", err)
 	}
 	defer client.Close()
@@ -26,7 +25,7 @@ func createDBSchema(client *ent.Client) {
 		context.Background(),
 		migrate.WithDropIndex(true),
 		migrate.WithDropColumn(true),
-	); !errors.Is(err, nil) {
+	); err != nil {
 		log.Fatalf("failed creating schema resources: %v", err)
 	}
 }

@@ -4,6 +4,7 @@ package ent
 
 import (
 	"project-management-demo-backend/ent/schema"
+	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/ent/testuser"
 	"time"
 )
@@ -12,6 +13,24 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	testtodoFields := schema.TestTodo{}.Fields()
+	_ = testtodoFields
+	// testtodoDescName is the schema descriptor for name field.
+	testtodoDescName := testtodoFields[0].Descriptor()
+	// testtodo.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	testtodo.NameValidator = testtodoDescName.Validators[0].(func(string) error)
+	// testtodoDescPriority is the schema descriptor for priority field.
+	testtodoDescPriority := testtodoFields[2].Descriptor()
+	// testtodo.DefaultPriority holds the default value on creation for the priority field.
+	testtodo.DefaultPriority = testtodoDescPriority.Default.(int)
+	// testtodoDescCreatedAt is the schema descriptor for created_at field.
+	testtodoDescCreatedAt := testtodoFields[3].Descriptor()
+	// testtodo.DefaultCreatedAt holds the default value on creation for the created_at field.
+	testtodo.DefaultCreatedAt = testtodoDescCreatedAt.Default.(func() time.Time)
+	// testtodoDescUpdatedAt is the schema descriptor for updated_at field.
+	testtodoDescUpdatedAt := testtodoFields[4].Descriptor()
+	// testtodo.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	testtodo.DefaultUpdatedAt = testtodoDescUpdatedAt.Default.(func() time.Time)
 	testuserFields := schema.TestUser{}.Fields()
 	_ = testuserFields
 	// testuserDescName is the schema descriptor for name field.
@@ -22,4 +41,8 @@ func init() {
 	testuserDescCreatedAt := testuserFields[2].Descriptor()
 	// testuser.DefaultCreatedAt holds the default value on creation for the created_at field.
 	testuser.DefaultCreatedAt = testuserDescCreatedAt.Default.(func() time.Time)
+	// testuserDescUpdatedAt is the schema descriptor for updated_at field.
+	testuserDescUpdatedAt := testuserFields[3].Descriptor()
+	// testuser.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	testuser.DefaultUpdatedAt = testuserDescUpdatedAt.Default.(func() time.Time)
 }
