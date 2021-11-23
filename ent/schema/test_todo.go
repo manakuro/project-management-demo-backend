@@ -3,6 +3,8 @@ package schema
 import (
 	"time"
 
+	"entgo.io/ent/schema/edge"
+
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/schema/field"
@@ -41,5 +43,9 @@ func (TestTodo) Fields() []ent.Field {
 
 // Edges of the TestTodo.
 func (TestTodo) Edges() []ent.Edge {
-	return nil
+	return []ent.Edge{
+		edge.From("test_user", TestUser.Type).
+			Ref("test_todos").
+			Unique(),
+	}
 }

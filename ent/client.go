@@ -14,6 +14,7 @@ import (
 
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 )
 
 // Client is the client that holds all ent builders.
@@ -215,6 +216,22 @@ func (c *TestTodoClient) GetX(ctx context.Context, id int) *TestTodo {
 	return obj
 }
 
+// QueryTestUser queries the test_user edge of a TestTodo.
+func (c *TestTodoClient) QueryTestUser(tt *TestTodo) *TestUserQuery {
+	query := &TestUserQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := tt.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(testtodo.Table, testtodo.FieldID, id),
+			sqlgraph.To(testuser.Table, testuser.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, testtodo.TestUserTable, testtodo.TestUserColumn),
+		)
+		fromV = sqlgraph.Neighbors(tt.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *TestTodoClient) Hooks() []Hook {
 	return c.hooks.TestTodo
@@ -303,6 +320,22 @@ func (c *TestUserClient) GetX(ctx context.Context, id int) *TestUser {
 		panic(err)
 	}
 	return obj
+}
+
+// QueryTestTodos queries the test_todos edge of a TestUser.
+func (c *TestUserClient) QueryTestTodos(tu *TestUser) *TestTodoQuery {
+	query := &TestTodoQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := tu.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(testuser.Table, testuser.FieldID, id),
+			sqlgraph.To(testtodo.Table, testtodo.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, testuser.TestTodosTable, testuser.TestTodosColumn),
+		)
+		fromV = sqlgraph.Neighbors(tu.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
 }
 
 // Hooks returns the client hooks.

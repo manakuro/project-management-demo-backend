@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"project-management-demo-backend/ent/predicate"
 	"project-management-demo-backend/ent/testtodo"
+	"project-management-demo-backend/ent/testuser"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -67,9 +68,34 @@ func (ttu *TestTodoUpdate) AddPriority(i int) *TestTodoUpdate {
 	return ttu
 }
 
+// SetTestUserID sets the "test_user" edge to the TestUser entity by ID.
+func (ttu *TestTodoUpdate) SetTestUserID(id int) *TestTodoUpdate {
+	ttu.mutation.SetTestUserID(id)
+	return ttu
+}
+
+// SetNillableTestUserID sets the "test_user" edge to the TestUser entity by ID if the given value is not nil.
+func (ttu *TestTodoUpdate) SetNillableTestUserID(id *int) *TestTodoUpdate {
+	if id != nil {
+		ttu = ttu.SetTestUserID(*id)
+	}
+	return ttu
+}
+
+// SetTestUser sets the "test_user" edge to the TestUser entity.
+func (ttu *TestTodoUpdate) SetTestUser(t *TestUser) *TestTodoUpdate {
+	return ttu.SetTestUserID(t.ID)
+}
+
 // Mutation returns the TestTodoMutation object of the builder.
 func (ttu *TestTodoUpdate) Mutation() *TestTodoMutation {
 	return ttu.mutation
+}
+
+// ClearTestUser clears the "test_user" edge to the TestUser entity.
+func (ttu *TestTodoUpdate) ClearTestUser() *TestTodoUpdate {
+	ttu.mutation.ClearTestUser()
+	return ttu
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -193,6 +219,41 @@ func (ttu *TestTodoUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: testtodo.FieldPriority,
 		})
 	}
+	if ttu.mutation.TestUserCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   testtodo.TestUserTable,
+			Columns: []string{testtodo.TestUserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: testuser.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ttu.mutation.TestUserIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   testtodo.TestUserTable,
+			Columns: []string{testtodo.TestUserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: testuser.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, ttu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{testtodo.Label}
@@ -253,9 +314,34 @@ func (ttuo *TestTodoUpdateOne) AddPriority(i int) *TestTodoUpdateOne {
 	return ttuo
 }
 
+// SetTestUserID sets the "test_user" edge to the TestUser entity by ID.
+func (ttuo *TestTodoUpdateOne) SetTestUserID(id int) *TestTodoUpdateOne {
+	ttuo.mutation.SetTestUserID(id)
+	return ttuo
+}
+
+// SetNillableTestUserID sets the "test_user" edge to the TestUser entity by ID if the given value is not nil.
+func (ttuo *TestTodoUpdateOne) SetNillableTestUserID(id *int) *TestTodoUpdateOne {
+	if id != nil {
+		ttuo = ttuo.SetTestUserID(*id)
+	}
+	return ttuo
+}
+
+// SetTestUser sets the "test_user" edge to the TestUser entity.
+func (ttuo *TestTodoUpdateOne) SetTestUser(t *TestUser) *TestTodoUpdateOne {
+	return ttuo.SetTestUserID(t.ID)
+}
+
 // Mutation returns the TestTodoMutation object of the builder.
 func (ttuo *TestTodoUpdateOne) Mutation() *TestTodoMutation {
 	return ttuo.mutation
+}
+
+// ClearTestUser clears the "test_user" edge to the TestUser entity.
+func (ttuo *TestTodoUpdateOne) ClearTestUser() *TestTodoUpdateOne {
+	ttuo.mutation.ClearTestUser()
+	return ttuo
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -402,6 +488,41 @@ func (ttuo *TestTodoUpdateOne) sqlSave(ctx context.Context) (_node *TestTodo, er
 			Value:  value,
 			Column: testtodo.FieldPriority,
 		})
+	}
+	if ttuo.mutation.TestUserCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   testtodo.TestUserTable,
+			Columns: []string{testtodo.TestUserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: testuser.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ttuo.mutation.TestUserIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   testtodo.TestUserTable,
+			Columns: []string{testtodo.TestUserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: testuser.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_node = &TestTodo{config: ttuo.config}
 	_spec.Assign = _node.assignValues

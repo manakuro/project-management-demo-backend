@@ -24,6 +24,27 @@ type TestUser struct {
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	// Edges holds the relations/edges for other nodes in the graph.
+	// The values are being populated by the TestUserQuery when eager-loading is set.
+	Edges TestUserEdges `json:"edges"`
+}
+
+// TestUserEdges holds the relations/edges for other nodes in the graph.
+type TestUserEdges struct {
+	// TestTodos holds the value of the test_todos edge.
+	TestTodos []*TestTodo `json:"test_todos,omitempty"`
+	// loadedTypes holds the information for reporting if a
+	// type was loaded (or requested) in eager-loading or not.
+	loadedTypes [1]bool
+}
+
+// TestTodosOrErr returns the TestTodos value or an error if the edge
+// was not loaded in eager-loading.
+func (e TestUserEdges) TestTodosOrErr() ([]*TestTodo, error) {
+	if e.loadedTypes[0] {
+		return e.TestTodos, nil
+	}
+	return nil, &NotLoadedError{edge: "test_todos"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -85,6 +106,11 @@ func (tu *TestUser) assignValues(columns []string, values []interface{}) error {
 		}
 	}
 	return nil
+}
+
+// QueryTestTodos queries the "test_todos" edge of the TestUser entity.
+func (tu *TestUser) QueryTestTodos() *TestTodoQuery {
+	return (&TestUserClient{config: tu.config}).QueryTestTodos(tu)
 }
 
 // Update returns a builder for updating this TestUser.

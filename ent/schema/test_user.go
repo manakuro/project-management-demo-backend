@@ -3,6 +3,8 @@ package schema
 import (
 	"time"
 
+	"entgo.io/ent/schema/edge"
+
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/schema/field"
@@ -33,5 +35,8 @@ func (TestUser) Fields() []ent.Field {
 
 // Edges of the Test.
 func (TestUser) Edges() []ent.Edge {
-	return nil
+	return []ent.Edge{
+		edge.To("test_todos", TestTodo.Type).
+			StorageKey(edge.Column("test_user_id")),
+	}
 }

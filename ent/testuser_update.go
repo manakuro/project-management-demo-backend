@@ -6,6 +6,7 @@ import (
 	"context"
 	"fmt"
 	"project-management-demo-backend/ent/predicate"
+	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/ent/testuser"
 	"time"
 
@@ -82,9 +83,45 @@ func (tuu *TestUserUpdate) SetNillableUpdatedAt(t *time.Time) *TestUserUpdate {
 	return tuu
 }
 
+// AddTestTodoIDs adds the "test_todos" edge to the TestTodo entity by IDs.
+func (tuu *TestUserUpdate) AddTestTodoIDs(ids ...int) *TestUserUpdate {
+	tuu.mutation.AddTestTodoIDs(ids...)
+	return tuu
+}
+
+// AddTestTodos adds the "test_todos" edges to the TestTodo entity.
+func (tuu *TestUserUpdate) AddTestTodos(t ...*TestTodo) *TestUserUpdate {
+	ids := make([]int, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return tuu.AddTestTodoIDs(ids...)
+}
+
 // Mutation returns the TestUserMutation object of the builder.
 func (tuu *TestUserUpdate) Mutation() *TestUserMutation {
 	return tuu.mutation
+}
+
+// ClearTestTodos clears all "test_todos" edges to the TestTodo entity.
+func (tuu *TestUserUpdate) ClearTestTodos() *TestUserUpdate {
+	tuu.mutation.ClearTestTodos()
+	return tuu
+}
+
+// RemoveTestTodoIDs removes the "test_todos" edge to TestTodo entities by IDs.
+func (tuu *TestUserUpdate) RemoveTestTodoIDs(ids ...int) *TestUserUpdate {
+	tuu.mutation.RemoveTestTodoIDs(ids...)
+	return tuu
+}
+
+// RemoveTestTodos removes "test_todos" edges to TestTodo entities.
+func (tuu *TestUserUpdate) RemoveTestTodos(t ...*TestTodo) *TestUserUpdate {
+	ids := make([]int, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return tuu.RemoveTestTodoIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -194,6 +231,60 @@ func (tuu *TestUserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: testuser.FieldUpdatedAt,
 		})
 	}
+	if tuu.mutation.TestTodosCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   testuser.TestTodosTable,
+			Columns: []string{testuser.TestTodosColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: testtodo.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tuu.mutation.RemovedTestTodosIDs(); len(nodes) > 0 && !tuu.mutation.TestTodosCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   testuser.TestTodosTable,
+			Columns: []string{testuser.TestTodosColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: testtodo.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tuu.mutation.TestTodosIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   testuser.TestTodosTable,
+			Columns: []string{testuser.TestTodosColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: testtodo.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, tuu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{testuser.Label}
@@ -268,9 +359,45 @@ func (tuuo *TestUserUpdateOne) SetNillableUpdatedAt(t *time.Time) *TestUserUpdat
 	return tuuo
 }
 
+// AddTestTodoIDs adds the "test_todos" edge to the TestTodo entity by IDs.
+func (tuuo *TestUserUpdateOne) AddTestTodoIDs(ids ...int) *TestUserUpdateOne {
+	tuuo.mutation.AddTestTodoIDs(ids...)
+	return tuuo
+}
+
+// AddTestTodos adds the "test_todos" edges to the TestTodo entity.
+func (tuuo *TestUserUpdateOne) AddTestTodos(t ...*TestTodo) *TestUserUpdateOne {
+	ids := make([]int, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return tuuo.AddTestTodoIDs(ids...)
+}
+
 // Mutation returns the TestUserMutation object of the builder.
 func (tuuo *TestUserUpdateOne) Mutation() *TestUserMutation {
 	return tuuo.mutation
+}
+
+// ClearTestTodos clears all "test_todos" edges to the TestTodo entity.
+func (tuuo *TestUserUpdateOne) ClearTestTodos() *TestUserUpdateOne {
+	tuuo.mutation.ClearTestTodos()
+	return tuuo
+}
+
+// RemoveTestTodoIDs removes the "test_todos" edge to TestTodo entities by IDs.
+func (tuuo *TestUserUpdateOne) RemoveTestTodoIDs(ids ...int) *TestUserUpdateOne {
+	tuuo.mutation.RemoveTestTodoIDs(ids...)
+	return tuuo
+}
+
+// RemoveTestTodos removes "test_todos" edges to TestTodo entities.
+func (tuuo *TestUserUpdateOne) RemoveTestTodos(t ...*TestTodo) *TestUserUpdateOne {
+	ids := make([]int, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return tuuo.RemoveTestTodoIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -403,6 +530,60 @@ func (tuuo *TestUserUpdateOne) sqlSave(ctx context.Context) (_node *TestUser, er
 			Value:  value,
 			Column: testuser.FieldUpdatedAt,
 		})
+	}
+	if tuuo.mutation.TestTodosCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   testuser.TestTodosTable,
+			Columns: []string{testuser.TestTodosColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: testtodo.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tuuo.mutation.RemovedTestTodosIDs(); len(nodes) > 0 && !tuuo.mutation.TestTodosCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   testuser.TestTodosTable,
+			Columns: []string{testuser.TestTodosColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: testtodo.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tuuo.mutation.TestTodosIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   testuser.TestTodosTable,
+			Columns: []string{testuser.TestTodosColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: testtodo.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_node = &TestUser{config: tuuo.config}
 	_spec.Assign = _node.assignValues

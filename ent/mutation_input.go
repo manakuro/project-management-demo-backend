@@ -9,11 +9,12 @@ import (
 
 // CreateTestTodoInput represents a mutation input for creating testtodos.
 type CreateTestTodoInput struct {
-	Name      string
-	Status    *testtodo.Status
-	Priority  *int
-	CreatedAt *time.Time
-	UpdatedAt *time.Time
+	Name       string
+	Status     *testtodo.Status
+	Priority   *int
+	CreatedAt  *time.Time
+	UpdatedAt  *time.Time
+	TestUserID *int
 }
 
 // Mutate applies the CreateTestTodoInput on the TestTodoCreate builder.
@@ -31,6 +32,9 @@ func (i *CreateTestTodoInput) Mutate(m *TestTodoCreate) {
 	if v := i.UpdatedAt; v != nil {
 		m.SetUpdatedAt(*v)
 	}
+	if v := i.TestUserID; v != nil {
+		m.SetTestUserID(*v)
+	}
 }
 
 // SetInput applies the change-set in the CreateTestTodoInput on the create builder.
@@ -41,9 +45,11 @@ func (c *TestTodoCreate) SetInput(i CreateTestTodoInput) *TestTodoCreate {
 
 // UpdateTestTodoInput represents a mutation input for updating testtodos.
 type UpdateTestTodoInput struct {
-	Name     *string
-	Status   *testtodo.Status
-	Priority *int
+	Name          *string
+	Status        *testtodo.Status
+	Priority      *int
+	TestUserID    *int
+	ClearTestUser bool
 }
 
 // Mutate applies the UpdateTestTodoInput on the TestTodoMutation.
@@ -56,6 +62,12 @@ func (i *UpdateTestTodoInput) Mutate(m *TestTodoMutation) {
 	}
 	if v := i.Priority; v != nil {
 		m.SetPriority(*v)
+	}
+	if i.ClearTestUser {
+		m.ClearTestUser()
+	}
+	if v := i.TestUserID; v != nil {
+		m.SetTestUserID(*v)
 	}
 }
 
@@ -73,10 +85,11 @@ func (u *TestTodoUpdateOne) SetInput(i UpdateTestTodoInput) *TestTodoUpdateOne {
 
 // CreateTestUserInput represents a mutation input for creating testusers.
 type CreateTestUserInput struct {
-	Name      *string
-	Age       int
-	CreatedAt *time.Time
-	UpdatedAt *time.Time
+	Name        *string
+	Age         int
+	CreatedAt   *time.Time
+	UpdatedAt   *time.Time
+	TestTodoIDs []int
 }
 
 // Mutate applies the CreateTestUserInput on the TestUserCreate builder.
@@ -91,6 +104,9 @@ func (i *CreateTestUserInput) Mutate(m *TestUserCreate) {
 	if v := i.UpdatedAt; v != nil {
 		m.SetUpdatedAt(*v)
 	}
+	if ids := i.TestTodoIDs; len(ids) > 0 {
+		m.AddTestTodoIDs(ids...)
+	}
 }
 
 // SetInput applies the change-set in the CreateTestUserInput on the create builder.
@@ -101,10 +117,12 @@ func (c *TestUserCreate) SetInput(i CreateTestUserInput) *TestUserCreate {
 
 // UpdateTestUserInput represents a mutation input for updating testusers.
 type UpdateTestUserInput struct {
-	Name      *string
-	Age       *int
-	CreatedAt *time.Time
-	UpdatedAt *time.Time
+	Name              *string
+	Age               *int
+	CreatedAt         *time.Time
+	UpdatedAt         *time.Time
+	AddTestTodoIDs    []int
+	RemoveTestTodoIDs []int
 }
 
 // Mutate applies the UpdateTestUserInput on the TestUserMutation.
@@ -120,6 +138,12 @@ func (i *UpdateTestUserInput) Mutate(m *TestUserMutation) {
 	}
 	if v := i.UpdatedAt; v != nil {
 		m.SetUpdatedAt(*v)
+	}
+	if ids := i.AddTestTodoIDs; len(ids) > 0 {
+		m.AddTestTodoIDs(ids...)
+	}
+	if ids := i.RemoveTestTodoIDs; len(ids) > 0 {
+		m.RemoveTestTodoIDs(ids...)
 	}
 }
 

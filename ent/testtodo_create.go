@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"project-management-demo-backend/ent/testtodo"
+	"project-management-demo-backend/ent/testuser"
 	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -80,6 +81,25 @@ func (ttc *TestTodoCreate) SetNillableUpdatedAt(t *time.Time) *TestTodoCreate {
 		ttc.SetUpdatedAt(*t)
 	}
 	return ttc
+}
+
+// SetTestUserID sets the "test_user" edge to the TestUser entity by ID.
+func (ttc *TestTodoCreate) SetTestUserID(id int) *TestTodoCreate {
+	ttc.mutation.SetTestUserID(id)
+	return ttc
+}
+
+// SetNillableTestUserID sets the "test_user" edge to the TestUser entity by ID if the given value is not nil.
+func (ttc *TestTodoCreate) SetNillableTestUserID(id *int) *TestTodoCreate {
+	if id != nil {
+		ttc = ttc.SetTestUserID(*id)
+	}
+	return ttc
+}
+
+// SetTestUser sets the "test_user" edge to the TestUser entity.
+func (ttc *TestTodoCreate) SetTestUser(t *TestUser) *TestTodoCreate {
+	return ttc.SetTestUserID(t.ID)
 }
 
 // Mutation returns the TestTodoMutation object of the builder.
@@ -264,6 +284,26 @@ func (ttc *TestTodoCreate) createSpec() (*TestTodo, *sqlgraph.CreateSpec) {
 			Column: testtodo.FieldUpdatedAt,
 		})
 		_node.UpdatedAt = value
+	}
+	if nodes := ttc.mutation.TestUserIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   testtodo.TestUserTable,
+			Columns: []string{testtodo.TestUserColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: testuser.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.test_user_id = &nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }

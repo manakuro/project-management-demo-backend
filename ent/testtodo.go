@@ -5,6 +5,7 @@ package ent
 import (
 	"fmt"
 	"project-management-demo-backend/ent/testtodo"
+	"project-management-demo-backend/ent/testuser"
 	"strings"
 	"time"
 
@@ -26,6 +27,33 @@ type TestTodo struct {
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	// Edges holds the relations/edges for other nodes in the graph.
+	// The values are being populated by the TestTodoQuery when eager-loading is set.
+	Edges        TestTodoEdges `json:"edges"`
+	test_user_id *int
+}
+
+// TestTodoEdges holds the relations/edges for other nodes in the graph.
+type TestTodoEdges struct {
+	// TestUser holds the value of the test_user edge.
+	TestUser *TestUser `json:"test_user,omitempty"`
+	// loadedTypes holds the information for reporting if a
+	// type was loaded (or requested) in eager-loading or not.
+	loadedTypes [1]bool
+}
+
+// TestUserOrErr returns the TestUser value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e TestTodoEdges) TestUserOrErr() (*TestUser, error) {
+	if e.loadedTypes[0] {
+		if e.TestUser == nil {
+			// The edge test_user was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: testuser.Label}
+		}
+		return e.TestUser, nil
+	}
+	return nil, &NotLoadedError{edge: "test_user"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -39,6 +67,8 @@ func (*TestTodo) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullString)
 		case testtodo.FieldCreatedAt, testtodo.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
+		case testtodo.ForeignKeys[0]: // test_user_id
+			values[i] = new(sql.NullInt64)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type TestTodo", columns[i])
 		}
@@ -90,9 +120,21 @@ func (tt *TestTodo) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				tt.UpdatedAt = value.Time
 			}
+		case testtodo.ForeignKeys[0]:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for edge-field test_user_id", value)
+			} else if value.Valid {
+				tt.test_user_id = new(int)
+				*tt.test_user_id = int(value.Int64)
+			}
 		}
 	}
 	return nil
+}
+
+// QueryTestUser queries the "test_user" edge of the TestTodo entity.
+func (tt *TestTodo) QueryTestUser() *TestUserQuery {
+	return (&TestTodoClient{config: tt.config}).QueryTestUser(tt)
 }
 
 // Update returns a builder for updating this TestTodo.

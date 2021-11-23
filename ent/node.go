@@ -52,7 +52,7 @@ func (tt *TestTodo) Node(ctx context.Context) (node *Node, err error) {
 		ID:     tt.ID,
 		Type:   "TestTodo",
 		Fields: make([]*Field, 5),
-		Edges:  make([]*Edge, 0),
+		Edges:  make([]*Edge, 1),
 	}
 	var buf []byte
 	if buf, err = json.Marshal(tt.Name); err != nil {
@@ -95,6 +95,16 @@ func (tt *TestTodo) Node(ctx context.Context) (node *Node, err error) {
 		Name:  "updated_at",
 		Value: string(buf),
 	}
+	node.Edges[0] = &Edge{
+		Type: "TestUser",
+		Name: "test_user",
+	}
+	err = tt.QueryTestUser().
+		Select(testuser.FieldID).
+		Scan(ctx, &node.Edges[0].IDs)
+	if err != nil {
+		return nil, err
+	}
 	return node, nil
 }
 
@@ -103,7 +113,7 @@ func (tu *TestUser) Node(ctx context.Context) (node *Node, err error) {
 		ID:     tu.ID,
 		Type:   "TestUser",
 		Fields: make([]*Field, 4),
-		Edges:  make([]*Edge, 0),
+		Edges:  make([]*Edge, 1),
 	}
 	var buf []byte
 	if buf, err = json.Marshal(tu.Name); err != nil {
@@ -137,6 +147,16 @@ func (tu *TestUser) Node(ctx context.Context) (node *Node, err error) {
 		Type:  "time.Time",
 		Name:  "updated_at",
 		Value: string(buf),
+	}
+	node.Edges[0] = &Edge{
+		Type: "TestTodo",
+		Name: "test_todos",
+	}
+	err = tu.QueryTestTodos().
+		Select(testtodo.FieldID).
+		Scan(ctx, &node.Edges[0].IDs)
+	if err != nil {
+		return nil, err
 	}
 	return node, nil
 }

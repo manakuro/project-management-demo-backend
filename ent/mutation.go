@@ -30,19 +30,21 @@ const (
 // TestTodoMutation represents an operation that mutates the TestTodo nodes in the graph.
 type TestTodoMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *int
-	name          *string
-	status        *testtodo.Status
-	priority      *int
-	addpriority   *int
-	created_at    *time.Time
-	updated_at    *time.Time
-	clearedFields map[string]struct{}
-	done          bool
-	oldValue      func(context.Context) (*TestTodo, error)
-	predicates    []predicate.TestTodo
+	op               Op
+	typ              string
+	id               *int
+	name             *string
+	status           *testtodo.Status
+	priority         *int
+	addpriority      *int
+	created_at       *time.Time
+	updated_at       *time.Time
+	clearedFields    map[string]struct{}
+	test_user        *int
+	clearedtest_user bool
+	done             bool
+	oldValue         func(context.Context) (*TestTodo, error)
+	predicates       []predicate.TestTodo
 }
 
 var _ ent.Mutation = (*TestTodoMutation)(nil)
@@ -324,6 +326,45 @@ func (m *TestTodoMutation) ResetUpdatedAt() {
 	m.updated_at = nil
 }
 
+// SetTestUserID sets the "test_user" edge to the TestUser entity by id.
+func (m *TestTodoMutation) SetTestUserID(id int) {
+	m.test_user = &id
+}
+
+// ClearTestUser clears the "test_user" edge to the TestUser entity.
+func (m *TestTodoMutation) ClearTestUser() {
+	m.clearedtest_user = true
+}
+
+// TestUserCleared reports if the "test_user" edge to the TestUser entity was cleared.
+func (m *TestTodoMutation) TestUserCleared() bool {
+	return m.clearedtest_user
+}
+
+// TestUserID returns the "test_user" edge ID in the mutation.
+func (m *TestTodoMutation) TestUserID() (id int, exists bool) {
+	if m.test_user != nil {
+		return *m.test_user, true
+	}
+	return
+}
+
+// TestUserIDs returns the "test_user" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// TestUserID instead. It exists only for internal usage by the builders.
+func (m *TestTodoMutation) TestUserIDs() (ids []int) {
+	if id := m.test_user; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetTestUser resets all changes to the "test_user" edge.
+func (m *TestTodoMutation) ResetTestUser() {
+	m.test_user = nil
+	m.clearedtest_user = false
+}
+
 // Where appends a list predicates to the TestTodoMutation builder.
 func (m *TestTodoMutation) Where(ps ...predicate.TestTodo) {
 	m.predicates = append(m.predicates, ps...)
@@ -525,67 +566,98 @@ func (m *TestTodoMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *TestTodoMutation) AddedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.test_user != nil {
+		edges = append(edges, testtodo.EdgeTestUser)
+	}
 	return edges
 }
 
 // AddedIDs returns all IDs (to other nodes) that were added for the given edge
 // name in this mutation.
 func (m *TestTodoMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case testtodo.EdgeTestUser:
+		if id := m.test_user; id != nil {
+			return []ent.Value{*id}
+		}
+	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *TestTodoMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
 	return edges
 }
 
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
 func (m *TestTodoMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *TestTodoMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.clearedtest_user {
+		edges = append(edges, testtodo.EdgeTestUser)
+	}
 	return edges
 }
 
 // EdgeCleared returns a boolean which indicates if the edge with the given name
 // was cleared in this mutation.
 func (m *TestTodoMutation) EdgeCleared(name string) bool {
+	switch name {
+	case testtodo.EdgeTestUser:
+		return m.clearedtest_user
+	}
 	return false
 }
 
 // ClearEdge clears the value of the edge with the given name. It returns an error
 // if that edge is not defined in the schema.
 func (m *TestTodoMutation) ClearEdge(name string) error {
+	switch name {
+	case testtodo.EdgeTestUser:
+		m.ClearTestUser()
+		return nil
+	}
 	return fmt.Errorf("unknown TestTodo unique edge %s", name)
 }
 
 // ResetEdge resets all changes to the edge with the given name in this mutation.
 // It returns an error if the edge is not defined in the schema.
 func (m *TestTodoMutation) ResetEdge(name string) error {
+	switch name {
+	case testtodo.EdgeTestUser:
+		m.ResetTestUser()
+		return nil
+	}
 	return fmt.Errorf("unknown TestTodo edge %s", name)
 }
 
 // TestUserMutation represents an operation that mutates the TestUser nodes in the graph.
 type TestUserMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *int
-	name          *string
-	age           *int
-	addage        *int
-	created_at    *time.Time
-	updated_at    *time.Time
-	clearedFields map[string]struct{}
-	done          bool
-	oldValue      func(context.Context) (*TestUser, error)
-	predicates    []predicate.TestUser
+	op                Op
+	typ               string
+	id                *int
+	name              *string
+	age               *int
+	addage            *int
+	created_at        *time.Time
+	updated_at        *time.Time
+	clearedFields     map[string]struct{}
+	test_todos        map[int]struct{}
+	removedtest_todos map[int]struct{}
+	clearedtest_todos bool
+	done              bool
+	oldValue          func(context.Context) (*TestUser, error)
+	predicates        []predicate.TestUser
 }
 
 var _ ent.Mutation = (*TestUserMutation)(nil)
@@ -831,6 +903,60 @@ func (m *TestUserMutation) ResetUpdatedAt() {
 	m.updated_at = nil
 }
 
+// AddTestTodoIDs adds the "test_todos" edge to the TestTodo entity by ids.
+func (m *TestUserMutation) AddTestTodoIDs(ids ...int) {
+	if m.test_todos == nil {
+		m.test_todos = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.test_todos[ids[i]] = struct{}{}
+	}
+}
+
+// ClearTestTodos clears the "test_todos" edge to the TestTodo entity.
+func (m *TestUserMutation) ClearTestTodos() {
+	m.clearedtest_todos = true
+}
+
+// TestTodosCleared reports if the "test_todos" edge to the TestTodo entity was cleared.
+func (m *TestUserMutation) TestTodosCleared() bool {
+	return m.clearedtest_todos
+}
+
+// RemoveTestTodoIDs removes the "test_todos" edge to the TestTodo entity by IDs.
+func (m *TestUserMutation) RemoveTestTodoIDs(ids ...int) {
+	if m.removedtest_todos == nil {
+		m.removedtest_todos = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.test_todos, ids[i])
+		m.removedtest_todos[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedTestTodos returns the removed IDs of the "test_todos" edge to the TestTodo entity.
+func (m *TestUserMutation) RemovedTestTodosIDs() (ids []int) {
+	for id := range m.removedtest_todos {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// TestTodosIDs returns the "test_todos" edge IDs in the mutation.
+func (m *TestUserMutation) TestTodosIDs() (ids []int) {
+	for id := range m.test_todos {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetTestTodos resets all changes to the "test_todos" edge.
+func (m *TestUserMutation) ResetTestTodos() {
+	m.test_todos = nil
+	m.clearedtest_todos = false
+	m.removedtest_todos = nil
+}
+
 // Where appends a list predicates to the TestUserMutation builder.
 func (m *TestUserMutation) Where(ps ...predicate.TestUser) {
 	m.predicates = append(m.predicates, ps...)
@@ -1015,48 +1141,84 @@ func (m *TestUserMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *TestUserMutation) AddedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.test_todos != nil {
+		edges = append(edges, testuser.EdgeTestTodos)
+	}
 	return edges
 }
 
 // AddedIDs returns all IDs (to other nodes) that were added for the given edge
 // name in this mutation.
 func (m *TestUserMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case testuser.EdgeTestTodos:
+		ids := make([]ent.Value, 0, len(m.test_todos))
+		for id := range m.test_todos {
+			ids = append(ids, id)
+		}
+		return ids
+	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *TestUserMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.removedtest_todos != nil {
+		edges = append(edges, testuser.EdgeTestTodos)
+	}
 	return edges
 }
 
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
 func (m *TestUserMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case testuser.EdgeTestTodos:
+		ids := make([]ent.Value, 0, len(m.removedtest_todos))
+		for id := range m.removedtest_todos {
+			ids = append(ids, id)
+		}
+		return ids
+	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *TestUserMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.clearedtest_todos {
+		edges = append(edges, testuser.EdgeTestTodos)
+	}
 	return edges
 }
 
 // EdgeCleared returns a boolean which indicates if the edge with the given name
 // was cleared in this mutation.
 func (m *TestUserMutation) EdgeCleared(name string) bool {
+	switch name {
+	case testuser.EdgeTestTodos:
+		return m.clearedtest_todos
+	}
 	return false
 }
 
 // ClearEdge clears the value of the edge with the given name. It returns an error
 // if that edge is not defined in the schema.
 func (m *TestUserMutation) ClearEdge(name string) error {
+	switch name {
+	}
 	return fmt.Errorf("unknown TestUser unique edge %s", name)
 }
 
 // ResetEdge resets all changes to the edge with the given name in this mutation.
 // It returns an error if the edge is not defined in the schema.
 func (m *TestUserMutation) ResetEdge(name string) error {
+	switch name {
+	case testuser.EdgeTestTodos:
+		m.ResetTestTodos()
+		return nil
+	}
 	return fmt.Errorf("unknown TestUser edge %s", name)
 }

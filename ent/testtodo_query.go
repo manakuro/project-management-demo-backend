@@ -9,6 +9,7 @@ import (
 	"math"
 	"project-management-demo-backend/ent/predicate"
 	"project-management-demo-backend/ent/testtodo"
+	"project-management-demo-backend/ent/testuser"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -24,6 +25,9 @@ type TestTodoQuery struct {
 	order      []OrderFunc
 	fields     []string
 	predicates []predicate.TestTodo
+	// eager-loading edges.
+	withTestUser *TestUserQuery
+	withFKs      bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -58,6 +62,28 @@ func (ttq *TestTodoQuery) Unique(unique bool) *TestTodoQuery {
 func (ttq *TestTodoQuery) Order(o ...OrderFunc) *TestTodoQuery {
 	ttq.order = append(ttq.order, o...)
 	return ttq
+}
+
+// QueryTestUser chains the current query on the "test_user" edge.
+func (ttq *TestTodoQuery) QueryTestUser() *TestUserQuery {
+	query := &TestUserQuery{config: ttq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := ttq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := ttq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(testtodo.Table, testtodo.FieldID, selector),
+			sqlgraph.To(testuser.Table, testuser.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, testtodo.TestUserTable, testtodo.TestUserColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(ttq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // First returns the first TestTodo entity from the query.
@@ -236,15 +262,27 @@ func (ttq *TestTodoQuery) Clone() *TestTodoQuery {
 		return nil
 	}
 	return &TestTodoQuery{
-		config:     ttq.config,
-		limit:      ttq.limit,
-		offset:     ttq.offset,
-		order:      append([]OrderFunc{}, ttq.order...),
-		predicates: append([]predicate.TestTodo{}, ttq.predicates...),
+		config:       ttq.config,
+		limit:        ttq.limit,
+		offset:       ttq.offset,
+		order:        append([]OrderFunc{}, ttq.order...),
+		predicates:   append([]predicate.TestTodo{}, ttq.predicates...),
+		withTestUser: ttq.withTestUser.Clone(),
 		// clone intermediate query.
 		sql:  ttq.sql.Clone(),
 		path: ttq.path,
 	}
+}
+
+// WithTestUser tells the query-builder to eager-load the nodes that are connected to
+// the "test_user" edge. The optional arguments are used to configure the query builder of the edge.
+func (ttq *TestTodoQuery) WithTestUser(opts ...func(*TestUserQuery)) *TestTodoQuery {
+	query := &TestUserQuery{config: ttq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	ttq.withTestUser = query
+	return ttq
 }
 
 // GroupBy is used to group vertices by one or more fields/columns.
@@ -310,9 +348,19 @@ func (ttq *TestTodoQuery) prepareQuery(ctx context.Context) error {
 
 func (ttq *TestTodoQuery) sqlAll(ctx context.Context) ([]*TestTodo, error) {
 	var (
-		nodes = []*TestTodo{}
-		_spec = ttq.querySpec()
+		nodes       = []*TestTodo{}
+		withFKs     = ttq.withFKs
+		_spec       = ttq.querySpec()
+		loadedTypes = [1]bool{
+			ttq.withTestUser != nil,
+		}
 	)
+	if ttq.withTestUser != nil {
+		withFKs = true
+	}
+	if withFKs {
+		_spec.Node.Columns = append(_spec.Node.Columns, testtodo.ForeignKeys...)
+	}
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
 		node := &TestTodo{config: ttq.config}
 		nodes = append(nodes, node)
@@ -323,6 +371,7 @@ func (ttq *TestTodoQuery) sqlAll(ctx context.Context) ([]*TestTodo, error) {
 			return fmt.Errorf("ent: Assign called without calling ScanValues")
 		}
 		node := nodes[len(nodes)-1]
+		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
 	if err := sqlgraph.QueryNodes(ctx, ttq.driver, _spec); err != nil {
@@ -331,6 +380,36 @@ func (ttq *TestTodoQuery) sqlAll(ctx context.Context) ([]*TestTodo, error) {
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
+
+	if query := ttq.withTestUser; query != nil {
+		ids := make([]int, 0, len(nodes))
+		nodeids := make(map[int][]*TestTodo)
+		for i := range nodes {
+			if nodes[i].test_user_id == nil {
+				continue
+			}
+			fk := *nodes[i].test_user_id
+			if _, ok := nodeids[fk]; !ok {
+				ids = append(ids, fk)
+			}
+			nodeids[fk] = append(nodeids[fk], nodes[i])
+		}
+		query.Where(testuser.IDIn(ids...))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nodeids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "test_user_id" returned %v`, n.ID)
+			}
+			for i := range nodes {
+				nodes[i].Edges.TestUser = n
+			}
+		}
+	}
+
 	return nodes, nil
 }
 

@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/ent/testuser"
 	"time"
 
@@ -66,6 +67,21 @@ func (tuc *TestUserCreate) SetNillableUpdatedAt(t *time.Time) *TestUserCreate {
 		tuc.SetUpdatedAt(*t)
 	}
 	return tuc
+}
+
+// AddTestTodoIDs adds the "test_todos" edge to the TestTodo entity by IDs.
+func (tuc *TestUserCreate) AddTestTodoIDs(ids ...int) *TestUserCreate {
+	tuc.mutation.AddTestTodoIDs(ids...)
+	return tuc
+}
+
+// AddTestTodos adds the "test_todos" edges to the TestTodo entity.
+func (tuc *TestUserCreate) AddTestTodos(t ...*TestTodo) *TestUserCreate {
+	ids := make([]int, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return tuc.AddTestTodoIDs(ids...)
 }
 
 // Mutation returns the TestUserMutation object of the builder.
@@ -225,6 +241,25 @@ func (tuc *TestUserCreate) createSpec() (*TestUser, *sqlgraph.CreateSpec) {
 			Column: testuser.FieldUpdatedAt,
 		})
 		_node.UpdatedAt = value
+	}
+	if nodes := tuc.mutation.TestTodosIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   testuser.TestTodosTable,
+			Columns: []string{testuser.TestTodosColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeInt,
+					Column: testtodo.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }
