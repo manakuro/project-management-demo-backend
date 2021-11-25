@@ -6,7 +6,6 @@ import (
 	"project-management-demo-backend/ent/testuser"
 	"project-management-demo-backend/pkg/entity/model"
 	ur "project-management-demo-backend/pkg/usecase/repository"
-	"strconv"
 )
 
 type testUserRepository struct {
@@ -18,16 +17,12 @@ func NewTestUserRepository(client *ent.Client) ur.TestUser {
 	return &testUserRepository{client: client}
 }
 
-func (r *testUserRepository) Get(id *string, age *int) (*model.TestUser, error) {
+func (r *testUserRepository) Get(id *model.ID, age *int) (*model.TestUser, error) {
 	ctx := context.Background()
 
 	q := r.client.TestUser.Query()
 	if id != nil {
-		i, err := strconv.ParseInt(*id, 10, 64)
-		if err != nil {
-			return nil, model.NewInvalidParamError(err, id)
-		}
-		q.Where(testuser.IDEQ(int(i)))
+		q.Where(testuser.IDEQ(id.Value()))
 	}
 	if age != nil {
 		q.Where(testuser.AgeEQ(*age))
@@ -87,19 +82,15 @@ func (r *testUserRepository) Create(input model.CreateTestUserInput) (*model.Tes
 
 func (r *testUserRepository) Update(input model.UpdateTestUserInput) (*model.TestUser, error) {
 	ctx := context.Background()
-	id, err := strconv.ParseInt(input.ID, 10, 64)
-	if err != nil {
-		return nil, model.NewInvalidParamError(err, id)
-	}
 
 	u, err := r.client.
-		TestUser.UpdateOneID(int(id)).
+		TestUser.UpdateOneID(input.ID.Value()).
 		SetInput(input.UpdateTestUserInput).
 		Save(ctx)
 
 	if err != nil {
 		if ent.IsNotFound(err) {
-			return nil, model.NewNotFoundError(err, id)
+			return nil, model.NewNotFoundError(err, input.ID.Value())
 		}
 
 		return nil, model.NewDBError(err)

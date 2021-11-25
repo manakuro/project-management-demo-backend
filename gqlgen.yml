@@ -45,10 +45,8 @@ autobind:
 models:
   ID:
     model:
-      - github.com/99designs/gqlgen/graphql.ID
-      - github.com/99designs/gqlgen/graphql.Int
-      - github.com/99designs/gqlgen/graphql.Int64
-      - github.com/99designs/gqlgen/graphql.Int32
+#      - github.com/99designs/gqlgen/graphql.ID
+       -  project-management-demo-backend/pkg/entity/model.ID
   Int:
     model:
       - github.com/99designs/gqlgen/graphql.Int

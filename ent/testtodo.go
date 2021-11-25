@@ -4,6 +4,7 @@ package ent
 
 import (
 	"fmt"
+	"project-management-demo-backend/ent/schema/pulid"
 	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/ent/testuser"
 	"strings"
@@ -16,7 +17,7 @@ import (
 type TestTodo struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID int `json:"id,omitempty"`
+	ID pulid.ID `json:"id,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
 	// Status holds the value of the "status" field.
@@ -30,7 +31,7 @@ type TestTodo struct {
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the TestTodoQuery when eager-loading is set.
 	Edges        TestTodoEdges `json:"edges"`
-	test_user_id *int
+	test_user_id *pulid.ID
 }
 
 // TestTodoEdges holds the relations/edges for other nodes in the graph.
@@ -61,14 +62,16 @@ func (*TestTodo) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case testtodo.FieldID, testtodo.FieldPriority:
+		case testtodo.FieldID:
+			values[i] = new(pulid.ID)
+		case testtodo.FieldPriority:
 			values[i] = new(sql.NullInt64)
 		case testtodo.FieldName, testtodo.FieldStatus:
 			values[i] = new(sql.NullString)
 		case testtodo.FieldCreatedAt, testtodo.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
 		case testtodo.ForeignKeys[0]: // test_user_id
-			values[i] = new(sql.NullInt64)
+			values[i] = &sql.NullScanner{S: new(pulid.ID)}
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type TestTodo", columns[i])
 		}
@@ -85,11 +88,11 @@ func (tt *TestTodo) assignValues(columns []string, values []interface{}) error {
 	for i := range columns {
 		switch columns[i] {
 		case testtodo.FieldID:
-			value, ok := values[i].(*sql.NullInt64)
-			if !ok {
-				return fmt.Errorf("unexpected type %T for field id", value)
+			if value, ok := values[i].(*pulid.ID); !ok {
+				return fmt.Errorf("unexpected type %T for field id", values[i])
+			} else if value != nil {
+				tt.ID = *value
 			}
-			tt.ID = int(value.Int64)
 		case testtodo.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field name", values[i])
@@ -121,11 +124,11 @@ func (tt *TestTodo) assignValues(columns []string, values []interface{}) error {
 				tt.UpdatedAt = value.Time
 			}
 		case testtodo.ForeignKeys[0]:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for edge-field test_user_id", value)
+			if value, ok := values[i].(*sql.NullScanner); !ok {
+				return fmt.Errorf("unexpected type %T for field test_user_id", values[i])
 			} else if value.Valid {
-				tt.test_user_id = new(int)
-				*tt.test_user_id = int(value.Int64)
+				tt.test_user_id = new(pulid.ID)
+				*tt.test_user_id = *value.S.(*pulid.ID)
 			}
 		}
 	}

@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"project-management-demo-backend/ent/schema/pulid"
 	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/ent/testuser"
 	"time"
@@ -83,14 +84,28 @@ func (ttc *TestTodoCreate) SetNillableUpdatedAt(t *time.Time) *TestTodoCreate {
 	return ttc
 }
 
+// SetID sets the "id" field.
+func (ttc *TestTodoCreate) SetID(pu pulid.ID) *TestTodoCreate {
+	ttc.mutation.SetID(pu)
+	return ttc
+}
+
+// SetNillableID sets the "id" field if the given value is not nil.
+func (ttc *TestTodoCreate) SetNillableID(pu *pulid.ID) *TestTodoCreate {
+	if pu != nil {
+		ttc.SetID(*pu)
+	}
+	return ttc
+}
+
 // SetTestUserID sets the "test_user" edge to the TestUser entity by ID.
-func (ttc *TestTodoCreate) SetTestUserID(id int) *TestTodoCreate {
+func (ttc *TestTodoCreate) SetTestUserID(id pulid.ID) *TestTodoCreate {
 	ttc.mutation.SetTestUserID(id)
 	return ttc
 }
 
 // SetNillableTestUserID sets the "test_user" edge to the TestUser entity by ID if the given value is not nil.
-func (ttc *TestTodoCreate) SetNillableTestUserID(id *int) *TestTodoCreate {
+func (ttc *TestTodoCreate) SetNillableTestUserID(id *pulid.ID) *TestTodoCreate {
 	if id != nil {
 		ttc = ttc.SetTestUserID(*id)
 	}
@@ -189,6 +204,10 @@ func (ttc *TestTodoCreate) defaults() {
 		v := testtodo.DefaultUpdatedAt()
 		ttc.mutation.SetUpdatedAt(v)
 	}
+	if _, ok := ttc.mutation.ID(); !ok {
+		v := testtodo.DefaultID()
+		ttc.mutation.SetID(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -229,8 +248,9 @@ func (ttc *TestTodoCreate) sqlSave(ctx context.Context) (*TestTodo, error) {
 		}
 		return nil, err
 	}
-	id := _spec.ID.Value.(int64)
-	_node.ID = int(id)
+	if _spec.ID.Value != nil {
+		_node.ID = _spec.ID.Value.(pulid.ID)
+	}
 	return _node, nil
 }
 
@@ -240,11 +260,15 @@ func (ttc *TestTodoCreate) createSpec() (*TestTodo, *sqlgraph.CreateSpec) {
 		_spec = &sqlgraph.CreateSpec{
 			Table: testtodo.Table,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeString,
 				Column: testtodo.FieldID,
 			},
 		}
 	)
+	if id, ok := ttc.mutation.ID(); ok {
+		_node.ID = id
+		_spec.ID.Value = id
+	}
 	if value, ok := ttc.mutation.Name(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -294,7 +318,7 @@ func (ttc *TestTodoCreate) createSpec() (*TestTodo, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeString,
 					Column: testuser.FieldID,
 				},
 			},
@@ -350,10 +374,6 @@ func (ttcb *TestTodoCreateBulk) Save(ctx context.Context) ([]*TestTodo, error) {
 				}
 				mutation.id = &nodes[i].ID
 				mutation.done = true
-				if specs[i].ID.Value != nil {
-					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = int(id)
-				}
 				return nodes[i], nil
 			})
 			for i := len(builder.hooks) - 1; i >= 0; i-- {

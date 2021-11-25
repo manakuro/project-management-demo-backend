@@ -72,7 +72,7 @@ func (ttd *TestTodoDelete) sqlExec(ctx context.Context) (int, error) {
 		Node: &sqlgraph.NodeSpec{
 			Table: testtodo.Table,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeString,
 				Column: testtodo.FieldID,
 			},
 		},

@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"math"
 	"project-management-demo-backend/ent/predicate"
+	"project-management-demo-backend/ent/schema/pulid"
 	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/ent/testuser"
 
@@ -110,8 +111,8 @@ func (ttq *TestTodoQuery) FirstX(ctx context.Context) *TestTodo {
 
 // FirstID returns the first TestTodo ID from the query.
 // Returns a *NotFoundError when no TestTodo ID was found.
-func (ttq *TestTodoQuery) FirstID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (ttq *TestTodoQuery) FirstID(ctx context.Context) (id pulid.ID, err error) {
+	var ids []pulid.ID
 	if ids, err = ttq.Limit(1).IDs(ctx); err != nil {
 		return
 	}
@@ -123,7 +124,7 @@ func (ttq *TestTodoQuery) FirstID(ctx context.Context) (id int, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (ttq *TestTodoQuery) FirstIDX(ctx context.Context) int {
+func (ttq *TestTodoQuery) FirstIDX(ctx context.Context) pulid.ID {
 	id, err := ttq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -161,8 +162,8 @@ func (ttq *TestTodoQuery) OnlyX(ctx context.Context) *TestTodo {
 // OnlyID is like Only, but returns the only TestTodo ID in the query.
 // Returns a *NotSingularError when exactly one TestTodo ID is not found.
 // Returns a *NotFoundError when no entities are found.
-func (ttq *TestTodoQuery) OnlyID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (ttq *TestTodoQuery) OnlyID(ctx context.Context) (id pulid.ID, err error) {
+	var ids []pulid.ID
 	if ids, err = ttq.Limit(2).IDs(ctx); err != nil {
 		return
 	}
@@ -178,7 +179,7 @@ func (ttq *TestTodoQuery) OnlyID(ctx context.Context) (id int, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (ttq *TestTodoQuery) OnlyIDX(ctx context.Context) int {
+func (ttq *TestTodoQuery) OnlyIDX(ctx context.Context) pulid.ID {
 	id, err := ttq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -204,8 +205,8 @@ func (ttq *TestTodoQuery) AllX(ctx context.Context) []*TestTodo {
 }
 
 // IDs executes the query and returns a list of TestTodo IDs.
-func (ttq *TestTodoQuery) IDs(ctx context.Context) ([]int, error) {
-	var ids []int
+func (ttq *TestTodoQuery) IDs(ctx context.Context) ([]pulid.ID, error) {
+	var ids []pulid.ID
 	if err := ttq.Select(testtodo.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -213,7 +214,7 @@ func (ttq *TestTodoQuery) IDs(ctx context.Context) ([]int, error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (ttq *TestTodoQuery) IDsX(ctx context.Context) []int {
+func (ttq *TestTodoQuery) IDsX(ctx context.Context) []pulid.ID {
 	ids, err := ttq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -382,8 +383,8 @@ func (ttq *TestTodoQuery) sqlAll(ctx context.Context) ([]*TestTodo, error) {
 	}
 
 	if query := ttq.withTestUser; query != nil {
-		ids := make([]int, 0, len(nodes))
-		nodeids := make(map[int][]*TestTodo)
+		ids := make([]pulid.ID, 0, len(nodes))
+		nodeids := make(map[pulid.ID][]*TestTodo)
 		for i := range nodes {
 			if nodes[i].test_user_id == nil {
 				continue
@@ -432,7 +433,7 @@ func (ttq *TestTodoQuery) querySpec() *sqlgraph.QuerySpec {
 			Table:   testtodo.Table,
 			Columns: testtodo.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeString,
 				Column: testtodo.FieldID,
 			},
 		},

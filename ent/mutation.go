@@ -6,6 +6,7 @@ import (
 	"context"
 	"fmt"
 	"project-management-demo-backend/ent/predicate"
+	"project-management-demo-backend/ent/schema/pulid"
 	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/ent/testuser"
 	"sync"
@@ -32,7 +33,7 @@ type TestTodoMutation struct {
 	config
 	op               Op
 	typ              string
-	id               *int
+	id               *pulid.ID
 	name             *string
 	status           *testtodo.Status
 	priority         *int
@@ -40,7 +41,7 @@ type TestTodoMutation struct {
 	created_at       *time.Time
 	updated_at       *time.Time
 	clearedFields    map[string]struct{}
-	test_user        *int
+	test_user        *pulid.ID
 	clearedtest_user bool
 	done             bool
 	oldValue         func(context.Context) (*TestTodo, error)
@@ -67,7 +68,7 @@ func newTestTodoMutation(c config, op Op, opts ...testtodoOption) *TestTodoMutat
 }
 
 // withTestTodoID sets the ID field of the mutation.
-func withTestTodoID(id int) testtodoOption {
+func withTestTodoID(id pulid.ID) testtodoOption {
 	return func(m *TestTodoMutation) {
 		var (
 			err   error
@@ -117,9 +118,15 @@ func (m TestTodoMutation) Tx() (*Tx, error) {
 	return tx, nil
 }
 
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of TestTodo entities.
+func (m *TestTodoMutation) SetID(id pulid.ID) {
+	m.id = &id
+}
+
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *TestTodoMutation) ID() (id int, exists bool) {
+func (m *TestTodoMutation) ID() (id pulid.ID, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -327,7 +334,7 @@ func (m *TestTodoMutation) ResetUpdatedAt() {
 }
 
 // SetTestUserID sets the "test_user" edge to the TestUser entity by id.
-func (m *TestTodoMutation) SetTestUserID(id int) {
+func (m *TestTodoMutation) SetTestUserID(id pulid.ID) {
 	m.test_user = &id
 }
 
@@ -342,7 +349,7 @@ func (m *TestTodoMutation) TestUserCleared() bool {
 }
 
 // TestUserID returns the "test_user" edge ID in the mutation.
-func (m *TestTodoMutation) TestUserID() (id int, exists bool) {
+func (m *TestTodoMutation) TestUserID() (id pulid.ID, exists bool) {
 	if m.test_user != nil {
 		return *m.test_user, true
 	}
@@ -352,7 +359,7 @@ func (m *TestTodoMutation) TestUserID() (id int, exists bool) {
 // TestUserIDs returns the "test_user" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // TestUserID instead. It exists only for internal usage by the builders.
-func (m *TestTodoMutation) TestUserIDs() (ids []int) {
+func (m *TestTodoMutation) TestUserIDs() (ids []pulid.ID) {
 	if id := m.test_user; id != nil {
 		ids = append(ids, *id)
 	}
@@ -645,15 +652,15 @@ type TestUserMutation struct {
 	config
 	op                Op
 	typ               string
-	id                *int
+	id                *pulid.ID
 	name              *string
 	age               *int
 	addage            *int
 	created_at        *time.Time
 	updated_at        *time.Time
 	clearedFields     map[string]struct{}
-	test_todos        map[int]struct{}
-	removedtest_todos map[int]struct{}
+	test_todos        map[pulid.ID]struct{}
+	removedtest_todos map[pulid.ID]struct{}
 	clearedtest_todos bool
 	done              bool
 	oldValue          func(context.Context) (*TestUser, error)
@@ -680,7 +687,7 @@ func newTestUserMutation(c config, op Op, opts ...testuserOption) *TestUserMutat
 }
 
 // withTestUserID sets the ID field of the mutation.
-func withTestUserID(id int) testuserOption {
+func withTestUserID(id pulid.ID) testuserOption {
 	return func(m *TestUserMutation) {
 		var (
 			err   error
@@ -730,9 +737,15 @@ func (m TestUserMutation) Tx() (*Tx, error) {
 	return tx, nil
 }
 
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of TestUser entities.
+func (m *TestUserMutation) SetID(id pulid.ID) {
+	m.id = &id
+}
+
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *TestUserMutation) ID() (id int, exists bool) {
+func (m *TestUserMutation) ID() (id pulid.ID, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -904,9 +917,9 @@ func (m *TestUserMutation) ResetUpdatedAt() {
 }
 
 // AddTestTodoIDs adds the "test_todos" edge to the TestTodo entity by ids.
-func (m *TestUserMutation) AddTestTodoIDs(ids ...int) {
+func (m *TestUserMutation) AddTestTodoIDs(ids ...pulid.ID) {
 	if m.test_todos == nil {
-		m.test_todos = make(map[int]struct{})
+		m.test_todos = make(map[pulid.ID]struct{})
 	}
 	for i := range ids {
 		m.test_todos[ids[i]] = struct{}{}
@@ -924,9 +937,9 @@ func (m *TestUserMutation) TestTodosCleared() bool {
 }
 
 // RemoveTestTodoIDs removes the "test_todos" edge to the TestTodo entity by IDs.
-func (m *TestUserMutation) RemoveTestTodoIDs(ids ...int) {
+func (m *TestUserMutation) RemoveTestTodoIDs(ids ...pulid.ID) {
 	if m.removedtest_todos == nil {
-		m.removedtest_todos = make(map[int]struct{})
+		m.removedtest_todos = make(map[pulid.ID]struct{})
 	}
 	for i := range ids {
 		delete(m.test_todos, ids[i])
@@ -935,7 +948,7 @@ func (m *TestUserMutation) RemoveTestTodoIDs(ids ...int) {
 }
 
 // RemovedTestTodos returns the removed IDs of the "test_todos" edge to the TestTodo entity.
-func (m *TestUserMutation) RemovedTestTodosIDs() (ids []int) {
+func (m *TestUserMutation) RemovedTestTodosIDs() (ids []pulid.ID) {
 	for id := range m.removedtest_todos {
 		ids = append(ids, id)
 	}
@@ -943,7 +956,7 @@ func (m *TestUserMutation) RemovedTestTodosIDs() (ids []int) {
 }
 
 // TestTodosIDs returns the "test_todos" edge IDs in the mutation.
-func (m *TestUserMutation) TestTodosIDs() (ids []int) {
+func (m *TestUserMutation) TestTodosIDs() (ids []pulid.ID) {
 	for id := range m.test_todos {
 		ids = append(ids, id)
 	}

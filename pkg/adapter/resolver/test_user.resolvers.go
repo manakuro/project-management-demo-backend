@@ -26,7 +26,7 @@ func (r *mutationResolver) UpdateTestUser(ctx context.Context, input model.Updat
 	return u, nil
 }
 
-func (r *queryResolver) TestUser(ctx context.Context, id *string, age *int) (*model.TestUser, error) {
+func (r *queryResolver) TestUser(ctx context.Context, id *model.ID, age *int) (*model.TestUser, error) {
 	u, err := r.controller.TestUser.Get(ctx, id, age)
 	if err != nil {
 		return nil, handler.HandleError(ctx, err)
@@ -40,6 +40,10 @@ func (r *queryResolver) TestUsers(ctx context.Context) ([]*model.TestUser, error
 		return nil, handler.HandleError(ctx, err)
 	}
 	return us, nil
+}
+
+func (r *testUserResolver) ID(ctx context.Context, obj *model.TestUser) (model.ID, error) {
+	return model.ID(obj.ID), nil
 }
 
 func (r *testUserResolver) TestTodos(ctx context.Context, obj *model.TestUser) ([]*model.TestTodo, error) {

@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"math"
 	"project-management-demo-backend/ent/predicate"
+	"project-management-demo-backend/ent/schema/pulid"
 	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/ent/testuser"
 
@@ -110,8 +111,8 @@ func (tuq *TestUserQuery) FirstX(ctx context.Context) *TestUser {
 
 // FirstID returns the first TestUser ID from the query.
 // Returns a *NotFoundError when no TestUser ID was found.
-func (tuq *TestUserQuery) FirstID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (tuq *TestUserQuery) FirstID(ctx context.Context) (id pulid.ID, err error) {
+	var ids []pulid.ID
 	if ids, err = tuq.Limit(1).IDs(ctx); err != nil {
 		return
 	}
@@ -123,7 +124,7 @@ func (tuq *TestUserQuery) FirstID(ctx context.Context) (id int, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (tuq *TestUserQuery) FirstIDX(ctx context.Context) int {
+func (tuq *TestUserQuery) FirstIDX(ctx context.Context) pulid.ID {
 	id, err := tuq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -161,8 +162,8 @@ func (tuq *TestUserQuery) OnlyX(ctx context.Context) *TestUser {
 // OnlyID is like Only, but returns the only TestUser ID in the query.
 // Returns a *NotSingularError when exactly one TestUser ID is not found.
 // Returns a *NotFoundError when no entities are found.
-func (tuq *TestUserQuery) OnlyID(ctx context.Context) (id int, err error) {
-	var ids []int
+func (tuq *TestUserQuery) OnlyID(ctx context.Context) (id pulid.ID, err error) {
+	var ids []pulid.ID
 	if ids, err = tuq.Limit(2).IDs(ctx); err != nil {
 		return
 	}
@@ -178,7 +179,7 @@ func (tuq *TestUserQuery) OnlyID(ctx context.Context) (id int, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (tuq *TestUserQuery) OnlyIDX(ctx context.Context) int {
+func (tuq *TestUserQuery) OnlyIDX(ctx context.Context) pulid.ID {
 	id, err := tuq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -204,8 +205,8 @@ func (tuq *TestUserQuery) AllX(ctx context.Context) []*TestUser {
 }
 
 // IDs executes the query and returns a list of TestUser IDs.
-func (tuq *TestUserQuery) IDs(ctx context.Context) ([]int, error) {
-	var ids []int
+func (tuq *TestUserQuery) IDs(ctx context.Context) ([]pulid.ID, error) {
+	var ids []pulid.ID
 	if err := tuq.Select(testuser.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -213,7 +214,7 @@ func (tuq *TestUserQuery) IDs(ctx context.Context) ([]int, error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (tuq *TestUserQuery) IDsX(ctx context.Context) []int {
+func (tuq *TestUserQuery) IDsX(ctx context.Context) []pulid.ID {
 	ids, err := tuq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -376,7 +377,7 @@ func (tuq *TestUserQuery) sqlAll(ctx context.Context) ([]*TestUser, error) {
 
 	if query := tuq.withTestTodos; query != nil {
 		fks := make([]driver.Value, 0, len(nodes))
-		nodeids := make(map[int]*TestUser)
+		nodeids := make(map[pulid.ID]*TestUser)
 		for i := range nodes {
 			fks = append(fks, nodes[i].ID)
 			nodeids[nodes[i].ID] = nodes[i]
@@ -425,7 +426,7 @@ func (tuq *TestUserQuery) querySpec() *sqlgraph.QuerySpec {
 			Table:   testuser.Table,
 			Columns: testuser.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeString,
 				Column: testuser.FieldID,
 			},
 		},

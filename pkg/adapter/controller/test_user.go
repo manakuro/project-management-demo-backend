@@ -8,7 +8,7 @@ import (
 
 // TestUser is an interface of controller
 type TestUser interface {
-	Get(ctx context.Context, id *string, age *int) (*model.TestUser, error)
+	Get(ctx context.Context, id *model.ID, age *int) (*model.TestUser, error)
 	List(ctx context.Context) ([]*model.TestUser, error)
 	Create(ctx context.Context, input model.CreateTestUserInput) (*model.TestUser, error)
 	Update(ctx context.Context, input model.UpdateTestUserInput) (*model.TestUser, error)
@@ -25,7 +25,7 @@ func NewTestUserController(tu usecase.TestUser) TestUser {
 	}
 }
 
-func (t *testUser) Get(ctx context.Context, id *string, age *int) (*model.TestUser, error) {
+func (t *testUser) Get(ctx context.Context, id *model.ID, age *int) (*model.TestUser, error) {
 	return t.testUserUsecase.Get(id, age)
 }
 

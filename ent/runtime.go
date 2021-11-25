@@ -4,6 +4,7 @@ package ent
 
 import (
 	"project-management-demo-backend/ent/schema"
+	"project-management-demo-backend/ent/schema/pulid"
 	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/ent/testuser"
 	"time"
@@ -16,33 +17,41 @@ func init() {
 	testtodoFields := schema.TestTodo{}.Fields()
 	_ = testtodoFields
 	// testtodoDescName is the schema descriptor for name field.
-	testtodoDescName := testtodoFields[0].Descriptor()
+	testtodoDescName := testtodoFields[1].Descriptor()
 	// testtodo.NameValidator is a validator for the "name" field. It is called by the builders before save.
 	testtodo.NameValidator = testtodoDescName.Validators[0].(func(string) error)
 	// testtodoDescPriority is the schema descriptor for priority field.
-	testtodoDescPriority := testtodoFields[2].Descriptor()
+	testtodoDescPriority := testtodoFields[3].Descriptor()
 	// testtodo.DefaultPriority holds the default value on creation for the priority field.
 	testtodo.DefaultPriority = testtodoDescPriority.Default.(int)
 	// testtodoDescCreatedAt is the schema descriptor for created_at field.
-	testtodoDescCreatedAt := testtodoFields[3].Descriptor()
+	testtodoDescCreatedAt := testtodoFields[4].Descriptor()
 	// testtodo.DefaultCreatedAt holds the default value on creation for the created_at field.
 	testtodo.DefaultCreatedAt = testtodoDescCreatedAt.Default.(func() time.Time)
 	// testtodoDescUpdatedAt is the schema descriptor for updated_at field.
-	testtodoDescUpdatedAt := testtodoFields[4].Descriptor()
+	testtodoDescUpdatedAt := testtodoFields[5].Descriptor()
 	// testtodo.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	testtodo.DefaultUpdatedAt = testtodoDescUpdatedAt.Default.(func() time.Time)
+	// testtodoDescID is the schema descriptor for id field.
+	testtodoDescID := testtodoFields[0].Descriptor()
+	// testtodo.DefaultID holds the default value on creation for the id field.
+	testtodo.DefaultID = testtodoDescID.Default.(func() pulid.ID)
 	testuserFields := schema.TestUser{}.Fields()
 	_ = testuserFields
 	// testuserDescName is the schema descriptor for name field.
-	testuserDescName := testuserFields[0].Descriptor()
+	testuserDescName := testuserFields[1].Descriptor()
 	// testuser.NameValidator is a validator for the "name" field. It is called by the builders before save.
 	testuser.NameValidator = testuserDescName.Validators[0].(func(string) error)
 	// testuserDescCreatedAt is the schema descriptor for created_at field.
-	testuserDescCreatedAt := testuserFields[2].Descriptor()
+	testuserDescCreatedAt := testuserFields[3].Descriptor()
 	// testuser.DefaultCreatedAt holds the default value on creation for the created_at field.
 	testuser.DefaultCreatedAt = testuserDescCreatedAt.Default.(func() time.Time)
 	// testuserDescUpdatedAt is the schema descriptor for updated_at field.
-	testuserDescUpdatedAt := testuserFields[3].Descriptor()
+	testuserDescUpdatedAt := testuserFields[4].Descriptor()
 	// testuser.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	testuser.DefaultUpdatedAt = testuserDescUpdatedAt.Default.(func() time.Time)
+	// testuserDescID is the schema descriptor for id field.
+	testuserDescID := testuserFields[0].Descriptor()
+	// testuser.DefaultID holds the default value on creation for the id field.
+	testuser.DefaultID = testuserDescID.Default.(func() pulid.ID)
 }
