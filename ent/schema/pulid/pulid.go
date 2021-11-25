@@ -5,7 +5,6 @@ import (
 	"database/sql/driver"
 	"fmt"
 	"io"
-	"reflect"
 	"strconv"
 	"time"
 
@@ -44,20 +43,23 @@ func (i ID) MarshalGQL(w io.Writer) {
 
 // Scan implements the Scanner interface.
 func (i *ID) Scan(src interface{}) error {
-	fmt.Println("src: ", reflect.ValueOf(src))
-	fmt.Println("src type: ", reflect.TypeOf(src))
-
 	if src == nil {
 		return fmt.Errorf("pulid: expected a value")
 		// @see https://github.com/ent/ent/issues/1481#issuecomment-823219929
 		//return nil
 	}
 
-	s, ok := src.(string)
-	if !ok {
+	switch s := src.(type) {
+	case string:
+		*i = ID(s)
+	case []byte:
+		str := string(s)
+		fmt.Println("src: ", ID(str))
+		*i = ID(str)
+	default:
 		return fmt.Errorf("pulid: expected a string %v", s)
 	}
-	*i = ID(s)
+
 	return nil
 }
 

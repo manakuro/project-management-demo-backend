@@ -22,7 +22,7 @@ func (r *testUserRepository) Get(id *model.ID, age *int) (*model.TestUser, error
 
 	q := r.client.TestUser.Query()
 	if id != nil {
-		q.Where(testuser.IDEQ(id.Value()))
+		q.Where(testuser.IDEQ(*id))
 	}
 	if age != nil {
 		q.Where(testuser.AgeEQ(*age))
@@ -84,13 +84,13 @@ func (r *testUserRepository) Update(input model.UpdateTestUserInput) (*model.Tes
 	ctx := context.Background()
 
 	u, err := r.client.
-		TestUser.UpdateOneID(input.ID.Value()).
+		TestUser.UpdateOneID(input.ID).
 		SetInput(input.UpdateTestUserInput).
 		Save(ctx)
 
 	if err != nil {
 		if ent.IsNotFound(err) {
-			return nil, model.NewNotFoundError(err, input.ID.Value())
+			return nil, model.NewNotFoundError(err, input.ID)
 		}
 
 		return nil, model.NewDBError(err)

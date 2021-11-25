@@ -22,7 +22,7 @@ func (r *testTodoRepository) Get(id *model.ID) (*model.TestTodo, error) {
 
 	q := r.client.TestTodo.Query()
 	if id != nil {
-		q.Where(testtodo.IDEQ(id.Value()))
+		q.Where(testtodo.IDEQ(*id))
 	}
 
 	u, err := q.Only(ctx)
@@ -79,7 +79,7 @@ func (r *testTodoRepository) Update(input model.UpdateTestTodoInput) (*model.Tes
 	ctx := context.Background()
 
 	u, err := r.client.
-		TestTodo.UpdateOneID(input.ID.Value()).
+		TestTodo.UpdateOneID(input.ID).
 		SetInput(input.UpdateTestTodoInput).
 		Save(ctx)
 
