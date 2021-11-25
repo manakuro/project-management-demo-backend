@@ -43,7 +43,6 @@ func (TestUser) Fields() []ent.Field {
 // Edges of the Test.
 func (TestUser) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("test_todos", TestTodo.Type).
-			StorageKey(edge.Column("test_user_id")),
+		edge.To("test_todos", TestTodo.Type),
 	}
 }

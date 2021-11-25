@@ -28,7 +28,6 @@ type TestTodoQuery struct {
 	predicates []predicate.TestTodo
 	// eager-loading edges.
 	withTestUser *TestUserQuery
-	withFKs      bool
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -292,12 +291,12 @@ func (ttq *TestTodoQuery) WithTestUser(opts ...func(*TestUserQuery)) *TestTodoQu
 // Example:
 //
 //	var v []struct {
-//		Name string `json:"name,omitempty"`
+//		TestUserID pulid.ID `json:"test_user_id,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.TestTodo.Query().
-//		GroupBy(testtodo.FieldName).
+//		GroupBy(testtodo.FieldTestUserID).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 //
@@ -319,11 +318,11 @@ func (ttq *TestTodoQuery) GroupBy(field string, fields ...string) *TestTodoGroup
 // Example:
 //
 //	var v []struct {
-//		Name string `json:"name,omitempty"`
+//		TestUserID pulid.ID `json:"test_user_id,omitempty"`
 //	}
 //
 //	client.TestTodo.Query().
-//		Select(testtodo.FieldName).
+//		Select(testtodo.FieldTestUserID).
 //		Scan(ctx, &v)
 //
 func (ttq *TestTodoQuery) Select(fields ...string) *TestTodoSelect {
@@ -350,18 +349,11 @@ func (ttq *TestTodoQuery) prepareQuery(ctx context.Context) error {
 func (ttq *TestTodoQuery) sqlAll(ctx context.Context) ([]*TestTodo, error) {
 	var (
 		nodes       = []*TestTodo{}
-		withFKs     = ttq.withFKs
 		_spec       = ttq.querySpec()
 		loadedTypes = [1]bool{
 			ttq.withTestUser != nil,
 		}
 	)
-	if ttq.withTestUser != nil {
-		withFKs = true
-	}
-	if withFKs {
-		_spec.Node.Columns = append(_spec.Node.Columns, testtodo.ForeignKeys...)
-	}
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
 		node := &TestTodo{config: ttq.config}
 		nodes = append(nodes, node)
@@ -386,10 +378,7 @@ func (ttq *TestTodoQuery) sqlAll(ctx context.Context) ([]*TestTodo, error) {
 		ids := make([]pulid.ID, 0, len(nodes))
 		nodeids := make(map[pulid.ID][]*TestTodo)
 		for i := range nodes {
-			if nodes[i].test_user_id == nil {
-				continue
-			}
-			fk := *nodes[i].test_user_id
+			fk := nodes[i].TestUserID
 			if _, ok := nodeids[fk]; !ok {
 				ids = append(ids, fk)
 			}

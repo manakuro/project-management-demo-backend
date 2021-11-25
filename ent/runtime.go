@@ -17,19 +17,19 @@ func init() {
 	testtodoFields := schema.TestTodo{}.Fields()
 	_ = testtodoFields
 	// testtodoDescName is the schema descriptor for name field.
-	testtodoDescName := testtodoFields[1].Descriptor()
+	testtodoDescName := testtodoFields[2].Descriptor()
 	// testtodo.NameValidator is a validator for the "name" field. It is called by the builders before save.
 	testtodo.NameValidator = testtodoDescName.Validators[0].(func(string) error)
 	// testtodoDescPriority is the schema descriptor for priority field.
-	testtodoDescPriority := testtodoFields[3].Descriptor()
+	testtodoDescPriority := testtodoFields[4].Descriptor()
 	// testtodo.DefaultPriority holds the default value on creation for the priority field.
 	testtodo.DefaultPriority = testtodoDescPriority.Default.(int)
 	// testtodoDescCreatedAt is the schema descriptor for created_at field.
-	testtodoDescCreatedAt := testtodoFields[4].Descriptor()
+	testtodoDescCreatedAt := testtodoFields[5].Descriptor()
 	// testtodo.DefaultCreatedAt holds the default value on creation for the created_at field.
 	testtodo.DefaultCreatedAt = testtodoDescCreatedAt.Default.(func() time.Time)
 	// testtodoDescUpdatedAt is the schema descriptor for updated_at field.
-	testtodoDescUpdatedAt := testtodoFields[5].Descriptor()
+	testtodoDescUpdatedAt := testtodoFields[6].Descriptor()
 	// testtodo.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	testtodo.DefaultUpdatedAt = testtodoDescUpdatedAt.Default.(func() time.Time)
 	// testtodoDescID is the schema descriptor for id field.

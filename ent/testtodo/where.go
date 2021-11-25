@@ -94,6 +94,13 @@ func IDLTE(id pulid.ID) predicate.TestTodo {
 	})
 }
 
+// TestUserID applies equality check predicate on the "test_user_id" field. It's identical to TestUserIDEQ.
+func TestUserID(v pulid.ID) predicate.TestTodo {
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldTestUserID), v))
+	})
+}
+
 // Name applies equality check predicate on the "name" field. It's identical to NameEQ.
 func Name(v string) predicate.TestTodo {
 	return predicate.TestTodo(func(s *sql.Selector) {
@@ -119,6 +126,136 @@ func CreatedAt(v time.Time) predicate.TestTodo {
 func UpdatedAt(v time.Time) predicate.TestTodo {
 	return predicate.TestTodo(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldUpdatedAt), v))
+	})
+}
+
+// TestUserIDEQ applies the EQ predicate on the "test_user_id" field.
+func TestUserIDEQ(v pulid.ID) predicate.TestTodo {
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldTestUserID), v))
+	})
+}
+
+// TestUserIDNEQ applies the NEQ predicate on the "test_user_id" field.
+func TestUserIDNEQ(v pulid.ID) predicate.TestTodo {
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldTestUserID), v))
+	})
+}
+
+// TestUserIDIn applies the In predicate on the "test_user_id" field.
+func TestUserIDIn(vs ...pulid.ID) predicate.TestTodo {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.TestTodo(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldTestUserID), v...))
+	})
+}
+
+// TestUserIDNotIn applies the NotIn predicate on the "test_user_id" field.
+func TestUserIDNotIn(vs ...pulid.ID) predicate.TestTodo {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.TestTodo(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldTestUserID), v...))
+	})
+}
+
+// TestUserIDGT applies the GT predicate on the "test_user_id" field.
+func TestUserIDGT(v pulid.ID) predicate.TestTodo {
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldTestUserID), v))
+	})
+}
+
+// TestUserIDGTE applies the GTE predicate on the "test_user_id" field.
+func TestUserIDGTE(v pulid.ID) predicate.TestTodo {
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldTestUserID), v))
+	})
+}
+
+// TestUserIDLT applies the LT predicate on the "test_user_id" field.
+func TestUserIDLT(v pulid.ID) predicate.TestTodo {
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldTestUserID), v))
+	})
+}
+
+// TestUserIDLTE applies the LTE predicate on the "test_user_id" field.
+func TestUserIDLTE(v pulid.ID) predicate.TestTodo {
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldTestUserID), v))
+	})
+}
+
+// TestUserIDContains applies the Contains predicate on the "test_user_id" field.
+func TestUserIDContains(v pulid.ID) predicate.TestTodo {
+	vc := string(v)
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldTestUserID), vc))
+	})
+}
+
+// TestUserIDHasPrefix applies the HasPrefix predicate on the "test_user_id" field.
+func TestUserIDHasPrefix(v pulid.ID) predicate.TestTodo {
+	vc := string(v)
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldTestUserID), vc))
+	})
+}
+
+// TestUserIDHasSuffix applies the HasSuffix predicate on the "test_user_id" field.
+func TestUserIDHasSuffix(v pulid.ID) predicate.TestTodo {
+	vc := string(v)
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldTestUserID), vc))
+	})
+}
+
+// TestUserIDIsNil applies the IsNil predicate on the "test_user_id" field.
+func TestUserIDIsNil() predicate.TestTodo {
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldTestUserID)))
+	})
+}
+
+// TestUserIDNotNil applies the NotNil predicate on the "test_user_id" field.
+func TestUserIDNotNil() predicate.TestTodo {
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldTestUserID)))
+	})
+}
+
+// TestUserIDEqualFold applies the EqualFold predicate on the "test_user_id" field.
+func TestUserIDEqualFold(v pulid.ID) predicate.TestTodo {
+	vc := string(v)
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldTestUserID), vc))
+	})
+}
+
+// TestUserIDContainsFold applies the ContainsFold predicate on the "test_user_id" field.
+func TestUserIDContainsFold(v pulid.ID) predicate.TestTodo {
+	vc := string(v)
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldTestUserID), vc))
 	})
 }
 

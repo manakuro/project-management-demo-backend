@@ -22,6 +22,9 @@ func (TestTodo) Fields() []ent.Field {
 		field.String("id").
 			GoType(pulid.ID("")).
 			DefaultFunc(func() pulid.ID { return pulid.MustNew("") }),
+		field.String("test_user_id").
+			GoType(pulid.ID("")).
+			Optional(),
 		field.String("name").NotEmpty(),
 		field.Enum("status").
 			NamedValues(
@@ -50,6 +53,7 @@ func (TestTodo) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("test_user", TestUser.Type).
 			Ref("test_todos").
-			Unique(),
+			Unique().
+			Field("test_user_id"),
 	}
 }

@@ -383,7 +383,6 @@ func (tuq *TestUserQuery) sqlAll(ctx context.Context) ([]*TestUser, error) {
 			nodeids[nodes[i].ID] = nodes[i]
 			nodes[i].Edges.TestTodos = []*TestTodo{}
 		}
-		query.withFKs = true
 		query.Where(predicate.TestTodo(func(s *sql.Selector) {
 			s.Where(sql.InValues(testuser.TestTodosColumn, fks...))
 		}))
@@ -392,13 +391,10 @@ func (tuq *TestUserQuery) sqlAll(ctx context.Context) ([]*TestUser, error) {
 			return nil, err
 		}
 		for _, n := range neighbors {
-			fk := n.test_user_id
-			if fk == nil {
-				return nil, fmt.Errorf(`foreign-key "test_user_id" is nil for node %v`, n.ID)
-			}
-			node, ok := nodeids[*fk]
+			fk := n.TestUserID
+			node, ok := nodeids[fk]
 			if !ok {
-				return nil, fmt.Errorf(`unexpected foreign-key "test_user_id" returned %v for node %v`, *fk, n.ID)
+				return nil, fmt.Errorf(`unexpected foreign-key "test_user_id" returned %v for node %v`, fk, n.ID)
 			}
 			node.Edges.TestTodos = append(node.Edges.TestTodos, n)
 		}

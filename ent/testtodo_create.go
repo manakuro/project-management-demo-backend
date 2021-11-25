@@ -22,6 +22,20 @@ type TestTodoCreate struct {
 	hooks    []Hook
 }
 
+// SetTestUserID sets the "test_user_id" field.
+func (ttc *TestTodoCreate) SetTestUserID(pu pulid.ID) *TestTodoCreate {
+	ttc.mutation.SetTestUserID(pu)
+	return ttc
+}
+
+// SetNillableTestUserID sets the "test_user_id" field if the given value is not nil.
+func (ttc *TestTodoCreate) SetNillableTestUserID(pu *pulid.ID) *TestTodoCreate {
+	if pu != nil {
+		ttc.SetTestUserID(*pu)
+	}
+	return ttc
+}
+
 // SetName sets the "name" field.
 func (ttc *TestTodoCreate) SetName(s string) *TestTodoCreate {
 	ttc.mutation.SetName(s)
@@ -94,20 +108,6 @@ func (ttc *TestTodoCreate) SetID(pu pulid.ID) *TestTodoCreate {
 func (ttc *TestTodoCreate) SetNillableID(pu *pulid.ID) *TestTodoCreate {
 	if pu != nil {
 		ttc.SetID(*pu)
-	}
-	return ttc
-}
-
-// SetTestUserID sets the "test_user" edge to the TestUser entity by ID.
-func (ttc *TestTodoCreate) SetTestUserID(id pulid.ID) *TestTodoCreate {
-	ttc.mutation.SetTestUserID(id)
-	return ttc
-}
-
-// SetNillableTestUserID sets the "test_user" edge to the TestUser entity by ID if the given value is not nil.
-func (ttc *TestTodoCreate) SetNillableTestUserID(id *pulid.ID) *TestTodoCreate {
-	if id != nil {
-		ttc = ttc.SetTestUserID(*id)
 	}
 	return ttc
 }
@@ -326,7 +326,7 @@ func (ttc *TestTodoCreate) createSpec() (*TestTodo, *sqlgraph.CreateSpec) {
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.test_user_id = &nodes[0]
+		_node.TestUserID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
