@@ -9,6 +9,8 @@ import (
 const (
 	// DBError is error code of database
 	DBError = "DB_ERROR"
+	// GraphQLError is error code of graphql
+	GraphQLError = "GRAPHQL_ERROR"
 	// NotFoundError is error code of not found
 	NotFoundError = "NOT_FOUND_ERROR"
 	// ValidationError is error code of validation
@@ -39,6 +41,18 @@ func NewDBError(e error) error {
 		fmt.Sprintf("%s", e.Error()),
 		map[string]interface{}{
 			"code": DBError,
+		},
+		e,
+	)
+}
+
+// NewGraphQLError returns error message related graphql
+func NewGraphQLError(e error) error {
+	return newError(
+		GraphQLError,
+		fmt.Sprintf("%s", e.Error()),
+		map[string]interface{}{
+			"code": GraphQLError,
 		},
 		e,
 	)
