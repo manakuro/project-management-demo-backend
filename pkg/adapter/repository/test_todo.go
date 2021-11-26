@@ -6,7 +6,6 @@ import (
 	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/pkg/entity/model"
 	ur "project-management-demo-backend/pkg/usecase/repository"
-	"strconv"
 )
 
 type testTodoRepository struct {
@@ -18,16 +17,12 @@ func NewTestTodoRepository(client *ent.Client) ur.TestTodo {
 	return &testTodoRepository{client: client}
 }
 
-func (r *testTodoRepository) Get(id *string) (*model.TestTodo, error) {
+func (r *testTodoRepository) Get(id *model.ID) (*model.TestTodo, error) {
 	ctx := context.Background()
 
 	q := r.client.TestTodo.Query()
 	if id != nil {
-		i, err := strconv.ParseInt(*id, 10, 64)
-		if err != nil {
-			return nil, model.NewInvalidParamError(err, id)
-		}
-		q.Where(testtodo.IDEQ(int(i)))
+		q.Where(testtodo.IDEQ(*id))
 	}
 
 	u, err := q.Only(ctx)
@@ -82,19 +77,15 @@ func (r *testTodoRepository) Create(input model.CreateTestTodoInput) (*model.Tes
 
 func (r *testTodoRepository) Update(input model.UpdateTestTodoInput) (*model.TestTodo, error) {
 	ctx := context.Background()
-	id, err := strconv.ParseInt(input.ID, 10, 64)
-	if err != nil {
-		return nil, model.NewInvalidParamError(err, id)
-	}
 
 	u, err := r.client.
-		TestTodo.UpdateOneID(int(id)).
+		TestTodo.UpdateOneID(input.ID).
 		SetInput(input.UpdateTestTodoInput).
 		Save(ctx)
 
 	if err != nil {
 		if ent.IsNotFound(err) {
-			return nil, model.NewNotFoundError(err, id)
+			return nil, model.NewNotFoundError(err, input.ID)
 		}
 
 		return nil, model.NewDBError(err)

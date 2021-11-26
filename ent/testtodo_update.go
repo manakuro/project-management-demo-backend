@@ -6,6 +6,7 @@ import (
 	"context"
 	"fmt"
 	"project-management-demo-backend/ent/predicate"
+	"project-management-demo-backend/ent/schema/pulid"
 	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/ent/testuser"
 
@@ -24,6 +25,26 @@ type TestTodoUpdate struct {
 // Where appends a list predicates to the TestTodoUpdate builder.
 func (ttu *TestTodoUpdate) Where(ps ...predicate.TestTodo) *TestTodoUpdate {
 	ttu.mutation.Where(ps...)
+	return ttu
+}
+
+// SetTestUserID sets the "test_user_id" field.
+func (ttu *TestTodoUpdate) SetTestUserID(pu pulid.ID) *TestTodoUpdate {
+	ttu.mutation.SetTestUserID(pu)
+	return ttu
+}
+
+// SetNillableTestUserID sets the "test_user_id" field if the given value is not nil.
+func (ttu *TestTodoUpdate) SetNillableTestUserID(pu *pulid.ID) *TestTodoUpdate {
+	if pu != nil {
+		ttu.SetTestUserID(*pu)
+	}
+	return ttu
+}
+
+// ClearTestUserID clears the value of the "test_user_id" field.
+func (ttu *TestTodoUpdate) ClearTestUserID() *TestTodoUpdate {
+	ttu.mutation.ClearTestUserID()
 	return ttu
 }
 
@@ -65,20 +86,6 @@ func (ttu *TestTodoUpdate) SetNillablePriority(i *int) *TestTodoUpdate {
 // AddPriority adds i to the "priority" field.
 func (ttu *TestTodoUpdate) AddPriority(i int) *TestTodoUpdate {
 	ttu.mutation.AddPriority(i)
-	return ttu
-}
-
-// SetTestUserID sets the "test_user" edge to the TestUser entity by ID.
-func (ttu *TestTodoUpdate) SetTestUserID(id int) *TestTodoUpdate {
-	ttu.mutation.SetTestUserID(id)
-	return ttu
-}
-
-// SetNillableTestUserID sets the "test_user" edge to the TestUser entity by ID if the given value is not nil.
-func (ttu *TestTodoUpdate) SetNillableTestUserID(id *int) *TestTodoUpdate {
-	if id != nil {
-		ttu = ttu.SetTestUserID(*id)
-	}
 	return ttu
 }
 
@@ -179,7 +186,7 @@ func (ttu *TestTodoUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Table:   testtodo.Table,
 			Columns: testtodo.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeString,
 				Column: testtodo.FieldID,
 			},
 		},
@@ -228,7 +235,7 @@ func (ttu *TestTodoUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeString,
 					Column: testuser.FieldID,
 				},
 			},
@@ -244,7 +251,7 @@ func (ttu *TestTodoUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeString,
 					Column: testuser.FieldID,
 				},
 			},
@@ -271,6 +278,26 @@ type TestTodoUpdateOne struct {
 	fields   []string
 	hooks    []Hook
 	mutation *TestTodoMutation
+}
+
+// SetTestUserID sets the "test_user_id" field.
+func (ttuo *TestTodoUpdateOne) SetTestUserID(pu pulid.ID) *TestTodoUpdateOne {
+	ttuo.mutation.SetTestUserID(pu)
+	return ttuo
+}
+
+// SetNillableTestUserID sets the "test_user_id" field if the given value is not nil.
+func (ttuo *TestTodoUpdateOne) SetNillableTestUserID(pu *pulid.ID) *TestTodoUpdateOne {
+	if pu != nil {
+		ttuo.SetTestUserID(*pu)
+	}
+	return ttuo
+}
+
+// ClearTestUserID clears the value of the "test_user_id" field.
+func (ttuo *TestTodoUpdateOne) ClearTestUserID() *TestTodoUpdateOne {
+	ttuo.mutation.ClearTestUserID()
+	return ttuo
 }
 
 // SetName sets the "name" field.
@@ -311,20 +338,6 @@ func (ttuo *TestTodoUpdateOne) SetNillablePriority(i *int) *TestTodoUpdateOne {
 // AddPriority adds i to the "priority" field.
 func (ttuo *TestTodoUpdateOne) AddPriority(i int) *TestTodoUpdateOne {
 	ttuo.mutation.AddPriority(i)
-	return ttuo
-}
-
-// SetTestUserID sets the "test_user" edge to the TestUser entity by ID.
-func (ttuo *TestTodoUpdateOne) SetTestUserID(id int) *TestTodoUpdateOne {
-	ttuo.mutation.SetTestUserID(id)
-	return ttuo
-}
-
-// SetNillableTestUserID sets the "test_user" edge to the TestUser entity by ID if the given value is not nil.
-func (ttuo *TestTodoUpdateOne) SetNillableTestUserID(id *int) *TestTodoUpdateOne {
-	if id != nil {
-		ttuo = ttuo.SetTestUserID(*id)
-	}
 	return ttuo
 }
 
@@ -432,7 +445,7 @@ func (ttuo *TestTodoUpdateOne) sqlSave(ctx context.Context) (_node *TestTodo, er
 			Table:   testtodo.Table,
 			Columns: testtodo.Columns,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeString,
 				Column: testtodo.FieldID,
 			},
 		},
@@ -498,7 +511,7 @@ func (ttuo *TestTodoUpdateOne) sqlSave(ctx context.Context) (_node *TestTodo, er
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeString,
 					Column: testuser.FieldID,
 				},
 			},
@@ -514,7 +527,7 @@ func (ttuo *TestTodoUpdateOne) sqlSave(ctx context.Context) (_node *TestTodo, er
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeString,
 					Column: testuser.FieldID,
 				},
 			},

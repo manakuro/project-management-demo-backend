@@ -8,6 +8,7 @@ import (
 	"log"
 
 	"project-management-demo-backend/ent/migrate"
+	"project-management-demo-backend/ent/schema/pulid"
 
 	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/ent/testuser"
@@ -26,8 +27,6 @@ type Client struct {
 	TestTodo *TestTodoClient
 	// TestUser is the client for interacting with the TestUser builders.
 	TestUser *TestUserClient
-	// additional fields for node api
-	tables tables
 }
 
 // NewClient creates a new client configured with the given options.
@@ -171,7 +170,7 @@ func (c *TestTodoClient) UpdateOne(tt *TestTodo) *TestTodoUpdateOne {
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *TestTodoClient) UpdateOneID(id int) *TestTodoUpdateOne {
+func (c *TestTodoClient) UpdateOneID(id pulid.ID) *TestTodoUpdateOne {
 	mutation := newTestTodoMutation(c.config, OpUpdateOne, withTestTodoID(id))
 	return &TestTodoUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -188,7 +187,7 @@ func (c *TestTodoClient) DeleteOne(tt *TestTodo) *TestTodoDeleteOne {
 }
 
 // DeleteOneID returns a delete builder for the given id.
-func (c *TestTodoClient) DeleteOneID(id int) *TestTodoDeleteOne {
+func (c *TestTodoClient) DeleteOneID(id pulid.ID) *TestTodoDeleteOne {
 	builder := c.Delete().Where(testtodo.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -203,12 +202,12 @@ func (c *TestTodoClient) Query() *TestTodoQuery {
 }
 
 // Get returns a TestTodo entity by its id.
-func (c *TestTodoClient) Get(ctx context.Context, id int) (*TestTodo, error) {
+func (c *TestTodoClient) Get(ctx context.Context, id pulid.ID) (*TestTodo, error) {
 	return c.Query().Where(testtodo.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *TestTodoClient) GetX(ctx context.Context, id int) *TestTodo {
+func (c *TestTodoClient) GetX(ctx context.Context, id pulid.ID) *TestTodo {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -277,7 +276,7 @@ func (c *TestUserClient) UpdateOne(tu *TestUser) *TestUserUpdateOne {
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *TestUserClient) UpdateOneID(id int) *TestUserUpdateOne {
+func (c *TestUserClient) UpdateOneID(id pulid.ID) *TestUserUpdateOne {
 	mutation := newTestUserMutation(c.config, OpUpdateOne, withTestUserID(id))
 	return &TestUserUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
@@ -294,7 +293,7 @@ func (c *TestUserClient) DeleteOne(tu *TestUser) *TestUserDeleteOne {
 }
 
 // DeleteOneID returns a delete builder for the given id.
-func (c *TestUserClient) DeleteOneID(id int) *TestUserDeleteOne {
+func (c *TestUserClient) DeleteOneID(id pulid.ID) *TestUserDeleteOne {
 	builder := c.Delete().Where(testuser.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
@@ -309,12 +308,12 @@ func (c *TestUserClient) Query() *TestUserQuery {
 }
 
 // Get returns a TestUser entity by its id.
-func (c *TestUserClient) Get(ctx context.Context, id int) (*TestUser, error) {
+func (c *TestUserClient) Get(ctx context.Context, id pulid.ID) (*TestUser, error) {
 	return c.Query().Where(testuser.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *TestUserClient) GetX(ctx context.Context, id int) *TestUser {
+func (c *TestUserClient) GetX(ctx context.Context, id pulid.ID) *TestUser {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)

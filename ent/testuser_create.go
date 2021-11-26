@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"project-management-demo-backend/ent/schema/pulid"
 	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/ent/testuser"
 	"time"
@@ -61,15 +62,29 @@ func (tuc *TestUserCreate) SetNillableUpdatedAt(t *time.Time) *TestUserCreate {
 	return tuc
 }
 
+// SetID sets the "id" field.
+func (tuc *TestUserCreate) SetID(pu pulid.ID) *TestUserCreate {
+	tuc.mutation.SetID(pu)
+	return tuc
+}
+
+// SetNillableID sets the "id" field if the given value is not nil.
+func (tuc *TestUserCreate) SetNillableID(pu *pulid.ID) *TestUserCreate {
+	if pu != nil {
+		tuc.SetID(*pu)
+	}
+	return tuc
+}
+
 // AddTestTodoIDs adds the "test_todos" edge to the TestTodo entity by IDs.
-func (tuc *TestUserCreate) AddTestTodoIDs(ids ...int) *TestUserCreate {
+func (tuc *TestUserCreate) AddTestTodoIDs(ids ...pulid.ID) *TestUserCreate {
 	tuc.mutation.AddTestTodoIDs(ids...)
 	return tuc
 }
 
 // AddTestTodos adds the "test_todos" edges to the TestTodo entity.
 func (tuc *TestUserCreate) AddTestTodos(t ...*TestTodo) *TestUserCreate {
-	ids := make([]int, len(t))
+	ids := make([]pulid.ID, len(t))
 	for i := range t {
 		ids[i] = t[i].ID
 	}
@@ -155,6 +170,10 @@ func (tuc *TestUserCreate) defaults() {
 		v := testuser.DefaultUpdatedAt()
 		tuc.mutation.SetUpdatedAt(v)
 	}
+	if _, ok := tuc.mutation.ID(); !ok {
+		v := testuser.DefaultID()
+		tuc.mutation.SetID(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -187,8 +206,9 @@ func (tuc *TestUserCreate) sqlSave(ctx context.Context) (*TestUser, error) {
 		}
 		return nil, err
 	}
-	id := _spec.ID.Value.(int64)
-	_node.ID = int(id)
+	if _spec.ID.Value != nil {
+		_node.ID = _spec.ID.Value.(pulid.ID)
+	}
 	return _node, nil
 }
 
@@ -198,11 +218,15 @@ func (tuc *TestUserCreate) createSpec() (*TestUser, *sqlgraph.CreateSpec) {
 		_spec = &sqlgraph.CreateSpec{
 			Table: testuser.Table,
 			ID: &sqlgraph.FieldSpec{
-				Type:   field.TypeInt,
+				Type:   field.TypeString,
 				Column: testuser.FieldID,
 			},
 		}
 	)
+	if id, ok := tuc.mutation.ID(); ok {
+		_node.ID = id
+		_spec.ID.Value = id
+	}
 	if value, ok := tuc.mutation.Name(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -244,7 +268,7 @@ func (tuc *TestUserCreate) createSpec() (*TestUser, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeInt,
+					Type:   field.TypeString,
 					Column: testtodo.FieldID,
 				},
 			},
@@ -299,10 +323,6 @@ func (tucb *TestUserCreateBulk) Save(ctx context.Context) ([]*TestUser, error) {
 				}
 				mutation.id = &nodes[i].ID
 				mutation.done = true
-				if specs[i].ID.Value != nil {
-					id := specs[i].ID.Value.(int64)
-					nodes[i].ID = int(id)
-				}
 				return nodes[i], nil
 			})
 			for i := len(builder.hooks) - 1; i >= 0; i-- {

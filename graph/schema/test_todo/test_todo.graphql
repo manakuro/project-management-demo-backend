@@ -8,6 +8,7 @@ type TestTodo {
   name: String!
   status: TestTodoStatus!
   priority: Int!
+  testUserID: ID
   createdAt: String!
   updatedAt: String!
 }
@@ -15,12 +16,14 @@ input CreateTestTodoInput {
   name: String!
   status: TestTodoStatus = IN_PROGRESS
   priority: Int!
+  testUserID: ID!
 }
 input UpdateTestTodoInput {
   id: ID!
   name: String
   status: TestTodoStatus
   priority: Int
+  testUserID: ID
 }
 
 extend type Query {

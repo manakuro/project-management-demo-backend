@@ -8,7 +8,7 @@ import (
 
 // TestTodo is an interface of controller
 type TestTodo interface {
-	Get(ctx context.Context, id *string) (*model.TestTodo, error)
+	Get(ctx context.Context, id *model.ID) (*model.TestTodo, error)
 	List(ctx context.Context) ([]*model.TestTodo, error)
 	Create(ctx context.Context, input model.CreateTestTodoInput) (*model.TestTodo, error)
 	Update(ctx context.Context, input model.UpdateTestTodoInput) (*model.TestTodo, error)
@@ -25,7 +25,7 @@ func NewTestTodoController(tu usecase.TestTodo) TestTodo {
 	}
 }
 
-func (t *testTodo) Get(ctx context.Context, id *string) (*model.TestTodo, error) {
+func (t *testTodo) Get(ctx context.Context, id *model.ID) (*model.TestTodo, error) {
 	return t.testTodoUsecase.Get(id)
 }
 

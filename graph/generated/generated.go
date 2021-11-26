@@ -6,6 +6,7 @@ import (
 	"bytes"
 	"context"
 	"errors"
+	"project-management-demo-backend/ent/schema/pulid"
 	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/pkg/entity/model"
 	"strconv"
@@ -54,19 +55,20 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		TestTodo  func(childComplexity int, id *string) int
+		TestTodo  func(childComplexity int, id *pulid.ID) int
 		TestTodos func(childComplexity int) int
-		TestUser  func(childComplexity int, id *string, age *int) int
+		TestUser  func(childComplexity int, id *pulid.ID, age *int) int
 		TestUsers func(childComplexity int) int
 	}
 
 	TestTodo struct {
-		CreatedAt func(childComplexity int) int
-		ID        func(childComplexity int) int
-		Name      func(childComplexity int) int
-		Priority  func(childComplexity int) int
-		Status    func(childComplexity int) int
-		UpdatedAt func(childComplexity int) int
+		CreatedAt  func(childComplexity int) int
+		ID         func(childComplexity int) int
+		Name       func(childComplexity int) int
+		Priority   func(childComplexity int) int
+		Status     func(childComplexity int) int
+		TestUserID func(childComplexity int) int
+		UpdatedAt  func(childComplexity int) int
 	}
 
 	TestUser struct {
@@ -86,9 +88,9 @@ type MutationResolver interface {
 	UpdateTestUser(ctx context.Context, input model.UpdateTestUserInput) (*model.TestUser, error)
 }
 type QueryResolver interface {
-	TestTodo(ctx context.Context, id *string) (*model.TestTodo, error)
+	TestTodo(ctx context.Context, id *pulid.ID) (*model.TestTodo, error)
 	TestTodos(ctx context.Context) ([]*model.TestTodo, error)
-	TestUser(ctx context.Context, id *string, age *int) (*model.TestUser, error)
+	TestUser(ctx context.Context, id *pulid.ID, age *int) (*model.TestUser, error)
 	TestUsers(ctx context.Context) ([]*model.TestUser, error)
 }
 type TestTodoResolver interface {
@@ -174,7 +176,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.TestTodo(childComplexity, args["id"].(*string)), true
+		return e.complexity.Query.TestTodo(childComplexity, args["id"].(*pulid.ID)), true
 
 	case "Query.testTodos":
 		if e.complexity.Query.TestTodos == nil {
@@ -193,7 +195,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.TestUser(childComplexity, args["id"].(*string), args["age"].(*int)), true
+		return e.complexity.Query.TestUser(childComplexity, args["id"].(*pulid.ID), args["age"].(*int)), true
 
 	case "Query.testUsers":
 		if e.complexity.Query.TestUsers == nil {
@@ -236,6 +238,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.TestTodo.Status(childComplexity), true
+
+	case "TestTodo.testUserID":
+		if e.complexity.TestTodo.TestUserID == nil {
+			break
+		}
+
+		return e.complexity.TestTodo.TestUserID(childComplexity), true
 
 	case "TestTodo.updatedAt":
 		if e.complexity.TestTodo.UpdatedAt == nil {
@@ -366,6 +375,7 @@ type TestTodo {
   name: String!
   status: TestTodoStatus!
   priority: Int!
+  testUserID: ID
   createdAt: String!
   updatedAt: String!
 }
@@ -373,12 +383,14 @@ input CreateTestTodoInput {
   name: String!
   status: TestTodoStatus = IN_PROGRESS
   priority: Int!
+  testUserID: ID!
 }
 input UpdateTestTodoInput {
   id: ID!
   name: String
   status: TestTodoStatus
   priority: Int
+  testUserID: ID
 }
 
 extend type Query {
@@ -504,10 +516,10 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 func (ec *executionContext) field_Query_testTodo_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 *string
+	var arg0 *pulid.ID
 	if tmp, ok := rawArgs["id"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-		arg0, err = ec.unmarshalOID2ᚖstring(ctx, tmp)
+		arg0, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋpulidᚐID(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -519,10 +531,10 @@ func (ec *executionContext) field_Query_testTodo_args(ctx context.Context, rawAr
 func (ec *executionContext) field_Query_testUser_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 *string
+	var arg0 *pulid.ID
 	if tmp, ok := rawArgs["id"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-		arg0, err = ec.unmarshalOID2ᚖstring(ctx, tmp)
+		arg0, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋpulidᚐID(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -771,7 +783,7 @@ func (ec *executionContext) _Query_testTodo(ctx context.Context, field graphql.C
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().TestTodo(rctx, args["id"].(*string))
+		return ec.resolvers.Query().TestTodo(rctx, args["id"].(*pulid.ID))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -845,7 +857,7 @@ func (ec *executionContext) _Query_testUser(ctx context.Context, field graphql.C
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().TestUser(rctx, args["id"].(*string), args["age"].(*int))
+		return ec.resolvers.Query().TestUser(rctx, args["id"].(*pulid.ID), args["age"].(*int))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -992,9 +1004,9 @@ func (ec *executionContext) _TestTodo_id(ctx context.Context, field graphql.Coll
 		}
 		return graphql.Null
 	}
-	res := resTmp.(int)
+	res := resTmp.(pulid.ID)
 	fc.Result = res
-	return ec.marshalNID2int(ctx, field.Selections, res)
+	return ec.marshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋpulidᚐID(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _TestTodo_name(ctx context.Context, field graphql.CollectedField, obj *model.TestTodo) (ret graphql.Marshaler) {
@@ -1102,6 +1114,38 @@ func (ec *executionContext) _TestTodo_priority(ctx context.Context, field graphq
 	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _TestTodo_testUserID(ctx context.Context, field graphql.CollectedField, obj *model.TestTodo) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "TestTodo",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TestUserID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(pulid.ID)
+	fc.Result = res
+	return ec.marshalOID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋpulidᚐID(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _TestTodo_createdAt(ctx context.Context, field graphql.CollectedField, obj *model.TestTodo) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -1202,9 +1246,9 @@ func (ec *executionContext) _TestUser_id(ctx context.Context, field graphql.Coll
 		}
 		return graphql.Null
 	}
-	res := resTmp.(int)
+	res := resTmp.(pulid.ID)
 	fc.Result = res
-	return ec.marshalNID2int(ctx, field.Selections, res)
+	return ec.marshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋpulidᚐID(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _TestUser_name(ctx context.Context, field graphql.CollectedField, obj *model.TestUser) (ret graphql.Marshaler) {
@@ -2541,6 +2585,14 @@ func (ec *executionContext) unmarshalInputCreateTestTodoInput(ctx context.Contex
 			if err != nil {
 				return it, err
 			}
+		case "testUserID":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("testUserID"))
+			it.TestUserID, err = ec.unmarshalNID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋpulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		}
 	}
 
@@ -2591,7 +2643,7 @@ func (ec *executionContext) unmarshalInputUpdateTestTodoInput(ctx context.Contex
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-			it.ID, err = ec.unmarshalNID2string(ctx, v)
+			it.ID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -2619,6 +2671,14 @@ func (ec *executionContext) unmarshalInputUpdateTestTodoInput(ctx context.Contex
 			if err != nil {
 				return it, err
 			}
+		case "testUserID":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("testUserID"))
+			it.TestUserID, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋpulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		}
 	}
 
@@ -2638,7 +2698,7 @@ func (ec *executionContext) unmarshalInputUpdateTestUserInput(ctx context.Contex
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-			it.ID, err = ec.unmarshalNID2string(ctx, v)
+			it.ID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋpulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -2826,6 +2886,8 @@ func (ec *executionContext) _TestTodo(ctx context.Context, sel ast.SelectionSet,
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)
 			}
+		case "testUserID":
+			out.Values[i] = ec._TestTodo_testUserID(ctx, field, obj)
 		case "createdAt":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
@@ -3219,34 +3281,30 @@ func (ec *executionContext) unmarshalNCreateTestUserInput2projectᚑmanagement�
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNID2int(ctx context.Context, v interface{}) (int, error) {
-	res, err := graphql.UnmarshalInt(v)
+func (ec *executionContext) unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋpulidᚐID(ctx context.Context, v interface{}) (pulid.ID, error) {
+	var res pulid.ID
+	err := res.UnmarshalGQL(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNID2int(ctx context.Context, sel ast.SelectionSet, v int) graphql.Marshaler {
-	res := graphql.MarshalInt(v)
-	if res == graphql.Null {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "must not be null")
-		}
-	}
-	return res
+func (ec *executionContext) marshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋpulidᚐID(ctx context.Context, sel ast.SelectionSet, v pulid.ID) graphql.Marshaler {
+	return v
 }
 
-func (ec *executionContext) unmarshalNID2string(ctx context.Context, v interface{}) (string, error) {
-	res, err := graphql.UnmarshalID(v)
+func (ec *executionContext) unmarshalNID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋpulidᚐID(ctx context.Context, v interface{}) (*pulid.ID, error) {
+	var res = new(pulid.ID)
+	err := res.UnmarshalGQL(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNID2string(ctx context.Context, sel ast.SelectionSet, v string) graphql.Marshaler {
-	res := graphql.MarshalID(v)
-	if res == graphql.Null {
+func (ec *executionContext) marshalNID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋpulidᚐID(ctx context.Context, sel ast.SelectionSet, v *pulid.ID) graphql.Marshaler {
+	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
 		}
+		return graphql.Null
 	}
-	return res
+	return v
 }
 
 func (ec *executionContext) unmarshalNInt2int(ctx context.Context, v interface{}) (int, error) {
@@ -3673,19 +3731,30 @@ func (ec *executionContext) marshalOBoolean2ᚖbool(ctx context.Context, sel ast
 	return graphql.MarshalBoolean(*v)
 }
 
-func (ec *executionContext) unmarshalOID2ᚖstring(ctx context.Context, v interface{}) (*string, error) {
+func (ec *executionContext) unmarshalOID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋpulidᚐID(ctx context.Context, v interface{}) (pulid.ID, error) {
+	var res pulid.ID
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋpulidᚐID(ctx context.Context, sel ast.SelectionSet, v pulid.ID) graphql.Marshaler {
+	return v
+}
+
+func (ec *executionContext) unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋpulidᚐID(ctx context.Context, v interface{}) (*pulid.ID, error) {
 	if v == nil {
 		return nil, nil
 	}
-	res, err := graphql.UnmarshalID(v)
-	return &res, graphql.ErrorOnPath(ctx, err)
+	var res = new(pulid.ID)
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalOID2ᚖstring(ctx context.Context, sel ast.SelectionSet, v *string) graphql.Marshaler {
+func (ec *executionContext) marshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋpulidᚐID(ctx context.Context, sel ast.SelectionSet, v *pulid.ID) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
-	return graphql.MarshalID(*v)
+	return v
 }
 
 func (ec *executionContext) unmarshalOInt2ᚖint(ctx context.Context, v interface{}) (*int, error) {

@@ -17,7 +17,7 @@ type CreateTestTodoInput struct {
 
 // UpdateTestTodoInput represents a mutation input for updating test users.
 type UpdateTestTodoInput struct {
-	ID string
+	ID ID
 	ent.UpdateTestTodoInput
 }
 

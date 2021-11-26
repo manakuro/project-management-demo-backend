@@ -1,6 +1,7 @@
 package schema
 
 import (
+	"project-management-demo-backend/ent/schema/pulid"
 	"time"
 
 	"entgo.io/ent/schema/edge"
@@ -18,6 +19,11 @@ type TestUser struct {
 // Fields of the Test.
 func (TestUser) Fields() []ent.Field {
 	return []ent.Field{
+		field.String("id").
+			GoType(pulid.ID("")).
+			DefaultFunc(func() pulid.ID {
+				return pulid.MustNew("")
+			}),
 		field.String("name").
 			NotEmpty(),
 		field.Int("age"),
@@ -37,7 +43,6 @@ func (TestUser) Fields() []ent.Field {
 // Edges of the Test.
 func (TestUser) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("test_todos", TestTodo.Type).
-			StorageKey(edge.Column("test_user_id")),
+		edge.To("test_todos", TestTodo.Type),
 	}
 }

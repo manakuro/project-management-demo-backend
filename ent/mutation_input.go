@@ -3,6 +3,7 @@
 package ent
 
 import (
+	"project-management-demo-backend/ent/schema/pulid"
 	"project-management-demo-backend/ent/testtodo"
 	"time"
 )
@@ -14,7 +15,7 @@ type CreateTestTodoInput struct {
 	Priority   *int
 	CreatedAt  *time.Time
 	UpdatedAt  *time.Time
-	TestUserID *int
+	TestUserID *pulid.ID
 }
 
 // Mutate applies the CreateTestTodoInput on the TestTodoCreate builder.
@@ -48,7 +49,7 @@ type UpdateTestTodoInput struct {
 	Name          *string
 	Status        *testtodo.Status
 	Priority      *int
-	TestUserID    *int
+	TestUserID    *pulid.ID
 	ClearTestUser bool
 }
 
@@ -89,7 +90,7 @@ type CreateTestUserInput struct {
 	Age         int
 	CreatedAt   *time.Time
 	UpdatedAt   *time.Time
-	TestTodoIDs []int
+	TestTodoIDs []pulid.ID
 }
 
 // Mutate applies the CreateTestUserInput on the TestUserCreate builder.
@@ -119,8 +120,8 @@ type UpdateTestUserInput struct {
 	Age               *int
 	CreatedAt         *time.Time
 	UpdatedAt         *time.Time
-	AddTestTodoIDs    []int
-	RemoveTestTodoIDs []int
+	AddTestTodoIDs    []pulid.ID
+	RemoveTestTodoIDs []pulid.ID
 }
 
 // Mutate applies the UpdateTestUserInput on the TestUserMutation.

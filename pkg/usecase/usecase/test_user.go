@@ -11,7 +11,7 @@ type testUser struct {
 
 // TestUser is an interface of test user
 type TestUser interface {
-	Get(id *string, age *int) (*model.TestUser, error)
+	Get(id *model.ID, age *int) (*model.TestUser, error)
 	List() ([]*model.TestUser, error)
 	Create(input model.CreateTestUserInput) (*model.TestUser, error)
 	Update(input model.UpdateTestUserInput) (*model.TestUser, error)
@@ -22,7 +22,7 @@ func NewTestUserUsecase(r repository.TestUser) TestUser {
 	return &testUser{testUserRepository: r}
 }
 
-func (t *testUser) Get(id *string, age *int) (*model.TestUser, error) {
+func (t *testUser) Get(id *model.ID, age *int) (*model.TestUser, error) {
 	return t.testUserRepository.Get(id, age)
 }
 

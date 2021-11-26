@@ -5,6 +5,7 @@ package testtodo
 import (
 	"fmt"
 	"io"
+	"project-management-demo-backend/ent/schema/pulid"
 	"strconv"
 	"time"
 )
@@ -14,6 +15,8 @@ const (
 	Label = "test_todo"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
+	// FieldTestUserID holds the string denoting the test_user_id field in the database.
+	FieldTestUserID = "test_user_id"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
 	// FieldStatus holds the string denoting the status field in the database.
@@ -40,6 +43,7 @@ const (
 // Columns holds all SQL columns for testtodo fields.
 var Columns = []string{
 	FieldID,
+	FieldTestUserID,
 	FieldName,
 	FieldStatus,
 	FieldPriority,
@@ -47,21 +51,10 @@ var Columns = []string{
 	FieldUpdatedAt,
 }
 
-// ForeignKeys holds the SQL foreign-keys that are owned by the "test_todos"
-// table and are not defined as standalone fields in the schema.
-var ForeignKeys = []string{
-	"test_user_id",
-}
-
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {
 	for i := range Columns {
 		if column == Columns[i] {
-			return true
-		}
-	}
-	for i := range ForeignKeys {
-		if column == ForeignKeys[i] {
 			return true
 		}
 	}
@@ -77,6 +70,8 @@ var (
 	DefaultCreatedAt func() time.Time
 	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.
 	DefaultUpdatedAt func() time.Time
+	// DefaultID holds the default value on creation for the "id" field.
+	DefaultID func() pulid.ID
 )
 
 // Status defines the type for the "status" enum field.
