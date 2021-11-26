@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"math"
 	"project-management-demo-backend/ent/predicate"
-	"project-management-demo-backend/ent/schema/pulid"
+	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/ent/testuser"
 
@@ -110,8 +110,8 @@ func (ttq *TestTodoQuery) FirstX(ctx context.Context) *TestTodo {
 
 // FirstID returns the first TestTodo ID from the query.
 // Returns a *NotFoundError when no TestTodo ID was found.
-func (ttq *TestTodoQuery) FirstID(ctx context.Context) (id pulid.ID, err error) {
-	var ids []pulid.ID
+func (ttq *TestTodoQuery) FirstID(ctx context.Context) (id ulid.ID, err error) {
+	var ids []ulid.ID
 	if ids, err = ttq.Limit(1).IDs(ctx); err != nil {
 		return
 	}
@@ -123,7 +123,7 @@ func (ttq *TestTodoQuery) FirstID(ctx context.Context) (id pulid.ID, err error) 
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (ttq *TestTodoQuery) FirstIDX(ctx context.Context) pulid.ID {
+func (ttq *TestTodoQuery) FirstIDX(ctx context.Context) ulid.ID {
 	id, err := ttq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -161,8 +161,8 @@ func (ttq *TestTodoQuery) OnlyX(ctx context.Context) *TestTodo {
 // OnlyID is like Only, but returns the only TestTodo ID in the query.
 // Returns a *NotSingularError when exactly one TestTodo ID is not found.
 // Returns a *NotFoundError when no entities are found.
-func (ttq *TestTodoQuery) OnlyID(ctx context.Context) (id pulid.ID, err error) {
-	var ids []pulid.ID
+func (ttq *TestTodoQuery) OnlyID(ctx context.Context) (id ulid.ID, err error) {
+	var ids []ulid.ID
 	if ids, err = ttq.Limit(2).IDs(ctx); err != nil {
 		return
 	}
@@ -178,7 +178,7 @@ func (ttq *TestTodoQuery) OnlyID(ctx context.Context) (id pulid.ID, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (ttq *TestTodoQuery) OnlyIDX(ctx context.Context) pulid.ID {
+func (ttq *TestTodoQuery) OnlyIDX(ctx context.Context) ulid.ID {
 	id, err := ttq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -204,8 +204,8 @@ func (ttq *TestTodoQuery) AllX(ctx context.Context) []*TestTodo {
 }
 
 // IDs executes the query and returns a list of TestTodo IDs.
-func (ttq *TestTodoQuery) IDs(ctx context.Context) ([]pulid.ID, error) {
-	var ids []pulid.ID
+func (ttq *TestTodoQuery) IDs(ctx context.Context) ([]ulid.ID, error) {
+	var ids []ulid.ID
 	if err := ttq.Select(testtodo.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
@@ -213,7 +213,7 @@ func (ttq *TestTodoQuery) IDs(ctx context.Context) ([]pulid.ID, error) {
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (ttq *TestTodoQuery) IDsX(ctx context.Context) []pulid.ID {
+func (ttq *TestTodoQuery) IDsX(ctx context.Context) []ulid.ID {
 	ids, err := ttq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -291,7 +291,7 @@ func (ttq *TestTodoQuery) WithTestUser(opts ...func(*TestUserQuery)) *TestTodoQu
 // Example:
 //
 //	var v []struct {
-//		TestUserID pulid.ID `json:"test_user_id,omitempty"`
+//		TestUserID ulid.ID `json:"test_user_id,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
@@ -318,7 +318,7 @@ func (ttq *TestTodoQuery) GroupBy(field string, fields ...string) *TestTodoGroup
 // Example:
 //
 //	var v []struct {
-//		TestUserID pulid.ID `json:"test_user_id,omitempty"`
+//		TestUserID ulid.ID `json:"test_user_id,omitempty"`
 //	}
 //
 //	client.TestTodo.Query().
@@ -375,8 +375,8 @@ func (ttq *TestTodoQuery) sqlAll(ctx context.Context) ([]*TestTodo, error) {
 	}
 
 	if query := ttq.withTestUser; query != nil {
-		ids := make([]pulid.ID, 0, len(nodes))
-		nodeids := make(map[pulid.ID][]*TestTodo)
+		ids := make([]ulid.ID, 0, len(nodes))
+		nodeids := make(map[ulid.ID][]*TestTodo)
 		for i := range nodes {
 			fk := nodes[i].TestUserID
 			if _, ok := nodeids[fk]; !ok {

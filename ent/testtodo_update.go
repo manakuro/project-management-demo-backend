@@ -6,7 +6,7 @@ import (
 	"context"
 	"fmt"
 	"project-management-demo-backend/ent/predicate"
-	"project-management-demo-backend/ent/schema/pulid"
+	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/ent/testuser"
 
@@ -29,15 +29,15 @@ func (ttu *TestTodoUpdate) Where(ps ...predicate.TestTodo) *TestTodoUpdate {
 }
 
 // SetTestUserID sets the "test_user_id" field.
-func (ttu *TestTodoUpdate) SetTestUserID(pu pulid.ID) *TestTodoUpdate {
-	ttu.mutation.SetTestUserID(pu)
+func (ttu *TestTodoUpdate) SetTestUserID(u ulid.ID) *TestTodoUpdate {
+	ttu.mutation.SetTestUserID(u)
 	return ttu
 }
 
 // SetNillableTestUserID sets the "test_user_id" field if the given value is not nil.
-func (ttu *TestTodoUpdate) SetNillableTestUserID(pu *pulid.ID) *TestTodoUpdate {
-	if pu != nil {
-		ttu.SetTestUserID(*pu)
+func (ttu *TestTodoUpdate) SetNillableTestUserID(u *ulid.ID) *TestTodoUpdate {
+	if u != nil {
+		ttu.SetTestUserID(*u)
 	}
 	return ttu
 }
@@ -281,15 +281,15 @@ type TestTodoUpdateOne struct {
 }
 
 // SetTestUserID sets the "test_user_id" field.
-func (ttuo *TestTodoUpdateOne) SetTestUserID(pu pulid.ID) *TestTodoUpdateOne {
-	ttuo.mutation.SetTestUserID(pu)
+func (ttuo *TestTodoUpdateOne) SetTestUserID(u ulid.ID) *TestTodoUpdateOne {
+	ttuo.mutation.SetTestUserID(u)
 	return ttuo
 }
 
 // SetNillableTestUserID sets the "test_user_id" field if the given value is not nil.
-func (ttuo *TestTodoUpdateOne) SetNillableTestUserID(pu *pulid.ID) *TestTodoUpdateOne {
-	if pu != nil {
-		ttuo.SetTestUserID(*pu)
+func (ttuo *TestTodoUpdateOne) SetNillableTestUserID(u *ulid.ID) *TestTodoUpdateOne {
+	if u != nil {
+		ttuo.SetTestUserID(*u)
 	}
 	return ttuo
 }

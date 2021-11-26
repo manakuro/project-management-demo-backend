@@ -1,7 +1,7 @@
 package schema
 
 import (
-	"project-management-demo-backend/ent/schema/pulid"
+	"project-management-demo-backend/ent/schema/ulid"
 	"time"
 
 	"entgo.io/ent/schema/edge"
@@ -20,9 +20,9 @@ type TestUser struct {
 func (TestUser) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("id").
-			GoType(pulid.ID("")).
-			DefaultFunc(func() pulid.ID {
-				return pulid.MustNew("")
+			GoType(ulid.ID("")).
+			DefaultFunc(func() ulid.ID {
+				return ulid.MustNew("")
 			}),
 		field.String("name").
 			NotEmpty(),

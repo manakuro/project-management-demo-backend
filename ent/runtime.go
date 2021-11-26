@@ -4,7 +4,7 @@ package ent
 
 import (
 	"project-management-demo-backend/ent/schema"
-	"project-management-demo-backend/ent/schema/pulid"
+	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/ent/testuser"
 	"time"
@@ -35,7 +35,7 @@ func init() {
 	// testtodoDescID is the schema descriptor for id field.
 	testtodoDescID := testtodoFields[0].Descriptor()
 	// testtodo.DefaultID holds the default value on creation for the id field.
-	testtodo.DefaultID = testtodoDescID.Default.(func() pulid.ID)
+	testtodo.DefaultID = testtodoDescID.Default.(func() ulid.ID)
 	testuserFields := schema.TestUser{}.Fields()
 	_ = testuserFields
 	// testuserDescName is the schema descriptor for name field.
@@ -53,5 +53,5 @@ func init() {
 	// testuserDescID is the schema descriptor for id field.
 	testuserDescID := testuserFields[0].Descriptor()
 	// testuser.DefaultID holds the default value on creation for the id field.
-	testuser.DefaultID = testuserDescID.Default.(func() pulid.ID)
+	testuser.DefaultID = testuserDescID.Default.(func() ulid.ID)
 }

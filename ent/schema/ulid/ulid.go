@@ -1,4 +1,4 @@
-package pulid
+package ulid
 
 import (
 	"crypto/rand"

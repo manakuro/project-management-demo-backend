@@ -6,7 +6,7 @@ package resolver
 import (
 	"context"
 	"project-management-demo-backend/ent"
-	"project-management-demo-backend/ent/schema/pulid"
+	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/graph/generated"
 	"project-management-demo-backend/pkg/adapter/handler"
 	"project-management-demo-backend/pkg/util/datetime"
@@ -28,7 +28,7 @@ func (r *mutationResolver) UpdateTestUser(ctx context.Context, input ent.UpdateT
 	return u, nil
 }
 
-func (r *queryResolver) TestUser(ctx context.Context, id *pulid.ID, age *int) (*ent.TestUser, error) {
+func (r *queryResolver) TestUser(ctx context.Context, id *ulid.ID, age *int) (*ent.TestUser, error) {
 	u, err := r.controller.TestUser.Get(ctx, id, age)
 	if err != nil {
 		return nil, handler.HandleError(ctx, err)

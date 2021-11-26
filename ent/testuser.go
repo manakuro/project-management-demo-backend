@@ -4,7 +4,7 @@ package ent
 
 import (
 	"fmt"
-	"project-management-demo-backend/ent/schema/pulid"
+	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/testuser"
 	"strings"
 	"time"
@@ -16,7 +16,7 @@ import (
 type TestUser struct {
 	config `json:"-"`
 	// ID of the ent.
-	ID pulid.ID `json:"id,omitempty"`
+	ID ulid.ID `json:"id,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
 	// Age holds the value of the "age" field.
@@ -53,14 +53,14 @@ func (*TestUser) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case testuser.FieldID:
-			values[i] = new(pulid.ID)
 		case testuser.FieldAge:
 			values[i] = new(sql.NullInt64)
 		case testuser.FieldName:
 			values[i] = new(sql.NullString)
 		case testuser.FieldCreatedAt, testuser.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
+		case testuser.FieldID:
+			values[i] = new(ulid.ID)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type TestUser", columns[i])
 		}
@@ -77,7 +77,7 @@ func (tu *TestUser) assignValues(columns []string, values []interface{}) error {
 	for i := range columns {
 		switch columns[i] {
 		case testuser.FieldID:
-			if value, ok := values[i].(*pulid.ID); !ok {
+			if value, ok := values[i].(*ulid.ID); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value != nil {
 				tu.ID = *value

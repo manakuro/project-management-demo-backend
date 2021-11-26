@@ -3,7 +3,7 @@
 package ent
 
 import (
-	"project-management-demo-backend/ent/schema/pulid"
+	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/testtodo"
 	"time"
 )
@@ -15,7 +15,7 @@ type CreateTestTodoInput struct {
 	Priority   *int
 	CreatedAt  *time.Time
 	UpdatedAt  *time.Time
-	TestUserID *pulid.ID
+	TestUserID *ulid.ID
 }
 
 // Mutate applies the CreateTestTodoInput on the TestTodoCreate builder.
@@ -46,11 +46,11 @@ func (c *TestTodoCreate) SetInput(i CreateTestTodoInput) *TestTodoCreate {
 
 // UpdateTestTodoInput represents a mutation input for updating testtodos.
 type UpdateTestTodoInput struct {
-	ID            pulid.ID
+	ID            ulid.ID
 	Name          *string
 	Status        *testtodo.Status
 	Priority      *int
-	TestUserID    *pulid.ID
+	TestUserID    *ulid.ID
 	ClearTestUser bool
 }
 
@@ -91,7 +91,7 @@ type CreateTestUserInput struct {
 	Age         int
 	CreatedAt   *time.Time
 	UpdatedAt   *time.Time
-	TestTodoIDs []pulid.ID
+	TestTodoIDs []ulid.ID
 }
 
 // Mutate applies the CreateTestUserInput on the TestUserCreate builder.
@@ -117,13 +117,13 @@ func (c *TestUserCreate) SetInput(i CreateTestUserInput) *TestUserCreate {
 
 // UpdateTestUserInput represents a mutation input for updating testusers.
 type UpdateTestUserInput struct {
-	ID                pulid.ID
+	ID                ulid.ID
 	Name              *string
 	Age               *int
 	CreatedAt         *time.Time
 	UpdatedAt         *time.Time
-	AddTestTodoIDs    []pulid.ID
-	RemoveTestTodoIDs []pulid.ID
+	AddTestTodoIDs    []ulid.ID
+	RemoveTestTodoIDs []ulid.ID
 }
 
 // Mutate applies the UpdateTestUserInput on the TestUserMutation.

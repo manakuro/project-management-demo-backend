@@ -6,7 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"project-management-demo-backend/ent/schema/pulid"
+	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/ent/testuser"
 	"time"
@@ -63,28 +63,28 @@ func (tuc *TestUserCreate) SetNillableUpdatedAt(t *time.Time) *TestUserCreate {
 }
 
 // SetID sets the "id" field.
-func (tuc *TestUserCreate) SetID(pu pulid.ID) *TestUserCreate {
-	tuc.mutation.SetID(pu)
+func (tuc *TestUserCreate) SetID(u ulid.ID) *TestUserCreate {
+	tuc.mutation.SetID(u)
 	return tuc
 }
 
 // SetNillableID sets the "id" field if the given value is not nil.
-func (tuc *TestUserCreate) SetNillableID(pu *pulid.ID) *TestUserCreate {
-	if pu != nil {
-		tuc.SetID(*pu)
+func (tuc *TestUserCreate) SetNillableID(u *ulid.ID) *TestUserCreate {
+	if u != nil {
+		tuc.SetID(*u)
 	}
 	return tuc
 }
 
 // AddTestTodoIDs adds the "test_todos" edge to the TestTodo entity by IDs.
-func (tuc *TestUserCreate) AddTestTodoIDs(ids ...pulid.ID) *TestUserCreate {
+func (tuc *TestUserCreate) AddTestTodoIDs(ids ...ulid.ID) *TestUserCreate {
 	tuc.mutation.AddTestTodoIDs(ids...)
 	return tuc
 }
 
 // AddTestTodos adds the "test_todos" edges to the TestTodo entity.
 func (tuc *TestUserCreate) AddTestTodos(t ...*TestTodo) *TestUserCreate {
-	ids := make([]pulid.ID, len(t))
+	ids := make([]ulid.ID, len(t))
 	for i := range t {
 		ids[i] = t[i].ID
 	}
@@ -207,7 +207,7 @@ func (tuc *TestUserCreate) sqlSave(ctx context.Context) (*TestUser, error) {
 		return nil, err
 	}
 	if _spec.ID.Value != nil {
-		_node.ID = _spec.ID.Value.(pulid.ID)
+		_node.ID = _spec.ID.Value.(ulid.ID)
 	}
 	return _node, nil
 }

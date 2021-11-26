@@ -3,7 +3,7 @@
 package testuser
 
 import (
-	"project-management-demo-backend/ent/schema/pulid"
+	"project-management-demo-backend/ent/schema/ulid"
 	"time"
 )
 
@@ -60,5 +60,5 @@ var (
 	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.
 	DefaultUpdatedAt func() time.Time
 	// DefaultID holds the default value on creation for the "id" field.
-	DefaultID func() pulid.ID
+	DefaultID func() ulid.ID
 )

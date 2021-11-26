@@ -6,7 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"project-management-demo-backend/ent/schema/pulid"
+	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/ent/testuser"
 	"time"
@@ -23,15 +23,15 @@ type TestTodoCreate struct {
 }
 
 // SetTestUserID sets the "test_user_id" field.
-func (ttc *TestTodoCreate) SetTestUserID(pu pulid.ID) *TestTodoCreate {
-	ttc.mutation.SetTestUserID(pu)
+func (ttc *TestTodoCreate) SetTestUserID(u ulid.ID) *TestTodoCreate {
+	ttc.mutation.SetTestUserID(u)
 	return ttc
 }
 
 // SetNillableTestUserID sets the "test_user_id" field if the given value is not nil.
-func (ttc *TestTodoCreate) SetNillableTestUserID(pu *pulid.ID) *TestTodoCreate {
-	if pu != nil {
-		ttc.SetTestUserID(*pu)
+func (ttc *TestTodoCreate) SetNillableTestUserID(u *ulid.ID) *TestTodoCreate {
+	if u != nil {
+		ttc.SetTestUserID(*u)
 	}
 	return ttc
 }
@@ -99,15 +99,15 @@ func (ttc *TestTodoCreate) SetNillableUpdatedAt(t *time.Time) *TestTodoCreate {
 }
 
 // SetID sets the "id" field.
-func (ttc *TestTodoCreate) SetID(pu pulid.ID) *TestTodoCreate {
-	ttc.mutation.SetID(pu)
+func (ttc *TestTodoCreate) SetID(u ulid.ID) *TestTodoCreate {
+	ttc.mutation.SetID(u)
 	return ttc
 }
 
 // SetNillableID sets the "id" field if the given value is not nil.
-func (ttc *TestTodoCreate) SetNillableID(pu *pulid.ID) *TestTodoCreate {
-	if pu != nil {
-		ttc.SetID(*pu)
+func (ttc *TestTodoCreate) SetNillableID(u *ulid.ID) *TestTodoCreate {
+	if u != nil {
+		ttc.SetID(*u)
 	}
 	return ttc
 }
@@ -249,7 +249,7 @@ func (ttc *TestTodoCreate) sqlSave(ctx context.Context) (*TestTodo, error) {
 		return nil, err
 	}
 	if _spec.ID.Value != nil {
-		_node.ID = _spec.ID.Value.(pulid.ID)
+		_node.ID = _spec.ID.Value.(ulid.ID)
 	}
 	return _node, nil
 }
