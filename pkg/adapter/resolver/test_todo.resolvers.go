@@ -9,11 +9,10 @@ import (
 	"project-management-demo-backend/ent/schema/pulid"
 	"project-management-demo-backend/graph/generated"
 	"project-management-demo-backend/pkg/adapter/handler"
-	"project-management-demo-backend/pkg/entity/model"
 	"project-management-demo-backend/pkg/util/datetime"
 )
 
-func (r *mutationResolver) CreateTestTodo(ctx context.Context, input model.CreateTestTodoInput) (*ent.TestTodo, error) {
+func (r *mutationResolver) CreateTestTodo(ctx context.Context, input ent.CreateTestTodoInput) (*ent.TestTodo, error) {
 	t, err := r.controller.TestTodo.Create(ctx, input)
 	if err != nil {
 		return nil, handler.HandleError(ctx, err)
@@ -21,7 +20,7 @@ func (r *mutationResolver) CreateTestTodo(ctx context.Context, input model.Creat
 	return t, nil
 }
 
-func (r *mutationResolver) UpdateTestTodo(ctx context.Context, input model.UpdateTestTodoInput) (*ent.TestTodo, error) {
+func (r *mutationResolver) UpdateTestTodo(ctx context.Context, input ent.UpdateTestTodoInput) (*ent.TestTodo, error) {
 	t, err := r.controller.TestTodo.Update(ctx, input)
 	if err != nil {
 		return nil, handler.HandleError(ctx, err)
