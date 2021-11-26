@@ -54,7 +54,6 @@ func (i *ID) Scan(src interface{}) error {
 		*i = ID(s)
 	case []byte:
 		str := string(s)
-		fmt.Println("src: ", ID(str))
 		*i = ID(str)
 	default:
 		return fmt.Errorf("pulid: expected a string %v", s)

@@ -39,7 +39,7 @@ func (r *testTodoRepository) Get(id *model.ID) (*model.TestTodo, error) {
 		return nil, model.NewDBError(err)
 	}
 
-	return &model.TestTodo{TestTodo: u}, nil
+	return u, nil
 }
 
 func (r *testTodoRepository) List() ([]*model.TestTodo, error) {
@@ -52,12 +52,7 @@ func (r *testTodoRepository) List() ([]*model.TestTodo, error) {
 	if err != nil {
 		return nil, model.NewDBError(err)
 	}
-
-	res := make([]*model.TestTodo, len(ts))
-	for i, v := range ts {
-		res[i] = &model.TestTodo{TestTodo: v}
-	}
-	return res, nil
+	return ts, nil
 }
 
 func (r *testTodoRepository) Create(input model.CreateTestTodoInput) (*model.TestTodo, error) {
@@ -65,14 +60,14 @@ func (r *testTodoRepository) Create(input model.CreateTestTodoInput) (*model.Tes
 	u, err := r.client.
 		TestTodo.
 		Create().
-		SetInput(input.CreateTestTodoInput).
+		SetInput(input).
 		Save(ctx)
 
 	if err != nil {
 		return nil, model.NewDBError(err)
 	}
 
-	return &model.TestTodo{TestTodo: u}, nil
+	return u, nil
 }
 
 func (r *testTodoRepository) Update(input model.UpdateTestTodoInput) (*model.TestTodo, error) {
@@ -80,7 +75,7 @@ func (r *testTodoRepository) Update(input model.UpdateTestTodoInput) (*model.Tes
 
 	u, err := r.client.
 		TestTodo.UpdateOneID(input.ID).
-		SetInput(input.UpdateTestTodoInput).
+		SetInput(input).
 		Save(ctx)
 
 	if err != nil {
@@ -91,5 +86,5 @@ func (r *testTodoRepository) Update(input model.UpdateTestTodoInput) (*model.Tes
 		return nil, model.NewDBError(err)
 	}
 
-	return &model.TestTodo{TestTodo: u}, nil
+	return u, nil
 }

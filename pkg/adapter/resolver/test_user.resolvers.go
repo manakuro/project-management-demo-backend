@@ -45,19 +45,6 @@ func (r *queryResolver) TestUsers(ctx context.Context) ([]*ent.TestUser, error) 
 	return us, nil
 }
 
-func (r *testUserResolver) TestTodos(ctx context.Context, obj *ent.TestUser) ([]*model.TestTodo, error) {
-	ts, err := obj.TestTodos(ctx)
-	if err != nil {
-		return nil, handler.HandleError(ctx, err)
-	}
-	res := make([]*model.TestTodo, len(ts))
-	for i, t := range ts {
-		res[i] = &model.TestTodo{TestTodo: t}
-	}
-
-	return res, nil
-}
-
 func (r *testUserResolver) CreatedAt(ctx context.Context, obj *ent.TestUser) (string, error) {
 	return datetime.FormatDate(obj.CreatedAt), nil
 }
@@ -70,3 +57,18 @@ func (r *testUserResolver) UpdatedAt(ctx context.Context, obj *ent.TestUser) (st
 func (r *Resolver) TestUser() generated.TestUserResolver { return &testUserResolver{r} }
 
 type testUserResolver struct{ *Resolver }
+
+// !!! WARNING !!!
+// The code below was going to be deleted when updating resolvers. It has been copied here so you have
+// one last chance to move it out of harms way if you want. There are two reasons this happens:
+//  - When renaming or deleting a resolver the old code will be put in here. You can safely delete
+//    it when you're done.
+//  - You have helper methods in this file. Move them out to keep these resolver files clean.
+func (r *testUserResolver) TestTodos(ctx context.Context, obj *ent.TestUser) ([]*model.TestTodo, error) {
+	ts, err := obj.TestTodos(ctx)
+	if err != nil {
+		return nil, handler.HandleError(ctx, err)
+	}
+
+	return ts, nil
+}
