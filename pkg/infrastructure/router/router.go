@@ -12,7 +12,7 @@ import (
 // NewRouter creates route endpoint
 func NewRouter(srv *handler.Server) *echo.Echo {
 	e := echo.New()
-	e.Use(middleware.Logger())
+	//e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{"*"},

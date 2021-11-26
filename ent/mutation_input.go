@@ -46,6 +46,7 @@ func (c *TestTodoCreate) SetInput(i CreateTestTodoInput) *TestTodoCreate {
 
 // UpdateTestTodoInput represents a mutation input for updating testtodos.
 type UpdateTestTodoInput struct {
+	ID            pulid.ID
 	Name          *string
 	Status        *testtodo.Status
 	Priority      *int
@@ -116,6 +117,7 @@ func (c *TestUserCreate) SetInput(i CreateTestUserInput) *TestUserCreate {
 
 // UpdateTestUserInput represents a mutation input for updating testusers.
 type UpdateTestUserInput struct {
+	ID                pulid.ID
 	Name              *string
 	Age               *int
 	CreatedAt         *time.Time

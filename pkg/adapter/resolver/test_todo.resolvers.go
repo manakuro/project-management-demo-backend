@@ -5,13 +5,15 @@ package resolver
 
 import (
 	"context"
+	"project-management-demo-backend/ent"
 	"project-management-demo-backend/ent/schema/pulid"
 	"project-management-demo-backend/graph/generated"
 	"project-management-demo-backend/pkg/adapter/handler"
 	"project-management-demo-backend/pkg/entity/model"
+	"project-management-demo-backend/pkg/util/datetime"
 )
 
-func (r *mutationResolver) CreateTestTodo(ctx context.Context, input model.CreateTestTodoInput) (*model.TestTodo, error) {
+func (r *mutationResolver) CreateTestTodo(ctx context.Context, input model.CreateTestTodoInput) (*ent.TestTodo, error) {
 	t, err := r.controller.TestTodo.Create(ctx, input)
 	if err != nil {
 		return nil, handler.HandleError(ctx, err)
@@ -19,7 +21,7 @@ func (r *mutationResolver) CreateTestTodo(ctx context.Context, input model.Creat
 	return t, nil
 }
 
-func (r *mutationResolver) UpdateTestTodo(ctx context.Context, input model.UpdateTestTodoInput) (*model.TestTodo, error) {
+func (r *mutationResolver) UpdateTestTodo(ctx context.Context, input model.UpdateTestTodoInput) (*ent.TestTodo, error) {
 	t, err := r.controller.TestTodo.Update(ctx, input)
 	if err != nil {
 		return nil, handler.HandleError(ctx, err)
@@ -27,7 +29,7 @@ func (r *mutationResolver) UpdateTestTodo(ctx context.Context, input model.Updat
 	return t, nil
 }
 
-func (r *queryResolver) TestTodo(ctx context.Context, id *pulid.ID) (*model.TestTodo, error) {
+func (r *queryResolver) TestTodo(ctx context.Context, id *pulid.ID) (*ent.TestTodo, error) {
 	t, err := r.controller.TestTodo.Get(ctx, id)
 	if err != nil {
 		return nil, handler.HandleError(ctx, err)
@@ -35,7 +37,7 @@ func (r *queryResolver) TestTodo(ctx context.Context, id *pulid.ID) (*model.Test
 	return t, nil
 }
 
-func (r *queryResolver) TestTodos(ctx context.Context) ([]*model.TestTodo, error) {
+func (r *queryResolver) TestTodos(ctx context.Context) ([]*ent.TestTodo, error) {
 	ts, err := r.controller.TestTodo.List(ctx)
 	if err != nil {
 		return nil, handler.HandleError(ctx, err)
@@ -43,12 +45,12 @@ func (r *queryResolver) TestTodos(ctx context.Context) ([]*model.TestTodo, error
 	return ts, nil
 }
 
-func (r *testTodoResolver) CreatedAt(ctx context.Context, obj *model.TestTodo) (string, error) {
-	return obj.FormattedCreatedAt(), nil
+func (r *testTodoResolver) CreatedAt(ctx context.Context, obj *ent.TestTodo) (string, error) {
+	return datetime.FormatDate(obj.CreatedAt), nil
 }
 
-func (r *testTodoResolver) UpdatedAt(ctx context.Context, obj *model.TestTodo) (string, error) {
-	return obj.FormattedUpdatedAt(), nil
+func (r *testTodoResolver) UpdatedAt(ctx context.Context, obj *ent.TestTodo) (string, error) {
+	return datetime.FormatDate(obj.UpdatedAt), nil
 }
 
 // TestTodo returns generated.TestTodoResolver implementation.
