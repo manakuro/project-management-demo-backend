@@ -5,13 +5,15 @@ package resolver
 
 import (
 	"context"
+	"project-management-demo-backend/ent"
 	"project-management-demo-backend/ent/schema/pulid"
 	"project-management-demo-backend/graph/generated"
 	"project-management-demo-backend/pkg/adapter/handler"
 	"project-management-demo-backend/pkg/entity/model"
+	"project-management-demo-backend/pkg/util/datetime"
 )
 
-func (r *mutationResolver) CreateTestUser(ctx context.Context, input model.CreateTestUserInput) (*model.TestUser, error) {
+func (r *mutationResolver) CreateTestUser(ctx context.Context, input ent.CreateTestUserInput) (*ent.TestUser, error) {
 	u, err := r.controller.TestUser.Create(ctx, input)
 	if err != nil {
 		return nil, handler.HandleError(ctx, err)
@@ -19,7 +21,7 @@ func (r *mutationResolver) CreateTestUser(ctx context.Context, input model.Creat
 	return u, nil
 }
 
-func (r *mutationResolver) UpdateTestUser(ctx context.Context, input model.UpdateTestUserInput) (*model.TestUser, error) {
+func (r *mutationResolver) UpdateTestUser(ctx context.Context, input model.UpdateTestUserInput) (*ent.TestUser, error) {
 	u, err := r.controller.TestUser.Update(ctx, input)
 	if err != nil {
 		return nil, handler.HandleError(ctx, err)
@@ -27,7 +29,7 @@ func (r *mutationResolver) UpdateTestUser(ctx context.Context, input model.Updat
 	return u, nil
 }
 
-func (r *queryResolver) TestUser(ctx context.Context, id *pulid.ID, age *int) (*model.TestUser, error) {
+func (r *queryResolver) TestUser(ctx context.Context, id *pulid.ID, age *int) (*ent.TestUser, error) {
 	u, err := r.controller.TestUser.Get(ctx, id, age)
 	if err != nil {
 		return nil, handler.HandleError(ctx, err)
@@ -35,7 +37,7 @@ func (r *queryResolver) TestUser(ctx context.Context, id *pulid.ID, age *int) (*
 	return u, nil
 }
 
-func (r *queryResolver) TestUsers(ctx context.Context) ([]*model.TestUser, error) {
+func (r *queryResolver) TestUsers(ctx context.Context) ([]*ent.TestUser, error) {
 	us, err := r.controller.TestUser.List(ctx)
 	if err != nil {
 		return nil, handler.HandleError(ctx, err)
@@ -43,7 +45,7 @@ func (r *queryResolver) TestUsers(ctx context.Context) ([]*model.TestUser, error
 	return us, nil
 }
 
-func (r *testUserResolver) TestTodos(ctx context.Context, obj *model.TestUser) ([]*model.TestTodo, error) {
+func (r *testUserResolver) TestTodos(ctx context.Context, obj *ent.TestUser) ([]*model.TestTodo, error) {
 	ts, err := obj.TestTodos(ctx)
 	if err != nil {
 		return nil, handler.HandleError(ctx, err)
@@ -56,12 +58,12 @@ func (r *testUserResolver) TestTodos(ctx context.Context, obj *model.TestUser) (
 	return res, nil
 }
 
-func (r *testUserResolver) CreatedAt(ctx context.Context, obj *model.TestUser) (string, error) {
-	return obj.FormattedCreatedAt(), nil
+func (r *testUserResolver) CreatedAt(ctx context.Context, obj *ent.TestUser) (string, error) {
+	return datetime.FormatDate(obj.CreatedAt), nil
 }
 
-func (r *testUserResolver) UpdatedAt(ctx context.Context, obj *model.TestUser) (string, error) {
-	return obj.FormattedUpdatedAt(), nil
+func (r *testUserResolver) UpdatedAt(ctx context.Context, obj *ent.TestUser) (string, error) {
+	return datetime.FormatDate(obj.UpdatedAt), nil
 }
 
 // TestUser returns generated.TestUserResolver implementation.

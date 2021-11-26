@@ -43,7 +43,7 @@ func (r *testUserRepository) Get(id *model.ID, age *int) (*model.TestUser, error
 		return nil, model.NewDBError(err)
 	}
 
-	return &model.TestUser{TestUser: u}, nil
+	return u, nil
 }
 
 func (r *testUserRepository) List() ([]*model.TestUser, error) {
@@ -55,14 +55,7 @@ func (r *testUserRepository) List() ([]*model.TestUser, error) {
 		return nil, model.NewDBError(err)
 	}
 
-	res := make([]*model.TestUser, len(us))
-	for i, u := range us {
-		res[i] = &model.TestUser{
-			TestUser: u,
-		}
-	}
-
-	return res, nil
+	return us, nil
 }
 
 func (r *testUserRepository) Create(input model.CreateTestUserInput) (*model.TestUser, error) {
@@ -70,14 +63,14 @@ func (r *testUserRepository) Create(input model.CreateTestUserInput) (*model.Tes
 	u, err := r.client.
 		TestUser.
 		Create().
-		SetInput(input.CreateTestUserInput).
+		SetInput(input).
 		Save(ctx)
 
 	if err != nil {
 		return nil, model.NewDBError(err)
 	}
 
-	return &model.TestUser{TestUser: u}, nil
+	return u, nil
 }
 
 func (r *testUserRepository) Update(input model.UpdateTestUserInput) (*model.TestUser, error) {
@@ -96,5 +89,5 @@ func (r *testUserRepository) Update(input model.UpdateTestUserInput) (*model.Tes
 		return nil, model.NewDBError(err)
 	}
 
-	return &model.TestUser{TestUser: u}, nil
+	return u, nil
 }
