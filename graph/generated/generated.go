@@ -52,7 +52,7 @@ type ComplexityRoot struct {
 		CreateTestTodo func(childComplexity int, input model.CreateTestTodoInput) int
 		CreateTestUser func(childComplexity int, input ent.CreateTestUserInput) int
 		UpdateTestTodo func(childComplexity int, input model.UpdateTestTodoInput) int
-		UpdateTestUser func(childComplexity int, input model.UpdateTestUserInput) int
+		UpdateTestUser func(childComplexity int, input ent.UpdateTestUserInput) int
 	}
 
 	Query struct {
@@ -86,7 +86,7 @@ type MutationResolver interface {
 	CreateTestTodo(ctx context.Context, input model.CreateTestTodoInput) (*model.TestTodo, error)
 	UpdateTestTodo(ctx context.Context, input model.UpdateTestTodoInput) (*model.TestTodo, error)
 	CreateTestUser(ctx context.Context, input ent.CreateTestUserInput) (*ent.TestUser, error)
-	UpdateTestUser(ctx context.Context, input model.UpdateTestUserInput) (*ent.TestUser, error)
+	UpdateTestUser(ctx context.Context, input ent.UpdateTestUserInput) (*ent.TestUser, error)
 }
 type QueryResolver interface {
 	TestTodo(ctx context.Context, id *pulid.ID) (*model.TestTodo, error)
@@ -165,7 +165,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.UpdateTestUser(childComplexity, args["input"].(model.UpdateTestUserInput)), true
+		return e.complexity.Mutation.UpdateTestUser(childComplexity, args["input"].(ent.UpdateTestUserInput)), true
 
 	case "Query.testTodo":
 		if e.complexity.Query.TestTodo == nil {
@@ -487,10 +487,10 @@ func (ec *executionContext) field_Mutation_updateTestTodo_args(ctx context.Conte
 func (ec *executionContext) field_Mutation_updateTestUser_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 model.UpdateTestUserInput
+	var arg0 ent.UpdateTestUserInput
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNUpdateTestUserInput2projectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐUpdateTestUserInput(ctx, tmp)
+		arg0, err = ec.unmarshalNUpdateTestUserInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐUpdateTestUserInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -742,7 +742,7 @@ func (ec *executionContext) _Mutation_updateTestUser(ctx context.Context, field 
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().UpdateTestUser(rctx, args["input"].(model.UpdateTestUserInput))
+		return ec.resolvers.Mutation().UpdateTestUser(rctx, args["input"].(ent.UpdateTestUserInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2686,8 +2686,8 @@ func (ec *executionContext) unmarshalInputUpdateTestTodoInput(ctx context.Contex
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputUpdateTestUserInput(ctx context.Context, obj interface{}) (model.UpdateTestUserInput, error) {
-	var it model.UpdateTestUserInput
+func (ec *executionContext) unmarshalInputUpdateTestUserInput(ctx context.Context, obj interface{}) (ent.UpdateTestUserInput, error) {
+	var it ent.UpdateTestUserInput
 	asMap := map[string]interface{}{}
 	for k, v := range obj.(map[string]interface{}) {
 		asMap[k] = v
@@ -3446,7 +3446,7 @@ func (ec *executionContext) unmarshalNUpdateTestTodoInput2projectᚑmanagement�
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNUpdateTestUserInput2projectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐUpdateTestUserInput(ctx context.Context, v interface{}) (model.UpdateTestUserInput, error) {
+func (ec *executionContext) unmarshalNUpdateTestUserInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐUpdateTestUserInput(ctx context.Context, v interface{}) (ent.UpdateTestUserInput, error) {
 	res, err := ec.unmarshalInputUpdateTestUserInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }

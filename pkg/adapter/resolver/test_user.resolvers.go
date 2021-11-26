@@ -21,7 +21,7 @@ func (r *mutationResolver) CreateTestUser(ctx context.Context, input ent.CreateT
 	return u, nil
 }
 
-func (r *mutationResolver) UpdateTestUser(ctx context.Context, input model.UpdateTestUserInput) (*ent.TestUser, error) {
+func (r *mutationResolver) UpdateTestUser(ctx context.Context, input ent.UpdateTestUserInput) (*ent.TestUser, error) {
 	u, err := r.controller.TestUser.Update(ctx, input)
 	if err != nil {
 		return nil, handler.HandleError(ctx, err)

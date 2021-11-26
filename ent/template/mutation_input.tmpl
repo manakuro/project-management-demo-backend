@@ -70,6 +70,7 @@
         {{ $input = print "Update" $n.Name "Input" }}
         // {{ $input }} represents a mutation input for updating {{ plural $n.Name | lower }}.
         type {{ $input }} struct {
+            {{ print "ID" }} {{ $n.ID.Type }}
         {{- range $f := $n.MutableFields }}
             {{- if not $f.IsEdgeField }}
                 {{ $f.StructField }} {{ if not $f.Type.RType.IsPtr }}*{{ end }}{{ $f.Type }}

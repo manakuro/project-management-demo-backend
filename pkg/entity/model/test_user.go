@@ -11,7 +11,4 @@ type TestUser = ent.TestUser
 type CreateTestUserInput = ent.CreateTestUserInput
 
 // UpdateTestUserInput represents a mutation input for updating test users.
-type UpdateTestUserInput struct {
-	ID ID
-	ent.UpdateTestUserInput
-}
+type UpdateTestUserInput = ent.UpdateTestUserInput

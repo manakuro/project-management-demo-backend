@@ -78,7 +78,7 @@ func (r *testUserRepository) Update(input model.UpdateTestUserInput) (*model.Tes
 
 	u, err := r.client.
 		TestUser.UpdateOneID(input.ID).
-		SetInput(input.UpdateTestUserInput).
+		SetInput(input).
 		Save(ctx)
 
 	if err != nil {
