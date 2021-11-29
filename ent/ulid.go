@@ -6,11 +6,13 @@ import (
 	"context"
 	"fmt"
 	"project-management-demo-backend/ent/schema/ulid"
+	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/ent/testuser"
 )
 
 // prefixMap maps ULID prefixes to table names.
 var prefixMap = map[ulid.ID]string{
+	"TD": testtodo.Table,
 	"TU": testuser.Table,
 }
 

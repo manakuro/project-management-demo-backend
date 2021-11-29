@@ -14,26 +14,33 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	testtodoMixin := schema.TestTodo{}.Mixin()
+	testtodoMixinFields0 := testtodoMixin[0].Fields()
+	_ = testtodoMixinFields0
+	testtodoMixinFields1 := testtodoMixin[1].Fields()
+	_ = testtodoMixinFields1
+	testtodoMixinFields2 := testtodoMixin[2].Fields()
+	_ = testtodoMixinFields2
 	testtodoFields := schema.TestTodo{}.Fields()
 	_ = testtodoFields
 	// testtodoDescName is the schema descriptor for name field.
-	testtodoDescName := testtodoFields[2].Descriptor()
+	testtodoDescName := testtodoMixinFields1[1].Descriptor()
 	// testtodo.NameValidator is a validator for the "name" field. It is called by the builders before save.
 	testtodo.NameValidator = testtodoDescName.Validators[0].(func(string) error)
 	// testtodoDescPriority is the schema descriptor for priority field.
-	testtodoDescPriority := testtodoFields[4].Descriptor()
+	testtodoDescPriority := testtodoMixinFields1[3].Descriptor()
 	// testtodo.DefaultPriority holds the default value on creation for the priority field.
 	testtodo.DefaultPriority = testtodoDescPriority.Default.(int)
 	// testtodoDescCreatedAt is the schema descriptor for created_at field.
-	testtodoDescCreatedAt := testtodoFields[5].Descriptor()
+	testtodoDescCreatedAt := testtodoMixinFields2[0].Descriptor()
 	// testtodo.DefaultCreatedAt holds the default value on creation for the created_at field.
 	testtodo.DefaultCreatedAt = testtodoDescCreatedAt.Default.(func() time.Time)
 	// testtodoDescUpdatedAt is the schema descriptor for updated_at field.
-	testtodoDescUpdatedAt := testtodoFields[6].Descriptor()
+	testtodoDescUpdatedAt := testtodoMixinFields2[1].Descriptor()
 	// testtodo.DefaultUpdatedAt holds the default value on creation for the updated_at field.
 	testtodo.DefaultUpdatedAt = testtodoDescUpdatedAt.Default.(func() time.Time)
 	// testtodoDescID is the schema descriptor for id field.
-	testtodoDescID := testtodoFields[0].Descriptor()
+	testtodoDescID := testtodoMixinFields0[0].Descriptor()
 	// testtodo.DefaultID holds the default value on creation for the id field.
 	testtodo.DefaultID = testtodoDescID.Default.(func() ulid.ID)
 	testuserMixin := schema.TestUser{}.Mixin()

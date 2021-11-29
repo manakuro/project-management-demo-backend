@@ -1,13 +1,13 @@
 package schema
 
 import (
+	"project-management-demo-backend/ent/mixin"
 	"project-management-demo-backend/ent/schema/ulid"
-	"time"
 
 	"entgo.io/ent/schema/edge"
+	entMixin "entgo.io/ent/schema/mixin"
 
 	"entgo.io/ent"
-	"entgo.io/ent/dialect"
 	"entgo.io/ent/schema/field"
 )
 
@@ -16,12 +16,16 @@ type TestTodo struct {
 	ent.Schema
 }
 
+var testTodoTablePrefix = "TD"
+
+// TestTodoMixin defines Fields
+type TestTodoMixin struct {
+	entMixin.Schema
+}
+
 // Fields of the TestTodo.
-func (TestTodo) Fields() []ent.Field {
+func (TestTodoMixin) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("id").
-			GoType(ulid.ID("")).
-			DefaultFunc(func() ulid.ID { return ulid.MustNew("") }),
 		field.String("test_user_id").
 			GoType(ulid.ID("")).
 			Optional(),
@@ -33,18 +37,6 @@ func (TestTodo) Fields() []ent.Field {
 			).
 			Default("IN_PROGRESS"),
 		field.Int("priority").Default(0),
-		field.Time("created_at").
-			Immutable().
-			Default(time.Now).
-			SchemaType(map[string]string{
-				dialect.MySQL: "datetime DEFAULT CURRENT_TIMESTAMP",
-			}),
-		field.Time("updated_at").
-			Immutable().
-			Default(time.Now).
-			SchemaType(map[string]string{
-				dialect.MySQL: "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
-			}),
 	}
 }
 
@@ -55,5 +47,14 @@ func (TestTodo) Edges() []ent.Edge {
 			Ref("test_todos").
 			Unique().
 			Field("test_user_id"),
+	}
+}
+
+// Mixin of the TestTodo.
+func (TestTodo) Mixin() []ent.Mixin {
+	return []ent.Mixin{
+		mixin.NewUlid(testTodoTablePrefix),
+		TestTodoMixin{},
+		mixin.NewDatetime(),
 	}
 }
