@@ -53,7 +53,7 @@ models:
       - github.com/99designs/gqlgen/graphql.Int32
   Node:
       model:
-        - project-management-demo-backend/ent.Noder
+        - project-management-demo-backend/pkg/entity/model.Node
   TestTodoStatus:
       model:
         - project-management-demo-backend/ent/testtodo.Status

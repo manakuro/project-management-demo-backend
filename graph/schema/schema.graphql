@@ -1,5 +1,11 @@
 scalar Time
 
-type Query
+interface Node {
+    id: ID!
+}
+
+type Query {
+    node(id: ID!): Node
+}
 
 type Mutation

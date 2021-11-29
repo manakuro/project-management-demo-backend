@@ -1,4 +1,4 @@
-type TestUser {
+type TestUser implements Node {
   id: ID!
   name: String!
   age: Int!

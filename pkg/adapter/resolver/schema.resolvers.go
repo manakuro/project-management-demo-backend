@@ -4,8 +4,24 @@ package resolver
 // will be copied through when generating and any unknown code will be moved to the end.
 
 import (
+	"context"
+	"project-management-demo-backend/ent"
+	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/graph/generated"
+	"project-management-demo-backend/pkg/adapter/handler"
+	"project-management-demo-backend/pkg/entity/model"
 )
+
+func (r *queryResolver) Node(ctx context.Context, id ulid.ID) (ent.Noder, error) {
+	n, err := r.client.Noder(ctx, id, ent.WithNodeType(ent.IDToType))
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return nil, handler.HandleError(ctx, model.NewNotFoundError(err, id))
+		}
+		return nil, handler.HandleError(ctx, model.NewGraphQLError(err))
+	}
+	return n, nil
+}
 
 // Mutation returns generated.MutationResolver implementation.
 func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResolver{r} }
