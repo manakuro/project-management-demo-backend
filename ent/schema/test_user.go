@@ -1,10 +1,8 @@
 package schema
 
 import (
-	"project-management-demo-backend/ent/schema/ulid"
+	"project-management-demo-backend/ent/mixin"
 	"time"
-
-	"entgo.io/ent/schema"
 
 	"entgo.io/ent/schema/edge"
 
@@ -23,11 +21,6 @@ var testUserTablePrefix = "TU"
 // Fields of the Test.
 func (TestUser) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("id").
-			GoType(ulid.ID("")).
-			DefaultFunc(func() ulid.ID {
-				return ulid.MustNew(testUserTablePrefix)
-			}),
 		field.String("name").
 			NotEmpty(),
 		field.Int("age"),
@@ -51,19 +44,9 @@ func (TestUser) Edges() []ent.Edge {
 	}
 }
 
-// Annotation captures the id prefix for a type.
-type Annotation struct {
-	Prefix string
-}
-
-// Name implements the ent Annotation interface.
-func (a Annotation) Name() string {
-	return "ULID"
-}
-
-// Annotations of the TestUser
-func (TestUser) Annotations() []schema.Annotation {
-	return []schema.Annotation{
-		Annotation{Prefix: testUserTablePrefix},
+// Mixin of the TestUser
+func (TestUser) Mixin() []ent.Mixin {
+	return []ent.Mixin{
+		mixin.NewUlidMixin(testUserTablePrefix),
 	}
 }
