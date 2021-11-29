@@ -9,7 +9,6 @@ import (
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/ent/testuser"
-	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -45,34 +44,6 @@ func (tuu *TestUserUpdate) SetAge(i int) *TestUserUpdate {
 // AddAge adds i to the "age" field.
 func (tuu *TestUserUpdate) AddAge(i int) *TestUserUpdate {
 	tuu.mutation.AddAge(i)
-	return tuu
-}
-
-// SetCreatedAt sets the "created_at" field.
-func (tuu *TestUserUpdate) SetCreatedAt(t time.Time) *TestUserUpdate {
-	tuu.mutation.SetCreatedAt(t)
-	return tuu
-}
-
-// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (tuu *TestUserUpdate) SetNillableCreatedAt(t *time.Time) *TestUserUpdate {
-	if t != nil {
-		tuu.SetCreatedAt(*t)
-	}
-	return tuu
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (tuu *TestUserUpdate) SetUpdatedAt(t time.Time) *TestUserUpdate {
-	tuu.mutation.SetUpdatedAt(t)
-	return tuu
-}
-
-// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
-func (tuu *TestUserUpdate) SetNillableUpdatedAt(t *time.Time) *TestUserUpdate {
-	if t != nil {
-		tuu.SetUpdatedAt(*t)
-	}
 	return tuu
 }
 
@@ -226,20 +197,6 @@ func (tuu *TestUserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: testuser.FieldAge,
 		})
 	}
-	if value, ok := tuu.mutation.CreatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: testuser.FieldCreatedAt,
-		})
-	}
-	if value, ok := tuu.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: testuser.FieldUpdatedAt,
-		})
-	}
 	if tuu.mutation.TestTodosCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -329,34 +286,6 @@ func (tuuo *TestUserUpdateOne) SetAge(i int) *TestUserUpdateOne {
 // AddAge adds i to the "age" field.
 func (tuuo *TestUserUpdateOne) AddAge(i int) *TestUserUpdateOne {
 	tuuo.mutation.AddAge(i)
-	return tuuo
-}
-
-// SetCreatedAt sets the "created_at" field.
-func (tuuo *TestUserUpdateOne) SetCreatedAt(t time.Time) *TestUserUpdateOne {
-	tuuo.mutation.SetCreatedAt(t)
-	return tuuo
-}
-
-// SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (tuuo *TestUserUpdateOne) SetNillableCreatedAt(t *time.Time) *TestUserUpdateOne {
-	if t != nil {
-		tuuo.SetCreatedAt(*t)
-	}
-	return tuuo
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (tuuo *TestUserUpdateOne) SetUpdatedAt(t time.Time) *TestUserUpdateOne {
-	tuuo.mutation.SetUpdatedAt(t)
-	return tuuo
-}
-
-// SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
-func (tuuo *TestUserUpdateOne) SetNillableUpdatedAt(t *time.Time) *TestUserUpdateOne {
-	if t != nil {
-		tuuo.SetUpdatedAt(*t)
-	}
 	return tuuo
 }
 
@@ -532,20 +461,6 @@ func (tuuo *TestUserUpdateOne) sqlSave(ctx context.Context) (_node *TestUser, er
 			Type:   field.TypeInt,
 			Value:  value,
 			Column: testuser.FieldAge,
-		})
-	}
-	if value, ok := tuuo.mutation.CreatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: testuser.FieldCreatedAt,
-		})
-	}
-	if value, ok := tuuo.mutation.UpdatedAt(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeTime,
-			Value:  value,
-			Column: testuser.FieldUpdatedAt,
 		})
 	}
 	if tuuo.mutation.TestTodosCleared() {

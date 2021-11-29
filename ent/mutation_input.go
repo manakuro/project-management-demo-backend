@@ -120,8 +120,6 @@ type UpdateTestUserInput struct {
 	ID                ulid.ID
 	Name              *string
 	Age               *int
-	CreatedAt         *time.Time
-	UpdatedAt         *time.Time
 	AddTestTodoIDs    []ulid.ID
 	RemoveTestTodoIDs []ulid.ID
 }
@@ -133,12 +131,6 @@ func (i *UpdateTestUserInput) Mutate(m *TestUserMutation) {
 	}
 	if v := i.Age; v != nil {
 		m.SetAge(*v)
-	}
-	if v := i.CreatedAt; v != nil {
-		m.SetCreatedAt(*v)
-	}
-	if v := i.UpdatedAt; v != nil {
-		m.SetUpdatedAt(*v)
 	}
 	if ids := i.AddTestTodoIDs; len(ids) > 0 {
 		m.AddTestTodoIDs(ids...)

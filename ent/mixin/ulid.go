@@ -9,12 +9,12 @@ import (
 	"entgo.io/ent/schema/mixin"
 )
 
-// NewUlidMixin creates a Mixin that encodes the provided prefix.
-func NewUlidMixin(prefix string) *UlidMixin {
+// NewUlid creates a Mixin that encodes the provided prefix.
+func NewUlid(prefix string) *UlidMixin {
 	return &UlidMixin{prefix: prefix}
 }
 
-// UlidMixin defines an ent Mixin that captures the PULID prefix for a type.
+// UlidMixin defines an ent Mixin that captures the ULID prefix for a type.
 type UlidMixin struct {
 	mixin.Schema
 	prefix string

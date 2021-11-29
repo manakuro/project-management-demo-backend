@@ -2,13 +2,12 @@ package schema
 
 import (
 	"project-management-demo-backend/ent/mixin"
-	"time"
 
 	"entgo.io/ent/schema/edge"
 
 	"entgo.io/ent"
-	"entgo.io/ent/dialect"
 	"entgo.io/ent/schema/field"
+	entMixin "entgo.io/ent/schema/mixin"
 )
 
 // TestUser holds the schema definition for the Test entity.
@@ -18,35 +17,32 @@ type TestUser struct {
 
 var testUserTablePrefix = "TU"
 
-// Fields of the Test.
-func (TestUser) Fields() []ent.Field {
+// TestUserMixin defines Fields
+type TestUserMixin struct {
+	entMixin.Schema
+}
+
+// Fields of the TestUser.
+func (TestUserMixin) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("name").
 			NotEmpty(),
 		field.Int("age"),
-		field.Time("created_at").
-			Default(time.Now).
-			SchemaType(map[string]string{
-				dialect.MySQL: "datetime DEFAULT CURRENT_TIMESTAMP",
-			}),
-		field.Time("updated_at").
-			Default(time.Now).
-			SchemaType(map[string]string{
-				dialect.MySQL: "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP",
-			}),
 	}
 }
 
-// Edges of the Test.
+// Edges of the TestUser.
 func (TestUser) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("test_todos", TestTodo.Type),
 	}
 }
 
-// Mixin of the TestUser
+// Mixin of the TestUser.
 func (TestUser) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		mixin.NewUlidMixin(testUserTablePrefix),
+		mixin.NewUlid(testUserTablePrefix),
+		TestUserMixin{},
+		mixin.NewDatetime(),
 	}
 }
