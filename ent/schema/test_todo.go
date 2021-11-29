@@ -3,6 +3,7 @@ package schema
 import (
 	"project-management-demo-backend/ent/mixin"
 	"project-management-demo-backend/ent/schema/ulid"
+	"project-management-demo-backend/pkg/const/dbschema"
 
 	"entgo.io/ent/schema/edge"
 	entMixin "entgo.io/ent/schema/mixin"
@@ -15,8 +16,6 @@ import (
 type TestTodo struct {
 	ent.Schema
 }
-
-var testTodoTablePrefix = "TD"
 
 // TestTodoMixin defines Fields
 type TestTodoMixin struct {
@@ -53,7 +52,7 @@ func (TestTodo) Edges() []ent.Edge {
 // Mixin of the TestTodo.
 func (TestTodo) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		mixin.NewUlid(testTodoTablePrefix),
+		mixin.NewUlid(dbschema.New().TestTodo.Prefix),
 		TestTodoMixin{},
 		mixin.NewDatetime(),
 	}
