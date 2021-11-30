@@ -28,7 +28,7 @@ func (TestTodoMixin) Fields() []ent.Field {
 		field.String("test_user_id").
 			GoType(ulid.ID("")).
 			Optional(),
-		field.String("name").NotEmpty(),
+		field.String("name").Default(""),
 		field.Enum("status").
 			NamedValues(
 				"InProgress", "IN_PROGRESS",

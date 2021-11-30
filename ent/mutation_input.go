@@ -10,7 +10,7 @@ import (
 
 // CreateTestTodoInput represents a mutation input for creating testtodos.
 type CreateTestTodoInput struct {
-	Name       string
+	Name       *string
 	Status     *testtodo.Status
 	Priority   *int
 	CreatedAt  *time.Time
@@ -20,7 +20,9 @@ type CreateTestTodoInput struct {
 
 // Mutate applies the CreateTestTodoInput on the TestTodoCreate builder.
 func (i *CreateTestTodoInput) Mutate(m *TestTodoCreate) {
-	m.SetName(i.Name)
+	if v := i.Name; v != nil {
+		m.SetName(*v)
+	}
 	if v := i.Status; v != nil {
 		m.SetStatus(*v)
 	}

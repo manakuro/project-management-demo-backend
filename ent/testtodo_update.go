@@ -54,6 +54,14 @@ func (ttu *TestTodoUpdate) SetName(s string) *TestTodoUpdate {
 	return ttu
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (ttu *TestTodoUpdate) SetNillableName(s *string) *TestTodoUpdate {
+	if s != nil {
+		ttu.SetName(*s)
+	}
+	return ttu
+}
+
 // SetStatus sets the "status" field.
 func (ttu *TestTodoUpdate) SetStatus(t testtodo.Status) *TestTodoUpdate {
 	ttu.mutation.SetStatus(t)
@@ -167,11 +175,6 @@ func (ttu *TestTodoUpdate) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (ttu *TestTodoUpdate) check() error {
-	if v, ok := ttu.mutation.Name(); ok {
-		if err := testtodo.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf("ent: validator failed for field \"name\": %w", err)}
-		}
-	}
 	if v, ok := ttu.mutation.Status(); ok {
 		if err := testtodo.StatusValidator(v); err != nil {
 			return &ValidationError{Name: "status", err: fmt.Errorf("ent: validator failed for field \"status\": %w", err)}
@@ -306,6 +309,14 @@ func (ttuo *TestTodoUpdateOne) SetName(s string) *TestTodoUpdateOne {
 	return ttuo
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (ttuo *TestTodoUpdateOne) SetNillableName(s *string) *TestTodoUpdateOne {
+	if s != nil {
+		ttuo.SetName(*s)
+	}
+	return ttuo
+}
+
 // SetStatus sets the "status" field.
 func (ttuo *TestTodoUpdateOne) SetStatus(t testtodo.Status) *TestTodoUpdateOne {
 	ttuo.mutation.SetStatus(t)
@@ -426,11 +437,6 @@ func (ttuo *TestTodoUpdateOne) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (ttuo *TestTodoUpdateOne) check() error {
-	if v, ok := ttuo.mutation.Name(); ok {
-		if err := testtodo.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf("ent: validator failed for field \"name\": %w", err)}
-		}
-	}
 	if v, ok := ttuo.mutation.Status(); ok {
 		if err := testtodo.StatusValidator(v); err != nil {
 			return &ValidationError{Name: "status", err: fmt.Errorf("ent: validator failed for field \"status\": %w", err)}

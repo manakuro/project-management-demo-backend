@@ -25,8 +25,8 @@ func init() {
 	_ = testtodoFields
 	// testtodoDescName is the schema descriptor for name field.
 	testtodoDescName := testtodoMixinFields1[1].Descriptor()
-	// testtodo.NameValidator is a validator for the "name" field. It is called by the builders before save.
-	testtodo.NameValidator = testtodoDescName.Validators[0].(func(string) error)
+	// testtodo.DefaultName holds the default value on creation for the name field.
+	testtodo.DefaultName = testtodoDescName.Default.(string)
 	// testtodoDescPriority is the schema descriptor for priority field.
 	testtodoDescPriority := testtodoMixinFields1[3].Descriptor()
 	// testtodo.DefaultPriority holds the default value on creation for the priority field.

@@ -42,6 +42,14 @@ func (ttc *TestTodoCreate) SetName(s string) *TestTodoCreate {
 	return ttc
 }
 
+// SetNillableName sets the "name" field if the given value is not nil.
+func (ttc *TestTodoCreate) SetNillableName(s *string) *TestTodoCreate {
+	if s != nil {
+		ttc.SetName(*s)
+	}
+	return ttc
+}
+
 // SetStatus sets the "status" field.
 func (ttc *TestTodoCreate) SetStatus(t testtodo.Status) *TestTodoCreate {
 	ttc.mutation.SetStatus(t)
@@ -188,6 +196,10 @@ func (ttc *TestTodoCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (ttc *TestTodoCreate) defaults() {
+	if _, ok := ttc.mutation.Name(); !ok {
+		v := testtodo.DefaultName
+		ttc.mutation.SetName(v)
+	}
 	if _, ok := ttc.mutation.Status(); !ok {
 		v := testtodo.DefaultStatus
 		ttc.mutation.SetStatus(v)
@@ -214,11 +226,6 @@ func (ttc *TestTodoCreate) defaults() {
 func (ttc *TestTodoCreate) check() error {
 	if _, ok := ttc.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "name"`)}
-	}
-	if v, ok := ttc.mutation.Name(); ok {
-		if err := testtodo.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "name": %w`, err)}
-		}
 	}
 	if _, ok := ttc.mutation.Status(); !ok {
 		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "status"`)}
