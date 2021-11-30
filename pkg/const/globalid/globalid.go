@@ -1,4 +1,4 @@
-package dbschema
+package globalid
 
 import (
 	"fmt"
@@ -13,17 +13,16 @@ type field struct {
 	Table  string
 }
 
-// DBSchema maps unique string to tables names.
-type DBSchema struct {
+// GlobalIDs maps unique string to tables names.
+type GlobalIDs struct {
 	TestUser field
 	TestTodo field
 }
 
-// New generates DBSchema
-// This is intended to be used as global identification for node interface query.
+// New generates a map object that is intended to be used as global identification for node interface query.
 // Prefix should maintain constrained to 3 characters for encoding the entity type.
-func New() DBSchema {
-	return DBSchema{
+func New() GlobalIDs {
+	return GlobalIDs{
 		TestUser: field{
 			Prefix: "0AA",
 			Table:  testuser.Table,
@@ -35,11 +34,11 @@ func New() DBSchema {
 	}
 }
 
-var ds = New()
-var maps = structToMap(&ds)
+var globalIDS = New()
+var maps = structToMap(&globalIDS)
 
 // FindTableByID returns table name by passed id.
-func (DBSchema) FindTableByID(id string) (string, error) {
+func (GlobalIDs) FindTableByID(id string) (string, error) {
 	v, ok := maps[id]
 	if !ok {
 		return "", fmt.Errorf("could not map '%s' to a table name", id)
@@ -47,18 +46,18 @@ func (DBSchema) FindTableByID(id string) (string, error) {
 	return v, nil
 }
 
-func structToMap(data *DBSchema) map[string]string {
+func structToMap(data *GlobalIDs) map[string]string {
 	elem := reflect.ValueOf(data).Elem()
 	size := elem.NumField()
 	result := make(map[string]string, size)
 
 	for i := 0; i < size; i++ {
 		value := elem.Field(i).Interface()
-		m, ok := value.(field)
+		f, ok := value.(field)
 		if !ok {
 			log.Fatalf("Cannot convert struct to map")
 		}
-		result[m.Prefix] = m.Table
+		result[f.Prefix] = f.Table
 	}
 
 	return result

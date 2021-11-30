@@ -3,7 +3,7 @@ package schema
 import (
 	"project-management-demo-backend/ent/mixin"
 	"project-management-demo-backend/ent/schema/ulid"
-	"project-management-demo-backend/pkg/const/dbschema"
+	"project-management-demo-backend/pkg/const/globalid"
 
 	"entgo.io/ent/schema/edge"
 	entMixin "entgo.io/ent/schema/mixin"
@@ -52,7 +52,7 @@ func (TestTodo) Edges() []ent.Edge {
 // Mixin of the TestTodo.
 func (TestTodo) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		mixin.NewUlid(dbschema.New().TestTodo.Prefix),
+		mixin.NewUlid(globalid.New().TestTodo.Prefix),
 		TestTodoMixin{},
 		mixin.NewDatetime(),
 	}
