@@ -12,6 +12,7 @@ type TestUser interface {
 	List(ctx context.Context) ([]*model.TestUser, error)
 	ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int) (*model.TestUserConnection, error)
 	Create(ctx context.Context, input model.CreateTestUserInput) (*model.TestUser, error)
+	CreateWithTodo(ctx context.Context, input model.CreateTestUserInput) (*model.TestUser, error)
 	Update(ctx context.Context, input model.UpdateTestUserInput) (*model.TestUser, error)
 }
 
@@ -40,6 +41,10 @@ func (t *testUser) ListWithPagination(ctx context.Context, after *model.Cursor, 
 
 func (t *testUser) Create(ctx context.Context, input model.CreateTestUserInput) (*model.TestUser, error) {
 	return t.testUserUsecase.Create(ctx, input)
+}
+
+func (t *testUser) CreateWithTodo(ctx context.Context, input model.CreateTestUserInput) (*model.TestUser, error) {
+	return t.testUserUsecase.CreateWithTodo(ctx, input)
 }
 
 func (t *testUser) Update(ctx context.Context, input model.UpdateTestUserInput) (*model.TestUser, error) {

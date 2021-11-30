@@ -20,6 +20,14 @@ func (r *mutationResolver) CreateTestUser(ctx context.Context, input ent.CreateT
 	return u, nil
 }
 
+func (r *mutationResolver) CreateTestUserAndTodo(ctx context.Context, input ent.CreateTestUserInput) (*ent.TestUser, error) {
+	u, err := r.controller.TestUser.CreateWithTodo(ctx, input)
+	if err != nil {
+		return nil, handler.HandleError(ctx, err)
+	}
+	return u, nil
+}
+
 func (r *mutationResolver) UpdateTestUser(ctx context.Context, input ent.UpdateTestUserInput) (*ent.TestUser, error) {
 	u, err := r.controller.TestUser.Update(ctx, input)
 	if err != nil {

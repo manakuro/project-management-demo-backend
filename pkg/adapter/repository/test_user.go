@@ -76,6 +76,27 @@ func (r *testUserRepository) Create(ctx context.Context, input model.CreateTestU
 	return u, nil
 }
 
+func (r *testUserRepository) CreateWithTodo(ctx context.Context, input model.CreateTestUserInput) (*model.TestUser, error) {
+	todo, err := r.client.
+		TestTodo.
+		Create().
+		Save(ctx)
+	if err != nil {
+		return nil, model.NewDBError(err)
+	}
+
+	u, err := r.client.TestUser.
+		Create().
+		SetInput(input).
+		AddTestTodos(todo).
+		Save(ctx)
+	if err != nil {
+		return nil, model.NewDBError(err)
+	}
+
+	return u, nil
+}
+
 func (r *testUserRepository) Update(ctx context.Context, input model.UpdateTestUserInput) (*model.TestUser, error) {
 	u, err := r.client.
 		TestUser.UpdateOneID(input.ID).

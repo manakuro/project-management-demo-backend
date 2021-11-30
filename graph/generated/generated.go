@@ -49,10 +49,11 @@ type DirectiveRoot struct {
 
 type ComplexityRoot struct {
 	Mutation struct {
-		CreateTestTodo func(childComplexity int, input ent.CreateTestTodoInput) int
-		CreateTestUser func(childComplexity int, input ent.CreateTestUserInput) int
-		UpdateTestTodo func(childComplexity int, input ent.UpdateTestTodoInput) int
-		UpdateTestUser func(childComplexity int, input ent.UpdateTestUserInput) int
+		CreateTestTodo        func(childComplexity int, input ent.CreateTestTodoInput) int
+		CreateTestUser        func(childComplexity int, input ent.CreateTestUserInput) int
+		CreateTestUserAndTodo func(childComplexity int, input ent.CreateTestUserInput) int
+		UpdateTestTodo        func(childComplexity int, input ent.UpdateTestTodoInput) int
+		UpdateTestUser        func(childComplexity int, input ent.UpdateTestUserInput) int
 	}
 
 	PageInfo struct {
@@ -106,6 +107,7 @@ type MutationResolver interface {
 	CreateTestTodo(ctx context.Context, input ent.CreateTestTodoInput) (*ent.TestTodo, error)
 	UpdateTestTodo(ctx context.Context, input ent.UpdateTestTodoInput) (*ent.TestTodo, error)
 	CreateTestUser(ctx context.Context, input ent.CreateTestUserInput) (*ent.TestUser, error)
+	CreateTestUserAndTodo(ctx context.Context, input ent.CreateTestUserInput) (*ent.TestUser, error)
 	UpdateTestUser(ctx context.Context, input ent.UpdateTestUserInput) (*ent.TestUser, error)
 }
 type QueryResolver interface {
@@ -163,6 +165,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.CreateTestUser(childComplexity, args["input"].(ent.CreateTestUserInput)), true
+
+	case "Mutation.createTestUserAndTodo":
+		if e.complexity.Mutation.CreateTestUserAndTodo == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createTestUserAndTodo_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateTestUserAndTodo(childComplexity, args["input"].(ent.CreateTestUserInput)), true
 
 	case "Mutation.updateTestTodo":
 		if e.complexity.Mutation.UpdateTestTodo == nil {
@@ -567,6 +581,7 @@ extend type Query {
 
 extend type Mutation {
   createTestUser(input: CreateTestUserInput!): TestUser!
+  createTestUserAndTodo(input: CreateTestUserInput!): TestUser!
   updateTestUser(input: UpdateTestUserInput!): TestUser!
 }
 `, BuiltIn: false},
@@ -584,6 +599,21 @@ func (ec *executionContext) field_Mutation_createTestTodo_args(ctx context.Conte
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNCreateTestTodoInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐCreateTestTodoInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_createTestUserAndTodo_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 ent.CreateTestUserInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNCreateTestUserInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐCreateTestUserInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -911,6 +941,48 @@ func (ec *executionContext) _Mutation_createTestUser(ctx context.Context, field 
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Mutation().CreateTestUser(rctx, args["input"].(ent.CreateTestUserInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.TestUser)
+	fc.Result = res
+	return ec.marshalNTestUser2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTestUser(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_createTestUserAndTodo(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_createTestUserAndTodo_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreateTestUserAndTodo(rctx, args["input"].(ent.CreateTestUserInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -3375,6 +3447,11 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			}
 		case "createTestUser":
 			out.Values[i] = ec._Mutation_createTestUser(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "createTestUserAndTodo":
+			out.Values[i] = ec._Mutation_createTestUserAndTodo(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
