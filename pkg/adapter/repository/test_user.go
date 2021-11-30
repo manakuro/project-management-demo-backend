@@ -58,6 +58,16 @@ func (r *testUserRepository) List() ([]*model.TestUser, error) {
 	return us, nil
 }
 
+func (r *testUserRepository) ListWithPagination(after *model.Cursor, first *int, before *model.Cursor, last *int) (*model.TestUserConnection, error) {
+	ctx := context.Background()
+
+	us, err := r.client.TestUser.Query().Paginate(ctx, after, first, before, last)
+	if err != nil {
+		return nil, model.NewDBError(err)
+	}
+	return us, nil
+}
+
 func (r *testUserRepository) Create(input model.CreateTestUserInput) (*model.TestUser, error) {
 	ctx := context.Background()
 	u, err := r.client.

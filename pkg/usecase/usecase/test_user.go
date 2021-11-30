@@ -13,6 +13,7 @@ type testUser struct {
 type TestUser interface {
 	Get(id *model.ID, age *int) (*model.TestUser, error)
 	List() ([]*model.TestUser, error)
+	ListWithPagination(after *model.Cursor, first *int, before *model.Cursor, last *int) (*model.TestUserConnection, error)
 	Create(input model.CreateTestUserInput) (*model.TestUser, error)
 	Update(input model.UpdateTestUserInput) (*model.TestUser, error)
 }
@@ -28,6 +29,10 @@ func (t *testUser) Get(id *model.ID, age *int) (*model.TestUser, error) {
 
 func (t *testUser) List() ([]*model.TestUser, error) {
 	return t.testUserRepository.List()
+}
+
+func (t *testUser) ListWithPagination(after *model.Cursor, first *int, before *model.Cursor, last *int) (*model.TestUserConnection, error) {
+	return t.testUserRepository.ListWithPagination(after, first, before, last)
 }
 
 func (t *testUser) Create(input model.CreateTestUserInput) (*model.TestUser, error) {

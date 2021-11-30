@@ -36,6 +36,7 @@ resolver:
 # if they match it will use them, otherwise it will generate them.
 autobind:
   - project-management-demo-backend/pkg/entity/model
+  - project-management-demo-backend/ent
 
 # This section declares type mapping between the GraphQL and go type systems
 #
