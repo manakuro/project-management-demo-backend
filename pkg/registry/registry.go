@@ -14,8 +14,8 @@ type Registry interface {
 	NewController() controller.Controller
 }
 
-// NewRegistry registers entire controller with dependencies
-func NewRegistry(client *ent.Client) Registry {
+// New registers entire controller with dependencies
+func New(client *ent.Client) Registry {
 	return &registry{
 		client: client,
 	}

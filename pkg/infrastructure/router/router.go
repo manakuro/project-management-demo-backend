@@ -9,8 +9,8 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
-// NewRouter creates route endpoint
-func NewRouter(srv *handler.Server) *echo.Echo {
+// New creates route endpoint
+func New(srv *handler.Server) *echo.Echo {
 	e := echo.New()
 	//e.Use(middleware.Logger())
 	e.Use(middleware.Recover())

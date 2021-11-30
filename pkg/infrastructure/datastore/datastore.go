@@ -7,8 +7,8 @@ import (
 	"github.com/go-sql-driver/mysql"
 )
 
-// NewDB returns database client with ORM
-func NewDB() (*ent.Client, error) {
+// New returns database client with ORM
+func New() (*ent.Client, error) {
 	DBMS := "mysql"
 	var entOptions []ent.Option
 	entOptions = append(entOptions, ent.Debug())

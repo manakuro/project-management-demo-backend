@@ -20,13 +20,13 @@ func main() {
 	c := newController(client)
 	srv := graphql.NewServer(client, c)
 
-	e := router.NewRouter(srv)
+	e := router.New(srv)
 
 	e.Logger.Fatal(e.Start(":8080"))
 }
 
 func newDBClient() *ent.Client {
-	client, err := datastore.NewDB()
+	client, err := datastore.New()
 	if err != nil {
 		log.Fatalf("failed opening mysql client: %v", err)
 	}
@@ -35,6 +35,6 @@ func newDBClient() *ent.Client {
 }
 
 func newController(client *ent.Client) controller.Controller {
-	r := registry.NewRegistry(client)
+	r := registry.New(client)
 	return r.NewController()
 }
