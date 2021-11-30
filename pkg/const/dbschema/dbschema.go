@@ -13,14 +13,15 @@ type field struct {
 	Table  string
 }
 
-// DBSchema defines database schema
+// DBSchema maps unique string to tables names.
 type DBSchema struct {
 	TestUser field
 	TestTodo field
 }
 
-// New maps unique string to tables names
-// This is intended to be used as global identification for node interface query
+// New generates DBSchema
+// This is intended to be used as global identification for node interface query.
+// Prefix should maintain constrained to 3 characters for encoding the entity type.
 func New() DBSchema {
 	return DBSchema{
 		TestUser: field{
@@ -28,17 +29,17 @@ func New() DBSchema {
 			Table:  testuser.Table,
 		},
 		TestTodo: field{
-			Prefix: "OAB",
+			Prefix: "0AB",
 			Table:  testtodo.Table,
 		},
 	}
 }
 
-var s = New()
-var maps = structToMap(&s)
+var ds = New()
+var maps = structToMap(&ds)
 
-// FindTableByID returns table name by passed id
-func (d *DBSchema) FindTableByID(id string) (string, error) {
+// FindTableByID returns table name by passed id.
+func (DBSchema) FindTableByID(id string) (string, error) {
 	v, ok := maps[id]
 	if !ok {
 		return "", fmt.Errorf("could not map '%s' to a table name", id)
