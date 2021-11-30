@@ -17,9 +17,7 @@ func NewTestUserRepository(client *ent.Client) ur.TestUser {
 	return &testUserRepository{client: client}
 }
 
-func (r *testUserRepository) Get(id *model.ID, age *int) (*model.TestUser, error) {
-	ctx := context.Background()
-
+func (r *testUserRepository) Get(ctx context.Context, id *model.ID, age *int) (*model.TestUser, error) {
 	q := r.client.TestUser.Query()
 	if id != nil {
 		q.Where(testuser.IDEQ(*id))
@@ -46,9 +44,7 @@ func (r *testUserRepository) Get(id *model.ID, age *int) (*model.TestUser, error
 	return u, nil
 }
 
-func (r *testUserRepository) List() ([]*model.TestUser, error) {
-	ctx := context.Background()
-
+func (r *testUserRepository) List(ctx context.Context) ([]*model.TestUser, error) {
 	us, err := r.client.
 		TestUser.Query().All(ctx)
 	if err != nil {
@@ -58,9 +54,7 @@ func (r *testUserRepository) List() ([]*model.TestUser, error) {
 	return us, nil
 }
 
-func (r *testUserRepository) ListWithPagination(after *model.Cursor, first *int, before *model.Cursor, last *int) (*model.TestUserConnection, error) {
-	ctx := context.Background()
-
+func (r *testUserRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int) (*model.TestUserConnection, error) {
 	us, err := r.client.TestUser.Query().Paginate(ctx, after, first, before, last)
 	if err != nil {
 		return nil, model.NewDBError(err)
@@ -68,8 +62,7 @@ func (r *testUserRepository) ListWithPagination(after *model.Cursor, first *int,
 	return us, nil
 }
 
-func (r *testUserRepository) Create(input model.CreateTestUserInput) (*model.TestUser, error) {
-	ctx := context.Background()
+func (r *testUserRepository) Create(ctx context.Context, input model.CreateTestUserInput) (*model.TestUser, error) {
 	u, err := r.client.
 		TestUser.
 		Create().
@@ -83,9 +76,7 @@ func (r *testUserRepository) Create(input model.CreateTestUserInput) (*model.Tes
 	return u, nil
 }
 
-func (r *testUserRepository) Update(input model.UpdateTestUserInput) (*model.TestUser, error) {
-	ctx := context.Background()
-
+func (r *testUserRepository) Update(ctx context.Context, input model.UpdateTestUserInput) (*model.TestUser, error) {
 	u, err := r.client.
 		TestUser.UpdateOneID(input.ID).
 		SetInput(input).

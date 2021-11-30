@@ -17,9 +17,7 @@ func NewTestTodoRepository(client *ent.Client) ur.TestTodo {
 	return &testTodoRepository{client: client}
 }
 
-func (r *testTodoRepository) Get(id *model.ID) (*model.TestTodo, error) {
-	ctx := context.Background()
-
+func (r *testTodoRepository) Get(ctx context.Context, id *model.ID) (*model.TestTodo, error) {
 	q := r.client.TestTodo.Query()
 	if id != nil {
 		q.Where(testtodo.IDEQ(*id))
@@ -42,9 +40,7 @@ func (r *testTodoRepository) Get(id *model.ID) (*model.TestTodo, error) {
 	return u, nil
 }
 
-func (r *testTodoRepository) List() ([]*model.TestTodo, error) {
-	ctx := context.Background()
-
+func (r *testTodoRepository) List(ctx context.Context) ([]*model.TestTodo, error) {
 	ts, err := r.client.
 		TestTodo.
 		Query().
@@ -55,8 +51,7 @@ func (r *testTodoRepository) List() ([]*model.TestTodo, error) {
 	return ts, nil
 }
 
-func (r *testTodoRepository) Create(input model.CreateTestTodoInput) (*model.TestTodo, error) {
-	ctx := context.Background()
+func (r *testTodoRepository) Create(ctx context.Context, input model.CreateTestTodoInput) (*model.TestTodo, error) {
 	u, err := r.client.
 		TestTodo.
 		Create().
@@ -70,9 +65,7 @@ func (r *testTodoRepository) Create(input model.CreateTestTodoInput) (*model.Tes
 	return u, nil
 }
 
-func (r *testTodoRepository) Update(input model.UpdateTestTodoInput) (*model.TestTodo, error) {
-	ctx := context.Background()
-
+func (r *testTodoRepository) Update(ctx context.Context, input model.UpdateTestTodoInput) (*model.TestTodo, error) {
 	u, err := r.client.
 		TestTodo.UpdateOneID(input.ID).
 		SetInput(input).

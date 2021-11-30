@@ -26,17 +26,17 @@ func NewTestTodoController(tu usecase.TestTodo) TestTodo {
 }
 
 func (t *testTodo) Get(ctx context.Context, id *model.ID) (*model.TestTodo, error) {
-	return t.testTodoUsecase.Get(id)
+	return t.testTodoUsecase.Get(ctx, id)
 }
 
 func (t *testTodo) List(ctx context.Context) ([]*model.TestTodo, error) {
-	return t.testTodoUsecase.List()
+	return t.testTodoUsecase.List(ctx)
 }
 
 func (t *testTodo) Create(ctx context.Context, input model.CreateTestTodoInput) (*model.TestTodo, error) {
-	return t.testTodoUsecase.Create(input)
+	return t.testTodoUsecase.Create(ctx, input)
 }
 
 func (t *testTodo) Update(ctx context.Context, input model.UpdateTestTodoInput) (*model.TestTodo, error) {
-	return t.testTodoUsecase.Update(input)
+	return t.testTodoUsecase.Update(ctx, input)
 }

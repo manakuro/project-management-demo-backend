@@ -27,21 +27,21 @@ func NewTestUserController(tu usecase.TestUser) TestUser {
 }
 
 func (t *testUser) Get(ctx context.Context, id *model.ID, age *int) (*model.TestUser, error) {
-	return t.testUserUsecase.Get(id, age)
+	return t.testUserUsecase.Get(ctx, id, age)
 }
 
 func (t *testUser) List(ctx context.Context) ([]*model.TestUser, error) {
-	return t.testUserUsecase.List()
+	return t.testUserUsecase.List(ctx)
 }
 
 func (t *testUser) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int) (*model.TestUserConnection, error) {
-	return t.testUserUsecase.ListWithPagination(after, first, before, last)
+	return t.testUserUsecase.ListWithPagination(ctx, after, first, before, last)
 }
 
 func (t *testUser) Create(ctx context.Context, input model.CreateTestUserInput) (*model.TestUser, error) {
-	return t.testUserUsecase.Create(input)
+	return t.testUserUsecase.Create(ctx, input)
 }
 
 func (t *testUser) Update(ctx context.Context, input model.UpdateTestUserInput) (*model.TestUser, error) {
-	return t.testUserUsecase.Update(input)
+	return t.testUserUsecase.Update(ctx, input)
 }
