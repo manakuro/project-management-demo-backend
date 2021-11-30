@@ -57,6 +57,7 @@ type ComplexityRoot struct {
 
 	Query struct {
 		Node      func(childComplexity int, id ulid.ID) int
+		Nodes     func(childComplexity int, ids []ulid.ID) int
 		TestTodo  func(childComplexity int, id *ulid.ID) int
 		TestTodos func(childComplexity int) int
 		TestUser  func(childComplexity int, id *ulid.ID, age *int) int
@@ -91,6 +92,7 @@ type MutationResolver interface {
 }
 type QueryResolver interface {
 	Node(ctx context.Context, id ulid.ID) (ent.Noder, error)
+	Nodes(ctx context.Context, ids []ulid.ID) ([]ent.Noder, error)
 	TestTodo(ctx context.Context, id *ulid.ID) (*ent.TestTodo, error)
 	TestTodos(ctx context.Context) ([]*ent.TestTodo, error)
 	TestUser(ctx context.Context, id *ulid.ID, age *int) (*ent.TestUser, error)
@@ -179,6 +181,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.Node(childComplexity, args["id"].(ulid.ID)), true
+
+	case "Query.nodes":
+		if e.complexity.Query.Nodes == nil {
+			break
+		}
+
+		args, err := ec.field_Query_nodes_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Nodes(childComplexity, args["ids"].([]ulid.ID)), true
 
 	case "Query.testTodo":
 		if e.complexity.Query.TestTodo == nil {
@@ -381,6 +395,7 @@ interface Node {
 
 type Query {
     node(id: ID!): Node
+    nodes(ids: [ID!]!): [Node]!
 }
 
 type Mutation
@@ -545,6 +560,21 @@ func (ec *executionContext) field_Query_node_args(ctx context.Context, rawArgs m
 		}
 	}
 	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_nodes_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 []ulid.ID
+	if tmp, ok := rawArgs["ids"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("ids"))
+		arg0, err = ec.unmarshalNID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["ids"] = arg0
 	return args, nil
 }
 
@@ -830,6 +860,48 @@ func (ec *executionContext) _Query_node(ctx context.Context, field graphql.Colle
 	res := resTmp.(ent.Noder)
 	fc.Result = res
 	return ec.marshalONode2projectᚑmanagementᚑdemoᚑbackendᚋentᚐNoder(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_nodes(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_nodes_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Nodes(rctx, args["ids"].([]ulid.ID))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]ent.Noder)
+	fc.Result = res
+	return ec.marshalNNode2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚐNoder(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_testTodo(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -2892,6 +2964,20 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 				res = ec._Query_node(ctx, field)
 				return res
 			})
+		case "nodes":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_nodes(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
 		case "testTodo":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
@@ -3390,6 +3476,42 @@ func (ec *executionContext) marshalNID2projectᚑmanagementᚑdemoᚑbackendᚋe
 	return v
 }
 
+func (ec *executionContext) unmarshalNID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx context.Context, v interface{}) ([]ulid.ID, error) {
+	var vSlice []interface{}
+	if v != nil {
+		if tmp1, ok := v.([]interface{}); ok {
+			vSlice = tmp1
+		} else {
+			vSlice = []interface{}{v}
+		}
+	}
+	var err error
+	res := make([]ulid.ID, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalNID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx context.Context, sel ast.SelectionSet, v []ulid.ID) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	for i := range v {
+		ret[i] = ec.marshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, sel, v[i])
+	}
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
 func (ec *executionContext) unmarshalNID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx context.Context, v interface{}) (*ulid.ID, error) {
 	var res = new(ulid.ID)
 	err := res.UnmarshalGQL(v)
@@ -3440,6 +3562,44 @@ func (ec *executionContext) marshalNInt2ᚖint(ctx context.Context, sel ast.Sele
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) marshalNNode2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚐNoder(ctx context.Context, sel ast.SelectionSet, v []ent.Noder) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalONode2projectᚑmanagementᚑdemoᚑbackendᚋentᚐNoder(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	return ret
 }
 
 func (ec *executionContext) unmarshalNString2string(ctx context.Context, v interface{}) (string, error) {

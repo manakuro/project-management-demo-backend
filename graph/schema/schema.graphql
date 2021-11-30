@@ -6,6 +6,7 @@ interface Node {
 
 type Query {
     node(id: ID!): Node
+    nodes(ids: [ID!]!): [Node]!
 }
 
 type Mutation
