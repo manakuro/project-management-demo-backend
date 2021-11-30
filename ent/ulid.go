@@ -15,9 +15,9 @@ func IDToType(ctx context.Context, id ulid.ID) (string, error) {
 		return "", fmt.Errorf("IDToType: id too short")
 	}
 	prefix := id[:3]
-	typ, err := globalIDs.FindTableByID(string(prefix))
+	t, err := globalIDs.FindTableByID(string(prefix))
 	if err != nil {
 		return "", fmt.Errorf("IDToType: could not map prefix '%s' to a type", prefix)
 	}
-	return typ, nil
+	return t, nil
 }
