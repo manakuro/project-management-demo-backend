@@ -25,7 +25,8 @@ type TestUserMixin struct {
 func (TestUserMixin) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("name").
-			NotEmpty(),
+			NotEmpty().
+			MaxLen(255),
 		field.Int("age"),
 	}
 }

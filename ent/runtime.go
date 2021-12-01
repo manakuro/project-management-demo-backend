@@ -55,7 +55,21 @@ func init() {
 	// testuserDescName is the schema descriptor for name field.
 	testuserDescName := testuserMixinFields1[0].Descriptor()
 	// testuser.NameValidator is a validator for the "name" field. It is called by the builders before save.
-	testuser.NameValidator = testuserDescName.Validators[0].(func(string) error)
+	testuser.NameValidator = func() func(string) error {
+		validators := testuserDescName.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(name string) error {
+			for _, fn := range fns {
+				if err := fn(name); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
 	// testuserDescCreatedAt is the schema descriptor for created_at field.
 	testuserDescCreatedAt := testuserMixinFields2[0].Descriptor()
 	// testuser.DefaultCreatedAt holds the default value on creation for the created_at field.
