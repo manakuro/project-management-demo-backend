@@ -77,7 +77,9 @@ func (r *testUserRepository) Create(ctx context.Context, input model.CreateTestU
 }
 
 func (r *testUserRepository) CreateWithTodo(ctx context.Context, input model.CreateTestUserInput) (*model.TestUser, error) {
-	todo, err := r.client.
+	client := WithTransactionalMutation(ctx)
+
+	todo, err := client.
 		TestTodo.
 		Create().
 		Save(ctx)
@@ -85,7 +87,7 @@ func (r *testUserRepository) CreateWithTodo(ctx context.Context, input model.Cre
 		return nil, model.NewDBError(err)
 	}
 
-	u, err := r.client.TestUser.
+	u, err := client.TestUser.
 		Create().
 		SetInput(input).
 		AddTestTodos(todo).
