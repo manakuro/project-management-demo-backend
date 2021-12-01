@@ -37,4 +37,8 @@ generate:
 schema_description:
 	ent describe ./ent/schema
 
-.PHONY: install setup_db migrate_up migrate_down start migrate_schema schema_description ent_generate
+# Testing
+setup_test_db:
+	./bin/init_db_test.sh
+
+.PHONY: install setup_db migrate_up migrate_down start migrate_schema schema_description ent_generate setup_test_db

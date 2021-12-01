@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path"
 	"path/filepath"
 	"project-management-demo-backend/pkg/util/environment"
+	"runtime"
 
 	"github.com/spf13/viper"
 )
@@ -40,15 +42,18 @@ func ReadConfig() {
 	Config := &C
 
 	if environment.IsDev() {
-		viper.AddConfigPath(filepath.Join("./", "config"))
+		viper.AddConfigPath(filepath.Join(rootDir(), "config"))
+		viper.SetConfigName("config")
 	} else if environment.IsTest() {
-		viper.AddConfigPath(filepath.Join("./", "config.test"))
+		fmt.Println(rootDir())
+		viper.AddConfigPath(filepath.Join(rootDir(), "config"))
+		viper.SetConfigName("config.test")
 	} else {
 		viper.AddConfigPath(filepath.Join("/srv", "config"))
+		viper.SetConfigName("config")
 	}
 
 	viper.SetConfigType("yml")
-	viper.SetConfigName("config")
 	viper.AutomaticEnv()
 
 	if err := viper.ReadInConfig(); err != nil {
@@ -62,4 +67,10 @@ func ReadConfig() {
 	}
 
 	//spew.Dump(C)
+}
+
+func rootDir() string {
+	_, b, _, _ := runtime.Caller(0)
+	d := path.Join(path.Dir(b))
+	return filepath.Dir(d)
 }
