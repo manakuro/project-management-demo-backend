@@ -12,7 +12,7 @@ import (
 func main() {
 	config.ReadConfig()
 
-	client, err := datastore.New()
+	client, err := datastore.NewClient()
 	if err != nil {
 		log.Fatalf("failed opening mysql client: %v", err)
 	}

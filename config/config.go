@@ -41,6 +41,8 @@ func ReadConfig() {
 
 	if environment.IsDev() {
 		viper.AddConfigPath(filepath.Join("./", "config"))
+	} else if environment.IsTest() {
+		viper.AddConfigPath(filepath.Join("./", "config.test"))
 	} else {
 		viper.AddConfigPath(filepath.Join("/srv", "config"))
 	}

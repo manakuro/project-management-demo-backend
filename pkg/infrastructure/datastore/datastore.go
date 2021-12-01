@@ -4,15 +4,13 @@ import (
 	"project-management-demo-backend/config"
 	"project-management-demo-backend/ent"
 
+	"entgo.io/ent/dialect"
+
 	"github.com/go-sql-driver/mysql"
 )
 
-// New returns database client with ORM
-func New() (*ent.Client, error) {
-	DBMS := "mysql"
-	var entOptions []ent.Option
-	entOptions = append(entOptions, ent.Debug())
-
+// New returns data source name
+func New() string {
 	mc := mysql.Config{
 		User:                 config.C.Database.User,
 		Passwd:               config.C.Database.Password,
@@ -27,5 +25,15 @@ func New() (*ent.Client, error) {
 		},
 	}
 
-	return ent.Open(DBMS, mc.FormatDSN(), entOptions...)
+	return mc.FormatDSN()
+}
+
+// NewClient returns an orm client
+func NewClient() (*ent.Client, error) {
+	var entOptions []ent.Option
+	entOptions = append(entOptions, ent.Debug())
+
+	d := New()
+
+	return ent.Open(dialect.MySQL, d, entOptions...)
 }
