@@ -54,8 +54,11 @@ func (r *testUserRepository) List(ctx context.Context) ([]*model.TestUser, error
 	return us, nil
 }
 
-func (r *testUserRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int) (*model.TestUserConnection, error) {
-	us, err := r.client.TestUser.Query().Paginate(ctx, after, first, before, last)
+func (r *testUserRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TestUserWhereInput) (*model.TestUserConnection, error) {
+	us, err := r.client.
+		TestUser.
+		Query().
+		Paginate(ctx, after, first, before, last, ent.WithTestUserFilter(where.Filter))
 	if err != nil {
 		return nil, model.NewDBError(err)
 	}

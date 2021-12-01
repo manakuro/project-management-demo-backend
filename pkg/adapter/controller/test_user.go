@@ -10,7 +10,7 @@ import (
 type TestUser interface {
 	Get(ctx context.Context, id *model.ID, age *int) (*model.TestUser, error)
 	List(ctx context.Context) ([]*model.TestUser, error)
-	ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int) (*model.TestUserConnection, error)
+	ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TestUserWhereInput) (*model.TestUserConnection, error)
 	Create(ctx context.Context, input model.CreateTestUserInput) (*model.TestUser, error)
 	CreateWithTodo(ctx context.Context, input model.CreateTestUserInput) (*model.TestUser, error)
 	Update(ctx context.Context, input model.UpdateTestUserInput) (*model.TestUser, error)
@@ -35,8 +35,8 @@ func (t *testUser) List(ctx context.Context) ([]*model.TestUser, error) {
 	return t.testUserUsecase.List(ctx)
 }
 
-func (t *testUser) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int) (*model.TestUserConnection, error) {
-	return t.testUserUsecase.ListWithPagination(ctx, after, first, before, last)
+func (t *testUser) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TestUserWhereInput) (*model.TestUserConnection, error) {
+	return t.testUserUsecase.ListWithPagination(ctx, after, first, before, last, where)
 }
 
 func (t *testUser) Create(ctx context.Context, input model.CreateTestUserInput) (*model.TestUser, error) {

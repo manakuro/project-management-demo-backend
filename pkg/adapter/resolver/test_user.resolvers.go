@@ -44,8 +44,8 @@ func (r *queryResolver) TestUser(ctx context.Context, id *ulid.ID, age *int) (*e
 	return u, nil
 }
 
-func (r *queryResolver) TestUsers(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int) (*ent.TestUserConnection, error) {
-	us, err := r.controller.TestUser.ListWithPagination(ctx, after, first, before, last)
+func (r *queryResolver) TestUsers(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TestUserWhereInput) (*ent.TestUserConnection, error) {
+	us, err := r.controller.TestUser.ListWithPagination(ctx, after, first, before, last, where)
 	if err != nil {
 		return nil, handler.HandleError(ctx, err)
 	}
