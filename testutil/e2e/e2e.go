@@ -19,11 +19,11 @@ type SetupOption struct {
 }
 
 // Setup set up database and server for E2E test
-func Setup(t *testing.T, option SetupOption) (expect *httpexpect.Expect, teardown func()) {
+func Setup(t *testing.T, option SetupOption) (expect *httpexpect.Expect, client *ent.Client, teardown func()) {
 	t.Helper()
 	testutil.ReadConfigE2E()
 
-	client := testutil.NewDBClient(t)
+	client = testutil.NewDBClient(t)
 	ctrl := newController(client)
 	gqlsrv := graphql.NewServer(client, ctrl)
 	e := router.New(gqlsrv)
@@ -36,7 +36,7 @@ func Setup(t *testing.T, option SetupOption) (expect *httpexpect.Expect, teardow
 			Printers: []httpexpect.Printer{
 				httpexpect.NewDebugPrinter(t, true),
 			},
-		}), func() {
+		}), client, func() {
 			option.Teardown(t, client)
 			defer client.Close()
 			defer srv.Close()

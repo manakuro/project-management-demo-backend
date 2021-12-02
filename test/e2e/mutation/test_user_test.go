@@ -1,38 +1,71 @@
 package mutation_test
 
 import (
+	"context"
 	"net/http"
 	"project-management-demo-backend/ent"
 	"project-management-demo-backend/pkg/infrastructure/router"
 	"project-management-demo-backend/testutil"
 	"project-management-demo-backend/testutil/e2e"
 	"testing"
+
+	"github.com/gavv/httpexpect/v2"
 )
 
 func TestTestUser_CreateTestUser(t *testing.T) {
-	expect, teardown := e2e.Setup(t, e2e.SetupOption{
+	expect, client, teardown := e2e.Setup(t, e2e.SetupOption{
 		Teardown: func(t *testing.T, client *ent.Client) {
 			testutil.DropTestUser(t, client)
 		},
 	})
 	defer teardown()
 
-	r := expect.POST(router.QueryPath).WithJSON(map[string]string{
-		"query": `
-			mutation {  
-				createTestUser(input: {name: "Tom1", age: 20}) {   
-					age    
-					name
-					id    
-					createdAt    
-					updatedAt  
-			}
-		}`,
-	}).Expect()
+	tests := []struct {
+		name    string
+		arrange func(t *testing.T)
+		act     func(t *testing.T) *httpexpect.Response
+		assert  func(t *testing.T, got *httpexpect.Response)
+		args    struct {
+			ctx context.Context
+		}
+		teardown func(t *testing.T)
+	}{
+		{
+			name:    "It should create test user",
+			arrange: func(t *testing.T) {},
+			act: func(t *testing.T) *httpexpect.Response {
+				return expect.POST(router.QueryPath).WithJSON(map[string]string{
+					"query": `
+						mutation {  
+							createTestUser(input: {name: "Tom1", age: 20}) {   
+								age    
+								name
+								id    
+								createdAt    
+								updatedAt  
+						}
+					}`,
+				}).Expect()
+			},
+			assert: func(t *testing.T, got *httpexpect.Response) {
+				got.Status(http.StatusOK)
+				testUser := e2e.GetData(got, "createTestUser")
 
-	r.Status(http.StatusOK)
-	testUser := e2e.GetData(r, "createTestUser")
+				testUser.Value("age").Number().Equal(20)
+				testUser.Value("name").String().Equal("Tom1")
+			},
+			teardown: func(t *testing.T) {
+				testutil.DropTestUser(t, client)
+			},
+		},
+	}
 
-	testUser.Value("age").Number().Equal(20)
-	testUser.Value("name").String().Equal("Tom1")
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			tt.arrange(t)
+			got := tt.act(t)
+			tt.assert(t, got)
+			tt.teardown(t)
+		})
+	}
 }
