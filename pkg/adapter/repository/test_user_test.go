@@ -2,38 +2,22 @@ package repository_test
 
 import (
 	"context"
-	"project-management-demo-backend/config"
 	"project-management-demo-backend/ent"
-	"project-management-demo-backend/ent/enttest"
 	"project-management-demo-backend/pkg/adapter/repository"
 	"project-management-demo-backend/pkg/entity/model"
-	"project-management-demo-backend/pkg/infrastructure/datastore"
-	"project-management-demo-backend/pkg/util/environment"
+	"project-management-demo-backend/testutil"
 	"testing"
 
-	_ "github.com/go-sql-driver/mysql"
-
-	"entgo.io/ent/dialect"
 	"github.com/stretchr/testify/assert"
 )
 
 func setup(t *testing.T) (client *ent.Client, teardown func()) {
-	config.ReadConfig(config.ReadConfigOption{
-		AppEnv: environment.Test,
-	})
-
-	d := datastore.New()
-	c := enttest.Open(t, dialect.MySQL, d)
+	testutil.ReadConfig()
+	c := testutil.NewDBClient(t)
 
 	return c, func() {
-		ctx := context.Background()
-		_, err := client.TestUser.Delete().Exec(ctx)
-		if err != nil {
-			t.Error(err)
-			t.FailNow()
-		}
-
-		_ = c.Close()
+		testutil.DropTestUser(t, c)
+		defer c.Close()
 	}
 }
 
@@ -57,7 +41,7 @@ func Test_testUserRepository_List(t *testing.T) {
 		args    struct {
 			ctx context.Context
 		}
-		teardown func()
+		teardown func(t *testing.T)
 	}{
 		{
 			name: "It should get user's list",
@@ -96,6 +80,9 @@ func Test_testUserRepository_List(t *testing.T) {
 			args: args{
 				ctx: context.Background(),
 			},
+			teardown: func(t *testing.T) {
+				testutil.DropTestUser(t, client)
+			},
 		},
 	}
 
@@ -104,6 +91,7 @@ func Test_testUserRepository_List(t *testing.T) {
 			tt.arrange(t)
 			got, err := tt.act(tt.args.ctx, t)
 			tt.assert(t, got, err)
+			tt.teardown(t)
 		})
 	}
 }
