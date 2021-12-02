@@ -5,11 +5,12 @@ import (
 	"project-management-demo-backend/ent"
 	"project-management-demo-backend/pkg/infrastructure/router"
 	"project-management-demo-backend/testutil"
+	"project-management-demo-backend/testutil/e2e"
 	"testing"
 )
 
-func TestTestUserMutation(t *testing.T) {
-	expect, teardown := testutil.SetupE2E(t, testutil.SetupE2EOption{
+func TestCreateTestUser(t *testing.T) {
+	expect, teardown := e2e.Setup(t, e2e.SetupOption{
 		Teardown: func(t *testing.T, client *ent.Client) {
 			testutil.DropTestUser(t, client)
 		},
@@ -30,13 +31,8 @@ func TestTestUserMutation(t *testing.T) {
 	}).Expect()
 
 	r.Status(http.StatusOK)
-	obj := r.JSON().
-		Object().
-		Value("data").
-		Object().
-		Value("createTestUser").
-		Object()
+	testUser := e2e.GetData(r, "createTestUser")
 
-	obj.Value("age").Number().Equal(20)
-	obj.Value("name").String().Equal("Tom1")
+	testUser.Value("age").Number().Equal(20)
+	testUser.Value("name").String().Equal("Tom1")
 }
