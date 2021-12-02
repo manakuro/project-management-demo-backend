@@ -2,6 +2,7 @@ package model
 
 import (
 	"fmt"
+	"project-management-demo-backend/pkg/util/environment"
 
 	"github.com/pkg/errors"
 )
@@ -149,7 +150,9 @@ func newError(code string, message string, extensions map[string]interface{}, e 
 func withStackTrace(e error) error {
 	ews := errors.WithStack(e)
 
-	fmt.Printf("%+v\n", ews)
+	if environment.IsDev() {
+		fmt.Printf("%+v\n", ews)
+	}
 
 	return ews
 }

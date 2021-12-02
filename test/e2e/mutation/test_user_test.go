@@ -36,8 +36,36 @@ func TestTestUser_CreateTestUser(t *testing.T) {
 			act: func(t *testing.T) *httpexpect.Response {
 				return expect.POST(router.QueryPath).WithJSON(map[string]string{
 					"query": `
+						mutation {
+							createTestUser(input: {name: "Tom1", age: 20}) {
+								age
+								name
+								id
+								createdAt
+								updatedAt
+						}
+					}`,
+				}).Expect()
+			},
+			assert: func(t *testing.T, got *httpexpect.Response) {
+				got.Status(http.StatusOK)
+				data := e2e.GetData(got).Object()
+				testUser := e2e.GetObject(data, "createTestUser")
+				testUser.Value("age").Number().Equal(20)
+				testUser.Value("name").String().Equal("Tom1")
+			},
+			teardown: func(t *testing.T) {
+				testutil.DropTestUser(t, client)
+			},
+		},
+		{
+			name:    "It should NOT create test user when the length of the name is over",
+			arrange: func(t *testing.T) {},
+			act: func(t *testing.T) *httpexpect.Response {
+				return expect.POST(router.QueryPath).WithJSON(map[string]string{
+					"query": `
 						mutation {  
-							createTestUser(input: {name: "Tom1", age: 20}) {   
+							createTestUser(input: {name: "Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1", age: 20}) {   
 								age    
 								name
 								id    
@@ -49,10 +77,11 @@ func TestTestUser_CreateTestUser(t *testing.T) {
 			},
 			assert: func(t *testing.T, got *httpexpect.Response) {
 				got.Status(http.StatusOK)
-				testUser := e2e.GetData(got, "createTestUser")
+				data := e2e.GetData(got)
+				data.Null()
 
-				testUser.Value("age").Number().Equal(20)
-				testUser.Value("name").String().Equal("Tom1")
+				errors := e2e.GetErrors(got)
+				errors.Array().Length().Equal(1)
 			},
 			teardown: func(t *testing.T) {
 				testutil.DropTestUser(t, client)

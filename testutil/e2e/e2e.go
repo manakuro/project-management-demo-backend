@@ -49,6 +49,11 @@ func newController(client *ent.Client) controller.Controller {
 }
 
 // GetData gets data from graphql response.
+func GetData(e *httpexpect.Response) *httpexpect.Value {
+	return e.JSON().Path("$.data")
+}
+
+// GetObject return data from path.
 // Path returns a new Value object for child object(s) matching given
 // JSONPath expression.
 // Example 1:
@@ -57,6 +62,11 @@ func newController(client *ent.Client) controller.Controller {
 //
 //  value.Path("$.users[0].name").String().Equal("john")
 //  value.Path("$.users[1].name").String().Equal("bob")
-func GetData(e *httpexpect.Response, path string) *httpexpect.Object {
-	return e.JSON().Path("$.data." + path).Object()
+func GetObject(obj *httpexpect.Object, path string) *httpexpect.Object {
+	return obj.Path("$." + path).Object()
+}
+
+// GetErrors return errors from graphql response.
+func GetErrors(e *httpexpect.Response) *httpexpect.Value {
+	return e.JSON().Path("$.errors")
 }
