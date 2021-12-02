@@ -9,6 +9,12 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
+// Path of route
+const (
+	QueryPath      = "/query"
+	PlaygroundPath = "/playground"
+)
+
 // New creates route endpoint
 func New(srv *handler.Server) *echo.Echo {
 	e := echo.New()
@@ -21,9 +27,9 @@ func New(srv *handler.Server) *echo.Echo {
 	}))
 
 	{
-		e.POST("/query", echo.WrapHandler(srv))
-		e.GET("/playground", func(c echo.Context) error {
-			playground.Handler("GraphQL", "/query").ServeHTTP(c.Response(), c.Request())
+		e.POST(QueryPath, echo.WrapHandler(srv))
+		e.GET(PlaygroundPath, func(c echo.Context) error {
+			playground.Handler("GraphQL", QueryPath).ServeHTTP(c.Response(), c.Request())
 			return nil
 		})
 	}

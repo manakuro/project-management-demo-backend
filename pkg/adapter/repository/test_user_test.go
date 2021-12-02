@@ -21,7 +21,7 @@ func setup(t *testing.T) (client *ent.Client, teardown func()) {
 	}
 }
 
-func Test_testUserRepository_List(t *testing.T) {
+func TestTestUserRepository_List(t *testing.T) {
 	t.Helper()
 
 	client, teardown := setup(t)
