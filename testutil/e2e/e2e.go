@@ -21,7 +21,7 @@ type SetupOption struct {
 // Setup set up database and server for E2E test
 func Setup(t *testing.T, option SetupOption) (expect *httpexpect.Expect, teardown func()) {
 	t.Helper()
-	testutil.ReadConfig()
+	testutil.ReadConfigE2E()
 
 	client := testutil.NewDBClient(t)
 	ctrl := newController(client)

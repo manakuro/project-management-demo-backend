@@ -19,6 +19,13 @@ func ReadConfig() {
 	})
 }
 
+// ReadConfigE2E reads config file for e2e.
+func ReadConfigE2E() {
+	config.ReadConfig(config.ReadConfigOption{
+		AppEnv: environment.E2E,
+	})
+}
+
 // NewDBClient loads database for test.
 func NewDBClient(t *testing.T) *ent.Client {
 	d := datastore.New()

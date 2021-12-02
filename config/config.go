@@ -53,6 +53,10 @@ func ReadConfig(option ReadConfigOption) {
 		fmt.Println(rootDir())
 		viper.AddConfigPath(filepath.Join(rootDir(), "config"))
 		viper.SetConfigName("config.test")
+	} else if environment.IsE2E() || (option.AppEnv == environment.E2E) {
+		fmt.Println(rootDir())
+		viper.AddConfigPath(filepath.Join(rootDir(), "config"))
+		viper.SetConfigName("config.e2e")
 	} else {
 		viper.AddConfigPath(filepath.Join("/srv", "config"))
 		viper.SetConfigName("config")
