@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"os"
 	"project-management-demo-backend/config"
 	"project-management-demo-backend/ent"
 	"project-management-demo-backend/pkg/adapter/controller"
@@ -22,7 +23,7 @@ func main() {
 
 	e := router.New(srv)
 
-	e.Logger.Fatal(e.Start(":8080"))
+	e.Logger.Fatal(e.Start(":" + port()))
 }
 
 func newDBClient() *ent.Client {
@@ -37,4 +38,11 @@ func newDBClient() *ent.Client {
 func newController(client *ent.Client) controller.Controller {
 	r := registry.New(client)
 	return r.NewController()
+}
+
+func port() string {
+	if os.Getenv("PORT") != "" {
+		return os.Getenv("PORT")
+	}
+	return config.C.Server.Address
 }
