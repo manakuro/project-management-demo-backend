@@ -2,29 +2,13 @@ package testutil
 
 import (
 	"context"
-	"project-management-demo-backend/config"
 	"project-management-demo-backend/ent"
 	"project-management-demo-backend/ent/enttest"
 	"project-management-demo-backend/pkg/infrastructure/datastore"
-	"project-management-demo-backend/pkg/util/environment"
 	"testing"
 
 	"entgo.io/ent/dialect"
 )
-
-// ReadConfig reads config file for test.
-func ReadConfig() {
-	config.ReadConfig(config.ReadConfigOption{
-		AppEnv: environment.Test,
-	})
-}
-
-// ReadConfigE2E reads config file for e2e.
-func ReadConfigE2E() {
-	config.ReadConfig(config.ReadConfigOption{
-		AppEnv: environment.E2E,
-	})
-}
 
 // NewDBClient loads database for test.
 func NewDBClient(t *testing.T) *ent.Client {

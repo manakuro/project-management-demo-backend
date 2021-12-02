@@ -9,7 +9,7 @@ import (
 	"testing"
 )
 
-func TestCreateTestUser(t *testing.T) {
+func TestTestUser_CreateTestUser(t *testing.T) {
 	expect, teardown := e2e.Setup(t, e2e.SetupOption{
 		Teardown: func(t *testing.T, client *ent.Client) {
 			testutil.DropTestUser(t, client)
