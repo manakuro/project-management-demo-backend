@@ -25,8 +25,8 @@ func NewDBClient(t *testing.T) *ent.Client {
 	return enttest.Open(t, dialect.MySQL, d)
 }
 
-// DropTables drops data from database.
-func DropTables(t *testing.T, client *ent.Client) {
+// DropAll drops all data from database.
+func DropAll(t *testing.T, client *ent.Client) {
 	t.Log("drop data from database")
 	DropTestUser(t, client)
 	DropTestTodo(t, client)
