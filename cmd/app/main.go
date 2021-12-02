@@ -12,7 +12,7 @@ import (
 )
 
 func main() {
-	config.ReadConfig()
+	config.ReadConfig(config.ReadConfigOption{})
 
 	client := newDBClient()
 	defer client.Close()

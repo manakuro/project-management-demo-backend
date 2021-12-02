@@ -10,7 +10,7 @@ import (
 )
 
 func main() {
-	config.ReadConfig()
+	config.ReadConfig(config.ReadConfigOption{})
 
 	client, err := datastore.NewClient()
 	if err != nil {

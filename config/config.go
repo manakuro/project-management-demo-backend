@@ -37,14 +37,19 @@ type config struct {
 // C is config variable
 var C config
 
+// ReadConfigOption is a config option
+type ReadConfigOption struct {
+	AppEnv string
+}
+
 // ReadConfig configures config file
-func ReadConfig() {
+func ReadConfig(option ReadConfigOption) {
 	Config := &C
 
 	if environment.IsDev() {
 		viper.AddConfigPath(filepath.Join(rootDir(), "config"))
 		viper.SetConfigName("config")
-	} else if environment.IsTest() {
+	} else if environment.IsTest() || (option.AppEnv == environment.Test) {
 		fmt.Println(rootDir())
 		viper.AddConfigPath(filepath.Join(rootDir(), "config"))
 		viper.SetConfigName("config.test")

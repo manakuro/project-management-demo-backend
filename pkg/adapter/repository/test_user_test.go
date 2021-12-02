@@ -8,6 +8,7 @@ import (
 	"project-management-demo-backend/pkg/adapter/repository"
 	"project-management-demo-backend/pkg/entity/model"
 	"project-management-demo-backend/pkg/infrastructure/datastore"
+	"project-management-demo-backend/pkg/util/environment"
 	"testing"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -17,7 +18,9 @@ import (
 )
 
 func setup(t *testing.T) (client *ent.Client, teardown func()) {
-	config.ReadConfig()
+	config.ReadConfig(config.ReadConfigOption{
+		AppEnv: environment.Test,
+	})
 
 	d := datastore.New()
 	c := enttest.Open(t, dialect.MySQL, d)
@@ -34,10 +37,6 @@ func setup(t *testing.T) (client *ent.Client, teardown func()) {
 	}
 }
 
-type args struct {
-	ctx context.Context
-}
-
 func Test_testUserRepository_List(t *testing.T) {
 	t.Helper()
 
@@ -45,6 +44,10 @@ func Test_testUserRepository_List(t *testing.T) {
 	defer teardown()
 
 	repo := repository.NewTestUserRepository(client)
+
+	type args struct {
+		ctx context.Context
+	}
 
 	tests := []struct {
 		name    string
@@ -69,20 +72,7 @@ func Test_testUserRepository_List(t *testing.T) {
 				users := []struct {
 					name string
 					age  int
-				}{
-					{
-						name: "test",
-						age:  10,
-					},
-					{
-						name: "test2",
-						age:  11,
-					},
-					{
-						name: "test3",
-						age:  12,
-					},
-				}
+				}{{name: "test", age: 10}, {name: "test2", age: 11}, {name: "test3", age: 12}}
 				bulk := make([]*ent.TestUserCreate, len(users))
 				for i, u := range users {
 					bulk[i] = client.TestUser.Create().SetName(u.name).SetAge(u.age)
