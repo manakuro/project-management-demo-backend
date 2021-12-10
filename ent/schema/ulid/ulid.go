@@ -11,7 +11,7 @@ import (
 	"github.com/oklog/ulid/v2"
 )
 
-// ID implements a PULID - a prefixed ULID.
+// ID implements a ULID - a prefixed ULID.
 type ID string
 
 var defaultEntropySource *ulid.MonotonicEntropy
@@ -26,7 +26,7 @@ func newULID() ulid.ULID {
 	return ulid.MustNew(ulid.Timestamp(time.Now()), defaultEntropySource)
 }
 
-// MustNew returns a new PULID for time.Now() given a prefix. This uses the default entropy source.
+// MustNew returns a new ULID for time.Now() given a prefix. This uses the default entropy source.
 func MustNew(prefix string) ID {
 	return ID(prefix + fmt.Sprint(newULID()))
 }

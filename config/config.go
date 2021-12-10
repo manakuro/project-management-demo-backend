@@ -46,7 +46,7 @@ type ReadConfigOption struct {
 func ReadConfig(option ReadConfigOption) {
 	Config := &C
 
-	if environment.IsDev() {
+	if environment.IsDev() || os.Getenv("APP_ENV") == "" {
 		viper.AddConfigPath(filepath.Join(rootDir(), "config"))
 		viper.SetConfigName("config")
 	} else if environment.IsTest() || (option.AppEnv == environment.Test) {
