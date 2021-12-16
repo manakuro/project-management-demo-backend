@@ -34,7 +34,7 @@ func TestTestUser_CreateTestUser(t *testing.T) {
 			name:    "It should create test user",
 			arrange: func(t *testing.T) {},
 			act: func(t *testing.T) *httpexpect.Response {
-				return expect.POST(router.QueryPath).WithJSON(map[string]string{
+				return expect.POST(router.GraphQLPath).WithJSON(map[string]string{
 					"query": `
 						mutation {
 							createTestUser(input: {name: "Tom1", age: 20}) {
@@ -62,7 +62,7 @@ func TestTestUser_CreateTestUser(t *testing.T) {
 			name:    "It should NOT create test user when the length of the name is over",
 			arrange: func(t *testing.T) {},
 			act: func(t *testing.T) *httpexpect.Response {
-				return expect.POST(router.QueryPath).WithJSON(map[string]string{
+				return expect.POST(router.GraphQLPath).WithJSON(map[string]string{
 					"query": `
 						mutation {  
 							createTestUser(input: {name: "Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1Tom1", age: 20}) {   

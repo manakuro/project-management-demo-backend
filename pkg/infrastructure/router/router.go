@@ -11,7 +11,7 @@ import (
 
 // Path of route
 const (
-	QueryPath        = "/query"
+	GraphQLPath      = "/graphql"
 	SubscriptionPath = "/subscription"
 	PlaygroundPath   = "/playground"
 )
@@ -28,12 +28,12 @@ func New(srv *handler.Server) *echo.Echo {
 	}))
 
 	{
-		e.POST(QueryPath, echo.WrapHandler(srv))
+		e.POST(GraphQLPath, echo.WrapHandler(srv))
 
 		e.GET(SubscriptionPath, echo.WrapHandler(srv))
 
 		e.GET(PlaygroundPath, func(c echo.Context) error {
-			playground.Handler("GraphQL", QueryPath).ServeHTTP(c.Response(), c.Request())
+			playground.Handler("GraphQL", GraphQLPath).ServeHTTP(c.Response(), c.Request())
 			return nil
 		})
 	}
