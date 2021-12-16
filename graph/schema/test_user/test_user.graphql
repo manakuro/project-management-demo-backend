@@ -31,6 +31,10 @@ extend type Query {
   testUsers(after: Cursor, first: Int, before: Cursor, last: Int, where: TestUserWhereInput): TestUserConnection
 }
 
+extend type Subscription {
+  testUserUpdated(id: ID): TestUser!
+}
+
 extend type Mutation {
   createTestUser(input: CreateTestUserInput!): TestUser!
   createTestUserAndTodo(input: CreateTestUserInput!): TestUser!

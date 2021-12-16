@@ -18,3 +18,5 @@ type Query {
 }
 
 type Mutation
+
+type Subscription

@@ -10,6 +10,8 @@ import (
 	"project-management-demo-backend/graph/generated"
 	"project-management-demo-backend/pkg/adapter/handler"
 	"project-management-demo-backend/pkg/util/datetime"
+
+	"github.com/thanhpk/randstr"
 )
 
 func (r *mutationResolver) CreateTestUser(ctx context.Context, input ent.CreateTestUserInput) (*ent.TestUser, error) {
@@ -33,6 +35,13 @@ func (r *mutationResolver) UpdateTestUser(ctx context.Context, input ent.UpdateT
 	if err != nil {
 		return nil, handler.HandleError(ctx, err)
 	}
+
+	for _, tu := range r.channels.TestUserUpdated {
+		if tu.id == u.ID {
+			tu.ch <- u
+		}
+	}
+
 	return u, nil
 }
 
@@ -50,6 +59,27 @@ func (r *queryResolver) TestUsers(ctx context.Context, after *ent.Cursor, first 
 		return nil, handler.HandleError(ctx, err)
 	}
 	return us, nil
+}
+
+func (r *subscriptionResolver) TestUserUpdated(ctx context.Context, id *ulid.ID) (<-chan *ent.TestUser, error) {
+	token := randstr.Hex(16)
+	ch := make(chan *ent.TestUser, 1)
+
+	r.mutex.Lock()
+	r.channels.TestUserUpdated[token] = struct {
+		id ulid.ID
+		ch chan *ent.TestUser
+	}{id: *id, ch: ch}
+	r.mutex.Unlock()
+
+	go func() {
+		<-ctx.Done()
+		r.mutex.Lock()
+		delete(r.channels.TestUserUpdated, token)
+		r.mutex.Unlock()
+	}()
+
+	return ch, nil
 }
 
 func (r *testUserResolver) CreatedAt(ctx context.Context, obj *ent.TestUser) (string, error) {

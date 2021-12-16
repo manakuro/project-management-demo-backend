@@ -11,8 +11,9 @@ import (
 
 // Path of route
 const (
-	QueryPath      = "/query"
-	PlaygroundPath = "/playground"
+	QueryPath        = "/query"
+	SubscriptionPath = "/subscription"
+	PlaygroundPath   = "/playground"
 )
 
 // New creates route endpoint
@@ -28,6 +29,9 @@ func New(srv *handler.Server) *echo.Echo {
 
 	{
 		e.POST(QueryPath, echo.WrapHandler(srv))
+
+		e.GET(SubscriptionPath, echo.WrapHandler(srv))
+
 		e.GET(PlaygroundPath, func(c echo.Context) error {
 			playground.Handler("GraphQL", QueryPath).ServeHTTP(c.Response(), c.Request())
 			return nil
