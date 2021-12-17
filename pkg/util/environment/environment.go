@@ -1,26 +1,20 @@
 package environment
 
-import "os"
-
-// Application Environment name
-const (
-	Development = "development"
-	Test        = "test"
-	E2E         = "e2e"
+import (
+	"project-management-demo-backend/config"
 )
 
 // IsDev returns APP_ENV in development mode
 func IsDev() bool {
-	println("os.Getenv(APP_ENV): ", os.Getenv("APP_ENV"))
-	return os.Getenv("APP_ENV") == Development
+	return config.C.AppEnv == config.Development
 }
 
 // IsTest returns APP_ENV in test mode
 func IsTest() bool {
-	return os.Getenv("APP_ENV") == Test
+	return config.C.AppEnv == config.Test
 }
 
 // IsE2E returns APP_ENV in e2e mode
 func IsE2E() bool {
-	return os.Getenv("APP_ENV") == E2E
+	return config.C.AppEnv == config.E2E
 }

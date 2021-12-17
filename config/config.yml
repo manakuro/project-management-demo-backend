@@ -1,3 +1,5 @@
+appEnv: development
+
 database:
   user: root
   password: root

@@ -16,6 +16,7 @@ import (
 // SetupOption is an option of SetupE2E
 type SetupOption struct {
 	Teardown func(t *testing.T, client *ent.Client)
+	SkipAuth bool
 }
 
 // Setup set up database and server for E2E test
@@ -26,7 +27,9 @@ func Setup(t *testing.T, option SetupOption) (expect *httpexpect.Expect, client 
 	client = testutil.NewDBClient(t)
 	ctrl := newController(client)
 	gqlsrv := graphql.NewServer(client, ctrl)
-	e := router.New(gqlsrv)
+	e := router.New(gqlsrv, router.Options{
+		Auth: false,
+	})
 
 	srv := httptest.NewServer(e)
 

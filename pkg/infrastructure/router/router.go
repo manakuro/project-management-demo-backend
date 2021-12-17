@@ -11,15 +11,25 @@ import (
 	rm "project-management-demo-backend/pkg/infrastructure/router/middleware"
 )
 
-// Path of route
 const (
-	GraphQLPath      = "/graphql"
-	SubscriptionPath = "/subscription"
-	PlaygroundPath   = "/playground"
+	apiPath          = "api"
+	graphQLPath      = "/graphql"
+	subscriptionPath = "/subscription"
+	playgroundPath   = "/playground"
 )
 
+// GraphQLPath is an endpoint of graphql server.
+const (
+	GraphQLPath = "/" + apiPath + graphQLPath
+)
+
+// Options of router
+type Options struct {
+	Auth bool
+}
+
 // New creates route endpoint
-func New(srv *handler.Server) *echo.Echo {
+func New(srv *handler.Server, options Options) *echo.Echo {
 	e := echo.New()
 	//e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
@@ -29,14 +39,16 @@ func New(srv *handler.Server) *echo.Echo {
 		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderXRequestedWith, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderAuthorization},
 	}))
 
-	g := e.Group("api", rm.Auth())
+	g := e.Group(apiPath, rm.Auth(rm.Options{
+		Skip: !options.Auth,
+	}))
 	{
-		g.POST(GraphQLPath, echo.WrapHandler(srv))
+		g.POST(graphQLPath, echo.WrapHandler(srv))
 
-		g.GET(SubscriptionPath, echo.WrapHandler(srv))
+		g.GET(subscriptionPath, echo.WrapHandler(srv))
 
-		e.GET(PlaygroundPath, func(c echo.Context) error {
-			playground.Handler("GraphQL", "/api"+GraphQLPath).ServeHTTP(c.Response(), c.Request())
+		e.GET(playgroundPath, func(c echo.Context) error {
+			playground.Handler("GraphQL", GraphQLPath).ServeHTTP(c.Response(), c.Request())
 			return nil
 		})
 	}

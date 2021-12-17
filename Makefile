@@ -11,7 +11,7 @@ install:
 
 # Start dev server
 start:
-	APP_ENV=development make migrate_schema
+	make migrate_schema
 	air
 
 # Set up database

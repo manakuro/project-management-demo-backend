@@ -21,7 +21,9 @@ func main() {
 	c := newController(client)
 	srv := graphql.NewServer(client, c)
 
-	e := router.New(srv)
+	e := router.New(srv, router.Options{
+		Auth: true,
+	})
 
 	e.Logger.Fatal(e.Start(":" + port()))
 }

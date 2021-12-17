@@ -6,13 +6,14 @@ import (
 	"os"
 	"path"
 	"path/filepath"
-	"project-management-demo-backend/pkg/util/environment"
 	"runtime"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/spf13/viper"
 )
 
 type config struct {
+	AppEnv   string
 	Database struct {
 		User                 string
 		Password             string
@@ -37,6 +38,13 @@ type config struct {
 // C is config variable
 var C config
 
+// Application Environment name
+const (
+	Development = "development"
+	Test        = "test"
+	E2E         = "e2e"
+)
+
 // ReadConfigOption is a config option
 type ReadConfigOption struct {
 	AppEnv string
@@ -46,11 +54,11 @@ type ReadConfigOption struct {
 func ReadConfig(option ReadConfigOption) {
 	Config := &C
 
-	if environment.IsTest() || (option.AppEnv == environment.Test) {
+	if option.AppEnv == Test {
 		setTest()
-	} else if environment.IsE2E() || (option.AppEnv == environment.E2E) {
+	} else if option.AppEnv == E2E {
 		setE2E()
-	} else if environment.IsDev() || os.Getenv("APP_ENV") == "" {
+	} else if option.AppEnv == Development || option.AppEnv == "" {
 		setDev()
 	} else {
 		setProd()
@@ -69,7 +77,9 @@ func ReadConfig(option ReadConfigOption) {
 		os.Exit(1)
 	}
 
-	//spew.Dump(C)
+	if Config.AppEnv == Development {
+		spew.Dump(C)
+	}
 }
 
 func rootDir() string {

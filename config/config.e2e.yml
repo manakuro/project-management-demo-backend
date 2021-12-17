@@ -1,3 +1,5 @@
+appEnv: e2e
+
 database:
   user: root
   password: root

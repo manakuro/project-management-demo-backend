@@ -13,10 +13,19 @@ import (
 	"google.golang.org/api/option"
 )
 
+// Options of auth
+type Options struct {
+	Skip bool
+}
+
 // Auth is a middleware of authenticating users
-func Auth() echo.MiddlewareFunc {
+func Auth(opts Options) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
+			if opts.Skip {
+				return next(c)
+			}
+
 			ctx := c.Request().Context()
 
 			opt := option.WithCredentialsFile(config.C.Firebase.ServiceKey)
