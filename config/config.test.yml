@@ -10,5 +10,8 @@ database:
     charset: utf8mb4
     loc: Asia/Tokyo
 
+firebase:
+  serviceKey: .keys/firebase-service-key.json
+
 server:
   address: 8081

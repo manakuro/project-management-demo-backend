@@ -5,6 +5,7 @@ go 1.16
 require (
 	entgo.io/contrib v0.1.0
 	entgo.io/ent v0.9.1
+	firebase.google.com/go v3.13.0+incompatible // indirect
 	github.com/99designs/gqlgen v0.14.0
 	github.com/andybalholm/brotli v1.0.4 // indirect
 	github.com/fatih/structs v1.1.0 // indirect
@@ -33,4 +34,5 @@ require (
 	golang.org/x/net v0.0.0-20211201190559-0a0e4e1bb54c // indirect
 	golang.org/x/sys v0.0.0-20211110154304-99a53858aa08 // indirect
 	golang.org/x/tools v0.1.7 // indirect
+	google.golang.org/api v0.56.0 // indirect
 )

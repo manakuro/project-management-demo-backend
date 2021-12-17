@@ -46,20 +46,14 @@ type ReadConfigOption struct {
 func ReadConfig(option ReadConfigOption) {
 	Config := &C
 
-	if environment.IsDev() || os.Getenv("APP_ENV") == "" {
-		viper.AddConfigPath(filepath.Join(rootDir(), "config"))
-		viper.SetConfigName("config")
-	} else if environment.IsTest() || (option.AppEnv == environment.Test) {
-		fmt.Println(rootDir())
-		viper.AddConfigPath(filepath.Join(rootDir(), "config"))
-		viper.SetConfigName("config.test")
+	if environment.IsTest() || (option.AppEnv == environment.Test) {
+		setTest()
 	} else if environment.IsE2E() || (option.AppEnv == environment.E2E) {
-		fmt.Println(rootDir())
-		viper.AddConfigPath(filepath.Join(rootDir(), "config"))
-		viper.SetConfigName("config.e2e")
+		setE2E()
+	} else if environment.IsDev() || os.Getenv("APP_ENV") == "" {
+		setDev()
 	} else {
-		viper.AddConfigPath(filepath.Join("/srv", "config"))
-		viper.SetConfigName("config")
+		setProd()
 	}
 
 	viper.SetConfigType("yml")
@@ -82,4 +76,24 @@ func rootDir() string {
 	_, b, _, _ := runtime.Caller(0)
 	d := path.Join(path.Dir(b))
 	return filepath.Dir(d)
+}
+
+func setDev() {
+	viper.AddConfigPath(filepath.Join(rootDir(), "config"))
+	viper.SetConfigName("config")
+}
+
+func setTest() {
+	viper.AddConfigPath(filepath.Join(rootDir(), "config"))
+	viper.SetConfigName("config.test")
+}
+
+func setE2E() {
+	viper.AddConfigPath(filepath.Join(rootDir(), "config"))
+	viper.SetConfigName("config.e2e")
+}
+
+func setProd() {
+	viper.AddConfigPath(filepath.Join("/srv", "config"))
+	viper.SetConfigName("config")
 }

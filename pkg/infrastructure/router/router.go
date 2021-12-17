@@ -7,6 +7,8 @@ import (
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+
+	rm "project-management-demo-backend/pkg/infrastructure/router/middleware"
 )
 
 // Path of route
@@ -27,13 +29,14 @@ func New(srv *handler.Server) *echo.Echo {
 		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderXRequestedWith, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderAuthorization},
 	}))
 
+	g := e.Group("api", rm.Auth())
 	{
-		e.POST(GraphQLPath, echo.WrapHandler(srv))
+		g.POST(GraphQLPath, echo.WrapHandler(srv))
 
-		e.GET(SubscriptionPath, echo.WrapHandler(srv))
+		g.GET(SubscriptionPath, echo.WrapHandler(srv))
 
 		e.GET(PlaygroundPath, func(c echo.Context) error {
-			playground.Handler("GraphQL", GraphQLPath).ServeHTTP(c.Response(), c.Request())
+			playground.Handler("GraphQL", "/api"+GraphQLPath).ServeHTTP(c.Response(), c.Request())
 			return nil
 		})
 	}

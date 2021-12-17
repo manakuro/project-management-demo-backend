@@ -11,7 +11,7 @@ database:
     loc: Asia/Tokyo
 
 firebase:
-  serviceKey: ~/.keys/firebase-service-key.json
+  serviceKey: .keys/firebase-service-key.json
 
 server:
   address: 8080

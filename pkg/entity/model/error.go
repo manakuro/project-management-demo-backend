@@ -20,6 +20,8 @@ const (
 	BadRequestError = "BAD_REQUEST_ERROR"
 	// InternalServerError is error code of server error
 	InternalServerError = "INTERNAL_SERVER_ERROR"
+	// AuthError is error code of authentication
+	AuthError = "AUTH_ERROR"
 )
 
 // StackTrace is used to check to see if the error has already been wrapped by errors.WithStack
@@ -92,6 +94,18 @@ func NewValidationError(e error) error {
 		fmt.Sprintf("%s", e.Error()),
 		map[string]interface{}{
 			"code": ValidationError,
+		},
+		e,
+	)
+}
+
+// NewAuthError returns error message related authentication
+func NewAuthError(e error) error {
+	return newError(
+		AuthError,
+		fmt.Sprintf("%s", e.Error()),
+		map[string]interface{}{
+			"code": AuthError,
 		},
 		e,
 	)
