@@ -14,6 +14,7 @@ import (
 const (
 	apiPath                 = "api"
 	graphQLPath             = "/graphql"
+	graphQLPlaygroundPath   = "/graphql_playground"
 	subscriptionPath        = "/subscription"
 	playgroundPath          = "/playground"
 	revokeRefreshTokensPath = "/revoke_refresh_tokens"
@@ -50,10 +51,12 @@ func New(srv *handler.Server, ctrl controller.Controller, options Options) *echo
 			Skip: !options.Auth,
 		}))
 
+		g.POST(graphQLPlaygroundPath, echo.WrapHandler(srv))
+
 		g.GET(subscriptionPath, echo.WrapHandler(srv))
 
 		e.GET(playgroundPath, func(c echo.Context) error {
-			playground.Handler("GraphQL", GraphQLPath).ServeHTTP(c.Response(), c.Request())
+			playground.Handler("GraphQL", "/"+apiPath+graphQLPlaygroundPath).ServeHTTP(c.Response(), c.Request())
 			return nil
 		})
 	}
