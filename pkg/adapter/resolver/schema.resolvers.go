@@ -16,9 +16,9 @@ func (r *queryResolver) Node(ctx context.Context, id ulid.ID) (ent.Noder, error)
 	n, err := r.client.Noder(ctx, id, ent.WithNodeType(ent.IDToType))
 	if err != nil {
 		if ent.IsNotFound(err) {
-			return nil, handler.HandleError(ctx, model.NewNotFoundError(err, id))
+			return nil, handler.HandleGraphQLError(ctx, model.NewNotFoundError(err, id))
 		}
-		return nil, handler.HandleError(ctx, model.NewGraphQLError(err))
+		return nil, handler.HandleGraphQLError(ctx, model.NewGraphQLError(err))
 	}
 	return n, nil
 }
@@ -27,9 +27,9 @@ func (r *queryResolver) Nodes(ctx context.Context, ids []ulid.ID) ([]ent.Noder, 
 	ns, err := r.client.Noders(ctx, ids, ent.WithNodeType(ent.IDToType))
 	if err != nil {
 		if ent.IsNotFound(err) {
-			return nil, handler.HandleError(ctx, model.NewNotFoundError(err, ids))
+			return nil, handler.HandleGraphQLError(ctx, model.NewNotFoundError(err, ids))
 		}
-		return nil, handler.HandleError(ctx, model.NewGraphQLError(err))
+		return nil, handler.HandleGraphQLError(ctx, model.NewGraphQLError(err))
 	}
 	return ns, nil
 }

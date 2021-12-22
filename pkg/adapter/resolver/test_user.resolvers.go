@@ -17,7 +17,7 @@ import (
 func (r *mutationResolver) CreateTestUser(ctx context.Context, input ent.CreateTestUserInput) (*ent.TestUser, error) {
 	u, err := r.controller.TestUser.Create(ctx, input)
 	if err != nil {
-		return nil, handler.HandleError(ctx, err)
+		return nil, handler.HandleGraphQLError(ctx, err)
 	}
 	return u, nil
 }
@@ -25,7 +25,7 @@ func (r *mutationResolver) CreateTestUser(ctx context.Context, input ent.CreateT
 func (r *mutationResolver) CreateTestUserAndTodo(ctx context.Context, input ent.CreateTestUserInput) (*ent.TestUser, error) {
 	u, err := r.controller.TestUser.CreateWithTodo(ctx, input)
 	if err != nil {
-		return nil, handler.HandleError(ctx, err)
+		return nil, handler.HandleGraphQLError(ctx, err)
 	}
 	return u, nil
 }
@@ -33,7 +33,7 @@ func (r *mutationResolver) CreateTestUserAndTodo(ctx context.Context, input ent.
 func (r *mutationResolver) UpdateTestUser(ctx context.Context, input ent.UpdateTestUserInput) (*ent.TestUser, error) {
 	u, err := r.controller.TestUser.Update(ctx, input)
 	if err != nil {
-		return nil, handler.HandleError(ctx, err)
+		return nil, handler.HandleGraphQLError(ctx, err)
 	}
 
 	for _, tu := range r.channels.TestUserUpdated {
@@ -48,7 +48,7 @@ func (r *mutationResolver) UpdateTestUser(ctx context.Context, input ent.UpdateT
 func (r *queryResolver) TestUser(ctx context.Context, id *ulid.ID, age *int) (*ent.TestUser, error) {
 	u, err := r.controller.TestUser.Get(ctx, id, age)
 	if err != nil {
-		return nil, handler.HandleError(ctx, err)
+		return nil, handler.HandleGraphQLError(ctx, err)
 	}
 	return u, nil
 }
@@ -56,7 +56,7 @@ func (r *queryResolver) TestUser(ctx context.Context, id *ulid.ID, age *int) (*e
 func (r *queryResolver) TestUsers(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TestUserWhereInput) (*ent.TestUserConnection, error) {
 	us, err := r.controller.TestUser.ListWithPagination(ctx, after, first, before, last, where)
 	if err != nil {
-		return nil, handler.HandleError(ctx, err)
+		return nil, handler.HandleGraphQLError(ctx, err)
 	}
 	return us, nil
 }

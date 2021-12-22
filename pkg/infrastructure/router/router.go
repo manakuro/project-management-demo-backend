@@ -2,6 +2,7 @@ package router
 
 import (
 	"net/http"
+	"project-management-demo-backend/pkg/adapter/controller"
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
@@ -12,10 +13,11 @@ import (
 )
 
 const (
-	apiPath          = "api"
-	graphQLPath      = "/graphql"
-	subscriptionPath = "/subscription"
-	playgroundPath   = "/playground"
+	apiPath                 = "api"
+	graphQLPath             = "/graphql"
+	subscriptionPath        = "/subscription"
+	playgroundPath          = "/playground"
+	revokeRefreshTokensPath = "/revoke_refresh_tokens"
 )
 
 // GraphQLPath is an endpoint of graphql server.
@@ -29,7 +31,7 @@ type Options struct {
 }
 
 // New creates route endpoint
-func New(srv *handler.Server, options Options) *echo.Echo {
+func New(srv *handler.Server, ctrl controller.Controller, options Options) *echo.Echo {
 	e := echo.New()
 	//e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
@@ -39,13 +41,18 @@ func New(srv *handler.Server, options Options) *echo.Echo {
 		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderXRequestedWith, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderAuthorization},
 	}))
 
-	g := e.Group(apiPath, rm.Auth(rm.Options{
+	gr := e.Group(apiPath)
+	{
+		gr.POST(revokeRefreshTokensPath, func(c echo.Context) error { return ctrl.Auth.RevokeRefreshTokens(c) })
+	}
+
+	gg := e.Group(apiPath, rm.Auth(rm.Options{
 		Skip: !options.Auth,
 	}))
 	{
-		g.POST(graphQLPath, echo.WrapHandler(srv))
+		gg.POST(graphQLPath, echo.WrapHandler(srv))
 
-		g.GET(subscriptionPath, echo.WrapHandler(srv))
+		gg.GET(subscriptionPath, echo.WrapHandler(srv))
 
 		e.GET(playgroundPath, func(c echo.Context) error {
 			playground.Handler("GraphQL", GraphQLPath).ServeHTTP(c.Response(), c.Request())

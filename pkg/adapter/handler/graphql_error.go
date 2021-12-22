@@ -9,9 +9,9 @@ import (
 	"github.com/vektah/gqlparser/v2/gqlerror"
 )
 
-// HandleError tasks any errors and add it to the graphql errors.
+// HandleGraphQLError tasks any errors and add it to the graphql errors.
 // It is basically intended to be used at the adapter/resolver layer
-func HandleError(ctx context.Context, err error) error {
+func HandleGraphQLError(ctx context.Context, err error) error {
 	var extendedError interface{ Extensions() map[string]interface{} }
 
 	for err != nil {

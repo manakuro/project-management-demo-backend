@@ -27,7 +27,7 @@ func Setup(t *testing.T, option SetupOption) (expect *httpexpect.Expect, client 
 	client = testutil.NewDBClient(t)
 	ctrl := newController(client)
 	gqlsrv := graphql.NewServer(client, ctrl)
-	e := router.New(gqlsrv, router.Options{
+	e := router.New(gqlsrv, ctrl, router.Options{
 		Auth: false,
 	})
 

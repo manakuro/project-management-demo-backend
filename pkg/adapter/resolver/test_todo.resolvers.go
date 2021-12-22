@@ -15,7 +15,7 @@ import (
 func (r *mutationResolver) CreateTestTodo(ctx context.Context, input ent.CreateTestTodoInput) (*ent.TestTodo, error) {
 	t, err := r.controller.TestTodo.Create(ctx, input)
 	if err != nil {
-		return nil, handler.HandleError(ctx, err)
+		return nil, handler.HandleGraphQLError(ctx, err)
 	}
 	return t, nil
 }
@@ -23,7 +23,7 @@ func (r *mutationResolver) CreateTestTodo(ctx context.Context, input ent.CreateT
 func (r *mutationResolver) UpdateTestTodo(ctx context.Context, input ent.UpdateTestTodoInput) (*ent.TestTodo, error) {
 	t, err := r.controller.TestTodo.Update(ctx, input)
 	if err != nil {
-		return nil, handler.HandleError(ctx, err)
+		return nil, handler.HandleGraphQLError(ctx, err)
 	}
 	return t, nil
 }
@@ -31,7 +31,7 @@ func (r *mutationResolver) UpdateTestTodo(ctx context.Context, input ent.UpdateT
 func (r *queryResolver) TestTodo(ctx context.Context, id *ulid.ID) (*ent.TestTodo, error) {
 	t, err := r.controller.TestTodo.Get(ctx, id)
 	if err != nil {
-		return nil, handler.HandleError(ctx, err)
+		return nil, handler.HandleGraphQLError(ctx, err)
 	}
 	return t, nil
 }
@@ -39,7 +39,7 @@ func (r *queryResolver) TestTodo(ctx context.Context, id *ulid.ID) (*ent.TestTod
 func (r *queryResolver) TestTodos(ctx context.Context) ([]*ent.TestTodo, error) {
 	ts, err := r.controller.TestTodo.List(ctx)
 	if err != nil {
-		return nil, handler.HandleError(ctx, err)
+		return nil, handler.HandleGraphQLError(ctx, err)
 	}
 	return ts, nil
 }

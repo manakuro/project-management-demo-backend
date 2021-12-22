@@ -3,9 +3,13 @@ package auth
 import (
 	"context"
 	"errors"
-	"project-management-demo-backend/pkg/entity/model"
 
+	firebase "firebase.google.com/go"
 	"firebase.google.com/go/auth"
+	"google.golang.org/api/option"
+
+	"project-management-demo-backend/config"
+	"project-management-demo-backend/pkg/entity/model"
 )
 
 type key string
@@ -31,4 +35,20 @@ func TokenID(ctx context.Context) (string, error) {
 	}
 
 	return tokenID, nil
+}
+
+// New returns auth client
+func New(ctx context.Context) (*auth.Client, error) {
+	opt := option.WithCredentialsFile(config.C.Firebase.ServiceKey)
+	app, err := firebase.NewApp(ctx, nil, opt)
+	if err != nil {
+		return nil, model.NewInternalServerError(err)
+	}
+
+	a, err := app.Auth(ctx)
+	if err != nil {
+		return nil, model.NewAuthError(err)
+	}
+
+	return a, nil
 }

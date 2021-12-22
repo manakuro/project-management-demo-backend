@@ -25,5 +25,6 @@ func (r *registry) NewController() controller.Controller {
 	return controller.Controller{
 		TestUser: r.NewTestUserController(),
 		TestTodo: r.NewTestTodoController(),
+		Auth:     r.NewAuthController(),
 	}
 }

@@ -18,10 +18,10 @@ func main() {
 	client := newDBClient()
 	defer client.Close()
 
-	c := newController(client)
-	srv := graphql.NewServer(client, c)
+	ctrl := newController(client)
+	srv := graphql.NewServer(client, ctrl)
 
-	e := router.New(srv, router.Options{
+	e := router.New(srv, ctrl, router.Options{
 		Auth: true,
 	})
 

@@ -2,15 +2,12 @@ package middleware
 
 import (
 	"context"
-	"project-management-demo-backend/config"
 	"project-management-demo-backend/pkg/entity/model"
 	"project-management-demo-backend/pkg/infrastructure/router/handler"
 	"project-management-demo-backend/pkg/util/auth"
 	"strings"
 
-	firebase "firebase.google.com/go"
 	"github.com/labstack/echo/v4"
-	"google.golang.org/api/option"
 )
 
 // Options of auth
@@ -28,13 +25,7 @@ func Auth(opts Options) echo.MiddlewareFunc {
 
 			ctx := c.Request().Context()
 
-			opt := option.WithCredentialsFile(config.C.Firebase.ServiceKey)
-			app, err := firebase.NewApp(ctx, nil, opt)
-			if err != nil {
-				return handler.HandleError(c, model.NewInternalServerError(err))
-			}
-
-			a, err := app.Auth(ctx)
+			a, err := auth.New(ctx)
 			if err != nil {
 				return handler.HandleError(c, model.NewAuthError(err))
 			}
