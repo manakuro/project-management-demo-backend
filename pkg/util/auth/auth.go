@@ -3,6 +3,7 @@ package auth
 import (
 	"context"
 	"errors"
+	"strings"
 
 	firebase "firebase.google.com/go"
 	"firebase.google.com/go/auth"
@@ -37,8 +38,8 @@ func TokenID(ctx context.Context) (string, error) {
 	return tokenID, nil
 }
 
-// New returns auth client
-func New(ctx context.Context) (*auth.Client, error) {
+// NewClient returns auth client
+func NewClient(ctx context.Context) (*auth.Client, error) {
 	opt := option.WithCredentialsFile(config.C.Firebase.ServiceKey)
 	app, err := firebase.NewApp(ctx, nil, opt)
 	if err != nil {
@@ -51,4 +52,14 @@ func New(ctx context.Context) (*auth.Client, error) {
 	}
 
 	return a, nil
+}
+
+// GetIDTokenFromBearer gets id token from Bearer string.
+func GetIDTokenFromBearer(str string) string {
+	return strings.TrimSpace(strings.Replace(str, "Bearer", "", 1))
+}
+
+// WithToken sets token data to context.
+func WithToken(ctx context.Context, token *auth.Token) context.Context {
+	return context.WithValue(ctx, TokenKey, token)
 }

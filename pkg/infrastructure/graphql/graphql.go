@@ -1,10 +1,13 @@
 package graphql
 
 import (
+	"context"
 	"net/http"
 	"project-management-demo-backend/ent"
 	"project-management-demo-backend/pkg/adapter/controller"
 	"project-management-demo-backend/pkg/adapter/resolver"
+	"project-management-demo-backend/pkg/entity/model"
+	"project-management-demo-backend/pkg/util/auth"
 	"time"
 
 	"entgo.io/contrib/entgql"
@@ -33,6 +36,23 @@ func NewServer(client *ent.Client, controller controller.Controller) *handler.Se
 			WriteBufferSize: 1024,
 		},
 		KeepAlivePingInterval: 10 * time.Second,
+		InitFunc: func(ctx context.Context, initPayload transport.InitPayload) (context.Context, error) {
+			authClient, err := auth.NewClient(ctx)
+			if err != nil {
+				return ctx, model.NewAuthError(err)
+			}
+
+			authorization := initPayload.Authorization()
+			idToken := auth.GetIDTokenFromBearer(authorization)
+			token, err := authClient.VerifyIDToken(ctx, idToken)
+			if err != nil {
+				return ctx, model.NewAuthError(err)
+			}
+
+			ctx = auth.WithToken(ctx, token)
+
+			return ctx, nil
+		},
 	})
 
 	srv.AddTransport(transport.Options{})

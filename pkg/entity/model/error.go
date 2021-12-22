@@ -156,7 +156,6 @@ func newError(code string, message string, extensions map[string]interface{}, e 
 		message:    message,
 		extensions: extensions,
 	}
-	fmt.Println("environment.IsDev(): ", environment.IsDev())
 	if IsStackTrace(e) {
 		return newErr
 	}

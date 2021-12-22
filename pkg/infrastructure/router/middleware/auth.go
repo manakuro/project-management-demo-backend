@@ -1,22 +1,20 @@
 package middleware
 
 import (
-	"context"
 	"project-management-demo-backend/pkg/entity/model"
 	"project-management-demo-backend/pkg/infrastructure/router/handler"
 	"project-management-demo-backend/pkg/util/auth"
-	"strings"
 
 	"github.com/labstack/echo/v4"
 )
 
-// Options of auth
-type Options struct {
+// AuthOptions of options for auth
+type AuthOptions struct {
 	Skip bool
 }
 
 // Auth is a middleware of authenticating users
-func Auth(opts Options) echo.MiddlewareFunc {
+func Auth(opts AuthOptions) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			if opts.Skip {
@@ -25,19 +23,19 @@ func Auth(opts Options) echo.MiddlewareFunc {
 
 			ctx := c.Request().Context()
 
-			a, err := auth.New(ctx)
+			client, err := auth.NewClient(ctx)
 			if err != nil {
 				return handler.HandleError(c, model.NewAuthError(err))
 			}
 
 			header := c.Request().Header.Get(echo.HeaderAuthorization)
-			idToken := strings.TrimSpace(strings.Replace(header, "Bearer", "", 1))
-			token, err := a.VerifyIDToken(ctx, idToken)
+			idToken := auth.GetIDTokenFromBearer(header)
+			token, err := client.VerifyIDToken(ctx, idToken)
 			if err != nil {
 				return handler.HandleError(c, model.NewAuthError(err))
 			}
 
-			ctx = context.WithValue(ctx, auth.TokenKey, token)
+			ctx = auth.WithToken(ctx, token)
 			c.SetRequest(c.Request().WithContext(ctx))
 
 			return next(c)

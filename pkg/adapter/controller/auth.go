@@ -29,7 +29,7 @@ func (a *auth) RevokeRefreshTokens(ctx Context) error {
 		return handler.HandleRestError(ctx, model.NewInvalidParamError(nil))
 	}
 
-	client, err := uauth.New(c)
+	client, err := uauth.NewClient(c)
 	if err != nil {
 		return err
 	}

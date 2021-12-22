@@ -3,13 +3,12 @@ package router
 import (
 	"net/http"
 	"project-management-demo-backend/pkg/adapter/controller"
+	rm "project-management-demo-backend/pkg/infrastructure/router/middleware"
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-
-	rm "project-management-demo-backend/pkg/infrastructure/router/middleware"
 )
 
 const (
@@ -41,18 +40,17 @@ func New(srv *handler.Server, ctrl controller.Controller, options Options) *echo
 		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderXRequestedWith, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderAuthorization},
 	}))
 
-	gr := e.Group(apiPath)
+	g := e.Group(apiPath)
 	{
-		gr.POST(revokeRefreshTokensPath, func(c echo.Context) error { return ctrl.Auth.RevokeRefreshTokens(c) })
+		g.POST(revokeRefreshTokensPath, func(c echo.Context) error { return ctrl.Auth.RevokeRefreshTokens(c) })
 	}
 
-	gg := e.Group(apiPath, rm.Auth(rm.Options{
-		Skip: !options.Auth,
-	}))
 	{
-		gg.POST(graphQLPath, echo.WrapHandler(srv))
+		g.POST(graphQLPath, echo.WrapHandler(srv), rm.Auth(rm.AuthOptions{
+			Skip: !options.Auth,
+		}))
 
-		gg.GET(subscriptionPath, echo.WrapHandler(srv))
+		g.GET(subscriptionPath, echo.WrapHandler(srv))
 
 		e.GET(playgroundPath, func(c echo.Context) error {
 			playground.Handler("GraphQL", GraphQLPath).ServeHTTP(c.Response(), c.Request())
