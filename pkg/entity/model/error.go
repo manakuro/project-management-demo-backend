@@ -1,6 +1,7 @@
 package model
 
 import (
+	pkgerrors "errors"
 	"fmt"
 	"project-management-demo-backend/pkg/util/environment"
 
@@ -75,7 +76,8 @@ func NewNotFoundError(e error, value interface{}) error {
 }
 
 // NewInvalidParamError returns error message related param
-func NewInvalidParamError(e error, value interface{}) error {
+func NewInvalidParamError(value interface{}) error {
+	e := pkgerrors.New("invalid params error")
 	return newError(
 		BadRequestError,
 		fmt.Sprintf("%s", e.Error()),
@@ -154,6 +156,7 @@ func newError(code string, message string, extensions map[string]interface{}, e 
 		message:    message,
 		extensions: extensions,
 	}
+	fmt.Println("environment.IsDev(): ", environment.IsDev())
 	if IsStackTrace(e) {
 		return newErr
 	}

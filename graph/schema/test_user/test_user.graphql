@@ -27,7 +27,7 @@ input UpdateTestUserInput {
 }
 
 extend type Query {
-  testUser(id: ID, age: Int): TestUser
+  testUser(id: ID!, age: Int): TestUser
   testUsers(after: Cursor, first: Int, before: Cursor, last: Int, where: TestUserWhereInput): TestUserConnection
 }
 

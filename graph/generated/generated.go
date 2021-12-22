@@ -71,7 +71,7 @@ type ComplexityRoot struct {
 		Nodes     func(childComplexity int, ids []ulid.ID) int
 		TestTodo  func(childComplexity int, id *ulid.ID) int
 		TestTodos func(childComplexity int) int
-		TestUser  func(childComplexity int, id *ulid.ID, age *int) int
+		TestUser  func(childComplexity int, id ulid.ID, age *int) int
 		TestUsers func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TestUserWhereInput) int
 	}
 
@@ -122,7 +122,7 @@ type QueryResolver interface {
 	Nodes(ctx context.Context, ids []ulid.ID) ([]ent.Noder, error)
 	TestTodo(ctx context.Context, id *ulid.ID) (*ent.TestTodo, error)
 	TestTodos(ctx context.Context) ([]*ent.TestTodo, error)
-	TestUser(ctx context.Context, id *ulid.ID, age *int) (*ent.TestUser, error)
+	TestUser(ctx context.Context, id ulid.ID, age *int) (*ent.TestUser, error)
 	TestUsers(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TestUserWhereInput) (*ent.TestUserConnection, error)
 }
 type SubscriptionResolver interface {
@@ -293,7 +293,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.TestUser(childComplexity, args["id"].(*ulid.ID), args["age"].(*int)), true
+		return e.complexity.Query.TestUser(childComplexity, args["id"].(ulid.ID), args["age"].(*int)), true
 
 	case "Query.testUsers":
 		if e.complexity.Query.TestUsers == nil {
@@ -777,7 +777,7 @@ input UpdateTestUserInput {
 }
 
 extend type Query {
-  testUser(id: ID, age: Int): TestUser
+  testUser(id: ID!, age: Int): TestUser
   testUsers(after: Cursor, first: Int, before: Cursor, last: Int, where: TestUserWhereInput): TestUserConnection
 }
 
@@ -936,10 +936,10 @@ func (ec *executionContext) field_Query_testTodo_args(ctx context.Context, rawAr
 func (ec *executionContext) field_Query_testUser_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 *ulid.ID
+	var arg0 ulid.ID
 	if tmp, ok := rawArgs["id"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-		arg0, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, tmp)
+		arg0, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1585,7 +1585,7 @@ func (ec *executionContext) _Query_testUser(ctx context.Context, field graphql.C
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().TestUser(rctx, args["id"].(*ulid.ID), args["age"].(*int))
+		return ec.resolvers.Query().TestUser(rctx, args["id"].(ulid.ID), args["age"].(*int))
 	})
 	if err != nil {
 		ec.Error(ctx, err)

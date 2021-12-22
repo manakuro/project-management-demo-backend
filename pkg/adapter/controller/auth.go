@@ -26,7 +26,7 @@ func (a *auth) RevokeRefreshTokens(ctx Context) error {
 		UID string `json:"uid"`
 	}
 	if err := ctx.Bind(&params); err != nil {
-		return handler.HandleRestError(ctx, model.NewInvalidParamError(err, nil))
+		return handler.HandleRestError(ctx, model.NewInvalidParamError(nil))
 	}
 
 	client, err := uauth.New(c)

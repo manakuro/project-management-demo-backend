@@ -17,11 +17,16 @@ func NewTestUserRepository(client *ent.Client) ur.TestUser {
 	return &testUserRepository{client: client}
 }
 
-func (r *testUserRepository) Get(ctx context.Context, id *model.ID, age *int) (*model.TestUser, error) {
+func (r *testUserRepository) Get(ctx context.Context, id model.ID, age *int) (*model.TestUser, error) {
 	q := r.client.TestUser.Query()
-	if id != nil {
-		q.Where(testuser.IDEQ(*id))
+
+	if id == "" {
+		return nil, model.NewInvalidParamError(map[string]interface{}{
+			"id": id,
+		})
 	}
+	q.Where(testuser.IDEQ(id))
+
 	if age != nil {
 		q.Where(testuser.AgeEQ(*age))
 	}

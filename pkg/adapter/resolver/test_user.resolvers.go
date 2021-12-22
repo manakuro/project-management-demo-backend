@@ -45,7 +45,7 @@ func (r *mutationResolver) UpdateTestUser(ctx context.Context, input ent.UpdateT
 	return u, nil
 }
 
-func (r *queryResolver) TestUser(ctx context.Context, id *ulid.ID, age *int) (*ent.TestUser, error) {
+func (r *queryResolver) TestUser(ctx context.Context, id ulid.ID, age *int) (*ent.TestUser, error) {
 	u, err := r.controller.TestUser.Get(ctx, id, age)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
