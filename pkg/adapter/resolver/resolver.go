@@ -37,8 +37,13 @@ func NewSchema(client *ent.Client, controller controller.Controller) graphql.Exe
 		Resolvers: &Resolver{
 			client:     client,
 			controller: controller,
-			channels:   Channels{},
-			mutex:      sync.Mutex{},
+			channels: Channels{
+				TestUserUpdated: map[string]struct {
+					id ulid.ID
+					ch chan *ent.TestUser
+				}{},
+			},
+			mutex: sync.Mutex{},
 		},
 	})
 }

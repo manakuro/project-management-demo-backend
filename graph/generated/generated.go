@@ -76,7 +76,7 @@ type ComplexityRoot struct {
 	}
 
 	Subscription struct {
-		TestUserUpdated func(childComplexity int, id *ulid.ID) int
+		TestUserUpdated func(childComplexity int, id ulid.ID) int
 	}
 
 	TestTodo struct {
@@ -126,7 +126,7 @@ type QueryResolver interface {
 	TestUsers(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TestUserWhereInput) (*ent.TestUserConnection, error)
 }
 type SubscriptionResolver interface {
-	TestUserUpdated(ctx context.Context, id *ulid.ID) (<-chan *ent.TestUser, error)
+	TestUserUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.TestUser, error)
 }
 type TestTodoResolver interface {
 	CreatedAt(ctx context.Context, obj *ent.TestTodo) (string, error)
@@ -317,7 +317,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Subscription.TestUserUpdated(childComplexity, args["id"].(*ulid.ID)), true
+		return e.complexity.Subscription.TestUserUpdated(childComplexity, args["id"].(ulid.ID)), true
 
 	case "TestTodo.createdAt":
 		if e.complexity.TestTodo.CreatedAt == nil {
@@ -782,7 +782,7 @@ extend type Query {
 }
 
 extend type Subscription {
-  testUserUpdated(id: ID): TestUser!
+  testUserUpdated(id: ID!): TestUser!
 }
 
 extend type Mutation {
@@ -1011,10 +1011,10 @@ func (ec *executionContext) field_Query_testUsers_args(ctx context.Context, rawA
 func (ec *executionContext) field_Subscription_testUserUpdated_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 *ulid.ID
+	var arg0 ulid.ID
 	if tmp, ok := rawArgs["id"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-		arg0, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, tmp)
+		arg0, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1734,7 +1734,7 @@ func (ec *executionContext) _Subscription_testUserUpdated(ctx context.Context, f
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Subscription().TestUserUpdated(rctx, args["id"].(*ulid.ID))
+		return ec.resolvers.Subscription().TestUserUpdated(rctx, args["id"].(ulid.ID))
 	})
 	if err != nil {
 		ec.Error(ctx, err)

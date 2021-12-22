@@ -32,7 +32,7 @@ extend type Query {
 }
 
 extend type Subscription {
-  testUserUpdated(id: ID): TestUser!
+  testUserUpdated(id: ID!): TestUser!
 }
 
 extend type Mutation {

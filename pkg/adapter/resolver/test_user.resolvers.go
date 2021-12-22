@@ -61,7 +61,7 @@ func (r *queryResolver) TestUsers(ctx context.Context, after *ent.Cursor, first 
 	return us, nil
 }
 
-func (r *subscriptionResolver) TestUserUpdated(ctx context.Context, id *ulid.ID) (<-chan *ent.TestUser, error) {
+func (r *subscriptionResolver) TestUserUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.TestUser, error) {
 	token := randstr.Hex(16)
 	ch := make(chan *ent.TestUser, 1)
 
@@ -69,7 +69,7 @@ func (r *subscriptionResolver) TestUserUpdated(ctx context.Context, id *ulid.ID)
 	r.channels.TestUserUpdated[token] = struct {
 		id ulid.ID
 		ch chan *ent.TestUser
-	}{id: *id, ch: ch}
+	}{id: id, ch: ch}
 	r.mutex.Unlock()
 
 	go func() {
