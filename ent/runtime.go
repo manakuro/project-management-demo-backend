@@ -5,6 +5,7 @@ package ent
 import (
 	"project-management-demo-backend/ent/schema"
 	"project-management-demo-backend/ent/schema/ulid"
+	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/ent/testuser"
 	"time"
@@ -14,6 +15,53 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	teammateMixin := schema.Teammate{}.Mixin()
+	teammateMixinFields0 := teammateMixin[0].Fields()
+	_ = teammateMixinFields0
+	teammateMixinFields1 := teammateMixin[1].Fields()
+	_ = teammateMixinFields1
+	teammateMixinFields2 := teammateMixin[2].Fields()
+	_ = teammateMixinFields2
+	teammateFields := schema.Teammate{}.Fields()
+	_ = teammateFields
+	// teammateDescName is the schema descriptor for name field.
+	teammateDescName := teammateMixinFields1[0].Descriptor()
+	// teammate.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	teammate.NameValidator = func() func(string) error {
+		validators := teammateDescName.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(name string) error {
+			for _, fn := range fns {
+				if err := fn(name); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// teammateDescImage is the schema descriptor for image field.
+	teammateDescImage := teammateMixinFields1[1].Descriptor()
+	// teammate.ImageValidator is a validator for the "image" field. It is called by the builders before save.
+	teammate.ImageValidator = teammateDescImage.Validators[0].(func(string) error)
+	// teammateDescEmail is the schema descriptor for email field.
+	teammateDescEmail := teammateMixinFields1[2].Descriptor()
+	// teammate.EmailValidator is a validator for the "email" field. It is called by the builders before save.
+	teammate.EmailValidator = teammateDescEmail.Validators[0].(func(string) error)
+	// teammateDescCreatedAt is the schema descriptor for created_at field.
+	teammateDescCreatedAt := teammateMixinFields2[0].Descriptor()
+	// teammate.DefaultCreatedAt holds the default value on creation for the created_at field.
+	teammate.DefaultCreatedAt = teammateDescCreatedAt.Default.(func() time.Time)
+	// teammateDescUpdatedAt is the schema descriptor for updated_at field.
+	teammateDescUpdatedAt := teammateMixinFields2[1].Descriptor()
+	// teammate.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	teammate.DefaultUpdatedAt = teammateDescUpdatedAt.Default.(func() time.Time)
+	// teammateDescID is the schema descriptor for id field.
+	teammateDescID := teammateMixinFields0[0].Descriptor()
+	// teammate.DefaultID holds the default value on creation for the id field.
+	teammate.DefaultID = teammateDescID.Default.(func() ulid.ID)
 	testtodoMixin := schema.TestTodo{}.Mixin()
 	testtodoMixinFields0 := testtodoMixin[0].Fields()
 	_ = testtodoMixinFields0

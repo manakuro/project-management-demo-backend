@@ -8,6 +8,19 @@ import (
 	"project-management-demo-backend/ent"
 )
 
+// The TeammateFunc type is an adapter to allow the use of ordinary
+// function as Teammate mutator.
+type TeammateFunc func(context.Context, *ent.TeammateMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f TeammateFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.TeammateMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.TeammateMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The TestTodoFunc type is an adapter to allow the use of ordinary
 // function as TestTodo mutator.
 type TestTodoFunc func(context.Context, *ent.TestTodoMutation) (ent.Value, error)
