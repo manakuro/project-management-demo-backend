@@ -10,6 +10,7 @@ import (
 	"project-management-demo-backend/ent/migrate"
 	"project-management-demo-backend/ent/schema/ulid"
 
+	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/ent/testuser"
 
@@ -23,6 +24,8 @@ type Client struct {
 	config
 	// Schema is the client for creating, migrating and dropping schema.
 	Schema *migrate.Schema
+	// Teammate is the client for interacting with the Teammate builders.
+	Teammate *TeammateClient
 	// TestTodo is the client for interacting with the TestTodo builders.
 	TestTodo *TestTodoClient
 	// TestUser is the client for interacting with the TestUser builders.
@@ -40,6 +43,7 @@ func NewClient(opts ...Option) *Client {
 
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
+	c.Teammate = NewTeammateClient(c.config)
 	c.TestTodo = NewTestTodoClient(c.config)
 	c.TestUser = NewTestUserClient(c.config)
 }
@@ -75,6 +79,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	return &Tx{
 		ctx:      ctx,
 		config:   cfg,
+		Teammate: NewTeammateClient(cfg),
 		TestTodo: NewTestTodoClient(cfg),
 		TestUser: NewTestUserClient(cfg),
 	}, nil
@@ -95,6 +100,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
 		config:   cfg,
+		Teammate: NewTeammateClient(cfg),
 		TestTodo: NewTestTodoClient(cfg),
 		TestUser: NewTestUserClient(cfg),
 	}, nil
@@ -103,7 +109,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 // Debug returns a new debug-client. It's used to get verbose logging on specific operations.
 //
 //	client.Debug().
-//		TestTodo.
+//		Teammate.
 //		Query().
 //		Count(ctx)
 //
@@ -126,8 +132,99 @@ func (c *Client) Close() error {
 // Use adds the mutation hooks to all the entity clients.
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
+	c.Teammate.Use(hooks...)
 	c.TestTodo.Use(hooks...)
 	c.TestUser.Use(hooks...)
+}
+
+// TeammateClient is a client for the Teammate schema.
+type TeammateClient struct {
+	config
+}
+
+// NewTeammateClient returns a client for the Teammate from the given config.
+func NewTeammateClient(c config) *TeammateClient {
+	return &TeammateClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `teammate.Hooks(f(g(h())))`.
+func (c *TeammateClient) Use(hooks ...Hook) {
+	c.hooks.Teammate = append(c.hooks.Teammate, hooks...)
+}
+
+// Create returns a create builder for Teammate.
+func (c *TeammateClient) Create() *TeammateCreate {
+	mutation := newTeammateMutation(c.config, OpCreate)
+	return &TeammateCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Teammate entities.
+func (c *TeammateClient) CreateBulk(builders ...*TeammateCreate) *TeammateCreateBulk {
+	return &TeammateCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Teammate.
+func (c *TeammateClient) Update() *TeammateUpdate {
+	mutation := newTeammateMutation(c.config, OpUpdate)
+	return &TeammateUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *TeammateClient) UpdateOne(t *Teammate) *TeammateUpdateOne {
+	mutation := newTeammateMutation(c.config, OpUpdateOne, withTeammate(t))
+	return &TeammateUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *TeammateClient) UpdateOneID(id ulid.ID) *TeammateUpdateOne {
+	mutation := newTeammateMutation(c.config, OpUpdateOne, withTeammateID(id))
+	return &TeammateUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Teammate.
+func (c *TeammateClient) Delete() *TeammateDelete {
+	mutation := newTeammateMutation(c.config, OpDelete)
+	return &TeammateDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *TeammateClient) DeleteOne(t *Teammate) *TeammateDeleteOne {
+	return c.DeleteOneID(t.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *TeammateClient) DeleteOneID(id ulid.ID) *TeammateDeleteOne {
+	builder := c.Delete().Where(teammate.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &TeammateDeleteOne{builder}
+}
+
+// Query returns a query builder for Teammate.
+func (c *TeammateClient) Query() *TeammateQuery {
+	return &TeammateQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a Teammate entity by its id.
+func (c *TeammateClient) Get(ctx context.Context, id ulid.ID) (*Teammate, error) {
+	return c.Query().Where(teammate.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *TeammateClient) GetX(ctx context.Context, id ulid.ID) *Teammate {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *TeammateClient) Hooks() []Hook {
+	return c.hooks.Teammate
 }
 
 // TestTodoClient is a client for the TestTodo schema.

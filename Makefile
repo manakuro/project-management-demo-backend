@@ -28,6 +28,10 @@ migrate_up:
 migrate_down:
 	migrate -path $$(yq e '.development.path' db/config.yaml) -database $$(yq e '.development.database' db/config.yaml) down
 
+# Feed data
+feed:
+	go1.16.9 run ./cmd/feed/main.go
+
 ent_generate:
 	go1.16.9 generate ./ent --idtype string
 
@@ -51,4 +55,4 @@ setup_e2e_db:
 e2e:
 	go1.16.9 test ./test/e2e/...
 
-.PHONY: install setup_db migrate_up migrate_down start migrate_schema schema_description ent_generate setup_test_db setup_e2e_db e2e test_repository
+.PHONY: install setup_db migrate_up migrate_down start migrate_schema schema_description ent_generate setup_test_db setup_e2e_db e2e test_repository feed

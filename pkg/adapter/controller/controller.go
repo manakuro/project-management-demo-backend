@@ -5,4 +5,5 @@ type Controller struct {
 	TestUser interface{ TestUser }
 	TestTodo interface{ TestTodo }
 	Auth     interface{ Auth }
+	Teammate interface{ Teammate }
 }

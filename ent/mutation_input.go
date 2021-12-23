@@ -8,6 +8,67 @@ import (
 	"time"
 )
 
+// CreateTeammateInput represents a mutation input for creating teammates.
+type CreateTeammateInput struct {
+	Name      string
+	Image     string
+	Email     string
+	CreatedAt *time.Time
+	UpdatedAt *time.Time
+}
+
+// Mutate applies the CreateTeammateInput on the TeammateCreate builder.
+func (i *CreateTeammateInput) Mutate(m *TeammateCreate) {
+	m.SetName(i.Name)
+	m.SetImage(i.Image)
+	m.SetEmail(i.Email)
+	if v := i.CreatedAt; v != nil {
+		m.SetCreatedAt(*v)
+	}
+	if v := i.UpdatedAt; v != nil {
+		m.SetUpdatedAt(*v)
+	}
+}
+
+// SetInput applies the change-set in the CreateTeammateInput on the create builder.
+func (c *TeammateCreate) SetInput(i CreateTeammateInput) *TeammateCreate {
+	i.Mutate(c)
+	return c
+}
+
+// UpdateTeammateInput represents a mutation input for updating teammates.
+type UpdateTeammateInput struct {
+	ID    ulid.ID
+	Name  *string
+	Image *string
+	Email *string
+}
+
+// Mutate applies the UpdateTeammateInput on the TeammateMutation.
+func (i *UpdateTeammateInput) Mutate(m *TeammateMutation) {
+	if v := i.Name; v != nil {
+		m.SetName(*v)
+	}
+	if v := i.Image; v != nil {
+		m.SetImage(*v)
+	}
+	if v := i.Email; v != nil {
+		m.SetEmail(*v)
+	}
+}
+
+// SetInput applies the change-set in the UpdateTeammateInput on the update builder.
+func (u *TeammateUpdate) SetInput(i UpdateTeammateInput) *TeammateUpdate {
+	i.Mutate(u.Mutation())
+	return u
+}
+
+// SetInput applies the change-set in the UpdateTeammateInput on the update-one builder.
+func (u *TeammateUpdateOne) SetInput(i UpdateTeammateInput) *TeammateUpdateOne {
+	i.Mutate(u.Mutation())
+	return u
+}
+
 // CreateTestTodoInput represents a mutation input for creating testtodos.
 type CreateTestTodoInput struct {
 	Name       *string

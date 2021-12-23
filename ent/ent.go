@@ -5,6 +5,7 @@ package ent
 import (
 	"errors"
 	"fmt"
+	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/ent/testuser"
 
@@ -30,6 +31,7 @@ type OrderFunc func(*sql.Selector)
 // columnChecker returns a function indicates if the column exists in the given column.
 func columnChecker(table string) func(string) error {
 	checks := map[string]func(string) bool{
+		teammate.Table: teammate.ValidColumn,
 		testtodo.Table: testtodo.ValidColumn,
 		testuser.Table: testuser.ValidColumn,
 	}
