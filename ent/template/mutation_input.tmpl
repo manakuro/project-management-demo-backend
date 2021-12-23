@@ -100,15 +100,9 @@
                     m.{{ print "Clear" $f.StructField }}()
                     }
                 {{- end }}
-                {{- if $f.IsJSON }}
-                    if v := i.{{ $f.StructField }}; v != nil {
-                    m.{{ $f.MutationSet }}(v)
-                    }
-                {{- else }}
-                    if v := i.{{ $f.StructField }}; v != nil {
-                    m.{{ $f.MutationSet }}(*v)
-                    }
-                {{- end }}
+                if v := i.{{ $f.StructField }}; v != nil {
+                m.{{ $f.MutationSet }}(*v)
+                }
             {{- end }}
         {{- end }}
         {{- range $e := $n.Edges }}

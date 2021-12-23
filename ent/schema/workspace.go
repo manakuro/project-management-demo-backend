@@ -52,7 +52,7 @@ func (WorkspaceMixin) Fields() []ent.Field {
 		field.String("name").
 			NotEmpty().
 			MaxLen(255),
-		field.JSON("description", &WorkspaceDescription{}),
+		field.JSON("description", WorkspaceDescription{}),
 	}
 }
 

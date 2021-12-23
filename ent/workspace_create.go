@@ -36,7 +36,7 @@ func (wc *WorkspaceCreate) SetName(s string) *WorkspaceCreate {
 }
 
 // SetDescription sets the "description" field.
-func (wc *WorkspaceCreate) SetDescription(sd *schema.WorkspaceDescription) *WorkspaceCreate {
+func (wc *WorkspaceCreate) SetDescription(sd schema.WorkspaceDescription) *WorkspaceCreate {
 	wc.mutation.SetDescription(sd)
 	return wc
 }

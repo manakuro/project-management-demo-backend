@@ -25,7 +25,7 @@ type Workspace struct {
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
 	// Description holds the value of the "description" field.
-	Description *schema.WorkspaceDescription `json:"description,omitempty"`
+	Description schema.WorkspaceDescription `json:"description,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.

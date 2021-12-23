@@ -231,7 +231,7 @@ func (u *TestUserUpdateOne) SetInput(i UpdateTestUserInput) *TestUserUpdateOne {
 // CreateWorkspaceInput represents a mutation input for creating workspaces.
 type CreateWorkspaceInput struct {
 	Name        string
-	Description *schema.WorkspaceDescription
+	Description schema.WorkspaceDescription
 	CreatedAt   *time.Time
 	UpdatedAt   *time.Time
 	CreatedBy   ulid.ID
@@ -271,7 +271,7 @@ func (i *UpdateWorkspaceInput) Mutate(m *WorkspaceMutation) {
 		m.SetName(*v)
 	}
 	if v := i.Description; v != nil {
-		m.SetDescription(v)
+		m.SetDescription(*v)
 	}
 	if i.ClearTeammate {
 		m.ClearTeammate()

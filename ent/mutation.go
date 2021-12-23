@@ -1893,7 +1893,7 @@ type WorkspaceMutation struct {
 	typ             string
 	id              *ulid.ID
 	name            *string
-	description     **schema.WorkspaceDescription
+	description     *schema.WorkspaceDescription
 	created_at      *time.Time
 	updated_at      *time.Time
 	clearedFields   map[string]struct{}
@@ -2062,12 +2062,12 @@ func (m *WorkspaceMutation) ResetName() {
 }
 
 // SetDescription sets the "description" field.
-func (m *WorkspaceMutation) SetDescription(sd *schema.WorkspaceDescription) {
+func (m *WorkspaceMutation) SetDescription(sd schema.WorkspaceDescription) {
 	m.description = &sd
 }
 
 // Description returns the value of the "description" field in the mutation.
-func (m *WorkspaceMutation) Description() (r *schema.WorkspaceDescription, exists bool) {
+func (m *WorkspaceMutation) Description() (r schema.WorkspaceDescription, exists bool) {
 	v := m.description
 	if v == nil {
 		return
@@ -2078,7 +2078,7 @@ func (m *WorkspaceMutation) Description() (r *schema.WorkspaceDescription, exist
 // OldDescription returns the old "description" field's value of the Workspace entity.
 // If the Workspace object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *WorkspaceMutation) OldDescription(ctx context.Context) (v *schema.WorkspaceDescription, err error) {
+func (m *WorkspaceMutation) OldDescription(ctx context.Context) (v schema.WorkspaceDescription, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, fmt.Errorf("OldDescription is only allowed on UpdateOne operations")
 	}
@@ -2304,7 +2304,7 @@ func (m *WorkspaceMutation) SetField(name string, value ent.Value) error {
 		m.SetName(v)
 		return nil
 	case workspace.FieldDescription:
-		v, ok := value.(*schema.WorkspaceDescription)
+		v, ok := value.(schema.WorkspaceDescription)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}

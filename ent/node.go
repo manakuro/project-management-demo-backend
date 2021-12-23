@@ -255,7 +255,7 @@ func (w *Workspace) Node(ctx context.Context) (node *Node, err error) {
 		return nil, err
 	}
 	node.Fields[2] = &Field{
-		Type:  "*schema.WorkspaceDescription",
+		Type:  "schema.WorkspaceDescription",
 		Name:  "description",
 		Value: string(buf),
 	}

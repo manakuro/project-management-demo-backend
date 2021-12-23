@@ -43,7 +43,7 @@ func (wu *WorkspaceUpdate) SetName(s string) *WorkspaceUpdate {
 }
 
 // SetDescription sets the "description" field.
-func (wu *WorkspaceUpdate) SetDescription(sd *schema.WorkspaceDescription) *WorkspaceUpdate {
+func (wu *WorkspaceUpdate) SetDescription(sd schema.WorkspaceDescription) *WorkspaceUpdate {
 	wu.mutation.SetDescription(sd)
 	return wu
 }
@@ -242,7 +242,7 @@ func (wuo *WorkspaceUpdateOne) SetName(s string) *WorkspaceUpdateOne {
 }
 
 // SetDescription sets the "description" field.
-func (wuo *WorkspaceUpdateOne) SetDescription(sd *schema.WorkspaceDescription) *WorkspaceUpdateOne {
+func (wuo *WorkspaceUpdateOne) SetDescription(sd schema.WorkspaceDescription) *WorkspaceUpdateOne {
 	wuo.mutation.SetDescription(sd)
 	return wuo
 }
