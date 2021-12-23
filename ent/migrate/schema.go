@@ -61,14 +61,39 @@ var (
 		Columns:    TestUsersColumns,
 		PrimaryKey: []*schema.Column{TestUsersColumns[0]},
 	}
+	// WorkspacesColumns holds the columns for the "workspaces" table.
+	WorkspacesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+		{Name: "name", Type: field.TypeString, Size: 255},
+		{Name: "description", Type: field.TypeJSON},
+		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
+		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
+		{Name: "created_by", Type: field.TypeString, Unique: true, Nullable: true},
+	}
+	// WorkspacesTable holds the schema information for the "workspaces" table.
+	WorkspacesTable = &schema.Table{
+		Name:       "workspaces",
+		Columns:    WorkspacesColumns,
+		PrimaryKey: []*schema.Column{WorkspacesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "workspaces_teammates_workspaces",
+				Columns:    []*schema.Column{WorkspacesColumns[5]},
+				RefColumns: []*schema.Column{TeammatesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		TeammatesTable,
 		TestTodosTable,
 		TestUsersTable,
+		WorkspacesTable,
 	}
 )
 
 func init() {
 	TestTodosTable.ForeignKeys[0].RefTable = TestUsersTable
+	WorkspacesTable.ForeignKeys[0].RefTable = TeammatesTable
 }

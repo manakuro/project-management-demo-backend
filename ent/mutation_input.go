@@ -3,6 +3,7 @@
 package ent
 
 import (
+	"project-management-demo-backend/ent/schema"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/testtodo"
 	"time"
@@ -10,11 +11,12 @@ import (
 
 // CreateTeammateInput represents a mutation input for creating teammates.
 type CreateTeammateInput struct {
-	Name      string
-	Image     string
-	Email     string
-	CreatedAt *time.Time
-	UpdatedAt *time.Time
+	Name        string
+	Image       string
+	Email       string
+	CreatedAt   *time.Time
+	UpdatedAt   *time.Time
+	WorkspaceID *ulid.ID
 }
 
 // Mutate applies the CreateTeammateInput on the TeammateCreate builder.
@@ -28,6 +30,9 @@ func (i *CreateTeammateInput) Mutate(m *TeammateCreate) {
 	if v := i.UpdatedAt; v != nil {
 		m.SetUpdatedAt(*v)
 	}
+	if v := i.WorkspaceID; v != nil {
+		m.SetWorkspacesID(*v)
+	}
 }
 
 // SetInput applies the change-set in the CreateTeammateInput on the create builder.
@@ -38,10 +43,12 @@ func (c *TeammateCreate) SetInput(i CreateTeammateInput) *TeammateCreate {
 
 // UpdateTeammateInput represents a mutation input for updating teammates.
 type UpdateTeammateInput struct {
-	ID    ulid.ID
-	Name  *string
-	Image *string
-	Email *string
+	ID              ulid.ID
+	Name            *string
+	Image           *string
+	Email           *string
+	WorkspaceID     *ulid.ID
+	ClearWorkspaces bool
 }
 
 // Mutate applies the UpdateTeammateInput on the TeammateMutation.
@@ -54,6 +61,12 @@ func (i *UpdateTeammateInput) Mutate(m *TeammateMutation) {
 	}
 	if v := i.Email; v != nil {
 		m.SetEmail(*v)
+	}
+	if i.ClearWorkspaces {
+		m.ClearWorkspaces()
+	}
+	if v := i.WorkspaceID; v != nil {
+		m.SetWorkspacesID(*v)
 	}
 }
 
@@ -211,6 +224,71 @@ func (u *TestUserUpdate) SetInput(i UpdateTestUserInput) *TestUserUpdate {
 
 // SetInput applies the change-set in the UpdateTestUserInput on the update-one builder.
 func (u *TestUserUpdateOne) SetInput(i UpdateTestUserInput) *TestUserUpdateOne {
+	i.Mutate(u.Mutation())
+	return u
+}
+
+// CreateWorkspaceInput represents a mutation input for creating workspaces.
+type CreateWorkspaceInput struct {
+	Name        string
+	Description *schema.WorkspaceDescription
+	CreatedAt   *time.Time
+	UpdatedAt   *time.Time
+	CreatedBy   ulid.ID
+}
+
+// Mutate applies the CreateWorkspaceInput on the WorkspaceCreate builder.
+func (i *CreateWorkspaceInput) Mutate(m *WorkspaceCreate) {
+	m.SetName(i.Name)
+	m.SetDescription(i.Description)
+	if v := i.CreatedAt; v != nil {
+		m.SetCreatedAt(*v)
+	}
+	if v := i.UpdatedAt; v != nil {
+		m.SetUpdatedAt(*v)
+	}
+	m.SetTeammateID(i.CreatedBy)
+}
+
+// SetInput applies the change-set in the CreateWorkspaceInput on the create builder.
+func (c *WorkspaceCreate) SetInput(i CreateWorkspaceInput) *WorkspaceCreate {
+	i.Mutate(c)
+	return c
+}
+
+// UpdateWorkspaceInput represents a mutation input for updating workspaces.
+type UpdateWorkspaceInput struct {
+	ID            ulid.ID
+	Name          *string
+	Description   *schema.WorkspaceDescription
+	CreatedBy     *ulid.ID
+	ClearTeammate bool
+}
+
+// Mutate applies the UpdateWorkspaceInput on the WorkspaceMutation.
+func (i *UpdateWorkspaceInput) Mutate(m *WorkspaceMutation) {
+	if v := i.Name; v != nil {
+		m.SetName(*v)
+	}
+	if v := i.Description; v != nil {
+		m.SetDescription(v)
+	}
+	if i.ClearTeammate {
+		m.ClearTeammate()
+	}
+	if v := i.CreatedBy; v != nil {
+		m.SetTeammateID(*v)
+	}
+}
+
+// SetInput applies the change-set in the UpdateWorkspaceInput on the update builder.
+func (u *WorkspaceUpdate) SetInput(i UpdateWorkspaceInput) *WorkspaceUpdate {
+	i.Mutate(u.Mutation())
+	return u
+}
+
+// SetInput applies the change-set in the UpdateWorkspaceInput on the update-one builder.
+func (u *WorkspaceUpdateOne) SetInput(i UpdateWorkspaceInput) *WorkspaceUpdateOne {
 	i.Mutate(u.Mutation())
 	return u
 }

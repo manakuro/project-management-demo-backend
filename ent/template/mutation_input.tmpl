@@ -20,7 +20,7 @@
         {{- end }}
         {{- range $e := $n.Edges }}
             {{- if $e.Unique }}
-                {{- $structField := print (pascal $e.Name) "ID" }}
+                {{- $structField := print (pascal $e.Annotations.Edge.FieldName) }}
                 {{ $structField }} {{ if $e.Optional }}*{{ end }}{{ $e.Type.ID.Type }}
             {{- else }}
                 {{- $structField := print (singular $e.Name | pascal) "IDs" }}
@@ -44,7 +44,7 @@
         {{- end }}
         {{- range $e := $n.Edges }}
             {{- if $e.Unique }}
-                {{- $structField := print (pascal $e.Name) "ID" }}
+                {{- $structField := print (pascal $e.Annotations.Edge.FieldName) }}
                 {{- if $e.Optional }}
                     if v := i.{{ $structField }}; v != nil {
                     m.{{ $e.MutationSet }}(*v)
@@ -81,7 +81,7 @@
         {{- end }}
         {{- range $e := $n.Edges }}
             {{- if $e.Unique }}
-                {{- $structField := print (pascal $e.Name) "ID" }}
+                {{- $structField := print (pascal $e.Annotations.Edge.FieldName) }}
                 {{ $structField }} *{{ $e.Type.ID.Type }}
                 {{ $e.MutationClear }} bool
             {{- else }}
@@ -100,9 +100,15 @@
                     m.{{ print "Clear" $f.StructField }}()
                     }
                 {{- end }}
-                if v := i.{{ $f.StructField }}; v != nil {
-                m.{{ $f.MutationSet }}(*v)
-                }
+                {{- if $f.IsJSON }}
+                    if v := i.{{ $f.StructField }}; v != nil {
+                    m.{{ $f.MutationSet }}(v)
+                    }
+                {{- else }}
+                    if v := i.{{ $f.StructField }}; v != nil {
+                    m.{{ $f.MutationSet }}(*v)
+                    }
+                {{- end }}
             {{- end }}
         {{- end }}
         {{- range $e := $n.Edges }}
@@ -110,7 +116,7 @@
                 if i.{{ $e.MutationClear }} {
                 m.{{ $e.MutationClear }}()
                 }
-                {{- $structField := print (pascal $e.Name) "ID" }}
+                {{- $structField := print (pascal $e.Annotations.Edge.FieldName) }}
                 if v := i.{{ $structField }}; v != nil {
                 m.{{ $e.MutationSet }}(*v)
                 }
