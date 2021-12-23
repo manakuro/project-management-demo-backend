@@ -2,9 +2,9 @@ package resolver
 
 import (
 	"project-management-demo-backend/ent"
-	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/graph/generated"
 	"project-management-demo-backend/pkg/adapter/controller"
+	"project-management-demo-backend/pkg/util/subscription"
 	"sync"
 
 	"github.com/99designs/gqlgen/graphql"
@@ -14,34 +14,24 @@ import (
 //
 // It serves as dependency injection for your app, add any dependencies you require here.
 
-// Channels of subscription
-type Channels struct {
-	TestUserUpdated map[string]struct {
-		id ulid.ID
-		ch chan *ent.TestUser
-	}
-}
-
-// Resolver is a context struct
+// Resolver is a context struct.
 type Resolver struct {
-	client     *ent.Client
-	controller controller.Controller
-	channels   Channels
+	client        *ent.Client
+	controller    controller.Controller
+	subscriptions *subscription.Subscriptions
 
 	mutex sync.Mutex
 }
 
-// NewSchema creates NewExecutableSchema
+// NewSchema creates NewExecutableSchema.
 func NewSchema(client *ent.Client, controller controller.Controller) graphql.ExecutableSchema {
 	return generated.NewExecutableSchema(generated.Config{
 		Resolvers: &Resolver{
 			client:     client,
 			controller: controller,
-			channels: Channels{
-				TestUserUpdated: map[string]struct {
-					id ulid.ID
-					ch chan *ent.TestUser
-				}{},
+			subscriptions: &subscription.Subscriptions{
+				TestUserUpdated: map[string]subscription.TestUserUpdated{},
+				TeammateUpdated: map[string]subscription.TeammateUpdated{},
 			},
 			mutex: sync.Mutex{},
 		},

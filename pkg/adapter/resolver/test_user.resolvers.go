@@ -10,8 +10,7 @@ import (
 	"project-management-demo-backend/graph/generated"
 	"project-management-demo-backend/pkg/adapter/handler"
 	"project-management-demo-backend/pkg/util/datetime"
-
-	"github.com/thanhpk/randstr"
+	"project-management-demo-backend/pkg/util/subscription"
 )
 
 func (r *mutationResolver) CreateTestUser(ctx context.Context, input ent.CreateTestUserInput) (*ent.TestUser, error) {
@@ -36,9 +35,9 @@ func (r *mutationResolver) UpdateTestUser(ctx context.Context, input ent.UpdateT
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
 
-	for _, tu := range r.channels.TestUserUpdated {
-		if tu.id == u.ID {
-			tu.ch <- u
+	for _, tu := range r.subscriptions.TestUserUpdated {
+		if tu.ID == u.ID {
+			tu.Ch <- u
 		}
 	}
 
@@ -62,20 +61,20 @@ func (r *queryResolver) TestUsers(ctx context.Context, after *ent.Cursor, first 
 }
 
 func (r *subscriptionResolver) TestUserUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.TestUser, error) {
-	token := randstr.Hex(16)
+	key := subscription.NewKey()
 	ch := make(chan *ent.TestUser, 1)
 
 	r.mutex.Lock()
-	r.channels.TestUserUpdated[token] = struct {
-		id ulid.ID
-		ch chan *ent.TestUser
-	}{id: id, ch: ch}
+	r.subscriptions.TestUserUpdated[key] = subscription.TestUserUpdated{
+		ID: id,
+		Ch: ch,
+	}
 	r.mutex.Unlock()
 
 	go func() {
 		<-ctx.Done()
 		r.mutex.Lock()
-		delete(r.channels.TestUserUpdated, token)
+		delete(r.subscriptions.TestUserUpdated, key)
 		r.mutex.Unlock()
 	}()
 
