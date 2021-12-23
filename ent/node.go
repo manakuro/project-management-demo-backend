@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"project-management-demo-backend/ent/schema/ulid"
+	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/ent/testuser"
 
@@ -40,6 +41,57 @@ type Edge struct {
 	Type string    `json:"type,omitempty"` // edge type.
 	Name string    `json:"name,omitempty"` // edge name.
 	IDs  []ulid.ID `json:"ids,omitempty"`  // node ids (where this edge point to).
+}
+
+func (t *Teammate) Node(ctx context.Context) (node *Node, err error) {
+	node = &Node{
+		ID:     t.ID,
+		Type:   "Teammate",
+		Fields: make([]*Field, 5),
+		Edges:  make([]*Edge, 0),
+	}
+	var buf []byte
+	if buf, err = json.Marshal(t.Name); err != nil {
+		return nil, err
+	}
+	node.Fields[0] = &Field{
+		Type:  "string",
+		Name:  "name",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(t.Image); err != nil {
+		return nil, err
+	}
+	node.Fields[1] = &Field{
+		Type:  "string",
+		Name:  "image",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(t.Email); err != nil {
+		return nil, err
+	}
+	node.Fields[2] = &Field{
+		Type:  "string",
+		Name:  "email",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(t.CreatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[3] = &Field{
+		Type:  "time.Time",
+		Name:  "created_at",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(t.UpdatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[4] = &Field{
+		Type:  "time.Time",
+		Name:  "updated_at",
+		Value: string(buf),
+	}
+	return node, nil
 }
 
 func (tt *TestTodo) Node(ctx context.Context) (node *Node, err error) {
@@ -231,6 +283,15 @@ func (c *Client) Noder(ctx context.Context, id ulid.ID, opts ...NodeOption) (_ N
 
 func (c *Client) noder(ctx context.Context, table string, id ulid.ID) (Noder, error) {
 	switch table {
+	case teammate.Table:
+		n, err := c.Teammate.Query().
+			Where(teammate.ID(id)).
+			CollectFields(ctx, "Teammate").
+			Only(ctx)
+		if err != nil {
+			return nil, err
+		}
+		return n, nil
 	case testtodo.Table:
 		n, err := c.TestTodo.Query().
 			Where(testtodo.ID(id)).
@@ -322,6 +383,19 @@ func (c *Client) noders(ctx context.Context, table string, ids []ulid.ID) ([]Nod
 		idmap[id] = append(idmap[id], &noders[i])
 	}
 	switch table {
+	case teammate.Table:
+		nodes, err := c.Teammate.Query().
+			Where(teammate.IDIn(ids...)).
+			CollectFields(ctx, "Teammate").
+			All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, node := range nodes {
+			for _, noder := range idmap[node.ID] {
+				*noder = node
+			}
+		}
 	case testtodo.Table:
 		nodes, err := c.TestTodo.Query().
 			Where(testtodo.IDIn(ids...)).

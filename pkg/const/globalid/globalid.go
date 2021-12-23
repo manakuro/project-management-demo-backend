@@ -3,6 +3,7 @@ package globalid
 import (
 	"fmt"
 	"log"
+	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/ent/testuser"
 	"reflect"
@@ -17,6 +18,7 @@ type field struct {
 type GlobalIDs struct {
 	TestUser field
 	TestTodo field
+	Teammate field
 }
 
 // New generates a map object that is intended to be used as global identification for node interface query.
@@ -30,6 +32,10 @@ func New() GlobalIDs {
 		TestTodo: field{
 			Prefix: "0AB",
 			Table:  testtodo.Table,
+		},
+		Teammate: field{
+			Prefix: "0AC",
+			Table:  teammate.Table,
 		},
 	}
 }

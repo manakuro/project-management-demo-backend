@@ -5,7 +5,7 @@ Project management demo backend
 
 ```
 $ cd docker
-$ docker-comopse up
+$ docker comopse up
 ```
 
 ## Install
@@ -21,7 +21,11 @@ $ make setup_db
 ```
 
 ```
-$ make migrate_up
+$ make migrate_schema
+```
+
+```
+$ make feed
 ```
 
 ## Start server

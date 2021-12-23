@@ -8,6 +8,21 @@ import (
 )
 
 var (
+	// TeammatesColumns holds the columns for the "teammates" table.
+	TeammatesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+		{Name: "name", Type: field.TypeString, Size: 255},
+		{Name: "image", Type: field.TypeString},
+		{Name: "email", Type: field.TypeString},
+		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
+		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
+	}
+	// TeammatesTable holds the schema information for the "teammates" table.
+	TeammatesTable = &schema.Table{
+		Name:       "teammates",
+		Columns:    TeammatesColumns,
+		PrimaryKey: []*schema.Column{TeammatesColumns[0]},
+	}
 	// TestTodosColumns holds the columns for the "test_todos" table.
 	TestTodosColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString},
@@ -48,6 +63,7 @@ var (
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
+		TeammatesTable,
 		TestTodosTable,
 		TestUsersTable,
 	}

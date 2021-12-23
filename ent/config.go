@@ -24,6 +24,7 @@ type config struct {
 
 // hooks per client, for fast access.
 type hooks struct {
+	Teammate []ent.Hook
 	TestTodo []ent.Hook
 	TestUser []ent.Hook
 }
