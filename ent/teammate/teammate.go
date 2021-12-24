@@ -22,8 +22,17 @@ const (
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
 	FieldUpdatedAt = "updated_at"
+	// EdgeWorkspaces holds the string denoting the workspaces edge name in mutations.
+	EdgeWorkspaces = "workspaces"
 	// Table holds the table name of the teammate in the database.
 	Table = "teammates"
+	// WorkspacesTable is the table that holds the workspaces relation/edge.
+	WorkspacesTable = "workspaces"
+	// WorkspacesInverseTable is the table name for the Workspace entity.
+	// It exists in this package in order to avoid circular dependency with the "workspace" package.
+	WorkspacesInverseTable = "workspaces"
+	// WorkspacesColumn is the table column denoting the workspaces relation/edge.
+	WorkspacesColumn = "created_by"
 )
 
 // Columns holds all SQL columns for teammate fields.

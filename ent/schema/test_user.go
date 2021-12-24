@@ -2,6 +2,7 @@ package schema
 
 import (
 	"project-management-demo-backend/ent/mixin"
+	"project-management-demo-backend/ent/schema/testuserprofile"
 	"project-management-demo-backend/pkg/const/globalid"
 
 	"entgo.io/ent/schema/edge"
@@ -28,6 +29,7 @@ func (TestUserMixin) Fields() []ent.Field {
 			NotEmpty().
 			MaxLen(255),
 		field.Int("age"),
+		field.JSON("profile", testuserprofile.TestUserProfile{}),
 	}
 }
 

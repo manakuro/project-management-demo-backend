@@ -8,6 +8,7 @@ import (
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/ent/testuser"
+	"project-management-demo-backend/ent/workspace"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
@@ -31,9 +32,10 @@ type OrderFunc func(*sql.Selector)
 // columnChecker returns a function indicates if the column exists in the given column.
 func columnChecker(table string) func(string) error {
 	checks := map[string]func(string) bool{
-		teammate.Table: teammate.ValidColumn,
-		testtodo.Table: testtodo.ValidColumn,
-		testuser.Table: testuser.ValidColumn,
+		teammate.Table:  teammate.ValidColumn,
+		testtodo.Table:  testtodo.ValidColumn,
+		testuser.Table:  testuser.ValidColumn,
+		workspace.Table: workspace.ValidColumn,
 	}
 	check, ok := checks[table]
 	if !ok {

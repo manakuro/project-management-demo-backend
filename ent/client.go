@@ -13,6 +13,7 @@ import (
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/ent/testuser"
+	"project-management-demo-backend/ent/workspace"
 
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
@@ -30,6 +31,8 @@ type Client struct {
 	TestTodo *TestTodoClient
 	// TestUser is the client for interacting with the TestUser builders.
 	TestUser *TestUserClient
+	// Workspace is the client for interacting with the Workspace builders.
+	Workspace *WorkspaceClient
 }
 
 // NewClient creates a new client configured with the given options.
@@ -46,6 +49,7 @@ func (c *Client) init() {
 	c.Teammate = NewTeammateClient(c.config)
 	c.TestTodo = NewTestTodoClient(c.config)
 	c.TestUser = NewTestUserClient(c.config)
+	c.Workspace = NewWorkspaceClient(c.config)
 }
 
 // Open opens a database/sql.DB specified by the driver name and
@@ -77,11 +81,12 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:      ctx,
-		config:   cfg,
-		Teammate: NewTeammateClient(cfg),
-		TestTodo: NewTestTodoClient(cfg),
-		TestUser: NewTestUserClient(cfg),
+		ctx:       ctx,
+		config:    cfg,
+		Teammate:  NewTeammateClient(cfg),
+		TestTodo:  NewTestTodoClient(cfg),
+		TestUser:  NewTestUserClient(cfg),
+		Workspace: NewWorkspaceClient(cfg),
 	}, nil
 }
 
@@ -99,10 +104,11 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		config:   cfg,
-		Teammate: NewTeammateClient(cfg),
-		TestTodo: NewTestTodoClient(cfg),
-		TestUser: NewTestUserClient(cfg),
+		config:    cfg,
+		Teammate:  NewTeammateClient(cfg),
+		TestTodo:  NewTestTodoClient(cfg),
+		TestUser:  NewTestUserClient(cfg),
+		Workspace: NewWorkspaceClient(cfg),
 	}, nil
 }
 
@@ -135,6 +141,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.Teammate.Use(hooks...)
 	c.TestTodo.Use(hooks...)
 	c.TestUser.Use(hooks...)
+	c.Workspace.Use(hooks...)
 }
 
 // TeammateClient is a client for the Teammate schema.
@@ -220,6 +227,22 @@ func (c *TeammateClient) GetX(ctx context.Context, id ulid.ID) *Teammate {
 		panic(err)
 	}
 	return obj
+}
+
+// QueryWorkspaces queries the workspaces edge of a Teammate.
+func (c *TeammateClient) QueryWorkspaces(t *Teammate) *WorkspaceQuery {
+	query := &WorkspaceQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := t.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(teammate.Table, teammate.FieldID, id),
+			sqlgraph.To(workspace.Table, workspace.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, false, teammate.WorkspacesTable, teammate.WorkspacesColumn),
+		)
+		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
 }
 
 // Hooks returns the client hooks.
@@ -437,4 +460,110 @@ func (c *TestUserClient) QueryTestTodos(tu *TestUser) *TestTodoQuery {
 // Hooks returns the client hooks.
 func (c *TestUserClient) Hooks() []Hook {
 	return c.hooks.TestUser
+}
+
+// WorkspaceClient is a client for the Workspace schema.
+type WorkspaceClient struct {
+	config
+}
+
+// NewWorkspaceClient returns a client for the Workspace from the given config.
+func NewWorkspaceClient(c config) *WorkspaceClient {
+	return &WorkspaceClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `workspace.Hooks(f(g(h())))`.
+func (c *WorkspaceClient) Use(hooks ...Hook) {
+	c.hooks.Workspace = append(c.hooks.Workspace, hooks...)
+}
+
+// Create returns a create builder for Workspace.
+func (c *WorkspaceClient) Create() *WorkspaceCreate {
+	mutation := newWorkspaceMutation(c.config, OpCreate)
+	return &WorkspaceCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Workspace entities.
+func (c *WorkspaceClient) CreateBulk(builders ...*WorkspaceCreate) *WorkspaceCreateBulk {
+	return &WorkspaceCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Workspace.
+func (c *WorkspaceClient) Update() *WorkspaceUpdate {
+	mutation := newWorkspaceMutation(c.config, OpUpdate)
+	return &WorkspaceUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *WorkspaceClient) UpdateOne(w *Workspace) *WorkspaceUpdateOne {
+	mutation := newWorkspaceMutation(c.config, OpUpdateOne, withWorkspace(w))
+	return &WorkspaceUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *WorkspaceClient) UpdateOneID(id ulid.ID) *WorkspaceUpdateOne {
+	mutation := newWorkspaceMutation(c.config, OpUpdateOne, withWorkspaceID(id))
+	return &WorkspaceUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Workspace.
+func (c *WorkspaceClient) Delete() *WorkspaceDelete {
+	mutation := newWorkspaceMutation(c.config, OpDelete)
+	return &WorkspaceDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *WorkspaceClient) DeleteOne(w *Workspace) *WorkspaceDeleteOne {
+	return c.DeleteOneID(w.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *WorkspaceClient) DeleteOneID(id ulid.ID) *WorkspaceDeleteOne {
+	builder := c.Delete().Where(workspace.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &WorkspaceDeleteOne{builder}
+}
+
+// Query returns a query builder for Workspace.
+func (c *WorkspaceClient) Query() *WorkspaceQuery {
+	return &WorkspaceQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a Workspace entity by its id.
+func (c *WorkspaceClient) Get(ctx context.Context, id ulid.ID) (*Workspace, error) {
+	return c.Query().Where(workspace.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *WorkspaceClient) GetX(ctx context.Context, id ulid.ID) *Workspace {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryTeammate queries the teammate edge of a Workspace.
+func (c *WorkspaceClient) QueryTeammate(w *Workspace) *TeammateQuery {
+	query := &TeammateQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := w.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(workspace.Table, workspace.FieldID, id),
+			sqlgraph.To(teammate.Table, teammate.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, true, workspace.TeammateTable, workspace.TeammateColumn),
+		)
+		fromV = sqlgraph.Neighbors(w.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *WorkspaceClient) Hooks() []Hook {
+	return c.hooks.Workspace
 }

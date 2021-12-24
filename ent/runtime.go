@@ -8,6 +8,7 @@ import (
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/ent/testuser"
+	"project-management-demo-backend/ent/workspace"
 	"time"
 )
 
@@ -130,4 +131,43 @@ func init() {
 	testuserDescID := testuserMixinFields0[0].Descriptor()
 	// testuser.DefaultID holds the default value on creation for the id field.
 	testuser.DefaultID = testuserDescID.Default.(func() ulid.ID)
+	workspaceMixin := schema.Workspace{}.Mixin()
+	workspaceMixinFields0 := workspaceMixin[0].Fields()
+	_ = workspaceMixinFields0
+	workspaceMixinFields1 := workspaceMixin[1].Fields()
+	_ = workspaceMixinFields1
+	workspaceMixinFields2 := workspaceMixin[2].Fields()
+	_ = workspaceMixinFields2
+	workspaceFields := schema.Workspace{}.Fields()
+	_ = workspaceFields
+	// workspaceDescName is the schema descriptor for name field.
+	workspaceDescName := workspaceMixinFields1[1].Descriptor()
+	// workspace.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	workspace.NameValidator = func() func(string) error {
+		validators := workspaceDescName.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(name string) error {
+			for _, fn := range fns {
+				if err := fn(name); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// workspaceDescCreatedAt is the schema descriptor for created_at field.
+	workspaceDescCreatedAt := workspaceMixinFields2[0].Descriptor()
+	// workspace.DefaultCreatedAt holds the default value on creation for the created_at field.
+	workspace.DefaultCreatedAt = workspaceDescCreatedAt.Default.(func() time.Time)
+	// workspaceDescUpdatedAt is the schema descriptor for updated_at field.
+	workspaceDescUpdatedAt := workspaceMixinFields2[1].Descriptor()
+	// workspace.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	workspace.DefaultUpdatedAt = workspaceDescUpdatedAt.Default.(func() time.Time)
+	// workspaceDescID is the schema descriptor for id field.
+	workspaceDescID := workspaceMixinFields0[0].Descriptor()
+	// workspace.DefaultID holds the default value on creation for the id field.
+	workspace.DefaultID = workspaceDescID.Default.(func() ulid.ID)
 }

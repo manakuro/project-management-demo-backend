@@ -12,6 +12,7 @@ import (
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/ent/testuser"
+	"project-management-demo-backend/ent/workspace"
 	"strconv"
 	"strings"
 
@@ -913,5 +914,232 @@ func (tu *TestUser) ToEdge(order *TestUserOrder) *TestUserEdge {
 	return &TestUserEdge{
 		Node:   tu,
 		Cursor: order.Field.toCursor(tu),
+	}
+}
+
+// WorkspaceEdge is the edge representation of Workspace.
+type WorkspaceEdge struct {
+	Node   *Workspace `json:"node"`
+	Cursor Cursor     `json:"cursor"`
+}
+
+// WorkspaceConnection is the connection containing edges to Workspace.
+type WorkspaceConnection struct {
+	Edges      []*WorkspaceEdge `json:"edges"`
+	PageInfo   PageInfo         `json:"pageInfo"`
+	TotalCount int              `json:"totalCount"`
+}
+
+// WorkspacePaginateOption enables pagination customization.
+type WorkspacePaginateOption func(*workspacePager) error
+
+// WithWorkspaceOrder configures pagination ordering.
+func WithWorkspaceOrder(order *WorkspaceOrder) WorkspacePaginateOption {
+	if order == nil {
+		order = DefaultWorkspaceOrder
+	}
+	o := *order
+	return func(pager *workspacePager) error {
+		if err := o.Direction.Validate(); err != nil {
+			return err
+		}
+		if o.Field == nil {
+			o.Field = DefaultWorkspaceOrder.Field
+		}
+		pager.order = &o
+		return nil
+	}
+}
+
+// WithWorkspaceFilter configures pagination filter.
+func WithWorkspaceFilter(filter func(*WorkspaceQuery) (*WorkspaceQuery, error)) WorkspacePaginateOption {
+	return func(pager *workspacePager) error {
+		if filter == nil {
+			return errors.New("WorkspaceQuery filter cannot be nil")
+		}
+		pager.filter = filter
+		return nil
+	}
+}
+
+type workspacePager struct {
+	order  *WorkspaceOrder
+	filter func(*WorkspaceQuery) (*WorkspaceQuery, error)
+}
+
+func newWorkspacePager(opts []WorkspacePaginateOption) (*workspacePager, error) {
+	pager := &workspacePager{}
+	for _, opt := range opts {
+		if err := opt(pager); err != nil {
+			return nil, err
+		}
+	}
+	if pager.order == nil {
+		pager.order = DefaultWorkspaceOrder
+	}
+	return pager, nil
+}
+
+func (p *workspacePager) applyFilter(query *WorkspaceQuery) (*WorkspaceQuery, error) {
+	if p.filter != nil {
+		return p.filter(query)
+	}
+	return query, nil
+}
+
+func (p *workspacePager) toCursor(w *Workspace) Cursor {
+	return p.order.Field.toCursor(w)
+}
+
+func (p *workspacePager) applyCursors(query *WorkspaceQuery, after, before *Cursor) *WorkspaceQuery {
+	for _, predicate := range cursorsToPredicates(
+		p.order.Direction, after, before,
+		p.order.Field.field, DefaultWorkspaceOrder.Field.field,
+	) {
+		query = query.Where(predicate)
+	}
+	return query
+}
+
+func (p *workspacePager) applyOrder(query *WorkspaceQuery, reverse bool) *WorkspaceQuery {
+	direction := p.order.Direction
+	if reverse {
+		direction = direction.reverse()
+	}
+	query = query.Order(direction.orderFunc(p.order.Field.field))
+	if p.order.Field != DefaultWorkspaceOrder.Field {
+		query = query.Order(direction.orderFunc(DefaultWorkspaceOrder.Field.field))
+	}
+	return query
+}
+
+// Paginate executes the query and returns a relay based cursor connection to Workspace.
+func (w *WorkspaceQuery) Paginate(
+	ctx context.Context, after *Cursor, first *int,
+	before *Cursor, last *int, opts ...WorkspacePaginateOption,
+) (*WorkspaceConnection, error) {
+	if err := validateFirstLast(first, last); err != nil {
+		return nil, err
+	}
+	pager, err := newWorkspacePager(opts)
+	if err != nil {
+		return nil, err
+	}
+
+	if w, err = pager.applyFilter(w); err != nil {
+		return nil, err
+	}
+
+	conn := &WorkspaceConnection{Edges: []*WorkspaceEdge{}}
+	if !hasCollectedField(ctx, edgesField) || first != nil && *first == 0 || last != nil && *last == 0 {
+		if hasCollectedField(ctx, totalCountField) ||
+			hasCollectedField(ctx, pageInfoField) {
+			count, err := w.Count(ctx)
+			if err != nil {
+				return nil, err
+			}
+			conn.TotalCount = count
+			conn.PageInfo.HasNextPage = first != nil && count > 0
+			conn.PageInfo.HasPreviousPage = last != nil && count > 0
+		}
+		return conn, nil
+	}
+
+	if (after != nil || first != nil || before != nil || last != nil) && hasCollectedField(ctx, totalCountField) {
+		count, err := w.Clone().Count(ctx)
+		if err != nil {
+			return nil, err
+		}
+		conn.TotalCount = count
+	}
+
+	w = pager.applyCursors(w, after, before)
+	w = pager.applyOrder(w, last != nil)
+	var limit int
+	if first != nil {
+		limit = *first + 1
+	} else if last != nil {
+		limit = *last + 1
+	}
+	if limit > 0 {
+		w = w.Limit(limit)
+	}
+
+	if field := getCollectedField(ctx, edgesField, nodeField); field != nil {
+		w = w.collectField(graphql.GetOperationContext(ctx), *field)
+	}
+
+	nodes, err := w.All(ctx)
+	if err != nil || len(nodes) == 0 {
+		return conn, err
+	}
+
+	if len(nodes) == limit {
+		conn.PageInfo.HasNextPage = first != nil
+		conn.PageInfo.HasPreviousPage = last != nil
+		nodes = nodes[:len(nodes)-1]
+	}
+
+	var nodeAt func(int) *Workspace
+	if last != nil {
+		n := len(nodes) - 1
+		nodeAt = func(i int) *Workspace {
+			return nodes[n-i]
+		}
+	} else {
+		nodeAt = func(i int) *Workspace {
+			return nodes[i]
+		}
+	}
+
+	conn.Edges = make([]*WorkspaceEdge, len(nodes))
+	for i := range nodes {
+		node := nodeAt(i)
+		conn.Edges[i] = &WorkspaceEdge{
+			Node:   node,
+			Cursor: pager.toCursor(node),
+		}
+	}
+
+	conn.PageInfo.StartCursor = &conn.Edges[0].Cursor
+	conn.PageInfo.EndCursor = &conn.Edges[len(conn.Edges)-1].Cursor
+	if conn.TotalCount == 0 {
+		conn.TotalCount = len(nodes)
+	}
+
+	return conn, nil
+}
+
+// WorkspaceOrderField defines the ordering field of Workspace.
+type WorkspaceOrderField struct {
+	field    string
+	toCursor func(*Workspace) Cursor
+}
+
+// WorkspaceOrder defines the ordering of Workspace.
+type WorkspaceOrder struct {
+	Direction OrderDirection       `json:"direction"`
+	Field     *WorkspaceOrderField `json:"field"`
+}
+
+// DefaultWorkspaceOrder is the default ordering of Workspace.
+var DefaultWorkspaceOrder = &WorkspaceOrder{
+	Direction: OrderDirectionAsc,
+	Field: &WorkspaceOrderField{
+		field: workspace.FieldID,
+		toCursor: func(w *Workspace) Cursor {
+			return Cursor{ID: w.ID}
+		},
+	},
+}
+
+// ToEdge converts Workspace into WorkspaceEdge.
+func (w *Workspace) ToEdge(order *WorkspaceOrder) *WorkspaceEdge {
+	if order == nil {
+		order = DefaultWorkspaceOrder
+	}
+	return &WorkspaceEdge{
+		Node:   w,
+		Cursor: order.Field.toCursor(w),
 	}
 }

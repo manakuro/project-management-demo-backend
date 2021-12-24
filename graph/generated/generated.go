@@ -9,6 +9,8 @@ import (
 	"fmt"
 	"io"
 	"project-management-demo-backend/ent"
+	"project-management-demo-backend/ent/schema/editor"
+	"project-management-demo-backend/ent/schema/testuserprofile"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/testtodo"
 	"strconv"
@@ -46,20 +48,44 @@ type ResolverRoot interface {
 	Teammate() TeammateResolver
 	TestTodo() TestTodoResolver
 	TestUser() TestUserResolver
+	Workspace() WorkspaceResolver
 }
 
 type DirectiveRoot struct {
 }
 
 type ComplexityRoot struct {
+	EditorDescription struct {
+		Content func(childComplexity int) int
+		Type    func(childComplexity int) int
+	}
+
+	EditorDescriptionContent struct {
+		Content func(childComplexity int) int
+		Type    func(childComplexity int) int
+	}
+
+	EditorDescriptionContentContent struct {
+		Attrs func(childComplexity int) int
+		Text  func(childComplexity int) int
+		Type  func(childComplexity int) int
+	}
+
+	EditorDescriptionContentContentAttrs struct {
+		MentionID   func(childComplexity int) int
+		MentionType func(childComplexity int) int
+	}
+
 	Mutation struct {
 		CreateTeammate        func(childComplexity int, input ent.CreateTeammateInput) int
 		CreateTestTodo        func(childComplexity int, input ent.CreateTestTodoInput) int
 		CreateTestUser        func(childComplexity int, input ent.CreateTestUserInput) int
 		CreateTestUserAndTodo func(childComplexity int, input ent.CreateTestUserInput) int
+		CreateWorkspace       func(childComplexity int, input ent.CreateWorkspaceInput) int
 		UpdateTeammate        func(childComplexity int, input ent.UpdateTeammateInput) int
 		UpdateTestTodo        func(childComplexity int, input ent.UpdateTestTodoInput) int
 		UpdateTestUser        func(childComplexity int, input ent.UpdateTestUserInput) int
+		UpdateWorkspace       func(childComplexity int, input ent.UpdateWorkspaceInput) int
 	}
 
 	PageInfo struct {
@@ -70,19 +96,22 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		Node      func(childComplexity int, id ulid.ID) int
-		Nodes     func(childComplexity int, ids []ulid.ID) int
-		Teammate  func(childComplexity int, id ulid.ID) int
-		Teammates func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TeammateWhereInput) int
-		TestTodo  func(childComplexity int, id *ulid.ID) int
-		TestTodos func(childComplexity int) int
-		TestUser  func(childComplexity int, id ulid.ID, age *int) int
-		TestUsers func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TestUserWhereInput) int
+		Node       func(childComplexity int, id ulid.ID) int
+		Nodes      func(childComplexity int, ids []ulid.ID) int
+		Teammate   func(childComplexity int, id ulid.ID) int
+		Teammates  func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TeammateWhereInput) int
+		TestTodo   func(childComplexity int, id *ulid.ID) int
+		TestTodos  func(childComplexity int) int
+		TestUser   func(childComplexity int, id ulid.ID, age *int) int
+		TestUsers  func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TestUserWhereInput) int
+		Workspace  func(childComplexity int, where *ent.WorkspaceWhereInput) int
+		Workspaces func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.WorkspaceWhereInput) int
 	}
 
 	Subscription struct {
-		TeammateUpdated func(childComplexity int, id ulid.ID) int
-		TestUserUpdated func(childComplexity int, id ulid.ID) int
+		TeammateUpdated  func(childComplexity int, id ulid.ID) int
+		TestUserUpdated  func(childComplexity int, id ulid.ID) int
+		WorkspaceUpdated func(childComplexity int, id ulid.ID) int
 	}
 
 	Teammate struct {
@@ -120,6 +149,7 @@ type ComplexityRoot struct {
 		CreatedAt func(childComplexity int) int
 		ID        func(childComplexity int) int
 		Name      func(childComplexity int) int
+		Profile   func(childComplexity int) int
 		TestTodos func(childComplexity int) int
 		UpdatedAt func(childComplexity int) int
 	}
@@ -134,6 +164,43 @@ type ComplexityRoot struct {
 		Cursor func(childComplexity int) int
 		Node   func(childComplexity int) int
 	}
+
+	TestUserProfile struct {
+		Address func(childComplexity int) int
+		Body    func(childComplexity int) int
+		Phone   func(childComplexity int) int
+	}
+
+	TestUserProfileBody struct {
+		Comment func(childComplexity int) int
+		Height  func(childComplexity int) int
+		Weight  func(childComplexity int) int
+	}
+
+	TestUserProfileBodyComment struct {
+		Text func(childComplexity int) int
+		Type func(childComplexity int) int
+	}
+
+	Workspace struct {
+		CreatedAt   func(childComplexity int) int
+		CreatedBy   func(childComplexity int) int
+		Description func(childComplexity int) int
+		ID          func(childComplexity int) int
+		Name        func(childComplexity int) int
+		UpdatedAt   func(childComplexity int) int
+	}
+
+	WorkspaceConnection struct {
+		Edges      func(childComplexity int) int
+		PageInfo   func(childComplexity int) int
+		TotalCount func(childComplexity int) int
+	}
+
+	WorkspaceEdge struct {
+		Cursor func(childComplexity int) int
+		Node   func(childComplexity int) int
+	}
 }
 
 type MutationResolver interface {
@@ -144,6 +211,8 @@ type MutationResolver interface {
 	CreateTestUser(ctx context.Context, input ent.CreateTestUserInput) (*ent.TestUser, error)
 	CreateTestUserAndTodo(ctx context.Context, input ent.CreateTestUserInput) (*ent.TestUser, error)
 	UpdateTestUser(ctx context.Context, input ent.UpdateTestUserInput) (*ent.TestUser, error)
+	CreateWorkspace(ctx context.Context, input ent.CreateWorkspaceInput) (*ent.Workspace, error)
+	UpdateWorkspace(ctx context.Context, input ent.UpdateWorkspaceInput) (*ent.Workspace, error)
 }
 type QueryResolver interface {
 	Node(ctx context.Context, id ulid.ID) (ent.Noder, error)
@@ -154,10 +223,13 @@ type QueryResolver interface {
 	TestTodos(ctx context.Context) ([]*ent.TestTodo, error)
 	TestUser(ctx context.Context, id ulid.ID, age *int) (*ent.TestUser, error)
 	TestUsers(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TestUserWhereInput) (*ent.TestUserConnection, error)
+	Workspace(ctx context.Context, where *ent.WorkspaceWhereInput) (*ent.Workspace, error)
+	Workspaces(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.WorkspaceWhereInput) (*ent.WorkspaceConnection, error)
 }
 type SubscriptionResolver interface {
 	TeammateUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.Teammate, error)
 	TestUserUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.TestUser, error)
+	WorkspaceUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.Workspace, error)
 }
 type TeammateResolver interface {
 	CreatedAt(ctx context.Context, obj *ent.Teammate) (string, error)
@@ -170,6 +242,10 @@ type TestTodoResolver interface {
 type TestUserResolver interface {
 	CreatedAt(ctx context.Context, obj *ent.TestUser) (string, error)
 	UpdatedAt(ctx context.Context, obj *ent.TestUser) (string, error)
+}
+type WorkspaceResolver interface {
+	CreatedAt(ctx context.Context, obj *ent.Workspace) (string, error)
+	UpdatedAt(ctx context.Context, obj *ent.Workspace) (string, error)
 }
 
 type executableSchema struct {
@@ -186,6 +262,69 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 	ec := executionContext{nil, e}
 	_ = ec
 	switch typeName + "." + field {
+
+	case "EditorDescription.content":
+		if e.complexity.EditorDescription.Content == nil {
+			break
+		}
+
+		return e.complexity.EditorDescription.Content(childComplexity), true
+
+	case "EditorDescription.type":
+		if e.complexity.EditorDescription.Type == nil {
+			break
+		}
+
+		return e.complexity.EditorDescription.Type(childComplexity), true
+
+	case "EditorDescriptionContent.content":
+		if e.complexity.EditorDescriptionContent.Content == nil {
+			break
+		}
+
+		return e.complexity.EditorDescriptionContent.Content(childComplexity), true
+
+	case "EditorDescriptionContent.type":
+		if e.complexity.EditorDescriptionContent.Type == nil {
+			break
+		}
+
+		return e.complexity.EditorDescriptionContent.Type(childComplexity), true
+
+	case "EditorDescriptionContentContent.attrs":
+		if e.complexity.EditorDescriptionContentContent.Attrs == nil {
+			break
+		}
+
+		return e.complexity.EditorDescriptionContentContent.Attrs(childComplexity), true
+
+	case "EditorDescriptionContentContent.text":
+		if e.complexity.EditorDescriptionContentContent.Text == nil {
+			break
+		}
+
+		return e.complexity.EditorDescriptionContentContent.Text(childComplexity), true
+
+	case "EditorDescriptionContentContent.type":
+		if e.complexity.EditorDescriptionContentContent.Type == nil {
+			break
+		}
+
+		return e.complexity.EditorDescriptionContentContent.Type(childComplexity), true
+
+	case "EditorDescriptionContentContentAttrs.mentionId":
+		if e.complexity.EditorDescriptionContentContentAttrs.MentionID == nil {
+			break
+		}
+
+		return e.complexity.EditorDescriptionContentContentAttrs.MentionID(childComplexity), true
+
+	case "EditorDescriptionContentContentAttrs.mentionType":
+		if e.complexity.EditorDescriptionContentContentAttrs.MentionType == nil {
+			break
+		}
+
+		return e.complexity.EditorDescriptionContentContentAttrs.MentionType(childComplexity), true
 
 	case "Mutation.createTeammate":
 		if e.complexity.Mutation.CreateTeammate == nil {
@@ -235,6 +374,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.CreateTestUserAndTodo(childComplexity, args["input"].(ent.CreateTestUserInput)), true
 
+	case "Mutation.createWorkspace":
+		if e.complexity.Mutation.CreateWorkspace == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createWorkspace_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateWorkspace(childComplexity, args["input"].(ent.CreateWorkspaceInput)), true
+
 	case "Mutation.updateTeammate":
 		if e.complexity.Mutation.UpdateTeammate == nil {
 			break
@@ -270,6 +421,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.UpdateTestUser(childComplexity, args["input"].(ent.UpdateTestUserInput)), true
+
+	case "Mutation.updateWorkspace":
+		if e.complexity.Mutation.UpdateWorkspace == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateWorkspace_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateWorkspace(childComplexity, args["input"].(ent.UpdateWorkspaceInput)), true
 
 	case "PageInfo.endCursor":
 		if e.complexity.PageInfo.EndCursor == nil {
@@ -390,6 +553,30 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.TestUsers(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["where"].(*ent.TestUserWhereInput)), true
 
+	case "Query.workspace":
+		if e.complexity.Query.Workspace == nil {
+			break
+		}
+
+		args, err := ec.field_Query_workspace_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Workspace(childComplexity, args["where"].(*ent.WorkspaceWhereInput)), true
+
+	case "Query.workspaces":
+		if e.complexity.Query.Workspaces == nil {
+			break
+		}
+
+		args, err := ec.field_Query_workspaces_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Workspaces(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["where"].(*ent.WorkspaceWhereInput)), true
+
 	case "Subscription.teammateUpdated":
 		if e.complexity.Subscription.TeammateUpdated == nil {
 			break
@@ -413,6 +600,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Subscription.TestUserUpdated(childComplexity, args["id"].(ulid.ID)), true
+
+	case "Subscription.workspaceUpdated":
+		if e.complexity.Subscription.WorkspaceUpdated == nil {
+			break
+		}
+
+		args, err := ec.field_Subscription_workspaceUpdated_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Subscription.WorkspaceUpdated(childComplexity, args["id"].(ulid.ID)), true
 
 	case "Teammate.createdAt":
 		if e.complexity.Teammate.CreatedAt == nil {
@@ -568,6 +767,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.TestUser.Name(childComplexity), true
 
+	case "TestUser.profile":
+		if e.complexity.TestUser.Profile == nil {
+			break
+		}
+
+		return e.complexity.TestUser.Profile(childComplexity), true
+
 	case "TestUser.testTodos":
 		if e.complexity.TestUser.TestTodos == nil {
 			break
@@ -616,6 +822,139 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.TestUserEdge.Node(childComplexity), true
+
+	case "TestUserProfile.address":
+		if e.complexity.TestUserProfile.Address == nil {
+			break
+		}
+
+		return e.complexity.TestUserProfile.Address(childComplexity), true
+
+	case "TestUserProfile.body":
+		if e.complexity.TestUserProfile.Body == nil {
+			break
+		}
+
+		return e.complexity.TestUserProfile.Body(childComplexity), true
+
+	case "TestUserProfile.phone":
+		if e.complexity.TestUserProfile.Phone == nil {
+			break
+		}
+
+		return e.complexity.TestUserProfile.Phone(childComplexity), true
+
+	case "TestUserProfileBody.comment":
+		if e.complexity.TestUserProfileBody.Comment == nil {
+			break
+		}
+
+		return e.complexity.TestUserProfileBody.Comment(childComplexity), true
+
+	case "TestUserProfileBody.height":
+		if e.complexity.TestUserProfileBody.Height == nil {
+			break
+		}
+
+		return e.complexity.TestUserProfileBody.Height(childComplexity), true
+
+	case "TestUserProfileBody.weight":
+		if e.complexity.TestUserProfileBody.Weight == nil {
+			break
+		}
+
+		return e.complexity.TestUserProfileBody.Weight(childComplexity), true
+
+	case "TestUserProfileBodyComment.text":
+		if e.complexity.TestUserProfileBodyComment.Text == nil {
+			break
+		}
+
+		return e.complexity.TestUserProfileBodyComment.Text(childComplexity), true
+
+	case "TestUserProfileBodyComment.type":
+		if e.complexity.TestUserProfileBodyComment.Type == nil {
+			break
+		}
+
+		return e.complexity.TestUserProfileBodyComment.Type(childComplexity), true
+
+	case "Workspace.createdAt":
+		if e.complexity.Workspace.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.Workspace.CreatedAt(childComplexity), true
+
+	case "Workspace.createdBy":
+		if e.complexity.Workspace.CreatedBy == nil {
+			break
+		}
+
+		return e.complexity.Workspace.CreatedBy(childComplexity), true
+
+	case "Workspace.description":
+		if e.complexity.Workspace.Description == nil {
+			break
+		}
+
+		return e.complexity.Workspace.Description(childComplexity), true
+
+	case "Workspace.id":
+		if e.complexity.Workspace.ID == nil {
+			break
+		}
+
+		return e.complexity.Workspace.ID(childComplexity), true
+
+	case "Workspace.name":
+		if e.complexity.Workspace.Name == nil {
+			break
+		}
+
+		return e.complexity.Workspace.Name(childComplexity), true
+
+	case "Workspace.updatedAt":
+		if e.complexity.Workspace.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.Workspace.UpdatedAt(childComplexity), true
+
+	case "WorkspaceConnection.edges":
+		if e.complexity.WorkspaceConnection.Edges == nil {
+			break
+		}
+
+		return e.complexity.WorkspaceConnection.Edges(childComplexity), true
+
+	case "WorkspaceConnection.pageInfo":
+		if e.complexity.WorkspaceConnection.PageInfo == nil {
+			break
+		}
+
+		return e.complexity.WorkspaceConnection.PageInfo(childComplexity), true
+
+	case "WorkspaceConnection.totalCount":
+		if e.complexity.WorkspaceConnection.TotalCount == nil {
+			break
+		}
+
+		return e.complexity.WorkspaceConnection.TotalCount(childComplexity), true
+
+	case "WorkspaceEdge.cursor":
+		if e.complexity.WorkspaceEdge.Cursor == nil {
+			break
+		}
+
+		return e.complexity.WorkspaceEdge.Cursor(childComplexity), true
+
+	case "WorkspaceEdge.node":
+		if e.complexity.WorkspaceEdge.Node == nil {
+			break
+		}
+
+		return e.complexity.WorkspaceEdge.Node(childComplexity), true
 
 	}
 	return 0, false
@@ -698,6 +1037,42 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 }
 
 var sources = []*ast.Source{
+	{Name: "graph/schema/editor.graphql", Input: `type EditorDescription {
+    type: String
+    content: [EditorDescriptionContent]!
+}
+type EditorDescriptionContent {
+    type: String
+    content: [EditorDescriptionContentContent]!
+}
+type EditorDescriptionContentContent {
+    type: String
+    text: String
+    attrs: EditorDescriptionContentContentAttrs
+}
+type EditorDescriptionContentContentAttrs {
+    mentionId: String
+    mentionType: String
+}
+
+input EditorDescriptionInput {
+    type: String
+    content: [EditorDescriptionContentInput]!
+}
+input EditorDescriptionContentInput {
+    type: String
+    content: [EditorDescriptionContentContentInput]!
+}
+input EditorDescriptionContentContentInput {
+    type: String
+    text: String
+    attrs: EditorDescriptionContentContentAttrsInput
+}
+input EditorDescriptionContentContentAttrsInput {
+    mentionId: String
+    mentionType: String
+}
+`, BuiltIn: false},
 	{Name: "graph/schema/ent.graphql", Input: `"""
 TestUserWhereInput is used for filtering TestUser objects.
 Input was generated by ent.
@@ -942,6 +1317,84 @@ input TeammateWhereInput {
   idGTE: ID
   idLT: ID
   idLTE: ID
+  
+  """workspaces edge predicates"""
+  hasWorkspaces: Boolean
+  hasWorkspacesWith: [WorkspaceWhereInput!]
+}
+
+"""
+WorkspaceWhereInput is used for filtering Workspace objects.
+Input was generated by ent.
+"""
+input WorkspaceWhereInput {
+  not: WorkspaceWhereInput
+  and: [WorkspaceWhereInput!]
+  or: [WorkspaceWhereInput!]
+  
+  """created_by field predicates"""
+  createdBy: ID
+  createdByNEQ: ID
+  createdByIn: [ID!]
+  createdByNotIn: [ID!]
+  createdByGT: ID
+  createdByGTE: ID
+  createdByLT: ID
+  createdByLTE: ID
+  createdByContains: ID
+  createdByHasPrefix: ID
+  createdByHasSuffix: ID
+  createdByEqualFold: ID
+  createdByContainsFold: ID
+  
+  """name field predicates"""
+  name: String
+  nameNEQ: String
+  nameIn: [String!]
+  nameNotIn: [String!]
+  nameGT: String
+  nameGTE: String
+  nameLT: String
+  nameLTE: String
+  nameContains: String
+  nameHasPrefix: String
+  nameHasSuffix: String
+  nameEqualFold: String
+  nameContainsFold: String
+  
+  """created_at field predicates"""
+  createdAt: Time
+  createdAtNEQ: Time
+  createdAtIn: [Time!]
+  createdAtNotIn: [Time!]
+  createdAtGT: Time
+  createdAtGTE: Time
+  createdAtLT: Time
+  createdAtLTE: Time
+  
+  """updated_at field predicates"""
+  updatedAt: Time
+  updatedAtNEQ: Time
+  updatedAtIn: [Time!]
+  updatedAtNotIn: [Time!]
+  updatedAtGT: Time
+  updatedAtGTE: Time
+  updatedAtLT: Time
+  updatedAtLTE: Time
+  
+  """id field predicates"""
+  id: ID
+  idNEQ: ID
+  idIn: [ID!]
+  idNotIn: [ID!]
+  idGT: ID
+  idGTE: ID
+  idLT: ID
+  idLTE: ID
+  
+  """teammate edge predicates"""
+  hasTeammate: Boolean
+  hasTeammateWith: [TeammateWhereInput!]
 }
 `, BuiltIn: false},
 	{Name: "graph/schema/schema.graphql", Input: `scalar Time
@@ -1049,11 +1502,42 @@ extend type Mutation {
   updateTestTodo(input: UpdateTestTodoInput!): TestTodo!
 }
 `, BuiltIn: false},
-	{Name: "graph/schema/test_user/test_user.graphql", Input: `type TestUser implements Node {
+	{Name: "graph/schema/test_user/test_user.graphql", Input: `type TestUserProfile {
+  address: String
+  phone: String
+  body: TestUserProfileBody
+}
+type TestUserProfileBody {
+  weight: Int
+  height: Int
+  comment: TestUserProfileBodyComment
+}
+type TestUserProfileBodyComment {
+  type: String
+  text: String
+}
+
+input TestUserProfileInput {
+  address: String
+  phone: String
+  body: TestUserProfileBodyInput
+}
+input TestUserProfileBodyInput {
+  weight: Int
+  height: Int
+  comment: TestUserProfileBodyCommentInput
+}
+input TestUserProfileBodyCommentInput {
+  type: String
+  text: String
+}
+
+type TestUser implements Node {
   id: ID!
   name: String!
   age: Int!
   testTodos: [TestTodo!]!
+  profile: TestUserProfile!
   createdAt: String!
   updatedAt: String!
 }
@@ -1070,6 +1554,7 @@ type TestUserEdge {
 input CreateTestUserInput {
   name: String!
   age: Int!
+  profile: TestUserProfileInput!
 }
 input UpdateTestUserInput {
   id: ID!
@@ -1090,6 +1575,50 @@ extend type Mutation {
   createTestUser(input: CreateTestUserInput!): TestUser!
   createTestUserAndTodo(input: CreateTestUserInput!): TestUser!
   updateTestUser(input: UpdateTestUserInput!): TestUser!
+}
+`, BuiltIn: false},
+	{Name: "graph/schema/workspace/workspace.graphql", Input: `type Workspace implements Node {
+  id: ID!
+  createdBy: ID!
+  name: String!
+  description: EditorDescription!
+  createdAt: String!
+  updatedAt: String!
+}
+type WorkspaceConnection {
+  totalCount: Int!
+  pageInfo: PageInfo!
+  edges: [WorkspaceEdge]
+}
+type WorkspaceEdge {
+  node: Workspace
+  cursor: Cursor!
+}
+
+input CreateWorkspaceInput {
+  name: String!
+  createdBy: ID!
+  description: EditorDescriptionInput
+}
+input UpdateWorkspaceInput {
+  id: ID!
+  name: String
+  createdBy: ID
+  description: EditorDescriptionInput
+}
+
+extend type Query {
+  workspace(where: WorkspaceWhereInput): Workspace
+  workspaces(after: Cursor, first: Int, before: Cursor, last: Int, where: WorkspaceWhereInput): WorkspaceConnection
+}
+
+extend type Subscription {
+  workspaceUpdated(id: ID!): Workspace!
+}
+
+extend type Mutation {
+  createWorkspace(input: CreateWorkspaceInput!): Workspace!
+  updateWorkspace(input: UpdateWorkspaceInput!): Workspace!
 }
 `, BuiltIn: false},
 }
@@ -1159,6 +1688,21 @@ func (ec *executionContext) field_Mutation_createTestUser_args(ctx context.Conte
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_createWorkspace_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 ent.CreateWorkspaceInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNCreateWorkspaceInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐCreateWorkspaceInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_updateTeammate_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -1196,6 +1740,21 @@ func (ec *executionContext) field_Mutation_updateTestUser_args(ctx context.Conte
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNUpdateTestUserInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐUpdateTestUserInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_updateWorkspace_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 ent.UpdateWorkspaceInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNUpdateWorkspaceInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐUpdateWorkspaceInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1405,6 +1964,72 @@ func (ec *executionContext) field_Query_testUsers_args(ctx context.Context, rawA
 	return args, nil
 }
 
+func (ec *executionContext) field_Query_workspace_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *ent.WorkspaceWhereInput
+	if tmp, ok := rawArgs["where"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
+		arg0, err = ec.unmarshalOWorkspaceWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐWorkspaceWhereInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["where"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_workspaces_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *ent.Cursor
+	if tmp, ok := rawArgs["after"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
+		arg0, err = ec.unmarshalOCursor2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐCursor(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["after"] = arg0
+	var arg1 *int
+	if tmp, ok := rawArgs["first"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("first"))
+		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["first"] = arg1
+	var arg2 *ent.Cursor
+	if tmp, ok := rawArgs["before"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("before"))
+		arg2, err = ec.unmarshalOCursor2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐCursor(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["before"] = arg2
+	var arg3 *int
+	if tmp, ok := rawArgs["last"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("last"))
+		arg3, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["last"] = arg3
+	var arg4 *ent.WorkspaceWhereInput
+	if tmp, ok := rawArgs["where"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
+		arg4, err = ec.unmarshalOWorkspaceWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐWorkspaceWhereInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["where"] = arg4
+	return args, nil
+}
+
 func (ec *executionContext) field_Subscription_teammateUpdated_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -1421,6 +2046,21 @@ func (ec *executionContext) field_Subscription_teammateUpdated_args(ctx context.
 }
 
 func (ec *executionContext) field_Subscription_testUserUpdated_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 ulid.ID
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Subscription_workspaceUpdated_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 ulid.ID
@@ -1472,6 +2112,300 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 // endregion ************************** directives.gotpl **************************
 
 // region    **************************** field.gotpl *****************************
+
+func (ec *executionContext) _EditorDescription_type(ctx context.Context, field graphql.CollectedField, obj *editor.Description) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "EditorDescription",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Type, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalOString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _EditorDescription_content(ctx context.Context, field graphql.CollectedField, obj *editor.Description) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "EditorDescription",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Content, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]editor.DescriptionContent)
+	fc.Result = res
+	return ec.marshalNEditorDescriptionContent2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋeditorᚐDescriptionContent(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _EditorDescriptionContent_type(ctx context.Context, field graphql.CollectedField, obj *editor.DescriptionContent) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "EditorDescriptionContent",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Type, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalOString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _EditorDescriptionContent_content(ctx context.Context, field graphql.CollectedField, obj *editor.DescriptionContent) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "EditorDescriptionContent",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Content, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]editor.Content)
+	fc.Result = res
+	return ec.marshalNEditorDescriptionContentContent2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋeditorᚐContent(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _EditorDescriptionContentContent_type(ctx context.Context, field graphql.CollectedField, obj *editor.Content) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "EditorDescriptionContentContent",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Type, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalOString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _EditorDescriptionContentContent_text(ctx context.Context, field graphql.CollectedField, obj *editor.Content) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "EditorDescriptionContentContent",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Text, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalOString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _EditorDescriptionContentContent_attrs(ctx context.Context, field graphql.CollectedField, obj *editor.Content) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "EditorDescriptionContentContent",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Attrs, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(editor.Attrs)
+	fc.Result = res
+	return ec.marshalOEditorDescriptionContentContentAttrs2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋeditorᚐAttrs(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _EditorDescriptionContentContentAttrs_mentionId(ctx context.Context, field graphql.CollectedField, obj *editor.Attrs) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "EditorDescriptionContentContentAttrs",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.MentionID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalOString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _EditorDescriptionContentContentAttrs_mentionType(ctx context.Context, field graphql.CollectedField, obj *editor.Attrs) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "EditorDescriptionContentContentAttrs",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.MentionType, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalOString2string(ctx, field.Selections, res)
+}
 
 func (ec *executionContext) _Mutation_createTeammate(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
@@ -1765,6 +2699,90 @@ func (ec *executionContext) _Mutation_updateTestUser(ctx context.Context, field 
 	res := resTmp.(*ent.TestUser)
 	fc.Result = res
 	return ec.marshalNTestUser2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTestUser(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_createWorkspace(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_createWorkspace_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreateWorkspace(rctx, args["input"].(ent.CreateWorkspaceInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.Workspace)
+	fc.Result = res
+	return ec.marshalNWorkspace2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐWorkspace(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_updateWorkspace(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_updateWorkspace_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdateWorkspace(rctx, args["input"].(ent.UpdateWorkspaceInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.Workspace)
+	fc.Result = res
+	return ec.marshalNWorkspace2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐWorkspace(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _PageInfo_hasNextPage(ctx context.Context, field graphql.CollectedField, obj *ent.PageInfo) (ret graphql.Marshaler) {
@@ -2212,6 +3230,84 @@ func (ec *executionContext) _Query_testUsers(ctx context.Context, field graphql.
 	return ec.marshalOTestUserConnection2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTestUserConnection(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Query_workspace(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_workspace_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Workspace(rctx, args["where"].(*ent.WorkspaceWhereInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*ent.Workspace)
+	fc.Result = res
+	return ec.marshalOWorkspace2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐWorkspace(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_workspaces(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_workspaces_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Workspaces(rctx, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["where"].(*ent.WorkspaceWhereInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*ent.WorkspaceConnection)
+	fc.Result = res
+	return ec.marshalOWorkspaceConnection2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐWorkspaceConnection(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Query___type(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -2382,6 +3478,58 @@ func (ec *executionContext) _Subscription_testUserUpdated(ctx context.Context, f
 			graphql.MarshalString(field.Alias).MarshalGQL(w)
 			w.Write([]byte{':'})
 			ec.marshalNTestUser2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTestUser(ctx, field.Selections, res).MarshalGQL(w)
+			w.Write([]byte{'}'})
+		})
+	}
+}
+
+func (ec *executionContext) _Subscription_workspaceUpdated(ctx context.Context, field graphql.CollectedField) (ret func() graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = nil
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Subscription",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Subscription_workspaceUpdated_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return nil
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Subscription().WorkspaceUpdated(rctx, args["id"].(ulid.ID))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return nil
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return nil
+	}
+	return func() graphql.Marshaler {
+		res, ok := <-resTmp.(<-chan *ent.Workspace)
+		if !ok {
+			return nil
+		}
+		return graphql.WriterFunc(func(w io.Writer) {
+			w.Write([]byte{'{'})
+			graphql.MarshalString(field.Alias).MarshalGQL(w)
+			w.Write([]byte{':'})
+			ec.marshalNWorkspace2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐWorkspace(ctx, field.Selections, res).MarshalGQL(w)
 			w.Write([]byte{'}'})
 		})
 	}
@@ -3148,6 +4296,41 @@ func (ec *executionContext) _TestUser_testTodos(ctx context.Context, field graph
 	return ec.marshalNTestTodo2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTestTodoᚄ(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _TestUser_profile(ctx context.Context, field graphql.CollectedField, obj *ent.TestUser) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "TestUser",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Profile, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(testuserprofile.TestUserProfile)
+	fc.Result = res
+	return ec.marshalNTestUserProfile2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋtestuserprofileᚐTestUserProfile(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _TestUser_createdAt(ctx context.Context, field graphql.CollectedField, obj *ent.TestUser) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -3361,6 +4544,641 @@ func (ec *executionContext) _TestUserEdge_cursor(ctx context.Context, field grap
 	}()
 	fc := &graphql.FieldContext{
 		Object:     "TestUserEdge",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Cursor, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(ent.Cursor)
+	fc.Result = res
+	return ec.marshalNCursor2projectᚑmanagementᚑdemoᚑbackendᚋentᚐCursor(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _TestUserProfile_address(ctx context.Context, field graphql.CollectedField, obj *testuserprofile.TestUserProfile) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "TestUserProfile",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Address, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalOString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _TestUserProfile_phone(ctx context.Context, field graphql.CollectedField, obj *testuserprofile.TestUserProfile) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "TestUserProfile",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Phone, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalOString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _TestUserProfile_body(ctx context.Context, field graphql.CollectedField, obj *testuserprofile.TestUserProfile) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "TestUserProfile",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Body, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(testuserprofile.TestUserProfileBody)
+	fc.Result = res
+	return ec.marshalOTestUserProfileBody2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋtestuserprofileᚐTestUserProfileBody(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _TestUserProfileBody_weight(ctx context.Context, field graphql.CollectedField, obj *testuserprofile.TestUserProfileBody) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "TestUserProfileBody",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Weight, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalOInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _TestUserProfileBody_height(ctx context.Context, field graphql.CollectedField, obj *testuserprofile.TestUserProfileBody) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "TestUserProfileBody",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Height, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalOInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _TestUserProfileBody_comment(ctx context.Context, field graphql.CollectedField, obj *testuserprofile.TestUserProfileBody) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "TestUserProfileBody",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Comment, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(testuserprofile.TestUserProfileBodyComment)
+	fc.Result = res
+	return ec.marshalOTestUserProfileBodyComment2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋtestuserprofileᚐTestUserProfileBodyComment(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _TestUserProfileBodyComment_type(ctx context.Context, field graphql.CollectedField, obj *testuserprofile.TestUserProfileBodyComment) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "TestUserProfileBodyComment",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Type, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalOString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _TestUserProfileBodyComment_text(ctx context.Context, field graphql.CollectedField, obj *testuserprofile.TestUserProfileBodyComment) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "TestUserProfileBodyComment",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Text, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalOString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Workspace_id(ctx context.Context, field graphql.CollectedField, obj *ent.Workspace) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Workspace",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(ulid.ID)
+	fc.Result = res
+	return ec.marshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Workspace_createdBy(ctx context.Context, field graphql.CollectedField, obj *ent.Workspace) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Workspace",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CreatedBy, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(ulid.ID)
+	fc.Result = res
+	return ec.marshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Workspace_name(ctx context.Context, field graphql.CollectedField, obj *ent.Workspace) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Workspace",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Name, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Workspace_description(ctx context.Context, field graphql.CollectedField, obj *ent.Workspace) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Workspace",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Description, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(editor.Description)
+	fc.Result = res
+	return ec.marshalNEditorDescription2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋeditorᚐDescription(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Workspace_createdAt(ctx context.Context, field graphql.CollectedField, obj *ent.Workspace) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Workspace",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Workspace().CreatedAt(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Workspace_updatedAt(ctx context.Context, field graphql.CollectedField, obj *ent.Workspace) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Workspace",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Workspace().UpdatedAt(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _WorkspaceConnection_totalCount(ctx context.Context, field graphql.CollectedField, obj *ent.WorkspaceConnection) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "WorkspaceConnection",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TotalCount, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _WorkspaceConnection_pageInfo(ctx context.Context, field graphql.CollectedField, obj *ent.WorkspaceConnection) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "WorkspaceConnection",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PageInfo, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(ent.PageInfo)
+	fc.Result = res
+	return ec.marshalNPageInfo2projectᚑmanagementᚑdemoᚑbackendᚋentᚐPageInfo(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _WorkspaceConnection_edges(ctx context.Context, field graphql.CollectedField, obj *ent.WorkspaceConnection) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "WorkspaceConnection",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Edges, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*ent.WorkspaceEdge)
+	fc.Result = res
+	return ec.marshalOWorkspaceEdge2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐWorkspaceEdge(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _WorkspaceEdge_node(ctx context.Context, field graphql.CollectedField, obj *ent.WorkspaceEdge) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "WorkspaceEdge",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Node, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*ent.Workspace)
+	fc.Result = res
+	return ec.marshalOWorkspace2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐWorkspace(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _WorkspaceEdge_cursor(ctx context.Context, field graphql.CollectedField, obj *ent.WorkspaceEdge) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "WorkspaceEdge",
 		Field:      field,
 		Args:       nil,
 		IsMethod:   false,
@@ -4624,6 +6442,154 @@ func (ec *executionContext) unmarshalInputCreateTestUserInput(ctx context.Contex
 			if err != nil {
 				return it, err
 			}
+		case "profile":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("profile"))
+			it.Profile, err = ec.unmarshalNTestUserProfileInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋtestuserprofileᚐTestUserProfile(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputCreateWorkspaceInput(ctx context.Context, obj interface{}) (ent.CreateWorkspaceInput, error) {
+	var it ent.CreateWorkspaceInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "name":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			it.Name, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdBy":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdBy"))
+			it.CreatedBy, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "description":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("description"))
+			it.Description, err = ec.unmarshalOEditorDescriptionInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋeditorᚐDescription(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputEditorDescriptionContentContentAttrsInput(ctx context.Context, obj interface{}) (editor.Attrs, error) {
+	var it editor.Attrs
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "mentionId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("mentionId"))
+			it.MentionID, err = ec.unmarshalOString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "mentionType":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("mentionType"))
+			it.MentionType, err = ec.unmarshalOString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputEditorDescriptionContentContentInput(ctx context.Context, obj interface{}) (editor.Content, error) {
+	var it editor.Content
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "type":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("type"))
+			it.Type, err = ec.unmarshalOString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "text":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("text"))
+			it.Text, err = ec.unmarshalOString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "attrs":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("attrs"))
+			it.Attrs, err = ec.unmarshalOEditorDescriptionContentContentAttrsInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋeditorᚐAttrs(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputEditorDescriptionContentInput(ctx context.Context, obj interface{}) (editor.DescriptionContent, error) {
+	var it editor.DescriptionContent
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "type":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("type"))
+			it.Type, err = ec.unmarshalOString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "content":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("content"))
+			it.Content, err = ec.unmarshalNEditorDescriptionContentContentInput2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋeditorᚐContent(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		}
 	}
 
@@ -5164,6 +7130,22 @@ func (ec *executionContext) unmarshalInputTeammateWhereInput(ctx context.Context
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idLTE"))
 			it.IDLTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasWorkspaces":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasWorkspaces"))
+			it.HasWorkspaces, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasWorkspacesWith":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasWorkspacesWith"))
+			it.HasWorkspacesWith, err = ec.unmarshalOWorkspaceWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐWorkspaceWhereInputᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -5740,6 +7722,76 @@ func (ec *executionContext) unmarshalInputTestTodoWhereInput(ctx context.Context
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputTestUserProfileBodyCommentInput(ctx context.Context, obj interface{}) (testuserprofile.TestUserProfileBodyComment, error) {
+	var it testuserprofile.TestUserProfileBodyComment
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "type":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("type"))
+			it.Type, err = ec.unmarshalOString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "text":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("text"))
+			it.Text, err = ec.unmarshalOString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputTestUserProfileBodyInput(ctx context.Context, obj interface{}) (testuserprofile.TestUserProfileBody, error) {
+	var it testuserprofile.TestUserProfileBody
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "weight":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("weight"))
+			it.Weight, err = ec.unmarshalOInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "height":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("height"))
+			it.Height, err = ec.unmarshalOInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "comment":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("comment"))
+			it.Comment, err = ec.unmarshalOTestUserProfileBodyCommentInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋtestuserprofileᚐTestUserProfileBodyComment(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputTestUserWhereInput(ctx context.Context, obj interface{}) (ent.TestUserWhereInput, error) {
 	var it ent.TestUserWhereInput
 	asMap := map[string]interface{}{}
@@ -6296,6 +8348,508 @@ func (ec *executionContext) unmarshalInputUpdateTestUserInput(ctx context.Contex
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputUpdateWorkspaceInput(ctx context.Context, obj interface{}) (ent.UpdateWorkspaceInput, error) {
+	var it ent.UpdateWorkspaceInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			it.ID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "name":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			it.Name, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdBy":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdBy"))
+			it.CreatedBy, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "description":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("description"))
+			it.Description, err = ec.unmarshalOEditorDescriptionInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋeditorᚐDescription(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputWorkspaceWhereInput(ctx context.Context, obj interface{}) (ent.WorkspaceWhereInput, error) {
+	var it ent.WorkspaceWhereInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "not":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("not"))
+			it.Not, err = ec.unmarshalOWorkspaceWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐWorkspaceWhereInput(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "and":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("and"))
+			it.And, err = ec.unmarshalOWorkspaceWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐWorkspaceWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "or":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("or"))
+			it.Or, err = ec.unmarshalOWorkspaceWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐWorkspaceWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdBy":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdBy"))
+			it.CreatedBy, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdByNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdByNEQ"))
+			it.CreatedByNEQ, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdByIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdByIn"))
+			it.CreatedByIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdByNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdByNotIn"))
+			it.CreatedByNotIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdByGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdByGT"))
+			it.CreatedByGT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdByGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdByGTE"))
+			it.CreatedByGTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdByLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdByLT"))
+			it.CreatedByLT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdByLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdByLTE"))
+			it.CreatedByLTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdByContains":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdByContains"))
+			it.CreatedByContains, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdByHasPrefix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdByHasPrefix"))
+			it.CreatedByHasPrefix, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdByHasSuffix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdByHasSuffix"))
+			it.CreatedByHasSuffix, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdByEqualFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdByEqualFold"))
+			it.CreatedByEqualFold, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdByContainsFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdByContainsFold"))
+			it.CreatedByContainsFold, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "name":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			it.Name, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameNEQ"))
+			it.NameNEQ, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameIn"))
+			it.NameIn, err = ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameNotIn"))
+			it.NameNotIn, err = ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameGT"))
+			it.NameGT, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameGTE"))
+			it.NameGTE, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameLT"))
+			it.NameLT, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameLTE"))
+			it.NameLTE, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameContains":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameContains"))
+			it.NameContains, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameHasPrefix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameHasPrefix"))
+			it.NameHasPrefix, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameHasSuffix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameHasSuffix"))
+			it.NameHasSuffix, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameEqualFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameEqualFold"))
+			it.NameEqualFold, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameContainsFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameContainsFold"))
+			it.NameContainsFold, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAt":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAt"))
+			it.CreatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtNEQ"))
+			it.CreatedAtNEQ, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtIn"))
+			it.CreatedAtIn, err = ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtNotIn"))
+			it.CreatedAtNotIn, err = ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtGT"))
+			it.CreatedAtGT, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtGTE"))
+			it.CreatedAtGTE, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtLT"))
+			it.CreatedAtLT, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtLTE"))
+			it.CreatedAtLTE, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAt":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAt"))
+			it.UpdatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtNEQ"))
+			it.UpdatedAtNEQ, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtIn"))
+			it.UpdatedAtIn, err = ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtNotIn"))
+			it.UpdatedAtNotIn, err = ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtGT"))
+			it.UpdatedAtGT, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtGTE"))
+			it.UpdatedAtGTE, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtLT"))
+			it.UpdatedAtLT, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtLTE"))
+			it.UpdatedAtLTE, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			it.ID, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idNEQ"))
+			it.IDNEQ, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idIn"))
+			it.IDIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idNotIn"))
+			it.IDNotIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idGT"))
+			it.IDGT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idGTE"))
+			it.IDGTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idLT"))
+			it.IDLT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idLTE"))
+			it.IDLTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasTeammate":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasTeammate"))
+			it.HasTeammate, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasTeammateWith":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasTeammateWith"))
+			it.HasTeammateWith, err = ec.unmarshalOTeammateWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTeammateWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 // endregion **************************** input.gotpl *****************************
 
 // region    ************************** interface.gotpl ***************************
@@ -6314,6 +8868,11 @@ func (ec *executionContext) _Node(ctx context.Context, sel ast.SelectionSet, obj
 			return graphql.Null
 		}
 		return ec._TestUser(ctx, sel, obj)
+	case *ent.Workspace:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._Workspace(ctx, sel, obj)
 	default:
 		panic(fmt.Errorf("unexpected type %T", obj))
 	}
@@ -6322,6 +8881,118 @@ func (ec *executionContext) _Node(ctx context.Context, sel ast.SelectionSet, obj
 // endregion ************************** interface.gotpl ***************************
 
 // region    **************************** object.gotpl ****************************
+
+var editorDescriptionImplementors = []string{"EditorDescription"}
+
+func (ec *executionContext) _EditorDescription(ctx context.Context, sel ast.SelectionSet, obj *editor.Description) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, editorDescriptionImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("EditorDescription")
+		case "type":
+			out.Values[i] = ec._EditorDescription_type(ctx, field, obj)
+		case "content":
+			out.Values[i] = ec._EditorDescription_content(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var editorDescriptionContentImplementors = []string{"EditorDescriptionContent"}
+
+func (ec *executionContext) _EditorDescriptionContent(ctx context.Context, sel ast.SelectionSet, obj *editor.DescriptionContent) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, editorDescriptionContentImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("EditorDescriptionContent")
+		case "type":
+			out.Values[i] = ec._EditorDescriptionContent_type(ctx, field, obj)
+		case "content":
+			out.Values[i] = ec._EditorDescriptionContent_content(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var editorDescriptionContentContentImplementors = []string{"EditorDescriptionContentContent"}
+
+func (ec *executionContext) _EditorDescriptionContentContent(ctx context.Context, sel ast.SelectionSet, obj *editor.Content) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, editorDescriptionContentContentImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("EditorDescriptionContentContent")
+		case "type":
+			out.Values[i] = ec._EditorDescriptionContentContent_type(ctx, field, obj)
+		case "text":
+			out.Values[i] = ec._EditorDescriptionContentContent_text(ctx, field, obj)
+		case "attrs":
+			out.Values[i] = ec._EditorDescriptionContentContent_attrs(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var editorDescriptionContentContentAttrsImplementors = []string{"EditorDescriptionContentContentAttrs"}
+
+func (ec *executionContext) _EditorDescriptionContentContentAttrs(ctx context.Context, sel ast.SelectionSet, obj *editor.Attrs) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, editorDescriptionContentContentAttrsImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("EditorDescriptionContentContentAttrs")
+		case "mentionId":
+			out.Values[i] = ec._EditorDescriptionContentContentAttrs_mentionId(ctx, field, obj)
+		case "mentionType":
+			out.Values[i] = ec._EditorDescriptionContentContentAttrs_mentionType(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
 
 var mutationImplementors = []string{"Mutation"}
 
@@ -6370,6 +9041,16 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			}
 		case "updateTestUser":
 			out.Values[i] = ec._Mutation_updateTestUser(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "createWorkspace":
+			out.Values[i] = ec._Mutation_createWorkspace(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "updateWorkspace":
+			out.Values[i] = ec._Mutation_updateWorkspace(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -6529,6 +9210,28 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 				res = ec._Query_testUsers(ctx, field)
 				return res
 			})
+		case "workspace":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_workspace(ctx, field)
+				return res
+			})
+		case "workspaces":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_workspaces(ctx, field)
+				return res
+			})
 		case "__type":
 			out.Values[i] = ec._Query___type(ctx, field)
 		case "__schema":
@@ -6561,6 +9264,8 @@ func (ec *executionContext) _Subscription(ctx context.Context, sel ast.Selection
 		return ec._Subscription_teammateUpdated(ctx, fields[0])
 	case "testUserUpdated":
 		return ec._Subscription_testUserUpdated(ctx, fields[0])
+	case "workspaceUpdated":
+		return ec._Subscription_workspaceUpdated(ctx, fields[0])
 	default:
 		panic("unknown field " + strconv.Quote(fields[0].Name))
 	}
@@ -6811,6 +9516,11 @@ func (ec *executionContext) _TestUser(ctx context.Context, sel ast.SelectionSet,
 				}
 				return res
 			})
+		case "profile":
+			out.Values[i] = ec._TestUser_profile(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
 		case "createdAt":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
@@ -6899,6 +9609,221 @@ func (ec *executionContext) _TestUserEdge(ctx context.Context, sel ast.Selection
 			out.Values[i] = ec._TestUserEdge_node(ctx, field, obj)
 		case "cursor":
 			out.Values[i] = ec._TestUserEdge_cursor(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var testUserProfileImplementors = []string{"TestUserProfile"}
+
+func (ec *executionContext) _TestUserProfile(ctx context.Context, sel ast.SelectionSet, obj *testuserprofile.TestUserProfile) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, testUserProfileImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("TestUserProfile")
+		case "address":
+			out.Values[i] = ec._TestUserProfile_address(ctx, field, obj)
+		case "phone":
+			out.Values[i] = ec._TestUserProfile_phone(ctx, field, obj)
+		case "body":
+			out.Values[i] = ec._TestUserProfile_body(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var testUserProfileBodyImplementors = []string{"TestUserProfileBody"}
+
+func (ec *executionContext) _TestUserProfileBody(ctx context.Context, sel ast.SelectionSet, obj *testuserprofile.TestUserProfileBody) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, testUserProfileBodyImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("TestUserProfileBody")
+		case "weight":
+			out.Values[i] = ec._TestUserProfileBody_weight(ctx, field, obj)
+		case "height":
+			out.Values[i] = ec._TestUserProfileBody_height(ctx, field, obj)
+		case "comment":
+			out.Values[i] = ec._TestUserProfileBody_comment(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var testUserProfileBodyCommentImplementors = []string{"TestUserProfileBodyComment"}
+
+func (ec *executionContext) _TestUserProfileBodyComment(ctx context.Context, sel ast.SelectionSet, obj *testuserprofile.TestUserProfileBodyComment) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, testUserProfileBodyCommentImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("TestUserProfileBodyComment")
+		case "type":
+			out.Values[i] = ec._TestUserProfileBodyComment_type(ctx, field, obj)
+		case "text":
+			out.Values[i] = ec._TestUserProfileBodyComment_text(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var workspaceImplementors = []string{"Workspace", "Node"}
+
+func (ec *executionContext) _Workspace(ctx context.Context, sel ast.SelectionSet, obj *ent.Workspace) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, workspaceImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Workspace")
+		case "id":
+			out.Values[i] = ec._Workspace_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "createdBy":
+			out.Values[i] = ec._Workspace_createdBy(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "name":
+			out.Values[i] = ec._Workspace_name(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "description":
+			out.Values[i] = ec._Workspace_description(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "createdAt":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Workspace_createdAt(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "updatedAt":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Workspace_updatedAt(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var workspaceConnectionImplementors = []string{"WorkspaceConnection"}
+
+func (ec *executionContext) _WorkspaceConnection(ctx context.Context, sel ast.SelectionSet, obj *ent.WorkspaceConnection) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, workspaceConnectionImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("WorkspaceConnection")
+		case "totalCount":
+			out.Values[i] = ec._WorkspaceConnection_totalCount(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "pageInfo":
+			out.Values[i] = ec._WorkspaceConnection_pageInfo(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "edges":
+			out.Values[i] = ec._WorkspaceConnection_edges(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var workspaceEdgeImplementors = []string{"WorkspaceEdge"}
+
+func (ec *executionContext) _WorkspaceEdge(ctx context.Context, sel ast.SelectionSet, obj *ent.WorkspaceEdge) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, workspaceEdgeImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("WorkspaceEdge")
+		case "node":
+			out.Values[i] = ec._WorkspaceEdge_node(ctx, field, obj)
+		case "cursor":
+			out.Values[i] = ec._WorkspaceEdge_cursor(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -7193,6 +10118,11 @@ func (ec *executionContext) unmarshalNCreateTestUserInput2projectᚑmanagement�
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
+func (ec *executionContext) unmarshalNCreateWorkspaceInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐCreateWorkspaceInput(ctx context.Context, v interface{}) (ent.CreateWorkspaceInput, error) {
+	res, err := ec.unmarshalInputCreateWorkspaceInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNCursor2projectᚑmanagementᚑdemoᚑbackendᚋentᚐCursor(ctx context.Context, v interface{}) (ent.Cursor, error) {
 	var res ent.Cursor
 	err := res.UnmarshalGQL(v)
@@ -7201,6 +10131,128 @@ func (ec *executionContext) unmarshalNCursor2projectᚑmanagementᚑdemoᚑbacke
 
 func (ec *executionContext) marshalNCursor2projectᚑmanagementᚑdemoᚑbackendᚋentᚐCursor(ctx context.Context, sel ast.SelectionSet, v ent.Cursor) graphql.Marshaler {
 	return v
+}
+
+func (ec *executionContext) marshalNEditorDescription2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋeditorᚐDescription(ctx context.Context, sel ast.SelectionSet, v editor.Description) graphql.Marshaler {
+	return v
+}
+
+func (ec *executionContext) marshalNEditorDescriptionContent2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋeditorᚐDescriptionContent(ctx context.Context, sel ast.SelectionSet, v []editor.DescriptionContent) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalOEditorDescriptionContent2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋeditorᚐDescriptionContent(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	return ret
+}
+
+func (ec *executionContext) marshalNEditorDescriptionContentContent2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋeditorᚐContent(ctx context.Context, sel ast.SelectionSet, v []editor.Content) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalOEditorDescriptionContentContent2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋeditorᚐContent(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	return ret
+}
+
+func (ec *executionContext) unmarshalNEditorDescriptionContentContentInput2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋeditorᚐContent(ctx context.Context, v interface{}) ([]editor.Content, error) {
+	var vSlice []interface{}
+	if v != nil {
+		if tmp1, ok := v.([]interface{}); ok {
+			vSlice = tmp1
+		} else {
+			vSlice = []interface{}{v}
+		}
+	}
+	var err error
+	res := make([]editor.Content, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalOEditorDescriptionContentContentInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋeditorᚐContent(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) unmarshalNEditorDescriptionContentInput2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋeditorᚐDescriptionContent(ctx context.Context, v interface{}) ([]editor.DescriptionContent, error) {
+	var vSlice []interface{}
+	if v != nil {
+		if tmp1, ok := v.([]interface{}); ok {
+			vSlice = tmp1
+		} else {
+			vSlice = []interface{}{v}
+		}
+	}
+	var err error
+	res := make([]editor.DescriptionContent, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalOEditorDescriptionContentInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋeditorᚐDescriptionContent(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
 }
 
 func (ec *executionContext) unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx context.Context, v interface{}) (ulid.ID, error) {
@@ -7485,6 +10537,16 @@ func (ec *executionContext) marshalNTestUser2ᚖprojectᚑmanagementᚑdemoᚑba
 	return ec._TestUser(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalNTestUserProfile2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋtestuserprofileᚐTestUserProfile(ctx context.Context, sel ast.SelectionSet, v testuserprofile.TestUserProfile) graphql.Marshaler {
+	return v
+}
+
+func (ec *executionContext) unmarshalNTestUserProfileInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋtestuserprofileᚐTestUserProfile(ctx context.Context, v interface{}) (testuserprofile.TestUserProfile, error) {
+	var res testuserprofile.TestUserProfile
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNTestUserWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTestUserWhereInput(ctx context.Context, v interface{}) (*ent.TestUserWhereInput, error) {
 	res, err := ec.unmarshalInputTestUserWhereInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
@@ -7518,6 +10580,30 @@ func (ec *executionContext) unmarshalNUpdateTestTodoInput2projectᚑmanagement�
 func (ec *executionContext) unmarshalNUpdateTestUserInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐUpdateTestUserInput(ctx context.Context, v interface{}) (ent.UpdateTestUserInput, error) {
 	res, err := ec.unmarshalInputUpdateTestUserInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNUpdateWorkspaceInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐUpdateWorkspaceInput(ctx context.Context, v interface{}) (ent.UpdateWorkspaceInput, error) {
+	res, err := ec.unmarshalInputUpdateWorkspaceInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNWorkspace2projectᚑmanagementᚑdemoᚑbackendᚋentᚐWorkspace(ctx context.Context, sel ast.SelectionSet, v ent.Workspace) graphql.Marshaler {
+	return ec._Workspace(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNWorkspace2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐWorkspace(ctx context.Context, sel ast.SelectionSet, v *ent.Workspace) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._Workspace(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNWorkspaceWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐWorkspaceWhereInput(ctx context.Context, v interface{}) (*ent.WorkspaceWhereInput, error) {
+	res, err := ec.unmarshalInputWorkspaceWhereInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalN__Directive2githubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐDirective(ctx context.Context, sel ast.SelectionSet, v introspection.Directive) graphql.Marshaler {
@@ -7817,6 +10903,48 @@ func (ec *executionContext) marshalOCursor2ᚖprojectᚑmanagementᚑdemoᚑback
 	return v
 }
 
+func (ec *executionContext) marshalOEditorDescriptionContent2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋeditorᚐDescriptionContent(ctx context.Context, sel ast.SelectionSet, v editor.DescriptionContent) graphql.Marshaler {
+	return ec._EditorDescriptionContent(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalOEditorDescriptionContentContent2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋeditorᚐContent(ctx context.Context, sel ast.SelectionSet, v editor.Content) graphql.Marshaler {
+	return ec._EditorDescriptionContentContent(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalOEditorDescriptionContentContentAttrs2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋeditorᚐAttrs(ctx context.Context, sel ast.SelectionSet, v editor.Attrs) graphql.Marshaler {
+	return ec._EditorDescriptionContentContentAttrs(ctx, sel, &v)
+}
+
+func (ec *executionContext) unmarshalOEditorDescriptionContentContentAttrsInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋeditorᚐAttrs(ctx context.Context, v interface{}) (editor.Attrs, error) {
+	res, err := ec.unmarshalInputEditorDescriptionContentContentAttrsInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalOEditorDescriptionContentContentInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋeditorᚐContent(ctx context.Context, v interface{}) (editor.Content, error) {
+	res, err := ec.unmarshalInputEditorDescriptionContentContentInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalOEditorDescriptionContentInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋeditorᚐDescriptionContent(ctx context.Context, v interface{}) (editor.DescriptionContent, error) {
+	res, err := ec.unmarshalInputEditorDescriptionContentInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalOEditorDescriptionInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋeditorᚐDescription(ctx context.Context, v interface{}) (editor.Description, error) {
+	var res editor.Description
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalOEditorDescriptionInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋeditorᚐDescription(ctx context.Context, v interface{}) (*editor.Description, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var res = new(editor.Description)
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalOID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx context.Context, v interface{}) (ulid.ID, error) {
 	var res ulid.ID
 	err := res.UnmarshalGQL(v)
@@ -7883,6 +11011,15 @@ func (ec *executionContext) marshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackend�
 		return graphql.Null
 	}
 	return v
+}
+
+func (ec *executionContext) unmarshalOInt2int(ctx context.Context, v interface{}) (int, error) {
+	res, err := graphql.UnmarshalInt(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOInt2int(ctx context.Context, sel ast.SelectionSet, v int) graphql.Marshaler {
+	return graphql.MarshalInt(v)
 }
 
 func (ec *executionContext) unmarshalOInt2ᚕintᚄ(ctx context.Context, v interface{}) ([]int, error) {
@@ -8297,6 +11434,24 @@ func (ec *executionContext) marshalOTestUserEdge2ᚖprojectᚑmanagementᚑdemo�
 	return ec._TestUserEdge(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalOTestUserProfileBody2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋtestuserprofileᚐTestUserProfileBody(ctx context.Context, sel ast.SelectionSet, v testuserprofile.TestUserProfileBody) graphql.Marshaler {
+	return ec._TestUserProfileBody(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalOTestUserProfileBodyComment2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋtestuserprofileᚐTestUserProfileBodyComment(ctx context.Context, sel ast.SelectionSet, v testuserprofile.TestUserProfileBodyComment) graphql.Marshaler {
+	return ec._TestUserProfileBodyComment(ctx, sel, &v)
+}
+
+func (ec *executionContext) unmarshalOTestUserProfileBodyCommentInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋtestuserprofileᚐTestUserProfileBodyComment(ctx context.Context, v interface{}) (testuserprofile.TestUserProfileBodyComment, error) {
+	res, err := ec.unmarshalInputTestUserProfileBodyCommentInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalOTestUserProfileBodyInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋtestuserprofileᚐTestUserProfileBody(ctx context.Context, v interface{}) (testuserprofile.TestUserProfileBody, error) {
+	res, err := ec.unmarshalInputTestUserProfileBodyInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalOTestUserWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTestUserWhereInputᚄ(ctx context.Context, v interface{}) ([]*ent.TestUserWhereInput, error) {
 	if v == nil {
 		return nil, nil
@@ -8384,6 +11539,100 @@ func (ec *executionContext) marshalOTime2ᚖtimeᚐTime(ctx context.Context, sel
 		return graphql.Null
 	}
 	return graphql.MarshalTime(*v)
+}
+
+func (ec *executionContext) marshalOWorkspace2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐWorkspace(ctx context.Context, sel ast.SelectionSet, v *ent.Workspace) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Workspace(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOWorkspaceConnection2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐWorkspaceConnection(ctx context.Context, sel ast.SelectionSet, v *ent.WorkspaceConnection) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._WorkspaceConnection(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOWorkspaceEdge2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐWorkspaceEdge(ctx context.Context, sel ast.SelectionSet, v []*ent.WorkspaceEdge) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalOWorkspaceEdge2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐWorkspaceEdge(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	return ret
+}
+
+func (ec *executionContext) marshalOWorkspaceEdge2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐWorkspaceEdge(ctx context.Context, sel ast.SelectionSet, v *ent.WorkspaceEdge) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._WorkspaceEdge(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalOWorkspaceWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐWorkspaceWhereInputᚄ(ctx context.Context, v interface{}) ([]*ent.WorkspaceWhereInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var vSlice []interface{}
+	if v != nil {
+		if tmp1, ok := v.([]interface{}); ok {
+			vSlice = tmp1
+		} else {
+			vSlice = []interface{}{v}
+		}
+	}
+	var err error
+	res := make([]*ent.WorkspaceWhereInput, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNWorkspaceWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐWorkspaceWhereInput(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) unmarshalOWorkspaceWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐWorkspaceWhereInput(ctx context.Context, v interface{}) (*ent.WorkspaceWhereInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputWorkspaceWhereInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalO__EnumValue2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐEnumValueᚄ(ctx context.Context, sel ast.SelectionSet, v []introspection.EnumValue) graphql.Marshaler {

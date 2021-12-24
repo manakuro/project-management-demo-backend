@@ -43,3 +43,15 @@ func (tu *TestUserQuery) CollectFields(ctx context.Context, satisfies ...string)
 func (tu *TestUserQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *TestUserQuery {
 	return tu
 }
+
+// CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
+func (w *WorkspaceQuery) CollectFields(ctx context.Context, satisfies ...string) *WorkspaceQuery {
+	if fc := graphql.GetFieldContext(ctx); fc != nil {
+		w = w.collectField(graphql.GetOperationContext(ctx), fc.Field, satisfies...)
+	}
+	return w
+}
+
+func (w *WorkspaceQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *WorkspaceQuery {
+	return w
+}
