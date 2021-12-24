@@ -21,16 +21,14 @@ func (r *workspaceRepository) Get(ctx context.Context, where *model.WorkspaceWhe
 
 	q, err := where.Filter(q)
 	if err != nil {
-		p, _ := where.P()
-		return nil, model.NewInvalidParamError(p)
+		return nil, model.NewInvalidParamError(nil)
 	}
 
 	u, err := q.Only(ctx)
 
 	if err != nil {
 		if ent.IsNotSingular(err) {
-			p, _ := where.P()
-			return nil, model.NewNotFoundError(err, p)
+			return nil, model.NewNotFoundError(err, nil)
 		}
 		if ent.IsNotFound(err) {
 			return nil, nil
