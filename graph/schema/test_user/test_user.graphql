@@ -1,8 +1,31 @@
 type TestUserProfile {
   address: String
+  phone: String
+  body: TestUserProfileBody
 }
+type TestUserProfileBody {
+  weight: Int
+  height: Int
+  comment: TestUserProfileBodyComment
+}
+type TestUserProfileBodyComment {
+  type: String
+  text: String
+}
+
 input TestUserProfileInput {
   address: String
+  phone: String
+  body: TestUserProfileBodyInput
+}
+input TestUserProfileBodyInput {
+  weight: Int
+  height: Int
+  comment: TestUserProfileBodyCommentInput
+}
+input TestUserProfileBodyCommentInput {
+  type: String
+  text: String
 }
 
 type TestUser implements Node {

@@ -139,6 +139,19 @@ type ComplexityRoot struct {
 
 	TestUserProfile struct {
 		Address func(childComplexity int) int
+		Body    func(childComplexity int) int
+		Phone   func(childComplexity int) int
+	}
+
+	TestUserProfileBody struct {
+		Comment func(childComplexity int) int
+		Height  func(childComplexity int) int
+		Weight  func(childComplexity int) int
+	}
+
+	TestUserProfileBodyComment struct {
+		Text func(childComplexity int) int
+		Type func(childComplexity int) int
 	}
 }
 
@@ -636,6 +649,55 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.TestUserProfile.Address(childComplexity), true
+
+	case "TestUserProfile.body":
+		if e.complexity.TestUserProfile.Body == nil {
+			break
+		}
+
+		return e.complexity.TestUserProfile.Body(childComplexity), true
+
+	case "TestUserProfile.phone":
+		if e.complexity.TestUserProfile.Phone == nil {
+			break
+		}
+
+		return e.complexity.TestUserProfile.Phone(childComplexity), true
+
+	case "TestUserProfileBody.comment":
+		if e.complexity.TestUserProfileBody.Comment == nil {
+			break
+		}
+
+		return e.complexity.TestUserProfileBody.Comment(childComplexity), true
+
+	case "TestUserProfileBody.height":
+		if e.complexity.TestUserProfileBody.Height == nil {
+			break
+		}
+
+		return e.complexity.TestUserProfileBody.Height(childComplexity), true
+
+	case "TestUserProfileBody.weight":
+		if e.complexity.TestUserProfileBody.Weight == nil {
+			break
+		}
+
+		return e.complexity.TestUserProfileBody.Weight(childComplexity), true
+
+	case "TestUserProfileBodyComment.text":
+		if e.complexity.TestUserProfileBodyComment.Text == nil {
+			break
+		}
+
+		return e.complexity.TestUserProfileBodyComment.Text(childComplexity), true
+
+	case "TestUserProfileBodyComment.type":
+		if e.complexity.TestUserProfileBodyComment.Type == nil {
+			break
+		}
+
+		return e.complexity.TestUserProfileBodyComment.Type(childComplexity), true
 
 	}
 	return 0, false
@@ -1149,9 +1211,32 @@ extend type Mutation {
 `, BuiltIn: false},
 	{Name: "graph/schema/test_user/test_user.graphql", Input: `type TestUserProfile {
   address: String
+  phone: String
+  body: TestUserProfileBody
 }
+type TestUserProfileBody {
+  weight: Int
+  height: Int
+  comment: TestUserProfileBodyComment
+}
+type TestUserProfileBodyComment {
+  type: String
+  text: String
+}
+
 input TestUserProfileInput {
   address: String
+  phone: String
+  body: TestUserProfileBodyInput
+}
+input TestUserProfileBodyInput {
+  weight: Int
+  height: Int
+  comment: TestUserProfileBodyCommentInput
+}
+input TestUserProfileBodyCommentInput {
+  type: String
+  text: String
 }
 
 type TestUser implements Node {
@@ -3561,6 +3646,230 @@ func (ec *executionContext) _TestUserProfile_address(ctx context.Context, field 
 	return ec.marshalOString2string(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _TestUserProfile_phone(ctx context.Context, field graphql.CollectedField, obj *testuserprofile.TestUserProfile) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "TestUserProfile",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Phone, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalOString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _TestUserProfile_body(ctx context.Context, field graphql.CollectedField, obj *testuserprofile.TestUserProfile) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "TestUserProfile",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Body, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(testuserprofile.TestUserProfileBody)
+	fc.Result = res
+	return ec.marshalOTestUserProfileBody2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋtestuserprofileᚐTestUserProfileBody(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _TestUserProfileBody_weight(ctx context.Context, field graphql.CollectedField, obj *testuserprofile.TestUserProfileBody) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "TestUserProfileBody",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Weight, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalOInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _TestUserProfileBody_height(ctx context.Context, field graphql.CollectedField, obj *testuserprofile.TestUserProfileBody) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "TestUserProfileBody",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Height, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalOInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _TestUserProfileBody_comment(ctx context.Context, field graphql.CollectedField, obj *testuserprofile.TestUserProfileBody) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "TestUserProfileBody",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Comment, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(testuserprofile.TestUserProfileBodyComment)
+	fc.Result = res
+	return ec.marshalOTestUserProfileBodyComment2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋtestuserprofileᚐTestUserProfileBodyComment(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _TestUserProfileBodyComment_type(ctx context.Context, field graphql.CollectedField, obj *testuserprofile.TestUserProfileBodyComment) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "TestUserProfileBodyComment",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Type, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalOString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _TestUserProfileBodyComment_text(ctx context.Context, field graphql.CollectedField, obj *testuserprofile.TestUserProfileBodyComment) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "TestUserProfileBodyComment",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Text, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalOString2string(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) ___Directive_name(ctx context.Context, field graphql.CollectedField, obj *introspection.Directive) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -5938,6 +6247,76 @@ func (ec *executionContext) unmarshalInputTestTodoWhereInput(ctx context.Context
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputTestUserProfileBodyCommentInput(ctx context.Context, obj interface{}) (testuserprofile.TestUserProfileBodyComment, error) {
+	var it testuserprofile.TestUserProfileBodyComment
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "type":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("type"))
+			it.Type, err = ec.unmarshalOString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "text":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("text"))
+			it.Text, err = ec.unmarshalOString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputTestUserProfileBodyInput(ctx context.Context, obj interface{}) (testuserprofile.TestUserProfileBody, error) {
+	var it testuserprofile.TestUserProfileBody
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "weight":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("weight"))
+			it.Weight, err = ec.unmarshalOInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "height":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("height"))
+			it.Height, err = ec.unmarshalOInt2int(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "comment":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("comment"))
+			it.Comment, err = ec.unmarshalOTestUserProfileBodyCommentInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋtestuserprofileᚐTestUserProfileBodyComment(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputTestUserWhereInput(ctx context.Context, obj interface{}) (ent.TestUserWhereInput, error) {
 	var it ent.TestUserWhereInput
 	asMap := map[string]interface{}{}
@@ -7584,6 +7963,64 @@ func (ec *executionContext) _TestUserProfile(ctx context.Context, sel ast.Select
 			out.Values[i] = graphql.MarshalString("TestUserProfile")
 		case "address":
 			out.Values[i] = ec._TestUserProfile_address(ctx, field, obj)
+		case "phone":
+			out.Values[i] = ec._TestUserProfile_phone(ctx, field, obj)
+		case "body":
+			out.Values[i] = ec._TestUserProfile_body(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var testUserProfileBodyImplementors = []string{"TestUserProfileBody"}
+
+func (ec *executionContext) _TestUserProfileBody(ctx context.Context, sel ast.SelectionSet, obj *testuserprofile.TestUserProfileBody) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, testUserProfileBodyImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("TestUserProfileBody")
+		case "weight":
+			out.Values[i] = ec._TestUserProfileBody_weight(ctx, field, obj)
+		case "height":
+			out.Values[i] = ec._TestUserProfileBody_height(ctx, field, obj)
+		case "comment":
+			out.Values[i] = ec._TestUserProfileBody_comment(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var testUserProfileBodyCommentImplementors = []string{"TestUserProfileBodyComment"}
+
+func (ec *executionContext) _TestUserProfileBodyComment(ctx context.Context, sel ast.SelectionSet, obj *testuserprofile.TestUserProfileBodyComment) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, testUserProfileBodyCommentImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("TestUserProfileBodyComment")
+		case "type":
+			out.Values[i] = ec._TestUserProfileBodyComment_type(ctx, field, obj)
+		case "text":
+			out.Values[i] = ec._TestUserProfileBodyComment_text(ctx, field, obj)
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -8582,6 +9019,15 @@ func (ec *executionContext) marshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackend�
 	return v
 }
 
+func (ec *executionContext) unmarshalOInt2int(ctx context.Context, v interface{}) (int, error) {
+	res, err := graphql.UnmarshalInt(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOInt2int(ctx context.Context, sel ast.SelectionSet, v int) graphql.Marshaler {
+	return graphql.MarshalInt(v)
+}
+
 func (ec *executionContext) unmarshalOInt2ᚕintᚄ(ctx context.Context, v interface{}) ([]int, error) {
 	if v == nil {
 		return nil, nil
@@ -8992,6 +9438,24 @@ func (ec *executionContext) marshalOTestUserEdge2ᚖprojectᚑmanagementᚑdemo�
 		return graphql.Null
 	}
 	return ec._TestUserEdge(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOTestUserProfileBody2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋtestuserprofileᚐTestUserProfileBody(ctx context.Context, sel ast.SelectionSet, v testuserprofile.TestUserProfileBody) graphql.Marshaler {
+	return ec._TestUserProfileBody(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalOTestUserProfileBodyComment2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋtestuserprofileᚐTestUserProfileBodyComment(ctx context.Context, sel ast.SelectionSet, v testuserprofile.TestUserProfileBodyComment) graphql.Marshaler {
+	return ec._TestUserProfileBodyComment(ctx, sel, &v)
+}
+
+func (ec *executionContext) unmarshalOTestUserProfileBodyCommentInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋtestuserprofileᚐTestUserProfileBodyComment(ctx context.Context, v interface{}) (testuserprofile.TestUserProfileBodyComment, error) {
+	res, err := ec.unmarshalInputTestUserProfileBodyCommentInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalOTestUserProfileBodyInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋtestuserprofileᚐTestUserProfileBody(ctx context.Context, v interface{}) (testuserprofile.TestUserProfileBody, error) {
+	res, err := ec.unmarshalInputTestUserProfileBodyInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalOTestUserWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTestUserWhereInputᚄ(ctx context.Context, v interface{}) ([]*ent.TestUserWhereInput, error) {

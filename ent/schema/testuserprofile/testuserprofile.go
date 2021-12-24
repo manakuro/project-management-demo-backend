@@ -10,6 +10,23 @@ import (
 // TestUserProfile of profile
 type TestUserProfile struct {
 	Address string `json:"address"`
+	Phone   string `json:"phone"`
+	Body    TestUserProfileBody
+}
+
+// TestUserProfileBody of profile body
+//revive:disable-next-line:exported
+type TestUserProfileBody struct {
+	Weight  int `json:"weight"`
+	Height  int `json:"height"`
+	Comment TestUserProfileBodyComment
+}
+
+// TestUserProfileBodyComment of profile body comment
+//revive:disable-next-line:exported
+type TestUserProfileBodyComment struct {
+	Type string `json:"type"`
+	Text string `json:"text"`
 }
 
 // UnmarshalGQL implements the graphql.Unmarshaller interface.

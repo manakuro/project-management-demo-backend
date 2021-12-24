@@ -11,8 +11,20 @@ type TestUser = ent.TestUser
 // TestUserProfile of profile.
 type TestUserProfile = testuserprofile.TestUserProfile
 
+// TestUserProfileBody of profile.
+type TestUserProfileBody = testuserprofile.TestUserProfileBody
+
+// TestUserProfileBodyComment of profile.
+type TestUserProfileBodyComment = testuserprofile.TestUserProfileBodyComment
+
 // TestUserProfileInput of input
 type TestUserProfileInput = testuserprofile.TestUserProfile
+
+// TestUserProfileBodyInput of input
+type TestUserProfileBodyInput = testuserprofile.TestUserProfileBody
+
+// TestUserProfileBodyCommentInput of input
+type TestUserProfileBodyCommentInput = testuserprofile.TestUserProfileBodyComment
 
 // TestUserConnection is the connection containing edges to TestUser.
 type TestUserConnection = ent.TestUserConnection
