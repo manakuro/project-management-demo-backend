@@ -17,8 +17,12 @@ func main() {
 
 	ctx := context.Background()
 
+	//client.DisableSQLSafeUpdates()
+
 	feed.Teammate(ctx, client)
 	feed.Workspace(ctx, client)
+
+	//client.EnableSQLSafeUpdates()
 }
 
 func newDBClient() *ent.Client {
