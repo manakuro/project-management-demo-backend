@@ -6,7 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"project-management-demo-backend/ent/schema"
+	"project-management-demo-backend/ent/schema/editor"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/workspace"
@@ -36,8 +36,8 @@ func (wc *WorkspaceCreate) SetName(s string) *WorkspaceCreate {
 }
 
 // SetDescription sets the "description" field.
-func (wc *WorkspaceCreate) SetDescription(sd schema.WorkspaceDescription) *WorkspaceCreate {
-	wc.mutation.SetDescription(sd)
+func (wc *WorkspaceCreate) SetDescription(e editor.Description) *WorkspaceCreate {
+	wc.mutation.SetDescription(e)
 	return wc
 }
 

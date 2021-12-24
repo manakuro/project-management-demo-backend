@@ -3,7 +3,7 @@
 package ent
 
 import (
-	"project-management-demo-backend/ent/schema"
+	"project-management-demo-backend/ent/schema/editor"
 	"project-management-demo-backend/ent/schema/testuserprofile"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/testtodo"
@@ -238,7 +238,7 @@ func (u *TestUserUpdateOne) SetInput(i UpdateTestUserInput) *TestUserUpdateOne {
 // CreateWorkspaceInput represents a mutation input for creating workspaces.
 type CreateWorkspaceInput struct {
 	Name        string
-	Description schema.WorkspaceDescription
+	Description editor.Description
 	CreatedAt   *time.Time
 	UpdatedAt   *time.Time
 	CreatedBy   ulid.ID
@@ -267,7 +267,7 @@ func (c *WorkspaceCreate) SetInput(i CreateWorkspaceInput) *WorkspaceCreate {
 type UpdateWorkspaceInput struct {
 	ID            ulid.ID
 	Name          *string
-	Description   *schema.WorkspaceDescription
+	Description   *editor.Description
 	CreatedBy     *ulid.ID
 	ClearTeammate bool
 }

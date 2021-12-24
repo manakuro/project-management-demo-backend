@@ -7,7 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"project-management-demo-backend/ent/predicate"
-	"project-management-demo-backend/ent/schema"
+	"project-management-demo-backend/ent/schema/editor"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/workspace"
@@ -43,8 +43,8 @@ func (wu *WorkspaceUpdate) SetName(s string) *WorkspaceUpdate {
 }
 
 // SetDescription sets the "description" field.
-func (wu *WorkspaceUpdate) SetDescription(sd schema.WorkspaceDescription) *WorkspaceUpdate {
-	wu.mutation.SetDescription(sd)
+func (wu *WorkspaceUpdate) SetDescription(e editor.Description) *WorkspaceUpdate {
+	wu.mutation.SetDescription(e)
 	return wu
 }
 
@@ -242,8 +242,8 @@ func (wuo *WorkspaceUpdateOne) SetName(s string) *WorkspaceUpdateOne {
 }
 
 // SetDescription sets the "description" field.
-func (wuo *WorkspaceUpdateOne) SetDescription(sd schema.WorkspaceDescription) *WorkspaceUpdateOne {
-	wuo.mutation.SetDescription(sd)
+func (wuo *WorkspaceUpdateOne) SetDescription(e editor.Description) *WorkspaceUpdateOne {
+	wuo.mutation.SetDescription(e)
 	return wuo
 }
 

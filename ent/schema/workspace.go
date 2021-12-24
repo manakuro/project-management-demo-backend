@@ -3,6 +3,7 @@ package schema
 import (
 	"project-management-demo-backend/ent/annotation"
 	"project-management-demo-backend/ent/mixin"
+	"project-management-demo-backend/ent/schema/editor"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/pkg/const/globalid"
 
@@ -25,25 +26,6 @@ type WorkspaceMixin struct {
 	entMixin.Schema
 }
 
-// WorkspaceAttrs is a type of attrs
-type WorkspaceAttrs struct {
-	MentionID   string `json:"mentionId"`
-	MentionType string `json:"mentionType"`
-}
-
-// WorkspaceContent is a type of content
-type WorkspaceContent struct {
-	Type  string         `json:"type"`
-	Text  string         `json:"text"`
-	Attrs WorkspaceAttrs `json:"attrs"`
-}
-
-// WorkspaceDescription is a type of description json
-type WorkspaceDescription struct {
-	Type    string `json:"type"`
-	Content WorkspaceContent
-}
-
 // Fields of the Workspace.
 func (WorkspaceMixin) Fields() []ent.Field {
 	return []ent.Field{
@@ -52,7 +34,7 @@ func (WorkspaceMixin) Fields() []ent.Field {
 		field.String("name").
 			NotEmpty().
 			MaxLen(255),
-		field.JSON("description", WorkspaceDescription{}),
+		field.JSON("description", editor.Description{}),
 	}
 }
 
