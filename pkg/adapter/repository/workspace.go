@@ -19,12 +19,6 @@ func NewWorkspaceRepository(client *ent.Client) ur.Workspace {
 func (r *workspaceRepository) Get(ctx context.Context, where *model.WorkspaceWhereInput) (*model.Workspace, error) {
 	q := r.client.Workspace.Query()
 
-	//if id == "" {
-	//	return nil, model.NewInvalidParamError(map[string]interface{}{
-	//		"id": id,
-	//	})
-	//}
-
 	q, err := where.Filter(q)
 	if err != nil {
 		p, _ := where.P()
