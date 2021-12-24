@@ -73,11 +73,11 @@ func (r *subscriptionResolver) WorkspaceUpdated(ctx context.Context, id ulid.ID)
 	return ch, nil
 }
 
-func (r *workspaceResolver) CreatedAt(_ context.Context, obj *ent.Workspace) (string, error) {
+func (r *workspaceResolver) CreatedAt(ctx context.Context, obj *ent.Workspace) (string, error) {
 	return datetime.FormatDate(obj.CreatedAt), nil
 }
 
-func (r *workspaceResolver) UpdatedAt(_ context.Context, obj *ent.Workspace) (string, error) {
+func (r *workspaceResolver) UpdatedAt(ctx context.Context, obj *ent.Workspace) (string, error) {
 	return datetime.FormatDate(obj.UpdatedAt), nil
 }
 

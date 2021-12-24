@@ -22,14 +22,14 @@ type Content struct {
 
 // DescriptionContent is a content
 type DescriptionContent struct {
-	Type    string `json:"type"`
-	Content []Content
+	Type    string    `json:"type"`
+	Content []Content `json:"content"`
 }
 
 // Description is a json type of description
 type Description struct {
-	Type    string `json:"type"`
-	Content []DescriptionContent
+	Type    string               `json:"type"`
+	Content []DescriptionContent `json:"content"`
 }
 
 // UnmarshalGQL implements the graphql.Unmarshaller interface.
