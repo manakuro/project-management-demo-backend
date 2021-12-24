@@ -29,7 +29,7 @@ input UpdateWorkspaceInput {
 }
 
 extend type Query {
-  workspace(id: ID!): Workspace
+  workspace(where: WorkspaceWhereInput): Workspace
   workspaces(after: Cursor, first: Int, before: Cursor, last: Int, where: WorkspaceWhereInput): WorkspaceConnection
 }
 

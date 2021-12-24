@@ -3,7 +3,6 @@ package repository
 import (
 	"context"
 	"project-management-demo-backend/ent"
-	"project-management-demo-backend/ent/workspace"
 	"project-management-demo-backend/pkg/entity/model"
 	ur "project-management-demo-backend/pkg/usecase/repository"
 )
@@ -17,23 +16,27 @@ func NewWorkspaceRepository(client *ent.Client) ur.Workspace {
 	return &workspaceRepository{client: client}
 }
 
-func (r *workspaceRepository) Get(ctx context.Context, id model.ID) (*model.Workspace, error) {
+func (r *workspaceRepository) Get(ctx context.Context, where *model.WorkspaceWhereInput) (*model.Workspace, error) {
 	q := r.client.Workspace.Query()
 
-	if id == "" {
-		return nil, model.NewInvalidParamError(map[string]interface{}{
-			"id": id,
-		})
+	//if id == "" {
+	//	return nil, model.NewInvalidParamError(map[string]interface{}{
+	//		"id": id,
+	//	})
+	//}
+
+	q, err := where.Filter(q)
+	if err != nil {
+		p, _ := where.P()
+		return nil, model.NewInvalidParamError(p)
 	}
-	q.Where(workspace.IDEQ(id))
 
 	u, err := q.Only(ctx)
 
 	if err != nil {
 		if ent.IsNotSingular(err) {
-			return nil, model.NewNotFoundError(err, map[string]interface{}{
-				"id": id,
-			})
+			p, _ := where.P()
+			return nil, model.NewNotFoundError(err, p)
 		}
 		if ent.IsNotFound(err) {
 			return nil, nil

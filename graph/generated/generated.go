@@ -104,7 +104,7 @@ type ComplexityRoot struct {
 		TestTodos  func(childComplexity int) int
 		TestUser   func(childComplexity int, id ulid.ID, age *int) int
 		TestUsers  func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TestUserWhereInput) int
-		Workspace  func(childComplexity int, id ulid.ID) int
+		Workspace  func(childComplexity int, where *ent.WorkspaceWhereInput) int
 		Workspaces func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.WorkspaceWhereInput) int
 	}
 
@@ -223,7 +223,7 @@ type QueryResolver interface {
 	TestTodos(ctx context.Context) ([]*ent.TestTodo, error)
 	TestUser(ctx context.Context, id ulid.ID, age *int) (*ent.TestUser, error)
 	TestUsers(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TestUserWhereInput) (*ent.TestUserConnection, error)
-	Workspace(ctx context.Context, id ulid.ID) (*ent.Workspace, error)
+	Workspace(ctx context.Context, where *ent.WorkspaceWhereInput) (*ent.Workspace, error)
 	Workspaces(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.WorkspaceWhereInput) (*ent.WorkspaceConnection, error)
 }
 type SubscriptionResolver interface {
@@ -563,7 +563,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Query.Workspace(childComplexity, args["id"].(ulid.ID)), true
+		return e.complexity.Query.Workspace(childComplexity, args["where"].(*ent.WorkspaceWhereInput)), true
 
 	case "Query.workspaces":
 		if e.complexity.Query.Workspaces == nil {
@@ -1608,7 +1608,7 @@ input UpdateWorkspaceInput {
 }
 
 extend type Query {
-  workspace(id: ID!): Workspace
+  workspace(where: WorkspaceWhereInput): Workspace
   workspaces(after: Cursor, first: Int, before: Cursor, last: Int, where: WorkspaceWhereInput): WorkspaceConnection
 }
 
@@ -1967,15 +1967,15 @@ func (ec *executionContext) field_Query_testUsers_args(ctx context.Context, rawA
 func (ec *executionContext) field_Query_workspace_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 ulid.ID
-	if tmp, ok := rawArgs["id"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-		arg0, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, tmp)
+	var arg0 *ent.WorkspaceWhereInput
+	if tmp, ok := rawArgs["where"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
+		arg0, err = ec.unmarshalOWorkspaceWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐWorkspaceWhereInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["id"] = arg0
+	args["where"] = arg0
 	return args, nil
 }
 
@@ -3255,7 +3255,7 @@ func (ec *executionContext) _Query_workspace(ctx context.Context, field graphql.
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Workspace(rctx, args["id"].(ulid.ID))
+		return ec.resolvers.Query().Workspace(rctx, args["where"].(*ent.WorkspaceWhereInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)

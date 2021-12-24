@@ -8,7 +8,7 @@ import (
 
 // Workspace is an interface of controller
 type Workspace interface {
-	Get(ctx context.Context, id model.ID) (*model.Workspace, error)
+	Get(ctx context.Context, where *model.WorkspaceWhereInput) (*model.Workspace, error)
 	List(ctx context.Context) ([]*model.Workspace, error)
 	ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.WorkspaceWhereInput) (*model.WorkspaceConnection, error)
 	Create(ctx context.Context, input model.CreateWorkspaceInput) (*model.Workspace, error)
@@ -26,8 +26,8 @@ func NewWorkspaceController(tu usecase.Workspace) Workspace {
 	}
 }
 
-func (t *workspace) Get(ctx context.Context, id model.ID) (*model.Workspace, error) {
-	return t.workspaceUsecase.Get(ctx, id)
+func (t *workspace) Get(ctx context.Context, where *model.WorkspaceWhereInput) (*model.Workspace, error) {
+	return t.workspaceUsecase.Get(ctx, where)
 }
 
 func (t *workspace) List(ctx context.Context) ([]*model.Workspace, error) {

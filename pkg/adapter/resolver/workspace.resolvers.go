@@ -36,8 +36,8 @@ func (r *mutationResolver) UpdateWorkspace(ctx context.Context, input ent.Update
 	return u, nil
 }
 
-func (r *queryResolver) Workspace(ctx context.Context, id ulid.ID) (*ent.Workspace, error) {
-	u, err := r.controller.Workspace.Get(ctx, id)
+func (r *queryResolver) Workspace(ctx context.Context, where *ent.WorkspaceWhereInput) (*ent.Workspace, error) {
+	u, err := r.controller.Workspace.Get(ctx, where)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
