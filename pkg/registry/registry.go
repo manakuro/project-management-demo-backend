@@ -23,9 +23,10 @@ func New(client *ent.Client) Registry {
 
 func (r *registry) NewController() controller.Controller {
 	return controller.Controller{
-		TestUser: r.NewTestUserController(),
-		TestTodo: r.NewTestTodoController(),
-		Auth:     r.NewAuthController(),
-		Teammate: r.NewTeammateController(),
+		TestUser:  r.NewTestUserController(),
+		TestTodo:  r.NewTestTodoController(),
+		Auth:      r.NewAuthController(),
+		Teammate:  r.NewTeammateController(),
+		Workspace: r.NewWorkspaceController(),
 	}
 }
