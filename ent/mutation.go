@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"project-management-demo-backend/ent/predicate"
 	"project-management-demo-backend/ent/schema"
+	"project-management-demo-backend/ent/schema/testuserprofile"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/testtodo"
@@ -1306,6 +1307,7 @@ type TestUserMutation struct {
 	name              *string
 	age               *int
 	addage            *int
+	profile           *testuserprofile.TestUserProfile
 	created_at        *time.Time
 	updated_at        *time.Time
 	clearedFields     map[string]struct{}
@@ -1494,6 +1496,42 @@ func (m *TestUserMutation) ResetAge() {
 	m.addage = nil
 }
 
+// SetProfile sets the "profile" field.
+func (m *TestUserMutation) SetProfile(tup testuserprofile.TestUserProfile) {
+	m.profile = &tup
+}
+
+// Profile returns the value of the "profile" field in the mutation.
+func (m *TestUserMutation) Profile() (r testuserprofile.TestUserProfile, exists bool) {
+	v := m.profile
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldProfile returns the old "profile" field's value of the TestUser entity.
+// If the TestUser object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TestUserMutation) OldProfile(ctx context.Context) (v testuserprofile.TestUserProfile, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldProfile is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldProfile requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldProfile: %w", err)
+	}
+	return oldValue.Profile, nil
+}
+
+// ResetProfile resets all changes to the "profile" field.
+func (m *TestUserMutation) ResetProfile() {
+	m.profile = nil
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (m *TestUserMutation) SetCreatedAt(t time.Time) {
 	m.created_at = &t
@@ -1639,12 +1677,15 @@ func (m *TestUserMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *TestUserMutation) Fields() []string {
-	fields := make([]string, 0, 4)
+	fields := make([]string, 0, 5)
 	if m.name != nil {
 		fields = append(fields, testuser.FieldName)
 	}
 	if m.age != nil {
 		fields = append(fields, testuser.FieldAge)
+	}
+	if m.profile != nil {
+		fields = append(fields, testuser.FieldProfile)
 	}
 	if m.created_at != nil {
 		fields = append(fields, testuser.FieldCreatedAt)
@@ -1664,6 +1705,8 @@ func (m *TestUserMutation) Field(name string) (ent.Value, bool) {
 		return m.Name()
 	case testuser.FieldAge:
 		return m.Age()
+	case testuser.FieldProfile:
+		return m.Profile()
 	case testuser.FieldCreatedAt:
 		return m.CreatedAt()
 	case testuser.FieldUpdatedAt:
@@ -1681,6 +1724,8 @@ func (m *TestUserMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldName(ctx)
 	case testuser.FieldAge:
 		return m.OldAge(ctx)
+	case testuser.FieldProfile:
+		return m.OldProfile(ctx)
 	case testuser.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case testuser.FieldUpdatedAt:
@@ -1707,6 +1752,13 @@ func (m *TestUserMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetAge(v)
+		return nil
+	case testuser.FieldProfile:
+		v, ok := value.(testuserprofile.TestUserProfile)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetProfile(v)
 		return nil
 	case testuser.FieldCreatedAt:
 		v, ok := value.(time.Time)
@@ -1791,6 +1843,9 @@ func (m *TestUserMutation) ResetField(name string) error {
 		return nil
 	case testuser.FieldAge:
 		m.ResetAge()
+		return nil
+	case testuser.FieldProfile:
+		m.ResetProfile()
 		return nil
 	case testuser.FieldCreatedAt:
 		m.ResetCreatedAt()

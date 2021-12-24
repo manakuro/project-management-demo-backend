@@ -2,10 +2,17 @@ package model
 
 import (
 	"project-management-demo-backend/ent"
+	"project-management-demo-backend/ent/schema/testuserprofile"
 )
 
 // TestUser is the model entity for the TestUser schema.
 type TestUser = ent.TestUser
+
+// TestUserProfile of profile.
+type TestUserProfile = testuserprofile.TestUserProfile
+
+// TestUserProfileInput of input
+type TestUserProfileInput = testuserprofile.TestUserProfile
 
 // TestUserConnection is the connection containing edges to TestUser.
 type TestUserConnection = ent.TestUserConnection

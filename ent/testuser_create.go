@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"project-management-demo-backend/ent/schema/testuserprofile"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/ent/testuser"
@@ -31,6 +32,12 @@ func (tuc *TestUserCreate) SetName(s string) *TestUserCreate {
 // SetAge sets the "age" field.
 func (tuc *TestUserCreate) SetAge(i int) *TestUserCreate {
 	tuc.mutation.SetAge(i)
+	return tuc
+}
+
+// SetProfile sets the "profile" field.
+func (tuc *TestUserCreate) SetProfile(tup testuserprofile.TestUserProfile) *TestUserCreate {
+	tuc.mutation.SetProfile(tup)
 	return tuc
 }
 
@@ -189,6 +196,9 @@ func (tuc *TestUserCreate) check() error {
 	if _, ok := tuc.mutation.Age(); !ok {
 		return &ValidationError{Name: "age", err: errors.New(`ent: missing required field "age"`)}
 	}
+	if _, ok := tuc.mutation.Profile(); !ok {
+		return &ValidationError{Name: "profile", err: errors.New(`ent: missing required field "profile"`)}
+	}
 	if _, ok := tuc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
 	}
@@ -242,6 +252,14 @@ func (tuc *TestUserCreate) createSpec() (*TestUser, *sqlgraph.CreateSpec) {
 			Column: testuser.FieldAge,
 		})
 		_node.Age = value
+	}
+	if value, ok := tuc.mutation.Profile(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: testuser.FieldProfile,
+		})
+		_node.Profile = value
 	}
 	if value, ok := tuc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

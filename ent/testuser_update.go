@@ -6,6 +6,7 @@ import (
 	"context"
 	"fmt"
 	"project-management-demo-backend/ent/predicate"
+	"project-management-demo-backend/ent/schema/testuserprofile"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/ent/testuser"
@@ -44,6 +45,12 @@ func (tuu *TestUserUpdate) SetAge(i int) *TestUserUpdate {
 // AddAge adds i to the "age" field.
 func (tuu *TestUserUpdate) AddAge(i int) *TestUserUpdate {
 	tuu.mutation.AddAge(i)
+	return tuu
+}
+
+// SetProfile sets the "profile" field.
+func (tuu *TestUserUpdate) SetProfile(tup testuserprofile.TestUserProfile) *TestUserUpdate {
+	tuu.mutation.SetProfile(tup)
 	return tuu
 }
 
@@ -197,6 +204,13 @@ func (tuu *TestUserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: testuser.FieldAge,
 		})
 	}
+	if value, ok := tuu.mutation.Profile(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: testuser.FieldProfile,
+		})
+	}
 	if tuu.mutation.TestTodosCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -286,6 +300,12 @@ func (tuuo *TestUserUpdateOne) SetAge(i int) *TestUserUpdateOne {
 // AddAge adds i to the "age" field.
 func (tuuo *TestUserUpdateOne) AddAge(i int) *TestUserUpdateOne {
 	tuuo.mutation.AddAge(i)
+	return tuuo
+}
+
+// SetProfile sets the "profile" field.
+func (tuuo *TestUserUpdateOne) SetProfile(tup testuserprofile.TestUserProfile) *TestUserUpdateOne {
+	tuuo.mutation.SetProfile(tup)
 	return tuuo
 }
 
@@ -461,6 +481,13 @@ func (tuuo *TestUserUpdateOne) sqlSave(ctx context.Context) (_node *TestUser, er
 			Type:   field.TypeInt,
 			Value:  value,
 			Column: testuser.FieldAge,
+		})
+	}
+	if value, ok := tuuo.mutation.Profile(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: testuser.FieldProfile,
 		})
 	}
 	if tuuo.mutation.TestTodosCleared() {

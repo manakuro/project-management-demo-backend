@@ -1,8 +1,16 @@
+type TestUserProfile {
+  address: String
+}
+input TestUserProfileInput {
+  address: String
+}
+
 type TestUser implements Node {
   id: ID!
   name: String!
   age: Int!
   testTodos: [TestTodo!]!
+  profile: TestUserProfile!
   createdAt: String!
   updatedAt: String!
 }
@@ -19,6 +27,7 @@ type TestUserEdge {
 input CreateTestUserInput {
   name: String!
   age: Int!
+  profile: TestUserProfileInput!
 }
 input UpdateTestUserInput {
   id: ID!
