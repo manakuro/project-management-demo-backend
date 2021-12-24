@@ -14,3 +14,6 @@ type TestTodo func(*sql.Selector)
 
 // TestUser is the predicate function for testuser builders.
 type TestUser func(*sql.Selector)
+
+// Workspace is the predicate function for workspace builders.
+type Workspace func(*sql.Selector)

@@ -1,8 +1,39 @@
+type TestUserProfile {
+  address: String
+  phone: String
+  body: TestUserProfileBody
+}
+type TestUserProfileBody {
+  weight: Int
+  height: Int
+  comment: TestUserProfileBodyComment
+}
+type TestUserProfileBodyComment {
+  type: String
+  text: String
+}
+
+input TestUserProfileInput {
+  address: String
+  phone: String
+  body: TestUserProfileBodyInput
+}
+input TestUserProfileBodyInput {
+  weight: Int
+  height: Int
+  comment: TestUserProfileBodyCommentInput
+}
+input TestUserProfileBodyCommentInput {
+  type: String
+  text: String
+}
+
 type TestUser implements Node {
   id: ID!
   name: String!
   age: Int!
   testTodos: [TestTodo!]!
+  profile: TestUserProfile!
   createdAt: String!
   updatedAt: String!
 }
@@ -19,6 +50,7 @@ type TestUserEdge {
 input CreateTestUserInput {
   name: String!
   age: Int!
+  profile: TestUserProfileInput!
 }
 input UpdateTestUserInput {
   id: ID!

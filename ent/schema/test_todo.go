@@ -1,9 +1,12 @@
 package schema
 
 import (
+	"project-management-demo-backend/ent/annotation"
 	"project-management-demo-backend/ent/mixin"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/pkg/const/globalid"
+
+	"entgo.io/ent/schema"
 
 	"entgo.io/ent/schema/edge"
 	entMixin "entgo.io/ent/schema/mixin"
@@ -45,7 +48,11 @@ func (TestTodo) Edges() []ent.Edge {
 		edge.From("test_user", TestUser.Type).
 			Ref("test_todos").
 			Unique().
-			Field("test_user_id"),
+			Field("test_user_id").Annotations(
+			schema.Annotation(
+				annotation.Edge{FieldName: "test_user_id"},
+			),
+		),
 	}
 }
 

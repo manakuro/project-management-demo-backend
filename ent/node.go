@@ -10,6 +10,7 @@ import (
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/ent/testuser"
+	"project-management-demo-backend/ent/workspace"
 
 	"entgo.io/contrib/entgql"
 	"github.com/99designs/gqlgen/graphql"
@@ -48,7 +49,7 @@ func (t *Teammate) Node(ctx context.Context) (node *Node, err error) {
 		ID:     t.ID,
 		Type:   "Teammate",
 		Fields: make([]*Field, 5),
-		Edges:  make([]*Edge, 0),
+		Edges:  make([]*Edge, 1),
 	}
 	var buf []byte
 	if buf, err = json.Marshal(t.Name); err != nil {
@@ -90,6 +91,16 @@ func (t *Teammate) Node(ctx context.Context) (node *Node, err error) {
 		Type:  "time.Time",
 		Name:  "updated_at",
 		Value: string(buf),
+	}
+	node.Edges[0] = &Edge{
+		Type: "Workspace",
+		Name: "workspaces",
+	}
+	err = t.QueryWorkspaces().
+		Select(workspace.FieldID).
+		Scan(ctx, &node.Edges[0].IDs)
+	if err != nil {
+		return nil, err
 	}
 	return node, nil
 }
@@ -167,7 +178,7 @@ func (tu *TestUser) Node(ctx context.Context) (node *Node, err error) {
 	node = &Node{
 		ID:     tu.ID,
 		Type:   "TestUser",
-		Fields: make([]*Field, 4),
+		Fields: make([]*Field, 5),
 		Edges:  make([]*Edge, 1),
 	}
 	var buf []byte
@@ -187,10 +198,18 @@ func (tu *TestUser) Node(ctx context.Context) (node *Node, err error) {
 		Name:  "age",
 		Value: string(buf),
 	}
-	if buf, err = json.Marshal(tu.CreatedAt); err != nil {
+	if buf, err = json.Marshal(tu.Profile); err != nil {
 		return nil, err
 	}
 	node.Fields[2] = &Field{
+		Type:  "testuserprofile.TestUserProfile",
+		Name:  "profile",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(tu.CreatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[3] = &Field{
 		Type:  "time.Time",
 		Name:  "created_at",
 		Value: string(buf),
@@ -198,7 +217,7 @@ func (tu *TestUser) Node(ctx context.Context) (node *Node, err error) {
 	if buf, err = json.Marshal(tu.UpdatedAt); err != nil {
 		return nil, err
 	}
-	node.Fields[3] = &Field{
+	node.Fields[4] = &Field{
 		Type:  "time.Time",
 		Name:  "updated_at",
 		Value: string(buf),
@@ -209,6 +228,67 @@ func (tu *TestUser) Node(ctx context.Context) (node *Node, err error) {
 	}
 	err = tu.QueryTestTodos().
 		Select(testtodo.FieldID).
+		Scan(ctx, &node.Edges[0].IDs)
+	if err != nil {
+		return nil, err
+	}
+	return node, nil
+}
+
+func (w *Workspace) Node(ctx context.Context) (node *Node, err error) {
+	node = &Node{
+		ID:     w.ID,
+		Type:   "Workspace",
+		Fields: make([]*Field, 5),
+		Edges:  make([]*Edge, 1),
+	}
+	var buf []byte
+	if buf, err = json.Marshal(w.CreatedBy); err != nil {
+		return nil, err
+	}
+	node.Fields[0] = &Field{
+		Type:  "ulid.ID",
+		Name:  "created_by",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(w.Name); err != nil {
+		return nil, err
+	}
+	node.Fields[1] = &Field{
+		Type:  "string",
+		Name:  "name",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(w.Description); err != nil {
+		return nil, err
+	}
+	node.Fields[2] = &Field{
+		Type:  "editor.Description",
+		Name:  "description",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(w.CreatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[3] = &Field{
+		Type:  "time.Time",
+		Name:  "created_at",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(w.UpdatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[4] = &Field{
+		Type:  "time.Time",
+		Name:  "updated_at",
+		Value: string(buf),
+	}
+	node.Edges[0] = &Edge{
+		Type: "Teammate",
+		Name: "teammate",
+	}
+	err = w.QueryTeammate().
+		Select(teammate.FieldID).
 		Scan(ctx, &node.Edges[0].IDs)
 	if err != nil {
 		return nil, err
@@ -305,6 +385,15 @@ func (c *Client) noder(ctx context.Context, table string, id ulid.ID) (Noder, er
 		n, err := c.TestUser.Query().
 			Where(testuser.ID(id)).
 			CollectFields(ctx, "TestUser").
+			Only(ctx)
+		if err != nil {
+			return nil, err
+		}
+		return n, nil
+	case workspace.Table:
+		n, err := c.Workspace.Query().
+			Where(workspace.ID(id)).
+			CollectFields(ctx, "Workspace").
 			Only(ctx)
 		if err != nil {
 			return nil, err
@@ -413,6 +502,19 @@ func (c *Client) noders(ctx context.Context, table string, ids []ulid.ID) ([]Nod
 		nodes, err := c.TestUser.Query().
 			Where(testuser.IDIn(ids...)).
 			CollectFields(ctx, "TestUser").
+			All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, node := range nodes {
+			for _, noder := range idmap[node.ID] {
+				*noder = node
+			}
+		}
+	case workspace.Table:
+		nodes, err := c.Workspace.Query().
+			Where(workspace.IDIn(ids...)).
+			CollectFields(ctx, "Workspace").
 			All(ctx)
 		if err != nil {
 			return nil, err

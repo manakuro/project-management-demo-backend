@@ -19,10 +19,17 @@ type TeammateUpdated struct {
 	Ch chan *ent.Teammate
 }
 
+// WorkspaceUpdated of channel
+type WorkspaceUpdated struct {
+	ID ulid.ID
+	Ch chan *ent.Workspace
+}
+
 // Subscriptions hold an id and a channel of subscription.
 type Subscriptions struct {
-	TestUserUpdated map[string]TestUserUpdated
-	TeammateUpdated map[string]TeammateUpdated
+	TestUserUpdated  map[string]TestUserUpdated
+	TeammateUpdated  map[string]TeammateUpdated
+	WorkspaceUpdated map[string]WorkspaceUpdated
 }
 
 // NewKey generates a random hex string with length of 16.

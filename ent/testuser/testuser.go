@@ -16,6 +16,8 @@ const (
 	FieldName = "name"
 	// FieldAge holds the string denoting the age field in the database.
 	FieldAge = "age"
+	// FieldProfile holds the string denoting the profile field in the database.
+	FieldProfile = "profile"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
@@ -38,6 +40,7 @@ var Columns = []string{
 	FieldID,
 	FieldName,
 	FieldAge,
+	FieldProfile,
 	FieldCreatedAt,
 	FieldUpdatedAt,
 }

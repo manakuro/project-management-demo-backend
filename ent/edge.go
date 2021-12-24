@@ -4,6 +4,14 @@ package ent
 
 import "context"
 
+func (t *Teammate) Workspaces(ctx context.Context) (*Workspace, error) {
+	result, err := t.Edges.WorkspacesOrErr()
+	if IsNotLoaded(err) {
+		result, err = t.QueryWorkspaces().Only(ctx)
+	}
+	return result, MaskNotFound(err)
+}
+
 func (tt *TestTodo) TestUser(ctx context.Context) (*TestUser, error) {
 	result, err := tt.Edges.TestUserOrErr()
 	if IsNotLoaded(err) {
@@ -16,6 +24,14 @@ func (tu *TestUser) TestTodos(ctx context.Context) ([]*TestTodo, error) {
 	result, err := tu.Edges.TestTodosOrErr()
 	if IsNotLoaded(err) {
 		result, err = tu.QueryTestTodos().All(ctx)
+	}
+	return result, err
+}
+
+func (w *Workspace) Teammate(ctx context.Context) (*Teammate, error) {
+	result, err := w.Edges.TeammateOrErr()
+	if IsNotLoaded(err) {
+		result, err = w.QueryTeammate().Only(ctx)
 	}
 	return result, err
 }

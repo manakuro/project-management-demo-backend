@@ -3,7 +3,9 @@
 package ent
 
 import (
+	"encoding/json"
 	"fmt"
+	"project-management-demo-backend/ent/schema/testuserprofile"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/testuser"
 	"strings"
@@ -21,6 +23,8 @@ type TestUser struct {
 	Name string `json:"name,omitempty"`
 	// Age holds the value of the "age" field.
 	Age int `json:"age,omitempty"`
+	// Profile holds the value of the "profile" field.
+	Profile testuserprofile.TestUserProfile `json:"profile,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -53,6 +57,8 @@ func (*TestUser) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case testuser.FieldProfile:
+			values[i] = new([]byte)
 		case testuser.FieldAge:
 			values[i] = new(sql.NullInt64)
 		case testuser.FieldName:
@@ -93,6 +99,14 @@ func (tu *TestUser) assignValues(columns []string, values []interface{}) error {
 				return fmt.Errorf("unexpected type %T for field age", values[i])
 			} else if value.Valid {
 				tu.Age = int(value.Int64)
+			}
+		case testuser.FieldProfile:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field profile", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &tu.Profile); err != nil {
+					return fmt.Errorf("unmarshal field profile: %w", err)
+				}
 			}
 		case testuser.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -143,6 +157,8 @@ func (tu *TestUser) String() string {
 	builder.WriteString(tu.Name)
 	builder.WriteString(", age=")
 	builder.WriteString(fmt.Sprintf("%v", tu.Age))
+	builder.WriteString(", profile=")
+	builder.WriteString(fmt.Sprintf("%v", tu.Profile))
 	builder.WriteString(", created_at=")
 	builder.WriteString(tu.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", updated_at=")

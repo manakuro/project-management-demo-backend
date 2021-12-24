@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/teammate"
+	"project-management-demo-backend/ent/workspace"
 	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -79,6 +80,25 @@ func (tc *TeammateCreate) SetNillableID(u *ulid.ID) *TeammateCreate {
 		tc.SetID(*u)
 	}
 	return tc
+}
+
+// SetWorkspacesID sets the "workspaces" edge to the Workspace entity by ID.
+func (tc *TeammateCreate) SetWorkspacesID(id ulid.ID) *TeammateCreate {
+	tc.mutation.SetWorkspacesID(id)
+	return tc
+}
+
+// SetNillableWorkspacesID sets the "workspaces" edge to the Workspace entity by ID if the given value is not nil.
+func (tc *TeammateCreate) SetNillableWorkspacesID(id *ulid.ID) *TeammateCreate {
+	if id != nil {
+		tc = tc.SetWorkspacesID(*id)
+	}
+	return tc
+}
+
+// SetWorkspaces sets the "workspaces" edge to the Workspace entity.
+func (tc *TeammateCreate) SetWorkspaces(w *Workspace) *TeammateCreate {
+	return tc.SetWorkspacesID(w.ID)
 }
 
 // Mutation returns the TeammateMutation object of the builder.
@@ -269,6 +289,25 @@ func (tc *TeammateCreate) createSpec() (*Teammate, *sqlgraph.CreateSpec) {
 			Column: teammate.FieldUpdatedAt,
 		})
 		_node.UpdatedAt = value
+	}
+	if nodes := tc.mutation.WorkspacesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   teammate.WorkspacesTable,
+			Columns: []string{teammate.WorkspacesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: workspace.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }
