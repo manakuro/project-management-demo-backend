@@ -4,7 +4,7 @@ type EditorDescription {
 }
 type EditorDescriptionContent {
     type: String
-    content: [EditorDescriptionContentContent]!
+    content: [EditorDescriptionContentContent]
 }
 type EditorDescriptionContentContent {
     type: String
@@ -18,11 +18,11 @@ type EditorDescriptionContentContentAttrs {
 
 input EditorDescriptionInput {
     type: String
-    content: [EditorDescriptionContentInput]!
+    content: [EditorDescriptionContentInput]
 }
 input EditorDescriptionContentInput {
     type: String
-    content: [EditorDescriptionContentContentInput]!
+    content: [EditorDescriptionContentContentInput]
 }
 input EditorDescriptionContentContentInput {
     type: String

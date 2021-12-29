@@ -1043,7 +1043,7 @@ var sources = []*ast.Source{
 }
 type EditorDescriptionContent {
     type: String
-    content: [EditorDescriptionContentContent]!
+    content: [EditorDescriptionContentContent]
 }
 type EditorDescriptionContentContent {
     type: String
@@ -1057,11 +1057,11 @@ type EditorDescriptionContentContentAttrs {
 
 input EditorDescriptionInput {
     type: String
-    content: [EditorDescriptionContentInput]!
+    content: [EditorDescriptionContentInput]
 }
 input EditorDescriptionContentInput {
     type: String
-    content: [EditorDescriptionContentContentInput]!
+    content: [EditorDescriptionContentContentInput]
 }
 input EditorDescriptionContentContentInput {
     type: String
@@ -2237,14 +2237,11 @@ func (ec *executionContext) _EditorDescriptionContent_content(ctx context.Contex
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
 	res := resTmp.([]editor.Content)
 	fc.Result = res
-	return ec.marshalNEditorDescriptionContentContent2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋeditorᚐContent(ctx, field.Selections, res)
+	return ec.marshalOEditorDescriptionContentContent2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋeditorᚐContent(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _EditorDescriptionContentContent_type(ctx context.Context, field graphql.CollectedField, obj *editor.Content) (ret graphql.Marshaler) {
@@ -6586,7 +6583,7 @@ func (ec *executionContext) unmarshalInputEditorDescriptionContentInput(ctx cont
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("content"))
-			it.Content, err = ec.unmarshalNEditorDescriptionContentContentInput2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋeditorᚐContent(ctx, v)
+			it.Content, err = ec.unmarshalOEditorDescriptionContentContentInput2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋeditorᚐContent(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -8926,9 +8923,6 @@ func (ec *executionContext) _EditorDescriptionContent(ctx context.Context, sel a
 			out.Values[i] = ec._EditorDescriptionContent_type(ctx, field, obj)
 		case "content":
 			out.Values[i] = ec._EditorDescriptionContent_content(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -10175,86 +10169,6 @@ func (ec *executionContext) marshalNEditorDescriptionContent2ᚕprojectᚑmanage
 	return ret
 }
 
-func (ec *executionContext) marshalNEditorDescriptionContentContent2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋeditorᚐContent(ctx context.Context, sel ast.SelectionSet, v []editor.Content) graphql.Marshaler {
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalOEditorDescriptionContentContent2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋeditorᚐContent(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
-
-	return ret
-}
-
-func (ec *executionContext) unmarshalNEditorDescriptionContentContentInput2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋeditorᚐContent(ctx context.Context, v interface{}) ([]editor.Content, error) {
-	var vSlice []interface{}
-	if v != nil {
-		if tmp1, ok := v.([]interface{}); ok {
-			vSlice = tmp1
-		} else {
-			vSlice = []interface{}{v}
-		}
-	}
-	var err error
-	res := make([]editor.Content, len(vSlice))
-	for i := range vSlice {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
-		res[i], err = ec.unmarshalOEditorDescriptionContentContentInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋeditorᚐContent(ctx, vSlice[i])
-		if err != nil {
-			return nil, err
-		}
-	}
-	return res, nil
-}
-
-func (ec *executionContext) unmarshalNEditorDescriptionContentInput2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋeditorᚐDescriptionContent(ctx context.Context, v interface{}) ([]editor.DescriptionContent, error) {
-	var vSlice []interface{}
-	if v != nil {
-		if tmp1, ok := v.([]interface{}); ok {
-			vSlice = tmp1
-		} else {
-			vSlice = []interface{}{v}
-		}
-	}
-	var err error
-	res := make([]editor.DescriptionContent, len(vSlice))
-	for i := range vSlice {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
-		res[i], err = ec.unmarshalOEditorDescriptionContentInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋeditorᚐDescriptionContent(ctx, vSlice[i])
-		if err != nil {
-			return nil, err
-		}
-	}
-	return res, nil
-}
-
 func (ec *executionContext) unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx context.Context, v interface{}) (ulid.ID, error) {
 	var res ulid.ID
 	err := res.UnmarshalGQL(v)
@@ -10911,6 +10825,47 @@ func (ec *executionContext) marshalOEditorDescriptionContentContent2projectᚑma
 	return ec._EditorDescriptionContentContent(ctx, sel, &v)
 }
 
+func (ec *executionContext) marshalOEditorDescriptionContentContent2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋeditorᚐContent(ctx context.Context, sel ast.SelectionSet, v []editor.Content) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalOEditorDescriptionContentContent2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋeditorᚐContent(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	return ret
+}
+
 func (ec *executionContext) marshalOEditorDescriptionContentContentAttrs2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋeditorᚐAttrs(ctx context.Context, sel ast.SelectionSet, v editor.Attrs) graphql.Marshaler {
 	return ec._EditorDescriptionContentContentAttrs(ctx, sel, &v)
 }
@@ -10925,9 +10880,57 @@ func (ec *executionContext) unmarshalOEditorDescriptionContentContentInput2proje
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
+func (ec *executionContext) unmarshalOEditorDescriptionContentContentInput2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋeditorᚐContent(ctx context.Context, v interface{}) ([]editor.Content, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var vSlice []interface{}
+	if v != nil {
+		if tmp1, ok := v.([]interface{}); ok {
+			vSlice = tmp1
+		} else {
+			vSlice = []interface{}{v}
+		}
+	}
+	var err error
+	res := make([]editor.Content, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalOEditorDescriptionContentContentInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋeditorᚐContent(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
 func (ec *executionContext) unmarshalOEditorDescriptionContentInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋeditorᚐDescriptionContent(ctx context.Context, v interface{}) (editor.DescriptionContent, error) {
 	res, err := ec.unmarshalInputEditorDescriptionContentInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalOEditorDescriptionContentInput2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋeditorᚐDescriptionContent(ctx context.Context, v interface{}) ([]editor.DescriptionContent, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var vSlice []interface{}
+	if v != nil {
+		if tmp1, ok := v.([]interface{}); ok {
+			vSlice = tmp1
+		} else {
+			vSlice = []interface{}{v}
+		}
+	}
+	var err error
+	res := make([]editor.DescriptionContent, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalOEditorDescriptionContentInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋeditorᚐDescriptionContent(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
 }
 
 func (ec *executionContext) unmarshalOEditorDescriptionInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋeditorᚐDescription(ctx context.Context, v interface{}) (editor.Description, error) {
