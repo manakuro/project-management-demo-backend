@@ -30,8 +30,9 @@ func NewSchema(client *ent.Client, controller controller.Controller) graphql.Exe
 			client:     client,
 			controller: controller,
 			subscriptions: &subscription.Subscriptions{
-				TestUserUpdated: map[string]subscription.TestUserUpdated{},
-				TeammateUpdated: map[string]subscription.TeammateUpdated{},
+				TestUserUpdated:  map[string]subscription.TestUserUpdated{},
+				TeammateUpdated:  map[string]subscription.TeammateUpdated{},
+				WorkspaceUpdated: map[string]subscription.WorkspaceUpdated{},
 			},
 			mutex: sync.Mutex{},
 		},
