@@ -361,6 +361,21 @@ input ColorWhereInput {
   colorEqualFold: String
   colorContainsFold: String
   
+  """hex field predicates"""
+  hex: String
+  hexNEQ: String
+  hexIn: [String!]
+  hexNotIn: [String!]
+  hexGT: String
+  hexGTE: String
+  hexLT: String
+  hexLTE: String
+  hexContains: String
+  hexHasPrefix: String
+  hexHasSuffix: String
+  hexEqualFold: String
+  hexContainsFold: String
+  
   """created_at field predicates"""
   createdAt: Time
   createdAtNEQ: Time
