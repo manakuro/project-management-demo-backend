@@ -14,6 +14,7 @@ import (
 type CreateColorInput struct {
 	Name      string
 	Color     string
+	Hex       string
 	CreatedAt *time.Time
 	UpdatedAt *time.Time
 }
@@ -22,6 +23,7 @@ type CreateColorInput struct {
 func (i *CreateColorInput) Mutate(m *ColorCreate) {
 	m.SetName(i.Name)
 	m.SetColor(i.Color)
+	m.SetHex(i.Hex)
 	if v := i.CreatedAt; v != nil {
 		m.SetCreatedAt(*v)
 	}
@@ -41,6 +43,7 @@ type UpdateColorInput struct {
 	ID    ulid.ID
 	Name  *string
 	Color *string
+	Hex   *string
 }
 
 // Mutate applies the UpdateColorInput on the ColorMutation.
@@ -50,6 +53,9 @@ func (i *UpdateColorInput) Mutate(m *ColorMutation) {
 	}
 	if v := i.Color; v != nil {
 		m.SetColor(*v)
+	}
+	if v := i.Hex; v != nil {
+		m.SetHex(*v)
 	}
 }
 

@@ -28,6 +28,9 @@ func (ColorMixin) Fields() []ent.Field {
 		field.String("color").
 			NotEmpty().
 			MaxLen(255),
+		field.String("hex").
+			NotEmpty().
+			MaxLen(255),
 	}
 }
 

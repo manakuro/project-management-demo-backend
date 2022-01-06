@@ -62,6 +62,24 @@ func init() {
 			return nil
 		}
 	}()
+	// colorDescHex is the schema descriptor for hex field.
+	colorDescHex := colorMixinFields1[2].Descriptor()
+	// color.HexValidator is a validator for the "hex" field. It is called by the builders before save.
+	color.HexValidator = func() func(string) error {
+		validators := colorDescHex.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(hex string) error {
+			for _, fn := range fns {
+				if err := fn(hex); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
 	// colorDescCreatedAt is the schema descriptor for created_at field.
 	colorDescCreatedAt := colorMixinFields2[0].Descriptor()
 	// color.DefaultCreatedAt holds the default value on creation for the created_at field.

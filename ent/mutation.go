@@ -44,6 +44,7 @@ type ColorMutation struct {
 	id            *ulid.ID
 	name          *string
 	color         *string
+	hex           *string
 	created_at    *time.Time
 	updated_at    *time.Time
 	clearedFields map[string]struct{}
@@ -209,6 +210,42 @@ func (m *ColorMutation) ResetColor() {
 	m.color = nil
 }
 
+// SetHex sets the "hex" field.
+func (m *ColorMutation) SetHex(s string) {
+	m.hex = &s
+}
+
+// Hex returns the value of the "hex" field in the mutation.
+func (m *ColorMutation) Hex() (r string, exists bool) {
+	v := m.hex
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldHex returns the old "hex" field's value of the Color entity.
+// If the Color object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ColorMutation) OldHex(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldHex is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldHex requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldHex: %w", err)
+	}
+	return oldValue.Hex, nil
+}
+
+// ResetHex resets all changes to the "hex" field.
+func (m *ColorMutation) ResetHex() {
+	m.hex = nil
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (m *ColorMutation) SetCreatedAt(t time.Time) {
 	m.created_at = &t
@@ -300,12 +337,15 @@ func (m *ColorMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ColorMutation) Fields() []string {
-	fields := make([]string, 0, 4)
+	fields := make([]string, 0, 5)
 	if m.name != nil {
 		fields = append(fields, color.FieldName)
 	}
 	if m.color != nil {
 		fields = append(fields, color.FieldColor)
+	}
+	if m.hex != nil {
+		fields = append(fields, color.FieldHex)
 	}
 	if m.created_at != nil {
 		fields = append(fields, color.FieldCreatedAt)
@@ -325,6 +365,8 @@ func (m *ColorMutation) Field(name string) (ent.Value, bool) {
 		return m.Name()
 	case color.FieldColor:
 		return m.Color()
+	case color.FieldHex:
+		return m.Hex()
 	case color.FieldCreatedAt:
 		return m.CreatedAt()
 	case color.FieldUpdatedAt:
@@ -342,6 +384,8 @@ func (m *ColorMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldName(ctx)
 	case color.FieldColor:
 		return m.OldColor(ctx)
+	case color.FieldHex:
+		return m.OldHex(ctx)
 	case color.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case color.FieldUpdatedAt:
@@ -368,6 +412,13 @@ func (m *ColorMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetColor(v)
+		return nil
+	case color.FieldHex:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetHex(v)
 		return nil
 	case color.FieldCreatedAt:
 		v, ok := value.(time.Time)
@@ -437,6 +488,9 @@ func (m *ColorMutation) ResetField(name string) error {
 		return nil
 	case color.FieldColor:
 		m.ResetColor()
+		return nil
+	case color.FieldHex:
+		m.ResetHex()
 		return nil
 	case color.FieldCreatedAt:
 		m.ResetCreatedAt()

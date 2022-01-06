@@ -33,6 +33,12 @@ func (cc *ColorCreate) SetColor(s string) *ColorCreate {
 	return cc
 }
 
+// SetHex sets the "hex" field.
+func (cc *ColorCreate) SetHex(s string) *ColorCreate {
+	cc.mutation.SetHex(s)
+	return cc
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (cc *ColorCreate) SetCreatedAt(t time.Time) *ColorCreate {
 	cc.mutation.SetCreatedAt(t)
@@ -178,6 +184,14 @@ func (cc *ColorCreate) check() error {
 			return &ValidationError{Name: "color", err: fmt.Errorf(`ent: validator failed for field "color": %w`, err)}
 		}
 	}
+	if _, ok := cc.mutation.Hex(); !ok {
+		return &ValidationError{Name: "hex", err: errors.New(`ent: missing required field "hex"`)}
+	}
+	if v, ok := cc.mutation.Hex(); ok {
+		if err := color.HexValidator(v); err != nil {
+			return &ValidationError{Name: "hex", err: fmt.Errorf(`ent: validator failed for field "hex": %w`, err)}
+		}
+	}
 	if _, ok := cc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
 	}
@@ -231,6 +245,14 @@ func (cc *ColorCreate) createSpec() (*Color, *sqlgraph.CreateSpec) {
 			Column: color.FieldColor,
 		})
 		_node.Color = value
+	}
+	if value, ok := cc.mutation.Hex(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: color.FieldHex,
+		})
+		_node.Hex = value
 	}
 	if value, ok := cc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

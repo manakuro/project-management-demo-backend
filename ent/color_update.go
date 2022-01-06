@@ -38,6 +38,12 @@ func (cu *ColorUpdate) SetColor(s string) *ColorUpdate {
 	return cu
 }
 
+// SetHex sets the "hex" field.
+func (cu *ColorUpdate) SetHex(s string) *ColorUpdate {
+	cu.mutation.SetHex(s)
+	return cu
+}
+
 // Mutation returns the ColorMutation object of the builder.
 func (cu *ColorUpdate) Mutation() *ColorMutation {
 	return cu.mutation
@@ -115,6 +121,11 @@ func (cu *ColorUpdate) check() error {
 			return &ValidationError{Name: "color", err: fmt.Errorf("ent: validator failed for field \"color\": %w", err)}
 		}
 	}
+	if v, ok := cu.mutation.Hex(); ok {
+		if err := color.HexValidator(v); err != nil {
+			return &ValidationError{Name: "hex", err: fmt.Errorf("ent: validator failed for field \"hex\": %w", err)}
+		}
+	}
 	return nil
 }
 
@@ -150,6 +161,13 @@ func (cu *ColorUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: color.FieldColor,
 		})
 	}
+	if value, ok := cu.mutation.Hex(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: color.FieldHex,
+		})
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, cu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{color.Label}
@@ -178,6 +196,12 @@ func (cuo *ColorUpdateOne) SetName(s string) *ColorUpdateOne {
 // SetColor sets the "color" field.
 func (cuo *ColorUpdateOne) SetColor(s string) *ColorUpdateOne {
 	cuo.mutation.SetColor(s)
+	return cuo
+}
+
+// SetHex sets the "hex" field.
+func (cuo *ColorUpdateOne) SetHex(s string) *ColorUpdateOne {
+	cuo.mutation.SetHex(s)
 	return cuo
 }
 
@@ -265,6 +289,11 @@ func (cuo *ColorUpdateOne) check() error {
 			return &ValidationError{Name: "color", err: fmt.Errorf("ent: validator failed for field \"color\": %w", err)}
 		}
 	}
+	if v, ok := cuo.mutation.Hex(); ok {
+		if err := color.HexValidator(v); err != nil {
+			return &ValidationError{Name: "hex", err: fmt.Errorf("ent: validator failed for field \"hex\": %w", err)}
+		}
+	}
 	return nil
 }
 
@@ -315,6 +344,13 @@ func (cuo *ColorUpdateOne) sqlSave(ctx context.Context) (_node *Color, err error
 			Type:   field.TypeString,
 			Value:  value,
 			Column: color.FieldColor,
+		})
+	}
+	if value, ok := cuo.mutation.Hex(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: color.FieldHex,
 		})
 	}
 	_node = &Color{config: cuo.config}

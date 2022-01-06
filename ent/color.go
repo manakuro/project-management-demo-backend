@@ -21,6 +21,8 @@ type Color struct {
 	Name string `json:"name,omitempty"`
 	// Color holds the value of the "color" field.
 	Color string `json:"color,omitempty"`
+	// Hex holds the value of the "hex" field.
+	Hex string `json:"hex,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -32,7 +34,7 @@ func (*Color) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case color.FieldName, color.FieldColor:
+		case color.FieldName, color.FieldColor, color.FieldHex:
 			values[i] = new(sql.NullString)
 		case color.FieldCreatedAt, color.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -70,6 +72,12 @@ func (c *Color) assignValues(columns []string, values []interface{}) error {
 				return fmt.Errorf("unexpected type %T for field color", values[i])
 			} else if value.Valid {
 				c.Color = value.String
+			}
+		case color.FieldHex:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field hex", values[i])
+			} else if value.Valid {
+				c.Hex = value.String
 			}
 		case color.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -115,6 +123,8 @@ func (c *Color) String() string {
 	builder.WriteString(c.Name)
 	builder.WriteString(", color=")
 	builder.WriteString(c.Color)
+	builder.WriteString(", hex=")
+	builder.WriteString(c.Hex)
 	builder.WriteString(", created_at=")
 	builder.WriteString(c.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", updated_at=")

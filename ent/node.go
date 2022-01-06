@@ -49,7 +49,7 @@ func (c *Color) Node(ctx context.Context) (node *Node, err error) {
 	node = &Node{
 		ID:     c.ID,
 		Type:   "Color",
-		Fields: make([]*Field, 4),
+		Fields: make([]*Field, 5),
 		Edges:  make([]*Edge, 0),
 	}
 	var buf []byte
@@ -69,10 +69,18 @@ func (c *Color) Node(ctx context.Context) (node *Node, err error) {
 		Name:  "color",
 		Value: string(buf),
 	}
-	if buf, err = json.Marshal(c.CreatedAt); err != nil {
+	if buf, err = json.Marshal(c.Hex); err != nil {
 		return nil, err
 	}
 	node.Fields[2] = &Field{
+		Type:  "string",
+		Name:  "hex",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(c.CreatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[3] = &Field{
 		Type:  "time.Time",
 		Name:  "created_at",
 		Value: string(buf),
@@ -80,7 +88,7 @@ func (c *Color) Node(ctx context.Context) (node *Node, err error) {
 	if buf, err = json.Marshal(c.UpdatedAt); err != nil {
 		return nil, err
 	}
-	node.Fields[3] = &Field{
+	node.Fields[4] = &Field{
 		Type:  "time.Time",
 		Name:  "updated_at",
 		Value: string(buf),

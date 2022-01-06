@@ -13,6 +13,7 @@ var (
 		{Name: "id", Type: field.TypeString},
 		{Name: "name", Type: field.TypeString, Size: 255},
 		{Name: "color", Type: field.TypeString, Size: 255},
+		{Name: "hex", Type: field.TypeString, Size: 255},
 		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
 		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
 	}

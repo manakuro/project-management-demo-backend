@@ -107,6 +107,13 @@ func Color(v string) predicate.Color {
 	})
 }
 
+// Hex applies equality check predicate on the "hex" field. It's identical to HexEQ.
+func Hex(v string) predicate.Color {
+	return predicate.Color(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldHex), v))
+	})
+}
+
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.Color {
 	return predicate.Color(func(s *sql.Selector) {
@@ -340,6 +347,117 @@ func ColorEqualFold(v string) predicate.Color {
 func ColorContainsFold(v string) predicate.Color {
 	return predicate.Color(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldColor), v))
+	})
+}
+
+// HexEQ applies the EQ predicate on the "hex" field.
+func HexEQ(v string) predicate.Color {
+	return predicate.Color(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldHex), v))
+	})
+}
+
+// HexNEQ applies the NEQ predicate on the "hex" field.
+func HexNEQ(v string) predicate.Color {
+	return predicate.Color(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldHex), v))
+	})
+}
+
+// HexIn applies the In predicate on the "hex" field.
+func HexIn(vs ...string) predicate.Color {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Color(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldHex), v...))
+	})
+}
+
+// HexNotIn applies the NotIn predicate on the "hex" field.
+func HexNotIn(vs ...string) predicate.Color {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Color(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldHex), v...))
+	})
+}
+
+// HexGT applies the GT predicate on the "hex" field.
+func HexGT(v string) predicate.Color {
+	return predicate.Color(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldHex), v))
+	})
+}
+
+// HexGTE applies the GTE predicate on the "hex" field.
+func HexGTE(v string) predicate.Color {
+	return predicate.Color(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldHex), v))
+	})
+}
+
+// HexLT applies the LT predicate on the "hex" field.
+func HexLT(v string) predicate.Color {
+	return predicate.Color(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldHex), v))
+	})
+}
+
+// HexLTE applies the LTE predicate on the "hex" field.
+func HexLTE(v string) predicate.Color {
+	return predicate.Color(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldHex), v))
+	})
+}
+
+// HexContains applies the Contains predicate on the "hex" field.
+func HexContains(v string) predicate.Color {
+	return predicate.Color(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldHex), v))
+	})
+}
+
+// HexHasPrefix applies the HasPrefix predicate on the "hex" field.
+func HexHasPrefix(v string) predicate.Color {
+	return predicate.Color(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldHex), v))
+	})
+}
+
+// HexHasSuffix applies the HasSuffix predicate on the "hex" field.
+func HexHasSuffix(v string) predicate.Color {
+	return predicate.Color(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldHex), v))
+	})
+}
+
+// HexEqualFold applies the EqualFold predicate on the "hex" field.
+func HexEqualFold(v string) predicate.Color {
+	return predicate.Color(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldHex), v))
+	})
+}
+
+// HexContainsFold applies the ContainsFold predicate on the "hex" field.
+func HexContainsFold(v string) predicate.Color {
+	return predicate.Color(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldHex), v))
 	})
 }
 

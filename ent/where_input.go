@@ -60,6 +60,21 @@ type ColorWhereInput struct {
 	ColorEqualFold    *string  `json:"colorEqualFold,omitempty"`
 	ColorContainsFold *string  `json:"colorContainsFold,omitempty"`
 
+	// "hex" field predicates.
+	Hex             *string  `json:"hex,omitempty"`
+	HexNEQ          *string  `json:"hexNEQ,omitempty"`
+	HexIn           []string `json:"hexIn,omitempty"`
+	HexNotIn        []string `json:"hexNotIn,omitempty"`
+	HexGT           *string  `json:"hexGT,omitempty"`
+	HexGTE          *string  `json:"hexGTE,omitempty"`
+	HexLT           *string  `json:"hexLT,omitempty"`
+	HexLTE          *string  `json:"hexLTE,omitempty"`
+	HexContains     *string  `json:"hexContains,omitempty"`
+	HexHasPrefix    *string  `json:"hexHasPrefix,omitempty"`
+	HexHasSuffix    *string  `json:"hexHasSuffix,omitempty"`
+	HexEqualFold    *string  `json:"hexEqualFold,omitempty"`
+	HexContainsFold *string  `json:"hexContainsFold,omitempty"`
+
 	// "created_at" field predicates.
 	CreatedAt      *time.Time  `json:"createdAt,omitempty"`
 	CreatedAtNEQ   *time.Time  `json:"createdAtNEQ,omitempty"`
@@ -241,6 +256,45 @@ func (i *ColorWhereInput) P() (predicate.Color, error) {
 	}
 	if i.ColorContainsFold != nil {
 		predicates = append(predicates, color.ColorContainsFold(*i.ColorContainsFold))
+	}
+	if i.Hex != nil {
+		predicates = append(predicates, color.HexEQ(*i.Hex))
+	}
+	if i.HexNEQ != nil {
+		predicates = append(predicates, color.HexNEQ(*i.HexNEQ))
+	}
+	if len(i.HexIn) > 0 {
+		predicates = append(predicates, color.HexIn(i.HexIn...))
+	}
+	if len(i.HexNotIn) > 0 {
+		predicates = append(predicates, color.HexNotIn(i.HexNotIn...))
+	}
+	if i.HexGT != nil {
+		predicates = append(predicates, color.HexGT(*i.HexGT))
+	}
+	if i.HexGTE != nil {
+		predicates = append(predicates, color.HexGTE(*i.HexGTE))
+	}
+	if i.HexLT != nil {
+		predicates = append(predicates, color.HexLT(*i.HexLT))
+	}
+	if i.HexLTE != nil {
+		predicates = append(predicates, color.HexLTE(*i.HexLTE))
+	}
+	if i.HexContains != nil {
+		predicates = append(predicates, color.HexContains(*i.HexContains))
+	}
+	if i.HexHasPrefix != nil {
+		predicates = append(predicates, color.HexHasPrefix(*i.HexHasPrefix))
+	}
+	if i.HexHasSuffix != nil {
+		predicates = append(predicates, color.HexHasSuffix(*i.HexHasSuffix))
+	}
+	if i.HexEqualFold != nil {
+		predicates = append(predicates, color.HexEqualFold(*i.HexEqualFold))
+	}
+	if i.HexContainsFold != nil {
+		predicates = append(predicates, color.HexContainsFold(*i.HexContainsFold))
 	}
 	if i.CreatedAt != nil {
 		predicates = append(predicates, color.CreatedAtEQ(*i.CreatedAt))
