@@ -9,6 +9,9 @@ import (
 // Color is the predicate function for color builders.
 type Color func(*sql.Selector)
 
+// Icon is the predicate function for icon builders.
+type Icon func(*sql.Selector)
+
 // Teammate is the predicate function for teammate builders.
 type Teammate func(*sql.Selector)
 

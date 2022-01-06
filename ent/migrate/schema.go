@@ -23,6 +23,20 @@ var (
 		Columns:    ColorsColumns,
 		PrimaryKey: []*schema.Column{ColorsColumns[0]},
 	}
+	// IconsColumns holds the columns for the "icons" table.
+	IconsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+		{Name: "name", Type: field.TypeString, Size: 255},
+		{Name: "icon", Type: field.TypeString, Size: 255},
+		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
+		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
+	}
+	// IconsTable holds the schema information for the "icons" table.
+	IconsTable = &schema.Table{
+		Name:       "icons",
+		Columns:    IconsColumns,
+		PrimaryKey: []*schema.Column{IconsColumns[0]},
+	}
 	// TeammatesColumns holds the columns for the "teammates" table.
 	TeammatesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString},
@@ -103,6 +117,7 @@ var (
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		ColorsTable,
+		IconsTable,
 		TeammatesTable,
 		TestTodosTable,
 		TestUsersTable,

@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io"
 	"project-management-demo-backend/ent/color"
+	"project-management-demo-backend/ent/icon"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/testtodo"
@@ -461,6 +462,233 @@ func (c *Color) ToEdge(order *ColorOrder) *ColorEdge {
 	return &ColorEdge{
 		Node:   c,
 		Cursor: order.Field.toCursor(c),
+	}
+}
+
+// IconEdge is the edge representation of Icon.
+type IconEdge struct {
+	Node   *Icon  `json:"node"`
+	Cursor Cursor `json:"cursor"`
+}
+
+// IconConnection is the connection containing edges to Icon.
+type IconConnection struct {
+	Edges      []*IconEdge `json:"edges"`
+	PageInfo   PageInfo    `json:"pageInfo"`
+	TotalCount int         `json:"totalCount"`
+}
+
+// IconPaginateOption enables pagination customization.
+type IconPaginateOption func(*iconPager) error
+
+// WithIconOrder configures pagination ordering.
+func WithIconOrder(order *IconOrder) IconPaginateOption {
+	if order == nil {
+		order = DefaultIconOrder
+	}
+	o := *order
+	return func(pager *iconPager) error {
+		if err := o.Direction.Validate(); err != nil {
+			return err
+		}
+		if o.Field == nil {
+			o.Field = DefaultIconOrder.Field
+		}
+		pager.order = &o
+		return nil
+	}
+}
+
+// WithIconFilter configures pagination filter.
+func WithIconFilter(filter func(*IconQuery) (*IconQuery, error)) IconPaginateOption {
+	return func(pager *iconPager) error {
+		if filter == nil {
+			return errors.New("IconQuery filter cannot be nil")
+		}
+		pager.filter = filter
+		return nil
+	}
+}
+
+type iconPager struct {
+	order  *IconOrder
+	filter func(*IconQuery) (*IconQuery, error)
+}
+
+func newIconPager(opts []IconPaginateOption) (*iconPager, error) {
+	pager := &iconPager{}
+	for _, opt := range opts {
+		if err := opt(pager); err != nil {
+			return nil, err
+		}
+	}
+	if pager.order == nil {
+		pager.order = DefaultIconOrder
+	}
+	return pager, nil
+}
+
+func (p *iconPager) applyFilter(query *IconQuery) (*IconQuery, error) {
+	if p.filter != nil {
+		return p.filter(query)
+	}
+	return query, nil
+}
+
+func (p *iconPager) toCursor(i *Icon) Cursor {
+	return p.order.Field.toCursor(i)
+}
+
+func (p *iconPager) applyCursors(query *IconQuery, after, before *Cursor) *IconQuery {
+	for _, predicate := range cursorsToPredicates(
+		p.order.Direction, after, before,
+		p.order.Field.field, DefaultIconOrder.Field.field,
+	) {
+		query = query.Where(predicate)
+	}
+	return query
+}
+
+func (p *iconPager) applyOrder(query *IconQuery, reverse bool) *IconQuery {
+	direction := p.order.Direction
+	if reverse {
+		direction = direction.reverse()
+	}
+	query = query.Order(direction.orderFunc(p.order.Field.field))
+	if p.order.Field != DefaultIconOrder.Field {
+		query = query.Order(direction.orderFunc(DefaultIconOrder.Field.field))
+	}
+	return query
+}
+
+// Paginate executes the query and returns a relay based cursor connection to Icon.
+func (i *IconQuery) Paginate(
+	ctx context.Context, after *Cursor, first *int,
+	before *Cursor, last *int, opts ...IconPaginateOption,
+) (*IconConnection, error) {
+	if err := validateFirstLast(first, last); err != nil {
+		return nil, err
+	}
+	pager, err := newIconPager(opts)
+	if err != nil {
+		return nil, err
+	}
+
+	if i, err = pager.applyFilter(i); err != nil {
+		return nil, err
+	}
+
+	conn := &IconConnection{Edges: []*IconEdge{}}
+	if !hasCollectedField(ctx, edgesField) || first != nil && *first == 0 || last != nil && *last == 0 {
+		if hasCollectedField(ctx, totalCountField) ||
+			hasCollectedField(ctx, pageInfoField) {
+			count, err := i.Count(ctx)
+			if err != nil {
+				return nil, err
+			}
+			conn.TotalCount = count
+			conn.PageInfo.HasNextPage = first != nil && count > 0
+			conn.PageInfo.HasPreviousPage = last != nil && count > 0
+		}
+		return conn, nil
+	}
+
+	if (after != nil || first != nil || before != nil || last != nil) && hasCollectedField(ctx, totalCountField) {
+		count, err := i.Clone().Count(ctx)
+		if err != nil {
+			return nil, err
+		}
+		conn.TotalCount = count
+	}
+
+	i = pager.applyCursors(i, after, before)
+	i = pager.applyOrder(i, last != nil)
+	var limit int
+	if first != nil {
+		limit = *first + 1
+	} else if last != nil {
+		limit = *last + 1
+	}
+	if limit > 0 {
+		i = i.Limit(limit)
+	}
+
+	if field := getCollectedField(ctx, edgesField, nodeField); field != nil {
+		i = i.collectField(graphql.GetOperationContext(ctx), *field)
+	}
+
+	nodes, err := i.All(ctx)
+	if err != nil || len(nodes) == 0 {
+		return conn, err
+	}
+
+	if len(nodes) == limit {
+		conn.PageInfo.HasNextPage = first != nil
+		conn.PageInfo.HasPreviousPage = last != nil
+		nodes = nodes[:len(nodes)-1]
+	}
+
+	var nodeAt func(int) *Icon
+	if last != nil {
+		n := len(nodes) - 1
+		nodeAt = func(i int) *Icon {
+			return nodes[n-i]
+		}
+	} else {
+		nodeAt = func(i int) *Icon {
+			return nodes[i]
+		}
+	}
+
+	conn.Edges = make([]*IconEdge, len(nodes))
+	for i := range nodes {
+		node := nodeAt(i)
+		conn.Edges[i] = &IconEdge{
+			Node:   node,
+			Cursor: pager.toCursor(node),
+		}
+	}
+
+	conn.PageInfo.StartCursor = &conn.Edges[0].Cursor
+	conn.PageInfo.EndCursor = &conn.Edges[len(conn.Edges)-1].Cursor
+	if conn.TotalCount == 0 {
+		conn.TotalCount = len(nodes)
+	}
+
+	return conn, nil
+}
+
+// IconOrderField defines the ordering field of Icon.
+type IconOrderField struct {
+	field    string
+	toCursor func(*Icon) Cursor
+}
+
+// IconOrder defines the ordering of Icon.
+type IconOrder struct {
+	Direction OrderDirection  `json:"direction"`
+	Field     *IconOrderField `json:"field"`
+}
+
+// DefaultIconOrder is the default ordering of Icon.
+var DefaultIconOrder = &IconOrder{
+	Direction: OrderDirectionAsc,
+	Field: &IconOrderField{
+		field: icon.FieldID,
+		toCursor: func(i *Icon) Cursor {
+			return Cursor{ID: i.ID}
+		},
+	},
+}
+
+// ToEdge converts Icon into IconEdge.
+func (i *Icon) ToEdge(order *IconOrder) *IconEdge {
+	if order == nil {
+		order = DefaultIconOrder
+	}
+	return &IconEdge{
+		Node:   i,
+		Cursor: order.Field.toCursor(i),
 	}
 }
 

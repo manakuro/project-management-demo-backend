@@ -11,6 +11,7 @@ import (
 	"project-management-demo-backend/ent/schema/ulid"
 
 	"project-management-demo-backend/ent/color"
+	"project-management-demo-backend/ent/icon"
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/ent/testuser"
@@ -28,6 +29,8 @@ type Client struct {
 	Schema *migrate.Schema
 	// Color is the client for interacting with the Color builders.
 	Color *ColorClient
+	// Icon is the client for interacting with the Icon builders.
+	Icon *IconClient
 	// Teammate is the client for interacting with the Teammate builders.
 	Teammate *TeammateClient
 	// TestTodo is the client for interacting with the TestTodo builders.
@@ -50,6 +53,7 @@ func NewClient(opts ...Option) *Client {
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.Color = NewColorClient(c.config)
+	c.Icon = NewIconClient(c.config)
 	c.Teammate = NewTeammateClient(c.config)
 	c.TestTodo = NewTestTodoClient(c.config)
 	c.TestUser = NewTestUserClient(c.config)
@@ -88,6 +92,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		ctx:       ctx,
 		config:    cfg,
 		Color:     NewColorClient(cfg),
+		Icon:      NewIconClient(cfg),
 		Teammate:  NewTeammateClient(cfg),
 		TestTodo:  NewTestTodoClient(cfg),
 		TestUser:  NewTestUserClient(cfg),
@@ -111,6 +116,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	return &Tx{
 		config:    cfg,
 		Color:     NewColorClient(cfg),
+		Icon:      NewIconClient(cfg),
 		Teammate:  NewTeammateClient(cfg),
 		TestTodo:  NewTestTodoClient(cfg),
 		TestUser:  NewTestUserClient(cfg),
@@ -145,6 +151,7 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	c.Color.Use(hooks...)
+	c.Icon.Use(hooks...)
 	c.Teammate.Use(hooks...)
 	c.TestTodo.Use(hooks...)
 	c.TestUser.Use(hooks...)
@@ -239,6 +246,96 @@ func (c *ColorClient) GetX(ctx context.Context, id ulid.ID) *Color {
 // Hooks returns the client hooks.
 func (c *ColorClient) Hooks() []Hook {
 	return c.hooks.Color
+}
+
+// IconClient is a client for the Icon schema.
+type IconClient struct {
+	config
+}
+
+// NewIconClient returns a client for the Icon from the given config.
+func NewIconClient(c config) *IconClient {
+	return &IconClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `icon.Hooks(f(g(h())))`.
+func (c *IconClient) Use(hooks ...Hook) {
+	c.hooks.Icon = append(c.hooks.Icon, hooks...)
+}
+
+// Create returns a create builder for Icon.
+func (c *IconClient) Create() *IconCreate {
+	mutation := newIconMutation(c.config, OpCreate)
+	return &IconCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Icon entities.
+func (c *IconClient) CreateBulk(builders ...*IconCreate) *IconCreateBulk {
+	return &IconCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Icon.
+func (c *IconClient) Update() *IconUpdate {
+	mutation := newIconMutation(c.config, OpUpdate)
+	return &IconUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *IconClient) UpdateOne(i *Icon) *IconUpdateOne {
+	mutation := newIconMutation(c.config, OpUpdateOne, withIcon(i))
+	return &IconUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *IconClient) UpdateOneID(id ulid.ID) *IconUpdateOne {
+	mutation := newIconMutation(c.config, OpUpdateOne, withIconID(id))
+	return &IconUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Icon.
+func (c *IconClient) Delete() *IconDelete {
+	mutation := newIconMutation(c.config, OpDelete)
+	return &IconDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *IconClient) DeleteOne(i *Icon) *IconDeleteOne {
+	return c.DeleteOneID(i.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *IconClient) DeleteOneID(id ulid.ID) *IconDeleteOne {
+	builder := c.Delete().Where(icon.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &IconDeleteOne{builder}
+}
+
+// Query returns a query builder for Icon.
+func (c *IconClient) Query() *IconQuery {
+	return &IconQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a Icon entity by its id.
+func (c *IconClient) Get(ctx context.Context, id ulid.ID) (*Icon, error) {
+	return c.Query().Where(icon.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *IconClient) GetX(ctx context.Context, id ulid.ID) *Icon {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *IconClient) Hooks() []Hook {
+	return c.hooks.Icon
 }
 
 // TeammateClient is a client for the Teammate schema.

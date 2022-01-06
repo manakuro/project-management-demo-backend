@@ -71,6 +71,61 @@ func (u *ColorUpdateOne) SetInput(i UpdateColorInput) *ColorUpdateOne {
 	return u
 }
 
+// CreateIconInput represents a mutation input for creating icons.
+type CreateIconInput struct {
+	Name      string
+	Icon      string
+	CreatedAt *time.Time
+	UpdatedAt *time.Time
+}
+
+// Mutate applies the CreateIconInput on the IconCreate builder.
+func (i *CreateIconInput) Mutate(m *IconCreate) {
+	m.SetName(i.Name)
+	m.SetIcon(i.Icon)
+	if v := i.CreatedAt; v != nil {
+		m.SetCreatedAt(*v)
+	}
+	if v := i.UpdatedAt; v != nil {
+		m.SetUpdatedAt(*v)
+	}
+}
+
+// SetInput applies the change-set in the CreateIconInput on the create builder.
+func (c *IconCreate) SetInput(i CreateIconInput) *IconCreate {
+	i.Mutate(c)
+	return c
+}
+
+// UpdateIconInput represents a mutation input for updating icons.
+type UpdateIconInput struct {
+	ID   ulid.ID
+	Name *string
+	Icon *string
+}
+
+// Mutate applies the UpdateIconInput on the IconMutation.
+func (i *UpdateIconInput) Mutate(m *IconMutation) {
+	if v := i.Name; v != nil {
+		m.SetName(*v)
+	}
+	if v := i.Icon; v != nil {
+		m.SetIcon(*v)
+	}
+}
+
+// SetInput applies the change-set in the UpdateIconInput on the update builder.
+func (u *IconUpdate) SetInput(i UpdateIconInput) *IconUpdate {
+	i.Mutate(u.Mutation())
+	return u
+}
+
+// SetInput applies the change-set in the UpdateIconInput on the update-one builder.
+func (u *IconUpdateOne) SetInput(i UpdateIconInput) *IconUpdateOne {
+	i.Mutate(u.Mutation())
+	return u
+}
+
 // CreateTeammateInput represents a mutation input for creating teammates.
 type CreateTeammateInput struct {
 	Name        string

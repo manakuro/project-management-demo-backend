@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"project-management-demo-backend/ent/color"
+	"project-management-demo-backend/ent/icon"
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/ent/testuser"
@@ -23,6 +24,7 @@ type GlobalIDs struct {
 	Teammate  field
 	Workspace field
 	Color     field
+	Icon      field
 }
 
 // New generates a map object that is intended to be used as global identification for node interface query.
@@ -48,6 +50,10 @@ func New() GlobalIDs {
 		Color: field{
 			Prefix: "0AE",
 			Table:  color.Table,
+		},
+		Icon: field{
+			Prefix: "0AF",
+			Table:  icon.Table,
 		},
 	}
 }
