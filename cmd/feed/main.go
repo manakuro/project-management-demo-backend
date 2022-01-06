@@ -19,6 +19,7 @@ func main() {
 
 	//client.DisableSQLSafeUpdates()
 
+	feed.Color(ctx, client)
 	feed.Teammate(ctx, client)
 	feed.Workspace(ctx, client)
 

@@ -10,6 +10,7 @@ import (
 	"project-management-demo-backend/ent/migrate"
 	"project-management-demo-backend/ent/schema/ulid"
 
+	"project-management-demo-backend/ent/color"
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/ent/testuser"
@@ -25,6 +26,8 @@ type Client struct {
 	config
 	// Schema is the client for creating, migrating and dropping schema.
 	Schema *migrate.Schema
+	// Color is the client for interacting with the Color builders.
+	Color *ColorClient
 	// Teammate is the client for interacting with the Teammate builders.
 	Teammate *TeammateClient
 	// TestTodo is the client for interacting with the TestTodo builders.
@@ -46,6 +49,7 @@ func NewClient(opts ...Option) *Client {
 
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
+	c.Color = NewColorClient(c.config)
 	c.Teammate = NewTeammateClient(c.config)
 	c.TestTodo = NewTestTodoClient(c.config)
 	c.TestUser = NewTestUserClient(c.config)
@@ -83,6 +87,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	return &Tx{
 		ctx:       ctx,
 		config:    cfg,
+		Color:     NewColorClient(cfg),
 		Teammate:  NewTeammateClient(cfg),
 		TestTodo:  NewTestTodoClient(cfg),
 		TestUser:  NewTestUserClient(cfg),
@@ -105,6 +110,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
 		config:    cfg,
+		Color:     NewColorClient(cfg),
 		Teammate:  NewTeammateClient(cfg),
 		TestTodo:  NewTestTodoClient(cfg),
 		TestUser:  NewTestUserClient(cfg),
@@ -115,7 +121,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 // Debug returns a new debug-client. It's used to get verbose logging on specific operations.
 //
 //	client.Debug().
-//		Teammate.
+//		Color.
 //		Query().
 //		Count(ctx)
 //
@@ -138,10 +144,101 @@ func (c *Client) Close() error {
 // Use adds the mutation hooks to all the entity clients.
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
+	c.Color.Use(hooks...)
 	c.Teammate.Use(hooks...)
 	c.TestTodo.Use(hooks...)
 	c.TestUser.Use(hooks...)
 	c.Workspace.Use(hooks...)
+}
+
+// ColorClient is a client for the Color schema.
+type ColorClient struct {
+	config
+}
+
+// NewColorClient returns a client for the Color from the given config.
+func NewColorClient(c config) *ColorClient {
+	return &ColorClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `color.Hooks(f(g(h())))`.
+func (c *ColorClient) Use(hooks ...Hook) {
+	c.hooks.Color = append(c.hooks.Color, hooks...)
+}
+
+// Create returns a create builder for Color.
+func (c *ColorClient) Create() *ColorCreate {
+	mutation := newColorMutation(c.config, OpCreate)
+	return &ColorCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Color entities.
+func (c *ColorClient) CreateBulk(builders ...*ColorCreate) *ColorCreateBulk {
+	return &ColorCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Color.
+func (c *ColorClient) Update() *ColorUpdate {
+	mutation := newColorMutation(c.config, OpUpdate)
+	return &ColorUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ColorClient) UpdateOne(co *Color) *ColorUpdateOne {
+	mutation := newColorMutation(c.config, OpUpdateOne, withColor(co))
+	return &ColorUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ColorClient) UpdateOneID(id ulid.ID) *ColorUpdateOne {
+	mutation := newColorMutation(c.config, OpUpdateOne, withColorID(id))
+	return &ColorUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Color.
+func (c *ColorClient) Delete() *ColorDelete {
+	mutation := newColorMutation(c.config, OpDelete)
+	return &ColorDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *ColorClient) DeleteOne(co *Color) *ColorDeleteOne {
+	return c.DeleteOneID(co.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *ColorClient) DeleteOneID(id ulid.ID) *ColorDeleteOne {
+	builder := c.Delete().Where(color.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ColorDeleteOne{builder}
+}
+
+// Query returns a query builder for Color.
+func (c *ColorClient) Query() *ColorQuery {
+	return &ColorQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a Color entity by its id.
+func (c *ColorClient) Get(ctx context.Context, id ulid.ID) (*Color, error) {
+	return c.Query().Where(color.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ColorClient) GetX(ctx context.Context, id ulid.ID) *Color {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *ColorClient) Hooks() []Hook {
+	return c.hooks.Color
 }
 
 // TeammateClient is a client for the Teammate schema.

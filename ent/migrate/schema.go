@@ -8,6 +8,21 @@ import (
 )
 
 var (
+	// ColorsColumns holds the columns for the "colors" table.
+	ColorsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+		{Name: "name", Type: field.TypeString, Size: 255},
+		{Name: "color", Type: field.TypeString, Size: 255},
+		{Name: "hex", Type: field.TypeString, Size: 255},
+		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
+		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
+	}
+	// ColorsTable holds the schema information for the "colors" table.
+	ColorsTable = &schema.Table{
+		Name:       "colors",
+		Columns:    ColorsColumns,
+		PrimaryKey: []*schema.Column{ColorsColumns[0]},
+	}
 	// TeammatesColumns holds the columns for the "teammates" table.
 	TeammatesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString},
@@ -87,6 +102,7 @@ var (
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
+		ColorsTable,
 		TeammatesTable,
 		TestTodosTable,
 		TestUsersTable,

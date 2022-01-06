@@ -7,4 +7,5 @@ type Controller struct {
 	Auth      interface{ Auth }
 	Teammate  interface{ Teammate }
 	Workspace interface{ Workspace }
+	Color     interface{ Color }
 }
