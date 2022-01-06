@@ -28,5 +28,6 @@ func (r *registry) NewController() controller.Controller {
 		Auth:      r.NewAuthController(),
 		Teammate:  r.NewTeammateController(),
 		Workspace: r.NewWorkspaceController(),
+		Color:     r.NewColorController(),
 	}
 }
