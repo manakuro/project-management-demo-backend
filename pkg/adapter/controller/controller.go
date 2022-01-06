@@ -8,4 +8,5 @@ type Controller struct {
 	Teammate  interface{ Teammate }
 	Workspace interface{ Workspace }
 	Color     interface{ Color }
+	Icon      interface{ Icon }
 }
