@@ -8,6 +8,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"project-management-demo-backend/ent/color"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/testtodo"
@@ -235,6 +236,233 @@ const (
 	pageInfoField   = "pageInfo"
 	totalCountField = "totalCount"
 )
+
+// ColorEdge is the edge representation of Color.
+type ColorEdge struct {
+	Node   *Color `json:"node"`
+	Cursor Cursor `json:"cursor"`
+}
+
+// ColorConnection is the connection containing edges to Color.
+type ColorConnection struct {
+	Edges      []*ColorEdge `json:"edges"`
+	PageInfo   PageInfo     `json:"pageInfo"`
+	TotalCount int          `json:"totalCount"`
+}
+
+// ColorPaginateOption enables pagination customization.
+type ColorPaginateOption func(*colorPager) error
+
+// WithColorOrder configures pagination ordering.
+func WithColorOrder(order *ColorOrder) ColorPaginateOption {
+	if order == nil {
+		order = DefaultColorOrder
+	}
+	o := *order
+	return func(pager *colorPager) error {
+		if err := o.Direction.Validate(); err != nil {
+			return err
+		}
+		if o.Field == nil {
+			o.Field = DefaultColorOrder.Field
+		}
+		pager.order = &o
+		return nil
+	}
+}
+
+// WithColorFilter configures pagination filter.
+func WithColorFilter(filter func(*ColorQuery) (*ColorQuery, error)) ColorPaginateOption {
+	return func(pager *colorPager) error {
+		if filter == nil {
+			return errors.New("ColorQuery filter cannot be nil")
+		}
+		pager.filter = filter
+		return nil
+	}
+}
+
+type colorPager struct {
+	order  *ColorOrder
+	filter func(*ColorQuery) (*ColorQuery, error)
+}
+
+func newColorPager(opts []ColorPaginateOption) (*colorPager, error) {
+	pager := &colorPager{}
+	for _, opt := range opts {
+		if err := opt(pager); err != nil {
+			return nil, err
+		}
+	}
+	if pager.order == nil {
+		pager.order = DefaultColorOrder
+	}
+	return pager, nil
+}
+
+func (p *colorPager) applyFilter(query *ColorQuery) (*ColorQuery, error) {
+	if p.filter != nil {
+		return p.filter(query)
+	}
+	return query, nil
+}
+
+func (p *colorPager) toCursor(c *Color) Cursor {
+	return p.order.Field.toCursor(c)
+}
+
+func (p *colorPager) applyCursors(query *ColorQuery, after, before *Cursor) *ColorQuery {
+	for _, predicate := range cursorsToPredicates(
+		p.order.Direction, after, before,
+		p.order.Field.field, DefaultColorOrder.Field.field,
+	) {
+		query = query.Where(predicate)
+	}
+	return query
+}
+
+func (p *colorPager) applyOrder(query *ColorQuery, reverse bool) *ColorQuery {
+	direction := p.order.Direction
+	if reverse {
+		direction = direction.reverse()
+	}
+	query = query.Order(direction.orderFunc(p.order.Field.field))
+	if p.order.Field != DefaultColorOrder.Field {
+		query = query.Order(direction.orderFunc(DefaultColorOrder.Field.field))
+	}
+	return query
+}
+
+// Paginate executes the query and returns a relay based cursor connection to Color.
+func (c *ColorQuery) Paginate(
+	ctx context.Context, after *Cursor, first *int,
+	before *Cursor, last *int, opts ...ColorPaginateOption,
+) (*ColorConnection, error) {
+	if err := validateFirstLast(first, last); err != nil {
+		return nil, err
+	}
+	pager, err := newColorPager(opts)
+	if err != nil {
+		return nil, err
+	}
+
+	if c, err = pager.applyFilter(c); err != nil {
+		return nil, err
+	}
+
+	conn := &ColorConnection{Edges: []*ColorEdge{}}
+	if !hasCollectedField(ctx, edgesField) || first != nil && *first == 0 || last != nil && *last == 0 {
+		if hasCollectedField(ctx, totalCountField) ||
+			hasCollectedField(ctx, pageInfoField) {
+			count, err := c.Count(ctx)
+			if err != nil {
+				return nil, err
+			}
+			conn.TotalCount = count
+			conn.PageInfo.HasNextPage = first != nil && count > 0
+			conn.PageInfo.HasPreviousPage = last != nil && count > 0
+		}
+		return conn, nil
+	}
+
+	if (after != nil || first != nil || before != nil || last != nil) && hasCollectedField(ctx, totalCountField) {
+		count, err := c.Clone().Count(ctx)
+		if err != nil {
+			return nil, err
+		}
+		conn.TotalCount = count
+	}
+
+	c = pager.applyCursors(c, after, before)
+	c = pager.applyOrder(c, last != nil)
+	var limit int
+	if first != nil {
+		limit = *first + 1
+	} else if last != nil {
+		limit = *last + 1
+	}
+	if limit > 0 {
+		c = c.Limit(limit)
+	}
+
+	if field := getCollectedField(ctx, edgesField, nodeField); field != nil {
+		c = c.collectField(graphql.GetOperationContext(ctx), *field)
+	}
+
+	nodes, err := c.All(ctx)
+	if err != nil || len(nodes) == 0 {
+		return conn, err
+	}
+
+	if len(nodes) == limit {
+		conn.PageInfo.HasNextPage = first != nil
+		conn.PageInfo.HasPreviousPage = last != nil
+		nodes = nodes[:len(nodes)-1]
+	}
+
+	var nodeAt func(int) *Color
+	if last != nil {
+		n := len(nodes) - 1
+		nodeAt = func(i int) *Color {
+			return nodes[n-i]
+		}
+	} else {
+		nodeAt = func(i int) *Color {
+			return nodes[i]
+		}
+	}
+
+	conn.Edges = make([]*ColorEdge, len(nodes))
+	for i := range nodes {
+		node := nodeAt(i)
+		conn.Edges[i] = &ColorEdge{
+			Node:   node,
+			Cursor: pager.toCursor(node),
+		}
+	}
+
+	conn.PageInfo.StartCursor = &conn.Edges[0].Cursor
+	conn.PageInfo.EndCursor = &conn.Edges[len(conn.Edges)-1].Cursor
+	if conn.TotalCount == 0 {
+		conn.TotalCount = len(nodes)
+	}
+
+	return conn, nil
+}
+
+// ColorOrderField defines the ordering field of Color.
+type ColorOrderField struct {
+	field    string
+	toCursor func(*Color) Cursor
+}
+
+// ColorOrder defines the ordering of Color.
+type ColorOrder struct {
+	Direction OrderDirection   `json:"direction"`
+	Field     *ColorOrderField `json:"field"`
+}
+
+// DefaultColorOrder is the default ordering of Color.
+var DefaultColorOrder = &ColorOrder{
+	Direction: OrderDirectionAsc,
+	Field: &ColorOrderField{
+		field: color.FieldID,
+		toCursor: func(c *Color) Cursor {
+			return Cursor{ID: c.ID}
+		},
+	},
+}
+
+// ToEdge converts Color into ColorEdge.
+func (c *Color) ToEdge(order *ColorOrder) *ColorEdge {
+	if order == nil {
+		order = DefaultColorOrder
+	}
+	return &ColorEdge{
+		Node:   c,
+		Cursor: order.Field.toCursor(c),
+	}
+}
 
 // TeammateEdge is the edge representation of Teammate.
 type TeammateEdge struct {

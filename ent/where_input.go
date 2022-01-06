@@ -4,6 +4,7 @@ package ent
 
 import (
 	"fmt"
+	"project-management-demo-backend/ent/color"
 	"project-management-demo-backend/ent/predicate"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/teammate"
@@ -12,6 +13,293 @@ import (
 	"project-management-demo-backend/ent/workspace"
 	"time"
 )
+
+// ColorWhereInput represents a where input for filtering Color queries.
+type ColorWhereInput struct {
+	Not *ColorWhereInput   `json:"not,omitempty"`
+	Or  []*ColorWhereInput `json:"or,omitempty"`
+	And []*ColorWhereInput `json:"and,omitempty"`
+
+	// "id" field predicates.
+	ID      *ulid.ID  `json:"id,omitempty"`
+	IDNEQ   *ulid.ID  `json:"idNEQ,omitempty"`
+	IDIn    []ulid.ID `json:"idIn,omitempty"`
+	IDNotIn []ulid.ID `json:"idNotIn,omitempty"`
+	IDGT    *ulid.ID  `json:"idGT,omitempty"`
+	IDGTE   *ulid.ID  `json:"idGTE,omitempty"`
+	IDLT    *ulid.ID  `json:"idLT,omitempty"`
+	IDLTE   *ulid.ID  `json:"idLTE,omitempty"`
+
+	// "name" field predicates.
+	Name             *string  `json:"name,omitempty"`
+	NameNEQ          *string  `json:"nameNEQ,omitempty"`
+	NameIn           []string `json:"nameIn,omitempty"`
+	NameNotIn        []string `json:"nameNotIn,omitempty"`
+	NameGT           *string  `json:"nameGT,omitempty"`
+	NameGTE          *string  `json:"nameGTE,omitempty"`
+	NameLT           *string  `json:"nameLT,omitempty"`
+	NameLTE          *string  `json:"nameLTE,omitempty"`
+	NameContains     *string  `json:"nameContains,omitempty"`
+	NameHasPrefix    *string  `json:"nameHasPrefix,omitempty"`
+	NameHasSuffix    *string  `json:"nameHasSuffix,omitempty"`
+	NameEqualFold    *string  `json:"nameEqualFold,omitempty"`
+	NameContainsFold *string  `json:"nameContainsFold,omitempty"`
+
+	// "color" field predicates.
+	Color             *string  `json:"color,omitempty"`
+	ColorNEQ          *string  `json:"colorNEQ,omitempty"`
+	ColorIn           []string `json:"colorIn,omitempty"`
+	ColorNotIn        []string `json:"colorNotIn,omitempty"`
+	ColorGT           *string  `json:"colorGT,omitempty"`
+	ColorGTE          *string  `json:"colorGTE,omitempty"`
+	ColorLT           *string  `json:"colorLT,omitempty"`
+	ColorLTE          *string  `json:"colorLTE,omitempty"`
+	ColorContains     *string  `json:"colorContains,omitempty"`
+	ColorHasPrefix    *string  `json:"colorHasPrefix,omitempty"`
+	ColorHasSuffix    *string  `json:"colorHasSuffix,omitempty"`
+	ColorEqualFold    *string  `json:"colorEqualFold,omitempty"`
+	ColorContainsFold *string  `json:"colorContainsFold,omitempty"`
+
+	// "created_at" field predicates.
+	CreatedAt      *time.Time  `json:"createdAt,omitempty"`
+	CreatedAtNEQ   *time.Time  `json:"createdAtNEQ,omitempty"`
+	CreatedAtIn    []time.Time `json:"createdAtIn,omitempty"`
+	CreatedAtNotIn []time.Time `json:"createdAtNotIn,omitempty"`
+	CreatedAtGT    *time.Time  `json:"createdAtGT,omitempty"`
+	CreatedAtGTE   *time.Time  `json:"createdAtGTE,omitempty"`
+	CreatedAtLT    *time.Time  `json:"createdAtLT,omitempty"`
+	CreatedAtLTE   *time.Time  `json:"createdAtLTE,omitempty"`
+
+	// "updated_at" field predicates.
+	UpdatedAt      *time.Time  `json:"updatedAt,omitempty"`
+	UpdatedAtNEQ   *time.Time  `json:"updatedAtNEQ,omitempty"`
+	UpdatedAtIn    []time.Time `json:"updatedAtIn,omitempty"`
+	UpdatedAtNotIn []time.Time `json:"updatedAtNotIn,omitempty"`
+	UpdatedAtGT    *time.Time  `json:"updatedAtGT,omitempty"`
+	UpdatedAtGTE   *time.Time  `json:"updatedAtGTE,omitempty"`
+	UpdatedAtLT    *time.Time  `json:"updatedAtLT,omitempty"`
+	UpdatedAtLTE   *time.Time  `json:"updatedAtLTE,omitempty"`
+}
+
+// Filter applies the ColorWhereInput filter on the ColorQuery builder.
+func (i *ColorWhereInput) Filter(q *ColorQuery) (*ColorQuery, error) {
+	if i == nil {
+		return q, nil
+	}
+	p, err := i.P()
+	if err != nil {
+		return nil, err
+	}
+	return q.Where(p), nil
+}
+
+// P returns a predicate for filtering colors.
+// An error is returned if the input is empty or invalid.
+func (i *ColorWhereInput) P() (predicate.Color, error) {
+	var predicates []predicate.Color
+	if i.Not != nil {
+		p, err := i.Not.P()
+		if err != nil {
+			return nil, err
+		}
+		predicates = append(predicates, color.Not(p))
+	}
+	switch n := len(i.Or); {
+	case n == 1:
+		p, err := i.Or[0].P()
+		if err != nil {
+			return nil, err
+		}
+		predicates = append(predicates, p)
+	case n > 1:
+		or := make([]predicate.Color, 0, n)
+		for _, w := range i.Or {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			or = append(or, p)
+		}
+		predicates = append(predicates, color.Or(or...))
+	}
+	switch n := len(i.And); {
+	case n == 1:
+		p, err := i.And[0].P()
+		if err != nil {
+			return nil, err
+		}
+		predicates = append(predicates, p)
+	case n > 1:
+		and := make([]predicate.Color, 0, n)
+		for _, w := range i.And {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			and = append(and, p)
+		}
+		predicates = append(predicates, color.And(and...))
+	}
+	if i.ID != nil {
+		predicates = append(predicates, color.IDEQ(*i.ID))
+	}
+	if i.IDNEQ != nil {
+		predicates = append(predicates, color.IDNEQ(*i.IDNEQ))
+	}
+	if len(i.IDIn) > 0 {
+		predicates = append(predicates, color.IDIn(i.IDIn...))
+	}
+	if len(i.IDNotIn) > 0 {
+		predicates = append(predicates, color.IDNotIn(i.IDNotIn...))
+	}
+	if i.IDGT != nil {
+		predicates = append(predicates, color.IDGT(*i.IDGT))
+	}
+	if i.IDGTE != nil {
+		predicates = append(predicates, color.IDGTE(*i.IDGTE))
+	}
+	if i.IDLT != nil {
+		predicates = append(predicates, color.IDLT(*i.IDLT))
+	}
+	if i.IDLTE != nil {
+		predicates = append(predicates, color.IDLTE(*i.IDLTE))
+	}
+	if i.Name != nil {
+		predicates = append(predicates, color.NameEQ(*i.Name))
+	}
+	if i.NameNEQ != nil {
+		predicates = append(predicates, color.NameNEQ(*i.NameNEQ))
+	}
+	if len(i.NameIn) > 0 {
+		predicates = append(predicates, color.NameIn(i.NameIn...))
+	}
+	if len(i.NameNotIn) > 0 {
+		predicates = append(predicates, color.NameNotIn(i.NameNotIn...))
+	}
+	if i.NameGT != nil {
+		predicates = append(predicates, color.NameGT(*i.NameGT))
+	}
+	if i.NameGTE != nil {
+		predicates = append(predicates, color.NameGTE(*i.NameGTE))
+	}
+	if i.NameLT != nil {
+		predicates = append(predicates, color.NameLT(*i.NameLT))
+	}
+	if i.NameLTE != nil {
+		predicates = append(predicates, color.NameLTE(*i.NameLTE))
+	}
+	if i.NameContains != nil {
+		predicates = append(predicates, color.NameContains(*i.NameContains))
+	}
+	if i.NameHasPrefix != nil {
+		predicates = append(predicates, color.NameHasPrefix(*i.NameHasPrefix))
+	}
+	if i.NameHasSuffix != nil {
+		predicates = append(predicates, color.NameHasSuffix(*i.NameHasSuffix))
+	}
+	if i.NameEqualFold != nil {
+		predicates = append(predicates, color.NameEqualFold(*i.NameEqualFold))
+	}
+	if i.NameContainsFold != nil {
+		predicates = append(predicates, color.NameContainsFold(*i.NameContainsFold))
+	}
+	if i.Color != nil {
+		predicates = append(predicates, color.ColorEQ(*i.Color))
+	}
+	if i.ColorNEQ != nil {
+		predicates = append(predicates, color.ColorNEQ(*i.ColorNEQ))
+	}
+	if len(i.ColorIn) > 0 {
+		predicates = append(predicates, color.ColorIn(i.ColorIn...))
+	}
+	if len(i.ColorNotIn) > 0 {
+		predicates = append(predicates, color.ColorNotIn(i.ColorNotIn...))
+	}
+	if i.ColorGT != nil {
+		predicates = append(predicates, color.ColorGT(*i.ColorGT))
+	}
+	if i.ColorGTE != nil {
+		predicates = append(predicates, color.ColorGTE(*i.ColorGTE))
+	}
+	if i.ColorLT != nil {
+		predicates = append(predicates, color.ColorLT(*i.ColorLT))
+	}
+	if i.ColorLTE != nil {
+		predicates = append(predicates, color.ColorLTE(*i.ColorLTE))
+	}
+	if i.ColorContains != nil {
+		predicates = append(predicates, color.ColorContains(*i.ColorContains))
+	}
+	if i.ColorHasPrefix != nil {
+		predicates = append(predicates, color.ColorHasPrefix(*i.ColorHasPrefix))
+	}
+	if i.ColorHasSuffix != nil {
+		predicates = append(predicates, color.ColorHasSuffix(*i.ColorHasSuffix))
+	}
+	if i.ColorEqualFold != nil {
+		predicates = append(predicates, color.ColorEqualFold(*i.ColorEqualFold))
+	}
+	if i.ColorContainsFold != nil {
+		predicates = append(predicates, color.ColorContainsFold(*i.ColorContainsFold))
+	}
+	if i.CreatedAt != nil {
+		predicates = append(predicates, color.CreatedAtEQ(*i.CreatedAt))
+	}
+	if i.CreatedAtNEQ != nil {
+		predicates = append(predicates, color.CreatedAtNEQ(*i.CreatedAtNEQ))
+	}
+	if len(i.CreatedAtIn) > 0 {
+		predicates = append(predicates, color.CreatedAtIn(i.CreatedAtIn...))
+	}
+	if len(i.CreatedAtNotIn) > 0 {
+		predicates = append(predicates, color.CreatedAtNotIn(i.CreatedAtNotIn...))
+	}
+	if i.CreatedAtGT != nil {
+		predicates = append(predicates, color.CreatedAtGT(*i.CreatedAtGT))
+	}
+	if i.CreatedAtGTE != nil {
+		predicates = append(predicates, color.CreatedAtGTE(*i.CreatedAtGTE))
+	}
+	if i.CreatedAtLT != nil {
+		predicates = append(predicates, color.CreatedAtLT(*i.CreatedAtLT))
+	}
+	if i.CreatedAtLTE != nil {
+		predicates = append(predicates, color.CreatedAtLTE(*i.CreatedAtLTE))
+	}
+	if i.UpdatedAt != nil {
+		predicates = append(predicates, color.UpdatedAtEQ(*i.UpdatedAt))
+	}
+	if i.UpdatedAtNEQ != nil {
+		predicates = append(predicates, color.UpdatedAtNEQ(*i.UpdatedAtNEQ))
+	}
+	if len(i.UpdatedAtIn) > 0 {
+		predicates = append(predicates, color.UpdatedAtIn(i.UpdatedAtIn...))
+	}
+	if len(i.UpdatedAtNotIn) > 0 {
+		predicates = append(predicates, color.UpdatedAtNotIn(i.UpdatedAtNotIn...))
+	}
+	if i.UpdatedAtGT != nil {
+		predicates = append(predicates, color.UpdatedAtGT(*i.UpdatedAtGT))
+	}
+	if i.UpdatedAtGTE != nil {
+		predicates = append(predicates, color.UpdatedAtGTE(*i.UpdatedAtGTE))
+	}
+	if i.UpdatedAtLT != nil {
+		predicates = append(predicates, color.UpdatedAtLT(*i.UpdatedAtLT))
+	}
+	if i.UpdatedAtLTE != nil {
+		predicates = append(predicates, color.UpdatedAtLTE(*i.UpdatedAtLTE))
+	}
+
+	switch len(predicates) {
+	case 0:
+		return nil, fmt.Errorf("project-management-demo-backend/ent: empty predicate ColorWhereInput")
+	case 1:
+		return predicates[0], nil
+	default:
+		return color.And(predicates...), nil
+	}
+}
 
 // TeammateWhereInput represents a where input for filtering Teammate queries.
 type TeammateWhereInput struct {

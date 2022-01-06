@@ -3,6 +3,7 @@
 package ent
 
 import (
+	"project-management-demo-backend/ent/color"
 	"project-management-demo-backend/ent/schema"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/teammate"
@@ -16,6 +17,63 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	colorMixin := schema.Color{}.Mixin()
+	colorMixinFields0 := colorMixin[0].Fields()
+	_ = colorMixinFields0
+	colorMixinFields1 := colorMixin[1].Fields()
+	_ = colorMixinFields1
+	colorMixinFields2 := colorMixin[2].Fields()
+	_ = colorMixinFields2
+	colorFields := schema.Color{}.Fields()
+	_ = colorFields
+	// colorDescName is the schema descriptor for name field.
+	colorDescName := colorMixinFields1[0].Descriptor()
+	// color.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	color.NameValidator = func() func(string) error {
+		validators := colorDescName.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(name string) error {
+			for _, fn := range fns {
+				if err := fn(name); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// colorDescColor is the schema descriptor for color field.
+	colorDescColor := colorMixinFields1[1].Descriptor()
+	// color.ColorValidator is a validator for the "color" field. It is called by the builders before save.
+	color.ColorValidator = func() func(string) error {
+		validators := colorDescColor.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(color string) error {
+			for _, fn := range fns {
+				if err := fn(color); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// colorDescCreatedAt is the schema descriptor for created_at field.
+	colorDescCreatedAt := colorMixinFields2[0].Descriptor()
+	// color.DefaultCreatedAt holds the default value on creation for the created_at field.
+	color.DefaultCreatedAt = colorDescCreatedAt.Default.(func() time.Time)
+	// colorDescUpdatedAt is the schema descriptor for updated_at field.
+	colorDescUpdatedAt := colorMixinFields2[1].Descriptor()
+	// color.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	color.DefaultUpdatedAt = colorDescUpdatedAt.Default.(func() time.Time)
+	// colorDescID is the schema descriptor for id field.
+	colorDescID := colorMixinFields0[0].Descriptor()
+	// color.DefaultID holds the default value on creation for the id field.
+	color.DefaultID = colorDescID.Default.(func() ulid.ID)
 	teammateMixin := schema.Teammate{}.Mixin()
 	teammateMixinFields0 := teammateMixin[0].Fields()
 	_ = teammateMixinFields0

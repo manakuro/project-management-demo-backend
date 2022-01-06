@@ -10,6 +10,61 @@ import (
 	"time"
 )
 
+// CreateColorInput represents a mutation input for creating colors.
+type CreateColorInput struct {
+	Name      string
+	Color     string
+	CreatedAt *time.Time
+	UpdatedAt *time.Time
+}
+
+// Mutate applies the CreateColorInput on the ColorCreate builder.
+func (i *CreateColorInput) Mutate(m *ColorCreate) {
+	m.SetName(i.Name)
+	m.SetColor(i.Color)
+	if v := i.CreatedAt; v != nil {
+		m.SetCreatedAt(*v)
+	}
+	if v := i.UpdatedAt; v != nil {
+		m.SetUpdatedAt(*v)
+	}
+}
+
+// SetInput applies the change-set in the CreateColorInput on the create builder.
+func (c *ColorCreate) SetInput(i CreateColorInput) *ColorCreate {
+	i.Mutate(c)
+	return c
+}
+
+// UpdateColorInput represents a mutation input for updating colors.
+type UpdateColorInput struct {
+	ID    ulid.ID
+	Name  *string
+	Color *string
+}
+
+// Mutate applies the UpdateColorInput on the ColorMutation.
+func (i *UpdateColorInput) Mutate(m *ColorMutation) {
+	if v := i.Name; v != nil {
+		m.SetName(*v)
+	}
+	if v := i.Color; v != nil {
+		m.SetColor(*v)
+	}
+}
+
+// SetInput applies the change-set in the UpdateColorInput on the update builder.
+func (u *ColorUpdate) SetInput(i UpdateColorInput) *ColorUpdate {
+	i.Mutate(u.Mutation())
+	return u
+}
+
+// SetInput applies the change-set in the UpdateColorInput on the update-one builder.
+func (u *ColorUpdateOne) SetInput(i UpdateColorInput) *ColorUpdateOne {
+	i.Mutate(u.Mutation())
+	return u
+}
+
 // CreateTeammateInput represents a mutation input for creating teammates.
 type CreateTeammateInput struct {
 	Name        string
