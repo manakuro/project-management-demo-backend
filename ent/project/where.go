@@ -1183,6 +1183,34 @@ func HasTeammateWith(preds ...predicate.Teammate) predicate.Project {
 	})
 }
 
+// HasProjectTeammates applies the HasEdge predicate on the "project_teammates" edge.
+func HasProjectTeammates() predicate.Project {
+	return predicate.Project(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(ProjectTeammatesTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ProjectTeammatesTable, ProjectTeammatesColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasProjectTeammatesWith applies the HasEdge predicate on the "project_teammates" edge with a given conditions (other predicates).
+func HasProjectTeammatesWith(preds ...predicate.ProjectTeammate) predicate.Project {
+	return predicate.Project(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(ProjectTeammatesInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ProjectTeammatesTable, ProjectTeammatesColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Project) predicate.Project {
 	return predicate.Project(func(s *sql.Selector) {

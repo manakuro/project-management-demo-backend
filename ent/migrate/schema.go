@@ -83,6 +83,36 @@ var (
 			},
 		},
 	}
+	// ProjectTeammatesColumns holds the columns for the "project_teammates" table.
+	ProjectTeammatesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+		{Name: "role", Type: field.TypeString, Size: 255},
+		{Name: "is_owner", Type: field.TypeBool},
+		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
+		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
+		{Name: "project_id", Type: field.TypeString, Nullable: true},
+		{Name: "teammate_id", Type: field.TypeString, Nullable: true},
+	}
+	// ProjectTeammatesTable holds the schema information for the "project_teammates" table.
+	ProjectTeammatesTable = &schema.Table{
+		Name:       "project_teammates",
+		Columns:    ProjectTeammatesColumns,
+		PrimaryKey: []*schema.Column{ProjectTeammatesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "project_teammates_projects_project_teammates",
+				Columns:    []*schema.Column{ProjectTeammatesColumns[5]},
+				RefColumns: []*schema.Column{ProjectsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "project_teammates_teammates_project_teammates",
+				Columns:    []*schema.Column{ProjectTeammatesColumns[6]},
+				RefColumns: []*schema.Column{TeammatesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
 	// TeammatesColumns holds the columns for the "teammates" table.
 	TeammatesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString},
@@ -165,6 +195,7 @@ var (
 		ColorsTable,
 		IconsTable,
 		ProjectsTable,
+		ProjectTeammatesTable,
 		TeammatesTable,
 		TestTodosTable,
 		TestUsersTable,
@@ -177,6 +208,8 @@ func init() {
 	ProjectsTable.ForeignKeys[1].RefTable = IconsTable
 	ProjectsTable.ForeignKeys[2].RefTable = TeammatesTable
 	ProjectsTable.ForeignKeys[3].RefTable = WorkspacesTable
+	ProjectTeammatesTable.ForeignKeys[0].RefTable = ProjectsTable
+	ProjectTeammatesTable.ForeignKeys[1].RefTable = TeammatesTable
 	TestTodosTable.ForeignKeys[0].RefTable = TestUsersTable
 	WorkspacesTable.ForeignKeys[0].RefTable = TeammatesTable
 }

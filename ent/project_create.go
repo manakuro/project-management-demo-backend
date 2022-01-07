@@ -9,6 +9,7 @@ import (
 	"project-management-demo-backend/ent/color"
 	"project-management-demo-backend/ent/icon"
 	"project-management-demo-backend/ent/project"
+	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/ent/schema/editor"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/teammate"
@@ -148,6 +149,21 @@ func (pc *ProjectCreate) SetTeammateID(id ulid.ID) *ProjectCreate {
 // SetTeammate sets the "teammate" edge to the Teammate entity.
 func (pc *ProjectCreate) SetTeammate(t *Teammate) *ProjectCreate {
 	return pc.SetTeammateID(t.ID)
+}
+
+// AddProjectTeammateIDs adds the "project_teammates" edge to the ProjectTeammate entity by IDs.
+func (pc *ProjectCreate) AddProjectTeammateIDs(ids ...ulid.ID) *ProjectCreate {
+	pc.mutation.AddProjectTeammateIDs(ids...)
+	return pc
+}
+
+// AddProjectTeammates adds the "project_teammates" edges to the ProjectTeammate entity.
+func (pc *ProjectCreate) AddProjectTeammates(p ...*ProjectTeammate) *ProjectCreate {
+	ids := make([]ulid.ID, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return pc.AddProjectTeammateIDs(ids...)
 }
 
 // Mutation returns the ProjectMutation object of the builder.
@@ -451,6 +467,25 @@ func (pc *ProjectCreate) createSpec() (*Project, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.CreatedBy = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := pc.mutation.ProjectTeammatesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   project.ProjectTeammatesTable,
+			Columns: []string{project.ProjectTeammatesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: projectteammate.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

@@ -13,6 +13,7 @@ import (
 	"project-management-demo-backend/ent/color"
 	"project-management-demo-backend/ent/icon"
 	"project-management-demo-backend/ent/project"
+	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/ent/testuser"
@@ -34,6 +35,8 @@ type Client struct {
 	Icon *IconClient
 	// Project is the client for interacting with the Project builders.
 	Project *ProjectClient
+	// ProjectTeammate is the client for interacting with the ProjectTeammate builders.
+	ProjectTeammate *ProjectTeammateClient
 	// Teammate is the client for interacting with the Teammate builders.
 	Teammate *TeammateClient
 	// TestTodo is the client for interacting with the TestTodo builders.
@@ -58,6 +61,7 @@ func (c *Client) init() {
 	c.Color = NewColorClient(c.config)
 	c.Icon = NewIconClient(c.config)
 	c.Project = NewProjectClient(c.config)
+	c.ProjectTeammate = NewProjectTeammateClient(c.config)
 	c.Teammate = NewTeammateClient(c.config)
 	c.TestTodo = NewTestTodoClient(c.config)
 	c.TestUser = NewTestUserClient(c.config)
@@ -93,15 +97,16 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:       ctx,
-		config:    cfg,
-		Color:     NewColorClient(cfg),
-		Icon:      NewIconClient(cfg),
-		Project:   NewProjectClient(cfg),
-		Teammate:  NewTeammateClient(cfg),
-		TestTodo:  NewTestTodoClient(cfg),
-		TestUser:  NewTestUserClient(cfg),
-		Workspace: NewWorkspaceClient(cfg),
+		ctx:             ctx,
+		config:          cfg,
+		Color:           NewColorClient(cfg),
+		Icon:            NewIconClient(cfg),
+		Project:         NewProjectClient(cfg),
+		ProjectTeammate: NewProjectTeammateClient(cfg),
+		Teammate:        NewTeammateClient(cfg),
+		TestTodo:        NewTestTodoClient(cfg),
+		TestUser:        NewTestUserClient(cfg),
+		Workspace:       NewWorkspaceClient(cfg),
 	}, nil
 }
 
@@ -119,14 +124,15 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		config:    cfg,
-		Color:     NewColorClient(cfg),
-		Icon:      NewIconClient(cfg),
-		Project:   NewProjectClient(cfg),
-		Teammate:  NewTeammateClient(cfg),
-		TestTodo:  NewTestTodoClient(cfg),
-		TestUser:  NewTestUserClient(cfg),
-		Workspace: NewWorkspaceClient(cfg),
+		config:          cfg,
+		Color:           NewColorClient(cfg),
+		Icon:            NewIconClient(cfg),
+		Project:         NewProjectClient(cfg),
+		ProjectTeammate: NewProjectTeammateClient(cfg),
+		Teammate:        NewTeammateClient(cfg),
+		TestTodo:        NewTestTodoClient(cfg),
+		TestUser:        NewTestUserClient(cfg),
+		Workspace:       NewWorkspaceClient(cfg),
 	}, nil
 }
 
@@ -159,6 +165,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.Color.Use(hooks...)
 	c.Icon.Use(hooks...)
 	c.Project.Use(hooks...)
+	c.ProjectTeammate.Use(hooks...)
 	c.Teammate.Use(hooks...)
 	c.TestTodo.Use(hooks...)
 	c.TestUser.Use(hooks...)
@@ -526,9 +533,147 @@ func (c *ProjectClient) QueryTeammate(pr *Project) *TeammateQuery {
 	return query
 }
 
+// QueryProjectTeammates queries the project_teammates edge of a Project.
+func (c *ProjectClient) QueryProjectTeammates(pr *Project) *ProjectTeammateQuery {
+	query := &ProjectTeammateQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := pr.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(project.Table, project.FieldID, id),
+			sqlgraph.To(projectteammate.Table, projectteammate.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, project.ProjectTeammatesTable, project.ProjectTeammatesColumn),
+		)
+		fromV = sqlgraph.Neighbors(pr.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *ProjectClient) Hooks() []Hook {
 	return c.hooks.Project
+}
+
+// ProjectTeammateClient is a client for the ProjectTeammate schema.
+type ProjectTeammateClient struct {
+	config
+}
+
+// NewProjectTeammateClient returns a client for the ProjectTeammate from the given config.
+func NewProjectTeammateClient(c config) *ProjectTeammateClient {
+	return &ProjectTeammateClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `projectteammate.Hooks(f(g(h())))`.
+func (c *ProjectTeammateClient) Use(hooks ...Hook) {
+	c.hooks.ProjectTeammate = append(c.hooks.ProjectTeammate, hooks...)
+}
+
+// Create returns a create builder for ProjectTeammate.
+func (c *ProjectTeammateClient) Create() *ProjectTeammateCreate {
+	mutation := newProjectTeammateMutation(c.config, OpCreate)
+	return &ProjectTeammateCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of ProjectTeammate entities.
+func (c *ProjectTeammateClient) CreateBulk(builders ...*ProjectTeammateCreate) *ProjectTeammateCreateBulk {
+	return &ProjectTeammateCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for ProjectTeammate.
+func (c *ProjectTeammateClient) Update() *ProjectTeammateUpdate {
+	mutation := newProjectTeammateMutation(c.config, OpUpdate)
+	return &ProjectTeammateUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ProjectTeammateClient) UpdateOne(pt *ProjectTeammate) *ProjectTeammateUpdateOne {
+	mutation := newProjectTeammateMutation(c.config, OpUpdateOne, withProjectTeammate(pt))
+	return &ProjectTeammateUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ProjectTeammateClient) UpdateOneID(id ulid.ID) *ProjectTeammateUpdateOne {
+	mutation := newProjectTeammateMutation(c.config, OpUpdateOne, withProjectTeammateID(id))
+	return &ProjectTeammateUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for ProjectTeammate.
+func (c *ProjectTeammateClient) Delete() *ProjectTeammateDelete {
+	mutation := newProjectTeammateMutation(c.config, OpDelete)
+	return &ProjectTeammateDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *ProjectTeammateClient) DeleteOne(pt *ProjectTeammate) *ProjectTeammateDeleteOne {
+	return c.DeleteOneID(pt.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *ProjectTeammateClient) DeleteOneID(id ulid.ID) *ProjectTeammateDeleteOne {
+	builder := c.Delete().Where(projectteammate.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ProjectTeammateDeleteOne{builder}
+}
+
+// Query returns a query builder for ProjectTeammate.
+func (c *ProjectTeammateClient) Query() *ProjectTeammateQuery {
+	return &ProjectTeammateQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a ProjectTeammate entity by its id.
+func (c *ProjectTeammateClient) Get(ctx context.Context, id ulid.ID) (*ProjectTeammate, error) {
+	return c.Query().Where(projectteammate.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ProjectTeammateClient) GetX(ctx context.Context, id ulid.ID) *ProjectTeammate {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryProject queries the project edge of a ProjectTeammate.
+func (c *ProjectTeammateClient) QueryProject(pt *ProjectTeammate) *ProjectQuery {
+	query := &ProjectQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := pt.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(projectteammate.Table, projectteammate.FieldID, id),
+			sqlgraph.To(project.Table, project.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, projectteammate.ProjectTable, projectteammate.ProjectColumn),
+		)
+		fromV = sqlgraph.Neighbors(pt.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryTeammate queries the teammate edge of a ProjectTeammate.
+func (c *ProjectTeammateClient) QueryTeammate(pt *ProjectTeammate) *TeammateQuery {
+	query := &TeammateQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := pt.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(projectteammate.Table, projectteammate.FieldID, id),
+			sqlgraph.To(teammate.Table, teammate.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, projectteammate.TeammateTable, projectteammate.TeammateColumn),
+		)
+		fromV = sqlgraph.Neighbors(pt.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *ProjectTeammateClient) Hooks() []Hook {
+	return c.hooks.ProjectTeammate
 }
 
 // TeammateClient is a client for the Teammate schema.
@@ -641,6 +786,22 @@ func (c *TeammateClient) QueryProjects(t *Teammate) *ProjectQuery {
 			sqlgraph.From(teammate.Table, teammate.FieldID, id),
 			sqlgraph.To(project.Table, project.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, teammate.ProjectsTable, teammate.ProjectsColumn),
+		)
+		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryProjectTeammates queries the project_teammates edge of a Teammate.
+func (c *TeammateClient) QueryProjectTeammates(t *Teammate) *ProjectTeammateQuery {
+	query := &ProjectTeammateQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := t.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(teammate.Table, teammate.FieldID, id),
+			sqlgraph.To(projectteammate.Table, projectteammate.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, teammate.ProjectTeammatesTable, teammate.ProjectTeammatesColumn),
 		)
 		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
 		return fromV, nil

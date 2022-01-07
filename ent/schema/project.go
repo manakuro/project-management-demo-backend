@@ -98,6 +98,12 @@ func (Project) Edges() []ent.Edge {
 					annotation.Edge{FieldName: "created_by"},
 				),
 			),
+		edge.To("project_teammates", ProjectTeammate.Edges).
+			Annotations(
+				schema.Annotation(
+					annotation.Edge{FieldName: "project_teammate_id"},
+				),
+			),
 	}
 }
 

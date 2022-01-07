@@ -11,6 +11,7 @@ import (
 	"project-management-demo-backend/ent/color"
 	"project-management-demo-backend/ent/icon"
 	"project-management-demo-backend/ent/project"
+	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/testtodo"
@@ -917,6 +918,233 @@ func (pr *Project) ToEdge(order *ProjectOrder) *ProjectEdge {
 	return &ProjectEdge{
 		Node:   pr,
 		Cursor: order.Field.toCursor(pr),
+	}
+}
+
+// ProjectTeammateEdge is the edge representation of ProjectTeammate.
+type ProjectTeammateEdge struct {
+	Node   *ProjectTeammate `json:"node"`
+	Cursor Cursor           `json:"cursor"`
+}
+
+// ProjectTeammateConnection is the connection containing edges to ProjectTeammate.
+type ProjectTeammateConnection struct {
+	Edges      []*ProjectTeammateEdge `json:"edges"`
+	PageInfo   PageInfo               `json:"pageInfo"`
+	TotalCount int                    `json:"totalCount"`
+}
+
+// ProjectTeammatePaginateOption enables pagination customization.
+type ProjectTeammatePaginateOption func(*projectTeammatePager) error
+
+// WithProjectTeammateOrder configures pagination ordering.
+func WithProjectTeammateOrder(order *ProjectTeammateOrder) ProjectTeammatePaginateOption {
+	if order == nil {
+		order = DefaultProjectTeammateOrder
+	}
+	o := *order
+	return func(pager *projectTeammatePager) error {
+		if err := o.Direction.Validate(); err != nil {
+			return err
+		}
+		if o.Field == nil {
+			o.Field = DefaultProjectTeammateOrder.Field
+		}
+		pager.order = &o
+		return nil
+	}
+}
+
+// WithProjectTeammateFilter configures pagination filter.
+func WithProjectTeammateFilter(filter func(*ProjectTeammateQuery) (*ProjectTeammateQuery, error)) ProjectTeammatePaginateOption {
+	return func(pager *projectTeammatePager) error {
+		if filter == nil {
+			return errors.New("ProjectTeammateQuery filter cannot be nil")
+		}
+		pager.filter = filter
+		return nil
+	}
+}
+
+type projectTeammatePager struct {
+	order  *ProjectTeammateOrder
+	filter func(*ProjectTeammateQuery) (*ProjectTeammateQuery, error)
+}
+
+func newProjectTeammatePager(opts []ProjectTeammatePaginateOption) (*projectTeammatePager, error) {
+	pager := &projectTeammatePager{}
+	for _, opt := range opts {
+		if err := opt(pager); err != nil {
+			return nil, err
+		}
+	}
+	if pager.order == nil {
+		pager.order = DefaultProjectTeammateOrder
+	}
+	return pager, nil
+}
+
+func (p *projectTeammatePager) applyFilter(query *ProjectTeammateQuery) (*ProjectTeammateQuery, error) {
+	if p.filter != nil {
+		return p.filter(query)
+	}
+	return query, nil
+}
+
+func (p *projectTeammatePager) toCursor(pt *ProjectTeammate) Cursor {
+	return p.order.Field.toCursor(pt)
+}
+
+func (p *projectTeammatePager) applyCursors(query *ProjectTeammateQuery, after, before *Cursor) *ProjectTeammateQuery {
+	for _, predicate := range cursorsToPredicates(
+		p.order.Direction, after, before,
+		p.order.Field.field, DefaultProjectTeammateOrder.Field.field,
+	) {
+		query = query.Where(predicate)
+	}
+	return query
+}
+
+func (p *projectTeammatePager) applyOrder(query *ProjectTeammateQuery, reverse bool) *ProjectTeammateQuery {
+	direction := p.order.Direction
+	if reverse {
+		direction = direction.reverse()
+	}
+	query = query.Order(direction.orderFunc(p.order.Field.field))
+	if p.order.Field != DefaultProjectTeammateOrder.Field {
+		query = query.Order(direction.orderFunc(DefaultProjectTeammateOrder.Field.field))
+	}
+	return query
+}
+
+// Paginate executes the query and returns a relay based cursor connection to ProjectTeammate.
+func (pt *ProjectTeammateQuery) Paginate(
+	ctx context.Context, after *Cursor, first *int,
+	before *Cursor, last *int, opts ...ProjectTeammatePaginateOption,
+) (*ProjectTeammateConnection, error) {
+	if err := validateFirstLast(first, last); err != nil {
+		return nil, err
+	}
+	pager, err := newProjectTeammatePager(opts)
+	if err != nil {
+		return nil, err
+	}
+
+	if pt, err = pager.applyFilter(pt); err != nil {
+		return nil, err
+	}
+
+	conn := &ProjectTeammateConnection{Edges: []*ProjectTeammateEdge{}}
+	if !hasCollectedField(ctx, edgesField) || first != nil && *first == 0 || last != nil && *last == 0 {
+		if hasCollectedField(ctx, totalCountField) ||
+			hasCollectedField(ctx, pageInfoField) {
+			count, err := pt.Count(ctx)
+			if err != nil {
+				return nil, err
+			}
+			conn.TotalCount = count
+			conn.PageInfo.HasNextPage = first != nil && count > 0
+			conn.PageInfo.HasPreviousPage = last != nil && count > 0
+		}
+		return conn, nil
+	}
+
+	if (after != nil || first != nil || before != nil || last != nil) && hasCollectedField(ctx, totalCountField) {
+		count, err := pt.Clone().Count(ctx)
+		if err != nil {
+			return nil, err
+		}
+		conn.TotalCount = count
+	}
+
+	pt = pager.applyCursors(pt, after, before)
+	pt = pager.applyOrder(pt, last != nil)
+	var limit int
+	if first != nil {
+		limit = *first + 1
+	} else if last != nil {
+		limit = *last + 1
+	}
+	if limit > 0 {
+		pt = pt.Limit(limit)
+	}
+
+	if field := getCollectedField(ctx, edgesField, nodeField); field != nil {
+		pt = pt.collectField(graphql.GetOperationContext(ctx), *field)
+	}
+
+	nodes, err := pt.All(ctx)
+	if err != nil || len(nodes) == 0 {
+		return conn, err
+	}
+
+	if len(nodes) == limit {
+		conn.PageInfo.HasNextPage = first != nil
+		conn.PageInfo.HasPreviousPage = last != nil
+		nodes = nodes[:len(nodes)-1]
+	}
+
+	var nodeAt func(int) *ProjectTeammate
+	if last != nil {
+		n := len(nodes) - 1
+		nodeAt = func(i int) *ProjectTeammate {
+			return nodes[n-i]
+		}
+	} else {
+		nodeAt = func(i int) *ProjectTeammate {
+			return nodes[i]
+		}
+	}
+
+	conn.Edges = make([]*ProjectTeammateEdge, len(nodes))
+	for i := range nodes {
+		node := nodeAt(i)
+		conn.Edges[i] = &ProjectTeammateEdge{
+			Node:   node,
+			Cursor: pager.toCursor(node),
+		}
+	}
+
+	conn.PageInfo.StartCursor = &conn.Edges[0].Cursor
+	conn.PageInfo.EndCursor = &conn.Edges[len(conn.Edges)-1].Cursor
+	if conn.TotalCount == 0 {
+		conn.TotalCount = len(nodes)
+	}
+
+	return conn, nil
+}
+
+// ProjectTeammateOrderField defines the ordering field of ProjectTeammate.
+type ProjectTeammateOrderField struct {
+	field    string
+	toCursor func(*ProjectTeammate) Cursor
+}
+
+// ProjectTeammateOrder defines the ordering of ProjectTeammate.
+type ProjectTeammateOrder struct {
+	Direction OrderDirection             `json:"direction"`
+	Field     *ProjectTeammateOrderField `json:"field"`
+}
+
+// DefaultProjectTeammateOrder is the default ordering of ProjectTeammate.
+var DefaultProjectTeammateOrder = &ProjectTeammateOrder{
+	Direction: OrderDirectionAsc,
+	Field: &ProjectTeammateOrderField{
+		field: projectteammate.FieldID,
+		toCursor: func(pt *ProjectTeammate) Cursor {
+			return Cursor{ID: pt.ID}
+		},
+	},
+}
+
+// ToEdge converts ProjectTeammate into ProjectTeammateEdge.
+func (pt *ProjectTeammate) ToEdge(order *ProjectTeammateOrder) *ProjectTeammateEdge {
+	if order == nil {
+		order = DefaultProjectTeammateOrder
+	}
+	return &ProjectTeammateEdge{
+		Node:   pt,
+		Cursor: order.Field.toCursor(pt),
 	}
 }
 

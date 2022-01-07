@@ -58,9 +58,11 @@ type ProjectEdges struct {
 	Icon *Icon `json:"icon,omitempty"`
 	// Teammate holds the value of the teammate edge.
 	Teammate *Teammate `json:"teammate,omitempty"`
+	// ProjectTeammates holds the value of the project_teammates edge.
+	ProjectTeammates []*ProjectTeammate `json:"project_teammates,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [4]bool
+	loadedTypes [5]bool
 }
 
 // WorkspaceOrErr returns the Workspace value or an error if the edge
@@ -117,6 +119,15 @@ func (e ProjectEdges) TeammateOrErr() (*Teammate, error) {
 		return e.Teammate, nil
 	}
 	return nil, &NotLoadedError{edge: "teammate"}
+}
+
+// ProjectTeammatesOrErr returns the ProjectTeammates value or an error if the edge
+// was not loaded in eager-loading.
+func (e ProjectEdges) ProjectTeammatesOrErr() ([]*ProjectTeammate, error) {
+	if e.loadedTypes[4] {
+		return e.ProjectTeammates, nil
+	}
+	return nil, &NotLoadedError{edge: "project_teammates"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -238,6 +249,11 @@ func (pr *Project) QueryIcon() *IconQuery {
 // QueryTeammate queries the "teammate" edge of the Project entity.
 func (pr *Project) QueryTeammate() *TeammateQuery {
 	return (&ProjectClient{config: pr.config}).QueryTeammate(pr)
+}
+
+// QueryProjectTeammates queries the "project_teammates" edge of the Project entity.
+func (pr *Project) QueryProjectTeammates() *ProjectTeammateQuery {
+	return (&ProjectClient{config: pr.config}).QueryProjectTeammates(pr)
 }
 
 // Update returns a builder for updating this Project.

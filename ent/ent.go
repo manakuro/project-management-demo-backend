@@ -8,6 +8,7 @@ import (
 	"project-management-demo-backend/ent/color"
 	"project-management-demo-backend/ent/icon"
 	"project-management-demo-backend/ent/project"
+	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/ent/testuser"
@@ -35,13 +36,14 @@ type OrderFunc func(*sql.Selector)
 // columnChecker returns a function indicates if the column exists in the given column.
 func columnChecker(table string) func(string) error {
 	checks := map[string]func(string) bool{
-		color.Table:     color.ValidColumn,
-		icon.Table:      icon.ValidColumn,
-		project.Table:   project.ValidColumn,
-		teammate.Table:  teammate.ValidColumn,
-		testtodo.Table:  testtodo.ValidColumn,
-		testuser.Table:  testuser.ValidColumn,
-		workspace.Table: workspace.ValidColumn,
+		color.Table:           color.ValidColumn,
+		icon.Table:            icon.ValidColumn,
+		project.Table:         project.ValidColumn,
+		projectteammate.Table: projectteammate.ValidColumn,
+		teammate.Table:        teammate.ValidColumn,
+		testtodo.Table:        testtodo.ValidColumn,
+		testuser.Table:        testuser.ValidColumn,
+		workspace.Table:       workspace.ValidColumn,
 	}
 	check, ok := checks[table]
 	if !ok {

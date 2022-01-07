@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"project-management-demo-backend/ent/predicate"
 	"project-management-demo-backend/ent/project"
+	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/workspace"
@@ -77,6 +78,21 @@ func (tu *TeammateUpdate) AddProjects(p ...*Project) *TeammateUpdate {
 	return tu.AddProjectIDs(ids...)
 }
 
+// AddProjectTeammateIDs adds the "project_teammates" edge to the ProjectTeammate entity by IDs.
+func (tu *TeammateUpdate) AddProjectTeammateIDs(ids ...ulid.ID) *TeammateUpdate {
+	tu.mutation.AddProjectTeammateIDs(ids...)
+	return tu
+}
+
+// AddProjectTeammates adds the "project_teammates" edges to the ProjectTeammate entity.
+func (tu *TeammateUpdate) AddProjectTeammates(p ...*ProjectTeammate) *TeammateUpdate {
+	ids := make([]ulid.ID, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return tu.AddProjectTeammateIDs(ids...)
+}
+
 // Mutation returns the TeammateMutation object of the builder.
 func (tu *TeammateUpdate) Mutation() *TeammateMutation {
 	return tu.mutation
@@ -122,6 +138,27 @@ func (tu *TeammateUpdate) RemoveProjects(p ...*Project) *TeammateUpdate {
 		ids[i] = p[i].ID
 	}
 	return tu.RemoveProjectIDs(ids...)
+}
+
+// ClearProjectTeammates clears all "project_teammates" edges to the ProjectTeammate entity.
+func (tu *TeammateUpdate) ClearProjectTeammates() *TeammateUpdate {
+	tu.mutation.ClearProjectTeammates()
+	return tu
+}
+
+// RemoveProjectTeammateIDs removes the "project_teammates" edge to ProjectTeammate entities by IDs.
+func (tu *TeammateUpdate) RemoveProjectTeammateIDs(ids ...ulid.ID) *TeammateUpdate {
+	tu.mutation.RemoveProjectTeammateIDs(ids...)
+	return tu
+}
+
+// RemoveProjectTeammates removes "project_teammates" edges to ProjectTeammate entities.
+func (tu *TeammateUpdate) RemoveProjectTeammates(p ...*ProjectTeammate) *TeammateUpdate {
+	ids := make([]ulid.ID, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return tu.RemoveProjectTeammateIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -351,6 +388,60 @@ func (tu *TeammateUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if tu.mutation.ProjectTeammatesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   teammate.ProjectTeammatesTable,
+			Columns: []string{teammate.ProjectTeammatesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: projectteammate.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tu.mutation.RemovedProjectTeammatesIDs(); len(nodes) > 0 && !tu.mutation.ProjectTeammatesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   teammate.ProjectTeammatesTable,
+			Columns: []string{teammate.ProjectTeammatesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: projectteammate.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tu.mutation.ProjectTeammatesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   teammate.ProjectTeammatesTable,
+			Columns: []string{teammate.ProjectTeammatesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: projectteammate.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, tu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{teammate.Label}
@@ -418,6 +509,21 @@ func (tuo *TeammateUpdateOne) AddProjects(p ...*Project) *TeammateUpdateOne {
 	return tuo.AddProjectIDs(ids...)
 }
 
+// AddProjectTeammateIDs adds the "project_teammates" edge to the ProjectTeammate entity by IDs.
+func (tuo *TeammateUpdateOne) AddProjectTeammateIDs(ids ...ulid.ID) *TeammateUpdateOne {
+	tuo.mutation.AddProjectTeammateIDs(ids...)
+	return tuo
+}
+
+// AddProjectTeammates adds the "project_teammates" edges to the ProjectTeammate entity.
+func (tuo *TeammateUpdateOne) AddProjectTeammates(p ...*ProjectTeammate) *TeammateUpdateOne {
+	ids := make([]ulid.ID, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return tuo.AddProjectTeammateIDs(ids...)
+}
+
 // Mutation returns the TeammateMutation object of the builder.
 func (tuo *TeammateUpdateOne) Mutation() *TeammateMutation {
 	return tuo.mutation
@@ -463,6 +569,27 @@ func (tuo *TeammateUpdateOne) RemoveProjects(p ...*Project) *TeammateUpdateOne {
 		ids[i] = p[i].ID
 	}
 	return tuo.RemoveProjectIDs(ids...)
+}
+
+// ClearProjectTeammates clears all "project_teammates" edges to the ProjectTeammate entity.
+func (tuo *TeammateUpdateOne) ClearProjectTeammates() *TeammateUpdateOne {
+	tuo.mutation.ClearProjectTeammates()
+	return tuo
+}
+
+// RemoveProjectTeammateIDs removes the "project_teammates" edge to ProjectTeammate entities by IDs.
+func (tuo *TeammateUpdateOne) RemoveProjectTeammateIDs(ids ...ulid.ID) *TeammateUpdateOne {
+	tuo.mutation.RemoveProjectTeammateIDs(ids...)
+	return tuo
+}
+
+// RemoveProjectTeammates removes "project_teammates" edges to ProjectTeammate entities.
+func (tuo *TeammateUpdateOne) RemoveProjectTeammates(p ...*ProjectTeammate) *TeammateUpdateOne {
+	ids := make([]ulid.ID, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return tuo.RemoveProjectTeammateIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -708,6 +835,60 @@ func (tuo *TeammateUpdateOne) sqlSave(ctx context.Context) (_node *Teammate, err
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: project.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if tuo.mutation.ProjectTeammatesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   teammate.ProjectTeammatesTable,
+			Columns: []string{teammate.ProjectTeammatesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: projectteammate.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tuo.mutation.RemovedProjectTeammatesIDs(); len(nodes) > 0 && !tuo.mutation.ProjectTeammatesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   teammate.ProjectTeammatesTable,
+			Columns: []string{teammate.ProjectTeammatesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: projectteammate.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tuo.mutation.ProjectTeammatesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   teammate.ProjectTeammatesTable,
+			Columns: []string{teammate.ProjectTeammatesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: projectteammate.FieldID,
 				},
 			},
 		}

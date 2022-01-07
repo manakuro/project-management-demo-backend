@@ -13,7 +13,7 @@ import (
 	"time"
 )
 
-// Project generates color data
+// Project generates projects data
 func Project(ctx context.Context, client *ent.Client) {
 	_, err := client.Project.Delete().Exec(ctx)
 	if err != nil {
