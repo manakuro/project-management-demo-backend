@@ -5,6 +5,7 @@ import (
 	"log"
 	"project-management-demo-backend/ent/color"
 	"project-management-demo-backend/ent/icon"
+	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/ent/testuser"
@@ -58,7 +59,7 @@ func New() GlobalIDs {
 		},
 		Project: field{
 			Prefix: "0AG",
-			Table:  icon.Table,
+			Table:  project.Table,
 		},
 	}
 }
