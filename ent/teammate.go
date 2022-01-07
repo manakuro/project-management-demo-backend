@@ -7,7 +7,6 @@ import (
 	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/teammate"
-	"project-management-demo-backend/ent/workspace"
 	"strings"
 	"time"
 
@@ -36,8 +35,8 @@ type Teammate struct {
 
 // TeammateEdges holds the relations/edges for other nodes in the graph.
 type TeammateEdges struct {
-	// Workspace holds the value of the workspace edge.
-	Workspace *Workspace `json:"workspace,omitempty"`
+	// Workspaces holds the value of the workspaces edge.
+	Workspaces []*Workspace `json:"workspaces,omitempty"`
 	// Project holds the value of the project edge.
 	Project *Project `json:"project,omitempty"`
 	// loadedTypes holds the information for reporting if a
@@ -45,18 +44,13 @@ type TeammateEdges struct {
 	loadedTypes [2]bool
 }
 
-// WorkspaceOrErr returns the Workspace value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e TeammateEdges) WorkspaceOrErr() (*Workspace, error) {
+// WorkspacesOrErr returns the Workspaces value or an error if the edge
+// was not loaded in eager-loading.
+func (e TeammateEdges) WorkspacesOrErr() ([]*Workspace, error) {
 	if e.loadedTypes[0] {
-		if e.Workspace == nil {
-			// The edge workspace was loaded in eager-loading,
-			// but was not found.
-			return nil, &NotFoundError{label: workspace.Label}
-		}
-		return e.Workspace, nil
+		return e.Workspaces, nil
 	}
-	return nil, &NotLoadedError{edge: "workspace"}
+	return nil, &NotLoadedError{edge: "workspaces"}
 }
 
 // ProjectOrErr returns the Project value or an error if the edge
@@ -140,9 +134,9 @@ func (t *Teammate) assignValues(columns []string, values []interface{}) error {
 	return nil
 }
 
-// QueryWorkspace queries the "workspace" edge of the Teammate entity.
-func (t *Teammate) QueryWorkspace() *WorkspaceQuery {
-	return (&TeammateClient{config: t.config}).QueryWorkspace(t)
+// QueryWorkspaces queries the "workspaces" edge of the Teammate entity.
+func (t *Teammate) QueryWorkspaces() *WorkspaceQuery {
+	return (&TeammateClient{config: t.config}).QueryWorkspaces(t)
 }
 
 // QueryProject queries the "project" edge of the Teammate entity.

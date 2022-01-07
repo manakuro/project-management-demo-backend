@@ -243,9 +243,9 @@ input TeammateWhereInput {
   idLT: ID
   idLTE: ID
   
-  """workspace edge predicates"""
-  hasWorkspace: Boolean
-  hasWorkspaceWith: [WorkspaceWhereInput!]
+  """workspaces edge predicates"""
+  hasWorkspaces: Boolean
+  hasWorkspacesWith: [WorkspaceWhereInput!]
   
   """project edge predicates"""
   hasProject: Boolean

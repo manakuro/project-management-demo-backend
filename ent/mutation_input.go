@@ -257,13 +257,13 @@ func (u *ProjectUpdateOne) SetInput(i UpdateProjectInput) *ProjectUpdateOne {
 
 // CreateTeammateInput represents a mutation input for creating teammates.
 type CreateTeammateInput struct {
-	Name        string
-	Image       string
-	Email       string
-	CreatedAt   *time.Time
-	UpdatedAt   *time.Time
-	WorkspaceID *ulid.ID
-	ProjectID   *ulid.ID
+	Name         string
+	Image        string
+	Email        string
+	CreatedAt    *time.Time
+	UpdatedAt    *time.Time
+	WorkspaceIDs []ulid.ID
+	ProjectID    *ulid.ID
 }
 
 // Mutate applies the CreateTeammateInput on the TeammateCreate builder.
@@ -277,8 +277,8 @@ func (i *CreateTeammateInput) Mutate(m *TeammateCreate) {
 	if v := i.UpdatedAt; v != nil {
 		m.SetUpdatedAt(*v)
 	}
-	if v := i.WorkspaceID; v != nil {
-		m.SetWorkspaceID(*v)
+	if ids := i.WorkspaceIDs; len(ids) > 0 {
+		m.AddWorkspaceIDs(ids...)
 	}
 	if v := i.ProjectID; v != nil {
 		m.SetProjectID(*v)
@@ -293,14 +293,14 @@ func (c *TeammateCreate) SetInput(i CreateTeammateInput) *TeammateCreate {
 
 // UpdateTeammateInput represents a mutation input for updating teammates.
 type UpdateTeammateInput struct {
-	ID             ulid.ID
-	Name           *string
-	Image          *string
-	Email          *string
-	WorkspaceID    *ulid.ID
-	ClearWorkspace bool
-	ProjectID      *ulid.ID
-	ClearProject   bool
+	ID                 ulid.ID
+	Name               *string
+	Image              *string
+	Email              *string
+	AddWorkspaceIDs    []ulid.ID
+	RemoveWorkspaceIDs []ulid.ID
+	ProjectID          *ulid.ID
+	ClearProject       bool
 }
 
 // Mutate applies the UpdateTeammateInput on the TeammateMutation.
@@ -314,11 +314,11 @@ func (i *UpdateTeammateInput) Mutate(m *TeammateMutation) {
 	if v := i.Email; v != nil {
 		m.SetEmail(*v)
 	}
-	if i.ClearWorkspace {
-		m.ClearWorkspace()
+	if ids := i.AddWorkspaceIDs; len(ids) > 0 {
+		m.AddWorkspaceIDs(ids...)
 	}
-	if v := i.WorkspaceID; v != nil {
-		m.SetWorkspaceID(*v)
+	if ids := i.RemoveWorkspaceIDs; len(ids) > 0 {
+		m.RemoveWorkspaceIDs(ids...)
 	}
 	if i.ClearProject {
 		m.ClearProject()

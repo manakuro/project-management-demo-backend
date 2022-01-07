@@ -81,7 +81,7 @@ func (wq *WorkspaceQuery) QueryTeammate() *TeammateQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(workspace.Table, workspace.FieldID, selector),
 			sqlgraph.To(teammate.Table, teammate.FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, true, workspace.TeammateTable, workspace.TeammateColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, workspace.TeammateTable, workspace.TeammateColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(wq.driver.Dialect(), step)
 		return fromU, nil

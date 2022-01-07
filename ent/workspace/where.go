@@ -507,7 +507,7 @@ func HasTeammate() predicate.Workspace {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(TeammateTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, true, TeammateTable, TeammateColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, TeammateTable, TeammateColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
@@ -519,7 +519,7 @@ func HasTeammateWith(preds ...predicate.Teammate) predicate.Workspace {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(TeammateInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, true, TeammateTable, TeammateColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, TeammateTable, TeammateColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

@@ -46,6 +46,11 @@ func Workspace(ctx context.Context, client *ent.Client) {
 			Description: description,
 			CreatedBy:   tm.ID,
 		},
+		{
+			Name:        "My Workspace 2",
+			Description: description,
+			CreatedBy:   tm.ID,
+		},
 	}
 	bulk := make([]*ent.WorkspaceCreate, len(ts))
 	for i, t := range ts {

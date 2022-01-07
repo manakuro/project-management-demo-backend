@@ -83,23 +83,19 @@ func (tc *TeammateCreate) SetNillableID(u *ulid.ID) *TeammateCreate {
 	return tc
 }
 
-// SetWorkspaceID sets the "workspace" edge to the Workspace entity by ID.
-func (tc *TeammateCreate) SetWorkspaceID(id ulid.ID) *TeammateCreate {
-	tc.mutation.SetWorkspaceID(id)
+// AddWorkspaceIDs adds the "workspaces" edge to the Workspace entity by IDs.
+func (tc *TeammateCreate) AddWorkspaceIDs(ids ...ulid.ID) *TeammateCreate {
+	tc.mutation.AddWorkspaceIDs(ids...)
 	return tc
 }
 
-// SetNillableWorkspaceID sets the "workspace" edge to the Workspace entity by ID if the given value is not nil.
-func (tc *TeammateCreate) SetNillableWorkspaceID(id *ulid.ID) *TeammateCreate {
-	if id != nil {
-		tc = tc.SetWorkspaceID(*id)
+// AddWorkspaces adds the "workspaces" edges to the Workspace entity.
+func (tc *TeammateCreate) AddWorkspaces(w ...*Workspace) *TeammateCreate {
+	ids := make([]ulid.ID, len(w))
+	for i := range w {
+		ids[i] = w[i].ID
 	}
-	return tc
-}
-
-// SetWorkspace sets the "workspace" edge to the Workspace entity.
-func (tc *TeammateCreate) SetWorkspace(w *Workspace) *TeammateCreate {
-	return tc.SetWorkspaceID(w.ID)
+	return tc.AddWorkspaceIDs(ids...)
 }
 
 // SetProjectID sets the "project" edge to the Project entity by ID.
@@ -310,12 +306,12 @@ func (tc *TeammateCreate) createSpec() (*Teammate, *sqlgraph.CreateSpec) {
 		})
 		_node.UpdatedAt = value
 	}
-	if nodes := tc.mutation.WorkspaceIDs(); len(nodes) > 0 {
+	if nodes := tc.mutation.WorkspacesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   teammate.WorkspaceTable,
-			Columns: []string{teammate.WorkspaceColumn},
+			Table:   teammate.WorkspacesTable,
+			Columns: []string{teammate.WorkspacesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{

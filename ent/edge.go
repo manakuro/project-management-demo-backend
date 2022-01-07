@@ -52,12 +52,12 @@ func (pr *Project) Teammate(ctx context.Context) (*Teammate, error) {
 	return result, err
 }
 
-func (t *Teammate) Workspace(ctx context.Context) (*Workspace, error) {
-	result, err := t.Edges.WorkspaceOrErr()
+func (t *Teammate) Workspaces(ctx context.Context) ([]*Workspace, error) {
+	result, err := t.Edges.WorkspacesOrErr()
 	if IsNotLoaded(err) {
-		result, err = t.QueryWorkspace().Only(ctx)
+		result, err = t.QueryWorkspaces().All(ctx)
 	}
-	return result, MaskNotFound(err)
+	return result, err
 }
 
 func (t *Teammate) Project(ctx context.Context) (*Project, error) {

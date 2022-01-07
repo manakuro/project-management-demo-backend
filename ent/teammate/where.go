@@ -614,25 +614,25 @@ func UpdatedAtLTE(v time.Time) predicate.Teammate {
 	})
 }
 
-// HasWorkspace applies the HasEdge predicate on the "workspace" edge.
-func HasWorkspace() predicate.Teammate {
+// HasWorkspaces applies the HasEdge predicate on the "workspaces" edge.
+func HasWorkspaces() predicate.Teammate {
 	return predicate.Teammate(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(WorkspaceTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, false, WorkspaceTable, WorkspaceColumn),
+			sqlgraph.To(WorkspacesTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, WorkspacesTable, WorkspacesColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasWorkspaceWith applies the HasEdge predicate on the "workspace" edge with a given conditions (other predicates).
-func HasWorkspaceWith(preds ...predicate.Workspace) predicate.Teammate {
+// HasWorkspacesWith applies the HasEdge predicate on the "workspaces" edge with a given conditions (other predicates).
+func HasWorkspacesWith(preds ...predicate.Workspace) predicate.Teammate {
 	return predicate.Teammate(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(WorkspaceInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, false, WorkspaceTable, WorkspaceColumn),
+			sqlgraph.To(WorkspacesInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, WorkspacesTable, WorkspacesColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

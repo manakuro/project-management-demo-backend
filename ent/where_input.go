@@ -1394,9 +1394,9 @@ type TeammateWhereInput struct {
 	UpdatedAtLT    *time.Time  `json:"updatedAtLT,omitempty"`
 	UpdatedAtLTE   *time.Time  `json:"updatedAtLTE,omitempty"`
 
-	// "workspace" edge predicates.
-	HasWorkspace     *bool                  `json:"hasWorkspace,omitempty"`
-	HasWorkspaceWith []*WorkspaceWhereInput `json:"hasWorkspaceWith,omitempty"`
+	// "workspaces" edge predicates.
+	HasWorkspaces     *bool                  `json:"hasWorkspaces,omitempty"`
+	HasWorkspacesWith []*WorkspaceWhereInput `json:"hasWorkspacesWith,omitempty"`
 
 	// "project" edge predicates.
 	HasProject     *bool                `json:"hasProject,omitempty"`
@@ -1652,23 +1652,23 @@ func (i *TeammateWhereInput) P() (predicate.Teammate, error) {
 		predicates = append(predicates, teammate.UpdatedAtLTE(*i.UpdatedAtLTE))
 	}
 
-	if i.HasWorkspace != nil {
-		p := teammate.HasWorkspace()
-		if !*i.HasWorkspace {
+	if i.HasWorkspaces != nil {
+		p := teammate.HasWorkspaces()
+		if !*i.HasWorkspaces {
 			p = teammate.Not(p)
 		}
 		predicates = append(predicates, p)
 	}
-	if len(i.HasWorkspaceWith) > 0 {
-		with := make([]predicate.Workspace, 0, len(i.HasWorkspaceWith))
-		for _, w := range i.HasWorkspaceWith {
+	if len(i.HasWorkspacesWith) > 0 {
+		with := make([]predicate.Workspace, 0, len(i.HasWorkspacesWith))
+		for _, w := range i.HasWorkspacesWith {
 			p, err := w.P()
 			if err != nil {
 				return nil, err
 			}
 			with = append(with, p)
 		}
-		predicates = append(predicates, teammate.HasWorkspaceWith(with...))
+		predicates = append(predicates, teammate.HasWorkspacesWith(with...))
 	}
 	if i.HasProject != nil {
 		p := teammate.HasProject()

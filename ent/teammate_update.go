@@ -47,23 +47,19 @@ func (tu *TeammateUpdate) SetEmail(s string) *TeammateUpdate {
 	return tu
 }
 
-// SetWorkspaceID sets the "workspace" edge to the Workspace entity by ID.
-func (tu *TeammateUpdate) SetWorkspaceID(id ulid.ID) *TeammateUpdate {
-	tu.mutation.SetWorkspaceID(id)
+// AddWorkspaceIDs adds the "workspaces" edge to the Workspace entity by IDs.
+func (tu *TeammateUpdate) AddWorkspaceIDs(ids ...ulid.ID) *TeammateUpdate {
+	tu.mutation.AddWorkspaceIDs(ids...)
 	return tu
 }
 
-// SetNillableWorkspaceID sets the "workspace" edge to the Workspace entity by ID if the given value is not nil.
-func (tu *TeammateUpdate) SetNillableWorkspaceID(id *ulid.ID) *TeammateUpdate {
-	if id != nil {
-		tu = tu.SetWorkspaceID(*id)
+// AddWorkspaces adds the "workspaces" edges to the Workspace entity.
+func (tu *TeammateUpdate) AddWorkspaces(w ...*Workspace) *TeammateUpdate {
+	ids := make([]ulid.ID, len(w))
+	for i := range w {
+		ids[i] = w[i].ID
 	}
-	return tu
-}
-
-// SetWorkspace sets the "workspace" edge to the Workspace entity.
-func (tu *TeammateUpdate) SetWorkspace(w *Workspace) *TeammateUpdate {
-	return tu.SetWorkspaceID(w.ID)
+	return tu.AddWorkspaceIDs(ids...)
 }
 
 // SetProjectID sets the "project" edge to the Project entity by ID.
@@ -90,10 +86,25 @@ func (tu *TeammateUpdate) Mutation() *TeammateMutation {
 	return tu.mutation
 }
 
-// ClearWorkspace clears the "workspace" edge to the Workspace entity.
-func (tu *TeammateUpdate) ClearWorkspace() *TeammateUpdate {
-	tu.mutation.ClearWorkspace()
+// ClearWorkspaces clears all "workspaces" edges to the Workspace entity.
+func (tu *TeammateUpdate) ClearWorkspaces() *TeammateUpdate {
+	tu.mutation.ClearWorkspaces()
 	return tu
+}
+
+// RemoveWorkspaceIDs removes the "workspaces" edge to Workspace entities by IDs.
+func (tu *TeammateUpdate) RemoveWorkspaceIDs(ids ...ulid.ID) *TeammateUpdate {
+	tu.mutation.RemoveWorkspaceIDs(ids...)
+	return tu
+}
+
+// RemoveWorkspaces removes "workspaces" edges to Workspace entities.
+func (tu *TeammateUpdate) RemoveWorkspaces(w ...*Workspace) *TeammateUpdate {
+	ids := make([]ulid.ID, len(w))
+	for i := range w {
+		ids[i] = w[i].ID
+	}
+	return tu.RemoveWorkspaceIDs(ids...)
 }
 
 // ClearProject clears the "project" edge to the Project entity.
@@ -221,12 +232,12 @@ func (tu *TeammateUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: teammate.FieldEmail,
 		})
 	}
-	if tu.mutation.WorkspaceCleared() {
+	if tu.mutation.WorkspacesCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   teammate.WorkspaceTable,
-			Columns: []string{teammate.WorkspaceColumn},
+			Table:   teammate.WorkspacesTable,
+			Columns: []string{teammate.WorkspacesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -237,12 +248,31 @@ func (tu *TeammateUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := tu.mutation.WorkspaceIDs(); len(nodes) > 0 {
+	if nodes := tu.mutation.RemovedWorkspacesIDs(); len(nodes) > 0 && !tu.mutation.WorkspacesCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   teammate.WorkspaceTable,
-			Columns: []string{teammate.WorkspaceColumn},
+			Table:   teammate.WorkspacesTable,
+			Columns: []string{teammate.WorkspacesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: workspace.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tu.mutation.WorkspacesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   teammate.WorkspacesTable,
+			Columns: []string{teammate.WorkspacesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -328,23 +358,19 @@ func (tuo *TeammateUpdateOne) SetEmail(s string) *TeammateUpdateOne {
 	return tuo
 }
 
-// SetWorkspaceID sets the "workspace" edge to the Workspace entity by ID.
-func (tuo *TeammateUpdateOne) SetWorkspaceID(id ulid.ID) *TeammateUpdateOne {
-	tuo.mutation.SetWorkspaceID(id)
+// AddWorkspaceIDs adds the "workspaces" edge to the Workspace entity by IDs.
+func (tuo *TeammateUpdateOne) AddWorkspaceIDs(ids ...ulid.ID) *TeammateUpdateOne {
+	tuo.mutation.AddWorkspaceIDs(ids...)
 	return tuo
 }
 
-// SetNillableWorkspaceID sets the "workspace" edge to the Workspace entity by ID if the given value is not nil.
-func (tuo *TeammateUpdateOne) SetNillableWorkspaceID(id *ulid.ID) *TeammateUpdateOne {
-	if id != nil {
-		tuo = tuo.SetWorkspaceID(*id)
+// AddWorkspaces adds the "workspaces" edges to the Workspace entity.
+func (tuo *TeammateUpdateOne) AddWorkspaces(w ...*Workspace) *TeammateUpdateOne {
+	ids := make([]ulid.ID, len(w))
+	for i := range w {
+		ids[i] = w[i].ID
 	}
-	return tuo
-}
-
-// SetWorkspace sets the "workspace" edge to the Workspace entity.
-func (tuo *TeammateUpdateOne) SetWorkspace(w *Workspace) *TeammateUpdateOne {
-	return tuo.SetWorkspaceID(w.ID)
+	return tuo.AddWorkspaceIDs(ids...)
 }
 
 // SetProjectID sets the "project" edge to the Project entity by ID.
@@ -371,10 +397,25 @@ func (tuo *TeammateUpdateOne) Mutation() *TeammateMutation {
 	return tuo.mutation
 }
 
-// ClearWorkspace clears the "workspace" edge to the Workspace entity.
-func (tuo *TeammateUpdateOne) ClearWorkspace() *TeammateUpdateOne {
-	tuo.mutation.ClearWorkspace()
+// ClearWorkspaces clears all "workspaces" edges to the Workspace entity.
+func (tuo *TeammateUpdateOne) ClearWorkspaces() *TeammateUpdateOne {
+	tuo.mutation.ClearWorkspaces()
 	return tuo
+}
+
+// RemoveWorkspaceIDs removes the "workspaces" edge to Workspace entities by IDs.
+func (tuo *TeammateUpdateOne) RemoveWorkspaceIDs(ids ...ulid.ID) *TeammateUpdateOne {
+	tuo.mutation.RemoveWorkspaceIDs(ids...)
+	return tuo
+}
+
+// RemoveWorkspaces removes "workspaces" edges to Workspace entities.
+func (tuo *TeammateUpdateOne) RemoveWorkspaces(w ...*Workspace) *TeammateUpdateOne {
+	ids := make([]ulid.ID, len(w))
+	for i := range w {
+		ids[i] = w[i].ID
+	}
+	return tuo.RemoveWorkspaceIDs(ids...)
 }
 
 // ClearProject clears the "project" edge to the Project entity.
@@ -526,12 +567,12 @@ func (tuo *TeammateUpdateOne) sqlSave(ctx context.Context) (_node *Teammate, err
 			Column: teammate.FieldEmail,
 		})
 	}
-	if tuo.mutation.WorkspaceCleared() {
+	if tuo.mutation.WorkspacesCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   teammate.WorkspaceTable,
-			Columns: []string{teammate.WorkspaceColumn},
+			Table:   teammate.WorkspacesTable,
+			Columns: []string{teammate.WorkspacesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -542,12 +583,31 @@ func (tuo *TeammateUpdateOne) sqlSave(ctx context.Context) (_node *Teammate, err
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := tuo.mutation.WorkspaceIDs(); len(nodes) > 0 {
+	if nodes := tuo.mutation.RemovedWorkspacesIDs(); len(nodes) > 0 && !tuo.mutation.WorkspacesCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   teammate.WorkspaceTable,
-			Columns: []string{teammate.WorkspaceColumn},
+			Table:   teammate.WorkspacesTable,
+			Columns: []string{teammate.WorkspacesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: workspace.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tuo.mutation.WorkspacesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   teammate.WorkspacesTable,
+			Columns: []string{teammate.WorkspacesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{

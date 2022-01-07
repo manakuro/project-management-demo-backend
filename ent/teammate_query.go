@@ -29,8 +29,8 @@ type TeammateQuery struct {
 	fields     []string
 	predicates []predicate.Teammate
 	// eager-loading edges.
-	withWorkspace *WorkspaceQuery
-	withProject   *ProjectQuery
+	withWorkspaces *WorkspaceQuery
+	withProject    *ProjectQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -67,8 +67,8 @@ func (tq *TeammateQuery) Order(o ...OrderFunc) *TeammateQuery {
 	return tq
 }
 
-// QueryWorkspace chains the current query on the "workspace" edge.
-func (tq *TeammateQuery) QueryWorkspace() *WorkspaceQuery {
+// QueryWorkspaces chains the current query on the "workspaces" edge.
+func (tq *TeammateQuery) QueryWorkspaces() *WorkspaceQuery {
 	query := &WorkspaceQuery{config: tq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := tq.prepareQuery(ctx); err != nil {
@@ -81,7 +81,7 @@ func (tq *TeammateQuery) QueryWorkspace() *WorkspaceQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(teammate.Table, teammate.FieldID, selector),
 			sqlgraph.To(workspace.Table, workspace.FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, false, teammate.WorkspaceTable, teammate.WorkspaceColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, teammate.WorkspacesTable, teammate.WorkspacesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(tq.driver.Dialect(), step)
 		return fromU, nil
@@ -287,27 +287,27 @@ func (tq *TeammateQuery) Clone() *TeammateQuery {
 		return nil
 	}
 	return &TeammateQuery{
-		config:        tq.config,
-		limit:         tq.limit,
-		offset:        tq.offset,
-		order:         append([]OrderFunc{}, tq.order...),
-		predicates:    append([]predicate.Teammate{}, tq.predicates...),
-		withWorkspace: tq.withWorkspace.Clone(),
-		withProject:   tq.withProject.Clone(),
+		config:         tq.config,
+		limit:          tq.limit,
+		offset:         tq.offset,
+		order:          append([]OrderFunc{}, tq.order...),
+		predicates:     append([]predicate.Teammate{}, tq.predicates...),
+		withWorkspaces: tq.withWorkspaces.Clone(),
+		withProject:    tq.withProject.Clone(),
 		// clone intermediate query.
 		sql:  tq.sql.Clone(),
 		path: tq.path,
 	}
 }
 
-// WithWorkspace tells the query-builder to eager-load the nodes that are connected to
-// the "workspace" edge. The optional arguments are used to configure the query builder of the edge.
-func (tq *TeammateQuery) WithWorkspace(opts ...func(*WorkspaceQuery)) *TeammateQuery {
+// WithWorkspaces tells the query-builder to eager-load the nodes that are connected to
+// the "workspaces" edge. The optional arguments are used to configure the query builder of the edge.
+func (tq *TeammateQuery) WithWorkspaces(opts ...func(*WorkspaceQuery)) *TeammateQuery {
 	query := &WorkspaceQuery{config: tq.config}
 	for _, opt := range opts {
 		opt(query)
 	}
-	tq.withWorkspace = query
+	tq.withWorkspaces = query
 	return tq
 }
 
@@ -388,7 +388,7 @@ func (tq *TeammateQuery) sqlAll(ctx context.Context) ([]*Teammate, error) {
 		nodes       = []*Teammate{}
 		_spec       = tq.querySpec()
 		loadedTypes = [2]bool{
-			tq.withWorkspace != nil,
+			tq.withWorkspaces != nil,
 			tq.withProject != nil,
 		}
 	)
@@ -412,15 +412,16 @@ func (tq *TeammateQuery) sqlAll(ctx context.Context) ([]*Teammate, error) {
 		return nodes, nil
 	}
 
-	if query := tq.withWorkspace; query != nil {
+	if query := tq.withWorkspaces; query != nil {
 		fks := make([]driver.Value, 0, len(nodes))
 		nodeids := make(map[ulid.ID]*Teammate)
 		for i := range nodes {
 			fks = append(fks, nodes[i].ID)
 			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.Workspaces = []*Workspace{}
 		}
 		query.Where(predicate.Workspace(func(s *sql.Selector) {
-			s.Where(sql.InValues(teammate.WorkspaceColumn, fks...))
+			s.Where(sql.InValues(teammate.WorkspacesColumn, fks...))
 		}))
 		neighbors, err := query.All(ctx)
 		if err != nil {
@@ -432,7 +433,7 @@ func (tq *TeammateQuery) sqlAll(ctx context.Context) ([]*Teammate, error) {
 			if !ok {
 				return nil, fmt.Errorf(`unexpected foreign-key "created_by" returned %v for node %v`, fk, n.ID)
 			}
-			node.Edges.Workspace = n
+			node.Edges.Workspaces = append(node.Edges.Workspaces, n)
 		}
 	}
 

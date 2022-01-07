@@ -342,9 +342,9 @@ func (t *Teammate) Node(ctx context.Context) (node *Node, err error) {
 	}
 	node.Edges[0] = &Edge{
 		Type: "Workspace",
-		Name: "workspace",
+		Name: "workspaces",
 	}
-	err = t.QueryWorkspace().
+	err = t.QueryWorkspaces().
 		Select(workspace.FieldID).
 		Scan(ctx, &node.Edges[0].IDs)
 	if err != nil {

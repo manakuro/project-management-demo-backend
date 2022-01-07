@@ -616,15 +616,15 @@ func (c *TeammateClient) GetX(ctx context.Context, id ulid.ID) *Teammate {
 	return obj
 }
 
-// QueryWorkspace queries the workspace edge of a Teammate.
-func (c *TeammateClient) QueryWorkspace(t *Teammate) *WorkspaceQuery {
+// QueryWorkspaces queries the workspaces edge of a Teammate.
+func (c *TeammateClient) QueryWorkspaces(t *Teammate) *WorkspaceQuery {
 	query := &WorkspaceQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
 		id := t.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(teammate.Table, teammate.FieldID, id),
 			sqlgraph.To(workspace.Table, workspace.FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, false, teammate.WorkspaceTable, teammate.WorkspaceColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, teammate.WorkspacesTable, teammate.WorkspacesColumn),
 		)
 		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
 		return fromV, nil
@@ -958,7 +958,7 @@ func (c *WorkspaceClient) QueryTeammate(w *Workspace) *TeammateQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(workspace.Table, workspace.FieldID, id),
 			sqlgraph.To(teammate.Table, teammate.FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, true, workspace.TeammateTable, workspace.TeammateColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, workspace.TeammateTable, workspace.TeammateColumn),
 		)
 		fromV = sqlgraph.Neighbors(w.driver.Dialect(), step)
 		return fromV, nil

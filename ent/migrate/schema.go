@@ -144,7 +144,7 @@ var (
 		{Name: "description", Type: field.TypeJSON},
 		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
 		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
-		{Name: "created_by", Type: field.TypeString, Unique: true, Nullable: true},
+		{Name: "created_by", Type: field.TypeString, Nullable: true},
 	}
 	// WorkspacesTable holds the schema information for the "workspaces" table.
 	WorkspacesTable = &schema.Table{
@@ -153,7 +153,7 @@ var (
 		PrimaryKey: []*schema.Column{WorkspacesColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "workspaces_teammates_workspace",
+				Symbol:     "workspaces_teammates_workspaces",
 				Columns:    []*schema.Column{WorkspacesColumns[5]},
 				RefColumns: []*schema.Column{TeammatesColumns[0]},
 				OnDelete:   schema.SetNull,
