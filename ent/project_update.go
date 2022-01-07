@@ -15,6 +15,7 @@ import (
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/workspace"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -73,6 +74,20 @@ func (pu *ProjectUpdate) SetDescription(e editor.Description) *ProjectUpdate {
 // SetDescriptionTitle sets the "description_title" field.
 func (pu *ProjectUpdate) SetDescriptionTitle(s string) *ProjectUpdate {
 	pu.mutation.SetDescriptionTitle(s)
+	return pu
+}
+
+// SetDueDate sets the "due_date" field.
+func (pu *ProjectUpdate) SetDueDate(t time.Time) *ProjectUpdate {
+	pu.mutation.SetDueDate(t)
+	return pu
+}
+
+// SetNillableDueDate sets the "due_date" field if the given value is not nil.
+func (pu *ProjectUpdate) SetNillableDueDate(t *time.Time) *ProjectUpdate {
+	if t != nil {
+		pu.SetDueDate(*t)
+	}
 	return pu
 }
 
@@ -291,6 +306,13 @@ func (pu *ProjectUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeString,
 			Value:  value,
 			Column: project.FieldDescriptionTitle,
+		})
+	}
+	if value, ok := pu.mutation.DueDate(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: project.FieldDueDate,
 		})
 	}
 	if pu.mutation.WorkspaceCleared() {
@@ -548,6 +570,20 @@ func (puo *ProjectUpdateOne) SetDescriptionTitle(s string) *ProjectUpdateOne {
 	return puo
 }
 
+// SetDueDate sets the "due_date" field.
+func (puo *ProjectUpdateOne) SetDueDate(t time.Time) *ProjectUpdateOne {
+	puo.mutation.SetDueDate(t)
+	return puo
+}
+
+// SetNillableDueDate sets the "due_date" field if the given value is not nil.
+func (puo *ProjectUpdateOne) SetNillableDueDate(t *time.Time) *ProjectUpdateOne {
+	if t != nil {
+		puo.SetDueDate(*t)
+	}
+	return puo
+}
+
 // SetWorkspace sets the "workspace" edge to the Workspace entity.
 func (puo *ProjectUpdateOne) SetWorkspace(w *Workspace) *ProjectUpdateOne {
 	return puo.SetWorkspaceID(w.ID)
@@ -787,6 +823,13 @@ func (puo *ProjectUpdateOne) sqlSave(ctx context.Context) (_node *Project, err e
 			Type:   field.TypeString,
 			Value:  value,
 			Column: project.FieldDescriptionTitle,
+		})
+	}
+	if value, ok := puo.mutation.DueDate(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: project.FieldDueDate,
 		})
 	}
 	if puo.mutation.WorkspaceCleared() {

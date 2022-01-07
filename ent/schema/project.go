@@ -50,8 +50,7 @@ func (ProjectMixin) Fields() []ent.Field {
 			Default(time.Now).
 			SchemaType(map[string]string{
 				dialect.MySQL: "datetime",
-			}).
-			Immutable(),
+			}),
 	}
 }
 

@@ -200,6 +200,7 @@ type UpdateProjectInput struct {
 	Name                     *string
 	Description              *editor.Description
 	DescriptionTitle         *string
+	DueDate                  *time.Time
 	WorkspaceID              *ulid.ID
 	ClearWorkspace           bool
 	ColorID                  *ulid.ID
@@ -222,6 +223,9 @@ func (i *UpdateProjectInput) Mutate(m *ProjectMutation) {
 	}
 	if v := i.DescriptionTitle; v != nil {
 		m.SetDescriptionTitle(*v)
+	}
+	if v := i.DueDate; v != nil {
+		m.SetDueDate(*v)
 	}
 	if i.ClearWorkspace {
 		m.ClearWorkspace()
