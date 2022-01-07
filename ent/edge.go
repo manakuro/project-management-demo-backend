@@ -4,18 +4,18 @@ package ent
 
 import "context"
 
-func (c *Color) Projects(ctx context.Context) (*Project, error) {
-	result, err := c.Edges.ProjectsOrErr()
+func (c *Color) Project(ctx context.Context) (*Project, error) {
+	result, err := c.Edges.ProjectOrErr()
 	if IsNotLoaded(err) {
-		result, err = c.QueryProjects().Only(ctx)
+		result, err = c.QueryProject().Only(ctx)
 	}
 	return result, MaskNotFound(err)
 }
 
-func (i *Icon) Projects(ctx context.Context) (*Project, error) {
-	result, err := i.Edges.ProjectsOrErr()
+func (i *Icon) Project(ctx context.Context) (*Project, error) {
+	result, err := i.Edges.ProjectOrErr()
 	if IsNotLoaded(err) {
-		result, err = i.QueryProjects().Only(ctx)
+		result, err = i.QueryProject().Only(ctx)
 	}
 	return result, MaskNotFound(err)
 }
@@ -52,18 +52,18 @@ func (pr *Project) Teammate(ctx context.Context) (*Teammate, error) {
 	return result, err
 }
 
-func (t *Teammate) Workspaces(ctx context.Context) (*Workspace, error) {
-	result, err := t.Edges.WorkspacesOrErr()
+func (t *Teammate) Workspace(ctx context.Context) (*Workspace, error) {
+	result, err := t.Edges.WorkspaceOrErr()
 	if IsNotLoaded(err) {
-		result, err = t.QueryWorkspaces().Only(ctx)
+		result, err = t.QueryWorkspace().Only(ctx)
 	}
 	return result, MaskNotFound(err)
 }
 
-func (t *Teammate) Projects(ctx context.Context) (*Project, error) {
-	result, err := t.Edges.ProjectsOrErr()
+func (t *Teammate) Project(ctx context.Context) (*Project, error) {
+	result, err := t.Edges.ProjectOrErr()
 	if IsNotLoaded(err) {
-		result, err = t.QueryProjects().Only(ctx)
+		result, err = t.QueryProject().Only(ctx)
 	}
 	return result, MaskNotFound(err)
 }

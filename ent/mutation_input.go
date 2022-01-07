@@ -32,7 +32,7 @@ func (i *CreateColorInput) Mutate(m *ColorCreate) {
 		m.SetUpdatedAt(*v)
 	}
 	if v := i.ProjectID; v != nil {
-		m.SetProjectsID(*v)
+		m.SetProjectID(*v)
 	}
 }
 
@@ -44,12 +44,12 @@ func (c *ColorCreate) SetInput(i CreateColorInput) *ColorCreate {
 
 // UpdateColorInput represents a mutation input for updating colors.
 type UpdateColorInput struct {
-	ID            ulid.ID
-	Name          *string
-	Color         *string
-	Hex           *string
-	ProjectID     *ulid.ID
-	ClearProjects bool
+	ID           ulid.ID
+	Name         *string
+	Color        *string
+	Hex          *string
+	ProjectID    *ulid.ID
+	ClearProject bool
 }
 
 // Mutate applies the UpdateColorInput on the ColorMutation.
@@ -63,11 +63,11 @@ func (i *UpdateColorInput) Mutate(m *ColorMutation) {
 	if v := i.Hex; v != nil {
 		m.SetHex(*v)
 	}
-	if i.ClearProjects {
-		m.ClearProjects()
+	if i.ClearProject {
+		m.ClearProject()
 	}
 	if v := i.ProjectID; v != nil {
-		m.SetProjectsID(*v)
+		m.SetProjectID(*v)
 	}
 }
 
@@ -103,7 +103,7 @@ func (i *CreateIconInput) Mutate(m *IconCreate) {
 		m.SetUpdatedAt(*v)
 	}
 	if v := i.ProjectID; v != nil {
-		m.SetProjectsID(*v)
+		m.SetProjectID(*v)
 	}
 }
 
@@ -115,11 +115,11 @@ func (c *IconCreate) SetInput(i CreateIconInput) *IconCreate {
 
 // UpdateIconInput represents a mutation input for updating icons.
 type UpdateIconInput struct {
-	ID            ulid.ID
-	Name          *string
-	Icon          *string
-	ProjectID     *ulid.ID
-	ClearProjects bool
+	ID           ulid.ID
+	Name         *string
+	Icon         *string
+	ProjectID    *ulid.ID
+	ClearProject bool
 }
 
 // Mutate applies the UpdateIconInput on the IconMutation.
@@ -130,11 +130,11 @@ func (i *UpdateIconInput) Mutate(m *IconMutation) {
 	if v := i.Icon; v != nil {
 		m.SetIcon(*v)
 	}
-	if i.ClearProjects {
-		m.ClearProjects()
+	if i.ClearProject {
+		m.ClearProject()
 	}
 	if v := i.ProjectID; v != nil {
-		m.SetProjectsID(*v)
+		m.SetProjectID(*v)
 	}
 }
 
@@ -278,10 +278,10 @@ func (i *CreateTeammateInput) Mutate(m *TeammateCreate) {
 		m.SetUpdatedAt(*v)
 	}
 	if v := i.WorkspaceID; v != nil {
-		m.SetWorkspacesID(*v)
+		m.SetWorkspaceID(*v)
 	}
 	if v := i.ProjectID; v != nil {
-		m.SetProjectsID(*v)
+		m.SetProjectID(*v)
 	}
 }
 
@@ -293,14 +293,14 @@ func (c *TeammateCreate) SetInput(i CreateTeammateInput) *TeammateCreate {
 
 // UpdateTeammateInput represents a mutation input for updating teammates.
 type UpdateTeammateInput struct {
-	ID              ulid.ID
-	Name            *string
-	Image           *string
-	Email           *string
-	WorkspaceID     *ulid.ID
-	ClearWorkspaces bool
-	ProjectID       *ulid.ID
-	ClearProjects   bool
+	ID             ulid.ID
+	Name           *string
+	Image          *string
+	Email          *string
+	WorkspaceID    *ulid.ID
+	ClearWorkspace bool
+	ProjectID      *ulid.ID
+	ClearProject   bool
 }
 
 // Mutate applies the UpdateTeammateInput on the TeammateMutation.
@@ -314,17 +314,17 @@ func (i *UpdateTeammateInput) Mutate(m *TeammateMutation) {
 	if v := i.Email; v != nil {
 		m.SetEmail(*v)
 	}
-	if i.ClearWorkspaces {
-		m.ClearWorkspaces()
+	if i.ClearWorkspace {
+		m.ClearWorkspace()
 	}
 	if v := i.WorkspaceID; v != nil {
-		m.SetWorkspacesID(*v)
+		m.SetWorkspaceID(*v)
 	}
-	if i.ClearProjects {
-		m.ClearProjects()
+	if i.ClearProject {
+		m.ClearProject()
 	}
 	if v := i.ProjectID; v != nil {
-		m.SetProjectsID(*v)
+		m.SetProjectID(*v)
 	}
 }
 

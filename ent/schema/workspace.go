@@ -42,7 +42,7 @@ func (WorkspaceMixin) Fields() []ent.Field {
 func (Workspace) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("teammate", Teammate.Type).
-			Ref("workspaces").
+			Ref("workspace").
 			Unique().
 			Field("created_by").
 			Required().

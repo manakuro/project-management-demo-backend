@@ -58,19 +58,19 @@ var (
 		PrimaryKey: []*schema.Column{ProjectsColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "projects_colors_projects",
+				Symbol:     "projects_colors_project",
 				Columns:    []*schema.Column{ProjectsColumns[7]},
 				RefColumns: []*schema.Column{ColorsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "projects_icons_projects",
+				Symbol:     "projects_icons_project",
 				Columns:    []*schema.Column{ProjectsColumns[8]},
 				RefColumns: []*schema.Column{IconsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "projects_teammates_projects",
+				Symbol:     "projects_teammates_project",
 				Columns:    []*schema.Column{ProjectsColumns[9]},
 				RefColumns: []*schema.Column{TeammatesColumns[0]},
 				OnDelete:   schema.SetNull,
@@ -153,7 +153,7 @@ var (
 		PrimaryKey: []*schema.Column{WorkspacesColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "workspaces_teammates_workspaces",
+				Symbol:     "workspaces_teammates_workspace",
 				Columns:    []*schema.Column{WorkspacesColumns[5]},
 				RefColumns: []*schema.Column{TeammatesColumns[0]},
 				OnDelete:   schema.SetNull,

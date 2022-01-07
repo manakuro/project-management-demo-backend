@@ -83,42 +83,42 @@ func (tc *TeammateCreate) SetNillableID(u *ulid.ID) *TeammateCreate {
 	return tc
 }
 
-// SetWorkspacesID sets the "workspaces" edge to the Workspace entity by ID.
-func (tc *TeammateCreate) SetWorkspacesID(id ulid.ID) *TeammateCreate {
-	tc.mutation.SetWorkspacesID(id)
+// SetWorkspaceID sets the "workspace" edge to the Workspace entity by ID.
+func (tc *TeammateCreate) SetWorkspaceID(id ulid.ID) *TeammateCreate {
+	tc.mutation.SetWorkspaceID(id)
 	return tc
 }
 
-// SetNillableWorkspacesID sets the "workspaces" edge to the Workspace entity by ID if the given value is not nil.
-func (tc *TeammateCreate) SetNillableWorkspacesID(id *ulid.ID) *TeammateCreate {
+// SetNillableWorkspaceID sets the "workspace" edge to the Workspace entity by ID if the given value is not nil.
+func (tc *TeammateCreate) SetNillableWorkspaceID(id *ulid.ID) *TeammateCreate {
 	if id != nil {
-		tc = tc.SetWorkspacesID(*id)
+		tc = tc.SetWorkspaceID(*id)
 	}
 	return tc
 }
 
-// SetWorkspaces sets the "workspaces" edge to the Workspace entity.
-func (tc *TeammateCreate) SetWorkspaces(w *Workspace) *TeammateCreate {
-	return tc.SetWorkspacesID(w.ID)
+// SetWorkspace sets the "workspace" edge to the Workspace entity.
+func (tc *TeammateCreate) SetWorkspace(w *Workspace) *TeammateCreate {
+	return tc.SetWorkspaceID(w.ID)
 }
 
-// SetProjectsID sets the "projects" edge to the Project entity by ID.
-func (tc *TeammateCreate) SetProjectsID(id ulid.ID) *TeammateCreate {
-	tc.mutation.SetProjectsID(id)
+// SetProjectID sets the "project" edge to the Project entity by ID.
+func (tc *TeammateCreate) SetProjectID(id ulid.ID) *TeammateCreate {
+	tc.mutation.SetProjectID(id)
 	return tc
 }
 
-// SetNillableProjectsID sets the "projects" edge to the Project entity by ID if the given value is not nil.
-func (tc *TeammateCreate) SetNillableProjectsID(id *ulid.ID) *TeammateCreate {
+// SetNillableProjectID sets the "project" edge to the Project entity by ID if the given value is not nil.
+func (tc *TeammateCreate) SetNillableProjectID(id *ulid.ID) *TeammateCreate {
 	if id != nil {
-		tc = tc.SetProjectsID(*id)
+		tc = tc.SetProjectID(*id)
 	}
 	return tc
 }
 
-// SetProjects sets the "projects" edge to the Project entity.
-func (tc *TeammateCreate) SetProjects(p *Project) *TeammateCreate {
-	return tc.SetProjectsID(p.ID)
+// SetProject sets the "project" edge to the Project entity.
+func (tc *TeammateCreate) SetProject(p *Project) *TeammateCreate {
+	return tc.SetProjectID(p.ID)
 }
 
 // Mutation returns the TeammateMutation object of the builder.
@@ -310,12 +310,12 @@ func (tc *TeammateCreate) createSpec() (*Teammate, *sqlgraph.CreateSpec) {
 		})
 		_node.UpdatedAt = value
 	}
-	if nodes := tc.mutation.WorkspacesIDs(); len(nodes) > 0 {
+	if nodes := tc.mutation.WorkspaceIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2O,
 			Inverse: false,
-			Table:   teammate.WorkspacesTable,
-			Columns: []string{teammate.WorkspacesColumn},
+			Table:   teammate.WorkspaceTable,
+			Columns: []string{teammate.WorkspaceColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -329,12 +329,12 @@ func (tc *TeammateCreate) createSpec() (*Teammate, *sqlgraph.CreateSpec) {
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := tc.mutation.ProjectsIDs(); len(nodes) > 0 {
+	if nodes := tc.mutation.ProjectIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2O,
 			Inverse: false,
-			Table:   teammate.ProjectsTable,
-			Columns: []string{teammate.ProjectsColumn},
+			Table:   teammate.ProjectTable,
+			Columns: []string{teammate.ProjectColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{

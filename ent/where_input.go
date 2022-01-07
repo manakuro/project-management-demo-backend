@@ -97,9 +97,9 @@ type ColorWhereInput struct {
 	UpdatedAtLT    *time.Time  `json:"updatedAtLT,omitempty"`
 	UpdatedAtLTE   *time.Time  `json:"updatedAtLTE,omitempty"`
 
-	// "projects" edge predicates.
-	HasProjects     *bool                `json:"hasProjects,omitempty"`
-	HasProjectsWith []*ProjectWhereInput `json:"hasProjectsWith,omitempty"`
+	// "project" edge predicates.
+	HasProject     *bool                `json:"hasProject,omitempty"`
+	HasProjectWith []*ProjectWhereInput `json:"hasProjectWith,omitempty"`
 }
 
 // Filter applies the ColorWhereInput filter on the ColorQuery builder.
@@ -351,23 +351,23 @@ func (i *ColorWhereInput) P() (predicate.Color, error) {
 		predicates = append(predicates, color.UpdatedAtLTE(*i.UpdatedAtLTE))
 	}
 
-	if i.HasProjects != nil {
-		p := color.HasProjects()
-		if !*i.HasProjects {
+	if i.HasProject != nil {
+		p := color.HasProject()
+		if !*i.HasProject {
 			p = color.Not(p)
 		}
 		predicates = append(predicates, p)
 	}
-	if len(i.HasProjectsWith) > 0 {
-		with := make([]predicate.Project, 0, len(i.HasProjectsWith))
-		for _, w := range i.HasProjectsWith {
+	if len(i.HasProjectWith) > 0 {
+		with := make([]predicate.Project, 0, len(i.HasProjectWith))
+		for _, w := range i.HasProjectWith {
 			p, err := w.P()
 			if err != nil {
 				return nil, err
 			}
 			with = append(with, p)
 		}
-		predicates = append(predicates, color.HasProjectsWith(with...))
+		predicates = append(predicates, color.HasProjectWith(with...))
 	}
 	switch len(predicates) {
 	case 0:
@@ -445,9 +445,9 @@ type IconWhereInput struct {
 	UpdatedAtLT    *time.Time  `json:"updatedAtLT,omitempty"`
 	UpdatedAtLTE   *time.Time  `json:"updatedAtLTE,omitempty"`
 
-	// "projects" edge predicates.
-	HasProjects     *bool                `json:"hasProjects,omitempty"`
-	HasProjectsWith []*ProjectWhereInput `json:"hasProjectsWith,omitempty"`
+	// "project" edge predicates.
+	HasProject     *bool                `json:"hasProject,omitempty"`
+	HasProjectWith []*ProjectWhereInput `json:"hasProjectWith,omitempty"`
 }
 
 // Filter applies the IconWhereInput filter on the IconQuery builder.
@@ -660,23 +660,23 @@ func (i *IconWhereInput) P() (predicate.Icon, error) {
 		predicates = append(predicates, icon.UpdatedAtLTE(*i.UpdatedAtLTE))
 	}
 
-	if i.HasProjects != nil {
-		p := icon.HasProjects()
-		if !*i.HasProjects {
+	if i.HasProject != nil {
+		p := icon.HasProject()
+		if !*i.HasProject {
 			p = icon.Not(p)
 		}
 		predicates = append(predicates, p)
 	}
-	if len(i.HasProjectsWith) > 0 {
-		with := make([]predicate.Project, 0, len(i.HasProjectsWith))
-		for _, w := range i.HasProjectsWith {
+	if len(i.HasProjectWith) > 0 {
+		with := make([]predicate.Project, 0, len(i.HasProjectWith))
+		for _, w := range i.HasProjectWith {
 			p, err := w.P()
 			if err != nil {
 				return nil, err
 			}
 			with = append(with, p)
 		}
-		predicates = append(predicates, icon.HasProjectsWith(with...))
+		predicates = append(predicates, icon.HasProjectWith(with...))
 	}
 	switch len(predicates) {
 	case 0:
@@ -1394,13 +1394,13 @@ type TeammateWhereInput struct {
 	UpdatedAtLT    *time.Time  `json:"updatedAtLT,omitempty"`
 	UpdatedAtLTE   *time.Time  `json:"updatedAtLTE,omitempty"`
 
-	// "workspaces" edge predicates.
-	HasWorkspaces     *bool                  `json:"hasWorkspaces,omitempty"`
-	HasWorkspacesWith []*WorkspaceWhereInput `json:"hasWorkspacesWith,omitempty"`
+	// "workspace" edge predicates.
+	HasWorkspace     *bool                  `json:"hasWorkspace,omitempty"`
+	HasWorkspaceWith []*WorkspaceWhereInput `json:"hasWorkspaceWith,omitempty"`
 
-	// "projects" edge predicates.
-	HasProjects     *bool                `json:"hasProjects,omitempty"`
-	HasProjectsWith []*ProjectWhereInput `json:"hasProjectsWith,omitempty"`
+	// "project" edge predicates.
+	HasProject     *bool                `json:"hasProject,omitempty"`
+	HasProjectWith []*ProjectWhereInput `json:"hasProjectWith,omitempty"`
 }
 
 // Filter applies the TeammateWhereInput filter on the TeammateQuery builder.
@@ -1652,41 +1652,41 @@ func (i *TeammateWhereInput) P() (predicate.Teammate, error) {
 		predicates = append(predicates, teammate.UpdatedAtLTE(*i.UpdatedAtLTE))
 	}
 
-	if i.HasWorkspaces != nil {
-		p := teammate.HasWorkspaces()
-		if !*i.HasWorkspaces {
+	if i.HasWorkspace != nil {
+		p := teammate.HasWorkspace()
+		if !*i.HasWorkspace {
 			p = teammate.Not(p)
 		}
 		predicates = append(predicates, p)
 	}
-	if len(i.HasWorkspacesWith) > 0 {
-		with := make([]predicate.Workspace, 0, len(i.HasWorkspacesWith))
-		for _, w := range i.HasWorkspacesWith {
+	if len(i.HasWorkspaceWith) > 0 {
+		with := make([]predicate.Workspace, 0, len(i.HasWorkspaceWith))
+		for _, w := range i.HasWorkspaceWith {
 			p, err := w.P()
 			if err != nil {
 				return nil, err
 			}
 			with = append(with, p)
 		}
-		predicates = append(predicates, teammate.HasWorkspacesWith(with...))
+		predicates = append(predicates, teammate.HasWorkspaceWith(with...))
 	}
-	if i.HasProjects != nil {
-		p := teammate.HasProjects()
-		if !*i.HasProjects {
+	if i.HasProject != nil {
+		p := teammate.HasProject()
+		if !*i.HasProject {
 			p = teammate.Not(p)
 		}
 		predicates = append(predicates, p)
 	}
-	if len(i.HasProjectsWith) > 0 {
-		with := make([]predicate.Project, 0, len(i.HasProjectsWith))
-		for _, w := range i.HasProjectsWith {
+	if len(i.HasProjectWith) > 0 {
+		with := make([]predicate.Project, 0, len(i.HasProjectWith))
+		for _, w := range i.HasProjectWith {
 			p, err := w.P()
 			if err != nil {
 				return nil, err
 			}
 			with = append(with, p)
 		}
-		predicates = append(predicates, teammate.HasProjectsWith(with...))
+		predicates = append(predicates, teammate.HasProjectWith(with...))
 	}
 	switch len(predicates) {
 	case 0:

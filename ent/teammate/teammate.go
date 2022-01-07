@@ -22,26 +22,26 @@ const (
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
 	FieldUpdatedAt = "updated_at"
-	// EdgeWorkspaces holds the string denoting the workspaces edge name in mutations.
-	EdgeWorkspaces = "workspaces"
-	// EdgeProjects holds the string denoting the projects edge name in mutations.
-	EdgeProjects = "projects"
+	// EdgeWorkspace holds the string denoting the workspace edge name in mutations.
+	EdgeWorkspace = "workspace"
+	// EdgeProject holds the string denoting the project edge name in mutations.
+	EdgeProject = "project"
 	// Table holds the table name of the teammate in the database.
 	Table = "teammates"
-	// WorkspacesTable is the table that holds the workspaces relation/edge.
-	WorkspacesTable = "workspaces"
-	// WorkspacesInverseTable is the table name for the Workspace entity.
+	// WorkspaceTable is the table that holds the workspace relation/edge.
+	WorkspaceTable = "workspaces"
+	// WorkspaceInverseTable is the table name for the Workspace entity.
 	// It exists in this package in order to avoid circular dependency with the "workspace" package.
-	WorkspacesInverseTable = "workspaces"
-	// WorkspacesColumn is the table column denoting the workspaces relation/edge.
-	WorkspacesColumn = "created_by"
-	// ProjectsTable is the table that holds the projects relation/edge.
-	ProjectsTable = "projects"
-	// ProjectsInverseTable is the table name for the Project entity.
+	WorkspaceInverseTable = "workspaces"
+	// WorkspaceColumn is the table column denoting the workspace relation/edge.
+	WorkspaceColumn = "created_by"
+	// ProjectTable is the table that holds the project relation/edge.
+	ProjectTable = "projects"
+	// ProjectInverseTable is the table name for the Project entity.
 	// It exists in this package in order to avoid circular dependency with the "project" package.
-	ProjectsInverseTable = "projects"
-	// ProjectsColumn is the table column denoting the projects relation/edge.
-	ProjectsColumn = "created_by"
+	ProjectInverseTable = "projects"
+	// ProjectColumn is the table column denoting the project relation/edge.
+	ProjectColumn = "created_by"
 )
 
 // Columns holds all SQL columns for teammate fields.

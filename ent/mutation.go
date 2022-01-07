@@ -43,20 +43,20 @@ const (
 // ColorMutation represents an operation that mutates the Color nodes in the graph.
 type ColorMutation struct {
 	config
-	op              Op
-	typ             string
-	id              *ulid.ID
-	name            *string
-	color           *string
-	hex             *string
-	created_at      *time.Time
-	updated_at      *time.Time
-	clearedFields   map[string]struct{}
-	projects        *ulid.ID
-	clearedprojects bool
-	done            bool
-	oldValue        func(context.Context) (*Color, error)
-	predicates      []predicate.Color
+	op             Op
+	typ            string
+	id             *ulid.ID
+	name           *string
+	color          *string
+	hex            *string
+	created_at     *time.Time
+	updated_at     *time.Time
+	clearedFields  map[string]struct{}
+	project        *ulid.ID
+	clearedproject bool
+	done           bool
+	oldValue       func(context.Context) (*Color, error)
+	predicates     []predicate.Color
 }
 
 var _ ent.Mutation = (*ColorMutation)(nil)
@@ -324,43 +324,43 @@ func (m *ColorMutation) ResetUpdatedAt() {
 	m.updated_at = nil
 }
 
-// SetProjectsID sets the "projects" edge to the Project entity by id.
-func (m *ColorMutation) SetProjectsID(id ulid.ID) {
-	m.projects = &id
+// SetProjectID sets the "project" edge to the Project entity by id.
+func (m *ColorMutation) SetProjectID(id ulid.ID) {
+	m.project = &id
 }
 
-// ClearProjects clears the "projects" edge to the Project entity.
-func (m *ColorMutation) ClearProjects() {
-	m.clearedprojects = true
+// ClearProject clears the "project" edge to the Project entity.
+func (m *ColorMutation) ClearProject() {
+	m.clearedproject = true
 }
 
-// ProjectsCleared reports if the "projects" edge to the Project entity was cleared.
-func (m *ColorMutation) ProjectsCleared() bool {
-	return m.clearedprojects
+// ProjectCleared reports if the "project" edge to the Project entity was cleared.
+func (m *ColorMutation) ProjectCleared() bool {
+	return m.clearedproject
 }
 
-// ProjectsID returns the "projects" edge ID in the mutation.
-func (m *ColorMutation) ProjectsID() (id ulid.ID, exists bool) {
-	if m.projects != nil {
-		return *m.projects, true
+// ProjectID returns the "project" edge ID in the mutation.
+func (m *ColorMutation) ProjectID() (id ulid.ID, exists bool) {
+	if m.project != nil {
+		return *m.project, true
 	}
 	return
 }
 
-// ProjectsIDs returns the "projects" edge IDs in the mutation.
+// ProjectIDs returns the "project" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// ProjectsID instead. It exists only for internal usage by the builders.
-func (m *ColorMutation) ProjectsIDs() (ids []ulid.ID) {
-	if id := m.projects; id != nil {
+// ProjectID instead. It exists only for internal usage by the builders.
+func (m *ColorMutation) ProjectIDs() (ids []ulid.ID) {
+	if id := m.project; id != nil {
 		ids = append(ids, *id)
 	}
 	return
 }
 
-// ResetProjects resets all changes to the "projects" edge.
-func (m *ColorMutation) ResetProjects() {
-	m.projects = nil
-	m.clearedprojects = false
+// ResetProject resets all changes to the "project" edge.
+func (m *ColorMutation) ResetProject() {
+	m.project = nil
+	m.clearedproject = false
 }
 
 // Where appends a list predicates to the ColorMutation builder.
@@ -550,8 +550,8 @@ func (m *ColorMutation) ResetField(name string) error {
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *ColorMutation) AddedEdges() []string {
 	edges := make([]string, 0, 1)
-	if m.projects != nil {
-		edges = append(edges, color.EdgeProjects)
+	if m.project != nil {
+		edges = append(edges, color.EdgeProject)
 	}
 	return edges
 }
@@ -560,8 +560,8 @@ func (m *ColorMutation) AddedEdges() []string {
 // name in this mutation.
 func (m *ColorMutation) AddedIDs(name string) []ent.Value {
 	switch name {
-	case color.EdgeProjects:
-		if id := m.projects; id != nil {
+	case color.EdgeProject:
+		if id := m.project; id != nil {
 			return []ent.Value{*id}
 		}
 	}
@@ -585,8 +585,8 @@ func (m *ColorMutation) RemovedIDs(name string) []ent.Value {
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *ColorMutation) ClearedEdges() []string {
 	edges := make([]string, 0, 1)
-	if m.clearedprojects {
-		edges = append(edges, color.EdgeProjects)
+	if m.clearedproject {
+		edges = append(edges, color.EdgeProject)
 	}
 	return edges
 }
@@ -595,8 +595,8 @@ func (m *ColorMutation) ClearedEdges() []string {
 // was cleared in this mutation.
 func (m *ColorMutation) EdgeCleared(name string) bool {
 	switch name {
-	case color.EdgeProjects:
-		return m.clearedprojects
+	case color.EdgeProject:
+		return m.clearedproject
 	}
 	return false
 }
@@ -605,8 +605,8 @@ func (m *ColorMutation) EdgeCleared(name string) bool {
 // if that edge is not defined in the schema.
 func (m *ColorMutation) ClearEdge(name string) error {
 	switch name {
-	case color.EdgeProjects:
-		m.ClearProjects()
+	case color.EdgeProject:
+		m.ClearProject()
 		return nil
 	}
 	return fmt.Errorf("unknown Color unique edge %s", name)
@@ -616,8 +616,8 @@ func (m *ColorMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *ColorMutation) ResetEdge(name string) error {
 	switch name {
-	case color.EdgeProjects:
-		m.ResetProjects()
+	case color.EdgeProject:
+		m.ResetProject()
 		return nil
 	}
 	return fmt.Errorf("unknown Color edge %s", name)
@@ -626,19 +626,19 @@ func (m *ColorMutation) ResetEdge(name string) error {
 // IconMutation represents an operation that mutates the Icon nodes in the graph.
 type IconMutation struct {
 	config
-	op              Op
-	typ             string
-	id              *ulid.ID
-	name            *string
-	icon            *string
-	created_at      *time.Time
-	updated_at      *time.Time
-	clearedFields   map[string]struct{}
-	projects        *ulid.ID
-	clearedprojects bool
-	done            bool
-	oldValue        func(context.Context) (*Icon, error)
-	predicates      []predicate.Icon
+	op             Op
+	typ            string
+	id             *ulid.ID
+	name           *string
+	icon           *string
+	created_at     *time.Time
+	updated_at     *time.Time
+	clearedFields  map[string]struct{}
+	project        *ulid.ID
+	clearedproject bool
+	done           bool
+	oldValue       func(context.Context) (*Icon, error)
+	predicates     []predicate.Icon
 }
 
 var _ ent.Mutation = (*IconMutation)(nil)
@@ -870,43 +870,43 @@ func (m *IconMutation) ResetUpdatedAt() {
 	m.updated_at = nil
 }
 
-// SetProjectsID sets the "projects" edge to the Project entity by id.
-func (m *IconMutation) SetProjectsID(id ulid.ID) {
-	m.projects = &id
+// SetProjectID sets the "project" edge to the Project entity by id.
+func (m *IconMutation) SetProjectID(id ulid.ID) {
+	m.project = &id
 }
 
-// ClearProjects clears the "projects" edge to the Project entity.
-func (m *IconMutation) ClearProjects() {
-	m.clearedprojects = true
+// ClearProject clears the "project" edge to the Project entity.
+func (m *IconMutation) ClearProject() {
+	m.clearedproject = true
 }
 
-// ProjectsCleared reports if the "projects" edge to the Project entity was cleared.
-func (m *IconMutation) ProjectsCleared() bool {
-	return m.clearedprojects
+// ProjectCleared reports if the "project" edge to the Project entity was cleared.
+func (m *IconMutation) ProjectCleared() bool {
+	return m.clearedproject
 }
 
-// ProjectsID returns the "projects" edge ID in the mutation.
-func (m *IconMutation) ProjectsID() (id ulid.ID, exists bool) {
-	if m.projects != nil {
-		return *m.projects, true
+// ProjectID returns the "project" edge ID in the mutation.
+func (m *IconMutation) ProjectID() (id ulid.ID, exists bool) {
+	if m.project != nil {
+		return *m.project, true
 	}
 	return
 }
 
-// ProjectsIDs returns the "projects" edge IDs in the mutation.
+// ProjectIDs returns the "project" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// ProjectsID instead. It exists only for internal usage by the builders.
-func (m *IconMutation) ProjectsIDs() (ids []ulid.ID) {
-	if id := m.projects; id != nil {
+// ProjectID instead. It exists only for internal usage by the builders.
+func (m *IconMutation) ProjectIDs() (ids []ulid.ID) {
+	if id := m.project; id != nil {
 		ids = append(ids, *id)
 	}
 	return
 }
 
-// ResetProjects resets all changes to the "projects" edge.
-func (m *IconMutation) ResetProjects() {
-	m.projects = nil
-	m.clearedprojects = false
+// ResetProject resets all changes to the "project" edge.
+func (m *IconMutation) ResetProject() {
+	m.project = nil
+	m.clearedproject = false
 }
 
 // Where appends a list predicates to the IconMutation builder.
@@ -1079,8 +1079,8 @@ func (m *IconMutation) ResetField(name string) error {
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *IconMutation) AddedEdges() []string {
 	edges := make([]string, 0, 1)
-	if m.projects != nil {
-		edges = append(edges, icon.EdgeProjects)
+	if m.project != nil {
+		edges = append(edges, icon.EdgeProject)
 	}
 	return edges
 }
@@ -1089,8 +1089,8 @@ func (m *IconMutation) AddedEdges() []string {
 // name in this mutation.
 func (m *IconMutation) AddedIDs(name string) []ent.Value {
 	switch name {
-	case icon.EdgeProjects:
-		if id := m.projects; id != nil {
+	case icon.EdgeProject:
+		if id := m.project; id != nil {
 			return []ent.Value{*id}
 		}
 	}
@@ -1114,8 +1114,8 @@ func (m *IconMutation) RemovedIDs(name string) []ent.Value {
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *IconMutation) ClearedEdges() []string {
 	edges := make([]string, 0, 1)
-	if m.clearedprojects {
-		edges = append(edges, icon.EdgeProjects)
+	if m.clearedproject {
+		edges = append(edges, icon.EdgeProject)
 	}
 	return edges
 }
@@ -1124,8 +1124,8 @@ func (m *IconMutation) ClearedEdges() []string {
 // was cleared in this mutation.
 func (m *IconMutation) EdgeCleared(name string) bool {
 	switch name {
-	case icon.EdgeProjects:
-		return m.clearedprojects
+	case icon.EdgeProject:
+		return m.clearedproject
 	}
 	return false
 }
@@ -1134,8 +1134,8 @@ func (m *IconMutation) EdgeCleared(name string) bool {
 // if that edge is not defined in the schema.
 func (m *IconMutation) ClearEdge(name string) error {
 	switch name {
-	case icon.EdgeProjects:
-		m.ClearProjects()
+	case icon.EdgeProject:
+		m.ClearProject()
 		return nil
 	}
 	return fmt.Errorf("unknown Icon unique edge %s", name)
@@ -1145,8 +1145,8 @@ func (m *IconMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *IconMutation) ResetEdge(name string) error {
 	switch name {
-	case icon.EdgeProjects:
-		m.ResetProjects()
+	case icon.EdgeProject:
+		m.ResetProject()
 		return nil
 	}
 	return fmt.Errorf("unknown Icon edge %s", name)
@@ -2142,22 +2142,22 @@ func (m *ProjectMutation) ResetEdge(name string) error {
 // TeammateMutation represents an operation that mutates the Teammate nodes in the graph.
 type TeammateMutation struct {
 	config
-	op                Op
-	typ               string
-	id                *ulid.ID
-	name              *string
-	image             *string
-	email             *string
-	created_at        *time.Time
-	updated_at        *time.Time
-	clearedFields     map[string]struct{}
-	workspaces        *ulid.ID
-	clearedworkspaces bool
-	projects          *ulid.ID
-	clearedprojects   bool
-	done              bool
-	oldValue          func(context.Context) (*Teammate, error)
-	predicates        []predicate.Teammate
+	op               Op
+	typ              string
+	id               *ulid.ID
+	name             *string
+	image            *string
+	email            *string
+	created_at       *time.Time
+	updated_at       *time.Time
+	clearedFields    map[string]struct{}
+	workspace        *ulid.ID
+	clearedworkspace bool
+	project          *ulid.ID
+	clearedproject   bool
+	done             bool
+	oldValue         func(context.Context) (*Teammate, error)
+	predicates       []predicate.Teammate
 }
 
 var _ ent.Mutation = (*TeammateMutation)(nil)
@@ -2425,82 +2425,82 @@ func (m *TeammateMutation) ResetUpdatedAt() {
 	m.updated_at = nil
 }
 
-// SetWorkspacesID sets the "workspaces" edge to the Workspace entity by id.
-func (m *TeammateMutation) SetWorkspacesID(id ulid.ID) {
-	m.workspaces = &id
+// SetWorkspaceID sets the "workspace" edge to the Workspace entity by id.
+func (m *TeammateMutation) SetWorkspaceID(id ulid.ID) {
+	m.workspace = &id
 }
 
-// ClearWorkspaces clears the "workspaces" edge to the Workspace entity.
-func (m *TeammateMutation) ClearWorkspaces() {
-	m.clearedworkspaces = true
+// ClearWorkspace clears the "workspace" edge to the Workspace entity.
+func (m *TeammateMutation) ClearWorkspace() {
+	m.clearedworkspace = true
 }
 
-// WorkspacesCleared reports if the "workspaces" edge to the Workspace entity was cleared.
-func (m *TeammateMutation) WorkspacesCleared() bool {
-	return m.clearedworkspaces
+// WorkspaceCleared reports if the "workspace" edge to the Workspace entity was cleared.
+func (m *TeammateMutation) WorkspaceCleared() bool {
+	return m.clearedworkspace
 }
 
-// WorkspacesID returns the "workspaces" edge ID in the mutation.
-func (m *TeammateMutation) WorkspacesID() (id ulid.ID, exists bool) {
-	if m.workspaces != nil {
-		return *m.workspaces, true
+// WorkspaceID returns the "workspace" edge ID in the mutation.
+func (m *TeammateMutation) WorkspaceID() (id ulid.ID, exists bool) {
+	if m.workspace != nil {
+		return *m.workspace, true
 	}
 	return
 }
 
-// WorkspacesIDs returns the "workspaces" edge IDs in the mutation.
+// WorkspaceIDs returns the "workspace" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// WorkspacesID instead. It exists only for internal usage by the builders.
-func (m *TeammateMutation) WorkspacesIDs() (ids []ulid.ID) {
-	if id := m.workspaces; id != nil {
+// WorkspaceID instead. It exists only for internal usage by the builders.
+func (m *TeammateMutation) WorkspaceIDs() (ids []ulid.ID) {
+	if id := m.workspace; id != nil {
 		ids = append(ids, *id)
 	}
 	return
 }
 
-// ResetWorkspaces resets all changes to the "workspaces" edge.
-func (m *TeammateMutation) ResetWorkspaces() {
-	m.workspaces = nil
-	m.clearedworkspaces = false
+// ResetWorkspace resets all changes to the "workspace" edge.
+func (m *TeammateMutation) ResetWorkspace() {
+	m.workspace = nil
+	m.clearedworkspace = false
 }
 
-// SetProjectsID sets the "projects" edge to the Project entity by id.
-func (m *TeammateMutation) SetProjectsID(id ulid.ID) {
-	m.projects = &id
+// SetProjectID sets the "project" edge to the Project entity by id.
+func (m *TeammateMutation) SetProjectID(id ulid.ID) {
+	m.project = &id
 }
 
-// ClearProjects clears the "projects" edge to the Project entity.
-func (m *TeammateMutation) ClearProjects() {
-	m.clearedprojects = true
+// ClearProject clears the "project" edge to the Project entity.
+func (m *TeammateMutation) ClearProject() {
+	m.clearedproject = true
 }
 
-// ProjectsCleared reports if the "projects" edge to the Project entity was cleared.
-func (m *TeammateMutation) ProjectsCleared() bool {
-	return m.clearedprojects
+// ProjectCleared reports if the "project" edge to the Project entity was cleared.
+func (m *TeammateMutation) ProjectCleared() bool {
+	return m.clearedproject
 }
 
-// ProjectsID returns the "projects" edge ID in the mutation.
-func (m *TeammateMutation) ProjectsID() (id ulid.ID, exists bool) {
-	if m.projects != nil {
-		return *m.projects, true
+// ProjectID returns the "project" edge ID in the mutation.
+func (m *TeammateMutation) ProjectID() (id ulid.ID, exists bool) {
+	if m.project != nil {
+		return *m.project, true
 	}
 	return
 }
 
-// ProjectsIDs returns the "projects" edge IDs in the mutation.
+// ProjectIDs returns the "project" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// ProjectsID instead. It exists only for internal usage by the builders.
-func (m *TeammateMutation) ProjectsIDs() (ids []ulid.ID) {
-	if id := m.projects; id != nil {
+// ProjectID instead. It exists only for internal usage by the builders.
+func (m *TeammateMutation) ProjectIDs() (ids []ulid.ID) {
+	if id := m.project; id != nil {
 		ids = append(ids, *id)
 	}
 	return
 }
 
-// ResetProjects resets all changes to the "projects" edge.
-func (m *TeammateMutation) ResetProjects() {
-	m.projects = nil
-	m.clearedprojects = false
+// ResetProject resets all changes to the "project" edge.
+func (m *TeammateMutation) ResetProject() {
+	m.project = nil
+	m.clearedproject = false
 }
 
 // Where appends a list predicates to the TeammateMutation builder.
@@ -2690,11 +2690,11 @@ func (m *TeammateMutation) ResetField(name string) error {
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *TeammateMutation) AddedEdges() []string {
 	edges := make([]string, 0, 2)
-	if m.workspaces != nil {
-		edges = append(edges, teammate.EdgeWorkspaces)
+	if m.workspace != nil {
+		edges = append(edges, teammate.EdgeWorkspace)
 	}
-	if m.projects != nil {
-		edges = append(edges, teammate.EdgeProjects)
+	if m.project != nil {
+		edges = append(edges, teammate.EdgeProject)
 	}
 	return edges
 }
@@ -2703,12 +2703,12 @@ func (m *TeammateMutation) AddedEdges() []string {
 // name in this mutation.
 func (m *TeammateMutation) AddedIDs(name string) []ent.Value {
 	switch name {
-	case teammate.EdgeWorkspaces:
-		if id := m.workspaces; id != nil {
+	case teammate.EdgeWorkspace:
+		if id := m.workspace; id != nil {
 			return []ent.Value{*id}
 		}
-	case teammate.EdgeProjects:
-		if id := m.projects; id != nil {
+	case teammate.EdgeProject:
+		if id := m.project; id != nil {
 			return []ent.Value{*id}
 		}
 	}
@@ -2732,11 +2732,11 @@ func (m *TeammateMutation) RemovedIDs(name string) []ent.Value {
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *TeammateMutation) ClearedEdges() []string {
 	edges := make([]string, 0, 2)
-	if m.clearedworkspaces {
-		edges = append(edges, teammate.EdgeWorkspaces)
+	if m.clearedworkspace {
+		edges = append(edges, teammate.EdgeWorkspace)
 	}
-	if m.clearedprojects {
-		edges = append(edges, teammate.EdgeProjects)
+	if m.clearedproject {
+		edges = append(edges, teammate.EdgeProject)
 	}
 	return edges
 }
@@ -2745,10 +2745,10 @@ func (m *TeammateMutation) ClearedEdges() []string {
 // was cleared in this mutation.
 func (m *TeammateMutation) EdgeCleared(name string) bool {
 	switch name {
-	case teammate.EdgeWorkspaces:
-		return m.clearedworkspaces
-	case teammate.EdgeProjects:
-		return m.clearedprojects
+	case teammate.EdgeWorkspace:
+		return m.clearedworkspace
+	case teammate.EdgeProject:
+		return m.clearedproject
 	}
 	return false
 }
@@ -2757,11 +2757,11 @@ func (m *TeammateMutation) EdgeCleared(name string) bool {
 // if that edge is not defined in the schema.
 func (m *TeammateMutation) ClearEdge(name string) error {
 	switch name {
-	case teammate.EdgeWorkspaces:
-		m.ClearWorkspaces()
+	case teammate.EdgeWorkspace:
+		m.ClearWorkspace()
 		return nil
-	case teammate.EdgeProjects:
-		m.ClearProjects()
+	case teammate.EdgeProject:
+		m.ClearProject()
 		return nil
 	}
 	return fmt.Errorf("unknown Teammate unique edge %s", name)
@@ -2771,11 +2771,11 @@ func (m *TeammateMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *TeammateMutation) ResetEdge(name string) error {
 	switch name {
-	case teammate.EdgeWorkspaces:
-		m.ResetWorkspaces()
+	case teammate.EdgeWorkspace:
+		m.ResetWorkspace()
 		return nil
-	case teammate.EdgeProjects:
-		m.ResetProjects()
+	case teammate.EdgeProject:
+		m.ResetProject()
 		return nil
 	}
 	return fmt.Errorf("unknown Teammate edge %s", name)

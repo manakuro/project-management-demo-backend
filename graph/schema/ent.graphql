@@ -243,13 +243,13 @@ input TeammateWhereInput {
   idLT: ID
   idLTE: ID
   
-  """workspaces edge predicates"""
-  hasWorkspaces: Boolean
-  hasWorkspacesWith: [WorkspaceWhereInput!]
+  """workspace edge predicates"""
+  hasWorkspace: Boolean
+  hasWorkspaceWith: [WorkspaceWhereInput!]
   
-  """projects edge predicates"""
-  hasProjects: Boolean
-  hasProjectsWith: [ProjectWhereInput!]
+  """project edge predicates"""
+  hasProject: Boolean
+  hasProjectWith: [ProjectWhereInput!]
 }
 
 """
@@ -414,9 +414,9 @@ input ColorWhereInput {
   idLT: ID
   idLTE: ID
   
-  """projects edge predicates"""
-  hasProjects: Boolean
-  hasProjectsWith: [ProjectWhereInput!]
+  """project edge predicates"""
+  hasProject: Boolean
+  hasProjectWith: [ProjectWhereInput!]
 }
 
 """
@@ -488,9 +488,9 @@ input IconWhereInput {
   idLT: ID
   idLTE: ID
   
-  """projects edge predicates"""
-  hasProjects: Boolean
-  hasProjectsWith: [ProjectWhereInput!]
+  """project edge predicates"""
+  hasProject: Boolean
+  hasProjectWith: [ProjectWhereInput!]
 }
 
 """

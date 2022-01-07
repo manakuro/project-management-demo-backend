@@ -97,9 +97,9 @@ func (c *Color) Node(ctx context.Context) (node *Node, err error) {
 	}
 	node.Edges[0] = &Edge{
 		Type: "Project",
-		Name: "projects",
+		Name: "project",
 	}
-	err = c.QueryProjects().
+	err = c.QueryProject().
 		Select(project.FieldID).
 		Scan(ctx, &node.Edges[0].IDs)
 	if err != nil {
@@ -150,9 +150,9 @@ func (i *Icon) Node(ctx context.Context) (node *Node, err error) {
 	}
 	node.Edges[0] = &Edge{
 		Type: "Project",
-		Name: "projects",
+		Name: "project",
 	}
-	err = i.QueryProjects().
+	err = i.QueryProject().
 		Select(project.FieldID).
 		Scan(ctx, &node.Edges[0].IDs)
 	if err != nil {
@@ -342,9 +342,9 @@ func (t *Teammate) Node(ctx context.Context) (node *Node, err error) {
 	}
 	node.Edges[0] = &Edge{
 		Type: "Workspace",
-		Name: "workspaces",
+		Name: "workspace",
 	}
-	err = t.QueryWorkspaces().
+	err = t.QueryWorkspace().
 		Select(workspace.FieldID).
 		Scan(ctx, &node.Edges[0].IDs)
 	if err != nil {
@@ -352,9 +352,9 @@ func (t *Teammate) Node(ctx context.Context) (node *Node, err error) {
 	}
 	node.Edges[1] = &Edge{
 		Type: "Project",
-		Name: "projects",
+		Name: "project",
 	}
-	err = t.QueryProjects().
+	err = t.QueryProject().
 		Select(project.FieldID).
 		Scan(ctx, &node.Edges[1].IDs)
 	if err != nil {

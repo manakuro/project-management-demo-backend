@@ -250,15 +250,15 @@ func (c *ColorClient) GetX(ctx context.Context, id ulid.ID) *Color {
 	return obj
 }
 
-// QueryProjects queries the projects edge of a Color.
-func (c *ColorClient) QueryProjects(co *Color) *ProjectQuery {
+// QueryProject queries the project edge of a Color.
+func (c *ColorClient) QueryProject(co *Color) *ProjectQuery {
 	query := &ProjectQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
 		id := co.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(color.Table, color.FieldID, id),
 			sqlgraph.To(project.Table, project.FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, false, color.ProjectsTable, color.ProjectsColumn),
+			sqlgraph.Edge(sqlgraph.O2O, false, color.ProjectTable, color.ProjectColumn),
 		)
 		fromV = sqlgraph.Neighbors(co.driver.Dialect(), step)
 		return fromV, nil
@@ -356,15 +356,15 @@ func (c *IconClient) GetX(ctx context.Context, id ulid.ID) *Icon {
 	return obj
 }
 
-// QueryProjects queries the projects edge of a Icon.
-func (c *IconClient) QueryProjects(i *Icon) *ProjectQuery {
+// QueryProject queries the project edge of a Icon.
+func (c *IconClient) QueryProject(i *Icon) *ProjectQuery {
 	query := &ProjectQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
 		id := i.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(icon.Table, icon.FieldID, id),
 			sqlgraph.To(project.Table, project.FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, false, icon.ProjectsTable, icon.ProjectsColumn),
+			sqlgraph.Edge(sqlgraph.O2O, false, icon.ProjectTable, icon.ProjectColumn),
 		)
 		fromV = sqlgraph.Neighbors(i.driver.Dialect(), step)
 		return fromV, nil
@@ -616,15 +616,15 @@ func (c *TeammateClient) GetX(ctx context.Context, id ulid.ID) *Teammate {
 	return obj
 }
 
-// QueryWorkspaces queries the workspaces edge of a Teammate.
-func (c *TeammateClient) QueryWorkspaces(t *Teammate) *WorkspaceQuery {
+// QueryWorkspace queries the workspace edge of a Teammate.
+func (c *TeammateClient) QueryWorkspace(t *Teammate) *WorkspaceQuery {
 	query := &WorkspaceQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
 		id := t.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(teammate.Table, teammate.FieldID, id),
 			sqlgraph.To(workspace.Table, workspace.FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, false, teammate.WorkspacesTable, teammate.WorkspacesColumn),
+			sqlgraph.Edge(sqlgraph.O2O, false, teammate.WorkspaceTable, teammate.WorkspaceColumn),
 		)
 		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
 		return fromV, nil
@@ -632,15 +632,15 @@ func (c *TeammateClient) QueryWorkspaces(t *Teammate) *WorkspaceQuery {
 	return query
 }
 
-// QueryProjects queries the projects edge of a Teammate.
-func (c *TeammateClient) QueryProjects(t *Teammate) *ProjectQuery {
+// QueryProject queries the project edge of a Teammate.
+func (c *TeammateClient) QueryProject(t *Teammate) *ProjectQuery {
 	query := &ProjectQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
 		id := t.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(teammate.Table, teammate.FieldID, id),
 			sqlgraph.To(project.Table, project.FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, false, teammate.ProjectsTable, teammate.ProjectsColumn),
+			sqlgraph.Edge(sqlgraph.O2O, false, teammate.ProjectTable, teammate.ProjectColumn),
 		)
 		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
 		return fromV, nil

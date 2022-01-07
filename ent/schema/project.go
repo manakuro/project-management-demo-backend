@@ -69,7 +69,7 @@ func (Project) Edges() []ent.Edge {
 				),
 			),
 		edge.From("color", Color.Type).
-			Ref("projects").
+			Ref("project").
 			Unique().
 			Field("color_id").
 			Required().
@@ -79,7 +79,7 @@ func (Project) Edges() []ent.Edge {
 				),
 			),
 		edge.From("icon", Icon.Type).
-			Ref("projects").
+			Ref("project").
 			Unique().
 			Field("icon_id").
 			Required().
@@ -89,7 +89,7 @@ func (Project) Edges() []ent.Edge {
 				),
 			),
 		edge.From("teammate", Teammate.Type).
-			Ref("projects").
+			Ref("project").
 			Unique().
 			Field("created_by").
 			Required().
