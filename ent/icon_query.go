@@ -4,11 +4,13 @@ package ent
 
 import (
 	"context"
+	"database/sql/driver"
 	"errors"
 	"fmt"
 	"math"
 	"project-management-demo-backend/ent/icon"
 	"project-management-demo-backend/ent/predicate"
+	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/schema/ulid"
 
 	"entgo.io/ent/dialect/sql"
@@ -25,6 +27,8 @@ type IconQuery struct {
 	order      []OrderFunc
 	fields     []string
 	predicates []predicate.Icon
+	// eager-loading edges.
+	withProjects *ProjectQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -59,6 +63,28 @@ func (iq *IconQuery) Unique(unique bool) *IconQuery {
 func (iq *IconQuery) Order(o ...OrderFunc) *IconQuery {
 	iq.order = append(iq.order, o...)
 	return iq
+}
+
+// QueryProjects chains the current query on the "projects" edge.
+func (iq *IconQuery) QueryProjects() *ProjectQuery {
+	query := &ProjectQuery{config: iq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := iq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := iq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(icon.Table, icon.FieldID, selector),
+			sqlgraph.To(project.Table, project.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, icon.ProjectsTable, icon.ProjectsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(iq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // First returns the first Icon entity from the query.
@@ -237,15 +263,27 @@ func (iq *IconQuery) Clone() *IconQuery {
 		return nil
 	}
 	return &IconQuery{
-		config:     iq.config,
-		limit:      iq.limit,
-		offset:     iq.offset,
-		order:      append([]OrderFunc{}, iq.order...),
-		predicates: append([]predicate.Icon{}, iq.predicates...),
+		config:       iq.config,
+		limit:        iq.limit,
+		offset:       iq.offset,
+		order:        append([]OrderFunc{}, iq.order...),
+		predicates:   append([]predicate.Icon{}, iq.predicates...),
+		withProjects: iq.withProjects.Clone(),
 		// clone intermediate query.
 		sql:  iq.sql.Clone(),
 		path: iq.path,
 	}
+}
+
+// WithProjects tells the query-builder to eager-load the nodes that are connected to
+// the "projects" edge. The optional arguments are used to configure the query builder of the edge.
+func (iq *IconQuery) WithProjects(opts ...func(*ProjectQuery)) *IconQuery {
+	query := &ProjectQuery{config: iq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	iq.withProjects = query
+	return iq
 }
 
 // GroupBy is used to group vertices by one or more fields/columns.
@@ -311,8 +349,11 @@ func (iq *IconQuery) prepareQuery(ctx context.Context) error {
 
 func (iq *IconQuery) sqlAll(ctx context.Context) ([]*Icon, error) {
 	var (
-		nodes = []*Icon{}
-		_spec = iq.querySpec()
+		nodes       = []*Icon{}
+		_spec       = iq.querySpec()
+		loadedTypes = [1]bool{
+			iq.withProjects != nil,
+		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
 		node := &Icon{config: iq.config}
@@ -324,6 +365,7 @@ func (iq *IconQuery) sqlAll(ctx context.Context) ([]*Icon, error) {
 			return fmt.Errorf("ent: Assign called without calling ScanValues")
 		}
 		node := nodes[len(nodes)-1]
+		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
 	if err := sqlgraph.QueryNodes(ctx, iq.driver, _spec); err != nil {
@@ -332,6 +374,32 @@ func (iq *IconQuery) sqlAll(ctx context.Context) ([]*Icon, error) {
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
+
+	if query := iq.withProjects; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[ulid.ID]*Icon)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.Projects = []*Project{}
+		}
+		query.Where(predicate.Project(func(s *sql.Selector) {
+			s.Where(sql.InValues(icon.ProjectsColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.IconID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "icon_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.Projects = append(node.Edges.Projects, n)
+		}
+	}
+
 	return nodes, nil
 }
 

@@ -4,10 +4,12 @@ package ent
 
 import (
 	"context"
+	"database/sql/driver"
 	"errors"
 	"fmt"
 	"math"
 	"project-management-demo-backend/ent/predicate"
+	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/workspace"
@@ -28,6 +30,7 @@ type WorkspaceQuery struct {
 	predicates []predicate.Workspace
 	// eager-loading edges.
 	withTeammate *TeammateQuery
+	withProjects *ProjectQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -78,7 +81,29 @@ func (wq *WorkspaceQuery) QueryTeammate() *TeammateQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(workspace.Table, workspace.FieldID, selector),
 			sqlgraph.To(teammate.Table, teammate.FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, true, workspace.TeammateTable, workspace.TeammateColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, workspace.TeammateTable, workspace.TeammateColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(wq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryProjects chains the current query on the "projects" edge.
+func (wq *WorkspaceQuery) QueryProjects() *ProjectQuery {
+	query := &ProjectQuery{config: wq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := wq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := wq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(workspace.Table, workspace.FieldID, selector),
+			sqlgraph.To(project.Table, project.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, workspace.ProjectsTable, workspace.ProjectsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(wq.driver.Dialect(), step)
 		return fromU, nil
@@ -268,6 +293,7 @@ func (wq *WorkspaceQuery) Clone() *WorkspaceQuery {
 		order:        append([]OrderFunc{}, wq.order...),
 		predicates:   append([]predicate.Workspace{}, wq.predicates...),
 		withTeammate: wq.withTeammate.Clone(),
+		withProjects: wq.withProjects.Clone(),
 		// clone intermediate query.
 		sql:  wq.sql.Clone(),
 		path: wq.path,
@@ -282,6 +308,17 @@ func (wq *WorkspaceQuery) WithTeammate(opts ...func(*TeammateQuery)) *WorkspaceQ
 		opt(query)
 	}
 	wq.withTeammate = query
+	return wq
+}
+
+// WithProjects tells the query-builder to eager-load the nodes that are connected to
+// the "projects" edge. The optional arguments are used to configure the query builder of the edge.
+func (wq *WorkspaceQuery) WithProjects(opts ...func(*ProjectQuery)) *WorkspaceQuery {
+	query := &ProjectQuery{config: wq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	wq.withProjects = query
 	return wq
 }
 
@@ -350,8 +387,9 @@ func (wq *WorkspaceQuery) sqlAll(ctx context.Context) ([]*Workspace, error) {
 	var (
 		nodes       = []*Workspace{}
 		_spec       = wq.querySpec()
-		loadedTypes = [1]bool{
+		loadedTypes = [2]bool{
 			wq.withTeammate != nil,
+			wq.withProjects != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -397,6 +435,31 @@ func (wq *WorkspaceQuery) sqlAll(ctx context.Context) ([]*Workspace, error) {
 			for i := range nodes {
 				nodes[i].Edges.Teammate = n
 			}
+		}
+	}
+
+	if query := wq.withProjects; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[ulid.ID]*Workspace)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.Projects = []*Project{}
+		}
+		query.Where(predicate.Project(func(s *sql.Selector) {
+			s.Where(sql.InValues(workspace.ProjectsColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.WorkspaceID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "workspace_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.Projects = append(node.Edges.Projects, n)
 		}
 	}
 

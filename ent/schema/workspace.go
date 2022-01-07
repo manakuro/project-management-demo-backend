@@ -44,12 +44,14 @@ func (Workspace) Edges() []ent.Edge {
 		edge.From("teammate", Teammate.Type).
 			Ref("workspaces").
 			Unique().
-			Field("created_by").Required().
+			Field("created_by").
+			Required().
 			Annotations(
 				schema.Annotation(
 					annotation.Edge{FieldName: "created_by"},
 				),
 			),
+		edge.To("projects", Project.Type),
 	}
 }
 

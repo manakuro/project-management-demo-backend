@@ -37,6 +37,82 @@ var (
 		Columns:    IconsColumns,
 		PrimaryKey: []*schema.Column{IconsColumns[0]},
 	}
+	// ProjectsColumns holds the columns for the "projects" table.
+	ProjectsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+		{Name: "name", Type: field.TypeString, Size: 255},
+		{Name: "description", Type: field.TypeJSON},
+		{Name: "description_title", Type: field.TypeString, Size: 255},
+		{Name: "due_date", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime"}},
+		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
+		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
+		{Name: "color_id", Type: field.TypeString, Nullable: true},
+		{Name: "icon_id", Type: field.TypeString, Nullable: true},
+		{Name: "created_by", Type: field.TypeString, Nullable: true},
+		{Name: "workspace_id", Type: field.TypeString, Nullable: true},
+	}
+	// ProjectsTable holds the schema information for the "projects" table.
+	ProjectsTable = &schema.Table{
+		Name:       "projects",
+		Columns:    ProjectsColumns,
+		PrimaryKey: []*schema.Column{ProjectsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "projects_colors_projects",
+				Columns:    []*schema.Column{ProjectsColumns[7]},
+				RefColumns: []*schema.Column{ColorsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "projects_icons_projects",
+				Columns:    []*schema.Column{ProjectsColumns[8]},
+				RefColumns: []*schema.Column{IconsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "projects_teammates_projects",
+				Columns:    []*schema.Column{ProjectsColumns[9]},
+				RefColumns: []*schema.Column{TeammatesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "projects_workspaces_projects",
+				Columns:    []*schema.Column{ProjectsColumns[10]},
+				RefColumns: []*schema.Column{WorkspacesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
+	// ProjectTeammatesColumns holds the columns for the "project_teammates" table.
+	ProjectTeammatesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+		{Name: "role", Type: field.TypeString, Size: 255},
+		{Name: "is_owner", Type: field.TypeBool},
+		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
+		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
+		{Name: "project_id", Type: field.TypeString, Nullable: true},
+		{Name: "teammate_id", Type: field.TypeString, Nullable: true},
+	}
+	// ProjectTeammatesTable holds the schema information for the "project_teammates" table.
+	ProjectTeammatesTable = &schema.Table{
+		Name:       "project_teammates",
+		Columns:    ProjectTeammatesColumns,
+		PrimaryKey: []*schema.Column{ProjectTeammatesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "project_teammates_projects_project_teammates",
+				Columns:    []*schema.Column{ProjectTeammatesColumns[5]},
+				RefColumns: []*schema.Column{ProjectsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "project_teammates_teammates_project_teammates",
+				Columns:    []*schema.Column{ProjectTeammatesColumns[6]},
+				RefColumns: []*schema.Column{TeammatesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
 	// TeammatesColumns holds the columns for the "teammates" table.
 	TeammatesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString},
@@ -98,7 +174,7 @@ var (
 		{Name: "description", Type: field.TypeJSON},
 		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
 		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
-		{Name: "created_by", Type: field.TypeString, Unique: true, Nullable: true},
+		{Name: "created_by", Type: field.TypeString, Nullable: true},
 	}
 	// WorkspacesTable holds the schema information for the "workspaces" table.
 	WorkspacesTable = &schema.Table{
@@ -118,6 +194,8 @@ var (
 	Tables = []*schema.Table{
 		ColorsTable,
 		IconsTable,
+		ProjectsTable,
+		ProjectTeammatesTable,
 		TeammatesTable,
 		TestTodosTable,
 		TestUsersTable,
@@ -126,6 +204,12 @@ var (
 )
 
 func init() {
+	ProjectsTable.ForeignKeys[0].RefTable = ColorsTable
+	ProjectsTable.ForeignKeys[1].RefTable = IconsTable
+	ProjectsTable.ForeignKeys[2].RefTable = TeammatesTable
+	ProjectsTable.ForeignKeys[3].RefTable = WorkspacesTable
+	ProjectTeammatesTable.ForeignKeys[0].RefTable = ProjectsTable
+	ProjectTeammatesTable.ForeignKeys[1].RefTable = TeammatesTable
 	TestTodosTable.ForeignKeys[0].RefTable = TestUsersTable
 	WorkspacesTable.ForeignKeys[0].RefTable = TeammatesTable
 }

@@ -5,6 +5,8 @@ import (
 	"log"
 	"project-management-demo-backend/ent/color"
 	"project-management-demo-backend/ent/icon"
+	"project-management-demo-backend/ent/project"
+	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/ent/testuser"
@@ -19,12 +21,14 @@ type field struct {
 
 // GlobalIDs maps unique string to tables names.
 type GlobalIDs struct {
-	TestUser  field
-	TestTodo  field
-	Teammate  field
-	Workspace field
-	Color     field
-	Icon      field
+	TestUser        field
+	TestTodo        field
+	Teammate        field
+	Workspace       field
+	Color           field
+	Icon            field
+	Project         field
+	ProjectTeammate field
 }
 
 // New generates a map object that is intended to be used as global identification for node interface query.
@@ -54,6 +58,14 @@ func New() GlobalIDs {
 		Icon: field{
 			Prefix: "0AF",
 			Table:  icon.Table,
+		},
+		Project: field{
+			Prefix: "0AG",
+			Table:  project.Table,
+		},
+		ProjectTeammate: field{
+			Prefix: "0AH",
+			Table:  projectteammate.Table,
 		},
 	}
 }

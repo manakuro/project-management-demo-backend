@@ -38,10 +38,22 @@ func (TeammateMixin) Fields() []ent.Field {
 // Edges of the Teammate.
 func (Teammate) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("workspaces", Workspace.Type).Unique().
+		edge.To("workspaces", Workspace.Type).
 			Annotations(
 				schema.Annotation(
 					annotation.Edge{FieldName: "workspace_id"},
+				),
+			),
+		edge.To("projects", Project.Type).
+			Annotations(
+				schema.Annotation(
+					annotation.Edge{FieldName: "project_id"},
+				),
+			),
+		edge.To("project_teammates", ProjectTeammate.Type).
+			Annotations(
+				schema.Annotation(
+					annotation.Edge{FieldName: "project_teammate_id"},
 				),
 			),
 	}

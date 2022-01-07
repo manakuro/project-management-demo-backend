@@ -45,6 +45,7 @@ type ResolverRoot interface {
 	Color() ColorResolver
 	Icon() IconResolver
 	Mutation() MutationResolver
+	Project() ProjectResolver
 	Query() QueryResolver
 	Subscription() SubscriptionResolver
 	Teammate() TeammateResolver
@@ -120,6 +121,7 @@ type ComplexityRoot struct {
 	Mutation struct {
 		CreateColor           func(childComplexity int, input ent.CreateColorInput) int
 		CreateIcon            func(childComplexity int, input ent.CreateIconInput) int
+		CreateProject         func(childComplexity int, input ent.CreateProjectInput) int
 		CreateTeammate        func(childComplexity int, input ent.CreateTeammateInput) int
 		CreateTestTodo        func(childComplexity int, input ent.CreateTestTodoInput) int
 		CreateTestUser        func(childComplexity int, input ent.CreateTestUserInput) int
@@ -127,6 +129,7 @@ type ComplexityRoot struct {
 		CreateWorkspace       func(childComplexity int, input ent.CreateWorkspaceInput) int
 		UpdateColor           func(childComplexity int, input ent.UpdateColorInput) int
 		UpdateIcon            func(childComplexity int, input ent.UpdateIconInput) int
+		UpdateProject         func(childComplexity int, input ent.UpdateProjectInput) int
 		UpdateTeammate        func(childComplexity int, input ent.UpdateTeammateInput) int
 		UpdateTestTodo        func(childComplexity int, input ent.UpdateTestTodoInput) int
 		UpdateTestUser        func(childComplexity int, input ent.UpdateTestUserInput) int
@@ -140,6 +143,31 @@ type ComplexityRoot struct {
 		StartCursor     func(childComplexity int) int
 	}
 
+	Project struct {
+		Color            func(childComplexity int) int
+		CreatedAt        func(childComplexity int) int
+		CreatedBy        func(childComplexity int) int
+		Description      func(childComplexity int) int
+		DescriptionTitle func(childComplexity int) int
+		DueDate          func(childComplexity int) int
+		ID               func(childComplexity int) int
+		Icon             func(childComplexity int) int
+		Name             func(childComplexity int) int
+		UpdatedAt        func(childComplexity int) int
+		WorkspaceID      func(childComplexity int) int
+	}
+
+	ProjectConnection struct {
+		Edges      func(childComplexity int) int
+		PageInfo   func(childComplexity int) int
+		TotalCount func(childComplexity int) int
+	}
+
+	ProjectEdge struct {
+		Cursor func(childComplexity int) int
+		Node   func(childComplexity int) int
+	}
+
 	Query struct {
 		Color      func(childComplexity int, id ulid.ID) int
 		Colors     func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ColorWhereInput) int
@@ -147,6 +175,8 @@ type ComplexityRoot struct {
 		Icons      func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.IconWhereInput) int
 		Node       func(childComplexity int, id ulid.ID) int
 		Nodes      func(childComplexity int, ids []ulid.ID) int
+		Project    func(childComplexity int, where *ent.ProjectWhereInput) int
+		Projects   func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectWhereInput) int
 		Teammate   func(childComplexity int, id ulid.ID) int
 		Teammates  func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TeammateWhereInput) int
 		TestTodo   func(childComplexity int, id *ulid.ID) int
@@ -160,6 +190,7 @@ type ComplexityRoot struct {
 	Subscription struct {
 		ColorUpdated     func(childComplexity int, id ulid.ID) int
 		IconUpdated      func(childComplexity int, id ulid.ID) int
+		ProjectUpdated   func(childComplexity int, id ulid.ID) int
 		TeammateUpdated  func(childComplexity int, id ulid.ID) int
 		TestUserUpdated  func(childComplexity int, id ulid.ID) int
 		WorkspaceUpdated func(childComplexity int, id ulid.ID) int
@@ -267,6 +298,8 @@ type MutationResolver interface {
 	UpdateColor(ctx context.Context, input ent.UpdateColorInput) (*ent.Color, error)
 	CreateIcon(ctx context.Context, input ent.CreateIconInput) (*ent.Icon, error)
 	UpdateIcon(ctx context.Context, input ent.UpdateIconInput) (*ent.Icon, error)
+	CreateProject(ctx context.Context, input ent.CreateProjectInput) (*ent.Project, error)
+	UpdateProject(ctx context.Context, input ent.UpdateProjectInput) (*ent.Project, error)
 	CreateTeammate(ctx context.Context, input ent.CreateTeammateInput) (*ent.Teammate, error)
 	UpdateTeammate(ctx context.Context, input ent.UpdateTeammateInput) (*ent.Teammate, error)
 	CreateTestTodo(ctx context.Context, input ent.CreateTestTodoInput) (*ent.TestTodo, error)
@@ -277,6 +310,11 @@ type MutationResolver interface {
 	CreateWorkspace(ctx context.Context, input ent.CreateWorkspaceInput) (*ent.Workspace, error)
 	UpdateWorkspace(ctx context.Context, input ent.UpdateWorkspaceInput) (*ent.Workspace, error)
 }
+type ProjectResolver interface {
+	DueDate(ctx context.Context, obj *ent.Project) (string, error)
+	CreatedAt(ctx context.Context, obj *ent.Project) (string, error)
+	UpdatedAt(ctx context.Context, obj *ent.Project) (string, error)
+}
 type QueryResolver interface {
 	Node(ctx context.Context, id ulid.ID) (ent.Noder, error)
 	Nodes(ctx context.Context, ids []ulid.ID) ([]ent.Noder, error)
@@ -284,6 +322,8 @@ type QueryResolver interface {
 	Colors(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ColorWhereInput) (*ent.ColorConnection, error)
 	Icon(ctx context.Context, id ulid.ID) (*ent.Icon, error)
 	Icons(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.IconWhereInput) (*ent.IconConnection, error)
+	Project(ctx context.Context, where *ent.ProjectWhereInput) (*ent.Project, error)
+	Projects(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectWhereInput) (*ent.ProjectConnection, error)
 	Teammate(ctx context.Context, id ulid.ID) (*ent.Teammate, error)
 	Teammates(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TeammateWhereInput) (*ent.TeammateConnection, error)
 	TestTodo(ctx context.Context, id *ulid.ID) (*ent.TestTodo, error)
@@ -296,6 +336,7 @@ type QueryResolver interface {
 type SubscriptionResolver interface {
 	ColorUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.Color, error)
 	IconUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.Icon, error)
+	ProjectUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.Project, error)
 	TeammateUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.Teammate, error)
 	TestUserUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.TestUser, error)
 	WorkspaceUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.Workspace, error)
@@ -566,6 +607,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.CreateIcon(childComplexity, args["input"].(ent.CreateIconInput)), true
 
+	case "Mutation.createProject":
+		if e.complexity.Mutation.CreateProject == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createProject_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateProject(childComplexity, args["input"].(ent.CreateProjectInput)), true
+
 	case "Mutation.createTeammate":
 		if e.complexity.Mutation.CreateTeammate == nil {
 			break
@@ -650,6 +703,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.UpdateIcon(childComplexity, args["input"].(ent.UpdateIconInput)), true
 
+	case "Mutation.updateProject":
+		if e.complexity.Mutation.UpdateProject == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateProject_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateProject(childComplexity, args["input"].(ent.UpdateProjectInput)), true
+
 	case "Mutation.updateTeammate":
 		if e.complexity.Mutation.UpdateTeammate == nil {
 			break
@@ -726,6 +791,118 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.PageInfo.StartCursor(childComplexity), true
 
+	case "Project.color":
+		if e.complexity.Project.Color == nil {
+			break
+		}
+
+		return e.complexity.Project.Color(childComplexity), true
+
+	case "Project.createdAt":
+		if e.complexity.Project.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.Project.CreatedAt(childComplexity), true
+
+	case "Project.createdBy":
+		if e.complexity.Project.CreatedBy == nil {
+			break
+		}
+
+		return e.complexity.Project.CreatedBy(childComplexity), true
+
+	case "Project.description":
+		if e.complexity.Project.Description == nil {
+			break
+		}
+
+		return e.complexity.Project.Description(childComplexity), true
+
+	case "Project.descriptionTitle":
+		if e.complexity.Project.DescriptionTitle == nil {
+			break
+		}
+
+		return e.complexity.Project.DescriptionTitle(childComplexity), true
+
+	case "Project.dueDate":
+		if e.complexity.Project.DueDate == nil {
+			break
+		}
+
+		return e.complexity.Project.DueDate(childComplexity), true
+
+	case "Project.id":
+		if e.complexity.Project.ID == nil {
+			break
+		}
+
+		return e.complexity.Project.ID(childComplexity), true
+
+	case "Project.icon":
+		if e.complexity.Project.Icon == nil {
+			break
+		}
+
+		return e.complexity.Project.Icon(childComplexity), true
+
+	case "Project.name":
+		if e.complexity.Project.Name == nil {
+			break
+		}
+
+		return e.complexity.Project.Name(childComplexity), true
+
+	case "Project.updatedAt":
+		if e.complexity.Project.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.Project.UpdatedAt(childComplexity), true
+
+	case "Project.workspaceID":
+		if e.complexity.Project.WorkspaceID == nil {
+			break
+		}
+
+		return e.complexity.Project.WorkspaceID(childComplexity), true
+
+	case "ProjectConnection.edges":
+		if e.complexity.ProjectConnection.Edges == nil {
+			break
+		}
+
+		return e.complexity.ProjectConnection.Edges(childComplexity), true
+
+	case "ProjectConnection.pageInfo":
+		if e.complexity.ProjectConnection.PageInfo == nil {
+			break
+		}
+
+		return e.complexity.ProjectConnection.PageInfo(childComplexity), true
+
+	case "ProjectConnection.totalCount":
+		if e.complexity.ProjectConnection.TotalCount == nil {
+			break
+		}
+
+		return e.complexity.ProjectConnection.TotalCount(childComplexity), true
+
+	case "ProjectEdge.cursor":
+		if e.complexity.ProjectEdge.Cursor == nil {
+			break
+		}
+
+		return e.complexity.ProjectEdge.Cursor(childComplexity), true
+
+	case "ProjectEdge.node":
+		if e.complexity.ProjectEdge.Node == nil {
+			break
+		}
+
+		return e.complexity.ProjectEdge.Node(childComplexity), true
+
 	case "Query.color":
 		if e.complexity.Query.Color == nil {
 			break
@@ -797,6 +974,30 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.Nodes(childComplexity, args["ids"].([]ulid.ID)), true
+
+	case "Query.project":
+		if e.complexity.Query.Project == nil {
+			break
+		}
+
+		args, err := ec.field_Query_project_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Project(childComplexity, args["where"].(*ent.ProjectWhereInput)), true
+
+	case "Query.projects":
+		if e.complexity.Query.Projects == nil {
+			break
+		}
+
+		args, err := ec.field_Query_projects_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.Projects(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["where"].(*ent.ProjectWhereInput)), true
 
 	case "Query.teammate":
 		if e.complexity.Query.Teammate == nil {
@@ -912,6 +1113,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Subscription.IconUpdated(childComplexity, args["id"].(ulid.ID)), true
+
+	case "Subscription.projectUpdated":
+		if e.complexity.Subscription.ProjectUpdated == nil {
+			break
+		}
+
+		args, err := ec.field_Subscription_projectUpdated_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Subscription.ProjectUpdated(childComplexity, args["id"].(ulid.ID)), true
 
 	case "Subscription.teammateUpdated":
 		if e.complexity.Subscription.TeammateUpdated == nil {
@@ -1701,6 +1914,14 @@ input TeammateWhereInput {
   """workspaces edge predicates"""
   hasWorkspaces: Boolean
   hasWorkspacesWith: [WorkspaceWhereInput!]
+  
+  """projects edge predicates"""
+  hasProjects: Boolean
+  hasProjectsWith: [ProjectWhereInput!]
+  
+  """project_teammates edge predicates"""
+  hasProjectTeammates: Boolean
+  hasProjectTeammatesWith: [ProjectTeammateWhereInput!]
 }
 
 """
@@ -1775,6 +1996,10 @@ input WorkspaceWhereInput {
   """teammate edge predicates"""
   hasTeammate: Boolean
   hasTeammateWith: [TeammateWhereInput!]
+  
+  """projects edge predicates"""
+  hasProjects: Boolean
+  hasProjectsWith: [ProjectWhereInput!]
 }
 
 """
@@ -1860,6 +2085,10 @@ input ColorWhereInput {
   idGTE: ID
   idLT: ID
   idLTE: ID
+  
+  """projects edge predicates"""
+  hasProjects: Boolean
+  hasProjectsWith: [ProjectWhereInput!]
 }
 
 """
@@ -1930,6 +2159,267 @@ input IconWhereInput {
   idGTE: ID
   idLT: ID
   idLTE: ID
+  
+  """projects edge predicates"""
+  hasProjects: Boolean
+  hasProjectsWith: [ProjectWhereInput!]
+}
+
+"""
+ProjectWhereInput is used for filtering Project objects.
+Input was generated by ent.
+"""
+input ProjectWhereInput {
+  not: ProjectWhereInput
+  and: [ProjectWhereInput!]
+  or: [ProjectWhereInput!]
+  
+  """workspace_id field predicates"""
+  workspaceID: ID
+  workspaceIDNEQ: ID
+  workspaceIDIn: [ID!]
+  workspaceIDNotIn: [ID!]
+  workspaceIDGT: ID
+  workspaceIDGTE: ID
+  workspaceIDLT: ID
+  workspaceIDLTE: ID
+  workspaceIDContains: ID
+  workspaceIDHasPrefix: ID
+  workspaceIDHasSuffix: ID
+  workspaceIDEqualFold: ID
+  workspaceIDContainsFold: ID
+  
+  """color_id field predicates"""
+  colorID: ID
+  colorIDNEQ: ID
+  colorIDIn: [ID!]
+  colorIDNotIn: [ID!]
+  colorIDGT: ID
+  colorIDGTE: ID
+  colorIDLT: ID
+  colorIDLTE: ID
+  colorIDContains: ID
+  colorIDHasPrefix: ID
+  colorIDHasSuffix: ID
+  colorIDEqualFold: ID
+  colorIDContainsFold: ID
+  
+  """icon_id field predicates"""
+  iconID: ID
+  iconIDNEQ: ID
+  iconIDIn: [ID!]
+  iconIDNotIn: [ID!]
+  iconIDGT: ID
+  iconIDGTE: ID
+  iconIDLT: ID
+  iconIDLTE: ID
+  iconIDContains: ID
+  iconIDHasPrefix: ID
+  iconIDHasSuffix: ID
+  iconIDEqualFold: ID
+  iconIDContainsFold: ID
+  
+  """created_by field predicates"""
+  createdBy: ID
+  createdByNEQ: ID
+  createdByIn: [ID!]
+  createdByNotIn: [ID!]
+  createdByGT: ID
+  createdByGTE: ID
+  createdByLT: ID
+  createdByLTE: ID
+  createdByContains: ID
+  createdByHasPrefix: ID
+  createdByHasSuffix: ID
+  createdByEqualFold: ID
+  createdByContainsFold: ID
+  
+  """name field predicates"""
+  name: String
+  nameNEQ: String
+  nameIn: [String!]
+  nameNotIn: [String!]
+  nameGT: String
+  nameGTE: String
+  nameLT: String
+  nameLTE: String
+  nameContains: String
+  nameHasPrefix: String
+  nameHasSuffix: String
+  nameEqualFold: String
+  nameContainsFold: String
+  
+  """description_title field predicates"""
+  descriptionTitle: String
+  descriptionTitleNEQ: String
+  descriptionTitleIn: [String!]
+  descriptionTitleNotIn: [String!]
+  descriptionTitleGT: String
+  descriptionTitleGTE: String
+  descriptionTitleLT: String
+  descriptionTitleLTE: String
+  descriptionTitleContains: String
+  descriptionTitleHasPrefix: String
+  descriptionTitleHasSuffix: String
+  descriptionTitleEqualFold: String
+  descriptionTitleContainsFold: String
+  
+  """due_date field predicates"""
+  dueDate: Time
+  dueDateNEQ: Time
+  dueDateIn: [Time!]
+  dueDateNotIn: [Time!]
+  dueDateGT: Time
+  dueDateGTE: Time
+  dueDateLT: Time
+  dueDateLTE: Time
+  
+  """created_at field predicates"""
+  createdAt: Time
+  createdAtNEQ: Time
+  createdAtIn: [Time!]
+  createdAtNotIn: [Time!]
+  createdAtGT: Time
+  createdAtGTE: Time
+  createdAtLT: Time
+  createdAtLTE: Time
+  
+  """updated_at field predicates"""
+  updatedAt: Time
+  updatedAtNEQ: Time
+  updatedAtIn: [Time!]
+  updatedAtNotIn: [Time!]
+  updatedAtGT: Time
+  updatedAtGTE: Time
+  updatedAtLT: Time
+  updatedAtLTE: Time
+  
+  """id field predicates"""
+  id: ID
+  idNEQ: ID
+  idIn: [ID!]
+  idNotIn: [ID!]
+  idGT: ID
+  idGTE: ID
+  idLT: ID
+  idLTE: ID
+  
+  """workspace edge predicates"""
+  hasWorkspace: Boolean
+  hasWorkspaceWith: [WorkspaceWhereInput!]
+  
+  """color edge predicates"""
+  hasColor: Boolean
+  hasColorWith: [ColorWhereInput!]
+  
+  """icon edge predicates"""
+  hasIcon: Boolean
+  hasIconWith: [IconWhereInput!]
+  
+  """teammate edge predicates"""
+  hasTeammate: Boolean
+  hasTeammateWith: [TeammateWhereInput!]
+  
+  """project_teammates edge predicates"""
+  hasProjectTeammates: Boolean
+  hasProjectTeammatesWith: [ProjectTeammateWhereInput!]
+}
+
+"""
+ProjectTeammateWhereInput is used for filtering ProjectTeammate objects.
+Input was generated by ent.
+"""
+input ProjectTeammateWhereInput {
+  not: ProjectTeammateWhereInput
+  and: [ProjectTeammateWhereInput!]
+  or: [ProjectTeammateWhereInput!]
+  
+  """project_id field predicates"""
+  projectID: ID
+  projectIDNEQ: ID
+  projectIDIn: [ID!]
+  projectIDNotIn: [ID!]
+  projectIDGT: ID
+  projectIDGTE: ID
+  projectIDLT: ID
+  projectIDLTE: ID
+  projectIDContains: ID
+  projectIDHasPrefix: ID
+  projectIDHasSuffix: ID
+  projectIDEqualFold: ID
+  projectIDContainsFold: ID
+  
+  """teammate_id field predicates"""
+  teammateID: ID
+  teammateIDNEQ: ID
+  teammateIDIn: [ID!]
+  teammateIDNotIn: [ID!]
+  teammateIDGT: ID
+  teammateIDGTE: ID
+  teammateIDLT: ID
+  teammateIDLTE: ID
+  teammateIDContains: ID
+  teammateIDHasPrefix: ID
+  teammateIDHasSuffix: ID
+  teammateIDEqualFold: ID
+  teammateIDContainsFold: ID
+  
+  """role field predicates"""
+  role: String
+  roleNEQ: String
+  roleIn: [String!]
+  roleNotIn: [String!]
+  roleGT: String
+  roleGTE: String
+  roleLT: String
+  roleLTE: String
+  roleContains: String
+  roleHasPrefix: String
+  roleHasSuffix: String
+  roleEqualFold: String
+  roleContainsFold: String
+  
+  """is_owner field predicates"""
+  isOwner: Boolean
+  isOwnerNEQ: Boolean
+  
+  """created_at field predicates"""
+  createdAt: Time
+  createdAtNEQ: Time
+  createdAtIn: [Time!]
+  createdAtNotIn: [Time!]
+  createdAtGT: Time
+  createdAtGTE: Time
+  createdAtLT: Time
+  createdAtLTE: Time
+  
+  """updated_at field predicates"""
+  updatedAt: Time
+  updatedAtNEQ: Time
+  updatedAtIn: [Time!]
+  updatedAtNotIn: [Time!]
+  updatedAtGT: Time
+  updatedAtGTE: Time
+  updatedAtLT: Time
+  updatedAtLTE: Time
+  
+  """id field predicates"""
+  id: ID
+  idNEQ: ID
+  idIn: [ID!]
+  idNotIn: [ID!]
+  idGT: ID
+  idGTE: ID
+  idLT: ID
+  idLTE: ID
+  
+  """project edge predicates"""
+  hasProject: Boolean
+  hasProjectWith: [ProjectWhereInput!]
+  
+  """teammate edge predicates"""
+  hasTeammate: Boolean
+  hasTeammateWith: [TeammateWhereInput!]
 }
 `, BuiltIn: false},
 	{Name: "graph/schema/icon/icon.graphql", Input: `type Icon implements Node {
@@ -1971,6 +2461,64 @@ extend type Subscription {
 extend type Mutation {
   createIcon(input: CreateIconInput!): Icon!
   updateIcon(input: UpdateIconInput!): Icon!
+}
+`, BuiltIn: false},
+	{Name: "graph/schema/project/project.graphql", Input: `type Project implements Node {
+  id: ID!
+  workspaceID: ID!
+  color: Color!
+  icon: Icon!
+  createdBy: ID!
+  name: String!
+  description: EditorDescription!
+  descriptionTitle: String!
+  dueDate: String!
+  createdAt: String!
+  updatedAt: String!
+}
+type ProjectConnection {
+  totalCount: Int!
+  pageInfo: PageInfo!
+  edges: [ProjectEdge]
+}
+type ProjectEdge {
+  node: Project
+  cursor: Cursor!
+}
+
+input CreateProjectInput {
+  workspaceID: ID!
+  colorID: ID
+  iconID: ID
+  createdBy: ID!
+  name: String!
+  description: EditorDescriptionInput
+  descriptionTitle: String
+  dueDate: Time
+}
+input UpdateProjectInput {
+  id: ID!
+  colorID: ID
+  iconID: ID
+  createdBy: ID
+  name: String
+  description: EditorDescriptionInput
+  descriptionTitle: String
+  dueDate: Time
+}
+
+extend type Query {
+  project(where: ProjectWhereInput): Project
+  projects(after: Cursor, first: Int, before: Cursor, last: Int, where: ProjectWhereInput): ProjectConnection
+}
+
+extend type Subscription {
+  projectUpdated(id: ID!): Project!
+}
+
+extend type Mutation {
+  createProject(input: CreateProjectInput!): Project!
+  updateProject(input: UpdateProjectInput!): Project!
 }
 `, BuiltIn: false},
 	{Name: "graph/schema/schema.graphql", Input: `scalar Time
@@ -2234,6 +2782,21 @@ func (ec *executionContext) field_Mutation_createIcon_args(ctx context.Context, 
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_createProject_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 ent.CreateProjectInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNCreateProjectInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐCreateProjectInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_createTeammate_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -2331,6 +2894,21 @@ func (ec *executionContext) field_Mutation_updateIcon_args(ctx context.Context, 
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNUpdateIconInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐUpdateIconInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_updateProject_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 ent.UpdateProjectInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNUpdateProjectInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐUpdateProjectInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -2576,6 +3154,72 @@ func (ec *executionContext) field_Query_nodes_args(ctx context.Context, rawArgs 
 	return args, nil
 }
 
+func (ec *executionContext) field_Query_project_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *ent.ProjectWhereInput
+	if tmp, ok := rawArgs["where"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
+		arg0, err = ec.unmarshalOProjectWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectWhereInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["where"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_projects_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *ent.Cursor
+	if tmp, ok := rawArgs["after"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
+		arg0, err = ec.unmarshalOCursor2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐCursor(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["after"] = arg0
+	var arg1 *int
+	if tmp, ok := rawArgs["first"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("first"))
+		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["first"] = arg1
+	var arg2 *ent.Cursor
+	if tmp, ok := rawArgs["before"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("before"))
+		arg2, err = ec.unmarshalOCursor2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐCursor(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["before"] = arg2
+	var arg3 *int
+	if tmp, ok := rawArgs["last"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("last"))
+		arg3, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["last"] = arg3
+	var arg4 *ent.ProjectWhereInput
+	if tmp, ok := rawArgs["where"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
+		arg4, err = ec.unmarshalOProjectWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectWhereInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["where"] = arg4
+	return args, nil
+}
+
 func (ec *executionContext) field_Query_teammate_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -2814,6 +3458,21 @@ func (ec *executionContext) field_Subscription_colorUpdated_args(ctx context.Con
 }
 
 func (ec *executionContext) field_Subscription_iconUpdated_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 ulid.ID
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Subscription_projectUpdated_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 ulid.ID
@@ -4093,6 +4752,90 @@ func (ec *executionContext) _Mutation_updateIcon(ctx context.Context, field grap
 	return ec.marshalNIcon2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐIcon(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Mutation_createProject(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_createProject_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreateProject(rctx, args["input"].(ent.CreateProjectInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.Project)
+	fc.Result = res
+	return ec.marshalNProject2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProject(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_updateProject(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_updateProject_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdateProject(rctx, args["input"].(ent.UpdateProjectInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.Project)
+	fc.Result = res
+	return ec.marshalNProject2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProject(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Mutation_createTeammate(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -4605,6 +5348,560 @@ func (ec *executionContext) _PageInfo_endCursor(ctx context.Context, field graph
 	return ec.marshalOCursor2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐCursor(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Project_id(ctx context.Context, field graphql.CollectedField, obj *ent.Project) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Project",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(ulid.ID)
+	fc.Result = res
+	return ec.marshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Project_workspaceID(ctx context.Context, field graphql.CollectedField, obj *ent.Project) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Project",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.WorkspaceID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(ulid.ID)
+	fc.Result = res
+	return ec.marshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Project_color(ctx context.Context, field graphql.CollectedField, obj *ent.Project) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Project",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Color(ctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.Color)
+	fc.Result = res
+	return ec.marshalNColor2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐColor(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Project_icon(ctx context.Context, field graphql.CollectedField, obj *ent.Project) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Project",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Icon(ctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.Icon)
+	fc.Result = res
+	return ec.marshalNIcon2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐIcon(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Project_createdBy(ctx context.Context, field graphql.CollectedField, obj *ent.Project) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Project",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CreatedBy, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(ulid.ID)
+	fc.Result = res
+	return ec.marshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Project_name(ctx context.Context, field graphql.CollectedField, obj *ent.Project) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Project",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Name, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Project_description(ctx context.Context, field graphql.CollectedField, obj *ent.Project) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Project",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Description, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(editor.Description)
+	fc.Result = res
+	return ec.marshalNEditorDescription2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋeditorᚐDescription(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Project_descriptionTitle(ctx context.Context, field graphql.CollectedField, obj *ent.Project) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Project",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.DescriptionTitle, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Project_dueDate(ctx context.Context, field graphql.CollectedField, obj *ent.Project) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Project",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Project().DueDate(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Project_createdAt(ctx context.Context, field graphql.CollectedField, obj *ent.Project) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Project",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Project().CreatedAt(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Project_updatedAt(ctx context.Context, field graphql.CollectedField, obj *ent.Project) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Project",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Project().UpdatedAt(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ProjectConnection_totalCount(ctx context.Context, field graphql.CollectedField, obj *ent.ProjectConnection) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ProjectConnection",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TotalCount, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ProjectConnection_pageInfo(ctx context.Context, field graphql.CollectedField, obj *ent.ProjectConnection) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ProjectConnection",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PageInfo, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(ent.PageInfo)
+	fc.Result = res
+	return ec.marshalNPageInfo2projectᚑmanagementᚑdemoᚑbackendᚋentᚐPageInfo(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ProjectConnection_edges(ctx context.Context, field graphql.CollectedField, obj *ent.ProjectConnection) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ProjectConnection",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Edges, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*ent.ProjectEdge)
+	fc.Result = res
+	return ec.marshalOProjectEdge2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectEdge(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ProjectEdge_node(ctx context.Context, field graphql.CollectedField, obj *ent.ProjectEdge) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ProjectEdge",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Node, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*ent.Project)
+	fc.Result = res
+	return ec.marshalOProject2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProject(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ProjectEdge_cursor(ctx context.Context, field graphql.CollectedField, obj *ent.ProjectEdge) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ProjectEdge",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Cursor, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(ent.Cursor)
+	fc.Result = res
+	return ec.marshalNCursor2projectᚑmanagementᚑdemoᚑbackendᚋentᚐCursor(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Query_node(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -4840,6 +6137,84 @@ func (ec *executionContext) _Query_icons(ctx context.Context, field graphql.Coll
 	res := resTmp.(*ent.IconConnection)
 	fc.Result = res
 	return ec.marshalOIconConnection2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐIconConnection(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_project(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_project_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Project(rctx, args["where"].(*ent.ProjectWhereInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*ent.Project)
+	fc.Result = res
+	return ec.marshalOProject2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProject(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_projects(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_projects_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Projects(rctx, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["where"].(*ent.ProjectWhereInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*ent.ProjectConnection)
+	fc.Result = res
+	return ec.marshalOProjectConnection2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectConnection(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_teammate(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -5320,6 +6695,58 @@ func (ec *executionContext) _Subscription_iconUpdated(ctx context.Context, field
 			graphql.MarshalString(field.Alias).MarshalGQL(w)
 			w.Write([]byte{':'})
 			ec.marshalNIcon2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐIcon(ctx, field.Selections, res).MarshalGQL(w)
+			w.Write([]byte{'}'})
+		})
+	}
+}
+
+func (ec *executionContext) _Subscription_projectUpdated(ctx context.Context, field graphql.CollectedField) (ret func() graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = nil
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Subscription",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Subscription_projectUpdated_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return nil
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Subscription().ProjectUpdated(rctx, args["id"].(ulid.ID))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return nil
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return nil
+	}
+	return func() graphql.Marshaler {
+		res, ok := <-resTmp.(<-chan *ent.Project)
+		if !ok {
+			return nil
+		}
+		return graphql.WriterFunc(func(w io.Writer) {
+			w.Write([]byte{'{'})
+			graphql.MarshalString(field.Alias).MarshalGQL(w)
+			w.Write([]byte{':'})
+			ec.marshalNProject2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProject(ctx, field.Selections, res).MarshalGQL(w)
 			w.Write([]byte{'}'})
 		})
 	}
@@ -8810,6 +10237,22 @@ func (ec *executionContext) unmarshalInputColorWhereInput(ctx context.Context, o
 			if err != nil {
 				return it, err
 			}
+		case "hasProjects":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasProjects"))
+			it.HasProjects, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasProjectsWith":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasProjectsWith"))
+			it.HasProjectsWith, err = ec.unmarshalOProjectWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		}
 	}
 
@@ -8877,6 +10320,85 @@ func (ec *executionContext) unmarshalInputCreateIconInput(ctx context.Context, o
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("icon"))
 			it.Icon, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputCreateProjectInput(ctx context.Context, obj interface{}) (ent.CreateProjectInput, error) {
+	var it ent.CreateProjectInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "workspaceID":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceID"))
+			it.WorkspaceID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "colorID":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("colorID"))
+			it.ColorID, err = ec.unmarshalOID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "iconID":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconID"))
+			it.IconID, err = ec.unmarshalOID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdBy":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdBy"))
+			it.CreatedBy, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "name":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			it.Name, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "description":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("description"))
+			it.Description, err = ec.unmarshalOEditorDescriptionInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋeditorᚐDescription(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "descriptionTitle":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("descriptionTitle"))
+			it.DescriptionTitle, err = ec.unmarshalOString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "dueDate":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("dueDate"))
+			it.DueDate, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -9588,6 +11110,1612 @@ func (ec *executionContext) unmarshalInputIconWhereInput(ctx context.Context, ob
 			if err != nil {
 				return it, err
 			}
+		case "hasProjects":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasProjects"))
+			it.HasProjects, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasProjectsWith":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasProjectsWith"))
+			it.HasProjectsWith, err = ec.unmarshalOProjectWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputProjectTeammateWhereInput(ctx context.Context, obj interface{}) (ent.ProjectTeammateWhereInput, error) {
+	var it ent.ProjectTeammateWhereInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "not":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("not"))
+			it.Not, err = ec.unmarshalOProjectTeammateWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTeammateWhereInput(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "and":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("and"))
+			it.And, err = ec.unmarshalOProjectTeammateWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTeammateWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "or":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("or"))
+			it.Or, err = ec.unmarshalOProjectTeammateWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTeammateWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "projectID":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("projectID"))
+			it.ProjectID, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "projectIDNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("projectIDNEQ"))
+			it.ProjectIDNEQ, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "projectIDIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("projectIDIn"))
+			it.ProjectIDIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "projectIDNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("projectIDNotIn"))
+			it.ProjectIDNotIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "projectIDGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("projectIDGT"))
+			it.ProjectIDGT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "projectIDGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("projectIDGTE"))
+			it.ProjectIDGTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "projectIDLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("projectIDLT"))
+			it.ProjectIDLT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "projectIDLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("projectIDLTE"))
+			it.ProjectIDLTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "projectIDContains":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("projectIDContains"))
+			it.ProjectIDContains, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "projectIDHasPrefix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("projectIDHasPrefix"))
+			it.ProjectIDHasPrefix, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "projectIDHasSuffix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("projectIDHasSuffix"))
+			it.ProjectIDHasSuffix, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "projectIDEqualFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("projectIDEqualFold"))
+			it.ProjectIDEqualFold, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "projectIDContainsFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("projectIDContainsFold"))
+			it.ProjectIDContainsFold, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "teammateID":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("teammateID"))
+			it.TeammateID, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "teammateIDNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("teammateIDNEQ"))
+			it.TeammateIDNEQ, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "teammateIDIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("teammateIDIn"))
+			it.TeammateIDIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "teammateIDNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("teammateIDNotIn"))
+			it.TeammateIDNotIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "teammateIDGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("teammateIDGT"))
+			it.TeammateIDGT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "teammateIDGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("teammateIDGTE"))
+			it.TeammateIDGTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "teammateIDLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("teammateIDLT"))
+			it.TeammateIDLT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "teammateIDLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("teammateIDLTE"))
+			it.TeammateIDLTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "teammateIDContains":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("teammateIDContains"))
+			it.TeammateIDContains, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "teammateIDHasPrefix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("teammateIDHasPrefix"))
+			it.TeammateIDHasPrefix, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "teammateIDHasSuffix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("teammateIDHasSuffix"))
+			it.TeammateIDHasSuffix, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "teammateIDEqualFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("teammateIDEqualFold"))
+			it.TeammateIDEqualFold, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "teammateIDContainsFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("teammateIDContainsFold"))
+			it.TeammateIDContainsFold, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "role":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("role"))
+			it.Role, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "roleNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("roleNEQ"))
+			it.RoleNEQ, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "roleIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("roleIn"))
+			it.RoleIn, err = ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "roleNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("roleNotIn"))
+			it.RoleNotIn, err = ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "roleGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("roleGT"))
+			it.RoleGT, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "roleGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("roleGTE"))
+			it.RoleGTE, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "roleLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("roleLT"))
+			it.RoleLT, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "roleLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("roleLTE"))
+			it.RoleLTE, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "roleContains":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("roleContains"))
+			it.RoleContains, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "roleHasPrefix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("roleHasPrefix"))
+			it.RoleHasPrefix, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "roleHasSuffix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("roleHasSuffix"))
+			it.RoleHasSuffix, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "roleEqualFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("roleEqualFold"))
+			it.RoleEqualFold, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "roleContainsFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("roleContainsFold"))
+			it.RoleContainsFold, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "isOwner":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("isOwner"))
+			it.IsOwner, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "isOwnerNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("isOwnerNEQ"))
+			it.IsOwnerNEQ, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAt":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAt"))
+			it.CreatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtNEQ"))
+			it.CreatedAtNEQ, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtIn"))
+			it.CreatedAtIn, err = ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtNotIn"))
+			it.CreatedAtNotIn, err = ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtGT"))
+			it.CreatedAtGT, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtGTE"))
+			it.CreatedAtGTE, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtLT"))
+			it.CreatedAtLT, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtLTE"))
+			it.CreatedAtLTE, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAt":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAt"))
+			it.UpdatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtNEQ"))
+			it.UpdatedAtNEQ, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtIn"))
+			it.UpdatedAtIn, err = ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtNotIn"))
+			it.UpdatedAtNotIn, err = ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtGT"))
+			it.UpdatedAtGT, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtGTE"))
+			it.UpdatedAtGTE, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtLT"))
+			it.UpdatedAtLT, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtLTE"))
+			it.UpdatedAtLTE, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			it.ID, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idNEQ"))
+			it.IDNEQ, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idIn"))
+			it.IDIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idNotIn"))
+			it.IDNotIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idGT"))
+			it.IDGT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idGTE"))
+			it.IDGTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idLT"))
+			it.IDLT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idLTE"))
+			it.IDLTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasProject":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasProject"))
+			it.HasProject, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasProjectWith":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasProjectWith"))
+			it.HasProjectWith, err = ec.unmarshalOProjectWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasTeammate":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasTeammate"))
+			it.HasTeammate, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasTeammateWith":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasTeammateWith"))
+			it.HasTeammateWith, err = ec.unmarshalOTeammateWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTeammateWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputProjectWhereInput(ctx context.Context, obj interface{}) (ent.ProjectWhereInput, error) {
+	var it ent.ProjectWhereInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "not":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("not"))
+			it.Not, err = ec.unmarshalOProjectWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectWhereInput(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "and":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("and"))
+			it.And, err = ec.unmarshalOProjectWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "or":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("or"))
+			it.Or, err = ec.unmarshalOProjectWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "workspaceID":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceID"))
+			it.WorkspaceID, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "workspaceIDNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceIDNEQ"))
+			it.WorkspaceIDNEQ, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "workspaceIDIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceIDIn"))
+			it.WorkspaceIDIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "workspaceIDNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceIDNotIn"))
+			it.WorkspaceIDNotIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "workspaceIDGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceIDGT"))
+			it.WorkspaceIDGT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "workspaceIDGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceIDGTE"))
+			it.WorkspaceIDGTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "workspaceIDLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceIDLT"))
+			it.WorkspaceIDLT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "workspaceIDLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceIDLTE"))
+			it.WorkspaceIDLTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "workspaceIDContains":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceIDContains"))
+			it.WorkspaceIDContains, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "workspaceIDHasPrefix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceIDHasPrefix"))
+			it.WorkspaceIDHasPrefix, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "workspaceIDHasSuffix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceIDHasSuffix"))
+			it.WorkspaceIDHasSuffix, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "workspaceIDEqualFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceIDEqualFold"))
+			it.WorkspaceIDEqualFold, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "workspaceIDContainsFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceIDContainsFold"))
+			it.WorkspaceIDContainsFold, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "colorID":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("colorID"))
+			it.ColorID, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "colorIDNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("colorIDNEQ"))
+			it.ColorIDNEQ, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "colorIDIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("colorIDIn"))
+			it.ColorIDIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "colorIDNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("colorIDNotIn"))
+			it.ColorIDNotIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "colorIDGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("colorIDGT"))
+			it.ColorIDGT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "colorIDGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("colorIDGTE"))
+			it.ColorIDGTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "colorIDLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("colorIDLT"))
+			it.ColorIDLT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "colorIDLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("colorIDLTE"))
+			it.ColorIDLTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "colorIDContains":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("colorIDContains"))
+			it.ColorIDContains, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "colorIDHasPrefix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("colorIDHasPrefix"))
+			it.ColorIDHasPrefix, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "colorIDHasSuffix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("colorIDHasSuffix"))
+			it.ColorIDHasSuffix, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "colorIDEqualFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("colorIDEqualFold"))
+			it.ColorIDEqualFold, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "colorIDContainsFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("colorIDContainsFold"))
+			it.ColorIDContainsFold, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "iconID":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconID"))
+			it.IconID, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "iconIDNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconIDNEQ"))
+			it.IconIDNEQ, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "iconIDIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconIDIn"))
+			it.IconIDIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "iconIDNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconIDNotIn"))
+			it.IconIDNotIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "iconIDGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconIDGT"))
+			it.IconIDGT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "iconIDGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconIDGTE"))
+			it.IconIDGTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "iconIDLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconIDLT"))
+			it.IconIDLT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "iconIDLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconIDLTE"))
+			it.IconIDLTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "iconIDContains":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconIDContains"))
+			it.IconIDContains, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "iconIDHasPrefix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconIDHasPrefix"))
+			it.IconIDHasPrefix, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "iconIDHasSuffix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconIDHasSuffix"))
+			it.IconIDHasSuffix, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "iconIDEqualFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconIDEqualFold"))
+			it.IconIDEqualFold, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "iconIDContainsFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconIDContainsFold"))
+			it.IconIDContainsFold, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdBy":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdBy"))
+			it.CreatedBy, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdByNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdByNEQ"))
+			it.CreatedByNEQ, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdByIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdByIn"))
+			it.CreatedByIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdByNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdByNotIn"))
+			it.CreatedByNotIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdByGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdByGT"))
+			it.CreatedByGT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdByGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdByGTE"))
+			it.CreatedByGTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdByLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdByLT"))
+			it.CreatedByLT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdByLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdByLTE"))
+			it.CreatedByLTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdByContains":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdByContains"))
+			it.CreatedByContains, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdByHasPrefix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdByHasPrefix"))
+			it.CreatedByHasPrefix, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdByHasSuffix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdByHasSuffix"))
+			it.CreatedByHasSuffix, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdByEqualFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdByEqualFold"))
+			it.CreatedByEqualFold, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdByContainsFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdByContainsFold"))
+			it.CreatedByContainsFold, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "name":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			it.Name, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameNEQ"))
+			it.NameNEQ, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameIn"))
+			it.NameIn, err = ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameNotIn"))
+			it.NameNotIn, err = ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameGT"))
+			it.NameGT, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameGTE"))
+			it.NameGTE, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameLT"))
+			it.NameLT, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameLTE"))
+			it.NameLTE, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameContains":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameContains"))
+			it.NameContains, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameHasPrefix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameHasPrefix"))
+			it.NameHasPrefix, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameHasSuffix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameHasSuffix"))
+			it.NameHasSuffix, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameEqualFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameEqualFold"))
+			it.NameEqualFold, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameContainsFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameContainsFold"))
+			it.NameContainsFold, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "descriptionTitle":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("descriptionTitle"))
+			it.DescriptionTitle, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "descriptionTitleNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("descriptionTitleNEQ"))
+			it.DescriptionTitleNEQ, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "descriptionTitleIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("descriptionTitleIn"))
+			it.DescriptionTitleIn, err = ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "descriptionTitleNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("descriptionTitleNotIn"))
+			it.DescriptionTitleNotIn, err = ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "descriptionTitleGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("descriptionTitleGT"))
+			it.DescriptionTitleGT, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "descriptionTitleGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("descriptionTitleGTE"))
+			it.DescriptionTitleGTE, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "descriptionTitleLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("descriptionTitleLT"))
+			it.DescriptionTitleLT, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "descriptionTitleLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("descriptionTitleLTE"))
+			it.DescriptionTitleLTE, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "descriptionTitleContains":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("descriptionTitleContains"))
+			it.DescriptionTitleContains, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "descriptionTitleHasPrefix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("descriptionTitleHasPrefix"))
+			it.DescriptionTitleHasPrefix, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "descriptionTitleHasSuffix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("descriptionTitleHasSuffix"))
+			it.DescriptionTitleHasSuffix, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "descriptionTitleEqualFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("descriptionTitleEqualFold"))
+			it.DescriptionTitleEqualFold, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "descriptionTitleContainsFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("descriptionTitleContainsFold"))
+			it.DescriptionTitleContainsFold, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "dueDate":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("dueDate"))
+			it.DueDate, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "dueDateNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("dueDateNEQ"))
+			it.DueDateNEQ, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "dueDateIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("dueDateIn"))
+			it.DueDateIn, err = ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "dueDateNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("dueDateNotIn"))
+			it.DueDateNotIn, err = ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "dueDateGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("dueDateGT"))
+			it.DueDateGT, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "dueDateGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("dueDateGTE"))
+			it.DueDateGTE, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "dueDateLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("dueDateLT"))
+			it.DueDateLT, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "dueDateLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("dueDateLTE"))
+			it.DueDateLTE, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAt":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAt"))
+			it.CreatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtNEQ"))
+			it.CreatedAtNEQ, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtIn"))
+			it.CreatedAtIn, err = ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtNotIn"))
+			it.CreatedAtNotIn, err = ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtGT"))
+			it.CreatedAtGT, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtGTE"))
+			it.CreatedAtGTE, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtLT"))
+			it.CreatedAtLT, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtLTE"))
+			it.CreatedAtLTE, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAt":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAt"))
+			it.UpdatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtNEQ"))
+			it.UpdatedAtNEQ, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtIn"))
+			it.UpdatedAtIn, err = ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtNotIn"))
+			it.UpdatedAtNotIn, err = ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtGT"))
+			it.UpdatedAtGT, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtGTE"))
+			it.UpdatedAtGTE, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtLT"))
+			it.UpdatedAtLT, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtLTE"))
+			it.UpdatedAtLTE, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			it.ID, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idNEQ"))
+			it.IDNEQ, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idIn"))
+			it.IDIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idNotIn"))
+			it.IDNotIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idGT"))
+			it.IDGT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idGTE"))
+			it.IDGTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idLT"))
+			it.IDLT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idLTE"))
+			it.IDLTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasWorkspace":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasWorkspace"))
+			it.HasWorkspace, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasWorkspaceWith":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasWorkspaceWith"))
+			it.HasWorkspaceWith, err = ec.unmarshalOWorkspaceWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐWorkspaceWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasColor":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasColor"))
+			it.HasColor, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasColorWith":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasColorWith"))
+			it.HasColorWith, err = ec.unmarshalOColorWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐColorWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasIcon":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasIcon"))
+			it.HasIcon, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasIconWith":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasIconWith"))
+			it.HasIconWith, err = ec.unmarshalOIconWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐIconWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasTeammate":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasTeammate"))
+			it.HasTeammate, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasTeammateWith":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasTeammateWith"))
+			it.HasTeammateWith, err = ec.unmarshalOTeammateWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTeammateWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasProjectTeammates":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasProjectTeammates"))
+			it.HasProjectTeammates, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasProjectTeammatesWith":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasProjectTeammatesWith"))
+			it.HasProjectTeammatesWith, err = ec.unmarshalOProjectTeammateWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTeammateWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		}
 	}
 
@@ -10144,6 +13272,38 @@ func (ec *executionContext) unmarshalInputTeammateWhereInput(ctx context.Context
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasWorkspacesWith"))
 			it.HasWorkspacesWith, err = ec.unmarshalOWorkspaceWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐWorkspaceWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasProjects":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasProjects"))
+			it.HasProjects, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasProjectsWith":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasProjectsWith"))
+			it.HasProjectsWith, err = ec.unmarshalOProjectWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasProjectTeammates":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasProjectTeammates"))
+			it.HasProjectTeammates, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasProjectTeammatesWith":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasProjectTeammatesWith"))
+			it.HasProjectTeammatesWith, err = ec.unmarshalOProjectTeammateWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTeammateWhereInputᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -11291,6 +14451,85 @@ func (ec *executionContext) unmarshalInputUpdateIconInput(ctx context.Context, o
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputUpdateProjectInput(ctx context.Context, obj interface{}) (ent.UpdateProjectInput, error) {
+	var it ent.UpdateProjectInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			it.ID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "colorID":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("colorID"))
+			it.ColorID, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "iconID":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("iconID"))
+			it.IconID, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdBy":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdBy"))
+			it.CreatedBy, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "name":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			it.Name, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "description":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("description"))
+			it.Description, err = ec.unmarshalOEditorDescriptionInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋeditorᚐDescription(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "descriptionTitle":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("descriptionTitle"))
+			it.DescriptionTitle, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "dueDate":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("dueDate"))
+			it.DueDate, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputUpdateTeammateInput(ctx context.Context, obj interface{}) (ent.UpdateTeammateInput, error) {
 	var it ent.UpdateTeammateInput
 	asMap := map[string]interface{}{}
@@ -11928,6 +15167,22 @@ func (ec *executionContext) unmarshalInputWorkspaceWhereInput(ctx context.Contex
 			if err != nil {
 				return it, err
 			}
+		case "hasProjects":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasProjects"))
+			it.HasProjects, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasProjectsWith":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasProjectsWith"))
+			it.HasProjectsWith, err = ec.unmarshalOProjectWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		}
 	}
 
@@ -11952,6 +15207,11 @@ func (ec *executionContext) _Node(ctx context.Context, sel ast.SelectionSet, obj
 			return graphql.Null
 		}
 		return ec._Icon(ctx, sel, obj)
+	case *ent.Project:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._Project(ctx, sel, obj)
 	case *ent.Teammate:
 		if obj == nil {
 			return graphql.Null
@@ -12381,6 +15641,16 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "createProject":
+			out.Values[i] = ec._Mutation_createProject(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "updateProject":
+			out.Values[i] = ec._Mutation_updateProject(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		case "createTeammate":
 			out.Values[i] = ec._Mutation_createTeammate(ctx, field)
 			if out.Values[i] == graphql.Null {
@@ -12462,6 +15732,191 @@ func (ec *executionContext) _PageInfo(ctx context.Context, sel ast.SelectionSet,
 			out.Values[i] = ec._PageInfo_startCursor(ctx, field, obj)
 		case "endCursor":
 			out.Values[i] = ec._PageInfo_endCursor(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var projectImplementors = []string{"Project", "Node"}
+
+func (ec *executionContext) _Project(ctx context.Context, sel ast.SelectionSet, obj *ent.Project) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, projectImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Project")
+		case "id":
+			out.Values[i] = ec._Project_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "workspaceID":
+			out.Values[i] = ec._Project_workspaceID(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "color":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Project_color(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "icon":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Project_icon(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "createdBy":
+			out.Values[i] = ec._Project_createdBy(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "name":
+			out.Values[i] = ec._Project_name(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "description":
+			out.Values[i] = ec._Project_description(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "descriptionTitle":
+			out.Values[i] = ec._Project_descriptionTitle(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "dueDate":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Project_dueDate(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "createdAt":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Project_createdAt(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "updatedAt":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Project_updatedAt(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var projectConnectionImplementors = []string{"ProjectConnection"}
+
+func (ec *executionContext) _ProjectConnection(ctx context.Context, sel ast.SelectionSet, obj *ent.ProjectConnection) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, projectConnectionImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("ProjectConnection")
+		case "totalCount":
+			out.Values[i] = ec._ProjectConnection_totalCount(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "pageInfo":
+			out.Values[i] = ec._ProjectConnection_pageInfo(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "edges":
+			out.Values[i] = ec._ProjectConnection_edges(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var projectEdgeImplementors = []string{"ProjectEdge"}
+
+func (ec *executionContext) _ProjectEdge(ctx context.Context, sel ast.SelectionSet, obj *ent.ProjectEdge) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, projectEdgeImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("ProjectEdge")
+		case "node":
+			out.Values[i] = ec._ProjectEdge_node(ctx, field, obj)
+		case "cursor":
+			out.Values[i] = ec._ProjectEdge_cursor(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -12555,6 +16010,28 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_icons(ctx, field)
+				return res
+			})
+		case "project":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_project(ctx, field)
+				return res
+			})
+		case "projects":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_projects(ctx, field)
 				return res
 			})
 		case "teammate":
@@ -12680,6 +16157,8 @@ func (ec *executionContext) _Subscription(ctx context.Context, sel ast.Selection
 		return ec._Subscription_colorUpdated(ctx, fields[0])
 	case "iconUpdated":
 		return ec._Subscription_iconUpdated(ctx, fields[0])
+	case "projectUpdated":
+		return ec._Subscription_projectUpdated(ctx, fields[0])
 	case "teammateUpdated":
 		return ec._Subscription_teammateUpdated(ctx, fields[0])
 	case "testUserUpdated":
@@ -13552,6 +17031,11 @@ func (ec *executionContext) unmarshalNCreateIconInput2projectᚑmanagementᚑdem
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
+func (ec *executionContext) unmarshalNCreateProjectInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐCreateProjectInput(ctx context.Context, v interface{}) (ent.CreateProjectInput, error) {
+	res, err := ec.unmarshalInputCreateProjectInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNCreateTeammateInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐCreateTeammateInput(ctx context.Context, v interface{}) (ent.CreateTeammateInput, error) {
 	res, err := ec.unmarshalInputCreateTeammateInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -13783,6 +17267,30 @@ func (ec *executionContext) marshalNPageInfo2projectᚑmanagementᚑdemoᚑbacke
 	return ec._PageInfo(ctx, sel, &v)
 }
 
+func (ec *executionContext) marshalNProject2projectᚑmanagementᚑdemoᚑbackendᚋentᚐProject(ctx context.Context, sel ast.SelectionSet, v ent.Project) graphql.Marshaler {
+	return ec._Project(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNProject2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProject(ctx context.Context, sel ast.SelectionSet, v *ent.Project) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._Project(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNProjectTeammateWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTeammateWhereInput(ctx context.Context, v interface{}) (*ent.ProjectTeammateWhereInput, error) {
+	res, err := ec.unmarshalInputProjectTeammateWhereInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNProjectWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectWhereInput(ctx context.Context, v interface{}) (*ent.ProjectWhereInput, error) {
+	res, err := ec.unmarshalInputProjectWhereInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNString2string(ctx context.Context, v interface{}) (string, error) {
 	res, err := graphql.UnmarshalString(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -13962,6 +17470,11 @@ func (ec *executionContext) unmarshalNUpdateColorInput2projectᚑmanagementᚑde
 
 func (ec *executionContext) unmarshalNUpdateIconInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐUpdateIconInput(ctx context.Context, v interface{}) (ent.UpdateIconInput, error) {
 	res, err := ec.unmarshalInputUpdateIconInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNUpdateProjectInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐUpdateProjectInput(ctx context.Context, v interface{}) (ent.UpdateProjectInput, error) {
+	res, err := ec.unmarshalInputUpdateProjectInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
@@ -14759,6 +18272,132 @@ func (ec *executionContext) marshalONode2projectᚑmanagementᚑdemoᚑbackend�
 		return graphql.Null
 	}
 	return ec._Node(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOProject2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProject(ctx context.Context, sel ast.SelectionSet, v *ent.Project) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Project(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOProjectConnection2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectConnection(ctx context.Context, sel ast.SelectionSet, v *ent.ProjectConnection) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._ProjectConnection(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOProjectEdge2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectEdge(ctx context.Context, sel ast.SelectionSet, v []*ent.ProjectEdge) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalOProjectEdge2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectEdge(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	return ret
+}
+
+func (ec *executionContext) marshalOProjectEdge2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectEdge(ctx context.Context, sel ast.SelectionSet, v *ent.ProjectEdge) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._ProjectEdge(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalOProjectTeammateWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTeammateWhereInputᚄ(ctx context.Context, v interface{}) ([]*ent.ProjectTeammateWhereInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var vSlice []interface{}
+	if v != nil {
+		if tmp1, ok := v.([]interface{}); ok {
+			vSlice = tmp1
+		} else {
+			vSlice = []interface{}{v}
+		}
+	}
+	var err error
+	res := make([]*ent.ProjectTeammateWhereInput, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNProjectTeammateWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTeammateWhereInput(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) unmarshalOProjectTeammateWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTeammateWhereInput(ctx context.Context, v interface{}) (*ent.ProjectTeammateWhereInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputProjectTeammateWhereInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalOProjectWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectWhereInputᚄ(ctx context.Context, v interface{}) ([]*ent.ProjectWhereInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var vSlice []interface{}
+	if v != nil {
+		if tmp1, ok := v.([]interface{}); ok {
+			vSlice = tmp1
+		} else {
+			vSlice = []interface{}{v}
+		}
+	}
+	var err error
+	res := make([]*ent.ProjectWhereInput, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNProjectWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectWhereInput(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) unmarshalOProjectWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectWhereInput(ctx context.Context, v interface{}) (*ent.ProjectWhereInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputProjectWhereInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalOString2string(ctx context.Context, v interface{}) (string, error) {

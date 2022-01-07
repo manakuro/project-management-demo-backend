@@ -5,6 +5,8 @@ package ent
 import (
 	"project-management-demo-backend/ent/color"
 	"project-management-demo-backend/ent/icon"
+	"project-management-demo-backend/ent/project"
+	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/ent/schema"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/teammate"
@@ -150,6 +152,78 @@ func init() {
 	iconDescID := iconMixinFields0[0].Descriptor()
 	// icon.DefaultID holds the default value on creation for the id field.
 	icon.DefaultID = iconDescID.Default.(func() ulid.ID)
+	projectMixin := schema.Project{}.Mixin()
+	projectMixinFields0 := projectMixin[0].Fields()
+	_ = projectMixinFields0
+	projectMixinFields1 := projectMixin[1].Fields()
+	_ = projectMixinFields1
+	projectMixinFields2 := projectMixin[2].Fields()
+	_ = projectMixinFields2
+	projectFields := schema.Project{}.Fields()
+	_ = projectFields
+	// projectDescName is the schema descriptor for name field.
+	projectDescName := projectMixinFields1[4].Descriptor()
+	// project.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	project.NameValidator = func() func(string) error {
+		validators := projectDescName.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(name string) error {
+			for _, fn := range fns {
+				if err := fn(name); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// projectDescDescriptionTitle is the schema descriptor for description_title field.
+	projectDescDescriptionTitle := projectMixinFields1[6].Descriptor()
+	// project.DescriptionTitleValidator is a validator for the "description_title" field. It is called by the builders before save.
+	project.DescriptionTitleValidator = projectDescDescriptionTitle.Validators[0].(func(string) error)
+	// projectDescDueDate is the schema descriptor for due_date field.
+	projectDescDueDate := projectMixinFields1[7].Descriptor()
+	// project.DefaultDueDate holds the default value on creation for the due_date field.
+	project.DefaultDueDate = projectDescDueDate.Default.(func() time.Time)
+	// projectDescCreatedAt is the schema descriptor for created_at field.
+	projectDescCreatedAt := projectMixinFields2[0].Descriptor()
+	// project.DefaultCreatedAt holds the default value on creation for the created_at field.
+	project.DefaultCreatedAt = projectDescCreatedAt.Default.(func() time.Time)
+	// projectDescUpdatedAt is the schema descriptor for updated_at field.
+	projectDescUpdatedAt := projectMixinFields2[1].Descriptor()
+	// project.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	project.DefaultUpdatedAt = projectDescUpdatedAt.Default.(func() time.Time)
+	// projectDescID is the schema descriptor for id field.
+	projectDescID := projectMixinFields0[0].Descriptor()
+	// project.DefaultID holds the default value on creation for the id field.
+	project.DefaultID = projectDescID.Default.(func() ulid.ID)
+	projectteammateMixin := schema.ProjectTeammate{}.Mixin()
+	projectteammateMixinFields0 := projectteammateMixin[0].Fields()
+	_ = projectteammateMixinFields0
+	projectteammateMixinFields1 := projectteammateMixin[1].Fields()
+	_ = projectteammateMixinFields1
+	projectteammateMixinFields2 := projectteammateMixin[2].Fields()
+	_ = projectteammateMixinFields2
+	projectteammateFields := schema.ProjectTeammate{}.Fields()
+	_ = projectteammateFields
+	// projectteammateDescRole is the schema descriptor for role field.
+	projectteammateDescRole := projectteammateMixinFields1[2].Descriptor()
+	// projectteammate.RoleValidator is a validator for the "role" field. It is called by the builders before save.
+	projectteammate.RoleValidator = projectteammateDescRole.Validators[0].(func(string) error)
+	// projectteammateDescCreatedAt is the schema descriptor for created_at field.
+	projectteammateDescCreatedAt := projectteammateMixinFields2[0].Descriptor()
+	// projectteammate.DefaultCreatedAt holds the default value on creation for the created_at field.
+	projectteammate.DefaultCreatedAt = projectteammateDescCreatedAt.Default.(func() time.Time)
+	// projectteammateDescUpdatedAt is the schema descriptor for updated_at field.
+	projectteammateDescUpdatedAt := projectteammateMixinFields2[1].Descriptor()
+	// projectteammate.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	projectteammate.DefaultUpdatedAt = projectteammateDescUpdatedAt.Default.(func() time.Time)
+	// projectteammateDescID is the schema descriptor for id field.
+	projectteammateDescID := projectteammateMixinFields0[0].Descriptor()
+	// projectteammate.DefaultID holds the default value on creation for the id field.
+	projectteammate.DefaultID = projectteammateDescID.Default.(func() ulid.ID)
 	teammateMixin := schema.Teammate{}.Mixin()
 	teammateMixinFields0 := teammateMixin[0].Fields()
 	_ = teammateMixinFields0

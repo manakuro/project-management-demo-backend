@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"project-management-demo-backend/ent/predicate"
+	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/schema/editor"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/teammate"
@@ -59,6 +60,21 @@ func (wu *WorkspaceUpdate) SetTeammate(t *Teammate) *WorkspaceUpdate {
 	return wu.SetTeammateID(t.ID)
 }
 
+// AddProjectIDs adds the "projects" edge to the Project entity by IDs.
+func (wu *WorkspaceUpdate) AddProjectIDs(ids ...ulid.ID) *WorkspaceUpdate {
+	wu.mutation.AddProjectIDs(ids...)
+	return wu
+}
+
+// AddProjects adds the "projects" edges to the Project entity.
+func (wu *WorkspaceUpdate) AddProjects(p ...*Project) *WorkspaceUpdate {
+	ids := make([]ulid.ID, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return wu.AddProjectIDs(ids...)
+}
+
 // Mutation returns the WorkspaceMutation object of the builder.
 func (wu *WorkspaceUpdate) Mutation() *WorkspaceMutation {
 	return wu.mutation
@@ -68,6 +84,27 @@ func (wu *WorkspaceUpdate) Mutation() *WorkspaceMutation {
 func (wu *WorkspaceUpdate) ClearTeammate() *WorkspaceUpdate {
 	wu.mutation.ClearTeammate()
 	return wu
+}
+
+// ClearProjects clears all "projects" edges to the Project entity.
+func (wu *WorkspaceUpdate) ClearProjects() *WorkspaceUpdate {
+	wu.mutation.ClearProjects()
+	return wu
+}
+
+// RemoveProjectIDs removes the "projects" edge to Project entities by IDs.
+func (wu *WorkspaceUpdate) RemoveProjectIDs(ids ...ulid.ID) *WorkspaceUpdate {
+	wu.mutation.RemoveProjectIDs(ids...)
+	return wu
+}
+
+// RemoveProjects removes "projects" edges to Project entities.
+func (wu *WorkspaceUpdate) RemoveProjects(p ...*Project) *WorkspaceUpdate {
+	ids := make([]ulid.ID, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return wu.RemoveProjectIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -177,7 +214,7 @@ func (wu *WorkspaceUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if wu.mutation.TeammateCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   workspace.TeammateTable,
 			Columns: []string{workspace.TeammateColumn},
@@ -193,7 +230,7 @@ func (wu *WorkspaceUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if nodes := wu.mutation.TeammateIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   workspace.TeammateTable,
 			Columns: []string{workspace.TeammateColumn},
@@ -202,6 +239,60 @@ func (wu *WorkspaceUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: teammate.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if wu.mutation.ProjectsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   workspace.ProjectsTable,
+			Columns: []string{workspace.ProjectsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: project.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := wu.mutation.RemovedProjectsIDs(); len(nodes) > 0 && !wu.mutation.ProjectsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   workspace.ProjectsTable,
+			Columns: []string{workspace.ProjectsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: project.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := wu.mutation.ProjectsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   workspace.ProjectsTable,
+			Columns: []string{workspace.ProjectsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: project.FieldID,
 				},
 			},
 		}
@@ -258,6 +349,21 @@ func (wuo *WorkspaceUpdateOne) SetTeammate(t *Teammate) *WorkspaceUpdateOne {
 	return wuo.SetTeammateID(t.ID)
 }
 
+// AddProjectIDs adds the "projects" edge to the Project entity by IDs.
+func (wuo *WorkspaceUpdateOne) AddProjectIDs(ids ...ulid.ID) *WorkspaceUpdateOne {
+	wuo.mutation.AddProjectIDs(ids...)
+	return wuo
+}
+
+// AddProjects adds the "projects" edges to the Project entity.
+func (wuo *WorkspaceUpdateOne) AddProjects(p ...*Project) *WorkspaceUpdateOne {
+	ids := make([]ulid.ID, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return wuo.AddProjectIDs(ids...)
+}
+
 // Mutation returns the WorkspaceMutation object of the builder.
 func (wuo *WorkspaceUpdateOne) Mutation() *WorkspaceMutation {
 	return wuo.mutation
@@ -267,6 +373,27 @@ func (wuo *WorkspaceUpdateOne) Mutation() *WorkspaceMutation {
 func (wuo *WorkspaceUpdateOne) ClearTeammate() *WorkspaceUpdateOne {
 	wuo.mutation.ClearTeammate()
 	return wuo
+}
+
+// ClearProjects clears all "projects" edges to the Project entity.
+func (wuo *WorkspaceUpdateOne) ClearProjects() *WorkspaceUpdateOne {
+	wuo.mutation.ClearProjects()
+	return wuo
+}
+
+// RemoveProjectIDs removes the "projects" edge to Project entities by IDs.
+func (wuo *WorkspaceUpdateOne) RemoveProjectIDs(ids ...ulid.ID) *WorkspaceUpdateOne {
+	wuo.mutation.RemoveProjectIDs(ids...)
+	return wuo
+}
+
+// RemoveProjects removes "projects" edges to Project entities.
+func (wuo *WorkspaceUpdateOne) RemoveProjects(p ...*Project) *WorkspaceUpdateOne {
+	ids := make([]ulid.ID, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return wuo.RemoveProjectIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -400,7 +527,7 @@ func (wuo *WorkspaceUpdateOne) sqlSave(ctx context.Context) (_node *Workspace, e
 	}
 	if wuo.mutation.TeammateCleared() {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   workspace.TeammateTable,
 			Columns: []string{workspace.TeammateColumn},
@@ -416,7 +543,7 @@ func (wuo *WorkspaceUpdateOne) sqlSave(ctx context.Context) (_node *Workspace, e
 	}
 	if nodes := wuo.mutation.TeammateIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
+			Rel:     sqlgraph.M2O,
 			Inverse: true,
 			Table:   workspace.TeammateTable,
 			Columns: []string{workspace.TeammateColumn},
@@ -425,6 +552,60 @@ func (wuo *WorkspaceUpdateOne) sqlSave(ctx context.Context) (_node *Workspace, e
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: teammate.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if wuo.mutation.ProjectsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   workspace.ProjectsTable,
+			Columns: []string{workspace.ProjectsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: project.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := wuo.mutation.RemovedProjectsIDs(); len(nodes) > 0 && !wuo.mutation.ProjectsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   workspace.ProjectsTable,
+			Columns: []string{workspace.ProjectsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: project.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := wuo.mutation.ProjectsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   workspace.ProjectsTable,
+			Columns: []string{workspace.ProjectsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: project.FieldID,
 				},
 			},
 		}

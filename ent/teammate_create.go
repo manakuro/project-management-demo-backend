@@ -6,6 +6,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"project-management-demo-backend/ent/project"
+	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/workspace"
@@ -82,23 +84,49 @@ func (tc *TeammateCreate) SetNillableID(u *ulid.ID) *TeammateCreate {
 	return tc
 }
 
-// SetWorkspacesID sets the "workspaces" edge to the Workspace entity by ID.
-func (tc *TeammateCreate) SetWorkspacesID(id ulid.ID) *TeammateCreate {
-	tc.mutation.SetWorkspacesID(id)
+// AddWorkspaceIDs adds the "workspaces" edge to the Workspace entity by IDs.
+func (tc *TeammateCreate) AddWorkspaceIDs(ids ...ulid.ID) *TeammateCreate {
+	tc.mutation.AddWorkspaceIDs(ids...)
 	return tc
 }
 
-// SetNillableWorkspacesID sets the "workspaces" edge to the Workspace entity by ID if the given value is not nil.
-func (tc *TeammateCreate) SetNillableWorkspacesID(id *ulid.ID) *TeammateCreate {
-	if id != nil {
-		tc = tc.SetWorkspacesID(*id)
+// AddWorkspaces adds the "workspaces" edges to the Workspace entity.
+func (tc *TeammateCreate) AddWorkspaces(w ...*Workspace) *TeammateCreate {
+	ids := make([]ulid.ID, len(w))
+	for i := range w {
+		ids[i] = w[i].ID
 	}
+	return tc.AddWorkspaceIDs(ids...)
+}
+
+// AddProjectIDs adds the "projects" edge to the Project entity by IDs.
+func (tc *TeammateCreate) AddProjectIDs(ids ...ulid.ID) *TeammateCreate {
+	tc.mutation.AddProjectIDs(ids...)
 	return tc
 }
 
-// SetWorkspaces sets the "workspaces" edge to the Workspace entity.
-func (tc *TeammateCreate) SetWorkspaces(w *Workspace) *TeammateCreate {
-	return tc.SetWorkspacesID(w.ID)
+// AddProjects adds the "projects" edges to the Project entity.
+func (tc *TeammateCreate) AddProjects(p ...*Project) *TeammateCreate {
+	ids := make([]ulid.ID, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return tc.AddProjectIDs(ids...)
+}
+
+// AddProjectTeammateIDs adds the "project_teammates" edge to the ProjectTeammate entity by IDs.
+func (tc *TeammateCreate) AddProjectTeammateIDs(ids ...ulid.ID) *TeammateCreate {
+	tc.mutation.AddProjectTeammateIDs(ids...)
+	return tc
+}
+
+// AddProjectTeammates adds the "project_teammates" edges to the ProjectTeammate entity.
+func (tc *TeammateCreate) AddProjectTeammates(p ...*ProjectTeammate) *TeammateCreate {
+	ids := make([]ulid.ID, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return tc.AddProjectTeammateIDs(ids...)
 }
 
 // Mutation returns the TeammateMutation object of the builder.
@@ -292,7 +320,7 @@ func (tc *TeammateCreate) createSpec() (*Teammate, *sqlgraph.CreateSpec) {
 	}
 	if nodes := tc.mutation.WorkspacesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
 			Table:   teammate.WorkspacesTable,
 			Columns: []string{teammate.WorkspacesColumn},
@@ -301,6 +329,44 @@ func (tc *TeammateCreate) createSpec() (*Teammate, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: workspace.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := tc.mutation.ProjectsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   teammate.ProjectsTable,
+			Columns: []string{teammate.ProjectsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: project.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := tc.mutation.ProjectTeammatesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   teammate.ProjectTeammatesTable,
+			Columns: []string{teammate.ProjectTeammatesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: projectteammate.FieldID,
 				},
 			},
 		}

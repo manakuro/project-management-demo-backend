@@ -12,6 +12,8 @@ import (
 
 	"project-management-demo-backend/ent/color"
 	"project-management-demo-backend/ent/icon"
+	"project-management-demo-backend/ent/project"
+	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/ent/testuser"
@@ -31,6 +33,10 @@ type Client struct {
 	Color *ColorClient
 	// Icon is the client for interacting with the Icon builders.
 	Icon *IconClient
+	// Project is the client for interacting with the Project builders.
+	Project *ProjectClient
+	// ProjectTeammate is the client for interacting with the ProjectTeammate builders.
+	ProjectTeammate *ProjectTeammateClient
 	// Teammate is the client for interacting with the Teammate builders.
 	Teammate *TeammateClient
 	// TestTodo is the client for interacting with the TestTodo builders.
@@ -54,6 +60,8 @@ func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.Color = NewColorClient(c.config)
 	c.Icon = NewIconClient(c.config)
+	c.Project = NewProjectClient(c.config)
+	c.ProjectTeammate = NewProjectTeammateClient(c.config)
 	c.Teammate = NewTeammateClient(c.config)
 	c.TestTodo = NewTestTodoClient(c.config)
 	c.TestUser = NewTestUserClient(c.config)
@@ -89,14 +97,16 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:       ctx,
-		config:    cfg,
-		Color:     NewColorClient(cfg),
-		Icon:      NewIconClient(cfg),
-		Teammate:  NewTeammateClient(cfg),
-		TestTodo:  NewTestTodoClient(cfg),
-		TestUser:  NewTestUserClient(cfg),
-		Workspace: NewWorkspaceClient(cfg),
+		ctx:             ctx,
+		config:          cfg,
+		Color:           NewColorClient(cfg),
+		Icon:            NewIconClient(cfg),
+		Project:         NewProjectClient(cfg),
+		ProjectTeammate: NewProjectTeammateClient(cfg),
+		Teammate:        NewTeammateClient(cfg),
+		TestTodo:        NewTestTodoClient(cfg),
+		TestUser:        NewTestUserClient(cfg),
+		Workspace:       NewWorkspaceClient(cfg),
 	}, nil
 }
 
@@ -114,13 +124,15 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		config:    cfg,
-		Color:     NewColorClient(cfg),
-		Icon:      NewIconClient(cfg),
-		Teammate:  NewTeammateClient(cfg),
-		TestTodo:  NewTestTodoClient(cfg),
-		TestUser:  NewTestUserClient(cfg),
-		Workspace: NewWorkspaceClient(cfg),
+		config:          cfg,
+		Color:           NewColorClient(cfg),
+		Icon:            NewIconClient(cfg),
+		Project:         NewProjectClient(cfg),
+		ProjectTeammate: NewProjectTeammateClient(cfg),
+		Teammate:        NewTeammateClient(cfg),
+		TestTodo:        NewTestTodoClient(cfg),
+		TestUser:        NewTestUserClient(cfg),
+		Workspace:       NewWorkspaceClient(cfg),
 	}, nil
 }
 
@@ -152,6 +164,8 @@ func (c *Client) Close() error {
 func (c *Client) Use(hooks ...Hook) {
 	c.Color.Use(hooks...)
 	c.Icon.Use(hooks...)
+	c.Project.Use(hooks...)
+	c.ProjectTeammate.Use(hooks...)
 	c.Teammate.Use(hooks...)
 	c.TestTodo.Use(hooks...)
 	c.TestUser.Use(hooks...)
@@ -241,6 +255,22 @@ func (c *ColorClient) GetX(ctx context.Context, id ulid.ID) *Color {
 		panic(err)
 	}
 	return obj
+}
+
+// QueryProjects queries the projects edge of a Color.
+func (c *ColorClient) QueryProjects(co *Color) *ProjectQuery {
+	query := &ProjectQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := co.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(color.Table, color.FieldID, id),
+			sqlgraph.To(project.Table, project.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, color.ProjectsTable, color.ProjectsColumn),
+		)
+		fromV = sqlgraph.Neighbors(co.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
 }
 
 // Hooks returns the client hooks.
@@ -333,9 +363,317 @@ func (c *IconClient) GetX(ctx context.Context, id ulid.ID) *Icon {
 	return obj
 }
 
+// QueryProjects queries the projects edge of a Icon.
+func (c *IconClient) QueryProjects(i *Icon) *ProjectQuery {
+	query := &ProjectQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := i.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(icon.Table, icon.FieldID, id),
+			sqlgraph.To(project.Table, project.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, icon.ProjectsTable, icon.ProjectsColumn),
+		)
+		fromV = sqlgraph.Neighbors(i.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *IconClient) Hooks() []Hook {
 	return c.hooks.Icon
+}
+
+// ProjectClient is a client for the Project schema.
+type ProjectClient struct {
+	config
+}
+
+// NewProjectClient returns a client for the Project from the given config.
+func NewProjectClient(c config) *ProjectClient {
+	return &ProjectClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `project.Hooks(f(g(h())))`.
+func (c *ProjectClient) Use(hooks ...Hook) {
+	c.hooks.Project = append(c.hooks.Project, hooks...)
+}
+
+// Create returns a create builder for Project.
+func (c *ProjectClient) Create() *ProjectCreate {
+	mutation := newProjectMutation(c.config, OpCreate)
+	return &ProjectCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Project entities.
+func (c *ProjectClient) CreateBulk(builders ...*ProjectCreate) *ProjectCreateBulk {
+	return &ProjectCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Project.
+func (c *ProjectClient) Update() *ProjectUpdate {
+	mutation := newProjectMutation(c.config, OpUpdate)
+	return &ProjectUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ProjectClient) UpdateOne(pr *Project) *ProjectUpdateOne {
+	mutation := newProjectMutation(c.config, OpUpdateOne, withProject(pr))
+	return &ProjectUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ProjectClient) UpdateOneID(id ulid.ID) *ProjectUpdateOne {
+	mutation := newProjectMutation(c.config, OpUpdateOne, withProjectID(id))
+	return &ProjectUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Project.
+func (c *ProjectClient) Delete() *ProjectDelete {
+	mutation := newProjectMutation(c.config, OpDelete)
+	return &ProjectDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *ProjectClient) DeleteOne(pr *Project) *ProjectDeleteOne {
+	return c.DeleteOneID(pr.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *ProjectClient) DeleteOneID(id ulid.ID) *ProjectDeleteOne {
+	builder := c.Delete().Where(project.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ProjectDeleteOne{builder}
+}
+
+// Query returns a query builder for Project.
+func (c *ProjectClient) Query() *ProjectQuery {
+	return &ProjectQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a Project entity by its id.
+func (c *ProjectClient) Get(ctx context.Context, id ulid.ID) (*Project, error) {
+	return c.Query().Where(project.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ProjectClient) GetX(ctx context.Context, id ulid.ID) *Project {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryWorkspace queries the workspace edge of a Project.
+func (c *ProjectClient) QueryWorkspace(pr *Project) *WorkspaceQuery {
+	query := &WorkspaceQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := pr.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(project.Table, project.FieldID, id),
+			sqlgraph.To(workspace.Table, workspace.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, project.WorkspaceTable, project.WorkspaceColumn),
+		)
+		fromV = sqlgraph.Neighbors(pr.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryColor queries the color edge of a Project.
+func (c *ProjectClient) QueryColor(pr *Project) *ColorQuery {
+	query := &ColorQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := pr.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(project.Table, project.FieldID, id),
+			sqlgraph.To(color.Table, color.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, project.ColorTable, project.ColorColumn),
+		)
+		fromV = sqlgraph.Neighbors(pr.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryIcon queries the icon edge of a Project.
+func (c *ProjectClient) QueryIcon(pr *Project) *IconQuery {
+	query := &IconQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := pr.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(project.Table, project.FieldID, id),
+			sqlgraph.To(icon.Table, icon.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, project.IconTable, project.IconColumn),
+		)
+		fromV = sqlgraph.Neighbors(pr.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryTeammate queries the teammate edge of a Project.
+func (c *ProjectClient) QueryTeammate(pr *Project) *TeammateQuery {
+	query := &TeammateQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := pr.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(project.Table, project.FieldID, id),
+			sqlgraph.To(teammate.Table, teammate.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, project.TeammateTable, project.TeammateColumn),
+		)
+		fromV = sqlgraph.Neighbors(pr.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryProjectTeammates queries the project_teammates edge of a Project.
+func (c *ProjectClient) QueryProjectTeammates(pr *Project) *ProjectTeammateQuery {
+	query := &ProjectTeammateQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := pr.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(project.Table, project.FieldID, id),
+			sqlgraph.To(projectteammate.Table, projectteammate.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, project.ProjectTeammatesTable, project.ProjectTeammatesColumn),
+		)
+		fromV = sqlgraph.Neighbors(pr.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *ProjectClient) Hooks() []Hook {
+	return c.hooks.Project
+}
+
+// ProjectTeammateClient is a client for the ProjectTeammate schema.
+type ProjectTeammateClient struct {
+	config
+}
+
+// NewProjectTeammateClient returns a client for the ProjectTeammate from the given config.
+func NewProjectTeammateClient(c config) *ProjectTeammateClient {
+	return &ProjectTeammateClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `projectteammate.Hooks(f(g(h())))`.
+func (c *ProjectTeammateClient) Use(hooks ...Hook) {
+	c.hooks.ProjectTeammate = append(c.hooks.ProjectTeammate, hooks...)
+}
+
+// Create returns a create builder for ProjectTeammate.
+func (c *ProjectTeammateClient) Create() *ProjectTeammateCreate {
+	mutation := newProjectTeammateMutation(c.config, OpCreate)
+	return &ProjectTeammateCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of ProjectTeammate entities.
+func (c *ProjectTeammateClient) CreateBulk(builders ...*ProjectTeammateCreate) *ProjectTeammateCreateBulk {
+	return &ProjectTeammateCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for ProjectTeammate.
+func (c *ProjectTeammateClient) Update() *ProjectTeammateUpdate {
+	mutation := newProjectTeammateMutation(c.config, OpUpdate)
+	return &ProjectTeammateUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ProjectTeammateClient) UpdateOne(pt *ProjectTeammate) *ProjectTeammateUpdateOne {
+	mutation := newProjectTeammateMutation(c.config, OpUpdateOne, withProjectTeammate(pt))
+	return &ProjectTeammateUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ProjectTeammateClient) UpdateOneID(id ulid.ID) *ProjectTeammateUpdateOne {
+	mutation := newProjectTeammateMutation(c.config, OpUpdateOne, withProjectTeammateID(id))
+	return &ProjectTeammateUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for ProjectTeammate.
+func (c *ProjectTeammateClient) Delete() *ProjectTeammateDelete {
+	mutation := newProjectTeammateMutation(c.config, OpDelete)
+	return &ProjectTeammateDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *ProjectTeammateClient) DeleteOne(pt *ProjectTeammate) *ProjectTeammateDeleteOne {
+	return c.DeleteOneID(pt.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *ProjectTeammateClient) DeleteOneID(id ulid.ID) *ProjectTeammateDeleteOne {
+	builder := c.Delete().Where(projectteammate.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ProjectTeammateDeleteOne{builder}
+}
+
+// Query returns a query builder for ProjectTeammate.
+func (c *ProjectTeammateClient) Query() *ProjectTeammateQuery {
+	return &ProjectTeammateQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a ProjectTeammate entity by its id.
+func (c *ProjectTeammateClient) Get(ctx context.Context, id ulid.ID) (*ProjectTeammate, error) {
+	return c.Query().Where(projectteammate.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ProjectTeammateClient) GetX(ctx context.Context, id ulid.ID) *ProjectTeammate {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryProject queries the project edge of a ProjectTeammate.
+func (c *ProjectTeammateClient) QueryProject(pt *ProjectTeammate) *ProjectQuery {
+	query := &ProjectQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := pt.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(projectteammate.Table, projectteammate.FieldID, id),
+			sqlgraph.To(project.Table, project.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, projectteammate.ProjectTable, projectteammate.ProjectColumn),
+		)
+		fromV = sqlgraph.Neighbors(pt.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryTeammate queries the teammate edge of a ProjectTeammate.
+func (c *ProjectTeammateClient) QueryTeammate(pt *ProjectTeammate) *TeammateQuery {
+	query := &TeammateQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := pt.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(projectteammate.Table, projectteammate.FieldID, id),
+			sqlgraph.To(teammate.Table, teammate.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, projectteammate.TeammateTable, projectteammate.TeammateColumn),
+		)
+		fromV = sqlgraph.Neighbors(pt.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *ProjectTeammateClient) Hooks() []Hook {
+	return c.hooks.ProjectTeammate
 }
 
 // TeammateClient is a client for the Teammate schema.
@@ -431,7 +769,39 @@ func (c *TeammateClient) QueryWorkspaces(t *Teammate) *WorkspaceQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(teammate.Table, teammate.FieldID, id),
 			sqlgraph.To(workspace.Table, workspace.FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, false, teammate.WorkspacesTable, teammate.WorkspacesColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, teammate.WorkspacesTable, teammate.WorkspacesColumn),
+		)
+		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryProjects queries the projects edge of a Teammate.
+func (c *TeammateClient) QueryProjects(t *Teammate) *ProjectQuery {
+	query := &ProjectQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := t.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(teammate.Table, teammate.FieldID, id),
+			sqlgraph.To(project.Table, project.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, teammate.ProjectsTable, teammate.ProjectsColumn),
+		)
+		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryProjectTeammates queries the project_teammates edge of a Teammate.
+func (c *TeammateClient) QueryProjectTeammates(t *Teammate) *ProjectTeammateQuery {
+	query := &ProjectTeammateQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := t.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(teammate.Table, teammate.FieldID, id),
+			sqlgraph.To(projectteammate.Table, projectteammate.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, teammate.ProjectTeammatesTable, teammate.ProjectTeammatesColumn),
 		)
 		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
 		return fromV, nil
@@ -749,7 +1119,23 @@ func (c *WorkspaceClient) QueryTeammate(w *Workspace) *TeammateQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(workspace.Table, workspace.FieldID, id),
 			sqlgraph.To(teammate.Table, teammate.FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, true, workspace.TeammateTable, workspace.TeammateColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, workspace.TeammateTable, workspace.TeammateColumn),
+		)
+		fromV = sqlgraph.Neighbors(w.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryProjects queries the projects edge of a Workspace.
+func (c *WorkspaceClient) QueryProjects(w *Workspace) *ProjectQuery {
+	query := &ProjectQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := w.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(workspace.Table, workspace.FieldID, id),
+			sqlgraph.To(project.Table, project.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, workspace.ProjectsTable, workspace.ProjectsColumn),
 		)
 		fromV = sqlgraph.Neighbors(w.driver.Dialect(), step)
 		return fromV, nil

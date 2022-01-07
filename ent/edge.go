@@ -4,12 +4,100 @@ package ent
 
 import "context"
 
-func (t *Teammate) Workspaces(ctx context.Context) (*Workspace, error) {
+func (c *Color) Projects(ctx context.Context) ([]*Project, error) {
+	result, err := c.Edges.ProjectsOrErr()
+	if IsNotLoaded(err) {
+		result, err = c.QueryProjects().All(ctx)
+	}
+	return result, err
+}
+
+func (i *Icon) Projects(ctx context.Context) ([]*Project, error) {
+	result, err := i.Edges.ProjectsOrErr()
+	if IsNotLoaded(err) {
+		result, err = i.QueryProjects().All(ctx)
+	}
+	return result, err
+}
+
+func (pr *Project) Workspace(ctx context.Context) (*Workspace, error) {
+	result, err := pr.Edges.WorkspaceOrErr()
+	if IsNotLoaded(err) {
+		result, err = pr.QueryWorkspace().Only(ctx)
+	}
+	return result, err
+}
+
+func (pr *Project) Color(ctx context.Context) (*Color, error) {
+	result, err := pr.Edges.ColorOrErr()
+	if IsNotLoaded(err) {
+		result, err = pr.QueryColor().Only(ctx)
+	}
+	return result, err
+}
+
+func (pr *Project) Icon(ctx context.Context) (*Icon, error) {
+	result, err := pr.Edges.IconOrErr()
+	if IsNotLoaded(err) {
+		result, err = pr.QueryIcon().Only(ctx)
+	}
+	return result, err
+}
+
+func (pr *Project) Teammate(ctx context.Context) (*Teammate, error) {
+	result, err := pr.Edges.TeammateOrErr()
+	if IsNotLoaded(err) {
+		result, err = pr.QueryTeammate().Only(ctx)
+	}
+	return result, err
+}
+
+func (pr *Project) ProjectTeammates(ctx context.Context) ([]*ProjectTeammate, error) {
+	result, err := pr.Edges.ProjectTeammatesOrErr()
+	if IsNotLoaded(err) {
+		result, err = pr.QueryProjectTeammates().All(ctx)
+	}
+	return result, err
+}
+
+func (pt *ProjectTeammate) Project(ctx context.Context) (*Project, error) {
+	result, err := pt.Edges.ProjectOrErr()
+	if IsNotLoaded(err) {
+		result, err = pt.QueryProject().Only(ctx)
+	}
+	return result, err
+}
+
+func (pt *ProjectTeammate) Teammate(ctx context.Context) (*Teammate, error) {
+	result, err := pt.Edges.TeammateOrErr()
+	if IsNotLoaded(err) {
+		result, err = pt.QueryTeammate().Only(ctx)
+	}
+	return result, err
+}
+
+func (t *Teammate) Workspaces(ctx context.Context) ([]*Workspace, error) {
 	result, err := t.Edges.WorkspacesOrErr()
 	if IsNotLoaded(err) {
-		result, err = t.QueryWorkspaces().Only(ctx)
+		result, err = t.QueryWorkspaces().All(ctx)
 	}
-	return result, MaskNotFound(err)
+	return result, err
+}
+
+func (t *Teammate) Projects(ctx context.Context) ([]*Project, error) {
+	result, err := t.Edges.ProjectsOrErr()
+	if IsNotLoaded(err) {
+		result, err = t.QueryProjects().All(ctx)
+	}
+	return result, err
+}
+
+func (t *Teammate) ProjectTeammates(ctx context.Context) ([]*ProjectTeammate, error) {
+	result, err := t.Edges.ProjectTeammatesOrErr()
+	if IsNotLoaded(err) {
+		result, err = t.QueryProjectTeammates().All(ctx)
+	}
+	return result, err
 }
 
 func (tt *TestTodo) TestUser(ctx context.Context) (*TestUser, error) {
@@ -32,6 +120,14 @@ func (w *Workspace) Teammate(ctx context.Context) (*Teammate, error) {
 	result, err := w.Edges.TeammateOrErr()
 	if IsNotLoaded(err) {
 		result, err = w.QueryTeammate().Only(ctx)
+	}
+	return result, err
+}
+
+func (w *Workspace) Projects(ctx context.Context) ([]*Project, error) {
+	result, err := w.Edges.ProjectsOrErr()
+	if IsNotLoaded(err) {
+		result, err = w.QueryProjects().All(ctx)
 	}
 	return result, err
 }

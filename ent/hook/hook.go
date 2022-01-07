@@ -34,6 +34,32 @@ func (f IconFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error)
 	return f(ctx, mv)
 }
 
+// The ProjectFunc type is an adapter to allow the use of ordinary
+// function as Project mutator.
+type ProjectFunc func(context.Context, *ent.ProjectMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ProjectFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.ProjectMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ProjectMutation", m)
+	}
+	return f(ctx, mv)
+}
+
+// The ProjectTeammateFunc type is an adapter to allow the use of ordinary
+// function as ProjectTeammate mutator.
+type ProjectTeammateFunc func(context.Context, *ent.ProjectTeammateMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ProjectTeammateFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.ProjectTeammateMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ProjectTeammateMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The TeammateFunc type is an adapter to allow the use of ordinary
 // function as Teammate mutator.
 type TeammateFunc func(context.Context, *ent.TeammateMutation) (ent.Value, error)

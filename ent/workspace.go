@@ -39,9 +39,11 @@ type Workspace struct {
 type WorkspaceEdges struct {
 	// Teammate holds the value of the teammate edge.
 	Teammate *Teammate `json:"teammate,omitempty"`
+	// Projects holds the value of the projects edge.
+	Projects []*Project `json:"projects,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [2]bool
 }
 
 // TeammateOrErr returns the Teammate value or an error if the edge
@@ -56,6 +58,15 @@ func (e WorkspaceEdges) TeammateOrErr() (*Teammate, error) {
 		return e.Teammate, nil
 	}
 	return nil, &NotLoadedError{edge: "teammate"}
+}
+
+// ProjectsOrErr returns the Projects value or an error if the edge
+// was not loaded in eager-loading.
+func (e WorkspaceEdges) ProjectsOrErr() ([]*Project, error) {
+	if e.loadedTypes[1] {
+		return e.Projects, nil
+	}
+	return nil, &NotLoadedError{edge: "projects"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -132,6 +143,11 @@ func (w *Workspace) assignValues(columns []string, values []interface{}) error {
 // QueryTeammate queries the "teammate" edge of the Workspace entity.
 func (w *Workspace) QueryTeammate() *TeammateQuery {
 	return (&WorkspaceClient{config: w.config}).QueryTeammate(w)
+}
+
+// QueryProjects queries the "projects" edge of the Workspace entity.
+func (w *Workspace) QueryProjects() *ProjectQuery {
+	return (&WorkspaceClient{config: w.config}).QueryProjects(w)
 }
 
 // Update returns a builder for updating this Workspace.
