@@ -24,6 +24,8 @@ const (
 	FieldUpdatedAt = "updated_at"
 	// EdgeTeammate holds the string denoting the teammate edge name in mutations.
 	EdgeTeammate = "teammate"
+	// EdgeProjects holds the string denoting the projects edge name in mutations.
+	EdgeProjects = "projects"
 	// Table holds the table name of the workspace in the database.
 	Table = "workspaces"
 	// TeammateTable is the table that holds the teammate relation/edge.
@@ -33,6 +35,13 @@ const (
 	TeammateInverseTable = "teammates"
 	// TeammateColumn is the table column denoting the teammate relation/edge.
 	TeammateColumn = "created_by"
+	// ProjectsTable is the table that holds the projects relation/edge.
+	ProjectsTable = "projects"
+	// ProjectsInverseTable is the table name for the Project entity.
+	// It exists in this package in order to avoid circular dependency with the "project" package.
+	ProjectsInverseTable = "projects"
+	// ProjectsColumn is the table column denoting the projects relation/edge.
+	ProjectsColumn = "workspace_id"
 )
 
 // Columns holds all SQL columns for workspace fields.

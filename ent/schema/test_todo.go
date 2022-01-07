@@ -48,11 +48,12 @@ func (TestTodo) Edges() []ent.Edge {
 		edge.From("test_user", TestUser.Type).
 			Ref("test_todos").
 			Unique().
-			Field("test_user_id").Annotations(
-			schema.Annotation(
-				annotation.Edge{FieldName: "test_user_id"},
+			Field("test_user_id").
+			Annotations(
+				schema.Annotation(
+					annotation.Edge{FieldName: "test_user_id"},
+				),
 			),
-		),
 	}
 }
 

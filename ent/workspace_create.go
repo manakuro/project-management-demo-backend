@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/schema/editor"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/teammate"
@@ -92,6 +93,21 @@ func (wc *WorkspaceCreate) SetTeammateID(id ulid.ID) *WorkspaceCreate {
 // SetTeammate sets the "teammate" edge to the Teammate entity.
 func (wc *WorkspaceCreate) SetTeammate(t *Teammate) *WorkspaceCreate {
 	return wc.SetTeammateID(t.ID)
+}
+
+// AddProjectIDs adds the "projects" edge to the Project entity by IDs.
+func (wc *WorkspaceCreate) AddProjectIDs(ids ...ulid.ID) *WorkspaceCreate {
+	wc.mutation.AddProjectIDs(ids...)
+	return wc
+}
+
+// AddProjects adds the "projects" edges to the Project entity.
+func (wc *WorkspaceCreate) AddProjects(p ...*Project) *WorkspaceCreate {
+	ids := make([]ulid.ID, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return wc.AddProjectIDs(ids...)
 }
 
 // Mutation returns the WorkspaceMutation object of the builder.
@@ -286,6 +302,25 @@ func (wc *WorkspaceCreate) createSpec() (*Workspace, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.CreatedBy = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := wc.mutation.ProjectsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   workspace.ProjectsTable,
+			Columns: []string{workspace.ProjectsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: project.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

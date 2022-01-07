@@ -4,11 +4,13 @@ package ent
 
 import (
 	"context"
+	"database/sql/driver"
 	"errors"
 	"fmt"
 	"math"
 	"project-management-demo-backend/ent/color"
 	"project-management-demo-backend/ent/predicate"
+	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/schema/ulid"
 
 	"entgo.io/ent/dialect/sql"
@@ -25,6 +27,8 @@ type ColorQuery struct {
 	order      []OrderFunc
 	fields     []string
 	predicates []predicate.Color
+	// eager-loading edges.
+	withProjects *ProjectQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -59,6 +63,28 @@ func (cq *ColorQuery) Unique(unique bool) *ColorQuery {
 func (cq *ColorQuery) Order(o ...OrderFunc) *ColorQuery {
 	cq.order = append(cq.order, o...)
 	return cq
+}
+
+// QueryProjects chains the current query on the "projects" edge.
+func (cq *ColorQuery) QueryProjects() *ProjectQuery {
+	query := &ProjectQuery{config: cq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := cq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := cq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(color.Table, color.FieldID, selector),
+			sqlgraph.To(project.Table, project.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, false, color.ProjectsTable, color.ProjectsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // First returns the first Color entity from the query.
@@ -237,15 +263,27 @@ func (cq *ColorQuery) Clone() *ColorQuery {
 		return nil
 	}
 	return &ColorQuery{
-		config:     cq.config,
-		limit:      cq.limit,
-		offset:     cq.offset,
-		order:      append([]OrderFunc{}, cq.order...),
-		predicates: append([]predicate.Color{}, cq.predicates...),
+		config:       cq.config,
+		limit:        cq.limit,
+		offset:       cq.offset,
+		order:        append([]OrderFunc{}, cq.order...),
+		predicates:   append([]predicate.Color{}, cq.predicates...),
+		withProjects: cq.withProjects.Clone(),
 		// clone intermediate query.
 		sql:  cq.sql.Clone(),
 		path: cq.path,
 	}
+}
+
+// WithProjects tells the query-builder to eager-load the nodes that are connected to
+// the "projects" edge. The optional arguments are used to configure the query builder of the edge.
+func (cq *ColorQuery) WithProjects(opts ...func(*ProjectQuery)) *ColorQuery {
+	query := &ProjectQuery{config: cq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	cq.withProjects = query
+	return cq
 }
 
 // GroupBy is used to group vertices by one or more fields/columns.
@@ -311,8 +349,11 @@ func (cq *ColorQuery) prepareQuery(ctx context.Context) error {
 
 func (cq *ColorQuery) sqlAll(ctx context.Context) ([]*Color, error) {
 	var (
-		nodes = []*Color{}
-		_spec = cq.querySpec()
+		nodes       = []*Color{}
+		_spec       = cq.querySpec()
+		loadedTypes = [1]bool{
+			cq.withProjects != nil,
+		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
 		node := &Color{config: cq.config}
@@ -324,6 +365,7 @@ func (cq *ColorQuery) sqlAll(ctx context.Context) ([]*Color, error) {
 			return fmt.Errorf("ent: Assign called without calling ScanValues")
 		}
 		node := nodes[len(nodes)-1]
+		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
 	if err := sqlgraph.QueryNodes(ctx, cq.driver, _spec); err != nil {
@@ -332,6 +374,31 @@ func (cq *ColorQuery) sqlAll(ctx context.Context) ([]*Color, error) {
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
+
+	if query := cq.withProjects; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[ulid.ID]*Color)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+		}
+		query.Where(predicate.Project(func(s *sql.Selector) {
+			s.Where(sql.InValues(color.ProjectsColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.ColorID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "color_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.Projects = n
+		}
+	}
+
 	return nodes, nil
 }
 

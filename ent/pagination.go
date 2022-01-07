@@ -10,6 +10,7 @@ import (
 	"io"
 	"project-management-demo-backend/ent/color"
 	"project-management-demo-backend/ent/icon"
+	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/testtodo"
@@ -689,6 +690,233 @@ func (i *Icon) ToEdge(order *IconOrder) *IconEdge {
 	return &IconEdge{
 		Node:   i,
 		Cursor: order.Field.toCursor(i),
+	}
+}
+
+// ProjectEdge is the edge representation of Project.
+type ProjectEdge struct {
+	Node   *Project `json:"node"`
+	Cursor Cursor   `json:"cursor"`
+}
+
+// ProjectConnection is the connection containing edges to Project.
+type ProjectConnection struct {
+	Edges      []*ProjectEdge `json:"edges"`
+	PageInfo   PageInfo       `json:"pageInfo"`
+	TotalCount int            `json:"totalCount"`
+}
+
+// ProjectPaginateOption enables pagination customization.
+type ProjectPaginateOption func(*projectPager) error
+
+// WithProjectOrder configures pagination ordering.
+func WithProjectOrder(order *ProjectOrder) ProjectPaginateOption {
+	if order == nil {
+		order = DefaultProjectOrder
+	}
+	o := *order
+	return func(pager *projectPager) error {
+		if err := o.Direction.Validate(); err != nil {
+			return err
+		}
+		if o.Field == nil {
+			o.Field = DefaultProjectOrder.Field
+		}
+		pager.order = &o
+		return nil
+	}
+}
+
+// WithProjectFilter configures pagination filter.
+func WithProjectFilter(filter func(*ProjectQuery) (*ProjectQuery, error)) ProjectPaginateOption {
+	return func(pager *projectPager) error {
+		if filter == nil {
+			return errors.New("ProjectQuery filter cannot be nil")
+		}
+		pager.filter = filter
+		return nil
+	}
+}
+
+type projectPager struct {
+	order  *ProjectOrder
+	filter func(*ProjectQuery) (*ProjectQuery, error)
+}
+
+func newProjectPager(opts []ProjectPaginateOption) (*projectPager, error) {
+	pager := &projectPager{}
+	for _, opt := range opts {
+		if err := opt(pager); err != nil {
+			return nil, err
+		}
+	}
+	if pager.order == nil {
+		pager.order = DefaultProjectOrder
+	}
+	return pager, nil
+}
+
+func (p *projectPager) applyFilter(query *ProjectQuery) (*ProjectQuery, error) {
+	if p.filter != nil {
+		return p.filter(query)
+	}
+	return query, nil
+}
+
+func (p *projectPager) toCursor(pr *Project) Cursor {
+	return p.order.Field.toCursor(pr)
+}
+
+func (p *projectPager) applyCursors(query *ProjectQuery, after, before *Cursor) *ProjectQuery {
+	for _, predicate := range cursorsToPredicates(
+		p.order.Direction, after, before,
+		p.order.Field.field, DefaultProjectOrder.Field.field,
+	) {
+		query = query.Where(predicate)
+	}
+	return query
+}
+
+func (p *projectPager) applyOrder(query *ProjectQuery, reverse bool) *ProjectQuery {
+	direction := p.order.Direction
+	if reverse {
+		direction = direction.reverse()
+	}
+	query = query.Order(direction.orderFunc(p.order.Field.field))
+	if p.order.Field != DefaultProjectOrder.Field {
+		query = query.Order(direction.orderFunc(DefaultProjectOrder.Field.field))
+	}
+	return query
+}
+
+// Paginate executes the query and returns a relay based cursor connection to Project.
+func (pr *ProjectQuery) Paginate(
+	ctx context.Context, after *Cursor, first *int,
+	before *Cursor, last *int, opts ...ProjectPaginateOption,
+) (*ProjectConnection, error) {
+	if err := validateFirstLast(first, last); err != nil {
+		return nil, err
+	}
+	pager, err := newProjectPager(opts)
+	if err != nil {
+		return nil, err
+	}
+
+	if pr, err = pager.applyFilter(pr); err != nil {
+		return nil, err
+	}
+
+	conn := &ProjectConnection{Edges: []*ProjectEdge{}}
+	if !hasCollectedField(ctx, edgesField) || first != nil && *first == 0 || last != nil && *last == 0 {
+		if hasCollectedField(ctx, totalCountField) ||
+			hasCollectedField(ctx, pageInfoField) {
+			count, err := pr.Count(ctx)
+			if err != nil {
+				return nil, err
+			}
+			conn.TotalCount = count
+			conn.PageInfo.HasNextPage = first != nil && count > 0
+			conn.PageInfo.HasPreviousPage = last != nil && count > 0
+		}
+		return conn, nil
+	}
+
+	if (after != nil || first != nil || before != nil || last != nil) && hasCollectedField(ctx, totalCountField) {
+		count, err := pr.Clone().Count(ctx)
+		if err != nil {
+			return nil, err
+		}
+		conn.TotalCount = count
+	}
+
+	pr = pager.applyCursors(pr, after, before)
+	pr = pager.applyOrder(pr, last != nil)
+	var limit int
+	if first != nil {
+		limit = *first + 1
+	} else if last != nil {
+		limit = *last + 1
+	}
+	if limit > 0 {
+		pr = pr.Limit(limit)
+	}
+
+	if field := getCollectedField(ctx, edgesField, nodeField); field != nil {
+		pr = pr.collectField(graphql.GetOperationContext(ctx), *field)
+	}
+
+	nodes, err := pr.All(ctx)
+	if err != nil || len(nodes) == 0 {
+		return conn, err
+	}
+
+	if len(nodes) == limit {
+		conn.PageInfo.HasNextPage = first != nil
+		conn.PageInfo.HasPreviousPage = last != nil
+		nodes = nodes[:len(nodes)-1]
+	}
+
+	var nodeAt func(int) *Project
+	if last != nil {
+		n := len(nodes) - 1
+		nodeAt = func(i int) *Project {
+			return nodes[n-i]
+		}
+	} else {
+		nodeAt = func(i int) *Project {
+			return nodes[i]
+		}
+	}
+
+	conn.Edges = make([]*ProjectEdge, len(nodes))
+	for i := range nodes {
+		node := nodeAt(i)
+		conn.Edges[i] = &ProjectEdge{
+			Node:   node,
+			Cursor: pager.toCursor(node),
+		}
+	}
+
+	conn.PageInfo.StartCursor = &conn.Edges[0].Cursor
+	conn.PageInfo.EndCursor = &conn.Edges[len(conn.Edges)-1].Cursor
+	if conn.TotalCount == 0 {
+		conn.TotalCount = len(nodes)
+	}
+
+	return conn, nil
+}
+
+// ProjectOrderField defines the ordering field of Project.
+type ProjectOrderField struct {
+	field    string
+	toCursor func(*Project) Cursor
+}
+
+// ProjectOrder defines the ordering of Project.
+type ProjectOrder struct {
+	Direction OrderDirection     `json:"direction"`
+	Field     *ProjectOrderField `json:"field"`
+}
+
+// DefaultProjectOrder is the default ordering of Project.
+var DefaultProjectOrder = &ProjectOrder{
+	Direction: OrderDirectionAsc,
+	Field: &ProjectOrderField{
+		field: project.FieldID,
+		toCursor: func(pr *Project) Cursor {
+			return Cursor{ID: pr.ID}
+		},
+	},
+}
+
+// ToEdge converts Project into ProjectEdge.
+func (pr *Project) ToEdge(order *ProjectOrder) *ProjectEdge {
+	if order == nil {
+		order = DefaultProjectOrder
+	}
+	return &ProjectEdge{
+		Node:   pr,
+		Cursor: order.Field.toCursor(pr),
 	}
 }
 

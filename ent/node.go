@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"project-management-demo-backend/ent/color"
 	"project-management-demo-backend/ent/icon"
+	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/testtodo"
@@ -51,7 +52,7 @@ func (c *Color) Node(ctx context.Context) (node *Node, err error) {
 		ID:     c.ID,
 		Type:   "Color",
 		Fields: make([]*Field, 5),
-		Edges:  make([]*Edge, 0),
+		Edges:  make([]*Edge, 1),
 	}
 	var buf []byte
 	if buf, err = json.Marshal(c.Name); err != nil {
@@ -94,6 +95,16 @@ func (c *Color) Node(ctx context.Context) (node *Node, err error) {
 		Name:  "updated_at",
 		Value: string(buf),
 	}
+	node.Edges[0] = &Edge{
+		Type: "Project",
+		Name: "projects",
+	}
+	err = c.QueryProjects().
+		Select(project.FieldID).
+		Scan(ctx, &node.Edges[0].IDs)
+	if err != nil {
+		return nil, err
+	}
 	return node, nil
 }
 
@@ -102,7 +113,7 @@ func (i *Icon) Node(ctx context.Context) (node *Node, err error) {
 		ID:     i.ID,
 		Type:   "Icon",
 		Fields: make([]*Field, 4),
-		Edges:  make([]*Edge, 0),
+		Edges:  make([]*Edge, 1),
 	}
 	var buf []byte
 	if buf, err = json.Marshal(i.Name); err != nil {
@@ -137,6 +148,147 @@ func (i *Icon) Node(ctx context.Context) (node *Node, err error) {
 		Name:  "updated_at",
 		Value: string(buf),
 	}
+	node.Edges[0] = &Edge{
+		Type: "Project",
+		Name: "projects",
+	}
+	err = i.QueryProjects().
+		Select(project.FieldID).
+		Scan(ctx, &node.Edges[0].IDs)
+	if err != nil {
+		return nil, err
+	}
+	return node, nil
+}
+
+func (pr *Project) Node(ctx context.Context) (node *Node, err error) {
+	node = &Node{
+		ID:     pr.ID,
+		Type:   "Project",
+		Fields: make([]*Field, 10),
+		Edges:  make([]*Edge, 4),
+	}
+	var buf []byte
+	if buf, err = json.Marshal(pr.WorkspaceID); err != nil {
+		return nil, err
+	}
+	node.Fields[0] = &Field{
+		Type:  "ulid.ID",
+		Name:  "workspace_id",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(pr.ColorID); err != nil {
+		return nil, err
+	}
+	node.Fields[1] = &Field{
+		Type:  "ulid.ID",
+		Name:  "color_id",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(pr.IconID); err != nil {
+		return nil, err
+	}
+	node.Fields[2] = &Field{
+		Type:  "ulid.ID",
+		Name:  "icon_id",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(pr.CreatedBy); err != nil {
+		return nil, err
+	}
+	node.Fields[3] = &Field{
+		Type:  "ulid.ID",
+		Name:  "created_by",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(pr.Name); err != nil {
+		return nil, err
+	}
+	node.Fields[4] = &Field{
+		Type:  "string",
+		Name:  "name",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(pr.Description); err != nil {
+		return nil, err
+	}
+	node.Fields[5] = &Field{
+		Type:  "editor.Description",
+		Name:  "description",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(pr.DescriptionTitle); err != nil {
+		return nil, err
+	}
+	node.Fields[6] = &Field{
+		Type:  "string",
+		Name:  "description_title",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(pr.DueDate); err != nil {
+		return nil, err
+	}
+	node.Fields[7] = &Field{
+		Type:  "time.Time",
+		Name:  "due_date",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(pr.CreatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[8] = &Field{
+		Type:  "time.Time",
+		Name:  "created_at",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(pr.UpdatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[9] = &Field{
+		Type:  "time.Time",
+		Name:  "updated_at",
+		Value: string(buf),
+	}
+	node.Edges[0] = &Edge{
+		Type: "Workspace",
+		Name: "workspace",
+	}
+	err = pr.QueryWorkspace().
+		Select(workspace.FieldID).
+		Scan(ctx, &node.Edges[0].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[1] = &Edge{
+		Type: "Color",
+		Name: "color",
+	}
+	err = pr.QueryColor().
+		Select(color.FieldID).
+		Scan(ctx, &node.Edges[1].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[2] = &Edge{
+		Type: "Icon",
+		Name: "icon",
+	}
+	err = pr.QueryIcon().
+		Select(icon.FieldID).
+		Scan(ctx, &node.Edges[2].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[3] = &Edge{
+		Type: "Teammate",
+		Name: "teammate",
+	}
+	err = pr.QueryTeammate().
+		Select(teammate.FieldID).
+		Scan(ctx, &node.Edges[3].IDs)
+	if err != nil {
+		return nil, err
+	}
 	return node, nil
 }
 
@@ -145,7 +297,7 @@ func (t *Teammate) Node(ctx context.Context) (node *Node, err error) {
 		ID:     t.ID,
 		Type:   "Teammate",
 		Fields: make([]*Field, 5),
-		Edges:  make([]*Edge, 1),
+		Edges:  make([]*Edge, 2),
 	}
 	var buf []byte
 	if buf, err = json.Marshal(t.Name); err != nil {
@@ -195,6 +347,16 @@ func (t *Teammate) Node(ctx context.Context) (node *Node, err error) {
 	err = t.QueryWorkspaces().
 		Select(workspace.FieldID).
 		Scan(ctx, &node.Edges[0].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[1] = &Edge{
+		Type: "Project",
+		Name: "projects",
+	}
+	err = t.QueryProjects().
+		Select(project.FieldID).
+		Scan(ctx, &node.Edges[1].IDs)
 	if err != nil {
 		return nil, err
 	}
@@ -336,7 +498,7 @@ func (w *Workspace) Node(ctx context.Context) (node *Node, err error) {
 		ID:     w.ID,
 		Type:   "Workspace",
 		Fields: make([]*Field, 5),
-		Edges:  make([]*Edge, 1),
+		Edges:  make([]*Edge, 2),
 	}
 	var buf []byte
 	if buf, err = json.Marshal(w.CreatedBy); err != nil {
@@ -386,6 +548,16 @@ func (w *Workspace) Node(ctx context.Context) (node *Node, err error) {
 	err = w.QueryTeammate().
 		Select(teammate.FieldID).
 		Scan(ctx, &node.Edges[0].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[1] = &Edge{
+		Type: "Project",
+		Name: "projects",
+	}
+	err = w.QueryProjects().
+		Select(project.FieldID).
+		Scan(ctx, &node.Edges[1].IDs)
 	if err != nil {
 		return nil, err
 	}
@@ -472,6 +644,15 @@ func (c *Client) noder(ctx context.Context, table string, id ulid.ID) (Noder, er
 		n, err := c.Icon.Query().
 			Where(icon.ID(id)).
 			CollectFields(ctx, "Icon").
+			Only(ctx)
+		if err != nil {
+			return nil, err
+		}
+		return n, nil
+	case project.Table:
+		n, err := c.Project.Query().
+			Where(project.ID(id)).
+			CollectFields(ctx, "Project").
 			Only(ctx)
 		if err != nil {
 			return nil, err
@@ -603,6 +784,19 @@ func (c *Client) noders(ctx context.Context, table string, ids []ulid.ID) ([]Nod
 		nodes, err := c.Icon.Query().
 			Where(icon.IDIn(ids...)).
 			CollectFields(ctx, "Icon").
+			All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, node := range nodes {
+			for _, noder := range idmap[node.ID] {
+				*noder = node
+			}
+		}
+	case project.Table:
+		nodes, err := c.Project.Query().
+			Where(project.IDIn(ids...)).
+			CollectFields(ctx, "Project").
 			All(ctx)
 		if err != nil {
 			return nil, err

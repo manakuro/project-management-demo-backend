@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"math"
 	"project-management-demo-backend/ent/predicate"
+	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/workspace"
@@ -29,6 +30,7 @@ type TeammateQuery struct {
 	predicates []predicate.Teammate
 	// eager-loading edges.
 	withWorkspaces *WorkspaceQuery
+	withProjects   *ProjectQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -80,6 +82,28 @@ func (tq *TeammateQuery) QueryWorkspaces() *WorkspaceQuery {
 			sqlgraph.From(teammate.Table, teammate.FieldID, selector),
 			sqlgraph.To(workspace.Table, workspace.FieldID),
 			sqlgraph.Edge(sqlgraph.O2O, false, teammate.WorkspacesTable, teammate.WorkspacesColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(tq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryProjects chains the current query on the "projects" edge.
+func (tq *TeammateQuery) QueryProjects() *ProjectQuery {
+	query := &ProjectQuery{config: tq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := tq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := tq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(teammate.Table, teammate.FieldID, selector),
+			sqlgraph.To(project.Table, project.FieldID),
+			sqlgraph.Edge(sqlgraph.O2O, false, teammate.ProjectsTable, teammate.ProjectsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(tq.driver.Dialect(), step)
 		return fromU, nil
@@ -269,6 +293,7 @@ func (tq *TeammateQuery) Clone() *TeammateQuery {
 		order:          append([]OrderFunc{}, tq.order...),
 		predicates:     append([]predicate.Teammate{}, tq.predicates...),
 		withWorkspaces: tq.withWorkspaces.Clone(),
+		withProjects:   tq.withProjects.Clone(),
 		// clone intermediate query.
 		sql:  tq.sql.Clone(),
 		path: tq.path,
@@ -283,6 +308,17 @@ func (tq *TeammateQuery) WithWorkspaces(opts ...func(*WorkspaceQuery)) *Teammate
 		opt(query)
 	}
 	tq.withWorkspaces = query
+	return tq
+}
+
+// WithProjects tells the query-builder to eager-load the nodes that are connected to
+// the "projects" edge. The optional arguments are used to configure the query builder of the edge.
+func (tq *TeammateQuery) WithProjects(opts ...func(*ProjectQuery)) *TeammateQuery {
+	query := &ProjectQuery{config: tq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	tq.withProjects = query
 	return tq
 }
 
@@ -351,8 +387,9 @@ func (tq *TeammateQuery) sqlAll(ctx context.Context) ([]*Teammate, error) {
 	var (
 		nodes       = []*Teammate{}
 		_spec       = tq.querySpec()
-		loadedTypes = [1]bool{
+		loadedTypes = [2]bool{
 			tq.withWorkspaces != nil,
+			tq.withProjects != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -396,6 +433,30 @@ func (tq *TeammateQuery) sqlAll(ctx context.Context) ([]*Teammate, error) {
 				return nil, fmt.Errorf(`unexpected foreign-key "created_by" returned %v for node %v`, fk, n.ID)
 			}
 			node.Edges.Workspaces = n
+		}
+	}
+
+	if query := tq.withProjects; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[ulid.ID]*Teammate)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+		}
+		query.Where(predicate.Project(func(s *sql.Selector) {
+			s.Where(sql.InValues(teammate.ProjectsColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.CreatedBy
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "created_by" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.Projects = n
 		}
 	}
 

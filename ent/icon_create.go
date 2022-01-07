@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"project-management-demo-backend/ent/icon"
+	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/schema/ulid"
 	"time"
 
@@ -73,6 +74,25 @@ func (ic *IconCreate) SetNillableID(u *ulid.ID) *IconCreate {
 		ic.SetID(*u)
 	}
 	return ic
+}
+
+// SetProjectsID sets the "projects" edge to the Project entity by ID.
+func (ic *IconCreate) SetProjectsID(id ulid.ID) *IconCreate {
+	ic.mutation.SetProjectsID(id)
+	return ic
+}
+
+// SetNillableProjectsID sets the "projects" edge to the Project entity by ID if the given value is not nil.
+func (ic *IconCreate) SetNillableProjectsID(id *ulid.ID) *IconCreate {
+	if id != nil {
+		ic = ic.SetProjectsID(*id)
+	}
+	return ic
+}
+
+// SetProjects sets the "projects" edge to the Project entity.
+func (ic *IconCreate) SetProjects(p *Project) *IconCreate {
+	return ic.SetProjectsID(p.ID)
 }
 
 // Mutation returns the IconMutation object of the builder.
@@ -247,6 +267,25 @@ func (ic *IconCreate) createSpec() (*Icon, *sqlgraph.CreateSpec) {
 			Column: icon.FieldUpdatedAt,
 		})
 		_node.UpdatedAt = value
+	}
+	if nodes := ic.mutation.ProjectsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   icon.ProjectsTable,
+			Columns: []string{icon.ProjectsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: project.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }

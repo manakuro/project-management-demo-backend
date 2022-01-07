@@ -26,6 +26,7 @@ type config struct {
 type hooks struct {
 	Color     []ent.Hook
 	Icon      []ent.Hook
+	Project   []ent.Hook
 	Teammate  []ent.Hook
 	TestTodo  []ent.Hook
 	TestUser  []ent.Hook

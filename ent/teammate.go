@@ -4,6 +4,7 @@ package ent
 
 import (
 	"fmt"
+	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/workspace"
@@ -37,9 +38,11 @@ type Teammate struct {
 type TeammateEdges struct {
 	// Workspaces holds the value of the workspaces edge.
 	Workspaces *Workspace `json:"workspaces,omitempty"`
+	// Projects holds the value of the projects edge.
+	Projects *Project `json:"projects,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [2]bool
 }
 
 // WorkspacesOrErr returns the Workspaces value or an error if the edge
@@ -54,6 +57,20 @@ func (e TeammateEdges) WorkspacesOrErr() (*Workspace, error) {
 		return e.Workspaces, nil
 	}
 	return nil, &NotLoadedError{edge: "workspaces"}
+}
+
+// ProjectsOrErr returns the Projects value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e TeammateEdges) ProjectsOrErr() (*Project, error) {
+	if e.loadedTypes[1] {
+		if e.Projects == nil {
+			// The edge projects was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: project.Label}
+		}
+		return e.Projects, nil
+	}
+	return nil, &NotLoadedError{edge: "projects"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -126,6 +143,11 @@ func (t *Teammate) assignValues(columns []string, values []interface{}) error {
 // QueryWorkspaces queries the "workspaces" edge of the Teammate entity.
 func (t *Teammate) QueryWorkspaces() *WorkspaceQuery {
 	return (&TeammateClient{config: t.config}).QueryWorkspaces(t)
+}
+
+// QueryProjects queries the "projects" edge of the Teammate entity.
+func (t *Teammate) QueryProjects() *ProjectQuery {
+	return (&TeammateClient{config: t.config}).QueryProjects(t)
 }
 
 // Update returns a builder for updating this Teammate.

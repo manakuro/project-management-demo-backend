@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"project-management-demo-backend/ent/icon"
 	"project-management-demo-backend/ent/predicate"
+	"project-management-demo-backend/ent/project"
+	"project-management-demo-backend/ent/schema/ulid"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -38,9 +40,34 @@ func (iu *IconUpdate) SetIcon(s string) *IconUpdate {
 	return iu
 }
 
+// SetProjectsID sets the "projects" edge to the Project entity by ID.
+func (iu *IconUpdate) SetProjectsID(id ulid.ID) *IconUpdate {
+	iu.mutation.SetProjectsID(id)
+	return iu
+}
+
+// SetNillableProjectsID sets the "projects" edge to the Project entity by ID if the given value is not nil.
+func (iu *IconUpdate) SetNillableProjectsID(id *ulid.ID) *IconUpdate {
+	if id != nil {
+		iu = iu.SetProjectsID(*id)
+	}
+	return iu
+}
+
+// SetProjects sets the "projects" edge to the Project entity.
+func (iu *IconUpdate) SetProjects(p *Project) *IconUpdate {
+	return iu.SetProjectsID(p.ID)
+}
+
 // Mutation returns the IconMutation object of the builder.
 func (iu *IconUpdate) Mutation() *IconMutation {
 	return iu.mutation
+}
+
+// ClearProjects clears the "projects" edge to the Project entity.
+func (iu *IconUpdate) ClearProjects() *IconUpdate {
+	iu.mutation.ClearProjects()
+	return iu
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -150,6 +177,41 @@ func (iu *IconUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: icon.FieldIcon,
 		})
 	}
+	if iu.mutation.ProjectsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   icon.ProjectsTable,
+			Columns: []string{icon.ProjectsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: project.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := iu.mutation.ProjectsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   icon.ProjectsTable,
+			Columns: []string{icon.ProjectsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: project.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, iu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{icon.Label}
@@ -181,9 +243,34 @@ func (iuo *IconUpdateOne) SetIcon(s string) *IconUpdateOne {
 	return iuo
 }
 
+// SetProjectsID sets the "projects" edge to the Project entity by ID.
+func (iuo *IconUpdateOne) SetProjectsID(id ulid.ID) *IconUpdateOne {
+	iuo.mutation.SetProjectsID(id)
+	return iuo
+}
+
+// SetNillableProjectsID sets the "projects" edge to the Project entity by ID if the given value is not nil.
+func (iuo *IconUpdateOne) SetNillableProjectsID(id *ulid.ID) *IconUpdateOne {
+	if id != nil {
+		iuo = iuo.SetProjectsID(*id)
+	}
+	return iuo
+}
+
+// SetProjects sets the "projects" edge to the Project entity.
+func (iuo *IconUpdateOne) SetProjects(p *Project) *IconUpdateOne {
+	return iuo.SetProjectsID(p.ID)
+}
+
 // Mutation returns the IconMutation object of the builder.
 func (iuo *IconUpdateOne) Mutation() *IconMutation {
 	return iuo.mutation
+}
+
+// ClearProjects clears the "projects" edge to the Project entity.
+func (iuo *IconUpdateOne) ClearProjects() *IconUpdateOne {
+	iuo.mutation.ClearProjects()
+	return iuo
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -316,6 +403,41 @@ func (iuo *IconUpdateOne) sqlSave(ctx context.Context) (_node *Icon, err error) 
 			Value:  value,
 			Column: icon.FieldIcon,
 		})
+	}
+	if iuo.mutation.ProjectsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   icon.ProjectsTable,
+			Columns: []string{icon.ProjectsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: project.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := iuo.mutation.ProjectsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   icon.ProjectsTable,
+			Columns: []string{icon.ProjectsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: project.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_node = &Icon{config: iuo.config}
 	_spec.Assign = _node.assignValues

@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"project-management-demo-backend/ent/color"
+	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/schema/ulid"
 	"time"
 
@@ -79,6 +80,25 @@ func (cc *ColorCreate) SetNillableID(u *ulid.ID) *ColorCreate {
 		cc.SetID(*u)
 	}
 	return cc
+}
+
+// SetProjectsID sets the "projects" edge to the Project entity by ID.
+func (cc *ColorCreate) SetProjectsID(id ulid.ID) *ColorCreate {
+	cc.mutation.SetProjectsID(id)
+	return cc
+}
+
+// SetNillableProjectsID sets the "projects" edge to the Project entity by ID if the given value is not nil.
+func (cc *ColorCreate) SetNillableProjectsID(id *ulid.ID) *ColorCreate {
+	if id != nil {
+		cc = cc.SetProjectsID(*id)
+	}
+	return cc
+}
+
+// SetProjects sets the "projects" edge to the Project entity.
+func (cc *ColorCreate) SetProjects(p *Project) *ColorCreate {
+	return cc.SetProjectsID(p.ID)
 }
 
 // Mutation returns the ColorMutation object of the builder.
@@ -269,6 +289,25 @@ func (cc *ColorCreate) createSpec() (*Color, *sqlgraph.CreateSpec) {
 			Column: color.FieldUpdatedAt,
 		})
 		_node.UpdatedAt = value
+	}
+	if nodes := cc.mutation.ProjectsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2O,
+			Inverse: false,
+			Table:   color.ProjectsTable,
+			Columns: []string{color.ProjectsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: project.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }

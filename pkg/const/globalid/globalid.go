@@ -25,6 +25,7 @@ type GlobalIDs struct {
 	Workspace field
 	Color     field
 	Icon      field
+	Project   field
 }
 
 // New generates a map object that is intended to be used as global identification for node interface query.
@@ -53,6 +54,10 @@ func New() GlobalIDs {
 		},
 		Icon: field{
 			Prefix: "0AF",
+			Table:  icon.Table,
+		},
+		Project: field{
+			Prefix: "0AG",
 			Table:  icon.Table,
 		},
 	}
