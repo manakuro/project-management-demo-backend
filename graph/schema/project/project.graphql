@@ -1,8 +1,8 @@
 type Project implements Node {
   id: ID!
   workspaceID: ID!
-  colorID: ID!
-  iconID: ID!
+  color: Color!
+  icon: Icon!
   createdBy: ID!
   name: String!
   description: EditorDescription!

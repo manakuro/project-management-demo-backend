@@ -144,14 +144,14 @@ type ComplexityRoot struct {
 	}
 
 	Project struct {
-		ColorID          func(childComplexity int) int
+		Color            func(childComplexity int) int
 		CreatedAt        func(childComplexity int) int
 		CreatedBy        func(childComplexity int) int
 		Description      func(childComplexity int) int
 		DescriptionTitle func(childComplexity int) int
 		DueDate          func(childComplexity int) int
 		ID               func(childComplexity int) int
-		IconID           func(childComplexity int) int
+		Icon             func(childComplexity int) int
 		Name             func(childComplexity int) int
 		UpdatedAt        func(childComplexity int) int
 		WorkspaceID      func(childComplexity int) int
@@ -791,12 +791,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.PageInfo.StartCursor(childComplexity), true
 
-	case "Project.colorID":
-		if e.complexity.Project.ColorID == nil {
+	case "Project.color":
+		if e.complexity.Project.Color == nil {
 			break
 		}
 
-		return e.complexity.Project.ColorID(childComplexity), true
+		return e.complexity.Project.Color(childComplexity), true
 
 	case "Project.createdAt":
 		if e.complexity.Project.CreatedAt == nil {
@@ -840,12 +840,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Project.ID(childComplexity), true
 
-	case "Project.iconID":
-		if e.complexity.Project.IconID == nil {
+	case "Project.icon":
+		if e.complexity.Project.Icon == nil {
 			break
 		}
 
-		return e.complexity.Project.IconID(childComplexity), true
+		return e.complexity.Project.Icon(childComplexity), true
 
 	case "Project.name":
 		if e.complexity.Project.Name == nil {
@@ -2466,8 +2466,8 @@ extend type Mutation {
 	{Name: "graph/schema/project/project.graphql", Input: `type Project implements Node {
   id: ID!
   workspaceID: ID!
-  colorID: ID!
-  iconID: ID!
+  color: Color!
+  icon: Icon!
   createdBy: ID!
   name: String!
   description: EditorDescription!
@@ -5418,7 +5418,7 @@ func (ec *executionContext) _Project_workspaceID(ctx context.Context, field grap
 	return ec.marshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Project_colorID(ctx context.Context, field graphql.CollectedField, obj *ent.Project) (ret graphql.Marshaler) {
+func (ec *executionContext) _Project_color(ctx context.Context, field graphql.CollectedField, obj *ent.Project) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -5429,14 +5429,14 @@ func (ec *executionContext) _Project_colorID(ctx context.Context, field graphql.
 		Object:     "Project",
 		Field:      field,
 		Args:       nil,
-		IsMethod:   false,
+		IsMethod:   true,
 		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.ColorID, nil
+		return obj.Color(ctx)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -5448,12 +5448,12 @@ func (ec *executionContext) _Project_colorID(ctx context.Context, field graphql.
 		}
 		return graphql.Null
 	}
-	res := resTmp.(ulid.ID)
+	res := resTmp.(*ent.Color)
 	fc.Result = res
-	return ec.marshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, field.Selections, res)
+	return ec.marshalNColor2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐColor(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _Project_iconID(ctx context.Context, field graphql.CollectedField, obj *ent.Project) (ret graphql.Marshaler) {
+func (ec *executionContext) _Project_icon(ctx context.Context, field graphql.CollectedField, obj *ent.Project) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -5464,14 +5464,14 @@ func (ec *executionContext) _Project_iconID(ctx context.Context, field graphql.C
 		Object:     "Project",
 		Field:      field,
 		Args:       nil,
-		IsMethod:   false,
+		IsMethod:   true,
 		IsResolver: false,
 	}
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.IconID, nil
+		return obj.Icon(ctx)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -5483,9 +5483,9 @@ func (ec *executionContext) _Project_iconID(ctx context.Context, field graphql.C
 		}
 		return graphql.Null
 	}
-	res := resTmp.(ulid.ID)
+	res := resTmp.(*ent.Icon)
 	fc.Result = res
-	return ec.marshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, field.Selections, res)
+	return ec.marshalNIcon2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐIcon(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Project_createdBy(ctx context.Context, field graphql.CollectedField, obj *ent.Project) (ret graphql.Marshaler) {
@@ -15764,16 +15764,34 @@ func (ec *executionContext) _Project(ctx context.Context, sel ast.SelectionSet, 
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)
 			}
-		case "colorID":
-			out.Values[i] = ec._Project_colorID(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
-			}
-		case "iconID":
-			out.Values[i] = ec._Project_iconID(ctx, field, obj)
-			if out.Values[i] == graphql.Null {
-				atomic.AddUint32(&invalids, 1)
-			}
+		case "color":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Project_color(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "icon":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Project_icon(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
 		case "createdBy":
 			out.Values[i] = ec._Project_createdBy(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
