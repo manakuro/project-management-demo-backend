@@ -4,6 +4,7 @@ package ent
 
 import (
 	"project-management-demo-backend/ent/color"
+	"project-management-demo-backend/ent/icon"
 	"project-management-demo-backend/ent/schema"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/teammate"
@@ -92,6 +93,63 @@ func init() {
 	colorDescID := colorMixinFields0[0].Descriptor()
 	// color.DefaultID holds the default value on creation for the id field.
 	color.DefaultID = colorDescID.Default.(func() ulid.ID)
+	iconMixin := schema.Icon{}.Mixin()
+	iconMixinFields0 := iconMixin[0].Fields()
+	_ = iconMixinFields0
+	iconMixinFields1 := iconMixin[1].Fields()
+	_ = iconMixinFields1
+	iconMixinFields2 := iconMixin[2].Fields()
+	_ = iconMixinFields2
+	iconFields := schema.Icon{}.Fields()
+	_ = iconFields
+	// iconDescName is the schema descriptor for name field.
+	iconDescName := iconMixinFields1[0].Descriptor()
+	// icon.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	icon.NameValidator = func() func(string) error {
+		validators := iconDescName.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(name string) error {
+			for _, fn := range fns {
+				if err := fn(name); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// iconDescIcon is the schema descriptor for icon field.
+	iconDescIcon := iconMixinFields1[1].Descriptor()
+	// icon.IconValidator is a validator for the "icon" field. It is called by the builders before save.
+	icon.IconValidator = func() func(string) error {
+		validators := iconDescIcon.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(icon string) error {
+			for _, fn := range fns {
+				if err := fn(icon); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// iconDescCreatedAt is the schema descriptor for created_at field.
+	iconDescCreatedAt := iconMixinFields2[0].Descriptor()
+	// icon.DefaultCreatedAt holds the default value on creation for the created_at field.
+	icon.DefaultCreatedAt = iconDescCreatedAt.Default.(func() time.Time)
+	// iconDescUpdatedAt is the schema descriptor for updated_at field.
+	iconDescUpdatedAt := iconMixinFields2[1].Descriptor()
+	// icon.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	icon.DefaultUpdatedAt = iconDescUpdatedAt.Default.(func() time.Time)
+	// iconDescID is the schema descriptor for id field.
+	iconDescID := iconMixinFields0[0].Descriptor()
+	// icon.DefaultID holds the default value on creation for the id field.
+	icon.DefaultID = iconDescID.Default.(func() ulid.ID)
 	teammateMixin := schema.Teammate{}.Mixin()
 	teammateMixinFields0 := teammateMixin[0].Fields()
 	_ = teammateMixinFields0
