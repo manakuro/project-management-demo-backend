@@ -8,6 +8,7 @@ import (
 	"project-management-demo-backend/ent/icon"
 	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/teammate"
+	"project-management-demo-backend/ent/testuser"
 	"project-management-demo-backend/ent/workspace"
 )
 
@@ -55,8 +56,18 @@ func GetIcon(ctx context.Context, client *ent.Client, val string) *ent.Icon {
 func GetWorkspace(ctx context.Context, client *ent.Client) *ent.Workspace {
 	w, err := client.Workspace.Query().Where(workspace.NameEQ("My Workspace")).Only(ctx)
 	if err != nil {
-		log.Fatalf("project: failed get workspace: %v", err)
+		log.Fatalf("GetWorkspace: failed get workspace: %v", err)
 	}
 
 	return w
+}
+
+// GetTestUserByName gets test user.
+func GetTestUserByName(ctx context.Context, client *ent.Client, name string) *ent.TestUser {
+	t, err := client.TestUser.Query().Where(testuser.NameEQ(name)).Only(ctx)
+	if err != nil {
+		log.Fatalf("GetTestUser: failed get test user: %v", err)
+	}
+
+	return t
 }

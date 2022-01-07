@@ -28,7 +28,7 @@ var projectFeed = struct {
 func Project(ctx context.Context, client *ent.Client) {
 	_, err := client.Project.Delete().Exec(ctx)
 	if err != nil {
-		log.Fatalf("project: failed to delete color: %v", err)
+		log.Fatalf("project: failed to delete project: %v", err)
 	}
 
 	createdBy := feedutil.GetTeammateByEmail(ctx, client, teammateFeed.manato.Email)
@@ -71,7 +71,7 @@ func Project(ctx context.Context, client *ent.Client) {
 		bulk[i] = client.Project.Create().SetInput(t)
 	}
 	if _, err = client.Project.CreateBulk(bulk...).Save(ctx); err != nil {
-		log.Fatalf("project: failed to feed color: %v", err)
+		log.Fatalf("project: failed to feed project: %v", err)
 	}
 }
 
