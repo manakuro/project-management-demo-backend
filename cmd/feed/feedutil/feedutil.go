@@ -4,8 +4,11 @@ import (
 	"context"
 	"log"
 	"project-management-demo-backend/ent"
+	"project-management-demo-backend/ent/color"
+	"project-management-demo-backend/ent/icon"
 	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/teammate"
+	"project-management-demo-backend/ent/workspace"
 )
 
 // GetTeammateByEmail gets teammate by email.
@@ -26,4 +29,34 @@ func GetProjectByName(ctx context.Context, client *ent.Client, name string) *ent
 	}
 
 	return p
+}
+
+// GetColor gets color by name.
+func GetColor(ctx context.Context, client *ent.Client, val string) *ent.Color {
+	c, err := client.Color.Query().Where(color.ColorEQ(val)).Only(ctx)
+	if err != nil {
+		log.Fatalf("GetColor: failed to get color: %v", err)
+	}
+
+	return c
+}
+
+// GetIcon gets icon by name.
+func GetIcon(ctx context.Context, client *ent.Client, val string) *ent.Icon {
+	i, err := client.Icon.Query().Where(icon.IconEQ(val)).Only(ctx)
+	if err != nil {
+		log.Fatalf("GetIcon: failed to get icon: %v", err)
+	}
+
+	return i
+}
+
+// GetWorkspace gets workspace.
+func GetWorkspace(ctx context.Context, client *ent.Client) *ent.Workspace {
+	w, err := client.Workspace.Query().Where(workspace.NameEQ("My Workspace")).Only(ctx)
+	if err != nil {
+		log.Fatalf("project: failed get workspace: %v", err)
+	}
+
+	return w
 }

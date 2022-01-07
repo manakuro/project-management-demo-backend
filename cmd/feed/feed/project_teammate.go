@@ -16,20 +16,20 @@ func ProjectTeammate(ctx context.Context, client *ent.Client) {
 
 	ts := []ent.CreateProjectTeammateInput{
 		{
-			ProjectID:  feedutil.GetProjectByName(ctx, client, "App Development").ID,
-			TeammateID: feedutil.GetTeammateByEmail(ctx, client, "manato.kuroda@example.com").ID,
+			ProjectID:  feedutil.GetProjectByName(ctx, client, projectFeed.appDevelopment.name).ID,
+			TeammateID: feedutil.GetTeammateByEmail(ctx, client, teammateFeed.manato.Email).ID,
 			Role:       "",
 			IsOwner:    true,
 		},
 		{
-			ProjectID:  feedutil.GetProjectByName(ctx, client, "App Development").ID,
-			TeammateID: feedutil.GetTeammateByEmail(ctx, client, "dan.abrahmov@example.com").ID,
+			ProjectID:  feedutil.GetProjectByName(ctx, client, projectFeed.appDevelopment.name).ID,
+			TeammateID: feedutil.GetTeammateByEmail(ctx, client, teammateFeed.dan.Email).ID,
 			Role:       "",
 			IsOwner:    false,
 		},
 		{
-			ProjectID:  feedutil.GetProjectByName(ctx, client, "App Development").ID,
-			TeammateID: feedutil.GetTeammateByEmail(ctx, client, "kent.dodds@example.com").ID,
+			ProjectID:  feedutil.GetProjectByName(ctx, client, projectFeed.appDevelopment.name).ID,
+			TeammateID: feedutil.GetTeammateByEmail(ctx, client, teammateFeed.kent.Email).ID,
 			Role:       "",
 			IsOwner:    false,
 		},

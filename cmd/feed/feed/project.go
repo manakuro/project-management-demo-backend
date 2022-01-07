@@ -4,14 +4,25 @@ import (
 	"context"
 	"encoding/json"
 	"log"
+	"project-management-demo-backend/cmd/feed/feedutil"
 	"project-management-demo-backend/ent"
-	"project-management-demo-backend/ent/color"
-	"project-management-demo-backend/ent/icon"
 	"project-management-demo-backend/ent/schema/editor"
-	"project-management-demo-backend/ent/teammate"
-	"project-management-demo-backend/ent/workspace"
 	"time"
 )
+
+type projectFeedField struct {
+	name string
+}
+
+var projectFeed = struct {
+	appDevelopment  projectFeedField
+	marketing       projectFeedField
+	customerSuccess projectFeedField
+}{
+	appDevelopment:  projectFeedField{name: "App Development"},
+	marketing:       projectFeedField{name: "Marketing"},
+	customerSuccess: projectFeedField{name: "Customer Success"},
+}
 
 // Project generates projects data
 func Project(ctx context.Context, client *ent.Client) {
@@ -20,35 +31,36 @@ func Project(ctx context.Context, client *ent.Client) {
 		log.Fatalf("project: failed to delete color: %v", err)
 	}
 
-	createdBy := getTeammate(ctx, client)
-	ws := getWorkspace(ctx, client)
+	createdBy := feedutil.GetTeammateByEmail(ctx, client, teammateFeed.manato.Email)
+	ws := feedutil.GetWorkspace(ctx, client)
+	desc := getDescription()
 	ts := []ent.CreateProjectInput{
 		{
-			Name:             "App Development",
+			Name:             projectFeed.appDevelopment.name,
 			WorkspaceID:      ws.ID,
-			ColorID:          getColor(ctx, client, "pink.400").ID,
-			IconID:           getIcon(ctx, client, "sun").ID,
-			Description:      getDescription(),
+			ColorID:          feedutil.GetColor(ctx, client, colorFeed.pink400.Color).ID,
+			IconID:           feedutil.GetIcon(ctx, client, iconFeed.sun.Icon).ID,
+			Description:      desc,
 			DescriptionTitle: "How we'll collaborate",
 			DueDate:          getDueDate(3),
 			CreatedBy:        createdBy.ID,
 		},
 		{
-			Name:             "Marketing",
+			Name:             projectFeed.marketing.name,
 			WorkspaceID:      ws.ID,
-			ColorID:          getColor(ctx, client, "teal.400").ID,
-			IconID:           getIcon(ctx, client, "moon").ID,
-			Description:      getDescription(),
+			ColorID:          feedutil.GetColor(ctx, client, colorFeed.teal400.Color).ID,
+			IconID:           feedutil.GetIcon(ctx, client, iconFeed.moon.Icon).ID,
+			Description:      desc,
 			DescriptionTitle: "How we'll collaborate",
 			DueDate:          getDueDate(10),
 			CreatedBy:        createdBy.ID,
 		},
 		{
-			Name:             "Customer Success",
+			Name:             projectFeed.customerSuccess.name,
 			WorkspaceID:      ws.ID,
-			ColorID:          getColor(ctx, client, "orange.400").ID,
-			IconID:           getIcon(ctx, client, "moon").ID,
-			Description:      getDescription(),
+			ColorID:          feedutil.GetColor(ctx, client, colorFeed.orange400.Color).ID,
+			IconID:           feedutil.GetIcon(ctx, client, iconFeed.moon.Icon).ID,
+			Description:      desc,
 			DescriptionTitle: "How we'll collaborate",
 			DueDate:          getDueDate(10),
 			CreatedBy:        createdBy.ID,
@@ -61,24 +73,6 @@ func Project(ctx context.Context, client *ent.Client) {
 	if _, err = client.Project.CreateBulk(bulk...).Save(ctx); err != nil {
 		log.Fatalf("project: failed to feed color: %v", err)
 	}
-}
-
-func getColor(ctx context.Context, client *ent.Client, val string) *ent.Color {
-	c, err := client.Color.Query().Where(color.ColorEQ(val)).Only(ctx)
-	if err != nil {
-		log.Fatalf("project: failed to get color: %v", err)
-	}
-
-	return c
-}
-
-func getIcon(ctx context.Context, client *ent.Client, val string) *ent.Icon {
-	i, err := client.Icon.Query().Where(icon.IconEQ(val)).Only(ctx)
-	if err != nil {
-		log.Fatalf("project: failed to get icon from: %v", err)
-	}
-
-	return i
 }
 
 func getDescription() editor.Description {
@@ -97,22 +91,4 @@ func getDueDate(date int) *time.Time {
 	t.AddDate(0, 0, date)
 
 	return &t
-}
-
-func getTeammate(ctx context.Context, client *ent.Client) *ent.Teammate {
-	tm, err := client.Teammate.Query().Where(teammate.EmailEQ("manato.kuroda@example.com")).Only(ctx)
-	if err != nil {
-		log.Fatalf("project: failed get teammate: %v", err)
-	}
-
-	return tm
-}
-
-func getWorkspace(ctx context.Context, client *ent.Client) *ent.Workspace {
-	w, err := client.Workspace.Query().Where(workspace.NameEQ("My Workspace")).Only(ctx)
-	if err != nil {
-		log.Fatalf("project: failed get teammate: %v", err)
-	}
-
-	return w
 }
