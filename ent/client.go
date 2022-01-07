@@ -518,7 +518,7 @@ func (c *ProjectClient) QueryTeammate(pr *Project) *TeammateQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(project.Table, project.FieldID, id),
 			sqlgraph.To(teammate.Table, teammate.FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, true, project.TeammateTable, project.TeammateColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, project.TeammateTable, project.TeammateColumn),
 		)
 		fromV = sqlgraph.Neighbors(pr.driver.Dialect(), step)
 		return fromV, nil
@@ -632,15 +632,15 @@ func (c *TeammateClient) QueryWorkspaces(t *Teammate) *WorkspaceQuery {
 	return query
 }
 
-// QueryProject queries the project edge of a Teammate.
-func (c *TeammateClient) QueryProject(t *Teammate) *ProjectQuery {
+// QueryProjects queries the projects edge of a Teammate.
+func (c *TeammateClient) QueryProjects(t *Teammate) *ProjectQuery {
 	query := &ProjectQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
 		id := t.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(teammate.Table, teammate.FieldID, id),
 			sqlgraph.To(project.Table, project.FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, false, teammate.ProjectTable, teammate.ProjectColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, teammate.ProjectsTable, teammate.ProjectsColumn),
 		)
 		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
 		return fromV, nil

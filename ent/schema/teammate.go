@@ -44,8 +44,7 @@ func (Teammate) Edges() []ent.Edge {
 					annotation.Edge{FieldName: "workspace_id"},
 				),
 			),
-		edge.To("project", Project.Type).
-			Unique().
+		edge.To("projects", Project.Type).
 			Annotations(
 				schema.Annotation(
 					annotation.Edge{FieldName: "project_id"},

@@ -48,7 +48,7 @@ var (
 		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
 		{Name: "color_id", Type: field.TypeString, Unique: true, Nullable: true},
 		{Name: "icon_id", Type: field.TypeString, Unique: true, Nullable: true},
-		{Name: "created_by", Type: field.TypeString, Unique: true, Nullable: true},
+		{Name: "created_by", Type: field.TypeString, Nullable: true},
 		{Name: "workspace_id", Type: field.TypeString, Nullable: true},
 	}
 	// ProjectsTable holds the schema information for the "projects" table.
@@ -70,7 +70,7 @@ var (
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "projects_teammates_project",
+				Symbol:     "projects_teammates_projects",
 				Columns:    []*schema.Column{ProjectsColumns[9]},
 				RefColumns: []*schema.Column{TeammatesColumns[0]},
 				OnDelete:   schema.SetNull,

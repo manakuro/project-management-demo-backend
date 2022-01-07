@@ -2154,8 +2154,9 @@ type TeammateMutation struct {
 	workspaces        map[ulid.ID]struct{}
 	removedworkspaces map[ulid.ID]struct{}
 	clearedworkspaces bool
-	project           *ulid.ID
-	clearedproject    bool
+	projects          map[ulid.ID]struct{}
+	removedprojects   map[ulid.ID]struct{}
+	clearedprojects   bool
 	done              bool
 	oldValue          func(context.Context) (*Teammate, error)
 	predicates        []predicate.Teammate
@@ -2480,43 +2481,58 @@ func (m *TeammateMutation) ResetWorkspaces() {
 	m.removedworkspaces = nil
 }
 
-// SetProjectID sets the "project" edge to the Project entity by id.
-func (m *TeammateMutation) SetProjectID(id ulid.ID) {
-	m.project = &id
+// AddProjectIDs adds the "projects" edge to the Project entity by ids.
+func (m *TeammateMutation) AddProjectIDs(ids ...ulid.ID) {
+	if m.projects == nil {
+		m.projects = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		m.projects[ids[i]] = struct{}{}
+	}
 }
 
-// ClearProject clears the "project" edge to the Project entity.
-func (m *TeammateMutation) ClearProject() {
-	m.clearedproject = true
+// ClearProjects clears the "projects" edge to the Project entity.
+func (m *TeammateMutation) ClearProjects() {
+	m.clearedprojects = true
 }
 
-// ProjectCleared reports if the "project" edge to the Project entity was cleared.
-func (m *TeammateMutation) ProjectCleared() bool {
-	return m.clearedproject
+// ProjectsCleared reports if the "projects" edge to the Project entity was cleared.
+func (m *TeammateMutation) ProjectsCleared() bool {
+	return m.clearedprojects
 }
 
-// ProjectID returns the "project" edge ID in the mutation.
-func (m *TeammateMutation) ProjectID() (id ulid.ID, exists bool) {
-	if m.project != nil {
-		return *m.project, true
+// RemoveProjectIDs removes the "projects" edge to the Project entity by IDs.
+func (m *TeammateMutation) RemoveProjectIDs(ids ...ulid.ID) {
+	if m.removedprojects == nil {
+		m.removedprojects = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		delete(m.projects, ids[i])
+		m.removedprojects[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedProjects returns the removed IDs of the "projects" edge to the Project entity.
+func (m *TeammateMutation) RemovedProjectsIDs() (ids []ulid.ID) {
+	for id := range m.removedprojects {
+		ids = append(ids, id)
 	}
 	return
 }
 
-// ProjectIDs returns the "project" edge IDs in the mutation.
-// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// ProjectID instead. It exists only for internal usage by the builders.
-func (m *TeammateMutation) ProjectIDs() (ids []ulid.ID) {
-	if id := m.project; id != nil {
-		ids = append(ids, *id)
+// ProjectsIDs returns the "projects" edge IDs in the mutation.
+func (m *TeammateMutation) ProjectsIDs() (ids []ulid.ID) {
+	for id := range m.projects {
+		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetProject resets all changes to the "project" edge.
-func (m *TeammateMutation) ResetProject() {
-	m.project = nil
-	m.clearedproject = false
+// ResetProjects resets all changes to the "projects" edge.
+func (m *TeammateMutation) ResetProjects() {
+	m.projects = nil
+	m.clearedprojects = false
+	m.removedprojects = nil
 }
 
 // Where appends a list predicates to the TeammateMutation builder.
@@ -2709,8 +2725,8 @@ func (m *TeammateMutation) AddedEdges() []string {
 	if m.workspaces != nil {
 		edges = append(edges, teammate.EdgeWorkspaces)
 	}
-	if m.project != nil {
-		edges = append(edges, teammate.EdgeProject)
+	if m.projects != nil {
+		edges = append(edges, teammate.EdgeProjects)
 	}
 	return edges
 }
@@ -2725,10 +2741,12 @@ func (m *TeammateMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
-	case teammate.EdgeProject:
-		if id := m.project; id != nil {
-			return []ent.Value{*id}
+	case teammate.EdgeProjects:
+		ids := make([]ent.Value, 0, len(m.projects))
+		for id := range m.projects {
+			ids = append(ids, id)
 		}
+		return ids
 	}
 	return nil
 }
@@ -2738,6 +2756,9 @@ func (m *TeammateMutation) RemovedEdges() []string {
 	edges := make([]string, 0, 2)
 	if m.removedworkspaces != nil {
 		edges = append(edges, teammate.EdgeWorkspaces)
+	}
+	if m.removedprojects != nil {
+		edges = append(edges, teammate.EdgeProjects)
 	}
 	return edges
 }
@@ -2752,6 +2773,12 @@ func (m *TeammateMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case teammate.EdgeProjects:
+		ids := make([]ent.Value, 0, len(m.removedprojects))
+		for id := range m.removedprojects {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
@@ -2762,8 +2789,8 @@ func (m *TeammateMutation) ClearedEdges() []string {
 	if m.clearedworkspaces {
 		edges = append(edges, teammate.EdgeWorkspaces)
 	}
-	if m.clearedproject {
-		edges = append(edges, teammate.EdgeProject)
+	if m.clearedprojects {
+		edges = append(edges, teammate.EdgeProjects)
 	}
 	return edges
 }
@@ -2774,8 +2801,8 @@ func (m *TeammateMutation) EdgeCleared(name string) bool {
 	switch name {
 	case teammate.EdgeWorkspaces:
 		return m.clearedworkspaces
-	case teammate.EdgeProject:
-		return m.clearedproject
+	case teammate.EdgeProjects:
+		return m.clearedprojects
 	}
 	return false
 }
@@ -2784,9 +2811,6 @@ func (m *TeammateMutation) EdgeCleared(name string) bool {
 // if that edge is not defined in the schema.
 func (m *TeammateMutation) ClearEdge(name string) error {
 	switch name {
-	case teammate.EdgeProject:
-		m.ClearProject()
-		return nil
 	}
 	return fmt.Errorf("unknown Teammate unique edge %s", name)
 }
@@ -2798,8 +2822,8 @@ func (m *TeammateMutation) ResetEdge(name string) error {
 	case teammate.EdgeWorkspaces:
 		m.ResetWorkspaces()
 		return nil
-	case teammate.EdgeProject:
-		m.ResetProject()
+	case teammate.EdgeProjects:
+		m.ResetProjects()
 		return nil
 	}
 	return fmt.Errorf("unknown Teammate edge %s", name)

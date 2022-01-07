@@ -263,7 +263,7 @@ type CreateTeammateInput struct {
 	CreatedAt    *time.Time
 	UpdatedAt    *time.Time
 	WorkspaceIDs []ulid.ID
-	ProjectID    *ulid.ID
+	ProjectIDs   []ulid.ID
 }
 
 // Mutate applies the CreateTeammateInput on the TeammateCreate builder.
@@ -280,8 +280,8 @@ func (i *CreateTeammateInput) Mutate(m *TeammateCreate) {
 	if ids := i.WorkspaceIDs; len(ids) > 0 {
 		m.AddWorkspaceIDs(ids...)
 	}
-	if v := i.ProjectID; v != nil {
-		m.SetProjectID(*v)
+	if ids := i.ProjectIDs; len(ids) > 0 {
+		m.AddProjectIDs(ids...)
 	}
 }
 
@@ -299,8 +299,8 @@ type UpdateTeammateInput struct {
 	Email              *string
 	AddWorkspaceIDs    []ulid.ID
 	RemoveWorkspaceIDs []ulid.ID
-	ProjectID          *ulid.ID
-	ClearProject       bool
+	AddProjectIDs      []ulid.ID
+	RemoveProjectIDs   []ulid.ID
 }
 
 // Mutate applies the UpdateTeammateInput on the TeammateMutation.
@@ -320,11 +320,11 @@ func (i *UpdateTeammateInput) Mutate(m *TeammateMutation) {
 	if ids := i.RemoveWorkspaceIDs; len(ids) > 0 {
 		m.RemoveWorkspaceIDs(ids...)
 	}
-	if i.ClearProject {
-		m.ClearProject()
+	if ids := i.AddProjectIDs; len(ids) > 0 {
+		m.AddProjectIDs(ids...)
 	}
-	if v := i.ProjectID; v != nil {
-		m.SetProjectID(*v)
+	if ids := i.RemoveProjectIDs; len(ids) > 0 {
+		m.RemoveProjectIDs(ids...)
 	}
 }
 

@@ -1398,9 +1398,9 @@ type TeammateWhereInput struct {
 	HasWorkspaces     *bool                  `json:"hasWorkspaces,omitempty"`
 	HasWorkspacesWith []*WorkspaceWhereInput `json:"hasWorkspacesWith,omitempty"`
 
-	// "project" edge predicates.
-	HasProject     *bool                `json:"hasProject,omitempty"`
-	HasProjectWith []*ProjectWhereInput `json:"hasProjectWith,omitempty"`
+	// "projects" edge predicates.
+	HasProjects     *bool                `json:"hasProjects,omitempty"`
+	HasProjectsWith []*ProjectWhereInput `json:"hasProjectsWith,omitempty"`
 }
 
 // Filter applies the TeammateWhereInput filter on the TeammateQuery builder.
@@ -1670,23 +1670,23 @@ func (i *TeammateWhereInput) P() (predicate.Teammate, error) {
 		}
 		predicates = append(predicates, teammate.HasWorkspacesWith(with...))
 	}
-	if i.HasProject != nil {
-		p := teammate.HasProject()
-		if !*i.HasProject {
+	if i.HasProjects != nil {
+		p := teammate.HasProjects()
+		if !*i.HasProjects {
 			p = teammate.Not(p)
 		}
 		predicates = append(predicates, p)
 	}
-	if len(i.HasProjectWith) > 0 {
-		with := make([]predicate.Project, 0, len(i.HasProjectWith))
-		for _, w := range i.HasProjectWith {
+	if len(i.HasProjectsWith) > 0 {
+		with := make([]predicate.Project, 0, len(i.HasProjectsWith))
+		for _, w := range i.HasProjectsWith {
 			p, err := w.P()
 			if err != nil {
 				return nil, err
 			}
 			with = append(with, p)
 		}
-		predicates = append(predicates, teammate.HasProjectWith(with...))
+		predicates = append(predicates, teammate.HasProjectsWith(with...))
 	}
 	switch len(predicates) {
 	case 0:

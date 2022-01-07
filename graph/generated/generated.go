@@ -1702,9 +1702,9 @@ input TeammateWhereInput {
   hasWorkspaces: Boolean
   hasWorkspacesWith: [WorkspaceWhereInput!]
   
-  """project edge predicates"""
-  hasProject: Boolean
-  hasProjectWith: [ProjectWhereInput!]
+  """projects edge predicates"""
+  hasProjects: Boolean
+  hasProjectsWith: [ProjectWhereInput!]
 }
 
 """
@@ -11334,19 +11334,19 @@ func (ec *executionContext) unmarshalInputTeammateWhereInput(ctx context.Context
 			if err != nil {
 				return it, err
 			}
-		case "hasProject":
+		case "hasProjects":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasProject"))
-			it.HasProject, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasProjects"))
+			it.HasProjects, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
 			if err != nil {
 				return it, err
 			}
-		case "hasProjectWith":
+		case "hasProjectsWith":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasProjectWith"))
-			it.HasProjectWith, err = ec.unmarshalOProjectWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectWhereInputᚄ(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasProjectsWith"))
+			it.HasProjectsWith, err = ec.unmarshalOProjectWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectWhereInputᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}

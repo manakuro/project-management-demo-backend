@@ -60,12 +60,12 @@ func (t *Teammate) Workspaces(ctx context.Context) ([]*Workspace, error) {
 	return result, err
 }
 
-func (t *Teammate) Project(ctx context.Context) (*Project, error) {
-	result, err := t.Edges.ProjectOrErr()
+func (t *Teammate) Projects(ctx context.Context) ([]*Project, error) {
+	result, err := t.Edges.ProjectsOrErr()
 	if IsNotLoaded(err) {
-		result, err = t.QueryProject().Only(ctx)
+		result, err = t.QueryProjects().All(ctx)
 	}
-	return result, MaskNotFound(err)
+	return result, err
 }
 
 func (tt *TestTodo) TestUser(ctx context.Context) (*TestUser, error) {

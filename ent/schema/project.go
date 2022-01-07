@@ -89,7 +89,7 @@ func (Project) Edges() []ent.Edge {
 				),
 			),
 		edge.From("teammate", Teammate.Type).
-			Ref("project").
+			Ref("projects").
 			Unique().
 			Field("created_by").
 			Required().

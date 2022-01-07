@@ -150,7 +150,7 @@ func (pq *ProjectQuery) QueryTeammate() *TeammateQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(project.Table, project.FieldID, selector),
 			sqlgraph.To(teammate.Table, teammate.FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, true, project.TeammateTable, project.TeammateColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, project.TeammateTable, project.TeammateColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
 		return fromU, nil

@@ -4,7 +4,6 @@ package ent
 
 import (
 	"fmt"
-	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/teammate"
 	"strings"
@@ -37,8 +36,8 @@ type Teammate struct {
 type TeammateEdges struct {
 	// Workspaces holds the value of the workspaces edge.
 	Workspaces []*Workspace `json:"workspaces,omitempty"`
-	// Project holds the value of the project edge.
-	Project *Project `json:"project,omitempty"`
+	// Projects holds the value of the projects edge.
+	Projects []*Project `json:"projects,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [2]bool
@@ -53,18 +52,13 @@ func (e TeammateEdges) WorkspacesOrErr() ([]*Workspace, error) {
 	return nil, &NotLoadedError{edge: "workspaces"}
 }
 
-// ProjectOrErr returns the Project value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e TeammateEdges) ProjectOrErr() (*Project, error) {
+// ProjectsOrErr returns the Projects value or an error if the edge
+// was not loaded in eager-loading.
+func (e TeammateEdges) ProjectsOrErr() ([]*Project, error) {
 	if e.loadedTypes[1] {
-		if e.Project == nil {
-			// The edge project was loaded in eager-loading,
-			// but was not found.
-			return nil, &NotFoundError{label: project.Label}
-		}
-		return e.Project, nil
+		return e.Projects, nil
 	}
-	return nil, &NotLoadedError{edge: "project"}
+	return nil, &NotLoadedError{edge: "projects"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -139,9 +133,9 @@ func (t *Teammate) QueryWorkspaces() *WorkspaceQuery {
 	return (&TeammateClient{config: t.config}).QueryWorkspaces(t)
 }
 
-// QueryProject queries the "project" edge of the Teammate entity.
-func (t *Teammate) QueryProject() *ProjectQuery {
-	return (&TeammateClient{config: t.config}).QueryProject(t)
+// QueryProjects queries the "projects" edge of the Teammate entity.
+func (t *Teammate) QueryProjects() *ProjectQuery {
+	return (&TeammateClient{config: t.config}).QueryProjects(t)
 }
 
 // Update returns a builder for updating this Teammate.

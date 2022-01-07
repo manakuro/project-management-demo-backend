@@ -23,6 +23,7 @@ func main() {
 	feed.Icon(ctx, client)
 	feed.Teammate(ctx, client)
 	feed.Workspace(ctx, client)
+	feed.Project(ctx, client)
 
 	//client.EnableSQLSafeUpdates()
 }
