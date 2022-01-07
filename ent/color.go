@@ -5,7 +5,6 @@ package ent
 import (
 	"fmt"
 	"project-management-demo-backend/ent/color"
-	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/schema/ulid"
 	"strings"
 	"time"
@@ -35,25 +34,20 @@ type Color struct {
 
 // ColorEdges holds the relations/edges for other nodes in the graph.
 type ColorEdges struct {
-	// Project holds the value of the project edge.
-	Project *Project `json:"project,omitempty"`
+	// Projects holds the value of the projects edge.
+	Projects []*Project `json:"projects,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [1]bool
 }
 
-// ProjectOrErr returns the Project value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e ColorEdges) ProjectOrErr() (*Project, error) {
+// ProjectsOrErr returns the Projects value or an error if the edge
+// was not loaded in eager-loading.
+func (e ColorEdges) ProjectsOrErr() ([]*Project, error) {
 	if e.loadedTypes[0] {
-		if e.Project == nil {
-			// The edge project was loaded in eager-loading,
-			// but was not found.
-			return nil, &NotFoundError{label: project.Label}
-		}
-		return e.Project, nil
+		return e.Projects, nil
 	}
-	return nil, &NotLoadedError{edge: "project"}
+	return nil, &NotLoadedError{edge: "projects"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -123,9 +117,9 @@ func (c *Color) assignValues(columns []string, values []interface{}) error {
 	return nil
 }
 
-// QueryProject queries the "project" edge of the Color entity.
-func (c *Color) QueryProject() *ProjectQuery {
-	return (&ColorClient{config: c.config}).QueryProject(c)
+// QueryProjects queries the "projects" edge of the Color entity.
+func (c *Color) QueryProjects() *ProjectQuery {
+	return (&ColorClient{config: c.config}).QueryProjects(c)
 }
 
 // Update returns a builder for updating this Color.

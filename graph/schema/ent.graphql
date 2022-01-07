@@ -414,9 +414,9 @@ input ColorWhereInput {
   idLT: ID
   idLTE: ID
   
-  """project edge predicates"""
-  hasProject: Boolean
-  hasProjectWith: [ProjectWhereInput!]
+  """projects edge predicates"""
+  hasProjects: Boolean
+  hasProjectsWith: [ProjectWhereInput!]
 }
 
 """
@@ -488,9 +488,9 @@ input IconWhereInput {
   idLT: ID
   idLTE: ID
   
-  """project edge predicates"""
-  hasProject: Boolean
-  hasProjectWith: [ProjectWhereInput!]
+  """projects edge predicates"""
+  hasProjects: Boolean
+  hasProjectsWith: [ProjectWhereInput!]
 }
 
 """

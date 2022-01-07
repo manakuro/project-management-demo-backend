@@ -12,12 +12,12 @@ import (
 
 // CreateColorInput represents a mutation input for creating colors.
 type CreateColorInput struct {
-	Name      string
-	Color     string
-	Hex       string
-	CreatedAt *time.Time
-	UpdatedAt *time.Time
-	ProjectID *ulid.ID
+	Name       string
+	Color      string
+	Hex        string
+	CreatedAt  *time.Time
+	UpdatedAt  *time.Time
+	ProjectIDs []ulid.ID
 }
 
 // Mutate applies the CreateColorInput on the ColorCreate builder.
@@ -31,8 +31,8 @@ func (i *CreateColorInput) Mutate(m *ColorCreate) {
 	if v := i.UpdatedAt; v != nil {
 		m.SetUpdatedAt(*v)
 	}
-	if v := i.ProjectID; v != nil {
-		m.SetProjectID(*v)
+	if ids := i.ProjectIDs; len(ids) > 0 {
+		m.AddProjectIDs(ids...)
 	}
 }
 
@@ -44,12 +44,12 @@ func (c *ColorCreate) SetInput(i CreateColorInput) *ColorCreate {
 
 // UpdateColorInput represents a mutation input for updating colors.
 type UpdateColorInput struct {
-	ID           ulid.ID
-	Name         *string
-	Color        *string
-	Hex          *string
-	ProjectID    *ulid.ID
-	ClearProject bool
+	ID               ulid.ID
+	Name             *string
+	Color            *string
+	Hex              *string
+	AddProjectIDs    []ulid.ID
+	RemoveProjectIDs []ulid.ID
 }
 
 // Mutate applies the UpdateColorInput on the ColorMutation.
@@ -63,11 +63,11 @@ func (i *UpdateColorInput) Mutate(m *ColorMutation) {
 	if v := i.Hex; v != nil {
 		m.SetHex(*v)
 	}
-	if i.ClearProject {
-		m.ClearProject()
+	if ids := i.AddProjectIDs; len(ids) > 0 {
+		m.AddProjectIDs(ids...)
 	}
-	if v := i.ProjectID; v != nil {
-		m.SetProjectID(*v)
+	if ids := i.RemoveProjectIDs; len(ids) > 0 {
+		m.RemoveProjectIDs(ids...)
 	}
 }
 
@@ -85,11 +85,11 @@ func (u *ColorUpdateOne) SetInput(i UpdateColorInput) *ColorUpdateOne {
 
 // CreateIconInput represents a mutation input for creating icons.
 type CreateIconInput struct {
-	Name      string
-	Icon      string
-	CreatedAt *time.Time
-	UpdatedAt *time.Time
-	ProjectID *ulid.ID
+	Name       string
+	Icon       string
+	CreatedAt  *time.Time
+	UpdatedAt  *time.Time
+	ProjectIDs []ulid.ID
 }
 
 // Mutate applies the CreateIconInput on the IconCreate builder.
@@ -102,8 +102,8 @@ func (i *CreateIconInput) Mutate(m *IconCreate) {
 	if v := i.UpdatedAt; v != nil {
 		m.SetUpdatedAt(*v)
 	}
-	if v := i.ProjectID; v != nil {
-		m.SetProjectID(*v)
+	if ids := i.ProjectIDs; len(ids) > 0 {
+		m.AddProjectIDs(ids...)
 	}
 }
 
@@ -115,11 +115,11 @@ func (c *IconCreate) SetInput(i CreateIconInput) *IconCreate {
 
 // UpdateIconInput represents a mutation input for updating icons.
 type UpdateIconInput struct {
-	ID           ulid.ID
-	Name         *string
-	Icon         *string
-	ProjectID    *ulid.ID
-	ClearProject bool
+	ID               ulid.ID
+	Name             *string
+	Icon             *string
+	AddProjectIDs    []ulid.ID
+	RemoveProjectIDs []ulid.ID
 }
 
 // Mutate applies the UpdateIconInput on the IconMutation.
@@ -130,11 +130,11 @@ func (i *UpdateIconInput) Mutate(m *IconMutation) {
 	if v := i.Icon; v != nil {
 		m.SetIcon(*v)
 	}
-	if i.ClearProject {
-		m.ClearProject()
+	if ids := i.AddProjectIDs; len(ids) > 0 {
+		m.AddProjectIDs(ids...)
 	}
-	if v := i.ProjectID; v != nil {
-		m.SetProjectID(*v)
+	if ids := i.RemoveProjectIDs; len(ids) > 0 {
+		m.RemoveProjectIDs(ids...)
 	}
 }
 

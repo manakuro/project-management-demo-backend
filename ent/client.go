@@ -250,15 +250,15 @@ func (c *ColorClient) GetX(ctx context.Context, id ulid.ID) *Color {
 	return obj
 }
 
-// QueryProject queries the project edge of a Color.
-func (c *ColorClient) QueryProject(co *Color) *ProjectQuery {
+// QueryProjects queries the projects edge of a Color.
+func (c *ColorClient) QueryProjects(co *Color) *ProjectQuery {
 	query := &ProjectQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
 		id := co.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(color.Table, color.FieldID, id),
 			sqlgraph.To(project.Table, project.FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, false, color.ProjectTable, color.ProjectColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, color.ProjectsTable, color.ProjectsColumn),
 		)
 		fromV = sqlgraph.Neighbors(co.driver.Dialect(), step)
 		return fromV, nil
@@ -356,15 +356,15 @@ func (c *IconClient) GetX(ctx context.Context, id ulid.ID) *Icon {
 	return obj
 }
 
-// QueryProject queries the project edge of a Icon.
-func (c *IconClient) QueryProject(i *Icon) *ProjectQuery {
+// QueryProjects queries the projects edge of a Icon.
+func (c *IconClient) QueryProjects(i *Icon) *ProjectQuery {
 	query := &ProjectQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
 		id := i.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(icon.Table, icon.FieldID, id),
 			sqlgraph.To(project.Table, project.FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, false, icon.ProjectTable, icon.ProjectColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, icon.ProjectsTable, icon.ProjectsColumn),
 		)
 		fromV = sqlgraph.Neighbors(i.driver.Dialect(), step)
 		return fromV, nil
@@ -486,7 +486,7 @@ func (c *ProjectClient) QueryColor(pr *Project) *ColorQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(project.Table, project.FieldID, id),
 			sqlgraph.To(color.Table, color.FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, true, project.ColorTable, project.ColorColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, project.ColorTable, project.ColorColumn),
 		)
 		fromV = sqlgraph.Neighbors(pr.driver.Dialect(), step)
 		return fromV, nil
@@ -502,7 +502,7 @@ func (c *ProjectClient) QueryIcon(pr *Project) *IconQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(project.Table, project.FieldID, id),
 			sqlgraph.To(icon.Table, icon.FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, true, project.IconTable, project.IconColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, project.IconTable, project.IconColumn),
 		)
 		fromV = sqlgraph.Neighbors(pr.driver.Dialect(), step)
 		return fromV, nil

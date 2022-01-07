@@ -4,20 +4,20 @@ package ent
 
 import "context"
 
-func (c *Color) Project(ctx context.Context) (*Project, error) {
-	result, err := c.Edges.ProjectOrErr()
+func (c *Color) Projects(ctx context.Context) ([]*Project, error) {
+	result, err := c.Edges.ProjectsOrErr()
 	if IsNotLoaded(err) {
-		result, err = c.QueryProject().Only(ctx)
+		result, err = c.QueryProjects().All(ctx)
 	}
-	return result, MaskNotFound(err)
+	return result, err
 }
 
-func (i *Icon) Project(ctx context.Context) (*Project, error) {
-	result, err := i.Edges.ProjectOrErr()
+func (i *Icon) Projects(ctx context.Context) ([]*Project, error) {
+	result, err := i.Edges.ProjectsOrErr()
 	if IsNotLoaded(err) {
-		result, err = i.QueryProject().Only(ctx)
+		result, err = i.QueryProjects().All(ctx)
 	}
-	return result, MaskNotFound(err)
+	return result, err
 }
 
 func (pr *Project) Workspace(ctx context.Context) (*Workspace, error) {

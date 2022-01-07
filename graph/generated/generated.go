@@ -1869,9 +1869,9 @@ input ColorWhereInput {
   idLT: ID
   idLTE: ID
   
-  """project edge predicates"""
-  hasProject: Boolean
-  hasProjectWith: [ProjectWhereInput!]
+  """projects edge predicates"""
+  hasProjects: Boolean
+  hasProjectsWith: [ProjectWhereInput!]
 }
 
 """
@@ -1943,9 +1943,9 @@ input IconWhereInput {
   idLT: ID
   idLTE: ID
   
-  """project edge predicates"""
-  hasProject: Boolean
-  hasProjectWith: [ProjectWhereInput!]
+  """projects edge predicates"""
+  hasProjects: Boolean
+  hasProjectsWith: [ProjectWhereInput!]
 }
 
 """
@@ -8982,19 +8982,19 @@ func (ec *executionContext) unmarshalInputColorWhereInput(ctx context.Context, o
 			if err != nil {
 				return it, err
 			}
-		case "hasProject":
+		case "hasProjects":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasProject"))
-			it.HasProject, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasProjects"))
+			it.HasProjects, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
 			if err != nil {
 				return it, err
 			}
-		case "hasProjectWith":
+		case "hasProjectsWith":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasProjectWith"))
-			it.HasProjectWith, err = ec.unmarshalOProjectWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectWhereInputᚄ(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasProjectsWith"))
+			it.HasProjectsWith, err = ec.unmarshalOProjectWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectWhereInputᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -9776,19 +9776,19 @@ func (ec *executionContext) unmarshalInputIconWhereInput(ctx context.Context, ob
 			if err != nil {
 				return it, err
 			}
-		case "hasProject":
+		case "hasProjects":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasProject"))
-			it.HasProject, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasProjects"))
+			it.HasProjects, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
 			if err != nil {
 				return it, err
 			}
-		case "hasProjectWith":
+		case "hasProjectsWith":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasProjectWith"))
-			it.HasProjectWith, err = ec.unmarshalOProjectWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectWhereInputᚄ(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasProjectsWith"))
+			it.HasProjectsWith, err = ec.unmarshalOProjectWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectWhereInputᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}

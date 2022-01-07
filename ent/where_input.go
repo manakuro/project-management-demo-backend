@@ -97,9 +97,9 @@ type ColorWhereInput struct {
 	UpdatedAtLT    *time.Time  `json:"updatedAtLT,omitempty"`
 	UpdatedAtLTE   *time.Time  `json:"updatedAtLTE,omitempty"`
 
-	// "project" edge predicates.
-	HasProject     *bool                `json:"hasProject,omitempty"`
-	HasProjectWith []*ProjectWhereInput `json:"hasProjectWith,omitempty"`
+	// "projects" edge predicates.
+	HasProjects     *bool                `json:"hasProjects,omitempty"`
+	HasProjectsWith []*ProjectWhereInput `json:"hasProjectsWith,omitempty"`
 }
 
 // Filter applies the ColorWhereInput filter on the ColorQuery builder.
@@ -351,23 +351,23 @@ func (i *ColorWhereInput) P() (predicate.Color, error) {
 		predicates = append(predicates, color.UpdatedAtLTE(*i.UpdatedAtLTE))
 	}
 
-	if i.HasProject != nil {
-		p := color.HasProject()
-		if !*i.HasProject {
+	if i.HasProjects != nil {
+		p := color.HasProjects()
+		if !*i.HasProjects {
 			p = color.Not(p)
 		}
 		predicates = append(predicates, p)
 	}
-	if len(i.HasProjectWith) > 0 {
-		with := make([]predicate.Project, 0, len(i.HasProjectWith))
-		for _, w := range i.HasProjectWith {
+	if len(i.HasProjectsWith) > 0 {
+		with := make([]predicate.Project, 0, len(i.HasProjectsWith))
+		for _, w := range i.HasProjectsWith {
 			p, err := w.P()
 			if err != nil {
 				return nil, err
 			}
 			with = append(with, p)
 		}
-		predicates = append(predicates, color.HasProjectWith(with...))
+		predicates = append(predicates, color.HasProjectsWith(with...))
 	}
 	switch len(predicates) {
 	case 0:
@@ -445,9 +445,9 @@ type IconWhereInput struct {
 	UpdatedAtLT    *time.Time  `json:"updatedAtLT,omitempty"`
 	UpdatedAtLTE   *time.Time  `json:"updatedAtLTE,omitempty"`
 
-	// "project" edge predicates.
-	HasProject     *bool                `json:"hasProject,omitempty"`
-	HasProjectWith []*ProjectWhereInput `json:"hasProjectWith,omitempty"`
+	// "projects" edge predicates.
+	HasProjects     *bool                `json:"hasProjects,omitempty"`
+	HasProjectsWith []*ProjectWhereInput `json:"hasProjectsWith,omitempty"`
 }
 
 // Filter applies the IconWhereInput filter on the IconQuery builder.
@@ -660,23 +660,23 @@ func (i *IconWhereInput) P() (predicate.Icon, error) {
 		predicates = append(predicates, icon.UpdatedAtLTE(*i.UpdatedAtLTE))
 	}
 
-	if i.HasProject != nil {
-		p := icon.HasProject()
-		if !*i.HasProject {
+	if i.HasProjects != nil {
+		p := icon.HasProjects()
+		if !*i.HasProjects {
 			p = icon.Not(p)
 		}
 		predicates = append(predicates, p)
 	}
-	if len(i.HasProjectWith) > 0 {
-		with := make([]predicate.Project, 0, len(i.HasProjectWith))
-		for _, w := range i.HasProjectWith {
+	if len(i.HasProjectsWith) > 0 {
+		with := make([]predicate.Project, 0, len(i.HasProjectsWith))
+		for _, w := range i.HasProjectsWith {
 			p, err := w.P()
 			if err != nil {
 				return nil, err
 			}
 			with = append(with, p)
 		}
-		predicates = append(predicates, icon.HasProjectWith(with...))
+		predicates = append(predicates, icon.HasProjectsWith(with...))
 	}
 	switch len(predicates) {
 	case 0:

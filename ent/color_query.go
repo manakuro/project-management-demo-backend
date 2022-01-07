@@ -28,7 +28,7 @@ type ColorQuery struct {
 	fields     []string
 	predicates []predicate.Color
 	// eager-loading edges.
-	withProject *ProjectQuery
+	withProjects *ProjectQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -65,8 +65,8 @@ func (cq *ColorQuery) Order(o ...OrderFunc) *ColorQuery {
 	return cq
 }
 
-// QueryProject chains the current query on the "project" edge.
-func (cq *ColorQuery) QueryProject() *ProjectQuery {
+// QueryProjects chains the current query on the "projects" edge.
+func (cq *ColorQuery) QueryProjects() *ProjectQuery {
 	query := &ProjectQuery{config: cq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := cq.prepareQuery(ctx); err != nil {
@@ -79,7 +79,7 @@ func (cq *ColorQuery) QueryProject() *ProjectQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(color.Table, color.FieldID, selector),
 			sqlgraph.To(project.Table, project.FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, false, color.ProjectTable, color.ProjectColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, color.ProjectsTable, color.ProjectsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
 		return fromU, nil
@@ -263,26 +263,26 @@ func (cq *ColorQuery) Clone() *ColorQuery {
 		return nil
 	}
 	return &ColorQuery{
-		config:      cq.config,
-		limit:       cq.limit,
-		offset:      cq.offset,
-		order:       append([]OrderFunc{}, cq.order...),
-		predicates:  append([]predicate.Color{}, cq.predicates...),
-		withProject: cq.withProject.Clone(),
+		config:       cq.config,
+		limit:        cq.limit,
+		offset:       cq.offset,
+		order:        append([]OrderFunc{}, cq.order...),
+		predicates:   append([]predicate.Color{}, cq.predicates...),
+		withProjects: cq.withProjects.Clone(),
 		// clone intermediate query.
 		sql:  cq.sql.Clone(),
 		path: cq.path,
 	}
 }
 
-// WithProject tells the query-builder to eager-load the nodes that are connected to
-// the "project" edge. The optional arguments are used to configure the query builder of the edge.
-func (cq *ColorQuery) WithProject(opts ...func(*ProjectQuery)) *ColorQuery {
+// WithProjects tells the query-builder to eager-load the nodes that are connected to
+// the "projects" edge. The optional arguments are used to configure the query builder of the edge.
+func (cq *ColorQuery) WithProjects(opts ...func(*ProjectQuery)) *ColorQuery {
 	query := &ProjectQuery{config: cq.config}
 	for _, opt := range opts {
 		opt(query)
 	}
-	cq.withProject = query
+	cq.withProjects = query
 	return cq
 }
 
@@ -352,7 +352,7 @@ func (cq *ColorQuery) sqlAll(ctx context.Context) ([]*Color, error) {
 		nodes       = []*Color{}
 		_spec       = cq.querySpec()
 		loadedTypes = [1]bool{
-			cq.withProject != nil,
+			cq.withProjects != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -375,15 +375,16 @@ func (cq *ColorQuery) sqlAll(ctx context.Context) ([]*Color, error) {
 		return nodes, nil
 	}
 
-	if query := cq.withProject; query != nil {
+	if query := cq.withProjects; query != nil {
 		fks := make([]driver.Value, 0, len(nodes))
 		nodeids := make(map[ulid.ID]*Color)
 		for i := range nodes {
 			fks = append(fks, nodes[i].ID)
 			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.Projects = []*Project{}
 		}
 		query.Where(predicate.Project(func(s *sql.Selector) {
-			s.Where(sql.InValues(color.ProjectColumn, fks...))
+			s.Where(sql.InValues(color.ProjectsColumn, fks...))
 		}))
 		neighbors, err := query.All(ctx)
 		if err != nil {
@@ -395,7 +396,7 @@ func (cq *ColorQuery) sqlAll(ctx context.Context) ([]*Color, error) {
 			if !ok {
 				return nil, fmt.Errorf(`unexpected foreign-key "color_id" returned %v for node %v`, fk, n.ID)
 			}
-			node.Edges.Project = n
+			node.Edges.Projects = append(node.Edges.Projects, n)
 		}
 	}
 

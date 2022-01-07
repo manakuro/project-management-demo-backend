@@ -46,8 +46,8 @@ var (
 		{Name: "due_date", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime"}},
 		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
 		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
-		{Name: "color_id", Type: field.TypeString, Unique: true, Nullable: true},
-		{Name: "icon_id", Type: field.TypeString, Unique: true, Nullable: true},
+		{Name: "color_id", Type: field.TypeString, Nullable: true},
+		{Name: "icon_id", Type: field.TypeString, Nullable: true},
 		{Name: "created_by", Type: field.TypeString, Nullable: true},
 		{Name: "workspace_id", Type: field.TypeString, Nullable: true},
 	}
@@ -58,13 +58,13 @@ var (
 		PrimaryKey: []*schema.Column{ProjectsColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "projects_colors_project",
+				Symbol:     "projects_colors_projects",
 				Columns:    []*schema.Column{ProjectsColumns[7]},
 				RefColumns: []*schema.Column{ColorsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "projects_icons_project",
+				Symbol:     "projects_icons_projects",
 				Columns:    []*schema.Column{ProjectsColumns[8]},
 				RefColumns: []*schema.Column{IconsColumns[0]},
 				OnDelete:   schema.SetNull,

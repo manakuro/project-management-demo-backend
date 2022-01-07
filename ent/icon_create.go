@@ -76,23 +76,19 @@ func (ic *IconCreate) SetNillableID(u *ulid.ID) *IconCreate {
 	return ic
 }
 
-// SetProjectID sets the "project" edge to the Project entity by ID.
-func (ic *IconCreate) SetProjectID(id ulid.ID) *IconCreate {
-	ic.mutation.SetProjectID(id)
+// AddProjectIDs adds the "projects" edge to the Project entity by IDs.
+func (ic *IconCreate) AddProjectIDs(ids ...ulid.ID) *IconCreate {
+	ic.mutation.AddProjectIDs(ids...)
 	return ic
 }
 
-// SetNillableProjectID sets the "project" edge to the Project entity by ID if the given value is not nil.
-func (ic *IconCreate) SetNillableProjectID(id *ulid.ID) *IconCreate {
-	if id != nil {
-		ic = ic.SetProjectID(*id)
+// AddProjects adds the "projects" edges to the Project entity.
+func (ic *IconCreate) AddProjects(p ...*Project) *IconCreate {
+	ids := make([]ulid.ID, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
 	}
-	return ic
-}
-
-// SetProject sets the "project" edge to the Project entity.
-func (ic *IconCreate) SetProject(p *Project) *IconCreate {
-	return ic.SetProjectID(p.ID)
+	return ic.AddProjectIDs(ids...)
 }
 
 // Mutation returns the IconMutation object of the builder.
@@ -268,12 +264,12 @@ func (ic *IconCreate) createSpec() (*Icon, *sqlgraph.CreateSpec) {
 		})
 		_node.UpdatedAt = value
 	}
-	if nodes := ic.mutation.ProjectIDs(); len(nodes) > 0 {
+	if nodes := ic.mutation.ProjectsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   icon.ProjectTable,
-			Columns: []string{icon.ProjectColumn},
+			Table:   icon.ProjectsTable,
+			Columns: []string{icon.ProjectsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{

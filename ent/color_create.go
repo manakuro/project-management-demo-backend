@@ -82,23 +82,19 @@ func (cc *ColorCreate) SetNillableID(u *ulid.ID) *ColorCreate {
 	return cc
 }
 
-// SetProjectID sets the "project" edge to the Project entity by ID.
-func (cc *ColorCreate) SetProjectID(id ulid.ID) *ColorCreate {
-	cc.mutation.SetProjectID(id)
+// AddProjectIDs adds the "projects" edge to the Project entity by IDs.
+func (cc *ColorCreate) AddProjectIDs(ids ...ulid.ID) *ColorCreate {
+	cc.mutation.AddProjectIDs(ids...)
 	return cc
 }
 
-// SetNillableProjectID sets the "project" edge to the Project entity by ID if the given value is not nil.
-func (cc *ColorCreate) SetNillableProjectID(id *ulid.ID) *ColorCreate {
-	if id != nil {
-		cc = cc.SetProjectID(*id)
+// AddProjects adds the "projects" edges to the Project entity.
+func (cc *ColorCreate) AddProjects(p ...*Project) *ColorCreate {
+	ids := make([]ulid.ID, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
 	}
-	return cc
-}
-
-// SetProject sets the "project" edge to the Project entity.
-func (cc *ColorCreate) SetProject(p *Project) *ColorCreate {
-	return cc.SetProjectID(p.ID)
+	return cc.AddProjectIDs(ids...)
 }
 
 // Mutation returns the ColorMutation object of the builder.
@@ -290,12 +286,12 @@ func (cc *ColorCreate) createSpec() (*Color, *sqlgraph.CreateSpec) {
 		})
 		_node.UpdatedAt = value
 	}
-	if nodes := cc.mutation.ProjectIDs(); len(nodes) > 0 {
+	if nodes := cc.mutation.ProjectsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2O,
+			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   color.ProjectTable,
-			Columns: []string{color.ProjectColumn},
+			Table:   color.ProjectsTable,
+			Columns: []string{color.ProjectsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{

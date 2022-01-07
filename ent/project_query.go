@@ -106,7 +106,7 @@ func (pq *ProjectQuery) QueryColor() *ColorQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(project.Table, project.FieldID, selector),
 			sqlgraph.To(color.Table, color.FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, true, project.ColorTable, project.ColorColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, project.ColorTable, project.ColorColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
 		return fromU, nil
@@ -128,7 +128,7 @@ func (pq *ProjectQuery) QueryIcon() *IconQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(project.Table, project.FieldID, selector),
 			sqlgraph.To(icon.Table, icon.FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, true, project.IconTable, project.IconColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, project.IconTable, project.IconColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
 		return fromU, nil

@@ -28,7 +28,7 @@ type IconQuery struct {
 	fields     []string
 	predicates []predicate.Icon
 	// eager-loading edges.
-	withProject *ProjectQuery
+	withProjects *ProjectQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -65,8 +65,8 @@ func (iq *IconQuery) Order(o ...OrderFunc) *IconQuery {
 	return iq
 }
 
-// QueryProject chains the current query on the "project" edge.
-func (iq *IconQuery) QueryProject() *ProjectQuery {
+// QueryProjects chains the current query on the "projects" edge.
+func (iq *IconQuery) QueryProjects() *ProjectQuery {
 	query := &ProjectQuery{config: iq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := iq.prepareQuery(ctx); err != nil {
@@ -79,7 +79,7 @@ func (iq *IconQuery) QueryProject() *ProjectQuery {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(icon.Table, icon.FieldID, selector),
 			sqlgraph.To(project.Table, project.FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, false, icon.ProjectTable, icon.ProjectColumn),
+			sqlgraph.Edge(sqlgraph.O2M, false, icon.ProjectsTable, icon.ProjectsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(iq.driver.Dialect(), step)
 		return fromU, nil
@@ -263,26 +263,26 @@ func (iq *IconQuery) Clone() *IconQuery {
 		return nil
 	}
 	return &IconQuery{
-		config:      iq.config,
-		limit:       iq.limit,
-		offset:      iq.offset,
-		order:       append([]OrderFunc{}, iq.order...),
-		predicates:  append([]predicate.Icon{}, iq.predicates...),
-		withProject: iq.withProject.Clone(),
+		config:       iq.config,
+		limit:        iq.limit,
+		offset:       iq.offset,
+		order:        append([]OrderFunc{}, iq.order...),
+		predicates:   append([]predicate.Icon{}, iq.predicates...),
+		withProjects: iq.withProjects.Clone(),
 		// clone intermediate query.
 		sql:  iq.sql.Clone(),
 		path: iq.path,
 	}
 }
 
-// WithProject tells the query-builder to eager-load the nodes that are connected to
-// the "project" edge. The optional arguments are used to configure the query builder of the edge.
-func (iq *IconQuery) WithProject(opts ...func(*ProjectQuery)) *IconQuery {
+// WithProjects tells the query-builder to eager-load the nodes that are connected to
+// the "projects" edge. The optional arguments are used to configure the query builder of the edge.
+func (iq *IconQuery) WithProjects(opts ...func(*ProjectQuery)) *IconQuery {
 	query := &ProjectQuery{config: iq.config}
 	for _, opt := range opts {
 		opt(query)
 	}
-	iq.withProject = query
+	iq.withProjects = query
 	return iq
 }
 
@@ -352,7 +352,7 @@ func (iq *IconQuery) sqlAll(ctx context.Context) ([]*Icon, error) {
 		nodes       = []*Icon{}
 		_spec       = iq.querySpec()
 		loadedTypes = [1]bool{
-			iq.withProject != nil,
+			iq.withProjects != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -375,15 +375,16 @@ func (iq *IconQuery) sqlAll(ctx context.Context) ([]*Icon, error) {
 		return nodes, nil
 	}
 
-	if query := iq.withProject; query != nil {
+	if query := iq.withProjects; query != nil {
 		fks := make([]driver.Value, 0, len(nodes))
 		nodeids := make(map[ulid.ID]*Icon)
 		for i := range nodes {
 			fks = append(fks, nodes[i].ID)
 			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.Projects = []*Project{}
 		}
 		query.Where(predicate.Project(func(s *sql.Selector) {
-			s.Where(sql.InValues(icon.ProjectColumn, fks...))
+			s.Where(sql.InValues(icon.ProjectsColumn, fks...))
 		}))
 		neighbors, err := query.All(ctx)
 		if err != nil {
@@ -395,7 +396,7 @@ func (iq *IconQuery) sqlAll(ctx context.Context) ([]*Icon, error) {
 			if !ok {
 				return nil, fmt.Errorf(`unexpected foreign-key "icon_id" returned %v for node %v`, fk, n.ID)
 			}
-			node.Edges.Project = n
+			node.Edges.Projects = append(node.Edges.Projects, n)
 		}
 	}
 

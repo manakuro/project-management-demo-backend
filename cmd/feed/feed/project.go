@@ -43,6 +43,16 @@ func Project(ctx context.Context, client *ent.Client) {
 			DueDate:          getDueDate(10),
 			CreatedBy:        createdBy.ID,
 		},
+		{
+			Name:             "Customer Success",
+			WorkspaceID:      ws.ID,
+			ColorID:          getColor(ctx, client, "orange.400").ID,
+			IconID:           getIcon(ctx, client, "moon").ID,
+			Description:      getDescription(),
+			DescriptionTitle: "How we'll collaborate",
+			DueDate:          getDueDate(10),
+			CreatedBy:        createdBy.ID,
+		},
 	}
 	bulk := make([]*ent.ProjectCreate, len(ts))
 	for i, t := range ts {

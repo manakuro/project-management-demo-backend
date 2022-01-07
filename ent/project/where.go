@@ -1105,7 +1105,7 @@ func HasColor() predicate.Project {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(ColorTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, true, ColorTable, ColorColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, ColorTable, ColorColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
@@ -1117,7 +1117,7 @@ func HasColorWith(preds ...predicate.Color) predicate.Project {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(ColorInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, true, ColorTable, ColorColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, ColorTable, ColorColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
@@ -1133,7 +1133,7 @@ func HasIcon() predicate.Project {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(IconTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, true, IconTable, IconColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, IconTable, IconColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
@@ -1145,7 +1145,7 @@ func HasIconWith(preds ...predicate.Icon) predicate.Project {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(IconInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2O, true, IconTable, IconColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, IconTable, IconColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
