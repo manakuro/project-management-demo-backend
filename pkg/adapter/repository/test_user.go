@@ -60,10 +60,10 @@ func (r *testUserRepository) List(ctx context.Context) ([]*model.TestUser, error
 	return us, nil
 }
 
-func (r *testUserRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TestUserWhereInput, preloads []string) (*model.TestUserConnection, error) {
+func (r *testUserRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TestUserWhereInput, requestedFields []string) (*model.TestUserConnection, error) {
 	q := r.client.TestUser.Query()
 
-	if collection.Contains(preloads, "edges.node.testTodos") {
+	if collection.Contains(requestedFields, "edges.node.testTodos") {
 		q.WithTestTodos()
 	}
 
