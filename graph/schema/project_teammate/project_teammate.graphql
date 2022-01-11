@@ -1,7 +1,9 @@
 type ProjectTeammate implements Node {
   id: ID!
   projectID: ID!
+  project: Project!
   teammateID: ID!
+  teammate: Teammate!
   role: String!
   isOwner: Boolean!
   createdAt: String!

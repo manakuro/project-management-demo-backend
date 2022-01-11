@@ -5,6 +5,7 @@ import (
 	"project-management-demo-backend/ent"
 	"project-management-demo-backend/pkg/entity/model"
 	ur "project-management-demo-backend/pkg/usecase/repository"
+	"project-management-demo-backend/pkg/util/collection"
 )
 
 type projectTeammateRepository struct {
@@ -50,10 +51,17 @@ func (p *projectTeammateRepository) List(ctx context.Context) ([]*model.ProjectT
 }
 
 func (p *projectTeammateRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ProjectTeammateWhereInput, requestedFields []string) (*model.ProjectTeammateConnection, error) {
-	us, err := p.client.
-		ProjectTeammate.
-		Query().
-		Paginate(ctx, after, first, before, last, ent.WithProjectTeammateFilter(where.Filter))
+	q := p.client.ProjectTeammate.Query()
+
+	if collection.Contains(requestedFields, "edges.node.project") {
+		q.WithProject()
+	}
+
+	if collection.Contains(requestedFields, "edges.node.teammate") {
+		q.WithTeammate()
+	}
+
+	us, err := q.Paginate(ctx, after, first, before, last, ent.WithProjectTeammateFilter(where.Filter))
 	if err != nil {
 		return nil, model.NewDBError(err)
 	}
