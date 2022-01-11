@@ -5,6 +5,7 @@ import (
 	"project-management-demo-backend/ent"
 	"project-management-demo-backend/pkg/entity/model"
 	ur "project-management-demo-backend/pkg/usecase/repository"
+	"project-management-demo-backend/pkg/util/collection"
 )
 
 type projectRepository struct {
@@ -24,7 +25,7 @@ func (r *projectRepository) Get(ctx context.Context, where *model.ProjectWhereIn
 		return nil, model.NewInvalidParamError(nil)
 	}
 
-	u, err := q.Only(ctx)
+	p, err := q.Only(ctx)
 
 	if err != nil {
 		if ent.IsNotSingular(err) {
@@ -36,32 +37,37 @@ func (r *projectRepository) Get(ctx context.Context, where *model.ProjectWhereIn
 		return nil, model.NewDBError(err)
 	}
 
-	return u, nil
+	return p, nil
 }
 
 func (r *projectRepository) List(ctx context.Context) ([]*model.Project, error) {
-	us, err := r.client.
-		Project.Query().All(ctx)
+	ps, err := r.client.Project.Query().All(ctx)
 	if err != nil {
 		return nil, model.NewDBError(err)
 	}
 
-	return us, nil
+	return ps, nil
 }
 
-func (r *projectRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ProjectWhereInput) (*model.ProjectConnection, error) {
-	us, err := r.client.
-		Project.
-		Query().
-		Paginate(ctx, after, first, before, last, ent.WithProjectFilter(where.Filter))
+func (r *projectRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ProjectWhereInput, requestedFields []string) (*model.ProjectConnection, error) {
+	q := r.client.Project.Query()
+
+	if collection.Contains(requestedFields, "edges.node.icon") {
+		q.WithIcon()
+	}
+	if collection.Contains(requestedFields, "edges.node.color") {
+		q.WithColor()
+	}
+
+	ps, err := q.Paginate(ctx, after, first, before, last, ent.WithProjectFilter(where.Filter))
 	if err != nil {
 		return nil, model.NewDBError(err)
 	}
-	return us, nil
+	return ps, nil
 }
 
 func (r *projectRepository) Create(ctx context.Context, input model.CreateProjectInput) (*model.Project, error) {
-	u, err := r.client.
+	p, err := r.client.
 		Project.
 		Create().
 		SetInput(input).
@@ -71,11 +77,11 @@ func (r *projectRepository) Create(ctx context.Context, input model.CreateProjec
 		return nil, model.NewDBError(err)
 	}
 
-	return u, nil
+	return p, nil
 }
 
 func (r *projectRepository) Update(ctx context.Context, input model.UpdateProjectInput) (*model.Project, error) {
-	u, err := r.client.
+	p, err := r.client.
 		Project.UpdateOneID(input.ID).
 		SetInput(input).
 		Save(ctx)
@@ -88,5 +94,5 @@ func (r *projectRepository) Update(ctx context.Context, input model.UpdateProjec
 		return nil, model.NewDBError(err)
 	}
 
-	return u, nil
+	return p, nil
 }

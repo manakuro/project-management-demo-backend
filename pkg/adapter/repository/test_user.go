@@ -6,6 +6,7 @@ import (
 	"project-management-demo-backend/ent/testuser"
 	"project-management-demo-backend/pkg/entity/model"
 	ur "project-management-demo-backend/pkg/usecase/repository"
+	"project-management-demo-backend/pkg/util/collection"
 )
 
 type testUserRepository struct {
@@ -59,11 +60,14 @@ func (r *testUserRepository) List(ctx context.Context) ([]*model.TestUser, error
 	return us, nil
 }
 
-func (r *testUserRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TestUserWhereInput) (*model.TestUserConnection, error) {
-	us, err := r.client.
-		TestUser.
-		Query().
-		Paginate(ctx, after, first, before, last, ent.WithTestUserFilter(where.Filter))
+func (r *testUserRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TestUserWhereInput, requestedFields []string) (*model.TestUserConnection, error) {
+	q := r.client.TestUser.Query()
+
+	if collection.Contains(requestedFields, "edges.node.testTodos") {
+		q.WithTestTodos()
+	}
+
+	us, err := q.Paginate(ctx, after, first, before, last, ent.WithTestUserFilter(where.Filter))
 	if err != nil {
 		return nil, model.NewDBError(err)
 	}
