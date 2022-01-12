@@ -156,6 +156,7 @@ type ComplexityRoot struct {
 		ID               func(childComplexity int) int
 		Icon             func(childComplexity int) int
 		Name             func(childComplexity int) int
+		ProjectTeammates func(childComplexity int) int
 		UpdatedAt        func(childComplexity int) int
 		WorkspaceID      func(childComplexity int) int
 	}
@@ -915,6 +916,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Project.Name(childComplexity), true
+
+	case "Project.projectTeammates":
+		if e.complexity.Project.ProjectTeammates == nil {
+			break
+		}
+
+		return e.complexity.Project.ProjectTeammates(childComplexity), true
 
 	case "Project.updatedAt":
 		if e.complexity.Project.UpdatedAt == nil {
@@ -2666,6 +2674,7 @@ extend type Mutation {
   icon: Icon!
   createdBy: ID!
   name: String!
+  projectTeammates: [ProjectTeammate!]!
   description: EditorDescription!
   descriptionTitle: String!
   dueDate: String!
@@ -5996,6 +6005,41 @@ func (ec *executionContext) _Project_name(ctx context.Context, field graphql.Col
 	res := resTmp.(string)
 	fc.Result = res
 	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Project_projectTeammates(ctx context.Context, field graphql.CollectedField, obj *ent.Project) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Project",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ProjectTeammates(ctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*ent.ProjectTeammate)
+	fc.Result = res
+	return ec.marshalNProjectTeammate2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTeammateᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Project_description(ctx context.Context, field graphql.CollectedField, obj *ent.Project) (ret graphql.Marshaler) {
@@ -16973,6 +17017,20 @@ func (ec *executionContext) _Project(ctx context.Context, sel ast.SelectionSet, 
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)
 			}
+		case "projectTeammates":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Project_projectTeammates(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
 		case "description":
 			out.Values[i] = ec._Project_description(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -18649,6 +18707,50 @@ func (ec *executionContext) marshalNProject2ᚖprojectᚑmanagementᚑdemoᚑbac
 
 func (ec *executionContext) marshalNProjectTeammate2projectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTeammate(ctx context.Context, sel ast.SelectionSet, v ent.ProjectTeammate) graphql.Marshaler {
 	return ec._ProjectTeammate(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNProjectTeammate2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTeammateᚄ(ctx context.Context, sel ast.SelectionSet, v []*ent.ProjectTeammate) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNProjectTeammate2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTeammate(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
 }
 
 func (ec *executionContext) marshalNProjectTeammate2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTeammate(ctx context.Context, sel ast.SelectionSet, v *ent.ProjectTeammate) graphql.Marshaler {

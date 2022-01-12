@@ -5,6 +5,7 @@ type Project implements Node {
   icon: Icon!
   createdBy: ID!
   name: String!
+  projectTeammates: [ProjectTeammate!]!
   description: EditorDescription!
   descriptionTitle: String!
   dueDate: String!
