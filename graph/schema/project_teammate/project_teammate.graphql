@@ -1,8 +1,8 @@
 type ProjectTeammate implements Node {
   id: ID!
-  projectID: ID!
+  projectId: ID!
   project: Project!
-  teammateID: ID!
+  teammateId: ID!
   teammate: Teammate!
   role: String!
   isOwner: Boolean!
@@ -20,15 +20,15 @@ type ProjectTeammateEdge {
 }
 
 input CreateProjectTeammateInput {
-  projectID: ID!
-  teammateID: ID!
+  projectId: ID!
+  teammateId: ID!
   role: String!
   isOwner: Boolean!
 }
 input UpdateProjectTeammateInput {
   id: ID!
-  projectID: ID
-  teammateID: ID
+  projectId: ID
+  teammateId: ID
   role: String
   isOwner: Boolean
 }
