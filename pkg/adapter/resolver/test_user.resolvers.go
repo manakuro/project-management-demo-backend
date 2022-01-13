@@ -10,7 +10,7 @@ import (
 	"project-management-demo-backend/graph/generated"
 	"project-management-demo-backend/pkg/adapter/handler"
 	"project-management-demo-backend/pkg/util/datetime"
-	"project-management-demo-backend/pkg/util/graphql"
+	"project-management-demo-backend/pkg/util/graphqlutil"
 	"project-management-demo-backend/pkg/util/subscription"
 )
 
@@ -54,7 +54,7 @@ func (r *queryResolver) TestUser(ctx context.Context, id ulid.ID, age *int) (*en
 }
 
 func (r *queryResolver) TestUsers(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TestUserWhereInput) (*ent.TestUserConnection, error) {
-	requestedFields := graphql.GetRequestedFields(ctx)
+	requestedFields := graphqlutil.GetRequestedFields(ctx)
 
 	us, err := r.controller.TestUser.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
 	if err != nil {

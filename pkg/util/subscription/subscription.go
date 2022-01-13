@@ -43,14 +43,21 @@ type ProjectUpdated struct {
 	Ch chan *ent.Project
 }
 
+// ProjectTeammateUpdated of channel
+type ProjectTeammateUpdated struct {
+	ID ulid.ID
+	Ch chan *ent.ProjectTeammate
+}
+
 // Subscriptions hold an id and a channel of subscription.
 type Subscriptions struct {
-	ColorUpdated     map[string]ColorUpdated
-	IconUpdated      map[string]IconUpdated
-	ProjectUpdated   map[string]ProjectUpdated
-	TeammateUpdated  map[string]TeammateUpdated
-	TestUserUpdated  map[string]TestUserUpdated
-	WorkspaceUpdated map[string]WorkspaceUpdated
+	ColorUpdated           map[string]ColorUpdated
+	IconUpdated            map[string]IconUpdated
+	ProjectUpdated         map[string]ProjectUpdated
+	ProjectTeammateUpdated map[string]ProjectTeammateUpdated
+	TeammateUpdated        map[string]TeammateUpdated
+	TestUserUpdated        map[string]TestUserUpdated
+	WorkspaceUpdated       map[string]WorkspaceUpdated
 }
 
 // NewKey generates a random hex string with length of 16.

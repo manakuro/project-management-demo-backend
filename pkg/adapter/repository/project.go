@@ -58,6 +58,11 @@ func (r *projectRepository) ListWithPagination(ctx context.Context, after *model
 	if collection.Contains(requestedFields, "edges.node.color") {
 		q.WithColor()
 	}
+	if collection.Contains(requestedFields, "edges.node.projectTeammates") {
+		q.WithProjectTeammates(func(query *ent.ProjectTeammateQuery) {
+			query.WithTeammate()
+		})
+	}
 
 	ps, err := q.Paginate(ctx, after, first, before, last, ent.WithProjectFilter(where.Filter))
 	if err != nil {
