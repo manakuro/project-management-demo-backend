@@ -38,6 +38,20 @@ func (r *mutationResolver) UpdateProject(ctx context.Context, input ent.UpdatePr
 	return p, nil
 }
 
+func (r *projectResolver) TeammateIds(ctx context.Context, obj *ent.Project) ([]string, error) {
+	projectTeammates, err := obj.ProjectTeammates(ctx)
+	if err != nil {
+		return nil, handler.HandleGraphQLError(ctx, err)
+	}
+
+	ids := make([]string, len(projectTeammates))
+	for i, projectTeammate := range projectTeammates {
+		ids[i] = string(projectTeammate.TeammateID)
+	}
+
+	return ids, nil
+}
+
 func (r *projectResolver) DueDate(ctx context.Context, obj *ent.Project) (string, error) {
 	return datetime.FormatDate(obj.DueDate), nil
 }

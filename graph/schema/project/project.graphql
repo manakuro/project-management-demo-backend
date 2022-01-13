@@ -1,11 +1,12 @@
 type Project implements Node {
   id: ID!
-  workspaceID: ID!
+  workspaceId: ID!
   color: Color!
   icon: Icon!
   createdBy: ID!
   name: String!
   projectTeammates: [ProjectTeammate!]!
+  teammateIds: [String!]!
   description: EditorDescription!
   descriptionTitle: String!
   dueDate: String!
@@ -23,9 +24,9 @@ type ProjectEdge {
 }
 
 input CreateProjectInput {
-  workspaceID: ID!
-  colorID: ID
-  iconID: ID
+  workspaceId: ID!
+  colorId: ID
+  iconId: ID
   createdBy: ID!
   name: String!
   description: EditorDescriptionInput
@@ -34,8 +35,8 @@ input CreateProjectInput {
 }
 input UpdateProjectInput {
   id: ID!
-  colorID: ID
-  iconID: ID
+  colorId: ID
+  iconId: ID
   createdBy: ID
   name: String
   description: EditorDescriptionInput
