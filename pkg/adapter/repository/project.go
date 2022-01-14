@@ -55,8 +55,15 @@ func (r *projectRepository) ListWithPagination(ctx context.Context, after *model
 	if collection.Contains(requestedFields, "edges.node.icon") {
 		q.WithIcon()
 	}
-	if collection.Contains(requestedFields, "edges.node.baseColor") {
-		q.WithProjectBaseColor()
+	if collection.Contains(requestedFields, "edges.node.projectBaseColor") {
+		q.WithProjectBaseColor(func(query *ent.ProjectBaseColorQuery) {
+			query.WithColor()
+		})
+	}
+	if collection.Contains(requestedFields, "edges.node.projectLightColor") {
+		q.WithProjectLightColor(func(query *ent.ProjectLightColorQuery) {
+			query.WithColor()
+		})
 	}
 	if collection.Contains(requestedFields, "edges.node.projectTeammates") {
 		q.WithProjectTeammates(func(query *ent.ProjectTeammateQuery) {

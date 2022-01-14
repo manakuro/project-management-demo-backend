@@ -1,0 +1,37 @@
+type ProjectLightColor implements Node {
+  id: ID!
+  color: Color!
+  createdAt: String!
+  updatedAt: String!
+}
+type ProjectLightColorConnection {
+  totalCount: Int!
+  pageInfo: PageInfo!
+  edges: [ProjectLightColorEdge]
+}
+type ProjectLightColorEdge {
+  node: ProjectLightColor
+  cursor: Cursor!
+}
+
+input CreateProjectLightColorInput {
+  colorId: ID!
+}
+input UpdateProjectLightColorInput {
+  id: ID!
+  colorId: ID
+}
+
+extend type Query {
+  projectLightColor(where: ProjectLightColorWhereInput): ProjectLightColor
+  projectLightColors(after: Cursor, first: Int, before: Cursor, last: Int, where: ProjectLightColorWhereInput): ProjectLightColorConnection
+}
+
+extend type Subscription {
+  projectLightColorUpdated(id: ID!): ProjectLightColor!
+}
+
+extend type Mutation {
+  createProjectLightColor(input: CreateProjectLightColorInput!): ProjectLightColor!
+  updateProjectLightColor(input: UpdateProjectLightColorInput!): ProjectLightColor!
+}

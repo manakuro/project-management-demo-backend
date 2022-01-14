@@ -23,15 +23,16 @@ func New(client *ent.Client) Registry {
 
 func (r *registry) NewController() controller.Controller {
 	return controller.Controller{
-		Auth:             r.NewAuthController(),
-		Color:            r.NewColorController(),
-		Icon:             r.NewIconController(),
-		Project:          r.NewProjectController(),
-		ProjectBaseColor: r.NewProjectBaseColorController(),
-		ProjectTeammate:  r.NewProjectTeammateController(),
-		Teammate:         r.NewTeammateController(),
-		TestTodo:         r.NewTestTodoController(),
-		TestUser:         r.NewTestUserController(),
-		Workspace:        r.NewWorkspaceController(),
+		Auth:              r.NewAuthController(),
+		Color:             r.NewColorController(),
+		Icon:              r.NewIconController(),
+		Project:           r.NewProjectController(),
+		ProjectBaseColor:  r.NewProjectBaseColorController(),
+		ProjectLightColor: r.NewProjectLightColorController(),
+		ProjectTeammate:   r.NewProjectTeammateController(),
+		Teammate:          r.NewTeammateController(),
+		TestTodo:          r.NewTestTodoController(),
+		TestUser:          r.NewTestUserController(),
+		Workspace:         r.NewWorkspaceController(),
 	}
 }
