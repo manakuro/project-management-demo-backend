@@ -6,9 +6,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"project-management-demo-backend/ent/icon"
 	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/projectbasecolor"
+	"project-management-demo-backend/ent/projecticon"
 	"project-management-demo-backend/ent/projectlightcolor"
 	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/ent/schema/editor"
@@ -46,9 +46,9 @@ func (pc *ProjectCreate) SetProjectLightColorID(u ulid.ID) *ProjectCreate {
 	return pc
 }
 
-// SetIconID sets the "icon_id" field.
-func (pc *ProjectCreate) SetIconID(u ulid.ID) *ProjectCreate {
-	pc.mutation.SetIconID(u)
+// SetProjectIconID sets the "project_icon_id" field.
+func (pc *ProjectCreate) SetProjectIconID(u ulid.ID) *ProjectCreate {
+	pc.mutation.SetProjectIconID(u)
 	return pc
 }
 
@@ -147,9 +147,9 @@ func (pc *ProjectCreate) SetProjectLightColor(p *ProjectLightColor) *ProjectCrea
 	return pc.SetProjectLightColorID(p.ID)
 }
 
-// SetIcon sets the "icon" edge to the Icon entity.
-func (pc *ProjectCreate) SetIcon(i *Icon) *ProjectCreate {
-	return pc.SetIconID(i.ID)
+// SetProjectIcon sets the "project_icon" edge to the ProjectIcon entity.
+func (pc *ProjectCreate) SetProjectIcon(p *ProjectIcon) *ProjectCreate {
+	return pc.SetProjectIconID(p.ID)
 }
 
 // SetTeammateID sets the "teammate" edge to the Teammate entity by ID.
@@ -278,8 +278,8 @@ func (pc *ProjectCreate) check() error {
 	if _, ok := pc.mutation.ProjectLightColorID(); !ok {
 		return &ValidationError{Name: "project_light_color_id", err: errors.New(`ent: missing required field "project_light_color_id"`)}
 	}
-	if _, ok := pc.mutation.IconID(); !ok {
-		return &ValidationError{Name: "icon_id", err: errors.New(`ent: missing required field "icon_id"`)}
+	if _, ok := pc.mutation.ProjectIconID(); !ok {
+		return &ValidationError{Name: "project_icon_id", err: errors.New(`ent: missing required field "project_icon_id"`)}
 	}
 	if _, ok := pc.mutation.CreatedBy(); !ok {
 		return &ValidationError{Name: "created_by", err: errors.New(`ent: missing required field "created_by"`)}
@@ -321,8 +321,8 @@ func (pc *ProjectCreate) check() error {
 	if _, ok := pc.mutation.ProjectLightColorID(); !ok {
 		return &ValidationError{Name: "project_light_color", err: errors.New("ent: missing required edge \"project_light_color\"")}
 	}
-	if _, ok := pc.mutation.IconID(); !ok {
-		return &ValidationError{Name: "icon", err: errors.New("ent: missing required edge \"icon\"")}
+	if _, ok := pc.mutation.ProjectIconID(); !ok {
+		return &ValidationError{Name: "project_icon", err: errors.New("ent: missing required edge \"project_icon\"")}
 	}
 	if _, ok := pc.mutation.TeammateID(); !ok {
 		return &ValidationError{Name: "teammate", err: errors.New("ent: missing required edge \"teammate\"")}
@@ -467,24 +467,24 @@ func (pc *ProjectCreate) createSpec() (*Project, *sqlgraph.CreateSpec) {
 		_node.ProjectLightColorID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := pc.mutation.IconIDs(); len(nodes) > 0 {
+	if nodes := pc.mutation.ProjectIconIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   project.IconTable,
-			Columns: []string{project.IconColumn},
+			Table:   project.ProjectIconTable,
+			Columns: []string{project.ProjectIconColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
-					Column: icon.FieldID,
+					Column: projecticon.FieldID,
 				},
 			},
 		}
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.IconID = nodes[0]
+		_node.ProjectIconID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := pc.mutation.TeammateIDs(); len(nodes) > 0 {

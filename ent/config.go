@@ -28,6 +28,7 @@ type hooks struct {
 	Icon              []ent.Hook
 	Project           []ent.Hook
 	ProjectBaseColor  []ent.Hook
+	ProjectIcon       []ent.Hook
 	ProjectLightColor []ent.Hook
 	ProjectTeammate   []ent.Hook
 	Teammate          []ent.Hook

@@ -9,6 +9,7 @@ import (
 	"project-management-demo-backend/ent/predicate"
 	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/projectbasecolor"
+	"project-management-demo-backend/ent/projecticon"
 	"project-management-demo-backend/ent/projectlightcolor"
 	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/ent/schema/ulid"
@@ -470,9 +471,9 @@ type IconWhereInput struct {
 	UpdatedAtLT    *time.Time  `json:"updatedAtLT,omitempty"`
 	UpdatedAtLTE   *time.Time  `json:"updatedAtLTE,omitempty"`
 
-	// "projects" edge predicates.
-	HasProjects     *bool                `json:"hasProjects,omitempty"`
-	HasProjectsWith []*ProjectWhereInput `json:"hasProjectsWith,omitempty"`
+	// "project_icons" edge predicates.
+	HasProjectIcons     *bool                    `json:"hasProjectIcons,omitempty"`
+	HasProjectIconsWith []*ProjectIconWhereInput `json:"hasProjectIconsWith,omitempty"`
 }
 
 // Filter applies the IconWhereInput filter on the IconQuery builder.
@@ -685,23 +686,23 @@ func (i *IconWhereInput) P() (predicate.Icon, error) {
 		predicates = append(predicates, icon.UpdatedAtLTE(*i.UpdatedAtLTE))
 	}
 
-	if i.HasProjects != nil {
-		p := icon.HasProjects()
-		if !*i.HasProjects {
+	if i.HasProjectIcons != nil {
+		p := icon.HasProjectIcons()
+		if !*i.HasProjectIcons {
 			p = icon.Not(p)
 		}
 		predicates = append(predicates, p)
 	}
-	if len(i.HasProjectsWith) > 0 {
-		with := make([]predicate.Project, 0, len(i.HasProjectsWith))
-		for _, w := range i.HasProjectsWith {
+	if len(i.HasProjectIconsWith) > 0 {
+		with := make([]predicate.ProjectIcon, 0, len(i.HasProjectIconsWith))
+		for _, w := range i.HasProjectIconsWith {
 			p, err := w.P()
 			if err != nil {
 				return nil, err
 			}
 			with = append(with, p)
 		}
-		predicates = append(predicates, icon.HasProjectsWith(with...))
+		predicates = append(predicates, icon.HasProjectIconsWith(with...))
 	}
 	switch len(predicates) {
 	case 0:
@@ -774,20 +775,20 @@ type ProjectWhereInput struct {
 	ProjectLightColorIDEqualFold    *ulid.ID  `json:"projectLightColorIDEqualFold,omitempty"`
 	ProjectLightColorIDContainsFold *ulid.ID  `json:"projectLightColorIDContainsFold,omitempty"`
 
-	// "icon_id" field predicates.
-	IconID             *ulid.ID  `json:"iconID,omitempty"`
-	IconIDNEQ          *ulid.ID  `json:"iconIDNEQ,omitempty"`
-	IconIDIn           []ulid.ID `json:"iconIDIn,omitempty"`
-	IconIDNotIn        []ulid.ID `json:"iconIDNotIn,omitempty"`
-	IconIDGT           *ulid.ID  `json:"iconIDGT,omitempty"`
-	IconIDGTE          *ulid.ID  `json:"iconIDGTE,omitempty"`
-	IconIDLT           *ulid.ID  `json:"iconIDLT,omitempty"`
-	IconIDLTE          *ulid.ID  `json:"iconIDLTE,omitempty"`
-	IconIDContains     *ulid.ID  `json:"iconIDContains,omitempty"`
-	IconIDHasPrefix    *ulid.ID  `json:"iconIDHasPrefix,omitempty"`
-	IconIDHasSuffix    *ulid.ID  `json:"iconIDHasSuffix,omitempty"`
-	IconIDEqualFold    *ulid.ID  `json:"iconIDEqualFold,omitempty"`
-	IconIDContainsFold *ulid.ID  `json:"iconIDContainsFold,omitempty"`
+	// "project_icon_id" field predicates.
+	ProjectIconID             *ulid.ID  `json:"projectIconID,omitempty"`
+	ProjectIconIDNEQ          *ulid.ID  `json:"projectIconIDNEQ,omitempty"`
+	ProjectIconIDIn           []ulid.ID `json:"projectIconIDIn,omitempty"`
+	ProjectIconIDNotIn        []ulid.ID `json:"projectIconIDNotIn,omitempty"`
+	ProjectIconIDGT           *ulid.ID  `json:"projectIconIDGT,omitempty"`
+	ProjectIconIDGTE          *ulid.ID  `json:"projectIconIDGTE,omitempty"`
+	ProjectIconIDLT           *ulid.ID  `json:"projectIconIDLT,omitempty"`
+	ProjectIconIDLTE          *ulid.ID  `json:"projectIconIDLTE,omitempty"`
+	ProjectIconIDContains     *ulid.ID  `json:"projectIconIDContains,omitempty"`
+	ProjectIconIDHasPrefix    *ulid.ID  `json:"projectIconIDHasPrefix,omitempty"`
+	ProjectIconIDHasSuffix    *ulid.ID  `json:"projectIconIDHasSuffix,omitempty"`
+	ProjectIconIDEqualFold    *ulid.ID  `json:"projectIconIDEqualFold,omitempty"`
+	ProjectIconIDContainsFold *ulid.ID  `json:"projectIconIDContainsFold,omitempty"`
 
 	// "created_by" field predicates.
 	CreatedBy             *ulid.ID  `json:"createdBy,omitempty"`
@@ -876,9 +877,9 @@ type ProjectWhereInput struct {
 	HasProjectLightColor     *bool                          `json:"hasProjectLightColor,omitempty"`
 	HasProjectLightColorWith []*ProjectLightColorWhereInput `json:"hasProjectLightColorWith,omitempty"`
 
-	// "icon" edge predicates.
-	HasIcon     *bool             `json:"hasIcon,omitempty"`
-	HasIconWith []*IconWhereInput `json:"hasIconWith,omitempty"`
+	// "project_icon" edge predicates.
+	HasProjectIcon     *bool                    `json:"hasProjectIcon,omitempty"`
+	HasProjectIconWith []*ProjectIconWhereInput `json:"hasProjectIconWith,omitempty"`
 
 	// "teammate" edge predicates.
 	HasTeammate     *bool                 `json:"hasTeammate,omitempty"`
@@ -1089,44 +1090,44 @@ func (i *ProjectWhereInput) P() (predicate.Project, error) {
 	if i.ProjectLightColorIDContainsFold != nil {
 		predicates = append(predicates, project.ProjectLightColorIDContainsFold(*i.ProjectLightColorIDContainsFold))
 	}
-	if i.IconID != nil {
-		predicates = append(predicates, project.IconIDEQ(*i.IconID))
+	if i.ProjectIconID != nil {
+		predicates = append(predicates, project.ProjectIconIDEQ(*i.ProjectIconID))
 	}
-	if i.IconIDNEQ != nil {
-		predicates = append(predicates, project.IconIDNEQ(*i.IconIDNEQ))
+	if i.ProjectIconIDNEQ != nil {
+		predicates = append(predicates, project.ProjectIconIDNEQ(*i.ProjectIconIDNEQ))
 	}
-	if len(i.IconIDIn) > 0 {
-		predicates = append(predicates, project.IconIDIn(i.IconIDIn...))
+	if len(i.ProjectIconIDIn) > 0 {
+		predicates = append(predicates, project.ProjectIconIDIn(i.ProjectIconIDIn...))
 	}
-	if len(i.IconIDNotIn) > 0 {
-		predicates = append(predicates, project.IconIDNotIn(i.IconIDNotIn...))
+	if len(i.ProjectIconIDNotIn) > 0 {
+		predicates = append(predicates, project.ProjectIconIDNotIn(i.ProjectIconIDNotIn...))
 	}
-	if i.IconIDGT != nil {
-		predicates = append(predicates, project.IconIDGT(*i.IconIDGT))
+	if i.ProjectIconIDGT != nil {
+		predicates = append(predicates, project.ProjectIconIDGT(*i.ProjectIconIDGT))
 	}
-	if i.IconIDGTE != nil {
-		predicates = append(predicates, project.IconIDGTE(*i.IconIDGTE))
+	if i.ProjectIconIDGTE != nil {
+		predicates = append(predicates, project.ProjectIconIDGTE(*i.ProjectIconIDGTE))
 	}
-	if i.IconIDLT != nil {
-		predicates = append(predicates, project.IconIDLT(*i.IconIDLT))
+	if i.ProjectIconIDLT != nil {
+		predicates = append(predicates, project.ProjectIconIDLT(*i.ProjectIconIDLT))
 	}
-	if i.IconIDLTE != nil {
-		predicates = append(predicates, project.IconIDLTE(*i.IconIDLTE))
+	if i.ProjectIconIDLTE != nil {
+		predicates = append(predicates, project.ProjectIconIDLTE(*i.ProjectIconIDLTE))
 	}
-	if i.IconIDContains != nil {
-		predicates = append(predicates, project.IconIDContains(*i.IconIDContains))
+	if i.ProjectIconIDContains != nil {
+		predicates = append(predicates, project.ProjectIconIDContains(*i.ProjectIconIDContains))
 	}
-	if i.IconIDHasPrefix != nil {
-		predicates = append(predicates, project.IconIDHasPrefix(*i.IconIDHasPrefix))
+	if i.ProjectIconIDHasPrefix != nil {
+		predicates = append(predicates, project.ProjectIconIDHasPrefix(*i.ProjectIconIDHasPrefix))
 	}
-	if i.IconIDHasSuffix != nil {
-		predicates = append(predicates, project.IconIDHasSuffix(*i.IconIDHasSuffix))
+	if i.ProjectIconIDHasSuffix != nil {
+		predicates = append(predicates, project.ProjectIconIDHasSuffix(*i.ProjectIconIDHasSuffix))
 	}
-	if i.IconIDEqualFold != nil {
-		predicates = append(predicates, project.IconIDEqualFold(*i.IconIDEqualFold))
+	if i.ProjectIconIDEqualFold != nil {
+		predicates = append(predicates, project.ProjectIconIDEqualFold(*i.ProjectIconIDEqualFold))
 	}
-	if i.IconIDContainsFold != nil {
-		predicates = append(predicates, project.IconIDContainsFold(*i.IconIDContainsFold))
+	if i.ProjectIconIDContainsFold != nil {
+		predicates = append(predicates, project.ProjectIconIDContainsFold(*i.ProjectIconIDContainsFold))
 	}
 	if i.CreatedBy != nil {
 		predicates = append(predicates, project.CreatedByEQ(*i.CreatedBy))
@@ -1372,23 +1373,23 @@ func (i *ProjectWhereInput) P() (predicate.Project, error) {
 		}
 		predicates = append(predicates, project.HasProjectLightColorWith(with...))
 	}
-	if i.HasIcon != nil {
-		p := project.HasIcon()
-		if !*i.HasIcon {
+	if i.HasProjectIcon != nil {
+		p := project.HasProjectIcon()
+		if !*i.HasProjectIcon {
 			p = project.Not(p)
 		}
 		predicates = append(predicates, p)
 	}
-	if len(i.HasIconWith) > 0 {
-		with := make([]predicate.Icon, 0, len(i.HasIconWith))
-		for _, w := range i.HasIconWith {
+	if len(i.HasProjectIconWith) > 0 {
+		with := make([]predicate.ProjectIcon, 0, len(i.HasProjectIconWith))
+		for _, w := range i.HasProjectIconWith {
 			p, err := w.P()
 			if err != nil {
 				return nil, err
 			}
 			with = append(with, p)
 		}
-		predicates = append(predicates, project.HasIconWith(with...))
+		predicates = append(predicates, project.HasProjectIconWith(with...))
 	}
 	if i.HasTeammate != nil {
 		p := project.HasTeammate()
@@ -1710,6 +1711,283 @@ func (i *ProjectBaseColorWhereInput) P() (predicate.ProjectBaseColor, error) {
 		return predicates[0], nil
 	default:
 		return projectbasecolor.And(predicates...), nil
+	}
+}
+
+// ProjectIconWhereInput represents a where input for filtering ProjectIcon queries.
+type ProjectIconWhereInput struct {
+	Not *ProjectIconWhereInput   `json:"not,omitempty"`
+	Or  []*ProjectIconWhereInput `json:"or,omitempty"`
+	And []*ProjectIconWhereInput `json:"and,omitempty"`
+
+	// "id" field predicates.
+	ID      *ulid.ID  `json:"id,omitempty"`
+	IDNEQ   *ulid.ID  `json:"idNEQ,omitempty"`
+	IDIn    []ulid.ID `json:"idIn,omitempty"`
+	IDNotIn []ulid.ID `json:"idNotIn,omitempty"`
+	IDGT    *ulid.ID  `json:"idGT,omitempty"`
+	IDGTE   *ulid.ID  `json:"idGTE,omitempty"`
+	IDLT    *ulid.ID  `json:"idLT,omitempty"`
+	IDLTE   *ulid.ID  `json:"idLTE,omitempty"`
+
+	// "icon_id" field predicates.
+	IconID             *ulid.ID  `json:"iconID,omitempty"`
+	IconIDNEQ          *ulid.ID  `json:"iconIDNEQ,omitempty"`
+	IconIDIn           []ulid.ID `json:"iconIDIn,omitempty"`
+	IconIDNotIn        []ulid.ID `json:"iconIDNotIn,omitempty"`
+	IconIDGT           *ulid.ID  `json:"iconIDGT,omitempty"`
+	IconIDGTE          *ulid.ID  `json:"iconIDGTE,omitempty"`
+	IconIDLT           *ulid.ID  `json:"iconIDLT,omitempty"`
+	IconIDLTE          *ulid.ID  `json:"iconIDLTE,omitempty"`
+	IconIDContains     *ulid.ID  `json:"iconIDContains,omitempty"`
+	IconIDHasPrefix    *ulid.ID  `json:"iconIDHasPrefix,omitempty"`
+	IconIDHasSuffix    *ulid.ID  `json:"iconIDHasSuffix,omitempty"`
+	IconIDEqualFold    *ulid.ID  `json:"iconIDEqualFold,omitempty"`
+	IconIDContainsFold *ulid.ID  `json:"iconIDContainsFold,omitempty"`
+
+	// "created_at" field predicates.
+	CreatedAt      *time.Time  `json:"createdAt,omitempty"`
+	CreatedAtNEQ   *time.Time  `json:"createdAtNEQ,omitempty"`
+	CreatedAtIn    []time.Time `json:"createdAtIn,omitempty"`
+	CreatedAtNotIn []time.Time `json:"createdAtNotIn,omitempty"`
+	CreatedAtGT    *time.Time  `json:"createdAtGT,omitempty"`
+	CreatedAtGTE   *time.Time  `json:"createdAtGTE,omitempty"`
+	CreatedAtLT    *time.Time  `json:"createdAtLT,omitempty"`
+	CreatedAtLTE   *time.Time  `json:"createdAtLTE,omitempty"`
+
+	// "updated_at" field predicates.
+	UpdatedAt      *time.Time  `json:"updatedAt,omitempty"`
+	UpdatedAtNEQ   *time.Time  `json:"updatedAtNEQ,omitempty"`
+	UpdatedAtIn    []time.Time `json:"updatedAtIn,omitempty"`
+	UpdatedAtNotIn []time.Time `json:"updatedAtNotIn,omitempty"`
+	UpdatedAtGT    *time.Time  `json:"updatedAtGT,omitempty"`
+	UpdatedAtGTE   *time.Time  `json:"updatedAtGTE,omitempty"`
+	UpdatedAtLT    *time.Time  `json:"updatedAtLT,omitempty"`
+	UpdatedAtLTE   *time.Time  `json:"updatedAtLTE,omitempty"`
+
+	// "projects" edge predicates.
+	HasProjects     *bool                `json:"hasProjects,omitempty"`
+	HasProjectsWith []*ProjectWhereInput `json:"hasProjectsWith,omitempty"`
+
+	// "icon" edge predicates.
+	HasIcon     *bool             `json:"hasIcon,omitempty"`
+	HasIconWith []*IconWhereInput `json:"hasIconWith,omitempty"`
+}
+
+// Filter applies the ProjectIconWhereInput filter on the ProjectIconQuery builder.
+func (i *ProjectIconWhereInput) Filter(q *ProjectIconQuery) (*ProjectIconQuery, error) {
+	if i == nil {
+		return q, nil
+	}
+	p, err := i.P()
+	if err != nil {
+		return nil, err
+	}
+	return q.Where(p), nil
+}
+
+// P returns a predicate for filtering projecticons.
+// An error is returned if the input is empty or invalid.
+func (i *ProjectIconWhereInput) P() (predicate.ProjectIcon, error) {
+	var predicates []predicate.ProjectIcon
+	if i.Not != nil {
+		p, err := i.Not.P()
+		if err != nil {
+			return nil, err
+		}
+		predicates = append(predicates, projecticon.Not(p))
+	}
+	switch n := len(i.Or); {
+	case n == 1:
+		p, err := i.Or[0].P()
+		if err != nil {
+			return nil, err
+		}
+		predicates = append(predicates, p)
+	case n > 1:
+		or := make([]predicate.ProjectIcon, 0, n)
+		for _, w := range i.Or {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			or = append(or, p)
+		}
+		predicates = append(predicates, projecticon.Or(or...))
+	}
+	switch n := len(i.And); {
+	case n == 1:
+		p, err := i.And[0].P()
+		if err != nil {
+			return nil, err
+		}
+		predicates = append(predicates, p)
+	case n > 1:
+		and := make([]predicate.ProjectIcon, 0, n)
+		for _, w := range i.And {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			and = append(and, p)
+		}
+		predicates = append(predicates, projecticon.And(and...))
+	}
+	if i.ID != nil {
+		predicates = append(predicates, projecticon.IDEQ(*i.ID))
+	}
+	if i.IDNEQ != nil {
+		predicates = append(predicates, projecticon.IDNEQ(*i.IDNEQ))
+	}
+	if len(i.IDIn) > 0 {
+		predicates = append(predicates, projecticon.IDIn(i.IDIn...))
+	}
+	if len(i.IDNotIn) > 0 {
+		predicates = append(predicates, projecticon.IDNotIn(i.IDNotIn...))
+	}
+	if i.IDGT != nil {
+		predicates = append(predicates, projecticon.IDGT(*i.IDGT))
+	}
+	if i.IDGTE != nil {
+		predicates = append(predicates, projecticon.IDGTE(*i.IDGTE))
+	}
+	if i.IDLT != nil {
+		predicates = append(predicates, projecticon.IDLT(*i.IDLT))
+	}
+	if i.IDLTE != nil {
+		predicates = append(predicates, projecticon.IDLTE(*i.IDLTE))
+	}
+	if i.IconID != nil {
+		predicates = append(predicates, projecticon.IconIDEQ(*i.IconID))
+	}
+	if i.IconIDNEQ != nil {
+		predicates = append(predicates, projecticon.IconIDNEQ(*i.IconIDNEQ))
+	}
+	if len(i.IconIDIn) > 0 {
+		predicates = append(predicates, projecticon.IconIDIn(i.IconIDIn...))
+	}
+	if len(i.IconIDNotIn) > 0 {
+		predicates = append(predicates, projecticon.IconIDNotIn(i.IconIDNotIn...))
+	}
+	if i.IconIDGT != nil {
+		predicates = append(predicates, projecticon.IconIDGT(*i.IconIDGT))
+	}
+	if i.IconIDGTE != nil {
+		predicates = append(predicates, projecticon.IconIDGTE(*i.IconIDGTE))
+	}
+	if i.IconIDLT != nil {
+		predicates = append(predicates, projecticon.IconIDLT(*i.IconIDLT))
+	}
+	if i.IconIDLTE != nil {
+		predicates = append(predicates, projecticon.IconIDLTE(*i.IconIDLTE))
+	}
+	if i.IconIDContains != nil {
+		predicates = append(predicates, projecticon.IconIDContains(*i.IconIDContains))
+	}
+	if i.IconIDHasPrefix != nil {
+		predicates = append(predicates, projecticon.IconIDHasPrefix(*i.IconIDHasPrefix))
+	}
+	if i.IconIDHasSuffix != nil {
+		predicates = append(predicates, projecticon.IconIDHasSuffix(*i.IconIDHasSuffix))
+	}
+	if i.IconIDEqualFold != nil {
+		predicates = append(predicates, projecticon.IconIDEqualFold(*i.IconIDEqualFold))
+	}
+	if i.IconIDContainsFold != nil {
+		predicates = append(predicates, projecticon.IconIDContainsFold(*i.IconIDContainsFold))
+	}
+	if i.CreatedAt != nil {
+		predicates = append(predicates, projecticon.CreatedAtEQ(*i.CreatedAt))
+	}
+	if i.CreatedAtNEQ != nil {
+		predicates = append(predicates, projecticon.CreatedAtNEQ(*i.CreatedAtNEQ))
+	}
+	if len(i.CreatedAtIn) > 0 {
+		predicates = append(predicates, projecticon.CreatedAtIn(i.CreatedAtIn...))
+	}
+	if len(i.CreatedAtNotIn) > 0 {
+		predicates = append(predicates, projecticon.CreatedAtNotIn(i.CreatedAtNotIn...))
+	}
+	if i.CreatedAtGT != nil {
+		predicates = append(predicates, projecticon.CreatedAtGT(*i.CreatedAtGT))
+	}
+	if i.CreatedAtGTE != nil {
+		predicates = append(predicates, projecticon.CreatedAtGTE(*i.CreatedAtGTE))
+	}
+	if i.CreatedAtLT != nil {
+		predicates = append(predicates, projecticon.CreatedAtLT(*i.CreatedAtLT))
+	}
+	if i.CreatedAtLTE != nil {
+		predicates = append(predicates, projecticon.CreatedAtLTE(*i.CreatedAtLTE))
+	}
+	if i.UpdatedAt != nil {
+		predicates = append(predicates, projecticon.UpdatedAtEQ(*i.UpdatedAt))
+	}
+	if i.UpdatedAtNEQ != nil {
+		predicates = append(predicates, projecticon.UpdatedAtNEQ(*i.UpdatedAtNEQ))
+	}
+	if len(i.UpdatedAtIn) > 0 {
+		predicates = append(predicates, projecticon.UpdatedAtIn(i.UpdatedAtIn...))
+	}
+	if len(i.UpdatedAtNotIn) > 0 {
+		predicates = append(predicates, projecticon.UpdatedAtNotIn(i.UpdatedAtNotIn...))
+	}
+	if i.UpdatedAtGT != nil {
+		predicates = append(predicates, projecticon.UpdatedAtGT(*i.UpdatedAtGT))
+	}
+	if i.UpdatedAtGTE != nil {
+		predicates = append(predicates, projecticon.UpdatedAtGTE(*i.UpdatedAtGTE))
+	}
+	if i.UpdatedAtLT != nil {
+		predicates = append(predicates, projecticon.UpdatedAtLT(*i.UpdatedAtLT))
+	}
+	if i.UpdatedAtLTE != nil {
+		predicates = append(predicates, projecticon.UpdatedAtLTE(*i.UpdatedAtLTE))
+	}
+
+	if i.HasProjects != nil {
+		p := projecticon.HasProjects()
+		if !*i.HasProjects {
+			p = projecticon.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasProjectsWith) > 0 {
+		with := make([]predicate.Project, 0, len(i.HasProjectsWith))
+		for _, w := range i.HasProjectsWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, projecticon.HasProjectsWith(with...))
+	}
+	if i.HasIcon != nil {
+		p := projecticon.HasIcon()
+		if !*i.HasIcon {
+			p = projecticon.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasIconWith) > 0 {
+		with := make([]predicate.Icon, 0, len(i.HasIconWith))
+		for _, w := range i.HasIconWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, projecticon.HasIconWith(with...))
+	}
+	switch len(predicates) {
+	case 0:
+		return nil, fmt.Errorf("project-management-demo-backend/ent: empty predicate ProjectIconWhereInput")
+	case 1:
+		return predicates[0], nil
+	default:
+		return projecticon.And(predicates...), nil
 	}
 }
 

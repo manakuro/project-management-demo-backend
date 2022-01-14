@@ -20,10 +20,10 @@ func (c *Color) ProjectLightColors(ctx context.Context) ([]*ProjectLightColor, e
 	return result, err
 }
 
-func (i *Icon) Projects(ctx context.Context) ([]*Project, error) {
-	result, err := i.Edges.ProjectsOrErr()
+func (i *Icon) ProjectIcons(ctx context.Context) ([]*ProjectIcon, error) {
+	result, err := i.Edges.ProjectIconsOrErr()
 	if IsNotLoaded(err) {
-		result, err = i.QueryProjects().All(ctx)
+		result, err = i.QueryProjectIcons().All(ctx)
 	}
 	return result, err
 }
@@ -52,10 +52,10 @@ func (pr *Project) ProjectLightColor(ctx context.Context) (*ProjectLightColor, e
 	return result, err
 }
 
-func (pr *Project) Icon(ctx context.Context) (*Icon, error) {
-	result, err := pr.Edges.IconOrErr()
+func (pr *Project) ProjectIcon(ctx context.Context) (*ProjectIcon, error) {
+	result, err := pr.Edges.ProjectIconOrErr()
 	if IsNotLoaded(err) {
-		result, err = pr.QueryIcon().Only(ctx)
+		result, err = pr.QueryProjectIcon().Only(ctx)
 	}
 	return result, err
 }
@@ -88,6 +88,22 @@ func (pbc *ProjectBaseColor) Color(ctx context.Context) (*Color, error) {
 	result, err := pbc.Edges.ColorOrErr()
 	if IsNotLoaded(err) {
 		result, err = pbc.QueryColor().Only(ctx)
+	}
+	return result, err
+}
+
+func (pi *ProjectIcon) Projects(ctx context.Context) ([]*Project, error) {
+	result, err := pi.Edges.ProjectsOrErr()
+	if IsNotLoaded(err) {
+		result, err = pi.QueryProjects().All(ctx)
+	}
+	return result, err
+}
+
+func (pi *ProjectIcon) Icon(ctx context.Context) (*Icon, error) {
+	result, err := pi.Edges.IconOrErr()
+	if IsNotLoaded(err) {
+		result, err = pi.QueryIcon().Only(ctx)
 	}
 	return result, err
 }

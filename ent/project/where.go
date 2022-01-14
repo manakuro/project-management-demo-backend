@@ -115,10 +115,10 @@ func ProjectLightColorID(v ulid.ID) predicate.Project {
 	})
 }
 
-// IconID applies equality check predicate on the "icon_id" field. It's identical to IconIDEQ.
-func IconID(v ulid.ID) predicate.Project {
+// ProjectIconID applies equality check predicate on the "project_icon_id" field. It's identical to ProjectIconIDEQ.
+func ProjectIconID(v ulid.ID) predicate.Project {
 	return predicate.Project(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldIconID), v))
+		s.Where(sql.EQ(s.C(FieldProjectIconID), v))
 	})
 }
 
@@ -512,22 +512,22 @@ func ProjectLightColorIDContainsFold(v ulid.ID) predicate.Project {
 	})
 }
 
-// IconIDEQ applies the EQ predicate on the "icon_id" field.
-func IconIDEQ(v ulid.ID) predicate.Project {
+// ProjectIconIDEQ applies the EQ predicate on the "project_icon_id" field.
+func ProjectIconIDEQ(v ulid.ID) predicate.Project {
 	return predicate.Project(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldIconID), v))
+		s.Where(sql.EQ(s.C(FieldProjectIconID), v))
 	})
 }
 
-// IconIDNEQ applies the NEQ predicate on the "icon_id" field.
-func IconIDNEQ(v ulid.ID) predicate.Project {
+// ProjectIconIDNEQ applies the NEQ predicate on the "project_icon_id" field.
+func ProjectIconIDNEQ(v ulid.ID) predicate.Project {
 	return predicate.Project(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldIconID), v))
+		s.Where(sql.NEQ(s.C(FieldProjectIconID), v))
 	})
 }
 
-// IconIDIn applies the In predicate on the "icon_id" field.
-func IconIDIn(vs ...ulid.ID) predicate.Project {
+// ProjectIconIDIn applies the In predicate on the "project_icon_id" field.
+func ProjectIconIDIn(vs ...ulid.ID) predicate.Project {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -539,12 +539,12 @@ func IconIDIn(vs ...ulid.ID) predicate.Project {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.In(s.C(FieldIconID), v...))
+		s.Where(sql.In(s.C(FieldProjectIconID), v...))
 	})
 }
 
-// IconIDNotIn applies the NotIn predicate on the "icon_id" field.
-func IconIDNotIn(vs ...ulid.ID) predicate.Project {
+// ProjectIconIDNotIn applies the NotIn predicate on the "project_icon_id" field.
+func ProjectIconIDNotIn(vs ...ulid.ID) predicate.Project {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -556,75 +556,75 @@ func IconIDNotIn(vs ...ulid.ID) predicate.Project {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.NotIn(s.C(FieldIconID), v...))
+		s.Where(sql.NotIn(s.C(FieldProjectIconID), v...))
 	})
 }
 
-// IconIDGT applies the GT predicate on the "icon_id" field.
-func IconIDGT(v ulid.ID) predicate.Project {
+// ProjectIconIDGT applies the GT predicate on the "project_icon_id" field.
+func ProjectIconIDGT(v ulid.ID) predicate.Project {
 	return predicate.Project(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldIconID), v))
+		s.Where(sql.GT(s.C(FieldProjectIconID), v))
 	})
 }
 
-// IconIDGTE applies the GTE predicate on the "icon_id" field.
-func IconIDGTE(v ulid.ID) predicate.Project {
+// ProjectIconIDGTE applies the GTE predicate on the "project_icon_id" field.
+func ProjectIconIDGTE(v ulid.ID) predicate.Project {
 	return predicate.Project(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldIconID), v))
+		s.Where(sql.GTE(s.C(FieldProjectIconID), v))
 	})
 }
 
-// IconIDLT applies the LT predicate on the "icon_id" field.
-func IconIDLT(v ulid.ID) predicate.Project {
+// ProjectIconIDLT applies the LT predicate on the "project_icon_id" field.
+func ProjectIconIDLT(v ulid.ID) predicate.Project {
 	return predicate.Project(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldIconID), v))
+		s.Where(sql.LT(s.C(FieldProjectIconID), v))
 	})
 }
 
-// IconIDLTE applies the LTE predicate on the "icon_id" field.
-func IconIDLTE(v ulid.ID) predicate.Project {
+// ProjectIconIDLTE applies the LTE predicate on the "project_icon_id" field.
+func ProjectIconIDLTE(v ulid.ID) predicate.Project {
 	return predicate.Project(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldIconID), v))
+		s.Where(sql.LTE(s.C(FieldProjectIconID), v))
 	})
 }
 
-// IconIDContains applies the Contains predicate on the "icon_id" field.
-func IconIDContains(v ulid.ID) predicate.Project {
+// ProjectIconIDContains applies the Contains predicate on the "project_icon_id" field.
+func ProjectIconIDContains(v ulid.ID) predicate.Project {
 	vc := string(v)
 	return predicate.Project(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldIconID), vc))
+		s.Where(sql.Contains(s.C(FieldProjectIconID), vc))
 	})
 }
 
-// IconIDHasPrefix applies the HasPrefix predicate on the "icon_id" field.
-func IconIDHasPrefix(v ulid.ID) predicate.Project {
+// ProjectIconIDHasPrefix applies the HasPrefix predicate on the "project_icon_id" field.
+func ProjectIconIDHasPrefix(v ulid.ID) predicate.Project {
 	vc := string(v)
 	return predicate.Project(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldIconID), vc))
+		s.Where(sql.HasPrefix(s.C(FieldProjectIconID), vc))
 	})
 }
 
-// IconIDHasSuffix applies the HasSuffix predicate on the "icon_id" field.
-func IconIDHasSuffix(v ulid.ID) predicate.Project {
+// ProjectIconIDHasSuffix applies the HasSuffix predicate on the "project_icon_id" field.
+func ProjectIconIDHasSuffix(v ulid.ID) predicate.Project {
 	vc := string(v)
 	return predicate.Project(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldIconID), vc))
+		s.Where(sql.HasSuffix(s.C(FieldProjectIconID), vc))
 	})
 }
 
-// IconIDEqualFold applies the EqualFold predicate on the "icon_id" field.
-func IconIDEqualFold(v ulid.ID) predicate.Project {
+// ProjectIconIDEqualFold applies the EqualFold predicate on the "project_icon_id" field.
+func ProjectIconIDEqualFold(v ulid.ID) predicate.Project {
 	vc := string(v)
 	return predicate.Project(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldIconID), vc))
+		s.Where(sql.EqualFold(s.C(FieldProjectIconID), vc))
 	})
 }
 
-// IconIDContainsFold applies the ContainsFold predicate on the "icon_id" field.
-func IconIDContainsFold(v ulid.ID) predicate.Project {
+// ProjectIconIDContainsFold applies the ContainsFold predicate on the "project_icon_id" field.
+func ProjectIconIDContainsFold(v ulid.ID) predicate.Project {
 	vc := string(v)
 	return predicate.Project(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldIconID), vc))
+		s.Where(sql.ContainsFold(s.C(FieldProjectIconID), vc))
 	})
 }
 
@@ -1278,25 +1278,25 @@ func HasProjectLightColorWith(preds ...predicate.ProjectLightColor) predicate.Pr
 	})
 }
 
-// HasIcon applies the HasEdge predicate on the "icon" edge.
-func HasIcon() predicate.Project {
+// HasProjectIcon applies the HasEdge predicate on the "project_icon" edge.
+func HasProjectIcon() predicate.Project {
 	return predicate.Project(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(IconTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, IconTable, IconColumn),
+			sqlgraph.To(ProjectIconTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, ProjectIconTable, ProjectIconColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasIconWith applies the HasEdge predicate on the "icon" edge with a given conditions (other predicates).
-func HasIconWith(preds ...predicate.Icon) predicate.Project {
+// HasProjectIconWith applies the HasEdge predicate on the "project_icon" edge with a given conditions (other predicates).
+func HasProjectIconWith(preds ...predicate.ProjectIcon) predicate.Project {
 	return predicate.Project(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(IconInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, IconTable, IconColumn),
+			sqlgraph.To(ProjectIconInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, ProjectIconTable, ProjectIconColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

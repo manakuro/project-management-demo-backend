@@ -8,10 +8,10 @@ import (
 	"errors"
 	"fmt"
 	"math"
-	"project-management-demo-backend/ent/icon"
 	"project-management-demo-backend/ent/predicate"
 	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/projectbasecolor"
+	"project-management-demo-backend/ent/projecticon"
 	"project-management-demo-backend/ent/projectlightcolor"
 	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/ent/schema/ulid"
@@ -36,7 +36,7 @@ type ProjectQuery struct {
 	withWorkspace         *WorkspaceQuery
 	withProjectBaseColor  *ProjectBaseColorQuery
 	withProjectLightColor *ProjectLightColorQuery
-	withIcon              *IconQuery
+	withProjectIcon       *ProjectIconQuery
 	withTeammate          *TeammateQuery
 	withProjectTeammates  *ProjectTeammateQuery
 	// intermediate query (i.e. traversal path).
@@ -141,9 +141,9 @@ func (pq *ProjectQuery) QueryProjectLightColor() *ProjectLightColorQuery {
 	return query
 }
 
-// QueryIcon chains the current query on the "icon" edge.
-func (pq *ProjectQuery) QueryIcon() *IconQuery {
-	query := &IconQuery{config: pq.config}
+// QueryProjectIcon chains the current query on the "project_icon" edge.
+func (pq *ProjectQuery) QueryProjectIcon() *ProjectIconQuery {
+	query := &ProjectIconQuery{config: pq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := pq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -154,8 +154,8 @@ func (pq *ProjectQuery) QueryIcon() *IconQuery {
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(project.Table, project.FieldID, selector),
-			sqlgraph.To(icon.Table, icon.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, project.IconTable, project.IconColumn),
+			sqlgraph.To(projecticon.Table, projecticon.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, project.ProjectIconTable, project.ProjectIconColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
 		return fromU, nil
@@ -391,7 +391,7 @@ func (pq *ProjectQuery) Clone() *ProjectQuery {
 		withWorkspace:         pq.withWorkspace.Clone(),
 		withProjectBaseColor:  pq.withProjectBaseColor.Clone(),
 		withProjectLightColor: pq.withProjectLightColor.Clone(),
-		withIcon:              pq.withIcon.Clone(),
+		withProjectIcon:       pq.withProjectIcon.Clone(),
 		withTeammate:          pq.withTeammate.Clone(),
 		withProjectTeammates:  pq.withProjectTeammates.Clone(),
 		// clone intermediate query.
@@ -433,14 +433,14 @@ func (pq *ProjectQuery) WithProjectLightColor(opts ...func(*ProjectLightColorQue
 	return pq
 }
 
-// WithIcon tells the query-builder to eager-load the nodes that are connected to
-// the "icon" edge. The optional arguments are used to configure the query builder of the edge.
-func (pq *ProjectQuery) WithIcon(opts ...func(*IconQuery)) *ProjectQuery {
-	query := &IconQuery{config: pq.config}
+// WithProjectIcon tells the query-builder to eager-load the nodes that are connected to
+// the "project_icon" edge. The optional arguments are used to configure the query builder of the edge.
+func (pq *ProjectQuery) WithProjectIcon(opts ...func(*ProjectIconQuery)) *ProjectQuery {
+	query := &ProjectIconQuery{config: pq.config}
 	for _, opt := range opts {
 		opt(query)
 	}
-	pq.withIcon = query
+	pq.withProjectIcon = query
 	return pq
 }
 
@@ -535,7 +535,7 @@ func (pq *ProjectQuery) sqlAll(ctx context.Context) ([]*Project, error) {
 			pq.withWorkspace != nil,
 			pq.withProjectBaseColor != nil,
 			pq.withProjectLightColor != nil,
-			pq.withIcon != nil,
+			pq.withProjectIcon != nil,
 			pq.withTeammate != nil,
 			pq.withProjectTeammates != nil,
 		}
@@ -638,17 +638,17 @@ func (pq *ProjectQuery) sqlAll(ctx context.Context) ([]*Project, error) {
 		}
 	}
 
-	if query := pq.withIcon; query != nil {
+	if query := pq.withProjectIcon; query != nil {
 		ids := make([]ulid.ID, 0, len(nodes))
 		nodeids := make(map[ulid.ID][]*Project)
 		for i := range nodes {
-			fk := nodes[i].IconID
+			fk := nodes[i].ProjectIconID
 			if _, ok := nodeids[fk]; !ok {
 				ids = append(ids, fk)
 			}
 			nodeids[fk] = append(nodeids[fk], nodes[i])
 		}
-		query.Where(icon.IDIn(ids...))
+		query.Where(projecticon.IDIn(ids...))
 		neighbors, err := query.All(ctx)
 		if err != nil {
 			return nil, err
@@ -656,10 +656,10 @@ func (pq *ProjectQuery) sqlAll(ctx context.Context) ([]*Project, error) {
 		for _, n := range neighbors {
 			nodes, ok := nodeids[n.ID]
 			if !ok {
-				return nil, fmt.Errorf(`unexpected foreign-key "icon_id" returned %v`, n.ID)
+				return nil, fmt.Errorf(`unexpected foreign-key "project_icon_id" returned %v`, n.ID)
 			}
 			for i := range nodes {
-				nodes[i].Edges.Icon = n
+				nodes[i].Edges.ProjectIcon = n
 			}
 		}
 	}

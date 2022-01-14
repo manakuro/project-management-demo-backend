@@ -10,6 +10,7 @@ import (
 	"project-management-demo-backend/ent/predicate"
 	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/projectbasecolor"
+	"project-management-demo-backend/ent/projecticon"
 	"project-management-demo-backend/ent/projectlightcolor"
 	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/ent/schema/editor"
@@ -38,6 +39,7 @@ const (
 	TypeIcon              = "Icon"
 	TypeProject           = "Project"
 	TypeProjectBaseColor  = "ProjectBaseColor"
+	TypeProjectIcon       = "ProjectIcon"
 	TypeProjectLightColor = "ProjectLightColor"
 	TypeProjectTeammate   = "ProjectTeammate"
 	TypeTeammate          = "Teammate"
@@ -739,20 +741,20 @@ func (m *ColorMutation) ResetEdge(name string) error {
 // IconMutation represents an operation that mutates the Icon nodes in the graph.
 type IconMutation struct {
 	config
-	op              Op
-	typ             string
-	id              *ulid.ID
-	name            *string
-	icon            *string
-	created_at      *time.Time
-	updated_at      *time.Time
-	clearedFields   map[string]struct{}
-	projects        map[ulid.ID]struct{}
-	removedprojects map[ulid.ID]struct{}
-	clearedprojects bool
-	done            bool
-	oldValue        func(context.Context) (*Icon, error)
-	predicates      []predicate.Icon
+	op                   Op
+	typ                  string
+	id                   *ulid.ID
+	name                 *string
+	icon                 *string
+	created_at           *time.Time
+	updated_at           *time.Time
+	clearedFields        map[string]struct{}
+	project_icons        map[ulid.ID]struct{}
+	removedproject_icons map[ulid.ID]struct{}
+	clearedproject_icons bool
+	done                 bool
+	oldValue             func(context.Context) (*Icon, error)
+	predicates           []predicate.Icon
 }
 
 var _ ent.Mutation = (*IconMutation)(nil)
@@ -984,58 +986,58 @@ func (m *IconMutation) ResetUpdatedAt() {
 	m.updated_at = nil
 }
 
-// AddProjectIDs adds the "projects" edge to the Project entity by ids.
-func (m *IconMutation) AddProjectIDs(ids ...ulid.ID) {
-	if m.projects == nil {
-		m.projects = make(map[ulid.ID]struct{})
+// AddProjectIconIDs adds the "project_icons" edge to the ProjectIcon entity by ids.
+func (m *IconMutation) AddProjectIconIDs(ids ...ulid.ID) {
+	if m.project_icons == nil {
+		m.project_icons = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		m.projects[ids[i]] = struct{}{}
+		m.project_icons[ids[i]] = struct{}{}
 	}
 }
 
-// ClearProjects clears the "projects" edge to the Project entity.
-func (m *IconMutation) ClearProjects() {
-	m.clearedprojects = true
+// ClearProjectIcons clears the "project_icons" edge to the ProjectIcon entity.
+func (m *IconMutation) ClearProjectIcons() {
+	m.clearedproject_icons = true
 }
 
-// ProjectsCleared reports if the "projects" edge to the Project entity was cleared.
-func (m *IconMutation) ProjectsCleared() bool {
-	return m.clearedprojects
+// ProjectIconsCleared reports if the "project_icons" edge to the ProjectIcon entity was cleared.
+func (m *IconMutation) ProjectIconsCleared() bool {
+	return m.clearedproject_icons
 }
 
-// RemoveProjectIDs removes the "projects" edge to the Project entity by IDs.
-func (m *IconMutation) RemoveProjectIDs(ids ...ulid.ID) {
-	if m.removedprojects == nil {
-		m.removedprojects = make(map[ulid.ID]struct{})
+// RemoveProjectIconIDs removes the "project_icons" edge to the ProjectIcon entity by IDs.
+func (m *IconMutation) RemoveProjectIconIDs(ids ...ulid.ID) {
+	if m.removedproject_icons == nil {
+		m.removedproject_icons = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		delete(m.projects, ids[i])
-		m.removedprojects[ids[i]] = struct{}{}
+		delete(m.project_icons, ids[i])
+		m.removedproject_icons[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedProjects returns the removed IDs of the "projects" edge to the Project entity.
-func (m *IconMutation) RemovedProjectsIDs() (ids []ulid.ID) {
-	for id := range m.removedprojects {
+// RemovedProjectIcons returns the removed IDs of the "project_icons" edge to the ProjectIcon entity.
+func (m *IconMutation) RemovedProjectIconsIDs() (ids []ulid.ID) {
+	for id := range m.removedproject_icons {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ProjectsIDs returns the "projects" edge IDs in the mutation.
-func (m *IconMutation) ProjectsIDs() (ids []ulid.ID) {
-	for id := range m.projects {
+// ProjectIconsIDs returns the "project_icons" edge IDs in the mutation.
+func (m *IconMutation) ProjectIconsIDs() (ids []ulid.ID) {
+	for id := range m.project_icons {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetProjects resets all changes to the "projects" edge.
-func (m *IconMutation) ResetProjects() {
-	m.projects = nil
-	m.clearedprojects = false
-	m.removedprojects = nil
+// ResetProjectIcons resets all changes to the "project_icons" edge.
+func (m *IconMutation) ResetProjectIcons() {
+	m.project_icons = nil
+	m.clearedproject_icons = false
+	m.removedproject_icons = nil
 }
 
 // Where appends a list predicates to the IconMutation builder.
@@ -1208,8 +1210,8 @@ func (m *IconMutation) ResetField(name string) error {
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *IconMutation) AddedEdges() []string {
 	edges := make([]string, 0, 1)
-	if m.projects != nil {
-		edges = append(edges, icon.EdgeProjects)
+	if m.project_icons != nil {
+		edges = append(edges, icon.EdgeProjectIcons)
 	}
 	return edges
 }
@@ -1218,9 +1220,9 @@ func (m *IconMutation) AddedEdges() []string {
 // name in this mutation.
 func (m *IconMutation) AddedIDs(name string) []ent.Value {
 	switch name {
-	case icon.EdgeProjects:
-		ids := make([]ent.Value, 0, len(m.projects))
-		for id := range m.projects {
+	case icon.EdgeProjectIcons:
+		ids := make([]ent.Value, 0, len(m.project_icons))
+		for id := range m.project_icons {
 			ids = append(ids, id)
 		}
 		return ids
@@ -1231,8 +1233,8 @@ func (m *IconMutation) AddedIDs(name string) []ent.Value {
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *IconMutation) RemovedEdges() []string {
 	edges := make([]string, 0, 1)
-	if m.removedprojects != nil {
-		edges = append(edges, icon.EdgeProjects)
+	if m.removedproject_icons != nil {
+		edges = append(edges, icon.EdgeProjectIcons)
 	}
 	return edges
 }
@@ -1241,9 +1243,9 @@ func (m *IconMutation) RemovedEdges() []string {
 // the given name in this mutation.
 func (m *IconMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
-	case icon.EdgeProjects:
-		ids := make([]ent.Value, 0, len(m.removedprojects))
-		for id := range m.removedprojects {
+	case icon.EdgeProjectIcons:
+		ids := make([]ent.Value, 0, len(m.removedproject_icons))
+		for id := range m.removedproject_icons {
 			ids = append(ids, id)
 		}
 		return ids
@@ -1254,8 +1256,8 @@ func (m *IconMutation) RemovedIDs(name string) []ent.Value {
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *IconMutation) ClearedEdges() []string {
 	edges := make([]string, 0, 1)
-	if m.clearedprojects {
-		edges = append(edges, icon.EdgeProjects)
+	if m.clearedproject_icons {
+		edges = append(edges, icon.EdgeProjectIcons)
 	}
 	return edges
 }
@@ -1264,8 +1266,8 @@ func (m *IconMutation) ClearedEdges() []string {
 // was cleared in this mutation.
 func (m *IconMutation) EdgeCleared(name string) bool {
 	switch name {
-	case icon.EdgeProjects:
-		return m.clearedprojects
+	case icon.EdgeProjectIcons:
+		return m.clearedproject_icons
 	}
 	return false
 }
@@ -1282,8 +1284,8 @@ func (m *IconMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *IconMutation) ResetEdge(name string) error {
 	switch name {
-	case icon.EdgeProjects:
-		m.ResetProjects()
+	case icon.EdgeProjectIcons:
+		m.ResetProjectIcons()
 		return nil
 	}
 	return fmt.Errorf("unknown Icon edge %s", name)
@@ -1308,8 +1310,8 @@ type ProjectMutation struct {
 	clearedproject_base_color  bool
 	project_light_color        *ulid.ID
 	clearedproject_light_color bool
-	icon                       *ulid.ID
-	clearedicon                bool
+	project_icon               *ulid.ID
+	clearedproject_icon        bool
 	teammate                   *ulid.ID
 	clearedteammate            bool
 	project_teammates          map[ulid.ID]struct{}
@@ -1513,40 +1515,40 @@ func (m *ProjectMutation) ResetProjectLightColorID() {
 	m.project_light_color = nil
 }
 
-// SetIconID sets the "icon_id" field.
-func (m *ProjectMutation) SetIconID(u ulid.ID) {
-	m.icon = &u
+// SetProjectIconID sets the "project_icon_id" field.
+func (m *ProjectMutation) SetProjectIconID(u ulid.ID) {
+	m.project_icon = &u
 }
 
-// IconID returns the value of the "icon_id" field in the mutation.
-func (m *ProjectMutation) IconID() (r ulid.ID, exists bool) {
-	v := m.icon
+// ProjectIconID returns the value of the "project_icon_id" field in the mutation.
+func (m *ProjectMutation) ProjectIconID() (r ulid.ID, exists bool) {
+	v := m.project_icon
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldIconID returns the old "icon_id" field's value of the Project entity.
+// OldProjectIconID returns the old "project_icon_id" field's value of the Project entity.
 // If the Project object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ProjectMutation) OldIconID(ctx context.Context) (v ulid.ID, err error) {
+func (m *ProjectMutation) OldProjectIconID(ctx context.Context) (v ulid.ID, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, fmt.Errorf("OldIconID is only allowed on UpdateOne operations")
+		return v, fmt.Errorf("OldProjectIconID is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, fmt.Errorf("OldIconID requires an ID field in the mutation")
+		return v, fmt.Errorf("OldProjectIconID requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldIconID: %w", err)
+		return v, fmt.Errorf("querying old value for OldProjectIconID: %w", err)
 	}
-	return oldValue.IconID, nil
+	return oldValue.ProjectIconID, nil
 }
 
-// ResetIconID resets all changes to the "icon_id" field.
-func (m *ProjectMutation) ResetIconID() {
-	m.icon = nil
+// ResetProjectIconID resets all changes to the "project_icon_id" field.
+func (m *ProjectMutation) ResetProjectIconID() {
+	m.project_icon = nil
 }
 
 // SetCreatedBy sets the "created_by" field.
@@ -1879,30 +1881,30 @@ func (m *ProjectMutation) ResetProjectLightColor() {
 	m.clearedproject_light_color = false
 }
 
-// ClearIcon clears the "icon" edge to the Icon entity.
-func (m *ProjectMutation) ClearIcon() {
-	m.clearedicon = true
+// ClearProjectIcon clears the "project_icon" edge to the ProjectIcon entity.
+func (m *ProjectMutation) ClearProjectIcon() {
+	m.clearedproject_icon = true
 }
 
-// IconCleared reports if the "icon" edge to the Icon entity was cleared.
-func (m *ProjectMutation) IconCleared() bool {
-	return m.clearedicon
+// ProjectIconCleared reports if the "project_icon" edge to the ProjectIcon entity was cleared.
+func (m *ProjectMutation) ProjectIconCleared() bool {
+	return m.clearedproject_icon
 }
 
-// IconIDs returns the "icon" edge IDs in the mutation.
+// ProjectIconIDs returns the "project_icon" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// IconID instead. It exists only for internal usage by the builders.
-func (m *ProjectMutation) IconIDs() (ids []ulid.ID) {
-	if id := m.icon; id != nil {
+// ProjectIconID instead. It exists only for internal usage by the builders.
+func (m *ProjectMutation) ProjectIconIDs() (ids []ulid.ID) {
+	if id := m.project_icon; id != nil {
 		ids = append(ids, *id)
 	}
 	return
 }
 
-// ResetIcon resets all changes to the "icon" edge.
-func (m *ProjectMutation) ResetIcon() {
-	m.icon = nil
-	m.clearedicon = false
+// ResetProjectIcon resets all changes to the "project_icon" edge.
+func (m *ProjectMutation) ResetProjectIcon() {
+	m.project_icon = nil
+	m.clearedproject_icon = false
 }
 
 // SetTeammateID sets the "teammate" edge to the Teammate entity by id.
@@ -2027,8 +2029,8 @@ func (m *ProjectMutation) Fields() []string {
 	if m.project_light_color != nil {
 		fields = append(fields, project.FieldProjectLightColorID)
 	}
-	if m.icon != nil {
-		fields = append(fields, project.FieldIconID)
+	if m.project_icon != nil {
+		fields = append(fields, project.FieldProjectIconID)
 	}
 	if m.teammate != nil {
 		fields = append(fields, project.FieldCreatedBy)
@@ -2065,8 +2067,8 @@ func (m *ProjectMutation) Field(name string) (ent.Value, bool) {
 		return m.ProjectBaseColorID()
 	case project.FieldProjectLightColorID:
 		return m.ProjectLightColorID()
-	case project.FieldIconID:
-		return m.IconID()
+	case project.FieldProjectIconID:
+		return m.ProjectIconID()
 	case project.FieldCreatedBy:
 		return m.CreatedBy()
 	case project.FieldName:
@@ -2096,8 +2098,8 @@ func (m *ProjectMutation) OldField(ctx context.Context, name string) (ent.Value,
 		return m.OldProjectBaseColorID(ctx)
 	case project.FieldProjectLightColorID:
 		return m.OldProjectLightColorID(ctx)
-	case project.FieldIconID:
-		return m.OldIconID(ctx)
+	case project.FieldProjectIconID:
+		return m.OldProjectIconID(ctx)
 	case project.FieldCreatedBy:
 		return m.OldCreatedBy(ctx)
 	case project.FieldName:
@@ -2142,12 +2144,12 @@ func (m *ProjectMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetProjectLightColorID(v)
 		return nil
-	case project.FieldIconID:
+	case project.FieldProjectIconID:
 		v, ok := value.(ulid.ID)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetIconID(v)
+		m.SetProjectIconID(v)
 		return nil
 	case project.FieldCreatedBy:
 		v, ok := value.(ulid.ID)
@@ -2256,8 +2258,8 @@ func (m *ProjectMutation) ResetField(name string) error {
 	case project.FieldProjectLightColorID:
 		m.ResetProjectLightColorID()
 		return nil
-	case project.FieldIconID:
-		m.ResetIconID()
+	case project.FieldProjectIconID:
+		m.ResetProjectIconID()
 		return nil
 	case project.FieldCreatedBy:
 		m.ResetCreatedBy()
@@ -2296,8 +2298,8 @@ func (m *ProjectMutation) AddedEdges() []string {
 	if m.project_light_color != nil {
 		edges = append(edges, project.EdgeProjectLightColor)
 	}
-	if m.icon != nil {
-		edges = append(edges, project.EdgeIcon)
+	if m.project_icon != nil {
+		edges = append(edges, project.EdgeProjectIcon)
 	}
 	if m.teammate != nil {
 		edges = append(edges, project.EdgeTeammate)
@@ -2324,8 +2326,8 @@ func (m *ProjectMutation) AddedIDs(name string) []ent.Value {
 		if id := m.project_light_color; id != nil {
 			return []ent.Value{*id}
 		}
-	case project.EdgeIcon:
-		if id := m.icon; id != nil {
+	case project.EdgeProjectIcon:
+		if id := m.project_icon; id != nil {
 			return []ent.Value{*id}
 		}
 	case project.EdgeTeammate:
@@ -2377,8 +2379,8 @@ func (m *ProjectMutation) ClearedEdges() []string {
 	if m.clearedproject_light_color {
 		edges = append(edges, project.EdgeProjectLightColor)
 	}
-	if m.clearedicon {
-		edges = append(edges, project.EdgeIcon)
+	if m.clearedproject_icon {
+		edges = append(edges, project.EdgeProjectIcon)
 	}
 	if m.clearedteammate {
 		edges = append(edges, project.EdgeTeammate)
@@ -2399,8 +2401,8 @@ func (m *ProjectMutation) EdgeCleared(name string) bool {
 		return m.clearedproject_base_color
 	case project.EdgeProjectLightColor:
 		return m.clearedproject_light_color
-	case project.EdgeIcon:
-		return m.clearedicon
+	case project.EdgeProjectIcon:
+		return m.clearedproject_icon
 	case project.EdgeTeammate:
 		return m.clearedteammate
 	case project.EdgeProjectTeammates:
@@ -2422,8 +2424,8 @@ func (m *ProjectMutation) ClearEdge(name string) error {
 	case project.EdgeProjectLightColor:
 		m.ClearProjectLightColor()
 		return nil
-	case project.EdgeIcon:
-		m.ClearIcon()
+	case project.EdgeProjectIcon:
+		m.ClearProjectIcon()
 		return nil
 	case project.EdgeTeammate:
 		m.ClearTeammate()
@@ -2445,8 +2447,8 @@ func (m *ProjectMutation) ResetEdge(name string) error {
 	case project.EdgeProjectLightColor:
 		m.ResetProjectLightColor()
 		return nil
-	case project.EdgeIcon:
-		m.ResetIcon()
+	case project.EdgeProjectIcon:
+		m.ResetProjectIcon()
 		return nil
 	case project.EdgeTeammate:
 		m.ResetTeammate()
@@ -3000,6 +3002,550 @@ func (m *ProjectBaseColorMutation) ResetEdge(name string) error {
 		return nil
 	}
 	return fmt.Errorf("unknown ProjectBaseColor edge %s", name)
+}
+
+// ProjectIconMutation represents an operation that mutates the ProjectIcon nodes in the graph.
+type ProjectIconMutation struct {
+	config
+	op              Op
+	typ             string
+	id              *ulid.ID
+	created_at      *time.Time
+	updated_at      *time.Time
+	clearedFields   map[string]struct{}
+	projects        map[ulid.ID]struct{}
+	removedprojects map[ulid.ID]struct{}
+	clearedprojects bool
+	icon            *ulid.ID
+	clearedicon     bool
+	done            bool
+	oldValue        func(context.Context) (*ProjectIcon, error)
+	predicates      []predicate.ProjectIcon
+}
+
+var _ ent.Mutation = (*ProjectIconMutation)(nil)
+
+// projecticonOption allows management of the mutation configuration using functional options.
+type projecticonOption func(*ProjectIconMutation)
+
+// newProjectIconMutation creates new mutation for the ProjectIcon entity.
+func newProjectIconMutation(c config, op Op, opts ...projecticonOption) *ProjectIconMutation {
+	m := &ProjectIconMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeProjectIcon,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withProjectIconID sets the ID field of the mutation.
+func withProjectIconID(id ulid.ID) projecticonOption {
+	return func(m *ProjectIconMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *ProjectIcon
+		)
+		m.oldValue = func(ctx context.Context) (*ProjectIcon, error) {
+			once.Do(func() {
+				if m.done {
+					err = fmt.Errorf("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().ProjectIcon.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withProjectIcon sets the old ProjectIcon of the mutation.
+func withProjectIcon(node *ProjectIcon) projecticonOption {
+	return func(m *ProjectIconMutation) {
+		m.oldValue = func(context.Context) (*ProjectIcon, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m ProjectIconMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m ProjectIconMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, fmt.Errorf("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of ProjectIcon entities.
+func (m *ProjectIconMutation) SetID(id ulid.ID) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *ProjectIconMutation) ID() (id ulid.ID, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// SetIconID sets the "icon_id" field.
+func (m *ProjectIconMutation) SetIconID(u ulid.ID) {
+	m.icon = &u
+}
+
+// IconID returns the value of the "icon_id" field in the mutation.
+func (m *ProjectIconMutation) IconID() (r ulid.ID, exists bool) {
+	v := m.icon
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIconID returns the old "icon_id" field's value of the ProjectIcon entity.
+// If the ProjectIcon object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProjectIconMutation) OldIconID(ctx context.Context) (v ulid.ID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldIconID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldIconID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIconID: %w", err)
+	}
+	return oldValue.IconID, nil
+}
+
+// ResetIconID resets all changes to the "icon_id" field.
+func (m *ProjectIconMutation) ResetIconID() {
+	m.icon = nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *ProjectIconMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *ProjectIconMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the ProjectIcon entity.
+// If the ProjectIcon object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProjectIconMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *ProjectIconMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *ProjectIconMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *ProjectIconMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the ProjectIcon entity.
+// If the ProjectIcon object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProjectIconMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *ProjectIconMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// AddProjectIDs adds the "projects" edge to the Project entity by ids.
+func (m *ProjectIconMutation) AddProjectIDs(ids ...ulid.ID) {
+	if m.projects == nil {
+		m.projects = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		m.projects[ids[i]] = struct{}{}
+	}
+}
+
+// ClearProjects clears the "projects" edge to the Project entity.
+func (m *ProjectIconMutation) ClearProjects() {
+	m.clearedprojects = true
+}
+
+// ProjectsCleared reports if the "projects" edge to the Project entity was cleared.
+func (m *ProjectIconMutation) ProjectsCleared() bool {
+	return m.clearedprojects
+}
+
+// RemoveProjectIDs removes the "projects" edge to the Project entity by IDs.
+func (m *ProjectIconMutation) RemoveProjectIDs(ids ...ulid.ID) {
+	if m.removedprojects == nil {
+		m.removedprojects = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		delete(m.projects, ids[i])
+		m.removedprojects[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedProjects returns the removed IDs of the "projects" edge to the Project entity.
+func (m *ProjectIconMutation) RemovedProjectsIDs() (ids []ulid.ID) {
+	for id := range m.removedprojects {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ProjectsIDs returns the "projects" edge IDs in the mutation.
+func (m *ProjectIconMutation) ProjectsIDs() (ids []ulid.ID) {
+	for id := range m.projects {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetProjects resets all changes to the "projects" edge.
+func (m *ProjectIconMutation) ResetProjects() {
+	m.projects = nil
+	m.clearedprojects = false
+	m.removedprojects = nil
+}
+
+// ClearIcon clears the "icon" edge to the Icon entity.
+func (m *ProjectIconMutation) ClearIcon() {
+	m.clearedicon = true
+}
+
+// IconCleared reports if the "icon" edge to the Icon entity was cleared.
+func (m *ProjectIconMutation) IconCleared() bool {
+	return m.clearedicon
+}
+
+// IconIDs returns the "icon" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// IconID instead. It exists only for internal usage by the builders.
+func (m *ProjectIconMutation) IconIDs() (ids []ulid.ID) {
+	if id := m.icon; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetIcon resets all changes to the "icon" edge.
+func (m *ProjectIconMutation) ResetIcon() {
+	m.icon = nil
+	m.clearedicon = false
+}
+
+// Where appends a list predicates to the ProjectIconMutation builder.
+func (m *ProjectIconMutation) Where(ps ...predicate.ProjectIcon) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// Op returns the operation name.
+func (m *ProjectIconMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (ProjectIcon).
+func (m *ProjectIconMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *ProjectIconMutation) Fields() []string {
+	fields := make([]string, 0, 3)
+	if m.icon != nil {
+		fields = append(fields, projecticon.FieldIconID)
+	}
+	if m.created_at != nil {
+		fields = append(fields, projecticon.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, projecticon.FieldUpdatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *ProjectIconMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case projecticon.FieldIconID:
+		return m.IconID()
+	case projecticon.FieldCreatedAt:
+		return m.CreatedAt()
+	case projecticon.FieldUpdatedAt:
+		return m.UpdatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *ProjectIconMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case projecticon.FieldIconID:
+		return m.OldIconID(ctx)
+	case projecticon.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case projecticon.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown ProjectIcon field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ProjectIconMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case projecticon.FieldIconID:
+		v, ok := value.(ulid.ID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIconID(v)
+		return nil
+	case projecticon.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case projecticon.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown ProjectIcon field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *ProjectIconMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *ProjectIconMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ProjectIconMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown ProjectIcon numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *ProjectIconMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *ProjectIconMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *ProjectIconMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown ProjectIcon nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *ProjectIconMutation) ResetField(name string) error {
+	switch name {
+	case projecticon.FieldIconID:
+		m.ResetIconID()
+		return nil
+	case projecticon.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case projecticon.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown ProjectIcon field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *ProjectIconMutation) AddedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.projects != nil {
+		edges = append(edges, projecticon.EdgeProjects)
+	}
+	if m.icon != nil {
+		edges = append(edges, projecticon.EdgeIcon)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *ProjectIconMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case projecticon.EdgeProjects:
+		ids := make([]ent.Value, 0, len(m.projects))
+		for id := range m.projects {
+			ids = append(ids, id)
+		}
+		return ids
+	case projecticon.EdgeIcon:
+		if id := m.icon; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *ProjectIconMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.removedprojects != nil {
+		edges = append(edges, projecticon.EdgeProjects)
+	}
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *ProjectIconMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case projecticon.EdgeProjects:
+		ids := make([]ent.Value, 0, len(m.removedprojects))
+		for id := range m.removedprojects {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *ProjectIconMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.clearedprojects {
+		edges = append(edges, projecticon.EdgeProjects)
+	}
+	if m.clearedicon {
+		edges = append(edges, projecticon.EdgeIcon)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *ProjectIconMutation) EdgeCleared(name string) bool {
+	switch name {
+	case projecticon.EdgeProjects:
+		return m.clearedprojects
+	case projecticon.EdgeIcon:
+		return m.clearedicon
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *ProjectIconMutation) ClearEdge(name string) error {
+	switch name {
+	case projecticon.EdgeIcon:
+		m.ClearIcon()
+		return nil
+	}
+	return fmt.Errorf("unknown ProjectIcon unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *ProjectIconMutation) ResetEdge(name string) error {
+	switch name {
+	case projecticon.EdgeProjects:
+		m.ResetProjects()
+		return nil
+	case projecticon.EdgeIcon:
+		m.ResetIcon()
+		return nil
+	}
+	return fmt.Errorf("unknown ProjectIcon edge %s", name)
 }
 
 // ProjectLightColorMutation represents an operation that mutates the ProjectLightColor nodes in the graph.

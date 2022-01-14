@@ -1,0 +1,37 @@
+type ProjectIcon implements Node {
+  id: ID!
+  icon: Icon!
+  createdAt: String!
+  updatedAt: String!
+}
+type ProjectIconConnection {
+  totalCount: Int!
+  pageInfo: PageInfo!
+  edges: [ProjectIconEdge]
+}
+type ProjectIconEdge {
+  node: ProjectIcon
+  cursor: Cursor!
+}
+
+input CreateProjectIconInput {
+  iconId: ID!
+}
+input UpdateProjectIconInput {
+  id: ID!
+  iconId: ID
+}
+
+extend type Query {
+  projectIcon(where: ProjectIconWhereInput): ProjectIcon
+  projectIcons(after: Cursor, first: Int, before: Cursor, last: Int, where: ProjectIconWhereInput): ProjectIconConnection
+}
+
+extend type Subscription {
+  projectIconUpdated(id: ID!): ProjectIcon!
+}
+
+extend type Mutation {
+  createProjectIcon(input: CreateProjectIconInput!): ProjectIcon!
+  updateProjectIcon(input: UpdateProjectIconInput!): ProjectIcon!
+}

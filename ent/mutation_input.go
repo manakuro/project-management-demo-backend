@@ -97,11 +97,11 @@ func (u *ColorUpdateOne) SetInput(i UpdateColorInput) *ColorUpdateOne {
 
 // CreateIconInput represents a mutation input for creating icons.
 type CreateIconInput struct {
-	Name       string
-	Icon       string
-	CreatedAt  *time.Time
-	UpdatedAt  *time.Time
-	ProjectIDs []ulid.ID
+	Name           string
+	Icon           string
+	CreatedAt      *time.Time
+	UpdatedAt      *time.Time
+	ProjectIconIDs []ulid.ID
 }
 
 // Mutate applies the CreateIconInput on the IconCreate builder.
@@ -114,8 +114,8 @@ func (i *CreateIconInput) Mutate(m *IconCreate) {
 	if v := i.UpdatedAt; v != nil {
 		m.SetUpdatedAt(*v)
 	}
-	if ids := i.ProjectIDs; len(ids) > 0 {
-		m.AddProjectIDs(ids...)
+	if ids := i.ProjectIconIDs; len(ids) > 0 {
+		m.AddProjectIconIDs(ids...)
 	}
 }
 
@@ -127,11 +127,11 @@ func (c *IconCreate) SetInput(i CreateIconInput) *IconCreate {
 
 // UpdateIconInput represents a mutation input for updating icons.
 type UpdateIconInput struct {
-	ID               ulid.ID
-	Name             *string
-	Icon             *string
-	AddProjectIDs    []ulid.ID
-	RemoveProjectIDs []ulid.ID
+	ID                   ulid.ID
+	Name                 *string
+	Icon                 *string
+	AddProjectIconIDs    []ulid.ID
+	RemoveProjectIconIDs []ulid.ID
 }
 
 // Mutate applies the UpdateIconInput on the IconMutation.
@@ -142,11 +142,11 @@ func (i *UpdateIconInput) Mutate(m *IconMutation) {
 	if v := i.Icon; v != nil {
 		m.SetIcon(*v)
 	}
-	if ids := i.AddProjectIDs; len(ids) > 0 {
-		m.AddProjectIDs(ids...)
+	if ids := i.AddProjectIconIDs; len(ids) > 0 {
+		m.AddProjectIconIDs(ids...)
 	}
-	if ids := i.RemoveProjectIDs; len(ids) > 0 {
-		m.RemoveProjectIDs(ids...)
+	if ids := i.RemoveProjectIconIDs; len(ids) > 0 {
+		m.RemoveProjectIconIDs(ids...)
 	}
 }
 
@@ -173,7 +173,7 @@ type CreateProjectInput struct {
 	WorkspaceID         ulid.ID
 	ProjectBaseColorID  ulid.ID
 	ProjectLightColorID ulid.ID
-	IconID              ulid.ID
+	ProjectIconID       ulid.ID
 	CreatedBy           ulid.ID
 	ProjectTeammateIDs  []ulid.ID
 }
@@ -195,7 +195,7 @@ func (i *CreateProjectInput) Mutate(m *ProjectCreate) {
 	m.SetWorkspaceID(i.WorkspaceID)
 	m.SetProjectBaseColorID(i.ProjectBaseColorID)
 	m.SetProjectLightColorID(i.ProjectLightColorID)
-	m.SetIconID(i.IconID)
+	m.SetProjectIconID(i.ProjectIconID)
 	m.SetTeammateID(i.CreatedBy)
 	if ids := i.ProjectTeammateIDs; len(ids) > 0 {
 		m.AddProjectTeammateIDs(ids...)
@@ -221,8 +221,8 @@ type UpdateProjectInput struct {
 	ClearProjectBaseColor    bool
 	ProjectLightColorID      *ulid.ID
 	ClearProjectLightColor   bool
-	IconID                   *ulid.ID
-	ClearIcon                bool
+	ProjectIconID            *ulid.ID
+	ClearProjectIcon         bool
 	CreatedBy                *ulid.ID
 	ClearTeammate            bool
 	AddProjectTeammateIDs    []ulid.ID
@@ -261,11 +261,11 @@ func (i *UpdateProjectInput) Mutate(m *ProjectMutation) {
 	if v := i.ProjectLightColorID; v != nil {
 		m.SetProjectLightColorID(*v)
 	}
-	if i.ClearIcon {
-		m.ClearIcon()
+	if i.ClearProjectIcon {
+		m.ClearProjectIcon()
 	}
-	if v := i.IconID; v != nil {
-		m.SetIconID(*v)
+	if v := i.ProjectIconID; v != nil {
+		m.SetProjectIconID(*v)
 	}
 	if i.ClearTeammate {
 		m.ClearTeammate()
@@ -354,6 +354,71 @@ func (u *ProjectBaseColorUpdate) SetInput(i UpdateProjectBaseColorInput) *Projec
 
 // SetInput applies the change-set in the UpdateProjectBaseColorInput on the update-one builder.
 func (u *ProjectBaseColorUpdateOne) SetInput(i UpdateProjectBaseColorInput) *ProjectBaseColorUpdateOne {
+	i.Mutate(u.Mutation())
+	return u
+}
+
+// CreateProjectIconInput represents a mutation input for creating projecticons.
+type CreateProjectIconInput struct {
+	CreatedAt  *time.Time
+	UpdatedAt  *time.Time
+	ProjectIDs []ulid.ID
+	IconID     ulid.ID
+}
+
+// Mutate applies the CreateProjectIconInput on the ProjectIconCreate builder.
+func (i *CreateProjectIconInput) Mutate(m *ProjectIconCreate) {
+	if v := i.CreatedAt; v != nil {
+		m.SetCreatedAt(*v)
+	}
+	if v := i.UpdatedAt; v != nil {
+		m.SetUpdatedAt(*v)
+	}
+	if ids := i.ProjectIDs; len(ids) > 0 {
+		m.AddProjectIDs(ids...)
+	}
+	m.SetIconID(i.IconID)
+}
+
+// SetInput applies the change-set in the CreateProjectIconInput on the create builder.
+func (c *ProjectIconCreate) SetInput(i CreateProjectIconInput) *ProjectIconCreate {
+	i.Mutate(c)
+	return c
+}
+
+// UpdateProjectIconInput represents a mutation input for updating projecticons.
+type UpdateProjectIconInput struct {
+	ID               ulid.ID
+	AddProjectIDs    []ulid.ID
+	RemoveProjectIDs []ulid.ID
+	IconID           *ulid.ID
+	ClearIcon        bool
+}
+
+// Mutate applies the UpdateProjectIconInput on the ProjectIconMutation.
+func (i *UpdateProjectIconInput) Mutate(m *ProjectIconMutation) {
+	if ids := i.AddProjectIDs; len(ids) > 0 {
+		m.AddProjectIDs(ids...)
+	}
+	if ids := i.RemoveProjectIDs; len(ids) > 0 {
+		m.RemoveProjectIDs(ids...)
+	}
+	if i.ClearIcon {
+		m.ClearIcon()
+	}
+	if v := i.IconID; v != nil {
+		m.SetIconID(*v)
+	}
+}
+
+// SetInput applies the change-set in the UpdateProjectIconInput on the update builder.
+func (u *ProjectIconUpdate) SetInput(i UpdateProjectIconInput) *ProjectIconUpdate {
+	i.Mutate(u.Mutation())
+	return u
+}
+
+// SetInput applies the change-set in the UpdateProjectIconInput on the update-one builder.
+func (u *ProjectIconUpdateOne) SetInput(i UpdateProjectIconInput) *ProjectIconUpdateOne {
 	i.Mutate(u.Mutation())
 	return u
 }

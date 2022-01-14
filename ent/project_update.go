@@ -6,10 +6,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"project-management-demo-backend/ent/icon"
 	"project-management-demo-backend/ent/predicate"
 	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/projectbasecolor"
+	"project-management-demo-backend/ent/projecticon"
 	"project-management-demo-backend/ent/projectlightcolor"
 	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/ent/schema/editor"
@@ -54,9 +54,9 @@ func (pu *ProjectUpdate) SetProjectLightColorID(u ulid.ID) *ProjectUpdate {
 	return pu
 }
 
-// SetIconID sets the "icon_id" field.
-func (pu *ProjectUpdate) SetIconID(u ulid.ID) *ProjectUpdate {
-	pu.mutation.SetIconID(u)
+// SetProjectIconID sets the "project_icon_id" field.
+func (pu *ProjectUpdate) SetProjectIconID(u ulid.ID) *ProjectUpdate {
+	pu.mutation.SetProjectIconID(u)
 	return pu
 }
 
@@ -113,9 +113,9 @@ func (pu *ProjectUpdate) SetProjectLightColor(p *ProjectLightColor) *ProjectUpda
 	return pu.SetProjectLightColorID(p.ID)
 }
 
-// SetIcon sets the "icon" edge to the Icon entity.
-func (pu *ProjectUpdate) SetIcon(i *Icon) *ProjectUpdate {
-	return pu.SetIconID(i.ID)
+// SetProjectIcon sets the "project_icon" edge to the ProjectIcon entity.
+func (pu *ProjectUpdate) SetProjectIcon(p *ProjectIcon) *ProjectUpdate {
+	return pu.SetProjectIconID(p.ID)
 }
 
 // SetTeammateID sets the "teammate" edge to the Teammate entity by ID.
@@ -167,9 +167,9 @@ func (pu *ProjectUpdate) ClearProjectLightColor() *ProjectUpdate {
 	return pu
 }
 
-// ClearIcon clears the "icon" edge to the Icon entity.
-func (pu *ProjectUpdate) ClearIcon() *ProjectUpdate {
-	pu.mutation.ClearIcon()
+// ClearProjectIcon clears the "project_icon" edge to the ProjectIcon entity.
+func (pu *ProjectUpdate) ClearProjectIcon() *ProjectUpdate {
+	pu.mutation.ClearProjectIcon()
 	return pu
 }
 
@@ -281,8 +281,8 @@ func (pu *ProjectUpdate) check() error {
 	if _, ok := pu.mutation.ProjectLightColorID(); pu.mutation.ProjectLightColorCleared() && !ok {
 		return errors.New("ent: clearing a required unique edge \"project_light_color\"")
 	}
-	if _, ok := pu.mutation.IconID(); pu.mutation.IconCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"icon\"")
+	if _, ok := pu.mutation.ProjectIconID(); pu.mutation.ProjectIconCleared() && !ok {
+		return errors.New("ent: clearing a required unique edge \"project_icon\"")
 	}
 	if _, ok := pu.mutation.TeammateID(); pu.mutation.TeammateCleared() && !ok {
 		return errors.New("ent: clearing a required unique edge \"teammate\"")
@@ -441,33 +441,33 @@ func (pu *ProjectUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if pu.mutation.IconCleared() {
+	if pu.mutation.ProjectIconCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   project.IconTable,
-			Columns: []string{project.IconColumn},
+			Table:   project.ProjectIconTable,
+			Columns: []string{project.ProjectIconColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
-					Column: icon.FieldID,
+					Column: projecticon.FieldID,
 				},
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := pu.mutation.IconIDs(); len(nodes) > 0 {
+	if nodes := pu.mutation.ProjectIconIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   project.IconTable,
-			Columns: []string{project.IconColumn},
+			Table:   project.ProjectIconTable,
+			Columns: []string{project.ProjectIconColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
-					Column: icon.FieldID,
+					Column: projecticon.FieldID,
 				},
 			},
 		}
@@ -602,9 +602,9 @@ func (puo *ProjectUpdateOne) SetProjectLightColorID(u ulid.ID) *ProjectUpdateOne
 	return puo
 }
 
-// SetIconID sets the "icon_id" field.
-func (puo *ProjectUpdateOne) SetIconID(u ulid.ID) *ProjectUpdateOne {
-	puo.mutation.SetIconID(u)
+// SetProjectIconID sets the "project_icon_id" field.
+func (puo *ProjectUpdateOne) SetProjectIconID(u ulid.ID) *ProjectUpdateOne {
+	puo.mutation.SetProjectIconID(u)
 	return puo
 }
 
@@ -661,9 +661,9 @@ func (puo *ProjectUpdateOne) SetProjectLightColor(p *ProjectLightColor) *Project
 	return puo.SetProjectLightColorID(p.ID)
 }
 
-// SetIcon sets the "icon" edge to the Icon entity.
-func (puo *ProjectUpdateOne) SetIcon(i *Icon) *ProjectUpdateOne {
-	return puo.SetIconID(i.ID)
+// SetProjectIcon sets the "project_icon" edge to the ProjectIcon entity.
+func (puo *ProjectUpdateOne) SetProjectIcon(p *ProjectIcon) *ProjectUpdateOne {
+	return puo.SetProjectIconID(p.ID)
 }
 
 // SetTeammateID sets the "teammate" edge to the Teammate entity by ID.
@@ -715,9 +715,9 @@ func (puo *ProjectUpdateOne) ClearProjectLightColor() *ProjectUpdateOne {
 	return puo
 }
 
-// ClearIcon clears the "icon" edge to the Icon entity.
-func (puo *ProjectUpdateOne) ClearIcon() *ProjectUpdateOne {
-	puo.mutation.ClearIcon()
+// ClearProjectIcon clears the "project_icon" edge to the ProjectIcon entity.
+func (puo *ProjectUpdateOne) ClearProjectIcon() *ProjectUpdateOne {
+	puo.mutation.ClearProjectIcon()
 	return puo
 }
 
@@ -836,8 +836,8 @@ func (puo *ProjectUpdateOne) check() error {
 	if _, ok := puo.mutation.ProjectLightColorID(); puo.mutation.ProjectLightColorCleared() && !ok {
 		return errors.New("ent: clearing a required unique edge \"project_light_color\"")
 	}
-	if _, ok := puo.mutation.IconID(); puo.mutation.IconCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"icon\"")
+	if _, ok := puo.mutation.ProjectIconID(); puo.mutation.ProjectIconCleared() && !ok {
+		return errors.New("ent: clearing a required unique edge \"project_icon\"")
 	}
 	if _, ok := puo.mutation.TeammateID(); puo.mutation.TeammateCleared() && !ok {
 		return errors.New("ent: clearing a required unique edge \"teammate\"")
@@ -1013,33 +1013,33 @@ func (puo *ProjectUpdateOne) sqlSave(ctx context.Context) (_node *Project, err e
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if puo.mutation.IconCleared() {
+	if puo.mutation.ProjectIconCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   project.IconTable,
-			Columns: []string{project.IconColumn},
+			Table:   project.ProjectIconTable,
+			Columns: []string{project.ProjectIconColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
-					Column: icon.FieldID,
+					Column: projecticon.FieldID,
 				},
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := puo.mutation.IconIDs(); len(nodes) > 0 {
+	if nodes := puo.mutation.ProjectIconIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   project.IconTable,
-			Columns: []string{project.IconColumn},
+			Table:   project.ProjectIconTable,
+			Columns: []string{project.ProjectIconColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
-					Column: icon.FieldID,
+					Column: projecticon.FieldID,
 				},
 			},
 		}

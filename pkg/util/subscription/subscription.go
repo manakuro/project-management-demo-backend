@@ -61,11 +61,18 @@ type ProjectLightColorUpdated struct {
 	Ch chan *ent.ProjectLightColor
 }
 
+// ProjectIconUpdated of channel
+type ProjectIconUpdated struct {
+	ID ulid.ID
+	Ch chan *ent.ProjectIcon
+}
+
 // Subscriptions hold an id and a channel of subscription.
 type Subscriptions struct {
 	ColorUpdated             map[string]ColorUpdated
 	IconUpdated              map[string]IconUpdated
 	ProjectBaseColorUpdated  map[string]ProjectBaseColorUpdated
+	ProjectIconUpdated       map[string]ProjectIconUpdated
 	ProjectLightColorUpdated map[string]ProjectLightColorUpdated
 	ProjectTeammateUpdated   map[string]ProjectTeammateUpdated
 	ProjectUpdated           map[string]ProjectUpdated

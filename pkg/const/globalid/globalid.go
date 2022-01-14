@@ -7,6 +7,7 @@ import (
 	"project-management-demo-backend/ent/icon"
 	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/projectbasecolor"
+	"project-management-demo-backend/ent/projecticon"
 	"project-management-demo-backend/ent/projectlightcolor"
 	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/ent/teammate"
@@ -29,6 +30,7 @@ type GlobalIDs struct {
 	ProjectBaseColor  field
 	ProjectLightColor field
 	ProjectTeammate   field
+	ProjectIcon       field
 	Teammate          field
 	TestTodo          field
 	TestUser          field
@@ -78,6 +80,10 @@ func New() GlobalIDs {
 		ProjectLightColor: field{
 			Prefix: "0AJ",
 			Table:  projectlightcolor.Table,
+		},
+		ProjectIcon: field{
+			Prefix: "0AK",
+			Table:  projecticon.Table,
 		},
 	}
 }

@@ -7,6 +7,7 @@ import (
 	"project-management-demo-backend/ent/icon"
 	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/projectbasecolor"
+	"project-management-demo-backend/ent/projecticon"
 	"project-management-demo-backend/ent/projectlightcolor"
 	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/ent/schema"
@@ -220,6 +221,25 @@ func init() {
 	projectbasecolorDescID := projectbasecolorMixinFields0[0].Descriptor()
 	// projectbasecolor.DefaultID holds the default value on creation for the id field.
 	projectbasecolor.DefaultID = projectbasecolorDescID.Default.(func() ulid.ID)
+	projecticonMixin := schema.ProjectIcon{}.Mixin()
+	projecticonMixinFields0 := projecticonMixin[0].Fields()
+	_ = projecticonMixinFields0
+	projecticonMixinFields2 := projecticonMixin[2].Fields()
+	_ = projecticonMixinFields2
+	projecticonFields := schema.ProjectIcon{}.Fields()
+	_ = projecticonFields
+	// projecticonDescCreatedAt is the schema descriptor for created_at field.
+	projecticonDescCreatedAt := projecticonMixinFields2[0].Descriptor()
+	// projecticon.DefaultCreatedAt holds the default value on creation for the created_at field.
+	projecticon.DefaultCreatedAt = projecticonDescCreatedAt.Default.(func() time.Time)
+	// projecticonDescUpdatedAt is the schema descriptor for updated_at field.
+	projecticonDescUpdatedAt := projecticonMixinFields2[1].Descriptor()
+	// projecticon.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	projecticon.DefaultUpdatedAt = projecticonDescUpdatedAt.Default.(func() time.Time)
+	// projecticonDescID is the schema descriptor for id field.
+	projecticonDescID := projecticonMixinFields0[0].Descriptor()
+	// projecticon.DefaultID holds the default value on creation for the id field.
+	projecticon.DefaultID = projecticonDescID.Default.(func() ulid.ID)
 	projectlightcolorMixin := schema.ProjectLightColor{}.Mixin()
 	projectlightcolorMixinFields0 := projectlightcolorMixin[0].Fields()
 	_ = projectlightcolorMixinFields0

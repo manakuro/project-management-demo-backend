@@ -18,8 +18,8 @@ const (
 	FieldProjectBaseColorID = "project_base_color_id"
 	// FieldProjectLightColorID holds the string denoting the project_light_color_id field in the database.
 	FieldProjectLightColorID = "project_light_color_id"
-	// FieldIconID holds the string denoting the icon_id field in the database.
-	FieldIconID = "icon_id"
+	// FieldProjectIconID holds the string denoting the project_icon_id field in the database.
+	FieldProjectIconID = "project_icon_id"
 	// FieldCreatedBy holds the string denoting the created_by field in the database.
 	FieldCreatedBy = "created_by"
 	// FieldName holds the string denoting the name field in the database.
@@ -40,8 +40,8 @@ const (
 	EdgeProjectBaseColor = "project_base_color"
 	// EdgeProjectLightColor holds the string denoting the project_light_color edge name in mutations.
 	EdgeProjectLightColor = "project_light_color"
-	// EdgeIcon holds the string denoting the icon edge name in mutations.
-	EdgeIcon = "icon"
+	// EdgeProjectIcon holds the string denoting the project_icon edge name in mutations.
+	EdgeProjectIcon = "project_icon"
 	// EdgeTeammate holds the string denoting the teammate edge name in mutations.
 	EdgeTeammate = "teammate"
 	// EdgeProjectTeammates holds the string denoting the project_teammates edge name in mutations.
@@ -69,13 +69,13 @@ const (
 	ProjectLightColorInverseTable = "project_light_colors"
 	// ProjectLightColorColumn is the table column denoting the project_light_color relation/edge.
 	ProjectLightColorColumn = "project_light_color_id"
-	// IconTable is the table that holds the icon relation/edge.
-	IconTable = "projects"
-	// IconInverseTable is the table name for the Icon entity.
-	// It exists in this package in order to avoid circular dependency with the "icon" package.
-	IconInverseTable = "icons"
-	// IconColumn is the table column denoting the icon relation/edge.
-	IconColumn = "icon_id"
+	// ProjectIconTable is the table that holds the project_icon relation/edge.
+	ProjectIconTable = "projects"
+	// ProjectIconInverseTable is the table name for the ProjectIcon entity.
+	// It exists in this package in order to avoid circular dependency with the "projecticon" package.
+	ProjectIconInverseTable = "project_icons"
+	// ProjectIconColumn is the table column denoting the project_icon relation/edge.
+	ProjectIconColumn = "project_icon_id"
 	// TeammateTable is the table that holds the teammate relation/edge.
 	TeammateTable = "projects"
 	// TeammateInverseTable is the table name for the Teammate entity.
@@ -98,7 +98,7 @@ var Columns = []string{
 	FieldWorkspaceID,
 	FieldProjectBaseColorID,
 	FieldProjectLightColorID,
-	FieldIconID,
+	FieldProjectIconID,
 	FieldCreatedBy,
 	FieldName,
 	FieldDescription,
