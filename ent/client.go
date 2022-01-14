@@ -14,6 +14,7 @@ import (
 	"project-management-demo-backend/ent/icon"
 	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/projectbasecolor"
+	"project-management-demo-backend/ent/projecticon"
 	"project-management-demo-backend/ent/projectlightcolor"
 	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/ent/teammate"
@@ -39,6 +40,8 @@ type Client struct {
 	Project *ProjectClient
 	// ProjectBaseColor is the client for interacting with the ProjectBaseColor builders.
 	ProjectBaseColor *ProjectBaseColorClient
+	// ProjectIcon is the client for interacting with the ProjectIcon builders.
+	ProjectIcon *ProjectIconClient
 	// ProjectLightColor is the client for interacting with the ProjectLightColor builders.
 	ProjectLightColor *ProjectLightColorClient
 	// ProjectTeammate is the client for interacting with the ProjectTeammate builders.
@@ -68,6 +71,7 @@ func (c *Client) init() {
 	c.Icon = NewIconClient(c.config)
 	c.Project = NewProjectClient(c.config)
 	c.ProjectBaseColor = NewProjectBaseColorClient(c.config)
+	c.ProjectIcon = NewProjectIconClient(c.config)
 	c.ProjectLightColor = NewProjectLightColorClient(c.config)
 	c.ProjectTeammate = NewProjectTeammateClient(c.config)
 	c.Teammate = NewTeammateClient(c.config)
@@ -111,6 +115,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Icon:              NewIconClient(cfg),
 		Project:           NewProjectClient(cfg),
 		ProjectBaseColor:  NewProjectBaseColorClient(cfg),
+		ProjectIcon:       NewProjectIconClient(cfg),
 		ProjectLightColor: NewProjectLightColorClient(cfg),
 		ProjectTeammate:   NewProjectTeammateClient(cfg),
 		Teammate:          NewTeammateClient(cfg),
@@ -139,6 +144,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Icon:              NewIconClient(cfg),
 		Project:           NewProjectClient(cfg),
 		ProjectBaseColor:  NewProjectBaseColorClient(cfg),
+		ProjectIcon:       NewProjectIconClient(cfg),
 		ProjectLightColor: NewProjectLightColorClient(cfg),
 		ProjectTeammate:   NewProjectTeammateClient(cfg),
 		Teammate:          NewTeammateClient(cfg),
@@ -178,6 +184,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.Icon.Use(hooks...)
 	c.Project.Use(hooks...)
 	c.ProjectBaseColor.Use(hooks...)
+	c.ProjectIcon.Use(hooks...)
 	c.ProjectLightColor.Use(hooks...)
 	c.ProjectTeammate.Use(hooks...)
 	c.Teammate.Use(hooks...)
@@ -393,15 +400,15 @@ func (c *IconClient) GetX(ctx context.Context, id ulid.ID) *Icon {
 	return obj
 }
 
-// QueryProjects queries the projects edge of a Icon.
-func (c *IconClient) QueryProjects(i *Icon) *ProjectQuery {
-	query := &ProjectQuery{config: c.config}
+// QueryProjectIcons queries the project_icons edge of a Icon.
+func (c *IconClient) QueryProjectIcons(i *Icon) *ProjectIconQuery {
+	query := &ProjectIconQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
 		id := i.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(icon.Table, icon.FieldID, id),
-			sqlgraph.To(project.Table, project.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, icon.ProjectsTable, icon.ProjectsColumn),
+			sqlgraph.To(projecticon.Table, projecticon.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, icon.ProjectIconsTable, icon.ProjectIconsColumn),
 		)
 		fromV = sqlgraph.Neighbors(i.driver.Dialect(), step)
 		return fromV, nil
@@ -547,15 +554,15 @@ func (c *ProjectClient) QueryProjectLightColor(pr *Project) *ProjectLightColorQu
 	return query
 }
 
-// QueryIcon queries the icon edge of a Project.
-func (c *ProjectClient) QueryIcon(pr *Project) *IconQuery {
-	query := &IconQuery{config: c.config}
+// QueryProjectIcon queries the project_icon edge of a Project.
+func (c *ProjectClient) QueryProjectIcon(pr *Project) *ProjectIconQuery {
+	query := &ProjectIconQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
 		id := pr.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(project.Table, project.FieldID, id),
-			sqlgraph.To(icon.Table, icon.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, project.IconTable, project.IconColumn),
+			sqlgraph.To(projecticon.Table, projecticon.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, project.ProjectIconTable, project.ProjectIconColumn),
 		)
 		fromV = sqlgraph.Neighbors(pr.driver.Dialect(), step)
 		return fromV, nil
@@ -720,6 +727,128 @@ func (c *ProjectBaseColorClient) QueryColor(pbc *ProjectBaseColor) *ColorQuery {
 // Hooks returns the client hooks.
 func (c *ProjectBaseColorClient) Hooks() []Hook {
 	return c.hooks.ProjectBaseColor
+}
+
+// ProjectIconClient is a client for the ProjectIcon schema.
+type ProjectIconClient struct {
+	config
+}
+
+// NewProjectIconClient returns a client for the ProjectIcon from the given config.
+func NewProjectIconClient(c config) *ProjectIconClient {
+	return &ProjectIconClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `projecticon.Hooks(f(g(h())))`.
+func (c *ProjectIconClient) Use(hooks ...Hook) {
+	c.hooks.ProjectIcon = append(c.hooks.ProjectIcon, hooks...)
+}
+
+// Create returns a create builder for ProjectIcon.
+func (c *ProjectIconClient) Create() *ProjectIconCreate {
+	mutation := newProjectIconMutation(c.config, OpCreate)
+	return &ProjectIconCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of ProjectIcon entities.
+func (c *ProjectIconClient) CreateBulk(builders ...*ProjectIconCreate) *ProjectIconCreateBulk {
+	return &ProjectIconCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for ProjectIcon.
+func (c *ProjectIconClient) Update() *ProjectIconUpdate {
+	mutation := newProjectIconMutation(c.config, OpUpdate)
+	return &ProjectIconUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ProjectIconClient) UpdateOne(pi *ProjectIcon) *ProjectIconUpdateOne {
+	mutation := newProjectIconMutation(c.config, OpUpdateOne, withProjectIcon(pi))
+	return &ProjectIconUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ProjectIconClient) UpdateOneID(id ulid.ID) *ProjectIconUpdateOne {
+	mutation := newProjectIconMutation(c.config, OpUpdateOne, withProjectIconID(id))
+	return &ProjectIconUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for ProjectIcon.
+func (c *ProjectIconClient) Delete() *ProjectIconDelete {
+	mutation := newProjectIconMutation(c.config, OpDelete)
+	return &ProjectIconDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *ProjectIconClient) DeleteOne(pi *ProjectIcon) *ProjectIconDeleteOne {
+	return c.DeleteOneID(pi.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *ProjectIconClient) DeleteOneID(id ulid.ID) *ProjectIconDeleteOne {
+	builder := c.Delete().Where(projecticon.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ProjectIconDeleteOne{builder}
+}
+
+// Query returns a query builder for ProjectIcon.
+func (c *ProjectIconClient) Query() *ProjectIconQuery {
+	return &ProjectIconQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a ProjectIcon entity by its id.
+func (c *ProjectIconClient) Get(ctx context.Context, id ulid.ID) (*ProjectIcon, error) {
+	return c.Query().Where(projecticon.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ProjectIconClient) GetX(ctx context.Context, id ulid.ID) *ProjectIcon {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryProjects queries the projects edge of a ProjectIcon.
+func (c *ProjectIconClient) QueryProjects(pi *ProjectIcon) *ProjectQuery {
+	query := &ProjectQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := pi.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(projecticon.Table, projecticon.FieldID, id),
+			sqlgraph.To(project.Table, project.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, projecticon.ProjectsTable, projecticon.ProjectsColumn),
+		)
+		fromV = sqlgraph.Neighbors(pi.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryIcon queries the icon edge of a ProjectIcon.
+func (c *ProjectIconClient) QueryIcon(pi *ProjectIcon) *IconQuery {
+	query := &IconQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := pi.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(projecticon.Table, projecticon.FieldID, id),
+			sqlgraph.To(icon.Table, icon.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, projecticon.IconTable, projecticon.IconColumn),
+		)
+		fromV = sqlgraph.Neighbors(pi.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *ProjectIconClient) Hooks() []Hook {
+	return c.hooks.ProjectIcon
 }
 
 // ProjectLightColorClient is a client for the ProjectLightColor schema.

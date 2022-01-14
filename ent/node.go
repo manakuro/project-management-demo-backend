@@ -10,6 +10,7 @@ import (
 	"project-management-demo-backend/ent/icon"
 	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/projectbasecolor"
+	"project-management-demo-backend/ent/projecticon"
 	"project-management-demo-backend/ent/projectlightcolor"
 	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/ent/schema/ulid"
@@ -162,11 +163,11 @@ func (i *Icon) Node(ctx context.Context) (node *Node, err error) {
 		Value: string(buf),
 	}
 	node.Edges[0] = &Edge{
-		Type: "Project",
-		Name: "projects",
+		Type: "ProjectIcon",
+		Name: "project_icons",
 	}
-	err = i.QueryProjects().
-		Select(project.FieldID).
+	err = i.QueryProjectIcons().
+		Select(projecticon.FieldID).
 		Scan(ctx, &node.Edges[0].IDs)
 	if err != nil {
 		return nil, err
@@ -206,12 +207,12 @@ func (pr *Project) Node(ctx context.Context) (node *Node, err error) {
 		Name:  "project_light_color_id",
 		Value: string(buf),
 	}
-	if buf, err = json.Marshal(pr.IconID); err != nil {
+	if buf, err = json.Marshal(pr.ProjectIconID); err != nil {
 		return nil, err
 	}
 	node.Fields[3] = &Field{
 		Type:  "ulid.ID",
-		Name:  "icon_id",
+		Name:  "project_icon_id",
 		Value: string(buf),
 	}
 	if buf, err = json.Marshal(pr.CreatedBy); err != nil {
@@ -301,11 +302,11 @@ func (pr *Project) Node(ctx context.Context) (node *Node, err error) {
 		return nil, err
 	}
 	node.Edges[3] = &Edge{
-		Type: "Icon",
-		Name: "icon",
+		Type: "ProjectIcon",
+		Name: "project_icon",
 	}
-	err = pr.QueryIcon().
-		Select(icon.FieldID).
+	err = pr.QueryProjectIcon().
+		Select(projecticon.FieldID).
 		Scan(ctx, &node.Edges[3].IDs)
 	if err != nil {
 		return nil, err
@@ -381,6 +382,61 @@ func (pbc *ProjectBaseColor) Node(ctx context.Context) (node *Node, err error) {
 	}
 	err = pbc.QueryColor().
 		Select(color.FieldID).
+		Scan(ctx, &node.Edges[1].IDs)
+	if err != nil {
+		return nil, err
+	}
+	return node, nil
+}
+
+func (pi *ProjectIcon) Node(ctx context.Context) (node *Node, err error) {
+	node = &Node{
+		ID:     pi.ID,
+		Type:   "ProjectIcon",
+		Fields: make([]*Field, 3),
+		Edges:  make([]*Edge, 2),
+	}
+	var buf []byte
+	if buf, err = json.Marshal(pi.IconID); err != nil {
+		return nil, err
+	}
+	node.Fields[0] = &Field{
+		Type:  "ulid.ID",
+		Name:  "icon_id",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(pi.CreatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[1] = &Field{
+		Type:  "time.Time",
+		Name:  "created_at",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(pi.UpdatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[2] = &Field{
+		Type:  "time.Time",
+		Name:  "updated_at",
+		Value: string(buf),
+	}
+	node.Edges[0] = &Edge{
+		Type: "Project",
+		Name: "projects",
+	}
+	err = pi.QueryProjects().
+		Select(project.FieldID).
+		Scan(ctx, &node.Edges[0].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[1] = &Edge{
+		Type: "Icon",
+		Name: "icon",
+	}
+	err = pi.QueryIcon().
+		Select(icon.FieldID).
 		Scan(ctx, &node.Edges[1].IDs)
 	if err != nil {
 		return nil, err
@@ -907,6 +963,15 @@ func (c *Client) noder(ctx context.Context, table string, id ulid.ID) (Noder, er
 			return nil, err
 		}
 		return n, nil
+	case projecticon.Table:
+		n, err := c.ProjectIcon.Query().
+			Where(projecticon.ID(id)).
+			CollectFields(ctx, "ProjectIcon").
+			Only(ctx)
+		if err != nil {
+			return nil, err
+		}
+		return n, nil
 	case projectlightcolor.Table:
 		n, err := c.ProjectLightColor.Query().
 			Where(projectlightcolor.ID(id)).
@@ -1077,6 +1142,19 @@ func (c *Client) noders(ctx context.Context, table string, ids []ulid.ID) ([]Nod
 		nodes, err := c.ProjectBaseColor.Query().
 			Where(projectbasecolor.IDIn(ids...)).
 			CollectFields(ctx, "ProjectBaseColor").
+			All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, node := range nodes {
+			for _, noder := range idmap[node.ID] {
+				*noder = node
+			}
+		}
+	case projecticon.Table:
+		nodes, err := c.ProjectIcon.Query().
+			Where(projecticon.IDIn(ids...)).
+			CollectFields(ctx, "ProjectIcon").
 			All(ctx)
 		if err != nil {
 			return nil, err

@@ -9,6 +9,7 @@ import (
 	"project-management-demo-backend/ent/icon"
 	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/projectbasecolor"
+	"project-management-demo-backend/ent/projecticon"
 	"project-management-demo-backend/ent/projectlightcolor"
 	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/ent/teammate"
@@ -42,6 +43,7 @@ func columnChecker(table string) func(string) error {
 		icon.Table:              icon.ValidColumn,
 		project.Table:           project.ValidColumn,
 		projectbasecolor.Table:  projectbasecolor.ValidColumn,
+		projecticon.Table:       projecticon.ValidColumn,
 		projectlightcolor.Table: projectlightcolor.ValidColumn,
 		projectteammate.Table:   projectteammate.ValidColumn,
 		teammate.Table:          teammate.ValidColumn,

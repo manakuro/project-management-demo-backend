@@ -7,7 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"project-management-demo-backend/ent/icon"
-	"project-management-demo-backend/ent/project"
+	"project-management-demo-backend/ent/projecticon"
 	"project-management-demo-backend/ent/schema/ulid"
 	"time"
 
@@ -76,19 +76,19 @@ func (ic *IconCreate) SetNillableID(u *ulid.ID) *IconCreate {
 	return ic
 }
 
-// AddProjectIDs adds the "projects" edge to the Project entity by IDs.
-func (ic *IconCreate) AddProjectIDs(ids ...ulid.ID) *IconCreate {
-	ic.mutation.AddProjectIDs(ids...)
+// AddProjectIconIDs adds the "project_icons" edge to the ProjectIcon entity by IDs.
+func (ic *IconCreate) AddProjectIconIDs(ids ...ulid.ID) *IconCreate {
+	ic.mutation.AddProjectIconIDs(ids...)
 	return ic
 }
 
-// AddProjects adds the "projects" edges to the Project entity.
-func (ic *IconCreate) AddProjects(p ...*Project) *IconCreate {
+// AddProjectIcons adds the "project_icons" edges to the ProjectIcon entity.
+func (ic *IconCreate) AddProjectIcons(p ...*ProjectIcon) *IconCreate {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
-	return ic.AddProjectIDs(ids...)
+	return ic.AddProjectIconIDs(ids...)
 }
 
 // Mutation returns the IconMutation object of the builder.
@@ -264,17 +264,17 @@ func (ic *IconCreate) createSpec() (*Icon, *sqlgraph.CreateSpec) {
 		})
 		_node.UpdatedAt = value
 	}
-	if nodes := ic.mutation.ProjectsIDs(); len(nodes) > 0 {
+	if nodes := ic.mutation.ProjectIconsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   icon.ProjectsTable,
-			Columns: []string{icon.ProjectsColumn},
+			Table:   icon.ProjectIconsTable,
+			Columns: []string{icon.ProjectIconsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
-					Column: project.FieldID,
+					Column: projecticon.FieldID,
 				},
 			},
 		}

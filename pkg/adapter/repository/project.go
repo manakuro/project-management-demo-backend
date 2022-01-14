@@ -52,8 +52,10 @@ func (r *projectRepository) List(ctx context.Context) ([]*model.Project, error) 
 func (r *projectRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ProjectWhereInput, requestedFields []string) (*model.ProjectConnection, error) {
 	q := r.client.Project.Query()
 
-	if collection.Contains(requestedFields, "edges.node.icon") {
-		q.WithIcon()
+	if collection.Contains(requestedFields, "edges.node.projectIcon") {
+		q.WithProjectIcon(func(query *ent.ProjectIconQuery) {
+			query.WithIcon()
+		})
 	}
 	if collection.Contains(requestedFields, "edges.node.projectBaseColor") {
 		q.WithProjectBaseColor(func(query *ent.ProjectBaseColorQuery) {

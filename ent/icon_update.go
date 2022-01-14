@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"project-management-demo-backend/ent/icon"
 	"project-management-demo-backend/ent/predicate"
-	"project-management-demo-backend/ent/project"
+	"project-management-demo-backend/ent/projecticon"
 	"project-management-demo-backend/ent/schema/ulid"
 
 	"entgo.io/ent/dialect/sql"
@@ -40,19 +40,19 @@ func (iu *IconUpdate) SetIcon(s string) *IconUpdate {
 	return iu
 }
 
-// AddProjectIDs adds the "projects" edge to the Project entity by IDs.
-func (iu *IconUpdate) AddProjectIDs(ids ...ulid.ID) *IconUpdate {
-	iu.mutation.AddProjectIDs(ids...)
+// AddProjectIconIDs adds the "project_icons" edge to the ProjectIcon entity by IDs.
+func (iu *IconUpdate) AddProjectIconIDs(ids ...ulid.ID) *IconUpdate {
+	iu.mutation.AddProjectIconIDs(ids...)
 	return iu
 }
 
-// AddProjects adds the "projects" edges to the Project entity.
-func (iu *IconUpdate) AddProjects(p ...*Project) *IconUpdate {
+// AddProjectIcons adds the "project_icons" edges to the ProjectIcon entity.
+func (iu *IconUpdate) AddProjectIcons(p ...*ProjectIcon) *IconUpdate {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
-	return iu.AddProjectIDs(ids...)
+	return iu.AddProjectIconIDs(ids...)
 }
 
 // Mutation returns the IconMutation object of the builder.
@@ -60,25 +60,25 @@ func (iu *IconUpdate) Mutation() *IconMutation {
 	return iu.mutation
 }
 
-// ClearProjects clears all "projects" edges to the Project entity.
-func (iu *IconUpdate) ClearProjects() *IconUpdate {
-	iu.mutation.ClearProjects()
+// ClearProjectIcons clears all "project_icons" edges to the ProjectIcon entity.
+func (iu *IconUpdate) ClearProjectIcons() *IconUpdate {
+	iu.mutation.ClearProjectIcons()
 	return iu
 }
 
-// RemoveProjectIDs removes the "projects" edge to Project entities by IDs.
-func (iu *IconUpdate) RemoveProjectIDs(ids ...ulid.ID) *IconUpdate {
-	iu.mutation.RemoveProjectIDs(ids...)
+// RemoveProjectIconIDs removes the "project_icons" edge to ProjectIcon entities by IDs.
+func (iu *IconUpdate) RemoveProjectIconIDs(ids ...ulid.ID) *IconUpdate {
+	iu.mutation.RemoveProjectIconIDs(ids...)
 	return iu
 }
 
-// RemoveProjects removes "projects" edges to Project entities.
-func (iu *IconUpdate) RemoveProjects(p ...*Project) *IconUpdate {
+// RemoveProjectIcons removes "project_icons" edges to ProjectIcon entities.
+func (iu *IconUpdate) RemoveProjectIcons(p ...*ProjectIcon) *IconUpdate {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
-	return iu.RemoveProjectIDs(ids...)
+	return iu.RemoveProjectIconIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -188,33 +188,33 @@ func (iu *IconUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: icon.FieldIcon,
 		})
 	}
-	if iu.mutation.ProjectsCleared() {
+	if iu.mutation.ProjectIconsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   icon.ProjectsTable,
-			Columns: []string{icon.ProjectsColumn},
+			Table:   icon.ProjectIconsTable,
+			Columns: []string{icon.ProjectIconsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
-					Column: project.FieldID,
+					Column: projecticon.FieldID,
 				},
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := iu.mutation.RemovedProjectsIDs(); len(nodes) > 0 && !iu.mutation.ProjectsCleared() {
+	if nodes := iu.mutation.RemovedProjectIconsIDs(); len(nodes) > 0 && !iu.mutation.ProjectIconsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   icon.ProjectsTable,
-			Columns: []string{icon.ProjectsColumn},
+			Table:   icon.ProjectIconsTable,
+			Columns: []string{icon.ProjectIconsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
-					Column: project.FieldID,
+					Column: projecticon.FieldID,
 				},
 			},
 		}
@@ -223,17 +223,17 @@ func (iu *IconUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := iu.mutation.ProjectsIDs(); len(nodes) > 0 {
+	if nodes := iu.mutation.ProjectIconsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   icon.ProjectsTable,
-			Columns: []string{icon.ProjectsColumn},
+			Table:   icon.ProjectIconsTable,
+			Columns: []string{icon.ProjectIconsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
-					Column: project.FieldID,
+					Column: projecticon.FieldID,
 				},
 			},
 		}
@@ -273,19 +273,19 @@ func (iuo *IconUpdateOne) SetIcon(s string) *IconUpdateOne {
 	return iuo
 }
 
-// AddProjectIDs adds the "projects" edge to the Project entity by IDs.
-func (iuo *IconUpdateOne) AddProjectIDs(ids ...ulid.ID) *IconUpdateOne {
-	iuo.mutation.AddProjectIDs(ids...)
+// AddProjectIconIDs adds the "project_icons" edge to the ProjectIcon entity by IDs.
+func (iuo *IconUpdateOne) AddProjectIconIDs(ids ...ulid.ID) *IconUpdateOne {
+	iuo.mutation.AddProjectIconIDs(ids...)
 	return iuo
 }
 
-// AddProjects adds the "projects" edges to the Project entity.
-func (iuo *IconUpdateOne) AddProjects(p ...*Project) *IconUpdateOne {
+// AddProjectIcons adds the "project_icons" edges to the ProjectIcon entity.
+func (iuo *IconUpdateOne) AddProjectIcons(p ...*ProjectIcon) *IconUpdateOne {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
-	return iuo.AddProjectIDs(ids...)
+	return iuo.AddProjectIconIDs(ids...)
 }
 
 // Mutation returns the IconMutation object of the builder.
@@ -293,25 +293,25 @@ func (iuo *IconUpdateOne) Mutation() *IconMutation {
 	return iuo.mutation
 }
 
-// ClearProjects clears all "projects" edges to the Project entity.
-func (iuo *IconUpdateOne) ClearProjects() *IconUpdateOne {
-	iuo.mutation.ClearProjects()
+// ClearProjectIcons clears all "project_icons" edges to the ProjectIcon entity.
+func (iuo *IconUpdateOne) ClearProjectIcons() *IconUpdateOne {
+	iuo.mutation.ClearProjectIcons()
 	return iuo
 }
 
-// RemoveProjectIDs removes the "projects" edge to Project entities by IDs.
-func (iuo *IconUpdateOne) RemoveProjectIDs(ids ...ulid.ID) *IconUpdateOne {
-	iuo.mutation.RemoveProjectIDs(ids...)
+// RemoveProjectIconIDs removes the "project_icons" edge to ProjectIcon entities by IDs.
+func (iuo *IconUpdateOne) RemoveProjectIconIDs(ids ...ulid.ID) *IconUpdateOne {
+	iuo.mutation.RemoveProjectIconIDs(ids...)
 	return iuo
 }
 
-// RemoveProjects removes "projects" edges to Project entities.
-func (iuo *IconUpdateOne) RemoveProjects(p ...*Project) *IconUpdateOne {
+// RemoveProjectIcons removes "project_icons" edges to ProjectIcon entities.
+func (iuo *IconUpdateOne) RemoveProjectIcons(p ...*ProjectIcon) *IconUpdateOne {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
-	return iuo.RemoveProjectIDs(ids...)
+	return iuo.RemoveProjectIconIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -445,33 +445,33 @@ func (iuo *IconUpdateOne) sqlSave(ctx context.Context) (_node *Icon, err error) 
 			Column: icon.FieldIcon,
 		})
 	}
-	if iuo.mutation.ProjectsCleared() {
+	if iuo.mutation.ProjectIconsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   icon.ProjectsTable,
-			Columns: []string{icon.ProjectsColumn},
+			Table:   icon.ProjectIconsTable,
+			Columns: []string{icon.ProjectIconsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
-					Column: project.FieldID,
+					Column: projecticon.FieldID,
 				},
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := iuo.mutation.RemovedProjectsIDs(); len(nodes) > 0 && !iuo.mutation.ProjectsCleared() {
+	if nodes := iuo.mutation.RemovedProjectIconsIDs(); len(nodes) > 0 && !iuo.mutation.ProjectIconsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   icon.ProjectsTable,
-			Columns: []string{icon.ProjectsColumn},
+			Table:   icon.ProjectIconsTable,
+			Columns: []string{icon.ProjectIconsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
-					Column: project.FieldID,
+					Column: projecticon.FieldID,
 				},
 			},
 		}
@@ -480,17 +480,17 @@ func (iuo *IconUpdateOne) sqlSave(ctx context.Context) (_node *Icon, err error) 
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := iuo.mutation.ProjectsIDs(); len(nodes) > 0 {
+	if nodes := iuo.mutation.ProjectIconsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   icon.ProjectsTable,
-			Columns: []string{icon.ProjectsColumn},
+			Table:   icon.ProjectIconsTable,
+			Columns: []string{icon.ProjectIconsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
-					Column: project.FieldID,
+					Column: projecticon.FieldID,
 				},
 			},
 		}

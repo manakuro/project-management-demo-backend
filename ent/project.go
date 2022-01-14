@@ -5,9 +5,9 @@ package ent
 import (
 	"encoding/json"
 	"fmt"
-	"project-management-demo-backend/ent/icon"
 	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/projectbasecolor"
+	"project-management-demo-backend/ent/projecticon"
 	"project-management-demo-backend/ent/projectlightcolor"
 	"project-management-demo-backend/ent/schema/editor"
 	"project-management-demo-backend/ent/schema/ulid"
@@ -30,8 +30,8 @@ type Project struct {
 	ProjectBaseColorID ulid.ID `json:"project_base_color_id,omitempty"`
 	// ProjectLightColorID holds the value of the "project_light_color_id" field.
 	ProjectLightColorID ulid.ID `json:"project_light_color_id,omitempty"`
-	// IconID holds the value of the "icon_id" field.
-	IconID ulid.ID `json:"icon_id,omitempty"`
+	// ProjectIconID holds the value of the "project_icon_id" field.
+	ProjectIconID ulid.ID `json:"project_icon_id,omitempty"`
 	// CreatedBy holds the value of the "created_by" field.
 	CreatedBy ulid.ID `json:"created_by,omitempty"`
 	// Name holds the value of the "name" field.
@@ -59,8 +59,8 @@ type ProjectEdges struct {
 	ProjectBaseColor *ProjectBaseColor `json:"project_base_color,omitempty"`
 	// ProjectLightColor holds the value of the project_light_color edge.
 	ProjectLightColor *ProjectLightColor `json:"project_light_color,omitempty"`
-	// Icon holds the value of the icon edge.
-	Icon *Icon `json:"icon,omitempty"`
+	// ProjectIcon holds the value of the project_icon edge.
+	ProjectIcon *ProjectIcon `json:"project_icon,omitempty"`
 	// Teammate holds the value of the teammate edge.
 	Teammate *Teammate `json:"teammate,omitempty"`
 	// ProjectTeammates holds the value of the project_teammates edge.
@@ -112,18 +112,18 @@ func (e ProjectEdges) ProjectLightColorOrErr() (*ProjectLightColor, error) {
 	return nil, &NotLoadedError{edge: "project_light_color"}
 }
 
-// IconOrErr returns the Icon value or an error if the edge
+// ProjectIconOrErr returns the ProjectIcon value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e ProjectEdges) IconOrErr() (*Icon, error) {
+func (e ProjectEdges) ProjectIconOrErr() (*ProjectIcon, error) {
 	if e.loadedTypes[3] {
-		if e.Icon == nil {
-			// The edge icon was loaded in eager-loading,
+		if e.ProjectIcon == nil {
+			// The edge project_icon was loaded in eager-loading,
 			// but was not found.
-			return nil, &NotFoundError{label: icon.Label}
+			return nil, &NotFoundError{label: projecticon.Label}
 		}
-		return e.Icon, nil
+		return e.ProjectIcon, nil
 	}
-	return nil, &NotLoadedError{edge: "icon"}
+	return nil, &NotLoadedError{edge: "project_icon"}
 }
 
 // TeammateOrErr returns the Teammate value or an error if the edge
@@ -160,7 +160,7 @@ func (*Project) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullString)
 		case project.FieldDueDate, project.FieldCreatedAt, project.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
-		case project.FieldID, project.FieldWorkspaceID, project.FieldProjectBaseColorID, project.FieldProjectLightColorID, project.FieldIconID, project.FieldCreatedBy:
+		case project.FieldID, project.FieldWorkspaceID, project.FieldProjectBaseColorID, project.FieldProjectLightColorID, project.FieldProjectIconID, project.FieldCreatedBy:
 			values[i] = new(ulid.ID)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Project", columns[i])
@@ -201,11 +201,11 @@ func (pr *Project) assignValues(columns []string, values []interface{}) error {
 			} else if value != nil {
 				pr.ProjectLightColorID = *value
 			}
-		case project.FieldIconID:
+		case project.FieldProjectIconID:
 			if value, ok := values[i].(*ulid.ID); !ok {
-				return fmt.Errorf("unexpected type %T for field icon_id", values[i])
+				return fmt.Errorf("unexpected type %T for field project_icon_id", values[i])
 			} else if value != nil {
-				pr.IconID = *value
+				pr.ProjectIconID = *value
 			}
 		case project.FieldCreatedBy:
 			if value, ok := values[i].(*ulid.ID); !ok {
@@ -271,9 +271,9 @@ func (pr *Project) QueryProjectLightColor() *ProjectLightColorQuery {
 	return (&ProjectClient{config: pr.config}).QueryProjectLightColor(pr)
 }
 
-// QueryIcon queries the "icon" edge of the Project entity.
-func (pr *Project) QueryIcon() *IconQuery {
-	return (&ProjectClient{config: pr.config}).QueryIcon(pr)
+// QueryProjectIcon queries the "project_icon" edge of the Project entity.
+func (pr *Project) QueryProjectIcon() *ProjectIconQuery {
+	return (&ProjectClient{config: pr.config}).QueryProjectIcon(pr)
 }
 
 // QueryTeammate queries the "teammate" edge of the Project entity.
@@ -315,8 +315,8 @@ func (pr *Project) String() string {
 	builder.WriteString(fmt.Sprintf("%v", pr.ProjectBaseColorID))
 	builder.WriteString(", project_light_color_id=")
 	builder.WriteString(fmt.Sprintf("%v", pr.ProjectLightColorID))
-	builder.WriteString(", icon_id=")
-	builder.WriteString(fmt.Sprintf("%v", pr.IconID))
+	builder.WriteString(", project_icon_id=")
+	builder.WriteString(fmt.Sprintf("%v", pr.ProjectIconID))
 	builder.WriteString(", created_by=")
 	builder.WriteString(fmt.Sprintf("%v", pr.CreatedBy))
 	builder.WriteString(", name=")

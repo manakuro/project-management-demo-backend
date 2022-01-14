@@ -7,6 +7,7 @@ type Controller struct {
 	Icon              interface{ Icon }
 	Project           interface{ Project }
 	ProjectBaseColor  interface{ ProjectBaseColor }
+	ProjectIcon       interface{ ProjectIcon }
 	ProjectLightColor interface{ ProjectLightColor }
 	ProjectTeammate   interface{ ProjectTeammate }
 	Teammate          interface{ Teammate }

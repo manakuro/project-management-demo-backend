@@ -18,6 +18,9 @@ type Project func(*sql.Selector)
 // ProjectBaseColor is the predicate function for projectbasecolor builders.
 type ProjectBaseColor func(*sql.Selector)
 
+// ProjectIcon is the predicate function for projecticon builders.
+type ProjectIcon func(*sql.Selector)
+
 // ProjectLightColor is the predicate function for projectlightcolor builders.
 type ProjectLightColor func(*sql.Selector)
 

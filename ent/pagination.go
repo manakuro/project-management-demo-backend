@@ -12,6 +12,7 @@ import (
 	"project-management-demo-backend/ent/icon"
 	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/projectbasecolor"
+	"project-management-demo-backend/ent/projecticon"
 	"project-management-demo-backend/ent/projectlightcolor"
 	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/ent/schema/ulid"
@@ -1147,6 +1148,233 @@ func (pbc *ProjectBaseColor) ToEdge(order *ProjectBaseColorOrder) *ProjectBaseCo
 	return &ProjectBaseColorEdge{
 		Node:   pbc,
 		Cursor: order.Field.toCursor(pbc),
+	}
+}
+
+// ProjectIconEdge is the edge representation of ProjectIcon.
+type ProjectIconEdge struct {
+	Node   *ProjectIcon `json:"node"`
+	Cursor Cursor       `json:"cursor"`
+}
+
+// ProjectIconConnection is the connection containing edges to ProjectIcon.
+type ProjectIconConnection struct {
+	Edges      []*ProjectIconEdge `json:"edges"`
+	PageInfo   PageInfo           `json:"pageInfo"`
+	TotalCount int                `json:"totalCount"`
+}
+
+// ProjectIconPaginateOption enables pagination customization.
+type ProjectIconPaginateOption func(*projectIconPager) error
+
+// WithProjectIconOrder configures pagination ordering.
+func WithProjectIconOrder(order *ProjectIconOrder) ProjectIconPaginateOption {
+	if order == nil {
+		order = DefaultProjectIconOrder
+	}
+	o := *order
+	return func(pager *projectIconPager) error {
+		if err := o.Direction.Validate(); err != nil {
+			return err
+		}
+		if o.Field == nil {
+			o.Field = DefaultProjectIconOrder.Field
+		}
+		pager.order = &o
+		return nil
+	}
+}
+
+// WithProjectIconFilter configures pagination filter.
+func WithProjectIconFilter(filter func(*ProjectIconQuery) (*ProjectIconQuery, error)) ProjectIconPaginateOption {
+	return func(pager *projectIconPager) error {
+		if filter == nil {
+			return errors.New("ProjectIconQuery filter cannot be nil")
+		}
+		pager.filter = filter
+		return nil
+	}
+}
+
+type projectIconPager struct {
+	order  *ProjectIconOrder
+	filter func(*ProjectIconQuery) (*ProjectIconQuery, error)
+}
+
+func newProjectIconPager(opts []ProjectIconPaginateOption) (*projectIconPager, error) {
+	pager := &projectIconPager{}
+	for _, opt := range opts {
+		if err := opt(pager); err != nil {
+			return nil, err
+		}
+	}
+	if pager.order == nil {
+		pager.order = DefaultProjectIconOrder
+	}
+	return pager, nil
+}
+
+func (p *projectIconPager) applyFilter(query *ProjectIconQuery) (*ProjectIconQuery, error) {
+	if p.filter != nil {
+		return p.filter(query)
+	}
+	return query, nil
+}
+
+func (p *projectIconPager) toCursor(pi *ProjectIcon) Cursor {
+	return p.order.Field.toCursor(pi)
+}
+
+func (p *projectIconPager) applyCursors(query *ProjectIconQuery, after, before *Cursor) *ProjectIconQuery {
+	for _, predicate := range cursorsToPredicates(
+		p.order.Direction, after, before,
+		p.order.Field.field, DefaultProjectIconOrder.Field.field,
+	) {
+		query = query.Where(predicate)
+	}
+	return query
+}
+
+func (p *projectIconPager) applyOrder(query *ProjectIconQuery, reverse bool) *ProjectIconQuery {
+	direction := p.order.Direction
+	if reverse {
+		direction = direction.reverse()
+	}
+	query = query.Order(direction.orderFunc(p.order.Field.field))
+	if p.order.Field != DefaultProjectIconOrder.Field {
+		query = query.Order(direction.orderFunc(DefaultProjectIconOrder.Field.field))
+	}
+	return query
+}
+
+// Paginate executes the query and returns a relay based cursor connection to ProjectIcon.
+func (pi *ProjectIconQuery) Paginate(
+	ctx context.Context, after *Cursor, first *int,
+	before *Cursor, last *int, opts ...ProjectIconPaginateOption,
+) (*ProjectIconConnection, error) {
+	if err := validateFirstLast(first, last); err != nil {
+		return nil, err
+	}
+	pager, err := newProjectIconPager(opts)
+	if err != nil {
+		return nil, err
+	}
+
+	if pi, err = pager.applyFilter(pi); err != nil {
+		return nil, err
+	}
+
+	conn := &ProjectIconConnection{Edges: []*ProjectIconEdge{}}
+	if !hasCollectedField(ctx, edgesField) || first != nil && *first == 0 || last != nil && *last == 0 {
+		if hasCollectedField(ctx, totalCountField) ||
+			hasCollectedField(ctx, pageInfoField) {
+			count, err := pi.Count(ctx)
+			if err != nil {
+				return nil, err
+			}
+			conn.TotalCount = count
+			conn.PageInfo.HasNextPage = first != nil && count > 0
+			conn.PageInfo.HasPreviousPage = last != nil && count > 0
+		}
+		return conn, nil
+	}
+
+	if (after != nil || first != nil || before != nil || last != nil) && hasCollectedField(ctx, totalCountField) {
+		count, err := pi.Clone().Count(ctx)
+		if err != nil {
+			return nil, err
+		}
+		conn.TotalCount = count
+	}
+
+	pi = pager.applyCursors(pi, after, before)
+	pi = pager.applyOrder(pi, last != nil)
+	var limit int
+	if first != nil {
+		limit = *first + 1
+	} else if last != nil {
+		limit = *last + 1
+	}
+	if limit > 0 {
+		pi = pi.Limit(limit)
+	}
+
+	if field := getCollectedField(ctx, edgesField, nodeField); field != nil {
+		pi = pi.collectField(graphql.GetOperationContext(ctx), *field)
+	}
+
+	nodes, err := pi.All(ctx)
+	if err != nil || len(nodes) == 0 {
+		return conn, err
+	}
+
+	if len(nodes) == limit {
+		conn.PageInfo.HasNextPage = first != nil
+		conn.PageInfo.HasPreviousPage = last != nil
+		nodes = nodes[:len(nodes)-1]
+	}
+
+	var nodeAt func(int) *ProjectIcon
+	if last != nil {
+		n := len(nodes) - 1
+		nodeAt = func(i int) *ProjectIcon {
+			return nodes[n-i]
+		}
+	} else {
+		nodeAt = func(i int) *ProjectIcon {
+			return nodes[i]
+		}
+	}
+
+	conn.Edges = make([]*ProjectIconEdge, len(nodes))
+	for i := range nodes {
+		node := nodeAt(i)
+		conn.Edges[i] = &ProjectIconEdge{
+			Node:   node,
+			Cursor: pager.toCursor(node),
+		}
+	}
+
+	conn.PageInfo.StartCursor = &conn.Edges[0].Cursor
+	conn.PageInfo.EndCursor = &conn.Edges[len(conn.Edges)-1].Cursor
+	if conn.TotalCount == 0 {
+		conn.TotalCount = len(nodes)
+	}
+
+	return conn, nil
+}
+
+// ProjectIconOrderField defines the ordering field of ProjectIcon.
+type ProjectIconOrderField struct {
+	field    string
+	toCursor func(*ProjectIcon) Cursor
+}
+
+// ProjectIconOrder defines the ordering of ProjectIcon.
+type ProjectIconOrder struct {
+	Direction OrderDirection         `json:"direction"`
+	Field     *ProjectIconOrderField `json:"field"`
+}
+
+// DefaultProjectIconOrder is the default ordering of ProjectIcon.
+var DefaultProjectIconOrder = &ProjectIconOrder{
+	Direction: OrderDirectionAsc,
+	Field: &ProjectIconOrderField{
+		field: projecticon.FieldID,
+		toCursor: func(pi *ProjectIcon) Cursor {
+			return Cursor{ID: pi.ID}
+		},
+	},
+}
+
+// ToEdge converts ProjectIcon into ProjectIconEdge.
+func (pi *ProjectIcon) ToEdge(order *ProjectIconOrder) *ProjectIconEdge {
+	if order == nil {
+		order = DefaultProjectIconOrder
+	}
+	return &ProjectIconEdge{
+		Node:   pi,
+		Cursor: order.Field.toCursor(pi),
 	}
 }
 

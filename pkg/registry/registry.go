@@ -28,6 +28,7 @@ func (r *registry) NewController() controller.Controller {
 		Icon:              r.NewIconController(),
 		Project:           r.NewProjectController(),
 		ProjectBaseColor:  r.NewProjectBaseColorController(),
+		ProjectIcon:       r.NewProjectIconController(),
 		ProjectLightColor: r.NewProjectLightColorController(),
 		ProjectTeammate:   r.NewProjectTeammateController(),
 		Teammate:          r.NewTeammateController(),

@@ -5,7 +5,8 @@ type Project implements Node {
   projectBaseColor: ProjectBaseColor!
   projectLightColorId: ID!
   projectLightColor: ProjectLightColor!
-  icon: Icon!
+  projectIconId: ID!
+  projectIcon: ProjectIcon!
   createdBy: ID!
   name: String!
   projectTeammates: [ProjectTeammate!]!
@@ -30,7 +31,7 @@ input CreateProjectInput {
   workspaceId: ID!
   projectBaseColorId: ID
   projectLightColorId: ID
-  iconId: ID
+  projectIconId: ID
   createdBy: ID!
   name: String!
   description: EditorDescriptionInput
@@ -41,7 +42,7 @@ input UpdateProjectInput {
   id: ID!
   projectBaseColorId: ID
   projectLightColorId: ID
-  iconId: ID
+  projectIconId: ID
   createdBy: ID
   name: String
   description: EditorDescriptionInput

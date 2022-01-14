@@ -496,25 +496,25 @@ func UpdatedAtLTE(v time.Time) predicate.Icon {
 	})
 }
 
-// HasProjects applies the HasEdge predicate on the "projects" edge.
-func HasProjects() predicate.Icon {
+// HasProjectIcons applies the HasEdge predicate on the "project_icons" edge.
+func HasProjectIcons() predicate.Icon {
 	return predicate.Icon(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(ProjectsTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, ProjectsTable, ProjectsColumn),
+			sqlgraph.To(ProjectIconsTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ProjectIconsTable, ProjectIconsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasProjectsWith applies the HasEdge predicate on the "projects" edge with a given conditions (other predicates).
-func HasProjectsWith(preds ...predicate.Project) predicate.Icon {
+// HasProjectIconsWith applies the HasEdge predicate on the "project_icons" edge with a given conditions (other predicates).
+func HasProjectIconsWith(preds ...predicate.ProjectIcon) predicate.Icon {
 	return predicate.Icon(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(ProjectsInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, ProjectsTable, ProjectsColumn),
+			sqlgraph.To(ProjectIconsInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ProjectIconsTable, ProjectIconsColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

@@ -60,6 +60,19 @@ func (f ProjectBaseColorFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.V
 	return f(ctx, mv)
 }
 
+// The ProjectIconFunc type is an adapter to allow the use of ordinary
+// function as ProjectIcon mutator.
+type ProjectIconFunc func(context.Context, *ent.ProjectIconMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ProjectIconFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.ProjectIconMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ProjectIconMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The ProjectLightColorFunc type is an adapter to allow the use of ordinary
 // function as ProjectLightColor mutator.
 type ProjectLightColorFunc func(context.Context, *ent.ProjectLightColorMutation) (ent.Value, error)
