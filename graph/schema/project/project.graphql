@@ -1,7 +1,9 @@
 type Project implements Node {
   id: ID!
   workspaceId: ID!
+  projectBaseColorId: ID!
   projectBaseColor: ProjectBaseColor!
+  projectLightColorId: ID!
   projectLightColor: ProjectLightColor!
   icon: Icon!
   createdBy: ID!
