@@ -6,10 +6,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"project-management-demo-backend/ent/color"
 	"project-management-demo-backend/ent/icon"
 	"project-management-demo-backend/ent/predicate"
 	"project-management-demo-backend/ent/project"
+	"project-management-demo-backend/ent/projectbasecolor"
+	"project-management-demo-backend/ent/projectlightcolor"
 	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/ent/schema/editor"
 	"project-management-demo-backend/ent/schema/ulid"
@@ -41,9 +42,15 @@ func (pu *ProjectUpdate) SetWorkspaceID(u ulid.ID) *ProjectUpdate {
 	return pu
 }
 
-// SetColorID sets the "color_id" field.
-func (pu *ProjectUpdate) SetColorID(u ulid.ID) *ProjectUpdate {
-	pu.mutation.SetColorID(u)
+// SetProjectBaseColorID sets the "project_base_color_id" field.
+func (pu *ProjectUpdate) SetProjectBaseColorID(u ulid.ID) *ProjectUpdate {
+	pu.mutation.SetProjectBaseColorID(u)
+	return pu
+}
+
+// SetProjectLightColorID sets the "project_light_color_id" field.
+func (pu *ProjectUpdate) SetProjectLightColorID(u ulid.ID) *ProjectUpdate {
+	pu.mutation.SetProjectLightColorID(u)
 	return pu
 }
 
@@ -96,9 +103,14 @@ func (pu *ProjectUpdate) SetWorkspace(w *Workspace) *ProjectUpdate {
 	return pu.SetWorkspaceID(w.ID)
 }
 
-// SetColor sets the "color" edge to the Color entity.
-func (pu *ProjectUpdate) SetColor(c *Color) *ProjectUpdate {
-	return pu.SetColorID(c.ID)
+// SetProjectBaseColor sets the "project_base_color" edge to the ProjectBaseColor entity.
+func (pu *ProjectUpdate) SetProjectBaseColor(p *ProjectBaseColor) *ProjectUpdate {
+	return pu.SetProjectBaseColorID(p.ID)
+}
+
+// SetProjectLightColor sets the "project_light_color" edge to the ProjectLightColor entity.
+func (pu *ProjectUpdate) SetProjectLightColor(p *ProjectLightColor) *ProjectUpdate {
+	return pu.SetProjectLightColorID(p.ID)
 }
 
 // SetIcon sets the "icon" edge to the Icon entity.
@@ -143,9 +155,15 @@ func (pu *ProjectUpdate) ClearWorkspace() *ProjectUpdate {
 	return pu
 }
 
-// ClearColor clears the "color" edge to the Color entity.
-func (pu *ProjectUpdate) ClearColor() *ProjectUpdate {
-	pu.mutation.ClearColor()
+// ClearProjectBaseColor clears the "project_base_color" edge to the ProjectBaseColor entity.
+func (pu *ProjectUpdate) ClearProjectBaseColor() *ProjectUpdate {
+	pu.mutation.ClearProjectBaseColor()
+	return pu
+}
+
+// ClearProjectLightColor clears the "project_light_color" edge to the ProjectLightColor entity.
+func (pu *ProjectUpdate) ClearProjectLightColor() *ProjectUpdate {
+	pu.mutation.ClearProjectLightColor()
 	return pu
 }
 
@@ -257,8 +275,11 @@ func (pu *ProjectUpdate) check() error {
 	if _, ok := pu.mutation.WorkspaceID(); pu.mutation.WorkspaceCleared() && !ok {
 		return errors.New("ent: clearing a required unique edge \"workspace\"")
 	}
-	if _, ok := pu.mutation.ColorID(); pu.mutation.ColorCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"color\"")
+	if _, ok := pu.mutation.ProjectBaseColorID(); pu.mutation.ProjectBaseColorCleared() && !ok {
+		return errors.New("ent: clearing a required unique edge \"project_base_color\"")
+	}
+	if _, ok := pu.mutation.ProjectLightColorID(); pu.mutation.ProjectLightColorCleared() && !ok {
+		return errors.New("ent: clearing a required unique edge \"project_light_color\"")
 	}
 	if _, ok := pu.mutation.IconID(); pu.mutation.IconCleared() && !ok {
 		return errors.New("ent: clearing a required unique edge \"icon\"")
@@ -350,33 +371,68 @@ func (pu *ProjectUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if pu.mutation.ColorCleared() {
+	if pu.mutation.ProjectBaseColorCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   project.ColorTable,
-			Columns: []string{project.ColorColumn},
+			Table:   project.ProjectBaseColorTable,
+			Columns: []string{project.ProjectBaseColorColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
-					Column: color.FieldID,
+					Column: projectbasecolor.FieldID,
 				},
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := pu.mutation.ColorIDs(); len(nodes) > 0 {
+	if nodes := pu.mutation.ProjectBaseColorIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   project.ColorTable,
-			Columns: []string{project.ColorColumn},
+			Table:   project.ProjectBaseColorTable,
+			Columns: []string{project.ProjectBaseColorColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
-					Column: color.FieldID,
+					Column: projectbasecolor.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if pu.mutation.ProjectLightColorCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   project.ProjectLightColorTable,
+			Columns: []string{project.ProjectLightColorColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: projectlightcolor.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.ProjectLightColorIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   project.ProjectLightColorTable,
+			Columns: []string{project.ProjectLightColorColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: projectlightcolor.FieldID,
 				},
 			},
 		}
@@ -534,9 +590,15 @@ func (puo *ProjectUpdateOne) SetWorkspaceID(u ulid.ID) *ProjectUpdateOne {
 	return puo
 }
 
-// SetColorID sets the "color_id" field.
-func (puo *ProjectUpdateOne) SetColorID(u ulid.ID) *ProjectUpdateOne {
-	puo.mutation.SetColorID(u)
+// SetProjectBaseColorID sets the "project_base_color_id" field.
+func (puo *ProjectUpdateOne) SetProjectBaseColorID(u ulid.ID) *ProjectUpdateOne {
+	puo.mutation.SetProjectBaseColorID(u)
+	return puo
+}
+
+// SetProjectLightColorID sets the "project_light_color_id" field.
+func (puo *ProjectUpdateOne) SetProjectLightColorID(u ulid.ID) *ProjectUpdateOne {
+	puo.mutation.SetProjectLightColorID(u)
 	return puo
 }
 
@@ -589,9 +651,14 @@ func (puo *ProjectUpdateOne) SetWorkspace(w *Workspace) *ProjectUpdateOne {
 	return puo.SetWorkspaceID(w.ID)
 }
 
-// SetColor sets the "color" edge to the Color entity.
-func (puo *ProjectUpdateOne) SetColor(c *Color) *ProjectUpdateOne {
-	return puo.SetColorID(c.ID)
+// SetProjectBaseColor sets the "project_base_color" edge to the ProjectBaseColor entity.
+func (puo *ProjectUpdateOne) SetProjectBaseColor(p *ProjectBaseColor) *ProjectUpdateOne {
+	return puo.SetProjectBaseColorID(p.ID)
+}
+
+// SetProjectLightColor sets the "project_light_color" edge to the ProjectLightColor entity.
+func (puo *ProjectUpdateOne) SetProjectLightColor(p *ProjectLightColor) *ProjectUpdateOne {
+	return puo.SetProjectLightColorID(p.ID)
 }
 
 // SetIcon sets the "icon" edge to the Icon entity.
@@ -636,9 +703,15 @@ func (puo *ProjectUpdateOne) ClearWorkspace() *ProjectUpdateOne {
 	return puo
 }
 
-// ClearColor clears the "color" edge to the Color entity.
-func (puo *ProjectUpdateOne) ClearColor() *ProjectUpdateOne {
-	puo.mutation.ClearColor()
+// ClearProjectBaseColor clears the "project_base_color" edge to the ProjectBaseColor entity.
+func (puo *ProjectUpdateOne) ClearProjectBaseColor() *ProjectUpdateOne {
+	puo.mutation.ClearProjectBaseColor()
+	return puo
+}
+
+// ClearProjectLightColor clears the "project_light_color" edge to the ProjectLightColor entity.
+func (puo *ProjectUpdateOne) ClearProjectLightColor() *ProjectUpdateOne {
+	puo.mutation.ClearProjectLightColor()
 	return puo
 }
 
@@ -757,8 +830,11 @@ func (puo *ProjectUpdateOne) check() error {
 	if _, ok := puo.mutation.WorkspaceID(); puo.mutation.WorkspaceCleared() && !ok {
 		return errors.New("ent: clearing a required unique edge \"workspace\"")
 	}
-	if _, ok := puo.mutation.ColorID(); puo.mutation.ColorCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"color\"")
+	if _, ok := puo.mutation.ProjectBaseColorID(); puo.mutation.ProjectBaseColorCleared() && !ok {
+		return errors.New("ent: clearing a required unique edge \"project_base_color\"")
+	}
+	if _, ok := puo.mutation.ProjectLightColorID(); puo.mutation.ProjectLightColorCleared() && !ok {
+		return errors.New("ent: clearing a required unique edge \"project_light_color\"")
 	}
 	if _, ok := puo.mutation.IconID(); puo.mutation.IconCleared() && !ok {
 		return errors.New("ent: clearing a required unique edge \"icon\"")
@@ -867,33 +943,68 @@ func (puo *ProjectUpdateOne) sqlSave(ctx context.Context) (_node *Project, err e
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if puo.mutation.ColorCleared() {
+	if puo.mutation.ProjectBaseColorCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   project.ColorTable,
-			Columns: []string{project.ColorColumn},
+			Table:   project.ProjectBaseColorTable,
+			Columns: []string{project.ProjectBaseColorColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
-					Column: color.FieldID,
+					Column: projectbasecolor.FieldID,
 				},
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := puo.mutation.ColorIDs(); len(nodes) > 0 {
+	if nodes := puo.mutation.ProjectBaseColorIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   project.ColorTable,
-			Columns: []string{project.ColorColumn},
+			Table:   project.ProjectBaseColorTable,
+			Columns: []string{project.ProjectBaseColorColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
-					Column: color.FieldID,
+					Column: projectbasecolor.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if puo.mutation.ProjectLightColorCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   project.ProjectLightColorTable,
+			Columns: []string{project.ProjectLightColorColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: projectlightcolor.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.ProjectLightColorIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   project.ProjectLightColorTable,
+			Columns: []string{project.ProjectLightColorColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: projectlightcolor.FieldID,
 				},
 			},
 		}

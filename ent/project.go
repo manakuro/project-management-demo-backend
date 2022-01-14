@@ -5,9 +5,10 @@ package ent
 import (
 	"encoding/json"
 	"fmt"
-	"project-management-demo-backend/ent/color"
 	"project-management-demo-backend/ent/icon"
 	"project-management-demo-backend/ent/project"
+	"project-management-demo-backend/ent/projectbasecolor"
+	"project-management-demo-backend/ent/projectlightcolor"
 	"project-management-demo-backend/ent/schema/editor"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/teammate"
@@ -25,8 +26,10 @@ type Project struct {
 	ID ulid.ID `json:"id,omitempty"`
 	// WorkspaceID holds the value of the "workspace_id" field.
 	WorkspaceID ulid.ID `json:"workspace_id,omitempty"`
-	// ColorID holds the value of the "color_id" field.
-	ColorID ulid.ID `json:"color_id,omitempty"`
+	// ProjectBaseColorID holds the value of the "project_base_color_id" field.
+	ProjectBaseColorID ulid.ID `json:"project_base_color_id,omitempty"`
+	// ProjectLightColorID holds the value of the "project_light_color_id" field.
+	ProjectLightColorID ulid.ID `json:"project_light_color_id,omitempty"`
 	// IconID holds the value of the "icon_id" field.
 	IconID ulid.ID `json:"icon_id,omitempty"`
 	// CreatedBy holds the value of the "created_by" field.
@@ -52,8 +55,10 @@ type Project struct {
 type ProjectEdges struct {
 	// Workspace holds the value of the workspace edge.
 	Workspace *Workspace `json:"workspace,omitempty"`
-	// Color holds the value of the color edge.
-	Color *Color `json:"color,omitempty"`
+	// ProjectBaseColor holds the value of the project_base_color edge.
+	ProjectBaseColor *ProjectBaseColor `json:"project_base_color,omitempty"`
+	// ProjectLightColor holds the value of the project_light_color edge.
+	ProjectLightColor *ProjectLightColor `json:"project_light_color,omitempty"`
 	// Icon holds the value of the icon edge.
 	Icon *Icon `json:"icon,omitempty"`
 	// Teammate holds the value of the teammate edge.
@@ -62,7 +67,7 @@ type ProjectEdges struct {
 	ProjectTeammates []*ProjectTeammate `json:"project_teammates,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [5]bool
+	loadedTypes [6]bool
 }
 
 // WorkspaceOrErr returns the Workspace value or an error if the edge
@@ -79,24 +84,38 @@ func (e ProjectEdges) WorkspaceOrErr() (*Workspace, error) {
 	return nil, &NotLoadedError{edge: "workspace"}
 }
 
-// ColorOrErr returns the Color value or an error if the edge
+// ProjectBaseColorOrErr returns the ProjectBaseColor value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e ProjectEdges) ColorOrErr() (*Color, error) {
+func (e ProjectEdges) ProjectBaseColorOrErr() (*ProjectBaseColor, error) {
 	if e.loadedTypes[1] {
-		if e.Color == nil {
-			// The edge color was loaded in eager-loading,
+		if e.ProjectBaseColor == nil {
+			// The edge project_base_color was loaded in eager-loading,
 			// but was not found.
-			return nil, &NotFoundError{label: color.Label}
+			return nil, &NotFoundError{label: projectbasecolor.Label}
 		}
-		return e.Color, nil
+		return e.ProjectBaseColor, nil
 	}
-	return nil, &NotLoadedError{edge: "color"}
+	return nil, &NotLoadedError{edge: "project_base_color"}
+}
+
+// ProjectLightColorOrErr returns the ProjectLightColor value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e ProjectEdges) ProjectLightColorOrErr() (*ProjectLightColor, error) {
+	if e.loadedTypes[2] {
+		if e.ProjectLightColor == nil {
+			// The edge project_light_color was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: projectlightcolor.Label}
+		}
+		return e.ProjectLightColor, nil
+	}
+	return nil, &NotLoadedError{edge: "project_light_color"}
 }
 
 // IconOrErr returns the Icon value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e ProjectEdges) IconOrErr() (*Icon, error) {
-	if e.loadedTypes[2] {
+	if e.loadedTypes[3] {
 		if e.Icon == nil {
 			// The edge icon was loaded in eager-loading,
 			// but was not found.
@@ -110,7 +129,7 @@ func (e ProjectEdges) IconOrErr() (*Icon, error) {
 // TeammateOrErr returns the Teammate value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e ProjectEdges) TeammateOrErr() (*Teammate, error) {
-	if e.loadedTypes[3] {
+	if e.loadedTypes[4] {
 		if e.Teammate == nil {
 			// The edge teammate was loaded in eager-loading,
 			// but was not found.
@@ -124,7 +143,7 @@ func (e ProjectEdges) TeammateOrErr() (*Teammate, error) {
 // ProjectTeammatesOrErr returns the ProjectTeammates value or an error if the edge
 // was not loaded in eager-loading.
 func (e ProjectEdges) ProjectTeammatesOrErr() ([]*ProjectTeammate, error) {
-	if e.loadedTypes[4] {
+	if e.loadedTypes[5] {
 		return e.ProjectTeammates, nil
 	}
 	return nil, &NotLoadedError{edge: "project_teammates"}
@@ -141,7 +160,7 @@ func (*Project) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullString)
 		case project.FieldDueDate, project.FieldCreatedAt, project.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
-		case project.FieldID, project.FieldWorkspaceID, project.FieldColorID, project.FieldIconID, project.FieldCreatedBy:
+		case project.FieldID, project.FieldWorkspaceID, project.FieldProjectBaseColorID, project.FieldProjectLightColorID, project.FieldIconID, project.FieldCreatedBy:
 			values[i] = new(ulid.ID)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type Project", columns[i])
@@ -170,11 +189,17 @@ func (pr *Project) assignValues(columns []string, values []interface{}) error {
 			} else if value != nil {
 				pr.WorkspaceID = *value
 			}
-		case project.FieldColorID:
+		case project.FieldProjectBaseColorID:
 			if value, ok := values[i].(*ulid.ID); !ok {
-				return fmt.Errorf("unexpected type %T for field color_id", values[i])
+				return fmt.Errorf("unexpected type %T for field project_base_color_id", values[i])
 			} else if value != nil {
-				pr.ColorID = *value
+				pr.ProjectBaseColorID = *value
+			}
+		case project.FieldProjectLightColorID:
+			if value, ok := values[i].(*ulid.ID); !ok {
+				return fmt.Errorf("unexpected type %T for field project_light_color_id", values[i])
+			} else if value != nil {
+				pr.ProjectLightColorID = *value
 			}
 		case project.FieldIconID:
 			if value, ok := values[i].(*ulid.ID); !ok {
@@ -236,9 +261,14 @@ func (pr *Project) QueryWorkspace() *WorkspaceQuery {
 	return (&ProjectClient{config: pr.config}).QueryWorkspace(pr)
 }
 
-// QueryColor queries the "color" edge of the Project entity.
-func (pr *Project) QueryColor() *ColorQuery {
-	return (&ProjectClient{config: pr.config}).QueryColor(pr)
+// QueryProjectBaseColor queries the "project_base_color" edge of the Project entity.
+func (pr *Project) QueryProjectBaseColor() *ProjectBaseColorQuery {
+	return (&ProjectClient{config: pr.config}).QueryProjectBaseColor(pr)
+}
+
+// QueryProjectLightColor queries the "project_light_color" edge of the Project entity.
+func (pr *Project) QueryProjectLightColor() *ProjectLightColorQuery {
+	return (&ProjectClient{config: pr.config}).QueryProjectLightColor(pr)
 }
 
 // QueryIcon queries the "icon" edge of the Project entity.
@@ -281,8 +311,10 @@ func (pr *Project) String() string {
 	builder.WriteString(fmt.Sprintf("id=%v", pr.ID))
 	builder.WriteString(", workspace_id=")
 	builder.WriteString(fmt.Sprintf("%v", pr.WorkspaceID))
-	builder.WriteString(", color_id=")
-	builder.WriteString(fmt.Sprintf("%v", pr.ColorID))
+	builder.WriteString(", project_base_color_id=")
+	builder.WriteString(fmt.Sprintf("%v", pr.ProjectBaseColorID))
+	builder.WriteString(", project_light_color_id=")
+	builder.WriteString(fmt.Sprintf("%v", pr.ProjectLightColorID))
 	builder.WriteString(", icon_id=")
 	builder.WriteString(fmt.Sprintf("%v", pr.IconID))
 	builder.WriteString(", created_by=")

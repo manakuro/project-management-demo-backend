@@ -8,10 +8,11 @@ import (
 	"errors"
 	"fmt"
 	"math"
-	"project-management-demo-backend/ent/color"
 	"project-management-demo-backend/ent/icon"
 	"project-management-demo-backend/ent/predicate"
 	"project-management-demo-backend/ent/project"
+	"project-management-demo-backend/ent/projectbasecolor"
+	"project-management-demo-backend/ent/projectlightcolor"
 	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/teammate"
@@ -32,11 +33,12 @@ type ProjectQuery struct {
 	fields     []string
 	predicates []predicate.Project
 	// eager-loading edges.
-	withWorkspace        *WorkspaceQuery
-	withColor            *ColorQuery
-	withIcon             *IconQuery
-	withTeammate         *TeammateQuery
-	withProjectTeammates *ProjectTeammateQuery
+	withWorkspace         *WorkspaceQuery
+	withProjectBaseColor  *ProjectBaseColorQuery
+	withProjectLightColor *ProjectLightColorQuery
+	withIcon              *IconQuery
+	withTeammate          *TeammateQuery
+	withProjectTeammates  *ProjectTeammateQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -95,9 +97,9 @@ func (pq *ProjectQuery) QueryWorkspace() *WorkspaceQuery {
 	return query
 }
 
-// QueryColor chains the current query on the "color" edge.
-func (pq *ProjectQuery) QueryColor() *ColorQuery {
-	query := &ColorQuery{config: pq.config}
+// QueryProjectBaseColor chains the current query on the "project_base_color" edge.
+func (pq *ProjectQuery) QueryProjectBaseColor() *ProjectBaseColorQuery {
+	query := &ProjectBaseColorQuery{config: pq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := pq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -108,8 +110,30 @@ func (pq *ProjectQuery) QueryColor() *ColorQuery {
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(project.Table, project.FieldID, selector),
-			sqlgraph.To(color.Table, color.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, project.ColorTable, project.ColorColumn),
+			sqlgraph.To(projectbasecolor.Table, projectbasecolor.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, project.ProjectBaseColorTable, project.ProjectBaseColorColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryProjectLightColor chains the current query on the "project_light_color" edge.
+func (pq *ProjectQuery) QueryProjectLightColor() *ProjectLightColorQuery {
+	query := &ProjectLightColorQuery{config: pq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := pq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := pq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(project.Table, project.FieldID, selector),
+			sqlgraph.To(projectlightcolor.Table, projectlightcolor.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, project.ProjectLightColorTable, project.ProjectLightColorColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
 		return fromU, nil
@@ -359,16 +383,17 @@ func (pq *ProjectQuery) Clone() *ProjectQuery {
 		return nil
 	}
 	return &ProjectQuery{
-		config:               pq.config,
-		limit:                pq.limit,
-		offset:               pq.offset,
-		order:                append([]OrderFunc{}, pq.order...),
-		predicates:           append([]predicate.Project{}, pq.predicates...),
-		withWorkspace:        pq.withWorkspace.Clone(),
-		withColor:            pq.withColor.Clone(),
-		withIcon:             pq.withIcon.Clone(),
-		withTeammate:         pq.withTeammate.Clone(),
-		withProjectTeammates: pq.withProjectTeammates.Clone(),
+		config:                pq.config,
+		limit:                 pq.limit,
+		offset:                pq.offset,
+		order:                 append([]OrderFunc{}, pq.order...),
+		predicates:            append([]predicate.Project{}, pq.predicates...),
+		withWorkspace:         pq.withWorkspace.Clone(),
+		withProjectBaseColor:  pq.withProjectBaseColor.Clone(),
+		withProjectLightColor: pq.withProjectLightColor.Clone(),
+		withIcon:              pq.withIcon.Clone(),
+		withTeammate:          pq.withTeammate.Clone(),
+		withProjectTeammates:  pq.withProjectTeammates.Clone(),
 		// clone intermediate query.
 		sql:  pq.sql.Clone(),
 		path: pq.path,
@@ -386,14 +411,25 @@ func (pq *ProjectQuery) WithWorkspace(opts ...func(*WorkspaceQuery)) *ProjectQue
 	return pq
 }
 
-// WithColor tells the query-builder to eager-load the nodes that are connected to
-// the "color" edge. The optional arguments are used to configure the query builder of the edge.
-func (pq *ProjectQuery) WithColor(opts ...func(*ColorQuery)) *ProjectQuery {
-	query := &ColorQuery{config: pq.config}
+// WithProjectBaseColor tells the query-builder to eager-load the nodes that are connected to
+// the "project_base_color" edge. The optional arguments are used to configure the query builder of the edge.
+func (pq *ProjectQuery) WithProjectBaseColor(opts ...func(*ProjectBaseColorQuery)) *ProjectQuery {
+	query := &ProjectBaseColorQuery{config: pq.config}
 	for _, opt := range opts {
 		opt(query)
 	}
-	pq.withColor = query
+	pq.withProjectBaseColor = query
+	return pq
+}
+
+// WithProjectLightColor tells the query-builder to eager-load the nodes that are connected to
+// the "project_light_color" edge. The optional arguments are used to configure the query builder of the edge.
+func (pq *ProjectQuery) WithProjectLightColor(opts ...func(*ProjectLightColorQuery)) *ProjectQuery {
+	query := &ProjectLightColorQuery{config: pq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	pq.withProjectLightColor = query
 	return pq
 }
 
@@ -495,9 +531,10 @@ func (pq *ProjectQuery) sqlAll(ctx context.Context) ([]*Project, error) {
 	var (
 		nodes       = []*Project{}
 		_spec       = pq.querySpec()
-		loadedTypes = [5]bool{
+		loadedTypes = [6]bool{
 			pq.withWorkspace != nil,
-			pq.withColor != nil,
+			pq.withProjectBaseColor != nil,
+			pq.withProjectLightColor != nil,
 			pq.withIcon != nil,
 			pq.withTeammate != nil,
 			pq.withProjectTeammates != nil,
@@ -549,17 +586,17 @@ func (pq *ProjectQuery) sqlAll(ctx context.Context) ([]*Project, error) {
 		}
 	}
 
-	if query := pq.withColor; query != nil {
+	if query := pq.withProjectBaseColor; query != nil {
 		ids := make([]ulid.ID, 0, len(nodes))
 		nodeids := make(map[ulid.ID][]*Project)
 		for i := range nodes {
-			fk := nodes[i].ColorID
+			fk := nodes[i].ProjectBaseColorID
 			if _, ok := nodeids[fk]; !ok {
 				ids = append(ids, fk)
 			}
 			nodeids[fk] = append(nodeids[fk], nodes[i])
 		}
-		query.Where(color.IDIn(ids...))
+		query.Where(projectbasecolor.IDIn(ids...))
 		neighbors, err := query.All(ctx)
 		if err != nil {
 			return nil, err
@@ -567,10 +604,36 @@ func (pq *ProjectQuery) sqlAll(ctx context.Context) ([]*Project, error) {
 		for _, n := range neighbors {
 			nodes, ok := nodeids[n.ID]
 			if !ok {
-				return nil, fmt.Errorf(`unexpected foreign-key "color_id" returned %v`, n.ID)
+				return nil, fmt.Errorf(`unexpected foreign-key "project_base_color_id" returned %v`, n.ID)
 			}
 			for i := range nodes {
-				nodes[i].Edges.Color = n
+				nodes[i].Edges.ProjectBaseColor = n
+			}
+		}
+	}
+
+	if query := pq.withProjectLightColor; query != nil {
+		ids := make([]ulid.ID, 0, len(nodes))
+		nodeids := make(map[ulid.ID][]*Project)
+		for i := range nodes {
+			fk := nodes[i].ProjectLightColorID
+			if _, ok := nodeids[fk]; !ok {
+				ids = append(ids, fk)
+			}
+			nodeids[fk] = append(nodeids[fk], nodes[i])
+		}
+		query.Where(projectlightcolor.IDIn(ids...))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nodeids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "project_light_color_id" returned %v`, n.ID)
+			}
+			for i := range nodes {
+				nodes[i].Edges.ProjectLightColor = n
 			}
 		}
 	}

@@ -8,6 +8,8 @@ import (
 	"project-management-demo-backend/ent/icon"
 	"project-management-demo-backend/ent/predicate"
 	"project-management-demo-backend/ent/project"
+	"project-management-demo-backend/ent/projectbasecolor"
+	"project-management-demo-backend/ent/projectlightcolor"
 	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/teammate"
@@ -98,9 +100,13 @@ type ColorWhereInput struct {
 	UpdatedAtLT    *time.Time  `json:"updatedAtLT,omitempty"`
 	UpdatedAtLTE   *time.Time  `json:"updatedAtLTE,omitempty"`
 
-	// "projects" edge predicates.
-	HasProjects     *bool                `json:"hasProjects,omitempty"`
-	HasProjectsWith []*ProjectWhereInput `json:"hasProjectsWith,omitempty"`
+	// "project_base_colors" edge predicates.
+	HasProjectBaseColors     *bool                         `json:"hasProjectBaseColors,omitempty"`
+	HasProjectBaseColorsWith []*ProjectBaseColorWhereInput `json:"hasProjectBaseColorsWith,omitempty"`
+
+	// "project_light_colors" edge predicates.
+	HasProjectLightColors     *bool                          `json:"hasProjectLightColors,omitempty"`
+	HasProjectLightColorsWith []*ProjectLightColorWhereInput `json:"hasProjectLightColorsWith,omitempty"`
 }
 
 // Filter applies the ColorWhereInput filter on the ColorQuery builder.
@@ -352,23 +358,41 @@ func (i *ColorWhereInput) P() (predicate.Color, error) {
 		predicates = append(predicates, color.UpdatedAtLTE(*i.UpdatedAtLTE))
 	}
 
-	if i.HasProjects != nil {
-		p := color.HasProjects()
-		if !*i.HasProjects {
+	if i.HasProjectBaseColors != nil {
+		p := color.HasProjectBaseColors()
+		if !*i.HasProjectBaseColors {
 			p = color.Not(p)
 		}
 		predicates = append(predicates, p)
 	}
-	if len(i.HasProjectsWith) > 0 {
-		with := make([]predicate.Project, 0, len(i.HasProjectsWith))
-		for _, w := range i.HasProjectsWith {
+	if len(i.HasProjectBaseColorsWith) > 0 {
+		with := make([]predicate.ProjectBaseColor, 0, len(i.HasProjectBaseColorsWith))
+		for _, w := range i.HasProjectBaseColorsWith {
 			p, err := w.P()
 			if err != nil {
 				return nil, err
 			}
 			with = append(with, p)
 		}
-		predicates = append(predicates, color.HasProjectsWith(with...))
+		predicates = append(predicates, color.HasProjectBaseColorsWith(with...))
+	}
+	if i.HasProjectLightColors != nil {
+		p := color.HasProjectLightColors()
+		if !*i.HasProjectLightColors {
+			p = color.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasProjectLightColorsWith) > 0 {
+		with := make([]predicate.ProjectLightColor, 0, len(i.HasProjectLightColorsWith))
+		for _, w := range i.HasProjectLightColorsWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, color.HasProjectLightColorsWith(with...))
 	}
 	switch len(predicates) {
 	case 0:
@@ -720,20 +744,35 @@ type ProjectWhereInput struct {
 	WorkspaceIDEqualFold    *ulid.ID  `json:"workspaceIDEqualFold,omitempty"`
 	WorkspaceIDContainsFold *ulid.ID  `json:"workspaceIDContainsFold,omitempty"`
 
-	// "color_id" field predicates.
-	ColorID             *ulid.ID  `json:"colorID,omitempty"`
-	ColorIDNEQ          *ulid.ID  `json:"colorIDNEQ,omitempty"`
-	ColorIDIn           []ulid.ID `json:"colorIDIn,omitempty"`
-	ColorIDNotIn        []ulid.ID `json:"colorIDNotIn,omitempty"`
-	ColorIDGT           *ulid.ID  `json:"colorIDGT,omitempty"`
-	ColorIDGTE          *ulid.ID  `json:"colorIDGTE,omitempty"`
-	ColorIDLT           *ulid.ID  `json:"colorIDLT,omitempty"`
-	ColorIDLTE          *ulid.ID  `json:"colorIDLTE,omitempty"`
-	ColorIDContains     *ulid.ID  `json:"colorIDContains,omitempty"`
-	ColorIDHasPrefix    *ulid.ID  `json:"colorIDHasPrefix,omitempty"`
-	ColorIDHasSuffix    *ulid.ID  `json:"colorIDHasSuffix,omitempty"`
-	ColorIDEqualFold    *ulid.ID  `json:"colorIDEqualFold,omitempty"`
-	ColorIDContainsFold *ulid.ID  `json:"colorIDContainsFold,omitempty"`
+	// "project_base_color_id" field predicates.
+	ProjectBaseColorID             *ulid.ID  `json:"projectBaseColorID,omitempty"`
+	ProjectBaseColorIDNEQ          *ulid.ID  `json:"projectBaseColorIDNEQ,omitempty"`
+	ProjectBaseColorIDIn           []ulid.ID `json:"projectBaseColorIDIn,omitempty"`
+	ProjectBaseColorIDNotIn        []ulid.ID `json:"projectBaseColorIDNotIn,omitempty"`
+	ProjectBaseColorIDGT           *ulid.ID  `json:"projectBaseColorIDGT,omitempty"`
+	ProjectBaseColorIDGTE          *ulid.ID  `json:"projectBaseColorIDGTE,omitempty"`
+	ProjectBaseColorIDLT           *ulid.ID  `json:"projectBaseColorIDLT,omitempty"`
+	ProjectBaseColorIDLTE          *ulid.ID  `json:"projectBaseColorIDLTE,omitempty"`
+	ProjectBaseColorIDContains     *ulid.ID  `json:"projectBaseColorIDContains,omitempty"`
+	ProjectBaseColorIDHasPrefix    *ulid.ID  `json:"projectBaseColorIDHasPrefix,omitempty"`
+	ProjectBaseColorIDHasSuffix    *ulid.ID  `json:"projectBaseColorIDHasSuffix,omitempty"`
+	ProjectBaseColorIDEqualFold    *ulid.ID  `json:"projectBaseColorIDEqualFold,omitempty"`
+	ProjectBaseColorIDContainsFold *ulid.ID  `json:"projectBaseColorIDContainsFold,omitempty"`
+
+	// "project_light_color_id" field predicates.
+	ProjectLightColorID             *ulid.ID  `json:"projectLightColorID,omitempty"`
+	ProjectLightColorIDNEQ          *ulid.ID  `json:"projectLightColorIDNEQ,omitempty"`
+	ProjectLightColorIDIn           []ulid.ID `json:"projectLightColorIDIn,omitempty"`
+	ProjectLightColorIDNotIn        []ulid.ID `json:"projectLightColorIDNotIn,omitempty"`
+	ProjectLightColorIDGT           *ulid.ID  `json:"projectLightColorIDGT,omitempty"`
+	ProjectLightColorIDGTE          *ulid.ID  `json:"projectLightColorIDGTE,omitempty"`
+	ProjectLightColorIDLT           *ulid.ID  `json:"projectLightColorIDLT,omitempty"`
+	ProjectLightColorIDLTE          *ulid.ID  `json:"projectLightColorIDLTE,omitempty"`
+	ProjectLightColorIDContains     *ulid.ID  `json:"projectLightColorIDContains,omitempty"`
+	ProjectLightColorIDHasPrefix    *ulid.ID  `json:"projectLightColorIDHasPrefix,omitempty"`
+	ProjectLightColorIDHasSuffix    *ulid.ID  `json:"projectLightColorIDHasSuffix,omitempty"`
+	ProjectLightColorIDEqualFold    *ulid.ID  `json:"projectLightColorIDEqualFold,omitempty"`
+	ProjectLightColorIDContainsFold *ulid.ID  `json:"projectLightColorIDContainsFold,omitempty"`
 
 	// "icon_id" field predicates.
 	IconID             *ulid.ID  `json:"iconID,omitempty"`
@@ -829,9 +868,13 @@ type ProjectWhereInput struct {
 	HasWorkspace     *bool                  `json:"hasWorkspace,omitempty"`
 	HasWorkspaceWith []*WorkspaceWhereInput `json:"hasWorkspaceWith,omitempty"`
 
-	// "color" edge predicates.
-	HasColor     *bool              `json:"hasColor,omitempty"`
-	HasColorWith []*ColorWhereInput `json:"hasColorWith,omitempty"`
+	// "project_base_color" edge predicates.
+	HasProjectBaseColor     *bool                         `json:"hasProjectBaseColor,omitempty"`
+	HasProjectBaseColorWith []*ProjectBaseColorWhereInput `json:"hasProjectBaseColorWith,omitempty"`
+
+	// "project_light_color" edge predicates.
+	HasProjectLightColor     *bool                          `json:"hasProjectLightColor,omitempty"`
+	HasProjectLightColorWith []*ProjectLightColorWhereInput `json:"hasProjectLightColorWith,omitempty"`
 
 	// "icon" edge predicates.
 	HasIcon     *bool             `json:"hasIcon,omitempty"`
@@ -968,44 +1011,83 @@ func (i *ProjectWhereInput) P() (predicate.Project, error) {
 	if i.WorkspaceIDContainsFold != nil {
 		predicates = append(predicates, project.WorkspaceIDContainsFold(*i.WorkspaceIDContainsFold))
 	}
-	if i.ColorID != nil {
-		predicates = append(predicates, project.ColorIDEQ(*i.ColorID))
+	if i.ProjectBaseColorID != nil {
+		predicates = append(predicates, project.ProjectBaseColorIDEQ(*i.ProjectBaseColorID))
 	}
-	if i.ColorIDNEQ != nil {
-		predicates = append(predicates, project.ColorIDNEQ(*i.ColorIDNEQ))
+	if i.ProjectBaseColorIDNEQ != nil {
+		predicates = append(predicates, project.ProjectBaseColorIDNEQ(*i.ProjectBaseColorIDNEQ))
 	}
-	if len(i.ColorIDIn) > 0 {
-		predicates = append(predicates, project.ColorIDIn(i.ColorIDIn...))
+	if len(i.ProjectBaseColorIDIn) > 0 {
+		predicates = append(predicates, project.ProjectBaseColorIDIn(i.ProjectBaseColorIDIn...))
 	}
-	if len(i.ColorIDNotIn) > 0 {
-		predicates = append(predicates, project.ColorIDNotIn(i.ColorIDNotIn...))
+	if len(i.ProjectBaseColorIDNotIn) > 0 {
+		predicates = append(predicates, project.ProjectBaseColorIDNotIn(i.ProjectBaseColorIDNotIn...))
 	}
-	if i.ColorIDGT != nil {
-		predicates = append(predicates, project.ColorIDGT(*i.ColorIDGT))
+	if i.ProjectBaseColorIDGT != nil {
+		predicates = append(predicates, project.ProjectBaseColorIDGT(*i.ProjectBaseColorIDGT))
 	}
-	if i.ColorIDGTE != nil {
-		predicates = append(predicates, project.ColorIDGTE(*i.ColorIDGTE))
+	if i.ProjectBaseColorIDGTE != nil {
+		predicates = append(predicates, project.ProjectBaseColorIDGTE(*i.ProjectBaseColorIDGTE))
 	}
-	if i.ColorIDLT != nil {
-		predicates = append(predicates, project.ColorIDLT(*i.ColorIDLT))
+	if i.ProjectBaseColorIDLT != nil {
+		predicates = append(predicates, project.ProjectBaseColorIDLT(*i.ProjectBaseColorIDLT))
 	}
-	if i.ColorIDLTE != nil {
-		predicates = append(predicates, project.ColorIDLTE(*i.ColorIDLTE))
+	if i.ProjectBaseColorIDLTE != nil {
+		predicates = append(predicates, project.ProjectBaseColorIDLTE(*i.ProjectBaseColorIDLTE))
 	}
-	if i.ColorIDContains != nil {
-		predicates = append(predicates, project.ColorIDContains(*i.ColorIDContains))
+	if i.ProjectBaseColorIDContains != nil {
+		predicates = append(predicates, project.ProjectBaseColorIDContains(*i.ProjectBaseColorIDContains))
 	}
-	if i.ColorIDHasPrefix != nil {
-		predicates = append(predicates, project.ColorIDHasPrefix(*i.ColorIDHasPrefix))
+	if i.ProjectBaseColorIDHasPrefix != nil {
+		predicates = append(predicates, project.ProjectBaseColorIDHasPrefix(*i.ProjectBaseColorIDHasPrefix))
 	}
-	if i.ColorIDHasSuffix != nil {
-		predicates = append(predicates, project.ColorIDHasSuffix(*i.ColorIDHasSuffix))
+	if i.ProjectBaseColorIDHasSuffix != nil {
+		predicates = append(predicates, project.ProjectBaseColorIDHasSuffix(*i.ProjectBaseColorIDHasSuffix))
 	}
-	if i.ColorIDEqualFold != nil {
-		predicates = append(predicates, project.ColorIDEqualFold(*i.ColorIDEqualFold))
+	if i.ProjectBaseColorIDEqualFold != nil {
+		predicates = append(predicates, project.ProjectBaseColorIDEqualFold(*i.ProjectBaseColorIDEqualFold))
 	}
-	if i.ColorIDContainsFold != nil {
-		predicates = append(predicates, project.ColorIDContainsFold(*i.ColorIDContainsFold))
+	if i.ProjectBaseColorIDContainsFold != nil {
+		predicates = append(predicates, project.ProjectBaseColorIDContainsFold(*i.ProjectBaseColorIDContainsFold))
+	}
+	if i.ProjectLightColorID != nil {
+		predicates = append(predicates, project.ProjectLightColorIDEQ(*i.ProjectLightColorID))
+	}
+	if i.ProjectLightColorIDNEQ != nil {
+		predicates = append(predicates, project.ProjectLightColorIDNEQ(*i.ProjectLightColorIDNEQ))
+	}
+	if len(i.ProjectLightColorIDIn) > 0 {
+		predicates = append(predicates, project.ProjectLightColorIDIn(i.ProjectLightColorIDIn...))
+	}
+	if len(i.ProjectLightColorIDNotIn) > 0 {
+		predicates = append(predicates, project.ProjectLightColorIDNotIn(i.ProjectLightColorIDNotIn...))
+	}
+	if i.ProjectLightColorIDGT != nil {
+		predicates = append(predicates, project.ProjectLightColorIDGT(*i.ProjectLightColorIDGT))
+	}
+	if i.ProjectLightColorIDGTE != nil {
+		predicates = append(predicates, project.ProjectLightColorIDGTE(*i.ProjectLightColorIDGTE))
+	}
+	if i.ProjectLightColorIDLT != nil {
+		predicates = append(predicates, project.ProjectLightColorIDLT(*i.ProjectLightColorIDLT))
+	}
+	if i.ProjectLightColorIDLTE != nil {
+		predicates = append(predicates, project.ProjectLightColorIDLTE(*i.ProjectLightColorIDLTE))
+	}
+	if i.ProjectLightColorIDContains != nil {
+		predicates = append(predicates, project.ProjectLightColorIDContains(*i.ProjectLightColorIDContains))
+	}
+	if i.ProjectLightColorIDHasPrefix != nil {
+		predicates = append(predicates, project.ProjectLightColorIDHasPrefix(*i.ProjectLightColorIDHasPrefix))
+	}
+	if i.ProjectLightColorIDHasSuffix != nil {
+		predicates = append(predicates, project.ProjectLightColorIDHasSuffix(*i.ProjectLightColorIDHasSuffix))
+	}
+	if i.ProjectLightColorIDEqualFold != nil {
+		predicates = append(predicates, project.ProjectLightColorIDEqualFold(*i.ProjectLightColorIDEqualFold))
+	}
+	if i.ProjectLightColorIDContainsFold != nil {
+		predicates = append(predicates, project.ProjectLightColorIDContainsFold(*i.ProjectLightColorIDContainsFold))
 	}
 	if i.IconID != nil {
 		predicates = append(predicates, project.IconIDEQ(*i.IconID))
@@ -1254,23 +1336,41 @@ func (i *ProjectWhereInput) P() (predicate.Project, error) {
 		}
 		predicates = append(predicates, project.HasWorkspaceWith(with...))
 	}
-	if i.HasColor != nil {
-		p := project.HasColor()
-		if !*i.HasColor {
+	if i.HasProjectBaseColor != nil {
+		p := project.HasProjectBaseColor()
+		if !*i.HasProjectBaseColor {
 			p = project.Not(p)
 		}
 		predicates = append(predicates, p)
 	}
-	if len(i.HasColorWith) > 0 {
-		with := make([]predicate.Color, 0, len(i.HasColorWith))
-		for _, w := range i.HasColorWith {
+	if len(i.HasProjectBaseColorWith) > 0 {
+		with := make([]predicate.ProjectBaseColor, 0, len(i.HasProjectBaseColorWith))
+		for _, w := range i.HasProjectBaseColorWith {
 			p, err := w.P()
 			if err != nil {
 				return nil, err
 			}
 			with = append(with, p)
 		}
-		predicates = append(predicates, project.HasColorWith(with...))
+		predicates = append(predicates, project.HasProjectBaseColorWith(with...))
+	}
+	if i.HasProjectLightColor != nil {
+		p := project.HasProjectLightColor()
+		if !*i.HasProjectLightColor {
+			p = project.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasProjectLightColorWith) > 0 {
+		with := make([]predicate.ProjectLightColor, 0, len(i.HasProjectLightColorWith))
+		for _, w := range i.HasProjectLightColorWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, project.HasProjectLightColorWith(with...))
 	}
 	if i.HasIcon != nil {
 		p := project.HasIcon()
@@ -1333,6 +1433,560 @@ func (i *ProjectWhereInput) P() (predicate.Project, error) {
 		return predicates[0], nil
 	default:
 		return project.And(predicates...), nil
+	}
+}
+
+// ProjectBaseColorWhereInput represents a where input for filtering ProjectBaseColor queries.
+type ProjectBaseColorWhereInput struct {
+	Not *ProjectBaseColorWhereInput   `json:"not,omitempty"`
+	Or  []*ProjectBaseColorWhereInput `json:"or,omitempty"`
+	And []*ProjectBaseColorWhereInput `json:"and,omitempty"`
+
+	// "id" field predicates.
+	ID      *ulid.ID  `json:"id,omitempty"`
+	IDNEQ   *ulid.ID  `json:"idNEQ,omitempty"`
+	IDIn    []ulid.ID `json:"idIn,omitempty"`
+	IDNotIn []ulid.ID `json:"idNotIn,omitempty"`
+	IDGT    *ulid.ID  `json:"idGT,omitempty"`
+	IDGTE   *ulid.ID  `json:"idGTE,omitempty"`
+	IDLT    *ulid.ID  `json:"idLT,omitempty"`
+	IDLTE   *ulid.ID  `json:"idLTE,omitempty"`
+
+	// "color_id" field predicates.
+	ColorID             *ulid.ID  `json:"colorID,omitempty"`
+	ColorIDNEQ          *ulid.ID  `json:"colorIDNEQ,omitempty"`
+	ColorIDIn           []ulid.ID `json:"colorIDIn,omitempty"`
+	ColorIDNotIn        []ulid.ID `json:"colorIDNotIn,omitempty"`
+	ColorIDGT           *ulid.ID  `json:"colorIDGT,omitempty"`
+	ColorIDGTE          *ulid.ID  `json:"colorIDGTE,omitempty"`
+	ColorIDLT           *ulid.ID  `json:"colorIDLT,omitempty"`
+	ColorIDLTE          *ulid.ID  `json:"colorIDLTE,omitempty"`
+	ColorIDContains     *ulid.ID  `json:"colorIDContains,omitempty"`
+	ColorIDHasPrefix    *ulid.ID  `json:"colorIDHasPrefix,omitempty"`
+	ColorIDHasSuffix    *ulid.ID  `json:"colorIDHasSuffix,omitempty"`
+	ColorIDEqualFold    *ulid.ID  `json:"colorIDEqualFold,omitempty"`
+	ColorIDContainsFold *ulid.ID  `json:"colorIDContainsFold,omitempty"`
+
+	// "created_at" field predicates.
+	CreatedAt      *time.Time  `json:"createdAt,omitempty"`
+	CreatedAtNEQ   *time.Time  `json:"createdAtNEQ,omitempty"`
+	CreatedAtIn    []time.Time `json:"createdAtIn,omitempty"`
+	CreatedAtNotIn []time.Time `json:"createdAtNotIn,omitempty"`
+	CreatedAtGT    *time.Time  `json:"createdAtGT,omitempty"`
+	CreatedAtGTE   *time.Time  `json:"createdAtGTE,omitempty"`
+	CreatedAtLT    *time.Time  `json:"createdAtLT,omitempty"`
+	CreatedAtLTE   *time.Time  `json:"createdAtLTE,omitempty"`
+
+	// "updated_at" field predicates.
+	UpdatedAt      *time.Time  `json:"updatedAt,omitempty"`
+	UpdatedAtNEQ   *time.Time  `json:"updatedAtNEQ,omitempty"`
+	UpdatedAtIn    []time.Time `json:"updatedAtIn,omitempty"`
+	UpdatedAtNotIn []time.Time `json:"updatedAtNotIn,omitempty"`
+	UpdatedAtGT    *time.Time  `json:"updatedAtGT,omitempty"`
+	UpdatedAtGTE   *time.Time  `json:"updatedAtGTE,omitempty"`
+	UpdatedAtLT    *time.Time  `json:"updatedAtLT,omitempty"`
+	UpdatedAtLTE   *time.Time  `json:"updatedAtLTE,omitempty"`
+
+	// "projects" edge predicates.
+	HasProjects     *bool                `json:"hasProjects,omitempty"`
+	HasProjectsWith []*ProjectWhereInput `json:"hasProjectsWith,omitempty"`
+
+	// "color" edge predicates.
+	HasColor     *bool              `json:"hasColor,omitempty"`
+	HasColorWith []*ColorWhereInput `json:"hasColorWith,omitempty"`
+}
+
+// Filter applies the ProjectBaseColorWhereInput filter on the ProjectBaseColorQuery builder.
+func (i *ProjectBaseColorWhereInput) Filter(q *ProjectBaseColorQuery) (*ProjectBaseColorQuery, error) {
+	if i == nil {
+		return q, nil
+	}
+	p, err := i.P()
+	if err != nil {
+		return nil, err
+	}
+	return q.Where(p), nil
+}
+
+// P returns a predicate for filtering projectbasecolors.
+// An error is returned if the input is empty or invalid.
+func (i *ProjectBaseColorWhereInput) P() (predicate.ProjectBaseColor, error) {
+	var predicates []predicate.ProjectBaseColor
+	if i.Not != nil {
+		p, err := i.Not.P()
+		if err != nil {
+			return nil, err
+		}
+		predicates = append(predicates, projectbasecolor.Not(p))
+	}
+	switch n := len(i.Or); {
+	case n == 1:
+		p, err := i.Or[0].P()
+		if err != nil {
+			return nil, err
+		}
+		predicates = append(predicates, p)
+	case n > 1:
+		or := make([]predicate.ProjectBaseColor, 0, n)
+		for _, w := range i.Or {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			or = append(or, p)
+		}
+		predicates = append(predicates, projectbasecolor.Or(or...))
+	}
+	switch n := len(i.And); {
+	case n == 1:
+		p, err := i.And[0].P()
+		if err != nil {
+			return nil, err
+		}
+		predicates = append(predicates, p)
+	case n > 1:
+		and := make([]predicate.ProjectBaseColor, 0, n)
+		for _, w := range i.And {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			and = append(and, p)
+		}
+		predicates = append(predicates, projectbasecolor.And(and...))
+	}
+	if i.ID != nil {
+		predicates = append(predicates, projectbasecolor.IDEQ(*i.ID))
+	}
+	if i.IDNEQ != nil {
+		predicates = append(predicates, projectbasecolor.IDNEQ(*i.IDNEQ))
+	}
+	if len(i.IDIn) > 0 {
+		predicates = append(predicates, projectbasecolor.IDIn(i.IDIn...))
+	}
+	if len(i.IDNotIn) > 0 {
+		predicates = append(predicates, projectbasecolor.IDNotIn(i.IDNotIn...))
+	}
+	if i.IDGT != nil {
+		predicates = append(predicates, projectbasecolor.IDGT(*i.IDGT))
+	}
+	if i.IDGTE != nil {
+		predicates = append(predicates, projectbasecolor.IDGTE(*i.IDGTE))
+	}
+	if i.IDLT != nil {
+		predicates = append(predicates, projectbasecolor.IDLT(*i.IDLT))
+	}
+	if i.IDLTE != nil {
+		predicates = append(predicates, projectbasecolor.IDLTE(*i.IDLTE))
+	}
+	if i.ColorID != nil {
+		predicates = append(predicates, projectbasecolor.ColorIDEQ(*i.ColorID))
+	}
+	if i.ColorIDNEQ != nil {
+		predicates = append(predicates, projectbasecolor.ColorIDNEQ(*i.ColorIDNEQ))
+	}
+	if len(i.ColorIDIn) > 0 {
+		predicates = append(predicates, projectbasecolor.ColorIDIn(i.ColorIDIn...))
+	}
+	if len(i.ColorIDNotIn) > 0 {
+		predicates = append(predicates, projectbasecolor.ColorIDNotIn(i.ColorIDNotIn...))
+	}
+	if i.ColorIDGT != nil {
+		predicates = append(predicates, projectbasecolor.ColorIDGT(*i.ColorIDGT))
+	}
+	if i.ColorIDGTE != nil {
+		predicates = append(predicates, projectbasecolor.ColorIDGTE(*i.ColorIDGTE))
+	}
+	if i.ColorIDLT != nil {
+		predicates = append(predicates, projectbasecolor.ColorIDLT(*i.ColorIDLT))
+	}
+	if i.ColorIDLTE != nil {
+		predicates = append(predicates, projectbasecolor.ColorIDLTE(*i.ColorIDLTE))
+	}
+	if i.ColorIDContains != nil {
+		predicates = append(predicates, projectbasecolor.ColorIDContains(*i.ColorIDContains))
+	}
+	if i.ColorIDHasPrefix != nil {
+		predicates = append(predicates, projectbasecolor.ColorIDHasPrefix(*i.ColorIDHasPrefix))
+	}
+	if i.ColorIDHasSuffix != nil {
+		predicates = append(predicates, projectbasecolor.ColorIDHasSuffix(*i.ColorIDHasSuffix))
+	}
+	if i.ColorIDEqualFold != nil {
+		predicates = append(predicates, projectbasecolor.ColorIDEqualFold(*i.ColorIDEqualFold))
+	}
+	if i.ColorIDContainsFold != nil {
+		predicates = append(predicates, projectbasecolor.ColorIDContainsFold(*i.ColorIDContainsFold))
+	}
+	if i.CreatedAt != nil {
+		predicates = append(predicates, projectbasecolor.CreatedAtEQ(*i.CreatedAt))
+	}
+	if i.CreatedAtNEQ != nil {
+		predicates = append(predicates, projectbasecolor.CreatedAtNEQ(*i.CreatedAtNEQ))
+	}
+	if len(i.CreatedAtIn) > 0 {
+		predicates = append(predicates, projectbasecolor.CreatedAtIn(i.CreatedAtIn...))
+	}
+	if len(i.CreatedAtNotIn) > 0 {
+		predicates = append(predicates, projectbasecolor.CreatedAtNotIn(i.CreatedAtNotIn...))
+	}
+	if i.CreatedAtGT != nil {
+		predicates = append(predicates, projectbasecolor.CreatedAtGT(*i.CreatedAtGT))
+	}
+	if i.CreatedAtGTE != nil {
+		predicates = append(predicates, projectbasecolor.CreatedAtGTE(*i.CreatedAtGTE))
+	}
+	if i.CreatedAtLT != nil {
+		predicates = append(predicates, projectbasecolor.CreatedAtLT(*i.CreatedAtLT))
+	}
+	if i.CreatedAtLTE != nil {
+		predicates = append(predicates, projectbasecolor.CreatedAtLTE(*i.CreatedAtLTE))
+	}
+	if i.UpdatedAt != nil {
+		predicates = append(predicates, projectbasecolor.UpdatedAtEQ(*i.UpdatedAt))
+	}
+	if i.UpdatedAtNEQ != nil {
+		predicates = append(predicates, projectbasecolor.UpdatedAtNEQ(*i.UpdatedAtNEQ))
+	}
+	if len(i.UpdatedAtIn) > 0 {
+		predicates = append(predicates, projectbasecolor.UpdatedAtIn(i.UpdatedAtIn...))
+	}
+	if len(i.UpdatedAtNotIn) > 0 {
+		predicates = append(predicates, projectbasecolor.UpdatedAtNotIn(i.UpdatedAtNotIn...))
+	}
+	if i.UpdatedAtGT != nil {
+		predicates = append(predicates, projectbasecolor.UpdatedAtGT(*i.UpdatedAtGT))
+	}
+	if i.UpdatedAtGTE != nil {
+		predicates = append(predicates, projectbasecolor.UpdatedAtGTE(*i.UpdatedAtGTE))
+	}
+	if i.UpdatedAtLT != nil {
+		predicates = append(predicates, projectbasecolor.UpdatedAtLT(*i.UpdatedAtLT))
+	}
+	if i.UpdatedAtLTE != nil {
+		predicates = append(predicates, projectbasecolor.UpdatedAtLTE(*i.UpdatedAtLTE))
+	}
+
+	if i.HasProjects != nil {
+		p := projectbasecolor.HasProjects()
+		if !*i.HasProjects {
+			p = projectbasecolor.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasProjectsWith) > 0 {
+		with := make([]predicate.Project, 0, len(i.HasProjectsWith))
+		for _, w := range i.HasProjectsWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, projectbasecolor.HasProjectsWith(with...))
+	}
+	if i.HasColor != nil {
+		p := projectbasecolor.HasColor()
+		if !*i.HasColor {
+			p = projectbasecolor.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasColorWith) > 0 {
+		with := make([]predicate.Color, 0, len(i.HasColorWith))
+		for _, w := range i.HasColorWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, projectbasecolor.HasColorWith(with...))
+	}
+	switch len(predicates) {
+	case 0:
+		return nil, fmt.Errorf("project-management-demo-backend/ent: empty predicate ProjectBaseColorWhereInput")
+	case 1:
+		return predicates[0], nil
+	default:
+		return projectbasecolor.And(predicates...), nil
+	}
+}
+
+// ProjectLightColorWhereInput represents a where input for filtering ProjectLightColor queries.
+type ProjectLightColorWhereInput struct {
+	Not *ProjectLightColorWhereInput   `json:"not,omitempty"`
+	Or  []*ProjectLightColorWhereInput `json:"or,omitempty"`
+	And []*ProjectLightColorWhereInput `json:"and,omitempty"`
+
+	// "id" field predicates.
+	ID      *ulid.ID  `json:"id,omitempty"`
+	IDNEQ   *ulid.ID  `json:"idNEQ,omitempty"`
+	IDIn    []ulid.ID `json:"idIn,omitempty"`
+	IDNotIn []ulid.ID `json:"idNotIn,omitempty"`
+	IDGT    *ulid.ID  `json:"idGT,omitempty"`
+	IDGTE   *ulid.ID  `json:"idGTE,omitempty"`
+	IDLT    *ulid.ID  `json:"idLT,omitempty"`
+	IDLTE   *ulid.ID  `json:"idLTE,omitempty"`
+
+	// "color_id" field predicates.
+	ColorID             *ulid.ID  `json:"colorID,omitempty"`
+	ColorIDNEQ          *ulid.ID  `json:"colorIDNEQ,omitempty"`
+	ColorIDIn           []ulid.ID `json:"colorIDIn,omitempty"`
+	ColorIDNotIn        []ulid.ID `json:"colorIDNotIn,omitempty"`
+	ColorIDGT           *ulid.ID  `json:"colorIDGT,omitempty"`
+	ColorIDGTE          *ulid.ID  `json:"colorIDGTE,omitempty"`
+	ColorIDLT           *ulid.ID  `json:"colorIDLT,omitempty"`
+	ColorIDLTE          *ulid.ID  `json:"colorIDLTE,omitempty"`
+	ColorIDContains     *ulid.ID  `json:"colorIDContains,omitempty"`
+	ColorIDHasPrefix    *ulid.ID  `json:"colorIDHasPrefix,omitempty"`
+	ColorIDHasSuffix    *ulid.ID  `json:"colorIDHasSuffix,omitempty"`
+	ColorIDEqualFold    *ulid.ID  `json:"colorIDEqualFold,omitempty"`
+	ColorIDContainsFold *ulid.ID  `json:"colorIDContainsFold,omitempty"`
+
+	// "created_at" field predicates.
+	CreatedAt      *time.Time  `json:"createdAt,omitempty"`
+	CreatedAtNEQ   *time.Time  `json:"createdAtNEQ,omitempty"`
+	CreatedAtIn    []time.Time `json:"createdAtIn,omitempty"`
+	CreatedAtNotIn []time.Time `json:"createdAtNotIn,omitempty"`
+	CreatedAtGT    *time.Time  `json:"createdAtGT,omitempty"`
+	CreatedAtGTE   *time.Time  `json:"createdAtGTE,omitempty"`
+	CreatedAtLT    *time.Time  `json:"createdAtLT,omitempty"`
+	CreatedAtLTE   *time.Time  `json:"createdAtLTE,omitempty"`
+
+	// "updated_at" field predicates.
+	UpdatedAt      *time.Time  `json:"updatedAt,omitempty"`
+	UpdatedAtNEQ   *time.Time  `json:"updatedAtNEQ,omitempty"`
+	UpdatedAtIn    []time.Time `json:"updatedAtIn,omitempty"`
+	UpdatedAtNotIn []time.Time `json:"updatedAtNotIn,omitempty"`
+	UpdatedAtGT    *time.Time  `json:"updatedAtGT,omitempty"`
+	UpdatedAtGTE   *time.Time  `json:"updatedAtGTE,omitempty"`
+	UpdatedAtLT    *time.Time  `json:"updatedAtLT,omitempty"`
+	UpdatedAtLTE   *time.Time  `json:"updatedAtLTE,omitempty"`
+
+	// "projects" edge predicates.
+	HasProjects     *bool                `json:"hasProjects,omitempty"`
+	HasProjectsWith []*ProjectWhereInput `json:"hasProjectsWith,omitempty"`
+
+	// "color" edge predicates.
+	HasColor     *bool              `json:"hasColor,omitempty"`
+	HasColorWith []*ColorWhereInput `json:"hasColorWith,omitempty"`
+}
+
+// Filter applies the ProjectLightColorWhereInput filter on the ProjectLightColorQuery builder.
+func (i *ProjectLightColorWhereInput) Filter(q *ProjectLightColorQuery) (*ProjectLightColorQuery, error) {
+	if i == nil {
+		return q, nil
+	}
+	p, err := i.P()
+	if err != nil {
+		return nil, err
+	}
+	return q.Where(p), nil
+}
+
+// P returns a predicate for filtering projectlightcolors.
+// An error is returned if the input is empty or invalid.
+func (i *ProjectLightColorWhereInput) P() (predicate.ProjectLightColor, error) {
+	var predicates []predicate.ProjectLightColor
+	if i.Not != nil {
+		p, err := i.Not.P()
+		if err != nil {
+			return nil, err
+		}
+		predicates = append(predicates, projectlightcolor.Not(p))
+	}
+	switch n := len(i.Or); {
+	case n == 1:
+		p, err := i.Or[0].P()
+		if err != nil {
+			return nil, err
+		}
+		predicates = append(predicates, p)
+	case n > 1:
+		or := make([]predicate.ProjectLightColor, 0, n)
+		for _, w := range i.Or {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			or = append(or, p)
+		}
+		predicates = append(predicates, projectlightcolor.Or(or...))
+	}
+	switch n := len(i.And); {
+	case n == 1:
+		p, err := i.And[0].P()
+		if err != nil {
+			return nil, err
+		}
+		predicates = append(predicates, p)
+	case n > 1:
+		and := make([]predicate.ProjectLightColor, 0, n)
+		for _, w := range i.And {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			and = append(and, p)
+		}
+		predicates = append(predicates, projectlightcolor.And(and...))
+	}
+	if i.ID != nil {
+		predicates = append(predicates, projectlightcolor.IDEQ(*i.ID))
+	}
+	if i.IDNEQ != nil {
+		predicates = append(predicates, projectlightcolor.IDNEQ(*i.IDNEQ))
+	}
+	if len(i.IDIn) > 0 {
+		predicates = append(predicates, projectlightcolor.IDIn(i.IDIn...))
+	}
+	if len(i.IDNotIn) > 0 {
+		predicates = append(predicates, projectlightcolor.IDNotIn(i.IDNotIn...))
+	}
+	if i.IDGT != nil {
+		predicates = append(predicates, projectlightcolor.IDGT(*i.IDGT))
+	}
+	if i.IDGTE != nil {
+		predicates = append(predicates, projectlightcolor.IDGTE(*i.IDGTE))
+	}
+	if i.IDLT != nil {
+		predicates = append(predicates, projectlightcolor.IDLT(*i.IDLT))
+	}
+	if i.IDLTE != nil {
+		predicates = append(predicates, projectlightcolor.IDLTE(*i.IDLTE))
+	}
+	if i.ColorID != nil {
+		predicates = append(predicates, projectlightcolor.ColorIDEQ(*i.ColorID))
+	}
+	if i.ColorIDNEQ != nil {
+		predicates = append(predicates, projectlightcolor.ColorIDNEQ(*i.ColorIDNEQ))
+	}
+	if len(i.ColorIDIn) > 0 {
+		predicates = append(predicates, projectlightcolor.ColorIDIn(i.ColorIDIn...))
+	}
+	if len(i.ColorIDNotIn) > 0 {
+		predicates = append(predicates, projectlightcolor.ColorIDNotIn(i.ColorIDNotIn...))
+	}
+	if i.ColorIDGT != nil {
+		predicates = append(predicates, projectlightcolor.ColorIDGT(*i.ColorIDGT))
+	}
+	if i.ColorIDGTE != nil {
+		predicates = append(predicates, projectlightcolor.ColorIDGTE(*i.ColorIDGTE))
+	}
+	if i.ColorIDLT != nil {
+		predicates = append(predicates, projectlightcolor.ColorIDLT(*i.ColorIDLT))
+	}
+	if i.ColorIDLTE != nil {
+		predicates = append(predicates, projectlightcolor.ColorIDLTE(*i.ColorIDLTE))
+	}
+	if i.ColorIDContains != nil {
+		predicates = append(predicates, projectlightcolor.ColorIDContains(*i.ColorIDContains))
+	}
+	if i.ColorIDHasPrefix != nil {
+		predicates = append(predicates, projectlightcolor.ColorIDHasPrefix(*i.ColorIDHasPrefix))
+	}
+	if i.ColorIDHasSuffix != nil {
+		predicates = append(predicates, projectlightcolor.ColorIDHasSuffix(*i.ColorIDHasSuffix))
+	}
+	if i.ColorIDEqualFold != nil {
+		predicates = append(predicates, projectlightcolor.ColorIDEqualFold(*i.ColorIDEqualFold))
+	}
+	if i.ColorIDContainsFold != nil {
+		predicates = append(predicates, projectlightcolor.ColorIDContainsFold(*i.ColorIDContainsFold))
+	}
+	if i.CreatedAt != nil {
+		predicates = append(predicates, projectlightcolor.CreatedAtEQ(*i.CreatedAt))
+	}
+	if i.CreatedAtNEQ != nil {
+		predicates = append(predicates, projectlightcolor.CreatedAtNEQ(*i.CreatedAtNEQ))
+	}
+	if len(i.CreatedAtIn) > 0 {
+		predicates = append(predicates, projectlightcolor.CreatedAtIn(i.CreatedAtIn...))
+	}
+	if len(i.CreatedAtNotIn) > 0 {
+		predicates = append(predicates, projectlightcolor.CreatedAtNotIn(i.CreatedAtNotIn...))
+	}
+	if i.CreatedAtGT != nil {
+		predicates = append(predicates, projectlightcolor.CreatedAtGT(*i.CreatedAtGT))
+	}
+	if i.CreatedAtGTE != nil {
+		predicates = append(predicates, projectlightcolor.CreatedAtGTE(*i.CreatedAtGTE))
+	}
+	if i.CreatedAtLT != nil {
+		predicates = append(predicates, projectlightcolor.CreatedAtLT(*i.CreatedAtLT))
+	}
+	if i.CreatedAtLTE != nil {
+		predicates = append(predicates, projectlightcolor.CreatedAtLTE(*i.CreatedAtLTE))
+	}
+	if i.UpdatedAt != nil {
+		predicates = append(predicates, projectlightcolor.UpdatedAtEQ(*i.UpdatedAt))
+	}
+	if i.UpdatedAtNEQ != nil {
+		predicates = append(predicates, projectlightcolor.UpdatedAtNEQ(*i.UpdatedAtNEQ))
+	}
+	if len(i.UpdatedAtIn) > 0 {
+		predicates = append(predicates, projectlightcolor.UpdatedAtIn(i.UpdatedAtIn...))
+	}
+	if len(i.UpdatedAtNotIn) > 0 {
+		predicates = append(predicates, projectlightcolor.UpdatedAtNotIn(i.UpdatedAtNotIn...))
+	}
+	if i.UpdatedAtGT != nil {
+		predicates = append(predicates, projectlightcolor.UpdatedAtGT(*i.UpdatedAtGT))
+	}
+	if i.UpdatedAtGTE != nil {
+		predicates = append(predicates, projectlightcolor.UpdatedAtGTE(*i.UpdatedAtGTE))
+	}
+	if i.UpdatedAtLT != nil {
+		predicates = append(predicates, projectlightcolor.UpdatedAtLT(*i.UpdatedAtLT))
+	}
+	if i.UpdatedAtLTE != nil {
+		predicates = append(predicates, projectlightcolor.UpdatedAtLTE(*i.UpdatedAtLTE))
+	}
+
+	if i.HasProjects != nil {
+		p := projectlightcolor.HasProjects()
+		if !*i.HasProjects {
+			p = projectlightcolor.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasProjectsWith) > 0 {
+		with := make([]predicate.Project, 0, len(i.HasProjectsWith))
+		for _, w := range i.HasProjectsWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, projectlightcolor.HasProjectsWith(with...))
+	}
+	if i.HasColor != nil {
+		p := projectlightcolor.HasColor()
+		if !*i.HasColor {
+			p = projectlightcolor.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasColorWith) > 0 {
+		with := make([]predicate.Color, 0, len(i.HasColorWith))
+		for _, w := range i.HasColorWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, projectlightcolor.HasColorWith(with...))
+	}
+	switch len(predicates) {
+	case 0:
+		return nil, fmt.Errorf("project-management-demo-backend/ent: empty predicate ProjectLightColorWhereInput")
+	case 1:
+		return predicates[0], nil
+	default:
+		return projectlightcolor.And(predicates...), nil
 	}
 }
 

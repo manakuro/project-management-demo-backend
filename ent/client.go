@@ -13,6 +13,8 @@ import (
 	"project-management-demo-backend/ent/color"
 	"project-management-demo-backend/ent/icon"
 	"project-management-demo-backend/ent/project"
+	"project-management-demo-backend/ent/projectbasecolor"
+	"project-management-demo-backend/ent/projectlightcolor"
 	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/testtodo"
@@ -35,6 +37,10 @@ type Client struct {
 	Icon *IconClient
 	// Project is the client for interacting with the Project builders.
 	Project *ProjectClient
+	// ProjectBaseColor is the client for interacting with the ProjectBaseColor builders.
+	ProjectBaseColor *ProjectBaseColorClient
+	// ProjectLightColor is the client for interacting with the ProjectLightColor builders.
+	ProjectLightColor *ProjectLightColorClient
 	// ProjectTeammate is the client for interacting with the ProjectTeammate builders.
 	ProjectTeammate *ProjectTeammateClient
 	// Teammate is the client for interacting with the Teammate builders.
@@ -61,6 +67,8 @@ func (c *Client) init() {
 	c.Color = NewColorClient(c.config)
 	c.Icon = NewIconClient(c.config)
 	c.Project = NewProjectClient(c.config)
+	c.ProjectBaseColor = NewProjectBaseColorClient(c.config)
+	c.ProjectLightColor = NewProjectLightColorClient(c.config)
 	c.ProjectTeammate = NewProjectTeammateClient(c.config)
 	c.Teammate = NewTeammateClient(c.config)
 	c.TestTodo = NewTestTodoClient(c.config)
@@ -97,16 +105,18 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:             ctx,
-		config:          cfg,
-		Color:           NewColorClient(cfg),
-		Icon:            NewIconClient(cfg),
-		Project:         NewProjectClient(cfg),
-		ProjectTeammate: NewProjectTeammateClient(cfg),
-		Teammate:        NewTeammateClient(cfg),
-		TestTodo:        NewTestTodoClient(cfg),
-		TestUser:        NewTestUserClient(cfg),
-		Workspace:       NewWorkspaceClient(cfg),
+		ctx:               ctx,
+		config:            cfg,
+		Color:             NewColorClient(cfg),
+		Icon:              NewIconClient(cfg),
+		Project:           NewProjectClient(cfg),
+		ProjectBaseColor:  NewProjectBaseColorClient(cfg),
+		ProjectLightColor: NewProjectLightColorClient(cfg),
+		ProjectTeammate:   NewProjectTeammateClient(cfg),
+		Teammate:          NewTeammateClient(cfg),
+		TestTodo:          NewTestTodoClient(cfg),
+		TestUser:          NewTestUserClient(cfg),
+		Workspace:         NewWorkspaceClient(cfg),
 	}, nil
 }
 
@@ -124,15 +134,17 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		config:          cfg,
-		Color:           NewColorClient(cfg),
-		Icon:            NewIconClient(cfg),
-		Project:         NewProjectClient(cfg),
-		ProjectTeammate: NewProjectTeammateClient(cfg),
-		Teammate:        NewTeammateClient(cfg),
-		TestTodo:        NewTestTodoClient(cfg),
-		TestUser:        NewTestUserClient(cfg),
-		Workspace:       NewWorkspaceClient(cfg),
+		config:            cfg,
+		Color:             NewColorClient(cfg),
+		Icon:              NewIconClient(cfg),
+		Project:           NewProjectClient(cfg),
+		ProjectBaseColor:  NewProjectBaseColorClient(cfg),
+		ProjectLightColor: NewProjectLightColorClient(cfg),
+		ProjectTeammate:   NewProjectTeammateClient(cfg),
+		Teammate:          NewTeammateClient(cfg),
+		TestTodo:          NewTestTodoClient(cfg),
+		TestUser:          NewTestUserClient(cfg),
+		Workspace:         NewWorkspaceClient(cfg),
 	}, nil
 }
 
@@ -165,6 +177,8 @@ func (c *Client) Use(hooks ...Hook) {
 	c.Color.Use(hooks...)
 	c.Icon.Use(hooks...)
 	c.Project.Use(hooks...)
+	c.ProjectBaseColor.Use(hooks...)
+	c.ProjectLightColor.Use(hooks...)
 	c.ProjectTeammate.Use(hooks...)
 	c.Teammate.Use(hooks...)
 	c.TestTodo.Use(hooks...)
@@ -257,15 +271,31 @@ func (c *ColorClient) GetX(ctx context.Context, id ulid.ID) *Color {
 	return obj
 }
 
-// QueryProjects queries the projects edge of a Color.
-func (c *ColorClient) QueryProjects(co *Color) *ProjectQuery {
-	query := &ProjectQuery{config: c.config}
+// QueryProjectBaseColors queries the project_base_colors edge of a Color.
+func (c *ColorClient) QueryProjectBaseColors(co *Color) *ProjectBaseColorQuery {
+	query := &ProjectBaseColorQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
 		id := co.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(color.Table, color.FieldID, id),
-			sqlgraph.To(project.Table, project.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, color.ProjectsTable, color.ProjectsColumn),
+			sqlgraph.To(projectbasecolor.Table, projectbasecolor.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, color.ProjectBaseColorsTable, color.ProjectBaseColorsColumn),
+		)
+		fromV = sqlgraph.Neighbors(co.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryProjectLightColors queries the project_light_colors edge of a Color.
+func (c *ColorClient) QueryProjectLightColors(co *Color) *ProjectLightColorQuery {
+	query := &ProjectLightColorQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := co.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(color.Table, color.FieldID, id),
+			sqlgraph.To(projectlightcolor.Table, projectlightcolor.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, color.ProjectLightColorsTable, color.ProjectLightColorsColumn),
 		)
 		fromV = sqlgraph.Neighbors(co.driver.Dialect(), step)
 		return fromV, nil
@@ -485,15 +515,31 @@ func (c *ProjectClient) QueryWorkspace(pr *Project) *WorkspaceQuery {
 	return query
 }
 
-// QueryColor queries the color edge of a Project.
-func (c *ProjectClient) QueryColor(pr *Project) *ColorQuery {
-	query := &ColorQuery{config: c.config}
+// QueryProjectBaseColor queries the project_base_color edge of a Project.
+func (c *ProjectClient) QueryProjectBaseColor(pr *Project) *ProjectBaseColorQuery {
+	query := &ProjectBaseColorQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
 		id := pr.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(project.Table, project.FieldID, id),
-			sqlgraph.To(color.Table, color.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, project.ColorTable, project.ColorColumn),
+			sqlgraph.To(projectbasecolor.Table, projectbasecolor.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, project.ProjectBaseColorTable, project.ProjectBaseColorColumn),
+		)
+		fromV = sqlgraph.Neighbors(pr.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryProjectLightColor queries the project_light_color edge of a Project.
+func (c *ProjectClient) QueryProjectLightColor(pr *Project) *ProjectLightColorQuery {
+	query := &ProjectLightColorQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := pr.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(project.Table, project.FieldID, id),
+			sqlgraph.To(projectlightcolor.Table, projectlightcolor.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, project.ProjectLightColorTable, project.ProjectLightColorColumn),
 		)
 		fromV = sqlgraph.Neighbors(pr.driver.Dialect(), step)
 		return fromV, nil
@@ -552,6 +598,250 @@ func (c *ProjectClient) QueryProjectTeammates(pr *Project) *ProjectTeammateQuery
 // Hooks returns the client hooks.
 func (c *ProjectClient) Hooks() []Hook {
 	return c.hooks.Project
+}
+
+// ProjectBaseColorClient is a client for the ProjectBaseColor schema.
+type ProjectBaseColorClient struct {
+	config
+}
+
+// NewProjectBaseColorClient returns a client for the ProjectBaseColor from the given config.
+func NewProjectBaseColorClient(c config) *ProjectBaseColorClient {
+	return &ProjectBaseColorClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `projectbasecolor.Hooks(f(g(h())))`.
+func (c *ProjectBaseColorClient) Use(hooks ...Hook) {
+	c.hooks.ProjectBaseColor = append(c.hooks.ProjectBaseColor, hooks...)
+}
+
+// Create returns a create builder for ProjectBaseColor.
+func (c *ProjectBaseColorClient) Create() *ProjectBaseColorCreate {
+	mutation := newProjectBaseColorMutation(c.config, OpCreate)
+	return &ProjectBaseColorCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of ProjectBaseColor entities.
+func (c *ProjectBaseColorClient) CreateBulk(builders ...*ProjectBaseColorCreate) *ProjectBaseColorCreateBulk {
+	return &ProjectBaseColorCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for ProjectBaseColor.
+func (c *ProjectBaseColorClient) Update() *ProjectBaseColorUpdate {
+	mutation := newProjectBaseColorMutation(c.config, OpUpdate)
+	return &ProjectBaseColorUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ProjectBaseColorClient) UpdateOne(pbc *ProjectBaseColor) *ProjectBaseColorUpdateOne {
+	mutation := newProjectBaseColorMutation(c.config, OpUpdateOne, withProjectBaseColor(pbc))
+	return &ProjectBaseColorUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ProjectBaseColorClient) UpdateOneID(id ulid.ID) *ProjectBaseColorUpdateOne {
+	mutation := newProjectBaseColorMutation(c.config, OpUpdateOne, withProjectBaseColorID(id))
+	return &ProjectBaseColorUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for ProjectBaseColor.
+func (c *ProjectBaseColorClient) Delete() *ProjectBaseColorDelete {
+	mutation := newProjectBaseColorMutation(c.config, OpDelete)
+	return &ProjectBaseColorDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *ProjectBaseColorClient) DeleteOne(pbc *ProjectBaseColor) *ProjectBaseColorDeleteOne {
+	return c.DeleteOneID(pbc.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *ProjectBaseColorClient) DeleteOneID(id ulid.ID) *ProjectBaseColorDeleteOne {
+	builder := c.Delete().Where(projectbasecolor.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ProjectBaseColorDeleteOne{builder}
+}
+
+// Query returns a query builder for ProjectBaseColor.
+func (c *ProjectBaseColorClient) Query() *ProjectBaseColorQuery {
+	return &ProjectBaseColorQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a ProjectBaseColor entity by its id.
+func (c *ProjectBaseColorClient) Get(ctx context.Context, id ulid.ID) (*ProjectBaseColor, error) {
+	return c.Query().Where(projectbasecolor.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ProjectBaseColorClient) GetX(ctx context.Context, id ulid.ID) *ProjectBaseColor {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryProjects queries the projects edge of a ProjectBaseColor.
+func (c *ProjectBaseColorClient) QueryProjects(pbc *ProjectBaseColor) *ProjectQuery {
+	query := &ProjectQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := pbc.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(projectbasecolor.Table, projectbasecolor.FieldID, id),
+			sqlgraph.To(project.Table, project.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, projectbasecolor.ProjectsTable, projectbasecolor.ProjectsColumn),
+		)
+		fromV = sqlgraph.Neighbors(pbc.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryColor queries the color edge of a ProjectBaseColor.
+func (c *ProjectBaseColorClient) QueryColor(pbc *ProjectBaseColor) *ColorQuery {
+	query := &ColorQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := pbc.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(projectbasecolor.Table, projectbasecolor.FieldID, id),
+			sqlgraph.To(color.Table, color.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, projectbasecolor.ColorTable, projectbasecolor.ColorColumn),
+		)
+		fromV = sqlgraph.Neighbors(pbc.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *ProjectBaseColorClient) Hooks() []Hook {
+	return c.hooks.ProjectBaseColor
+}
+
+// ProjectLightColorClient is a client for the ProjectLightColor schema.
+type ProjectLightColorClient struct {
+	config
+}
+
+// NewProjectLightColorClient returns a client for the ProjectLightColor from the given config.
+func NewProjectLightColorClient(c config) *ProjectLightColorClient {
+	return &ProjectLightColorClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `projectlightcolor.Hooks(f(g(h())))`.
+func (c *ProjectLightColorClient) Use(hooks ...Hook) {
+	c.hooks.ProjectLightColor = append(c.hooks.ProjectLightColor, hooks...)
+}
+
+// Create returns a create builder for ProjectLightColor.
+func (c *ProjectLightColorClient) Create() *ProjectLightColorCreate {
+	mutation := newProjectLightColorMutation(c.config, OpCreate)
+	return &ProjectLightColorCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of ProjectLightColor entities.
+func (c *ProjectLightColorClient) CreateBulk(builders ...*ProjectLightColorCreate) *ProjectLightColorCreateBulk {
+	return &ProjectLightColorCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for ProjectLightColor.
+func (c *ProjectLightColorClient) Update() *ProjectLightColorUpdate {
+	mutation := newProjectLightColorMutation(c.config, OpUpdate)
+	return &ProjectLightColorUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ProjectLightColorClient) UpdateOne(plc *ProjectLightColor) *ProjectLightColorUpdateOne {
+	mutation := newProjectLightColorMutation(c.config, OpUpdateOne, withProjectLightColor(plc))
+	return &ProjectLightColorUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ProjectLightColorClient) UpdateOneID(id ulid.ID) *ProjectLightColorUpdateOne {
+	mutation := newProjectLightColorMutation(c.config, OpUpdateOne, withProjectLightColorID(id))
+	return &ProjectLightColorUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for ProjectLightColor.
+func (c *ProjectLightColorClient) Delete() *ProjectLightColorDelete {
+	mutation := newProjectLightColorMutation(c.config, OpDelete)
+	return &ProjectLightColorDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *ProjectLightColorClient) DeleteOne(plc *ProjectLightColor) *ProjectLightColorDeleteOne {
+	return c.DeleteOneID(plc.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *ProjectLightColorClient) DeleteOneID(id ulid.ID) *ProjectLightColorDeleteOne {
+	builder := c.Delete().Where(projectlightcolor.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ProjectLightColorDeleteOne{builder}
+}
+
+// Query returns a query builder for ProjectLightColor.
+func (c *ProjectLightColorClient) Query() *ProjectLightColorQuery {
+	return &ProjectLightColorQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a ProjectLightColor entity by its id.
+func (c *ProjectLightColorClient) Get(ctx context.Context, id ulid.ID) (*ProjectLightColor, error) {
+	return c.Query().Where(projectlightcolor.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ProjectLightColorClient) GetX(ctx context.Context, id ulid.ID) *ProjectLightColor {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryProjects queries the projects edge of a ProjectLightColor.
+func (c *ProjectLightColorClient) QueryProjects(plc *ProjectLightColor) *ProjectQuery {
+	query := &ProjectQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := plc.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(projectlightcolor.Table, projectlightcolor.FieldID, id),
+			sqlgraph.To(project.Table, project.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, projectlightcolor.ProjectsTable, projectlightcolor.ProjectsColumn),
+		)
+		fromV = sqlgraph.Neighbors(plc.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryColor queries the color edge of a ProjectLightColor.
+func (c *ProjectLightColorClient) QueryColor(plc *ProjectLightColor) *ColorQuery {
+	query := &ColorQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := plc.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(projectlightcolor.Table, projectlightcolor.FieldID, id),
+			sqlgraph.To(color.Table, color.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, projectlightcolor.ColorTable, projectlightcolor.ColorColumn),
+		)
+		fromV = sqlgraph.Neighbors(plc.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *ProjectLightColorClient) Hooks() []Hook {
+	return c.hooks.ProjectLightColor
 }
 
 // ProjectTeammateClient is a client for the ProjectTeammate schema.

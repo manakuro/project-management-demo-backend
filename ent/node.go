@@ -9,6 +9,8 @@ import (
 	"project-management-demo-backend/ent/color"
 	"project-management-demo-backend/ent/icon"
 	"project-management-demo-backend/ent/project"
+	"project-management-demo-backend/ent/projectbasecolor"
+	"project-management-demo-backend/ent/projectlightcolor"
 	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/teammate"
@@ -53,7 +55,7 @@ func (c *Color) Node(ctx context.Context) (node *Node, err error) {
 		ID:     c.ID,
 		Type:   "Color",
 		Fields: make([]*Field, 5),
-		Edges:  make([]*Edge, 1),
+		Edges:  make([]*Edge, 2),
 	}
 	var buf []byte
 	if buf, err = json.Marshal(c.Name); err != nil {
@@ -97,12 +99,22 @@ func (c *Color) Node(ctx context.Context) (node *Node, err error) {
 		Value: string(buf),
 	}
 	node.Edges[0] = &Edge{
-		Type: "Project",
-		Name: "projects",
+		Type: "ProjectBaseColor",
+		Name: "project_base_colors",
 	}
-	err = c.QueryProjects().
-		Select(project.FieldID).
+	err = c.QueryProjectBaseColors().
+		Select(projectbasecolor.FieldID).
 		Scan(ctx, &node.Edges[0].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[1] = &Edge{
+		Type: "ProjectLightColor",
+		Name: "project_light_colors",
+	}
+	err = c.QueryProjectLightColors().
+		Select(projectlightcolor.FieldID).
+		Scan(ctx, &node.Edges[1].IDs)
 	if err != nil {
 		return nil, err
 	}
@@ -166,8 +178,8 @@ func (pr *Project) Node(ctx context.Context) (node *Node, err error) {
 	node = &Node{
 		ID:     pr.ID,
 		Type:   "Project",
-		Fields: make([]*Field, 10),
-		Edges:  make([]*Edge, 5),
+		Fields: make([]*Field, 11),
+		Edges:  make([]*Edge, 6),
 	}
 	var buf []byte
 	if buf, err = json.Marshal(pr.WorkspaceID); err != nil {
@@ -178,18 +190,26 @@ func (pr *Project) Node(ctx context.Context) (node *Node, err error) {
 		Name:  "workspace_id",
 		Value: string(buf),
 	}
-	if buf, err = json.Marshal(pr.ColorID); err != nil {
+	if buf, err = json.Marshal(pr.ProjectBaseColorID); err != nil {
 		return nil, err
 	}
 	node.Fields[1] = &Field{
 		Type:  "ulid.ID",
-		Name:  "color_id",
+		Name:  "project_base_color_id",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(pr.ProjectLightColorID); err != nil {
+		return nil, err
+	}
+	node.Fields[2] = &Field{
+		Type:  "ulid.ID",
+		Name:  "project_light_color_id",
 		Value: string(buf),
 	}
 	if buf, err = json.Marshal(pr.IconID); err != nil {
 		return nil, err
 	}
-	node.Fields[2] = &Field{
+	node.Fields[3] = &Field{
 		Type:  "ulid.ID",
 		Name:  "icon_id",
 		Value: string(buf),
@@ -197,7 +217,7 @@ func (pr *Project) Node(ctx context.Context) (node *Node, err error) {
 	if buf, err = json.Marshal(pr.CreatedBy); err != nil {
 		return nil, err
 	}
-	node.Fields[3] = &Field{
+	node.Fields[4] = &Field{
 		Type:  "ulid.ID",
 		Name:  "created_by",
 		Value: string(buf),
@@ -205,7 +225,7 @@ func (pr *Project) Node(ctx context.Context) (node *Node, err error) {
 	if buf, err = json.Marshal(pr.Name); err != nil {
 		return nil, err
 	}
-	node.Fields[4] = &Field{
+	node.Fields[5] = &Field{
 		Type:  "string",
 		Name:  "name",
 		Value: string(buf),
@@ -213,7 +233,7 @@ func (pr *Project) Node(ctx context.Context) (node *Node, err error) {
 	if buf, err = json.Marshal(pr.Description); err != nil {
 		return nil, err
 	}
-	node.Fields[5] = &Field{
+	node.Fields[6] = &Field{
 		Type:  "editor.Description",
 		Name:  "description",
 		Value: string(buf),
@@ -221,7 +241,7 @@ func (pr *Project) Node(ctx context.Context) (node *Node, err error) {
 	if buf, err = json.Marshal(pr.DescriptionTitle); err != nil {
 		return nil, err
 	}
-	node.Fields[6] = &Field{
+	node.Fields[7] = &Field{
 		Type:  "string",
 		Name:  "description_title",
 		Value: string(buf),
@@ -229,7 +249,7 @@ func (pr *Project) Node(ctx context.Context) (node *Node, err error) {
 	if buf, err = json.Marshal(pr.DueDate); err != nil {
 		return nil, err
 	}
-	node.Fields[7] = &Field{
+	node.Fields[8] = &Field{
 		Type:  "time.Time",
 		Name:  "due_date",
 		Value: string(buf),
@@ -237,7 +257,7 @@ func (pr *Project) Node(ctx context.Context) (node *Node, err error) {
 	if buf, err = json.Marshal(pr.CreatedAt); err != nil {
 		return nil, err
 	}
-	node.Fields[8] = &Field{
+	node.Fields[9] = &Field{
 		Type:  "time.Time",
 		Name:  "created_at",
 		Value: string(buf),
@@ -245,7 +265,7 @@ func (pr *Project) Node(ctx context.Context) (node *Node, err error) {
 	if buf, err = json.Marshal(pr.UpdatedAt); err != nil {
 		return nil, err
 	}
-	node.Fields[9] = &Field{
+	node.Fields[10] = &Field{
 		Type:  "time.Time",
 		Name:  "updated_at",
 		Value: string(buf),
@@ -261,42 +281,162 @@ func (pr *Project) Node(ctx context.Context) (node *Node, err error) {
 		return nil, err
 	}
 	node.Edges[1] = &Edge{
-		Type: "Color",
-		Name: "color",
+		Type: "ProjectBaseColor",
+		Name: "project_base_color",
 	}
-	err = pr.QueryColor().
-		Select(color.FieldID).
+	err = pr.QueryProjectBaseColor().
+		Select(projectbasecolor.FieldID).
 		Scan(ctx, &node.Edges[1].IDs)
 	if err != nil {
 		return nil, err
 	}
 	node.Edges[2] = &Edge{
-		Type: "Icon",
-		Name: "icon",
+		Type: "ProjectLightColor",
+		Name: "project_light_color",
 	}
-	err = pr.QueryIcon().
-		Select(icon.FieldID).
+	err = pr.QueryProjectLightColor().
+		Select(projectlightcolor.FieldID).
 		Scan(ctx, &node.Edges[2].IDs)
 	if err != nil {
 		return nil, err
 	}
 	node.Edges[3] = &Edge{
-		Type: "Teammate",
-		Name: "teammate",
+		Type: "Icon",
+		Name: "icon",
 	}
-	err = pr.QueryTeammate().
-		Select(teammate.FieldID).
+	err = pr.QueryIcon().
+		Select(icon.FieldID).
 		Scan(ctx, &node.Edges[3].IDs)
 	if err != nil {
 		return nil, err
 	}
 	node.Edges[4] = &Edge{
+		Type: "Teammate",
+		Name: "teammate",
+	}
+	err = pr.QueryTeammate().
+		Select(teammate.FieldID).
+		Scan(ctx, &node.Edges[4].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[5] = &Edge{
 		Type: "ProjectTeammate",
 		Name: "project_teammates",
 	}
 	err = pr.QueryProjectTeammates().
 		Select(projectteammate.FieldID).
-		Scan(ctx, &node.Edges[4].IDs)
+		Scan(ctx, &node.Edges[5].IDs)
+	if err != nil {
+		return nil, err
+	}
+	return node, nil
+}
+
+func (pbc *ProjectBaseColor) Node(ctx context.Context) (node *Node, err error) {
+	node = &Node{
+		ID:     pbc.ID,
+		Type:   "ProjectBaseColor",
+		Fields: make([]*Field, 3),
+		Edges:  make([]*Edge, 2),
+	}
+	var buf []byte
+	if buf, err = json.Marshal(pbc.ColorID); err != nil {
+		return nil, err
+	}
+	node.Fields[0] = &Field{
+		Type:  "ulid.ID",
+		Name:  "color_id",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(pbc.CreatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[1] = &Field{
+		Type:  "time.Time",
+		Name:  "created_at",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(pbc.UpdatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[2] = &Field{
+		Type:  "time.Time",
+		Name:  "updated_at",
+		Value: string(buf),
+	}
+	node.Edges[0] = &Edge{
+		Type: "Project",
+		Name: "projects",
+	}
+	err = pbc.QueryProjects().
+		Select(project.FieldID).
+		Scan(ctx, &node.Edges[0].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[1] = &Edge{
+		Type: "Color",
+		Name: "color",
+	}
+	err = pbc.QueryColor().
+		Select(color.FieldID).
+		Scan(ctx, &node.Edges[1].IDs)
+	if err != nil {
+		return nil, err
+	}
+	return node, nil
+}
+
+func (plc *ProjectLightColor) Node(ctx context.Context) (node *Node, err error) {
+	node = &Node{
+		ID:     plc.ID,
+		Type:   "ProjectLightColor",
+		Fields: make([]*Field, 3),
+		Edges:  make([]*Edge, 2),
+	}
+	var buf []byte
+	if buf, err = json.Marshal(plc.ColorID); err != nil {
+		return nil, err
+	}
+	node.Fields[0] = &Field{
+		Type:  "ulid.ID",
+		Name:  "color_id",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(plc.CreatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[1] = &Field{
+		Type:  "time.Time",
+		Name:  "created_at",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(plc.UpdatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[2] = &Field{
+		Type:  "time.Time",
+		Name:  "updated_at",
+		Value: string(buf),
+	}
+	node.Edges[0] = &Edge{
+		Type: "Project",
+		Name: "projects",
+	}
+	err = plc.QueryProjects().
+		Select(project.FieldID).
+		Scan(ctx, &node.Edges[0].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[1] = &Edge{
+		Type: "Color",
+		Name: "color",
+	}
+	err = plc.QueryColor().
+		Select(color.FieldID).
+		Scan(ctx, &node.Edges[1].IDs)
 	if err != nil {
 		return nil, err
 	}
@@ -758,6 +898,24 @@ func (c *Client) noder(ctx context.Context, table string, id ulid.ID) (Noder, er
 			return nil, err
 		}
 		return n, nil
+	case projectbasecolor.Table:
+		n, err := c.ProjectBaseColor.Query().
+			Where(projectbasecolor.ID(id)).
+			CollectFields(ctx, "ProjectBaseColor").
+			Only(ctx)
+		if err != nil {
+			return nil, err
+		}
+		return n, nil
+	case projectlightcolor.Table:
+		n, err := c.ProjectLightColor.Query().
+			Where(projectlightcolor.ID(id)).
+			CollectFields(ctx, "ProjectLightColor").
+			Only(ctx)
+		if err != nil {
+			return nil, err
+		}
+		return n, nil
 	case projectteammate.Table:
 		n, err := c.ProjectTeammate.Query().
 			Where(projectteammate.ID(id)).
@@ -906,6 +1064,32 @@ func (c *Client) noders(ctx context.Context, table string, ids []ulid.ID) ([]Nod
 		nodes, err := c.Project.Query().
 			Where(project.IDIn(ids...)).
 			CollectFields(ctx, "Project").
+			All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, node := range nodes {
+			for _, noder := range idmap[node.ID] {
+				*noder = node
+			}
+		}
+	case projectbasecolor.Table:
+		nodes, err := c.ProjectBaseColor.Query().
+			Where(projectbasecolor.IDIn(ids...)).
+			CollectFields(ctx, "ProjectBaseColor").
+			All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, node := range nodes {
+			for _, noder := range idmap[node.ID] {
+				*noder = node
+			}
+		}
+	case projectlightcolor.Table:
+		nodes, err := c.ProjectLightColor.Query().
+			Where(projectlightcolor.IDIn(ids...)).
+			CollectFields(ctx, "ProjectLightColor").
 			All(ctx)
 		if err != nil {
 			return nil, err

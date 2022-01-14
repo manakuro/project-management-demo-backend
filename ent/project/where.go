@@ -101,10 +101,17 @@ func WorkspaceID(v ulid.ID) predicate.Project {
 	})
 }
 
-// ColorID applies equality check predicate on the "color_id" field. It's identical to ColorIDEQ.
-func ColorID(v ulid.ID) predicate.Project {
+// ProjectBaseColorID applies equality check predicate on the "project_base_color_id" field. It's identical to ProjectBaseColorIDEQ.
+func ProjectBaseColorID(v ulid.ID) predicate.Project {
 	return predicate.Project(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldColorID), v))
+		s.Where(sql.EQ(s.C(FieldProjectBaseColorID), v))
+	})
+}
+
+// ProjectLightColorID applies equality check predicate on the "project_light_color_id" field. It's identical to ProjectLightColorIDEQ.
+func ProjectLightColorID(v ulid.ID) predicate.Project {
+	return predicate.Project(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldProjectLightColorID), v))
 	})
 }
 
@@ -273,22 +280,22 @@ func WorkspaceIDContainsFold(v ulid.ID) predicate.Project {
 	})
 }
 
-// ColorIDEQ applies the EQ predicate on the "color_id" field.
-func ColorIDEQ(v ulid.ID) predicate.Project {
+// ProjectBaseColorIDEQ applies the EQ predicate on the "project_base_color_id" field.
+func ProjectBaseColorIDEQ(v ulid.ID) predicate.Project {
 	return predicate.Project(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldColorID), v))
+		s.Where(sql.EQ(s.C(FieldProjectBaseColorID), v))
 	})
 }
 
-// ColorIDNEQ applies the NEQ predicate on the "color_id" field.
-func ColorIDNEQ(v ulid.ID) predicate.Project {
+// ProjectBaseColorIDNEQ applies the NEQ predicate on the "project_base_color_id" field.
+func ProjectBaseColorIDNEQ(v ulid.ID) predicate.Project {
 	return predicate.Project(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldColorID), v))
+		s.Where(sql.NEQ(s.C(FieldProjectBaseColorID), v))
 	})
 }
 
-// ColorIDIn applies the In predicate on the "color_id" field.
-func ColorIDIn(vs ...ulid.ID) predicate.Project {
+// ProjectBaseColorIDIn applies the In predicate on the "project_base_color_id" field.
+func ProjectBaseColorIDIn(vs ...ulid.ID) predicate.Project {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -300,12 +307,12 @@ func ColorIDIn(vs ...ulid.ID) predicate.Project {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.In(s.C(FieldColorID), v...))
+		s.Where(sql.In(s.C(FieldProjectBaseColorID), v...))
 	})
 }
 
-// ColorIDNotIn applies the NotIn predicate on the "color_id" field.
-func ColorIDNotIn(vs ...ulid.ID) predicate.Project {
+// ProjectBaseColorIDNotIn applies the NotIn predicate on the "project_base_color_id" field.
+func ProjectBaseColorIDNotIn(vs ...ulid.ID) predicate.Project {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -317,75 +324,191 @@ func ColorIDNotIn(vs ...ulid.ID) predicate.Project {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.NotIn(s.C(FieldColorID), v...))
+		s.Where(sql.NotIn(s.C(FieldProjectBaseColorID), v...))
 	})
 }
 
-// ColorIDGT applies the GT predicate on the "color_id" field.
-func ColorIDGT(v ulid.ID) predicate.Project {
+// ProjectBaseColorIDGT applies the GT predicate on the "project_base_color_id" field.
+func ProjectBaseColorIDGT(v ulid.ID) predicate.Project {
 	return predicate.Project(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldColorID), v))
+		s.Where(sql.GT(s.C(FieldProjectBaseColorID), v))
 	})
 }
 
-// ColorIDGTE applies the GTE predicate on the "color_id" field.
-func ColorIDGTE(v ulid.ID) predicate.Project {
+// ProjectBaseColorIDGTE applies the GTE predicate on the "project_base_color_id" field.
+func ProjectBaseColorIDGTE(v ulid.ID) predicate.Project {
 	return predicate.Project(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldColorID), v))
+		s.Where(sql.GTE(s.C(FieldProjectBaseColorID), v))
 	})
 }
 
-// ColorIDLT applies the LT predicate on the "color_id" field.
-func ColorIDLT(v ulid.ID) predicate.Project {
+// ProjectBaseColorIDLT applies the LT predicate on the "project_base_color_id" field.
+func ProjectBaseColorIDLT(v ulid.ID) predicate.Project {
 	return predicate.Project(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldColorID), v))
+		s.Where(sql.LT(s.C(FieldProjectBaseColorID), v))
 	})
 }
 
-// ColorIDLTE applies the LTE predicate on the "color_id" field.
-func ColorIDLTE(v ulid.ID) predicate.Project {
+// ProjectBaseColorIDLTE applies the LTE predicate on the "project_base_color_id" field.
+func ProjectBaseColorIDLTE(v ulid.ID) predicate.Project {
 	return predicate.Project(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldColorID), v))
+		s.Where(sql.LTE(s.C(FieldProjectBaseColorID), v))
 	})
 }
 
-// ColorIDContains applies the Contains predicate on the "color_id" field.
-func ColorIDContains(v ulid.ID) predicate.Project {
+// ProjectBaseColorIDContains applies the Contains predicate on the "project_base_color_id" field.
+func ProjectBaseColorIDContains(v ulid.ID) predicate.Project {
 	vc := string(v)
 	return predicate.Project(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldColorID), vc))
+		s.Where(sql.Contains(s.C(FieldProjectBaseColorID), vc))
 	})
 }
 
-// ColorIDHasPrefix applies the HasPrefix predicate on the "color_id" field.
-func ColorIDHasPrefix(v ulid.ID) predicate.Project {
+// ProjectBaseColorIDHasPrefix applies the HasPrefix predicate on the "project_base_color_id" field.
+func ProjectBaseColorIDHasPrefix(v ulid.ID) predicate.Project {
 	vc := string(v)
 	return predicate.Project(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldColorID), vc))
+		s.Where(sql.HasPrefix(s.C(FieldProjectBaseColorID), vc))
 	})
 }
 
-// ColorIDHasSuffix applies the HasSuffix predicate on the "color_id" field.
-func ColorIDHasSuffix(v ulid.ID) predicate.Project {
+// ProjectBaseColorIDHasSuffix applies the HasSuffix predicate on the "project_base_color_id" field.
+func ProjectBaseColorIDHasSuffix(v ulid.ID) predicate.Project {
 	vc := string(v)
 	return predicate.Project(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldColorID), vc))
+		s.Where(sql.HasSuffix(s.C(FieldProjectBaseColorID), vc))
 	})
 }
 
-// ColorIDEqualFold applies the EqualFold predicate on the "color_id" field.
-func ColorIDEqualFold(v ulid.ID) predicate.Project {
+// ProjectBaseColorIDEqualFold applies the EqualFold predicate on the "project_base_color_id" field.
+func ProjectBaseColorIDEqualFold(v ulid.ID) predicate.Project {
 	vc := string(v)
 	return predicate.Project(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldColorID), vc))
+		s.Where(sql.EqualFold(s.C(FieldProjectBaseColorID), vc))
 	})
 }
 
-// ColorIDContainsFold applies the ContainsFold predicate on the "color_id" field.
-func ColorIDContainsFold(v ulid.ID) predicate.Project {
+// ProjectBaseColorIDContainsFold applies the ContainsFold predicate on the "project_base_color_id" field.
+func ProjectBaseColorIDContainsFold(v ulid.ID) predicate.Project {
 	vc := string(v)
 	return predicate.Project(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldColorID), vc))
+		s.Where(sql.ContainsFold(s.C(FieldProjectBaseColorID), vc))
+	})
+}
+
+// ProjectLightColorIDEQ applies the EQ predicate on the "project_light_color_id" field.
+func ProjectLightColorIDEQ(v ulid.ID) predicate.Project {
+	return predicate.Project(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldProjectLightColorID), v))
+	})
+}
+
+// ProjectLightColorIDNEQ applies the NEQ predicate on the "project_light_color_id" field.
+func ProjectLightColorIDNEQ(v ulid.ID) predicate.Project {
+	return predicate.Project(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldProjectLightColorID), v))
+	})
+}
+
+// ProjectLightColorIDIn applies the In predicate on the "project_light_color_id" field.
+func ProjectLightColorIDIn(vs ...ulid.ID) predicate.Project {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Project(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldProjectLightColorID), v...))
+	})
+}
+
+// ProjectLightColorIDNotIn applies the NotIn predicate on the "project_light_color_id" field.
+func ProjectLightColorIDNotIn(vs ...ulid.ID) predicate.Project {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.Project(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldProjectLightColorID), v...))
+	})
+}
+
+// ProjectLightColorIDGT applies the GT predicate on the "project_light_color_id" field.
+func ProjectLightColorIDGT(v ulid.ID) predicate.Project {
+	return predicate.Project(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldProjectLightColorID), v))
+	})
+}
+
+// ProjectLightColorIDGTE applies the GTE predicate on the "project_light_color_id" field.
+func ProjectLightColorIDGTE(v ulid.ID) predicate.Project {
+	return predicate.Project(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldProjectLightColorID), v))
+	})
+}
+
+// ProjectLightColorIDLT applies the LT predicate on the "project_light_color_id" field.
+func ProjectLightColorIDLT(v ulid.ID) predicate.Project {
+	return predicate.Project(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldProjectLightColorID), v))
+	})
+}
+
+// ProjectLightColorIDLTE applies the LTE predicate on the "project_light_color_id" field.
+func ProjectLightColorIDLTE(v ulid.ID) predicate.Project {
+	return predicate.Project(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldProjectLightColorID), v))
+	})
+}
+
+// ProjectLightColorIDContains applies the Contains predicate on the "project_light_color_id" field.
+func ProjectLightColorIDContains(v ulid.ID) predicate.Project {
+	vc := string(v)
+	return predicate.Project(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldProjectLightColorID), vc))
+	})
+}
+
+// ProjectLightColorIDHasPrefix applies the HasPrefix predicate on the "project_light_color_id" field.
+func ProjectLightColorIDHasPrefix(v ulid.ID) predicate.Project {
+	vc := string(v)
+	return predicate.Project(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldProjectLightColorID), vc))
+	})
+}
+
+// ProjectLightColorIDHasSuffix applies the HasSuffix predicate on the "project_light_color_id" field.
+func ProjectLightColorIDHasSuffix(v ulid.ID) predicate.Project {
+	vc := string(v)
+	return predicate.Project(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldProjectLightColorID), vc))
+	})
+}
+
+// ProjectLightColorIDEqualFold applies the EqualFold predicate on the "project_light_color_id" field.
+func ProjectLightColorIDEqualFold(v ulid.ID) predicate.Project {
+	vc := string(v)
+	return predicate.Project(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldProjectLightColorID), vc))
+	})
+}
+
+// ProjectLightColorIDContainsFold applies the ContainsFold predicate on the "project_light_color_id" field.
+func ProjectLightColorIDContainsFold(v ulid.ID) predicate.Project {
+	vc := string(v)
+	return predicate.Project(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldProjectLightColorID), vc))
 	})
 }
 
@@ -1099,25 +1222,53 @@ func HasWorkspaceWith(preds ...predicate.Workspace) predicate.Project {
 	})
 }
 
-// HasColor applies the HasEdge predicate on the "color" edge.
-func HasColor() predicate.Project {
+// HasProjectBaseColor applies the HasEdge predicate on the "project_base_color" edge.
+func HasProjectBaseColor() predicate.Project {
 	return predicate.Project(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(ColorTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, ColorTable, ColorColumn),
+			sqlgraph.To(ProjectBaseColorTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, ProjectBaseColorTable, ProjectBaseColorColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasColorWith applies the HasEdge predicate on the "color" edge with a given conditions (other predicates).
-func HasColorWith(preds ...predicate.Color) predicate.Project {
+// HasProjectBaseColorWith applies the HasEdge predicate on the "project_base_color" edge with a given conditions (other predicates).
+func HasProjectBaseColorWith(preds ...predicate.ProjectBaseColor) predicate.Project {
 	return predicate.Project(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(ColorInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, ColorTable, ColorColumn),
+			sqlgraph.To(ProjectBaseColorInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, ProjectBaseColorTable, ProjectBaseColorColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasProjectLightColor applies the HasEdge predicate on the "project_light_color" edge.
+func HasProjectLightColor() predicate.Project {
+	return predicate.Project(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(ProjectLightColorTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, ProjectLightColorTable, ProjectLightColorColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasProjectLightColorWith applies the HasEdge predicate on the "project_light_color" edge with a given conditions (other predicates).
+func HasProjectLightColorWith(preds ...predicate.ProjectLightColor) predicate.Project {
+	return predicate.Project(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(ProjectLightColorInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, ProjectLightColorTable, ProjectLightColorColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {
