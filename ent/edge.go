@@ -12,6 +12,14 @@ func (c *Color) ProjectBaseColors(ctx context.Context) ([]*ProjectBaseColor, err
 	return result, err
 }
 
+func (c *Color) ProjectLightColors(ctx context.Context) ([]*ProjectLightColor, error) {
+	result, err := c.Edges.ProjectLightColorsOrErr()
+	if IsNotLoaded(err) {
+		result, err = c.QueryProjectLightColors().All(ctx)
+	}
+	return result, err
+}
+
 func (i *Icon) Projects(ctx context.Context) ([]*Project, error) {
 	result, err := i.Edges.ProjectsOrErr()
 	if IsNotLoaded(err) {
@@ -32,6 +40,14 @@ func (pr *Project) ProjectBaseColor(ctx context.Context) (*ProjectBaseColor, err
 	result, err := pr.Edges.ProjectBaseColorOrErr()
 	if IsNotLoaded(err) {
 		result, err = pr.QueryProjectBaseColor().Only(ctx)
+	}
+	return result, err
+}
+
+func (pr *Project) ProjectLightColor(ctx context.Context) (*ProjectLightColor, error) {
+	result, err := pr.Edges.ProjectLightColorOrErr()
+	if IsNotLoaded(err) {
+		result, err = pr.QueryProjectLightColor().Only(ctx)
 	}
 	return result, err
 }
@@ -72,6 +88,22 @@ func (pbc *ProjectBaseColor) Color(ctx context.Context) (*Color, error) {
 	result, err := pbc.Edges.ColorOrErr()
 	if IsNotLoaded(err) {
 		result, err = pbc.QueryColor().Only(ctx)
+	}
+	return result, err
+}
+
+func (plc *ProjectLightColor) Projects(ctx context.Context) ([]*Project, error) {
+	result, err := plc.Edges.ProjectsOrErr()
+	if IsNotLoaded(err) {
+		result, err = plc.QueryProjects().All(ctx)
+	}
+	return result, err
+}
+
+func (plc *ProjectLightColor) Color(ctx context.Context) (*Color, error) {
+	result, err := plc.Edges.ColorOrErr()
+	if IsNotLoaded(err) {
+		result, err = plc.QueryColor().Only(ctx)
 	}
 	return result, err
 }

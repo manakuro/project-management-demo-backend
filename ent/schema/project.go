@@ -36,6 +36,8 @@ func (ProjectMixin) Fields() []ent.Field {
 			GoType(ulid.ID("")),
 		field.String("project_base_color_id").
 			GoType(ulid.ID("")),
+		field.String("project_light_color_id").
+			GoType(ulid.ID("")),
 		field.String("icon_id").
 			GoType(ulid.ID("")),
 		field.String("created_by").
@@ -75,6 +77,16 @@ func (Project) Edges() []ent.Edge {
 			Annotations(
 				schema.Annotation(
 					annotation.Edge{FieldName: "project_base_color_id"},
+				),
+			),
+		edge.From("project_light_color", ProjectLightColor.Type).
+			Ref("projects").
+			Unique().
+			Field("project_light_color_id").
+			Required().
+			Annotations(
+				schema.Annotation(
+					annotation.Edge{FieldName: "project_light_color_id"},
 				),
 			),
 		edge.From("icon", Icon.Type).

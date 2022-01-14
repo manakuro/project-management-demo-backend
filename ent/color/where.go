@@ -642,6 +642,34 @@ func HasProjectBaseColorsWith(preds ...predicate.ProjectBaseColor) predicate.Col
 	})
 }
 
+// HasProjectLightColors applies the HasEdge predicate on the "project_light_colors" edge.
+func HasProjectLightColors() predicate.Color {
+	return predicate.Color(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(ProjectLightColorsTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ProjectLightColorsTable, ProjectLightColorsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasProjectLightColorsWith applies the HasEdge predicate on the "project_light_colors" edge with a given conditions (other predicates).
+func HasProjectLightColorsWith(preds ...predicate.ProjectLightColor) predicate.Color {
+	return predicate.Color(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(ProjectLightColorsInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ProjectLightColorsTable, ProjectLightColorsColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Color) predicate.Color {
 	return predicate.Color(func(s *sql.Selector) {

@@ -8,6 +8,7 @@ import (
 	"project-management-demo-backend/ent/icon"
 	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/projectbasecolor"
+	"project-management-demo-backend/ent/projectlightcolor"
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/testuser"
 	"project-management-demo-backend/ent/workspace"
@@ -80,6 +81,18 @@ func GetProjectBaseColorByColor(ctx context.Context, client *ent.Client, val str
 	p, err := client.ProjectBaseColor.Query().Where(projectbasecolor.ColorID(c.ID)).Only(ctx)
 	if err != nil {
 		log.Fatalf("GetProjectBaseColorByColor: failed get project base color: %v", err)
+	}
+
+	return p
+}
+
+// GetProjectLightColorByColor gets project light color data.
+func GetProjectLightColorByColor(ctx context.Context, client *ent.Client, val string) *ent.ProjectLightColor {
+	c := GetColor(ctx, client, val)
+
+	p, err := client.ProjectLightColor.Query().Where(projectlightcolor.ColorID(c.ID)).Only(ctx)
+	if err != nil {
+		log.Fatalf("GetProjectLightColorByColor: failed get project light color: %v", err)
 	}
 
 	return p

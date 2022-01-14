@@ -16,6 +16,8 @@ const (
 	FieldWorkspaceID = "workspace_id"
 	// FieldProjectBaseColorID holds the string denoting the project_base_color_id field in the database.
 	FieldProjectBaseColorID = "project_base_color_id"
+	// FieldProjectLightColorID holds the string denoting the project_light_color_id field in the database.
+	FieldProjectLightColorID = "project_light_color_id"
 	// FieldIconID holds the string denoting the icon_id field in the database.
 	FieldIconID = "icon_id"
 	// FieldCreatedBy holds the string denoting the created_by field in the database.
@@ -36,6 +38,8 @@ const (
 	EdgeWorkspace = "workspace"
 	// EdgeProjectBaseColor holds the string denoting the project_base_color edge name in mutations.
 	EdgeProjectBaseColor = "project_base_color"
+	// EdgeProjectLightColor holds the string denoting the project_light_color edge name in mutations.
+	EdgeProjectLightColor = "project_light_color"
 	// EdgeIcon holds the string denoting the icon edge name in mutations.
 	EdgeIcon = "icon"
 	// EdgeTeammate holds the string denoting the teammate edge name in mutations.
@@ -58,6 +62,13 @@ const (
 	ProjectBaseColorInverseTable = "project_base_colors"
 	// ProjectBaseColorColumn is the table column denoting the project_base_color relation/edge.
 	ProjectBaseColorColumn = "project_base_color_id"
+	// ProjectLightColorTable is the table that holds the project_light_color relation/edge.
+	ProjectLightColorTable = "projects"
+	// ProjectLightColorInverseTable is the table name for the ProjectLightColor entity.
+	// It exists in this package in order to avoid circular dependency with the "projectlightcolor" package.
+	ProjectLightColorInverseTable = "project_light_colors"
+	// ProjectLightColorColumn is the table column denoting the project_light_color relation/edge.
+	ProjectLightColorColumn = "project_light_color_id"
 	// IconTable is the table that holds the icon relation/edge.
 	IconTable = "projects"
 	// IconInverseTable is the table name for the Icon entity.
@@ -86,6 +97,7 @@ var Columns = []string{
 	FieldID,
 	FieldWorkspaceID,
 	FieldProjectBaseColorID,
+	FieldProjectLightColorID,
 	FieldIconID,
 	FieldCreatedBy,
 	FieldName,

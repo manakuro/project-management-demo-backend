@@ -36,9 +36,11 @@ type Color struct {
 type ColorEdges struct {
 	// ProjectBaseColors holds the value of the project_base_colors edge.
 	ProjectBaseColors []*ProjectBaseColor `json:"project_base_colors,omitempty"`
+	// ProjectLightColors holds the value of the project_light_colors edge.
+	ProjectLightColors []*ProjectLightColor `json:"project_light_colors,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [2]bool
 }
 
 // ProjectBaseColorsOrErr returns the ProjectBaseColors value or an error if the edge
@@ -48,6 +50,15 @@ func (e ColorEdges) ProjectBaseColorsOrErr() ([]*ProjectBaseColor, error) {
 		return e.ProjectBaseColors, nil
 	}
 	return nil, &NotLoadedError{edge: "project_base_colors"}
+}
+
+// ProjectLightColorsOrErr returns the ProjectLightColors value or an error if the edge
+// was not loaded in eager-loading.
+func (e ColorEdges) ProjectLightColorsOrErr() ([]*ProjectLightColor, error) {
+	if e.loadedTypes[1] {
+		return e.ProjectLightColors, nil
+	}
+	return nil, &NotLoadedError{edge: "project_light_colors"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -120,6 +131,11 @@ func (c *Color) assignValues(columns []string, values []interface{}) error {
 // QueryProjectBaseColors queries the "project_base_colors" edge of the Color entity.
 func (c *Color) QueryProjectBaseColors() *ProjectBaseColorQuery {
 	return (&ColorClient{config: c.config}).QueryProjectBaseColors(c)
+}
+
+// QueryProjectLightColors queries the "project_light_colors" edge of the Color entity.
+func (c *Color) QueryProjectLightColors() *ProjectLightColorQuery {
+	return (&ColorClient{config: c.config}).QueryProjectLightColors(c)
 }
 
 // Update returns a builder for updating this Color.

@@ -47,6 +47,12 @@ func (Color) Edges() []ent.Edge {
 					annotation.Edge{FieldName: "project_base_color_id"},
 				),
 			),
+		edge.To("project_light_colors", ProjectLightColor.Type).
+			Annotations(
+				schema.Annotation(
+					annotation.Edge{FieldName: "project_light_color_id"},
+				),
+			),
 	}
 }
 

@@ -48,6 +48,7 @@ var (
 		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
 		{Name: "icon_id", Type: field.TypeString, Nullable: true},
 		{Name: "project_base_color_id", Type: field.TypeString, Nullable: true},
+		{Name: "project_light_color_id", Type: field.TypeString, Nullable: true},
 		{Name: "created_by", Type: field.TypeString, Nullable: true},
 		{Name: "workspace_id", Type: field.TypeString, Nullable: true},
 	}
@@ -70,14 +71,20 @@ var (
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "projects_teammates_projects",
+				Symbol:     "projects_project_light_colors_projects",
 				Columns:    []*schema.Column{ProjectsColumns[9]},
+				RefColumns: []*schema.Column{ProjectLightColorsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "projects_teammates_projects",
+				Columns:    []*schema.Column{ProjectsColumns[10]},
 				RefColumns: []*schema.Column{TeammatesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "projects_workspaces_projects",
-				Columns:    []*schema.Column{ProjectsColumns[10]},
+				Columns:    []*schema.Column{ProjectsColumns[11]},
 				RefColumns: []*schema.Column{WorkspacesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -99,6 +106,27 @@ var (
 			{
 				Symbol:     "project_base_colors_colors_project_base_colors",
 				Columns:    []*schema.Column{ProjectBaseColorsColumns[3]},
+				RefColumns: []*schema.Column{ColorsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
+	// ProjectLightColorsColumns holds the columns for the "project_light_colors" table.
+	ProjectLightColorsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
+		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
+		{Name: "color_id", Type: field.TypeString, Nullable: true},
+	}
+	// ProjectLightColorsTable holds the schema information for the "project_light_colors" table.
+	ProjectLightColorsTable = &schema.Table{
+		Name:       "project_light_colors",
+		Columns:    ProjectLightColorsColumns,
+		PrimaryKey: []*schema.Column{ProjectLightColorsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "project_light_colors_colors_project_light_colors",
+				Columns:    []*schema.Column{ProjectLightColorsColumns[3]},
 				RefColumns: []*schema.Column{ColorsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -217,6 +245,7 @@ var (
 		IconsTable,
 		ProjectsTable,
 		ProjectBaseColorsTable,
+		ProjectLightColorsTable,
 		ProjectTeammatesTable,
 		TeammatesTable,
 		TestTodosTable,
@@ -228,9 +257,11 @@ var (
 func init() {
 	ProjectsTable.ForeignKeys[0].RefTable = IconsTable
 	ProjectsTable.ForeignKeys[1].RefTable = ProjectBaseColorsTable
-	ProjectsTable.ForeignKeys[2].RefTable = TeammatesTable
-	ProjectsTable.ForeignKeys[3].RefTable = WorkspacesTable
+	ProjectsTable.ForeignKeys[2].RefTable = ProjectLightColorsTable
+	ProjectsTable.ForeignKeys[3].RefTable = TeammatesTable
+	ProjectsTable.ForeignKeys[4].RefTable = WorkspacesTable
 	ProjectBaseColorsTable.ForeignKeys[0].RefTable = ColorsTable
+	ProjectLightColorsTable.ForeignKeys[0].RefTable = ColorsTable
 	ProjectTeammatesTable.ForeignKeys[0].RefTable = ProjectsTable
 	ProjectTeammatesTable.ForeignKeys[1].RefTable = TeammatesTable
 	TestTodosTable.ForeignKeys[0].RefTable = TestUsersTable
