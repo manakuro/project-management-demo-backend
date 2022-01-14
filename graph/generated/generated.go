@@ -121,23 +121,25 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		CreateColor           func(childComplexity int, input ent.CreateColorInput) int
-		CreateIcon            func(childComplexity int, input ent.CreateIconInput) int
-		CreateProject         func(childComplexity int, input ent.CreateProjectInput) int
-		CreateProjectTeammate func(childComplexity int, input ent.CreateProjectTeammateInput) int
-		CreateTeammate        func(childComplexity int, input ent.CreateTeammateInput) int
-		CreateTestTodo        func(childComplexity int, input ent.CreateTestTodoInput) int
-		CreateTestUser        func(childComplexity int, input ent.CreateTestUserInput) int
-		CreateTestUserAndTodo func(childComplexity int, input ent.CreateTestUserInput) int
-		CreateWorkspace       func(childComplexity int, input ent.CreateWorkspaceInput) int
-		UpdateColor           func(childComplexity int, input ent.UpdateColorInput) int
-		UpdateIcon            func(childComplexity int, input ent.UpdateIconInput) int
-		UpdateProject         func(childComplexity int, input ent.UpdateProjectInput) int
-		UpdateProjectTeammate func(childComplexity int, input ent.UpdateProjectTeammateInput) int
-		UpdateTeammate        func(childComplexity int, input ent.UpdateTeammateInput) int
-		UpdateTestTodo        func(childComplexity int, input ent.UpdateTestTodoInput) int
-		UpdateTestUser        func(childComplexity int, input ent.UpdateTestUserInput) int
-		UpdateWorkspace       func(childComplexity int, input ent.UpdateWorkspaceInput) int
+		CreateColor            func(childComplexity int, input ent.CreateColorInput) int
+		CreateIcon             func(childComplexity int, input ent.CreateIconInput) int
+		CreateProject          func(childComplexity int, input ent.CreateProjectInput) int
+		CreateProjectBaseColor func(childComplexity int, input ent.CreateProjectBaseColorInput) int
+		CreateProjectTeammate  func(childComplexity int, input ent.CreateProjectTeammateInput) int
+		CreateTeammate         func(childComplexity int, input ent.CreateTeammateInput) int
+		CreateTestTodo         func(childComplexity int, input ent.CreateTestTodoInput) int
+		CreateTestUser         func(childComplexity int, input ent.CreateTestUserInput) int
+		CreateTestUserAndTodo  func(childComplexity int, input ent.CreateTestUserInput) int
+		CreateWorkspace        func(childComplexity int, input ent.CreateWorkspaceInput) int
+		UpdateColor            func(childComplexity int, input ent.UpdateColorInput) int
+		UpdateIcon             func(childComplexity int, input ent.UpdateIconInput) int
+		UpdateProject          func(childComplexity int, input ent.UpdateProjectInput) int
+		UpdateProjectBaseColor func(childComplexity int, input ent.UpdateProjectBaseColorInput) int
+		UpdateProjectTeammate  func(childComplexity int, input ent.UpdateProjectTeammateInput) int
+		UpdateTeammate         func(childComplexity int, input ent.UpdateTeammateInput) int
+		UpdateTestTodo         func(childComplexity int, input ent.UpdateTestTodoInput) int
+		UpdateTestUser         func(childComplexity int, input ent.UpdateTestUserInput) int
+		UpdateWorkspace        func(childComplexity int, input ent.UpdateWorkspaceInput) int
 	}
 
 	PageInfo struct {
@@ -216,34 +218,37 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		Color            func(childComplexity int, id ulid.ID) int
-		Colors           func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ColorWhereInput) int
-		Icon             func(childComplexity int, id ulid.ID) int
-		Icons            func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.IconWhereInput) int
-		Node             func(childComplexity int, id ulid.ID) int
-		Nodes            func(childComplexity int, ids []ulid.ID) int
-		Project          func(childComplexity int, where *ent.ProjectWhereInput) int
-		ProjectTeammate  func(childComplexity int, where *ent.ProjectTeammateWhereInput) int
-		ProjectTeammates func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectTeammateWhereInput) int
-		Projects         func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectWhereInput) int
-		Teammate         func(childComplexity int, id ulid.ID) int
-		Teammates        func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TeammateWhereInput) int
-		TestTodo         func(childComplexity int, id *ulid.ID) int
-		TestTodos        func(childComplexity int) int
-		TestUser         func(childComplexity int, id ulid.ID, age *int) int
-		TestUsers        func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TestUserWhereInput) int
-		Workspace        func(childComplexity int, where *ent.WorkspaceWhereInput) int
-		Workspaces       func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.WorkspaceWhereInput) int
+		Color             func(childComplexity int, id ulid.ID) int
+		Colors            func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ColorWhereInput) int
+		Icon              func(childComplexity int, id ulid.ID) int
+		Icons             func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.IconWhereInput) int
+		Node              func(childComplexity int, id ulid.ID) int
+		Nodes             func(childComplexity int, ids []ulid.ID) int
+		Project           func(childComplexity int, where *ent.ProjectWhereInput) int
+		ProjectBaseColor  func(childComplexity int, where *ent.ProjectBaseColorWhereInput) int
+		ProjectBaseColors func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectBaseColorWhereInput) int
+		ProjectTeammate   func(childComplexity int, where *ent.ProjectTeammateWhereInput) int
+		ProjectTeammates  func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectTeammateWhereInput) int
+		Projects          func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectWhereInput) int
+		Teammate          func(childComplexity int, id ulid.ID) int
+		Teammates         func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TeammateWhereInput) int
+		TestTodo          func(childComplexity int, id *ulid.ID) int
+		TestTodos         func(childComplexity int) int
+		TestUser          func(childComplexity int, id ulid.ID, age *int) int
+		TestUsers         func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TestUserWhereInput) int
+		Workspace         func(childComplexity int, where *ent.WorkspaceWhereInput) int
+		Workspaces        func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.WorkspaceWhereInput) int
 	}
 
 	Subscription struct {
-		ColorUpdated           func(childComplexity int, id ulid.ID) int
-		IconUpdated            func(childComplexity int, id ulid.ID) int
-		ProjectTeammateUpdated func(childComplexity int, id ulid.ID) int
-		ProjectUpdated         func(childComplexity int, id ulid.ID) int
-		TeammateUpdated        func(childComplexity int, id ulid.ID) int
-		TestUserUpdated        func(childComplexity int, id ulid.ID) int
-		WorkspaceUpdated       func(childComplexity int, id ulid.ID) int
+		ColorUpdated            func(childComplexity int, id ulid.ID) int
+		IconUpdated             func(childComplexity int, id ulid.ID) int
+		ProjectBaseColorUpdated func(childComplexity int, id ulid.ID) int
+		ProjectTeammateUpdated  func(childComplexity int, id ulid.ID) int
+		ProjectUpdated          func(childComplexity int, id ulid.ID) int
+		TeammateUpdated         func(childComplexity int, id ulid.ID) int
+		TestUserUpdated         func(childComplexity int, id ulid.ID) int
+		WorkspaceUpdated        func(childComplexity int, id ulid.ID) int
 	}
 
 	Teammate struct {
@@ -350,6 +355,8 @@ type MutationResolver interface {
 	UpdateIcon(ctx context.Context, input ent.UpdateIconInput) (*ent.Icon, error)
 	CreateProject(ctx context.Context, input ent.CreateProjectInput) (*ent.Project, error)
 	UpdateProject(ctx context.Context, input ent.UpdateProjectInput) (*ent.Project, error)
+	CreateProjectBaseColor(ctx context.Context, input ent.CreateProjectBaseColorInput) (*ent.ProjectBaseColor, error)
+	UpdateProjectBaseColor(ctx context.Context, input ent.UpdateProjectBaseColorInput) (*ent.ProjectBaseColor, error)
 	CreateProjectTeammate(ctx context.Context, input ent.CreateProjectTeammateInput) (*ent.ProjectTeammate, error)
 	UpdateProjectTeammate(ctx context.Context, input ent.UpdateProjectTeammateInput) (*ent.ProjectTeammate, error)
 	CreateTeammate(ctx context.Context, input ent.CreateTeammateInput) (*ent.Teammate, error)
@@ -386,6 +393,8 @@ type QueryResolver interface {
 	Icons(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.IconWhereInput) (*ent.IconConnection, error)
 	Project(ctx context.Context, where *ent.ProjectWhereInput) (*ent.Project, error)
 	Projects(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectWhereInput) (*ent.ProjectConnection, error)
+	ProjectBaseColor(ctx context.Context, where *ent.ProjectBaseColorWhereInput) (*ent.ProjectBaseColor, error)
+	ProjectBaseColors(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectBaseColorWhereInput) (*ent.ProjectBaseColorConnection, error)
 	ProjectTeammate(ctx context.Context, where *ent.ProjectTeammateWhereInput) (*ent.ProjectTeammate, error)
 	ProjectTeammates(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectTeammateWhereInput) (*ent.ProjectTeammateConnection, error)
 	Teammate(ctx context.Context, id ulid.ID) (*ent.Teammate, error)
@@ -401,6 +410,7 @@ type SubscriptionResolver interface {
 	ColorUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.Color, error)
 	IconUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.Icon, error)
 	ProjectUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.Project, error)
+	ProjectBaseColorUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.ProjectBaseColor, error)
 	ProjectTeammateUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.ProjectTeammate, error)
 	TeammateUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.Teammate, error)
 	TestUserUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.TestUser, error)
@@ -684,6 +694,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.CreateProject(childComplexity, args["input"].(ent.CreateProjectInput)), true
 
+	case "Mutation.createProjectBaseColor":
+		if e.complexity.Mutation.CreateProjectBaseColor == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createProjectBaseColor_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateProjectBaseColor(childComplexity, args["input"].(ent.CreateProjectBaseColorInput)), true
+
 	case "Mutation.createProjectTeammate":
 		if e.complexity.Mutation.CreateProjectTeammate == nil {
 			break
@@ -791,6 +813,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.UpdateProject(childComplexity, args["input"].(ent.UpdateProjectInput)), true
+
+	case "Mutation.updateProjectBaseColor":
+		if e.complexity.Mutation.UpdateProjectBaseColor == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateProjectBaseColor_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateProjectBaseColor(childComplexity, args["input"].(ent.UpdateProjectBaseColorInput)), true
 
 	case "Mutation.updateProjectTeammate":
 		if e.complexity.Mutation.UpdateProjectTeammate == nil {
@@ -1251,6 +1285,30 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.Project(childComplexity, args["where"].(*ent.ProjectWhereInput)), true
 
+	case "Query.projectBaseColor":
+		if e.complexity.Query.ProjectBaseColor == nil {
+			break
+		}
+
+		args, err := ec.field_Query_projectBaseColor_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.ProjectBaseColor(childComplexity, args["where"].(*ent.ProjectBaseColorWhereInput)), true
+
+	case "Query.projectBaseColors":
+		if e.complexity.Query.ProjectBaseColors == nil {
+			break
+		}
+
+		args, err := ec.field_Query_projectBaseColors_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.ProjectBaseColors(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["where"].(*ent.ProjectBaseColorWhereInput)), true
+
 	case "Query.projectTeammate":
 		if e.complexity.Query.ProjectTeammate == nil {
 			break
@@ -1401,6 +1459,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Subscription.IconUpdated(childComplexity, args["id"].(ulid.ID)), true
+
+	case "Subscription.projectBaseColorUpdated":
+		if e.complexity.Subscription.ProjectBaseColorUpdated == nil {
+			break
+		}
+
+		args, err := ec.field_Subscription_projectBaseColorUpdated_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Subscription.ProjectBaseColorUpdated(childComplexity, args["id"].(ulid.ID)), true
 
 	case "Subscription.projectTeammateUpdated":
 		if e.complexity.Subscription.ProjectTeammateUpdated == nil {
@@ -2909,6 +2979,20 @@ input UpdateProjectBaseColorInput {
   id: ID!
   colorId: ID
 }
+
+extend type Query {
+  projectBaseColor(where: ProjectBaseColorWhereInput): ProjectBaseColor
+  projectBaseColors(after: Cursor, first: Int, before: Cursor, last: Int, where: ProjectBaseColorWhereInput): ProjectBaseColorConnection
+}
+
+extend type Subscription {
+  projectBaseColorUpdated(id: ID!): ProjectBaseColor!
+}
+
+extend type Mutation {
+  createProjectBaseColor(input: CreateProjectBaseColorInput!): ProjectBaseColor!
+  updateProjectBaseColor(input: UpdateProjectBaseColorInput!): ProjectBaseColor!
+}
 `, BuiltIn: false},
 	{Name: "graph/schema/project_teammate/project_teammate.graphql", Input: `type ProjectTeammate implements Node {
   id: ID!
@@ -3220,6 +3304,21 @@ func (ec *executionContext) field_Mutation_createIcon_args(ctx context.Context, 
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_createProjectBaseColor_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 ent.CreateProjectBaseColorInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNCreateProjectBaseColorInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐCreateProjectBaseColorInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_createProjectTeammate_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -3347,6 +3446,21 @@ func (ec *executionContext) field_Mutation_updateIcon_args(ctx context.Context, 
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNUpdateIconInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐUpdateIconInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_updateProjectBaseColor_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 ent.UpdateProjectBaseColorInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNUpdateProjectBaseColorInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐUpdateProjectBaseColorInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -3619,6 +3733,72 @@ func (ec *executionContext) field_Query_nodes_args(ctx context.Context, rawArgs 
 		}
 	}
 	args["ids"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_projectBaseColor_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *ent.ProjectBaseColorWhereInput
+	if tmp, ok := rawArgs["where"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
+		arg0, err = ec.unmarshalOProjectBaseColorWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectBaseColorWhereInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["where"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_projectBaseColors_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *ent.Cursor
+	if tmp, ok := rawArgs["after"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
+		arg0, err = ec.unmarshalOCursor2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐCursor(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["after"] = arg0
+	var arg1 *int
+	if tmp, ok := rawArgs["first"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("first"))
+		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["first"] = arg1
+	var arg2 *ent.Cursor
+	if tmp, ok := rawArgs["before"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("before"))
+		arg2, err = ec.unmarshalOCursor2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐCursor(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["before"] = arg2
+	var arg3 *int
+	if tmp, ok := rawArgs["last"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("last"))
+		arg3, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["last"] = arg3
+	var arg4 *ent.ProjectBaseColorWhereInput
+	if tmp, ok := rawArgs["where"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
+		arg4, err = ec.unmarshalOProjectBaseColorWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectBaseColorWhereInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["where"] = arg4
 	return args, nil
 }
 
@@ -3992,6 +4172,21 @@ func (ec *executionContext) field_Subscription_colorUpdated_args(ctx context.Con
 }
 
 func (ec *executionContext) field_Subscription_iconUpdated_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 ulid.ID
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Subscription_projectBaseColorUpdated_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 ulid.ID
@@ -5383,6 +5578,90 @@ func (ec *executionContext) _Mutation_updateProject(ctx context.Context, field g
 	res := resTmp.(*ent.Project)
 	fc.Result = res
 	return ec.marshalNProject2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProject(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_createProjectBaseColor(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_createProjectBaseColor_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreateProjectBaseColor(rctx, args["input"].(ent.CreateProjectBaseColorInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.ProjectBaseColor)
+	fc.Result = res
+	return ec.marshalNProjectBaseColor2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectBaseColor(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_updateProjectBaseColor(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_updateProjectBaseColor_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdateProjectBaseColor(rctx, args["input"].(ent.UpdateProjectBaseColorInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.ProjectBaseColor)
+	fc.Result = res
+	return ec.marshalNProjectBaseColor2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectBaseColor(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_createProjectTeammate(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -7713,6 +7992,84 @@ func (ec *executionContext) _Query_projects(ctx context.Context, field graphql.C
 	return ec.marshalOProjectConnection2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectConnection(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Query_projectBaseColor(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_projectBaseColor_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().ProjectBaseColor(rctx, args["where"].(*ent.ProjectBaseColorWhereInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*ent.ProjectBaseColor)
+	fc.Result = res
+	return ec.marshalOProjectBaseColor2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectBaseColor(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_projectBaseColors(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_projectBaseColors_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().ProjectBaseColors(rctx, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["where"].(*ent.ProjectBaseColorWhereInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*ent.ProjectBaseColorConnection)
+	fc.Result = res
+	return ec.marshalOProjectBaseColorConnection2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectBaseColorConnection(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Query_projectTeammate(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -8321,6 +8678,58 @@ func (ec *executionContext) _Subscription_projectUpdated(ctx context.Context, fi
 			graphql.MarshalString(field.Alias).MarshalGQL(w)
 			w.Write([]byte{':'})
 			ec.marshalNProject2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProject(ctx, field.Selections, res).MarshalGQL(w)
+			w.Write([]byte{'}'})
+		})
+	}
+}
+
+func (ec *executionContext) _Subscription_projectBaseColorUpdated(ctx context.Context, field graphql.CollectedField) (ret func() graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = nil
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Subscription",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Subscription_projectBaseColorUpdated_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return nil
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Subscription().ProjectBaseColorUpdated(rctx, args["id"].(ulid.ID))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return nil
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return nil
+	}
+	return func() graphql.Marshaler {
+		res, ok := <-resTmp.(<-chan *ent.ProjectBaseColor)
+		if !ok {
+			return nil
+		}
+		return graphql.WriterFunc(func(w io.Writer) {
+			w.Write([]byte{'{'})
+			graphql.MarshalString(field.Alias).MarshalGQL(w)
+			w.Write([]byte{':'})
+			ec.marshalNProjectBaseColor2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectBaseColor(ctx, field.Selections, res).MarshalGQL(w)
 			w.Write([]byte{'}'})
 		})
 	}
@@ -17810,6 +18219,16 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "createProjectBaseColor":
+			out.Values[i] = ec._Mutation_createProjectBaseColor(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "updateProjectBaseColor":
+			out.Values[i] = ec._Mutation_updateProjectBaseColor(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		case "createProjectTeammate":
 			out.Values[i] = ec._Mutation_createProjectTeammate(ctx, field)
 			if out.Values[i] == graphql.Null {
@@ -18529,6 +18948,28 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 				res = ec._Query_projects(ctx, field)
 				return res
 			})
+		case "projectBaseColor":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_projectBaseColor(ctx, field)
+				return res
+			})
+		case "projectBaseColors":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_projectBaseColors(ctx, field)
+				return res
+			})
 		case "projectTeammate":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
@@ -18676,6 +19117,8 @@ func (ec *executionContext) _Subscription(ctx context.Context, sel ast.Selection
 		return ec._Subscription_iconUpdated(ctx, fields[0])
 	case "projectUpdated":
 		return ec._Subscription_projectUpdated(ctx, fields[0])
+	case "projectBaseColorUpdated":
+		return ec._Subscription_projectBaseColorUpdated(ctx, fields[0])
 	case "projectTeammateUpdated":
 		return ec._Subscription_projectTeammateUpdated(ctx, fields[0])
 	case "teammateUpdated":
@@ -19550,6 +19993,11 @@ func (ec *executionContext) unmarshalNCreateIconInput2projectᚑmanagementᚑdem
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
+func (ec *executionContext) unmarshalNCreateProjectBaseColorInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐCreateProjectBaseColorInput(ctx context.Context, v interface{}) (ent.CreateProjectBaseColorInput, error) {
+	res, err := ec.unmarshalInputCreateProjectBaseColorInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNCreateProjectInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐCreateProjectInput(ctx context.Context, v interface{}) (ent.CreateProjectInput, error) {
 	res, err := ec.unmarshalInputCreateProjectInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -19803,6 +20251,10 @@ func (ec *executionContext) marshalNProject2ᚖprojectᚑmanagementᚑdemoᚑbac
 		return graphql.Null
 	}
 	return ec._Project(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNProjectBaseColor2projectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectBaseColor(ctx context.Context, sel ast.SelectionSet, v ent.ProjectBaseColor) graphql.Marshaler {
+	return ec._ProjectBaseColor(ctx, sel, &v)
 }
 
 func (ec *executionContext) marshalNProjectBaseColor2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectBaseColor(ctx context.Context, sel ast.SelectionSet, v *ent.ProjectBaseColor) graphql.Marshaler {
@@ -20103,6 +20555,11 @@ func (ec *executionContext) unmarshalNUpdateColorInput2projectᚑmanagementᚑde
 
 func (ec *executionContext) unmarshalNUpdateIconInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐUpdateIconInput(ctx context.Context, v interface{}) (ent.UpdateIconInput, error) {
 	res, err := ec.unmarshalInputUpdateIconInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNUpdateProjectBaseColorInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐUpdateProjectBaseColorInput(ctx context.Context, v interface{}) (ent.UpdateProjectBaseColorInput, error) {
+	res, err := ec.unmarshalInputUpdateProjectBaseColorInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
@@ -20924,6 +21381,13 @@ func (ec *executionContext) marshalOProjectBaseColor2ᚖprojectᚑmanagementᚑd
 		return graphql.Null
 	}
 	return ec._ProjectBaseColor(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOProjectBaseColorConnection2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectBaseColorConnection(ctx context.Context, sel ast.SelectionSet, v *ent.ProjectBaseColorConnection) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._ProjectBaseColorConnection(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalOProjectBaseColorEdge2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectBaseColorEdge(ctx context.Context, sel ast.SelectionSet, v []*ent.ProjectBaseColorEdge) graphql.Marshaler {
