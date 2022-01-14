@@ -41,10 +41,10 @@ func (ColorMixin) Fields() []ent.Field {
 // Edges of the Color.
 func (Color) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("projects", Project.Type).
+		edge.To("project_base_colors", ProjectBaseColor.Type).
 			Annotations(
 				schema.Annotation(
-					annotation.Edge{FieldName: "project_id"},
+					annotation.Edge{FieldName: "project_base_color_id"},
 				),
 			),
 	}

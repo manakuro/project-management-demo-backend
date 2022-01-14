@@ -34,7 +34,7 @@ func (ProjectMixin) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("workspace_id").
 			GoType(ulid.ID("")),
-		field.String("color_id").
+		field.String("project_base_color_id").
 			GoType(ulid.ID("")),
 		field.String("icon_id").
 			GoType(ulid.ID("")),
@@ -67,14 +67,14 @@ func (Project) Edges() []ent.Edge {
 					annotation.Edge{FieldName: "workspace_id"},
 				),
 			),
-		edge.From("color", Color.Type).
+		edge.From("project_base_color", ProjectBaseColor.Type).
 			Ref("projects").
 			Unique().
-			Field("color_id").
+			Field("project_base_color_id").
 			Required().
 			Annotations(
 				schema.Annotation(
-					annotation.Edge{FieldName: "color_id"},
+					annotation.Edge{FieldName: "project_base_color_id"},
 				),
 			),
 		edge.From("icon", Icon.Type).

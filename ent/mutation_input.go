@@ -12,12 +12,12 @@ import (
 
 // CreateColorInput represents a mutation input for creating colors.
 type CreateColorInput struct {
-	Name       string
-	Color      string
-	Hex        string
-	CreatedAt  *time.Time
-	UpdatedAt  *time.Time
-	ProjectIDs []ulid.ID
+	Name                string
+	Color               string
+	Hex                 string
+	CreatedAt           *time.Time
+	UpdatedAt           *time.Time
+	ProjectBaseColorIDs []ulid.ID
 }
 
 // Mutate applies the CreateColorInput on the ColorCreate builder.
@@ -31,8 +31,8 @@ func (i *CreateColorInput) Mutate(m *ColorCreate) {
 	if v := i.UpdatedAt; v != nil {
 		m.SetUpdatedAt(*v)
 	}
-	if ids := i.ProjectIDs; len(ids) > 0 {
-		m.AddProjectIDs(ids...)
+	if ids := i.ProjectBaseColorIDs; len(ids) > 0 {
+		m.AddProjectBaseColorIDs(ids...)
 	}
 }
 
@@ -44,12 +44,12 @@ func (c *ColorCreate) SetInput(i CreateColorInput) *ColorCreate {
 
 // UpdateColorInput represents a mutation input for updating colors.
 type UpdateColorInput struct {
-	ID               ulid.ID
-	Name             *string
-	Color            *string
-	Hex              *string
-	AddProjectIDs    []ulid.ID
-	RemoveProjectIDs []ulid.ID
+	ID                        ulid.ID
+	Name                      *string
+	Color                     *string
+	Hex                       *string
+	AddProjectBaseColorIDs    []ulid.ID
+	RemoveProjectBaseColorIDs []ulid.ID
 }
 
 // Mutate applies the UpdateColorInput on the ColorMutation.
@@ -63,11 +63,11 @@ func (i *UpdateColorInput) Mutate(m *ColorMutation) {
 	if v := i.Hex; v != nil {
 		m.SetHex(*v)
 	}
-	if ids := i.AddProjectIDs; len(ids) > 0 {
-		m.AddProjectIDs(ids...)
+	if ids := i.AddProjectBaseColorIDs; len(ids) > 0 {
+		m.AddProjectBaseColorIDs(ids...)
 	}
-	if ids := i.RemoveProjectIDs; len(ids) > 0 {
-		m.RemoveProjectIDs(ids...)
+	if ids := i.RemoveProjectBaseColorIDs; len(ids) > 0 {
+		m.RemoveProjectBaseColorIDs(ids...)
 	}
 }
 
@@ -159,7 +159,7 @@ type CreateProjectInput struct {
 	CreatedAt          *time.Time
 	UpdatedAt          *time.Time
 	WorkspaceID        ulid.ID
-	ColorID            ulid.ID
+	ProjectBaseColorID ulid.ID
 	IconID             ulid.ID
 	CreatedBy          ulid.ID
 	ProjectTeammateIDs []ulid.ID
@@ -180,7 +180,7 @@ func (i *CreateProjectInput) Mutate(m *ProjectCreate) {
 		m.SetUpdatedAt(*v)
 	}
 	m.SetWorkspaceID(i.WorkspaceID)
-	m.SetColorID(i.ColorID)
+	m.SetProjectBaseColorID(i.ProjectBaseColorID)
 	m.SetIconID(i.IconID)
 	m.SetTeammateID(i.CreatedBy)
 	if ids := i.ProjectTeammateIDs; len(ids) > 0 {
@@ -203,8 +203,8 @@ type UpdateProjectInput struct {
 	DueDate                  *time.Time
 	WorkspaceID              *ulid.ID
 	ClearWorkspace           bool
-	ColorID                  *ulid.ID
-	ClearColor               bool
+	ProjectBaseColorID       *ulid.ID
+	ClearProjectBaseColor    bool
 	IconID                   *ulid.ID
 	ClearIcon                bool
 	CreatedBy                *ulid.ID
@@ -233,11 +233,11 @@ func (i *UpdateProjectInput) Mutate(m *ProjectMutation) {
 	if v := i.WorkspaceID; v != nil {
 		m.SetWorkspaceID(*v)
 	}
-	if i.ClearColor {
-		m.ClearColor()
+	if i.ClearProjectBaseColor {
+		m.ClearProjectBaseColor()
 	}
-	if v := i.ColorID; v != nil {
-		m.SetColorID(*v)
+	if v := i.ProjectBaseColorID; v != nil {
+		m.SetProjectBaseColorID(*v)
 	}
 	if i.ClearIcon {
 		m.ClearIcon()
@@ -267,6 +267,71 @@ func (u *ProjectUpdate) SetInput(i UpdateProjectInput) *ProjectUpdate {
 
 // SetInput applies the change-set in the UpdateProjectInput on the update-one builder.
 func (u *ProjectUpdateOne) SetInput(i UpdateProjectInput) *ProjectUpdateOne {
+	i.Mutate(u.Mutation())
+	return u
+}
+
+// CreateProjectBaseColorInput represents a mutation input for creating projectbasecolors.
+type CreateProjectBaseColorInput struct {
+	CreatedAt  *time.Time
+	UpdatedAt  *time.Time
+	ProjectIDs []ulid.ID
+	ColorID    ulid.ID
+}
+
+// Mutate applies the CreateProjectBaseColorInput on the ProjectBaseColorCreate builder.
+func (i *CreateProjectBaseColorInput) Mutate(m *ProjectBaseColorCreate) {
+	if v := i.CreatedAt; v != nil {
+		m.SetCreatedAt(*v)
+	}
+	if v := i.UpdatedAt; v != nil {
+		m.SetUpdatedAt(*v)
+	}
+	if ids := i.ProjectIDs; len(ids) > 0 {
+		m.AddProjectIDs(ids...)
+	}
+	m.SetColorID(i.ColorID)
+}
+
+// SetInput applies the change-set in the CreateProjectBaseColorInput on the create builder.
+func (c *ProjectBaseColorCreate) SetInput(i CreateProjectBaseColorInput) *ProjectBaseColorCreate {
+	i.Mutate(c)
+	return c
+}
+
+// UpdateProjectBaseColorInput represents a mutation input for updating projectbasecolors.
+type UpdateProjectBaseColorInput struct {
+	ID               ulid.ID
+	AddProjectIDs    []ulid.ID
+	RemoveProjectIDs []ulid.ID
+	ColorID          *ulid.ID
+	ClearColor       bool
+}
+
+// Mutate applies the UpdateProjectBaseColorInput on the ProjectBaseColorMutation.
+func (i *UpdateProjectBaseColorInput) Mutate(m *ProjectBaseColorMutation) {
+	if ids := i.AddProjectIDs; len(ids) > 0 {
+		m.AddProjectIDs(ids...)
+	}
+	if ids := i.RemoveProjectIDs; len(ids) > 0 {
+		m.RemoveProjectIDs(ids...)
+	}
+	if i.ClearColor {
+		m.ClearColor()
+	}
+	if v := i.ColorID; v != nil {
+		m.SetColorID(*v)
+	}
+}
+
+// SetInput applies the change-set in the UpdateProjectBaseColorInput on the update builder.
+func (u *ProjectBaseColorUpdate) SetInput(i UpdateProjectBaseColorInput) *ProjectBaseColorUpdate {
+	i.Mutate(u.Mutation())
+	return u
+}
+
+// SetInput applies the change-set in the UpdateProjectBaseColorInput on the update-one builder.
+func (u *ProjectBaseColorUpdateOne) SetInput(i UpdateProjectBaseColorInput) *ProjectBaseColorUpdateOne {
 	i.Mutate(u.Mutation())
 	return u
 }

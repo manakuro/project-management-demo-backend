@@ -11,6 +11,7 @@ import (
 	"project-management-demo-backend/ent/color"
 	"project-management-demo-backend/ent/icon"
 	"project-management-demo-backend/ent/project"
+	"project-management-demo-backend/ent/projectbasecolor"
 	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/teammate"
@@ -918,6 +919,233 @@ func (pr *Project) ToEdge(order *ProjectOrder) *ProjectEdge {
 	return &ProjectEdge{
 		Node:   pr,
 		Cursor: order.Field.toCursor(pr),
+	}
+}
+
+// ProjectBaseColorEdge is the edge representation of ProjectBaseColor.
+type ProjectBaseColorEdge struct {
+	Node   *ProjectBaseColor `json:"node"`
+	Cursor Cursor            `json:"cursor"`
+}
+
+// ProjectBaseColorConnection is the connection containing edges to ProjectBaseColor.
+type ProjectBaseColorConnection struct {
+	Edges      []*ProjectBaseColorEdge `json:"edges"`
+	PageInfo   PageInfo                `json:"pageInfo"`
+	TotalCount int                     `json:"totalCount"`
+}
+
+// ProjectBaseColorPaginateOption enables pagination customization.
+type ProjectBaseColorPaginateOption func(*projectBaseColorPager) error
+
+// WithProjectBaseColorOrder configures pagination ordering.
+func WithProjectBaseColorOrder(order *ProjectBaseColorOrder) ProjectBaseColorPaginateOption {
+	if order == nil {
+		order = DefaultProjectBaseColorOrder
+	}
+	o := *order
+	return func(pager *projectBaseColorPager) error {
+		if err := o.Direction.Validate(); err != nil {
+			return err
+		}
+		if o.Field == nil {
+			o.Field = DefaultProjectBaseColorOrder.Field
+		}
+		pager.order = &o
+		return nil
+	}
+}
+
+// WithProjectBaseColorFilter configures pagination filter.
+func WithProjectBaseColorFilter(filter func(*ProjectBaseColorQuery) (*ProjectBaseColorQuery, error)) ProjectBaseColorPaginateOption {
+	return func(pager *projectBaseColorPager) error {
+		if filter == nil {
+			return errors.New("ProjectBaseColorQuery filter cannot be nil")
+		}
+		pager.filter = filter
+		return nil
+	}
+}
+
+type projectBaseColorPager struct {
+	order  *ProjectBaseColorOrder
+	filter func(*ProjectBaseColorQuery) (*ProjectBaseColorQuery, error)
+}
+
+func newProjectBaseColorPager(opts []ProjectBaseColorPaginateOption) (*projectBaseColorPager, error) {
+	pager := &projectBaseColorPager{}
+	for _, opt := range opts {
+		if err := opt(pager); err != nil {
+			return nil, err
+		}
+	}
+	if pager.order == nil {
+		pager.order = DefaultProjectBaseColorOrder
+	}
+	return pager, nil
+}
+
+func (p *projectBaseColorPager) applyFilter(query *ProjectBaseColorQuery) (*ProjectBaseColorQuery, error) {
+	if p.filter != nil {
+		return p.filter(query)
+	}
+	return query, nil
+}
+
+func (p *projectBaseColorPager) toCursor(pbc *ProjectBaseColor) Cursor {
+	return p.order.Field.toCursor(pbc)
+}
+
+func (p *projectBaseColorPager) applyCursors(query *ProjectBaseColorQuery, after, before *Cursor) *ProjectBaseColorQuery {
+	for _, predicate := range cursorsToPredicates(
+		p.order.Direction, after, before,
+		p.order.Field.field, DefaultProjectBaseColorOrder.Field.field,
+	) {
+		query = query.Where(predicate)
+	}
+	return query
+}
+
+func (p *projectBaseColorPager) applyOrder(query *ProjectBaseColorQuery, reverse bool) *ProjectBaseColorQuery {
+	direction := p.order.Direction
+	if reverse {
+		direction = direction.reverse()
+	}
+	query = query.Order(direction.orderFunc(p.order.Field.field))
+	if p.order.Field != DefaultProjectBaseColorOrder.Field {
+		query = query.Order(direction.orderFunc(DefaultProjectBaseColorOrder.Field.field))
+	}
+	return query
+}
+
+// Paginate executes the query and returns a relay based cursor connection to ProjectBaseColor.
+func (pbc *ProjectBaseColorQuery) Paginate(
+	ctx context.Context, after *Cursor, first *int,
+	before *Cursor, last *int, opts ...ProjectBaseColorPaginateOption,
+) (*ProjectBaseColorConnection, error) {
+	if err := validateFirstLast(first, last); err != nil {
+		return nil, err
+	}
+	pager, err := newProjectBaseColorPager(opts)
+	if err != nil {
+		return nil, err
+	}
+
+	if pbc, err = pager.applyFilter(pbc); err != nil {
+		return nil, err
+	}
+
+	conn := &ProjectBaseColorConnection{Edges: []*ProjectBaseColorEdge{}}
+	if !hasCollectedField(ctx, edgesField) || first != nil && *first == 0 || last != nil && *last == 0 {
+		if hasCollectedField(ctx, totalCountField) ||
+			hasCollectedField(ctx, pageInfoField) {
+			count, err := pbc.Count(ctx)
+			if err != nil {
+				return nil, err
+			}
+			conn.TotalCount = count
+			conn.PageInfo.HasNextPage = first != nil && count > 0
+			conn.PageInfo.HasPreviousPage = last != nil && count > 0
+		}
+		return conn, nil
+	}
+
+	if (after != nil || first != nil || before != nil || last != nil) && hasCollectedField(ctx, totalCountField) {
+		count, err := pbc.Clone().Count(ctx)
+		if err != nil {
+			return nil, err
+		}
+		conn.TotalCount = count
+	}
+
+	pbc = pager.applyCursors(pbc, after, before)
+	pbc = pager.applyOrder(pbc, last != nil)
+	var limit int
+	if first != nil {
+		limit = *first + 1
+	} else if last != nil {
+		limit = *last + 1
+	}
+	if limit > 0 {
+		pbc = pbc.Limit(limit)
+	}
+
+	if field := getCollectedField(ctx, edgesField, nodeField); field != nil {
+		pbc = pbc.collectField(graphql.GetOperationContext(ctx), *field)
+	}
+
+	nodes, err := pbc.All(ctx)
+	if err != nil || len(nodes) == 0 {
+		return conn, err
+	}
+
+	if len(nodes) == limit {
+		conn.PageInfo.HasNextPage = first != nil
+		conn.PageInfo.HasPreviousPage = last != nil
+		nodes = nodes[:len(nodes)-1]
+	}
+
+	var nodeAt func(int) *ProjectBaseColor
+	if last != nil {
+		n := len(nodes) - 1
+		nodeAt = func(i int) *ProjectBaseColor {
+			return nodes[n-i]
+		}
+	} else {
+		nodeAt = func(i int) *ProjectBaseColor {
+			return nodes[i]
+		}
+	}
+
+	conn.Edges = make([]*ProjectBaseColorEdge, len(nodes))
+	for i := range nodes {
+		node := nodeAt(i)
+		conn.Edges[i] = &ProjectBaseColorEdge{
+			Node:   node,
+			Cursor: pager.toCursor(node),
+		}
+	}
+
+	conn.PageInfo.StartCursor = &conn.Edges[0].Cursor
+	conn.PageInfo.EndCursor = &conn.Edges[len(conn.Edges)-1].Cursor
+	if conn.TotalCount == 0 {
+		conn.TotalCount = len(nodes)
+	}
+
+	return conn, nil
+}
+
+// ProjectBaseColorOrderField defines the ordering field of ProjectBaseColor.
+type ProjectBaseColorOrderField struct {
+	field    string
+	toCursor func(*ProjectBaseColor) Cursor
+}
+
+// ProjectBaseColorOrder defines the ordering of ProjectBaseColor.
+type ProjectBaseColorOrder struct {
+	Direction OrderDirection              `json:"direction"`
+	Field     *ProjectBaseColorOrderField `json:"field"`
+}
+
+// DefaultProjectBaseColorOrder is the default ordering of ProjectBaseColor.
+var DefaultProjectBaseColorOrder = &ProjectBaseColorOrder{
+	Direction: OrderDirectionAsc,
+	Field: &ProjectBaseColorOrderField{
+		field: projectbasecolor.FieldID,
+		toCursor: func(pbc *ProjectBaseColor) Cursor {
+			return Cursor{ID: pbc.ID}
+		},
+	},
+}
+
+// ToEdge converts ProjectBaseColor into ProjectBaseColorEdge.
+func (pbc *ProjectBaseColor) ToEdge(order *ProjectBaseColorOrder) *ProjectBaseColorEdge {
+	if order == nil {
+		order = DefaultProjectBaseColorOrder
+	}
+	return &ProjectBaseColorEdge{
+		Node:   pbc,
+		Cursor: order.Field.toCursor(pbc),
 	}
 }
 

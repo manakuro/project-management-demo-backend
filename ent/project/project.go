@@ -14,8 +14,8 @@ const (
 	FieldID = "id"
 	// FieldWorkspaceID holds the string denoting the workspace_id field in the database.
 	FieldWorkspaceID = "workspace_id"
-	// FieldColorID holds the string denoting the color_id field in the database.
-	FieldColorID = "color_id"
+	// FieldProjectBaseColorID holds the string denoting the project_base_color_id field in the database.
+	FieldProjectBaseColorID = "project_base_color_id"
 	// FieldIconID holds the string denoting the icon_id field in the database.
 	FieldIconID = "icon_id"
 	// FieldCreatedBy holds the string denoting the created_by field in the database.
@@ -34,8 +34,8 @@ const (
 	FieldUpdatedAt = "updated_at"
 	// EdgeWorkspace holds the string denoting the workspace edge name in mutations.
 	EdgeWorkspace = "workspace"
-	// EdgeColor holds the string denoting the color edge name in mutations.
-	EdgeColor = "color"
+	// EdgeProjectBaseColor holds the string denoting the project_base_color edge name in mutations.
+	EdgeProjectBaseColor = "project_base_color"
 	// EdgeIcon holds the string denoting the icon edge name in mutations.
 	EdgeIcon = "icon"
 	// EdgeTeammate holds the string denoting the teammate edge name in mutations.
@@ -51,13 +51,13 @@ const (
 	WorkspaceInverseTable = "workspaces"
 	// WorkspaceColumn is the table column denoting the workspace relation/edge.
 	WorkspaceColumn = "workspace_id"
-	// ColorTable is the table that holds the color relation/edge.
-	ColorTable = "projects"
-	// ColorInverseTable is the table name for the Color entity.
-	// It exists in this package in order to avoid circular dependency with the "color" package.
-	ColorInverseTable = "colors"
-	// ColorColumn is the table column denoting the color relation/edge.
-	ColorColumn = "color_id"
+	// ProjectBaseColorTable is the table that holds the project_base_color relation/edge.
+	ProjectBaseColorTable = "projects"
+	// ProjectBaseColorInverseTable is the table name for the ProjectBaseColor entity.
+	// It exists in this package in order to avoid circular dependency with the "projectbasecolor" package.
+	ProjectBaseColorInverseTable = "project_base_colors"
+	// ProjectBaseColorColumn is the table column denoting the project_base_color relation/edge.
+	ProjectBaseColorColumn = "project_base_color_id"
 	// IconTable is the table that holds the icon relation/edge.
 	IconTable = "projects"
 	// IconInverseTable is the table name for the Icon entity.
@@ -85,7 +85,7 @@ const (
 var Columns = []string{
 	FieldID,
 	FieldWorkspaceID,
-	FieldColorID,
+	FieldProjectBaseColorID,
 	FieldIconID,
 	FieldCreatedBy,
 	FieldName,

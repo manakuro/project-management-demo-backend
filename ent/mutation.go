@@ -9,6 +9,7 @@ import (
 	"project-management-demo-backend/ent/icon"
 	"project-management-demo-backend/ent/predicate"
 	"project-management-demo-backend/ent/project"
+	"project-management-demo-backend/ent/projectbasecolor"
 	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/ent/schema/editor"
 	"project-management-demo-backend/ent/schema/testuserprofile"
@@ -32,34 +33,35 @@ const (
 	OpUpdateOne = ent.OpUpdateOne
 
 	// Node types.
-	TypeColor           = "Color"
-	TypeIcon            = "Icon"
-	TypeProject         = "Project"
-	TypeProjectTeammate = "ProjectTeammate"
-	TypeTeammate        = "Teammate"
-	TypeTestTodo        = "TestTodo"
-	TypeTestUser        = "TestUser"
-	TypeWorkspace       = "Workspace"
+	TypeColor            = "Color"
+	TypeIcon             = "Icon"
+	TypeProject          = "Project"
+	TypeProjectBaseColor = "ProjectBaseColor"
+	TypeProjectTeammate  = "ProjectTeammate"
+	TypeTeammate         = "Teammate"
+	TypeTestTodo         = "TestTodo"
+	TypeTestUser         = "TestUser"
+	TypeWorkspace        = "Workspace"
 )
 
 // ColorMutation represents an operation that mutates the Color nodes in the graph.
 type ColorMutation struct {
 	config
-	op              Op
-	typ             string
-	id              *ulid.ID
-	name            *string
-	color           *string
-	hex             *string
-	created_at      *time.Time
-	updated_at      *time.Time
-	clearedFields   map[string]struct{}
-	projects        map[ulid.ID]struct{}
-	removedprojects map[ulid.ID]struct{}
-	clearedprojects bool
-	done            bool
-	oldValue        func(context.Context) (*Color, error)
-	predicates      []predicate.Color
+	op                         Op
+	typ                        string
+	id                         *ulid.ID
+	name                       *string
+	color                      *string
+	hex                        *string
+	created_at                 *time.Time
+	updated_at                 *time.Time
+	clearedFields              map[string]struct{}
+	project_base_colors        map[ulid.ID]struct{}
+	removedproject_base_colors map[ulid.ID]struct{}
+	clearedproject_base_colors bool
+	done                       bool
+	oldValue                   func(context.Context) (*Color, error)
+	predicates                 []predicate.Color
 }
 
 var _ ent.Mutation = (*ColorMutation)(nil)
@@ -327,58 +329,58 @@ func (m *ColorMutation) ResetUpdatedAt() {
 	m.updated_at = nil
 }
 
-// AddProjectIDs adds the "projects" edge to the Project entity by ids.
-func (m *ColorMutation) AddProjectIDs(ids ...ulid.ID) {
-	if m.projects == nil {
-		m.projects = make(map[ulid.ID]struct{})
+// AddProjectBaseColorIDs adds the "project_base_colors" edge to the ProjectBaseColor entity by ids.
+func (m *ColorMutation) AddProjectBaseColorIDs(ids ...ulid.ID) {
+	if m.project_base_colors == nil {
+		m.project_base_colors = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		m.projects[ids[i]] = struct{}{}
+		m.project_base_colors[ids[i]] = struct{}{}
 	}
 }
 
-// ClearProjects clears the "projects" edge to the Project entity.
-func (m *ColorMutation) ClearProjects() {
-	m.clearedprojects = true
+// ClearProjectBaseColors clears the "project_base_colors" edge to the ProjectBaseColor entity.
+func (m *ColorMutation) ClearProjectBaseColors() {
+	m.clearedproject_base_colors = true
 }
 
-// ProjectsCleared reports if the "projects" edge to the Project entity was cleared.
-func (m *ColorMutation) ProjectsCleared() bool {
-	return m.clearedprojects
+// ProjectBaseColorsCleared reports if the "project_base_colors" edge to the ProjectBaseColor entity was cleared.
+func (m *ColorMutation) ProjectBaseColorsCleared() bool {
+	return m.clearedproject_base_colors
 }
 
-// RemoveProjectIDs removes the "projects" edge to the Project entity by IDs.
-func (m *ColorMutation) RemoveProjectIDs(ids ...ulid.ID) {
-	if m.removedprojects == nil {
-		m.removedprojects = make(map[ulid.ID]struct{})
+// RemoveProjectBaseColorIDs removes the "project_base_colors" edge to the ProjectBaseColor entity by IDs.
+func (m *ColorMutation) RemoveProjectBaseColorIDs(ids ...ulid.ID) {
+	if m.removedproject_base_colors == nil {
+		m.removedproject_base_colors = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		delete(m.projects, ids[i])
-		m.removedprojects[ids[i]] = struct{}{}
+		delete(m.project_base_colors, ids[i])
+		m.removedproject_base_colors[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedProjects returns the removed IDs of the "projects" edge to the Project entity.
-func (m *ColorMutation) RemovedProjectsIDs() (ids []ulid.ID) {
-	for id := range m.removedprojects {
+// RemovedProjectBaseColors returns the removed IDs of the "project_base_colors" edge to the ProjectBaseColor entity.
+func (m *ColorMutation) RemovedProjectBaseColorsIDs() (ids []ulid.ID) {
+	for id := range m.removedproject_base_colors {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ProjectsIDs returns the "projects" edge IDs in the mutation.
-func (m *ColorMutation) ProjectsIDs() (ids []ulid.ID) {
-	for id := range m.projects {
+// ProjectBaseColorsIDs returns the "project_base_colors" edge IDs in the mutation.
+func (m *ColorMutation) ProjectBaseColorsIDs() (ids []ulid.ID) {
+	for id := range m.project_base_colors {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetProjects resets all changes to the "projects" edge.
-func (m *ColorMutation) ResetProjects() {
-	m.projects = nil
-	m.clearedprojects = false
-	m.removedprojects = nil
+// ResetProjectBaseColors resets all changes to the "project_base_colors" edge.
+func (m *ColorMutation) ResetProjectBaseColors() {
+	m.project_base_colors = nil
+	m.clearedproject_base_colors = false
+	m.removedproject_base_colors = nil
 }
 
 // Where appends a list predicates to the ColorMutation builder.
@@ -568,8 +570,8 @@ func (m *ColorMutation) ResetField(name string) error {
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *ColorMutation) AddedEdges() []string {
 	edges := make([]string, 0, 1)
-	if m.projects != nil {
-		edges = append(edges, color.EdgeProjects)
+	if m.project_base_colors != nil {
+		edges = append(edges, color.EdgeProjectBaseColors)
 	}
 	return edges
 }
@@ -578,9 +580,9 @@ func (m *ColorMutation) AddedEdges() []string {
 // name in this mutation.
 func (m *ColorMutation) AddedIDs(name string) []ent.Value {
 	switch name {
-	case color.EdgeProjects:
-		ids := make([]ent.Value, 0, len(m.projects))
-		for id := range m.projects {
+	case color.EdgeProjectBaseColors:
+		ids := make([]ent.Value, 0, len(m.project_base_colors))
+		for id := range m.project_base_colors {
 			ids = append(ids, id)
 		}
 		return ids
@@ -591,8 +593,8 @@ func (m *ColorMutation) AddedIDs(name string) []ent.Value {
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *ColorMutation) RemovedEdges() []string {
 	edges := make([]string, 0, 1)
-	if m.removedprojects != nil {
-		edges = append(edges, color.EdgeProjects)
+	if m.removedproject_base_colors != nil {
+		edges = append(edges, color.EdgeProjectBaseColors)
 	}
 	return edges
 }
@@ -601,9 +603,9 @@ func (m *ColorMutation) RemovedEdges() []string {
 // the given name in this mutation.
 func (m *ColorMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
-	case color.EdgeProjects:
-		ids := make([]ent.Value, 0, len(m.removedprojects))
-		for id := range m.removedprojects {
+	case color.EdgeProjectBaseColors:
+		ids := make([]ent.Value, 0, len(m.removedproject_base_colors))
+		for id := range m.removedproject_base_colors {
 			ids = append(ids, id)
 		}
 		return ids
@@ -614,8 +616,8 @@ func (m *ColorMutation) RemovedIDs(name string) []ent.Value {
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *ColorMutation) ClearedEdges() []string {
 	edges := make([]string, 0, 1)
-	if m.clearedprojects {
-		edges = append(edges, color.EdgeProjects)
+	if m.clearedproject_base_colors {
+		edges = append(edges, color.EdgeProjectBaseColors)
 	}
 	return edges
 }
@@ -624,8 +626,8 @@ func (m *ColorMutation) ClearedEdges() []string {
 // was cleared in this mutation.
 func (m *ColorMutation) EdgeCleared(name string) bool {
 	switch name {
-	case color.EdgeProjects:
-		return m.clearedprojects
+	case color.EdgeProjectBaseColors:
+		return m.clearedproject_base_colors
 	}
 	return false
 }
@@ -642,8 +644,8 @@ func (m *ColorMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *ColorMutation) ResetEdge(name string) error {
 	switch name {
-	case color.EdgeProjects:
-		m.ResetProjects()
+	case color.EdgeProjectBaseColors:
+		m.ResetProjectBaseColors()
 		return nil
 	}
 	return fmt.Errorf("unknown Color edge %s", name)
@@ -1205,30 +1207,30 @@ func (m *IconMutation) ResetEdge(name string) error {
 // ProjectMutation represents an operation that mutates the Project nodes in the graph.
 type ProjectMutation struct {
 	config
-	op                       Op
-	typ                      string
-	id                       *ulid.ID
-	name                     *string
-	description              *editor.Description
-	description_title        *string
-	due_date                 *time.Time
-	created_at               *time.Time
-	updated_at               *time.Time
-	clearedFields            map[string]struct{}
-	workspace                *ulid.ID
-	clearedworkspace         bool
-	color                    *ulid.ID
-	clearedcolor             bool
-	icon                     *ulid.ID
-	clearedicon              bool
-	teammate                 *ulid.ID
-	clearedteammate          bool
-	project_teammates        map[ulid.ID]struct{}
-	removedproject_teammates map[ulid.ID]struct{}
-	clearedproject_teammates bool
-	done                     bool
-	oldValue                 func(context.Context) (*Project, error)
-	predicates               []predicate.Project
+	op                        Op
+	typ                       string
+	id                        *ulid.ID
+	name                      *string
+	description               *editor.Description
+	description_title         *string
+	due_date                  *time.Time
+	created_at                *time.Time
+	updated_at                *time.Time
+	clearedFields             map[string]struct{}
+	workspace                 *ulid.ID
+	clearedworkspace          bool
+	project_base_color        *ulid.ID
+	clearedproject_base_color bool
+	icon                      *ulid.ID
+	clearedicon               bool
+	teammate                  *ulid.ID
+	clearedteammate           bool
+	project_teammates         map[ulid.ID]struct{}
+	removedproject_teammates  map[ulid.ID]struct{}
+	clearedproject_teammates  bool
+	done                      bool
+	oldValue                  func(context.Context) (*Project, error)
+	predicates                []predicate.Project
 }
 
 var _ ent.Mutation = (*ProjectMutation)(nil)
@@ -1352,40 +1354,40 @@ func (m *ProjectMutation) ResetWorkspaceID() {
 	m.workspace = nil
 }
 
-// SetColorID sets the "color_id" field.
-func (m *ProjectMutation) SetColorID(u ulid.ID) {
-	m.color = &u
+// SetProjectBaseColorID sets the "project_base_color_id" field.
+func (m *ProjectMutation) SetProjectBaseColorID(u ulid.ID) {
+	m.project_base_color = &u
 }
 
-// ColorID returns the value of the "color_id" field in the mutation.
-func (m *ProjectMutation) ColorID() (r ulid.ID, exists bool) {
-	v := m.color
+// ProjectBaseColorID returns the value of the "project_base_color_id" field in the mutation.
+func (m *ProjectMutation) ProjectBaseColorID() (r ulid.ID, exists bool) {
+	v := m.project_base_color
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldColorID returns the old "color_id" field's value of the Project entity.
+// OldProjectBaseColorID returns the old "project_base_color_id" field's value of the Project entity.
 // If the Project object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ProjectMutation) OldColorID(ctx context.Context) (v ulid.ID, err error) {
+func (m *ProjectMutation) OldProjectBaseColorID(ctx context.Context) (v ulid.ID, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, fmt.Errorf("OldColorID is only allowed on UpdateOne operations")
+		return v, fmt.Errorf("OldProjectBaseColorID is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, fmt.Errorf("OldColorID requires an ID field in the mutation")
+		return v, fmt.Errorf("OldProjectBaseColorID requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldColorID: %w", err)
+		return v, fmt.Errorf("querying old value for OldProjectBaseColorID: %w", err)
 	}
-	return oldValue.ColorID, nil
+	return oldValue.ProjectBaseColorID, nil
 }
 
-// ResetColorID resets all changes to the "color_id" field.
-func (m *ProjectMutation) ResetColorID() {
-	m.color = nil
+// ResetProjectBaseColorID resets all changes to the "project_base_color_id" field.
+func (m *ProjectMutation) ResetProjectBaseColorID() {
+	m.project_base_color = nil
 }
 
 // SetIconID sets the "icon_id" field.
@@ -1702,30 +1704,30 @@ func (m *ProjectMutation) ResetWorkspace() {
 	m.clearedworkspace = false
 }
 
-// ClearColor clears the "color" edge to the Color entity.
-func (m *ProjectMutation) ClearColor() {
-	m.clearedcolor = true
+// ClearProjectBaseColor clears the "project_base_color" edge to the ProjectBaseColor entity.
+func (m *ProjectMutation) ClearProjectBaseColor() {
+	m.clearedproject_base_color = true
 }
 
-// ColorCleared reports if the "color" edge to the Color entity was cleared.
-func (m *ProjectMutation) ColorCleared() bool {
-	return m.clearedcolor
+// ProjectBaseColorCleared reports if the "project_base_color" edge to the ProjectBaseColor entity was cleared.
+func (m *ProjectMutation) ProjectBaseColorCleared() bool {
+	return m.clearedproject_base_color
 }
 
-// ColorIDs returns the "color" edge IDs in the mutation.
+// ProjectBaseColorIDs returns the "project_base_color" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// ColorID instead. It exists only for internal usage by the builders.
-func (m *ProjectMutation) ColorIDs() (ids []ulid.ID) {
-	if id := m.color; id != nil {
+// ProjectBaseColorID instead. It exists only for internal usage by the builders.
+func (m *ProjectMutation) ProjectBaseColorIDs() (ids []ulid.ID) {
+	if id := m.project_base_color; id != nil {
 		ids = append(ids, *id)
 	}
 	return
 }
 
-// ResetColor resets all changes to the "color" edge.
-func (m *ProjectMutation) ResetColor() {
-	m.color = nil
-	m.clearedcolor = false
+// ResetProjectBaseColor resets all changes to the "project_base_color" edge.
+func (m *ProjectMutation) ResetProjectBaseColor() {
+	m.project_base_color = nil
+	m.clearedproject_base_color = false
 }
 
 // ClearIcon clears the "icon" edge to the Icon entity.
@@ -1870,8 +1872,8 @@ func (m *ProjectMutation) Fields() []string {
 	if m.workspace != nil {
 		fields = append(fields, project.FieldWorkspaceID)
 	}
-	if m.color != nil {
-		fields = append(fields, project.FieldColorID)
+	if m.project_base_color != nil {
+		fields = append(fields, project.FieldProjectBaseColorID)
 	}
 	if m.icon != nil {
 		fields = append(fields, project.FieldIconID)
@@ -1907,8 +1909,8 @@ func (m *ProjectMutation) Field(name string) (ent.Value, bool) {
 	switch name {
 	case project.FieldWorkspaceID:
 		return m.WorkspaceID()
-	case project.FieldColorID:
-		return m.ColorID()
+	case project.FieldProjectBaseColorID:
+		return m.ProjectBaseColorID()
 	case project.FieldIconID:
 		return m.IconID()
 	case project.FieldCreatedBy:
@@ -1936,8 +1938,8 @@ func (m *ProjectMutation) OldField(ctx context.Context, name string) (ent.Value,
 	switch name {
 	case project.FieldWorkspaceID:
 		return m.OldWorkspaceID(ctx)
-	case project.FieldColorID:
-		return m.OldColorID(ctx)
+	case project.FieldProjectBaseColorID:
+		return m.OldProjectBaseColorID(ctx)
 	case project.FieldIconID:
 		return m.OldIconID(ctx)
 	case project.FieldCreatedBy:
@@ -1970,12 +1972,12 @@ func (m *ProjectMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetWorkspaceID(v)
 		return nil
-	case project.FieldColorID:
+	case project.FieldProjectBaseColorID:
 		v, ok := value.(ulid.ID)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetColorID(v)
+		m.SetProjectBaseColorID(v)
 		return nil
 	case project.FieldIconID:
 		v, ok := value.(ulid.ID)
@@ -2085,8 +2087,8 @@ func (m *ProjectMutation) ResetField(name string) error {
 	case project.FieldWorkspaceID:
 		m.ResetWorkspaceID()
 		return nil
-	case project.FieldColorID:
-		m.ResetColorID()
+	case project.FieldProjectBaseColorID:
+		m.ResetProjectBaseColorID()
 		return nil
 	case project.FieldIconID:
 		m.ResetIconID()
@@ -2122,8 +2124,8 @@ func (m *ProjectMutation) AddedEdges() []string {
 	if m.workspace != nil {
 		edges = append(edges, project.EdgeWorkspace)
 	}
-	if m.color != nil {
-		edges = append(edges, project.EdgeColor)
+	if m.project_base_color != nil {
+		edges = append(edges, project.EdgeProjectBaseColor)
 	}
 	if m.icon != nil {
 		edges = append(edges, project.EdgeIcon)
@@ -2145,8 +2147,8 @@ func (m *ProjectMutation) AddedIDs(name string) []ent.Value {
 		if id := m.workspace; id != nil {
 			return []ent.Value{*id}
 		}
-	case project.EdgeColor:
-		if id := m.color; id != nil {
+	case project.EdgeProjectBaseColor:
+		if id := m.project_base_color; id != nil {
 			return []ent.Value{*id}
 		}
 	case project.EdgeIcon:
@@ -2196,8 +2198,8 @@ func (m *ProjectMutation) ClearedEdges() []string {
 	if m.clearedworkspace {
 		edges = append(edges, project.EdgeWorkspace)
 	}
-	if m.clearedcolor {
-		edges = append(edges, project.EdgeColor)
+	if m.clearedproject_base_color {
+		edges = append(edges, project.EdgeProjectBaseColor)
 	}
 	if m.clearedicon {
 		edges = append(edges, project.EdgeIcon)
@@ -2217,8 +2219,8 @@ func (m *ProjectMutation) EdgeCleared(name string) bool {
 	switch name {
 	case project.EdgeWorkspace:
 		return m.clearedworkspace
-	case project.EdgeColor:
-		return m.clearedcolor
+	case project.EdgeProjectBaseColor:
+		return m.clearedproject_base_color
 	case project.EdgeIcon:
 		return m.clearedicon
 	case project.EdgeTeammate:
@@ -2236,8 +2238,8 @@ func (m *ProjectMutation) ClearEdge(name string) error {
 	case project.EdgeWorkspace:
 		m.ClearWorkspace()
 		return nil
-	case project.EdgeColor:
-		m.ClearColor()
+	case project.EdgeProjectBaseColor:
+		m.ClearProjectBaseColor()
 		return nil
 	case project.EdgeIcon:
 		m.ClearIcon()
@@ -2256,8 +2258,8 @@ func (m *ProjectMutation) ResetEdge(name string) error {
 	case project.EdgeWorkspace:
 		m.ResetWorkspace()
 		return nil
-	case project.EdgeColor:
-		m.ResetColor()
+	case project.EdgeProjectBaseColor:
+		m.ResetProjectBaseColor()
 		return nil
 	case project.EdgeIcon:
 		m.ResetIcon()
@@ -2270,6 +2272,550 @@ func (m *ProjectMutation) ResetEdge(name string) error {
 		return nil
 	}
 	return fmt.Errorf("unknown Project edge %s", name)
+}
+
+// ProjectBaseColorMutation represents an operation that mutates the ProjectBaseColor nodes in the graph.
+type ProjectBaseColorMutation struct {
+	config
+	op              Op
+	typ             string
+	id              *ulid.ID
+	created_at      *time.Time
+	updated_at      *time.Time
+	clearedFields   map[string]struct{}
+	projects        map[ulid.ID]struct{}
+	removedprojects map[ulid.ID]struct{}
+	clearedprojects bool
+	color           *ulid.ID
+	clearedcolor    bool
+	done            bool
+	oldValue        func(context.Context) (*ProjectBaseColor, error)
+	predicates      []predicate.ProjectBaseColor
+}
+
+var _ ent.Mutation = (*ProjectBaseColorMutation)(nil)
+
+// projectbasecolorOption allows management of the mutation configuration using functional options.
+type projectbasecolorOption func(*ProjectBaseColorMutation)
+
+// newProjectBaseColorMutation creates new mutation for the ProjectBaseColor entity.
+func newProjectBaseColorMutation(c config, op Op, opts ...projectbasecolorOption) *ProjectBaseColorMutation {
+	m := &ProjectBaseColorMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeProjectBaseColor,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withProjectBaseColorID sets the ID field of the mutation.
+func withProjectBaseColorID(id ulid.ID) projectbasecolorOption {
+	return func(m *ProjectBaseColorMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *ProjectBaseColor
+		)
+		m.oldValue = func(ctx context.Context) (*ProjectBaseColor, error) {
+			once.Do(func() {
+				if m.done {
+					err = fmt.Errorf("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().ProjectBaseColor.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withProjectBaseColor sets the old ProjectBaseColor of the mutation.
+func withProjectBaseColor(node *ProjectBaseColor) projectbasecolorOption {
+	return func(m *ProjectBaseColorMutation) {
+		m.oldValue = func(context.Context) (*ProjectBaseColor, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m ProjectBaseColorMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m ProjectBaseColorMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, fmt.Errorf("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of ProjectBaseColor entities.
+func (m *ProjectBaseColorMutation) SetID(id ulid.ID) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *ProjectBaseColorMutation) ID() (id ulid.ID, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// SetColorID sets the "color_id" field.
+func (m *ProjectBaseColorMutation) SetColorID(u ulid.ID) {
+	m.color = &u
+}
+
+// ColorID returns the value of the "color_id" field in the mutation.
+func (m *ProjectBaseColorMutation) ColorID() (r ulid.ID, exists bool) {
+	v := m.color
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldColorID returns the old "color_id" field's value of the ProjectBaseColor entity.
+// If the ProjectBaseColor object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProjectBaseColorMutation) OldColorID(ctx context.Context) (v ulid.ID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldColorID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldColorID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldColorID: %w", err)
+	}
+	return oldValue.ColorID, nil
+}
+
+// ResetColorID resets all changes to the "color_id" field.
+func (m *ProjectBaseColorMutation) ResetColorID() {
+	m.color = nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *ProjectBaseColorMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *ProjectBaseColorMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the ProjectBaseColor entity.
+// If the ProjectBaseColor object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProjectBaseColorMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *ProjectBaseColorMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *ProjectBaseColorMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *ProjectBaseColorMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the ProjectBaseColor entity.
+// If the ProjectBaseColor object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProjectBaseColorMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *ProjectBaseColorMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// AddProjectIDs adds the "projects" edge to the Project entity by ids.
+func (m *ProjectBaseColorMutation) AddProjectIDs(ids ...ulid.ID) {
+	if m.projects == nil {
+		m.projects = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		m.projects[ids[i]] = struct{}{}
+	}
+}
+
+// ClearProjects clears the "projects" edge to the Project entity.
+func (m *ProjectBaseColorMutation) ClearProjects() {
+	m.clearedprojects = true
+}
+
+// ProjectsCleared reports if the "projects" edge to the Project entity was cleared.
+func (m *ProjectBaseColorMutation) ProjectsCleared() bool {
+	return m.clearedprojects
+}
+
+// RemoveProjectIDs removes the "projects" edge to the Project entity by IDs.
+func (m *ProjectBaseColorMutation) RemoveProjectIDs(ids ...ulid.ID) {
+	if m.removedprojects == nil {
+		m.removedprojects = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		delete(m.projects, ids[i])
+		m.removedprojects[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedProjects returns the removed IDs of the "projects" edge to the Project entity.
+func (m *ProjectBaseColorMutation) RemovedProjectsIDs() (ids []ulid.ID) {
+	for id := range m.removedprojects {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ProjectsIDs returns the "projects" edge IDs in the mutation.
+func (m *ProjectBaseColorMutation) ProjectsIDs() (ids []ulid.ID) {
+	for id := range m.projects {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetProjects resets all changes to the "projects" edge.
+func (m *ProjectBaseColorMutation) ResetProjects() {
+	m.projects = nil
+	m.clearedprojects = false
+	m.removedprojects = nil
+}
+
+// ClearColor clears the "color" edge to the Color entity.
+func (m *ProjectBaseColorMutation) ClearColor() {
+	m.clearedcolor = true
+}
+
+// ColorCleared reports if the "color" edge to the Color entity was cleared.
+func (m *ProjectBaseColorMutation) ColorCleared() bool {
+	return m.clearedcolor
+}
+
+// ColorIDs returns the "color" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// ColorID instead. It exists only for internal usage by the builders.
+func (m *ProjectBaseColorMutation) ColorIDs() (ids []ulid.ID) {
+	if id := m.color; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetColor resets all changes to the "color" edge.
+func (m *ProjectBaseColorMutation) ResetColor() {
+	m.color = nil
+	m.clearedcolor = false
+}
+
+// Where appends a list predicates to the ProjectBaseColorMutation builder.
+func (m *ProjectBaseColorMutation) Where(ps ...predicate.ProjectBaseColor) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// Op returns the operation name.
+func (m *ProjectBaseColorMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (ProjectBaseColor).
+func (m *ProjectBaseColorMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *ProjectBaseColorMutation) Fields() []string {
+	fields := make([]string, 0, 3)
+	if m.color != nil {
+		fields = append(fields, projectbasecolor.FieldColorID)
+	}
+	if m.created_at != nil {
+		fields = append(fields, projectbasecolor.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, projectbasecolor.FieldUpdatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *ProjectBaseColorMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case projectbasecolor.FieldColorID:
+		return m.ColorID()
+	case projectbasecolor.FieldCreatedAt:
+		return m.CreatedAt()
+	case projectbasecolor.FieldUpdatedAt:
+		return m.UpdatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *ProjectBaseColorMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case projectbasecolor.FieldColorID:
+		return m.OldColorID(ctx)
+	case projectbasecolor.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case projectbasecolor.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown ProjectBaseColor field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ProjectBaseColorMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case projectbasecolor.FieldColorID:
+		v, ok := value.(ulid.ID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetColorID(v)
+		return nil
+	case projectbasecolor.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case projectbasecolor.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown ProjectBaseColor field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *ProjectBaseColorMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *ProjectBaseColorMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ProjectBaseColorMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown ProjectBaseColor numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *ProjectBaseColorMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *ProjectBaseColorMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *ProjectBaseColorMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown ProjectBaseColor nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *ProjectBaseColorMutation) ResetField(name string) error {
+	switch name {
+	case projectbasecolor.FieldColorID:
+		m.ResetColorID()
+		return nil
+	case projectbasecolor.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case projectbasecolor.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown ProjectBaseColor field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *ProjectBaseColorMutation) AddedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.projects != nil {
+		edges = append(edges, projectbasecolor.EdgeProjects)
+	}
+	if m.color != nil {
+		edges = append(edges, projectbasecolor.EdgeColor)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *ProjectBaseColorMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case projectbasecolor.EdgeProjects:
+		ids := make([]ent.Value, 0, len(m.projects))
+		for id := range m.projects {
+			ids = append(ids, id)
+		}
+		return ids
+	case projectbasecolor.EdgeColor:
+		if id := m.color; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *ProjectBaseColorMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.removedprojects != nil {
+		edges = append(edges, projectbasecolor.EdgeProjects)
+	}
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *ProjectBaseColorMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case projectbasecolor.EdgeProjects:
+		ids := make([]ent.Value, 0, len(m.removedprojects))
+		for id := range m.removedprojects {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *ProjectBaseColorMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.clearedprojects {
+		edges = append(edges, projectbasecolor.EdgeProjects)
+	}
+	if m.clearedcolor {
+		edges = append(edges, projectbasecolor.EdgeColor)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *ProjectBaseColorMutation) EdgeCleared(name string) bool {
+	switch name {
+	case projectbasecolor.EdgeProjects:
+		return m.clearedprojects
+	case projectbasecolor.EdgeColor:
+		return m.clearedcolor
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *ProjectBaseColorMutation) ClearEdge(name string) error {
+	switch name {
+	case projectbasecolor.EdgeColor:
+		m.ClearColor()
+		return nil
+	}
+	return fmt.Errorf("unknown ProjectBaseColor unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *ProjectBaseColorMutation) ResetEdge(name string) error {
+	switch name {
+	case projectbasecolor.EdgeProjects:
+		m.ResetProjects()
+		return nil
+	case projectbasecolor.EdgeColor:
+		m.ResetColor()
+		return nil
+	}
+	return fmt.Errorf("unknown ProjectBaseColor edge %s", name)
 }
 
 // ProjectTeammateMutation represents an operation that mutates the ProjectTeammate nodes in the graph.

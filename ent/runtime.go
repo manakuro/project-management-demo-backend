@@ -6,6 +6,7 @@ import (
 	"project-management-demo-backend/ent/color"
 	"project-management-demo-backend/ent/icon"
 	"project-management-demo-backend/ent/project"
+	"project-management-demo-backend/ent/projectbasecolor"
 	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/ent/schema"
 	"project-management-demo-backend/ent/schema/ulid"
@@ -199,6 +200,25 @@ func init() {
 	projectDescID := projectMixinFields0[0].Descriptor()
 	// project.DefaultID holds the default value on creation for the id field.
 	project.DefaultID = projectDescID.Default.(func() ulid.ID)
+	projectbasecolorMixin := schema.ProjectBaseColor{}.Mixin()
+	projectbasecolorMixinFields0 := projectbasecolorMixin[0].Fields()
+	_ = projectbasecolorMixinFields0
+	projectbasecolorMixinFields2 := projectbasecolorMixin[2].Fields()
+	_ = projectbasecolorMixinFields2
+	projectbasecolorFields := schema.ProjectBaseColor{}.Fields()
+	_ = projectbasecolorFields
+	// projectbasecolorDescCreatedAt is the schema descriptor for created_at field.
+	projectbasecolorDescCreatedAt := projectbasecolorMixinFields2[0].Descriptor()
+	// projectbasecolor.DefaultCreatedAt holds the default value on creation for the created_at field.
+	projectbasecolor.DefaultCreatedAt = projectbasecolorDescCreatedAt.Default.(func() time.Time)
+	// projectbasecolorDescUpdatedAt is the schema descriptor for updated_at field.
+	projectbasecolorDescUpdatedAt := projectbasecolorMixinFields2[1].Descriptor()
+	// projectbasecolor.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	projectbasecolor.DefaultUpdatedAt = projectbasecolorDescUpdatedAt.Default.(func() time.Time)
+	// projectbasecolorDescID is the schema descriptor for id field.
+	projectbasecolorDescID := projectbasecolorMixinFields0[0].Descriptor()
+	// projectbasecolor.DefaultID holds the default value on creation for the id field.
+	projectbasecolor.DefaultID = projectbasecolorDescID.Default.(func() ulid.ID)
 	projectteammateMixin := schema.ProjectTeammate{}.Mixin()
 	projectteammateMixinFields0 := projectteammateMixin[0].Fields()
 	_ = projectteammateMixinFields0

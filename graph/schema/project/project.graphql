@@ -1,7 +1,7 @@
 type Project implements Node {
   id: ID!
   workspaceId: ID!
-  color: Color!
+  projectBaseColor: ProjectBaseColor!
   icon: Icon!
   createdBy: ID!
   name: String!
@@ -25,7 +25,7 @@ type ProjectEdge {
 
 input CreateProjectInput {
   workspaceId: ID!
-  colorId: ID
+  projectBaseColorId: ID
   iconId: ID
   createdBy: ID!
   name: String!
@@ -35,7 +35,7 @@ input CreateProjectInput {
 }
 input UpdateProjectInput {
   id: ID!
-  colorId: ID
+  projectBaseColorId: ID
   iconId: ID
   createdBy: ID
   name: String

@@ -4,10 +4,10 @@ package ent
 
 import "context"
 
-func (c *Color) Projects(ctx context.Context) ([]*Project, error) {
-	result, err := c.Edges.ProjectsOrErr()
+func (c *Color) ProjectBaseColors(ctx context.Context) ([]*ProjectBaseColor, error) {
+	result, err := c.Edges.ProjectBaseColorsOrErr()
 	if IsNotLoaded(err) {
-		result, err = c.QueryProjects().All(ctx)
+		result, err = c.QueryProjectBaseColors().All(ctx)
 	}
 	return result, err
 }
@@ -28,10 +28,10 @@ func (pr *Project) Workspace(ctx context.Context) (*Workspace, error) {
 	return result, err
 }
 
-func (pr *Project) Color(ctx context.Context) (*Color, error) {
-	result, err := pr.Edges.ColorOrErr()
+func (pr *Project) ProjectBaseColor(ctx context.Context) (*ProjectBaseColor, error) {
+	result, err := pr.Edges.ProjectBaseColorOrErr()
 	if IsNotLoaded(err) {
-		result, err = pr.QueryColor().Only(ctx)
+		result, err = pr.QueryProjectBaseColor().Only(ctx)
 	}
 	return result, err
 }
@@ -56,6 +56,22 @@ func (pr *Project) ProjectTeammates(ctx context.Context) ([]*ProjectTeammate, er
 	result, err := pr.Edges.ProjectTeammatesOrErr()
 	if IsNotLoaded(err) {
 		result, err = pr.QueryProjectTeammates().All(ctx)
+	}
+	return result, err
+}
+
+func (pbc *ProjectBaseColor) Projects(ctx context.Context) ([]*Project, error) {
+	result, err := pbc.Edges.ProjectsOrErr()
+	if IsNotLoaded(err) {
+		result, err = pbc.QueryProjects().All(ctx)
+	}
+	return result, err
+}
+
+func (pbc *ProjectBaseColor) Color(ctx context.Context) (*Color, error) {
+	result, err := pbc.Edges.ColorOrErr()
+	if IsNotLoaded(err) {
+		result, err = pbc.QueryColor().Only(ctx)
 	}
 	return result, err
 }

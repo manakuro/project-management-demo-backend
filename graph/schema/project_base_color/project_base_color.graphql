@@ -1,0 +1,23 @@
+type ProjectBaseColor implements Node {
+  id: ID!
+  color: Color!
+  createdAt: String!
+  updatedAt: String!
+}
+type ProjectBaseColorConnection {
+  totalCount: Int!
+  pageInfo: PageInfo!
+  edges: [ProjectBaseColorEdge]
+}
+type ProjectBaseColorEdge {
+  node: ProjectBaseColor
+  cursor: Cursor!
+}
+
+input CreateProjectBaseColorInput {
+  colorId: ID!
+}
+input UpdateProjectBaseColorInput {
+  id: ID!
+  colorId: ID
+}

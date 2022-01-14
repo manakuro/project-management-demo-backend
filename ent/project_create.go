@@ -6,9 +6,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"project-management-demo-backend/ent/color"
 	"project-management-demo-backend/ent/icon"
 	"project-management-demo-backend/ent/project"
+	"project-management-demo-backend/ent/projectbasecolor"
 	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/ent/schema/editor"
 	"project-management-demo-backend/ent/schema/ulid"
@@ -33,9 +33,9 @@ func (pc *ProjectCreate) SetWorkspaceID(u ulid.ID) *ProjectCreate {
 	return pc
 }
 
-// SetColorID sets the "color_id" field.
-func (pc *ProjectCreate) SetColorID(u ulid.ID) *ProjectCreate {
-	pc.mutation.SetColorID(u)
+// SetProjectBaseColorID sets the "project_base_color_id" field.
+func (pc *ProjectCreate) SetProjectBaseColorID(u ulid.ID) *ProjectCreate {
+	pc.mutation.SetProjectBaseColorID(u)
 	return pc
 }
 
@@ -130,9 +130,9 @@ func (pc *ProjectCreate) SetWorkspace(w *Workspace) *ProjectCreate {
 	return pc.SetWorkspaceID(w.ID)
 }
 
-// SetColor sets the "color" edge to the Color entity.
-func (pc *ProjectCreate) SetColor(c *Color) *ProjectCreate {
-	return pc.SetColorID(c.ID)
+// SetProjectBaseColor sets the "project_base_color" edge to the ProjectBaseColor entity.
+func (pc *ProjectCreate) SetProjectBaseColor(p *ProjectBaseColor) *ProjectCreate {
+	return pc.SetProjectBaseColorID(p.ID)
 }
 
 // SetIcon sets the "icon" edge to the Icon entity.
@@ -260,8 +260,8 @@ func (pc *ProjectCreate) check() error {
 	if _, ok := pc.mutation.WorkspaceID(); !ok {
 		return &ValidationError{Name: "workspace_id", err: errors.New(`ent: missing required field "workspace_id"`)}
 	}
-	if _, ok := pc.mutation.ColorID(); !ok {
-		return &ValidationError{Name: "color_id", err: errors.New(`ent: missing required field "color_id"`)}
+	if _, ok := pc.mutation.ProjectBaseColorID(); !ok {
+		return &ValidationError{Name: "project_base_color_id", err: errors.New(`ent: missing required field "project_base_color_id"`)}
 	}
 	if _, ok := pc.mutation.IconID(); !ok {
 		return &ValidationError{Name: "icon_id", err: errors.New(`ent: missing required field "icon_id"`)}
@@ -300,8 +300,8 @@ func (pc *ProjectCreate) check() error {
 	if _, ok := pc.mutation.WorkspaceID(); !ok {
 		return &ValidationError{Name: "workspace", err: errors.New("ent: missing required edge \"workspace\"")}
 	}
-	if _, ok := pc.mutation.ColorID(); !ok {
-		return &ValidationError{Name: "color", err: errors.New("ent: missing required edge \"color\"")}
+	if _, ok := pc.mutation.ProjectBaseColorID(); !ok {
+		return &ValidationError{Name: "project_base_color", err: errors.New("ent: missing required edge \"project_base_color\"")}
 	}
 	if _, ok := pc.mutation.IconID(); !ok {
 		return &ValidationError{Name: "icon", err: errors.New("ent: missing required edge \"icon\"")}
@@ -409,24 +409,24 @@ func (pc *ProjectCreate) createSpec() (*Project, *sqlgraph.CreateSpec) {
 		_node.WorkspaceID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := pc.mutation.ColorIDs(); len(nodes) > 0 {
+	if nodes := pc.mutation.ProjectBaseColorIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   project.ColorTable,
-			Columns: []string{project.ColorColumn},
+			Table:   project.ProjectBaseColorTable,
+			Columns: []string{project.ProjectBaseColorColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
-					Column: color.FieldID,
+					Column: projectbasecolor.FieldID,
 				},
 			},
 		}
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.ColorID = nodes[0]
+		_node.ProjectBaseColorID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := pc.mutation.IconIDs(); len(nodes) > 0 {

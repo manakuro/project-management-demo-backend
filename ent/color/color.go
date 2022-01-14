@@ -22,17 +22,17 @@ const (
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
 	FieldUpdatedAt = "updated_at"
-	// EdgeProjects holds the string denoting the projects edge name in mutations.
-	EdgeProjects = "projects"
+	// EdgeProjectBaseColors holds the string denoting the project_base_colors edge name in mutations.
+	EdgeProjectBaseColors = "project_base_colors"
 	// Table holds the table name of the color in the database.
 	Table = "colors"
-	// ProjectsTable is the table that holds the projects relation/edge.
-	ProjectsTable = "projects"
-	// ProjectsInverseTable is the table name for the Project entity.
-	// It exists in this package in order to avoid circular dependency with the "project" package.
-	ProjectsInverseTable = "projects"
-	// ProjectsColumn is the table column denoting the projects relation/edge.
-	ProjectsColumn = "color_id"
+	// ProjectBaseColorsTable is the table that holds the project_base_colors relation/edge.
+	ProjectBaseColorsTable = "project_base_colors"
+	// ProjectBaseColorsInverseTable is the table name for the ProjectBaseColor entity.
+	// It exists in this package in order to avoid circular dependency with the "projectbasecolor" package.
+	ProjectBaseColorsInverseTable = "project_base_colors"
+	// ProjectBaseColorsColumn is the table column denoting the project_base_colors relation/edge.
+	ProjectBaseColorsColumn = "color_id"
 )
 
 // Columns holds all SQL columns for color fields.

@@ -614,25 +614,25 @@ func UpdatedAtLTE(v time.Time) predicate.Color {
 	})
 }
 
-// HasProjects applies the HasEdge predicate on the "projects" edge.
-func HasProjects() predicate.Color {
+// HasProjectBaseColors applies the HasEdge predicate on the "project_base_colors" edge.
+func HasProjectBaseColors() predicate.Color {
 	return predicate.Color(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(ProjectsTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, ProjectsTable, ProjectsColumn),
+			sqlgraph.To(ProjectBaseColorsTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ProjectBaseColorsTable, ProjectBaseColorsColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasProjectsWith applies the HasEdge predicate on the "projects" edge with a given conditions (other predicates).
-func HasProjectsWith(preds ...predicate.Project) predicate.Color {
+// HasProjectBaseColorsWith applies the HasEdge predicate on the "project_base_colors" edge with a given conditions (other predicates).
+func HasProjectBaseColorsWith(preds ...predicate.ProjectBaseColor) predicate.Color {
 	return predicate.Color(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(ProjectsInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, ProjectsTable, ProjectsColumn),
+			sqlgraph.To(ProjectBaseColorsInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ProjectBaseColorsTable, ProjectBaseColorsColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

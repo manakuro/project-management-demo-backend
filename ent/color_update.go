@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"project-management-demo-backend/ent/color"
 	"project-management-demo-backend/ent/predicate"
-	"project-management-demo-backend/ent/project"
+	"project-management-demo-backend/ent/projectbasecolor"
 	"project-management-demo-backend/ent/schema/ulid"
 
 	"entgo.io/ent/dialect/sql"
@@ -46,19 +46,19 @@ func (cu *ColorUpdate) SetHex(s string) *ColorUpdate {
 	return cu
 }
 
-// AddProjectIDs adds the "projects" edge to the Project entity by IDs.
-func (cu *ColorUpdate) AddProjectIDs(ids ...ulid.ID) *ColorUpdate {
-	cu.mutation.AddProjectIDs(ids...)
+// AddProjectBaseColorIDs adds the "project_base_colors" edge to the ProjectBaseColor entity by IDs.
+func (cu *ColorUpdate) AddProjectBaseColorIDs(ids ...ulid.ID) *ColorUpdate {
+	cu.mutation.AddProjectBaseColorIDs(ids...)
 	return cu
 }
 
-// AddProjects adds the "projects" edges to the Project entity.
-func (cu *ColorUpdate) AddProjects(p ...*Project) *ColorUpdate {
+// AddProjectBaseColors adds the "project_base_colors" edges to the ProjectBaseColor entity.
+func (cu *ColorUpdate) AddProjectBaseColors(p ...*ProjectBaseColor) *ColorUpdate {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
-	return cu.AddProjectIDs(ids...)
+	return cu.AddProjectBaseColorIDs(ids...)
 }
 
 // Mutation returns the ColorMutation object of the builder.
@@ -66,25 +66,25 @@ func (cu *ColorUpdate) Mutation() *ColorMutation {
 	return cu.mutation
 }
 
-// ClearProjects clears all "projects" edges to the Project entity.
-func (cu *ColorUpdate) ClearProjects() *ColorUpdate {
-	cu.mutation.ClearProjects()
+// ClearProjectBaseColors clears all "project_base_colors" edges to the ProjectBaseColor entity.
+func (cu *ColorUpdate) ClearProjectBaseColors() *ColorUpdate {
+	cu.mutation.ClearProjectBaseColors()
 	return cu
 }
 
-// RemoveProjectIDs removes the "projects" edge to Project entities by IDs.
-func (cu *ColorUpdate) RemoveProjectIDs(ids ...ulid.ID) *ColorUpdate {
-	cu.mutation.RemoveProjectIDs(ids...)
+// RemoveProjectBaseColorIDs removes the "project_base_colors" edge to ProjectBaseColor entities by IDs.
+func (cu *ColorUpdate) RemoveProjectBaseColorIDs(ids ...ulid.ID) *ColorUpdate {
+	cu.mutation.RemoveProjectBaseColorIDs(ids...)
 	return cu
 }
 
-// RemoveProjects removes "projects" edges to Project entities.
-func (cu *ColorUpdate) RemoveProjects(p ...*Project) *ColorUpdate {
+// RemoveProjectBaseColors removes "project_base_colors" edges to ProjectBaseColor entities.
+func (cu *ColorUpdate) RemoveProjectBaseColors(p ...*ProjectBaseColor) *ColorUpdate {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
-	return cu.RemoveProjectIDs(ids...)
+	return cu.RemoveProjectBaseColorIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -206,33 +206,33 @@ func (cu *ColorUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: color.FieldHex,
 		})
 	}
-	if cu.mutation.ProjectsCleared() {
+	if cu.mutation.ProjectBaseColorsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   color.ProjectsTable,
-			Columns: []string{color.ProjectsColumn},
+			Table:   color.ProjectBaseColorsTable,
+			Columns: []string{color.ProjectBaseColorsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
-					Column: project.FieldID,
+					Column: projectbasecolor.FieldID,
 				},
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := cu.mutation.RemovedProjectsIDs(); len(nodes) > 0 && !cu.mutation.ProjectsCleared() {
+	if nodes := cu.mutation.RemovedProjectBaseColorsIDs(); len(nodes) > 0 && !cu.mutation.ProjectBaseColorsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   color.ProjectsTable,
-			Columns: []string{color.ProjectsColumn},
+			Table:   color.ProjectBaseColorsTable,
+			Columns: []string{color.ProjectBaseColorsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
-					Column: project.FieldID,
+					Column: projectbasecolor.FieldID,
 				},
 			},
 		}
@@ -241,17 +241,17 @@ func (cu *ColorUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := cu.mutation.ProjectsIDs(); len(nodes) > 0 {
+	if nodes := cu.mutation.ProjectBaseColorsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   color.ProjectsTable,
-			Columns: []string{color.ProjectsColumn},
+			Table:   color.ProjectBaseColorsTable,
+			Columns: []string{color.ProjectBaseColorsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
-					Column: project.FieldID,
+					Column: projectbasecolor.FieldID,
 				},
 			},
 		}
@@ -297,19 +297,19 @@ func (cuo *ColorUpdateOne) SetHex(s string) *ColorUpdateOne {
 	return cuo
 }
 
-// AddProjectIDs adds the "projects" edge to the Project entity by IDs.
-func (cuo *ColorUpdateOne) AddProjectIDs(ids ...ulid.ID) *ColorUpdateOne {
-	cuo.mutation.AddProjectIDs(ids...)
+// AddProjectBaseColorIDs adds the "project_base_colors" edge to the ProjectBaseColor entity by IDs.
+func (cuo *ColorUpdateOne) AddProjectBaseColorIDs(ids ...ulid.ID) *ColorUpdateOne {
+	cuo.mutation.AddProjectBaseColorIDs(ids...)
 	return cuo
 }
 
-// AddProjects adds the "projects" edges to the Project entity.
-func (cuo *ColorUpdateOne) AddProjects(p ...*Project) *ColorUpdateOne {
+// AddProjectBaseColors adds the "project_base_colors" edges to the ProjectBaseColor entity.
+func (cuo *ColorUpdateOne) AddProjectBaseColors(p ...*ProjectBaseColor) *ColorUpdateOne {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
-	return cuo.AddProjectIDs(ids...)
+	return cuo.AddProjectBaseColorIDs(ids...)
 }
 
 // Mutation returns the ColorMutation object of the builder.
@@ -317,25 +317,25 @@ func (cuo *ColorUpdateOne) Mutation() *ColorMutation {
 	return cuo.mutation
 }
 
-// ClearProjects clears all "projects" edges to the Project entity.
-func (cuo *ColorUpdateOne) ClearProjects() *ColorUpdateOne {
-	cuo.mutation.ClearProjects()
+// ClearProjectBaseColors clears all "project_base_colors" edges to the ProjectBaseColor entity.
+func (cuo *ColorUpdateOne) ClearProjectBaseColors() *ColorUpdateOne {
+	cuo.mutation.ClearProjectBaseColors()
 	return cuo
 }
 
-// RemoveProjectIDs removes the "projects" edge to Project entities by IDs.
-func (cuo *ColorUpdateOne) RemoveProjectIDs(ids ...ulid.ID) *ColorUpdateOne {
-	cuo.mutation.RemoveProjectIDs(ids...)
+// RemoveProjectBaseColorIDs removes the "project_base_colors" edge to ProjectBaseColor entities by IDs.
+func (cuo *ColorUpdateOne) RemoveProjectBaseColorIDs(ids ...ulid.ID) *ColorUpdateOne {
+	cuo.mutation.RemoveProjectBaseColorIDs(ids...)
 	return cuo
 }
 
-// RemoveProjects removes "projects" edges to Project entities.
-func (cuo *ColorUpdateOne) RemoveProjects(p ...*Project) *ColorUpdateOne {
+// RemoveProjectBaseColors removes "project_base_colors" edges to ProjectBaseColor entities.
+func (cuo *ColorUpdateOne) RemoveProjectBaseColors(p ...*ProjectBaseColor) *ColorUpdateOne {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
-	return cuo.RemoveProjectIDs(ids...)
+	return cuo.RemoveProjectBaseColorIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -481,33 +481,33 @@ func (cuo *ColorUpdateOne) sqlSave(ctx context.Context) (_node *Color, err error
 			Column: color.FieldHex,
 		})
 	}
-	if cuo.mutation.ProjectsCleared() {
+	if cuo.mutation.ProjectBaseColorsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   color.ProjectsTable,
-			Columns: []string{color.ProjectsColumn},
+			Table:   color.ProjectBaseColorsTable,
+			Columns: []string{color.ProjectBaseColorsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
-					Column: project.FieldID,
+					Column: projectbasecolor.FieldID,
 				},
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := cuo.mutation.RemovedProjectsIDs(); len(nodes) > 0 && !cuo.mutation.ProjectsCleared() {
+	if nodes := cuo.mutation.RemovedProjectBaseColorsIDs(); len(nodes) > 0 && !cuo.mutation.ProjectBaseColorsCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   color.ProjectsTable,
-			Columns: []string{color.ProjectsColumn},
+			Table:   color.ProjectBaseColorsTable,
+			Columns: []string{color.ProjectBaseColorsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
-					Column: project.FieldID,
+					Column: projectbasecolor.FieldID,
 				},
 			},
 		}
@@ -516,17 +516,17 @@ func (cuo *ColorUpdateOne) sqlSave(ctx context.Context) (_node *Color, err error
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := cuo.mutation.ProjectsIDs(); len(nodes) > 0 {
+	if nodes := cuo.mutation.ProjectBaseColorsIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   color.ProjectsTable,
-			Columns: []string{color.ProjectsColumn},
+			Table:   color.ProjectBaseColorsTable,
+			Columns: []string{color.ProjectBaseColorsColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
-					Column: project.FieldID,
+					Column: projectbasecolor.FieldID,
 				},
 			},
 		}
