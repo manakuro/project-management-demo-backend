@@ -13,6 +13,7 @@ import (
 	"project-management-demo-backend/ent/schema/testuserprofile"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/testtodo"
+	"project-management-demo-backend/pkg/entity/model"
 	"strconv"
 	"sync"
 	"sync/atomic"
@@ -44,6 +45,7 @@ type Config struct {
 type ResolverRoot interface {
 	Color() ColorResolver
 	Icon() IconResolver
+	Me() MeResolver
 	Mutation() MutationResolver
 	Project() ProjectResolver
 	ProjectBaseColor() ProjectBaseColorResolver
@@ -122,6 +124,15 @@ type ComplexityRoot struct {
 		Node   func(childComplexity int) int
 	}
 
+	Me struct {
+		CreatedAt func(childComplexity int) int
+		Email     func(childComplexity int) int
+		ID        func(childComplexity int) int
+		Image     func(childComplexity int) int
+		Name      func(childComplexity int) int
+		UpdatedAt func(childComplexity int) int
+	}
+
 	Mutation struct {
 		CreateColor             func(childComplexity int, input ent.CreateColorInput) int
 		CreateIcon              func(childComplexity int, input ent.CreateIconInput) int
@@ -137,6 +148,7 @@ type ComplexityRoot struct {
 		CreateWorkspace         func(childComplexity int, input ent.CreateWorkspaceInput) int
 		UpdateColor             func(childComplexity int, input ent.UpdateColorInput) int
 		UpdateIcon              func(childComplexity int, input ent.UpdateIconInput) int
+		UpdateMe                func(childComplexity int, input model.UpdateMeInput) int
 		UpdateProject           func(childComplexity int, input ent.UpdateProjectInput) int
 		UpdateProjectBaseColor  func(childComplexity int, input ent.UpdateProjectBaseColorInput) int
 		UpdateProjectIcon       func(childComplexity int, input ent.UpdateProjectIconInput) int
@@ -268,6 +280,7 @@ type ComplexityRoot struct {
 		Colors             func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ColorWhereInput) int
 		Icon               func(childComplexity int, id ulid.ID) int
 		Icons              func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.IconWhereInput) int
+		Me                 func(childComplexity int) int
 		Node               func(childComplexity int, id ulid.ID) int
 		Nodes              func(childComplexity int, ids []ulid.ID) int
 		Project            func(childComplexity int, where *ent.ProjectWhereInput) int
@@ -293,6 +306,7 @@ type ComplexityRoot struct {
 	Subscription struct {
 		ColorUpdated             func(childComplexity int, id ulid.ID) int
 		IconUpdated              func(childComplexity int, id ulid.ID) int
+		MeUpdated                func(childComplexity int, id ulid.ID) int
 		ProjectBaseColorUpdated  func(childComplexity int, id ulid.ID) int
 		ProjectIconUpdated       func(childComplexity int, id ulid.ID) int
 		ProjectLightColorUpdated func(childComplexity int, id ulid.ID) int
@@ -400,11 +414,16 @@ type IconResolver interface {
 	CreatedAt(ctx context.Context, obj *ent.Icon) (string, error)
 	UpdatedAt(ctx context.Context, obj *ent.Icon) (string, error)
 }
+type MeResolver interface {
+	CreatedAt(ctx context.Context, obj *model.Me) (string, error)
+	UpdatedAt(ctx context.Context, obj *model.Me) (string, error)
+}
 type MutationResolver interface {
 	CreateColor(ctx context.Context, input ent.CreateColorInput) (*ent.Color, error)
 	UpdateColor(ctx context.Context, input ent.UpdateColorInput) (*ent.Color, error)
 	CreateIcon(ctx context.Context, input ent.CreateIconInput) (*ent.Icon, error)
 	UpdateIcon(ctx context.Context, input ent.UpdateIconInput) (*ent.Icon, error)
+	UpdateMe(ctx context.Context, input model.UpdateMeInput) (*model.Me, error)
 	CreateProject(ctx context.Context, input ent.CreateProjectInput) (*ent.Project, error)
 	UpdateProject(ctx context.Context, input ent.UpdateProjectInput) (*ent.Project, error)
 	CreateProjectBaseColor(ctx context.Context, input ent.CreateProjectBaseColorInput) (*ent.ProjectBaseColor, error)
@@ -455,6 +474,7 @@ type QueryResolver interface {
 	Colors(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ColorWhereInput) (*ent.ColorConnection, error)
 	Icon(ctx context.Context, id ulid.ID) (*ent.Icon, error)
 	Icons(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.IconWhereInput) (*ent.IconConnection, error)
+	Me(ctx context.Context) (*model.Me, error)
 	Project(ctx context.Context, where *ent.ProjectWhereInput) (*ent.Project, error)
 	Projects(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectWhereInput) (*ent.ProjectConnection, error)
 	ProjectBaseColor(ctx context.Context, where *ent.ProjectBaseColorWhereInput) (*ent.ProjectBaseColor, error)
@@ -477,6 +497,7 @@ type QueryResolver interface {
 type SubscriptionResolver interface {
 	ColorUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.Color, error)
 	IconUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.Icon, error)
+	MeUpdated(ctx context.Context, id ulid.ID) (<-chan *model.Me, error)
 	ProjectUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.Project, error)
 	ProjectBaseColorUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.ProjectBaseColor, error)
 	ProjectIconUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.ProjectIcon, error)
@@ -728,6 +749,48 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.IconEdge.Node(childComplexity), true
 
+	case "Me.createdAt":
+		if e.complexity.Me.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.Me.CreatedAt(childComplexity), true
+
+	case "Me.email":
+		if e.complexity.Me.Email == nil {
+			break
+		}
+
+		return e.complexity.Me.Email(childComplexity), true
+
+	case "Me.id":
+		if e.complexity.Me.ID == nil {
+			break
+		}
+
+		return e.complexity.Me.ID(childComplexity), true
+
+	case "Me.image":
+		if e.complexity.Me.Image == nil {
+			break
+		}
+
+		return e.complexity.Me.Image(childComplexity), true
+
+	case "Me.name":
+		if e.complexity.Me.Name == nil {
+			break
+		}
+
+		return e.complexity.Me.Name(childComplexity), true
+
+	case "Me.updatedAt":
+		if e.complexity.Me.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.Me.UpdatedAt(childComplexity), true
+
 	case "Mutation.createColor":
 		if e.complexity.Mutation.CreateColor == nil {
 			break
@@ -895,6 +958,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.UpdateIcon(childComplexity, args["input"].(ent.UpdateIconInput)), true
+
+	case "Mutation.updateMe":
+		if e.complexity.Mutation.UpdateMe == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateMe_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateMe(childComplexity, args["input"].(model.UpdateMeInput)), true
 
 	case "Mutation.updateProject":
 		if e.complexity.Mutation.UpdateProject == nil {
@@ -1521,6 +1596,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.Icons(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["where"].(*ent.IconWhereInput)), true
 
+	case "Query.me":
+		if e.complexity.Query.Me == nil {
+			break
+		}
+
+		return e.complexity.Query.Me(childComplexity), true
+
 	case "Query.node":
 		if e.complexity.Query.Node == nil {
 			break
@@ -1779,6 +1861,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Subscription.IconUpdated(childComplexity, args["id"].(ulid.ID)), true
+
+	case "Subscription.meUpdated":
+		if e.complexity.Subscription.MeUpdated == nil {
+			break
+		}
+
+		args, err := ec.field_Subscription_meUpdated_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Subscription.MeUpdated(childComplexity, args["id"].(ulid.ID)), true
 
 	case "Subscription.projectBaseColorUpdated":
 		if e.complexity.Subscription.ProjectBaseColorUpdated == nil {
@@ -3389,6 +3483,34 @@ extend type Mutation {
   updateIcon(input: UpdateIconInput!): Icon!
 }
 `, BuiltIn: false},
+	{Name: "graph/schema/me/me.graphql", Input: `type Me {
+  id: ID!
+  name: String!
+  image: String!
+  email: String!
+  createdAt: String!
+  updatedAt: String!
+}
+
+input UpdateMeInput {
+  id: ID!
+  name: String
+  image: String
+  email: String
+}
+
+extend type Query {
+  me: Me
+}
+
+extend type Subscription {
+  meUpdated(id: ID!): Me!
+}
+
+extend type Mutation {
+  updateMe(input: UpdateMeInput!): Me!
+}
+`, BuiltIn: false},
 	{Name: "graph/schema/project/project.graphql", Input: `type Project implements Node {
   id: ID!
   workspaceId: ID!
@@ -4051,6 +4173,21 @@ func (ec *executionContext) field_Mutation_updateIcon_args(ctx context.Context, 
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNUpdateIconInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐUpdateIconInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_updateMe_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.UpdateMeInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNUpdateMeInput2projectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐUpdateMeInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -4939,6 +5076,21 @@ func (ec *executionContext) field_Subscription_colorUpdated_args(ctx context.Con
 }
 
 func (ec *executionContext) field_Subscription_iconUpdated_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 ulid.ID
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Subscription_meUpdated_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 ulid.ID
@@ -6125,6 +6277,216 @@ func (ec *executionContext) _IconEdge_cursor(ctx context.Context, field graphql.
 	return ec.marshalNCursor2projectᚑmanagementᚑdemoᚑbackendᚋentᚐCursor(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Me_id(ctx context.Context, field graphql.CollectedField, obj *model.Me) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Me",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(ulid.ID)
+	fc.Result = res
+	return ec.marshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Me_name(ctx context.Context, field graphql.CollectedField, obj *model.Me) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Me",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Name, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Me_image(ctx context.Context, field graphql.CollectedField, obj *model.Me) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Me",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Image, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Me_email(ctx context.Context, field graphql.CollectedField, obj *model.Me) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Me",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Email, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Me_createdAt(ctx context.Context, field graphql.CollectedField, obj *model.Me) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Me",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Me().CreatedAt(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Me_updatedAt(ctx context.Context, field graphql.CollectedField, obj *model.Me) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Me",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Me().UpdatedAt(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Mutation_createColor(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -6291,6 +6653,48 @@ func (ec *executionContext) _Mutation_updateIcon(ctx context.Context, field grap
 	res := resTmp.(*ent.Icon)
 	fc.Result = res
 	return ec.marshalNIcon2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐIcon(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_updateMe(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_updateMe_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdateMe(rctx, args["input"].(model.UpdateMeInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Me)
+	fc.Result = res
+	return ec.marshalNMe2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐMe(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_createProject(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -9637,6 +10041,38 @@ func (ec *executionContext) _Query_icons(ctx context.Context, field graphql.Coll
 	return ec.marshalOIconConnection2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐIconConnection(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Query_me(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().Me(rctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.Me)
+	fc.Result = res
+	return ec.marshalOMe2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐMe(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Query_project(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -10505,6 +10941,58 @@ func (ec *executionContext) _Subscription_iconUpdated(ctx context.Context, field
 			graphql.MarshalString(field.Alias).MarshalGQL(w)
 			w.Write([]byte{':'})
 			ec.marshalNIcon2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐIcon(ctx, field.Selections, res).MarshalGQL(w)
+			w.Write([]byte{'}'})
+		})
+	}
+}
+
+func (ec *executionContext) _Subscription_meUpdated(ctx context.Context, field graphql.CollectedField) (ret func() graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = nil
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Subscription",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Subscription_meUpdated_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return nil
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Subscription().MeUpdated(rctx, args["id"].(ulid.ID))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return nil
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return nil
+	}
+	return func() graphql.Marshaler {
+		res, ok := <-resTmp.(<-chan *model.Me)
+		if !ok {
+			return nil
+		}
+		return graphql.WriterFunc(func(w io.Writer) {
+			w.Write([]byte{'{'})
+			graphql.MarshalString(field.Alias).MarshalGQL(w)
+			w.Write([]byte{':'})
+			ec.marshalNMe2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐMe(ctx, field.Selections, res).MarshalGQL(w)
 			w.Write([]byte{'}'})
 		})
 	}
@@ -19830,6 +20318,53 @@ func (ec *executionContext) unmarshalInputUpdateIconInput(ctx context.Context, o
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputUpdateMeInput(ctx context.Context, obj interface{}) (model.UpdateMeInput, error) {
+	var it model.UpdateMeInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			it.ID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "name":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			it.Name, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "image":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("image"))
+			it.Image, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "email":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("email"))
+			it.Email, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputUpdateProjectBaseColorInput(ctx context.Context, obj interface{}) (ent.UpdateProjectBaseColorInput, error) {
 	var it ent.UpdateProjectBaseColorInput
 	asMap := map[string]interface{}{}
@@ -21161,6 +21696,76 @@ func (ec *executionContext) _IconEdge(ctx context.Context, sel ast.SelectionSet,
 	return out
 }
 
+var meImplementors = []string{"Me"}
+
+func (ec *executionContext) _Me(ctx context.Context, sel ast.SelectionSet, obj *model.Me) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, meImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Me")
+		case "id":
+			out.Values[i] = ec._Me_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "name":
+			out.Values[i] = ec._Me_name(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "image":
+			out.Values[i] = ec._Me_image(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "email":
+			out.Values[i] = ec._Me_email(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "createdAt":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Me_createdAt(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "updatedAt":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Me_updatedAt(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var mutationImplementors = []string{"Mutation"}
 
 func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet) graphql.Marshaler {
@@ -21193,6 +21798,11 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			}
 		case "updateIcon":
 			out.Values[i] = ec._Mutation_updateIcon(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "updateMe":
+			out.Values[i] = ec._Mutation_updateMe(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -22226,6 +22836,17 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 				res = ec._Query_icons(ctx, field)
 				return res
 			})
+		case "me":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_me(ctx, field)
+				return res
+			})
 		case "project":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
@@ -22459,6 +23080,8 @@ func (ec *executionContext) _Subscription(ctx context.Context, sel ast.Selection
 		return ec._Subscription_colorUpdated(ctx, fields[0])
 	case "iconUpdated":
 		return ec._Subscription_iconUpdated(ctx, fields[0])
+	case "meUpdated":
+		return ec._Subscription_meUpdated(ctx, fields[0])
 	case "projectUpdated":
 		return ec._Subscription_projectUpdated(ctx, fields[0])
 	case "projectBaseColorUpdated":
@@ -23555,6 +24178,20 @@ func (ec *executionContext) marshalNInt2ᚖint(ctx context.Context, sel ast.Sele
 	return res
 }
 
+func (ec *executionContext) marshalNMe2projectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐMe(ctx context.Context, sel ast.SelectionSet, v model.Me) graphql.Marshaler {
+	return ec._Me(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNMe2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐMe(ctx context.Context, sel ast.SelectionSet, v *model.Me) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._Me(ctx, sel, v)
+}
+
 func (ec *executionContext) marshalNNode2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚐNoder(ctx context.Context, sel ast.SelectionSet, v []ent.Noder) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
@@ -23951,6 +24588,11 @@ func (ec *executionContext) unmarshalNUpdateColorInput2projectᚑmanagementᚑde
 
 func (ec *executionContext) unmarshalNUpdateIconInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐUpdateIconInput(ctx context.Context, v interface{}) (ent.UpdateIconInput, error) {
 	res, err := ec.unmarshalInputUpdateIconInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNUpdateMeInput2projectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐUpdateMeInput(ctx context.Context, v interface{}) (model.UpdateMeInput, error) {
+	res, err := ec.unmarshalInputUpdateMeInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
@@ -24766,6 +25408,13 @@ func (ec *executionContext) marshalOInt2ᚖint(ctx context.Context, sel ast.Sele
 		return graphql.Null
 	}
 	return graphql.MarshalInt(*v)
+}
+
+func (ec *executionContext) marshalOMe2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐMe(ctx context.Context, sel ast.SelectionSet, v *model.Me) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._Me(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalONode2projectᚑmanagementᚑdemoᚑbackendᚋentᚐNoder(ctx context.Context, sel ast.SelectionSet, v ent.Noder) graphql.Marshaler {

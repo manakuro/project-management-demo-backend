@@ -26,6 +26,7 @@ func (r *registry) NewController() controller.Controller {
 		Auth:              r.NewAuthController(),
 		Color:             r.NewColorController(),
 		Icon:              r.NewIconController(),
+		Me:                r.NewMeController(),
 		Project:           r.NewProjectController(),
 		ProjectBaseColor:  r.NewProjectBaseColorController(),
 		ProjectIcon:       r.NewProjectIconController(),
