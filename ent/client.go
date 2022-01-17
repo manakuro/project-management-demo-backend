@@ -21,6 +21,7 @@ import (
 	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/ent/testuser"
 	"project-management-demo-backend/ent/workspace"
+	"project-management-demo-backend/ent/workspaceteammate"
 
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
@@ -54,6 +55,8 @@ type Client struct {
 	TestUser *TestUserClient
 	// Workspace is the client for interacting with the Workspace builders.
 	Workspace *WorkspaceClient
+	// WorkspaceTeammate is the client for interacting with the WorkspaceTeammate builders.
+	WorkspaceTeammate *WorkspaceTeammateClient
 }
 
 // NewClient creates a new client configured with the given options.
@@ -78,6 +81,7 @@ func (c *Client) init() {
 	c.TestTodo = NewTestTodoClient(c.config)
 	c.TestUser = NewTestUserClient(c.config)
 	c.Workspace = NewWorkspaceClient(c.config)
+	c.WorkspaceTeammate = NewWorkspaceTeammateClient(c.config)
 }
 
 // Open opens a database/sql.DB specified by the driver name and
@@ -122,6 +126,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		TestTodo:          NewTestTodoClient(cfg),
 		TestUser:          NewTestUserClient(cfg),
 		Workspace:         NewWorkspaceClient(cfg),
+		WorkspaceTeammate: NewWorkspaceTeammateClient(cfg),
 	}, nil
 }
 
@@ -151,6 +156,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		TestTodo:          NewTestTodoClient(cfg),
 		TestUser:          NewTestUserClient(cfg),
 		Workspace:         NewWorkspaceClient(cfg),
+		WorkspaceTeammate: NewWorkspaceTeammateClient(cfg),
 	}, nil
 }
 
@@ -191,6 +197,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.TestTodo.Use(hooks...)
 	c.TestUser.Use(hooks...)
 	c.Workspace.Use(hooks...)
+	c.WorkspaceTeammate.Use(hooks...)
 }
 
 // ColorClient is a client for the Color schema.
@@ -1228,6 +1235,22 @@ func (c *TeammateClient) QueryProjectTeammates(t *Teammate) *ProjectTeammateQuer
 	return query
 }
 
+// QueryWorkspaceTeammates queries the workspace_teammates edge of a Teammate.
+func (c *TeammateClient) QueryWorkspaceTeammates(t *Teammate) *WorkspaceTeammateQuery {
+	query := &WorkspaceTeammateQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := t.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(teammate.Table, teammate.FieldID, id),
+			sqlgraph.To(workspaceteammate.Table, workspaceteammate.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, teammate.WorkspaceTeammatesTable, teammate.WorkspaceTeammatesColumn),
+		)
+		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *TeammateClient) Hooks() []Hook {
 	return c.hooks.Teammate
@@ -1562,7 +1585,145 @@ func (c *WorkspaceClient) QueryProjects(w *Workspace) *ProjectQuery {
 	return query
 }
 
+// QueryWorkspaceTeammates queries the workspace_teammates edge of a Workspace.
+func (c *WorkspaceClient) QueryWorkspaceTeammates(w *Workspace) *WorkspaceTeammateQuery {
+	query := &WorkspaceTeammateQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := w.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(workspace.Table, workspace.FieldID, id),
+			sqlgraph.To(workspaceteammate.Table, workspaceteammate.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, workspace.WorkspaceTeammatesTable, workspace.WorkspaceTeammatesColumn),
+		)
+		fromV = sqlgraph.Neighbors(w.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *WorkspaceClient) Hooks() []Hook {
 	return c.hooks.Workspace
+}
+
+// WorkspaceTeammateClient is a client for the WorkspaceTeammate schema.
+type WorkspaceTeammateClient struct {
+	config
+}
+
+// NewWorkspaceTeammateClient returns a client for the WorkspaceTeammate from the given config.
+func NewWorkspaceTeammateClient(c config) *WorkspaceTeammateClient {
+	return &WorkspaceTeammateClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `workspaceteammate.Hooks(f(g(h())))`.
+func (c *WorkspaceTeammateClient) Use(hooks ...Hook) {
+	c.hooks.WorkspaceTeammate = append(c.hooks.WorkspaceTeammate, hooks...)
+}
+
+// Create returns a create builder for WorkspaceTeammate.
+func (c *WorkspaceTeammateClient) Create() *WorkspaceTeammateCreate {
+	mutation := newWorkspaceTeammateMutation(c.config, OpCreate)
+	return &WorkspaceTeammateCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of WorkspaceTeammate entities.
+func (c *WorkspaceTeammateClient) CreateBulk(builders ...*WorkspaceTeammateCreate) *WorkspaceTeammateCreateBulk {
+	return &WorkspaceTeammateCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for WorkspaceTeammate.
+func (c *WorkspaceTeammateClient) Update() *WorkspaceTeammateUpdate {
+	mutation := newWorkspaceTeammateMutation(c.config, OpUpdate)
+	return &WorkspaceTeammateUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *WorkspaceTeammateClient) UpdateOne(wt *WorkspaceTeammate) *WorkspaceTeammateUpdateOne {
+	mutation := newWorkspaceTeammateMutation(c.config, OpUpdateOne, withWorkspaceTeammate(wt))
+	return &WorkspaceTeammateUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *WorkspaceTeammateClient) UpdateOneID(id ulid.ID) *WorkspaceTeammateUpdateOne {
+	mutation := newWorkspaceTeammateMutation(c.config, OpUpdateOne, withWorkspaceTeammateID(id))
+	return &WorkspaceTeammateUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for WorkspaceTeammate.
+func (c *WorkspaceTeammateClient) Delete() *WorkspaceTeammateDelete {
+	mutation := newWorkspaceTeammateMutation(c.config, OpDelete)
+	return &WorkspaceTeammateDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *WorkspaceTeammateClient) DeleteOne(wt *WorkspaceTeammate) *WorkspaceTeammateDeleteOne {
+	return c.DeleteOneID(wt.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *WorkspaceTeammateClient) DeleteOneID(id ulid.ID) *WorkspaceTeammateDeleteOne {
+	builder := c.Delete().Where(workspaceteammate.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &WorkspaceTeammateDeleteOne{builder}
+}
+
+// Query returns a query builder for WorkspaceTeammate.
+func (c *WorkspaceTeammateClient) Query() *WorkspaceTeammateQuery {
+	return &WorkspaceTeammateQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a WorkspaceTeammate entity by its id.
+func (c *WorkspaceTeammateClient) Get(ctx context.Context, id ulid.ID) (*WorkspaceTeammate, error) {
+	return c.Query().Where(workspaceteammate.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *WorkspaceTeammateClient) GetX(ctx context.Context, id ulid.ID) *WorkspaceTeammate {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryWorkspace queries the workspace edge of a WorkspaceTeammate.
+func (c *WorkspaceTeammateClient) QueryWorkspace(wt *WorkspaceTeammate) *WorkspaceQuery {
+	query := &WorkspaceQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := wt.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(workspaceteammate.Table, workspaceteammate.FieldID, id),
+			sqlgraph.To(workspace.Table, workspace.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, workspaceteammate.WorkspaceTable, workspaceteammate.WorkspaceColumn),
+		)
+		fromV = sqlgraph.Neighbors(wt.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryTeammate queries the teammate edge of a WorkspaceTeammate.
+func (c *WorkspaceTeammateClient) QueryTeammate(wt *WorkspaceTeammate) *TeammateQuery {
+	query := &TeammateQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := wt.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(workspaceteammate.Table, workspaceteammate.FieldID, id),
+			sqlgraph.To(teammate.Table, teammate.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, workspaceteammate.TeammateTable, workspaceteammate.TeammateColumn),
+		)
+		fromV = sqlgraph.Neighbors(wt.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *WorkspaceTeammateClient) Hooks() []Hook {
+	return c.hooks.WorkspaceTeammate
 }

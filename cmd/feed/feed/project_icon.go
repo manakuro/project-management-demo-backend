@@ -11,7 +11,7 @@ import (
 func ProjectIcon(ctx context.Context, client *ent.Client) {
 	_, err := client.ProjectIcon.Delete().Exec(ctx)
 	if err != nil {
-		log.Fatalf("failed to delete project icon: %v", err)
+		log.Fatalf("ProjectIcon failed to delete data: %v", err)
 	}
 
 	data := []ent.CreateProjectIconInput{
@@ -81,6 +81,6 @@ func ProjectIcon(ctx context.Context, client *ent.Client) {
 		bulk[i] = client.ProjectIcon.Create().SetInput(t)
 	}
 	if _, err = client.ProjectIcon.CreateBulk(bulk...).Save(ctx); err != nil {
-		log.Fatalf("failed to feed project icon: %v", err)
+		log.Fatalf("ProjectIcon failed to feed data: %v", err)
 	}
 }

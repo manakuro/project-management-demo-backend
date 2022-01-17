@@ -18,6 +18,7 @@ import (
 	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/ent/testuser"
 	"project-management-demo-backend/ent/workspace"
+	"project-management-demo-backend/ent/workspaceteammate"
 
 	"entgo.io/contrib/entgql"
 	"github.com/99designs/gqlgen/graphql"
@@ -583,7 +584,7 @@ func (t *Teammate) Node(ctx context.Context) (node *Node, err error) {
 		ID:     t.ID,
 		Type:   "Teammate",
 		Fields: make([]*Field, 5),
-		Edges:  make([]*Edge, 3),
+		Edges:  make([]*Edge, 4),
 	}
 	var buf []byte
 	if buf, err = json.Marshal(t.Name); err != nil {
@@ -653,6 +654,16 @@ func (t *Teammate) Node(ctx context.Context) (node *Node, err error) {
 	err = t.QueryProjectTeammates().
 		Select(projectteammate.FieldID).
 		Scan(ctx, &node.Edges[2].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[3] = &Edge{
+		Type: "WorkspaceTeammate",
+		Name: "workspace_teammates",
+	}
+	err = t.QueryWorkspaceTeammates().
+		Select(workspaceteammate.FieldID).
+		Scan(ctx, &node.Edges[3].IDs)
 	if err != nil {
 		return nil, err
 	}
@@ -794,7 +805,7 @@ func (w *Workspace) Node(ctx context.Context) (node *Node, err error) {
 		ID:     w.ID,
 		Type:   "Workspace",
 		Fields: make([]*Field, 5),
-		Edges:  make([]*Edge, 2),
+		Edges:  make([]*Edge, 3),
 	}
 	var buf []byte
 	if buf, err = json.Marshal(w.CreatedBy); err != nil {
@@ -853,6 +864,95 @@ func (w *Workspace) Node(ctx context.Context) (node *Node, err error) {
 	}
 	err = w.QueryProjects().
 		Select(project.FieldID).
+		Scan(ctx, &node.Edges[1].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[2] = &Edge{
+		Type: "WorkspaceTeammate",
+		Name: "workspace_teammates",
+	}
+	err = w.QueryWorkspaceTeammates().
+		Select(workspaceteammate.FieldID).
+		Scan(ctx, &node.Edges[2].IDs)
+	if err != nil {
+		return nil, err
+	}
+	return node, nil
+}
+
+func (wt *WorkspaceTeammate) Node(ctx context.Context) (node *Node, err error) {
+	node = &Node{
+		ID:     wt.ID,
+		Type:   "WorkspaceTeammate",
+		Fields: make([]*Field, 6),
+		Edges:  make([]*Edge, 2),
+	}
+	var buf []byte
+	if buf, err = json.Marshal(wt.WorkspaceID); err != nil {
+		return nil, err
+	}
+	node.Fields[0] = &Field{
+		Type:  "ulid.ID",
+		Name:  "workspace_id",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(wt.TeammateID); err != nil {
+		return nil, err
+	}
+	node.Fields[1] = &Field{
+		Type:  "ulid.ID",
+		Name:  "teammate_id",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(wt.Role); err != nil {
+		return nil, err
+	}
+	node.Fields[2] = &Field{
+		Type:  "string",
+		Name:  "role",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(wt.IsOwner); err != nil {
+		return nil, err
+	}
+	node.Fields[3] = &Field{
+		Type:  "bool",
+		Name:  "is_owner",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(wt.CreatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[4] = &Field{
+		Type:  "time.Time",
+		Name:  "created_at",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(wt.UpdatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[5] = &Field{
+		Type:  "time.Time",
+		Name:  "updated_at",
+		Value: string(buf),
+	}
+	node.Edges[0] = &Edge{
+		Type: "Workspace",
+		Name: "workspace",
+	}
+	err = wt.QueryWorkspace().
+		Select(workspace.FieldID).
+		Scan(ctx, &node.Edges[0].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[1] = &Edge{
+		Type: "Teammate",
+		Name: "teammate",
+	}
+	err = wt.QueryTeammate().
+		Select(teammate.FieldID).
 		Scan(ctx, &node.Edges[1].IDs)
 	if err != nil {
 		return nil, err
@@ -1021,6 +1121,15 @@ func (c *Client) noder(ctx context.Context, table string, id ulid.ID) (Noder, er
 		n, err := c.Workspace.Query().
 			Where(workspace.ID(id)).
 			CollectFields(ctx, "Workspace").
+			Only(ctx)
+		if err != nil {
+			return nil, err
+		}
+		return n, nil
+	case workspaceteammate.Table:
+		n, err := c.WorkspaceTeammate.Query().
+			Where(workspaceteammate.ID(id)).
+			CollectFields(ctx, "WorkspaceTeammate").
 			Only(ctx)
 		if err != nil {
 			return nil, err
@@ -1233,6 +1342,19 @@ func (c *Client) noders(ctx context.Context, table string, ids []ulid.ID) ([]Nod
 		nodes, err := c.Workspace.Query().
 			Where(workspace.IDIn(ids...)).
 			CollectFields(ctx, "Workspace").
+			All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, node := range nodes {
+			for _, noder := range idmap[node.ID] {
+				*noder = node
+			}
+		}
+	case workspaceteammate.Table:
+		nodes, err := c.WorkspaceTeammate.Query().
+			Where(workspaceteammate.IDIn(ids...)).
+			CollectFields(ctx, "WorkspaceTeammate").
 			All(ctx)
 		if err != nil {
 			return nil, err

@@ -14,6 +14,7 @@ import (
 	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/ent/testuser"
 	"project-management-demo-backend/ent/workspace"
+	"project-management-demo-backend/ent/workspaceteammate"
 	"reflect"
 )
 
@@ -35,6 +36,7 @@ type GlobalIDs struct {
 	TestTodo          field
 	TestUser          field
 	Workspace         field
+	WorkspaceTeammate field
 }
 
 // New generates a map object that is intended to be used as global identification for node interface query.
@@ -84,6 +86,10 @@ func New() GlobalIDs {
 		ProjectIcon: field{
 			Prefix: "0AK",
 			Table:  projecticon.Table,
+		},
+		WorkspaceTeammate: field{
+			Prefix: "0AL",
+			Table:  workspaceteammate.Table,
 		},
 	}
 }

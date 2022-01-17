@@ -35,6 +35,7 @@ type hooks struct {
 	TestTodo          []ent.Hook
 	TestUser          []ent.Hook
 	Workspace         []ent.Hook
+	WorkspaceTeammate []ent.Hook
 }
 
 // Options applies the options on the config object.

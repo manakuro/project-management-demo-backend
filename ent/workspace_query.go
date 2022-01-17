@@ -13,6 +13,7 @@ import (
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/workspace"
+	"project-management-demo-backend/ent/workspaceteammate"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -29,8 +30,9 @@ type WorkspaceQuery struct {
 	fields     []string
 	predicates []predicate.Workspace
 	// eager-loading edges.
-	withTeammate *TeammateQuery
-	withProjects *ProjectQuery
+	withTeammate           *TeammateQuery
+	withProjects           *ProjectQuery
+	withWorkspaceTeammates *WorkspaceTeammateQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -104,6 +106,28 @@ func (wq *WorkspaceQuery) QueryProjects() *ProjectQuery {
 			sqlgraph.From(workspace.Table, workspace.FieldID, selector),
 			sqlgraph.To(project.Table, project.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, workspace.ProjectsTable, workspace.ProjectsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(wq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryWorkspaceTeammates chains the current query on the "workspace_teammates" edge.
+func (wq *WorkspaceQuery) QueryWorkspaceTeammates() *WorkspaceTeammateQuery {
+	query := &WorkspaceTeammateQuery{config: wq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := wq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := wq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(workspace.Table, workspace.FieldID, selector),
+			sqlgraph.To(workspaceteammate.Table, workspaceteammate.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, workspace.WorkspaceTeammatesTable, workspace.WorkspaceTeammatesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(wq.driver.Dialect(), step)
 		return fromU, nil
@@ -287,13 +311,14 @@ func (wq *WorkspaceQuery) Clone() *WorkspaceQuery {
 		return nil
 	}
 	return &WorkspaceQuery{
-		config:       wq.config,
-		limit:        wq.limit,
-		offset:       wq.offset,
-		order:        append([]OrderFunc{}, wq.order...),
-		predicates:   append([]predicate.Workspace{}, wq.predicates...),
-		withTeammate: wq.withTeammate.Clone(),
-		withProjects: wq.withProjects.Clone(),
+		config:                 wq.config,
+		limit:                  wq.limit,
+		offset:                 wq.offset,
+		order:                  append([]OrderFunc{}, wq.order...),
+		predicates:             append([]predicate.Workspace{}, wq.predicates...),
+		withTeammate:           wq.withTeammate.Clone(),
+		withProjects:           wq.withProjects.Clone(),
+		withWorkspaceTeammates: wq.withWorkspaceTeammates.Clone(),
 		// clone intermediate query.
 		sql:  wq.sql.Clone(),
 		path: wq.path,
@@ -319,6 +344,17 @@ func (wq *WorkspaceQuery) WithProjects(opts ...func(*ProjectQuery)) *WorkspaceQu
 		opt(query)
 	}
 	wq.withProjects = query
+	return wq
+}
+
+// WithWorkspaceTeammates tells the query-builder to eager-load the nodes that are connected to
+// the "workspace_teammates" edge. The optional arguments are used to configure the query builder of the edge.
+func (wq *WorkspaceQuery) WithWorkspaceTeammates(opts ...func(*WorkspaceTeammateQuery)) *WorkspaceQuery {
+	query := &WorkspaceTeammateQuery{config: wq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	wq.withWorkspaceTeammates = query
 	return wq
 }
 
@@ -387,9 +423,10 @@ func (wq *WorkspaceQuery) sqlAll(ctx context.Context) ([]*Workspace, error) {
 	var (
 		nodes       = []*Workspace{}
 		_spec       = wq.querySpec()
-		loadedTypes = [2]bool{
+		loadedTypes = [3]bool{
 			wq.withTeammate != nil,
 			wq.withProjects != nil,
+			wq.withWorkspaceTeammates != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -460,6 +497,31 @@ func (wq *WorkspaceQuery) sqlAll(ctx context.Context) ([]*Workspace, error) {
 				return nil, fmt.Errorf(`unexpected foreign-key "workspace_id" returned %v for node %v`, fk, n.ID)
 			}
 			node.Edges.Projects = append(node.Edges.Projects, n)
+		}
+	}
+
+	if query := wq.withWorkspaceTeammates; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[ulid.ID]*Workspace)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.WorkspaceTeammates = []*WorkspaceTeammate{}
+		}
+		query.Where(predicate.WorkspaceTeammate(func(s *sql.Selector) {
+			s.Where(sql.InValues(workspace.WorkspaceTeammatesColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.WorkspaceID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "workspace_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.WorkspaceTeammates = append(node.Edges.WorkspaceTeammates, n)
 		}
 	}
 

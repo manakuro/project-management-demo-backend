@@ -34,6 +34,8 @@ type Tx struct {
 	TestUser *TestUserClient
 	// Workspace is the client for interacting with the Workspace builders.
 	Workspace *WorkspaceClient
+	// WorkspaceTeammate is the client for interacting with the WorkspaceTeammate builders.
+	WorkspaceTeammate *WorkspaceTeammateClient
 
 	// lazily loaded.
 	client     *Client
@@ -180,6 +182,7 @@ func (tx *Tx) init() {
 	tx.TestTodo = NewTestTodoClient(tx.config)
 	tx.TestUser = NewTestUserClient(tx.config)
 	tx.Workspace = NewWorkspaceClient(tx.config)
+	tx.WorkspaceTeammate = NewWorkspaceTeammateClient(tx.config)
 }
 
 // txDriver wraps the given dialect.Tx with a nop dialect.Driver implementation.

@@ -11,6 +11,7 @@ import (
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/workspace"
+	"project-management-demo-backend/ent/workspaceteammate"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -93,6 +94,21 @@ func (tu *TeammateUpdate) AddProjectTeammates(p ...*ProjectTeammate) *TeammateUp
 	return tu.AddProjectTeammateIDs(ids...)
 }
 
+// AddWorkspaceTeammateIDs adds the "workspace_teammates" edge to the WorkspaceTeammate entity by IDs.
+func (tu *TeammateUpdate) AddWorkspaceTeammateIDs(ids ...ulid.ID) *TeammateUpdate {
+	tu.mutation.AddWorkspaceTeammateIDs(ids...)
+	return tu
+}
+
+// AddWorkspaceTeammates adds the "workspace_teammates" edges to the WorkspaceTeammate entity.
+func (tu *TeammateUpdate) AddWorkspaceTeammates(w ...*WorkspaceTeammate) *TeammateUpdate {
+	ids := make([]ulid.ID, len(w))
+	for i := range w {
+		ids[i] = w[i].ID
+	}
+	return tu.AddWorkspaceTeammateIDs(ids...)
+}
+
 // Mutation returns the TeammateMutation object of the builder.
 func (tu *TeammateUpdate) Mutation() *TeammateMutation {
 	return tu.mutation
@@ -159,6 +175,27 @@ func (tu *TeammateUpdate) RemoveProjectTeammates(p ...*ProjectTeammate) *Teammat
 		ids[i] = p[i].ID
 	}
 	return tu.RemoveProjectTeammateIDs(ids...)
+}
+
+// ClearWorkspaceTeammates clears all "workspace_teammates" edges to the WorkspaceTeammate entity.
+func (tu *TeammateUpdate) ClearWorkspaceTeammates() *TeammateUpdate {
+	tu.mutation.ClearWorkspaceTeammates()
+	return tu
+}
+
+// RemoveWorkspaceTeammateIDs removes the "workspace_teammates" edge to WorkspaceTeammate entities by IDs.
+func (tu *TeammateUpdate) RemoveWorkspaceTeammateIDs(ids ...ulid.ID) *TeammateUpdate {
+	tu.mutation.RemoveWorkspaceTeammateIDs(ids...)
+	return tu
+}
+
+// RemoveWorkspaceTeammates removes "workspace_teammates" edges to WorkspaceTeammate entities.
+func (tu *TeammateUpdate) RemoveWorkspaceTeammates(w ...*WorkspaceTeammate) *TeammateUpdate {
+	ids := make([]ulid.ID, len(w))
+	for i := range w {
+		ids[i] = w[i].ID
+	}
+	return tu.RemoveWorkspaceTeammateIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -442,6 +479,60 @@ func (tu *TeammateUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if tu.mutation.WorkspaceTeammatesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   teammate.WorkspaceTeammatesTable,
+			Columns: []string{teammate.WorkspaceTeammatesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: workspaceteammate.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tu.mutation.RemovedWorkspaceTeammatesIDs(); len(nodes) > 0 && !tu.mutation.WorkspaceTeammatesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   teammate.WorkspaceTeammatesTable,
+			Columns: []string{teammate.WorkspaceTeammatesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: workspaceteammate.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tu.mutation.WorkspaceTeammatesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   teammate.WorkspaceTeammatesTable,
+			Columns: []string{teammate.WorkspaceTeammatesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: workspaceteammate.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, tu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{teammate.Label}
@@ -524,6 +615,21 @@ func (tuo *TeammateUpdateOne) AddProjectTeammates(p ...*ProjectTeammate) *Teamma
 	return tuo.AddProjectTeammateIDs(ids...)
 }
 
+// AddWorkspaceTeammateIDs adds the "workspace_teammates" edge to the WorkspaceTeammate entity by IDs.
+func (tuo *TeammateUpdateOne) AddWorkspaceTeammateIDs(ids ...ulid.ID) *TeammateUpdateOne {
+	tuo.mutation.AddWorkspaceTeammateIDs(ids...)
+	return tuo
+}
+
+// AddWorkspaceTeammates adds the "workspace_teammates" edges to the WorkspaceTeammate entity.
+func (tuo *TeammateUpdateOne) AddWorkspaceTeammates(w ...*WorkspaceTeammate) *TeammateUpdateOne {
+	ids := make([]ulid.ID, len(w))
+	for i := range w {
+		ids[i] = w[i].ID
+	}
+	return tuo.AddWorkspaceTeammateIDs(ids...)
+}
+
 // Mutation returns the TeammateMutation object of the builder.
 func (tuo *TeammateUpdateOne) Mutation() *TeammateMutation {
 	return tuo.mutation
@@ -590,6 +696,27 @@ func (tuo *TeammateUpdateOne) RemoveProjectTeammates(p ...*ProjectTeammate) *Tea
 		ids[i] = p[i].ID
 	}
 	return tuo.RemoveProjectTeammateIDs(ids...)
+}
+
+// ClearWorkspaceTeammates clears all "workspace_teammates" edges to the WorkspaceTeammate entity.
+func (tuo *TeammateUpdateOne) ClearWorkspaceTeammates() *TeammateUpdateOne {
+	tuo.mutation.ClearWorkspaceTeammates()
+	return tuo
+}
+
+// RemoveWorkspaceTeammateIDs removes the "workspace_teammates" edge to WorkspaceTeammate entities by IDs.
+func (tuo *TeammateUpdateOne) RemoveWorkspaceTeammateIDs(ids ...ulid.ID) *TeammateUpdateOne {
+	tuo.mutation.RemoveWorkspaceTeammateIDs(ids...)
+	return tuo
+}
+
+// RemoveWorkspaceTeammates removes "workspace_teammates" edges to WorkspaceTeammate entities.
+func (tuo *TeammateUpdateOne) RemoveWorkspaceTeammates(w ...*WorkspaceTeammate) *TeammateUpdateOne {
+	ids := make([]ulid.ID, len(w))
+	for i := range w {
+		ids[i] = w[i].ID
+	}
+	return tuo.RemoveWorkspaceTeammateIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -889,6 +1016,60 @@ func (tuo *TeammateUpdateOne) sqlSave(ctx context.Context) (_node *Teammate, err
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: projectteammate.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if tuo.mutation.WorkspaceTeammatesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   teammate.WorkspaceTeammatesTable,
+			Columns: []string{teammate.WorkspaceTeammatesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: workspaceteammate.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tuo.mutation.RemovedWorkspaceTeammatesIDs(); len(nodes) > 0 && !tuo.mutation.WorkspaceTeammatesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   teammate.WorkspaceTeammatesTable,
+			Columns: []string{teammate.WorkspaceTeammatesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: workspaceteammate.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tuo.mutation.WorkspaceTeammatesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   teammate.WorkspaceTeammatesTable,
+			Columns: []string{teammate.WorkspaceTeammatesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: workspaceteammate.FieldID,
 				},
 			},
 		}

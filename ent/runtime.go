@@ -16,6 +16,7 @@ import (
 	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/ent/testuser"
 	"project-management-demo-backend/ent/workspace"
+	"project-management-demo-backend/ent/workspaceteammate"
 	"time"
 )
 
@@ -438,4 +439,29 @@ func init() {
 	workspaceDescID := workspaceMixinFields0[0].Descriptor()
 	// workspace.DefaultID holds the default value on creation for the id field.
 	workspace.DefaultID = workspaceDescID.Default.(func() ulid.ID)
+	workspaceteammateMixin := schema.WorkspaceTeammate{}.Mixin()
+	workspaceteammateMixinFields0 := workspaceteammateMixin[0].Fields()
+	_ = workspaceteammateMixinFields0
+	workspaceteammateMixinFields1 := workspaceteammateMixin[1].Fields()
+	_ = workspaceteammateMixinFields1
+	workspaceteammateMixinFields2 := workspaceteammateMixin[2].Fields()
+	_ = workspaceteammateMixinFields2
+	workspaceteammateFields := schema.WorkspaceTeammate{}.Fields()
+	_ = workspaceteammateFields
+	// workspaceteammateDescRole is the schema descriptor for role field.
+	workspaceteammateDescRole := workspaceteammateMixinFields1[2].Descriptor()
+	// workspaceteammate.RoleValidator is a validator for the "role" field. It is called by the builders before save.
+	workspaceteammate.RoleValidator = workspaceteammateDescRole.Validators[0].(func(string) error)
+	// workspaceteammateDescCreatedAt is the schema descriptor for created_at field.
+	workspaceteammateDescCreatedAt := workspaceteammateMixinFields2[0].Descriptor()
+	// workspaceteammate.DefaultCreatedAt holds the default value on creation for the created_at field.
+	workspaceteammate.DefaultCreatedAt = workspaceteammateDescCreatedAt.Default.(func() time.Time)
+	// workspaceteammateDescUpdatedAt is the schema descriptor for updated_at field.
+	workspaceteammateDescUpdatedAt := workspaceteammateMixinFields2[1].Descriptor()
+	// workspaceteammate.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	workspaceteammate.DefaultUpdatedAt = workspaceteammateDescUpdatedAt.Default.(func() time.Time)
+	// workspaceteammateDescID is the schema descriptor for id field.
+	workspaceteammateDescID := workspaceteammateMixinFields0[0].Descriptor()
+	// workspaceteammate.DefaultID holds the default value on creation for the id field.
+	workspaceteammate.DefaultID = workspaceteammateDescID.Default.(func() ulid.ID)
 }

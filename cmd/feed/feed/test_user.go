@@ -175,7 +175,7 @@ var testUserFeed = struct {
 func TestUser(ctx context.Context, client *ent.Client) {
 	_, err := client.TestUser.Delete().Exec(ctx)
 	if err != nil {
-		log.Fatalf("test_user: failed to delete test user: %v", err)
+		log.Fatalf("TestUser failed to delete data: %v", err)
 	}
 
 	ts := []ent.CreateTestUserInput{
@@ -195,6 +195,6 @@ func TestUser(ctx context.Context, client *ent.Client) {
 		bulk[i] = client.TestUser.Create().SetInput(t)
 	}
 	if _, err = client.TestUser.CreateBulk(bulk...).Save(ctx); err != nil {
-		log.Fatalf("test_user: failed to feed test user: %v", err)
+		log.Fatalf("TestUser failed to feed data: %v", err)
 	}
 }
