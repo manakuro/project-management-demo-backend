@@ -5,6 +5,7 @@ type Controller struct {
 	Auth              interface{ Auth }
 	Color             interface{ Color }
 	Icon              interface{ Icon }
+	Me                interface{ Me }
 	Project           interface{ Project }
 	ProjectBaseColor  interface{ ProjectBaseColor }
 	ProjectIcon       interface{ ProjectIcon }

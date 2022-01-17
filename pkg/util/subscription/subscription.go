@@ -3,6 +3,7 @@ package subscription
 import (
 	"project-management-demo-backend/ent"
 	"project-management-demo-backend/ent/schema/ulid"
+	"project-management-demo-backend/pkg/entity/model"
 
 	"github.com/thanhpk/randstr"
 )
@@ -67,10 +68,17 @@ type ProjectIconUpdated struct {
 	Ch chan *ent.ProjectIcon
 }
 
+// MeUpdated of channel
+type MeUpdated struct {
+	ID ulid.ID
+	Ch chan *model.Me
+}
+
 // Subscriptions hold an id and a channel of subscription.
 type Subscriptions struct {
 	ColorUpdated             map[string]ColorUpdated
 	IconUpdated              map[string]IconUpdated
+	MeUpdated                map[string]MeUpdated
 	ProjectBaseColorUpdated  map[string]ProjectBaseColorUpdated
 	ProjectIconUpdated       map[string]ProjectIconUpdated
 	ProjectLightColorUpdated map[string]ProjectLightColorUpdated
