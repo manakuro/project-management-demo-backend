@@ -21,6 +21,18 @@ func (c *ColorQuery) collectField(ctx *graphql.OperationContext, field graphql.C
 }
 
 // CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
+func (fp *FavoriteProjectQuery) CollectFields(ctx context.Context, satisfies ...string) *FavoriteProjectQuery {
+	if fc := graphql.GetFieldContext(ctx); fc != nil {
+		fp = fp.collectField(graphql.GetOperationContext(ctx), fc.Field, satisfies...)
+	}
+	return fp
+}
+
+func (fp *FavoriteProjectQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *FavoriteProjectQuery {
+	return fp
+}
+
+// CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
 func (i *IconQuery) CollectFields(ctx context.Context, satisfies ...string) *IconQuery {
 	if fc := graphql.GetFieldContext(ctx); fc != nil {
 		i = i.collectField(graphql.GetOperationContext(ctx), fc.Field, satisfies...)

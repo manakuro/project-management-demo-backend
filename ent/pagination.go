@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io"
 	"project-management-demo-backend/ent/color"
+	"project-management-demo-backend/ent/favoriteproject"
 	"project-management-demo-backend/ent/icon"
 	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/projectbasecolor"
@@ -468,6 +469,233 @@ func (c *Color) ToEdge(order *ColorOrder) *ColorEdge {
 	return &ColorEdge{
 		Node:   c,
 		Cursor: order.Field.toCursor(c),
+	}
+}
+
+// FavoriteProjectEdge is the edge representation of FavoriteProject.
+type FavoriteProjectEdge struct {
+	Node   *FavoriteProject `json:"node"`
+	Cursor Cursor           `json:"cursor"`
+}
+
+// FavoriteProjectConnection is the connection containing edges to FavoriteProject.
+type FavoriteProjectConnection struct {
+	Edges      []*FavoriteProjectEdge `json:"edges"`
+	PageInfo   PageInfo               `json:"pageInfo"`
+	TotalCount int                    `json:"totalCount"`
+}
+
+// FavoriteProjectPaginateOption enables pagination customization.
+type FavoriteProjectPaginateOption func(*favoriteProjectPager) error
+
+// WithFavoriteProjectOrder configures pagination ordering.
+func WithFavoriteProjectOrder(order *FavoriteProjectOrder) FavoriteProjectPaginateOption {
+	if order == nil {
+		order = DefaultFavoriteProjectOrder
+	}
+	o := *order
+	return func(pager *favoriteProjectPager) error {
+		if err := o.Direction.Validate(); err != nil {
+			return err
+		}
+		if o.Field == nil {
+			o.Field = DefaultFavoriteProjectOrder.Field
+		}
+		pager.order = &o
+		return nil
+	}
+}
+
+// WithFavoriteProjectFilter configures pagination filter.
+func WithFavoriteProjectFilter(filter func(*FavoriteProjectQuery) (*FavoriteProjectQuery, error)) FavoriteProjectPaginateOption {
+	return func(pager *favoriteProjectPager) error {
+		if filter == nil {
+			return errors.New("FavoriteProjectQuery filter cannot be nil")
+		}
+		pager.filter = filter
+		return nil
+	}
+}
+
+type favoriteProjectPager struct {
+	order  *FavoriteProjectOrder
+	filter func(*FavoriteProjectQuery) (*FavoriteProjectQuery, error)
+}
+
+func newFavoriteProjectPager(opts []FavoriteProjectPaginateOption) (*favoriteProjectPager, error) {
+	pager := &favoriteProjectPager{}
+	for _, opt := range opts {
+		if err := opt(pager); err != nil {
+			return nil, err
+		}
+	}
+	if pager.order == nil {
+		pager.order = DefaultFavoriteProjectOrder
+	}
+	return pager, nil
+}
+
+func (p *favoriteProjectPager) applyFilter(query *FavoriteProjectQuery) (*FavoriteProjectQuery, error) {
+	if p.filter != nil {
+		return p.filter(query)
+	}
+	return query, nil
+}
+
+func (p *favoriteProjectPager) toCursor(fp *FavoriteProject) Cursor {
+	return p.order.Field.toCursor(fp)
+}
+
+func (p *favoriteProjectPager) applyCursors(query *FavoriteProjectQuery, after, before *Cursor) *FavoriteProjectQuery {
+	for _, predicate := range cursorsToPredicates(
+		p.order.Direction, after, before,
+		p.order.Field.field, DefaultFavoriteProjectOrder.Field.field,
+	) {
+		query = query.Where(predicate)
+	}
+	return query
+}
+
+func (p *favoriteProjectPager) applyOrder(query *FavoriteProjectQuery, reverse bool) *FavoriteProjectQuery {
+	direction := p.order.Direction
+	if reverse {
+		direction = direction.reverse()
+	}
+	query = query.Order(direction.orderFunc(p.order.Field.field))
+	if p.order.Field != DefaultFavoriteProjectOrder.Field {
+		query = query.Order(direction.orderFunc(DefaultFavoriteProjectOrder.Field.field))
+	}
+	return query
+}
+
+// Paginate executes the query and returns a relay based cursor connection to FavoriteProject.
+func (fp *FavoriteProjectQuery) Paginate(
+	ctx context.Context, after *Cursor, first *int,
+	before *Cursor, last *int, opts ...FavoriteProjectPaginateOption,
+) (*FavoriteProjectConnection, error) {
+	if err := validateFirstLast(first, last); err != nil {
+		return nil, err
+	}
+	pager, err := newFavoriteProjectPager(opts)
+	if err != nil {
+		return nil, err
+	}
+
+	if fp, err = pager.applyFilter(fp); err != nil {
+		return nil, err
+	}
+
+	conn := &FavoriteProjectConnection{Edges: []*FavoriteProjectEdge{}}
+	if !hasCollectedField(ctx, edgesField) || first != nil && *first == 0 || last != nil && *last == 0 {
+		if hasCollectedField(ctx, totalCountField) ||
+			hasCollectedField(ctx, pageInfoField) {
+			count, err := fp.Count(ctx)
+			if err != nil {
+				return nil, err
+			}
+			conn.TotalCount = count
+			conn.PageInfo.HasNextPage = first != nil && count > 0
+			conn.PageInfo.HasPreviousPage = last != nil && count > 0
+		}
+		return conn, nil
+	}
+
+	if (after != nil || first != nil || before != nil || last != nil) && hasCollectedField(ctx, totalCountField) {
+		count, err := fp.Clone().Count(ctx)
+		if err != nil {
+			return nil, err
+		}
+		conn.TotalCount = count
+	}
+
+	fp = pager.applyCursors(fp, after, before)
+	fp = pager.applyOrder(fp, last != nil)
+	var limit int
+	if first != nil {
+		limit = *first + 1
+	} else if last != nil {
+		limit = *last + 1
+	}
+	if limit > 0 {
+		fp = fp.Limit(limit)
+	}
+
+	if field := getCollectedField(ctx, edgesField, nodeField); field != nil {
+		fp = fp.collectField(graphql.GetOperationContext(ctx), *field)
+	}
+
+	nodes, err := fp.All(ctx)
+	if err != nil || len(nodes) == 0 {
+		return conn, err
+	}
+
+	if len(nodes) == limit {
+		conn.PageInfo.HasNextPage = first != nil
+		conn.PageInfo.HasPreviousPage = last != nil
+		nodes = nodes[:len(nodes)-1]
+	}
+
+	var nodeAt func(int) *FavoriteProject
+	if last != nil {
+		n := len(nodes) - 1
+		nodeAt = func(i int) *FavoriteProject {
+			return nodes[n-i]
+		}
+	} else {
+		nodeAt = func(i int) *FavoriteProject {
+			return nodes[i]
+		}
+	}
+
+	conn.Edges = make([]*FavoriteProjectEdge, len(nodes))
+	for i := range nodes {
+		node := nodeAt(i)
+		conn.Edges[i] = &FavoriteProjectEdge{
+			Node:   node,
+			Cursor: pager.toCursor(node),
+		}
+	}
+
+	conn.PageInfo.StartCursor = &conn.Edges[0].Cursor
+	conn.PageInfo.EndCursor = &conn.Edges[len(conn.Edges)-1].Cursor
+	if conn.TotalCount == 0 {
+		conn.TotalCount = len(nodes)
+	}
+
+	return conn, nil
+}
+
+// FavoriteProjectOrderField defines the ordering field of FavoriteProject.
+type FavoriteProjectOrderField struct {
+	field    string
+	toCursor func(*FavoriteProject) Cursor
+}
+
+// FavoriteProjectOrder defines the ordering of FavoriteProject.
+type FavoriteProjectOrder struct {
+	Direction OrderDirection             `json:"direction"`
+	Field     *FavoriteProjectOrderField `json:"field"`
+}
+
+// DefaultFavoriteProjectOrder is the default ordering of FavoriteProject.
+var DefaultFavoriteProjectOrder = &FavoriteProjectOrder{
+	Direction: OrderDirectionAsc,
+	Field: &FavoriteProjectOrderField{
+		field: favoriteproject.FieldID,
+		toCursor: func(fp *FavoriteProject) Cursor {
+			return Cursor{ID: fp.ID}
+		},
+	},
+}
+
+// ToEdge converts FavoriteProject into FavoriteProjectEdge.
+func (fp *FavoriteProject) ToEdge(order *FavoriteProjectOrder) *FavoriteProjectEdge {
+	if order == nil {
+		order = DefaultFavoriteProjectOrder
+	}
+	return &FavoriteProjectEdge{
+		Node:   fp,
+		Cursor: order.Field.toCursor(fp),
 	}
 }
 

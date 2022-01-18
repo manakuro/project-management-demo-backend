@@ -20,6 +20,22 @@ func (c *Color) ProjectLightColors(ctx context.Context) ([]*ProjectLightColor, e
 	return result, err
 }
 
+func (fp *FavoriteProject) Project(ctx context.Context) (*Project, error) {
+	result, err := fp.Edges.ProjectOrErr()
+	if IsNotLoaded(err) {
+		result, err = fp.QueryProject().Only(ctx)
+	}
+	return result, err
+}
+
+func (fp *FavoriteProject) Teammate(ctx context.Context) (*Teammate, error) {
+	result, err := fp.Edges.TeammateOrErr()
+	if IsNotLoaded(err) {
+		result, err = fp.QueryTeammate().Only(ctx)
+	}
+	return result, err
+}
+
 func (i *Icon) ProjectIcons(ctx context.Context) ([]*ProjectIcon, error) {
 	result, err := i.Edges.ProjectIconsOrErr()
 	if IsNotLoaded(err) {
@@ -72,6 +88,14 @@ func (pr *Project) ProjectTeammates(ctx context.Context) ([]*ProjectTeammate, er
 	result, err := pr.Edges.ProjectTeammatesOrErr()
 	if IsNotLoaded(err) {
 		result, err = pr.QueryProjectTeammates().All(ctx)
+	}
+	return result, err
+}
+
+func (pr *Project) FavoriteProjects(ctx context.Context) ([]*FavoriteProject, error) {
+	result, err := pr.Edges.FavoriteProjectsOrErr()
+	if IsNotLoaded(err) {
+		result, err = pr.QueryFavoriteProjects().All(ctx)
 	}
 	return result, err
 }
@@ -168,6 +192,14 @@ func (t *Teammate) WorkspaceTeammates(ctx context.Context) ([]*WorkspaceTeammate
 	result, err := t.Edges.WorkspaceTeammatesOrErr()
 	if IsNotLoaded(err) {
 		result, err = t.QueryWorkspaceTeammates().All(ctx)
+	}
+	return result, err
+}
+
+func (t *Teammate) FavoriteProjects(ctx context.Context) ([]*FavoriteProject, error) {
+	result, err := t.Edges.FavoriteProjectsOrErr()
+	if IsNotLoaded(err) {
+		result, err = t.QueryFavoriteProjects().All(ctx)
 	}
 	return result, err
 }

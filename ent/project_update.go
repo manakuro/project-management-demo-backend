@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"project-management-demo-backend/ent/favoriteproject"
 	"project-management-demo-backend/ent/predicate"
 	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/projectbasecolor"
@@ -144,6 +145,21 @@ func (pu *ProjectUpdate) AddProjectTeammates(p ...*ProjectTeammate) *ProjectUpda
 	return pu.AddProjectTeammateIDs(ids...)
 }
 
+// AddFavoriteProjectIDs adds the "favorite_projects" edge to the FavoriteProject entity by IDs.
+func (pu *ProjectUpdate) AddFavoriteProjectIDs(ids ...ulid.ID) *ProjectUpdate {
+	pu.mutation.AddFavoriteProjectIDs(ids...)
+	return pu
+}
+
+// AddFavoriteProjects adds the "favorite_projects" edges to the FavoriteProject entity.
+func (pu *ProjectUpdate) AddFavoriteProjects(f ...*FavoriteProject) *ProjectUpdate {
+	ids := make([]ulid.ID, len(f))
+	for i := range f {
+		ids[i] = f[i].ID
+	}
+	return pu.AddFavoriteProjectIDs(ids...)
+}
+
 // Mutation returns the ProjectMutation object of the builder.
 func (pu *ProjectUpdate) Mutation() *ProjectMutation {
 	return pu.mutation
@@ -198,6 +214,27 @@ func (pu *ProjectUpdate) RemoveProjectTeammates(p ...*ProjectTeammate) *ProjectU
 		ids[i] = p[i].ID
 	}
 	return pu.RemoveProjectTeammateIDs(ids...)
+}
+
+// ClearFavoriteProjects clears all "favorite_projects" edges to the FavoriteProject entity.
+func (pu *ProjectUpdate) ClearFavoriteProjects() *ProjectUpdate {
+	pu.mutation.ClearFavoriteProjects()
+	return pu
+}
+
+// RemoveFavoriteProjectIDs removes the "favorite_projects" edge to FavoriteProject entities by IDs.
+func (pu *ProjectUpdate) RemoveFavoriteProjectIDs(ids ...ulid.ID) *ProjectUpdate {
+	pu.mutation.RemoveFavoriteProjectIDs(ids...)
+	return pu
+}
+
+// RemoveFavoriteProjects removes "favorite_projects" edges to FavoriteProject entities.
+func (pu *ProjectUpdate) RemoveFavoriteProjects(f ...*FavoriteProject) *ProjectUpdate {
+	ids := make([]ulid.ID, len(f))
+	for i := range f {
+		ids[i] = f[i].ID
+	}
+	return pu.RemoveFavoriteProjectIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -565,6 +602,60 @@ func (pu *ProjectUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if pu.mutation.FavoriteProjectsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   project.FavoriteProjectsTable,
+			Columns: []string{project.FavoriteProjectsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: favoriteproject.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.RemovedFavoriteProjectsIDs(); len(nodes) > 0 && !pu.mutation.FavoriteProjectsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   project.FavoriteProjectsTable,
+			Columns: []string{project.FavoriteProjectsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: favoriteproject.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.FavoriteProjectsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   project.FavoriteProjectsTable,
+			Columns: []string{project.FavoriteProjectsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: favoriteproject.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, pu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{project.Label}
@@ -692,6 +783,21 @@ func (puo *ProjectUpdateOne) AddProjectTeammates(p ...*ProjectTeammate) *Project
 	return puo.AddProjectTeammateIDs(ids...)
 }
 
+// AddFavoriteProjectIDs adds the "favorite_projects" edge to the FavoriteProject entity by IDs.
+func (puo *ProjectUpdateOne) AddFavoriteProjectIDs(ids ...ulid.ID) *ProjectUpdateOne {
+	puo.mutation.AddFavoriteProjectIDs(ids...)
+	return puo
+}
+
+// AddFavoriteProjects adds the "favorite_projects" edges to the FavoriteProject entity.
+func (puo *ProjectUpdateOne) AddFavoriteProjects(f ...*FavoriteProject) *ProjectUpdateOne {
+	ids := make([]ulid.ID, len(f))
+	for i := range f {
+		ids[i] = f[i].ID
+	}
+	return puo.AddFavoriteProjectIDs(ids...)
+}
+
 // Mutation returns the ProjectMutation object of the builder.
 func (puo *ProjectUpdateOne) Mutation() *ProjectMutation {
 	return puo.mutation
@@ -746,6 +852,27 @@ func (puo *ProjectUpdateOne) RemoveProjectTeammates(p ...*ProjectTeammate) *Proj
 		ids[i] = p[i].ID
 	}
 	return puo.RemoveProjectTeammateIDs(ids...)
+}
+
+// ClearFavoriteProjects clears all "favorite_projects" edges to the FavoriteProject entity.
+func (puo *ProjectUpdateOne) ClearFavoriteProjects() *ProjectUpdateOne {
+	puo.mutation.ClearFavoriteProjects()
+	return puo
+}
+
+// RemoveFavoriteProjectIDs removes the "favorite_projects" edge to FavoriteProject entities by IDs.
+func (puo *ProjectUpdateOne) RemoveFavoriteProjectIDs(ids ...ulid.ID) *ProjectUpdateOne {
+	puo.mutation.RemoveFavoriteProjectIDs(ids...)
+	return puo
+}
+
+// RemoveFavoriteProjects removes "favorite_projects" edges to FavoriteProject entities.
+func (puo *ProjectUpdateOne) RemoveFavoriteProjects(f ...*FavoriteProject) *ProjectUpdateOne {
+	ids := make([]ulid.ID, len(f))
+	for i := range f {
+		ids[i] = f[i].ID
+	}
+	return puo.RemoveFavoriteProjectIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -1129,6 +1256,60 @@ func (puo *ProjectUpdateOne) sqlSave(ctx context.Context) (_node *Project, err e
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: projectteammate.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if puo.mutation.FavoriteProjectsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   project.FavoriteProjectsTable,
+			Columns: []string{project.FavoriteProjectsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: favoriteproject.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.RemovedFavoriteProjectsIDs(); len(nodes) > 0 && !puo.mutation.FavoriteProjectsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   project.FavoriteProjectsTable,
+			Columns: []string{project.FavoriteProjectsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: favoriteproject.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.FavoriteProjectsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   project.FavoriteProjectsTable,
+			Columns: []string{project.FavoriteProjectsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: favoriteproject.FieldID,
 				},
 			},
 		}

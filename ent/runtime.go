@@ -4,6 +4,7 @@ package ent
 
 import (
 	"project-management-demo-backend/ent/color"
+	"project-management-demo-backend/ent/favoriteproject"
 	"project-management-demo-backend/ent/icon"
 	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/projectbasecolor"
@@ -99,6 +100,25 @@ func init() {
 	colorDescID := colorMixinFields0[0].Descriptor()
 	// color.DefaultID holds the default value on creation for the id field.
 	color.DefaultID = colorDescID.Default.(func() ulid.ID)
+	favoriteprojectMixin := schema.FavoriteProject{}.Mixin()
+	favoriteprojectMixinFields0 := favoriteprojectMixin[0].Fields()
+	_ = favoriteprojectMixinFields0
+	favoriteprojectMixinFields2 := favoriteprojectMixin[2].Fields()
+	_ = favoriteprojectMixinFields2
+	favoriteprojectFields := schema.FavoriteProject{}.Fields()
+	_ = favoriteprojectFields
+	// favoriteprojectDescCreatedAt is the schema descriptor for created_at field.
+	favoriteprojectDescCreatedAt := favoriteprojectMixinFields2[0].Descriptor()
+	// favoriteproject.DefaultCreatedAt holds the default value on creation for the created_at field.
+	favoriteproject.DefaultCreatedAt = favoriteprojectDescCreatedAt.Default.(func() time.Time)
+	// favoriteprojectDescUpdatedAt is the schema descriptor for updated_at field.
+	favoriteprojectDescUpdatedAt := favoriteprojectMixinFields2[1].Descriptor()
+	// favoriteproject.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	favoriteproject.DefaultUpdatedAt = favoriteprojectDescUpdatedAt.Default.(func() time.Time)
+	// favoriteprojectDescID is the schema descriptor for id field.
+	favoriteprojectDescID := favoriteprojectMixinFields0[0].Descriptor()
+	// favoriteproject.DefaultID holds the default value on creation for the id field.
+	favoriteproject.DefaultID = favoriteprojectDescID.Default.(func() ulid.ID)
 	iconMixin := schema.Icon{}.Mixin()
 	iconMixinFields0 := iconMixin[0].Fields()
 	_ = iconMixinFields0

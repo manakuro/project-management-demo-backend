@@ -11,6 +11,7 @@ import (
 	"project-management-demo-backend/ent/schema/ulid"
 
 	"project-management-demo-backend/ent/color"
+	"project-management-demo-backend/ent/favoriteproject"
 	"project-management-demo-backend/ent/icon"
 	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/projectbasecolor"
@@ -35,6 +36,8 @@ type Client struct {
 	Schema *migrate.Schema
 	// Color is the client for interacting with the Color builders.
 	Color *ColorClient
+	// FavoriteProject is the client for interacting with the FavoriteProject builders.
+	FavoriteProject *FavoriteProjectClient
 	// Icon is the client for interacting with the Icon builders.
 	Icon *IconClient
 	// Project is the client for interacting with the Project builders.
@@ -71,6 +74,7 @@ func NewClient(opts ...Option) *Client {
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.Color = NewColorClient(c.config)
+	c.FavoriteProject = NewFavoriteProjectClient(c.config)
 	c.Icon = NewIconClient(c.config)
 	c.Project = NewProjectClient(c.config)
 	c.ProjectBaseColor = NewProjectBaseColorClient(c.config)
@@ -116,6 +120,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		ctx:               ctx,
 		config:            cfg,
 		Color:             NewColorClient(cfg),
+		FavoriteProject:   NewFavoriteProjectClient(cfg),
 		Icon:              NewIconClient(cfg),
 		Project:           NewProjectClient(cfg),
 		ProjectBaseColor:  NewProjectBaseColorClient(cfg),
@@ -146,6 +151,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	return &Tx{
 		config:            cfg,
 		Color:             NewColorClient(cfg),
+		FavoriteProject:   NewFavoriteProjectClient(cfg),
 		Icon:              NewIconClient(cfg),
 		Project:           NewProjectClient(cfg),
 		ProjectBaseColor:  NewProjectBaseColorClient(cfg),
@@ -187,6 +193,7 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	c.Color.Use(hooks...)
+	c.FavoriteProject.Use(hooks...)
 	c.Icon.Use(hooks...)
 	c.Project.Use(hooks...)
 	c.ProjectBaseColor.Use(hooks...)
@@ -320,6 +327,128 @@ func (c *ColorClient) QueryProjectLightColors(co *Color) *ProjectLightColorQuery
 // Hooks returns the client hooks.
 func (c *ColorClient) Hooks() []Hook {
 	return c.hooks.Color
+}
+
+// FavoriteProjectClient is a client for the FavoriteProject schema.
+type FavoriteProjectClient struct {
+	config
+}
+
+// NewFavoriteProjectClient returns a client for the FavoriteProject from the given config.
+func NewFavoriteProjectClient(c config) *FavoriteProjectClient {
+	return &FavoriteProjectClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `favoriteproject.Hooks(f(g(h())))`.
+func (c *FavoriteProjectClient) Use(hooks ...Hook) {
+	c.hooks.FavoriteProject = append(c.hooks.FavoriteProject, hooks...)
+}
+
+// Create returns a create builder for FavoriteProject.
+func (c *FavoriteProjectClient) Create() *FavoriteProjectCreate {
+	mutation := newFavoriteProjectMutation(c.config, OpCreate)
+	return &FavoriteProjectCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of FavoriteProject entities.
+func (c *FavoriteProjectClient) CreateBulk(builders ...*FavoriteProjectCreate) *FavoriteProjectCreateBulk {
+	return &FavoriteProjectCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for FavoriteProject.
+func (c *FavoriteProjectClient) Update() *FavoriteProjectUpdate {
+	mutation := newFavoriteProjectMutation(c.config, OpUpdate)
+	return &FavoriteProjectUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *FavoriteProjectClient) UpdateOne(fp *FavoriteProject) *FavoriteProjectUpdateOne {
+	mutation := newFavoriteProjectMutation(c.config, OpUpdateOne, withFavoriteProject(fp))
+	return &FavoriteProjectUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *FavoriteProjectClient) UpdateOneID(id ulid.ID) *FavoriteProjectUpdateOne {
+	mutation := newFavoriteProjectMutation(c.config, OpUpdateOne, withFavoriteProjectID(id))
+	return &FavoriteProjectUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for FavoriteProject.
+func (c *FavoriteProjectClient) Delete() *FavoriteProjectDelete {
+	mutation := newFavoriteProjectMutation(c.config, OpDelete)
+	return &FavoriteProjectDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *FavoriteProjectClient) DeleteOne(fp *FavoriteProject) *FavoriteProjectDeleteOne {
+	return c.DeleteOneID(fp.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *FavoriteProjectClient) DeleteOneID(id ulid.ID) *FavoriteProjectDeleteOne {
+	builder := c.Delete().Where(favoriteproject.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &FavoriteProjectDeleteOne{builder}
+}
+
+// Query returns a query builder for FavoriteProject.
+func (c *FavoriteProjectClient) Query() *FavoriteProjectQuery {
+	return &FavoriteProjectQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a FavoriteProject entity by its id.
+func (c *FavoriteProjectClient) Get(ctx context.Context, id ulid.ID) (*FavoriteProject, error) {
+	return c.Query().Where(favoriteproject.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *FavoriteProjectClient) GetX(ctx context.Context, id ulid.ID) *FavoriteProject {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryProject queries the project edge of a FavoriteProject.
+func (c *FavoriteProjectClient) QueryProject(fp *FavoriteProject) *ProjectQuery {
+	query := &ProjectQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := fp.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(favoriteproject.Table, favoriteproject.FieldID, id),
+			sqlgraph.To(project.Table, project.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, favoriteproject.ProjectTable, favoriteproject.ProjectColumn),
+		)
+		fromV = sqlgraph.Neighbors(fp.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryTeammate queries the teammate edge of a FavoriteProject.
+func (c *FavoriteProjectClient) QueryTeammate(fp *FavoriteProject) *TeammateQuery {
+	query := &TeammateQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := fp.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(favoriteproject.Table, favoriteproject.FieldID, id),
+			sqlgraph.To(teammate.Table, teammate.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, favoriteproject.TeammateTable, favoriteproject.TeammateColumn),
+		)
+		fromV = sqlgraph.Neighbors(fp.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *FavoriteProjectClient) Hooks() []Hook {
+	return c.hooks.FavoriteProject
 }
 
 // IconClient is a client for the Icon schema.
@@ -602,6 +731,22 @@ func (c *ProjectClient) QueryProjectTeammates(pr *Project) *ProjectTeammateQuery
 			sqlgraph.From(project.Table, project.FieldID, id),
 			sqlgraph.To(projectteammate.Table, projectteammate.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, project.ProjectTeammatesTable, project.ProjectTeammatesColumn),
+		)
+		fromV = sqlgraph.Neighbors(pr.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryFavoriteProjects queries the favorite_projects edge of a Project.
+func (c *ProjectClient) QueryFavoriteProjects(pr *Project) *FavoriteProjectQuery {
+	query := &FavoriteProjectQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := pr.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(project.Table, project.FieldID, id),
+			sqlgraph.To(favoriteproject.Table, favoriteproject.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, project.FavoriteProjectsTable, project.FavoriteProjectsColumn),
 		)
 		fromV = sqlgraph.Neighbors(pr.driver.Dialect(), step)
 		return fromV, nil
@@ -1244,6 +1389,22 @@ func (c *TeammateClient) QueryWorkspaceTeammates(t *Teammate) *WorkspaceTeammate
 			sqlgraph.From(teammate.Table, teammate.FieldID, id),
 			sqlgraph.To(workspaceteammate.Table, workspaceteammate.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, teammate.WorkspaceTeammatesTable, teammate.WorkspaceTeammatesColumn),
+		)
+		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryFavoriteProjects queries the favorite_projects edge of a Teammate.
+func (c *TeammateClient) QueryFavoriteProjects(t *Teammate) *FavoriteProjectQuery {
+	query := &FavoriteProjectQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := t.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(teammate.Table, teammate.FieldID, id),
+			sqlgraph.To(favoriteproject.Table, favoriteproject.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, teammate.FavoriteProjectsTable, teammate.FavoriteProjectsColumn),
 		)
 		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
 		return fromV, nil
