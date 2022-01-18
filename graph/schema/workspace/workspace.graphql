@@ -3,6 +3,7 @@ type Workspace implements Node {
   createdBy: ID!
   name: String!
   description: EditorDescription!
+  projects: [Project!]!
   createdAt: String!
   updatedAt: String!
 }
