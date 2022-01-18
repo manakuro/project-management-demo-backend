@@ -392,13 +392,14 @@ type ComplexityRoot struct {
 	}
 
 	Workspace struct {
-		CreatedAt   func(childComplexity int) int
-		CreatedBy   func(childComplexity int) int
-		Description func(childComplexity int) int
-		ID          func(childComplexity int) int
-		Name        func(childComplexity int) int
-		Projects    func(childComplexity int) int
-		UpdatedAt   func(childComplexity int) int
+		CreatedAt          func(childComplexity int) int
+		CreatedBy          func(childComplexity int) int
+		Description        func(childComplexity int) int
+		ID                 func(childComplexity int) int
+		Name               func(childComplexity int) int
+		Projects           func(childComplexity int) int
+		UpdatedAt          func(childComplexity int) int
+		WorkspaceTeammates func(childComplexity int) int
 	}
 
 	WorkspaceConnection struct {
@@ -2384,6 +2385,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Workspace.UpdatedAt(childComplexity), true
 
+	case "Workspace.workspaceTeammates":
+		if e.complexity.Workspace.WorkspaceTeammates == nil {
+			break
+		}
+
+		return e.complexity.Workspace.WorkspaceTeammates(childComplexity), true
+
 	case "WorkspaceConnection.edges":
 		if e.complexity.WorkspaceConnection.Edges == nil {
 			break
@@ -4235,6 +4243,7 @@ extend type Mutation {
   name: String!
   description: EditorDescription!
   projects: [Project!]!
+  workspaceTeammates: [WorkspaceTeammate!]!
   createdAt: String!
   updatedAt: String!
 }
@@ -13562,6 +13571,41 @@ func (ec *executionContext) _Workspace_projects(ctx context.Context, field graph
 	res := resTmp.([]*ent.Project)
 	fc.Result = res
 	return ec.marshalNProject2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Workspace_workspaceTeammates(ctx context.Context, field graphql.CollectedField, obj *ent.Workspace) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Workspace",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.WorkspaceTeammates(ctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*ent.WorkspaceTeammate)
+	fc.Result = res
+	return ec.marshalNWorkspaceTeammate2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐWorkspaceTeammateᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Workspace_createdAt(ctx context.Context, field graphql.CollectedField, obj *ent.Workspace) (ret graphql.Marshaler) {
@@ -25549,6 +25593,20 @@ func (ec *executionContext) _Workspace(ctx context.Context, sel ast.SelectionSet
 				}
 				return res
 			})
+		case "workspaceTeammates":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Workspace_workspaceTeammates(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
 		case "createdAt":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
@@ -26858,6 +26916,50 @@ func (ec *executionContext) marshalNWorkspace2ᚖprojectᚑmanagementᚑdemoᚑb
 
 func (ec *executionContext) marshalNWorkspaceTeammate2projectᚑmanagementᚑdemoᚑbackendᚋentᚐWorkspaceTeammate(ctx context.Context, sel ast.SelectionSet, v ent.WorkspaceTeammate) graphql.Marshaler {
 	return ec._WorkspaceTeammate(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNWorkspaceTeammate2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐWorkspaceTeammateᚄ(ctx context.Context, sel ast.SelectionSet, v []*ent.WorkspaceTeammate) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNWorkspaceTeammate2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐWorkspaceTeammate(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
 }
 
 func (ec *executionContext) marshalNWorkspaceTeammate2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐWorkspaceTeammate(ctx context.Context, sel ast.SelectionSet, v *ent.WorkspaceTeammate) graphql.Marshaler {

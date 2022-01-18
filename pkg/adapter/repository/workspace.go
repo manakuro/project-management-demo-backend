@@ -32,6 +32,11 @@ func (r *workspaceRepository) Get(ctx context.Context, where *model.WorkspaceWhe
 			})
 		})
 	}
+	if collection.Contains(requestFields, "workspaceTeammates") {
+		q.WithWorkspaceTeammates(func(wtq *ent.WorkspaceTeammateQuery) {
+			wtq.WithTeammate()
+		})
+	}
 
 	result, err := q.Only(ctx)
 
