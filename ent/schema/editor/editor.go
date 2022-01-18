@@ -32,6 +32,13 @@ type Description struct {
 	Content []DescriptionContent `json:"content"`
 }
 
+// DescriptionWithTypename is a json type of description with __typename
+type DescriptionWithTypename struct {
+	Type     string               `json:"type"`
+	Content  []DescriptionContent `json:"content"`
+	Typename string               `json:"__typename"`
+}
+
 // UnmarshalGQL implements the graphql.Unmarshaller interface.
 func (d *Description) UnmarshalGQL(v interface{}) error {
 	return d.Scan(v)
@@ -39,7 +46,13 @@ func (d *Description) UnmarshalGQL(v interface{}) error {
 
 // MarshalGQL implements the graphql.Marshaler interface.
 func (d Description) MarshalGQL(w io.Writer) {
-	val, _ := json.Marshal(d)
+	descriptionWithTypename := &DescriptionWithTypename{
+		Typename: "EditorDescription",
+		Content:  d.Content,
+		Type:     d.Type,
+	}
+
+	val, _ := json.Marshal(descriptionWithTypename)
 	_, _ = io.WriteString(w, string(val))
 }
 
