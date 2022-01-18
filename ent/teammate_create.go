@@ -11,6 +11,7 @@ import (
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/workspace"
+	"project-management-demo-backend/ent/workspaceteammate"
 	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -127,6 +128,21 @@ func (tc *TeammateCreate) AddProjectTeammates(p ...*ProjectTeammate) *TeammateCr
 		ids[i] = p[i].ID
 	}
 	return tc.AddProjectTeammateIDs(ids...)
+}
+
+// AddWorkspaceTeammateIDs adds the "workspace_teammates" edge to the WorkspaceTeammate entity by IDs.
+func (tc *TeammateCreate) AddWorkspaceTeammateIDs(ids ...ulid.ID) *TeammateCreate {
+	tc.mutation.AddWorkspaceTeammateIDs(ids...)
+	return tc
+}
+
+// AddWorkspaceTeammates adds the "workspace_teammates" edges to the WorkspaceTeammate entity.
+func (tc *TeammateCreate) AddWorkspaceTeammates(w ...*WorkspaceTeammate) *TeammateCreate {
+	ids := make([]ulid.ID, len(w))
+	for i := range w {
+		ids[i] = w[i].ID
+	}
+	return tc.AddWorkspaceTeammateIDs(ids...)
 }
 
 // Mutation returns the TeammateMutation object of the builder.
@@ -367,6 +383,25 @@ func (tc *TeammateCreate) createSpec() (*Teammate, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: projectteammate.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := tc.mutation.WorkspaceTeammatesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   teammate.WorkspaceTeammatesTable,
+			Columns: []string{teammate.WorkspaceTeammatesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: workspaceteammate.FieldID,
 				},
 			},
 		}

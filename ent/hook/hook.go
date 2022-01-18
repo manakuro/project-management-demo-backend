@@ -151,6 +151,19 @@ func (f WorkspaceFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, e
 	return f(ctx, mv)
 }
 
+// The WorkspaceTeammateFunc type is an adapter to allow the use of ordinary
+// function as WorkspaceTeammate mutator.
+type WorkspaceTeammateFunc func(context.Context, *ent.WorkspaceTeammateMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f WorkspaceTeammateFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.WorkspaceTeammateMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.WorkspaceTeammateMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // Condition is a hook condition function.
 type Condition func(context.Context, ent.Mutation) bool
 

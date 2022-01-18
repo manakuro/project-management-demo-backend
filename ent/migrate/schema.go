@@ -260,6 +260,36 @@ var (
 			},
 		},
 	}
+	// WorkspaceTeammatesColumns holds the columns for the "workspace_teammates" table.
+	WorkspaceTeammatesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+		{Name: "role", Type: field.TypeString, Size: 255},
+		{Name: "is_owner", Type: field.TypeBool},
+		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
+		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
+		{Name: "teammate_id", Type: field.TypeString, Nullable: true},
+		{Name: "workspace_id", Type: field.TypeString, Nullable: true},
+	}
+	// WorkspaceTeammatesTable holds the schema information for the "workspace_teammates" table.
+	WorkspaceTeammatesTable = &schema.Table{
+		Name:       "workspace_teammates",
+		Columns:    WorkspaceTeammatesColumns,
+		PrimaryKey: []*schema.Column{WorkspaceTeammatesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "workspace_teammates_teammates_workspace_teammates",
+				Columns:    []*schema.Column{WorkspaceTeammatesColumns[5]},
+				RefColumns: []*schema.Column{TeammatesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "workspace_teammates_workspaces_workspace_teammates",
+				Columns:    []*schema.Column{WorkspaceTeammatesColumns[6]},
+				RefColumns: []*schema.Column{WorkspacesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		ColorsTable,
@@ -273,6 +303,7 @@ var (
 		TestTodosTable,
 		TestUsersTable,
 		WorkspacesTable,
+		WorkspaceTeammatesTable,
 	}
 )
 
@@ -289,4 +320,6 @@ func init() {
 	ProjectTeammatesTable.ForeignKeys[1].RefTable = TeammatesTable
 	TestTodosTable.ForeignKeys[0].RefTable = TestUsersTable
 	WorkspacesTable.ForeignKeys[0].RefTable = TeammatesTable
+	WorkspaceTeammatesTable.ForeignKeys[0].RefTable = TeammatesTable
+	WorkspaceTeammatesTable.ForeignKeys[1].RefTable = WorkspacesTable
 }

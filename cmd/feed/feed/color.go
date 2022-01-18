@@ -218,7 +218,7 @@ var colorFeed = struct {
 func Color(ctx context.Context, client *ent.Client) {
 	_, err := client.Color.Delete().Exec(ctx)
 	if err != nil {
-		log.Fatalf("failed to delete color: %v", err)
+		log.Fatalf("Color failed to delete data: %v", err)
 	}
 
 	ts := []ent.CreateColorInput{
@@ -328,6 +328,6 @@ func Color(ctx context.Context, client *ent.Client) {
 		bulk[i] = client.Color.Create().SetInput(t)
 	}
 	if _, err = client.Color.CreateBulk(bulk...).Save(ctx); err != nil {
-		log.Fatalf("failed to feed color: %v", err)
+		log.Fatalf("Color failed to feed data: %v", err)
 	}
 }

@@ -20,6 +20,7 @@ import (
 	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/ent/testuser"
 	"project-management-demo-backend/ent/workspace"
+	"project-management-demo-backend/ent/workspaceteammate"
 	"strconv"
 	"strings"
 
@@ -2737,5 +2738,232 @@ func (w *Workspace) ToEdge(order *WorkspaceOrder) *WorkspaceEdge {
 	return &WorkspaceEdge{
 		Node:   w,
 		Cursor: order.Field.toCursor(w),
+	}
+}
+
+// WorkspaceTeammateEdge is the edge representation of WorkspaceTeammate.
+type WorkspaceTeammateEdge struct {
+	Node   *WorkspaceTeammate `json:"node"`
+	Cursor Cursor             `json:"cursor"`
+}
+
+// WorkspaceTeammateConnection is the connection containing edges to WorkspaceTeammate.
+type WorkspaceTeammateConnection struct {
+	Edges      []*WorkspaceTeammateEdge `json:"edges"`
+	PageInfo   PageInfo                 `json:"pageInfo"`
+	TotalCount int                      `json:"totalCount"`
+}
+
+// WorkspaceTeammatePaginateOption enables pagination customization.
+type WorkspaceTeammatePaginateOption func(*workspaceTeammatePager) error
+
+// WithWorkspaceTeammateOrder configures pagination ordering.
+func WithWorkspaceTeammateOrder(order *WorkspaceTeammateOrder) WorkspaceTeammatePaginateOption {
+	if order == nil {
+		order = DefaultWorkspaceTeammateOrder
+	}
+	o := *order
+	return func(pager *workspaceTeammatePager) error {
+		if err := o.Direction.Validate(); err != nil {
+			return err
+		}
+		if o.Field == nil {
+			o.Field = DefaultWorkspaceTeammateOrder.Field
+		}
+		pager.order = &o
+		return nil
+	}
+}
+
+// WithWorkspaceTeammateFilter configures pagination filter.
+func WithWorkspaceTeammateFilter(filter func(*WorkspaceTeammateQuery) (*WorkspaceTeammateQuery, error)) WorkspaceTeammatePaginateOption {
+	return func(pager *workspaceTeammatePager) error {
+		if filter == nil {
+			return errors.New("WorkspaceTeammateQuery filter cannot be nil")
+		}
+		pager.filter = filter
+		return nil
+	}
+}
+
+type workspaceTeammatePager struct {
+	order  *WorkspaceTeammateOrder
+	filter func(*WorkspaceTeammateQuery) (*WorkspaceTeammateQuery, error)
+}
+
+func newWorkspaceTeammatePager(opts []WorkspaceTeammatePaginateOption) (*workspaceTeammatePager, error) {
+	pager := &workspaceTeammatePager{}
+	for _, opt := range opts {
+		if err := opt(pager); err != nil {
+			return nil, err
+		}
+	}
+	if pager.order == nil {
+		pager.order = DefaultWorkspaceTeammateOrder
+	}
+	return pager, nil
+}
+
+func (p *workspaceTeammatePager) applyFilter(query *WorkspaceTeammateQuery) (*WorkspaceTeammateQuery, error) {
+	if p.filter != nil {
+		return p.filter(query)
+	}
+	return query, nil
+}
+
+func (p *workspaceTeammatePager) toCursor(wt *WorkspaceTeammate) Cursor {
+	return p.order.Field.toCursor(wt)
+}
+
+func (p *workspaceTeammatePager) applyCursors(query *WorkspaceTeammateQuery, after, before *Cursor) *WorkspaceTeammateQuery {
+	for _, predicate := range cursorsToPredicates(
+		p.order.Direction, after, before,
+		p.order.Field.field, DefaultWorkspaceTeammateOrder.Field.field,
+	) {
+		query = query.Where(predicate)
+	}
+	return query
+}
+
+func (p *workspaceTeammatePager) applyOrder(query *WorkspaceTeammateQuery, reverse bool) *WorkspaceTeammateQuery {
+	direction := p.order.Direction
+	if reverse {
+		direction = direction.reverse()
+	}
+	query = query.Order(direction.orderFunc(p.order.Field.field))
+	if p.order.Field != DefaultWorkspaceTeammateOrder.Field {
+		query = query.Order(direction.orderFunc(DefaultWorkspaceTeammateOrder.Field.field))
+	}
+	return query
+}
+
+// Paginate executes the query and returns a relay based cursor connection to WorkspaceTeammate.
+func (wt *WorkspaceTeammateQuery) Paginate(
+	ctx context.Context, after *Cursor, first *int,
+	before *Cursor, last *int, opts ...WorkspaceTeammatePaginateOption,
+) (*WorkspaceTeammateConnection, error) {
+	if err := validateFirstLast(first, last); err != nil {
+		return nil, err
+	}
+	pager, err := newWorkspaceTeammatePager(opts)
+	if err != nil {
+		return nil, err
+	}
+
+	if wt, err = pager.applyFilter(wt); err != nil {
+		return nil, err
+	}
+
+	conn := &WorkspaceTeammateConnection{Edges: []*WorkspaceTeammateEdge{}}
+	if !hasCollectedField(ctx, edgesField) || first != nil && *first == 0 || last != nil && *last == 0 {
+		if hasCollectedField(ctx, totalCountField) ||
+			hasCollectedField(ctx, pageInfoField) {
+			count, err := wt.Count(ctx)
+			if err != nil {
+				return nil, err
+			}
+			conn.TotalCount = count
+			conn.PageInfo.HasNextPage = first != nil && count > 0
+			conn.PageInfo.HasPreviousPage = last != nil && count > 0
+		}
+		return conn, nil
+	}
+
+	if (after != nil || first != nil || before != nil || last != nil) && hasCollectedField(ctx, totalCountField) {
+		count, err := wt.Clone().Count(ctx)
+		if err != nil {
+			return nil, err
+		}
+		conn.TotalCount = count
+	}
+
+	wt = pager.applyCursors(wt, after, before)
+	wt = pager.applyOrder(wt, last != nil)
+	var limit int
+	if first != nil {
+		limit = *first + 1
+	} else if last != nil {
+		limit = *last + 1
+	}
+	if limit > 0 {
+		wt = wt.Limit(limit)
+	}
+
+	if field := getCollectedField(ctx, edgesField, nodeField); field != nil {
+		wt = wt.collectField(graphql.GetOperationContext(ctx), *field)
+	}
+
+	nodes, err := wt.All(ctx)
+	if err != nil || len(nodes) == 0 {
+		return conn, err
+	}
+
+	if len(nodes) == limit {
+		conn.PageInfo.HasNextPage = first != nil
+		conn.PageInfo.HasPreviousPage = last != nil
+		nodes = nodes[:len(nodes)-1]
+	}
+
+	var nodeAt func(int) *WorkspaceTeammate
+	if last != nil {
+		n := len(nodes) - 1
+		nodeAt = func(i int) *WorkspaceTeammate {
+			return nodes[n-i]
+		}
+	} else {
+		nodeAt = func(i int) *WorkspaceTeammate {
+			return nodes[i]
+		}
+	}
+
+	conn.Edges = make([]*WorkspaceTeammateEdge, len(nodes))
+	for i := range nodes {
+		node := nodeAt(i)
+		conn.Edges[i] = &WorkspaceTeammateEdge{
+			Node:   node,
+			Cursor: pager.toCursor(node),
+		}
+	}
+
+	conn.PageInfo.StartCursor = &conn.Edges[0].Cursor
+	conn.PageInfo.EndCursor = &conn.Edges[len(conn.Edges)-1].Cursor
+	if conn.TotalCount == 0 {
+		conn.TotalCount = len(nodes)
+	}
+
+	return conn, nil
+}
+
+// WorkspaceTeammateOrderField defines the ordering field of WorkspaceTeammate.
+type WorkspaceTeammateOrderField struct {
+	field    string
+	toCursor func(*WorkspaceTeammate) Cursor
+}
+
+// WorkspaceTeammateOrder defines the ordering of WorkspaceTeammate.
+type WorkspaceTeammateOrder struct {
+	Direction OrderDirection               `json:"direction"`
+	Field     *WorkspaceTeammateOrderField `json:"field"`
+}
+
+// DefaultWorkspaceTeammateOrder is the default ordering of WorkspaceTeammate.
+var DefaultWorkspaceTeammateOrder = &WorkspaceTeammateOrder{
+	Direction: OrderDirectionAsc,
+	Field: &WorkspaceTeammateOrderField{
+		field: workspaceteammate.FieldID,
+		toCursor: func(wt *WorkspaceTeammate) Cursor {
+			return Cursor{ID: wt.ID}
+		},
+	},
+}
+
+// ToEdge converts WorkspaceTeammate into WorkspaceTeammateEdge.
+func (wt *WorkspaceTeammate) ToEdge(order *WorkspaceTeammateOrder) *WorkspaceTeammateEdge {
+	if order == nil {
+		order = DefaultWorkspaceTeammateOrder
+	}
+	return &WorkspaceTeammateEdge{
+		Node:   wt,
+		Cursor: order.Field.toCursor(wt),
 	}
 }

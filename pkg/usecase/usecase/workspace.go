@@ -12,9 +12,9 @@ type workspace struct {
 
 // Workspace is an interface of test user
 type Workspace interface {
-	Get(ctx context.Context, where *model.WorkspaceWhereInput) (*model.Workspace, error)
+	Get(ctx context.Context, where *model.WorkspaceWhereInput, requestFields []string) (*model.Workspace, error)
 	List(ctx context.Context) ([]*model.Workspace, error)
-	ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.WorkspaceWhereInput) (*model.WorkspaceConnection, error)
+	ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.WorkspaceWhereInput, requestFields []string) (*model.WorkspaceConnection, error)
 	Create(ctx context.Context, input model.CreateWorkspaceInput) (*model.Workspace, error)
 	Update(ctx context.Context, input model.UpdateWorkspaceInput) (*model.Workspace, error)
 }
@@ -24,16 +24,16 @@ func NewWorkspaceUsecase(r repository.Workspace) Workspace {
 	return &workspace{workspaceRepository: r}
 }
 
-func (t *workspace) Get(ctx context.Context, where *model.WorkspaceWhereInput) (*model.Workspace, error) {
-	return t.workspaceRepository.Get(ctx, where)
+func (t *workspace) Get(ctx context.Context, where *model.WorkspaceWhereInput, requestFields []string) (*model.Workspace, error) {
+	return t.workspaceRepository.Get(ctx, where, requestFields)
 }
 
 func (t *workspace) List(ctx context.Context) ([]*model.Workspace, error) {
 	return t.workspaceRepository.List(ctx)
 }
 
-func (t *workspace) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.WorkspaceWhereInput) (*model.WorkspaceConnection, error) {
-	return t.workspaceRepository.ListWithPagination(ctx, after, first, before, last, where)
+func (t *workspace) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.WorkspaceWhereInput, requestFields []string) (*model.WorkspaceConnection, error) {
+	return t.workspaceRepository.ListWithPagination(ctx, after, first, before, last, where, requestFields)
 }
 
 func (t *workspace) Create(ctx context.Context, input model.CreateWorkspaceInput) (*model.Workspace, error) {

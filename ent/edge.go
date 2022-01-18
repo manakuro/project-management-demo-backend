@@ -164,6 +164,14 @@ func (t *Teammate) ProjectTeammates(ctx context.Context) ([]*ProjectTeammate, er
 	return result, err
 }
 
+func (t *Teammate) WorkspaceTeammates(ctx context.Context) ([]*WorkspaceTeammate, error) {
+	result, err := t.Edges.WorkspaceTeammatesOrErr()
+	if IsNotLoaded(err) {
+		result, err = t.QueryWorkspaceTeammates().All(ctx)
+	}
+	return result, err
+}
+
 func (tt *TestTodo) TestUser(ctx context.Context) (*TestUser, error) {
 	result, err := tt.Edges.TestUserOrErr()
 	if IsNotLoaded(err) {
@@ -192,6 +200,30 @@ func (w *Workspace) Projects(ctx context.Context) ([]*Project, error) {
 	result, err := w.Edges.ProjectsOrErr()
 	if IsNotLoaded(err) {
 		result, err = w.QueryProjects().All(ctx)
+	}
+	return result, err
+}
+
+func (w *Workspace) WorkspaceTeammates(ctx context.Context) ([]*WorkspaceTeammate, error) {
+	result, err := w.Edges.WorkspaceTeammatesOrErr()
+	if IsNotLoaded(err) {
+		result, err = w.QueryWorkspaceTeammates().All(ctx)
+	}
+	return result, err
+}
+
+func (wt *WorkspaceTeammate) Workspace(ctx context.Context) (*Workspace, error) {
+	result, err := wt.Edges.WorkspaceOrErr()
+	if IsNotLoaded(err) {
+		result, err = wt.QueryWorkspace().Only(ctx)
+	}
+	return result, err
+}
+
+func (wt *WorkspaceTeammate) Teammate(ctx context.Context) (*Teammate, error) {
+	result, err := wt.Edges.TeammateOrErr()
+	if IsNotLoaded(err) {
+		result, err = wt.QueryTeammate().Only(ctx)
 	}
 	return result, err
 }

@@ -28,6 +28,7 @@ func main() {
 	feed.ProjectIcon(ctx, client)
 	feed.Project(ctx, client)
 	feed.ProjectTeammate(ctx, client)
+	feed.WorkspaceTeammate(ctx, client)
 
 	feed.TestUser(ctx, client)
 	feed.TestTodo(ctx, client)

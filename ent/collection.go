@@ -139,3 +139,15 @@ func (w *WorkspaceQuery) CollectFields(ctx context.Context, satisfies ...string)
 func (w *WorkspaceQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *WorkspaceQuery {
 	return w
 }
+
+// CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
+func (wt *WorkspaceTeammateQuery) CollectFields(ctx context.Context, satisfies ...string) *WorkspaceTeammateQuery {
+	if fc := graphql.GetFieldContext(ctx); fc != nil {
+		wt = wt.collectField(graphql.GetOperationContext(ctx), fc.Field, satisfies...)
+	}
+	return wt
+}
+
+func (wt *WorkspaceTeammateQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *WorkspaceTeammateQuery {
+	return wt
+}

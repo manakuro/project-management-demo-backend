@@ -5,6 +5,7 @@ import (
 	"project-management-demo-backend/ent"
 	"project-management-demo-backend/pkg/entity/model"
 	ur "project-management-demo-backend/pkg/usecase/repository"
+	"project-management-demo-backend/pkg/util/collection"
 )
 
 type workspaceRepository struct {
@@ -16,7 +17,7 @@ func NewWorkspaceRepository(client *ent.Client) ur.Workspace {
 	return &workspaceRepository{client: client}
 }
 
-func (r *workspaceRepository) Get(ctx context.Context, where *model.WorkspaceWhereInput) (*model.Workspace, error) {
+func (r *workspaceRepository) Get(ctx context.Context, where *model.WorkspaceWhereInput, requestFields []string) (*model.Workspace, error) {
 	q := r.client.Workspace.Query()
 
 	q, err := where.Filter(q)
@@ -24,7 +25,20 @@ func (r *workspaceRepository) Get(ctx context.Context, where *model.WorkspaceWhe
 		return nil, model.NewInvalidParamError(nil)
 	}
 
-	u, err := q.Only(ctx)
+	if collection.Contains(requestFields, "projects") {
+		q.WithProjects(func(pq *ent.ProjectQuery) {
+			pq.WithProjectTeammates(func(ptq *ent.ProjectTeammateQuery) {
+				ptq.WithTeammate()
+			})
+		})
+	}
+	if collection.Contains(requestFields, "workspaceTeammates") {
+		q.WithWorkspaceTeammates(func(wtq *ent.WorkspaceTeammateQuery) {
+			wtq.WithTeammate()
+		})
+	}
+
+	result, err := q.Only(ctx)
 
 	if err != nil {
 		if ent.IsNotSingular(err) {
@@ -36,32 +50,39 @@ func (r *workspaceRepository) Get(ctx context.Context, where *model.WorkspaceWhe
 		return nil, model.NewDBError(err)
 	}
 
-	return u, nil
+	return result, nil
 }
 
 func (r *workspaceRepository) List(ctx context.Context) ([]*model.Workspace, error) {
-	us, err := r.client.
+	result, err := r.client.
 		Workspace.Query().All(ctx)
 	if err != nil {
 		return nil, model.NewDBError(err)
 	}
 
-	return us, nil
+	return result, nil
 }
 
-func (r *workspaceRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.WorkspaceWhereInput) (*model.WorkspaceConnection, error) {
-	us, err := r.client.
-		Workspace.
-		Query().
-		Paginate(ctx, after, first, before, last, ent.WithWorkspaceFilter(where.Filter))
+func (r *workspaceRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.WorkspaceWhereInput, requestFields []string) (*model.WorkspaceConnection, error) {
+	q := r.client.Workspace.Query()
+
+	if collection.Contains(requestFields, "edges.node.projects") {
+		q.WithProjects(func(qp *ent.ProjectQuery) {
+			qp.WithProjectTeammates(func(ptq *ent.ProjectTeammateQuery) {
+				ptq.WithProject()
+			})
+		})
+	}
+
+	result, err := q.Paginate(ctx, after, first, before, last, ent.WithWorkspaceFilter(where.Filter))
 	if err != nil {
 		return nil, model.NewDBError(err)
 	}
-	return us, nil
+	return result, nil
 }
 
 func (r *workspaceRepository) Create(ctx context.Context, input model.CreateWorkspaceInput) (*model.Workspace, error) {
-	u, err := r.client.
+	result, err := r.client.
 		Workspace.
 		Create().
 		SetInput(input).
@@ -71,11 +92,11 @@ func (r *workspaceRepository) Create(ctx context.Context, input model.CreateWork
 		return nil, model.NewDBError(err)
 	}
 
-	return u, nil
+	return result, nil
 }
 
 func (r *workspaceRepository) Update(ctx context.Context, input model.UpdateWorkspaceInput) (*model.Workspace, error) {
-	u, err := r.client.
+	result, err := r.client.
 		Workspace.UpdateOneID(input.ID).
 		SetInput(input).
 		Save(ctx)
@@ -88,5 +109,5 @@ func (r *workspaceRepository) Update(ctx context.Context, input model.UpdateWork
 		return nil, model.NewDBError(err)
 	}
 
-	return u, nil
+	return result, nil
 }

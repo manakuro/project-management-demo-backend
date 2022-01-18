@@ -28,7 +28,7 @@ var projectFeed = struct {
 func Project(ctx context.Context, client *ent.Client) {
 	_, err := client.Project.Delete().Exec(ctx)
 	if err != nil {
-		log.Fatalf("project: failed to delete project: %v", err)
+		log.Fatalf("Project failed to delete data: %v", err)
 	}
 
 	createdBy := feedutil.GetTeammateByEmail(ctx, client, teammateFeed.manato.Email)
@@ -74,7 +74,7 @@ func Project(ctx context.Context, client *ent.Client) {
 		bulk[i] = client.Project.Create().SetInput(t)
 	}
 	if _, err = client.Project.CreateBulk(bulk...).Save(ctx); err != nil {
-		log.Fatalf("project: failed to feed project: %v", err)
+		log.Fatalf("Project failed to feed data: %v", err)
 	}
 }
 
@@ -83,7 +83,7 @@ func getDescription() editor.Description {
 
 	var description editor.Description
 	if err := json.Unmarshal(b, &description); err != nil {
-		log.Fatalf("project: failed to encode json")
+		log.Fatalf("Project failed to encode json")
 	}
 
 	return description

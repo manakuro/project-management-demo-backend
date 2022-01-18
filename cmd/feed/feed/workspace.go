@@ -13,7 +13,7 @@ import (
 func Workspace(ctx context.Context, client *ent.Client) {
 	_, err := client.Workspace.Delete().Exec(ctx)
 	if err != nil {
-		log.Fatalf("workspace: failed to delete: %v", err)
+		log.Fatalf("Workspace failed to delete data: %v", err)
 	}
 
 	tm, err := client.Teammate.Query().Where(teammate.EmailEQ("manato.kuroda@example.com")).Only(ctx)
@@ -37,7 +37,7 @@ func Workspace(ctx context.Context, client *ent.Client) {
 }`)
 	var description editor.Description
 	if err = json.Unmarshal(b, &description); err != nil {
-		log.Fatalf("failed to encode json")
+		log.Fatalf("Workspace failed to encode json")
 	}
 
 	ts := []ent.CreateWorkspaceInput{
@@ -58,6 +58,6 @@ func Workspace(ctx context.Context, client *ent.Client) {
 		bulk[i] = client.Workspace.Create().SetInput(t)
 	}
 	if _, err = client.Workspace.CreateBulk(bulk...).Save(ctx); err != nil {
-		log.Fatalf("workspace: failed to delete: %v", err)
+		log.Fatalf("Workspace failed to feed data: %v", err)
 	}
 }

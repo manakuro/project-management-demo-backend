@@ -54,7 +54,7 @@ var iconFeed = struct {
 func Icon(ctx context.Context, client *ent.Client) {
 	_, err := client.Icon.Delete().Exec(ctx)
 	if err != nil {
-		log.Fatalf("failed to delete icon: %v", err)
+		log.Fatalf("Icon failed to delete data: %v", err)
 	}
 
 	data := []ent.CreateIconInput{
@@ -84,6 +84,6 @@ func Icon(ctx context.Context, client *ent.Client) {
 		bulk[i] = client.Icon.Create().SetInput(t)
 	}
 	if _, err = client.Icon.CreateBulk(bulk...).Save(ctx); err != nil {
-		log.Fatalf("failed to feed icon: %v", err)
+		log.Fatalf("Icon failed to feed data: %v", err)
 	}
 }

@@ -11,7 +11,7 @@ import (
 func ProjectTeammate(ctx context.Context, client *ent.Client) {
 	_, err := client.ProjectTeammate.Delete().Exec(ctx)
 	if err != nil {
-		log.Fatalf("project_teammate: failed to delete color: %v", err)
+		log.Fatalf("ProjectTeammate failed to delete data: %v", err)
 	}
 
 	ts := []ent.CreateProjectTeammateInput{
@@ -39,6 +39,6 @@ func ProjectTeammate(ctx context.Context, client *ent.Client) {
 		bulk[i] = client.ProjectTeammate.Create().SetInput(t)
 	}
 	if _, err = client.ProjectTeammate.CreateBulk(bulk...).Save(ctx); err != nil {
-		log.Fatalf("project_teammate: failed to feed color: %v", err)
+		log.Fatalf("ProjectTeammate failed to feed data: %v", err)
 	}
 }

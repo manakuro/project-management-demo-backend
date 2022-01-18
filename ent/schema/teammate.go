@@ -56,6 +56,12 @@ func (Teammate) Edges() []ent.Edge {
 					annotation.Edge{FieldName: "project_teammate_id"},
 				),
 			),
+		edge.To("workspace_teammates", WorkspaceTeammate.Type).
+			Annotations(
+				schema.Annotation(
+					annotation.Edge{FieldName: "workspace_teammate_id"},
+				),
+			),
 	}
 }
 

@@ -8,9 +8,9 @@ import (
 
 // Workspace is an interface of controller
 type Workspace interface {
-	Get(ctx context.Context, where *model.WorkspaceWhereInput) (*model.Workspace, error)
+	Get(ctx context.Context, where *model.WorkspaceWhereInput, requestFields []string) (*model.Workspace, error)
 	List(ctx context.Context) ([]*model.Workspace, error)
-	ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.WorkspaceWhereInput) (*model.WorkspaceConnection, error)
+	ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.WorkspaceWhereInput, requestFields []string) (*model.WorkspaceConnection, error)
 	Create(ctx context.Context, input model.CreateWorkspaceInput) (*model.Workspace, error)
 	Update(ctx context.Context, input model.UpdateWorkspaceInput) (*model.Workspace, error)
 }
@@ -26,16 +26,16 @@ func NewWorkspaceController(tu usecase.Workspace) Workspace {
 	}
 }
 
-func (t *workspace) Get(ctx context.Context, where *model.WorkspaceWhereInput) (*model.Workspace, error) {
-	return t.workspaceUsecase.Get(ctx, where)
+func (t *workspace) Get(ctx context.Context, where *model.WorkspaceWhereInput, requestFields []string) (*model.Workspace, error) {
+	return t.workspaceUsecase.Get(ctx, where, requestFields)
 }
 
 func (t *workspace) List(ctx context.Context) ([]*model.Workspace, error) {
 	return t.workspaceUsecase.List(ctx)
 }
 
-func (t *workspace) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.WorkspaceWhereInput) (*model.WorkspaceConnection, error) {
-	return t.workspaceUsecase.ListWithPagination(ctx, after, first, before, last, where)
+func (t *workspace) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.WorkspaceWhereInput, requestFields []string) (*model.WorkspaceConnection, error) {
+	return t.workspaceUsecase.ListWithPagination(ctx, after, first, before, last, where, requestFields)
 }
 
 func (t *workspace) Create(ctx context.Context, input model.CreateWorkspaceInput) (*model.Workspace, error) {

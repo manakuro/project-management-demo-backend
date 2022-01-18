@@ -32,7 +32,7 @@ var teammateFeed = struct {
 func Teammate(ctx context.Context, client *ent.Client) {
 	_, err := client.Teammate.Delete().Exec(ctx)
 	if err != nil {
-		log.Fatalf("failed to delete teammate: %v", err)
+		log.Fatalf("Teammate failed to delete data: %v", err)
 	}
 
 	ts := []ent.CreateTeammateInput{
@@ -45,6 +45,6 @@ func Teammate(ctx context.Context, client *ent.Client) {
 		bulk[i] = client.Teammate.Create().SetInput(t)
 	}
 	if _, err = client.Teammate.CreateBulk(bulk...).Save(ctx); err != nil {
-		log.Fatalf("failed to feed teammate: %v", err)
+		log.Fatalf("Teammate failed to feed data: %v", err)
 	}
 }

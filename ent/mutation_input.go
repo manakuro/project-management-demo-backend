@@ -565,14 +565,15 @@ func (u *ProjectTeammateUpdateOne) SetInput(i UpdateProjectTeammateInput) *Proje
 
 // CreateTeammateInput represents a mutation input for creating teammates.
 type CreateTeammateInput struct {
-	Name               string
-	Image              string
-	Email              string
-	CreatedAt          *time.Time
-	UpdatedAt          *time.Time
-	WorkspaceIDs       []ulid.ID
-	ProjectIDs         []ulid.ID
-	ProjectTeammateIDs []ulid.ID
+	Name                 string
+	Image                string
+	Email                string
+	CreatedAt            *time.Time
+	UpdatedAt            *time.Time
+	WorkspaceIDs         []ulid.ID
+	ProjectIDs           []ulid.ID
+	ProjectTeammateIDs   []ulid.ID
+	WorkspaceTeammateIDs []ulid.ID
 }
 
 // Mutate applies the CreateTeammateInput on the TeammateCreate builder.
@@ -595,6 +596,9 @@ func (i *CreateTeammateInput) Mutate(m *TeammateCreate) {
 	if ids := i.ProjectTeammateIDs; len(ids) > 0 {
 		m.AddProjectTeammateIDs(ids...)
 	}
+	if ids := i.WorkspaceTeammateIDs; len(ids) > 0 {
+		m.AddWorkspaceTeammateIDs(ids...)
+	}
 }
 
 // SetInput applies the change-set in the CreateTeammateInput on the create builder.
@@ -605,16 +609,18 @@ func (c *TeammateCreate) SetInput(i CreateTeammateInput) *TeammateCreate {
 
 // UpdateTeammateInput represents a mutation input for updating teammates.
 type UpdateTeammateInput struct {
-	ID                       ulid.ID
-	Name                     *string
-	Image                    *string
-	Email                    *string
-	AddWorkspaceIDs          []ulid.ID
-	RemoveWorkspaceIDs       []ulid.ID
-	AddProjectIDs            []ulid.ID
-	RemoveProjectIDs         []ulid.ID
-	AddProjectTeammateIDs    []ulid.ID
-	RemoveProjectTeammateIDs []ulid.ID
+	ID                         ulid.ID
+	Name                       *string
+	Image                      *string
+	Email                      *string
+	AddWorkspaceIDs            []ulid.ID
+	RemoveWorkspaceIDs         []ulid.ID
+	AddProjectIDs              []ulid.ID
+	RemoveProjectIDs           []ulid.ID
+	AddProjectTeammateIDs      []ulid.ID
+	RemoveProjectTeammateIDs   []ulid.ID
+	AddWorkspaceTeammateIDs    []ulid.ID
+	RemoveWorkspaceTeammateIDs []ulid.ID
 }
 
 // Mutate applies the UpdateTeammateInput on the TeammateMutation.
@@ -645,6 +651,12 @@ func (i *UpdateTeammateInput) Mutate(m *TeammateMutation) {
 	}
 	if ids := i.RemoveProjectTeammateIDs; len(ids) > 0 {
 		m.RemoveProjectTeammateIDs(ids...)
+	}
+	if ids := i.AddWorkspaceTeammateIDs; len(ids) > 0 {
+		m.AddWorkspaceTeammateIDs(ids...)
+	}
+	if ids := i.RemoveWorkspaceTeammateIDs; len(ids) > 0 {
+		m.RemoveWorkspaceTeammateIDs(ids...)
 	}
 }
 
@@ -814,12 +826,13 @@ func (u *TestUserUpdateOne) SetInput(i UpdateTestUserInput) *TestUserUpdateOne {
 
 // CreateWorkspaceInput represents a mutation input for creating workspaces.
 type CreateWorkspaceInput struct {
-	Name        string
-	Description editor.Description
-	CreatedAt   *time.Time
-	UpdatedAt   *time.Time
-	CreatedBy   ulid.ID
-	ProjectIDs  []ulid.ID
+	Name                 string
+	Description          editor.Description
+	CreatedAt            *time.Time
+	UpdatedAt            *time.Time
+	CreatedBy            ulid.ID
+	ProjectIDs           []ulid.ID
+	WorkspaceTeammateIDs []ulid.ID
 }
 
 // Mutate applies the CreateWorkspaceInput on the WorkspaceCreate builder.
@@ -836,6 +849,9 @@ func (i *CreateWorkspaceInput) Mutate(m *WorkspaceCreate) {
 	if ids := i.ProjectIDs; len(ids) > 0 {
 		m.AddProjectIDs(ids...)
 	}
+	if ids := i.WorkspaceTeammateIDs; len(ids) > 0 {
+		m.AddWorkspaceTeammateIDs(ids...)
+	}
 }
 
 // SetInput applies the change-set in the CreateWorkspaceInput on the create builder.
@@ -846,13 +862,15 @@ func (c *WorkspaceCreate) SetInput(i CreateWorkspaceInput) *WorkspaceCreate {
 
 // UpdateWorkspaceInput represents a mutation input for updating workspaces.
 type UpdateWorkspaceInput struct {
-	ID               ulid.ID
-	Name             *string
-	Description      *editor.Description
-	CreatedBy        *ulid.ID
-	ClearTeammate    bool
-	AddProjectIDs    []ulid.ID
-	RemoveProjectIDs []ulid.ID
+	ID                         ulid.ID
+	Name                       *string
+	Description                *editor.Description
+	CreatedBy                  *ulid.ID
+	ClearTeammate              bool
+	AddProjectIDs              []ulid.ID
+	RemoveProjectIDs           []ulid.ID
+	AddWorkspaceTeammateIDs    []ulid.ID
+	RemoveWorkspaceTeammateIDs []ulid.ID
 }
 
 // Mutate applies the UpdateWorkspaceInput on the WorkspaceMutation.
@@ -875,6 +893,12 @@ func (i *UpdateWorkspaceInput) Mutate(m *WorkspaceMutation) {
 	if ids := i.RemoveProjectIDs; len(ids) > 0 {
 		m.RemoveProjectIDs(ids...)
 	}
+	if ids := i.AddWorkspaceTeammateIDs; len(ids) > 0 {
+		m.AddWorkspaceTeammateIDs(ids...)
+	}
+	if ids := i.RemoveWorkspaceTeammateIDs; len(ids) > 0 {
+		m.RemoveWorkspaceTeammateIDs(ids...)
+	}
 }
 
 // SetInput applies the change-set in the UpdateWorkspaceInput on the update builder.
@@ -885,6 +909,81 @@ func (u *WorkspaceUpdate) SetInput(i UpdateWorkspaceInput) *WorkspaceUpdate {
 
 // SetInput applies the change-set in the UpdateWorkspaceInput on the update-one builder.
 func (u *WorkspaceUpdateOne) SetInput(i UpdateWorkspaceInput) *WorkspaceUpdateOne {
+	i.Mutate(u.Mutation())
+	return u
+}
+
+// CreateWorkspaceTeammateInput represents a mutation input for creating workspaceteammates.
+type CreateWorkspaceTeammateInput struct {
+	Role        string
+	IsOwner     bool
+	CreatedAt   *time.Time
+	UpdatedAt   *time.Time
+	WorkspaceID ulid.ID
+	TeammateID  ulid.ID
+}
+
+// Mutate applies the CreateWorkspaceTeammateInput on the WorkspaceTeammateCreate builder.
+func (i *CreateWorkspaceTeammateInput) Mutate(m *WorkspaceTeammateCreate) {
+	m.SetRole(i.Role)
+	m.SetIsOwner(i.IsOwner)
+	if v := i.CreatedAt; v != nil {
+		m.SetCreatedAt(*v)
+	}
+	if v := i.UpdatedAt; v != nil {
+		m.SetUpdatedAt(*v)
+	}
+	m.SetWorkspaceID(i.WorkspaceID)
+	m.SetTeammateID(i.TeammateID)
+}
+
+// SetInput applies the change-set in the CreateWorkspaceTeammateInput on the create builder.
+func (c *WorkspaceTeammateCreate) SetInput(i CreateWorkspaceTeammateInput) *WorkspaceTeammateCreate {
+	i.Mutate(c)
+	return c
+}
+
+// UpdateWorkspaceTeammateInput represents a mutation input for updating workspaceteammates.
+type UpdateWorkspaceTeammateInput struct {
+	ID             ulid.ID
+	Role           *string
+	IsOwner        *bool
+	WorkspaceID    *ulid.ID
+	ClearWorkspace bool
+	TeammateID     *ulid.ID
+	ClearTeammate  bool
+}
+
+// Mutate applies the UpdateWorkspaceTeammateInput on the WorkspaceTeammateMutation.
+func (i *UpdateWorkspaceTeammateInput) Mutate(m *WorkspaceTeammateMutation) {
+	if v := i.Role; v != nil {
+		m.SetRole(*v)
+	}
+	if v := i.IsOwner; v != nil {
+		m.SetIsOwner(*v)
+	}
+	if i.ClearWorkspace {
+		m.ClearWorkspace()
+	}
+	if v := i.WorkspaceID; v != nil {
+		m.SetWorkspaceID(*v)
+	}
+	if i.ClearTeammate {
+		m.ClearTeammate()
+	}
+	if v := i.TeammateID; v != nil {
+		m.SetTeammateID(*v)
+	}
+}
+
+// SetInput applies the change-set in the UpdateWorkspaceTeammateInput on the update builder.
+func (u *WorkspaceTeammateUpdate) SetInput(i UpdateWorkspaceTeammateInput) *WorkspaceTeammateUpdate {
+	i.Mutate(u.Mutation())
+	return u
+}
+
+// SetInput applies the change-set in the UpdateWorkspaceTeammateInput on the update-one builder.
+func (u *WorkspaceTeammateUpdateOne) SetInput(i UpdateWorkspaceTeammateInput) *WorkspaceTeammateUpdateOne {
 	i.Mutate(u.Mutation())
 	return u
 }

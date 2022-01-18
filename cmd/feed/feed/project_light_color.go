@@ -11,7 +11,7 @@ import (
 func ProjectLightColor(ctx context.Context, client *ent.Client) {
 	_, err := client.ProjectLightColor.Delete().Exec(ctx)
 	if err != nil {
-		log.Fatalf("failed to delete project light color: %v", err)
+		log.Fatalf("ProjectLightColor failed to delete data: %v", err)
 	}
 
 	data := []ent.CreateProjectLightColorInput{
@@ -51,6 +51,6 @@ func ProjectLightColor(ctx context.Context, client *ent.Client) {
 		bulk[i] = client.ProjectLightColor.Create().SetInput(t)
 	}
 	if _, err = client.ProjectLightColor.CreateBulk(bulk...).Save(ctx); err != nil {
-		log.Fatalf("failed to feed project light color: %v", err)
+		log.Fatalf("ProjectLightColor failed to feed data: %v", err)
 	}
 }
