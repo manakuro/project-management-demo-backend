@@ -25,7 +25,7 @@ func (p *projectTeammateRepository) Get(ctx context.Context, where *model.Projec
 		return nil, model.NewInvalidParamError(nil)
 	}
 
-	u, err := q.Only(ctx)
+	result, err := q.Only(ctx)
 
 	if err != nil {
 		if ent.IsNotSingular(err) {
@@ -37,17 +37,17 @@ func (p *projectTeammateRepository) Get(ctx context.Context, where *model.Projec
 		return nil, model.NewDBError(err)
 	}
 
-	return u, nil
+	return result, nil
 }
 
 func (p *projectTeammateRepository) List(ctx context.Context) ([]*model.ProjectTeammate, error) {
-	us, err := p.client.
+	result, err := p.client.
 		ProjectTeammate.Query().All(ctx)
 	if err != nil {
 		return nil, model.NewDBError(err)
 	}
 
-	return us, nil
+	return result, nil
 }
 
 func (p *projectTeammateRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ProjectTeammateWhereInput, requestedFields []string) (*model.ProjectTeammateConnection, error) {
@@ -61,15 +61,15 @@ func (p *projectTeammateRepository) ListWithPagination(ctx context.Context, afte
 		q.WithTeammate()
 	}
 
-	us, err := q.Paginate(ctx, after, first, before, last, ent.WithProjectTeammateFilter(where.Filter))
+	result, err := q.Paginate(ctx, after, first, before, last, ent.WithProjectTeammateFilter(where.Filter))
 	if err != nil {
 		return nil, model.NewDBError(err)
 	}
-	return us, nil
+	return result, nil
 }
 
 func (p *projectTeammateRepository) Create(ctx context.Context, input model.CreateProjectTeammateInput) (*model.ProjectTeammate, error) {
-	u, err := p.client.
+	result, err := p.client.
 		ProjectTeammate.
 		Create().
 		SetInput(input).
@@ -79,11 +79,11 @@ func (p *projectTeammateRepository) Create(ctx context.Context, input model.Crea
 		return nil, model.NewDBError(err)
 	}
 
-	return u, nil
+	return result, nil
 }
 
 func (p *projectTeammateRepository) Update(ctx context.Context, input model.UpdateProjectTeammateInput) (*model.ProjectTeammate, error) {
-	u, err := p.client.
+	result, err := p.client.
 		ProjectTeammate.UpdateOneID(input.ID).
 		SetInput(input).
 		Save(ctx)
@@ -96,5 +96,5 @@ func (p *projectTeammateRepository) Update(ctx context.Context, input model.Upda
 		return nil, model.NewDBError(err)
 	}
 
-	return u, nil
+	return result, nil
 }

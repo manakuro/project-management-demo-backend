@@ -20,9 +20,9 @@ type projectTeammate struct {
 }
 
 // NewProjectTeammateController generates projectTeammate controller
-func NewProjectTeammateController(p usecase.ProjectTeammate) ProjectTeammate {
+func NewProjectTeammateController(pt usecase.ProjectTeammate) ProjectTeammate {
 	return &projectTeammate{
-		projectTeammateUsecase: p,
+		projectTeammateUsecase: pt,
 	}
 }
 
