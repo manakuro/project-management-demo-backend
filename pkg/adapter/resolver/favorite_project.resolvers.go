@@ -30,10 +30,10 @@ func (r *mutationResolver) CreateFavoriteProject(ctx context.Context, input ent.
 	return f, nil
 }
 
-func (r *mutationResolver) DeleteFavoriteProject(ctx context.Context, input model.DeleteFavoriteProjectInput) (int, error) {
+func (r *mutationResolver) DeleteFavoriteProject(ctx context.Context, input model.DeleteFavoriteProjectInput) (*ent.FavoriteProject, error) {
 	result, err := r.controller.FavoriteProject.Delete(ctx, input)
 	if err != nil {
-		return 0, handler.HandleGraphQLError(ctx, err)
+		return nil, handler.HandleGraphQLError(ctx, err)
 	}
 
 	return result, nil

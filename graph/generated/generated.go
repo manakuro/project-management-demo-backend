@@ -484,7 +484,7 @@ type MutationResolver interface {
 	CreateColor(ctx context.Context, input ent.CreateColorInput) (*ent.Color, error)
 	UpdateColor(ctx context.Context, input ent.UpdateColorInput) (*ent.Color, error)
 	CreateFavoriteProject(ctx context.Context, input ent.CreateFavoriteProjectInput) (*ent.FavoriteProject, error)
-	DeleteFavoriteProject(ctx context.Context, input model.DeleteFavoriteProjectInput) (int, error)
+	DeleteFavoriteProject(ctx context.Context, input model.DeleteFavoriteProjectInput) (*ent.FavoriteProject, error)
 	CreateIcon(ctx context.Context, input ent.CreateIconInput) (*ent.Icon, error)
 	UpdateIcon(ctx context.Context, input ent.UpdateIconInput) (*ent.Icon, error)
 	UpdateMe(ctx context.Context, input model.UpdateMeInput) (*model.Me, error)
@@ -4062,7 +4062,7 @@ extend type Query {
 
 extend type Mutation {
   createFavoriteProject(input: CreateFavoriteProjectInput!): FavoriteProject!
-  deleteFavoriteProject(input: DeleteFavoriteProjectInput!): Int!
+  deleteFavoriteProject(input: DeleteFavoriteProjectInput!): FavoriteProject!
 }
 `, BuiltIn: false},
 	{Name: "graph/schema/icon/icon.graphql", Input: `type Icon implements Node {
@@ -7960,9 +7960,9 @@ func (ec *executionContext) _Mutation_deleteFavoriteProject(ctx context.Context,
 		}
 		return graphql.Null
 	}
-	res := resTmp.(int)
+	res := resTmp.(*ent.FavoriteProject)
 	fc.Result = res
-	return ec.marshalNInt2int(ctx, field.Selections, res)
+	return ec.marshalNFavoriteProject2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐFavoriteProject(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_createIcon(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {

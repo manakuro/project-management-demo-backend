@@ -13,7 +13,7 @@ type FavoriteProject interface {
 	ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.FavoriteProjectWhereInput, requestedFields []string) (*model.FavoriteProjectConnection, error)
 	Create(ctx context.Context, input model.CreateFavoriteProjectInput) (*model.FavoriteProject, error)
 	Update(ctx context.Context, input model.UpdateFavoriteProjectInput) (*model.FavoriteProject, error)
-	Delete(ctx context.Context, input model.DeleteFavoriteProjectInput) (int, error)
+	Delete(ctx context.Context, input model.DeleteFavoriteProjectInput) (*model.FavoriteProject, error)
 	FavoriteProjectIDs(ctx context.Context, teammateID model.ID) ([]model.ID, error)
 }
 
@@ -48,7 +48,7 @@ func (f *favoriteProject) Update(ctx context.Context, input model.UpdateFavorite
 	return f.favoriteProjectUsecase.Update(ctx, input)
 }
 
-func (f *favoriteProject) Delete(ctx context.Context, input model.DeleteFavoriteProjectInput) (int, error) {
+func (f *favoriteProject) Delete(ctx context.Context, input model.DeleteFavoriteProjectInput) (*model.FavoriteProject, error) {
 	return f.favoriteProjectUsecase.Delete(ctx, input)
 }
 

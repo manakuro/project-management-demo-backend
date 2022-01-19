@@ -35,5 +35,5 @@ extend type Query {
 
 extend type Mutation {
   createFavoriteProject(input: CreateFavoriteProjectInput!): FavoriteProject!
-  deleteFavoriteProject(input: DeleteFavoriteProjectInput!): Int!
+  deleteFavoriteProject(input: DeleteFavoriteProjectInput!): FavoriteProject!
 }
