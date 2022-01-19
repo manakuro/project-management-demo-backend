@@ -100,6 +100,20 @@ func (r *favoriteProjectRepository) Update(ctx context.Context, input model.Upda
 	return result, nil
 }
 
+func (r *favoriteProjectRepository) Delete(ctx context.Context, input model.DeleteFavoriteProjectInput) (int, error) {
+	result, err := r.client.
+		FavoriteProject.
+		Delete().
+		Where(favoriteproject.ProjectID(input.ProjectID)).
+		Where(favoriteproject.TeammateID(input.TeammateID)).
+		Exec(ctx)
+	if err != nil {
+		return 0, model.NewDBError(err)
+	}
+
+	return result, nil
+}
+
 func (r *favoriteProjectRepository) FavoriteProjectIDs(ctx context.Context, teammateID model.ID) ([]model.ID, error) {
 	result, err := r.client.FavoriteProject.Query().Where(favoriteproject.TeammateID(teammateID)).All(ctx)
 	if err != nil {

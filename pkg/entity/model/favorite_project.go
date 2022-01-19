@@ -2,6 +2,7 @@ package model
 
 import (
 	"project-management-demo-backend/ent"
+	"project-management-demo-backend/ent/schema/ulid"
 )
 
 // FavoriteProject is the model entity for the FavoriteProject schema
@@ -18,3 +19,9 @@ type FavoriteProjectWhereInput = ent.FavoriteProjectWhereInput
 
 // UpdateFavoriteProjectInput represents a mutation input for updating test users.
 type UpdateFavoriteProjectInput = ent.UpdateFavoriteProjectInput
+
+// DeleteFavoriteProjectInput represents a mutation input for updating test users.
+type DeleteFavoriteProjectInput struct {
+	ProjectID  ulid.ID
+	TeammateID ulid.ID
+}

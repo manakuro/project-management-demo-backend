@@ -171,6 +171,7 @@ type ComplexityRoot struct {
 		CreateTestUserAndTodo   func(childComplexity int, input ent.CreateTestUserInput) int
 		CreateWorkspace         func(childComplexity int, input ent.CreateWorkspaceInput) int
 		CreateWorkspaceTeammate func(childComplexity int, input ent.CreateWorkspaceTeammateInput) int
+		DeleteFavoriteProject   func(childComplexity int, input model.DeleteFavoriteProjectInput) int
 		UpdateColor             func(childComplexity int, input ent.UpdateColorInput) int
 		UpdateIcon              func(childComplexity int, input ent.UpdateIconInput) int
 		UpdateMe                func(childComplexity int, input model.UpdateMeInput) int
@@ -483,6 +484,7 @@ type MutationResolver interface {
 	CreateColor(ctx context.Context, input ent.CreateColorInput) (*ent.Color, error)
 	UpdateColor(ctx context.Context, input ent.UpdateColorInput) (*ent.Color, error)
 	CreateFavoriteProject(ctx context.Context, input ent.CreateFavoriteProjectInput) (*ent.FavoriteProject, error)
+	DeleteFavoriteProject(ctx context.Context, input model.DeleteFavoriteProjectInput) (int, error)
 	CreateIcon(ctx context.Context, input ent.CreateIconInput) (*ent.Icon, error)
 	UpdateIcon(ctx context.Context, input ent.UpdateIconInput) (*ent.Icon, error)
 	UpdateMe(ctx context.Context, input model.UpdateMeInput) (*model.Me, error)
@@ -1116,6 +1118,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.CreateWorkspaceTeammate(childComplexity, args["input"].(ent.CreateWorkspaceTeammateInput)), true
+
+	case "Mutation.deleteFavoriteProject":
+		if e.complexity.Mutation.DeleteFavoriteProject == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deleteFavoriteProject_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteFavoriteProject(childComplexity, args["input"].(model.DeleteFavoriteProjectInput)), true
 
 	case "Mutation.updateColor":
 		if e.complexity.Mutation.UpdateColor == nil {
@@ -4035,6 +4049,11 @@ input CreateFavoriteProjectInput {
   teammateId: ID!
 }
 
+input DeleteFavoriteProjectInput {
+  projectId: ID!
+  teammateId: ID!
+}
+
 extend type Query {
   favoriteProject(where: FavoriteProjectWhereInput): FavoriteProject
   favoriteProjects(after: Cursor, first: Int, before: Cursor, last: Int, where: FavoriteProjectWhereInput): FavoriteProjectConnection
@@ -4043,6 +4062,7 @@ extend type Query {
 
 extend type Mutation {
   createFavoriteProject(input: CreateFavoriteProjectInput!): FavoriteProject!
+  deleteFavoriteProject(input: DeleteFavoriteProjectInput!): Int!
 }
 `, BuiltIn: false},
 	{Name: "graph/schema/icon/icon.graphql", Input: `type Icon implements Node {
@@ -4827,6 +4847,21 @@ func (ec *executionContext) field_Mutation_createWorkspace_args(ctx context.Cont
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNCreateWorkspaceInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐCreateWorkspaceInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_deleteFavoriteProject_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.DeleteFavoriteProjectInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNDeleteFavoriteProjectInput2projectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐDeleteFavoriteProjectInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -7886,6 +7921,48 @@ func (ec *executionContext) _Mutation_createFavoriteProject(ctx context.Context,
 	res := resTmp.(*ent.FavoriteProject)
 	fc.Result = res
 	return ec.marshalNFavoriteProject2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐFavoriteProject(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_deleteFavoriteProject(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_deleteFavoriteProject_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().DeleteFavoriteProject(rctx, args["input"].(model.DeleteFavoriteProjectInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_createIcon(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -17505,6 +17582,37 @@ func (ec *executionContext) unmarshalInputCreateWorkspaceTeammateInput(ctx conte
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputDeleteFavoriteProjectInput(ctx context.Context, obj interface{}) (model.DeleteFavoriteProjectInput, error) {
+	var it model.DeleteFavoriteProjectInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "projectId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("projectId"))
+			it.ProjectID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "teammateId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("teammateId"))
+			it.TeammateID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputEditorDescriptionContentContentAttrsInput(ctx context.Context, obj interface{}) (editor.Attrs, error) {
 	var it editor.Attrs
 	asMap := map[string]interface{}{}
@@ -25426,6 +25534,11 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "deleteFavoriteProject":
+			out.Values[i] = ec._Mutation_deleteFavoriteProject(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		case "createIcon":
 			out.Values[i] = ec._Mutation_createIcon(ctx, field)
 			if out.Values[i] == graphql.Null {
@@ -27926,6 +28039,11 @@ func (ec *executionContext) unmarshalNCursor2projectᚑmanagementᚑdemoᚑbacke
 
 func (ec *executionContext) marshalNCursor2projectᚑmanagementᚑdemoᚑbackendᚋentᚐCursor(ctx context.Context, sel ast.SelectionSet, v ent.Cursor) graphql.Marshaler {
 	return v
+}
+
+func (ec *executionContext) unmarshalNDeleteFavoriteProjectInput2projectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐDeleteFavoriteProjectInput(ctx context.Context, v interface{}) (model.DeleteFavoriteProjectInput, error) {
+	res, err := ec.unmarshalInputDeleteFavoriteProjectInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalNEditorDescription2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋeditorᚐDescription(ctx context.Context, sel ast.SelectionSet, v editor.Description) graphql.Marshaler {

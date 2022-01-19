@@ -9,6 +9,7 @@ import (
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/graph/generated"
 	"project-management-demo-backend/pkg/adapter/handler"
+	"project-management-demo-backend/pkg/entity/model"
 	"project-management-demo-backend/pkg/util/datetime"
 	"project-management-demo-backend/pkg/util/graphqlutil"
 )
@@ -27,6 +28,15 @@ func (r *mutationResolver) CreateFavoriteProject(ctx context.Context, input ent.
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
 	return f, nil
+}
+
+func (r *mutationResolver) DeleteFavoriteProject(ctx context.Context, input model.DeleteFavoriteProjectInput) (int, error) {
+	result, err := r.controller.FavoriteProject.Delete(ctx, input)
+	if err != nil {
+		return 0, handler.HandleGraphQLError(ctx, err)
+	}
+
+	return result, nil
 }
 
 func (r *queryResolver) FavoriteProject(ctx context.Context, where *ent.FavoriteProjectWhereInput) (*ent.FavoriteProject, error) {

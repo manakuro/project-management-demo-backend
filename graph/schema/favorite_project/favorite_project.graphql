@@ -22,6 +22,11 @@ input CreateFavoriteProjectInput {
   teammateId: ID!
 }
 
+input DeleteFavoriteProjectInput {
+  projectId: ID!
+  teammateId: ID!
+}
+
 extend type Query {
   favoriteProject(where: FavoriteProjectWhereInput): FavoriteProject
   favoriteProjects(after: Cursor, first: Int, before: Cursor, last: Int, where: FavoriteProjectWhereInput): FavoriteProjectConnection
@@ -30,4 +35,5 @@ extend type Query {
 
 extend type Mutation {
   createFavoriteProject(input: CreateFavoriteProjectInput!): FavoriteProject!
+  deleteFavoriteProject(input: DeleteFavoriteProjectInput!): Int!
 }
