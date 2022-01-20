@@ -5,6 +5,7 @@ import (
 	"log"
 	"project-management-demo-backend/ent/color"
 	"project-management-demo-backend/ent/favoriteproject"
+	"project-management-demo-backend/ent/favoriteworkspace"
 	"project-management-demo-backend/ent/icon"
 	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/projectbasecolor"
@@ -28,6 +29,7 @@ type field struct {
 type GlobalIDs struct {
 	Color             field
 	FavoriteProject   field
+	FavoriteWorkspace field
 	Icon              field
 	Project           field
 	ProjectBaseColor  field
@@ -96,6 +98,10 @@ func New() GlobalIDs {
 		FavoriteProject: field{
 			Prefix: "0AM",
 			Table:  favoriteproject.Table,
+		},
+		FavoriteWorkspace: field{
+			Prefix: "0AN",
+			Table:  favoriteworkspace.Table,
 		},
 	}
 }

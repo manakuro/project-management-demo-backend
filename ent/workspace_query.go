@@ -8,6 +8,7 @@ import (
 	"errors"
 	"fmt"
 	"math"
+	"project-management-demo-backend/ent/favoriteworkspace"
 	"project-management-demo-backend/ent/predicate"
 	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/schema/ulid"
@@ -33,6 +34,7 @@ type WorkspaceQuery struct {
 	withTeammate           *TeammateQuery
 	withProjects           *ProjectQuery
 	withWorkspaceTeammates *WorkspaceTeammateQuery
+	withFavoriteWorkspaces *FavoriteWorkspaceQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -128,6 +130,28 @@ func (wq *WorkspaceQuery) QueryWorkspaceTeammates() *WorkspaceTeammateQuery {
 			sqlgraph.From(workspace.Table, workspace.FieldID, selector),
 			sqlgraph.To(workspaceteammate.Table, workspaceteammate.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, workspace.WorkspaceTeammatesTable, workspace.WorkspaceTeammatesColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(wq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryFavoriteWorkspaces chains the current query on the "favorite_workspaces" edge.
+func (wq *WorkspaceQuery) QueryFavoriteWorkspaces() *FavoriteWorkspaceQuery {
+	query := &FavoriteWorkspaceQuery{config: wq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := wq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := wq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(workspace.Table, workspace.FieldID, selector),
+			sqlgraph.To(favoriteworkspace.Table, favoriteworkspace.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, workspace.FavoriteWorkspacesTable, workspace.FavoriteWorkspacesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(wq.driver.Dialect(), step)
 		return fromU, nil
@@ -319,6 +343,7 @@ func (wq *WorkspaceQuery) Clone() *WorkspaceQuery {
 		withTeammate:           wq.withTeammate.Clone(),
 		withProjects:           wq.withProjects.Clone(),
 		withWorkspaceTeammates: wq.withWorkspaceTeammates.Clone(),
+		withFavoriteWorkspaces: wq.withFavoriteWorkspaces.Clone(),
 		// clone intermediate query.
 		sql:  wq.sql.Clone(),
 		path: wq.path,
@@ -355,6 +380,17 @@ func (wq *WorkspaceQuery) WithWorkspaceTeammates(opts ...func(*WorkspaceTeammate
 		opt(query)
 	}
 	wq.withWorkspaceTeammates = query
+	return wq
+}
+
+// WithFavoriteWorkspaces tells the query-builder to eager-load the nodes that are connected to
+// the "favorite_workspaces" edge. The optional arguments are used to configure the query builder of the edge.
+func (wq *WorkspaceQuery) WithFavoriteWorkspaces(opts ...func(*FavoriteWorkspaceQuery)) *WorkspaceQuery {
+	query := &FavoriteWorkspaceQuery{config: wq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	wq.withFavoriteWorkspaces = query
 	return wq
 }
 
@@ -423,10 +459,11 @@ func (wq *WorkspaceQuery) sqlAll(ctx context.Context) ([]*Workspace, error) {
 	var (
 		nodes       = []*Workspace{}
 		_spec       = wq.querySpec()
-		loadedTypes = [3]bool{
+		loadedTypes = [4]bool{
 			wq.withTeammate != nil,
 			wq.withProjects != nil,
 			wq.withWorkspaceTeammates != nil,
+			wq.withFavoriteWorkspaces != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -522,6 +559,31 @@ func (wq *WorkspaceQuery) sqlAll(ctx context.Context) ([]*Workspace, error) {
 				return nil, fmt.Errorf(`unexpected foreign-key "workspace_id" returned %v for node %v`, fk, n.ID)
 			}
 			node.Edges.WorkspaceTeammates = append(node.Edges.WorkspaceTeammates, n)
+		}
+	}
+
+	if query := wq.withFavoriteWorkspaces; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[ulid.ID]*Workspace)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.FavoriteWorkspaces = []*FavoriteWorkspace{}
+		}
+		query.Where(predicate.FavoriteWorkspace(func(s *sql.Selector) {
+			s.Where(sql.InValues(workspace.FavoriteWorkspacesColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.WorkspaceID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "workspace_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.FavoriteWorkspaces = append(node.Edges.FavoriteWorkspaces, n)
 		}
 	}
 

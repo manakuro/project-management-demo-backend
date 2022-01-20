@@ -6,6 +6,7 @@ import (
 	"context"
 	"fmt"
 	"project-management-demo-backend/ent/favoriteproject"
+	"project-management-demo-backend/ent/favoriteworkspace"
 	"project-management-demo-backend/ent/predicate"
 	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/projectteammate"
@@ -125,6 +126,21 @@ func (tu *TeammateUpdate) AddFavoriteProjects(f ...*FavoriteProject) *TeammateUp
 	return tu.AddFavoriteProjectIDs(ids...)
 }
 
+// AddFavoriteWorkspaceIDs adds the "favorite_workspaces" edge to the FavoriteWorkspace entity by IDs.
+func (tu *TeammateUpdate) AddFavoriteWorkspaceIDs(ids ...ulid.ID) *TeammateUpdate {
+	tu.mutation.AddFavoriteWorkspaceIDs(ids...)
+	return tu
+}
+
+// AddFavoriteWorkspaces adds the "favorite_workspaces" edges to the FavoriteWorkspace entity.
+func (tu *TeammateUpdate) AddFavoriteWorkspaces(f ...*FavoriteWorkspace) *TeammateUpdate {
+	ids := make([]ulid.ID, len(f))
+	for i := range f {
+		ids[i] = f[i].ID
+	}
+	return tu.AddFavoriteWorkspaceIDs(ids...)
+}
+
 // Mutation returns the TeammateMutation object of the builder.
 func (tu *TeammateUpdate) Mutation() *TeammateMutation {
 	return tu.mutation
@@ -233,6 +249,27 @@ func (tu *TeammateUpdate) RemoveFavoriteProjects(f ...*FavoriteProject) *Teammat
 		ids[i] = f[i].ID
 	}
 	return tu.RemoveFavoriteProjectIDs(ids...)
+}
+
+// ClearFavoriteWorkspaces clears all "favorite_workspaces" edges to the FavoriteWorkspace entity.
+func (tu *TeammateUpdate) ClearFavoriteWorkspaces() *TeammateUpdate {
+	tu.mutation.ClearFavoriteWorkspaces()
+	return tu
+}
+
+// RemoveFavoriteWorkspaceIDs removes the "favorite_workspaces" edge to FavoriteWorkspace entities by IDs.
+func (tu *TeammateUpdate) RemoveFavoriteWorkspaceIDs(ids ...ulid.ID) *TeammateUpdate {
+	tu.mutation.RemoveFavoriteWorkspaceIDs(ids...)
+	return tu
+}
+
+// RemoveFavoriteWorkspaces removes "favorite_workspaces" edges to FavoriteWorkspace entities.
+func (tu *TeammateUpdate) RemoveFavoriteWorkspaces(f ...*FavoriteWorkspace) *TeammateUpdate {
+	ids := make([]ulid.ID, len(f))
+	for i := range f {
+		ids[i] = f[i].ID
+	}
+	return tu.RemoveFavoriteWorkspaceIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -624,6 +661,60 @@ func (tu *TeammateUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if tu.mutation.FavoriteWorkspacesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   teammate.FavoriteWorkspacesTable,
+			Columns: []string{teammate.FavoriteWorkspacesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: favoriteworkspace.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tu.mutation.RemovedFavoriteWorkspacesIDs(); len(nodes) > 0 && !tu.mutation.FavoriteWorkspacesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   teammate.FavoriteWorkspacesTable,
+			Columns: []string{teammate.FavoriteWorkspacesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: favoriteworkspace.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tu.mutation.FavoriteWorkspacesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   teammate.FavoriteWorkspacesTable,
+			Columns: []string{teammate.FavoriteWorkspacesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: favoriteworkspace.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, tu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{teammate.Label}
@@ -736,6 +827,21 @@ func (tuo *TeammateUpdateOne) AddFavoriteProjects(f ...*FavoriteProject) *Teamma
 	return tuo.AddFavoriteProjectIDs(ids...)
 }
 
+// AddFavoriteWorkspaceIDs adds the "favorite_workspaces" edge to the FavoriteWorkspace entity by IDs.
+func (tuo *TeammateUpdateOne) AddFavoriteWorkspaceIDs(ids ...ulid.ID) *TeammateUpdateOne {
+	tuo.mutation.AddFavoriteWorkspaceIDs(ids...)
+	return tuo
+}
+
+// AddFavoriteWorkspaces adds the "favorite_workspaces" edges to the FavoriteWorkspace entity.
+func (tuo *TeammateUpdateOne) AddFavoriteWorkspaces(f ...*FavoriteWorkspace) *TeammateUpdateOne {
+	ids := make([]ulid.ID, len(f))
+	for i := range f {
+		ids[i] = f[i].ID
+	}
+	return tuo.AddFavoriteWorkspaceIDs(ids...)
+}
+
 // Mutation returns the TeammateMutation object of the builder.
 func (tuo *TeammateUpdateOne) Mutation() *TeammateMutation {
 	return tuo.mutation
@@ -844,6 +950,27 @@ func (tuo *TeammateUpdateOne) RemoveFavoriteProjects(f ...*FavoriteProject) *Tea
 		ids[i] = f[i].ID
 	}
 	return tuo.RemoveFavoriteProjectIDs(ids...)
+}
+
+// ClearFavoriteWorkspaces clears all "favorite_workspaces" edges to the FavoriteWorkspace entity.
+func (tuo *TeammateUpdateOne) ClearFavoriteWorkspaces() *TeammateUpdateOne {
+	tuo.mutation.ClearFavoriteWorkspaces()
+	return tuo
+}
+
+// RemoveFavoriteWorkspaceIDs removes the "favorite_workspaces" edge to FavoriteWorkspace entities by IDs.
+func (tuo *TeammateUpdateOne) RemoveFavoriteWorkspaceIDs(ids ...ulid.ID) *TeammateUpdateOne {
+	tuo.mutation.RemoveFavoriteWorkspaceIDs(ids...)
+	return tuo
+}
+
+// RemoveFavoriteWorkspaces removes "favorite_workspaces" edges to FavoriteWorkspace entities.
+func (tuo *TeammateUpdateOne) RemoveFavoriteWorkspaces(f ...*FavoriteWorkspace) *TeammateUpdateOne {
+	ids := make([]ulid.ID, len(f))
+	for i := range f {
+		ids[i] = f[i].ID
+	}
+	return tuo.RemoveFavoriteWorkspaceIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -1251,6 +1378,60 @@ func (tuo *TeammateUpdateOne) sqlSave(ctx context.Context) (_node *Teammate, err
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: favoriteproject.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if tuo.mutation.FavoriteWorkspacesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   teammate.FavoriteWorkspacesTable,
+			Columns: []string{teammate.FavoriteWorkspacesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: favoriteworkspace.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tuo.mutation.RemovedFavoriteWorkspacesIDs(); len(nodes) > 0 && !tuo.mutation.FavoriteWorkspacesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   teammate.FavoriteWorkspacesTable,
+			Columns: []string{teammate.FavoriteWorkspacesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: favoriteworkspace.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tuo.mutation.FavoriteWorkspacesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   teammate.FavoriteWorkspacesTable,
+			Columns: []string{teammate.FavoriteWorkspacesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: favoriteworkspace.FieldID,
 				},
 			},
 		}

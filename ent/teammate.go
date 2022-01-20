@@ -44,9 +44,11 @@ type TeammateEdges struct {
 	WorkspaceTeammates []*WorkspaceTeammate `json:"workspace_teammates,omitempty"`
 	// FavoriteProjects holds the value of the favorite_projects edge.
 	FavoriteProjects []*FavoriteProject `json:"favorite_projects,omitempty"`
+	// FavoriteWorkspaces holds the value of the favorite_workspaces edge.
+	FavoriteWorkspaces []*FavoriteWorkspace `json:"favorite_workspaces,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [5]bool
+	loadedTypes [6]bool
 }
 
 // WorkspacesOrErr returns the Workspaces value or an error if the edge
@@ -92,6 +94,15 @@ func (e TeammateEdges) FavoriteProjectsOrErr() ([]*FavoriteProject, error) {
 		return e.FavoriteProjects, nil
 	}
 	return nil, &NotLoadedError{edge: "favorite_projects"}
+}
+
+// FavoriteWorkspacesOrErr returns the FavoriteWorkspaces value or an error if the edge
+// was not loaded in eager-loading.
+func (e TeammateEdges) FavoriteWorkspacesOrErr() ([]*FavoriteWorkspace, error) {
+	if e.loadedTypes[5] {
+		return e.FavoriteWorkspaces, nil
+	}
+	return nil, &NotLoadedError{edge: "favorite_workspaces"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -184,6 +195,11 @@ func (t *Teammate) QueryWorkspaceTeammates() *WorkspaceTeammateQuery {
 // QueryFavoriteProjects queries the "favorite_projects" edge of the Teammate entity.
 func (t *Teammate) QueryFavoriteProjects() *FavoriteProjectQuery {
 	return (&TeammateClient{config: t.config}).QueryFavoriteProjects(t)
+}
+
+// QueryFavoriteWorkspaces queries the "favorite_workspaces" edge of the Teammate entity.
+func (t *Teammate) QueryFavoriteWorkspaces() *FavoriteWorkspaceQuery {
+	return (&TeammateClient{config: t.config}).QueryFavoriteWorkspaces(t)
 }
 
 // Update returns a builder for updating this Teammate.

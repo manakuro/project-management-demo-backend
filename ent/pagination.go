@@ -10,6 +10,7 @@ import (
 	"io"
 	"project-management-demo-backend/ent/color"
 	"project-management-demo-backend/ent/favoriteproject"
+	"project-management-demo-backend/ent/favoriteworkspace"
 	"project-management-demo-backend/ent/icon"
 	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/projectbasecolor"
@@ -696,6 +697,233 @@ func (fp *FavoriteProject) ToEdge(order *FavoriteProjectOrder) *FavoriteProjectE
 	return &FavoriteProjectEdge{
 		Node:   fp,
 		Cursor: order.Field.toCursor(fp),
+	}
+}
+
+// FavoriteWorkspaceEdge is the edge representation of FavoriteWorkspace.
+type FavoriteWorkspaceEdge struct {
+	Node   *FavoriteWorkspace `json:"node"`
+	Cursor Cursor             `json:"cursor"`
+}
+
+// FavoriteWorkspaceConnection is the connection containing edges to FavoriteWorkspace.
+type FavoriteWorkspaceConnection struct {
+	Edges      []*FavoriteWorkspaceEdge `json:"edges"`
+	PageInfo   PageInfo                 `json:"pageInfo"`
+	TotalCount int                      `json:"totalCount"`
+}
+
+// FavoriteWorkspacePaginateOption enables pagination customization.
+type FavoriteWorkspacePaginateOption func(*favoriteWorkspacePager) error
+
+// WithFavoriteWorkspaceOrder configures pagination ordering.
+func WithFavoriteWorkspaceOrder(order *FavoriteWorkspaceOrder) FavoriteWorkspacePaginateOption {
+	if order == nil {
+		order = DefaultFavoriteWorkspaceOrder
+	}
+	o := *order
+	return func(pager *favoriteWorkspacePager) error {
+		if err := o.Direction.Validate(); err != nil {
+			return err
+		}
+		if o.Field == nil {
+			o.Field = DefaultFavoriteWorkspaceOrder.Field
+		}
+		pager.order = &o
+		return nil
+	}
+}
+
+// WithFavoriteWorkspaceFilter configures pagination filter.
+func WithFavoriteWorkspaceFilter(filter func(*FavoriteWorkspaceQuery) (*FavoriteWorkspaceQuery, error)) FavoriteWorkspacePaginateOption {
+	return func(pager *favoriteWorkspacePager) error {
+		if filter == nil {
+			return errors.New("FavoriteWorkspaceQuery filter cannot be nil")
+		}
+		pager.filter = filter
+		return nil
+	}
+}
+
+type favoriteWorkspacePager struct {
+	order  *FavoriteWorkspaceOrder
+	filter func(*FavoriteWorkspaceQuery) (*FavoriteWorkspaceQuery, error)
+}
+
+func newFavoriteWorkspacePager(opts []FavoriteWorkspacePaginateOption) (*favoriteWorkspacePager, error) {
+	pager := &favoriteWorkspacePager{}
+	for _, opt := range opts {
+		if err := opt(pager); err != nil {
+			return nil, err
+		}
+	}
+	if pager.order == nil {
+		pager.order = DefaultFavoriteWorkspaceOrder
+	}
+	return pager, nil
+}
+
+func (p *favoriteWorkspacePager) applyFilter(query *FavoriteWorkspaceQuery) (*FavoriteWorkspaceQuery, error) {
+	if p.filter != nil {
+		return p.filter(query)
+	}
+	return query, nil
+}
+
+func (p *favoriteWorkspacePager) toCursor(fw *FavoriteWorkspace) Cursor {
+	return p.order.Field.toCursor(fw)
+}
+
+func (p *favoriteWorkspacePager) applyCursors(query *FavoriteWorkspaceQuery, after, before *Cursor) *FavoriteWorkspaceQuery {
+	for _, predicate := range cursorsToPredicates(
+		p.order.Direction, after, before,
+		p.order.Field.field, DefaultFavoriteWorkspaceOrder.Field.field,
+	) {
+		query = query.Where(predicate)
+	}
+	return query
+}
+
+func (p *favoriteWorkspacePager) applyOrder(query *FavoriteWorkspaceQuery, reverse bool) *FavoriteWorkspaceQuery {
+	direction := p.order.Direction
+	if reverse {
+		direction = direction.reverse()
+	}
+	query = query.Order(direction.orderFunc(p.order.Field.field))
+	if p.order.Field != DefaultFavoriteWorkspaceOrder.Field {
+		query = query.Order(direction.orderFunc(DefaultFavoriteWorkspaceOrder.Field.field))
+	}
+	return query
+}
+
+// Paginate executes the query and returns a relay based cursor connection to FavoriteWorkspace.
+func (fw *FavoriteWorkspaceQuery) Paginate(
+	ctx context.Context, after *Cursor, first *int,
+	before *Cursor, last *int, opts ...FavoriteWorkspacePaginateOption,
+) (*FavoriteWorkspaceConnection, error) {
+	if err := validateFirstLast(first, last); err != nil {
+		return nil, err
+	}
+	pager, err := newFavoriteWorkspacePager(opts)
+	if err != nil {
+		return nil, err
+	}
+
+	if fw, err = pager.applyFilter(fw); err != nil {
+		return nil, err
+	}
+
+	conn := &FavoriteWorkspaceConnection{Edges: []*FavoriteWorkspaceEdge{}}
+	if !hasCollectedField(ctx, edgesField) || first != nil && *first == 0 || last != nil && *last == 0 {
+		if hasCollectedField(ctx, totalCountField) ||
+			hasCollectedField(ctx, pageInfoField) {
+			count, err := fw.Count(ctx)
+			if err != nil {
+				return nil, err
+			}
+			conn.TotalCount = count
+			conn.PageInfo.HasNextPage = first != nil && count > 0
+			conn.PageInfo.HasPreviousPage = last != nil && count > 0
+		}
+		return conn, nil
+	}
+
+	if (after != nil || first != nil || before != nil || last != nil) && hasCollectedField(ctx, totalCountField) {
+		count, err := fw.Clone().Count(ctx)
+		if err != nil {
+			return nil, err
+		}
+		conn.TotalCount = count
+	}
+
+	fw = pager.applyCursors(fw, after, before)
+	fw = pager.applyOrder(fw, last != nil)
+	var limit int
+	if first != nil {
+		limit = *first + 1
+	} else if last != nil {
+		limit = *last + 1
+	}
+	if limit > 0 {
+		fw = fw.Limit(limit)
+	}
+
+	if field := getCollectedField(ctx, edgesField, nodeField); field != nil {
+		fw = fw.collectField(graphql.GetOperationContext(ctx), *field)
+	}
+
+	nodes, err := fw.All(ctx)
+	if err != nil || len(nodes) == 0 {
+		return conn, err
+	}
+
+	if len(nodes) == limit {
+		conn.PageInfo.HasNextPage = first != nil
+		conn.PageInfo.HasPreviousPage = last != nil
+		nodes = nodes[:len(nodes)-1]
+	}
+
+	var nodeAt func(int) *FavoriteWorkspace
+	if last != nil {
+		n := len(nodes) - 1
+		nodeAt = func(i int) *FavoriteWorkspace {
+			return nodes[n-i]
+		}
+	} else {
+		nodeAt = func(i int) *FavoriteWorkspace {
+			return nodes[i]
+		}
+	}
+
+	conn.Edges = make([]*FavoriteWorkspaceEdge, len(nodes))
+	for i := range nodes {
+		node := nodeAt(i)
+		conn.Edges[i] = &FavoriteWorkspaceEdge{
+			Node:   node,
+			Cursor: pager.toCursor(node),
+		}
+	}
+
+	conn.PageInfo.StartCursor = &conn.Edges[0].Cursor
+	conn.PageInfo.EndCursor = &conn.Edges[len(conn.Edges)-1].Cursor
+	if conn.TotalCount == 0 {
+		conn.TotalCount = len(nodes)
+	}
+
+	return conn, nil
+}
+
+// FavoriteWorkspaceOrderField defines the ordering field of FavoriteWorkspace.
+type FavoriteWorkspaceOrderField struct {
+	field    string
+	toCursor func(*FavoriteWorkspace) Cursor
+}
+
+// FavoriteWorkspaceOrder defines the ordering of FavoriteWorkspace.
+type FavoriteWorkspaceOrder struct {
+	Direction OrderDirection               `json:"direction"`
+	Field     *FavoriteWorkspaceOrderField `json:"field"`
+}
+
+// DefaultFavoriteWorkspaceOrder is the default ordering of FavoriteWorkspace.
+var DefaultFavoriteWorkspaceOrder = &FavoriteWorkspaceOrder{
+	Direction: OrderDirectionAsc,
+	Field: &FavoriteWorkspaceOrderField{
+		field: favoriteworkspace.FieldID,
+		toCursor: func(fw *FavoriteWorkspace) Cursor {
+			return Cursor{ID: fw.ID}
+		},
+	},
+}
+
+// ToEdge converts FavoriteWorkspace into FavoriteWorkspaceEdge.
+func (fw *FavoriteWorkspace) ToEdge(order *FavoriteWorkspaceOrder) *FavoriteWorkspaceEdge {
+	if order == nil {
+		order = DefaultFavoriteWorkspaceOrder
+	}
+	return &FavoriteWorkspaceEdge{
+		Node:   fw,
+		Cursor: order.Field.toCursor(fw),
 	}
 }
 

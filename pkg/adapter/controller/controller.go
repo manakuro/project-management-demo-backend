@@ -5,6 +5,7 @@ type Controller struct {
 	Auth              interface{ Auth }
 	Color             interface{ Color }
 	FavoriteProject   interface{ FavoriteProject }
+	FavoriteWorkspace interface{ FavoriteWorkspace }
 	Icon              interface{ Icon }
 	Me                interface{ Me }
 	Project           interface{ Project }

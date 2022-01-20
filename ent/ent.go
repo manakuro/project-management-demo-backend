@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"project-management-demo-backend/ent/color"
 	"project-management-demo-backend/ent/favoriteproject"
+	"project-management-demo-backend/ent/favoriteworkspace"
 	"project-management-demo-backend/ent/icon"
 	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/projectbasecolor"
@@ -43,6 +44,7 @@ func columnChecker(table string) func(string) error {
 	checks := map[string]func(string) bool{
 		color.Table:             color.ValidColumn,
 		favoriteproject.Table:   favoriteproject.ValidColumn,
+		favoriteworkspace.Table: favoriteworkspace.ValidColumn,
 		icon.Table:              icon.ValidColumn,
 		project.Table:           project.ValidColumn,
 		projectbasecolor.Table:  projectbasecolor.ValidColumn,

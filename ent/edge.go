@@ -36,6 +36,22 @@ func (fp *FavoriteProject) Teammate(ctx context.Context) (*Teammate, error) {
 	return result, err
 }
 
+func (fw *FavoriteWorkspace) Workspace(ctx context.Context) (*Workspace, error) {
+	result, err := fw.Edges.WorkspaceOrErr()
+	if IsNotLoaded(err) {
+		result, err = fw.QueryWorkspace().Only(ctx)
+	}
+	return result, err
+}
+
+func (fw *FavoriteWorkspace) Teammate(ctx context.Context) (*Teammate, error) {
+	result, err := fw.Edges.TeammateOrErr()
+	if IsNotLoaded(err) {
+		result, err = fw.QueryTeammate().Only(ctx)
+	}
+	return result, err
+}
+
 func (i *Icon) ProjectIcons(ctx context.Context) ([]*ProjectIcon, error) {
 	result, err := i.Edges.ProjectIconsOrErr()
 	if IsNotLoaded(err) {
@@ -204,6 +220,14 @@ func (t *Teammate) FavoriteProjects(ctx context.Context) ([]*FavoriteProject, er
 	return result, err
 }
 
+func (t *Teammate) FavoriteWorkspaces(ctx context.Context) ([]*FavoriteWorkspace, error) {
+	result, err := t.Edges.FavoriteWorkspacesOrErr()
+	if IsNotLoaded(err) {
+		result, err = t.QueryFavoriteWorkspaces().All(ctx)
+	}
+	return result, err
+}
+
 func (tt *TestTodo) TestUser(ctx context.Context) (*TestUser, error) {
 	result, err := tt.Edges.TestUserOrErr()
 	if IsNotLoaded(err) {
@@ -240,6 +264,14 @@ func (w *Workspace) WorkspaceTeammates(ctx context.Context) ([]*WorkspaceTeammat
 	result, err := w.Edges.WorkspaceTeammatesOrErr()
 	if IsNotLoaded(err) {
 		result, err = w.QueryWorkspaceTeammates().All(ctx)
+	}
+	return result, err
+}
+
+func (w *Workspace) FavoriteWorkspaces(ctx context.Context) ([]*FavoriteWorkspace, error) {
+	result, err := w.Edges.FavoriteWorkspacesOrErr()
+	if IsNotLoaded(err) {
+		result, err = w.QueryFavoriteWorkspaces().All(ctx)
 	}
 	return result, err
 }

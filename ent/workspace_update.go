@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"project-management-demo-backend/ent/favoriteworkspace"
 	"project-management-demo-backend/ent/predicate"
 	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/schema/editor"
@@ -91,6 +92,21 @@ func (wu *WorkspaceUpdate) AddWorkspaceTeammates(w ...*WorkspaceTeammate) *Works
 	return wu.AddWorkspaceTeammateIDs(ids...)
 }
 
+// AddFavoriteWorkspaceIDs adds the "favorite_workspaces" edge to the FavoriteWorkspace entity by IDs.
+func (wu *WorkspaceUpdate) AddFavoriteWorkspaceIDs(ids ...ulid.ID) *WorkspaceUpdate {
+	wu.mutation.AddFavoriteWorkspaceIDs(ids...)
+	return wu
+}
+
+// AddFavoriteWorkspaces adds the "favorite_workspaces" edges to the FavoriteWorkspace entity.
+func (wu *WorkspaceUpdate) AddFavoriteWorkspaces(f ...*FavoriteWorkspace) *WorkspaceUpdate {
+	ids := make([]ulid.ID, len(f))
+	for i := range f {
+		ids[i] = f[i].ID
+	}
+	return wu.AddFavoriteWorkspaceIDs(ids...)
+}
+
 // Mutation returns the WorkspaceMutation object of the builder.
 func (wu *WorkspaceUpdate) Mutation() *WorkspaceMutation {
 	return wu.mutation
@@ -142,6 +158,27 @@ func (wu *WorkspaceUpdate) RemoveWorkspaceTeammates(w ...*WorkspaceTeammate) *Wo
 		ids[i] = w[i].ID
 	}
 	return wu.RemoveWorkspaceTeammateIDs(ids...)
+}
+
+// ClearFavoriteWorkspaces clears all "favorite_workspaces" edges to the FavoriteWorkspace entity.
+func (wu *WorkspaceUpdate) ClearFavoriteWorkspaces() *WorkspaceUpdate {
+	wu.mutation.ClearFavoriteWorkspaces()
+	return wu
+}
+
+// RemoveFavoriteWorkspaceIDs removes the "favorite_workspaces" edge to FavoriteWorkspace entities by IDs.
+func (wu *WorkspaceUpdate) RemoveFavoriteWorkspaceIDs(ids ...ulid.ID) *WorkspaceUpdate {
+	wu.mutation.RemoveFavoriteWorkspaceIDs(ids...)
+	return wu
+}
+
+// RemoveFavoriteWorkspaces removes "favorite_workspaces" edges to FavoriteWorkspace entities.
+func (wu *WorkspaceUpdate) RemoveFavoriteWorkspaces(f ...*FavoriteWorkspace) *WorkspaceUpdate {
+	ids := make([]ulid.ID, len(f))
+	for i := range f {
+		ids[i] = f[i].ID
+	}
+	return wu.RemoveFavoriteWorkspaceIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -392,6 +429,60 @@ func (wu *WorkspaceUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if wu.mutation.FavoriteWorkspacesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   workspace.FavoriteWorkspacesTable,
+			Columns: []string{workspace.FavoriteWorkspacesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: favoriteworkspace.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := wu.mutation.RemovedFavoriteWorkspacesIDs(); len(nodes) > 0 && !wu.mutation.FavoriteWorkspacesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   workspace.FavoriteWorkspacesTable,
+			Columns: []string{workspace.FavoriteWorkspacesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: favoriteworkspace.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := wu.mutation.FavoriteWorkspacesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   workspace.FavoriteWorkspacesTable,
+			Columns: []string{workspace.FavoriteWorkspacesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: favoriteworkspace.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, wu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{workspace.Label}
@@ -470,6 +561,21 @@ func (wuo *WorkspaceUpdateOne) AddWorkspaceTeammates(w ...*WorkspaceTeammate) *W
 	return wuo.AddWorkspaceTeammateIDs(ids...)
 }
 
+// AddFavoriteWorkspaceIDs adds the "favorite_workspaces" edge to the FavoriteWorkspace entity by IDs.
+func (wuo *WorkspaceUpdateOne) AddFavoriteWorkspaceIDs(ids ...ulid.ID) *WorkspaceUpdateOne {
+	wuo.mutation.AddFavoriteWorkspaceIDs(ids...)
+	return wuo
+}
+
+// AddFavoriteWorkspaces adds the "favorite_workspaces" edges to the FavoriteWorkspace entity.
+func (wuo *WorkspaceUpdateOne) AddFavoriteWorkspaces(f ...*FavoriteWorkspace) *WorkspaceUpdateOne {
+	ids := make([]ulid.ID, len(f))
+	for i := range f {
+		ids[i] = f[i].ID
+	}
+	return wuo.AddFavoriteWorkspaceIDs(ids...)
+}
+
 // Mutation returns the WorkspaceMutation object of the builder.
 func (wuo *WorkspaceUpdateOne) Mutation() *WorkspaceMutation {
 	return wuo.mutation
@@ -521,6 +627,27 @@ func (wuo *WorkspaceUpdateOne) RemoveWorkspaceTeammates(w ...*WorkspaceTeammate)
 		ids[i] = w[i].ID
 	}
 	return wuo.RemoveWorkspaceTeammateIDs(ids...)
+}
+
+// ClearFavoriteWorkspaces clears all "favorite_workspaces" edges to the FavoriteWorkspace entity.
+func (wuo *WorkspaceUpdateOne) ClearFavoriteWorkspaces() *WorkspaceUpdateOne {
+	wuo.mutation.ClearFavoriteWorkspaces()
+	return wuo
+}
+
+// RemoveFavoriteWorkspaceIDs removes the "favorite_workspaces" edge to FavoriteWorkspace entities by IDs.
+func (wuo *WorkspaceUpdateOne) RemoveFavoriteWorkspaceIDs(ids ...ulid.ID) *WorkspaceUpdateOne {
+	wuo.mutation.RemoveFavoriteWorkspaceIDs(ids...)
+	return wuo
+}
+
+// RemoveFavoriteWorkspaces removes "favorite_workspaces" edges to FavoriteWorkspace entities.
+func (wuo *WorkspaceUpdateOne) RemoveFavoriteWorkspaces(f ...*FavoriteWorkspace) *WorkspaceUpdateOne {
+	ids := make([]ulid.ID, len(f))
+	for i := range f {
+		ids[i] = f[i].ID
+	}
+	return wuo.RemoveFavoriteWorkspaceIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -787,6 +914,60 @@ func (wuo *WorkspaceUpdateOne) sqlSave(ctx context.Context) (_node *Workspace, e
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: workspaceteammate.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if wuo.mutation.FavoriteWorkspacesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   workspace.FavoriteWorkspacesTable,
+			Columns: []string{workspace.FavoriteWorkspacesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: favoriteworkspace.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := wuo.mutation.RemovedFavoriteWorkspacesIDs(); len(nodes) > 0 && !wuo.mutation.FavoriteWorkspacesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   workspace.FavoriteWorkspacesTable,
+			Columns: []string{workspace.FavoriteWorkspacesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: favoriteworkspace.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := wuo.mutation.FavoriteWorkspacesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   workspace.FavoriteWorkspacesTable,
+			Columns: []string{workspace.FavoriteWorkspacesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: favoriteworkspace.FieldID,
 				},
 			},
 		}
