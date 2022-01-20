@@ -92,22 +92,29 @@ type FavoriteProjectIDsUpdated struct {
 	Ch         chan []model.ID
 }
 
+// FavoriteWorkspaceIDsUpdated of channel
+type FavoriteWorkspaceIDsUpdated struct {
+	TeammateID model.ID
+	Ch         chan []model.ID
+}
+
 // Subscriptions hold an id and a channel of subscription.
 type Subscriptions struct {
-	ColorUpdated              map[string]ColorUpdated
-	FavoriteProjectCreated    map[string]FavoriteProjectCreated
-	FavoriteProjectIDsUpdated map[string]FavoriteProjectIDsUpdated
-	IconUpdated               map[string]IconUpdated
-	MeUpdated                 map[string]MeUpdated
-	ProjectBaseColorUpdated   map[string]ProjectBaseColorUpdated
-	ProjectIconUpdated        map[string]ProjectIconUpdated
-	ProjectLightColorUpdated  map[string]ProjectLightColorUpdated
-	ProjectTeammateUpdated    map[string]ProjectTeammateUpdated
-	ProjectUpdated            map[string]ProjectUpdated
-	TeammateUpdated           map[string]TeammateUpdated
-	TestUserUpdated           map[string]TestUserUpdated
-	WorkspaceTeammateUpdated  map[string]WorkspaceTeammateUpdated
-	WorkspaceUpdated          map[string]WorkspaceUpdated
+	ColorUpdated                map[string]ColorUpdated
+	FavoriteProjectCreated      map[string]FavoriteProjectCreated
+	FavoriteProjectIDsUpdated   map[string]FavoriteProjectIDsUpdated
+	FavoriteWorkspaceIDsUpdated map[string]FavoriteWorkspaceIDsUpdated
+	IconUpdated                 map[string]IconUpdated
+	MeUpdated                   map[string]MeUpdated
+	ProjectBaseColorUpdated     map[string]ProjectBaseColorUpdated
+	ProjectIconUpdated          map[string]ProjectIconUpdated
+	ProjectLightColorUpdated    map[string]ProjectLightColorUpdated
+	ProjectTeammateUpdated      map[string]ProjectTeammateUpdated
+	ProjectUpdated              map[string]ProjectUpdated
+	TeammateUpdated             map[string]TeammateUpdated
+	TestUserUpdated             map[string]TestUserUpdated
+	WorkspaceTeammateUpdated    map[string]WorkspaceTeammateUpdated
+	WorkspaceUpdated            map[string]WorkspaceUpdated
 }
 
 // NewKey generates a random hex string with length of 16.
