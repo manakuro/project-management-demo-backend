@@ -27,6 +27,11 @@ input DeleteFavoriteProjectInput {
   teammateId: ID!
 }
 
+extend type Subscription {
+  favoriteProjectCreated(teammateId: ID!): FavoriteProject!
+  favoriteProjectIdsUpdated(teammateId: ID!): [ID!]!
+}
+
 extend type Query {
   favoriteProject(where: FavoriteProjectWhereInput): FavoriteProject
   favoriteProjects(after: Cursor, first: Int, before: Cursor, last: Int, where: FavoriteProjectWhereInput): FavoriteProjectConnection

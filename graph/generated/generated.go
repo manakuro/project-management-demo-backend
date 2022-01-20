@@ -336,18 +336,20 @@ type ComplexityRoot struct {
 	}
 
 	Subscription struct {
-		ColorUpdated             func(childComplexity int, id ulid.ID) int
-		IconUpdated              func(childComplexity int, id ulid.ID) int
-		MeUpdated                func(childComplexity int, id ulid.ID) int
-		ProjectBaseColorUpdated  func(childComplexity int, id ulid.ID) int
-		ProjectIconUpdated       func(childComplexity int, id ulid.ID) int
-		ProjectLightColorUpdated func(childComplexity int, id ulid.ID) int
-		ProjectTeammateUpdated   func(childComplexity int, id ulid.ID) int
-		ProjectUpdated           func(childComplexity int, id ulid.ID) int
-		TeammateUpdated          func(childComplexity int, id ulid.ID) int
-		TestUserUpdated          func(childComplexity int, id ulid.ID) int
-		WorkspaceTeammateUpdated func(childComplexity int, id ulid.ID) int
-		WorkspaceUpdated         func(childComplexity int, id ulid.ID) int
+		ColorUpdated              func(childComplexity int, id ulid.ID) int
+		FavoriteProjectCreated    func(childComplexity int, teammateID ulid.ID) int
+		FavoriteProjectIdsUpdated func(childComplexity int, teammateID ulid.ID) int
+		IconUpdated               func(childComplexity int, id ulid.ID) int
+		MeUpdated                 func(childComplexity int, id ulid.ID) int
+		ProjectBaseColorUpdated   func(childComplexity int, id ulid.ID) int
+		ProjectIconUpdated        func(childComplexity int, id ulid.ID) int
+		ProjectLightColorUpdated  func(childComplexity int, id ulid.ID) int
+		ProjectTeammateUpdated    func(childComplexity int, id ulid.ID) int
+		ProjectUpdated            func(childComplexity int, id ulid.ID) int
+		TeammateUpdated           func(childComplexity int, id ulid.ID) int
+		TestUserUpdated           func(childComplexity int, id ulid.ID) int
+		WorkspaceTeammateUpdated  func(childComplexity int, id ulid.ID) int
+		WorkspaceUpdated          func(childComplexity int, id ulid.ID) int
 	}
 
 	Teammate struct {
@@ -567,6 +569,8 @@ type QueryResolver interface {
 }
 type SubscriptionResolver interface {
 	ColorUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.Color, error)
+	FavoriteProjectCreated(ctx context.Context, teammateID ulid.ID) (<-chan *ent.FavoriteProject, error)
+	FavoriteProjectIdsUpdated(ctx context.Context, teammateID ulid.ID) (<-chan []ulid.ID, error)
 	IconUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.Icon, error)
 	MeUpdated(ctx context.Context, id ulid.ID) (<-chan *model.Me, error)
 	ProjectUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.Project, error)
@@ -2117,6 +2121,30 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Subscription.ColorUpdated(childComplexity, args["id"].(ulid.ID)), true
+
+	case "Subscription.favoriteProjectCreated":
+		if e.complexity.Subscription.FavoriteProjectCreated == nil {
+			break
+		}
+
+		args, err := ec.field_Subscription_favoriteProjectCreated_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Subscription.FavoriteProjectCreated(childComplexity, args["teammateId"].(ulid.ID)), true
+
+	case "Subscription.favoriteProjectIdsUpdated":
+		if e.complexity.Subscription.FavoriteProjectIdsUpdated == nil {
+			break
+		}
+
+		args, err := ec.field_Subscription_favoriteProjectIdsUpdated_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Subscription.FavoriteProjectIdsUpdated(childComplexity, args["teammateId"].(ulid.ID)), true
 
 	case "Subscription.iconUpdated":
 		if e.complexity.Subscription.IconUpdated == nil {
@@ -4054,6 +4082,11 @@ input DeleteFavoriteProjectInput {
   teammateId: ID!
 }
 
+extend type Subscription {
+  favoriteProjectCreated(teammateId: ID!): FavoriteProject!
+  favoriteProjectIdsUpdated(teammateId: ID!): [ID!]!
+}
+
 extend type Query {
   favoriteProject(where: FavoriteProjectWhereInput): FavoriteProject
   favoriteProjects(after: Cursor, first: Int, before: Cursor, last: Int, where: FavoriteProjectWhereInput): FavoriteProjectConnection
@@ -5953,6 +5986,36 @@ func (ec *executionContext) field_Subscription_colorUpdated_args(ctx context.Con
 		}
 	}
 	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Subscription_favoriteProjectCreated_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 ulid.ID
+	if tmp, ok := rawArgs["teammateId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("teammateId"))
+		arg0, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["teammateId"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Subscription_favoriteProjectIdsUpdated_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 ulid.ID
+	if tmp, ok := rawArgs["teammateId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("teammateId"))
+		arg0, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["teammateId"] = arg0
 	return args, nil
 }
 
@@ -12565,6 +12628,110 @@ func (ec *executionContext) _Subscription_colorUpdated(ctx context.Context, fiel
 			graphql.MarshalString(field.Alias).MarshalGQL(w)
 			w.Write([]byte{':'})
 			ec.marshalNColor2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐColor(ctx, field.Selections, res).MarshalGQL(w)
+			w.Write([]byte{'}'})
+		})
+	}
+}
+
+func (ec *executionContext) _Subscription_favoriteProjectCreated(ctx context.Context, field graphql.CollectedField) (ret func() graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = nil
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Subscription",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Subscription_favoriteProjectCreated_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return nil
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Subscription().FavoriteProjectCreated(rctx, args["teammateId"].(ulid.ID))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return nil
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return nil
+	}
+	return func() graphql.Marshaler {
+		res, ok := <-resTmp.(<-chan *ent.FavoriteProject)
+		if !ok {
+			return nil
+		}
+		return graphql.WriterFunc(func(w io.Writer) {
+			w.Write([]byte{'{'})
+			graphql.MarshalString(field.Alias).MarshalGQL(w)
+			w.Write([]byte{':'})
+			ec.marshalNFavoriteProject2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐFavoriteProject(ctx, field.Selections, res).MarshalGQL(w)
+			w.Write([]byte{'}'})
+		})
+	}
+}
+
+func (ec *executionContext) _Subscription_favoriteProjectIdsUpdated(ctx context.Context, field graphql.CollectedField) (ret func() graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = nil
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Subscription",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Subscription_favoriteProjectIdsUpdated_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return nil
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Subscription().FavoriteProjectIdsUpdated(rctx, args["teammateId"].(ulid.ID))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return nil
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return nil
+	}
+	return func() graphql.Marshaler {
+		res, ok := <-resTmp.(<-chan []ulid.ID)
+		if !ok {
+			return nil
+		}
+		return graphql.WriterFunc(func(w io.Writer) {
+			w.Write([]byte{'{'})
+			graphql.MarshalString(field.Alias).MarshalGQL(w)
+			w.Write([]byte{':'})
+			ec.marshalNID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, field.Selections, res).MarshalGQL(w)
 			w.Write([]byte{'}'})
 		})
 	}
@@ -26894,6 +27061,10 @@ func (ec *executionContext) _Subscription(ctx context.Context, sel ast.Selection
 	switch fields[0].Name {
 	case "colorUpdated":
 		return ec._Subscription_colorUpdated(ctx, fields[0])
+	case "favoriteProjectCreated":
+		return ec._Subscription_favoriteProjectCreated(ctx, fields[0])
+	case "favoriteProjectIdsUpdated":
+		return ec._Subscription_favoriteProjectIdsUpdated(ctx, fields[0])
 	case "iconUpdated":
 		return ec._Subscription_iconUpdated(ctx, fields[0])
 	case "meUpdated":

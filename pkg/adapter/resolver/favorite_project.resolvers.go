@@ -5,6 +5,7 @@ package resolver
 
 import (
 	"context"
+	"fmt"
 	"project-management-demo-backend/ent"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/graph/generated"
@@ -12,6 +13,7 @@ import (
 	"project-management-demo-backend/pkg/entity/model"
 	"project-management-demo-backend/pkg/util/datetime"
 	"project-management-demo-backend/pkg/util/graphqlutil"
+	"project-management-demo-backend/pkg/util/subscription"
 )
 
 func (r *favoriteProjectResolver) CreatedAt(ctx context.Context, obj *ent.FavoriteProject) (string, error) {
@@ -27,6 +29,16 @@ func (r *mutationResolver) CreateFavoriteProject(ctx context.Context, input ent.
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
+
+	go func() {
+		ids, _ := r.controller.FavoriteProject.FavoriteProjectIDs(context.Background(), input.TeammateID)
+		for _, created := range r.subscriptions.FavoriteProjectIDsUpdated {
+			if created.TeammateID == input.TeammateID {
+				created.Ch <- ids
+			}
+		}
+	}()
+
 	return f, nil
 }
 
@@ -35,6 +47,15 @@ func (r *mutationResolver) DeleteFavoriteProject(ctx context.Context, input mode
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
+
+	go func() {
+		ids, _ := r.controller.FavoriteProject.FavoriteProjectIDs(context.Background(), input.TeammateID)
+		for _, created := range r.subscriptions.FavoriteProjectIDsUpdated {
+			if created.TeammateID == input.TeammateID {
+				created.Ch <- ids
+			}
+		}
+	}()
 
 	return result, nil
 }
@@ -64,6 +85,49 @@ func (r *queryResolver) FavoriteProjectIds(ctx context.Context, teammateID ulid.
 	}
 
 	return ids, nil
+}
+
+func (r *subscriptionResolver) FavoriteProjectCreated(ctx context.Context, teammateID ulid.ID) (<-chan *ent.FavoriteProject, error) {
+	key := subscription.NewKey()
+	ch := make(chan *ent.FavoriteProject, 1)
+
+	r.mutex.Lock()
+	r.subscriptions.FavoriteProjectCreated[key] = subscription.FavoriteProjectCreated{
+		TeammateID: teammateID,
+		Ch:         ch,
+	}
+	r.mutex.Unlock()
+
+	go func() {
+		<-ctx.Done()
+		r.mutex.Lock()
+		delete(r.subscriptions.FavoriteProjectCreated, key)
+		r.mutex.Unlock()
+	}()
+
+	return ch, nil
+}
+
+func (r *subscriptionResolver) FavoriteProjectIdsUpdated(ctx context.Context, teammateID ulid.ID) (<-chan []ulid.ID, error) {
+	key := subscription.NewKey()
+	ch := make(chan []ulid.ID, 1)
+
+	r.mutex.Lock()
+	r.subscriptions.FavoriteProjectIDsUpdated[key] = subscription.FavoriteProjectIDsUpdated{
+		TeammateID: teammateID,
+		Ch:         ch,
+	}
+	r.mutex.Unlock()
+
+	go func() {
+		<-ctx.Done()
+		r.mutex.Lock()
+		delete(r.subscriptions.FavoriteProjectIDsUpdated, key)
+		fmt.Println("FavoriteProjectIdsUpdated: finished!")
+		r.mutex.Unlock()
+	}()
+
+	return ch, nil
 }
 
 // FavoriteProject returns generated.FavoriteProjectResolver implementation.
