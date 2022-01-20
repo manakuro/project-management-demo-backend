@@ -5,7 +5,6 @@ package resolver
 
 import (
 	"context"
-	"fmt"
 	"project-management-demo-backend/ent"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/graph/generated"
@@ -123,7 +122,6 @@ func (r *subscriptionResolver) FavoriteProjectIdsUpdated(ctx context.Context, te
 		<-ctx.Done()
 		r.mutex.Lock()
 		delete(r.subscriptions.FavoriteProjectIDsUpdated, key)
-		fmt.Println("FavoriteProjectIdsUpdated: finished!")
 		r.mutex.Unlock()
 	}()
 
