@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"project-management-demo-backend/ent/color"
 	"project-management-demo-backend/ent/favoriteproject"
+	"project-management-demo-backend/ent/favoriteworkspace"
 	"project-management-demo-backend/ent/icon"
 	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/projectbasecolor"
@@ -179,6 +180,69 @@ func (fp *FavoriteProject) Node(ctx context.Context) (node *Node, err error) {
 		Name: "teammate",
 	}
 	err = fp.QueryTeammate().
+		Select(teammate.FieldID).
+		Scan(ctx, &node.Edges[1].IDs)
+	if err != nil {
+		return nil, err
+	}
+	return node, nil
+}
+
+func (fw *FavoriteWorkspace) Node(ctx context.Context) (node *Node, err error) {
+	node = &Node{
+		ID:     fw.ID,
+		Type:   "FavoriteWorkspace",
+		Fields: make([]*Field, 4),
+		Edges:  make([]*Edge, 2),
+	}
+	var buf []byte
+	if buf, err = json.Marshal(fw.WorkspaceID); err != nil {
+		return nil, err
+	}
+	node.Fields[0] = &Field{
+		Type:  "ulid.ID",
+		Name:  "workspace_id",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(fw.TeammateID); err != nil {
+		return nil, err
+	}
+	node.Fields[1] = &Field{
+		Type:  "ulid.ID",
+		Name:  "teammate_id",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(fw.CreatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[2] = &Field{
+		Type:  "time.Time",
+		Name:  "created_at",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(fw.UpdatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[3] = &Field{
+		Type:  "time.Time",
+		Name:  "updated_at",
+		Value: string(buf),
+	}
+	node.Edges[0] = &Edge{
+		Type: "Workspace",
+		Name: "workspace",
+	}
+	err = fw.QueryWorkspace().
+		Select(workspace.FieldID).
+		Scan(ctx, &node.Edges[0].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[1] = &Edge{
+		Type: "Teammate",
+		Name: "teammate",
+	}
+	err = fw.QueryTeammate().
 		Select(teammate.FieldID).
 		Scan(ctx, &node.Edges[1].IDs)
 	if err != nil {
@@ -658,7 +722,7 @@ func (t *Teammate) Node(ctx context.Context) (node *Node, err error) {
 		ID:     t.ID,
 		Type:   "Teammate",
 		Fields: make([]*Field, 5),
-		Edges:  make([]*Edge, 5),
+		Edges:  make([]*Edge, 6),
 	}
 	var buf []byte
 	if buf, err = json.Marshal(t.Name); err != nil {
@@ -748,6 +812,16 @@ func (t *Teammate) Node(ctx context.Context) (node *Node, err error) {
 	err = t.QueryFavoriteProjects().
 		Select(favoriteproject.FieldID).
 		Scan(ctx, &node.Edges[4].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[5] = &Edge{
+		Type: "FavoriteWorkspace",
+		Name: "favorite_workspaces",
+	}
+	err = t.QueryFavoriteWorkspaces().
+		Select(favoriteworkspace.FieldID).
+		Scan(ctx, &node.Edges[5].IDs)
 	if err != nil {
 		return nil, err
 	}
@@ -889,7 +963,7 @@ func (w *Workspace) Node(ctx context.Context) (node *Node, err error) {
 		ID:     w.ID,
 		Type:   "Workspace",
 		Fields: make([]*Field, 5),
-		Edges:  make([]*Edge, 3),
+		Edges:  make([]*Edge, 4),
 	}
 	var buf []byte
 	if buf, err = json.Marshal(w.CreatedBy); err != nil {
@@ -959,6 +1033,16 @@ func (w *Workspace) Node(ctx context.Context) (node *Node, err error) {
 	err = w.QueryWorkspaceTeammates().
 		Select(workspaceteammate.FieldID).
 		Scan(ctx, &node.Edges[2].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[3] = &Edge{
+		Type: "FavoriteWorkspace",
+		Name: "favorite_workspaces",
+	}
+	err = w.QueryFavoriteWorkspaces().
+		Select(favoriteworkspace.FieldID).
+		Scan(ctx, &node.Edges[3].IDs)
 	if err != nil {
 		return nil, err
 	}
@@ -1124,6 +1208,15 @@ func (c *Client) noder(ctx context.Context, table string, id ulid.ID) (Noder, er
 		n, err := c.FavoriteProject.Query().
 			Where(favoriteproject.ID(id)).
 			CollectFields(ctx, "FavoriteProject").
+			Only(ctx)
+		if err != nil {
+			return nil, err
+		}
+		return n, nil
+	case favoriteworkspace.Table:
+		n, err := c.FavoriteWorkspace.Query().
+			Where(favoriteworkspace.ID(id)).
+			CollectFields(ctx, "FavoriteWorkspace").
 			Only(ctx)
 		if err != nil {
 			return nil, err
@@ -1318,6 +1411,19 @@ func (c *Client) noders(ctx context.Context, table string, ids []ulid.ID) ([]Nod
 		nodes, err := c.FavoriteProject.Query().
 			Where(favoriteproject.IDIn(ids...)).
 			CollectFields(ctx, "FavoriteProject").
+			All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, node := range nodes {
+			for _, noder := range idmap[node.ID] {
+				*noder = node
+			}
+		}
+	case favoriteworkspace.Table:
+		nodes, err := c.FavoriteWorkspace.Query().
+			Where(favoriteworkspace.IDIn(ids...)).
+			CollectFields(ctx, "FavoriteWorkspace").
 			All(ctx)
 		if err != nil {
 			return nil, err

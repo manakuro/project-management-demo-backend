@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"project-management-demo-backend/ent/favoriteworkspace"
 	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/schema/editor"
 	"project-management-demo-backend/ent/schema/ulid"
@@ -124,6 +125,21 @@ func (wc *WorkspaceCreate) AddWorkspaceTeammates(w ...*WorkspaceTeammate) *Works
 		ids[i] = w[i].ID
 	}
 	return wc.AddWorkspaceTeammateIDs(ids...)
+}
+
+// AddFavoriteWorkspaceIDs adds the "favorite_workspaces" edge to the FavoriteWorkspace entity by IDs.
+func (wc *WorkspaceCreate) AddFavoriteWorkspaceIDs(ids ...ulid.ID) *WorkspaceCreate {
+	wc.mutation.AddFavoriteWorkspaceIDs(ids...)
+	return wc
+}
+
+// AddFavoriteWorkspaces adds the "favorite_workspaces" edges to the FavoriteWorkspace entity.
+func (wc *WorkspaceCreate) AddFavoriteWorkspaces(f ...*FavoriteWorkspace) *WorkspaceCreate {
+	ids := make([]ulid.ID, len(f))
+	for i := range f {
+		ids[i] = f[i].ID
+	}
+	return wc.AddFavoriteWorkspaceIDs(ids...)
 }
 
 // Mutation returns the WorkspaceMutation object of the builder.
@@ -350,6 +366,25 @@ func (wc *WorkspaceCreate) createSpec() (*Workspace, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: workspaceteammate.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := wc.mutation.FavoriteWorkspacesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   workspace.FavoriteWorkspacesTable,
+			Columns: []string{workspace.FavoriteWorkspacesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: favoriteworkspace.FieldID,
 				},
 			},
 		}

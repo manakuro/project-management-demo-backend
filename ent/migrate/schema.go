@@ -51,6 +51,34 @@ var (
 			},
 		},
 	}
+	// FavoriteWorkspacesColumns holds the columns for the "favorite_workspaces" table.
+	FavoriteWorkspacesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
+		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
+		{Name: "teammate_id", Type: field.TypeString, Nullable: true},
+		{Name: "workspace_id", Type: field.TypeString, Nullable: true},
+	}
+	// FavoriteWorkspacesTable holds the schema information for the "favorite_workspaces" table.
+	FavoriteWorkspacesTable = &schema.Table{
+		Name:       "favorite_workspaces",
+		Columns:    FavoriteWorkspacesColumns,
+		PrimaryKey: []*schema.Column{FavoriteWorkspacesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "favorite_workspaces_teammates_favorite_workspaces",
+				Columns:    []*schema.Column{FavoriteWorkspacesColumns[3]},
+				RefColumns: []*schema.Column{TeammatesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "favorite_workspaces_workspaces_favorite_workspaces",
+				Columns:    []*schema.Column{FavoriteWorkspacesColumns[4]},
+				RefColumns: []*schema.Column{WorkspacesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
 	// IconsColumns holds the columns for the "icons" table.
 	IconsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString},
@@ -322,6 +350,7 @@ var (
 	Tables = []*schema.Table{
 		ColorsTable,
 		FavoriteProjectsTable,
+		FavoriteWorkspacesTable,
 		IconsTable,
 		ProjectsTable,
 		ProjectBaseColorsTable,
@@ -339,6 +368,8 @@ var (
 func init() {
 	FavoriteProjectsTable.ForeignKeys[0].RefTable = ProjectsTable
 	FavoriteProjectsTable.ForeignKeys[1].RefTable = TeammatesTable
+	FavoriteWorkspacesTable.ForeignKeys[0].RefTable = TeammatesTable
+	FavoriteWorkspacesTable.ForeignKeys[1].RefTable = WorkspacesTable
 	ProjectsTable.ForeignKeys[0].RefTable = ProjectBaseColorsTable
 	ProjectsTable.ForeignKeys[1].RefTable = ProjectIconsTable
 	ProjectsTable.ForeignKeys[2].RefTable = ProjectLightColorsTable

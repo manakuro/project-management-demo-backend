@@ -58,6 +58,12 @@ func (Workspace) Edges() []ent.Edge {
 					annotation.Edge{FieldName: "workspace_teammate_id"},
 				),
 			),
+		edge.To("favorite_workspaces", FavoriteWorkspace.Type).
+			Annotations(
+				schema.Annotation(
+					annotation.Edge{FieldName: "favorite_workspace_id"},
+				),
+			),
 	}
 }
 

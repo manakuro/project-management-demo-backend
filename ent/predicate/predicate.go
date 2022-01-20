@@ -12,6 +12,9 @@ type Color func(*sql.Selector)
 // FavoriteProject is the predicate function for favoriteproject builders.
 type FavoriteProject func(*sql.Selector)
 
+// FavoriteWorkspace is the predicate function for favoriteworkspace builders.
+type FavoriteWorkspace func(*sql.Selector)
+
 // Icon is the predicate function for icon builders.
 type Icon func(*sql.Selector)
 

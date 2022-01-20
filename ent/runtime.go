@@ -5,6 +5,7 @@ package ent
 import (
 	"project-management-demo-backend/ent/color"
 	"project-management-demo-backend/ent/favoriteproject"
+	"project-management-demo-backend/ent/favoriteworkspace"
 	"project-management-demo-backend/ent/icon"
 	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/projectbasecolor"
@@ -119,6 +120,25 @@ func init() {
 	favoriteprojectDescID := favoriteprojectMixinFields0[0].Descriptor()
 	// favoriteproject.DefaultID holds the default value on creation for the id field.
 	favoriteproject.DefaultID = favoriteprojectDescID.Default.(func() ulid.ID)
+	favoriteworkspaceMixin := schema.FavoriteWorkspace{}.Mixin()
+	favoriteworkspaceMixinFields0 := favoriteworkspaceMixin[0].Fields()
+	_ = favoriteworkspaceMixinFields0
+	favoriteworkspaceMixinFields2 := favoriteworkspaceMixin[2].Fields()
+	_ = favoriteworkspaceMixinFields2
+	favoriteworkspaceFields := schema.FavoriteWorkspace{}.Fields()
+	_ = favoriteworkspaceFields
+	// favoriteworkspaceDescCreatedAt is the schema descriptor for created_at field.
+	favoriteworkspaceDescCreatedAt := favoriteworkspaceMixinFields2[0].Descriptor()
+	// favoriteworkspace.DefaultCreatedAt holds the default value on creation for the created_at field.
+	favoriteworkspace.DefaultCreatedAt = favoriteworkspaceDescCreatedAt.Default.(func() time.Time)
+	// favoriteworkspaceDescUpdatedAt is the schema descriptor for updated_at field.
+	favoriteworkspaceDescUpdatedAt := favoriteworkspaceMixinFields2[1].Descriptor()
+	// favoriteworkspace.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	favoriteworkspace.DefaultUpdatedAt = favoriteworkspaceDescUpdatedAt.Default.(func() time.Time)
+	// favoriteworkspaceDescID is the schema descriptor for id field.
+	favoriteworkspaceDescID := favoriteworkspaceMixinFields0[0].Descriptor()
+	// favoriteworkspace.DefaultID holds the default value on creation for the id field.
+	favoriteworkspace.DefaultID = favoriteworkspaceDescID.Default.(func() ulid.ID)
 	iconMixin := schema.Icon{}.Mixin()
 	iconMixinFields0 := iconMixin[0].Fields()
 	_ = iconMixinFields0

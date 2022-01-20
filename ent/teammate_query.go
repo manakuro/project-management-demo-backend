@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"math"
 	"project-management-demo-backend/ent/favoriteproject"
+	"project-management-demo-backend/ent/favoriteworkspace"
 	"project-management-demo-backend/ent/predicate"
 	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/projectteammate"
@@ -37,6 +38,7 @@ type TeammateQuery struct {
 	withProjectTeammates   *ProjectTeammateQuery
 	withWorkspaceTeammates *WorkspaceTeammateQuery
 	withFavoriteProjects   *FavoriteProjectQuery
+	withFavoriteWorkspaces *FavoriteWorkspaceQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -176,6 +178,28 @@ func (tq *TeammateQuery) QueryFavoriteProjects() *FavoriteProjectQuery {
 			sqlgraph.From(teammate.Table, teammate.FieldID, selector),
 			sqlgraph.To(favoriteproject.Table, favoriteproject.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, teammate.FavoriteProjectsTable, teammate.FavoriteProjectsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(tq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryFavoriteWorkspaces chains the current query on the "favorite_workspaces" edge.
+func (tq *TeammateQuery) QueryFavoriteWorkspaces() *FavoriteWorkspaceQuery {
+	query := &FavoriteWorkspaceQuery{config: tq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := tq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := tq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(teammate.Table, teammate.FieldID, selector),
+			sqlgraph.To(favoriteworkspace.Table, favoriteworkspace.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, teammate.FavoriteWorkspacesTable, teammate.FavoriteWorkspacesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(tq.driver.Dialect(), step)
 		return fromU, nil
@@ -369,6 +393,7 @@ func (tq *TeammateQuery) Clone() *TeammateQuery {
 		withProjectTeammates:   tq.withProjectTeammates.Clone(),
 		withWorkspaceTeammates: tq.withWorkspaceTeammates.Clone(),
 		withFavoriteProjects:   tq.withFavoriteProjects.Clone(),
+		withFavoriteWorkspaces: tq.withFavoriteWorkspaces.Clone(),
 		// clone intermediate query.
 		sql:  tq.sql.Clone(),
 		path: tq.path,
@@ -427,6 +452,17 @@ func (tq *TeammateQuery) WithFavoriteProjects(opts ...func(*FavoriteProjectQuery
 		opt(query)
 	}
 	tq.withFavoriteProjects = query
+	return tq
+}
+
+// WithFavoriteWorkspaces tells the query-builder to eager-load the nodes that are connected to
+// the "favorite_workspaces" edge. The optional arguments are used to configure the query builder of the edge.
+func (tq *TeammateQuery) WithFavoriteWorkspaces(opts ...func(*FavoriteWorkspaceQuery)) *TeammateQuery {
+	query := &FavoriteWorkspaceQuery{config: tq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	tq.withFavoriteWorkspaces = query
 	return tq
 }
 
@@ -495,12 +531,13 @@ func (tq *TeammateQuery) sqlAll(ctx context.Context) ([]*Teammate, error) {
 	var (
 		nodes       = []*Teammate{}
 		_spec       = tq.querySpec()
-		loadedTypes = [5]bool{
+		loadedTypes = [6]bool{
 			tq.withWorkspaces != nil,
 			tq.withProjects != nil,
 			tq.withProjectTeammates != nil,
 			tq.withWorkspaceTeammates != nil,
 			tq.withFavoriteProjects != nil,
+			tq.withFavoriteWorkspaces != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -645,6 +682,31 @@ func (tq *TeammateQuery) sqlAll(ctx context.Context) ([]*Teammate, error) {
 				return nil, fmt.Errorf(`unexpected foreign-key "teammate_id" returned %v for node %v`, fk, n.ID)
 			}
 			node.Edges.FavoriteProjects = append(node.Edges.FavoriteProjects, n)
+		}
+	}
+
+	if query := tq.withFavoriteWorkspaces; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[ulid.ID]*Teammate)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.FavoriteWorkspaces = []*FavoriteWorkspace{}
+		}
+		query.Where(predicate.FavoriteWorkspace(func(s *sql.Selector) {
+			s.Where(sql.InValues(teammate.FavoriteWorkspacesColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.TeammateID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "teammate_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.FavoriteWorkspaces = append(node.Edges.FavoriteWorkspaces, n)
 		}
 	}
 

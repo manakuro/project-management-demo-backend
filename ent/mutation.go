@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"project-management-demo-backend/ent/color"
 	"project-management-demo-backend/ent/favoriteproject"
+	"project-management-demo-backend/ent/favoriteworkspace"
 	"project-management-demo-backend/ent/icon"
 	"project-management-demo-backend/ent/predicate"
 	"project-management-demo-backend/ent/project"
@@ -39,6 +40,7 @@ const (
 	// Node types.
 	TypeColor             = "Color"
 	TypeFavoriteProject   = "FavoriteProject"
+	TypeFavoriteWorkspace = "FavoriteWorkspace"
 	TypeIcon              = "Icon"
 	TypeProject           = "Project"
 	TypeProjectBaseColor  = "ProjectBaseColor"
@@ -1300,6 +1302,566 @@ func (m *FavoriteProjectMutation) ResetEdge(name string) error {
 		return nil
 	}
 	return fmt.Errorf("unknown FavoriteProject edge %s", name)
+}
+
+// FavoriteWorkspaceMutation represents an operation that mutates the FavoriteWorkspace nodes in the graph.
+type FavoriteWorkspaceMutation struct {
+	config
+	op               Op
+	typ              string
+	id               *ulid.ID
+	created_at       *time.Time
+	updated_at       *time.Time
+	clearedFields    map[string]struct{}
+	workspace        *ulid.ID
+	clearedworkspace bool
+	teammate         *ulid.ID
+	clearedteammate  bool
+	done             bool
+	oldValue         func(context.Context) (*FavoriteWorkspace, error)
+	predicates       []predicate.FavoriteWorkspace
+}
+
+var _ ent.Mutation = (*FavoriteWorkspaceMutation)(nil)
+
+// favoriteworkspaceOption allows management of the mutation configuration using functional options.
+type favoriteworkspaceOption func(*FavoriteWorkspaceMutation)
+
+// newFavoriteWorkspaceMutation creates new mutation for the FavoriteWorkspace entity.
+func newFavoriteWorkspaceMutation(c config, op Op, opts ...favoriteworkspaceOption) *FavoriteWorkspaceMutation {
+	m := &FavoriteWorkspaceMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeFavoriteWorkspace,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withFavoriteWorkspaceID sets the ID field of the mutation.
+func withFavoriteWorkspaceID(id ulid.ID) favoriteworkspaceOption {
+	return func(m *FavoriteWorkspaceMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *FavoriteWorkspace
+		)
+		m.oldValue = func(ctx context.Context) (*FavoriteWorkspace, error) {
+			once.Do(func() {
+				if m.done {
+					err = fmt.Errorf("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().FavoriteWorkspace.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withFavoriteWorkspace sets the old FavoriteWorkspace of the mutation.
+func withFavoriteWorkspace(node *FavoriteWorkspace) favoriteworkspaceOption {
+	return func(m *FavoriteWorkspaceMutation) {
+		m.oldValue = func(context.Context) (*FavoriteWorkspace, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m FavoriteWorkspaceMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m FavoriteWorkspaceMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, fmt.Errorf("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of FavoriteWorkspace entities.
+func (m *FavoriteWorkspaceMutation) SetID(id ulid.ID) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *FavoriteWorkspaceMutation) ID() (id ulid.ID, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// SetWorkspaceID sets the "workspace_id" field.
+func (m *FavoriteWorkspaceMutation) SetWorkspaceID(u ulid.ID) {
+	m.workspace = &u
+}
+
+// WorkspaceID returns the value of the "workspace_id" field in the mutation.
+func (m *FavoriteWorkspaceMutation) WorkspaceID() (r ulid.ID, exists bool) {
+	v := m.workspace
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldWorkspaceID returns the old "workspace_id" field's value of the FavoriteWorkspace entity.
+// If the FavoriteWorkspace object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *FavoriteWorkspaceMutation) OldWorkspaceID(ctx context.Context) (v ulid.ID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldWorkspaceID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldWorkspaceID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldWorkspaceID: %w", err)
+	}
+	return oldValue.WorkspaceID, nil
+}
+
+// ResetWorkspaceID resets all changes to the "workspace_id" field.
+func (m *FavoriteWorkspaceMutation) ResetWorkspaceID() {
+	m.workspace = nil
+}
+
+// SetTeammateID sets the "teammate_id" field.
+func (m *FavoriteWorkspaceMutation) SetTeammateID(u ulid.ID) {
+	m.teammate = &u
+}
+
+// TeammateID returns the value of the "teammate_id" field in the mutation.
+func (m *FavoriteWorkspaceMutation) TeammateID() (r ulid.ID, exists bool) {
+	v := m.teammate
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTeammateID returns the old "teammate_id" field's value of the FavoriteWorkspace entity.
+// If the FavoriteWorkspace object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *FavoriteWorkspaceMutation) OldTeammateID(ctx context.Context) (v ulid.ID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldTeammateID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldTeammateID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTeammateID: %w", err)
+	}
+	return oldValue.TeammateID, nil
+}
+
+// ResetTeammateID resets all changes to the "teammate_id" field.
+func (m *FavoriteWorkspaceMutation) ResetTeammateID() {
+	m.teammate = nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *FavoriteWorkspaceMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *FavoriteWorkspaceMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the FavoriteWorkspace entity.
+// If the FavoriteWorkspace object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *FavoriteWorkspaceMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *FavoriteWorkspaceMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *FavoriteWorkspaceMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *FavoriteWorkspaceMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the FavoriteWorkspace entity.
+// If the FavoriteWorkspace object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *FavoriteWorkspaceMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *FavoriteWorkspaceMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// ClearWorkspace clears the "workspace" edge to the Workspace entity.
+func (m *FavoriteWorkspaceMutation) ClearWorkspace() {
+	m.clearedworkspace = true
+}
+
+// WorkspaceCleared reports if the "workspace" edge to the Workspace entity was cleared.
+func (m *FavoriteWorkspaceMutation) WorkspaceCleared() bool {
+	return m.clearedworkspace
+}
+
+// WorkspaceIDs returns the "workspace" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// WorkspaceID instead. It exists only for internal usage by the builders.
+func (m *FavoriteWorkspaceMutation) WorkspaceIDs() (ids []ulid.ID) {
+	if id := m.workspace; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetWorkspace resets all changes to the "workspace" edge.
+func (m *FavoriteWorkspaceMutation) ResetWorkspace() {
+	m.workspace = nil
+	m.clearedworkspace = false
+}
+
+// ClearTeammate clears the "teammate" edge to the Teammate entity.
+func (m *FavoriteWorkspaceMutation) ClearTeammate() {
+	m.clearedteammate = true
+}
+
+// TeammateCleared reports if the "teammate" edge to the Teammate entity was cleared.
+func (m *FavoriteWorkspaceMutation) TeammateCleared() bool {
+	return m.clearedteammate
+}
+
+// TeammateIDs returns the "teammate" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// TeammateID instead. It exists only for internal usage by the builders.
+func (m *FavoriteWorkspaceMutation) TeammateIDs() (ids []ulid.ID) {
+	if id := m.teammate; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetTeammate resets all changes to the "teammate" edge.
+func (m *FavoriteWorkspaceMutation) ResetTeammate() {
+	m.teammate = nil
+	m.clearedteammate = false
+}
+
+// Where appends a list predicates to the FavoriteWorkspaceMutation builder.
+func (m *FavoriteWorkspaceMutation) Where(ps ...predicate.FavoriteWorkspace) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// Op returns the operation name.
+func (m *FavoriteWorkspaceMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (FavoriteWorkspace).
+func (m *FavoriteWorkspaceMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *FavoriteWorkspaceMutation) Fields() []string {
+	fields := make([]string, 0, 4)
+	if m.workspace != nil {
+		fields = append(fields, favoriteworkspace.FieldWorkspaceID)
+	}
+	if m.teammate != nil {
+		fields = append(fields, favoriteworkspace.FieldTeammateID)
+	}
+	if m.created_at != nil {
+		fields = append(fields, favoriteworkspace.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, favoriteworkspace.FieldUpdatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *FavoriteWorkspaceMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case favoriteworkspace.FieldWorkspaceID:
+		return m.WorkspaceID()
+	case favoriteworkspace.FieldTeammateID:
+		return m.TeammateID()
+	case favoriteworkspace.FieldCreatedAt:
+		return m.CreatedAt()
+	case favoriteworkspace.FieldUpdatedAt:
+		return m.UpdatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *FavoriteWorkspaceMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case favoriteworkspace.FieldWorkspaceID:
+		return m.OldWorkspaceID(ctx)
+	case favoriteworkspace.FieldTeammateID:
+		return m.OldTeammateID(ctx)
+	case favoriteworkspace.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case favoriteworkspace.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown FavoriteWorkspace field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *FavoriteWorkspaceMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case favoriteworkspace.FieldWorkspaceID:
+		v, ok := value.(ulid.ID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetWorkspaceID(v)
+		return nil
+	case favoriteworkspace.FieldTeammateID:
+		v, ok := value.(ulid.ID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTeammateID(v)
+		return nil
+	case favoriteworkspace.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case favoriteworkspace.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown FavoriteWorkspace field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *FavoriteWorkspaceMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *FavoriteWorkspaceMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *FavoriteWorkspaceMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown FavoriteWorkspace numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *FavoriteWorkspaceMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *FavoriteWorkspaceMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *FavoriteWorkspaceMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown FavoriteWorkspace nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *FavoriteWorkspaceMutation) ResetField(name string) error {
+	switch name {
+	case favoriteworkspace.FieldWorkspaceID:
+		m.ResetWorkspaceID()
+		return nil
+	case favoriteworkspace.FieldTeammateID:
+		m.ResetTeammateID()
+		return nil
+	case favoriteworkspace.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case favoriteworkspace.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown FavoriteWorkspace field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *FavoriteWorkspaceMutation) AddedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.workspace != nil {
+		edges = append(edges, favoriteworkspace.EdgeWorkspace)
+	}
+	if m.teammate != nil {
+		edges = append(edges, favoriteworkspace.EdgeTeammate)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *FavoriteWorkspaceMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case favoriteworkspace.EdgeWorkspace:
+		if id := m.workspace; id != nil {
+			return []ent.Value{*id}
+		}
+	case favoriteworkspace.EdgeTeammate:
+		if id := m.teammate; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *FavoriteWorkspaceMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 2)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *FavoriteWorkspaceMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *FavoriteWorkspaceMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.clearedworkspace {
+		edges = append(edges, favoriteworkspace.EdgeWorkspace)
+	}
+	if m.clearedteammate {
+		edges = append(edges, favoriteworkspace.EdgeTeammate)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *FavoriteWorkspaceMutation) EdgeCleared(name string) bool {
+	switch name {
+	case favoriteworkspace.EdgeWorkspace:
+		return m.clearedworkspace
+	case favoriteworkspace.EdgeTeammate:
+		return m.clearedteammate
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *FavoriteWorkspaceMutation) ClearEdge(name string) error {
+	switch name {
+	case favoriteworkspace.EdgeWorkspace:
+		m.ClearWorkspace()
+		return nil
+	case favoriteworkspace.EdgeTeammate:
+		m.ClearTeammate()
+		return nil
+	}
+	return fmt.Errorf("unknown FavoriteWorkspace unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *FavoriteWorkspaceMutation) ResetEdge(name string) error {
+	switch name {
+	case favoriteworkspace.EdgeWorkspace:
+		m.ResetWorkspace()
+		return nil
+	case favoriteworkspace.EdgeTeammate:
+		m.ResetTeammate()
+		return nil
+	}
+	return fmt.Errorf("unknown FavoriteWorkspace edge %s", name)
 }
 
 // IconMutation represents an operation that mutates the Icon nodes in the graph.
@@ -5434,6 +5996,9 @@ type TeammateMutation struct {
 	favorite_projects          map[ulid.ID]struct{}
 	removedfavorite_projects   map[ulid.ID]struct{}
 	clearedfavorite_projects   bool
+	favorite_workspaces        map[ulid.ID]struct{}
+	removedfavorite_workspaces map[ulid.ID]struct{}
+	clearedfavorite_workspaces bool
 	done                       bool
 	oldValue                   func(context.Context) (*Teammate, error)
 	predicates                 []predicate.Teammate
@@ -5974,6 +6539,60 @@ func (m *TeammateMutation) ResetFavoriteProjects() {
 	m.removedfavorite_projects = nil
 }
 
+// AddFavoriteWorkspaceIDs adds the "favorite_workspaces" edge to the FavoriteWorkspace entity by ids.
+func (m *TeammateMutation) AddFavoriteWorkspaceIDs(ids ...ulid.ID) {
+	if m.favorite_workspaces == nil {
+		m.favorite_workspaces = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		m.favorite_workspaces[ids[i]] = struct{}{}
+	}
+}
+
+// ClearFavoriteWorkspaces clears the "favorite_workspaces" edge to the FavoriteWorkspace entity.
+func (m *TeammateMutation) ClearFavoriteWorkspaces() {
+	m.clearedfavorite_workspaces = true
+}
+
+// FavoriteWorkspacesCleared reports if the "favorite_workspaces" edge to the FavoriteWorkspace entity was cleared.
+func (m *TeammateMutation) FavoriteWorkspacesCleared() bool {
+	return m.clearedfavorite_workspaces
+}
+
+// RemoveFavoriteWorkspaceIDs removes the "favorite_workspaces" edge to the FavoriteWorkspace entity by IDs.
+func (m *TeammateMutation) RemoveFavoriteWorkspaceIDs(ids ...ulid.ID) {
+	if m.removedfavorite_workspaces == nil {
+		m.removedfavorite_workspaces = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		delete(m.favorite_workspaces, ids[i])
+		m.removedfavorite_workspaces[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedFavoriteWorkspaces returns the removed IDs of the "favorite_workspaces" edge to the FavoriteWorkspace entity.
+func (m *TeammateMutation) RemovedFavoriteWorkspacesIDs() (ids []ulid.ID) {
+	for id := range m.removedfavorite_workspaces {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// FavoriteWorkspacesIDs returns the "favorite_workspaces" edge IDs in the mutation.
+func (m *TeammateMutation) FavoriteWorkspacesIDs() (ids []ulid.ID) {
+	for id := range m.favorite_workspaces {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetFavoriteWorkspaces resets all changes to the "favorite_workspaces" edge.
+func (m *TeammateMutation) ResetFavoriteWorkspaces() {
+	m.favorite_workspaces = nil
+	m.clearedfavorite_workspaces = false
+	m.removedfavorite_workspaces = nil
+}
+
 // Where appends a list predicates to the TeammateMutation builder.
 func (m *TeammateMutation) Where(ps ...predicate.Teammate) {
 	m.predicates = append(m.predicates, ps...)
@@ -6160,7 +6779,7 @@ func (m *TeammateMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *TeammateMutation) AddedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 6)
 	if m.workspaces != nil {
 		edges = append(edges, teammate.EdgeWorkspaces)
 	}
@@ -6175,6 +6794,9 @@ func (m *TeammateMutation) AddedEdges() []string {
 	}
 	if m.favorite_projects != nil {
 		edges = append(edges, teammate.EdgeFavoriteProjects)
+	}
+	if m.favorite_workspaces != nil {
+		edges = append(edges, teammate.EdgeFavoriteWorkspaces)
 	}
 	return edges
 }
@@ -6213,13 +6835,19 @@ func (m *TeammateMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case teammate.EdgeFavoriteWorkspaces:
+		ids := make([]ent.Value, 0, len(m.favorite_workspaces))
+		for id := range m.favorite_workspaces {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *TeammateMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 6)
 	if m.removedworkspaces != nil {
 		edges = append(edges, teammate.EdgeWorkspaces)
 	}
@@ -6234,6 +6862,9 @@ func (m *TeammateMutation) RemovedEdges() []string {
 	}
 	if m.removedfavorite_projects != nil {
 		edges = append(edges, teammate.EdgeFavoriteProjects)
+	}
+	if m.removedfavorite_workspaces != nil {
+		edges = append(edges, teammate.EdgeFavoriteWorkspaces)
 	}
 	return edges
 }
@@ -6272,13 +6903,19 @@ func (m *TeammateMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case teammate.EdgeFavoriteWorkspaces:
+		ids := make([]ent.Value, 0, len(m.removedfavorite_workspaces))
+		for id := range m.removedfavorite_workspaces {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *TeammateMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 5)
+	edges := make([]string, 0, 6)
 	if m.clearedworkspaces {
 		edges = append(edges, teammate.EdgeWorkspaces)
 	}
@@ -6293,6 +6930,9 @@ func (m *TeammateMutation) ClearedEdges() []string {
 	}
 	if m.clearedfavorite_projects {
 		edges = append(edges, teammate.EdgeFavoriteProjects)
+	}
+	if m.clearedfavorite_workspaces {
+		edges = append(edges, teammate.EdgeFavoriteWorkspaces)
 	}
 	return edges
 }
@@ -6311,6 +6951,8 @@ func (m *TeammateMutation) EdgeCleared(name string) bool {
 		return m.clearedworkspace_teammates
 	case teammate.EdgeFavoriteProjects:
 		return m.clearedfavorite_projects
+	case teammate.EdgeFavoriteWorkspaces:
+		return m.clearedfavorite_workspaces
 	}
 	return false
 }
@@ -6341,6 +6983,9 @@ func (m *TeammateMutation) ResetEdge(name string) error {
 		return nil
 	case teammate.EdgeFavoriteProjects:
 		m.ResetFavoriteProjects()
+		return nil
+	case teammate.EdgeFavoriteWorkspaces:
+		m.ResetFavoriteWorkspaces()
 		return nil
 	}
 	return fmt.Errorf("unknown Teammate edge %s", name)
@@ -7689,6 +8334,9 @@ type WorkspaceMutation struct {
 	workspace_teammates        map[ulid.ID]struct{}
 	removedworkspace_teammates map[ulid.ID]struct{}
 	clearedworkspace_teammates bool
+	favorite_workspaces        map[ulid.ID]struct{}
+	removedfavorite_workspaces map[ulid.ID]struct{}
+	clearedfavorite_workspaces bool
 	done                       bool
 	oldValue                   func(context.Context) (*Workspace, error)
 	predicates                 []predicate.Workspace
@@ -8106,6 +8754,60 @@ func (m *WorkspaceMutation) ResetWorkspaceTeammates() {
 	m.removedworkspace_teammates = nil
 }
 
+// AddFavoriteWorkspaceIDs adds the "favorite_workspaces" edge to the FavoriteWorkspace entity by ids.
+func (m *WorkspaceMutation) AddFavoriteWorkspaceIDs(ids ...ulid.ID) {
+	if m.favorite_workspaces == nil {
+		m.favorite_workspaces = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		m.favorite_workspaces[ids[i]] = struct{}{}
+	}
+}
+
+// ClearFavoriteWorkspaces clears the "favorite_workspaces" edge to the FavoriteWorkspace entity.
+func (m *WorkspaceMutation) ClearFavoriteWorkspaces() {
+	m.clearedfavorite_workspaces = true
+}
+
+// FavoriteWorkspacesCleared reports if the "favorite_workspaces" edge to the FavoriteWorkspace entity was cleared.
+func (m *WorkspaceMutation) FavoriteWorkspacesCleared() bool {
+	return m.clearedfavorite_workspaces
+}
+
+// RemoveFavoriteWorkspaceIDs removes the "favorite_workspaces" edge to the FavoriteWorkspace entity by IDs.
+func (m *WorkspaceMutation) RemoveFavoriteWorkspaceIDs(ids ...ulid.ID) {
+	if m.removedfavorite_workspaces == nil {
+		m.removedfavorite_workspaces = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		delete(m.favorite_workspaces, ids[i])
+		m.removedfavorite_workspaces[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedFavoriteWorkspaces returns the removed IDs of the "favorite_workspaces" edge to the FavoriteWorkspace entity.
+func (m *WorkspaceMutation) RemovedFavoriteWorkspacesIDs() (ids []ulid.ID) {
+	for id := range m.removedfavorite_workspaces {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// FavoriteWorkspacesIDs returns the "favorite_workspaces" edge IDs in the mutation.
+func (m *WorkspaceMutation) FavoriteWorkspacesIDs() (ids []ulid.ID) {
+	for id := range m.favorite_workspaces {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetFavoriteWorkspaces resets all changes to the "favorite_workspaces" edge.
+func (m *WorkspaceMutation) ResetFavoriteWorkspaces() {
+	m.favorite_workspaces = nil
+	m.clearedfavorite_workspaces = false
+	m.removedfavorite_workspaces = nil
+}
+
 // Where appends a list predicates to the WorkspaceMutation builder.
 func (m *WorkspaceMutation) Where(ps ...predicate.Workspace) {
 	m.predicates = append(m.predicates, ps...)
@@ -8292,7 +8994,7 @@ func (m *WorkspaceMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *WorkspaceMutation) AddedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.teammate != nil {
 		edges = append(edges, workspace.EdgeTeammate)
 	}
@@ -8301,6 +9003,9 @@ func (m *WorkspaceMutation) AddedEdges() []string {
 	}
 	if m.workspace_teammates != nil {
 		edges = append(edges, workspace.EdgeWorkspaceTeammates)
+	}
+	if m.favorite_workspaces != nil {
+		edges = append(edges, workspace.EdgeFavoriteWorkspaces)
 	}
 	return edges
 }
@@ -8325,18 +9030,27 @@ func (m *WorkspaceMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case workspace.EdgeFavoriteWorkspaces:
+		ids := make([]ent.Value, 0, len(m.favorite_workspaces))
+		for id := range m.favorite_workspaces {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *WorkspaceMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.removedprojects != nil {
 		edges = append(edges, workspace.EdgeProjects)
 	}
 	if m.removedworkspace_teammates != nil {
 		edges = append(edges, workspace.EdgeWorkspaceTeammates)
+	}
+	if m.removedfavorite_workspaces != nil {
+		edges = append(edges, workspace.EdgeFavoriteWorkspaces)
 	}
 	return edges
 }
@@ -8357,13 +9071,19 @@ func (m *WorkspaceMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case workspace.EdgeFavoriteWorkspaces:
+		ids := make([]ent.Value, 0, len(m.removedfavorite_workspaces))
+		for id := range m.removedfavorite_workspaces {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *WorkspaceMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.clearedteammate {
 		edges = append(edges, workspace.EdgeTeammate)
 	}
@@ -8372,6 +9092,9 @@ func (m *WorkspaceMutation) ClearedEdges() []string {
 	}
 	if m.clearedworkspace_teammates {
 		edges = append(edges, workspace.EdgeWorkspaceTeammates)
+	}
+	if m.clearedfavorite_workspaces {
+		edges = append(edges, workspace.EdgeFavoriteWorkspaces)
 	}
 	return edges
 }
@@ -8386,6 +9109,8 @@ func (m *WorkspaceMutation) EdgeCleared(name string) bool {
 		return m.clearedprojects
 	case workspace.EdgeWorkspaceTeammates:
 		return m.clearedworkspace_teammates
+	case workspace.EdgeFavoriteWorkspaces:
+		return m.clearedfavorite_workspaces
 	}
 	return false
 }
@@ -8413,6 +9138,9 @@ func (m *WorkspaceMutation) ResetEdge(name string) error {
 		return nil
 	case workspace.EdgeWorkspaceTeammates:
 		m.ResetWorkspaceTeammates()
+		return nil
+	case workspace.EdgeFavoriteWorkspaces:
+		m.ResetFavoriteWorkspaces()
 		return nil
 	}
 	return fmt.Errorf("unknown Workspace edge %s", name)

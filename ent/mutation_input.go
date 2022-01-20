@@ -158,6 +158,69 @@ func (u *FavoriteProjectUpdateOne) SetInput(i UpdateFavoriteProjectInput) *Favor
 	return u
 }
 
+// CreateFavoriteWorkspaceInput represents a mutation input for creating favoriteworkspaces.
+type CreateFavoriteWorkspaceInput struct {
+	CreatedAt   *time.Time
+	UpdatedAt   *time.Time
+	WorkspaceID ulid.ID
+	TeammateID  ulid.ID
+}
+
+// Mutate applies the CreateFavoriteWorkspaceInput on the FavoriteWorkspaceCreate builder.
+func (i *CreateFavoriteWorkspaceInput) Mutate(m *FavoriteWorkspaceCreate) {
+	if v := i.CreatedAt; v != nil {
+		m.SetCreatedAt(*v)
+	}
+	if v := i.UpdatedAt; v != nil {
+		m.SetUpdatedAt(*v)
+	}
+	m.SetWorkspaceID(i.WorkspaceID)
+	m.SetTeammateID(i.TeammateID)
+}
+
+// SetInput applies the change-set in the CreateFavoriteWorkspaceInput on the create builder.
+func (c *FavoriteWorkspaceCreate) SetInput(i CreateFavoriteWorkspaceInput) *FavoriteWorkspaceCreate {
+	i.Mutate(c)
+	return c
+}
+
+// UpdateFavoriteWorkspaceInput represents a mutation input for updating favoriteworkspaces.
+type UpdateFavoriteWorkspaceInput struct {
+	ID             ulid.ID
+	WorkspaceID    *ulid.ID
+	ClearWorkspace bool
+	TeammateID     *ulid.ID
+	ClearTeammate  bool
+}
+
+// Mutate applies the UpdateFavoriteWorkspaceInput on the FavoriteWorkspaceMutation.
+func (i *UpdateFavoriteWorkspaceInput) Mutate(m *FavoriteWorkspaceMutation) {
+	if i.ClearWorkspace {
+		m.ClearWorkspace()
+	}
+	if v := i.WorkspaceID; v != nil {
+		m.SetWorkspaceID(*v)
+	}
+	if i.ClearTeammate {
+		m.ClearTeammate()
+	}
+	if v := i.TeammateID; v != nil {
+		m.SetTeammateID(*v)
+	}
+}
+
+// SetInput applies the change-set in the UpdateFavoriteWorkspaceInput on the update builder.
+func (u *FavoriteWorkspaceUpdate) SetInput(i UpdateFavoriteWorkspaceInput) *FavoriteWorkspaceUpdate {
+	i.Mutate(u.Mutation())
+	return u
+}
+
+// SetInput applies the change-set in the UpdateFavoriteWorkspaceInput on the update-one builder.
+func (u *FavoriteWorkspaceUpdateOne) SetInput(i UpdateFavoriteWorkspaceInput) *FavoriteWorkspaceUpdateOne {
+	i.Mutate(u.Mutation())
+	return u
+}
+
 // CreateIconInput represents a mutation input for creating icons.
 type CreateIconInput struct {
 	Name           string
@@ -650,6 +713,7 @@ type CreateTeammateInput struct {
 	ProjectTeammateIDs   []ulid.ID
 	WorkspaceTeammateIDs []ulid.ID
 	FavoriteProjectIDs   []ulid.ID
+	FavoriteWorkspaceIDs []ulid.ID
 }
 
 // Mutate applies the CreateTeammateInput on the TeammateCreate builder.
@@ -678,6 +742,9 @@ func (i *CreateTeammateInput) Mutate(m *TeammateCreate) {
 	if ids := i.FavoriteProjectIDs; len(ids) > 0 {
 		m.AddFavoriteProjectIDs(ids...)
 	}
+	if ids := i.FavoriteWorkspaceIDs; len(ids) > 0 {
+		m.AddFavoriteWorkspaceIDs(ids...)
+	}
 }
 
 // SetInput applies the change-set in the CreateTeammateInput on the create builder.
@@ -702,6 +769,8 @@ type UpdateTeammateInput struct {
 	RemoveWorkspaceTeammateIDs []ulid.ID
 	AddFavoriteProjectIDs      []ulid.ID
 	RemoveFavoriteProjectIDs   []ulid.ID
+	AddFavoriteWorkspaceIDs    []ulid.ID
+	RemoveFavoriteWorkspaceIDs []ulid.ID
 }
 
 // Mutate applies the UpdateTeammateInput on the TeammateMutation.
@@ -744,6 +813,12 @@ func (i *UpdateTeammateInput) Mutate(m *TeammateMutation) {
 	}
 	if ids := i.RemoveFavoriteProjectIDs; len(ids) > 0 {
 		m.RemoveFavoriteProjectIDs(ids...)
+	}
+	if ids := i.AddFavoriteWorkspaceIDs; len(ids) > 0 {
+		m.AddFavoriteWorkspaceIDs(ids...)
+	}
+	if ids := i.RemoveFavoriteWorkspaceIDs; len(ids) > 0 {
+		m.RemoveFavoriteWorkspaceIDs(ids...)
 	}
 }
 
@@ -920,6 +995,7 @@ type CreateWorkspaceInput struct {
 	CreatedBy            ulid.ID
 	ProjectIDs           []ulid.ID
 	WorkspaceTeammateIDs []ulid.ID
+	FavoriteWorkspaceIDs []ulid.ID
 }
 
 // Mutate applies the CreateWorkspaceInput on the WorkspaceCreate builder.
@@ -938,6 +1014,9 @@ func (i *CreateWorkspaceInput) Mutate(m *WorkspaceCreate) {
 	}
 	if ids := i.WorkspaceTeammateIDs; len(ids) > 0 {
 		m.AddWorkspaceTeammateIDs(ids...)
+	}
+	if ids := i.FavoriteWorkspaceIDs; len(ids) > 0 {
+		m.AddFavoriteWorkspaceIDs(ids...)
 	}
 }
 
@@ -958,6 +1037,8 @@ type UpdateWorkspaceInput struct {
 	RemoveProjectIDs           []ulid.ID
 	AddWorkspaceTeammateIDs    []ulid.ID
 	RemoveWorkspaceTeammateIDs []ulid.ID
+	AddFavoriteWorkspaceIDs    []ulid.ID
+	RemoveFavoriteWorkspaceIDs []ulid.ID
 }
 
 // Mutate applies the UpdateWorkspaceInput on the WorkspaceMutation.
@@ -985,6 +1066,12 @@ func (i *UpdateWorkspaceInput) Mutate(m *WorkspaceMutation) {
 	}
 	if ids := i.RemoveWorkspaceTeammateIDs; len(ids) > 0 {
 		m.RemoveWorkspaceTeammateIDs(ids...)
+	}
+	if ids := i.AddFavoriteWorkspaceIDs; len(ids) > 0 {
+		m.AddFavoriteWorkspaceIDs(ids...)
+	}
+	if ids := i.RemoveFavoriteWorkspaceIDs; len(ids) > 0 {
+		m.RemoveFavoriteWorkspaceIDs(ids...)
 	}
 }
 

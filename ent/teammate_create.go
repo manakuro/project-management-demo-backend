@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"project-management-demo-backend/ent/favoriteproject"
+	"project-management-demo-backend/ent/favoriteworkspace"
 	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/ent/schema/ulid"
@@ -159,6 +160,21 @@ func (tc *TeammateCreate) AddFavoriteProjects(f ...*FavoriteProject) *TeammateCr
 		ids[i] = f[i].ID
 	}
 	return tc.AddFavoriteProjectIDs(ids...)
+}
+
+// AddFavoriteWorkspaceIDs adds the "favorite_workspaces" edge to the FavoriteWorkspace entity by IDs.
+func (tc *TeammateCreate) AddFavoriteWorkspaceIDs(ids ...ulid.ID) *TeammateCreate {
+	tc.mutation.AddFavoriteWorkspaceIDs(ids...)
+	return tc
+}
+
+// AddFavoriteWorkspaces adds the "favorite_workspaces" edges to the FavoriteWorkspace entity.
+func (tc *TeammateCreate) AddFavoriteWorkspaces(f ...*FavoriteWorkspace) *TeammateCreate {
+	ids := make([]ulid.ID, len(f))
+	for i := range f {
+		ids[i] = f[i].ID
+	}
+	return tc.AddFavoriteWorkspaceIDs(ids...)
 }
 
 // Mutation returns the TeammateMutation object of the builder.
@@ -437,6 +453,25 @@ func (tc *TeammateCreate) createSpec() (*Teammate, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: favoriteproject.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := tc.mutation.FavoriteWorkspacesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   teammate.FavoriteWorkspacesTable,
+			Columns: []string{teammate.FavoriteWorkspacesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: favoriteworkspace.FieldID,
 				},
 			},
 		}

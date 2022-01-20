@@ -12,6 +12,7 @@ import (
 
 	"project-management-demo-backend/ent/color"
 	"project-management-demo-backend/ent/favoriteproject"
+	"project-management-demo-backend/ent/favoriteworkspace"
 	"project-management-demo-backend/ent/icon"
 	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/projectbasecolor"
@@ -38,6 +39,8 @@ type Client struct {
 	Color *ColorClient
 	// FavoriteProject is the client for interacting with the FavoriteProject builders.
 	FavoriteProject *FavoriteProjectClient
+	// FavoriteWorkspace is the client for interacting with the FavoriteWorkspace builders.
+	FavoriteWorkspace *FavoriteWorkspaceClient
 	// Icon is the client for interacting with the Icon builders.
 	Icon *IconClient
 	// Project is the client for interacting with the Project builders.
@@ -75,6 +78,7 @@ func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.Color = NewColorClient(c.config)
 	c.FavoriteProject = NewFavoriteProjectClient(c.config)
+	c.FavoriteWorkspace = NewFavoriteWorkspaceClient(c.config)
 	c.Icon = NewIconClient(c.config)
 	c.Project = NewProjectClient(c.config)
 	c.ProjectBaseColor = NewProjectBaseColorClient(c.config)
@@ -121,6 +125,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		config:            cfg,
 		Color:             NewColorClient(cfg),
 		FavoriteProject:   NewFavoriteProjectClient(cfg),
+		FavoriteWorkspace: NewFavoriteWorkspaceClient(cfg),
 		Icon:              NewIconClient(cfg),
 		Project:           NewProjectClient(cfg),
 		ProjectBaseColor:  NewProjectBaseColorClient(cfg),
@@ -152,6 +157,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		config:            cfg,
 		Color:             NewColorClient(cfg),
 		FavoriteProject:   NewFavoriteProjectClient(cfg),
+		FavoriteWorkspace: NewFavoriteWorkspaceClient(cfg),
 		Icon:              NewIconClient(cfg),
 		Project:           NewProjectClient(cfg),
 		ProjectBaseColor:  NewProjectBaseColorClient(cfg),
@@ -194,6 +200,7 @@ func (c *Client) Close() error {
 func (c *Client) Use(hooks ...Hook) {
 	c.Color.Use(hooks...)
 	c.FavoriteProject.Use(hooks...)
+	c.FavoriteWorkspace.Use(hooks...)
 	c.Icon.Use(hooks...)
 	c.Project.Use(hooks...)
 	c.ProjectBaseColor.Use(hooks...)
@@ -449,6 +456,128 @@ func (c *FavoriteProjectClient) QueryTeammate(fp *FavoriteProject) *TeammateQuer
 // Hooks returns the client hooks.
 func (c *FavoriteProjectClient) Hooks() []Hook {
 	return c.hooks.FavoriteProject
+}
+
+// FavoriteWorkspaceClient is a client for the FavoriteWorkspace schema.
+type FavoriteWorkspaceClient struct {
+	config
+}
+
+// NewFavoriteWorkspaceClient returns a client for the FavoriteWorkspace from the given config.
+func NewFavoriteWorkspaceClient(c config) *FavoriteWorkspaceClient {
+	return &FavoriteWorkspaceClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `favoriteworkspace.Hooks(f(g(h())))`.
+func (c *FavoriteWorkspaceClient) Use(hooks ...Hook) {
+	c.hooks.FavoriteWorkspace = append(c.hooks.FavoriteWorkspace, hooks...)
+}
+
+// Create returns a create builder for FavoriteWorkspace.
+func (c *FavoriteWorkspaceClient) Create() *FavoriteWorkspaceCreate {
+	mutation := newFavoriteWorkspaceMutation(c.config, OpCreate)
+	return &FavoriteWorkspaceCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of FavoriteWorkspace entities.
+func (c *FavoriteWorkspaceClient) CreateBulk(builders ...*FavoriteWorkspaceCreate) *FavoriteWorkspaceCreateBulk {
+	return &FavoriteWorkspaceCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for FavoriteWorkspace.
+func (c *FavoriteWorkspaceClient) Update() *FavoriteWorkspaceUpdate {
+	mutation := newFavoriteWorkspaceMutation(c.config, OpUpdate)
+	return &FavoriteWorkspaceUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *FavoriteWorkspaceClient) UpdateOne(fw *FavoriteWorkspace) *FavoriteWorkspaceUpdateOne {
+	mutation := newFavoriteWorkspaceMutation(c.config, OpUpdateOne, withFavoriteWorkspace(fw))
+	return &FavoriteWorkspaceUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *FavoriteWorkspaceClient) UpdateOneID(id ulid.ID) *FavoriteWorkspaceUpdateOne {
+	mutation := newFavoriteWorkspaceMutation(c.config, OpUpdateOne, withFavoriteWorkspaceID(id))
+	return &FavoriteWorkspaceUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for FavoriteWorkspace.
+func (c *FavoriteWorkspaceClient) Delete() *FavoriteWorkspaceDelete {
+	mutation := newFavoriteWorkspaceMutation(c.config, OpDelete)
+	return &FavoriteWorkspaceDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *FavoriteWorkspaceClient) DeleteOne(fw *FavoriteWorkspace) *FavoriteWorkspaceDeleteOne {
+	return c.DeleteOneID(fw.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *FavoriteWorkspaceClient) DeleteOneID(id ulid.ID) *FavoriteWorkspaceDeleteOne {
+	builder := c.Delete().Where(favoriteworkspace.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &FavoriteWorkspaceDeleteOne{builder}
+}
+
+// Query returns a query builder for FavoriteWorkspace.
+func (c *FavoriteWorkspaceClient) Query() *FavoriteWorkspaceQuery {
+	return &FavoriteWorkspaceQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a FavoriteWorkspace entity by its id.
+func (c *FavoriteWorkspaceClient) Get(ctx context.Context, id ulid.ID) (*FavoriteWorkspace, error) {
+	return c.Query().Where(favoriteworkspace.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *FavoriteWorkspaceClient) GetX(ctx context.Context, id ulid.ID) *FavoriteWorkspace {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryWorkspace queries the workspace edge of a FavoriteWorkspace.
+func (c *FavoriteWorkspaceClient) QueryWorkspace(fw *FavoriteWorkspace) *WorkspaceQuery {
+	query := &WorkspaceQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := fw.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(favoriteworkspace.Table, favoriteworkspace.FieldID, id),
+			sqlgraph.To(workspace.Table, workspace.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, favoriteworkspace.WorkspaceTable, favoriteworkspace.WorkspaceColumn),
+		)
+		fromV = sqlgraph.Neighbors(fw.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryTeammate queries the teammate edge of a FavoriteWorkspace.
+func (c *FavoriteWorkspaceClient) QueryTeammate(fw *FavoriteWorkspace) *TeammateQuery {
+	query := &TeammateQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := fw.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(favoriteworkspace.Table, favoriteworkspace.FieldID, id),
+			sqlgraph.To(teammate.Table, teammate.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, favoriteworkspace.TeammateTable, favoriteworkspace.TeammateColumn),
+		)
+		fromV = sqlgraph.Neighbors(fw.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *FavoriteWorkspaceClient) Hooks() []Hook {
+	return c.hooks.FavoriteWorkspace
 }
 
 // IconClient is a client for the Icon schema.
@@ -1412,6 +1541,22 @@ func (c *TeammateClient) QueryFavoriteProjects(t *Teammate) *FavoriteProjectQuer
 	return query
 }
 
+// QueryFavoriteWorkspaces queries the favorite_workspaces edge of a Teammate.
+func (c *TeammateClient) QueryFavoriteWorkspaces(t *Teammate) *FavoriteWorkspaceQuery {
+	query := &FavoriteWorkspaceQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := t.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(teammate.Table, teammate.FieldID, id),
+			sqlgraph.To(favoriteworkspace.Table, favoriteworkspace.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, teammate.FavoriteWorkspacesTable, teammate.FavoriteWorkspacesColumn),
+		)
+		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *TeammateClient) Hooks() []Hook {
 	return c.hooks.Teammate
@@ -1755,6 +1900,22 @@ func (c *WorkspaceClient) QueryWorkspaceTeammates(w *Workspace) *WorkspaceTeamma
 			sqlgraph.From(workspace.Table, workspace.FieldID, id),
 			sqlgraph.To(workspaceteammate.Table, workspaceteammate.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, workspace.WorkspaceTeammatesTable, workspace.WorkspaceTeammatesColumn),
+		)
+		fromV = sqlgraph.Neighbors(w.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryFavoriteWorkspaces queries the favorite_workspaces edge of a Workspace.
+func (c *WorkspaceClient) QueryFavoriteWorkspaces(w *Workspace) *FavoriteWorkspaceQuery {
+	query := &FavoriteWorkspaceQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := w.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(workspace.Table, workspace.FieldID, id),
+			sqlgraph.To(favoriteworkspace.Table, favoriteworkspace.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, workspace.FavoriteWorkspacesTable, workspace.FavoriteWorkspacesColumn),
 		)
 		fromV = sqlgraph.Neighbors(w.driver.Dialect(), step)
 		return fromV, nil
