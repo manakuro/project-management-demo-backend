@@ -30,6 +30,8 @@ const (
 	EdgeProjectTeammates = "project_teammates"
 	// EdgeWorkspaceTeammates holds the string denoting the workspace_teammates edge name in mutations.
 	EdgeWorkspaceTeammates = "workspace_teammates"
+	// EdgeFavoriteProjects holds the string denoting the favorite_projects edge name in mutations.
+	EdgeFavoriteProjects = "favorite_projects"
 	// Table holds the table name of the teammate in the database.
 	Table = "teammates"
 	// WorkspacesTable is the table that holds the workspaces relation/edge.
@@ -60,6 +62,13 @@ const (
 	WorkspaceTeammatesInverseTable = "workspace_teammates"
 	// WorkspaceTeammatesColumn is the table column denoting the workspace_teammates relation/edge.
 	WorkspaceTeammatesColumn = "teammate_id"
+	// FavoriteProjectsTable is the table that holds the favorite_projects relation/edge.
+	FavoriteProjectsTable = "favorite_projects"
+	// FavoriteProjectsInverseTable is the table name for the FavoriteProject entity.
+	// It exists in this package in order to avoid circular dependency with the "favoriteproject" package.
+	FavoriteProjectsInverseTable = "favorite_projects"
+	// FavoriteProjectsColumn is the table column denoting the favorite_projects relation/edge.
+	FavoriteProjectsColumn = "teammate_id"
 )
 
 // Columns holds all SQL columns for teammate fields.

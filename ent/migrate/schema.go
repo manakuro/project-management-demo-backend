@@ -23,6 +23,34 @@ var (
 		Columns:    ColorsColumns,
 		PrimaryKey: []*schema.Column{ColorsColumns[0]},
 	}
+	// FavoriteProjectsColumns holds the columns for the "favorite_projects" table.
+	FavoriteProjectsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
+		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
+		{Name: "project_id", Type: field.TypeString, Nullable: true},
+		{Name: "teammate_id", Type: field.TypeString, Nullable: true},
+	}
+	// FavoriteProjectsTable holds the schema information for the "favorite_projects" table.
+	FavoriteProjectsTable = &schema.Table{
+		Name:       "favorite_projects",
+		Columns:    FavoriteProjectsColumns,
+		PrimaryKey: []*schema.Column{FavoriteProjectsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "favorite_projects_projects_favorite_projects",
+				Columns:    []*schema.Column{FavoriteProjectsColumns[3]},
+				RefColumns: []*schema.Column{ProjectsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "favorite_projects_teammates_favorite_projects",
+				Columns:    []*schema.Column{FavoriteProjectsColumns[4]},
+				RefColumns: []*schema.Column{TeammatesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
 	// IconsColumns holds the columns for the "icons" table.
 	IconsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString},
@@ -293,6 +321,7 @@ var (
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		ColorsTable,
+		FavoriteProjectsTable,
 		IconsTable,
 		ProjectsTable,
 		ProjectBaseColorsTable,
@@ -308,6 +337,8 @@ var (
 )
 
 func init() {
+	FavoriteProjectsTable.ForeignKeys[0].RefTable = ProjectsTable
+	FavoriteProjectsTable.ForeignKeys[1].RefTable = TeammatesTable
 	ProjectsTable.ForeignKeys[0].RefTable = ProjectBaseColorsTable
 	ProjectsTable.ForeignKeys[1].RefTable = ProjectIconsTable
 	ProjectsTable.ForeignKeys[2].RefTable = ProjectLightColorsTable

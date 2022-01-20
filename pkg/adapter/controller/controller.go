@@ -4,6 +4,7 @@ package controller
 type Controller struct {
 	Auth              interface{ Auth }
 	Color             interface{ Color }
+	FavoriteProject   interface{ FavoriteProject }
 	Icon              interface{ Icon }
 	Me                interface{ Me }
 	Project           interface{ Project }

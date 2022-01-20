@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"project-management-demo-backend/ent/favoriteproject"
 	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/projectbasecolor"
 	"project-management-demo-backend/ent/projecticon"
@@ -176,6 +177,21 @@ func (pc *ProjectCreate) AddProjectTeammates(p ...*ProjectTeammate) *ProjectCrea
 		ids[i] = p[i].ID
 	}
 	return pc.AddProjectTeammateIDs(ids...)
+}
+
+// AddFavoriteProjectIDs adds the "favorite_projects" edge to the FavoriteProject entity by IDs.
+func (pc *ProjectCreate) AddFavoriteProjectIDs(ids ...ulid.ID) *ProjectCreate {
+	pc.mutation.AddFavoriteProjectIDs(ids...)
+	return pc
+}
+
+// AddFavoriteProjects adds the "favorite_projects" edges to the FavoriteProject entity.
+func (pc *ProjectCreate) AddFavoriteProjects(f ...*FavoriteProject) *ProjectCreate {
+	ids := make([]ulid.ID, len(f))
+	for i := range f {
+		ids[i] = f[i].ID
+	}
+	return pc.AddFavoriteProjectIDs(ids...)
 }
 
 // Mutation returns the ProjectMutation object of the builder.
@@ -518,6 +534,25 @@ func (pc *ProjectCreate) createSpec() (*Project, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: projectteammate.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := pc.mutation.FavoriteProjectsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   project.FavoriteProjectsTable,
+			Columns: []string{project.FavoriteProjectsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: favoriteproject.FieldID,
 				},
 			},
 		}

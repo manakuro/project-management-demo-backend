@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"project-management-demo-backend/ent/color"
+	"project-management-demo-backend/ent/favoriteproject"
 	"project-management-demo-backend/ent/icon"
 	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/projectbasecolor"
@@ -26,12 +27,13 @@ type field struct {
 // GlobalIDs maps unique string to tables names.
 type GlobalIDs struct {
 	Color             field
+	FavoriteProject   field
 	Icon              field
 	Project           field
 	ProjectBaseColor  field
+	ProjectIcon       field
 	ProjectLightColor field
 	ProjectTeammate   field
-	ProjectIcon       field
 	Teammate          field
 	TestTodo          field
 	TestUser          field
@@ -90,6 +92,10 @@ func New() GlobalIDs {
 		WorkspaceTeammate: field{
 			Prefix: "0AL",
 			Table:  workspaceteammate.Table,
+		},
+		FavoriteProject: field{
+			Prefix: "0AM",
+			Table:  favoriteproject.Table,
 		},
 	}
 }

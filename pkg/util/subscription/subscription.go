@@ -80,20 +80,34 @@ type WorkspaceTeammateUpdated struct {
 	Ch chan *model.WorkspaceTeammate
 }
 
+// FavoriteProjectCreated of channel
+type FavoriteProjectCreated struct {
+	TeammateID ulid.ID
+	Ch         chan *model.FavoriteProject
+}
+
+// FavoriteProjectIDsUpdated of channel
+type FavoriteProjectIDsUpdated struct {
+	TeammateID model.ID
+	Ch         chan []model.ID
+}
+
 // Subscriptions hold an id and a channel of subscription.
 type Subscriptions struct {
-	ColorUpdated             map[string]ColorUpdated
-	IconUpdated              map[string]IconUpdated
-	MeUpdated                map[string]MeUpdated
-	ProjectBaseColorUpdated  map[string]ProjectBaseColorUpdated
-	ProjectIconUpdated       map[string]ProjectIconUpdated
-	ProjectLightColorUpdated map[string]ProjectLightColorUpdated
-	ProjectTeammateUpdated   map[string]ProjectTeammateUpdated
-	ProjectUpdated           map[string]ProjectUpdated
-	TeammateUpdated          map[string]TeammateUpdated
-	TestUserUpdated          map[string]TestUserUpdated
-	WorkspaceUpdated         map[string]WorkspaceUpdated
-	WorkspaceTeammateUpdated map[string]WorkspaceTeammateUpdated
+	ColorUpdated              map[string]ColorUpdated
+	FavoriteProjectCreated    map[string]FavoriteProjectCreated
+	FavoriteProjectIDsUpdated map[string]FavoriteProjectIDsUpdated
+	IconUpdated               map[string]IconUpdated
+	MeUpdated                 map[string]MeUpdated
+	ProjectBaseColorUpdated   map[string]ProjectBaseColorUpdated
+	ProjectIconUpdated        map[string]ProjectIconUpdated
+	ProjectLightColorUpdated  map[string]ProjectLightColorUpdated
+	ProjectTeammateUpdated    map[string]ProjectTeammateUpdated
+	ProjectUpdated            map[string]ProjectUpdated
+	TeammateUpdated           map[string]TeammateUpdated
+	TestUserUpdated           map[string]TestUserUpdated
+	WorkspaceTeammateUpdated  map[string]WorkspaceTeammateUpdated
+	WorkspaceUpdated          map[string]WorkspaceUpdated
 }
 
 // NewKey generates a random hex string with length of 16.

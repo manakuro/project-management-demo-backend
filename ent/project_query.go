@@ -8,6 +8,7 @@ import (
 	"errors"
 	"fmt"
 	"math"
+	"project-management-demo-backend/ent/favoriteproject"
 	"project-management-demo-backend/ent/predicate"
 	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/projectbasecolor"
@@ -39,6 +40,7 @@ type ProjectQuery struct {
 	withProjectIcon       *ProjectIconQuery
 	withTeammate          *TeammateQuery
 	withProjectTeammates  *ProjectTeammateQuery
+	withFavoriteProjects  *FavoriteProjectQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -200,6 +202,28 @@ func (pq *ProjectQuery) QueryProjectTeammates() *ProjectTeammateQuery {
 			sqlgraph.From(project.Table, project.FieldID, selector),
 			sqlgraph.To(projectteammate.Table, projectteammate.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, project.ProjectTeammatesTable, project.ProjectTeammatesColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryFavoriteProjects chains the current query on the "favorite_projects" edge.
+func (pq *ProjectQuery) QueryFavoriteProjects() *FavoriteProjectQuery {
+	query := &FavoriteProjectQuery{config: pq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := pq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := pq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(project.Table, project.FieldID, selector),
+			sqlgraph.To(favoriteproject.Table, favoriteproject.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, project.FavoriteProjectsTable, project.FavoriteProjectsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
 		return fromU, nil
@@ -394,6 +418,7 @@ func (pq *ProjectQuery) Clone() *ProjectQuery {
 		withProjectIcon:       pq.withProjectIcon.Clone(),
 		withTeammate:          pq.withTeammate.Clone(),
 		withProjectTeammates:  pq.withProjectTeammates.Clone(),
+		withFavoriteProjects:  pq.withFavoriteProjects.Clone(),
 		// clone intermediate query.
 		sql:  pq.sql.Clone(),
 		path: pq.path,
@@ -466,6 +491,17 @@ func (pq *ProjectQuery) WithProjectTeammates(opts ...func(*ProjectTeammateQuery)
 	return pq
 }
 
+// WithFavoriteProjects tells the query-builder to eager-load the nodes that are connected to
+// the "favorite_projects" edge. The optional arguments are used to configure the query builder of the edge.
+func (pq *ProjectQuery) WithFavoriteProjects(opts ...func(*FavoriteProjectQuery)) *ProjectQuery {
+	query := &FavoriteProjectQuery{config: pq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	pq.withFavoriteProjects = query
+	return pq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -531,13 +567,14 @@ func (pq *ProjectQuery) sqlAll(ctx context.Context) ([]*Project, error) {
 	var (
 		nodes       = []*Project{}
 		_spec       = pq.querySpec()
-		loadedTypes = [6]bool{
+		loadedTypes = [7]bool{
 			pq.withWorkspace != nil,
 			pq.withProjectBaseColor != nil,
 			pq.withProjectLightColor != nil,
 			pq.withProjectIcon != nil,
 			pq.withTeammate != nil,
 			pq.withProjectTeammates != nil,
+			pq.withFavoriteProjects != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -712,6 +749,31 @@ func (pq *ProjectQuery) sqlAll(ctx context.Context) ([]*Project, error) {
 				return nil, fmt.Errorf(`unexpected foreign-key "project_id" returned %v for node %v`, fk, n.ID)
 			}
 			node.Edges.ProjectTeammates = append(node.Edges.ProjectTeammates, n)
+		}
+	}
+
+	if query := pq.withFavoriteProjects; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[ulid.ID]*Project)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.FavoriteProjects = []*FavoriteProject{}
+		}
+		query.Where(predicate.FavoriteProject(func(s *sql.Selector) {
+			s.Where(sql.InValues(project.FavoriteProjectsColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.ProjectID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "project_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.FavoriteProjects = append(node.Edges.FavoriteProjects, n)
 		}
 	}
 

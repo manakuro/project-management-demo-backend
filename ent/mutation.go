@@ -6,6 +6,7 @@ import (
 	"context"
 	"fmt"
 	"project-management-demo-backend/ent/color"
+	"project-management-demo-backend/ent/favoriteproject"
 	"project-management-demo-backend/ent/icon"
 	"project-management-demo-backend/ent/predicate"
 	"project-management-demo-backend/ent/project"
@@ -37,6 +38,7 @@ const (
 
 	// Node types.
 	TypeColor             = "Color"
+	TypeFavoriteProject   = "FavoriteProject"
 	TypeIcon              = "Icon"
 	TypeProject           = "Project"
 	TypeProjectBaseColor  = "ProjectBaseColor"
@@ -740,6 +742,566 @@ func (m *ColorMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown Color edge %s", name)
 }
 
+// FavoriteProjectMutation represents an operation that mutates the FavoriteProject nodes in the graph.
+type FavoriteProjectMutation struct {
+	config
+	op              Op
+	typ             string
+	id              *ulid.ID
+	created_at      *time.Time
+	updated_at      *time.Time
+	clearedFields   map[string]struct{}
+	project         *ulid.ID
+	clearedproject  bool
+	teammate        *ulid.ID
+	clearedteammate bool
+	done            bool
+	oldValue        func(context.Context) (*FavoriteProject, error)
+	predicates      []predicate.FavoriteProject
+}
+
+var _ ent.Mutation = (*FavoriteProjectMutation)(nil)
+
+// favoriteprojectOption allows management of the mutation configuration using functional options.
+type favoriteprojectOption func(*FavoriteProjectMutation)
+
+// newFavoriteProjectMutation creates new mutation for the FavoriteProject entity.
+func newFavoriteProjectMutation(c config, op Op, opts ...favoriteprojectOption) *FavoriteProjectMutation {
+	m := &FavoriteProjectMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeFavoriteProject,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withFavoriteProjectID sets the ID field of the mutation.
+func withFavoriteProjectID(id ulid.ID) favoriteprojectOption {
+	return func(m *FavoriteProjectMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *FavoriteProject
+		)
+		m.oldValue = func(ctx context.Context) (*FavoriteProject, error) {
+			once.Do(func() {
+				if m.done {
+					err = fmt.Errorf("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().FavoriteProject.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withFavoriteProject sets the old FavoriteProject of the mutation.
+func withFavoriteProject(node *FavoriteProject) favoriteprojectOption {
+	return func(m *FavoriteProjectMutation) {
+		m.oldValue = func(context.Context) (*FavoriteProject, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m FavoriteProjectMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m FavoriteProjectMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, fmt.Errorf("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of FavoriteProject entities.
+func (m *FavoriteProjectMutation) SetID(id ulid.ID) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *FavoriteProjectMutation) ID() (id ulid.ID, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// SetProjectID sets the "project_id" field.
+func (m *FavoriteProjectMutation) SetProjectID(u ulid.ID) {
+	m.project = &u
+}
+
+// ProjectID returns the value of the "project_id" field in the mutation.
+func (m *FavoriteProjectMutation) ProjectID() (r ulid.ID, exists bool) {
+	v := m.project
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldProjectID returns the old "project_id" field's value of the FavoriteProject entity.
+// If the FavoriteProject object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *FavoriteProjectMutation) OldProjectID(ctx context.Context) (v ulid.ID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldProjectID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldProjectID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldProjectID: %w", err)
+	}
+	return oldValue.ProjectID, nil
+}
+
+// ResetProjectID resets all changes to the "project_id" field.
+func (m *FavoriteProjectMutation) ResetProjectID() {
+	m.project = nil
+}
+
+// SetTeammateID sets the "teammate_id" field.
+func (m *FavoriteProjectMutation) SetTeammateID(u ulid.ID) {
+	m.teammate = &u
+}
+
+// TeammateID returns the value of the "teammate_id" field in the mutation.
+func (m *FavoriteProjectMutation) TeammateID() (r ulid.ID, exists bool) {
+	v := m.teammate
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTeammateID returns the old "teammate_id" field's value of the FavoriteProject entity.
+// If the FavoriteProject object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *FavoriteProjectMutation) OldTeammateID(ctx context.Context) (v ulid.ID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldTeammateID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldTeammateID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTeammateID: %w", err)
+	}
+	return oldValue.TeammateID, nil
+}
+
+// ResetTeammateID resets all changes to the "teammate_id" field.
+func (m *FavoriteProjectMutation) ResetTeammateID() {
+	m.teammate = nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *FavoriteProjectMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *FavoriteProjectMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the FavoriteProject entity.
+// If the FavoriteProject object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *FavoriteProjectMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *FavoriteProjectMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *FavoriteProjectMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *FavoriteProjectMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the FavoriteProject entity.
+// If the FavoriteProject object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *FavoriteProjectMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *FavoriteProjectMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// ClearProject clears the "project" edge to the Project entity.
+func (m *FavoriteProjectMutation) ClearProject() {
+	m.clearedproject = true
+}
+
+// ProjectCleared reports if the "project" edge to the Project entity was cleared.
+func (m *FavoriteProjectMutation) ProjectCleared() bool {
+	return m.clearedproject
+}
+
+// ProjectIDs returns the "project" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// ProjectID instead. It exists only for internal usage by the builders.
+func (m *FavoriteProjectMutation) ProjectIDs() (ids []ulid.ID) {
+	if id := m.project; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetProject resets all changes to the "project" edge.
+func (m *FavoriteProjectMutation) ResetProject() {
+	m.project = nil
+	m.clearedproject = false
+}
+
+// ClearTeammate clears the "teammate" edge to the Teammate entity.
+func (m *FavoriteProjectMutation) ClearTeammate() {
+	m.clearedteammate = true
+}
+
+// TeammateCleared reports if the "teammate" edge to the Teammate entity was cleared.
+func (m *FavoriteProjectMutation) TeammateCleared() bool {
+	return m.clearedteammate
+}
+
+// TeammateIDs returns the "teammate" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// TeammateID instead. It exists only for internal usage by the builders.
+func (m *FavoriteProjectMutation) TeammateIDs() (ids []ulid.ID) {
+	if id := m.teammate; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetTeammate resets all changes to the "teammate" edge.
+func (m *FavoriteProjectMutation) ResetTeammate() {
+	m.teammate = nil
+	m.clearedteammate = false
+}
+
+// Where appends a list predicates to the FavoriteProjectMutation builder.
+func (m *FavoriteProjectMutation) Where(ps ...predicate.FavoriteProject) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// Op returns the operation name.
+func (m *FavoriteProjectMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (FavoriteProject).
+func (m *FavoriteProjectMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *FavoriteProjectMutation) Fields() []string {
+	fields := make([]string, 0, 4)
+	if m.project != nil {
+		fields = append(fields, favoriteproject.FieldProjectID)
+	}
+	if m.teammate != nil {
+		fields = append(fields, favoriteproject.FieldTeammateID)
+	}
+	if m.created_at != nil {
+		fields = append(fields, favoriteproject.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, favoriteproject.FieldUpdatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *FavoriteProjectMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case favoriteproject.FieldProjectID:
+		return m.ProjectID()
+	case favoriteproject.FieldTeammateID:
+		return m.TeammateID()
+	case favoriteproject.FieldCreatedAt:
+		return m.CreatedAt()
+	case favoriteproject.FieldUpdatedAt:
+		return m.UpdatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *FavoriteProjectMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case favoriteproject.FieldProjectID:
+		return m.OldProjectID(ctx)
+	case favoriteproject.FieldTeammateID:
+		return m.OldTeammateID(ctx)
+	case favoriteproject.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case favoriteproject.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown FavoriteProject field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *FavoriteProjectMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case favoriteproject.FieldProjectID:
+		v, ok := value.(ulid.ID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetProjectID(v)
+		return nil
+	case favoriteproject.FieldTeammateID:
+		v, ok := value.(ulid.ID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTeammateID(v)
+		return nil
+	case favoriteproject.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case favoriteproject.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown FavoriteProject field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *FavoriteProjectMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *FavoriteProjectMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *FavoriteProjectMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown FavoriteProject numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *FavoriteProjectMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *FavoriteProjectMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *FavoriteProjectMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown FavoriteProject nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *FavoriteProjectMutation) ResetField(name string) error {
+	switch name {
+	case favoriteproject.FieldProjectID:
+		m.ResetProjectID()
+		return nil
+	case favoriteproject.FieldTeammateID:
+		m.ResetTeammateID()
+		return nil
+	case favoriteproject.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case favoriteproject.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown FavoriteProject field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *FavoriteProjectMutation) AddedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.project != nil {
+		edges = append(edges, favoriteproject.EdgeProject)
+	}
+	if m.teammate != nil {
+		edges = append(edges, favoriteproject.EdgeTeammate)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *FavoriteProjectMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case favoriteproject.EdgeProject:
+		if id := m.project; id != nil {
+			return []ent.Value{*id}
+		}
+	case favoriteproject.EdgeTeammate:
+		if id := m.teammate; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *FavoriteProjectMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 2)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *FavoriteProjectMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *FavoriteProjectMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.clearedproject {
+		edges = append(edges, favoriteproject.EdgeProject)
+	}
+	if m.clearedteammate {
+		edges = append(edges, favoriteproject.EdgeTeammate)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *FavoriteProjectMutation) EdgeCleared(name string) bool {
+	switch name {
+	case favoriteproject.EdgeProject:
+		return m.clearedproject
+	case favoriteproject.EdgeTeammate:
+		return m.clearedteammate
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *FavoriteProjectMutation) ClearEdge(name string) error {
+	switch name {
+	case favoriteproject.EdgeProject:
+		m.ClearProject()
+		return nil
+	case favoriteproject.EdgeTeammate:
+		m.ClearTeammate()
+		return nil
+	}
+	return fmt.Errorf("unknown FavoriteProject unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *FavoriteProjectMutation) ResetEdge(name string) error {
+	switch name {
+	case favoriteproject.EdgeProject:
+		m.ResetProject()
+		return nil
+	case favoriteproject.EdgeTeammate:
+		m.ResetTeammate()
+		return nil
+	}
+	return fmt.Errorf("unknown FavoriteProject edge %s", name)
+}
+
 // IconMutation represents an operation that mutates the Icon nodes in the graph.
 type IconMutation struct {
 	config
@@ -1319,6 +1881,9 @@ type ProjectMutation struct {
 	project_teammates          map[ulid.ID]struct{}
 	removedproject_teammates   map[ulid.ID]struct{}
 	clearedproject_teammates   bool
+	favorite_projects          map[ulid.ID]struct{}
+	removedfavorite_projects   map[ulid.ID]struct{}
+	clearedfavorite_projects   bool
 	done                       bool
 	oldValue                   func(context.Context) (*Project, error)
 	predicates                 []predicate.Project
@@ -2002,6 +2567,60 @@ func (m *ProjectMutation) ResetProjectTeammates() {
 	m.removedproject_teammates = nil
 }
 
+// AddFavoriteProjectIDs adds the "favorite_projects" edge to the FavoriteProject entity by ids.
+func (m *ProjectMutation) AddFavoriteProjectIDs(ids ...ulid.ID) {
+	if m.favorite_projects == nil {
+		m.favorite_projects = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		m.favorite_projects[ids[i]] = struct{}{}
+	}
+}
+
+// ClearFavoriteProjects clears the "favorite_projects" edge to the FavoriteProject entity.
+func (m *ProjectMutation) ClearFavoriteProjects() {
+	m.clearedfavorite_projects = true
+}
+
+// FavoriteProjectsCleared reports if the "favorite_projects" edge to the FavoriteProject entity was cleared.
+func (m *ProjectMutation) FavoriteProjectsCleared() bool {
+	return m.clearedfavorite_projects
+}
+
+// RemoveFavoriteProjectIDs removes the "favorite_projects" edge to the FavoriteProject entity by IDs.
+func (m *ProjectMutation) RemoveFavoriteProjectIDs(ids ...ulid.ID) {
+	if m.removedfavorite_projects == nil {
+		m.removedfavorite_projects = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		delete(m.favorite_projects, ids[i])
+		m.removedfavorite_projects[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedFavoriteProjects returns the removed IDs of the "favorite_projects" edge to the FavoriteProject entity.
+func (m *ProjectMutation) RemovedFavoriteProjectsIDs() (ids []ulid.ID) {
+	for id := range m.removedfavorite_projects {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// FavoriteProjectsIDs returns the "favorite_projects" edge IDs in the mutation.
+func (m *ProjectMutation) FavoriteProjectsIDs() (ids []ulid.ID) {
+	for id := range m.favorite_projects {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetFavoriteProjects resets all changes to the "favorite_projects" edge.
+func (m *ProjectMutation) ResetFavoriteProjects() {
+	m.favorite_projects = nil
+	m.clearedfavorite_projects = false
+	m.removedfavorite_projects = nil
+}
+
 // Where appends a list predicates to the ProjectMutation builder.
 func (m *ProjectMutation) Where(ps ...predicate.Project) {
 	m.predicates = append(m.predicates, ps...)
@@ -2290,7 +2909,7 @@ func (m *ProjectMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *ProjectMutation) AddedEdges() []string {
-	edges := make([]string, 0, 6)
+	edges := make([]string, 0, 7)
 	if m.workspace != nil {
 		edges = append(edges, project.EdgeWorkspace)
 	}
@@ -2308,6 +2927,9 @@ func (m *ProjectMutation) AddedEdges() []string {
 	}
 	if m.project_teammates != nil {
 		edges = append(edges, project.EdgeProjectTeammates)
+	}
+	if m.favorite_projects != nil {
+		edges = append(edges, project.EdgeFavoriteProjects)
 	}
 	return edges
 }
@@ -2342,15 +2964,24 @@ func (m *ProjectMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case project.EdgeFavoriteProjects:
+		ids := make([]ent.Value, 0, len(m.favorite_projects))
+		for id := range m.favorite_projects {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *ProjectMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 6)
+	edges := make([]string, 0, 7)
 	if m.removedproject_teammates != nil {
 		edges = append(edges, project.EdgeProjectTeammates)
+	}
+	if m.removedfavorite_projects != nil {
+		edges = append(edges, project.EdgeFavoriteProjects)
 	}
 	return edges
 }
@@ -2365,13 +2996,19 @@ func (m *ProjectMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case project.EdgeFavoriteProjects:
+		ids := make([]ent.Value, 0, len(m.removedfavorite_projects))
+		for id := range m.removedfavorite_projects {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *ProjectMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 6)
+	edges := make([]string, 0, 7)
 	if m.clearedworkspace {
 		edges = append(edges, project.EdgeWorkspace)
 	}
@@ -2389,6 +3026,9 @@ func (m *ProjectMutation) ClearedEdges() []string {
 	}
 	if m.clearedproject_teammates {
 		edges = append(edges, project.EdgeProjectTeammates)
+	}
+	if m.clearedfavorite_projects {
+		edges = append(edges, project.EdgeFavoriteProjects)
 	}
 	return edges
 }
@@ -2409,6 +3049,8 @@ func (m *ProjectMutation) EdgeCleared(name string) bool {
 		return m.clearedteammate
 	case project.EdgeProjectTeammates:
 		return m.clearedproject_teammates
+	case project.EdgeFavoriteProjects:
+		return m.clearedfavorite_projects
 	}
 	return false
 }
@@ -2457,6 +3099,9 @@ func (m *ProjectMutation) ResetEdge(name string) error {
 		return nil
 	case project.EdgeProjectTeammates:
 		m.ResetProjectTeammates()
+		return nil
+	case project.EdgeFavoriteProjects:
+		m.ResetFavoriteProjects()
 		return nil
 	}
 	return fmt.Errorf("unknown Project edge %s", name)
@@ -4786,6 +5431,9 @@ type TeammateMutation struct {
 	workspace_teammates        map[ulid.ID]struct{}
 	removedworkspace_teammates map[ulid.ID]struct{}
 	clearedworkspace_teammates bool
+	favorite_projects          map[ulid.ID]struct{}
+	removedfavorite_projects   map[ulid.ID]struct{}
+	clearedfavorite_projects   bool
 	done                       bool
 	oldValue                   func(context.Context) (*Teammate, error)
 	predicates                 []predicate.Teammate
@@ -5272,6 +5920,60 @@ func (m *TeammateMutation) ResetWorkspaceTeammates() {
 	m.removedworkspace_teammates = nil
 }
 
+// AddFavoriteProjectIDs adds the "favorite_projects" edge to the FavoriteProject entity by ids.
+func (m *TeammateMutation) AddFavoriteProjectIDs(ids ...ulid.ID) {
+	if m.favorite_projects == nil {
+		m.favorite_projects = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		m.favorite_projects[ids[i]] = struct{}{}
+	}
+}
+
+// ClearFavoriteProjects clears the "favorite_projects" edge to the FavoriteProject entity.
+func (m *TeammateMutation) ClearFavoriteProjects() {
+	m.clearedfavorite_projects = true
+}
+
+// FavoriteProjectsCleared reports if the "favorite_projects" edge to the FavoriteProject entity was cleared.
+func (m *TeammateMutation) FavoriteProjectsCleared() bool {
+	return m.clearedfavorite_projects
+}
+
+// RemoveFavoriteProjectIDs removes the "favorite_projects" edge to the FavoriteProject entity by IDs.
+func (m *TeammateMutation) RemoveFavoriteProjectIDs(ids ...ulid.ID) {
+	if m.removedfavorite_projects == nil {
+		m.removedfavorite_projects = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		delete(m.favorite_projects, ids[i])
+		m.removedfavorite_projects[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedFavoriteProjects returns the removed IDs of the "favorite_projects" edge to the FavoriteProject entity.
+func (m *TeammateMutation) RemovedFavoriteProjectsIDs() (ids []ulid.ID) {
+	for id := range m.removedfavorite_projects {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// FavoriteProjectsIDs returns the "favorite_projects" edge IDs in the mutation.
+func (m *TeammateMutation) FavoriteProjectsIDs() (ids []ulid.ID) {
+	for id := range m.favorite_projects {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetFavoriteProjects resets all changes to the "favorite_projects" edge.
+func (m *TeammateMutation) ResetFavoriteProjects() {
+	m.favorite_projects = nil
+	m.clearedfavorite_projects = false
+	m.removedfavorite_projects = nil
+}
+
 // Where appends a list predicates to the TeammateMutation builder.
 func (m *TeammateMutation) Where(ps ...predicate.Teammate) {
 	m.predicates = append(m.predicates, ps...)
@@ -5458,7 +6160,7 @@ func (m *TeammateMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *TeammateMutation) AddedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 5)
 	if m.workspaces != nil {
 		edges = append(edges, teammate.EdgeWorkspaces)
 	}
@@ -5470,6 +6172,9 @@ func (m *TeammateMutation) AddedEdges() []string {
 	}
 	if m.workspace_teammates != nil {
 		edges = append(edges, teammate.EdgeWorkspaceTeammates)
+	}
+	if m.favorite_projects != nil {
+		edges = append(edges, teammate.EdgeFavoriteProjects)
 	}
 	return edges
 }
@@ -5502,13 +6207,19 @@ func (m *TeammateMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case teammate.EdgeFavoriteProjects:
+		ids := make([]ent.Value, 0, len(m.favorite_projects))
+		for id := range m.favorite_projects {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *TeammateMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 5)
 	if m.removedworkspaces != nil {
 		edges = append(edges, teammate.EdgeWorkspaces)
 	}
@@ -5520,6 +6231,9 @@ func (m *TeammateMutation) RemovedEdges() []string {
 	}
 	if m.removedworkspace_teammates != nil {
 		edges = append(edges, teammate.EdgeWorkspaceTeammates)
+	}
+	if m.removedfavorite_projects != nil {
+		edges = append(edges, teammate.EdgeFavoriteProjects)
 	}
 	return edges
 }
@@ -5552,13 +6266,19 @@ func (m *TeammateMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case teammate.EdgeFavoriteProjects:
+		ids := make([]ent.Value, 0, len(m.removedfavorite_projects))
+		for id := range m.removedfavorite_projects {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *TeammateMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 5)
 	if m.clearedworkspaces {
 		edges = append(edges, teammate.EdgeWorkspaces)
 	}
@@ -5570,6 +6290,9 @@ func (m *TeammateMutation) ClearedEdges() []string {
 	}
 	if m.clearedworkspace_teammates {
 		edges = append(edges, teammate.EdgeWorkspaceTeammates)
+	}
+	if m.clearedfavorite_projects {
+		edges = append(edges, teammate.EdgeFavoriteProjects)
 	}
 	return edges
 }
@@ -5586,6 +6309,8 @@ func (m *TeammateMutation) EdgeCleared(name string) bool {
 		return m.clearedproject_teammates
 	case teammate.EdgeWorkspaceTeammates:
 		return m.clearedworkspace_teammates
+	case teammate.EdgeFavoriteProjects:
+		return m.clearedfavorite_projects
 	}
 	return false
 }
@@ -5613,6 +6338,9 @@ func (m *TeammateMutation) ResetEdge(name string) error {
 		return nil
 	case teammate.EdgeWorkspaceTeammates:
 		m.ResetWorkspaceTeammates()
+		return nil
+	case teammate.EdgeFavoriteProjects:
+		m.ResetFavoriteProjects()
 		return nil
 	}
 	return fmt.Errorf("unknown Teammate edge %s", name)

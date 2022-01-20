@@ -5,6 +5,7 @@ package ent
 import (
 	"fmt"
 	"project-management-demo-backend/ent/color"
+	"project-management-demo-backend/ent/favoriteproject"
 	"project-management-demo-backend/ent/icon"
 	"project-management-demo-backend/ent/predicate"
 	"project-management-demo-backend/ent/project"
@@ -403,6 +404,337 @@ func (i *ColorWhereInput) P() (predicate.Color, error) {
 		return predicates[0], nil
 	default:
 		return color.And(predicates...), nil
+	}
+}
+
+// FavoriteProjectWhereInput represents a where input for filtering FavoriteProject queries.
+type FavoriteProjectWhereInput struct {
+	Not *FavoriteProjectWhereInput   `json:"not,omitempty"`
+	Or  []*FavoriteProjectWhereInput `json:"or,omitempty"`
+	And []*FavoriteProjectWhereInput `json:"and,omitempty"`
+
+	// "id" field predicates.
+	ID      *ulid.ID  `json:"id,omitempty"`
+	IDNEQ   *ulid.ID  `json:"idNEQ,omitempty"`
+	IDIn    []ulid.ID `json:"idIn,omitempty"`
+	IDNotIn []ulid.ID `json:"idNotIn,omitempty"`
+	IDGT    *ulid.ID  `json:"idGT,omitempty"`
+	IDGTE   *ulid.ID  `json:"idGTE,omitempty"`
+	IDLT    *ulid.ID  `json:"idLT,omitempty"`
+	IDLTE   *ulid.ID  `json:"idLTE,omitempty"`
+
+	// "project_id" field predicates.
+	ProjectID             *ulid.ID  `json:"projectID,omitempty"`
+	ProjectIDNEQ          *ulid.ID  `json:"projectIDNEQ,omitempty"`
+	ProjectIDIn           []ulid.ID `json:"projectIDIn,omitempty"`
+	ProjectIDNotIn        []ulid.ID `json:"projectIDNotIn,omitempty"`
+	ProjectIDGT           *ulid.ID  `json:"projectIDGT,omitempty"`
+	ProjectIDGTE          *ulid.ID  `json:"projectIDGTE,omitempty"`
+	ProjectIDLT           *ulid.ID  `json:"projectIDLT,omitempty"`
+	ProjectIDLTE          *ulid.ID  `json:"projectIDLTE,omitempty"`
+	ProjectIDContains     *ulid.ID  `json:"projectIDContains,omitempty"`
+	ProjectIDHasPrefix    *ulid.ID  `json:"projectIDHasPrefix,omitempty"`
+	ProjectIDHasSuffix    *ulid.ID  `json:"projectIDHasSuffix,omitempty"`
+	ProjectIDEqualFold    *ulid.ID  `json:"projectIDEqualFold,omitempty"`
+	ProjectIDContainsFold *ulid.ID  `json:"projectIDContainsFold,omitempty"`
+
+	// "teammate_id" field predicates.
+	TeammateID             *ulid.ID  `json:"teammateID,omitempty"`
+	TeammateIDNEQ          *ulid.ID  `json:"teammateIDNEQ,omitempty"`
+	TeammateIDIn           []ulid.ID `json:"teammateIDIn,omitempty"`
+	TeammateIDNotIn        []ulid.ID `json:"teammateIDNotIn,omitempty"`
+	TeammateIDGT           *ulid.ID  `json:"teammateIDGT,omitempty"`
+	TeammateIDGTE          *ulid.ID  `json:"teammateIDGTE,omitempty"`
+	TeammateIDLT           *ulid.ID  `json:"teammateIDLT,omitempty"`
+	TeammateIDLTE          *ulid.ID  `json:"teammateIDLTE,omitempty"`
+	TeammateIDContains     *ulid.ID  `json:"teammateIDContains,omitempty"`
+	TeammateIDHasPrefix    *ulid.ID  `json:"teammateIDHasPrefix,omitempty"`
+	TeammateIDHasSuffix    *ulid.ID  `json:"teammateIDHasSuffix,omitempty"`
+	TeammateIDEqualFold    *ulid.ID  `json:"teammateIDEqualFold,omitempty"`
+	TeammateIDContainsFold *ulid.ID  `json:"teammateIDContainsFold,omitempty"`
+
+	// "created_at" field predicates.
+	CreatedAt      *time.Time  `json:"createdAt,omitempty"`
+	CreatedAtNEQ   *time.Time  `json:"createdAtNEQ,omitempty"`
+	CreatedAtIn    []time.Time `json:"createdAtIn,omitempty"`
+	CreatedAtNotIn []time.Time `json:"createdAtNotIn,omitempty"`
+	CreatedAtGT    *time.Time  `json:"createdAtGT,omitempty"`
+	CreatedAtGTE   *time.Time  `json:"createdAtGTE,omitempty"`
+	CreatedAtLT    *time.Time  `json:"createdAtLT,omitempty"`
+	CreatedAtLTE   *time.Time  `json:"createdAtLTE,omitempty"`
+
+	// "updated_at" field predicates.
+	UpdatedAt      *time.Time  `json:"updatedAt,omitempty"`
+	UpdatedAtNEQ   *time.Time  `json:"updatedAtNEQ,omitempty"`
+	UpdatedAtIn    []time.Time `json:"updatedAtIn,omitempty"`
+	UpdatedAtNotIn []time.Time `json:"updatedAtNotIn,omitempty"`
+	UpdatedAtGT    *time.Time  `json:"updatedAtGT,omitempty"`
+	UpdatedAtGTE   *time.Time  `json:"updatedAtGTE,omitempty"`
+	UpdatedAtLT    *time.Time  `json:"updatedAtLT,omitempty"`
+	UpdatedAtLTE   *time.Time  `json:"updatedAtLTE,omitempty"`
+
+	// "project" edge predicates.
+	HasProject     *bool                `json:"hasProject,omitempty"`
+	HasProjectWith []*ProjectWhereInput `json:"hasProjectWith,omitempty"`
+
+	// "teammate" edge predicates.
+	HasTeammate     *bool                 `json:"hasTeammate,omitempty"`
+	HasTeammateWith []*TeammateWhereInput `json:"hasTeammateWith,omitempty"`
+}
+
+// Filter applies the FavoriteProjectWhereInput filter on the FavoriteProjectQuery builder.
+func (i *FavoriteProjectWhereInput) Filter(q *FavoriteProjectQuery) (*FavoriteProjectQuery, error) {
+	if i == nil {
+		return q, nil
+	}
+	p, err := i.P()
+	if err != nil {
+		return nil, err
+	}
+	return q.Where(p), nil
+}
+
+// P returns a predicate for filtering favoriteprojects.
+// An error is returned if the input is empty or invalid.
+func (i *FavoriteProjectWhereInput) P() (predicate.FavoriteProject, error) {
+	var predicates []predicate.FavoriteProject
+	if i.Not != nil {
+		p, err := i.Not.P()
+		if err != nil {
+			return nil, err
+		}
+		predicates = append(predicates, favoriteproject.Not(p))
+	}
+	switch n := len(i.Or); {
+	case n == 1:
+		p, err := i.Or[0].P()
+		if err != nil {
+			return nil, err
+		}
+		predicates = append(predicates, p)
+	case n > 1:
+		or := make([]predicate.FavoriteProject, 0, n)
+		for _, w := range i.Or {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			or = append(or, p)
+		}
+		predicates = append(predicates, favoriteproject.Or(or...))
+	}
+	switch n := len(i.And); {
+	case n == 1:
+		p, err := i.And[0].P()
+		if err != nil {
+			return nil, err
+		}
+		predicates = append(predicates, p)
+	case n > 1:
+		and := make([]predicate.FavoriteProject, 0, n)
+		for _, w := range i.And {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			and = append(and, p)
+		}
+		predicates = append(predicates, favoriteproject.And(and...))
+	}
+	if i.ID != nil {
+		predicates = append(predicates, favoriteproject.IDEQ(*i.ID))
+	}
+	if i.IDNEQ != nil {
+		predicates = append(predicates, favoriteproject.IDNEQ(*i.IDNEQ))
+	}
+	if len(i.IDIn) > 0 {
+		predicates = append(predicates, favoriteproject.IDIn(i.IDIn...))
+	}
+	if len(i.IDNotIn) > 0 {
+		predicates = append(predicates, favoriteproject.IDNotIn(i.IDNotIn...))
+	}
+	if i.IDGT != nil {
+		predicates = append(predicates, favoriteproject.IDGT(*i.IDGT))
+	}
+	if i.IDGTE != nil {
+		predicates = append(predicates, favoriteproject.IDGTE(*i.IDGTE))
+	}
+	if i.IDLT != nil {
+		predicates = append(predicates, favoriteproject.IDLT(*i.IDLT))
+	}
+	if i.IDLTE != nil {
+		predicates = append(predicates, favoriteproject.IDLTE(*i.IDLTE))
+	}
+	if i.ProjectID != nil {
+		predicates = append(predicates, favoriteproject.ProjectIDEQ(*i.ProjectID))
+	}
+	if i.ProjectIDNEQ != nil {
+		predicates = append(predicates, favoriteproject.ProjectIDNEQ(*i.ProjectIDNEQ))
+	}
+	if len(i.ProjectIDIn) > 0 {
+		predicates = append(predicates, favoriteproject.ProjectIDIn(i.ProjectIDIn...))
+	}
+	if len(i.ProjectIDNotIn) > 0 {
+		predicates = append(predicates, favoriteproject.ProjectIDNotIn(i.ProjectIDNotIn...))
+	}
+	if i.ProjectIDGT != nil {
+		predicates = append(predicates, favoriteproject.ProjectIDGT(*i.ProjectIDGT))
+	}
+	if i.ProjectIDGTE != nil {
+		predicates = append(predicates, favoriteproject.ProjectIDGTE(*i.ProjectIDGTE))
+	}
+	if i.ProjectIDLT != nil {
+		predicates = append(predicates, favoriteproject.ProjectIDLT(*i.ProjectIDLT))
+	}
+	if i.ProjectIDLTE != nil {
+		predicates = append(predicates, favoriteproject.ProjectIDLTE(*i.ProjectIDLTE))
+	}
+	if i.ProjectIDContains != nil {
+		predicates = append(predicates, favoriteproject.ProjectIDContains(*i.ProjectIDContains))
+	}
+	if i.ProjectIDHasPrefix != nil {
+		predicates = append(predicates, favoriteproject.ProjectIDHasPrefix(*i.ProjectIDHasPrefix))
+	}
+	if i.ProjectIDHasSuffix != nil {
+		predicates = append(predicates, favoriteproject.ProjectIDHasSuffix(*i.ProjectIDHasSuffix))
+	}
+	if i.ProjectIDEqualFold != nil {
+		predicates = append(predicates, favoriteproject.ProjectIDEqualFold(*i.ProjectIDEqualFold))
+	}
+	if i.ProjectIDContainsFold != nil {
+		predicates = append(predicates, favoriteproject.ProjectIDContainsFold(*i.ProjectIDContainsFold))
+	}
+	if i.TeammateID != nil {
+		predicates = append(predicates, favoriteproject.TeammateIDEQ(*i.TeammateID))
+	}
+	if i.TeammateIDNEQ != nil {
+		predicates = append(predicates, favoriteproject.TeammateIDNEQ(*i.TeammateIDNEQ))
+	}
+	if len(i.TeammateIDIn) > 0 {
+		predicates = append(predicates, favoriteproject.TeammateIDIn(i.TeammateIDIn...))
+	}
+	if len(i.TeammateIDNotIn) > 0 {
+		predicates = append(predicates, favoriteproject.TeammateIDNotIn(i.TeammateIDNotIn...))
+	}
+	if i.TeammateIDGT != nil {
+		predicates = append(predicates, favoriteproject.TeammateIDGT(*i.TeammateIDGT))
+	}
+	if i.TeammateIDGTE != nil {
+		predicates = append(predicates, favoriteproject.TeammateIDGTE(*i.TeammateIDGTE))
+	}
+	if i.TeammateIDLT != nil {
+		predicates = append(predicates, favoriteproject.TeammateIDLT(*i.TeammateIDLT))
+	}
+	if i.TeammateIDLTE != nil {
+		predicates = append(predicates, favoriteproject.TeammateIDLTE(*i.TeammateIDLTE))
+	}
+	if i.TeammateIDContains != nil {
+		predicates = append(predicates, favoriteproject.TeammateIDContains(*i.TeammateIDContains))
+	}
+	if i.TeammateIDHasPrefix != nil {
+		predicates = append(predicates, favoriteproject.TeammateIDHasPrefix(*i.TeammateIDHasPrefix))
+	}
+	if i.TeammateIDHasSuffix != nil {
+		predicates = append(predicates, favoriteproject.TeammateIDHasSuffix(*i.TeammateIDHasSuffix))
+	}
+	if i.TeammateIDEqualFold != nil {
+		predicates = append(predicates, favoriteproject.TeammateIDEqualFold(*i.TeammateIDEqualFold))
+	}
+	if i.TeammateIDContainsFold != nil {
+		predicates = append(predicates, favoriteproject.TeammateIDContainsFold(*i.TeammateIDContainsFold))
+	}
+	if i.CreatedAt != nil {
+		predicates = append(predicates, favoriteproject.CreatedAtEQ(*i.CreatedAt))
+	}
+	if i.CreatedAtNEQ != nil {
+		predicates = append(predicates, favoriteproject.CreatedAtNEQ(*i.CreatedAtNEQ))
+	}
+	if len(i.CreatedAtIn) > 0 {
+		predicates = append(predicates, favoriteproject.CreatedAtIn(i.CreatedAtIn...))
+	}
+	if len(i.CreatedAtNotIn) > 0 {
+		predicates = append(predicates, favoriteproject.CreatedAtNotIn(i.CreatedAtNotIn...))
+	}
+	if i.CreatedAtGT != nil {
+		predicates = append(predicates, favoriteproject.CreatedAtGT(*i.CreatedAtGT))
+	}
+	if i.CreatedAtGTE != nil {
+		predicates = append(predicates, favoriteproject.CreatedAtGTE(*i.CreatedAtGTE))
+	}
+	if i.CreatedAtLT != nil {
+		predicates = append(predicates, favoriteproject.CreatedAtLT(*i.CreatedAtLT))
+	}
+	if i.CreatedAtLTE != nil {
+		predicates = append(predicates, favoriteproject.CreatedAtLTE(*i.CreatedAtLTE))
+	}
+	if i.UpdatedAt != nil {
+		predicates = append(predicates, favoriteproject.UpdatedAtEQ(*i.UpdatedAt))
+	}
+	if i.UpdatedAtNEQ != nil {
+		predicates = append(predicates, favoriteproject.UpdatedAtNEQ(*i.UpdatedAtNEQ))
+	}
+	if len(i.UpdatedAtIn) > 0 {
+		predicates = append(predicates, favoriteproject.UpdatedAtIn(i.UpdatedAtIn...))
+	}
+	if len(i.UpdatedAtNotIn) > 0 {
+		predicates = append(predicates, favoriteproject.UpdatedAtNotIn(i.UpdatedAtNotIn...))
+	}
+	if i.UpdatedAtGT != nil {
+		predicates = append(predicates, favoriteproject.UpdatedAtGT(*i.UpdatedAtGT))
+	}
+	if i.UpdatedAtGTE != nil {
+		predicates = append(predicates, favoriteproject.UpdatedAtGTE(*i.UpdatedAtGTE))
+	}
+	if i.UpdatedAtLT != nil {
+		predicates = append(predicates, favoriteproject.UpdatedAtLT(*i.UpdatedAtLT))
+	}
+	if i.UpdatedAtLTE != nil {
+		predicates = append(predicates, favoriteproject.UpdatedAtLTE(*i.UpdatedAtLTE))
+	}
+
+	if i.HasProject != nil {
+		p := favoriteproject.HasProject()
+		if !*i.HasProject {
+			p = favoriteproject.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasProjectWith) > 0 {
+		with := make([]predicate.Project, 0, len(i.HasProjectWith))
+		for _, w := range i.HasProjectWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, favoriteproject.HasProjectWith(with...))
+	}
+	if i.HasTeammate != nil {
+		p := favoriteproject.HasTeammate()
+		if !*i.HasTeammate {
+			p = favoriteproject.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasTeammateWith) > 0 {
+		with := make([]predicate.Teammate, 0, len(i.HasTeammateWith))
+		for _, w := range i.HasTeammateWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, favoriteproject.HasTeammateWith(with...))
+	}
+	switch len(predicates) {
+	case 0:
+		return nil, fmt.Errorf("project-management-demo-backend/ent: empty predicate FavoriteProjectWhereInput")
+	case 1:
+		return predicates[0], nil
+	default:
+		return favoriteproject.And(predicates...), nil
 	}
 }
 
@@ -889,6 +1221,10 @@ type ProjectWhereInput struct {
 	// "project_teammates" edge predicates.
 	HasProjectTeammates     *bool                        `json:"hasProjectTeammates,omitempty"`
 	HasProjectTeammatesWith []*ProjectTeammateWhereInput `json:"hasProjectTeammatesWith,omitempty"`
+
+	// "favorite_projects" edge predicates.
+	HasFavoriteProjects     *bool                        `json:"hasFavoriteProjects,omitempty"`
+	HasFavoriteProjectsWith []*FavoriteProjectWhereInput `json:"hasFavoriteProjectsWith,omitempty"`
 }
 
 // Filter applies the ProjectWhereInput filter on the ProjectQuery builder.
@@ -1427,6 +1763,24 @@ func (i *ProjectWhereInput) P() (predicate.Project, error) {
 			with = append(with, p)
 		}
 		predicates = append(predicates, project.HasProjectTeammatesWith(with...))
+	}
+	if i.HasFavoriteProjects != nil {
+		p := project.HasFavoriteProjects()
+		if !*i.HasFavoriteProjects {
+			p = project.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasFavoriteProjectsWith) > 0 {
+		with := make([]predicate.FavoriteProject, 0, len(i.HasFavoriteProjectsWith))
+		for _, w := range i.HasFavoriteProjectsWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, project.HasFavoriteProjectsWith(with...))
 	}
 	switch len(predicates) {
 	case 0:
@@ -2760,6 +3114,10 @@ type TeammateWhereInput struct {
 	// "workspace_teammates" edge predicates.
 	HasWorkspaceTeammates     *bool                          `json:"hasWorkspaceTeammates,omitempty"`
 	HasWorkspaceTeammatesWith []*WorkspaceTeammateWhereInput `json:"hasWorkspaceTeammatesWith,omitempty"`
+
+	// "favorite_projects" edge predicates.
+	HasFavoriteProjects     *bool                        `json:"hasFavoriteProjects,omitempty"`
+	HasFavoriteProjectsWith []*FavoriteProjectWhereInput `json:"hasFavoriteProjectsWith,omitempty"`
 }
 
 // Filter applies the TeammateWhereInput filter on the TeammateQuery builder.
@@ -3082,6 +3440,24 @@ func (i *TeammateWhereInput) P() (predicate.Teammate, error) {
 			with = append(with, p)
 		}
 		predicates = append(predicates, teammate.HasWorkspaceTeammatesWith(with...))
+	}
+	if i.HasFavoriteProjects != nil {
+		p := teammate.HasFavoriteProjects()
+		if !*i.HasFavoriteProjects {
+			p = teammate.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasFavoriteProjectsWith) > 0 {
+		with := make([]predicate.FavoriteProject, 0, len(i.HasFavoriteProjectsWith))
+		for _, w := range i.HasFavoriteProjectsWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, teammate.HasFavoriteProjectsWith(with...))
 	}
 	switch len(predicates) {
 	case 0:
