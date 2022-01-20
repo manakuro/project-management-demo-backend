@@ -31,6 +31,7 @@ func main() {
 	feed.WorkspaceTeammate(ctx, client)
 
 	feed.FavoriteProject(ctx, client)
+	feed.FavoriteWorkspace(ctx, client)
 
 	feed.TestUser(ctx, client)
 	feed.TestTodo(ctx, client)
