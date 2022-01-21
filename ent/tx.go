@@ -20,6 +20,8 @@ type Tx struct {
 	FavoriteWorkspace *FavoriteWorkspaceClient
 	// Icon is the client for interacting with the Icon builders.
 	Icon *IconClient
+	// MyTasksTabStatus is the client for interacting with the MyTasksTabStatus builders.
+	MyTasksTabStatus *MyTasksTabStatusClient
 	// Project is the client for interacting with the Project builders.
 	Project *ProjectClient
 	// ProjectBaseColor is the client for interacting with the ProjectBaseColor builders.
@@ -179,6 +181,7 @@ func (tx *Tx) init() {
 	tx.FavoriteProject = NewFavoriteProjectClient(tx.config)
 	tx.FavoriteWorkspace = NewFavoriteWorkspaceClient(tx.config)
 	tx.Icon = NewIconClient(tx.config)
+	tx.MyTasksTabStatus = NewMyTasksTabStatusClient(tx.config)
 	tx.Project = NewProjectClient(tx.config)
 	tx.ProjectBaseColor = NewProjectBaseColorClient(tx.config)
 	tx.ProjectIcon = NewProjectIconClient(tx.config)

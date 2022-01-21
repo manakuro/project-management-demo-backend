@@ -98,6 +98,12 @@ type FavoriteWorkspaceIDsUpdated struct {
 	Ch         chan []model.ID
 }
 
+// MyTasksTabStatusUpdated of channel
+type MyTasksTabStatusUpdated struct {
+	ID model.ID
+	Ch chan *model.MyTasksTabStatus
+}
+
 // Subscriptions hold an id and a channel of subscription.
 type Subscriptions struct {
 	ColorUpdated                map[string]ColorUpdated
@@ -106,6 +112,7 @@ type Subscriptions struct {
 	FavoriteWorkspaceIDsUpdated map[string]FavoriteWorkspaceIDsUpdated
 	IconUpdated                 map[string]IconUpdated
 	MeUpdated                   map[string]MeUpdated
+	MyTasksTabStatusUpdated     map[string]MyTasksTabStatusUpdated
 	ProjectBaseColorUpdated     map[string]ProjectBaseColorUpdated
 	ProjectIconUpdated          map[string]ProjectIconUpdated
 	ProjectLightColorUpdated    map[string]ProjectLightColorUpdated

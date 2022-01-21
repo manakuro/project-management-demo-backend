@@ -60,6 +60,22 @@ func (i *Icon) ProjectIcons(ctx context.Context) ([]*ProjectIcon, error) {
 	return result, err
 }
 
+func (mtts *MyTasksTabStatus) Workspace(ctx context.Context) (*Workspace, error) {
+	result, err := mtts.Edges.WorkspaceOrErr()
+	if IsNotLoaded(err) {
+		result, err = mtts.QueryWorkspace().Only(ctx)
+	}
+	return result, err
+}
+
+func (mtts *MyTasksTabStatus) Teammate(ctx context.Context) (*Teammate, error) {
+	result, err := mtts.Edges.TeammateOrErr()
+	if IsNotLoaded(err) {
+		result, err = mtts.QueryTeammate().Only(ctx)
+	}
+	return result, err
+}
+
 func (pr *Project) Workspace(ctx context.Context) (*Workspace, error) {
 	result, err := pr.Edges.WorkspaceOrErr()
 	if IsNotLoaded(err) {
@@ -228,6 +244,14 @@ func (t *Teammate) FavoriteWorkspaces(ctx context.Context) ([]*FavoriteWorkspace
 	return result, err
 }
 
+func (t *Teammate) MyTasksTabStatuses(ctx context.Context) ([]*MyTasksTabStatus, error) {
+	result, err := t.Edges.MyTasksTabStatusesOrErr()
+	if IsNotLoaded(err) {
+		result, err = t.QueryMyTasksTabStatuses().All(ctx)
+	}
+	return result, err
+}
+
 func (tt *TestTodo) TestUser(ctx context.Context) (*TestUser, error) {
 	result, err := tt.Edges.TestUserOrErr()
 	if IsNotLoaded(err) {
@@ -272,6 +296,14 @@ func (w *Workspace) FavoriteWorkspaces(ctx context.Context) ([]*FavoriteWorkspac
 	result, err := w.Edges.FavoriteWorkspacesOrErr()
 	if IsNotLoaded(err) {
 		result, err = w.QueryFavoriteWorkspaces().All(ctx)
+	}
+	return result, err
+}
+
+func (w *Workspace) MyTasksTabStatuses(ctx context.Context) ([]*MyTasksTabStatus, error) {
+	result, err := w.Edges.MyTasksTabStatusesOrErr()
+	if IsNotLoaded(err) {
+		result, err = w.QueryMyTasksTabStatuses().All(ctx)
 	}
 	return result, err
 }

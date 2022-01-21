@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"project-management-demo-backend/ent/favoriteworkspace"
+	"project-management-demo-backend/ent/mytaskstabstatus"
 	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/schema/editor"
 	"project-management-demo-backend/ent/schema/ulid"
@@ -140,6 +141,21 @@ func (wc *WorkspaceCreate) AddFavoriteWorkspaces(f ...*FavoriteWorkspace) *Works
 		ids[i] = f[i].ID
 	}
 	return wc.AddFavoriteWorkspaceIDs(ids...)
+}
+
+// AddMyTasksTabStatusIDs adds the "my_tasks_tab_statuses" edge to the MyTasksTabStatus entity by IDs.
+func (wc *WorkspaceCreate) AddMyTasksTabStatusIDs(ids ...ulid.ID) *WorkspaceCreate {
+	wc.mutation.AddMyTasksTabStatusIDs(ids...)
+	return wc
+}
+
+// AddMyTasksTabStatuses adds the "my_tasks_tab_statuses" edges to the MyTasksTabStatus entity.
+func (wc *WorkspaceCreate) AddMyTasksTabStatuses(m ...*MyTasksTabStatus) *WorkspaceCreate {
+	ids := make([]ulid.ID, len(m))
+	for i := range m {
+		ids[i] = m[i].ID
+	}
+	return wc.AddMyTasksTabStatusIDs(ids...)
 }
 
 // Mutation returns the WorkspaceMutation object of the builder.
@@ -385,6 +401,25 @@ func (wc *WorkspaceCreate) createSpec() (*Workspace, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: favoriteworkspace.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := wc.mutation.MyTasksTabStatusesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   workspace.MyTasksTabStatusesTable,
+			Columns: []string{workspace.MyTasksTabStatusesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: mytaskstabstatus.FieldID,
 				},
 			},
 		}

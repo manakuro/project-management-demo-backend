@@ -3,6 +3,7 @@
 package ent
 
 import (
+	"project-management-demo-backend/ent/mytaskstabstatus"
 	"project-management-demo-backend/ent/schema/editor"
 	"project-management-demo-backend/ent/schema/testuserprofile"
 	"project-management-demo-backend/ent/schema/ulid"
@@ -284,6 +285,77 @@ func (u *IconUpdate) SetInput(i UpdateIconInput) *IconUpdate {
 
 // SetInput applies the change-set in the UpdateIconInput on the update-one builder.
 func (u *IconUpdateOne) SetInput(i UpdateIconInput) *IconUpdateOne {
+	i.Mutate(u.Mutation())
+	return u
+}
+
+// CreateMyTasksTabStatusInput represents a mutation input for creating mytaskstabstatusslice.
+type CreateMyTasksTabStatusInput struct {
+	Status      *mytaskstabstatus.Status
+	CreatedAt   *time.Time
+	UpdatedAt   *time.Time
+	WorkspaceID ulid.ID
+	TeammateID  ulid.ID
+}
+
+// Mutate applies the CreateMyTasksTabStatusInput on the MyTasksTabStatusCreate builder.
+func (i *CreateMyTasksTabStatusInput) Mutate(m *MyTasksTabStatusCreate) {
+	if v := i.Status; v != nil {
+		m.SetStatus(*v)
+	}
+	if v := i.CreatedAt; v != nil {
+		m.SetCreatedAt(*v)
+	}
+	if v := i.UpdatedAt; v != nil {
+		m.SetUpdatedAt(*v)
+	}
+	m.SetWorkspaceID(i.WorkspaceID)
+	m.SetTeammateID(i.TeammateID)
+}
+
+// SetInput applies the change-set in the CreateMyTasksTabStatusInput on the create builder.
+func (c *MyTasksTabStatusCreate) SetInput(i CreateMyTasksTabStatusInput) *MyTasksTabStatusCreate {
+	i.Mutate(c)
+	return c
+}
+
+// UpdateMyTasksTabStatusInput represents a mutation input for updating mytaskstabstatusslice.
+type UpdateMyTasksTabStatusInput struct {
+	ID             ulid.ID
+	Status         *mytaskstabstatus.Status
+	WorkspaceID    *ulid.ID
+	ClearWorkspace bool
+	TeammateID     *ulid.ID
+	ClearTeammate  bool
+}
+
+// Mutate applies the UpdateMyTasksTabStatusInput on the MyTasksTabStatusMutation.
+func (i *UpdateMyTasksTabStatusInput) Mutate(m *MyTasksTabStatusMutation) {
+	if v := i.Status; v != nil {
+		m.SetStatus(*v)
+	}
+	if i.ClearWorkspace {
+		m.ClearWorkspace()
+	}
+	if v := i.WorkspaceID; v != nil {
+		m.SetWorkspaceID(*v)
+	}
+	if i.ClearTeammate {
+		m.ClearTeammate()
+	}
+	if v := i.TeammateID; v != nil {
+		m.SetTeammateID(*v)
+	}
+}
+
+// SetInput applies the change-set in the UpdateMyTasksTabStatusInput on the update builder.
+func (u *MyTasksTabStatusUpdate) SetInput(i UpdateMyTasksTabStatusInput) *MyTasksTabStatusUpdate {
+	i.Mutate(u.Mutation())
+	return u
+}
+
+// SetInput applies the change-set in the UpdateMyTasksTabStatusInput on the update-one builder.
+func (u *MyTasksTabStatusUpdateOne) SetInput(i UpdateMyTasksTabStatusInput) *MyTasksTabStatusUpdateOne {
 	i.Mutate(u.Mutation())
 	return u
 }
@@ -714,6 +786,7 @@ type CreateTeammateInput struct {
 	WorkspaceTeammateIDs []ulid.ID
 	FavoriteProjectIDs   []ulid.ID
 	FavoriteWorkspaceIDs []ulid.ID
+	MyTasksTabStatusIDs  []ulid.ID
 }
 
 // Mutate applies the CreateTeammateInput on the TeammateCreate builder.
@@ -745,6 +818,9 @@ func (i *CreateTeammateInput) Mutate(m *TeammateCreate) {
 	if ids := i.FavoriteWorkspaceIDs; len(ids) > 0 {
 		m.AddFavoriteWorkspaceIDs(ids...)
 	}
+	if ids := i.MyTasksTabStatusIDs; len(ids) > 0 {
+		m.AddMyTasksTabStatusIDs(ids...)
+	}
 }
 
 // SetInput applies the change-set in the CreateTeammateInput on the create builder.
@@ -771,6 +847,8 @@ type UpdateTeammateInput struct {
 	RemoveFavoriteProjectIDs   []ulid.ID
 	AddFavoriteWorkspaceIDs    []ulid.ID
 	RemoveFavoriteWorkspaceIDs []ulid.ID
+	AddMyTasksTabStatusIDs     []ulid.ID
+	RemoveMyTasksTabStatusIDs  []ulid.ID
 }
 
 // Mutate applies the UpdateTeammateInput on the TeammateMutation.
@@ -819,6 +897,12 @@ func (i *UpdateTeammateInput) Mutate(m *TeammateMutation) {
 	}
 	if ids := i.RemoveFavoriteWorkspaceIDs; len(ids) > 0 {
 		m.RemoveFavoriteWorkspaceIDs(ids...)
+	}
+	if ids := i.AddMyTasksTabStatusIDs; len(ids) > 0 {
+		m.AddMyTasksTabStatusIDs(ids...)
+	}
+	if ids := i.RemoveMyTasksTabStatusIDs; len(ids) > 0 {
+		m.RemoveMyTasksTabStatusIDs(ids...)
 	}
 }
 
@@ -996,6 +1080,7 @@ type CreateWorkspaceInput struct {
 	ProjectIDs           []ulid.ID
 	WorkspaceTeammateIDs []ulid.ID
 	FavoriteWorkspaceIDs []ulid.ID
+	MyTasksTabStatusIDs  []ulid.ID
 }
 
 // Mutate applies the CreateWorkspaceInput on the WorkspaceCreate builder.
@@ -1018,6 +1103,9 @@ func (i *CreateWorkspaceInput) Mutate(m *WorkspaceCreate) {
 	if ids := i.FavoriteWorkspaceIDs; len(ids) > 0 {
 		m.AddFavoriteWorkspaceIDs(ids...)
 	}
+	if ids := i.MyTasksTabStatusIDs; len(ids) > 0 {
+		m.AddMyTasksTabStatusIDs(ids...)
+	}
 }
 
 // SetInput applies the change-set in the CreateWorkspaceInput on the create builder.
@@ -1039,6 +1127,8 @@ type UpdateWorkspaceInput struct {
 	RemoveWorkspaceTeammateIDs []ulid.ID
 	AddFavoriteWorkspaceIDs    []ulid.ID
 	RemoveFavoriteWorkspaceIDs []ulid.ID
+	AddMyTasksTabStatusIDs     []ulid.ID
+	RemoveMyTasksTabStatusIDs  []ulid.ID
 }
 
 // Mutate applies the UpdateWorkspaceInput on the WorkspaceMutation.
@@ -1072,6 +1162,12 @@ func (i *UpdateWorkspaceInput) Mutate(m *WorkspaceMutation) {
 	}
 	if ids := i.RemoveFavoriteWorkspaceIDs; len(ids) > 0 {
 		m.RemoveFavoriteWorkspaceIDs(ids...)
+	}
+	if ids := i.AddMyTasksTabStatusIDs; len(ids) > 0 {
+		m.AddMyTasksTabStatusIDs(ids...)
+	}
+	if ids := i.RemoveMyTasksTabStatusIDs; len(ids) > 0 {
+		m.RemoveMyTasksTabStatusIDs(ids...)
 	}
 }
 
