@@ -164,6 +164,19 @@ func (f TeammateFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, er
 	return f(ctx, mv)
 }
 
+// The TeammateTaskColumnFunc type is an adapter to allow the use of ordinary
+// function as TeammateTaskColumn mutator.
+type TeammateTaskColumnFunc func(context.Context, *ent.TeammateTaskColumnMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f TeammateTaskColumnFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.TeammateTaskColumnMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.TeammateTaskColumnMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The TestTodoFunc type is an adapter to allow the use of ordinary
 // function as TestTodo mutator.
 type TestTodoFunc func(context.Context, *ent.TestTodoMutation) (ent.Value, error)

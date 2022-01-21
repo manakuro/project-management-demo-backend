@@ -61,6 +61,7 @@ type ResolverRoot interface {
 	Subscription() SubscriptionResolver
 	TaskColumn() TaskColumnResolver
 	Teammate() TeammateResolver
+	TeammateTaskColumn() TeammateTaskColumnResolver
 	TestTodo() TestTodoResolver
 	TestUser() TestUserResolver
 	Workspace() WorkspaceResolver
@@ -183,40 +184,42 @@ type ComplexityRoot struct {
 	}
 
 	Mutation struct {
-		CreateColor             func(childComplexity int, input ent.CreateColorInput) int
-		CreateFavoriteProject   func(childComplexity int, input ent.CreateFavoriteProjectInput) int
-		CreateFavoriteWorkspace func(childComplexity int, input ent.CreateFavoriteWorkspaceInput) int
-		CreateIcon              func(childComplexity int, input ent.CreateIconInput) int
-		CreateMyTasksTabStatus  func(childComplexity int, input ent.CreateMyTasksTabStatusInput) int
-		CreateProject           func(childComplexity int, input ent.CreateProjectInput) int
-		CreateProjectBaseColor  func(childComplexity int, input ent.CreateProjectBaseColorInput) int
-		CreateProjectIcon       func(childComplexity int, input ent.CreateProjectIconInput) int
-		CreateProjectLightColor func(childComplexity int, input ent.CreateProjectLightColorInput) int
-		CreateProjectTeammate   func(childComplexity int, input ent.CreateProjectTeammateInput) int
-		CreateTaskColumn        func(childComplexity int, input ent.CreateTaskColumnInput) int
-		CreateTeammate          func(childComplexity int, input ent.CreateTeammateInput) int
-		CreateTestTodo          func(childComplexity int, input ent.CreateTestTodoInput) int
-		CreateTestUser          func(childComplexity int, input ent.CreateTestUserInput) int
-		CreateTestUserAndTodo   func(childComplexity int, input ent.CreateTestUserInput) int
-		CreateWorkspace         func(childComplexity int, input ent.CreateWorkspaceInput) int
-		CreateWorkspaceTeammate func(childComplexity int, input ent.CreateWorkspaceTeammateInput) int
-		DeleteFavoriteProject   func(childComplexity int, input model.DeleteFavoriteProjectInput) int
-		DeleteFavoriteWorkspace func(childComplexity int, input model.DeleteFavoriteWorkspaceInput) int
-		UpdateColor             func(childComplexity int, input ent.UpdateColorInput) int
-		UpdateIcon              func(childComplexity int, input ent.UpdateIconInput) int
-		UpdateMe                func(childComplexity int, input model.UpdateMeInput) int
-		UpdateMyTasksTabStatus  func(childComplexity int, input ent.UpdateMyTasksTabStatusInput) int
-		UpdateProject           func(childComplexity int, input ent.UpdateProjectInput) int
-		UpdateProjectBaseColor  func(childComplexity int, input ent.UpdateProjectBaseColorInput) int
-		UpdateProjectIcon       func(childComplexity int, input ent.UpdateProjectIconInput) int
-		UpdateProjectLightColor func(childComplexity int, input ent.UpdateProjectLightColorInput) int
-		UpdateProjectTeammate   func(childComplexity int, input ent.UpdateProjectTeammateInput) int
-		UpdateTaskColumn        func(childComplexity int, input ent.UpdateTaskColumnInput) int
-		UpdateTeammate          func(childComplexity int, input ent.UpdateTeammateInput) int
-		UpdateTestTodo          func(childComplexity int, input ent.UpdateTestTodoInput) int
-		UpdateTestUser          func(childComplexity int, input ent.UpdateTestUserInput) int
-		UpdateWorkspace         func(childComplexity int, input ent.UpdateWorkspaceInput) int
-		UpdateWorkspaceTeammate func(childComplexity int, input ent.UpdateWorkspaceTeammateInput) int
+		CreateColor              func(childComplexity int, input ent.CreateColorInput) int
+		CreateFavoriteProject    func(childComplexity int, input ent.CreateFavoriteProjectInput) int
+		CreateFavoriteWorkspace  func(childComplexity int, input ent.CreateFavoriteWorkspaceInput) int
+		CreateIcon               func(childComplexity int, input ent.CreateIconInput) int
+		CreateMyTasksTabStatus   func(childComplexity int, input ent.CreateMyTasksTabStatusInput) int
+		CreateProject            func(childComplexity int, input ent.CreateProjectInput) int
+		CreateProjectBaseColor   func(childComplexity int, input ent.CreateProjectBaseColorInput) int
+		CreateProjectIcon        func(childComplexity int, input ent.CreateProjectIconInput) int
+		CreateProjectLightColor  func(childComplexity int, input ent.CreateProjectLightColorInput) int
+		CreateProjectTeammate    func(childComplexity int, input ent.CreateProjectTeammateInput) int
+		CreateTaskColumn         func(childComplexity int, input ent.CreateTaskColumnInput) int
+		CreateTeammate           func(childComplexity int, input ent.CreateTeammateInput) int
+		CreateTeammateTaskColumn func(childComplexity int, input ent.CreateTeammateTaskColumnInput) int
+		CreateTestTodo           func(childComplexity int, input ent.CreateTestTodoInput) int
+		CreateTestUser           func(childComplexity int, input ent.CreateTestUserInput) int
+		CreateTestUserAndTodo    func(childComplexity int, input ent.CreateTestUserInput) int
+		CreateWorkspace          func(childComplexity int, input ent.CreateWorkspaceInput) int
+		CreateWorkspaceTeammate  func(childComplexity int, input ent.CreateWorkspaceTeammateInput) int
+		DeleteFavoriteProject    func(childComplexity int, input model.DeleteFavoriteProjectInput) int
+		DeleteFavoriteWorkspace  func(childComplexity int, input model.DeleteFavoriteWorkspaceInput) int
+		UpdateColor              func(childComplexity int, input ent.UpdateColorInput) int
+		UpdateIcon               func(childComplexity int, input ent.UpdateIconInput) int
+		UpdateMe                 func(childComplexity int, input model.UpdateMeInput) int
+		UpdateMyTasksTabStatus   func(childComplexity int, input ent.UpdateMyTasksTabStatusInput) int
+		UpdateProject            func(childComplexity int, input ent.UpdateProjectInput) int
+		UpdateProjectBaseColor   func(childComplexity int, input ent.UpdateProjectBaseColorInput) int
+		UpdateProjectIcon        func(childComplexity int, input ent.UpdateProjectIconInput) int
+		UpdateProjectLightColor  func(childComplexity int, input ent.UpdateProjectLightColorInput) int
+		UpdateProjectTeammate    func(childComplexity int, input ent.UpdateProjectTeammateInput) int
+		UpdateTaskColumn         func(childComplexity int, input ent.UpdateTaskColumnInput) int
+		UpdateTeammate           func(childComplexity int, input ent.UpdateTeammateInput) int
+		UpdateTeammateTaskColumn func(childComplexity int, input ent.UpdateTeammateTaskColumnInput) int
+		UpdateTestTodo           func(childComplexity int, input ent.UpdateTestTodoInput) int
+		UpdateTestUser           func(childComplexity int, input ent.UpdateTestUserInput) int
+		UpdateWorkspace          func(childComplexity int, input ent.UpdateWorkspaceInput) int
+		UpdateWorkspaceTeammate  func(childComplexity int, input ent.UpdateWorkspaceTeammateInput) int
 	}
 
 	MyTasksTabStatus struct {
@@ -385,6 +388,8 @@ type ComplexityRoot struct {
 		TaskColumn           func(childComplexity int, where *ent.TaskColumnWhereInput) int
 		TaskColumns          func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskColumnWhereInput) int
 		Teammate             func(childComplexity int, id ulid.ID) int
+		TeammateTaskColumn   func(childComplexity int, where *ent.TeammateTaskColumnWhereInput) int
+		TeammateTaskColumns  func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TeammateTaskColumnWhereInput) int
 		Teammates            func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TeammateWhereInput) int
 		TestTodo             func(childComplexity int, id *ulid.ID) int
 		TestTodos            func(childComplexity int) int
@@ -409,6 +414,7 @@ type ComplexityRoot struct {
 		ProjectLightColorUpdated    func(childComplexity int, id ulid.ID) int
 		ProjectTeammateUpdated      func(childComplexity int, id ulid.ID) int
 		ProjectUpdated              func(childComplexity int, id ulid.ID) int
+		TeammateTaskColumnUpdated   func(childComplexity int, id ulid.ID) int
 		TeammateUpdated             func(childComplexity int, id ulid.ID) int
 		TestUserUpdated             func(childComplexity int, id ulid.ID) int
 		WorkspaceTeammateUpdated    func(childComplexity int, id ulid.ID) int
@@ -450,6 +456,31 @@ type ComplexityRoot struct {
 	}
 
 	TeammateEdge struct {
+		Cursor func(childComplexity int) int
+		Node   func(childComplexity int) int
+	}
+
+	TeammateTaskColumn struct {
+		CreatedAt    func(childComplexity int) int
+		Customizable func(childComplexity int) int
+		Disabled     func(childComplexity int) int
+		ID           func(childComplexity int) int
+		Order        func(childComplexity int) int
+		TaskColumn   func(childComplexity int) int
+		TaskColumnID func(childComplexity int) int
+		Teammate     func(childComplexity int) int
+		TeammateID   func(childComplexity int) int
+		UpdatedAt    func(childComplexity int) int
+		Width        func(childComplexity int) int
+	}
+
+	TeammateTaskColumnConnection struct {
+		Edges      func(childComplexity int) int
+		PageInfo   func(childComplexity int) int
+		TotalCount func(childComplexity int) int
+	}
+
+	TeammateTaskColumnEdge struct {
 		Cursor func(childComplexity int) int
 		Node   func(childComplexity int) int
 	}
@@ -594,6 +625,8 @@ type MutationResolver interface {
 	UpdateTaskColumn(ctx context.Context, input ent.UpdateTaskColumnInput) (*ent.TaskColumn, error)
 	CreateTeammate(ctx context.Context, input ent.CreateTeammateInput) (*ent.Teammate, error)
 	UpdateTeammate(ctx context.Context, input ent.UpdateTeammateInput) (*ent.Teammate, error)
+	CreateTeammateTaskColumn(ctx context.Context, input ent.CreateTeammateTaskColumnInput) (*ent.TeammateTaskColumn, error)
+	UpdateTeammateTaskColumn(ctx context.Context, input ent.UpdateTeammateTaskColumnInput) (*ent.TeammateTaskColumn, error)
 	CreateTestTodo(ctx context.Context, input ent.CreateTestTodoInput) (*ent.TestTodo, error)
 	UpdateTestTodo(ctx context.Context, input ent.UpdateTestTodoInput) (*ent.TestTodo, error)
 	CreateTestUser(ctx context.Context, input ent.CreateTestUserInput) (*ent.TestUser, error)
@@ -661,6 +694,8 @@ type QueryResolver interface {
 	TaskColumns(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskColumnWhereInput) (*ent.TaskColumnConnection, error)
 	Teammate(ctx context.Context, id ulid.ID) (*ent.Teammate, error)
 	Teammates(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TeammateWhereInput) (*ent.TeammateConnection, error)
+	TeammateTaskColumn(ctx context.Context, where *ent.TeammateTaskColumnWhereInput) (*ent.TeammateTaskColumn, error)
+	TeammateTaskColumns(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TeammateTaskColumnWhereInput) (*ent.TeammateTaskColumnConnection, error)
 	TestTodo(ctx context.Context, id *ulid.ID) (*ent.TestTodo, error)
 	TestTodos(ctx context.Context) ([]*ent.TestTodo, error)
 	TestUser(ctx context.Context, id ulid.ID, age *int) (*ent.TestUser, error)
@@ -684,6 +719,7 @@ type SubscriptionResolver interface {
 	ProjectLightColorUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.ProjectLightColor, error)
 	ProjectTeammateUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.ProjectTeammate, error)
 	TeammateUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.Teammate, error)
+	TeammateTaskColumnUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.TeammateTaskColumn, error)
 	TestUserUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.TestUser, error)
 	WorkspaceUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.Workspace, error)
 	WorkspaceTeammateUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.WorkspaceTeammate, error)
@@ -695,6 +731,10 @@ type TaskColumnResolver interface {
 type TeammateResolver interface {
 	CreatedAt(ctx context.Context, obj *ent.Teammate) (string, error)
 	UpdatedAt(ctx context.Context, obj *ent.Teammate) (string, error)
+}
+type TeammateTaskColumnResolver interface {
+	CreatedAt(ctx context.Context, obj *ent.TeammateTaskColumn) (string, error)
+	UpdatedAt(ctx context.Context, obj *ent.TeammateTaskColumn) (string, error)
 }
 type TestTodoResolver interface {
 	CreatedAt(ctx context.Context, obj *ent.TestTodo) (string, error)
@@ -1292,6 +1332,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.CreateTeammate(childComplexity, args["input"].(ent.CreateTeammateInput)), true
 
+	case "Mutation.createTeammateTaskColumn":
+		if e.complexity.Mutation.CreateTeammateTaskColumn == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createTeammateTaskColumn_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateTeammateTaskColumn(childComplexity, args["input"].(ent.CreateTeammateTaskColumnInput)), true
+
 	case "Mutation.createTestTodo":
 		if e.complexity.Mutation.CreateTestTodo == nil {
 			break
@@ -1507,6 +1559,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.UpdateTeammate(childComplexity, args["input"].(ent.UpdateTeammateInput)), true
+
+	case "Mutation.updateTeammateTaskColumn":
+		if e.complexity.Mutation.UpdateTeammateTaskColumn == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateTeammateTaskColumn_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateTeammateTaskColumn(childComplexity, args["input"].(ent.UpdateTeammateTaskColumnInput)), true
 
 	case "Mutation.updateTestTodo":
 		if e.complexity.Mutation.UpdateTestTodo == nil {
@@ -2447,6 +2511,30 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.Teammate(childComplexity, args["id"].(ulid.ID)), true
 
+	case "Query.teammateTaskColumn":
+		if e.complexity.Query.TeammateTaskColumn == nil {
+			break
+		}
+
+		args, err := ec.field_Query_teammateTaskColumn_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.TeammateTaskColumn(childComplexity, args["where"].(*ent.TeammateTaskColumnWhereInput)), true
+
+	case "Query.teammateTaskColumns":
+		if e.complexity.Query.TeammateTaskColumns == nil {
+			break
+		}
+
+		args, err := ec.field_Query_teammateTaskColumns_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.TeammateTaskColumns(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["where"].(*ent.TeammateTaskColumnWhereInput)), true
+
 	case "Query.teammates":
 		if e.complexity.Query.Teammates == nil {
 			break
@@ -2694,6 +2782,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Subscription.ProjectUpdated(childComplexity, args["id"].(ulid.ID)), true
 
+	case "Subscription.teammateTaskColumnUpdated":
+		if e.complexity.Subscription.TeammateTaskColumnUpdated == nil {
+			break
+		}
+
+		args, err := ec.field_Subscription_teammateTaskColumnUpdated_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Subscription.TeammateTaskColumnUpdated(childComplexity, args["id"].(ulid.ID)), true
+
 	case "Subscription.teammateUpdated":
 		if e.complexity.Subscription.TeammateUpdated == nil {
 			break
@@ -2888,6 +2988,118 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.TeammateEdge.Node(childComplexity), true
+
+	case "TeammateTaskColumn.createdAt":
+		if e.complexity.TeammateTaskColumn.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.TeammateTaskColumn.CreatedAt(childComplexity), true
+
+	case "TeammateTaskColumn.customizable":
+		if e.complexity.TeammateTaskColumn.Customizable == nil {
+			break
+		}
+
+		return e.complexity.TeammateTaskColumn.Customizable(childComplexity), true
+
+	case "TeammateTaskColumn.disabled":
+		if e.complexity.TeammateTaskColumn.Disabled == nil {
+			break
+		}
+
+		return e.complexity.TeammateTaskColumn.Disabled(childComplexity), true
+
+	case "TeammateTaskColumn.id":
+		if e.complexity.TeammateTaskColumn.ID == nil {
+			break
+		}
+
+		return e.complexity.TeammateTaskColumn.ID(childComplexity), true
+
+	case "TeammateTaskColumn.order":
+		if e.complexity.TeammateTaskColumn.Order == nil {
+			break
+		}
+
+		return e.complexity.TeammateTaskColumn.Order(childComplexity), true
+
+	case "TeammateTaskColumn.taskColumn":
+		if e.complexity.TeammateTaskColumn.TaskColumn == nil {
+			break
+		}
+
+		return e.complexity.TeammateTaskColumn.TaskColumn(childComplexity), true
+
+	case "TeammateTaskColumn.taskColumnId":
+		if e.complexity.TeammateTaskColumn.TaskColumnID == nil {
+			break
+		}
+
+		return e.complexity.TeammateTaskColumn.TaskColumnID(childComplexity), true
+
+	case "TeammateTaskColumn.teammate":
+		if e.complexity.TeammateTaskColumn.Teammate == nil {
+			break
+		}
+
+		return e.complexity.TeammateTaskColumn.Teammate(childComplexity), true
+
+	case "TeammateTaskColumn.teammateId":
+		if e.complexity.TeammateTaskColumn.TeammateID == nil {
+			break
+		}
+
+		return e.complexity.TeammateTaskColumn.TeammateID(childComplexity), true
+
+	case "TeammateTaskColumn.updatedAt":
+		if e.complexity.TeammateTaskColumn.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.TeammateTaskColumn.UpdatedAt(childComplexity), true
+
+	case "TeammateTaskColumn.width":
+		if e.complexity.TeammateTaskColumn.Width == nil {
+			break
+		}
+
+		return e.complexity.TeammateTaskColumn.Width(childComplexity), true
+
+	case "TeammateTaskColumnConnection.edges":
+		if e.complexity.TeammateTaskColumnConnection.Edges == nil {
+			break
+		}
+
+		return e.complexity.TeammateTaskColumnConnection.Edges(childComplexity), true
+
+	case "TeammateTaskColumnConnection.pageInfo":
+		if e.complexity.TeammateTaskColumnConnection.PageInfo == nil {
+			break
+		}
+
+		return e.complexity.TeammateTaskColumnConnection.PageInfo(childComplexity), true
+
+	case "TeammateTaskColumnConnection.totalCount":
+		if e.complexity.TeammateTaskColumnConnection.TotalCount == nil {
+			break
+		}
+
+		return e.complexity.TeammateTaskColumnConnection.TotalCount(childComplexity), true
+
+	case "TeammateTaskColumnEdge.cursor":
+		if e.complexity.TeammateTaskColumnEdge.Cursor == nil {
+			break
+		}
+
+		return e.complexity.TeammateTaskColumnEdge.Cursor(childComplexity), true
+
+	case "TeammateTaskColumnEdge.node":
+		if e.complexity.TeammateTaskColumnEdge.Node == nil {
+			break
+		}
+
+		return e.complexity.TeammateTaskColumnEdge.Node(childComplexity), true
 
 	case "TestTodo.createdAt":
 		if e.complexity.TestTodo.CreatedAt == nil {
@@ -3436,7 +3648,7 @@ input TestUserWhereInput {
   not: TestUserWhereInput
   and: [TestUserWhereInput!]
   or: [TestUserWhereInput!]
-
+  
   """name field predicates"""
   name: String
   nameNEQ: String
@@ -3451,7 +3663,7 @@ input TestUserWhereInput {
   nameHasSuffix: String
   nameEqualFold: String
   nameContainsFold: String
-
+  
   """age field predicates"""
   age: Int
   ageNEQ: Int
@@ -3461,7 +3673,7 @@ input TestUserWhereInput {
   ageGTE: Int
   ageLT: Int
   ageLTE: Int
-
+  
   """created_at field predicates"""
   createdAt: Time
   createdAtNEQ: Time
@@ -3471,7 +3683,7 @@ input TestUserWhereInput {
   createdAtGTE: Time
   createdAtLT: Time
   createdAtLTE: Time
-
+  
   """updated_at field predicates"""
   updatedAt: Time
   updatedAtNEQ: Time
@@ -3481,7 +3693,7 @@ input TestUserWhereInput {
   updatedAtGTE: Time
   updatedAtLT: Time
   updatedAtLTE: Time
-
+  
   """id field predicates"""
   id: ID
   idNEQ: ID
@@ -3491,7 +3703,7 @@ input TestUserWhereInput {
   idGTE: ID
   idLT: ID
   idLTE: ID
-
+  
   """test_todos edge predicates"""
   hasTestTodos: Boolean
   hasTestTodosWith: [TestTodoWhereInput!]
@@ -3505,7 +3717,7 @@ input TestTodoWhereInput {
   not: TestTodoWhereInput
   and: [TestTodoWhereInput!]
   or: [TestTodoWhereInput!]
-
+  
   """test_user_id field predicates"""
   testUserID: ID
   testUserIDNEQ: ID
@@ -3522,7 +3734,7 @@ input TestTodoWhereInput {
   testUserIDNotNil: Boolean
   testUserIDEqualFold: ID
   testUserIDContainsFold: ID
-
+  
   """name field predicates"""
   name: String
   nameNEQ: String
@@ -3537,13 +3749,13 @@ input TestTodoWhereInput {
   nameHasSuffix: String
   nameEqualFold: String
   nameContainsFold: String
-
+  
   """status field predicates"""
   status: TestTodoStatus
   statusNEQ: TestTodoStatus
   statusIn: [TestTodoStatus!]
   statusNotIn: [TestTodoStatus!]
-
+  
   """priority field predicates"""
   priority: Int
   priorityNEQ: Int
@@ -3553,7 +3765,7 @@ input TestTodoWhereInput {
   priorityGTE: Int
   priorityLT: Int
   priorityLTE: Int
-
+  
   """created_at field predicates"""
   createdAt: Time
   createdAtNEQ: Time
@@ -3563,7 +3775,7 @@ input TestTodoWhereInput {
   createdAtGTE: Time
   createdAtLT: Time
   createdAtLTE: Time
-
+  
   """updated_at field predicates"""
   updatedAt: Time
   updatedAtNEQ: Time
@@ -3573,7 +3785,7 @@ input TestTodoWhereInput {
   updatedAtGTE: Time
   updatedAtLT: Time
   updatedAtLTE: Time
-
+  
   """id field predicates"""
   id: ID
   idNEQ: ID
@@ -3583,7 +3795,7 @@ input TestTodoWhereInput {
   idGTE: ID
   idLT: ID
   idLTE: ID
-
+  
   """test_user edge predicates"""
   hasTestUser: Boolean
   hasTestUserWith: [TestUserWhereInput!]
@@ -3597,7 +3809,7 @@ input TeammateWhereInput {
   not: TeammateWhereInput
   and: [TeammateWhereInput!]
   or: [TeammateWhereInput!]
-
+  
   """name field predicates"""
   name: String
   nameNEQ: String
@@ -3612,7 +3824,7 @@ input TeammateWhereInput {
   nameHasSuffix: String
   nameEqualFold: String
   nameContainsFold: String
-
+  
   """image field predicates"""
   image: String
   imageNEQ: String
@@ -3627,7 +3839,7 @@ input TeammateWhereInput {
   imageHasSuffix: String
   imageEqualFold: String
   imageContainsFold: String
-
+  
   """email field predicates"""
   email: String
   emailNEQ: String
@@ -3642,7 +3854,7 @@ input TeammateWhereInput {
   emailHasSuffix: String
   emailEqualFold: String
   emailContainsFold: String
-
+  
   """created_at field predicates"""
   createdAt: Time
   createdAtNEQ: Time
@@ -3652,7 +3864,7 @@ input TeammateWhereInput {
   createdAtGTE: Time
   createdAtLT: Time
   createdAtLTE: Time
-
+  
   """updated_at field predicates"""
   updatedAt: Time
   updatedAtNEQ: Time
@@ -3662,7 +3874,7 @@ input TeammateWhereInput {
   updatedAtGTE: Time
   updatedAtLT: Time
   updatedAtLTE: Time
-
+  
   """id field predicates"""
   id: ID
   idNEQ: ID
@@ -3672,34 +3884,38 @@ input TeammateWhereInput {
   idGTE: ID
   idLT: ID
   idLTE: ID
-
+  
   """workspaces edge predicates"""
   hasWorkspaces: Boolean
   hasWorkspacesWith: [WorkspaceWhereInput!]
-
+  
   """projects edge predicates"""
   hasProjects: Boolean
   hasProjectsWith: [ProjectWhereInput!]
-
+  
   """project_teammates edge predicates"""
   hasProjectTeammates: Boolean
   hasProjectTeammatesWith: [ProjectTeammateWhereInput!]
-
+  
   """workspace_teammates edge predicates"""
   hasWorkspaceTeammates: Boolean
   hasWorkspaceTeammatesWith: [WorkspaceTeammateWhereInput!]
-
+  
   """favorite_projects edge predicates"""
   hasFavoriteProjects: Boolean
   hasFavoriteProjectsWith: [FavoriteProjectWhereInput!]
-
+  
   """favorite_workspaces edge predicates"""
   hasFavoriteWorkspaces: Boolean
   hasFavoriteWorkspacesWith: [FavoriteWorkspaceWhereInput!]
-
+  
   """my_tasks_tab_statuses edge predicates"""
   hasMyTasksTabStatuses: Boolean
   hasMyTasksTabStatusesWith: [MyTasksTabStatusWhereInput!]
+  
+  """teammate_task_columns edge predicates"""
+  hasTeammateTaskColumns: Boolean
+  hasTeammateTaskColumnsWith: [TeammateTaskColumnWhereInput!]
 }
 
 """
@@ -3710,7 +3926,7 @@ input WorkspaceWhereInput {
   not: WorkspaceWhereInput
   and: [WorkspaceWhereInput!]
   or: [WorkspaceWhereInput!]
-
+  
   """created_by field predicates"""
   createdBy: ID
   createdByNEQ: ID
@@ -3725,7 +3941,7 @@ input WorkspaceWhereInput {
   createdByHasSuffix: ID
   createdByEqualFold: ID
   createdByContainsFold: ID
-
+  
   """name field predicates"""
   name: String
   nameNEQ: String
@@ -3740,7 +3956,7 @@ input WorkspaceWhereInput {
   nameHasSuffix: String
   nameEqualFold: String
   nameContainsFold: String
-
+  
   """created_at field predicates"""
   createdAt: Time
   createdAtNEQ: Time
@@ -3750,7 +3966,7 @@ input WorkspaceWhereInput {
   createdAtGTE: Time
   createdAtLT: Time
   createdAtLTE: Time
-
+  
   """updated_at field predicates"""
   updatedAt: Time
   updatedAtNEQ: Time
@@ -3760,7 +3976,7 @@ input WorkspaceWhereInput {
   updatedAtGTE: Time
   updatedAtLT: Time
   updatedAtLTE: Time
-
+  
   """id field predicates"""
   id: ID
   idNEQ: ID
@@ -3770,23 +3986,23 @@ input WorkspaceWhereInput {
   idGTE: ID
   idLT: ID
   idLTE: ID
-
+  
   """teammate edge predicates"""
   hasTeammate: Boolean
   hasTeammateWith: [TeammateWhereInput!]
-
+  
   """projects edge predicates"""
   hasProjects: Boolean
   hasProjectsWith: [ProjectWhereInput!]
-
+  
   """workspace_teammates edge predicates"""
   hasWorkspaceTeammates: Boolean
   hasWorkspaceTeammatesWith: [WorkspaceTeammateWhereInput!]
-
+  
   """favorite_workspaces edge predicates"""
   hasFavoriteWorkspaces: Boolean
   hasFavoriteWorkspacesWith: [FavoriteWorkspaceWhereInput!]
-
+  
   """my_tasks_tab_statuses edge predicates"""
   hasMyTasksTabStatuses: Boolean
   hasMyTasksTabStatusesWith: [MyTasksTabStatusWhereInput!]
@@ -3800,7 +4016,7 @@ input ColorWhereInput {
   not: ColorWhereInput
   and: [ColorWhereInput!]
   or: [ColorWhereInput!]
-
+  
   """name field predicates"""
   name: String
   nameNEQ: String
@@ -3815,7 +4031,7 @@ input ColorWhereInput {
   nameHasSuffix: String
   nameEqualFold: String
   nameContainsFold: String
-
+  
   """color field predicates"""
   color: String
   colorNEQ: String
@@ -3830,7 +4046,7 @@ input ColorWhereInput {
   colorHasSuffix: String
   colorEqualFold: String
   colorContainsFold: String
-
+  
   """hex field predicates"""
   hex: String
   hexNEQ: String
@@ -3845,7 +4061,7 @@ input ColorWhereInput {
   hexHasSuffix: String
   hexEqualFold: String
   hexContainsFold: String
-
+  
   """created_at field predicates"""
   createdAt: Time
   createdAtNEQ: Time
@@ -3855,7 +4071,7 @@ input ColorWhereInput {
   createdAtGTE: Time
   createdAtLT: Time
   createdAtLTE: Time
-
+  
   """updated_at field predicates"""
   updatedAt: Time
   updatedAtNEQ: Time
@@ -3865,7 +4081,7 @@ input ColorWhereInput {
   updatedAtGTE: Time
   updatedAtLT: Time
   updatedAtLTE: Time
-
+  
   """id field predicates"""
   id: ID
   idNEQ: ID
@@ -3875,11 +4091,11 @@ input ColorWhereInput {
   idGTE: ID
   idLT: ID
   idLTE: ID
-
+  
   """project_base_colors edge predicates"""
   hasProjectBaseColors: Boolean
   hasProjectBaseColorsWith: [ProjectBaseColorWhereInput!]
-
+  
   """project_light_colors edge predicates"""
   hasProjectLightColors: Boolean
   hasProjectLightColorsWith: [ProjectLightColorWhereInput!]
@@ -3893,7 +4109,7 @@ input IconWhereInput {
   not: IconWhereInput
   and: [IconWhereInput!]
   or: [IconWhereInput!]
-
+  
   """name field predicates"""
   name: String
   nameNEQ: String
@@ -3908,7 +4124,7 @@ input IconWhereInput {
   nameHasSuffix: String
   nameEqualFold: String
   nameContainsFold: String
-
+  
   """icon field predicates"""
   icon: String
   iconNEQ: String
@@ -3923,7 +4139,7 @@ input IconWhereInput {
   iconHasSuffix: String
   iconEqualFold: String
   iconContainsFold: String
-
+  
   """created_at field predicates"""
   createdAt: Time
   createdAtNEQ: Time
@@ -3933,7 +4149,7 @@ input IconWhereInput {
   createdAtGTE: Time
   createdAtLT: Time
   createdAtLTE: Time
-
+  
   """updated_at field predicates"""
   updatedAt: Time
   updatedAtNEQ: Time
@@ -3943,7 +4159,7 @@ input IconWhereInput {
   updatedAtGTE: Time
   updatedAtLT: Time
   updatedAtLTE: Time
-
+  
   """id field predicates"""
   id: ID
   idNEQ: ID
@@ -3953,7 +4169,7 @@ input IconWhereInput {
   idGTE: ID
   idLT: ID
   idLTE: ID
-
+  
   """project_icons edge predicates"""
   hasProjectIcons: Boolean
   hasProjectIconsWith: [ProjectIconWhereInput!]
@@ -3967,7 +4183,7 @@ input ProjectWhereInput {
   not: ProjectWhereInput
   and: [ProjectWhereInput!]
   or: [ProjectWhereInput!]
-
+  
   """workspace_id field predicates"""
   workspaceID: ID
   workspaceIDNEQ: ID
@@ -3982,7 +4198,7 @@ input ProjectWhereInput {
   workspaceIDHasSuffix: ID
   workspaceIDEqualFold: ID
   workspaceIDContainsFold: ID
-
+  
   """project_base_color_id field predicates"""
   projectBaseColorID: ID
   projectBaseColorIDNEQ: ID
@@ -3997,7 +4213,7 @@ input ProjectWhereInput {
   projectBaseColorIDHasSuffix: ID
   projectBaseColorIDEqualFold: ID
   projectBaseColorIDContainsFold: ID
-
+  
   """project_light_color_id field predicates"""
   projectLightColorID: ID
   projectLightColorIDNEQ: ID
@@ -4012,7 +4228,7 @@ input ProjectWhereInput {
   projectLightColorIDHasSuffix: ID
   projectLightColorIDEqualFold: ID
   projectLightColorIDContainsFold: ID
-
+  
   """project_icon_id field predicates"""
   projectIconID: ID
   projectIconIDNEQ: ID
@@ -4027,7 +4243,7 @@ input ProjectWhereInput {
   projectIconIDHasSuffix: ID
   projectIconIDEqualFold: ID
   projectIconIDContainsFold: ID
-
+  
   """created_by field predicates"""
   createdBy: ID
   createdByNEQ: ID
@@ -4042,7 +4258,7 @@ input ProjectWhereInput {
   createdByHasSuffix: ID
   createdByEqualFold: ID
   createdByContainsFold: ID
-
+  
   """name field predicates"""
   name: String
   nameNEQ: String
@@ -4057,7 +4273,7 @@ input ProjectWhereInput {
   nameHasSuffix: String
   nameEqualFold: String
   nameContainsFold: String
-
+  
   """description_title field predicates"""
   descriptionTitle: String
   descriptionTitleNEQ: String
@@ -4072,7 +4288,7 @@ input ProjectWhereInput {
   descriptionTitleHasSuffix: String
   descriptionTitleEqualFold: String
   descriptionTitleContainsFold: String
-
+  
   """due_date field predicates"""
   dueDate: Time
   dueDateNEQ: Time
@@ -4082,7 +4298,7 @@ input ProjectWhereInput {
   dueDateGTE: Time
   dueDateLT: Time
   dueDateLTE: Time
-
+  
   """created_at field predicates"""
   createdAt: Time
   createdAtNEQ: Time
@@ -4092,7 +4308,7 @@ input ProjectWhereInput {
   createdAtGTE: Time
   createdAtLT: Time
   createdAtLTE: Time
-
+  
   """updated_at field predicates"""
   updatedAt: Time
   updatedAtNEQ: Time
@@ -4102,7 +4318,7 @@ input ProjectWhereInput {
   updatedAtGTE: Time
   updatedAtLT: Time
   updatedAtLTE: Time
-
+  
   """id field predicates"""
   id: ID
   idNEQ: ID
@@ -4112,31 +4328,31 @@ input ProjectWhereInput {
   idGTE: ID
   idLT: ID
   idLTE: ID
-
+  
   """workspace edge predicates"""
   hasWorkspace: Boolean
   hasWorkspaceWith: [WorkspaceWhereInput!]
-
+  
   """project_base_color edge predicates"""
   hasProjectBaseColor: Boolean
   hasProjectBaseColorWith: [ProjectBaseColorWhereInput!]
-
+  
   """project_light_color edge predicates"""
   hasProjectLightColor: Boolean
   hasProjectLightColorWith: [ProjectLightColorWhereInput!]
-
+  
   """project_icon edge predicates"""
   hasProjectIcon: Boolean
   hasProjectIconWith: [ProjectIconWhereInput!]
-
+  
   """teammate edge predicates"""
   hasTeammate: Boolean
   hasTeammateWith: [TeammateWhereInput!]
-
+  
   """project_teammates edge predicates"""
   hasProjectTeammates: Boolean
   hasProjectTeammatesWith: [ProjectTeammateWhereInput!]
-
+  
   """favorite_projects edge predicates"""
   hasFavoriteProjects: Boolean
   hasFavoriteProjectsWith: [FavoriteProjectWhereInput!]
@@ -4150,7 +4366,7 @@ input ProjectTeammateWhereInput {
   not: ProjectTeammateWhereInput
   and: [ProjectTeammateWhereInput!]
   or: [ProjectTeammateWhereInput!]
-
+  
   """project_id field predicates"""
   projectID: ID
   projectIDNEQ: ID
@@ -4165,7 +4381,7 @@ input ProjectTeammateWhereInput {
   projectIDHasSuffix: ID
   projectIDEqualFold: ID
   projectIDContainsFold: ID
-
+  
   """teammate_id field predicates"""
   teammateID: ID
   teammateIDNEQ: ID
@@ -4180,7 +4396,7 @@ input ProjectTeammateWhereInput {
   teammateIDHasSuffix: ID
   teammateIDEqualFold: ID
   teammateIDContainsFold: ID
-
+  
   """role field predicates"""
   role: String
   roleNEQ: String
@@ -4195,11 +4411,11 @@ input ProjectTeammateWhereInput {
   roleHasSuffix: String
   roleEqualFold: String
   roleContainsFold: String
-
+  
   """is_owner field predicates"""
   isOwner: Boolean
   isOwnerNEQ: Boolean
-
+  
   """created_at field predicates"""
   createdAt: Time
   createdAtNEQ: Time
@@ -4209,7 +4425,7 @@ input ProjectTeammateWhereInput {
   createdAtGTE: Time
   createdAtLT: Time
   createdAtLTE: Time
-
+  
   """updated_at field predicates"""
   updatedAt: Time
   updatedAtNEQ: Time
@@ -4219,7 +4435,7 @@ input ProjectTeammateWhereInput {
   updatedAtGTE: Time
   updatedAtLT: Time
   updatedAtLTE: Time
-
+  
   """id field predicates"""
   id: ID
   idNEQ: ID
@@ -4229,11 +4445,11 @@ input ProjectTeammateWhereInput {
   idGTE: ID
   idLT: ID
   idLTE: ID
-
+  
   """project edge predicates"""
   hasProject: Boolean
   hasProjectWith: [ProjectWhereInput!]
-
+  
   """teammate edge predicates"""
   hasTeammate: Boolean
   hasTeammateWith: [TeammateWhereInput!]
@@ -4247,7 +4463,7 @@ input ProjectBaseColorWhereInput {
   not: ProjectBaseColorWhereInput
   and: [ProjectBaseColorWhereInput!]
   or: [ProjectBaseColorWhereInput!]
-
+  
   """color_id field predicates"""
   colorID: ID
   colorIDNEQ: ID
@@ -4262,7 +4478,7 @@ input ProjectBaseColorWhereInput {
   colorIDHasSuffix: ID
   colorIDEqualFold: ID
   colorIDContainsFold: ID
-
+  
   """created_at field predicates"""
   createdAt: Time
   createdAtNEQ: Time
@@ -4272,7 +4488,7 @@ input ProjectBaseColorWhereInput {
   createdAtGTE: Time
   createdAtLT: Time
   createdAtLTE: Time
-
+  
   """updated_at field predicates"""
   updatedAt: Time
   updatedAtNEQ: Time
@@ -4282,7 +4498,7 @@ input ProjectBaseColorWhereInput {
   updatedAtGTE: Time
   updatedAtLT: Time
   updatedAtLTE: Time
-
+  
   """id field predicates"""
   id: ID
   idNEQ: ID
@@ -4292,11 +4508,11 @@ input ProjectBaseColorWhereInput {
   idGTE: ID
   idLT: ID
   idLTE: ID
-
+  
   """projects edge predicates"""
   hasProjects: Boolean
   hasProjectsWith: [ProjectWhereInput!]
-
+  
   """color edge predicates"""
   hasColor: Boolean
   hasColorWith: [ColorWhereInput!]
@@ -4310,7 +4526,7 @@ input ProjectLightColorWhereInput {
   not: ProjectLightColorWhereInput
   and: [ProjectLightColorWhereInput!]
   or: [ProjectLightColorWhereInput!]
-
+  
   """color_id field predicates"""
   colorID: ID
   colorIDNEQ: ID
@@ -4325,7 +4541,7 @@ input ProjectLightColorWhereInput {
   colorIDHasSuffix: ID
   colorIDEqualFold: ID
   colorIDContainsFold: ID
-
+  
   """created_at field predicates"""
   createdAt: Time
   createdAtNEQ: Time
@@ -4335,7 +4551,7 @@ input ProjectLightColorWhereInput {
   createdAtGTE: Time
   createdAtLT: Time
   createdAtLTE: Time
-
+  
   """updated_at field predicates"""
   updatedAt: Time
   updatedAtNEQ: Time
@@ -4345,7 +4561,7 @@ input ProjectLightColorWhereInput {
   updatedAtGTE: Time
   updatedAtLT: Time
   updatedAtLTE: Time
-
+  
   """id field predicates"""
   id: ID
   idNEQ: ID
@@ -4355,11 +4571,11 @@ input ProjectLightColorWhereInput {
   idGTE: ID
   idLT: ID
   idLTE: ID
-
+  
   """projects edge predicates"""
   hasProjects: Boolean
   hasProjectsWith: [ProjectWhereInput!]
-
+  
   """color edge predicates"""
   hasColor: Boolean
   hasColorWith: [ColorWhereInput!]
@@ -4373,7 +4589,7 @@ input ProjectIconWhereInput {
   not: ProjectIconWhereInput
   and: [ProjectIconWhereInput!]
   or: [ProjectIconWhereInput!]
-
+  
   """icon_id field predicates"""
   iconID: ID
   iconIDNEQ: ID
@@ -4388,7 +4604,7 @@ input ProjectIconWhereInput {
   iconIDHasSuffix: ID
   iconIDEqualFold: ID
   iconIDContainsFold: ID
-
+  
   """created_at field predicates"""
   createdAt: Time
   createdAtNEQ: Time
@@ -4398,7 +4614,7 @@ input ProjectIconWhereInput {
   createdAtGTE: Time
   createdAtLT: Time
   createdAtLTE: Time
-
+  
   """updated_at field predicates"""
   updatedAt: Time
   updatedAtNEQ: Time
@@ -4408,7 +4624,7 @@ input ProjectIconWhereInput {
   updatedAtGTE: Time
   updatedAtLT: Time
   updatedAtLTE: Time
-
+  
   """id field predicates"""
   id: ID
   idNEQ: ID
@@ -4418,11 +4634,11 @@ input ProjectIconWhereInput {
   idGTE: ID
   idLT: ID
   idLTE: ID
-
+  
   """projects edge predicates"""
   hasProjects: Boolean
   hasProjectsWith: [ProjectWhereInput!]
-
+  
   """icon edge predicates"""
   hasIcon: Boolean
   hasIconWith: [IconWhereInput!]
@@ -4436,7 +4652,7 @@ input WorkspaceTeammateWhereInput {
   not: WorkspaceTeammateWhereInput
   and: [WorkspaceTeammateWhereInput!]
   or: [WorkspaceTeammateWhereInput!]
-
+  
   """workspace_id field predicates"""
   workspaceID: ID
   workspaceIDNEQ: ID
@@ -4451,7 +4667,7 @@ input WorkspaceTeammateWhereInput {
   workspaceIDHasSuffix: ID
   workspaceIDEqualFold: ID
   workspaceIDContainsFold: ID
-
+  
   """teammate_id field predicates"""
   teammateID: ID
   teammateIDNEQ: ID
@@ -4466,7 +4682,7 @@ input WorkspaceTeammateWhereInput {
   teammateIDHasSuffix: ID
   teammateIDEqualFold: ID
   teammateIDContainsFold: ID
-
+  
   """role field predicates"""
   role: String
   roleNEQ: String
@@ -4481,11 +4697,11 @@ input WorkspaceTeammateWhereInput {
   roleHasSuffix: String
   roleEqualFold: String
   roleContainsFold: String
-
+  
   """is_owner field predicates"""
   isOwner: Boolean
   isOwnerNEQ: Boolean
-
+  
   """created_at field predicates"""
   createdAt: Time
   createdAtNEQ: Time
@@ -4495,7 +4711,7 @@ input WorkspaceTeammateWhereInput {
   createdAtGTE: Time
   createdAtLT: Time
   createdAtLTE: Time
-
+  
   """updated_at field predicates"""
   updatedAt: Time
   updatedAtNEQ: Time
@@ -4505,7 +4721,7 @@ input WorkspaceTeammateWhereInput {
   updatedAtGTE: Time
   updatedAtLT: Time
   updatedAtLTE: Time
-
+  
   """id field predicates"""
   id: ID
   idNEQ: ID
@@ -4515,11 +4731,11 @@ input WorkspaceTeammateWhereInput {
   idGTE: ID
   idLT: ID
   idLTE: ID
-
+  
   """workspace edge predicates"""
   hasWorkspace: Boolean
   hasWorkspaceWith: [WorkspaceWhereInput!]
-
+  
   """teammate edge predicates"""
   hasTeammate: Boolean
   hasTeammateWith: [TeammateWhereInput!]
@@ -4533,7 +4749,7 @@ input FavoriteProjectWhereInput {
   not: FavoriteProjectWhereInput
   and: [FavoriteProjectWhereInput!]
   or: [FavoriteProjectWhereInput!]
-
+  
   """project_id field predicates"""
   projectID: ID
   projectIDNEQ: ID
@@ -4548,7 +4764,7 @@ input FavoriteProjectWhereInput {
   projectIDHasSuffix: ID
   projectIDEqualFold: ID
   projectIDContainsFold: ID
-
+  
   """teammate_id field predicates"""
   teammateID: ID
   teammateIDNEQ: ID
@@ -4563,7 +4779,7 @@ input FavoriteProjectWhereInput {
   teammateIDHasSuffix: ID
   teammateIDEqualFold: ID
   teammateIDContainsFold: ID
-
+  
   """created_at field predicates"""
   createdAt: Time
   createdAtNEQ: Time
@@ -4573,7 +4789,7 @@ input FavoriteProjectWhereInput {
   createdAtGTE: Time
   createdAtLT: Time
   createdAtLTE: Time
-
+  
   """updated_at field predicates"""
   updatedAt: Time
   updatedAtNEQ: Time
@@ -4583,7 +4799,7 @@ input FavoriteProjectWhereInput {
   updatedAtGTE: Time
   updatedAtLT: Time
   updatedAtLTE: Time
-
+  
   """id field predicates"""
   id: ID
   idNEQ: ID
@@ -4593,11 +4809,11 @@ input FavoriteProjectWhereInput {
   idGTE: ID
   idLT: ID
   idLTE: ID
-
+  
   """project edge predicates"""
   hasProject: Boolean
   hasProjectWith: [ProjectWhereInput!]
-
+  
   """teammate edge predicates"""
   hasTeammate: Boolean
   hasTeammateWith: [TeammateWhereInput!]
@@ -4611,7 +4827,7 @@ input FavoriteWorkspaceWhereInput {
   not: FavoriteWorkspaceWhereInput
   and: [FavoriteWorkspaceWhereInput!]
   or: [FavoriteWorkspaceWhereInput!]
-
+  
   """workspace_id field predicates"""
   workspaceID: ID
   workspaceIDNEQ: ID
@@ -4626,7 +4842,7 @@ input FavoriteWorkspaceWhereInput {
   workspaceIDHasSuffix: ID
   workspaceIDEqualFold: ID
   workspaceIDContainsFold: ID
-
+  
   """teammate_id field predicates"""
   teammateID: ID
   teammateIDNEQ: ID
@@ -4641,7 +4857,7 @@ input FavoriteWorkspaceWhereInput {
   teammateIDHasSuffix: ID
   teammateIDEqualFold: ID
   teammateIDContainsFold: ID
-
+  
   """created_at field predicates"""
   createdAt: Time
   createdAtNEQ: Time
@@ -4651,7 +4867,7 @@ input FavoriteWorkspaceWhereInput {
   createdAtGTE: Time
   createdAtLT: Time
   createdAtLTE: Time
-
+  
   """updated_at field predicates"""
   updatedAt: Time
   updatedAtNEQ: Time
@@ -4661,7 +4877,7 @@ input FavoriteWorkspaceWhereInput {
   updatedAtGTE: Time
   updatedAtLT: Time
   updatedAtLTE: Time
-
+  
   """id field predicates"""
   id: ID
   idNEQ: ID
@@ -4671,11 +4887,11 @@ input FavoriteWorkspaceWhereInput {
   idGTE: ID
   idLT: ID
   idLTE: ID
-
+  
   """workspace edge predicates"""
   hasWorkspace: Boolean
   hasWorkspaceWith: [WorkspaceWhereInput!]
-
+  
   """teammate edge predicates"""
   hasTeammate: Boolean
   hasTeammateWith: [TeammateWhereInput!]
@@ -4689,7 +4905,7 @@ input MyTasksTabStatusWhereInput {
   not: MyTasksTabStatusWhereInput
   and: [MyTasksTabStatusWhereInput!]
   or: [MyTasksTabStatusWhereInput!]
-
+  
   """workspace_id field predicates"""
   workspaceID: ID
   workspaceIDNEQ: ID
@@ -4704,7 +4920,7 @@ input MyTasksTabStatusWhereInput {
   workspaceIDHasSuffix: ID
   workspaceIDEqualFold: ID
   workspaceIDContainsFold: ID
-
+  
   """teammate_id field predicates"""
   teammateID: ID
   teammateIDNEQ: ID
@@ -4719,13 +4935,13 @@ input MyTasksTabStatusWhereInput {
   teammateIDHasSuffix: ID
   teammateIDEqualFold: ID
   teammateIDContainsFold: ID
-
+  
   """status field predicates"""
   status: MyTasksTabStatusCode
   statusNEQ: MyTasksTabStatusCode
   statusIn: [MyTasksTabStatusCode!]
   statusNotIn: [MyTasksTabStatusCode!]
-
+  
   """created_at field predicates"""
   createdAt: Time
   createdAtNEQ: Time
@@ -4735,7 +4951,7 @@ input MyTasksTabStatusWhereInput {
   createdAtGTE: Time
   createdAtLT: Time
   createdAtLTE: Time
-
+  
   """updated_at field predicates"""
   updatedAt: Time
   updatedAtNEQ: Time
@@ -4745,7 +4961,7 @@ input MyTasksTabStatusWhereInput {
   updatedAtGTE: Time
   updatedAtLT: Time
   updatedAtLTE: Time
-
+  
   """id field predicates"""
   id: ID
   idNEQ: ID
@@ -4755,11 +4971,11 @@ input MyTasksTabStatusWhereInput {
   idGTE: ID
   idLT: ID
   idLTE: ID
-
+  
   """workspace edge predicates"""
   hasWorkspace: Boolean
   hasWorkspaceWith: [WorkspaceWhereInput!]
-
+  
   """teammate edge predicates"""
   hasTeammate: Boolean
   hasTeammateWith: [TeammateWhereInput!]
@@ -4773,7 +4989,7 @@ input TaskColumnWhereInput {
   not: TaskColumnWhereInput
   and: [TaskColumnWhereInput!]
   or: [TaskColumnWhereInput!]
-
+  
   """name field predicates"""
   name: String
   nameNEQ: String
@@ -4788,13 +5004,13 @@ input TaskColumnWhereInput {
   nameHasSuffix: String
   nameEqualFold: String
   nameContainsFold: String
-
+  
   """type field predicates"""
   type: TaskColumnType
   typeNEQ: TaskColumnType
   typeIn: [TaskColumnType!]
   typeNotIn: [TaskColumnType!]
-
+  
   """created_at field predicates"""
   createdAt: Time
   createdAtNEQ: Time
@@ -4804,7 +5020,7 @@ input TaskColumnWhereInput {
   createdAtGTE: Time
   createdAtLT: Time
   createdAtLTE: Time
-
+  
   """updated_at field predicates"""
   updatedAt: Time
   updatedAtNEQ: Time
@@ -4814,7 +5030,7 @@ input TaskColumnWhereInput {
   updatedAtGTE: Time
   updatedAtLT: Time
   updatedAtLTE: Time
-
+  
   """id field predicates"""
   id: ID
   idNEQ: ID
@@ -4824,6 +5040,121 @@ input TaskColumnWhereInput {
   idGTE: ID
   idLT: ID
   idLTE: ID
+  
+  """teammate_task_columns edge predicates"""
+  hasTeammateTaskColumns: Boolean
+  hasTeammateTaskColumnsWith: [TeammateTaskColumnWhereInput!]
+}
+
+"""
+TeammateTaskColumnWhereInput is used for filtering TeammateTaskColumn objects.
+Input was generated by ent.
+"""
+input TeammateTaskColumnWhereInput {
+  not: TeammateTaskColumnWhereInput
+  and: [TeammateTaskColumnWhereInput!]
+  or: [TeammateTaskColumnWhereInput!]
+  
+  """teammate_id field predicates"""
+  teammateID: ID
+  teammateIDNEQ: ID
+  teammateIDIn: [ID!]
+  teammateIDNotIn: [ID!]
+  teammateIDGT: ID
+  teammateIDGTE: ID
+  teammateIDLT: ID
+  teammateIDLTE: ID
+  teammateIDContains: ID
+  teammateIDHasPrefix: ID
+  teammateIDHasSuffix: ID
+  teammateIDEqualFold: ID
+  teammateIDContainsFold: ID
+  
+  """task_column_id field predicates"""
+  taskColumnID: ID
+  taskColumnIDNEQ: ID
+  taskColumnIDIn: [ID!]
+  taskColumnIDNotIn: [ID!]
+  taskColumnIDGT: ID
+  taskColumnIDGTE: ID
+  taskColumnIDLT: ID
+  taskColumnIDLTE: ID
+  taskColumnIDContains: ID
+  taskColumnIDHasPrefix: ID
+  taskColumnIDHasSuffix: ID
+  taskColumnIDEqualFold: ID
+  taskColumnIDContainsFold: ID
+  
+  """width field predicates"""
+  width: String
+  widthNEQ: String
+  widthIn: [String!]
+  widthNotIn: [String!]
+  widthGT: String
+  widthGTE: String
+  widthLT: String
+  widthLTE: String
+  widthContains: String
+  widthHasPrefix: String
+  widthHasSuffix: String
+  widthEqualFold: String
+  widthContainsFold: String
+  
+  """disabled field predicates"""
+  disabled: Boolean
+  disabledNEQ: Boolean
+  
+  """customizable field predicates"""
+  customizable: Boolean
+  customizableNEQ: Boolean
+  
+  """order field predicates"""
+  order: Int
+  orderNEQ: Int
+  orderIn: [Int!]
+  orderNotIn: [Int!]
+  orderGT: Int
+  orderGTE: Int
+  orderLT: Int
+  orderLTE: Int
+  
+  """created_at field predicates"""
+  createdAt: Time
+  createdAtNEQ: Time
+  createdAtIn: [Time!]
+  createdAtNotIn: [Time!]
+  createdAtGT: Time
+  createdAtGTE: Time
+  createdAtLT: Time
+  createdAtLTE: Time
+  
+  """updated_at field predicates"""
+  updatedAt: Time
+  updatedAtNEQ: Time
+  updatedAtIn: [Time!]
+  updatedAtNotIn: [Time!]
+  updatedAtGT: Time
+  updatedAtGTE: Time
+  updatedAtLT: Time
+  updatedAtLTE: Time
+  
+  """id field predicates"""
+  id: ID
+  idNEQ: ID
+  idIn: [ID!]
+  idNotIn: [ID!]
+  idGT: ID
+  idGTE: ID
+  idLT: ID
+  idLTE: ID
+  
+  """teammate edge predicates"""
+  hasTeammate: Boolean
+  hasTeammateWith: [TeammateWhereInput!]
+  
+  """task_column edge predicates"""
+  hasTaskColumn: Boolean
+  hasTaskColumnWith: [TaskColumnWhereInput!]
 }
 `, BuiltIn: false},
 	{Name: "graph/schema/favorite_project/favorite_project.graphql", Input: `type FavoriteProject implements Node {
@@ -5379,6 +5710,60 @@ extend type Mutation {
   updateTeammate(input: UpdateTeammateInput!): Teammate!
 }
 `, BuiltIn: false},
+	{Name: "graph/schema/teammate_task_column/teammate_task_column.graphql", Input: `type TeammateTaskColumn implements Node {
+  id: ID!
+  teammateId: ID!
+  teammate: Teammate!
+  taskColumnId: ID!
+  taskColumn: TaskColumn!
+  width: String!
+  disabled: Boolean!
+  customizable: Boolean!
+  order: Int!
+  createdAt: String!
+  updatedAt: String!
+}
+type TeammateTaskColumnConnection {
+  totalCount: Int!
+  pageInfo: PageInfo!
+  edges: [TeammateTaskColumnEdge]
+}
+type TeammateTaskColumnEdge {
+  node: TeammateTaskColumn
+  cursor: Cursor!
+}
+
+input CreateTeammateTaskColumnInput {
+  taskColumnId: ID!
+  teammateId: ID!
+  width: String!
+  disabled: Boolean!
+  customizable: Boolean!
+  order: Int!
+}
+
+input UpdateTeammateTaskColumnInput {
+  id: ID!
+  width: String
+  disabled: Boolean
+  customizable: Boolean
+  order: Int
+}
+
+extend type Subscription {
+  teammateTaskColumnUpdated(id: ID!): TeammateTaskColumn!
+}
+
+extend type Query {
+  teammateTaskColumn(where: TeammateTaskColumnWhereInput): TeammateTaskColumn
+  teammateTaskColumns(after: Cursor, first: Int, before: Cursor, last: Int, where: TeammateTaskColumnWhereInput): TeammateTaskColumnConnection
+}
+
+extend type Mutation {
+  createTeammateTaskColumn(input: CreateTeammateTaskColumnInput!): TeammateTaskColumn!
+  updateTeammateTaskColumn(input: UpdateTeammateTaskColumnInput!): TeammateTaskColumn!
+}
+`, BuiltIn: false},
 	{Name: "graph/schema/test_todo/test_todo.graphql", Input: `enum TestTodoStatus {
   IN_PROGRESS
   COMPLETED
@@ -5759,6 +6144,21 @@ func (ec *executionContext) field_Mutation_createTaskColumn_args(ctx context.Con
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_createTeammateTaskColumn_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 ent.CreateTeammateTaskColumnInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNCreateTeammateTaskColumnInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐCreateTeammateTaskColumnInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_createTeammate_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -6021,6 +6421,21 @@ func (ec *executionContext) field_Mutation_updateTaskColumn_args(ctx context.Con
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNUpdateTaskColumnInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐUpdateTaskColumnInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_updateTeammateTaskColumn_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 ent.UpdateTeammateTaskColumnInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNUpdateTeammateTaskColumnInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐUpdateTeammateTaskColumnInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -6914,6 +7329,72 @@ func (ec *executionContext) field_Query_taskColumns_args(ctx context.Context, ra
 	return args, nil
 }
 
+func (ec *executionContext) field_Query_teammateTaskColumn_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *ent.TeammateTaskColumnWhereInput
+	if tmp, ok := rawArgs["where"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
+		arg0, err = ec.unmarshalOTeammateTaskColumnWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTeammateTaskColumnWhereInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["where"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_teammateTaskColumns_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *ent.Cursor
+	if tmp, ok := rawArgs["after"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
+		arg0, err = ec.unmarshalOCursor2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐCursor(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["after"] = arg0
+	var arg1 *int
+	if tmp, ok := rawArgs["first"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("first"))
+		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["first"] = arg1
+	var arg2 *ent.Cursor
+	if tmp, ok := rawArgs["before"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("before"))
+		arg2, err = ec.unmarshalOCursor2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐCursor(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["before"] = arg2
+	var arg3 *int
+	if tmp, ok := rawArgs["last"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("last"))
+		arg3, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["last"] = arg3
+	var arg4 *ent.TeammateTaskColumnWhereInput
+	if tmp, ok := rawArgs["where"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
+		arg4, err = ec.unmarshalOTeammateTaskColumnWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTeammateTaskColumnWhereInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["where"] = arg4
+	return args, nil
+}
+
 func (ec *executionContext) field_Query_teammate_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -7368,6 +7849,21 @@ func (ec *executionContext) field_Subscription_projectTeammateUpdated_args(ctx c
 }
 
 func (ec *executionContext) field_Subscription_projectUpdated_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 ulid.ID
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Subscription_teammateTaskColumnUpdated_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 ulid.ID
@@ -10580,6 +11076,90 @@ func (ec *executionContext) _Mutation_updateTeammate(ctx context.Context, field 
 	res := resTmp.(*ent.Teammate)
 	fc.Result = res
 	return ec.marshalNTeammate2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTeammate(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_createTeammateTaskColumn(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_createTeammateTaskColumn_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreateTeammateTaskColumn(rctx, args["input"].(ent.CreateTeammateTaskColumnInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.TeammateTaskColumn)
+	fc.Result = res
+	return ec.marshalNTeammateTaskColumn2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTeammateTaskColumn(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_updateTeammateTaskColumn(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_updateTeammateTaskColumn_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdateTeammateTaskColumn(rctx, args["input"].(ent.UpdateTeammateTaskColumnInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.TeammateTaskColumn)
+	fc.Result = res
+	return ec.marshalNTeammateTaskColumn2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTeammateTaskColumn(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_createTestTodo(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -14848,6 +15428,84 @@ func (ec *executionContext) _Query_teammates(ctx context.Context, field graphql.
 	return ec.marshalOTeammateConnection2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTeammateConnection(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Query_teammateTaskColumn(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_teammateTaskColumn_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().TeammateTaskColumn(rctx, args["where"].(*ent.TeammateTaskColumnWhereInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*ent.TeammateTaskColumn)
+	fc.Result = res
+	return ec.marshalOTeammateTaskColumn2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTeammateTaskColumn(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_teammateTaskColumns(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_teammateTaskColumns_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().TeammateTaskColumns(rctx, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["where"].(*ent.TeammateTaskColumnWhereInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*ent.TeammateTaskColumnConnection)
+	fc.Result = res
+	return ec.marshalOTeammateTaskColumnConnection2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTeammateTaskColumnConnection(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Query_testTodo(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -15903,6 +16561,58 @@ func (ec *executionContext) _Subscription_teammateUpdated(ctx context.Context, f
 	}
 }
 
+func (ec *executionContext) _Subscription_teammateTaskColumnUpdated(ctx context.Context, field graphql.CollectedField) (ret func() graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = nil
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Subscription",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Subscription_teammateTaskColumnUpdated_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return nil
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Subscription().TeammateTaskColumnUpdated(rctx, args["id"].(ulid.ID))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return nil
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return nil
+	}
+	return func() graphql.Marshaler {
+		res, ok := <-resTmp.(<-chan *ent.TeammateTaskColumn)
+		if !ok {
+			return nil
+		}
+		return graphql.WriterFunc(func(w io.Writer) {
+			w.Write([]byte{'{'})
+			graphql.MarshalString(field.Alias).MarshalGQL(w)
+			w.Write([]byte{':'})
+			ec.marshalNTeammateTaskColumn2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTeammateTaskColumn(ctx, field.Selections, res).MarshalGQL(w)
+			w.Write([]byte{'}'})
+		})
+	}
+}
+
 func (ec *executionContext) _Subscription_testUserUpdated(ctx context.Context, field graphql.CollectedField) (ret func() graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -16753,6 +17463,560 @@ func (ec *executionContext) _TeammateEdge_cursor(ctx context.Context, field grap
 	}()
 	fc := &graphql.FieldContext{
 		Object:     "TeammateEdge",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Cursor, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(ent.Cursor)
+	fc.Result = res
+	return ec.marshalNCursor2projectᚑmanagementᚑdemoᚑbackendᚋentᚐCursor(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _TeammateTaskColumn_id(ctx context.Context, field graphql.CollectedField, obj *ent.TeammateTaskColumn) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "TeammateTaskColumn",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(ulid.ID)
+	fc.Result = res
+	return ec.marshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _TeammateTaskColumn_teammateId(ctx context.Context, field graphql.CollectedField, obj *ent.TeammateTaskColumn) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "TeammateTaskColumn",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TeammateID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(ulid.ID)
+	fc.Result = res
+	return ec.marshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _TeammateTaskColumn_teammate(ctx context.Context, field graphql.CollectedField, obj *ent.TeammateTaskColumn) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "TeammateTaskColumn",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Teammate(ctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.Teammate)
+	fc.Result = res
+	return ec.marshalNTeammate2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTeammate(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _TeammateTaskColumn_taskColumnId(ctx context.Context, field graphql.CollectedField, obj *ent.TeammateTaskColumn) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "TeammateTaskColumn",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TaskColumnID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(ulid.ID)
+	fc.Result = res
+	return ec.marshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _TeammateTaskColumn_taskColumn(ctx context.Context, field graphql.CollectedField, obj *ent.TeammateTaskColumn) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "TeammateTaskColumn",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TaskColumn(ctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.TaskColumn)
+	fc.Result = res
+	return ec.marshalNTaskColumn2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskColumn(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _TeammateTaskColumn_width(ctx context.Context, field graphql.CollectedField, obj *ent.TeammateTaskColumn) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "TeammateTaskColumn",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Width, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _TeammateTaskColumn_disabled(ctx context.Context, field graphql.CollectedField, obj *ent.TeammateTaskColumn) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "TeammateTaskColumn",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Disabled, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _TeammateTaskColumn_customizable(ctx context.Context, field graphql.CollectedField, obj *ent.TeammateTaskColumn) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "TeammateTaskColumn",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Customizable, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(bool)
+	fc.Result = res
+	return ec.marshalNBoolean2bool(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _TeammateTaskColumn_order(ctx context.Context, field graphql.CollectedField, obj *ent.TeammateTaskColumn) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "TeammateTaskColumn",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Order, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _TeammateTaskColumn_createdAt(ctx context.Context, field graphql.CollectedField, obj *ent.TeammateTaskColumn) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "TeammateTaskColumn",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.TeammateTaskColumn().CreatedAt(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _TeammateTaskColumn_updatedAt(ctx context.Context, field graphql.CollectedField, obj *ent.TeammateTaskColumn) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "TeammateTaskColumn",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.TeammateTaskColumn().UpdatedAt(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _TeammateTaskColumnConnection_totalCount(ctx context.Context, field graphql.CollectedField, obj *ent.TeammateTaskColumnConnection) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "TeammateTaskColumnConnection",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TotalCount, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _TeammateTaskColumnConnection_pageInfo(ctx context.Context, field graphql.CollectedField, obj *ent.TeammateTaskColumnConnection) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "TeammateTaskColumnConnection",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PageInfo, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(ent.PageInfo)
+	fc.Result = res
+	return ec.marshalNPageInfo2projectᚑmanagementᚑdemoᚑbackendᚋentᚐPageInfo(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _TeammateTaskColumnConnection_edges(ctx context.Context, field graphql.CollectedField, obj *ent.TeammateTaskColumnConnection) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "TeammateTaskColumnConnection",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Edges, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*ent.TeammateTaskColumnEdge)
+	fc.Result = res
+	return ec.marshalOTeammateTaskColumnEdge2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTeammateTaskColumnEdge(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _TeammateTaskColumnEdge_node(ctx context.Context, field graphql.CollectedField, obj *ent.TeammateTaskColumnEdge) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "TeammateTaskColumnEdge",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Node, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*ent.TeammateTaskColumn)
+	fc.Result = res
+	return ec.marshalOTeammateTaskColumn2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTeammateTaskColumn(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _TeammateTaskColumnEdge_cursor(ctx context.Context, field graphql.CollectedField, obj *ent.TeammateTaskColumnEdge) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "TeammateTaskColumnEdge",
 		Field:      field,
 		Args:       nil,
 		IsMethod:   false,
@@ -20748,6 +22012,69 @@ func (ec *executionContext) unmarshalInputCreateTeammateInput(ctx context.Contex
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("email"))
 			it.Email, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputCreateTeammateTaskColumnInput(ctx context.Context, obj interface{}) (ent.CreateTeammateTaskColumnInput, error) {
+	var it ent.CreateTeammateTaskColumnInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "taskColumnId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskColumnId"))
+			it.TaskColumnID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "teammateId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("teammateId"))
+			it.TeammateID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "width":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("width"))
+			it.Width, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "disabled":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("disabled"))
+			it.Disabled, err = ec.unmarshalNBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "customizable":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("customizable"))
+			it.Customizable, err = ec.unmarshalNBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "order":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("order"))
+			it.Order, err = ec.unmarshalNInt2int(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -26184,6 +27511,693 @@ func (ec *executionContext) unmarshalInputTaskColumnWhereInput(ctx context.Conte
 			if err != nil {
 				return it, err
 			}
+		case "hasTeammateTaskColumns":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasTeammateTaskColumns"))
+			it.HasTeammateTaskColumns, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasTeammateTaskColumnsWith":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasTeammateTaskColumnsWith"))
+			it.HasTeammateTaskColumnsWith, err = ec.unmarshalOTeammateTaskColumnWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTeammateTaskColumnWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputTeammateTaskColumnWhereInput(ctx context.Context, obj interface{}) (ent.TeammateTaskColumnWhereInput, error) {
+	var it ent.TeammateTaskColumnWhereInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "not":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("not"))
+			it.Not, err = ec.unmarshalOTeammateTaskColumnWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTeammateTaskColumnWhereInput(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "and":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("and"))
+			it.And, err = ec.unmarshalOTeammateTaskColumnWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTeammateTaskColumnWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "or":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("or"))
+			it.Or, err = ec.unmarshalOTeammateTaskColumnWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTeammateTaskColumnWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "teammateID":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("teammateID"))
+			it.TeammateID, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "teammateIDNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("teammateIDNEQ"))
+			it.TeammateIDNEQ, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "teammateIDIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("teammateIDIn"))
+			it.TeammateIDIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "teammateIDNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("teammateIDNotIn"))
+			it.TeammateIDNotIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "teammateIDGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("teammateIDGT"))
+			it.TeammateIDGT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "teammateIDGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("teammateIDGTE"))
+			it.TeammateIDGTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "teammateIDLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("teammateIDLT"))
+			it.TeammateIDLT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "teammateIDLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("teammateIDLTE"))
+			it.TeammateIDLTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "teammateIDContains":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("teammateIDContains"))
+			it.TeammateIDContains, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "teammateIDHasPrefix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("teammateIDHasPrefix"))
+			it.TeammateIDHasPrefix, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "teammateIDHasSuffix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("teammateIDHasSuffix"))
+			it.TeammateIDHasSuffix, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "teammateIDEqualFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("teammateIDEqualFold"))
+			it.TeammateIDEqualFold, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "teammateIDContainsFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("teammateIDContainsFold"))
+			it.TeammateIDContainsFold, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskColumnID":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskColumnID"))
+			it.TaskColumnID, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskColumnIDNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskColumnIDNEQ"))
+			it.TaskColumnIDNEQ, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskColumnIDIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskColumnIDIn"))
+			it.TaskColumnIDIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskColumnIDNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskColumnIDNotIn"))
+			it.TaskColumnIDNotIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskColumnIDGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskColumnIDGT"))
+			it.TaskColumnIDGT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskColumnIDGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskColumnIDGTE"))
+			it.TaskColumnIDGTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskColumnIDLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskColumnIDLT"))
+			it.TaskColumnIDLT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskColumnIDLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskColumnIDLTE"))
+			it.TaskColumnIDLTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskColumnIDContains":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskColumnIDContains"))
+			it.TaskColumnIDContains, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskColumnIDHasPrefix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskColumnIDHasPrefix"))
+			it.TaskColumnIDHasPrefix, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskColumnIDHasSuffix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskColumnIDHasSuffix"))
+			it.TaskColumnIDHasSuffix, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskColumnIDEqualFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskColumnIDEqualFold"))
+			it.TaskColumnIDEqualFold, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskColumnIDContainsFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskColumnIDContainsFold"))
+			it.TaskColumnIDContainsFold, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "width":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("width"))
+			it.Width, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "widthNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("widthNEQ"))
+			it.WidthNEQ, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "widthIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("widthIn"))
+			it.WidthIn, err = ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "widthNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("widthNotIn"))
+			it.WidthNotIn, err = ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "widthGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("widthGT"))
+			it.WidthGT, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "widthGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("widthGTE"))
+			it.WidthGTE, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "widthLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("widthLT"))
+			it.WidthLT, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "widthLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("widthLTE"))
+			it.WidthLTE, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "widthContains":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("widthContains"))
+			it.WidthContains, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "widthHasPrefix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("widthHasPrefix"))
+			it.WidthHasPrefix, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "widthHasSuffix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("widthHasSuffix"))
+			it.WidthHasSuffix, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "widthEqualFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("widthEqualFold"))
+			it.WidthEqualFold, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "widthContainsFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("widthContainsFold"))
+			it.WidthContainsFold, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "disabled":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("disabled"))
+			it.Disabled, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "disabledNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("disabledNEQ"))
+			it.DisabledNEQ, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "customizable":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("customizable"))
+			it.Customizable, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "customizableNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("customizableNEQ"))
+			it.CustomizableNEQ, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "order":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("order"))
+			it.Order, err = ec.unmarshalOInt2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "orderNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("orderNEQ"))
+			it.OrderNEQ, err = ec.unmarshalOInt2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "orderIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("orderIn"))
+			it.OrderIn, err = ec.unmarshalOInt2ᚕintᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "orderNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("orderNotIn"))
+			it.OrderNotIn, err = ec.unmarshalOInt2ᚕintᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "orderGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("orderGT"))
+			it.OrderGT, err = ec.unmarshalOInt2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "orderGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("orderGTE"))
+			it.OrderGTE, err = ec.unmarshalOInt2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "orderLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("orderLT"))
+			it.OrderLT, err = ec.unmarshalOInt2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "orderLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("orderLTE"))
+			it.OrderLTE, err = ec.unmarshalOInt2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAt":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAt"))
+			it.CreatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtNEQ"))
+			it.CreatedAtNEQ, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtIn"))
+			it.CreatedAtIn, err = ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtNotIn"))
+			it.CreatedAtNotIn, err = ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtGT"))
+			it.CreatedAtGT, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtGTE"))
+			it.CreatedAtGTE, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtLT"))
+			it.CreatedAtLT, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtLTE"))
+			it.CreatedAtLTE, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAt":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAt"))
+			it.UpdatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtNEQ"))
+			it.UpdatedAtNEQ, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtIn"))
+			it.UpdatedAtIn, err = ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtNotIn"))
+			it.UpdatedAtNotIn, err = ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtGT"))
+			it.UpdatedAtGT, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtGTE"))
+			it.UpdatedAtGTE, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtLT"))
+			it.UpdatedAtLT, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtLTE"))
+			it.UpdatedAtLTE, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			it.ID, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idNEQ"))
+			it.IDNEQ, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idIn"))
+			it.IDIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idNotIn"))
+			it.IDNotIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idGT"))
+			it.IDGT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idGTE"))
+			it.IDGTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idLT"))
+			it.IDLT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idLTE"))
+			it.IDLTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasTeammate":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasTeammate"))
+			it.HasTeammate, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasTeammateWith":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasTeammateWith"))
+			it.HasTeammateWith, err = ec.unmarshalOTeammateWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTeammateWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasTaskColumn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasTaskColumn"))
+			it.HasTaskColumn, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasTaskColumnWith":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasTaskColumnWith"))
+			it.HasTaskColumnWith, err = ec.unmarshalOTaskColumnWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskColumnWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		}
 	}
 
@@ -26836,6 +28850,22 @@ func (ec *executionContext) unmarshalInputTeammateWhereInput(ctx context.Context
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasMyTasksTabStatusesWith"))
 			it.HasMyTasksTabStatusesWith, err = ec.unmarshalOMyTasksTabStatusWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐMyTasksTabStatusWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasTeammateTaskColumns":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasTeammateTaskColumns"))
+			it.HasTeammateTaskColumns, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasTeammateTaskColumnsWith":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasTeammateTaskColumnsWith"))
+			it.HasTeammateTaskColumnsWith, err = ec.unmarshalOTeammateTaskColumnWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTeammateTaskColumnWhereInputᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -28390,6 +30420,61 @@ func (ec *executionContext) unmarshalInputUpdateTeammateInput(ctx context.Contex
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputUpdateTeammateTaskColumnInput(ctx context.Context, obj interface{}) (ent.UpdateTeammateTaskColumnInput, error) {
+	var it ent.UpdateTeammateTaskColumnInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			it.ID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "width":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("width"))
+			it.Width, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "disabled":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("disabled"))
+			it.Disabled, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "customizable":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("customizable"))
+			it.Customizable, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "order":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("order"))
+			it.Order, err = ec.unmarshalOInt2ᚖint(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputUpdateTestTodoInput(ctx context.Context, obj interface{}) (ent.UpdateTestTodoInput, error) {
 	var it ent.UpdateTestTodoInput
 	asMap := map[string]interface{}{}
@@ -29764,6 +31849,11 @@ func (ec *executionContext) _Node(ctx context.Context, sel ast.SelectionSet, obj
 			return graphql.Null
 		}
 		return ec._Teammate(ctx, sel, obj)
+	case *ent.TeammateTaskColumn:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._TeammateTaskColumn(ctx, sel, obj)
 	case *ent.TestUser:
 		if obj == nil {
 			return graphql.Null
@@ -30677,6 +32767,16 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			}
 		case "updateTeammate":
 			out.Values[i] = ec._Mutation_updateTeammate(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "createTeammateTaskColumn":
+			out.Values[i] = ec._Mutation_createTeammateTaskColumn(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "updateTeammateTaskColumn":
+			out.Values[i] = ec._Mutation_updateTeammateTaskColumn(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -32077,6 +34177,28 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 				res = ec._Query_teammates(ctx, field)
 				return res
 			})
+		case "teammateTaskColumn":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_teammateTaskColumn(ctx, field)
+				return res
+			})
+		case "teammateTaskColumns":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_teammateTaskColumns(ctx, field)
+				return res
+			})
 		case "testTodo":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
@@ -32222,6 +34344,8 @@ func (ec *executionContext) _Subscription(ctx context.Context, sel ast.Selection
 		return ec._Subscription_projectTeammateUpdated(ctx, fields[0])
 	case "teammateUpdated":
 		return ec._Subscription_teammateUpdated(ctx, fields[0])
+	case "teammateTaskColumnUpdated":
+		return ec._Subscription_teammateTaskColumnUpdated(ctx, fields[0])
 	case "testUserUpdated":
 		return ec._Subscription_testUserUpdated(ctx, fields[0])
 	case "workspaceUpdated":
@@ -32477,6 +34601,182 @@ func (ec *executionContext) _TeammateEdge(ctx context.Context, sel ast.Selection
 			out.Values[i] = ec._TeammateEdge_node(ctx, field, obj)
 		case "cursor":
 			out.Values[i] = ec._TeammateEdge_cursor(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var teammateTaskColumnImplementors = []string{"TeammateTaskColumn", "Node"}
+
+func (ec *executionContext) _TeammateTaskColumn(ctx context.Context, sel ast.SelectionSet, obj *ent.TeammateTaskColumn) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, teammateTaskColumnImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("TeammateTaskColumn")
+		case "id":
+			out.Values[i] = ec._TeammateTaskColumn_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "teammateId":
+			out.Values[i] = ec._TeammateTaskColumn_teammateId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "teammate":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._TeammateTaskColumn_teammate(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "taskColumnId":
+			out.Values[i] = ec._TeammateTaskColumn_taskColumnId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "taskColumn":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._TeammateTaskColumn_taskColumn(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "width":
+			out.Values[i] = ec._TeammateTaskColumn_width(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "disabled":
+			out.Values[i] = ec._TeammateTaskColumn_disabled(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "customizable":
+			out.Values[i] = ec._TeammateTaskColumn_customizable(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "order":
+			out.Values[i] = ec._TeammateTaskColumn_order(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "createdAt":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._TeammateTaskColumn_createdAt(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "updatedAt":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._TeammateTaskColumn_updatedAt(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var teammateTaskColumnConnectionImplementors = []string{"TeammateTaskColumnConnection"}
+
+func (ec *executionContext) _TeammateTaskColumnConnection(ctx context.Context, sel ast.SelectionSet, obj *ent.TeammateTaskColumnConnection) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, teammateTaskColumnConnectionImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("TeammateTaskColumnConnection")
+		case "totalCount":
+			out.Values[i] = ec._TeammateTaskColumnConnection_totalCount(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "pageInfo":
+			out.Values[i] = ec._TeammateTaskColumnConnection_pageInfo(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "edges":
+			out.Values[i] = ec._TeammateTaskColumnConnection_edges(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var teammateTaskColumnEdgeImplementors = []string{"TeammateTaskColumnEdge"}
+
+func (ec *executionContext) _TeammateTaskColumnEdge(ctx context.Context, sel ast.SelectionSet, obj *ent.TeammateTaskColumnEdge) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, teammateTaskColumnEdgeImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("TeammateTaskColumnEdge")
+		case "node":
+			out.Values[i] = ec._TeammateTaskColumnEdge_node(ctx, field, obj)
+		case "cursor":
+			out.Values[i] = ec._TeammateTaskColumnEdge_cursor(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -33463,6 +35763,11 @@ func (ec *executionContext) unmarshalNCreateTeammateInput2projectᚑmanagement�
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
+func (ec *executionContext) unmarshalNCreateTeammateTaskColumnInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐCreateTeammateTaskColumnInput(ctx context.Context, v interface{}) (ent.CreateTeammateTaskColumnInput, error) {
+	res, err := ec.unmarshalInputCreateTeammateTaskColumnInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNCreateTestTodoInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐCreateTestTodoInput(ctx context.Context, v interface{}) (ent.CreateTestTodoInput, error) {
 	res, err := ec.unmarshalInputCreateTestTodoInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -34083,6 +36388,25 @@ func (ec *executionContext) marshalNTeammate2ᚖprojectᚑmanagementᚑdemoᚑba
 	return ec._Teammate(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalNTeammateTaskColumn2projectᚑmanagementᚑdemoᚑbackendᚋentᚐTeammateTaskColumn(ctx context.Context, sel ast.SelectionSet, v ent.TeammateTaskColumn) graphql.Marshaler {
+	return ec._TeammateTaskColumn(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNTeammateTaskColumn2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTeammateTaskColumn(ctx context.Context, sel ast.SelectionSet, v *ent.TeammateTaskColumn) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._TeammateTaskColumn(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNTeammateTaskColumnWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTeammateTaskColumnWhereInput(ctx context.Context, v interface{}) (*ent.TeammateTaskColumnWhereInput, error) {
+	res, err := ec.unmarshalInputTeammateTaskColumnWhereInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNTeammateWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTeammateWhereInput(ctx context.Context, v interface{}) (*ent.TeammateWhereInput, error) {
 	res, err := ec.unmarshalInputTeammateWhereInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
@@ -34257,6 +36581,11 @@ func (ec *executionContext) unmarshalNUpdateTaskColumnInput2projectᚑmanagement
 
 func (ec *executionContext) unmarshalNUpdateTeammateInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐUpdateTeammateInput(ctx context.Context, v interface{}) (ent.UpdateTeammateInput, error) {
 	res, err := ec.unmarshalInputUpdateTeammateInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNUpdateTeammateTaskColumnInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐUpdateTeammateTaskColumnInput(ctx context.Context, v interface{}) (ent.UpdateTeammateTaskColumnInput, error) {
+	res, err := ec.unmarshalInputUpdateTeammateTaskColumnInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
@@ -36292,6 +38621,100 @@ func (ec *executionContext) marshalOTeammateEdge2ᚖprojectᚑmanagementᚑdemo�
 		return graphql.Null
 	}
 	return ec._TeammateEdge(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOTeammateTaskColumn2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTeammateTaskColumn(ctx context.Context, sel ast.SelectionSet, v *ent.TeammateTaskColumn) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._TeammateTaskColumn(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOTeammateTaskColumnConnection2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTeammateTaskColumnConnection(ctx context.Context, sel ast.SelectionSet, v *ent.TeammateTaskColumnConnection) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._TeammateTaskColumnConnection(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOTeammateTaskColumnEdge2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTeammateTaskColumnEdge(ctx context.Context, sel ast.SelectionSet, v []*ent.TeammateTaskColumnEdge) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalOTeammateTaskColumnEdge2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTeammateTaskColumnEdge(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	return ret
+}
+
+func (ec *executionContext) marshalOTeammateTaskColumnEdge2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTeammateTaskColumnEdge(ctx context.Context, sel ast.SelectionSet, v *ent.TeammateTaskColumnEdge) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._TeammateTaskColumnEdge(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalOTeammateTaskColumnWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTeammateTaskColumnWhereInputᚄ(ctx context.Context, v interface{}) ([]*ent.TeammateTaskColumnWhereInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var vSlice []interface{}
+	if v != nil {
+		if tmp1, ok := v.([]interface{}); ok {
+			vSlice = tmp1
+		} else {
+			vSlice = []interface{}{v}
+		}
+	}
+	var err error
+	res := make([]*ent.TeammateTaskColumnWhereInput, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNTeammateTaskColumnWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTeammateTaskColumnWhereInput(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) unmarshalOTeammateTaskColumnWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTeammateTaskColumnWhereInput(ctx context.Context, v interface{}) (*ent.TeammateTaskColumnWhereInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputTeammateTaskColumnWhereInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalOTeammateWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTeammateWhereInputᚄ(ctx context.Context, v interface{}) ([]*ent.TeammateWhereInput, error) {

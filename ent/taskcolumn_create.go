@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/taskcolumn"
+	"project-management-demo-backend/ent/teammatetaskcolumn"
 	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -73,6 +74,21 @@ func (tcc *TaskColumnCreate) SetNillableID(u *ulid.ID) *TaskColumnCreate {
 		tcc.SetID(*u)
 	}
 	return tcc
+}
+
+// AddTeammateTaskColumnIDs adds the "teammate_task_columns" edge to the TeammateTaskColumn entity by IDs.
+func (tcc *TaskColumnCreate) AddTeammateTaskColumnIDs(ids ...ulid.ID) *TaskColumnCreate {
+	tcc.mutation.AddTeammateTaskColumnIDs(ids...)
+	return tcc
+}
+
+// AddTeammateTaskColumns adds the "teammate_task_columns" edges to the TeammateTaskColumn entity.
+func (tcc *TaskColumnCreate) AddTeammateTaskColumns(t ...*TeammateTaskColumn) *TaskColumnCreate {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return tcc.AddTeammateTaskColumnIDs(ids...)
 }
 
 // Mutation returns the TaskColumnMutation object of the builder.
@@ -247,6 +263,25 @@ func (tcc *TaskColumnCreate) createSpec() (*TaskColumn, *sqlgraph.CreateSpec) {
 			Column: taskcolumn.FieldUpdatedAt,
 		})
 		_node.UpdatedAt = value
+	}
+	if nodes := tcc.mutation.TeammateTaskColumnsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   taskcolumn.TeammateTaskColumnsTable,
+			Columns: []string{taskcolumn.TeammateTaskColumnsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: teammatetaskcolumn.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }

@@ -22,6 +22,7 @@ import (
 	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/ent/taskcolumn"
 	"project-management-demo-backend/ent/teammate"
+	"project-management-demo-backend/ent/teammatetaskcolumn"
 	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/ent/testuser"
 	"project-management-demo-backend/ent/workspace"
@@ -61,6 +62,8 @@ type Client struct {
 	TaskColumn *TaskColumnClient
 	// Teammate is the client for interacting with the Teammate builders.
 	Teammate *TeammateClient
+	// TeammateTaskColumn is the client for interacting with the TeammateTaskColumn builders.
+	TeammateTaskColumn *TeammateTaskColumnClient
 	// TestTodo is the client for interacting with the TestTodo builders.
 	TestTodo *TestTodoClient
 	// TestUser is the client for interacting with the TestUser builders.
@@ -94,6 +97,7 @@ func (c *Client) init() {
 	c.ProjectTeammate = NewProjectTeammateClient(c.config)
 	c.TaskColumn = NewTaskColumnClient(c.config)
 	c.Teammate = NewTeammateClient(c.config)
+	c.TeammateTaskColumn = NewTeammateTaskColumnClient(c.config)
 	c.TestTodo = NewTestTodoClient(c.config)
 	c.TestUser = NewTestUserClient(c.config)
 	c.Workspace = NewWorkspaceClient(c.config)
@@ -129,24 +133,25 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:               ctx,
-		config:            cfg,
-		Color:             NewColorClient(cfg),
-		FavoriteProject:   NewFavoriteProjectClient(cfg),
-		FavoriteWorkspace: NewFavoriteWorkspaceClient(cfg),
-		Icon:              NewIconClient(cfg),
-		MyTasksTabStatus:  NewMyTasksTabStatusClient(cfg),
-		Project:           NewProjectClient(cfg),
-		ProjectBaseColor:  NewProjectBaseColorClient(cfg),
-		ProjectIcon:       NewProjectIconClient(cfg),
-		ProjectLightColor: NewProjectLightColorClient(cfg),
-		ProjectTeammate:   NewProjectTeammateClient(cfg),
-		TaskColumn:        NewTaskColumnClient(cfg),
-		Teammate:          NewTeammateClient(cfg),
-		TestTodo:          NewTestTodoClient(cfg),
-		TestUser:          NewTestUserClient(cfg),
-		Workspace:         NewWorkspaceClient(cfg),
-		WorkspaceTeammate: NewWorkspaceTeammateClient(cfg),
+		ctx:                ctx,
+		config:             cfg,
+		Color:              NewColorClient(cfg),
+		FavoriteProject:    NewFavoriteProjectClient(cfg),
+		FavoriteWorkspace:  NewFavoriteWorkspaceClient(cfg),
+		Icon:               NewIconClient(cfg),
+		MyTasksTabStatus:   NewMyTasksTabStatusClient(cfg),
+		Project:            NewProjectClient(cfg),
+		ProjectBaseColor:   NewProjectBaseColorClient(cfg),
+		ProjectIcon:        NewProjectIconClient(cfg),
+		ProjectLightColor:  NewProjectLightColorClient(cfg),
+		ProjectTeammate:    NewProjectTeammateClient(cfg),
+		TaskColumn:         NewTaskColumnClient(cfg),
+		Teammate:           NewTeammateClient(cfg),
+		TeammateTaskColumn: NewTeammateTaskColumnClient(cfg),
+		TestTodo:           NewTestTodoClient(cfg),
+		TestUser:           NewTestUserClient(cfg),
+		Workspace:          NewWorkspaceClient(cfg),
+		WorkspaceTeammate:  NewWorkspaceTeammateClient(cfg),
 	}, nil
 }
 
@@ -164,23 +169,24 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		config:            cfg,
-		Color:             NewColorClient(cfg),
-		FavoriteProject:   NewFavoriteProjectClient(cfg),
-		FavoriteWorkspace: NewFavoriteWorkspaceClient(cfg),
-		Icon:              NewIconClient(cfg),
-		MyTasksTabStatus:  NewMyTasksTabStatusClient(cfg),
-		Project:           NewProjectClient(cfg),
-		ProjectBaseColor:  NewProjectBaseColorClient(cfg),
-		ProjectIcon:       NewProjectIconClient(cfg),
-		ProjectLightColor: NewProjectLightColorClient(cfg),
-		ProjectTeammate:   NewProjectTeammateClient(cfg),
-		TaskColumn:        NewTaskColumnClient(cfg),
-		Teammate:          NewTeammateClient(cfg),
-		TestTodo:          NewTestTodoClient(cfg),
-		TestUser:          NewTestUserClient(cfg),
-		Workspace:         NewWorkspaceClient(cfg),
-		WorkspaceTeammate: NewWorkspaceTeammateClient(cfg),
+		config:             cfg,
+		Color:              NewColorClient(cfg),
+		FavoriteProject:    NewFavoriteProjectClient(cfg),
+		FavoriteWorkspace:  NewFavoriteWorkspaceClient(cfg),
+		Icon:               NewIconClient(cfg),
+		MyTasksTabStatus:   NewMyTasksTabStatusClient(cfg),
+		Project:            NewProjectClient(cfg),
+		ProjectBaseColor:   NewProjectBaseColorClient(cfg),
+		ProjectIcon:        NewProjectIconClient(cfg),
+		ProjectLightColor:  NewProjectLightColorClient(cfg),
+		ProjectTeammate:    NewProjectTeammateClient(cfg),
+		TaskColumn:         NewTaskColumnClient(cfg),
+		Teammate:           NewTeammateClient(cfg),
+		TeammateTaskColumn: NewTeammateTaskColumnClient(cfg),
+		TestTodo:           NewTestTodoClient(cfg),
+		TestUser:           NewTestUserClient(cfg),
+		Workspace:          NewWorkspaceClient(cfg),
+		WorkspaceTeammate:  NewWorkspaceTeammateClient(cfg),
 	}, nil
 }
 
@@ -222,6 +228,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.ProjectTeammate.Use(hooks...)
 	c.TaskColumn.Use(hooks...)
 	c.Teammate.Use(hooks...)
+	c.TeammateTaskColumn.Use(hooks...)
 	c.TestTodo.Use(hooks...)
 	c.TestUser.Use(hooks...)
 	c.Workspace.Use(hooks...)
@@ -1597,6 +1604,22 @@ func (c *TaskColumnClient) GetX(ctx context.Context, id ulid.ID) *TaskColumn {
 	return obj
 }
 
+// QueryTeammateTaskColumns queries the teammate_task_columns edge of a TaskColumn.
+func (c *TaskColumnClient) QueryTeammateTaskColumns(tc *TaskColumn) *TeammateTaskColumnQuery {
+	query := &TeammateTaskColumnQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := tc.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(taskcolumn.Table, taskcolumn.FieldID, id),
+			sqlgraph.To(teammatetaskcolumn.Table, teammatetaskcolumn.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, taskcolumn.TeammateTaskColumnsTable, taskcolumn.TeammateTaskColumnsColumn),
+		)
+		fromV = sqlgraph.Neighbors(tc.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *TaskColumnClient) Hooks() []Hook {
 	return c.hooks.TaskColumn
@@ -1799,9 +1822,147 @@ func (c *TeammateClient) QueryMyTasksTabStatuses(t *Teammate) *MyTasksTabStatusQ
 	return query
 }
 
+// QueryTeammateTaskColumns queries the teammate_task_columns edge of a Teammate.
+func (c *TeammateClient) QueryTeammateTaskColumns(t *Teammate) *TeammateTaskColumnQuery {
+	query := &TeammateTaskColumnQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := t.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(teammate.Table, teammate.FieldID, id),
+			sqlgraph.To(teammatetaskcolumn.Table, teammatetaskcolumn.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, teammate.TeammateTaskColumnsTable, teammate.TeammateTaskColumnsColumn),
+		)
+		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *TeammateClient) Hooks() []Hook {
 	return c.hooks.Teammate
+}
+
+// TeammateTaskColumnClient is a client for the TeammateTaskColumn schema.
+type TeammateTaskColumnClient struct {
+	config
+}
+
+// NewTeammateTaskColumnClient returns a client for the TeammateTaskColumn from the given config.
+func NewTeammateTaskColumnClient(c config) *TeammateTaskColumnClient {
+	return &TeammateTaskColumnClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `teammatetaskcolumn.Hooks(f(g(h())))`.
+func (c *TeammateTaskColumnClient) Use(hooks ...Hook) {
+	c.hooks.TeammateTaskColumn = append(c.hooks.TeammateTaskColumn, hooks...)
+}
+
+// Create returns a create builder for TeammateTaskColumn.
+func (c *TeammateTaskColumnClient) Create() *TeammateTaskColumnCreate {
+	mutation := newTeammateTaskColumnMutation(c.config, OpCreate)
+	return &TeammateTaskColumnCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of TeammateTaskColumn entities.
+func (c *TeammateTaskColumnClient) CreateBulk(builders ...*TeammateTaskColumnCreate) *TeammateTaskColumnCreateBulk {
+	return &TeammateTaskColumnCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for TeammateTaskColumn.
+func (c *TeammateTaskColumnClient) Update() *TeammateTaskColumnUpdate {
+	mutation := newTeammateTaskColumnMutation(c.config, OpUpdate)
+	return &TeammateTaskColumnUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *TeammateTaskColumnClient) UpdateOne(ttc *TeammateTaskColumn) *TeammateTaskColumnUpdateOne {
+	mutation := newTeammateTaskColumnMutation(c.config, OpUpdateOne, withTeammateTaskColumn(ttc))
+	return &TeammateTaskColumnUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *TeammateTaskColumnClient) UpdateOneID(id ulid.ID) *TeammateTaskColumnUpdateOne {
+	mutation := newTeammateTaskColumnMutation(c.config, OpUpdateOne, withTeammateTaskColumnID(id))
+	return &TeammateTaskColumnUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for TeammateTaskColumn.
+func (c *TeammateTaskColumnClient) Delete() *TeammateTaskColumnDelete {
+	mutation := newTeammateTaskColumnMutation(c.config, OpDelete)
+	return &TeammateTaskColumnDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *TeammateTaskColumnClient) DeleteOne(ttc *TeammateTaskColumn) *TeammateTaskColumnDeleteOne {
+	return c.DeleteOneID(ttc.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *TeammateTaskColumnClient) DeleteOneID(id ulid.ID) *TeammateTaskColumnDeleteOne {
+	builder := c.Delete().Where(teammatetaskcolumn.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &TeammateTaskColumnDeleteOne{builder}
+}
+
+// Query returns a query builder for TeammateTaskColumn.
+func (c *TeammateTaskColumnClient) Query() *TeammateTaskColumnQuery {
+	return &TeammateTaskColumnQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a TeammateTaskColumn entity by its id.
+func (c *TeammateTaskColumnClient) Get(ctx context.Context, id ulid.ID) (*TeammateTaskColumn, error) {
+	return c.Query().Where(teammatetaskcolumn.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *TeammateTaskColumnClient) GetX(ctx context.Context, id ulid.ID) *TeammateTaskColumn {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryTeammate queries the teammate edge of a TeammateTaskColumn.
+func (c *TeammateTaskColumnClient) QueryTeammate(ttc *TeammateTaskColumn) *TeammateQuery {
+	query := &TeammateQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := ttc.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(teammatetaskcolumn.Table, teammatetaskcolumn.FieldID, id),
+			sqlgraph.To(teammate.Table, teammate.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, teammatetaskcolumn.TeammateTable, teammatetaskcolumn.TeammateColumn),
+		)
+		fromV = sqlgraph.Neighbors(ttc.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryTaskColumn queries the task_column edge of a TeammateTaskColumn.
+func (c *TeammateTaskColumnClient) QueryTaskColumn(ttc *TeammateTaskColumn) *TaskColumnQuery {
+	query := &TaskColumnQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := ttc.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(teammatetaskcolumn.Table, teammatetaskcolumn.FieldID, id),
+			sqlgraph.To(taskcolumn.Table, taskcolumn.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, teammatetaskcolumn.TaskColumnTable, teammatetaskcolumn.TaskColumnColumn),
+		)
+		fromV = sqlgraph.Neighbors(ttc.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *TeammateTaskColumnClient) Hooks() []Hook {
+	return c.hooks.TeammateTaskColumn
 }
 
 // TestTodoClient is a client for the TestTodo schema.

@@ -17,6 +17,7 @@ import (
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/taskcolumn"
 	"project-management-demo-backend/ent/teammate"
+	"project-management-demo-backend/ent/teammatetaskcolumn"
 	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/ent/testuser"
 	"project-management-demo-backend/ent/workspace"
@@ -434,6 +435,45 @@ func init() {
 	teammateDescID := teammateMixinFields0[0].Descriptor()
 	// teammate.DefaultID holds the default value on creation for the id field.
 	teammate.DefaultID = teammateDescID.Default.(func() ulid.ID)
+	teammatetaskcolumnMixin := schema.TeammateTaskColumn{}.Mixin()
+	teammatetaskcolumnMixinFields0 := teammatetaskcolumnMixin[0].Fields()
+	_ = teammatetaskcolumnMixinFields0
+	teammatetaskcolumnMixinFields1 := teammatetaskcolumnMixin[1].Fields()
+	_ = teammatetaskcolumnMixinFields1
+	teammatetaskcolumnMixinFields2 := teammatetaskcolumnMixin[2].Fields()
+	_ = teammatetaskcolumnMixinFields2
+	teammatetaskcolumnFields := schema.TeammateTaskColumn{}.Fields()
+	_ = teammatetaskcolumnFields
+	// teammatetaskcolumnDescWidth is the schema descriptor for width field.
+	teammatetaskcolumnDescWidth := teammatetaskcolumnMixinFields1[2].Descriptor()
+	// teammatetaskcolumn.WidthValidator is a validator for the "width" field. It is called by the builders before save.
+	teammatetaskcolumn.WidthValidator = func() func(string) error {
+		validators := teammatetaskcolumnDescWidth.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(width string) error {
+			for _, fn := range fns {
+				if err := fn(width); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// teammatetaskcolumnDescCreatedAt is the schema descriptor for created_at field.
+	teammatetaskcolumnDescCreatedAt := teammatetaskcolumnMixinFields2[0].Descriptor()
+	// teammatetaskcolumn.DefaultCreatedAt holds the default value on creation for the created_at field.
+	teammatetaskcolumn.DefaultCreatedAt = teammatetaskcolumnDescCreatedAt.Default.(func() time.Time)
+	// teammatetaskcolumnDescUpdatedAt is the schema descriptor for updated_at field.
+	teammatetaskcolumnDescUpdatedAt := teammatetaskcolumnMixinFields2[1].Descriptor()
+	// teammatetaskcolumn.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	teammatetaskcolumn.DefaultUpdatedAt = teammatetaskcolumnDescUpdatedAt.Default.(func() time.Time)
+	// teammatetaskcolumnDescID is the schema descriptor for id field.
+	teammatetaskcolumnDescID := teammatetaskcolumnMixinFields0[0].Descriptor()
+	// teammatetaskcolumn.DefaultID holds the default value on creation for the id field.
+	teammatetaskcolumn.DefaultID = teammatetaskcolumnDescID.Default.(func() ulid.ID)
 	testtodoMixin := schema.TestTodo{}.Mixin()
 	testtodoMixinFields0 := testtodoMixin[0].Fields()
 	_ = testtodoMixinFields0

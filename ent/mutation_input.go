@@ -776,10 +776,11 @@ func (u *ProjectTeammateUpdateOne) SetInput(i UpdateProjectTeammateInput) *Proje
 
 // CreateTaskColumnInput represents a mutation input for creating taskcolumns.
 type CreateTaskColumnInput struct {
-	Name      string
-	Type      taskcolumn.Type
-	CreatedAt *time.Time
-	UpdatedAt *time.Time
+	Name                  string
+	Type                  taskcolumn.Type
+	CreatedAt             *time.Time
+	UpdatedAt             *time.Time
+	TeammateTaskColumnIDs []ulid.ID
 }
 
 // Mutate applies the CreateTaskColumnInput on the TaskColumnCreate builder.
@@ -792,6 +793,9 @@ func (i *CreateTaskColumnInput) Mutate(m *TaskColumnCreate) {
 	if v := i.UpdatedAt; v != nil {
 		m.SetUpdatedAt(*v)
 	}
+	if ids := i.TeammateTaskColumnIDs; len(ids) > 0 {
+		m.AddTeammateTaskColumnIDs(ids...)
+	}
 }
 
 // SetInput applies the change-set in the CreateTaskColumnInput on the create builder.
@@ -802,9 +806,11 @@ func (c *TaskColumnCreate) SetInput(i CreateTaskColumnInput) *TaskColumnCreate {
 
 // UpdateTaskColumnInput represents a mutation input for updating taskcolumns.
 type UpdateTaskColumnInput struct {
-	ID   ulid.ID
-	Name *string
-	Type *taskcolumn.Type
+	ID                          ulid.ID
+	Name                        *string
+	Type                        *taskcolumn.Type
+	AddTeammateTaskColumnIDs    []ulid.ID
+	RemoveTeammateTaskColumnIDs []ulid.ID
 }
 
 // Mutate applies the UpdateTaskColumnInput on the TaskColumnMutation.
@@ -814,6 +820,12 @@ func (i *UpdateTaskColumnInput) Mutate(m *TaskColumnMutation) {
 	}
 	if v := i.Type; v != nil {
 		m.SetType(*v)
+	}
+	if ids := i.AddTeammateTaskColumnIDs; len(ids) > 0 {
+		m.AddTeammateTaskColumnIDs(ids...)
+	}
+	if ids := i.RemoveTeammateTaskColumnIDs; len(ids) > 0 {
+		m.RemoveTeammateTaskColumnIDs(ids...)
 	}
 }
 
@@ -831,18 +843,19 @@ func (u *TaskColumnUpdateOne) SetInput(i UpdateTaskColumnInput) *TaskColumnUpdat
 
 // CreateTeammateInput represents a mutation input for creating teammates.
 type CreateTeammateInput struct {
-	Name                 string
-	Image                string
-	Email                string
-	CreatedAt            *time.Time
-	UpdatedAt            *time.Time
-	WorkspaceIDs         []ulid.ID
-	ProjectIDs           []ulid.ID
-	ProjectTeammateIDs   []ulid.ID
-	WorkspaceTeammateIDs []ulid.ID
-	FavoriteProjectIDs   []ulid.ID
-	FavoriteWorkspaceIDs []ulid.ID
-	MyTasksTabStatusIDs  []ulid.ID
+	Name                  string
+	Image                 string
+	Email                 string
+	CreatedAt             *time.Time
+	UpdatedAt             *time.Time
+	WorkspaceIDs          []ulid.ID
+	ProjectIDs            []ulid.ID
+	ProjectTeammateIDs    []ulid.ID
+	WorkspaceTeammateIDs  []ulid.ID
+	FavoriteProjectIDs    []ulid.ID
+	FavoriteWorkspaceIDs  []ulid.ID
+	MyTasksTabStatusIDs   []ulid.ID
+	TeammateTaskColumnIDs []ulid.ID
 }
 
 // Mutate applies the CreateTeammateInput on the TeammateCreate builder.
@@ -877,6 +890,9 @@ func (i *CreateTeammateInput) Mutate(m *TeammateCreate) {
 	if ids := i.MyTasksTabStatusIDs; len(ids) > 0 {
 		m.AddMyTasksTabStatusIDs(ids...)
 	}
+	if ids := i.TeammateTaskColumnIDs; len(ids) > 0 {
+		m.AddTeammateTaskColumnIDs(ids...)
+	}
 }
 
 // SetInput applies the change-set in the CreateTeammateInput on the create builder.
@@ -887,24 +903,26 @@ func (c *TeammateCreate) SetInput(i CreateTeammateInput) *TeammateCreate {
 
 // UpdateTeammateInput represents a mutation input for updating teammates.
 type UpdateTeammateInput struct {
-	ID                         ulid.ID
-	Name                       *string
-	Image                      *string
-	Email                      *string
-	AddWorkspaceIDs            []ulid.ID
-	RemoveWorkspaceIDs         []ulid.ID
-	AddProjectIDs              []ulid.ID
-	RemoveProjectIDs           []ulid.ID
-	AddProjectTeammateIDs      []ulid.ID
-	RemoveProjectTeammateIDs   []ulid.ID
-	AddWorkspaceTeammateIDs    []ulid.ID
-	RemoveWorkspaceTeammateIDs []ulid.ID
-	AddFavoriteProjectIDs      []ulid.ID
-	RemoveFavoriteProjectIDs   []ulid.ID
-	AddFavoriteWorkspaceIDs    []ulid.ID
-	RemoveFavoriteWorkspaceIDs []ulid.ID
-	AddMyTasksTabStatusIDs     []ulid.ID
-	RemoveMyTasksTabStatusIDs  []ulid.ID
+	ID                          ulid.ID
+	Name                        *string
+	Image                       *string
+	Email                       *string
+	AddWorkspaceIDs             []ulid.ID
+	RemoveWorkspaceIDs          []ulid.ID
+	AddProjectIDs               []ulid.ID
+	RemoveProjectIDs            []ulid.ID
+	AddProjectTeammateIDs       []ulid.ID
+	RemoveProjectTeammateIDs    []ulid.ID
+	AddWorkspaceTeammateIDs     []ulid.ID
+	RemoveWorkspaceTeammateIDs  []ulid.ID
+	AddFavoriteProjectIDs       []ulid.ID
+	RemoveFavoriteProjectIDs    []ulid.ID
+	AddFavoriteWorkspaceIDs     []ulid.ID
+	RemoveFavoriteWorkspaceIDs  []ulid.ID
+	AddMyTasksTabStatusIDs      []ulid.ID
+	RemoveMyTasksTabStatusIDs   []ulid.ID
+	AddTeammateTaskColumnIDs    []ulid.ID
+	RemoveTeammateTaskColumnIDs []ulid.ID
 }
 
 // Mutate applies the UpdateTeammateInput on the TeammateMutation.
@@ -960,6 +978,12 @@ func (i *UpdateTeammateInput) Mutate(m *TeammateMutation) {
 	if ids := i.RemoveMyTasksTabStatusIDs; len(ids) > 0 {
 		m.RemoveMyTasksTabStatusIDs(ids...)
 	}
+	if ids := i.AddTeammateTaskColumnIDs; len(ids) > 0 {
+		m.AddTeammateTaskColumnIDs(ids...)
+	}
+	if ids := i.RemoveTeammateTaskColumnIDs; len(ids) > 0 {
+		m.RemoveTeammateTaskColumnIDs(ids...)
+	}
 }
 
 // SetInput applies the change-set in the UpdateTeammateInput on the update builder.
@@ -970,6 +994,93 @@ func (u *TeammateUpdate) SetInput(i UpdateTeammateInput) *TeammateUpdate {
 
 // SetInput applies the change-set in the UpdateTeammateInput on the update-one builder.
 func (u *TeammateUpdateOne) SetInput(i UpdateTeammateInput) *TeammateUpdateOne {
+	i.Mutate(u.Mutation())
+	return u
+}
+
+// CreateTeammateTaskColumnInput represents a mutation input for creating teammatetaskcolumns.
+type CreateTeammateTaskColumnInput struct {
+	Width        string
+	Disabled     bool
+	Customizable bool
+	Order        int
+	CreatedAt    *time.Time
+	UpdatedAt    *time.Time
+	TeammateID   ulid.ID
+	TaskColumnID ulid.ID
+}
+
+// Mutate applies the CreateTeammateTaskColumnInput on the TeammateTaskColumnCreate builder.
+func (i *CreateTeammateTaskColumnInput) Mutate(m *TeammateTaskColumnCreate) {
+	m.SetWidth(i.Width)
+	m.SetDisabled(i.Disabled)
+	m.SetCustomizable(i.Customizable)
+	m.SetOrder(i.Order)
+	if v := i.CreatedAt; v != nil {
+		m.SetCreatedAt(*v)
+	}
+	if v := i.UpdatedAt; v != nil {
+		m.SetUpdatedAt(*v)
+	}
+	m.SetTeammateID(i.TeammateID)
+	m.SetTaskColumnID(i.TaskColumnID)
+}
+
+// SetInput applies the change-set in the CreateTeammateTaskColumnInput on the create builder.
+func (c *TeammateTaskColumnCreate) SetInput(i CreateTeammateTaskColumnInput) *TeammateTaskColumnCreate {
+	i.Mutate(c)
+	return c
+}
+
+// UpdateTeammateTaskColumnInput represents a mutation input for updating teammatetaskcolumns.
+type UpdateTeammateTaskColumnInput struct {
+	ID              ulid.ID
+	Width           *string
+	Disabled        *bool
+	Customizable    *bool
+	Order           *int
+	TeammateID      *ulid.ID
+	ClearTeammate   bool
+	TaskColumnID    *ulid.ID
+	ClearTaskColumn bool
+}
+
+// Mutate applies the UpdateTeammateTaskColumnInput on the TeammateTaskColumnMutation.
+func (i *UpdateTeammateTaskColumnInput) Mutate(m *TeammateTaskColumnMutation) {
+	if v := i.Width; v != nil {
+		m.SetWidth(*v)
+	}
+	if v := i.Disabled; v != nil {
+		m.SetDisabled(*v)
+	}
+	if v := i.Customizable; v != nil {
+		m.SetCustomizable(*v)
+	}
+	if v := i.Order; v != nil {
+		m.SetOrder(*v)
+	}
+	if i.ClearTeammate {
+		m.ClearTeammate()
+	}
+	if v := i.TeammateID; v != nil {
+		m.SetTeammateID(*v)
+	}
+	if i.ClearTaskColumn {
+		m.ClearTaskColumn()
+	}
+	if v := i.TaskColumnID; v != nil {
+		m.SetTaskColumnID(*v)
+	}
+}
+
+// SetInput applies the change-set in the UpdateTeammateTaskColumnInput on the update builder.
+func (u *TeammateTaskColumnUpdate) SetInput(i UpdateTeammateTaskColumnInput) *TeammateTaskColumnUpdate {
+	i.Mutate(u.Mutation())
+	return u
+}
+
+// SetInput applies the change-set in the UpdateTeammateTaskColumnInput on the update-one builder.
+func (u *TeammateTaskColumnUpdateOne) SetInput(i UpdateTeammateTaskColumnInput) *TeammateTaskColumnUpdateOne {
 	i.Mutate(u.Mutation())
 	return u
 }

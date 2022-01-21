@@ -21,6 +21,7 @@ import (
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/taskcolumn"
 	"project-management-demo-backend/ent/teammate"
+	"project-management-demo-backend/ent/teammatetaskcolumn"
 	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/ent/testuser"
 	"project-management-demo-backend/ent/workspace"
@@ -40,22 +41,23 @@ const (
 	OpUpdateOne = ent.OpUpdateOne
 
 	// Node types.
-	TypeColor             = "Color"
-	TypeFavoriteProject   = "FavoriteProject"
-	TypeFavoriteWorkspace = "FavoriteWorkspace"
-	TypeIcon              = "Icon"
-	TypeMyTasksTabStatus  = "MyTasksTabStatus"
-	TypeProject           = "Project"
-	TypeProjectBaseColor  = "ProjectBaseColor"
-	TypeProjectIcon       = "ProjectIcon"
-	TypeProjectLightColor = "ProjectLightColor"
-	TypeProjectTeammate   = "ProjectTeammate"
-	TypeTaskColumn        = "TaskColumn"
-	TypeTeammate          = "Teammate"
-	TypeTestTodo          = "TestTodo"
-	TypeTestUser          = "TestUser"
-	TypeWorkspace         = "Workspace"
-	TypeWorkspaceTeammate = "WorkspaceTeammate"
+	TypeColor              = "Color"
+	TypeFavoriteProject    = "FavoriteProject"
+	TypeFavoriteWorkspace  = "FavoriteWorkspace"
+	TypeIcon               = "Icon"
+	TypeMyTasksTabStatus   = "MyTasksTabStatus"
+	TypeProject            = "Project"
+	TypeProjectBaseColor   = "ProjectBaseColor"
+	TypeProjectIcon        = "ProjectIcon"
+	TypeProjectLightColor  = "ProjectLightColor"
+	TypeProjectTeammate    = "ProjectTeammate"
+	TypeTaskColumn         = "TaskColumn"
+	TypeTeammate           = "Teammate"
+	TypeTeammateTaskColumn = "TeammateTaskColumn"
+	TypeTestTodo           = "TestTodo"
+	TypeTestUser           = "TestUser"
+	TypeWorkspace          = "Workspace"
+	TypeWorkspaceTeammate  = "WorkspaceTeammate"
 )
 
 // ColorMutation represents an operation that mutates the Color nodes in the graph.
@@ -6590,17 +6592,20 @@ func (m *ProjectTeammateMutation) ResetEdge(name string) error {
 // TaskColumnMutation represents an operation that mutates the TaskColumn nodes in the graph.
 type TaskColumnMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *ulid.ID
-	name          *string
-	_type         *taskcolumn.Type
-	created_at    *time.Time
-	updated_at    *time.Time
-	clearedFields map[string]struct{}
-	done          bool
-	oldValue      func(context.Context) (*TaskColumn, error)
-	predicates    []predicate.TaskColumn
+	op                           Op
+	typ                          string
+	id                           *ulid.ID
+	name                         *string
+	_type                        *taskcolumn.Type
+	created_at                   *time.Time
+	updated_at                   *time.Time
+	clearedFields                map[string]struct{}
+	teammate_task_columns        map[ulid.ID]struct{}
+	removedteammate_task_columns map[ulid.ID]struct{}
+	clearedteammate_task_columns bool
+	done                         bool
+	oldValue                     func(context.Context) (*TaskColumn, error)
+	predicates                   []predicate.TaskColumn
 }
 
 var _ ent.Mutation = (*TaskColumnMutation)(nil)
@@ -6832,6 +6837,60 @@ func (m *TaskColumnMutation) ResetUpdatedAt() {
 	m.updated_at = nil
 }
 
+// AddTeammateTaskColumnIDs adds the "teammate_task_columns" edge to the TeammateTaskColumn entity by ids.
+func (m *TaskColumnMutation) AddTeammateTaskColumnIDs(ids ...ulid.ID) {
+	if m.teammate_task_columns == nil {
+		m.teammate_task_columns = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		m.teammate_task_columns[ids[i]] = struct{}{}
+	}
+}
+
+// ClearTeammateTaskColumns clears the "teammate_task_columns" edge to the TeammateTaskColumn entity.
+func (m *TaskColumnMutation) ClearTeammateTaskColumns() {
+	m.clearedteammate_task_columns = true
+}
+
+// TeammateTaskColumnsCleared reports if the "teammate_task_columns" edge to the TeammateTaskColumn entity was cleared.
+func (m *TaskColumnMutation) TeammateTaskColumnsCleared() bool {
+	return m.clearedteammate_task_columns
+}
+
+// RemoveTeammateTaskColumnIDs removes the "teammate_task_columns" edge to the TeammateTaskColumn entity by IDs.
+func (m *TaskColumnMutation) RemoveTeammateTaskColumnIDs(ids ...ulid.ID) {
+	if m.removedteammate_task_columns == nil {
+		m.removedteammate_task_columns = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		delete(m.teammate_task_columns, ids[i])
+		m.removedteammate_task_columns[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedTeammateTaskColumns returns the removed IDs of the "teammate_task_columns" edge to the TeammateTaskColumn entity.
+func (m *TaskColumnMutation) RemovedTeammateTaskColumnsIDs() (ids []ulid.ID) {
+	for id := range m.removedteammate_task_columns {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// TeammateTaskColumnsIDs returns the "teammate_task_columns" edge IDs in the mutation.
+func (m *TaskColumnMutation) TeammateTaskColumnsIDs() (ids []ulid.ID) {
+	for id := range m.teammate_task_columns {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetTeammateTaskColumns resets all changes to the "teammate_task_columns" edge.
+func (m *TaskColumnMutation) ResetTeammateTaskColumns() {
+	m.teammate_task_columns = nil
+	m.clearedteammate_task_columns = false
+	m.removedteammate_task_columns = nil
+}
+
 // Where appends a list predicates to the TaskColumnMutation builder.
 func (m *TaskColumnMutation) Where(ps ...predicate.TaskColumn) {
 	m.predicates = append(m.predicates, ps...)
@@ -7001,49 +7060,85 @@ func (m *TaskColumnMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *TaskColumnMutation) AddedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.teammate_task_columns != nil {
+		edges = append(edges, taskcolumn.EdgeTeammateTaskColumns)
+	}
 	return edges
 }
 
 // AddedIDs returns all IDs (to other nodes) that were added for the given edge
 // name in this mutation.
 func (m *TaskColumnMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case taskcolumn.EdgeTeammateTaskColumns:
+		ids := make([]ent.Value, 0, len(m.teammate_task_columns))
+		for id := range m.teammate_task_columns {
+			ids = append(ids, id)
+		}
+		return ids
+	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *TaskColumnMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.removedteammate_task_columns != nil {
+		edges = append(edges, taskcolumn.EdgeTeammateTaskColumns)
+	}
 	return edges
 }
 
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
 func (m *TaskColumnMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case taskcolumn.EdgeTeammateTaskColumns:
+		ids := make([]ent.Value, 0, len(m.removedteammate_task_columns))
+		for id := range m.removedteammate_task_columns {
+			ids = append(ids, id)
+		}
+		return ids
+	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *TaskColumnMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.clearedteammate_task_columns {
+		edges = append(edges, taskcolumn.EdgeTeammateTaskColumns)
+	}
 	return edges
 }
 
 // EdgeCleared returns a boolean which indicates if the edge with the given name
 // was cleared in this mutation.
 func (m *TaskColumnMutation) EdgeCleared(name string) bool {
+	switch name {
+	case taskcolumn.EdgeTeammateTaskColumns:
+		return m.clearedteammate_task_columns
+	}
 	return false
 }
 
 // ClearEdge clears the value of the edge with the given name. It returns an error
 // if that edge is not defined in the schema.
 func (m *TaskColumnMutation) ClearEdge(name string) error {
+	switch name {
+	}
 	return fmt.Errorf("unknown TaskColumn unique edge %s", name)
 }
 
 // ResetEdge resets all changes to the edge with the given name in this mutation.
 // It returns an error if the edge is not defined in the schema.
 func (m *TaskColumnMutation) ResetEdge(name string) error {
+	switch name {
+	case taskcolumn.EdgeTeammateTaskColumns:
+		m.ResetTeammateTaskColumns()
+		return nil
+	}
 	return fmt.Errorf("unknown TaskColumn edge %s", name)
 }
 
@@ -7080,6 +7175,9 @@ type TeammateMutation struct {
 	my_tasks_tab_statuses        map[ulid.ID]struct{}
 	removedmy_tasks_tab_statuses map[ulid.ID]struct{}
 	clearedmy_tasks_tab_statuses bool
+	teammate_task_columns        map[ulid.ID]struct{}
+	removedteammate_task_columns map[ulid.ID]struct{}
+	clearedteammate_task_columns bool
 	done                         bool
 	oldValue                     func(context.Context) (*Teammate, error)
 	predicates                   []predicate.Teammate
@@ -7728,6 +7826,60 @@ func (m *TeammateMutation) ResetMyTasksTabStatuses() {
 	m.removedmy_tasks_tab_statuses = nil
 }
 
+// AddTeammateTaskColumnIDs adds the "teammate_task_columns" edge to the TeammateTaskColumn entity by ids.
+func (m *TeammateMutation) AddTeammateTaskColumnIDs(ids ...ulid.ID) {
+	if m.teammate_task_columns == nil {
+		m.teammate_task_columns = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		m.teammate_task_columns[ids[i]] = struct{}{}
+	}
+}
+
+// ClearTeammateTaskColumns clears the "teammate_task_columns" edge to the TeammateTaskColumn entity.
+func (m *TeammateMutation) ClearTeammateTaskColumns() {
+	m.clearedteammate_task_columns = true
+}
+
+// TeammateTaskColumnsCleared reports if the "teammate_task_columns" edge to the TeammateTaskColumn entity was cleared.
+func (m *TeammateMutation) TeammateTaskColumnsCleared() bool {
+	return m.clearedteammate_task_columns
+}
+
+// RemoveTeammateTaskColumnIDs removes the "teammate_task_columns" edge to the TeammateTaskColumn entity by IDs.
+func (m *TeammateMutation) RemoveTeammateTaskColumnIDs(ids ...ulid.ID) {
+	if m.removedteammate_task_columns == nil {
+		m.removedteammate_task_columns = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		delete(m.teammate_task_columns, ids[i])
+		m.removedteammate_task_columns[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedTeammateTaskColumns returns the removed IDs of the "teammate_task_columns" edge to the TeammateTaskColumn entity.
+func (m *TeammateMutation) RemovedTeammateTaskColumnsIDs() (ids []ulid.ID) {
+	for id := range m.removedteammate_task_columns {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// TeammateTaskColumnsIDs returns the "teammate_task_columns" edge IDs in the mutation.
+func (m *TeammateMutation) TeammateTaskColumnsIDs() (ids []ulid.ID) {
+	for id := range m.teammate_task_columns {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetTeammateTaskColumns resets all changes to the "teammate_task_columns" edge.
+func (m *TeammateMutation) ResetTeammateTaskColumns() {
+	m.teammate_task_columns = nil
+	m.clearedteammate_task_columns = false
+	m.removedteammate_task_columns = nil
+}
+
 // Where appends a list predicates to the TeammateMutation builder.
 func (m *TeammateMutation) Where(ps ...predicate.Teammate) {
 	m.predicates = append(m.predicates, ps...)
@@ -7914,7 +8066,7 @@ func (m *TeammateMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *TeammateMutation) AddedEdges() []string {
-	edges := make([]string, 0, 7)
+	edges := make([]string, 0, 8)
 	if m.workspaces != nil {
 		edges = append(edges, teammate.EdgeWorkspaces)
 	}
@@ -7935,6 +8087,9 @@ func (m *TeammateMutation) AddedEdges() []string {
 	}
 	if m.my_tasks_tab_statuses != nil {
 		edges = append(edges, teammate.EdgeMyTasksTabStatuses)
+	}
+	if m.teammate_task_columns != nil {
+		edges = append(edges, teammate.EdgeTeammateTaskColumns)
 	}
 	return edges
 }
@@ -7985,13 +8140,19 @@ func (m *TeammateMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case teammate.EdgeTeammateTaskColumns:
+		ids := make([]ent.Value, 0, len(m.teammate_task_columns))
+		for id := range m.teammate_task_columns {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *TeammateMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 7)
+	edges := make([]string, 0, 8)
 	if m.removedworkspaces != nil {
 		edges = append(edges, teammate.EdgeWorkspaces)
 	}
@@ -8012,6 +8173,9 @@ func (m *TeammateMutation) RemovedEdges() []string {
 	}
 	if m.removedmy_tasks_tab_statuses != nil {
 		edges = append(edges, teammate.EdgeMyTasksTabStatuses)
+	}
+	if m.removedteammate_task_columns != nil {
+		edges = append(edges, teammate.EdgeTeammateTaskColumns)
 	}
 	return edges
 }
@@ -8062,13 +8226,19 @@ func (m *TeammateMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case teammate.EdgeTeammateTaskColumns:
+		ids := make([]ent.Value, 0, len(m.removedteammate_task_columns))
+		for id := range m.removedteammate_task_columns {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *TeammateMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 7)
+	edges := make([]string, 0, 8)
 	if m.clearedworkspaces {
 		edges = append(edges, teammate.EdgeWorkspaces)
 	}
@@ -8089,6 +8259,9 @@ func (m *TeammateMutation) ClearedEdges() []string {
 	}
 	if m.clearedmy_tasks_tab_statuses {
 		edges = append(edges, teammate.EdgeMyTasksTabStatuses)
+	}
+	if m.clearedteammate_task_columns {
+		edges = append(edges, teammate.EdgeTeammateTaskColumns)
 	}
 	return edges
 }
@@ -8111,6 +8284,8 @@ func (m *TeammateMutation) EdgeCleared(name string) bool {
 		return m.clearedfavorite_workspaces
 	case teammate.EdgeMyTasksTabStatuses:
 		return m.clearedmy_tasks_tab_statuses
+	case teammate.EdgeTeammateTaskColumns:
+		return m.clearedteammate_task_columns
 	}
 	return false
 }
@@ -8148,8 +8323,823 @@ func (m *TeammateMutation) ResetEdge(name string) error {
 	case teammate.EdgeMyTasksTabStatuses:
 		m.ResetMyTasksTabStatuses()
 		return nil
+	case teammate.EdgeTeammateTaskColumns:
+		m.ResetTeammateTaskColumns()
+		return nil
 	}
 	return fmt.Errorf("unknown Teammate edge %s", name)
+}
+
+// TeammateTaskColumnMutation represents an operation that mutates the TeammateTaskColumn nodes in the graph.
+type TeammateTaskColumnMutation struct {
+	config
+	op                 Op
+	typ                string
+	id                 *ulid.ID
+	width              *string
+	disabled           *bool
+	customizable       *bool
+	_order             *int
+	add_order          *int
+	created_at         *time.Time
+	updated_at         *time.Time
+	clearedFields      map[string]struct{}
+	teammate           *ulid.ID
+	clearedteammate    bool
+	task_column        *ulid.ID
+	clearedtask_column bool
+	done               bool
+	oldValue           func(context.Context) (*TeammateTaskColumn, error)
+	predicates         []predicate.TeammateTaskColumn
+}
+
+var _ ent.Mutation = (*TeammateTaskColumnMutation)(nil)
+
+// teammatetaskcolumnOption allows management of the mutation configuration using functional options.
+type teammatetaskcolumnOption func(*TeammateTaskColumnMutation)
+
+// newTeammateTaskColumnMutation creates new mutation for the TeammateTaskColumn entity.
+func newTeammateTaskColumnMutation(c config, op Op, opts ...teammatetaskcolumnOption) *TeammateTaskColumnMutation {
+	m := &TeammateTaskColumnMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeTeammateTaskColumn,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withTeammateTaskColumnID sets the ID field of the mutation.
+func withTeammateTaskColumnID(id ulid.ID) teammatetaskcolumnOption {
+	return func(m *TeammateTaskColumnMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *TeammateTaskColumn
+		)
+		m.oldValue = func(ctx context.Context) (*TeammateTaskColumn, error) {
+			once.Do(func() {
+				if m.done {
+					err = fmt.Errorf("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().TeammateTaskColumn.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withTeammateTaskColumn sets the old TeammateTaskColumn of the mutation.
+func withTeammateTaskColumn(node *TeammateTaskColumn) teammatetaskcolumnOption {
+	return func(m *TeammateTaskColumnMutation) {
+		m.oldValue = func(context.Context) (*TeammateTaskColumn, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m TeammateTaskColumnMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m TeammateTaskColumnMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, fmt.Errorf("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of TeammateTaskColumn entities.
+func (m *TeammateTaskColumnMutation) SetID(id ulid.ID) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *TeammateTaskColumnMutation) ID() (id ulid.ID, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// SetTeammateID sets the "teammate_id" field.
+func (m *TeammateTaskColumnMutation) SetTeammateID(u ulid.ID) {
+	m.teammate = &u
+}
+
+// TeammateID returns the value of the "teammate_id" field in the mutation.
+func (m *TeammateTaskColumnMutation) TeammateID() (r ulid.ID, exists bool) {
+	v := m.teammate
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTeammateID returns the old "teammate_id" field's value of the TeammateTaskColumn entity.
+// If the TeammateTaskColumn object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TeammateTaskColumnMutation) OldTeammateID(ctx context.Context) (v ulid.ID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldTeammateID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldTeammateID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTeammateID: %w", err)
+	}
+	return oldValue.TeammateID, nil
+}
+
+// ResetTeammateID resets all changes to the "teammate_id" field.
+func (m *TeammateTaskColumnMutation) ResetTeammateID() {
+	m.teammate = nil
+}
+
+// SetTaskColumnID sets the "task_column_id" field.
+func (m *TeammateTaskColumnMutation) SetTaskColumnID(u ulid.ID) {
+	m.task_column = &u
+}
+
+// TaskColumnID returns the value of the "task_column_id" field in the mutation.
+func (m *TeammateTaskColumnMutation) TaskColumnID() (r ulid.ID, exists bool) {
+	v := m.task_column
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTaskColumnID returns the old "task_column_id" field's value of the TeammateTaskColumn entity.
+// If the TeammateTaskColumn object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TeammateTaskColumnMutation) OldTaskColumnID(ctx context.Context) (v ulid.ID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldTaskColumnID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldTaskColumnID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTaskColumnID: %w", err)
+	}
+	return oldValue.TaskColumnID, nil
+}
+
+// ResetTaskColumnID resets all changes to the "task_column_id" field.
+func (m *TeammateTaskColumnMutation) ResetTaskColumnID() {
+	m.task_column = nil
+}
+
+// SetWidth sets the "width" field.
+func (m *TeammateTaskColumnMutation) SetWidth(s string) {
+	m.width = &s
+}
+
+// Width returns the value of the "width" field in the mutation.
+func (m *TeammateTaskColumnMutation) Width() (r string, exists bool) {
+	v := m.width
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldWidth returns the old "width" field's value of the TeammateTaskColumn entity.
+// If the TeammateTaskColumn object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TeammateTaskColumnMutation) OldWidth(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldWidth is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldWidth requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldWidth: %w", err)
+	}
+	return oldValue.Width, nil
+}
+
+// ResetWidth resets all changes to the "width" field.
+func (m *TeammateTaskColumnMutation) ResetWidth() {
+	m.width = nil
+}
+
+// SetDisabled sets the "disabled" field.
+func (m *TeammateTaskColumnMutation) SetDisabled(b bool) {
+	m.disabled = &b
+}
+
+// Disabled returns the value of the "disabled" field in the mutation.
+func (m *TeammateTaskColumnMutation) Disabled() (r bool, exists bool) {
+	v := m.disabled
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDisabled returns the old "disabled" field's value of the TeammateTaskColumn entity.
+// If the TeammateTaskColumn object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TeammateTaskColumnMutation) OldDisabled(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldDisabled is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldDisabled requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDisabled: %w", err)
+	}
+	return oldValue.Disabled, nil
+}
+
+// ResetDisabled resets all changes to the "disabled" field.
+func (m *TeammateTaskColumnMutation) ResetDisabled() {
+	m.disabled = nil
+}
+
+// SetCustomizable sets the "customizable" field.
+func (m *TeammateTaskColumnMutation) SetCustomizable(b bool) {
+	m.customizable = &b
+}
+
+// Customizable returns the value of the "customizable" field in the mutation.
+func (m *TeammateTaskColumnMutation) Customizable() (r bool, exists bool) {
+	v := m.customizable
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCustomizable returns the old "customizable" field's value of the TeammateTaskColumn entity.
+// If the TeammateTaskColumn object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TeammateTaskColumnMutation) OldCustomizable(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldCustomizable is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldCustomizable requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCustomizable: %w", err)
+	}
+	return oldValue.Customizable, nil
+}
+
+// ResetCustomizable resets all changes to the "customizable" field.
+func (m *TeammateTaskColumnMutation) ResetCustomizable() {
+	m.customizable = nil
+}
+
+// SetOrder sets the "order" field.
+func (m *TeammateTaskColumnMutation) SetOrder(i int) {
+	m._order = &i
+	m.add_order = nil
+}
+
+// Order returns the value of the "order" field in the mutation.
+func (m *TeammateTaskColumnMutation) Order() (r int, exists bool) {
+	v := m._order
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldOrder returns the old "order" field's value of the TeammateTaskColumn entity.
+// If the TeammateTaskColumn object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TeammateTaskColumnMutation) OldOrder(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldOrder is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldOrder requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldOrder: %w", err)
+	}
+	return oldValue.Order, nil
+}
+
+// AddOrder adds i to the "order" field.
+func (m *TeammateTaskColumnMutation) AddOrder(i int) {
+	if m.add_order != nil {
+		*m.add_order += i
+	} else {
+		m.add_order = &i
+	}
+}
+
+// AddedOrder returns the value that was added to the "order" field in this mutation.
+func (m *TeammateTaskColumnMutation) AddedOrder() (r int, exists bool) {
+	v := m.add_order
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetOrder resets all changes to the "order" field.
+func (m *TeammateTaskColumnMutation) ResetOrder() {
+	m._order = nil
+	m.add_order = nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *TeammateTaskColumnMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *TeammateTaskColumnMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the TeammateTaskColumn entity.
+// If the TeammateTaskColumn object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TeammateTaskColumnMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *TeammateTaskColumnMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *TeammateTaskColumnMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *TeammateTaskColumnMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the TeammateTaskColumn entity.
+// If the TeammateTaskColumn object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TeammateTaskColumnMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *TeammateTaskColumnMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// ClearTeammate clears the "teammate" edge to the Teammate entity.
+func (m *TeammateTaskColumnMutation) ClearTeammate() {
+	m.clearedteammate = true
+}
+
+// TeammateCleared reports if the "teammate" edge to the Teammate entity was cleared.
+func (m *TeammateTaskColumnMutation) TeammateCleared() bool {
+	return m.clearedteammate
+}
+
+// TeammateIDs returns the "teammate" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// TeammateID instead. It exists only for internal usage by the builders.
+func (m *TeammateTaskColumnMutation) TeammateIDs() (ids []ulid.ID) {
+	if id := m.teammate; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetTeammate resets all changes to the "teammate" edge.
+func (m *TeammateTaskColumnMutation) ResetTeammate() {
+	m.teammate = nil
+	m.clearedteammate = false
+}
+
+// ClearTaskColumn clears the "task_column" edge to the TaskColumn entity.
+func (m *TeammateTaskColumnMutation) ClearTaskColumn() {
+	m.clearedtask_column = true
+}
+
+// TaskColumnCleared reports if the "task_column" edge to the TaskColumn entity was cleared.
+func (m *TeammateTaskColumnMutation) TaskColumnCleared() bool {
+	return m.clearedtask_column
+}
+
+// TaskColumnIDs returns the "task_column" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// TaskColumnID instead. It exists only for internal usage by the builders.
+func (m *TeammateTaskColumnMutation) TaskColumnIDs() (ids []ulid.ID) {
+	if id := m.task_column; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetTaskColumn resets all changes to the "task_column" edge.
+func (m *TeammateTaskColumnMutation) ResetTaskColumn() {
+	m.task_column = nil
+	m.clearedtask_column = false
+}
+
+// Where appends a list predicates to the TeammateTaskColumnMutation builder.
+func (m *TeammateTaskColumnMutation) Where(ps ...predicate.TeammateTaskColumn) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// Op returns the operation name.
+func (m *TeammateTaskColumnMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (TeammateTaskColumn).
+func (m *TeammateTaskColumnMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *TeammateTaskColumnMutation) Fields() []string {
+	fields := make([]string, 0, 8)
+	if m.teammate != nil {
+		fields = append(fields, teammatetaskcolumn.FieldTeammateID)
+	}
+	if m.task_column != nil {
+		fields = append(fields, teammatetaskcolumn.FieldTaskColumnID)
+	}
+	if m.width != nil {
+		fields = append(fields, teammatetaskcolumn.FieldWidth)
+	}
+	if m.disabled != nil {
+		fields = append(fields, teammatetaskcolumn.FieldDisabled)
+	}
+	if m.customizable != nil {
+		fields = append(fields, teammatetaskcolumn.FieldCustomizable)
+	}
+	if m._order != nil {
+		fields = append(fields, teammatetaskcolumn.FieldOrder)
+	}
+	if m.created_at != nil {
+		fields = append(fields, teammatetaskcolumn.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, teammatetaskcolumn.FieldUpdatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *TeammateTaskColumnMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case teammatetaskcolumn.FieldTeammateID:
+		return m.TeammateID()
+	case teammatetaskcolumn.FieldTaskColumnID:
+		return m.TaskColumnID()
+	case teammatetaskcolumn.FieldWidth:
+		return m.Width()
+	case teammatetaskcolumn.FieldDisabled:
+		return m.Disabled()
+	case teammatetaskcolumn.FieldCustomizable:
+		return m.Customizable()
+	case teammatetaskcolumn.FieldOrder:
+		return m.Order()
+	case teammatetaskcolumn.FieldCreatedAt:
+		return m.CreatedAt()
+	case teammatetaskcolumn.FieldUpdatedAt:
+		return m.UpdatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *TeammateTaskColumnMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case teammatetaskcolumn.FieldTeammateID:
+		return m.OldTeammateID(ctx)
+	case teammatetaskcolumn.FieldTaskColumnID:
+		return m.OldTaskColumnID(ctx)
+	case teammatetaskcolumn.FieldWidth:
+		return m.OldWidth(ctx)
+	case teammatetaskcolumn.FieldDisabled:
+		return m.OldDisabled(ctx)
+	case teammatetaskcolumn.FieldCustomizable:
+		return m.OldCustomizable(ctx)
+	case teammatetaskcolumn.FieldOrder:
+		return m.OldOrder(ctx)
+	case teammatetaskcolumn.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case teammatetaskcolumn.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown TeammateTaskColumn field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *TeammateTaskColumnMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case teammatetaskcolumn.FieldTeammateID:
+		v, ok := value.(ulid.ID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTeammateID(v)
+		return nil
+	case teammatetaskcolumn.FieldTaskColumnID:
+		v, ok := value.(ulid.ID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTaskColumnID(v)
+		return nil
+	case teammatetaskcolumn.FieldWidth:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetWidth(v)
+		return nil
+	case teammatetaskcolumn.FieldDisabled:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDisabled(v)
+		return nil
+	case teammatetaskcolumn.FieldCustomizable:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCustomizable(v)
+		return nil
+	case teammatetaskcolumn.FieldOrder:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetOrder(v)
+		return nil
+	case teammatetaskcolumn.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case teammatetaskcolumn.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown TeammateTaskColumn field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *TeammateTaskColumnMutation) AddedFields() []string {
+	var fields []string
+	if m.add_order != nil {
+		fields = append(fields, teammatetaskcolumn.FieldOrder)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *TeammateTaskColumnMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case teammatetaskcolumn.FieldOrder:
+		return m.AddedOrder()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *TeammateTaskColumnMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case teammatetaskcolumn.FieldOrder:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddOrder(v)
+		return nil
+	}
+	return fmt.Errorf("unknown TeammateTaskColumn numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *TeammateTaskColumnMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *TeammateTaskColumnMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *TeammateTaskColumnMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown TeammateTaskColumn nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *TeammateTaskColumnMutation) ResetField(name string) error {
+	switch name {
+	case teammatetaskcolumn.FieldTeammateID:
+		m.ResetTeammateID()
+		return nil
+	case teammatetaskcolumn.FieldTaskColumnID:
+		m.ResetTaskColumnID()
+		return nil
+	case teammatetaskcolumn.FieldWidth:
+		m.ResetWidth()
+		return nil
+	case teammatetaskcolumn.FieldDisabled:
+		m.ResetDisabled()
+		return nil
+	case teammatetaskcolumn.FieldCustomizable:
+		m.ResetCustomizable()
+		return nil
+	case teammatetaskcolumn.FieldOrder:
+		m.ResetOrder()
+		return nil
+	case teammatetaskcolumn.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case teammatetaskcolumn.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown TeammateTaskColumn field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *TeammateTaskColumnMutation) AddedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.teammate != nil {
+		edges = append(edges, teammatetaskcolumn.EdgeTeammate)
+	}
+	if m.task_column != nil {
+		edges = append(edges, teammatetaskcolumn.EdgeTaskColumn)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *TeammateTaskColumnMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case teammatetaskcolumn.EdgeTeammate:
+		if id := m.teammate; id != nil {
+			return []ent.Value{*id}
+		}
+	case teammatetaskcolumn.EdgeTaskColumn:
+		if id := m.task_column; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *TeammateTaskColumnMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 2)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *TeammateTaskColumnMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *TeammateTaskColumnMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.clearedteammate {
+		edges = append(edges, teammatetaskcolumn.EdgeTeammate)
+	}
+	if m.clearedtask_column {
+		edges = append(edges, teammatetaskcolumn.EdgeTaskColumn)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *TeammateTaskColumnMutation) EdgeCleared(name string) bool {
+	switch name {
+	case teammatetaskcolumn.EdgeTeammate:
+		return m.clearedteammate
+	case teammatetaskcolumn.EdgeTaskColumn:
+		return m.clearedtask_column
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *TeammateTaskColumnMutation) ClearEdge(name string) error {
+	switch name {
+	case teammatetaskcolumn.EdgeTeammate:
+		m.ClearTeammate()
+		return nil
+	case teammatetaskcolumn.EdgeTaskColumn:
+		m.ClearTaskColumn()
+		return nil
+	}
+	return fmt.Errorf("unknown TeammateTaskColumn unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *TeammateTaskColumnMutation) ResetEdge(name string) error {
+	switch name {
+	case teammatetaskcolumn.EdgeTeammate:
+		m.ResetTeammate()
+		return nil
+	case teammatetaskcolumn.EdgeTaskColumn:
+		m.ResetTaskColumn()
+		return nil
+	}
+	return fmt.Errorf("unknown TeammateTaskColumn edge %s", name)
 }
 
 // TestTodoMutation represents an operation that mutates the TestTodo nodes in the graph.

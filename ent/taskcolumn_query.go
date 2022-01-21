@@ -4,12 +4,14 @@ package ent
 
 import (
 	"context"
+	"database/sql/driver"
 	"errors"
 	"fmt"
 	"math"
 	"project-management-demo-backend/ent/predicate"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/taskcolumn"
+	"project-management-demo-backend/ent/teammatetaskcolumn"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -25,6 +27,8 @@ type TaskColumnQuery struct {
 	order      []OrderFunc
 	fields     []string
 	predicates []predicate.TaskColumn
+	// eager-loading edges.
+	withTeammateTaskColumns *TeammateTaskColumnQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -59,6 +63,28 @@ func (tcq *TaskColumnQuery) Unique(unique bool) *TaskColumnQuery {
 func (tcq *TaskColumnQuery) Order(o ...OrderFunc) *TaskColumnQuery {
 	tcq.order = append(tcq.order, o...)
 	return tcq
+}
+
+// QueryTeammateTaskColumns chains the current query on the "teammate_task_columns" edge.
+func (tcq *TaskColumnQuery) QueryTeammateTaskColumns() *TeammateTaskColumnQuery {
+	query := &TeammateTaskColumnQuery{config: tcq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := tcq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := tcq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(taskcolumn.Table, taskcolumn.FieldID, selector),
+			sqlgraph.To(teammatetaskcolumn.Table, teammatetaskcolumn.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, taskcolumn.TeammateTaskColumnsTable, taskcolumn.TeammateTaskColumnsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(tcq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // First returns the first TaskColumn entity from the query.
@@ -237,15 +263,27 @@ func (tcq *TaskColumnQuery) Clone() *TaskColumnQuery {
 		return nil
 	}
 	return &TaskColumnQuery{
-		config:     tcq.config,
-		limit:      tcq.limit,
-		offset:     tcq.offset,
-		order:      append([]OrderFunc{}, tcq.order...),
-		predicates: append([]predicate.TaskColumn{}, tcq.predicates...),
+		config:                  tcq.config,
+		limit:                   tcq.limit,
+		offset:                  tcq.offset,
+		order:                   append([]OrderFunc{}, tcq.order...),
+		predicates:              append([]predicate.TaskColumn{}, tcq.predicates...),
+		withTeammateTaskColumns: tcq.withTeammateTaskColumns.Clone(),
 		// clone intermediate query.
 		sql:  tcq.sql.Clone(),
 		path: tcq.path,
 	}
+}
+
+// WithTeammateTaskColumns tells the query-builder to eager-load the nodes that are connected to
+// the "teammate_task_columns" edge. The optional arguments are used to configure the query builder of the edge.
+func (tcq *TaskColumnQuery) WithTeammateTaskColumns(opts ...func(*TeammateTaskColumnQuery)) *TaskColumnQuery {
+	query := &TeammateTaskColumnQuery{config: tcq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	tcq.withTeammateTaskColumns = query
+	return tcq
 }
 
 // GroupBy is used to group vertices by one or more fields/columns.
@@ -311,8 +349,11 @@ func (tcq *TaskColumnQuery) prepareQuery(ctx context.Context) error {
 
 func (tcq *TaskColumnQuery) sqlAll(ctx context.Context) ([]*TaskColumn, error) {
 	var (
-		nodes = []*TaskColumn{}
-		_spec = tcq.querySpec()
+		nodes       = []*TaskColumn{}
+		_spec       = tcq.querySpec()
+		loadedTypes = [1]bool{
+			tcq.withTeammateTaskColumns != nil,
+		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
 		node := &TaskColumn{config: tcq.config}
@@ -324,6 +365,7 @@ func (tcq *TaskColumnQuery) sqlAll(ctx context.Context) ([]*TaskColumn, error) {
 			return fmt.Errorf("ent: Assign called without calling ScanValues")
 		}
 		node := nodes[len(nodes)-1]
+		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
 	if err := sqlgraph.QueryNodes(ctx, tcq.driver, _spec); err != nil {
@@ -332,6 +374,32 @@ func (tcq *TaskColumnQuery) sqlAll(ctx context.Context) ([]*TaskColumn, error) {
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
+
+	if query := tcq.withTeammateTaskColumns; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[ulid.ID]*TaskColumn)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.TeammateTaskColumns = []*TeammateTaskColumn{}
+		}
+		query.Where(predicate.TeammateTaskColumn(func(s *sql.Selector) {
+			s.Where(sql.InValues(taskcolumn.TeammateTaskColumnsColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.TaskColumnID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "task_column_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.TeammateTaskColumns = append(node.Edges.TeammateTaskColumns, n)
+		}
+	}
+
 	return nodes, nil
 }
 

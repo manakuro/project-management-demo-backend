@@ -80,6 +80,12 @@ func (Teammate) Edges() []ent.Edge {
 					annotation.Edge{FieldName: "my_tasks_tab_status_id"},
 				),
 			),
+		edge.To("teammate_task_columns", TeammateTaskColumn.Type).
+			Annotations(
+				schema.Annotation(
+					annotation.Edge{FieldName: "teammate_task_column_id"},
+				),
+			),
 	}
 }
 

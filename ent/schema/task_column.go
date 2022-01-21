@@ -1,8 +1,12 @@
 package schema
 
 import (
+	"project-management-demo-backend/ent/annotation"
 	"project-management-demo-backend/ent/mixin"
 	"project-management-demo-backend/pkg/const/globalid"
+
+	"entgo.io/ent/schema"
+	"entgo.io/ent/schema/edge"
 
 	"entgo.io/ent"
 	"entgo.io/ent/schema/field"
@@ -39,7 +43,14 @@ func (TaskColumnMixin) Fields() []ent.Field {
 
 // Edges of the TaskColumn.
 func (TaskColumn) Edges() []ent.Edge {
-	return nil
+	return []ent.Edge{
+		edge.To("teammate_task_columns", TeammateTaskColumn.Type).
+			Annotations(
+				schema.Annotation(
+					annotation.Edge{FieldName: "teammate_task_column_id"},
+				),
+			),
+	}
 }
 
 // Mixin of the TaskColumn.

@@ -24,22 +24,23 @@ type config struct {
 
 // hooks per client, for fast access.
 type hooks struct {
-	Color             []ent.Hook
-	FavoriteProject   []ent.Hook
-	FavoriteWorkspace []ent.Hook
-	Icon              []ent.Hook
-	MyTasksTabStatus  []ent.Hook
-	Project           []ent.Hook
-	ProjectBaseColor  []ent.Hook
-	ProjectIcon       []ent.Hook
-	ProjectLightColor []ent.Hook
-	ProjectTeammate   []ent.Hook
-	TaskColumn        []ent.Hook
-	Teammate          []ent.Hook
-	TestTodo          []ent.Hook
-	TestUser          []ent.Hook
-	Workspace         []ent.Hook
-	WorkspaceTeammate []ent.Hook
+	Color              []ent.Hook
+	FavoriteProject    []ent.Hook
+	FavoriteWorkspace  []ent.Hook
+	Icon               []ent.Hook
+	MyTasksTabStatus   []ent.Hook
+	Project            []ent.Hook
+	ProjectBaseColor   []ent.Hook
+	ProjectIcon        []ent.Hook
+	ProjectLightColor  []ent.Hook
+	ProjectTeammate    []ent.Hook
+	TaskColumn         []ent.Hook
+	Teammate           []ent.Hook
+	TeammateTaskColumn []ent.Hook
+	TestTodo           []ent.Hook
+	TestUser           []ent.Hook
+	Workspace          []ent.Hook
+	WorkspaceTeammate  []ent.Hook
 }
 
 // Options applies the options on the config object.

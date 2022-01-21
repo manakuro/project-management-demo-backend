@@ -48,9 +48,11 @@ type TeammateEdges struct {
 	FavoriteWorkspaces []*FavoriteWorkspace `json:"favorite_workspaces,omitempty"`
 	// MyTasksTabStatuses holds the value of the my_tasks_tab_statuses edge.
 	MyTasksTabStatuses []*MyTasksTabStatus `json:"my_tasks_tab_statuses,omitempty"`
+	// TeammateTaskColumns holds the value of the teammate_task_columns edge.
+	TeammateTaskColumns []*TeammateTaskColumn `json:"teammate_task_columns,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [7]bool
+	loadedTypes [8]bool
 }
 
 // WorkspacesOrErr returns the Workspaces value or an error if the edge
@@ -114,6 +116,15 @@ func (e TeammateEdges) MyTasksTabStatusesOrErr() ([]*MyTasksTabStatus, error) {
 		return e.MyTasksTabStatuses, nil
 	}
 	return nil, &NotLoadedError{edge: "my_tasks_tab_statuses"}
+}
+
+// TeammateTaskColumnsOrErr returns the TeammateTaskColumns value or an error if the edge
+// was not loaded in eager-loading.
+func (e TeammateEdges) TeammateTaskColumnsOrErr() ([]*TeammateTaskColumn, error) {
+	if e.loadedTypes[7] {
+		return e.TeammateTaskColumns, nil
+	}
+	return nil, &NotLoadedError{edge: "teammate_task_columns"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -216,6 +227,11 @@ func (t *Teammate) QueryFavoriteWorkspaces() *FavoriteWorkspaceQuery {
 // QueryMyTasksTabStatuses queries the "my_tasks_tab_statuses" edge of the Teammate entity.
 func (t *Teammate) QueryMyTasksTabStatuses() *MyTasksTabStatusQuery {
 	return (&TeammateClient{config: t.config}).QueryMyTasksTabStatuses(t)
+}
+
+// QueryTeammateTaskColumns queries the "teammate_task_columns" edge of the Teammate entity.
+func (t *Teammate) QueryTeammateTaskColumns() *TeammateTaskColumnQuery {
+	return (&TeammateClient{config: t.config}).QueryTeammateTaskColumns(t)
 }
 
 // Update returns a builder for updating this Teammate.
