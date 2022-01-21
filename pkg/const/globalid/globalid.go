@@ -29,22 +29,23 @@ type field struct {
 
 // GlobalIDs maps unique string to tables names.
 type GlobalIDs struct {
-	Color             field
-	FavoriteProject   field
-	FavoriteWorkspace field
-	Icon              field
-	Project           field
-	ProjectBaseColor  field
-	ProjectIcon       field
-	ProjectLightColor field
-	ProjectTeammate   field
-	Teammate          field
-	TestTodo          field
-	TestUser          field
-	Workspace         field
-	WorkspaceTeammate field
-	MyTasksTabStatus  field
-	TaskColumn        field
+	Color              field
+	FavoriteProject    field
+	FavoriteWorkspace  field
+	Icon               field
+	Project            field
+	ProjectBaseColor   field
+	ProjectIcon        field
+	ProjectLightColor  field
+	ProjectTeammate    field
+	Teammate           field
+	TestTodo           field
+	TestUser           field
+	Workspace          field
+	WorkspaceTeammate  field
+	MyTasksTabStatus   field
+	TaskColumn         field
+	TeammateTaskColumn field
 }
 
 // New generates a map object that is intended to be used as global identification for node interface query.
@@ -113,6 +114,10 @@ func New() GlobalIDs {
 		},
 		TaskColumn: field{
 			Prefix: "0AP",
+			Table:  taskcolumn.Table,
+		},
+		TeammateTaskColumn: field{
+			Prefix: "0APQ",
 			Table:  taskcolumn.Table,
 		},
 	}

@@ -17,6 +17,7 @@ import (
 	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/ent/taskcolumn"
 	"project-management-demo-backend/ent/teammate"
+	"project-management-demo-backend/ent/teammatetaskcolumn"
 	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/ent/testuser"
 	"project-management-demo-backend/ent/workspace"
@@ -44,22 +45,23 @@ type OrderFunc func(*sql.Selector)
 // columnChecker returns a function indicates if the column exists in the given column.
 func columnChecker(table string) func(string) error {
 	checks := map[string]func(string) bool{
-		color.Table:             color.ValidColumn,
-		favoriteproject.Table:   favoriteproject.ValidColumn,
-		favoriteworkspace.Table: favoriteworkspace.ValidColumn,
-		icon.Table:              icon.ValidColumn,
-		mytaskstabstatus.Table:  mytaskstabstatus.ValidColumn,
-		project.Table:           project.ValidColumn,
-		projectbasecolor.Table:  projectbasecolor.ValidColumn,
-		projecticon.Table:       projecticon.ValidColumn,
-		projectlightcolor.Table: projectlightcolor.ValidColumn,
-		projectteammate.Table:   projectteammate.ValidColumn,
-		taskcolumn.Table:        taskcolumn.ValidColumn,
-		teammate.Table:          teammate.ValidColumn,
-		testtodo.Table:          testtodo.ValidColumn,
-		testuser.Table:          testuser.ValidColumn,
-		workspace.Table:         workspace.ValidColumn,
-		workspaceteammate.Table: workspaceteammate.ValidColumn,
+		color.Table:              color.ValidColumn,
+		favoriteproject.Table:    favoriteproject.ValidColumn,
+		favoriteworkspace.Table:  favoriteworkspace.ValidColumn,
+		icon.Table:               icon.ValidColumn,
+		mytaskstabstatus.Table:   mytaskstabstatus.ValidColumn,
+		project.Table:            project.ValidColumn,
+		projectbasecolor.Table:   projectbasecolor.ValidColumn,
+		projecticon.Table:        projecticon.ValidColumn,
+		projectlightcolor.Table:  projectlightcolor.ValidColumn,
+		projectteammate.Table:    projectteammate.ValidColumn,
+		taskcolumn.Table:         taskcolumn.ValidColumn,
+		teammate.Table:           teammate.ValidColumn,
+		teammatetaskcolumn.Table: teammatetaskcolumn.ValidColumn,
+		testtodo.Table:           testtodo.ValidColumn,
+		testuser.Table:           testuser.ValidColumn,
+		workspace.Table:          workspace.ValidColumn,
+		workspaceteammate.Table:  workspaceteammate.ValidColumn,
 	}
 	check, ok := checks[table]
 	if !ok {

@@ -36,6 +36,8 @@ const (
 	EdgeFavoriteWorkspaces = "favorite_workspaces"
 	// EdgeMyTasksTabStatuses holds the string denoting the my_tasks_tab_statuses edge name in mutations.
 	EdgeMyTasksTabStatuses = "my_tasks_tab_statuses"
+	// EdgeTeammateTaskColumns holds the string denoting the teammate_task_columns edge name in mutations.
+	EdgeTeammateTaskColumns = "teammate_task_columns"
 	// Table holds the table name of the teammate in the database.
 	Table = "teammates"
 	// WorkspacesTable is the table that holds the workspaces relation/edge.
@@ -87,6 +89,13 @@ const (
 	MyTasksTabStatusesInverseTable = "my_tasks_tab_status"
 	// MyTasksTabStatusesColumn is the table column denoting the my_tasks_tab_statuses relation/edge.
 	MyTasksTabStatusesColumn = "teammate_id"
+	// TeammateTaskColumnsTable is the table that holds the teammate_task_columns relation/edge.
+	TeammateTaskColumnsTable = "teammate_task_columns"
+	// TeammateTaskColumnsInverseTable is the table name for the TeammateTaskColumn entity.
+	// It exists in this package in order to avoid circular dependency with the "teammatetaskcolumn" package.
+	TeammateTaskColumnsInverseTable = "teammate_task_columns"
+	// TeammateTaskColumnsColumn is the table column denoting the teammate_task_columns relation/edge.
+	TeammateTaskColumnsColumn = "teammate_id"
 )
 
 // Columns holds all SQL columns for teammate fields.

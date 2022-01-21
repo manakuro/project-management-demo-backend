@@ -25,6 +25,27 @@ type TaskColumn struct {
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	// Edges holds the relations/edges for other nodes in the graph.
+	// The values are being populated by the TaskColumnQuery when eager-loading is set.
+	Edges TaskColumnEdges `json:"edges"`
+}
+
+// TaskColumnEdges holds the relations/edges for other nodes in the graph.
+type TaskColumnEdges struct {
+	// TeammateTaskColumns holds the value of the teammate_task_columns edge.
+	TeammateTaskColumns []*TeammateTaskColumn `json:"teammate_task_columns,omitempty"`
+	// loadedTypes holds the information for reporting if a
+	// type was loaded (or requested) in eager-loading or not.
+	loadedTypes [1]bool
+}
+
+// TeammateTaskColumnsOrErr returns the TeammateTaskColumns value or an error if the edge
+// was not loaded in eager-loading.
+func (e TaskColumnEdges) TeammateTaskColumnsOrErr() ([]*TeammateTaskColumn, error) {
+	if e.loadedTypes[0] {
+		return e.TeammateTaskColumns, nil
+	}
+	return nil, &NotLoadedError{edge: "teammate_task_columns"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -86,6 +107,11 @@ func (tc *TaskColumn) assignValues(columns []string, values []interface{}) error
 		}
 	}
 	return nil
+}
+
+// QueryTeammateTaskColumns queries the "teammate_task_columns" edge of the TaskColumn entity.
+func (tc *TaskColumn) QueryTeammateTaskColumns() *TeammateTaskColumnQuery {
+	return (&TaskColumnClient{config: tc.config}).QueryTeammateTaskColumns(tc)
 }
 
 // Update returns a builder for updating this TaskColumn.

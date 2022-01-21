@@ -196,6 +196,14 @@ func (pt *ProjectTeammate) Teammate(ctx context.Context) (*Teammate, error) {
 	return result, err
 }
 
+func (tc *TaskColumn) TeammateTaskColumns(ctx context.Context) ([]*TeammateTaskColumn, error) {
+	result, err := tc.Edges.TeammateTaskColumnsOrErr()
+	if IsNotLoaded(err) {
+		result, err = tc.QueryTeammateTaskColumns().All(ctx)
+	}
+	return result, err
+}
+
 func (t *Teammate) Workspaces(ctx context.Context) ([]*Workspace, error) {
 	result, err := t.Edges.WorkspacesOrErr()
 	if IsNotLoaded(err) {
@@ -248,6 +256,30 @@ func (t *Teammate) MyTasksTabStatuses(ctx context.Context) ([]*MyTasksTabStatus,
 	result, err := t.Edges.MyTasksTabStatusesOrErr()
 	if IsNotLoaded(err) {
 		result, err = t.QueryMyTasksTabStatuses().All(ctx)
+	}
+	return result, err
+}
+
+func (t *Teammate) TeammateTaskColumns(ctx context.Context) ([]*TeammateTaskColumn, error) {
+	result, err := t.Edges.TeammateTaskColumnsOrErr()
+	if IsNotLoaded(err) {
+		result, err = t.QueryTeammateTaskColumns().All(ctx)
+	}
+	return result, err
+}
+
+func (ttc *TeammateTaskColumn) Teammate(ctx context.Context) (*Teammate, error) {
+	result, err := ttc.Edges.TeammateOrErr()
+	if IsNotLoaded(err) {
+		result, err = ttc.QueryTeammate().Only(ctx)
+	}
+	return result, err
+}
+
+func (ttc *TeammateTaskColumn) TaskColumn(ctx context.Context) (*TaskColumn, error) {
+	result, err := ttc.Edges.TaskColumnOrErr()
+	if IsNotLoaded(err) {
+		result, err = ttc.QueryTaskColumn().Only(ctx)
 	}
 	return result, err
 }

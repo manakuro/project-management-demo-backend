@@ -297,6 +297,38 @@ var (
 		Columns:    TeammatesColumns,
 		PrimaryKey: []*schema.Column{TeammatesColumns[0]},
 	}
+	// TeammateTaskColumnsColumns holds the columns for the "teammate_task_columns" table.
+	TeammateTaskColumnsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+		{Name: "width", Type: field.TypeString, Size: 255},
+		{Name: "disabled", Type: field.TypeBool},
+		{Name: "customizable", Type: field.TypeBool},
+		{Name: "order", Type: field.TypeInt},
+		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
+		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
+		{Name: "task_column_id", Type: field.TypeString, Nullable: true},
+		{Name: "teammate_id", Type: field.TypeString, Nullable: true},
+	}
+	// TeammateTaskColumnsTable holds the schema information for the "teammate_task_columns" table.
+	TeammateTaskColumnsTable = &schema.Table{
+		Name:       "teammate_task_columns",
+		Columns:    TeammateTaskColumnsColumns,
+		PrimaryKey: []*schema.Column{TeammateTaskColumnsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "teammate_task_columns_task_columns_teammate_task_columns",
+				Columns:    []*schema.Column{TeammateTaskColumnsColumns[7]},
+				RefColumns: []*schema.Column{TaskColumnsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "teammate_task_columns_teammates_teammate_task_columns",
+				Columns:    []*schema.Column{TeammateTaskColumnsColumns[8]},
+				RefColumns: []*schema.Column{TeammatesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
 	// TestTodosColumns holds the columns for the "test_todos" table.
 	TestTodosColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString},
@@ -403,6 +435,7 @@ var (
 		ProjectTeammatesTable,
 		TaskColumnsTable,
 		TeammatesTable,
+		TeammateTaskColumnsTable,
 		TestTodosTable,
 		TestUsersTable,
 		WorkspacesTable,
@@ -427,6 +460,8 @@ func init() {
 	ProjectLightColorsTable.ForeignKeys[0].RefTable = ColorsTable
 	ProjectTeammatesTable.ForeignKeys[0].RefTable = ProjectsTable
 	ProjectTeammatesTable.ForeignKeys[1].RefTable = TeammatesTable
+	TeammateTaskColumnsTable.ForeignKeys[0].RefTable = TaskColumnsTable
+	TeammateTaskColumnsTable.ForeignKeys[1].RefTable = TeammatesTable
 	TestTodosTable.ForeignKeys[0].RefTable = TestUsersTable
 	WorkspacesTable.ForeignKeys[0].RefTable = TeammatesTable
 	WorkspaceTeammatesTable.ForeignKeys[0].RefTable = TeammatesTable
