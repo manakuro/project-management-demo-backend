@@ -15,6 +15,7 @@ import (
 	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/ent/schema"
 	"project-management-demo-backend/ent/schema/ulid"
+	"project-management-demo-backend/ent/taskcolumn"
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/ent/testuser"
@@ -347,6 +348,45 @@ func init() {
 	projectteammateDescID := projectteammateMixinFields0[0].Descriptor()
 	// projectteammate.DefaultID holds the default value on creation for the id field.
 	projectteammate.DefaultID = projectteammateDescID.Default.(func() ulid.ID)
+	taskcolumnMixin := schema.TaskColumn{}.Mixin()
+	taskcolumnMixinFields0 := taskcolumnMixin[0].Fields()
+	_ = taskcolumnMixinFields0
+	taskcolumnMixinFields1 := taskcolumnMixin[1].Fields()
+	_ = taskcolumnMixinFields1
+	taskcolumnMixinFields2 := taskcolumnMixin[2].Fields()
+	_ = taskcolumnMixinFields2
+	taskcolumnFields := schema.TaskColumn{}.Fields()
+	_ = taskcolumnFields
+	// taskcolumnDescName is the schema descriptor for name field.
+	taskcolumnDescName := taskcolumnMixinFields1[0].Descriptor()
+	// taskcolumn.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	taskcolumn.NameValidator = func() func(string) error {
+		validators := taskcolumnDescName.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(name string) error {
+			for _, fn := range fns {
+				if err := fn(name); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// taskcolumnDescCreatedAt is the schema descriptor for created_at field.
+	taskcolumnDescCreatedAt := taskcolumnMixinFields2[0].Descriptor()
+	// taskcolumn.DefaultCreatedAt holds the default value on creation for the created_at field.
+	taskcolumn.DefaultCreatedAt = taskcolumnDescCreatedAt.Default.(func() time.Time)
+	// taskcolumnDescUpdatedAt is the schema descriptor for updated_at field.
+	taskcolumnDescUpdatedAt := taskcolumnMixinFields2[1].Descriptor()
+	// taskcolumn.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	taskcolumn.DefaultUpdatedAt = taskcolumnDescUpdatedAt.Default.(func() time.Time)
+	// taskcolumnDescID is the schema descriptor for id field.
+	taskcolumnDescID := taskcolumnMixinFields0[0].Descriptor()
+	// taskcolumn.DefaultID holds the default value on creation for the id field.
+	taskcolumn.DefaultID = taskcolumnDescID.Default.(func() ulid.ID)
 	teammateMixin := schema.Teammate{}.Mixin()
 	teammateMixinFields0 := teammateMixin[0].Fields()
 	_ = teammateMixinFields0
