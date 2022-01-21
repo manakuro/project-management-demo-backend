@@ -268,6 +268,20 @@ var (
 			},
 		},
 	}
+	// TaskColumnsColumns holds the columns for the "task_columns" table.
+	TaskColumnsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+		{Name: "name", Type: field.TypeString, Size: 255},
+		{Name: "type", Type: field.TypeEnum, Enums: []string{"TASK_NAME", "ASSIGNEE", "DUE_DATE", "PROJECT", "TAGS", "CUSTOM"}},
+		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
+		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
+	}
+	// TaskColumnsTable holds the schema information for the "task_columns" table.
+	TaskColumnsTable = &schema.Table{
+		Name:       "task_columns",
+		Columns:    TaskColumnsColumns,
+		PrimaryKey: []*schema.Column{TaskColumnsColumns[0]},
+	}
 	// TeammatesColumns holds the columns for the "teammates" table.
 	TeammatesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString},
@@ -387,6 +401,7 @@ var (
 		ProjectIconsTable,
 		ProjectLightColorsTable,
 		ProjectTeammatesTable,
+		TaskColumnsTable,
 		TeammatesTable,
 		TestTodosTable,
 		TestUsersTable,

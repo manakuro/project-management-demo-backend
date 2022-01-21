@@ -7,6 +7,7 @@ import (
 	"project-management-demo-backend/ent/schema/editor"
 	"project-management-demo-backend/ent/schema/testuserprofile"
 	"project-management-demo-backend/ent/schema/ulid"
+	"project-management-demo-backend/ent/taskcolumn"
 	"project-management-demo-backend/ent/testtodo"
 	"time"
 )
@@ -769,6 +770,61 @@ func (u *ProjectTeammateUpdate) SetInput(i UpdateProjectTeammateInput) *ProjectT
 
 // SetInput applies the change-set in the UpdateProjectTeammateInput on the update-one builder.
 func (u *ProjectTeammateUpdateOne) SetInput(i UpdateProjectTeammateInput) *ProjectTeammateUpdateOne {
+	i.Mutate(u.Mutation())
+	return u
+}
+
+// CreateTaskColumnInput represents a mutation input for creating taskcolumns.
+type CreateTaskColumnInput struct {
+	Name      string
+	Type      taskcolumn.Type
+	CreatedAt *time.Time
+	UpdatedAt *time.Time
+}
+
+// Mutate applies the CreateTaskColumnInput on the TaskColumnCreate builder.
+func (i *CreateTaskColumnInput) Mutate(m *TaskColumnCreate) {
+	m.SetName(i.Name)
+	m.SetType(i.Type)
+	if v := i.CreatedAt; v != nil {
+		m.SetCreatedAt(*v)
+	}
+	if v := i.UpdatedAt; v != nil {
+		m.SetUpdatedAt(*v)
+	}
+}
+
+// SetInput applies the change-set in the CreateTaskColumnInput on the create builder.
+func (c *TaskColumnCreate) SetInput(i CreateTaskColumnInput) *TaskColumnCreate {
+	i.Mutate(c)
+	return c
+}
+
+// UpdateTaskColumnInput represents a mutation input for updating taskcolumns.
+type UpdateTaskColumnInput struct {
+	ID   ulid.ID
+	Name *string
+	Type *taskcolumn.Type
+}
+
+// Mutate applies the UpdateTaskColumnInput on the TaskColumnMutation.
+func (i *UpdateTaskColumnInput) Mutate(m *TaskColumnMutation) {
+	if v := i.Name; v != nil {
+		m.SetName(*v)
+	}
+	if v := i.Type; v != nil {
+		m.SetType(*v)
+	}
+}
+
+// SetInput applies the change-set in the UpdateTaskColumnInput on the update builder.
+func (u *TaskColumnUpdate) SetInput(i UpdateTaskColumnInput) *TaskColumnUpdate {
+	i.Mutate(u.Mutation())
+	return u
+}
+
+// SetInput applies the change-set in the UpdateTaskColumnInput on the update-one builder.
+func (u *TaskColumnUpdateOne) SetInput(i UpdateTaskColumnInput) *TaskColumnUpdateOne {
 	i.Mutate(u.Mutation())
 	return u
 }

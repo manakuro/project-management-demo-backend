@@ -104,6 +104,12 @@ type MyTasksTabStatusUpdated struct {
 	Ch chan *model.MyTasksTabStatus
 }
 
+// TaskColumnUpdated of channel
+type TaskColumnUpdated struct {
+	ID model.ID
+	Ch chan *model.TaskColumn
+}
+
 // Subscriptions hold an id and a channel of subscription.
 type Subscriptions struct {
 	ColorUpdated                map[string]ColorUpdated
@@ -118,6 +124,7 @@ type Subscriptions struct {
 	ProjectLightColorUpdated    map[string]ProjectLightColorUpdated
 	ProjectTeammateUpdated      map[string]ProjectTeammateUpdated
 	ProjectUpdated              map[string]ProjectUpdated
+	TaskColumnUpdated           map[string]TaskColumnUpdated
 	TeammateUpdated             map[string]TeammateUpdated
 	TestUserUpdated             map[string]TestUserUpdated
 	WorkspaceTeammateUpdated    map[string]WorkspaceTeammateUpdated

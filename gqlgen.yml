@@ -61,4 +61,7 @@ models:
   MyTasksTabStatusCode:
       model:
         - project-management-demo-backend/ent/mytaskstabstatus.Status
+  TaskColumnType:
+    model:
+        - project-management-demo-backend/ent/taskcolumn.Type
 

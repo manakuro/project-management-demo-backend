@@ -34,6 +34,7 @@ type hooks struct {
 	ProjectIcon       []ent.Hook
 	ProjectLightColor []ent.Hook
 	ProjectTeammate   []ent.Hook
+	TaskColumn        []ent.Hook
 	Teammate          []ent.Hook
 	TestTodo          []ent.Hook
 	TestUser          []ent.Hook
