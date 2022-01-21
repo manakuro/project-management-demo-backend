@@ -58,4 +58,7 @@ models:
   TestTodoStatus:
       model:
         - project-management-demo-backend/ent/testtodo.Status
+  MyTasksTabStatusCode:
+      model:
+        - project-management-demo-backend/ent/mytaskstabstatus.Status
 

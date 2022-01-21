@@ -1,0 +1,52 @@
+enum MyTasksTabStatusCode {
+  LIST
+  BOARD
+  CALENDAR
+  FILES
+}
+
+type MyTasksTabStatus implements Node {
+  id: ID!
+  workspaceId: ID!
+  workspace: Workspace!
+  teammateId: ID!
+  teammate: Teammate!
+  status: MyTasksTabStatusCode
+  createdAt: String!
+  updatedAt: String!
+}
+type MyTasksTabStatusConnection {
+  totalCount: Int!
+  pageInfo: PageInfo!
+  edges: [MyTasksTabStatusEdge]
+}
+type MyTasksTabStatusEdge {
+  node: MyTasksTabStatus
+  cursor: Cursor!
+}
+
+input CreateMyTasksTabStatusInput {
+  workspaceId: ID!
+  teammateId: ID!
+}
+
+input UpdateMyTasksTabStatusInput {
+  id: ID!
+  workspaceId: ID
+  teammateId: ID
+  status: MyTasksTabStatusCode
+}
+
+extend type Subscription {
+  myTasksTabStatusUpdated(id: ID!): MyTasksTabStatus!
+}
+
+extend type Query {
+  myTasksTabStatus(where: MyTasksTabStatusWhereInput): MyTasksTabStatus
+  myTasksTabStatuses(after: Cursor, first: Int, before: Cursor, last: Int, where: MyTasksTabStatusWhereInput): MyTasksTabStatusConnection
+}
+
+extend type Mutation {
+  createMyTasksTabStatus(input: CreateMyTasksTabStatusInput!): MyTasksTabStatus!
+  updateMyTasksTabStatus(input: UpdateMyTasksTabStatusInput!): MyTasksTabStatus!
+}
