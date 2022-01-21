@@ -10,6 +10,7 @@ import (
 	"project-management-demo-backend/ent/projectbasecolor"
 	"project-management-demo-backend/ent/projecticon"
 	"project-management-demo-backend/ent/projectlightcolor"
+	"project-management-demo-backend/ent/taskcolumn"
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/testuser"
 	"project-management-demo-backend/ent/workspace"
@@ -109,4 +110,14 @@ func GetProjectIconByIcon(ctx context.Context, client *ent.Client, val string) *
 	}
 
 	return p
+}
+
+// GetTaskColumnByName gets task column data.
+func GetTaskColumnByName(ctx context.Context, client *ent.Client, val string) *ent.TaskColumn {
+	c, err := client.TaskColumn.Query().Where(taskcolumn.NameEQ(val)).Only(ctx)
+	if err != nil {
+		log.Fatalf("GetTaskColumnByName: failed get data: %v", err)
+	}
+
+	return c
 }

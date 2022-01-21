@@ -15,6 +15,7 @@ import (
 	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/ent/taskcolumn"
 	"project-management-demo-backend/ent/teammate"
+	"project-management-demo-backend/ent/teammatetaskcolumn"
 	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/ent/testuser"
 	"project-management-demo-backend/ent/workspace"
@@ -118,7 +119,7 @@ func New() GlobalIDs {
 		},
 		TeammateTaskColumn: field{
 			Prefix: "0APQ",
-			Table:  taskcolumn.Table,
+			Table:  teammatetaskcolumn.Table,
 		},
 	}
 }
