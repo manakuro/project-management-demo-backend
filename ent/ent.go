@@ -9,6 +9,7 @@ import (
 	"project-management-demo-backend/ent/favoriteproject"
 	"project-management-demo-backend/ent/favoriteworkspace"
 	"project-management-demo-backend/ent/icon"
+	"project-management-demo-backend/ent/mytaskstabstatus"
 	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/projectbasecolor"
 	"project-management-demo-backend/ent/projecticon"
@@ -46,6 +47,7 @@ func columnChecker(table string) func(string) error {
 		favoriteproject.Table:   favoriteproject.ValidColumn,
 		favoriteworkspace.Table: favoriteworkspace.ValidColumn,
 		icon.Table:              icon.ValidColumn,
+		mytaskstabstatus.Table:  mytaskstabstatus.ValidColumn,
 		project.Table:           project.ValidColumn,
 		projectbasecolor.Table:  projectbasecolor.ValidColumn,
 		projecticon.Table:       projecticon.ValidColumn,

@@ -7,6 +7,7 @@ import (
 	"project-management-demo-backend/ent/favoriteproject"
 	"project-management-demo-backend/ent/favoriteworkspace"
 	"project-management-demo-backend/ent/icon"
+	"project-management-demo-backend/ent/mytaskstabstatus"
 	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/projectbasecolor"
 	"project-management-demo-backend/ent/projecticon"
@@ -196,6 +197,27 @@ func init() {
 	iconDescID := iconMixinFields0[0].Descriptor()
 	// icon.DefaultID holds the default value on creation for the id field.
 	icon.DefaultID = iconDescID.Default.(func() ulid.ID)
+	mytaskstabstatusMixin := schema.MyTasksTabStatus{}.Mixin()
+	mytaskstabstatusMixinFields0 := mytaskstabstatusMixin[0].Fields()
+	_ = mytaskstabstatusMixinFields0
+	mytaskstabstatusMixinFields1 := mytaskstabstatusMixin[1].Fields()
+	_ = mytaskstabstatusMixinFields1
+	mytaskstabstatusMixinFields2 := mytaskstabstatusMixin[2].Fields()
+	_ = mytaskstabstatusMixinFields2
+	mytaskstabstatusFields := schema.MyTasksTabStatus{}.Fields()
+	_ = mytaskstabstatusFields
+	// mytaskstabstatusDescCreatedAt is the schema descriptor for created_at field.
+	mytaskstabstatusDescCreatedAt := mytaskstabstatusMixinFields2[0].Descriptor()
+	// mytaskstabstatus.DefaultCreatedAt holds the default value on creation for the created_at field.
+	mytaskstabstatus.DefaultCreatedAt = mytaskstabstatusDescCreatedAt.Default.(func() time.Time)
+	// mytaskstabstatusDescUpdatedAt is the schema descriptor for updated_at field.
+	mytaskstabstatusDescUpdatedAt := mytaskstabstatusMixinFields2[1].Descriptor()
+	// mytaskstabstatus.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	mytaskstabstatus.DefaultUpdatedAt = mytaskstabstatusDescUpdatedAt.Default.(func() time.Time)
+	// mytaskstabstatusDescID is the schema descriptor for id field.
+	mytaskstabstatusDescID := mytaskstabstatusMixinFields0[0].Descriptor()
+	// mytaskstabstatus.DefaultID holds the default value on creation for the id field.
+	mytaskstabstatus.DefaultID = mytaskstabstatusDescID.Default.(func() ulid.ID)
 	projectMixin := schema.Project{}.Mixin()
 	projectMixinFields0 := projectMixin[0].Fields()
 	_ = projectMixinFields0

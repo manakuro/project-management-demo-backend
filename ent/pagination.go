@@ -12,6 +12,7 @@ import (
 	"project-management-demo-backend/ent/favoriteproject"
 	"project-management-demo-backend/ent/favoriteworkspace"
 	"project-management-demo-backend/ent/icon"
+	"project-management-demo-backend/ent/mytaskstabstatus"
 	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/projectbasecolor"
 	"project-management-demo-backend/ent/projecticon"
@@ -1151,6 +1152,233 @@ func (i *Icon) ToEdge(order *IconOrder) *IconEdge {
 	return &IconEdge{
 		Node:   i,
 		Cursor: order.Field.toCursor(i),
+	}
+}
+
+// MyTasksTabStatusEdge is the edge representation of MyTasksTabStatus.
+type MyTasksTabStatusEdge struct {
+	Node   *MyTasksTabStatus `json:"node"`
+	Cursor Cursor            `json:"cursor"`
+}
+
+// MyTasksTabStatusConnection is the connection containing edges to MyTasksTabStatus.
+type MyTasksTabStatusConnection struct {
+	Edges      []*MyTasksTabStatusEdge `json:"edges"`
+	PageInfo   PageInfo                `json:"pageInfo"`
+	TotalCount int                     `json:"totalCount"`
+}
+
+// MyTasksTabStatusPaginateOption enables pagination customization.
+type MyTasksTabStatusPaginateOption func(*myTasksTabStatusPager) error
+
+// WithMyTasksTabStatusOrder configures pagination ordering.
+func WithMyTasksTabStatusOrder(order *MyTasksTabStatusOrder) MyTasksTabStatusPaginateOption {
+	if order == nil {
+		order = DefaultMyTasksTabStatusOrder
+	}
+	o := *order
+	return func(pager *myTasksTabStatusPager) error {
+		if err := o.Direction.Validate(); err != nil {
+			return err
+		}
+		if o.Field == nil {
+			o.Field = DefaultMyTasksTabStatusOrder.Field
+		}
+		pager.order = &o
+		return nil
+	}
+}
+
+// WithMyTasksTabStatusFilter configures pagination filter.
+func WithMyTasksTabStatusFilter(filter func(*MyTasksTabStatusQuery) (*MyTasksTabStatusQuery, error)) MyTasksTabStatusPaginateOption {
+	return func(pager *myTasksTabStatusPager) error {
+		if filter == nil {
+			return errors.New("MyTasksTabStatusQuery filter cannot be nil")
+		}
+		pager.filter = filter
+		return nil
+	}
+}
+
+type myTasksTabStatusPager struct {
+	order  *MyTasksTabStatusOrder
+	filter func(*MyTasksTabStatusQuery) (*MyTasksTabStatusQuery, error)
+}
+
+func newMyTasksTabStatusPager(opts []MyTasksTabStatusPaginateOption) (*myTasksTabStatusPager, error) {
+	pager := &myTasksTabStatusPager{}
+	for _, opt := range opts {
+		if err := opt(pager); err != nil {
+			return nil, err
+		}
+	}
+	if pager.order == nil {
+		pager.order = DefaultMyTasksTabStatusOrder
+	}
+	return pager, nil
+}
+
+func (p *myTasksTabStatusPager) applyFilter(query *MyTasksTabStatusQuery) (*MyTasksTabStatusQuery, error) {
+	if p.filter != nil {
+		return p.filter(query)
+	}
+	return query, nil
+}
+
+func (p *myTasksTabStatusPager) toCursor(mtts *MyTasksTabStatus) Cursor {
+	return p.order.Field.toCursor(mtts)
+}
+
+func (p *myTasksTabStatusPager) applyCursors(query *MyTasksTabStatusQuery, after, before *Cursor) *MyTasksTabStatusQuery {
+	for _, predicate := range cursorsToPredicates(
+		p.order.Direction, after, before,
+		p.order.Field.field, DefaultMyTasksTabStatusOrder.Field.field,
+	) {
+		query = query.Where(predicate)
+	}
+	return query
+}
+
+func (p *myTasksTabStatusPager) applyOrder(query *MyTasksTabStatusQuery, reverse bool) *MyTasksTabStatusQuery {
+	direction := p.order.Direction
+	if reverse {
+		direction = direction.reverse()
+	}
+	query = query.Order(direction.orderFunc(p.order.Field.field))
+	if p.order.Field != DefaultMyTasksTabStatusOrder.Field {
+		query = query.Order(direction.orderFunc(DefaultMyTasksTabStatusOrder.Field.field))
+	}
+	return query
+}
+
+// Paginate executes the query and returns a relay based cursor connection to MyTasksTabStatus.
+func (mtts *MyTasksTabStatusQuery) Paginate(
+	ctx context.Context, after *Cursor, first *int,
+	before *Cursor, last *int, opts ...MyTasksTabStatusPaginateOption,
+) (*MyTasksTabStatusConnection, error) {
+	if err := validateFirstLast(first, last); err != nil {
+		return nil, err
+	}
+	pager, err := newMyTasksTabStatusPager(opts)
+	if err != nil {
+		return nil, err
+	}
+
+	if mtts, err = pager.applyFilter(mtts); err != nil {
+		return nil, err
+	}
+
+	conn := &MyTasksTabStatusConnection{Edges: []*MyTasksTabStatusEdge{}}
+	if !hasCollectedField(ctx, edgesField) || first != nil && *first == 0 || last != nil && *last == 0 {
+		if hasCollectedField(ctx, totalCountField) ||
+			hasCollectedField(ctx, pageInfoField) {
+			count, err := mtts.Count(ctx)
+			if err != nil {
+				return nil, err
+			}
+			conn.TotalCount = count
+			conn.PageInfo.HasNextPage = first != nil && count > 0
+			conn.PageInfo.HasPreviousPage = last != nil && count > 0
+		}
+		return conn, nil
+	}
+
+	if (after != nil || first != nil || before != nil || last != nil) && hasCollectedField(ctx, totalCountField) {
+		count, err := mtts.Clone().Count(ctx)
+		if err != nil {
+			return nil, err
+		}
+		conn.TotalCount = count
+	}
+
+	mtts = pager.applyCursors(mtts, after, before)
+	mtts = pager.applyOrder(mtts, last != nil)
+	var limit int
+	if first != nil {
+		limit = *first + 1
+	} else if last != nil {
+		limit = *last + 1
+	}
+	if limit > 0 {
+		mtts = mtts.Limit(limit)
+	}
+
+	if field := getCollectedField(ctx, edgesField, nodeField); field != nil {
+		mtts = mtts.collectField(graphql.GetOperationContext(ctx), *field)
+	}
+
+	nodes, err := mtts.All(ctx)
+	if err != nil || len(nodes) == 0 {
+		return conn, err
+	}
+
+	if len(nodes) == limit {
+		conn.PageInfo.HasNextPage = first != nil
+		conn.PageInfo.HasPreviousPage = last != nil
+		nodes = nodes[:len(nodes)-1]
+	}
+
+	var nodeAt func(int) *MyTasksTabStatus
+	if last != nil {
+		n := len(nodes) - 1
+		nodeAt = func(i int) *MyTasksTabStatus {
+			return nodes[n-i]
+		}
+	} else {
+		nodeAt = func(i int) *MyTasksTabStatus {
+			return nodes[i]
+		}
+	}
+
+	conn.Edges = make([]*MyTasksTabStatusEdge, len(nodes))
+	for i := range nodes {
+		node := nodeAt(i)
+		conn.Edges[i] = &MyTasksTabStatusEdge{
+			Node:   node,
+			Cursor: pager.toCursor(node),
+		}
+	}
+
+	conn.PageInfo.StartCursor = &conn.Edges[0].Cursor
+	conn.PageInfo.EndCursor = &conn.Edges[len(conn.Edges)-1].Cursor
+	if conn.TotalCount == 0 {
+		conn.TotalCount = len(nodes)
+	}
+
+	return conn, nil
+}
+
+// MyTasksTabStatusOrderField defines the ordering field of MyTasksTabStatus.
+type MyTasksTabStatusOrderField struct {
+	field    string
+	toCursor func(*MyTasksTabStatus) Cursor
+}
+
+// MyTasksTabStatusOrder defines the ordering of MyTasksTabStatus.
+type MyTasksTabStatusOrder struct {
+	Direction OrderDirection              `json:"direction"`
+	Field     *MyTasksTabStatusOrderField `json:"field"`
+}
+
+// DefaultMyTasksTabStatusOrder is the default ordering of MyTasksTabStatus.
+var DefaultMyTasksTabStatusOrder = &MyTasksTabStatusOrder{
+	Direction: OrderDirectionAsc,
+	Field: &MyTasksTabStatusOrderField{
+		field: mytaskstabstatus.FieldID,
+		toCursor: func(mtts *MyTasksTabStatus) Cursor {
+			return Cursor{ID: mtts.ID}
+		},
+	},
+}
+
+// ToEdge converts MyTasksTabStatus into MyTasksTabStatusEdge.
+func (mtts *MyTasksTabStatus) ToEdge(order *MyTasksTabStatusOrder) *MyTasksTabStatusEdge {
+	if order == nil {
+		order = DefaultMyTasksTabStatusOrder
+	}
+	return &MyTasksTabStatusEdge{
+		Node:   mtts,
+		Cursor: order.Field.toCursor(mtts),
 	}
 }
 

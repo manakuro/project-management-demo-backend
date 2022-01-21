@@ -28,6 +28,7 @@ type hooks struct {
 	FavoriteProject   []ent.Hook
 	FavoriteWorkspace []ent.Hook
 	Icon              []ent.Hook
+	MyTasksTabStatus  []ent.Hook
 	Project           []ent.Hook
 	ProjectBaseColor  []ent.Hook
 	ProjectIcon       []ent.Hook

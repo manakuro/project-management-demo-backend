@@ -57,6 +57,18 @@ func (i *IconQuery) collectField(ctx *graphql.OperationContext, field graphql.Co
 }
 
 // CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
+func (mtts *MyTasksTabStatusQuery) CollectFields(ctx context.Context, satisfies ...string) *MyTasksTabStatusQuery {
+	if fc := graphql.GetFieldContext(ctx); fc != nil {
+		mtts = mtts.collectField(graphql.GetOperationContext(ctx), fc.Field, satisfies...)
+	}
+	return mtts
+}
+
+func (mtts *MyTasksTabStatusQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *MyTasksTabStatusQuery {
+	return mtts
+}
+
+// CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
 func (pr *ProjectQuery) CollectFields(ctx context.Context, satisfies ...string) *ProjectQuery {
 	if fc := graphql.GetFieldContext(ctx); fc != nil {
 		pr = pr.collectField(graphql.GetOperationContext(ctx), fc.Field, satisfies...)

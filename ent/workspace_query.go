@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"math"
 	"project-management-demo-backend/ent/favoriteworkspace"
+	"project-management-demo-backend/ent/mytaskstabstatus"
 	"project-management-demo-backend/ent/predicate"
 	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/schema/ulid"
@@ -35,6 +36,7 @@ type WorkspaceQuery struct {
 	withProjects           *ProjectQuery
 	withWorkspaceTeammates *WorkspaceTeammateQuery
 	withFavoriteWorkspaces *FavoriteWorkspaceQuery
+	withMyTasksTabStatuses *MyTasksTabStatusQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -152,6 +154,28 @@ func (wq *WorkspaceQuery) QueryFavoriteWorkspaces() *FavoriteWorkspaceQuery {
 			sqlgraph.From(workspace.Table, workspace.FieldID, selector),
 			sqlgraph.To(favoriteworkspace.Table, favoriteworkspace.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, workspace.FavoriteWorkspacesTable, workspace.FavoriteWorkspacesColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(wq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryMyTasksTabStatuses chains the current query on the "my_tasks_tab_statuses" edge.
+func (wq *WorkspaceQuery) QueryMyTasksTabStatuses() *MyTasksTabStatusQuery {
+	query := &MyTasksTabStatusQuery{config: wq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := wq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := wq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(workspace.Table, workspace.FieldID, selector),
+			sqlgraph.To(mytaskstabstatus.Table, mytaskstabstatus.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, workspace.MyTasksTabStatusesTable, workspace.MyTasksTabStatusesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(wq.driver.Dialect(), step)
 		return fromU, nil
@@ -344,6 +368,7 @@ func (wq *WorkspaceQuery) Clone() *WorkspaceQuery {
 		withProjects:           wq.withProjects.Clone(),
 		withWorkspaceTeammates: wq.withWorkspaceTeammates.Clone(),
 		withFavoriteWorkspaces: wq.withFavoriteWorkspaces.Clone(),
+		withMyTasksTabStatuses: wq.withMyTasksTabStatuses.Clone(),
 		// clone intermediate query.
 		sql:  wq.sql.Clone(),
 		path: wq.path,
@@ -391,6 +416,17 @@ func (wq *WorkspaceQuery) WithFavoriteWorkspaces(opts ...func(*FavoriteWorkspace
 		opt(query)
 	}
 	wq.withFavoriteWorkspaces = query
+	return wq
+}
+
+// WithMyTasksTabStatuses tells the query-builder to eager-load the nodes that are connected to
+// the "my_tasks_tab_statuses" edge. The optional arguments are used to configure the query builder of the edge.
+func (wq *WorkspaceQuery) WithMyTasksTabStatuses(opts ...func(*MyTasksTabStatusQuery)) *WorkspaceQuery {
+	query := &MyTasksTabStatusQuery{config: wq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	wq.withMyTasksTabStatuses = query
 	return wq
 }
 
@@ -459,11 +495,12 @@ func (wq *WorkspaceQuery) sqlAll(ctx context.Context) ([]*Workspace, error) {
 	var (
 		nodes       = []*Workspace{}
 		_spec       = wq.querySpec()
-		loadedTypes = [4]bool{
+		loadedTypes = [5]bool{
 			wq.withTeammate != nil,
 			wq.withProjects != nil,
 			wq.withWorkspaceTeammates != nil,
 			wq.withFavoriteWorkspaces != nil,
+			wq.withMyTasksTabStatuses != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -584,6 +621,31 @@ func (wq *WorkspaceQuery) sqlAll(ctx context.Context) ([]*Workspace, error) {
 				return nil, fmt.Errorf(`unexpected foreign-key "workspace_id" returned %v for node %v`, fk, n.ID)
 			}
 			node.Edges.FavoriteWorkspaces = append(node.Edges.FavoriteWorkspaces, n)
+		}
+	}
+
+	if query := wq.withMyTasksTabStatuses; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[ulid.ID]*Workspace)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.MyTasksTabStatuses = []*MyTasksTabStatus{}
+		}
+		query.Where(predicate.MyTasksTabStatus(func(s *sql.Selector) {
+			s.Where(sql.InValues(workspace.MyTasksTabStatusesColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.WorkspaceID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "workspace_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.MyTasksTabStatuses = append(node.Edges.MyTasksTabStatuses, n)
 		}
 	}
 

@@ -64,6 +64,12 @@ func (Workspace) Edges() []ent.Edge {
 					annotation.Edge{FieldName: "favorite_workspace_id"},
 				),
 			),
+		edge.To("my_tasks_tab_statuses", MyTasksTabStatus.Type).
+			Annotations(
+				schema.Annotation(
+					annotation.Edge{FieldName: "my_tasks_tab_status_id"},
+				),
+			),
 	}
 }
 
