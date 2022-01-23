@@ -16,6 +16,7 @@ type Controller struct {
 	ProjectTaskColumn  interface{ ProjectTaskColumn }
 	ProjectTeammate    interface{ ProjectTeammate }
 	TaskColumn         interface{ TaskColumn }
+	TaskSection        interface{ TaskSection }
 	Teammate           interface{ Teammate }
 	TeammateTaskColumn interface{ TeammateTaskColumn }
 	TestTodo           interface{ TestTodo }

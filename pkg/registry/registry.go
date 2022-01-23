@@ -37,6 +37,7 @@ func (r *registry) NewController() controller.Controller {
 		ProjectTaskColumn:  r.NewProjectTaskColumnController(),
 		ProjectTeammate:    r.NewProjectTeammateController(),
 		TaskColumn:         r.NewTaskColumnController(),
+		TaskSection:        r.NewTaskSectionController(),
 		Teammate:           r.NewTeammateController(),
 		TeammateTaskColumn: r.NewTeammateTaskColumnController(),
 		TestTodo:           r.NewTestTodoController(),

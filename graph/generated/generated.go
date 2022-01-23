@@ -61,6 +61,7 @@ type ResolverRoot interface {
 	Query() QueryResolver
 	Subscription() SubscriptionResolver
 	TaskColumn() TaskColumnResolver
+	TaskSection() TaskSectionResolver
 	Teammate() TeammateResolver
 	TeammateTaskColumn() TeammateTaskColumnResolver
 	TestTodo() TestTodoResolver
@@ -197,6 +198,7 @@ type ComplexityRoot struct {
 		CreateProjectTaskColumn  func(childComplexity int, input ent.CreateProjectTaskColumnInput) int
 		CreateProjectTeammate    func(childComplexity int, input ent.CreateProjectTeammateInput) int
 		CreateTaskColumn         func(childComplexity int, input ent.CreateTaskColumnInput) int
+		CreateTaskSection        func(childComplexity int, input ent.CreateTaskSectionInput) int
 		CreateTeammate           func(childComplexity int, input ent.CreateTeammateInput) int
 		CreateTeammateTaskColumn func(childComplexity int, input ent.CreateTeammateTaskColumnInput) int
 		CreateTestTodo           func(childComplexity int, input ent.CreateTestTodoInput) int
@@ -217,6 +219,7 @@ type ComplexityRoot struct {
 		UpdateProjectTaskColumn  func(childComplexity int, input ent.UpdateProjectTaskColumnInput) int
 		UpdateProjectTeammate    func(childComplexity int, input ent.UpdateProjectTeammateInput) int
 		UpdateTaskColumn         func(childComplexity int, input ent.UpdateTaskColumnInput) int
+		UpdateTaskSection        func(childComplexity int, input ent.UpdateTaskSectionInput) int
 		UpdateTeammate           func(childComplexity int, input ent.UpdateTeammateInput) int
 		UpdateTeammateTaskColumn func(childComplexity int, input ent.UpdateTeammateTaskColumnInput) int
 		UpdateTestTodo           func(childComplexity int, input ent.UpdateTestTodoInput) int
@@ -417,6 +420,8 @@ type ComplexityRoot struct {
 		Projects             func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectWhereInput) int
 		TaskColumn           func(childComplexity int, where *ent.TaskColumnWhereInput) int
 		TaskColumns          func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskColumnWhereInput) int
+		TaskSection          func(childComplexity int, where *ent.TaskSectionWhereInput) int
+		TaskSections         func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskSectionWhereInput) int
 		Teammate             func(childComplexity int, id ulid.ID) int
 		TeammateTaskColumn   func(childComplexity int, where *ent.TeammateTaskColumnWhereInput) int
 		TeammateTaskColumns  func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TeammateTaskColumnWhereInput) int
@@ -445,6 +450,7 @@ type ComplexityRoot struct {
 		ProjectTaskColumnUpdated    func(childComplexity int, id ulid.ID) int
 		ProjectTeammateUpdated      func(childComplexity int, id ulid.ID) int
 		ProjectUpdated              func(childComplexity int, id ulid.ID) int
+		TaskSectionUpdated          func(childComplexity int, id ulid.ID) int
 		TeammateTaskColumnUpdated   func(childComplexity int, id ulid.ID) int
 		TeammateUpdated             func(childComplexity int, id ulid.ID) int
 		TestUserUpdated             func(childComplexity int, id ulid.ID) int
@@ -467,6 +473,24 @@ type ComplexityRoot struct {
 	}
 
 	TaskColumnEdge struct {
+		Cursor func(childComplexity int) int
+		Node   func(childComplexity int) int
+	}
+
+	TaskSection struct {
+		CreatedAt func(childComplexity int) int
+		ID        func(childComplexity int) int
+		Name      func(childComplexity int) int
+		UpdatedAt func(childComplexity int) int
+	}
+
+	TaskSectionConnection struct {
+		Edges      func(childComplexity int) int
+		PageInfo   func(childComplexity int) int
+		TotalCount func(childComplexity int) int
+	}
+
+	TaskSectionEdge struct {
 		Cursor func(childComplexity int) int
 		Node   func(childComplexity int) int
 	}
@@ -656,6 +680,8 @@ type MutationResolver interface {
 	UpdateProjectTeammate(ctx context.Context, input ent.UpdateProjectTeammateInput) (*ent.ProjectTeammate, error)
 	CreateTaskColumn(ctx context.Context, input ent.CreateTaskColumnInput) (*ent.TaskColumn, error)
 	UpdateTaskColumn(ctx context.Context, input ent.UpdateTaskColumnInput) (*ent.TaskColumn, error)
+	CreateTaskSection(ctx context.Context, input ent.CreateTaskSectionInput) (*ent.TaskSection, error)
+	UpdateTaskSection(ctx context.Context, input ent.UpdateTaskSectionInput) (*ent.TaskSection, error)
 	CreateTeammate(ctx context.Context, input ent.CreateTeammateInput) (*ent.Teammate, error)
 	UpdateTeammate(ctx context.Context, input ent.UpdateTeammateInput) (*ent.Teammate, error)
 	CreateTeammateTaskColumn(ctx context.Context, input ent.CreateTeammateTaskColumnInput) (*ent.TeammateTaskColumn, error)
@@ -731,6 +757,8 @@ type QueryResolver interface {
 	ProjectTeammates(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectTeammateWhereInput) (*ent.ProjectTeammateConnection, error)
 	TaskColumn(ctx context.Context, where *ent.TaskColumnWhereInput) (*ent.TaskColumn, error)
 	TaskColumns(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskColumnWhereInput) (*ent.TaskColumnConnection, error)
+	TaskSection(ctx context.Context, where *ent.TaskSectionWhereInput) (*ent.TaskSection, error)
+	TaskSections(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskSectionWhereInput) (*ent.TaskSectionConnection, error)
 	Teammate(ctx context.Context, id ulid.ID) (*ent.Teammate, error)
 	Teammates(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TeammateWhereInput) (*ent.TeammateConnection, error)
 	TeammateTaskColumn(ctx context.Context, where *ent.TeammateTaskColumnWhereInput) (*ent.TeammateTaskColumn, error)
@@ -758,6 +786,7 @@ type SubscriptionResolver interface {
 	ProjectLightColorUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.ProjectLightColor, error)
 	ProjectTaskColumnUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.ProjectTaskColumn, error)
 	ProjectTeammateUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.ProjectTeammate, error)
+	TaskSectionUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.TaskSection, error)
 	TeammateUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.Teammate, error)
 	TeammateTaskColumnUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.TeammateTaskColumn, error)
 	TestUserUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.TestUser, error)
@@ -767,6 +796,10 @@ type SubscriptionResolver interface {
 type TaskColumnResolver interface {
 	CreatedAt(ctx context.Context, obj *ent.TaskColumn) (string, error)
 	UpdatedAt(ctx context.Context, obj *ent.TaskColumn) (string, error)
+}
+type TaskSectionResolver interface {
+	CreatedAt(ctx context.Context, obj *ent.TaskSection) (string, error)
+	UpdatedAt(ctx context.Context, obj *ent.TaskSection) (string, error)
 }
 type TeammateResolver interface {
 	CreatedAt(ctx context.Context, obj *ent.Teammate) (string, error)
@@ -1372,6 +1405,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.CreateTaskColumn(childComplexity, args["input"].(ent.CreateTaskColumnInput)), true
 
+	case "Mutation.createTaskSection":
+		if e.complexity.Mutation.CreateTaskSection == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createTaskSection_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateTaskSection(childComplexity, args["input"].(ent.CreateTaskSectionInput)), true
+
 	case "Mutation.createTeammate":
 		if e.complexity.Mutation.CreateTeammate == nil {
 			break
@@ -1611,6 +1656,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.UpdateTaskColumn(childComplexity, args["input"].(ent.UpdateTaskColumnInput)), true
+
+	case "Mutation.updateTaskSection":
+		if e.complexity.Mutation.UpdateTaskSection == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateTaskSection_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateTaskSection(childComplexity, args["input"].(ent.UpdateTaskSectionInput)), true
 
 	case "Mutation.updateTeammate":
 		if e.complexity.Mutation.UpdateTeammate == nil {
@@ -2699,6 +2756,30 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.TaskColumns(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["where"].(*ent.TaskColumnWhereInput)), true
 
+	case "Query.taskSection":
+		if e.complexity.Query.TaskSection == nil {
+			break
+		}
+
+		args, err := ec.field_Query_taskSection_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.TaskSection(childComplexity, args["where"].(*ent.TaskSectionWhereInput)), true
+
+	case "Query.taskSections":
+		if e.complexity.Query.TaskSections == nil {
+			break
+		}
+
+		args, err := ec.field_Query_taskSections_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.TaskSections(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["where"].(*ent.TaskSectionWhereInput)), true
+
 	case "Query.teammate":
 		if e.complexity.Query.Teammate == nil {
 			break
@@ -2994,6 +3075,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Subscription.ProjectUpdated(childComplexity, args["id"].(ulid.ID)), true
 
+	case "Subscription.taskSectionUpdated":
+		if e.complexity.Subscription.TaskSectionUpdated == nil {
+			break
+		}
+
+		args, err := ec.field_Subscription_taskSectionUpdated_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Subscription.TaskSectionUpdated(childComplexity, args["id"].(ulid.ID)), true
+
 	case "Subscription.teammateTaskColumnUpdated":
 		if e.complexity.Subscription.TeammateTaskColumnUpdated == nil {
 			break
@@ -3123,6 +3216,69 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.TaskColumnEdge.Node(childComplexity), true
+
+	case "TaskSection.createdAt":
+		if e.complexity.TaskSection.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.TaskSection.CreatedAt(childComplexity), true
+
+	case "TaskSection.id":
+		if e.complexity.TaskSection.ID == nil {
+			break
+		}
+
+		return e.complexity.TaskSection.ID(childComplexity), true
+
+	case "TaskSection.name":
+		if e.complexity.TaskSection.Name == nil {
+			break
+		}
+
+		return e.complexity.TaskSection.Name(childComplexity), true
+
+	case "TaskSection.updatedAt":
+		if e.complexity.TaskSection.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.TaskSection.UpdatedAt(childComplexity), true
+
+	case "TaskSectionConnection.edges":
+		if e.complexity.TaskSectionConnection.Edges == nil {
+			break
+		}
+
+		return e.complexity.TaskSectionConnection.Edges(childComplexity), true
+
+	case "TaskSectionConnection.pageInfo":
+		if e.complexity.TaskSectionConnection.PageInfo == nil {
+			break
+		}
+
+		return e.complexity.TaskSectionConnection.PageInfo(childComplexity), true
+
+	case "TaskSectionConnection.totalCount":
+		if e.complexity.TaskSectionConnection.TotalCount == nil {
+			break
+		}
+
+		return e.complexity.TaskSectionConnection.TotalCount(childComplexity), true
+
+	case "TaskSectionEdge.cursor":
+		if e.complexity.TaskSectionEdge.Cursor == nil {
+			break
+		}
+
+		return e.complexity.TaskSectionEdge.Cursor(childComplexity), true
+
+	case "TaskSectionEdge.node":
+		if e.complexity.TaskSectionEdge.Node == nil {
+			break
+		}
+
+		return e.complexity.TaskSectionEdge.Node(childComplexity), true
 
 	case "Teammate.createdAt":
 		if e.complexity.Teammate.CreatedAt == nil {
@@ -5487,6 +5643,61 @@ input ProjectTaskColumnWhereInput {
   hasTaskColumn: Boolean
   hasTaskColumnWith: [TaskColumnWhereInput!]
 }
+
+"""
+TaskSectionWhereInput is used for filtering TaskSection objects.
+Input was generated by ent.
+"""
+input TaskSectionWhereInput {
+  not: TaskSectionWhereInput
+  and: [TaskSectionWhereInput!]
+  or: [TaskSectionWhereInput!]
+  
+  """name field predicates"""
+  name: String
+  nameNEQ: String
+  nameIn: [String!]
+  nameNotIn: [String!]
+  nameGT: String
+  nameGTE: String
+  nameLT: String
+  nameLTE: String
+  nameContains: String
+  nameHasPrefix: String
+  nameHasSuffix: String
+  nameEqualFold: String
+  nameContainsFold: String
+  
+  """created_at field predicates"""
+  createdAt: Time
+  createdAtNEQ: Time
+  createdAtIn: [Time!]
+  createdAtNotIn: [Time!]
+  createdAtGT: Time
+  createdAtGTE: Time
+  createdAtLT: Time
+  createdAtLTE: Time
+  
+  """updated_at field predicates"""
+  updatedAt: Time
+  updatedAtNEQ: Time
+  updatedAtIn: [Time!]
+  updatedAtNotIn: [Time!]
+  updatedAtGT: Time
+  updatedAtGTE: Time
+  updatedAtLT: Time
+  updatedAtLTE: Time
+  
+  """id field predicates"""
+  id: ID
+  idNEQ: ID
+  idIn: [ID!]
+  idNotIn: [ID!]
+  idGT: ID
+  idGTE: ID
+  idLT: ID
+  idLTE: ID
+}
 `, BuiltIn: false},
 	{Name: "graph/schema/favorite_project/favorite_project.graphql", Input: `type FavoriteProject implements Node {
   id: ID!
@@ -6053,6 +6264,45 @@ extend type Mutation {
   updateTaskColumn(input: UpdateTaskColumnInput!): TaskColumn!
 }
 `, BuiltIn: false},
+	{Name: "graph/schema/task_section/task_section.graphql", Input: `type TaskSection implements Node {
+  id: ID!
+  name: String!
+  createdAt: String!
+  updatedAt: String!
+}
+type TaskSectionConnection {
+  totalCount: Int!
+  pageInfo: PageInfo!
+  edges: [TaskSectionEdge]
+}
+type TaskSectionEdge {
+  node: TaskSection
+  cursor: Cursor!
+}
+
+input CreateTaskSectionInput {
+  name: String!
+}
+
+input UpdateTaskSectionInput {
+  id: ID!
+  name: String
+}
+
+extend type Subscription {
+  taskSectionUpdated(id: ID!): TaskSection!
+}
+
+extend type Query {
+  taskSection(where: TaskSectionWhereInput): TaskSection
+  taskSections(after: Cursor, first: Int, before: Cursor, last: Int, where: TaskSectionWhereInput): TaskSectionConnection
+}
+
+extend type Mutation {
+  createTaskSection(input: CreateTaskSectionInput!): TaskSection!
+  updateTaskSection(input: UpdateTaskSectionInput!): TaskSection!
+}
+`, BuiltIn: false},
 	{Name: "graph/schema/teammate/teammate.graphql", Input: `type Teammate implements Node {
   id: ID!
   name: String!
@@ -6546,6 +6796,21 @@ func (ec *executionContext) field_Mutation_createTaskColumn_args(ctx context.Con
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_createTaskSection_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 ent.CreateTaskSectionInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNCreateTaskSectionInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐCreateTaskSectionInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_createTeammateTaskColumn_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -6838,6 +7103,21 @@ func (ec *executionContext) field_Mutation_updateTaskColumn_args(ctx context.Con
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNUpdateTaskColumnInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐUpdateTaskColumnInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_updateTaskSection_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 ent.UpdateTaskSectionInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNUpdateTaskSectionInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐUpdateTaskSectionInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -7812,6 +8092,72 @@ func (ec *executionContext) field_Query_taskColumns_args(ctx context.Context, ra
 	return args, nil
 }
 
+func (ec *executionContext) field_Query_taskSection_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *ent.TaskSectionWhereInput
+	if tmp, ok := rawArgs["where"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
+		arg0, err = ec.unmarshalOTaskSectionWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskSectionWhereInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["where"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_taskSections_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *ent.Cursor
+	if tmp, ok := rawArgs["after"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
+		arg0, err = ec.unmarshalOCursor2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐCursor(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["after"] = arg0
+	var arg1 *int
+	if tmp, ok := rawArgs["first"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("first"))
+		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["first"] = arg1
+	var arg2 *ent.Cursor
+	if tmp, ok := rawArgs["before"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("before"))
+		arg2, err = ec.unmarshalOCursor2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐCursor(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["before"] = arg2
+	var arg3 *int
+	if tmp, ok := rawArgs["last"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("last"))
+		arg3, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["last"] = arg3
+	var arg4 *ent.TaskSectionWhereInput
+	if tmp, ok := rawArgs["where"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
+		arg4, err = ec.unmarshalOTaskSectionWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskSectionWhereInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["where"] = arg4
+	return args, nil
+}
+
 func (ec *executionContext) field_Query_teammateTaskColumn_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -8347,6 +8693,21 @@ func (ec *executionContext) field_Subscription_projectTeammateUpdated_args(ctx c
 }
 
 func (ec *executionContext) field_Subscription_projectUpdated_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 ulid.ID
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Subscription_taskSectionUpdated_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 ulid.ID
@@ -11574,6 +11935,90 @@ func (ec *executionContext) _Mutation_updateTaskColumn(ctx context.Context, fiel
 	res := resTmp.(*ent.TaskColumn)
 	fc.Result = res
 	return ec.marshalNTaskColumn2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskColumn(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_createTaskSection(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_createTaskSection_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreateTaskSection(rctx, args["input"].(ent.CreateTaskSectionInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.TaskSection)
+	fc.Result = res
+	return ec.marshalNTaskSection2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskSection(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_updateTaskSection(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_updateTaskSection_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdateTaskSection(rctx, args["input"].(ent.UpdateTaskSectionInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.TaskSection)
+	fc.Result = res
+	return ec.marshalNTaskSection2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskSection(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_createTeammate(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -16564,6 +17009,84 @@ func (ec *executionContext) _Query_taskColumns(ctx context.Context, field graphq
 	return ec.marshalOTaskColumnConnection2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskColumnConnection(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Query_taskSection(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_taskSection_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().TaskSection(rctx, args["where"].(*ent.TaskSectionWhereInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*ent.TaskSection)
+	fc.Result = res
+	return ec.marshalOTaskSection2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskSection(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_taskSections(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_taskSections_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().TaskSections(rctx, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["where"].(*ent.TaskSectionWhereInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*ent.TaskSectionConnection)
+	fc.Result = res
+	return ec.marshalOTaskSectionConnection2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskSectionConnection(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Query_teammate(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -17775,6 +18298,58 @@ func (ec *executionContext) _Subscription_projectTeammateUpdated(ctx context.Con
 	}
 }
 
+func (ec *executionContext) _Subscription_taskSectionUpdated(ctx context.Context, field graphql.CollectedField) (ret func() graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = nil
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Subscription",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Subscription_taskSectionUpdated_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return nil
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Subscription().TaskSectionUpdated(rctx, args["id"].(ulid.ID))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return nil
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return nil
+	}
+	return func() graphql.Marshaler {
+		res, ok := <-resTmp.(<-chan *ent.TaskSection)
+		if !ok {
+			return nil
+		}
+		return graphql.WriterFunc(func(w io.Writer) {
+			w.Write([]byte{'{'})
+			graphql.MarshalString(field.Alias).MarshalGQL(w)
+			w.Write([]byte{':'})
+			ec.marshalNTaskSection2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskSection(ctx, field.Selections, res).MarshalGQL(w)
+			w.Write([]byte{'}'})
+		})
+	}
+}
+
 func (ec *executionContext) _Subscription_teammateUpdated(ctx context.Context, field graphql.CollectedField) (ret func() graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -18350,6 +18925,315 @@ func (ec *executionContext) _TaskColumnEdge_cursor(ctx context.Context, field gr
 	}()
 	fc := &graphql.FieldContext{
 		Object:     "TaskColumnEdge",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Cursor, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(ent.Cursor)
+	fc.Result = res
+	return ec.marshalNCursor2projectᚑmanagementᚑdemoᚑbackendᚋentᚐCursor(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _TaskSection_id(ctx context.Context, field graphql.CollectedField, obj *ent.TaskSection) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "TaskSection",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(ulid.ID)
+	fc.Result = res
+	return ec.marshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _TaskSection_name(ctx context.Context, field graphql.CollectedField, obj *ent.TaskSection) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "TaskSection",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Name, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _TaskSection_createdAt(ctx context.Context, field graphql.CollectedField, obj *ent.TaskSection) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "TaskSection",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.TaskSection().CreatedAt(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _TaskSection_updatedAt(ctx context.Context, field graphql.CollectedField, obj *ent.TaskSection) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "TaskSection",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.TaskSection().UpdatedAt(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _TaskSectionConnection_totalCount(ctx context.Context, field graphql.CollectedField, obj *ent.TaskSectionConnection) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "TaskSectionConnection",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TotalCount, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _TaskSectionConnection_pageInfo(ctx context.Context, field graphql.CollectedField, obj *ent.TaskSectionConnection) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "TaskSectionConnection",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PageInfo, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(ent.PageInfo)
+	fc.Result = res
+	return ec.marshalNPageInfo2projectᚑmanagementᚑdemoᚑbackendᚋentᚐPageInfo(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _TaskSectionConnection_edges(ctx context.Context, field graphql.CollectedField, obj *ent.TaskSectionConnection) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "TaskSectionConnection",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Edges, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*ent.TaskSectionEdge)
+	fc.Result = res
+	return ec.marshalOTaskSectionEdge2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskSectionEdge(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _TaskSectionEdge_node(ctx context.Context, field graphql.CollectedField, obj *ent.TaskSectionEdge) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "TaskSectionEdge",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Node, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*ent.TaskSection)
+	fc.Result = res
+	return ec.marshalOTaskSection2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskSection(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _TaskSectionEdge_cursor(ctx context.Context, field graphql.CollectedField, obj *ent.TaskSectionEdge) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "TaskSectionEdge",
 		Field:      field,
 		Args:       nil,
 		IsMethod:   false,
@@ -23302,6 +24186,29 @@ func (ec *executionContext) unmarshalInputCreateTaskColumnInput(ctx context.Cont
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("type"))
 			it.Type, err = ec.unmarshalNTaskColumnType2projectᚑmanagementᚑdemoᚑbackendᚋentᚋtaskcolumnᚐType(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputCreateTaskSectionInput(ctx context.Context, obj interface{}) (ent.CreateTaskSectionInput, error) {
+	var it ent.CreateTaskSectionInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "name":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			it.Name, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -29565,6 +30472,341 @@ func (ec *executionContext) unmarshalInputTaskColumnWhereInput(ctx context.Conte
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputTaskSectionWhereInput(ctx context.Context, obj interface{}) (ent.TaskSectionWhereInput, error) {
+	var it ent.TaskSectionWhereInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "not":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("not"))
+			it.Not, err = ec.unmarshalOTaskSectionWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskSectionWhereInput(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "and":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("and"))
+			it.And, err = ec.unmarshalOTaskSectionWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskSectionWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "or":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("or"))
+			it.Or, err = ec.unmarshalOTaskSectionWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskSectionWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "name":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			it.Name, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameNEQ"))
+			it.NameNEQ, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameIn"))
+			it.NameIn, err = ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameNotIn"))
+			it.NameNotIn, err = ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameGT"))
+			it.NameGT, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameGTE"))
+			it.NameGTE, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameLT"))
+			it.NameLT, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameLTE"))
+			it.NameLTE, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameContains":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameContains"))
+			it.NameContains, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameHasPrefix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameHasPrefix"))
+			it.NameHasPrefix, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameHasSuffix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameHasSuffix"))
+			it.NameHasSuffix, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameEqualFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameEqualFold"))
+			it.NameEqualFold, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameContainsFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameContainsFold"))
+			it.NameContainsFold, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAt":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAt"))
+			it.CreatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtNEQ"))
+			it.CreatedAtNEQ, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtIn"))
+			it.CreatedAtIn, err = ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtNotIn"))
+			it.CreatedAtNotIn, err = ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtGT"))
+			it.CreatedAtGT, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtGTE"))
+			it.CreatedAtGTE, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtLT"))
+			it.CreatedAtLT, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtLTE"))
+			it.CreatedAtLTE, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAt":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAt"))
+			it.UpdatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtNEQ"))
+			it.UpdatedAtNEQ, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtIn"))
+			it.UpdatedAtIn, err = ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtNotIn"))
+			it.UpdatedAtNotIn, err = ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtGT"))
+			it.UpdatedAtGT, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtGTE"))
+			it.UpdatedAtGTE, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtLT"))
+			it.UpdatedAtLT, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtLTE"))
+			it.UpdatedAtLTE, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			it.ID, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idNEQ"))
+			it.IDNEQ, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idIn"))
+			it.IDIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idNotIn"))
+			it.IDNotIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idGT"))
+			it.IDGT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idGTE"))
+			it.IDGTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idLT"))
+			it.IDLT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idLTE"))
+			it.IDLTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputTeammateTaskColumnWhereInput(ctx context.Context, obj interface{}) (ent.TeammateTaskColumnWhereInput, error) {
 	var it ent.TeammateTaskColumnWhereInput
 	asMap := map[string]interface{}{}
@@ -32460,6 +33702,37 @@ func (ec *executionContext) unmarshalInputUpdateTaskColumnInput(ctx context.Cont
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputUpdateTaskSectionInput(ctx context.Context, obj interface{}) (ent.UpdateTaskSectionInput, error) {
+	var it ent.UpdateTaskSectionInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			it.ID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "name":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			it.Name, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputUpdateTeammateInput(ctx context.Context, obj interface{}) (ent.UpdateTeammateInput, error) {
 	var it ent.UpdateTeammateInput
 	asMap := map[string]interface{}{}
@@ -33936,6 +35209,11 @@ func (ec *executionContext) _Node(ctx context.Context, sel ast.SelectionSet, obj
 			return graphql.Null
 		}
 		return ec._TaskColumn(ctx, sel, obj)
+	case *ent.TaskSection:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._TaskSection(ctx, sel, obj)
 	case *ent.Teammate:
 		if obj == nil {
 			return graphql.Null
@@ -34859,6 +36137,16 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			}
 		case "updateTaskColumn":
 			out.Values[i] = ec._Mutation_updateTaskColumn(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "createTaskSection":
+			out.Values[i] = ec._Mutation_createTaskSection(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "updateTaskSection":
+			out.Values[i] = ec._Mutation_updateTaskSection(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -36455,6 +37743,28 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 				res = ec._Query_taskColumns(ctx, field)
 				return res
 			})
+		case "taskSection":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_taskSection(ctx, field)
+				return res
+			})
+		case "taskSections":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_taskSections(ctx, field)
+				return res
+			})
 		case "teammate":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
@@ -36644,6 +37954,8 @@ func (ec *executionContext) _Subscription(ctx context.Context, sel ast.Selection
 		return ec._Subscription_projectTaskColumnUpdated(ctx, fields[0])
 	case "projectTeammateUpdated":
 		return ec._Subscription_projectTeammateUpdated(ctx, fields[0])
+	case "taskSectionUpdated":
+		return ec._Subscription_taskSectionUpdated(ctx, fields[0])
 	case "teammateUpdated":
 		return ec._Subscription_teammateUpdated(ctx, fields[0])
 	case "teammateTaskColumnUpdated":
@@ -36770,6 +38082,129 @@ func (ec *executionContext) _TaskColumnEdge(ctx context.Context, sel ast.Selecti
 			out.Values[i] = ec._TaskColumnEdge_node(ctx, field, obj)
 		case "cursor":
 			out.Values[i] = ec._TaskColumnEdge_cursor(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var taskSectionImplementors = []string{"TaskSection", "Node"}
+
+func (ec *executionContext) _TaskSection(ctx context.Context, sel ast.SelectionSet, obj *ent.TaskSection) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, taskSectionImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("TaskSection")
+		case "id":
+			out.Values[i] = ec._TaskSection_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "name":
+			out.Values[i] = ec._TaskSection_name(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "createdAt":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._TaskSection_createdAt(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "updatedAt":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._TaskSection_updatedAt(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var taskSectionConnectionImplementors = []string{"TaskSectionConnection"}
+
+func (ec *executionContext) _TaskSectionConnection(ctx context.Context, sel ast.SelectionSet, obj *ent.TaskSectionConnection) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, taskSectionConnectionImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("TaskSectionConnection")
+		case "totalCount":
+			out.Values[i] = ec._TaskSectionConnection_totalCount(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "pageInfo":
+			out.Values[i] = ec._TaskSectionConnection_pageInfo(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "edges":
+			out.Values[i] = ec._TaskSectionConnection_edges(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var taskSectionEdgeImplementors = []string{"TaskSectionEdge"}
+
+func (ec *executionContext) _TaskSectionEdge(ctx context.Context, sel ast.SelectionSet, obj *ent.TaskSectionEdge) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, taskSectionEdgeImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("TaskSectionEdge")
+		case "node":
+			out.Values[i] = ec._TaskSectionEdge_node(ctx, field, obj)
+		case "cursor":
+			out.Values[i] = ec._TaskSectionEdge_cursor(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -38065,6 +39500,11 @@ func (ec *executionContext) unmarshalNCreateTaskColumnInput2projectᚑmanagement
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
+func (ec *executionContext) unmarshalNCreateTaskSectionInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐCreateTaskSectionInput(ctx context.Context, v interface{}) (ent.CreateTaskSectionInput, error) {
+	res, err := ec.unmarshalInputCreateTaskSectionInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNCreateTeammateInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐCreateTeammateInput(ctx context.Context, v interface{}) (ent.CreateTeammateInput, error) {
 	res, err := ec.unmarshalInputCreateTeammateInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -38700,6 +40140,25 @@ func (ec *executionContext) unmarshalNTaskColumnWhereInput2ᚖprojectᚑmanageme
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
+func (ec *executionContext) marshalNTaskSection2projectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskSection(ctx context.Context, sel ast.SelectionSet, v ent.TaskSection) graphql.Marshaler {
+	return ec._TaskSection(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNTaskSection2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskSection(ctx context.Context, sel ast.SelectionSet, v *ent.TaskSection) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._TaskSection(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNTaskSectionWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskSectionWhereInput(ctx context.Context, v interface{}) (*ent.TaskSectionWhereInput, error) {
+	res, err := ec.unmarshalInputTaskSectionWhereInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) marshalNTeammate2projectᚑmanagementᚑdemoᚑbackendᚋentᚐTeammate(ctx context.Context, sel ast.SelectionSet, v ent.Teammate) graphql.Marshaler {
 	return ec._Teammate(ctx, sel, &v)
 }
@@ -38907,6 +40366,11 @@ func (ec *executionContext) unmarshalNUpdateProjectTeammateInput2projectᚑmanag
 
 func (ec *executionContext) unmarshalNUpdateTaskColumnInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐUpdateTaskColumnInput(ctx context.Context, v interface{}) (ent.UpdateTaskColumnInput, error) {
 	res, err := ec.unmarshalInputUpdateTaskColumnInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNUpdateTaskSectionInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐUpdateTaskSectionInput(ctx context.Context, v interface{}) (ent.UpdateTaskSectionInput, error) {
+	res, err := ec.unmarshalInputUpdateTaskSectionInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
@@ -40983,6 +42447,100 @@ func (ec *executionContext) unmarshalOTaskColumnWhereInput2ᚖprojectᚑmanageme
 		return nil, nil
 	}
 	res, err := ec.unmarshalInputTaskColumnWhereInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOTaskSection2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskSection(ctx context.Context, sel ast.SelectionSet, v *ent.TaskSection) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._TaskSection(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOTaskSectionConnection2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskSectionConnection(ctx context.Context, sel ast.SelectionSet, v *ent.TaskSectionConnection) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._TaskSectionConnection(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOTaskSectionEdge2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskSectionEdge(ctx context.Context, sel ast.SelectionSet, v []*ent.TaskSectionEdge) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalOTaskSectionEdge2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskSectionEdge(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	return ret
+}
+
+func (ec *executionContext) marshalOTaskSectionEdge2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskSectionEdge(ctx context.Context, sel ast.SelectionSet, v *ent.TaskSectionEdge) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._TaskSectionEdge(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalOTaskSectionWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskSectionWhereInputᚄ(ctx context.Context, v interface{}) ([]*ent.TaskSectionWhereInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var vSlice []interface{}
+	if v != nil {
+		if tmp1, ok := v.([]interface{}); ok {
+			vSlice = tmp1
+		} else {
+			vSlice = []interface{}{v}
+		}
+	}
+	var err error
+	res := make([]*ent.TaskSectionWhereInput, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNTaskSectionWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskSectionWhereInput(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) unmarshalOTaskSectionWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskSectionWhereInput(ctx context.Context, v interface{}) (*ent.TaskSectionWhereInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputTaskSectionWhereInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
