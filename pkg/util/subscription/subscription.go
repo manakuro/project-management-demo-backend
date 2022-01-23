@@ -116,6 +116,12 @@ type TeammateTaskColumnUpdated struct {
 	Ch chan *model.TeammateTaskColumn
 }
 
+// ProjectTaskColumnUpdated of channel
+type ProjectTaskColumnUpdated struct {
+	ID model.ID
+	Ch chan *model.ProjectTaskColumn
+}
+
 // Subscriptions hold an id and a channel of subscription.
 type Subscriptions struct {
 	ColorUpdated                map[string]ColorUpdated
@@ -136,6 +142,7 @@ type Subscriptions struct {
 	TestUserUpdated             map[string]TestUserUpdated
 	WorkspaceTeammateUpdated    map[string]WorkspaceTeammateUpdated
 	WorkspaceUpdated            map[string]WorkspaceUpdated
+	ProjectTaskColumnUpdated    map[string]ProjectTaskColumnUpdated
 }
 
 // NewKey generates a random hex string with length of 16.
