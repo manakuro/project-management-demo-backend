@@ -25,6 +25,8 @@ const (
 	FieldUpdatedAt = "updated_at"
 	// EdgeTeammateTaskColumns holds the string denoting the teammate_task_columns edge name in mutations.
 	EdgeTeammateTaskColumns = "teammate_task_columns"
+	// EdgeProjectTaskColumns holds the string denoting the project_task_columns edge name in mutations.
+	EdgeProjectTaskColumns = "project_task_columns"
 	// Table holds the table name of the taskcolumn in the database.
 	Table = "task_columns"
 	// TeammateTaskColumnsTable is the table that holds the teammate_task_columns relation/edge.
@@ -34,6 +36,13 @@ const (
 	TeammateTaskColumnsInverseTable = "teammate_task_columns"
 	// TeammateTaskColumnsColumn is the table column denoting the teammate_task_columns relation/edge.
 	TeammateTaskColumnsColumn = "task_column_id"
+	// ProjectTaskColumnsTable is the table that holds the project_task_columns relation/edge.
+	ProjectTaskColumnsTable = "project_task_columns"
+	// ProjectTaskColumnsInverseTable is the table name for the ProjectTaskColumn entity.
+	// It exists in this package in order to avoid circular dependency with the "projecttaskcolumn" package.
+	ProjectTaskColumnsInverseTable = "project_task_columns"
+	// ProjectTaskColumnsColumn is the table column denoting the project_task_columns relation/edge.
+	ProjectTaskColumnsColumn = "task_column_id"
 )
 
 // Columns holds all SQL columns for taskcolumn fields.
@@ -75,6 +84,8 @@ const (
 	TypeAssignee Type = "ASSIGNEE"
 	TypeDueDate  Type = "DUE_DATE"
 	TypeProject  Type = "PROJECT"
+	TypeProjects Type = "PROJECTS"
+	TypePriority Type = "PRIORITY"
 	TypeTags     Type = "TAGS"
 	TypeCustom   Type = "CUSTOM"
 )
@@ -86,7 +97,7 @@ func (_type Type) String() string {
 // TypeValidator is a validator for the "type" field enum values. It is called by the builders before save.
 func TypeValidator(_type Type) error {
 	switch _type {
-	case TypeTaskName, TypeAssignee, TypeDueDate, TypeProject, TypeTags, TypeCustom:
+	case TypeTaskName, TypeAssignee, TypeDueDate, TypeProject, TypeProjects, TypePriority, TypeTags, TypeCustom:
 		return nil
 	default:
 		return fmt.Errorf("taskcolumn: invalid enum value for type field: %q", _type)

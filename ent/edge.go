@@ -132,6 +132,14 @@ func (pr *Project) FavoriteProjects(ctx context.Context) ([]*FavoriteProject, er
 	return result, err
 }
 
+func (pr *Project) ProjectTaskColumns(ctx context.Context) ([]*ProjectTaskColumn, error) {
+	result, err := pr.Edges.ProjectTaskColumnsOrErr()
+	if IsNotLoaded(err) {
+		result, err = pr.QueryProjectTaskColumns().All(ctx)
+	}
+	return result, err
+}
+
 func (pbc *ProjectBaseColor) Projects(ctx context.Context) ([]*Project, error) {
 	result, err := pbc.Edges.ProjectsOrErr()
 	if IsNotLoaded(err) {
@@ -180,6 +188,22 @@ func (plc *ProjectLightColor) Color(ctx context.Context) (*Color, error) {
 	return result, err
 }
 
+func (ptc *ProjectTaskColumn) Project(ctx context.Context) (*Project, error) {
+	result, err := ptc.Edges.ProjectOrErr()
+	if IsNotLoaded(err) {
+		result, err = ptc.QueryProject().Only(ctx)
+	}
+	return result, err
+}
+
+func (ptc *ProjectTaskColumn) TaskColumn(ctx context.Context) (*TaskColumn, error) {
+	result, err := ptc.Edges.TaskColumnOrErr()
+	if IsNotLoaded(err) {
+		result, err = ptc.QueryTaskColumn().Only(ctx)
+	}
+	return result, err
+}
+
 func (pt *ProjectTeammate) Project(ctx context.Context) (*Project, error) {
 	result, err := pt.Edges.ProjectOrErr()
 	if IsNotLoaded(err) {
@@ -200,6 +224,14 @@ func (tc *TaskColumn) TeammateTaskColumns(ctx context.Context) ([]*TeammateTaskC
 	result, err := tc.Edges.TeammateTaskColumnsOrErr()
 	if IsNotLoaded(err) {
 		result, err = tc.QueryTeammateTaskColumns().All(ctx)
+	}
+	return result, err
+}
+
+func (tc *TaskColumn) ProjectTaskColumns(ctx context.Context) ([]*ProjectTaskColumn, error) {
+	result, err := tc.Edges.ProjectTaskColumnsOrErr()
+	if IsNotLoaded(err) {
+		result, err = tc.QueryProjectTaskColumns().All(ctx)
 	}
 	return result, err
 }

@@ -12,6 +12,8 @@ var taskColumnFeed = struct {
 	assignee ent.CreateTaskColumnInput
 	dueDate  ent.CreateTaskColumnInput
 	project  ent.CreateTaskColumnInput
+	projects ent.CreateTaskColumnInput
+	priority ent.CreateTaskColumnInput
 	tags     ent.CreateTaskColumnInput
 	custom   ent.CreateTaskColumnInput
 }{
@@ -19,6 +21,8 @@ var taskColumnFeed = struct {
 	assignee: ent.CreateTaskColumnInput{Name: "Assignee", Type: taskcolumn.TypeAssignee},
 	dueDate:  ent.CreateTaskColumnInput{Name: "Due Date", Type: taskcolumn.TypeDueDate},
 	project:  ent.CreateTaskColumnInput{Name: "Project", Type: taskcolumn.TypeProject},
+	projects: ent.CreateTaskColumnInput{Name: "Projects", Type: taskcolumn.TypeProjects},
+	priority: ent.CreateTaskColumnInput{Name: "Priority", Type: taskcolumn.TypePriority},
 	tags:     ent.CreateTaskColumnInput{Name: "Tags", Type: taskcolumn.TypeTags},
 	custom:   ent.CreateTaskColumnInput{Name: "Custom", Type: taskcolumn.TypeCustom},
 }
@@ -35,6 +39,8 @@ func TaskColumn(ctx context.Context, client *ent.Client) {
 		taskColumnFeed.assignee,
 		taskColumnFeed.dueDate,
 		taskColumnFeed.project,
+		taskColumnFeed.projects,
+		taskColumnFeed.priority,
 		taskColumnFeed.tags,
 		taskColumnFeed.custom,
 	}

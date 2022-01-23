@@ -121,6 +121,12 @@ func (Project) Edges() []ent.Edge {
 					annotation.Edge{FieldName: "favorite_project_id"},
 				),
 			),
+		edge.To("project_task_columns", ProjectTaskColumn.Type).
+			Annotations(
+				schema.Annotation(
+					annotation.Edge{FieldName: "project_task_column_id"},
+				),
+			),
 	}
 }
 

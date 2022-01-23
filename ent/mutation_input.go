@@ -363,19 +363,20 @@ func (u *MyTasksTabStatusUpdateOne) SetInput(i UpdateMyTasksTabStatusInput) *MyT
 
 // CreateProjectInput represents a mutation input for creating projects.
 type CreateProjectInput struct {
-	Name                string
-	Description         editor.Description
-	DescriptionTitle    string
-	DueDate             *time.Time
-	CreatedAt           *time.Time
-	UpdatedAt           *time.Time
-	WorkspaceID         ulid.ID
-	ProjectBaseColorID  ulid.ID
-	ProjectLightColorID ulid.ID
-	ProjectIconID       ulid.ID
-	CreatedBy           ulid.ID
-	ProjectTeammateIDs  []ulid.ID
-	FavoriteProjectIDs  []ulid.ID
+	Name                 string
+	Description          editor.Description
+	DescriptionTitle     string
+	DueDate              *time.Time
+	CreatedAt            *time.Time
+	UpdatedAt            *time.Time
+	WorkspaceID          ulid.ID
+	ProjectBaseColorID   ulid.ID
+	ProjectLightColorID  ulid.ID
+	ProjectIconID        ulid.ID
+	CreatedBy            ulid.ID
+	ProjectTeammateIDs   []ulid.ID
+	FavoriteProjectIDs   []ulid.ID
+	ProjectTaskColumnIDs []ulid.ID
 }
 
 // Mutate applies the CreateProjectInput on the ProjectCreate builder.
@@ -403,6 +404,9 @@ func (i *CreateProjectInput) Mutate(m *ProjectCreate) {
 	if ids := i.FavoriteProjectIDs; len(ids) > 0 {
 		m.AddFavoriteProjectIDs(ids...)
 	}
+	if ids := i.ProjectTaskColumnIDs; len(ids) > 0 {
+		m.AddProjectTaskColumnIDs(ids...)
+	}
 }
 
 // SetInput applies the change-set in the CreateProjectInput on the create builder.
@@ -413,25 +417,27 @@ func (c *ProjectCreate) SetInput(i CreateProjectInput) *ProjectCreate {
 
 // UpdateProjectInput represents a mutation input for updating projects.
 type UpdateProjectInput struct {
-	ID                       ulid.ID
-	Name                     *string
-	Description              *editor.Description
-	DescriptionTitle         *string
-	DueDate                  *time.Time
-	WorkspaceID              *ulid.ID
-	ClearWorkspace           bool
-	ProjectBaseColorID       *ulid.ID
-	ClearProjectBaseColor    bool
-	ProjectLightColorID      *ulid.ID
-	ClearProjectLightColor   bool
-	ProjectIconID            *ulid.ID
-	ClearProjectIcon         bool
-	CreatedBy                *ulid.ID
-	ClearTeammate            bool
-	AddProjectTeammateIDs    []ulid.ID
-	RemoveProjectTeammateIDs []ulid.ID
-	AddFavoriteProjectIDs    []ulid.ID
-	RemoveFavoriteProjectIDs []ulid.ID
+	ID                         ulid.ID
+	Name                       *string
+	Description                *editor.Description
+	DescriptionTitle           *string
+	DueDate                    *time.Time
+	WorkspaceID                *ulid.ID
+	ClearWorkspace             bool
+	ProjectBaseColorID         *ulid.ID
+	ClearProjectBaseColor      bool
+	ProjectLightColorID        *ulid.ID
+	ClearProjectLightColor     bool
+	ProjectIconID              *ulid.ID
+	ClearProjectIcon           bool
+	CreatedBy                  *ulid.ID
+	ClearTeammate              bool
+	AddProjectTeammateIDs      []ulid.ID
+	RemoveProjectTeammateIDs   []ulid.ID
+	AddFavoriteProjectIDs      []ulid.ID
+	RemoveFavoriteProjectIDs   []ulid.ID
+	AddProjectTaskColumnIDs    []ulid.ID
+	RemoveProjectTaskColumnIDs []ulid.ID
 }
 
 // Mutate applies the UpdateProjectInput on the ProjectMutation.
@@ -489,6 +495,12 @@ func (i *UpdateProjectInput) Mutate(m *ProjectMutation) {
 	}
 	if ids := i.RemoveFavoriteProjectIDs; len(ids) > 0 {
 		m.RemoveFavoriteProjectIDs(ids...)
+	}
+	if ids := i.AddProjectTaskColumnIDs; len(ids) > 0 {
+		m.AddProjectTaskColumnIDs(ids...)
+	}
+	if ids := i.RemoveProjectTaskColumnIDs; len(ids) > 0 {
+		m.RemoveProjectTaskColumnIDs(ids...)
 	}
 }
 
@@ -699,6 +711,93 @@ func (u *ProjectLightColorUpdateOne) SetInput(i UpdateProjectLightColorInput) *P
 	return u
 }
 
+// CreateProjectTaskColumnInput represents a mutation input for creating projecttaskcolumns.
+type CreateProjectTaskColumnInput struct {
+	Width        string
+	Disabled     bool
+	Customizable bool
+	Order        int
+	CreatedAt    *time.Time
+	UpdatedAt    *time.Time
+	ProjectID    ulid.ID
+	TaskColumnID ulid.ID
+}
+
+// Mutate applies the CreateProjectTaskColumnInput on the ProjectTaskColumnCreate builder.
+func (i *CreateProjectTaskColumnInput) Mutate(m *ProjectTaskColumnCreate) {
+	m.SetWidth(i.Width)
+	m.SetDisabled(i.Disabled)
+	m.SetCustomizable(i.Customizable)
+	m.SetOrder(i.Order)
+	if v := i.CreatedAt; v != nil {
+		m.SetCreatedAt(*v)
+	}
+	if v := i.UpdatedAt; v != nil {
+		m.SetUpdatedAt(*v)
+	}
+	m.SetProjectID(i.ProjectID)
+	m.SetTaskColumnID(i.TaskColumnID)
+}
+
+// SetInput applies the change-set in the CreateProjectTaskColumnInput on the create builder.
+func (c *ProjectTaskColumnCreate) SetInput(i CreateProjectTaskColumnInput) *ProjectTaskColumnCreate {
+	i.Mutate(c)
+	return c
+}
+
+// UpdateProjectTaskColumnInput represents a mutation input for updating projecttaskcolumns.
+type UpdateProjectTaskColumnInput struct {
+	ID              ulid.ID
+	Width           *string
+	Disabled        *bool
+	Customizable    *bool
+	Order           *int
+	ProjectID       *ulid.ID
+	ClearProject    bool
+	TaskColumnID    *ulid.ID
+	ClearTaskColumn bool
+}
+
+// Mutate applies the UpdateProjectTaskColumnInput on the ProjectTaskColumnMutation.
+func (i *UpdateProjectTaskColumnInput) Mutate(m *ProjectTaskColumnMutation) {
+	if v := i.Width; v != nil {
+		m.SetWidth(*v)
+	}
+	if v := i.Disabled; v != nil {
+		m.SetDisabled(*v)
+	}
+	if v := i.Customizable; v != nil {
+		m.SetCustomizable(*v)
+	}
+	if v := i.Order; v != nil {
+		m.SetOrder(*v)
+	}
+	if i.ClearProject {
+		m.ClearProject()
+	}
+	if v := i.ProjectID; v != nil {
+		m.SetProjectID(*v)
+	}
+	if i.ClearTaskColumn {
+		m.ClearTaskColumn()
+	}
+	if v := i.TaskColumnID; v != nil {
+		m.SetTaskColumnID(*v)
+	}
+}
+
+// SetInput applies the change-set in the UpdateProjectTaskColumnInput on the update builder.
+func (u *ProjectTaskColumnUpdate) SetInput(i UpdateProjectTaskColumnInput) *ProjectTaskColumnUpdate {
+	i.Mutate(u.Mutation())
+	return u
+}
+
+// SetInput applies the change-set in the UpdateProjectTaskColumnInput on the update-one builder.
+func (u *ProjectTaskColumnUpdateOne) SetInput(i UpdateProjectTaskColumnInput) *ProjectTaskColumnUpdateOne {
+	i.Mutate(u.Mutation())
+	return u
+}
+
 // CreateProjectTeammateInput represents a mutation input for creating projectteammates.
 type CreateProjectTeammateInput struct {
 	Role       string
@@ -781,6 +880,7 @@ type CreateTaskColumnInput struct {
 	CreatedAt             *time.Time
 	UpdatedAt             *time.Time
 	TeammateTaskColumnIDs []ulid.ID
+	ProjectTaskColumnIDs  []ulid.ID
 }
 
 // Mutate applies the CreateTaskColumnInput on the TaskColumnCreate builder.
@@ -795,6 +895,9 @@ func (i *CreateTaskColumnInput) Mutate(m *TaskColumnCreate) {
 	}
 	if ids := i.TeammateTaskColumnIDs; len(ids) > 0 {
 		m.AddTeammateTaskColumnIDs(ids...)
+	}
+	if ids := i.ProjectTaskColumnIDs; len(ids) > 0 {
+		m.AddProjectTaskColumnIDs(ids...)
 	}
 }
 
@@ -811,6 +914,8 @@ type UpdateTaskColumnInput struct {
 	Type                        *taskcolumn.Type
 	AddTeammateTaskColumnIDs    []ulid.ID
 	RemoveTeammateTaskColumnIDs []ulid.ID
+	AddProjectTaskColumnIDs     []ulid.ID
+	RemoveProjectTaskColumnIDs  []ulid.ID
 }
 
 // Mutate applies the UpdateTaskColumnInput on the TaskColumnMutation.
@@ -826,6 +931,12 @@ func (i *UpdateTaskColumnInput) Mutate(m *TaskColumnMutation) {
 	}
 	if ids := i.RemoveTeammateTaskColumnIDs; len(ids) > 0 {
 		m.RemoveTeammateTaskColumnIDs(ids...)
+	}
+	if ids := i.AddProjectTaskColumnIDs; len(ids) > 0 {
+		m.AddProjectTaskColumnIDs(ids...)
+	}
+	if ids := i.RemoveProjectTaskColumnIDs; len(ids) > 0 {
+		m.RemoveProjectTaskColumnIDs(ids...)
 	}
 }
 

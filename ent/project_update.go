@@ -12,6 +12,7 @@ import (
 	"project-management-demo-backend/ent/projectbasecolor"
 	"project-management-demo-backend/ent/projecticon"
 	"project-management-demo-backend/ent/projectlightcolor"
+	"project-management-demo-backend/ent/projecttaskcolumn"
 	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/ent/schema/editor"
 	"project-management-demo-backend/ent/schema/ulid"
@@ -160,6 +161,21 @@ func (pu *ProjectUpdate) AddFavoriteProjects(f ...*FavoriteProject) *ProjectUpda
 	return pu.AddFavoriteProjectIDs(ids...)
 }
 
+// AddProjectTaskColumnIDs adds the "project_task_columns" edge to the ProjectTaskColumn entity by IDs.
+func (pu *ProjectUpdate) AddProjectTaskColumnIDs(ids ...ulid.ID) *ProjectUpdate {
+	pu.mutation.AddProjectTaskColumnIDs(ids...)
+	return pu
+}
+
+// AddProjectTaskColumns adds the "project_task_columns" edges to the ProjectTaskColumn entity.
+func (pu *ProjectUpdate) AddProjectTaskColumns(p ...*ProjectTaskColumn) *ProjectUpdate {
+	ids := make([]ulid.ID, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return pu.AddProjectTaskColumnIDs(ids...)
+}
+
 // Mutation returns the ProjectMutation object of the builder.
 func (pu *ProjectUpdate) Mutation() *ProjectMutation {
 	return pu.mutation
@@ -235,6 +251,27 @@ func (pu *ProjectUpdate) RemoveFavoriteProjects(f ...*FavoriteProject) *ProjectU
 		ids[i] = f[i].ID
 	}
 	return pu.RemoveFavoriteProjectIDs(ids...)
+}
+
+// ClearProjectTaskColumns clears all "project_task_columns" edges to the ProjectTaskColumn entity.
+func (pu *ProjectUpdate) ClearProjectTaskColumns() *ProjectUpdate {
+	pu.mutation.ClearProjectTaskColumns()
+	return pu
+}
+
+// RemoveProjectTaskColumnIDs removes the "project_task_columns" edge to ProjectTaskColumn entities by IDs.
+func (pu *ProjectUpdate) RemoveProjectTaskColumnIDs(ids ...ulid.ID) *ProjectUpdate {
+	pu.mutation.RemoveProjectTaskColumnIDs(ids...)
+	return pu
+}
+
+// RemoveProjectTaskColumns removes "project_task_columns" edges to ProjectTaskColumn entities.
+func (pu *ProjectUpdate) RemoveProjectTaskColumns(p ...*ProjectTaskColumn) *ProjectUpdate {
+	ids := make([]ulid.ID, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return pu.RemoveProjectTaskColumnIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -656,6 +693,60 @@ func (pu *ProjectUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if pu.mutation.ProjectTaskColumnsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   project.ProjectTaskColumnsTable,
+			Columns: []string{project.ProjectTaskColumnsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: projecttaskcolumn.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.RemovedProjectTaskColumnsIDs(); len(nodes) > 0 && !pu.mutation.ProjectTaskColumnsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   project.ProjectTaskColumnsTable,
+			Columns: []string{project.ProjectTaskColumnsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: projecttaskcolumn.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.ProjectTaskColumnsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   project.ProjectTaskColumnsTable,
+			Columns: []string{project.ProjectTaskColumnsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: projecttaskcolumn.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, pu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{project.Label}
@@ -798,6 +889,21 @@ func (puo *ProjectUpdateOne) AddFavoriteProjects(f ...*FavoriteProject) *Project
 	return puo.AddFavoriteProjectIDs(ids...)
 }
 
+// AddProjectTaskColumnIDs adds the "project_task_columns" edge to the ProjectTaskColumn entity by IDs.
+func (puo *ProjectUpdateOne) AddProjectTaskColumnIDs(ids ...ulid.ID) *ProjectUpdateOne {
+	puo.mutation.AddProjectTaskColumnIDs(ids...)
+	return puo
+}
+
+// AddProjectTaskColumns adds the "project_task_columns" edges to the ProjectTaskColumn entity.
+func (puo *ProjectUpdateOne) AddProjectTaskColumns(p ...*ProjectTaskColumn) *ProjectUpdateOne {
+	ids := make([]ulid.ID, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return puo.AddProjectTaskColumnIDs(ids...)
+}
+
 // Mutation returns the ProjectMutation object of the builder.
 func (puo *ProjectUpdateOne) Mutation() *ProjectMutation {
 	return puo.mutation
@@ -873,6 +979,27 @@ func (puo *ProjectUpdateOne) RemoveFavoriteProjects(f ...*FavoriteProject) *Proj
 		ids[i] = f[i].ID
 	}
 	return puo.RemoveFavoriteProjectIDs(ids...)
+}
+
+// ClearProjectTaskColumns clears all "project_task_columns" edges to the ProjectTaskColumn entity.
+func (puo *ProjectUpdateOne) ClearProjectTaskColumns() *ProjectUpdateOne {
+	puo.mutation.ClearProjectTaskColumns()
+	return puo
+}
+
+// RemoveProjectTaskColumnIDs removes the "project_task_columns" edge to ProjectTaskColumn entities by IDs.
+func (puo *ProjectUpdateOne) RemoveProjectTaskColumnIDs(ids ...ulid.ID) *ProjectUpdateOne {
+	puo.mutation.RemoveProjectTaskColumnIDs(ids...)
+	return puo
+}
+
+// RemoveProjectTaskColumns removes "project_task_columns" edges to ProjectTaskColumn entities.
+func (puo *ProjectUpdateOne) RemoveProjectTaskColumns(p ...*ProjectTaskColumn) *ProjectUpdateOne {
+	ids := make([]ulid.ID, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return puo.RemoveProjectTaskColumnIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -1310,6 +1437,60 @@ func (puo *ProjectUpdateOne) sqlSave(ctx context.Context) (_node *Project, err e
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: favoriteproject.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if puo.mutation.ProjectTaskColumnsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   project.ProjectTaskColumnsTable,
+			Columns: []string{project.ProjectTaskColumnsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: projecttaskcolumn.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.RemovedProjectTaskColumnsIDs(); len(nodes) > 0 && !puo.mutation.ProjectTaskColumnsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   project.ProjectTaskColumnsTable,
+			Columns: []string{project.ProjectTaskColumnsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: projecttaskcolumn.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.ProjectTaskColumnsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   project.ProjectTaskColumnsTable,
+			Columns: []string{project.ProjectTaskColumnsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: projecttaskcolumn.FieldID,
 				},
 			},
 		}

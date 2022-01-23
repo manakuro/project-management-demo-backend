@@ -6,6 +6,7 @@ import (
 	"context"
 	"fmt"
 	"project-management-demo-backend/ent/predicate"
+	"project-management-demo-backend/ent/projecttaskcolumn"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/taskcolumn"
 	"project-management-demo-backend/ent/teammatetaskcolumn"
@@ -55,6 +56,21 @@ func (tcu *TaskColumnUpdate) AddTeammateTaskColumns(t ...*TeammateTaskColumn) *T
 	return tcu.AddTeammateTaskColumnIDs(ids...)
 }
 
+// AddProjectTaskColumnIDs adds the "project_task_columns" edge to the ProjectTaskColumn entity by IDs.
+func (tcu *TaskColumnUpdate) AddProjectTaskColumnIDs(ids ...ulid.ID) *TaskColumnUpdate {
+	tcu.mutation.AddProjectTaskColumnIDs(ids...)
+	return tcu
+}
+
+// AddProjectTaskColumns adds the "project_task_columns" edges to the ProjectTaskColumn entity.
+func (tcu *TaskColumnUpdate) AddProjectTaskColumns(p ...*ProjectTaskColumn) *TaskColumnUpdate {
+	ids := make([]ulid.ID, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return tcu.AddProjectTaskColumnIDs(ids...)
+}
+
 // Mutation returns the TaskColumnMutation object of the builder.
 func (tcu *TaskColumnUpdate) Mutation() *TaskColumnMutation {
 	return tcu.mutation
@@ -79,6 +95,27 @@ func (tcu *TaskColumnUpdate) RemoveTeammateTaskColumns(t ...*TeammateTaskColumn)
 		ids[i] = t[i].ID
 	}
 	return tcu.RemoveTeammateTaskColumnIDs(ids...)
+}
+
+// ClearProjectTaskColumns clears all "project_task_columns" edges to the ProjectTaskColumn entity.
+func (tcu *TaskColumnUpdate) ClearProjectTaskColumns() *TaskColumnUpdate {
+	tcu.mutation.ClearProjectTaskColumns()
+	return tcu
+}
+
+// RemoveProjectTaskColumnIDs removes the "project_task_columns" edge to ProjectTaskColumn entities by IDs.
+func (tcu *TaskColumnUpdate) RemoveProjectTaskColumnIDs(ids ...ulid.ID) *TaskColumnUpdate {
+	tcu.mutation.RemoveProjectTaskColumnIDs(ids...)
+	return tcu
+}
+
+// RemoveProjectTaskColumns removes "project_task_columns" edges to ProjectTaskColumn entities.
+func (tcu *TaskColumnUpdate) RemoveProjectTaskColumns(p ...*ProjectTaskColumn) *TaskColumnUpdate {
+	ids := make([]ulid.ID, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return tcu.RemoveProjectTaskColumnIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -242,6 +279,60 @@ func (tcu *TaskColumnUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if tcu.mutation.ProjectTaskColumnsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   taskcolumn.ProjectTaskColumnsTable,
+			Columns: []string{taskcolumn.ProjectTaskColumnsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: projecttaskcolumn.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tcu.mutation.RemovedProjectTaskColumnsIDs(); len(nodes) > 0 && !tcu.mutation.ProjectTaskColumnsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   taskcolumn.ProjectTaskColumnsTable,
+			Columns: []string{taskcolumn.ProjectTaskColumnsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: projecttaskcolumn.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tcu.mutation.ProjectTaskColumnsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   taskcolumn.ProjectTaskColumnsTable,
+			Columns: []string{taskcolumn.ProjectTaskColumnsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: projecttaskcolumn.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, tcu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{taskcolumn.Label}
@@ -288,6 +379,21 @@ func (tcuo *TaskColumnUpdateOne) AddTeammateTaskColumns(t ...*TeammateTaskColumn
 	return tcuo.AddTeammateTaskColumnIDs(ids...)
 }
 
+// AddProjectTaskColumnIDs adds the "project_task_columns" edge to the ProjectTaskColumn entity by IDs.
+func (tcuo *TaskColumnUpdateOne) AddProjectTaskColumnIDs(ids ...ulid.ID) *TaskColumnUpdateOne {
+	tcuo.mutation.AddProjectTaskColumnIDs(ids...)
+	return tcuo
+}
+
+// AddProjectTaskColumns adds the "project_task_columns" edges to the ProjectTaskColumn entity.
+func (tcuo *TaskColumnUpdateOne) AddProjectTaskColumns(p ...*ProjectTaskColumn) *TaskColumnUpdateOne {
+	ids := make([]ulid.ID, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return tcuo.AddProjectTaskColumnIDs(ids...)
+}
+
 // Mutation returns the TaskColumnMutation object of the builder.
 func (tcuo *TaskColumnUpdateOne) Mutation() *TaskColumnMutation {
 	return tcuo.mutation
@@ -312,6 +418,27 @@ func (tcuo *TaskColumnUpdateOne) RemoveTeammateTaskColumns(t ...*TeammateTaskCol
 		ids[i] = t[i].ID
 	}
 	return tcuo.RemoveTeammateTaskColumnIDs(ids...)
+}
+
+// ClearProjectTaskColumns clears all "project_task_columns" edges to the ProjectTaskColumn entity.
+func (tcuo *TaskColumnUpdateOne) ClearProjectTaskColumns() *TaskColumnUpdateOne {
+	tcuo.mutation.ClearProjectTaskColumns()
+	return tcuo
+}
+
+// RemoveProjectTaskColumnIDs removes the "project_task_columns" edge to ProjectTaskColumn entities by IDs.
+func (tcuo *TaskColumnUpdateOne) RemoveProjectTaskColumnIDs(ids ...ulid.ID) *TaskColumnUpdateOne {
+	tcuo.mutation.RemoveProjectTaskColumnIDs(ids...)
+	return tcuo
+}
+
+// RemoveProjectTaskColumns removes "project_task_columns" edges to ProjectTaskColumn entities.
+func (tcuo *TaskColumnUpdateOne) RemoveProjectTaskColumns(p ...*ProjectTaskColumn) *TaskColumnUpdateOne {
+	ids := make([]ulid.ID, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return tcuo.RemoveProjectTaskColumnIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -491,6 +618,60 @@ func (tcuo *TaskColumnUpdateOne) sqlSave(ctx context.Context) (_node *TaskColumn
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: teammatetaskcolumn.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if tcuo.mutation.ProjectTaskColumnsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   taskcolumn.ProjectTaskColumnsTable,
+			Columns: []string{taskcolumn.ProjectTaskColumnsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: projecttaskcolumn.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tcuo.mutation.RemovedProjectTaskColumnsIDs(); len(nodes) > 0 && !tcuo.mutation.ProjectTaskColumnsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   taskcolumn.ProjectTaskColumnsTable,
+			Columns: []string{taskcolumn.ProjectTaskColumnsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: projecttaskcolumn.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tcuo.mutation.ProjectTaskColumnsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   taskcolumn.ProjectTaskColumnsTable,
+			Columns: []string{taskcolumn.ProjectTaskColumnsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: projecttaskcolumn.FieldID,
 				},
 			},
 		}

@@ -19,6 +19,7 @@ import (
 	"project-management-demo-backend/ent/projectbasecolor"
 	"project-management-demo-backend/ent/projecticon"
 	"project-management-demo-backend/ent/projectlightcolor"
+	"project-management-demo-backend/ent/projecttaskcolumn"
 	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/ent/taskcolumn"
 	"project-management-demo-backend/ent/teammate"
@@ -56,6 +57,8 @@ type Client struct {
 	ProjectIcon *ProjectIconClient
 	// ProjectLightColor is the client for interacting with the ProjectLightColor builders.
 	ProjectLightColor *ProjectLightColorClient
+	// ProjectTaskColumn is the client for interacting with the ProjectTaskColumn builders.
+	ProjectTaskColumn *ProjectTaskColumnClient
 	// ProjectTeammate is the client for interacting with the ProjectTeammate builders.
 	ProjectTeammate *ProjectTeammateClient
 	// TaskColumn is the client for interacting with the TaskColumn builders.
@@ -94,6 +97,7 @@ func (c *Client) init() {
 	c.ProjectBaseColor = NewProjectBaseColorClient(c.config)
 	c.ProjectIcon = NewProjectIconClient(c.config)
 	c.ProjectLightColor = NewProjectLightColorClient(c.config)
+	c.ProjectTaskColumn = NewProjectTaskColumnClient(c.config)
 	c.ProjectTeammate = NewProjectTeammateClient(c.config)
 	c.TaskColumn = NewTaskColumnClient(c.config)
 	c.Teammate = NewTeammateClient(c.config)
@@ -144,6 +148,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		ProjectBaseColor:   NewProjectBaseColorClient(cfg),
 		ProjectIcon:        NewProjectIconClient(cfg),
 		ProjectLightColor:  NewProjectLightColorClient(cfg),
+		ProjectTaskColumn:  NewProjectTaskColumnClient(cfg),
 		ProjectTeammate:    NewProjectTeammateClient(cfg),
 		TaskColumn:         NewTaskColumnClient(cfg),
 		Teammate:           NewTeammateClient(cfg),
@@ -179,6 +184,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		ProjectBaseColor:   NewProjectBaseColorClient(cfg),
 		ProjectIcon:        NewProjectIconClient(cfg),
 		ProjectLightColor:  NewProjectLightColorClient(cfg),
+		ProjectTaskColumn:  NewProjectTaskColumnClient(cfg),
 		ProjectTeammate:    NewProjectTeammateClient(cfg),
 		TaskColumn:         NewTaskColumnClient(cfg),
 		Teammate:           NewTeammateClient(cfg),
@@ -225,6 +231,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.ProjectBaseColor.Use(hooks...)
 	c.ProjectIcon.Use(hooks...)
 	c.ProjectLightColor.Use(hooks...)
+	c.ProjectTaskColumn.Use(hooks...)
 	c.ProjectTeammate.Use(hooks...)
 	c.TaskColumn.Use(hooks...)
 	c.Teammate.Use(hooks...)
@@ -1026,6 +1033,22 @@ func (c *ProjectClient) QueryFavoriteProjects(pr *Project) *FavoriteProjectQuery
 	return query
 }
 
+// QueryProjectTaskColumns queries the project_task_columns edge of a Project.
+func (c *ProjectClient) QueryProjectTaskColumns(pr *Project) *ProjectTaskColumnQuery {
+	query := &ProjectTaskColumnQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := pr.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(project.Table, project.FieldID, id),
+			sqlgraph.To(projecttaskcolumn.Table, projecttaskcolumn.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, project.ProjectTaskColumnsTable, project.ProjectTaskColumnsColumn),
+		)
+		fromV = sqlgraph.Neighbors(pr.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *ProjectClient) Hooks() []Hook {
 	return c.hooks.Project
@@ -1397,6 +1420,128 @@ func (c *ProjectLightColorClient) Hooks() []Hook {
 	return c.hooks.ProjectLightColor
 }
 
+// ProjectTaskColumnClient is a client for the ProjectTaskColumn schema.
+type ProjectTaskColumnClient struct {
+	config
+}
+
+// NewProjectTaskColumnClient returns a client for the ProjectTaskColumn from the given config.
+func NewProjectTaskColumnClient(c config) *ProjectTaskColumnClient {
+	return &ProjectTaskColumnClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `projecttaskcolumn.Hooks(f(g(h())))`.
+func (c *ProjectTaskColumnClient) Use(hooks ...Hook) {
+	c.hooks.ProjectTaskColumn = append(c.hooks.ProjectTaskColumn, hooks...)
+}
+
+// Create returns a create builder for ProjectTaskColumn.
+func (c *ProjectTaskColumnClient) Create() *ProjectTaskColumnCreate {
+	mutation := newProjectTaskColumnMutation(c.config, OpCreate)
+	return &ProjectTaskColumnCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of ProjectTaskColumn entities.
+func (c *ProjectTaskColumnClient) CreateBulk(builders ...*ProjectTaskColumnCreate) *ProjectTaskColumnCreateBulk {
+	return &ProjectTaskColumnCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for ProjectTaskColumn.
+func (c *ProjectTaskColumnClient) Update() *ProjectTaskColumnUpdate {
+	mutation := newProjectTaskColumnMutation(c.config, OpUpdate)
+	return &ProjectTaskColumnUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ProjectTaskColumnClient) UpdateOne(ptc *ProjectTaskColumn) *ProjectTaskColumnUpdateOne {
+	mutation := newProjectTaskColumnMutation(c.config, OpUpdateOne, withProjectTaskColumn(ptc))
+	return &ProjectTaskColumnUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ProjectTaskColumnClient) UpdateOneID(id ulid.ID) *ProjectTaskColumnUpdateOne {
+	mutation := newProjectTaskColumnMutation(c.config, OpUpdateOne, withProjectTaskColumnID(id))
+	return &ProjectTaskColumnUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for ProjectTaskColumn.
+func (c *ProjectTaskColumnClient) Delete() *ProjectTaskColumnDelete {
+	mutation := newProjectTaskColumnMutation(c.config, OpDelete)
+	return &ProjectTaskColumnDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *ProjectTaskColumnClient) DeleteOne(ptc *ProjectTaskColumn) *ProjectTaskColumnDeleteOne {
+	return c.DeleteOneID(ptc.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *ProjectTaskColumnClient) DeleteOneID(id ulid.ID) *ProjectTaskColumnDeleteOne {
+	builder := c.Delete().Where(projecttaskcolumn.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ProjectTaskColumnDeleteOne{builder}
+}
+
+// Query returns a query builder for ProjectTaskColumn.
+func (c *ProjectTaskColumnClient) Query() *ProjectTaskColumnQuery {
+	return &ProjectTaskColumnQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a ProjectTaskColumn entity by its id.
+func (c *ProjectTaskColumnClient) Get(ctx context.Context, id ulid.ID) (*ProjectTaskColumn, error) {
+	return c.Query().Where(projecttaskcolumn.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ProjectTaskColumnClient) GetX(ctx context.Context, id ulid.ID) *ProjectTaskColumn {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryProject queries the project edge of a ProjectTaskColumn.
+func (c *ProjectTaskColumnClient) QueryProject(ptc *ProjectTaskColumn) *ProjectQuery {
+	query := &ProjectQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := ptc.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(projecttaskcolumn.Table, projecttaskcolumn.FieldID, id),
+			sqlgraph.To(project.Table, project.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, projecttaskcolumn.ProjectTable, projecttaskcolumn.ProjectColumn),
+		)
+		fromV = sqlgraph.Neighbors(ptc.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryTaskColumn queries the task_column edge of a ProjectTaskColumn.
+func (c *ProjectTaskColumnClient) QueryTaskColumn(ptc *ProjectTaskColumn) *TaskColumnQuery {
+	query := &TaskColumnQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := ptc.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(projecttaskcolumn.Table, projecttaskcolumn.FieldID, id),
+			sqlgraph.To(taskcolumn.Table, taskcolumn.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, projecttaskcolumn.TaskColumnTable, projecttaskcolumn.TaskColumnColumn),
+		)
+		fromV = sqlgraph.Neighbors(ptc.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *ProjectTaskColumnClient) Hooks() []Hook {
+	return c.hooks.ProjectTaskColumn
+}
+
 // ProjectTeammateClient is a client for the ProjectTeammate schema.
 type ProjectTeammateClient struct {
 	config
@@ -1613,6 +1758,22 @@ func (c *TaskColumnClient) QueryTeammateTaskColumns(tc *TaskColumn) *TeammateTas
 			sqlgraph.From(taskcolumn.Table, taskcolumn.FieldID, id),
 			sqlgraph.To(teammatetaskcolumn.Table, teammatetaskcolumn.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, taskcolumn.TeammateTaskColumnsTable, taskcolumn.TeammateTaskColumnsColumn),
+		)
+		fromV = sqlgraph.Neighbors(tc.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryProjectTaskColumns queries the project_task_columns edge of a TaskColumn.
+func (c *TaskColumnClient) QueryProjectTaskColumns(tc *TaskColumn) *ProjectTaskColumnQuery {
+	query := &ProjectTaskColumnQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := tc.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(taskcolumn.Table, taskcolumn.FieldID, id),
+			sqlgraph.To(projecttaskcolumn.Table, projecttaskcolumn.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, taskcolumn.ProjectTaskColumnsTable, taskcolumn.ProjectTaskColumnsColumn),
 		)
 		fromV = sqlgraph.Neighbors(tc.driver.Dialect(), step)
 		return fromV, nil

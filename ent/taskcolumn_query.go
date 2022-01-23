@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"math"
 	"project-management-demo-backend/ent/predicate"
+	"project-management-demo-backend/ent/projecttaskcolumn"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/taskcolumn"
 	"project-management-demo-backend/ent/teammatetaskcolumn"
@@ -29,6 +30,7 @@ type TaskColumnQuery struct {
 	predicates []predicate.TaskColumn
 	// eager-loading edges.
 	withTeammateTaskColumns *TeammateTaskColumnQuery
+	withProjectTaskColumns  *ProjectTaskColumnQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -80,6 +82,28 @@ func (tcq *TaskColumnQuery) QueryTeammateTaskColumns() *TeammateTaskColumnQuery 
 			sqlgraph.From(taskcolumn.Table, taskcolumn.FieldID, selector),
 			sqlgraph.To(teammatetaskcolumn.Table, teammatetaskcolumn.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, taskcolumn.TeammateTaskColumnsTable, taskcolumn.TeammateTaskColumnsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(tcq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryProjectTaskColumns chains the current query on the "project_task_columns" edge.
+func (tcq *TaskColumnQuery) QueryProjectTaskColumns() *ProjectTaskColumnQuery {
+	query := &ProjectTaskColumnQuery{config: tcq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := tcq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := tcq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(taskcolumn.Table, taskcolumn.FieldID, selector),
+			sqlgraph.To(projecttaskcolumn.Table, projecttaskcolumn.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, taskcolumn.ProjectTaskColumnsTable, taskcolumn.ProjectTaskColumnsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(tcq.driver.Dialect(), step)
 		return fromU, nil
@@ -269,6 +293,7 @@ func (tcq *TaskColumnQuery) Clone() *TaskColumnQuery {
 		order:                   append([]OrderFunc{}, tcq.order...),
 		predicates:              append([]predicate.TaskColumn{}, tcq.predicates...),
 		withTeammateTaskColumns: tcq.withTeammateTaskColumns.Clone(),
+		withProjectTaskColumns:  tcq.withProjectTaskColumns.Clone(),
 		// clone intermediate query.
 		sql:  tcq.sql.Clone(),
 		path: tcq.path,
@@ -283,6 +308,17 @@ func (tcq *TaskColumnQuery) WithTeammateTaskColumns(opts ...func(*TeammateTaskCo
 		opt(query)
 	}
 	tcq.withTeammateTaskColumns = query
+	return tcq
+}
+
+// WithProjectTaskColumns tells the query-builder to eager-load the nodes that are connected to
+// the "project_task_columns" edge. The optional arguments are used to configure the query builder of the edge.
+func (tcq *TaskColumnQuery) WithProjectTaskColumns(opts ...func(*ProjectTaskColumnQuery)) *TaskColumnQuery {
+	query := &ProjectTaskColumnQuery{config: tcq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	tcq.withProjectTaskColumns = query
 	return tcq
 }
 
@@ -351,8 +387,9 @@ func (tcq *TaskColumnQuery) sqlAll(ctx context.Context) ([]*TaskColumn, error) {
 	var (
 		nodes       = []*TaskColumn{}
 		_spec       = tcq.querySpec()
-		loadedTypes = [1]bool{
+		loadedTypes = [2]bool{
 			tcq.withTeammateTaskColumns != nil,
+			tcq.withProjectTaskColumns != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -397,6 +434,31 @@ func (tcq *TaskColumnQuery) sqlAll(ctx context.Context) ([]*TaskColumn, error) {
 				return nil, fmt.Errorf(`unexpected foreign-key "task_column_id" returned %v for node %v`, fk, n.ID)
 			}
 			node.Edges.TeammateTaskColumns = append(node.Edges.TeammateTaskColumns, n)
+		}
+	}
+
+	if query := tcq.withProjectTaskColumns; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[ulid.ID]*TaskColumn)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.ProjectTaskColumns = []*ProjectTaskColumn{}
+		}
+		query.Where(predicate.ProjectTaskColumn(func(s *sql.Selector) {
+			s.Where(sql.InValues(taskcolumn.ProjectTaskColumnsColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.TaskColumnID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "task_column_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.ProjectTaskColumns = append(node.Edges.ProjectTaskColumns, n)
 		}
 	}
 

@@ -14,6 +14,7 @@ import (
 	"project-management-demo-backend/ent/projectbasecolor"
 	"project-management-demo-backend/ent/projecticon"
 	"project-management-demo-backend/ent/projectlightcolor"
+	"project-management-demo-backend/ent/projecttaskcolumn"
 	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/taskcolumn"
@@ -1909,6 +1910,10 @@ type ProjectWhereInput struct {
 	// "favorite_projects" edge predicates.
 	HasFavoriteProjects     *bool                        `json:"hasFavoriteProjects,omitempty"`
 	HasFavoriteProjectsWith []*FavoriteProjectWhereInput `json:"hasFavoriteProjectsWith,omitempty"`
+
+	// "project_task_columns" edge predicates.
+	HasProjectTaskColumns     *bool                          `json:"hasProjectTaskColumns,omitempty"`
+	HasProjectTaskColumnsWith []*ProjectTaskColumnWhereInput `json:"hasProjectTaskColumnsWith,omitempty"`
 }
 
 // Filter applies the ProjectWhereInput filter on the ProjectQuery builder.
@@ -2465,6 +2470,24 @@ func (i *ProjectWhereInput) P() (predicate.Project, error) {
 			with = append(with, p)
 		}
 		predicates = append(predicates, project.HasFavoriteProjectsWith(with...))
+	}
+	if i.HasProjectTaskColumns != nil {
+		p := project.HasProjectTaskColumns()
+		if !*i.HasProjectTaskColumns {
+			p = project.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasProjectTaskColumnsWith) > 0 {
+		with := make([]predicate.ProjectTaskColumn, 0, len(i.HasProjectTaskColumnsWith))
+		for _, w := range i.HasProjectTaskColumnsWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, project.HasProjectTaskColumnsWith(with...))
 	}
 	switch len(predicates) {
 	case 0:
@@ -3307,6 +3330,445 @@ func (i *ProjectLightColorWhereInput) P() (predicate.ProjectLightColor, error) {
 	}
 }
 
+// ProjectTaskColumnWhereInput represents a where input for filtering ProjectTaskColumn queries.
+type ProjectTaskColumnWhereInput struct {
+	Not *ProjectTaskColumnWhereInput   `json:"not,omitempty"`
+	Or  []*ProjectTaskColumnWhereInput `json:"or,omitempty"`
+	And []*ProjectTaskColumnWhereInput `json:"and,omitempty"`
+
+	// "id" field predicates.
+	ID      *ulid.ID  `json:"id,omitempty"`
+	IDNEQ   *ulid.ID  `json:"idNEQ,omitempty"`
+	IDIn    []ulid.ID `json:"idIn,omitempty"`
+	IDNotIn []ulid.ID `json:"idNotIn,omitempty"`
+	IDGT    *ulid.ID  `json:"idGT,omitempty"`
+	IDGTE   *ulid.ID  `json:"idGTE,omitempty"`
+	IDLT    *ulid.ID  `json:"idLT,omitempty"`
+	IDLTE   *ulid.ID  `json:"idLTE,omitempty"`
+
+	// "project_id" field predicates.
+	ProjectID             *ulid.ID  `json:"projectID,omitempty"`
+	ProjectIDNEQ          *ulid.ID  `json:"projectIDNEQ,omitempty"`
+	ProjectIDIn           []ulid.ID `json:"projectIDIn,omitempty"`
+	ProjectIDNotIn        []ulid.ID `json:"projectIDNotIn,omitempty"`
+	ProjectIDGT           *ulid.ID  `json:"projectIDGT,omitempty"`
+	ProjectIDGTE          *ulid.ID  `json:"projectIDGTE,omitempty"`
+	ProjectIDLT           *ulid.ID  `json:"projectIDLT,omitempty"`
+	ProjectIDLTE          *ulid.ID  `json:"projectIDLTE,omitempty"`
+	ProjectIDContains     *ulid.ID  `json:"projectIDContains,omitempty"`
+	ProjectIDHasPrefix    *ulid.ID  `json:"projectIDHasPrefix,omitempty"`
+	ProjectIDHasSuffix    *ulid.ID  `json:"projectIDHasSuffix,omitempty"`
+	ProjectIDEqualFold    *ulid.ID  `json:"projectIDEqualFold,omitempty"`
+	ProjectIDContainsFold *ulid.ID  `json:"projectIDContainsFold,omitempty"`
+
+	// "task_column_id" field predicates.
+	TaskColumnID             *ulid.ID  `json:"taskColumnID,omitempty"`
+	TaskColumnIDNEQ          *ulid.ID  `json:"taskColumnIDNEQ,omitempty"`
+	TaskColumnIDIn           []ulid.ID `json:"taskColumnIDIn,omitempty"`
+	TaskColumnIDNotIn        []ulid.ID `json:"taskColumnIDNotIn,omitempty"`
+	TaskColumnIDGT           *ulid.ID  `json:"taskColumnIDGT,omitempty"`
+	TaskColumnIDGTE          *ulid.ID  `json:"taskColumnIDGTE,omitempty"`
+	TaskColumnIDLT           *ulid.ID  `json:"taskColumnIDLT,omitempty"`
+	TaskColumnIDLTE          *ulid.ID  `json:"taskColumnIDLTE,omitempty"`
+	TaskColumnIDContains     *ulid.ID  `json:"taskColumnIDContains,omitempty"`
+	TaskColumnIDHasPrefix    *ulid.ID  `json:"taskColumnIDHasPrefix,omitempty"`
+	TaskColumnIDHasSuffix    *ulid.ID  `json:"taskColumnIDHasSuffix,omitempty"`
+	TaskColumnIDEqualFold    *ulid.ID  `json:"taskColumnIDEqualFold,omitempty"`
+	TaskColumnIDContainsFold *ulid.ID  `json:"taskColumnIDContainsFold,omitempty"`
+
+	// "width" field predicates.
+	Width             *string  `json:"width,omitempty"`
+	WidthNEQ          *string  `json:"widthNEQ,omitempty"`
+	WidthIn           []string `json:"widthIn,omitempty"`
+	WidthNotIn        []string `json:"widthNotIn,omitempty"`
+	WidthGT           *string  `json:"widthGT,omitempty"`
+	WidthGTE          *string  `json:"widthGTE,omitempty"`
+	WidthLT           *string  `json:"widthLT,omitempty"`
+	WidthLTE          *string  `json:"widthLTE,omitempty"`
+	WidthContains     *string  `json:"widthContains,omitempty"`
+	WidthHasPrefix    *string  `json:"widthHasPrefix,omitempty"`
+	WidthHasSuffix    *string  `json:"widthHasSuffix,omitempty"`
+	WidthEqualFold    *string  `json:"widthEqualFold,omitempty"`
+	WidthContainsFold *string  `json:"widthContainsFold,omitempty"`
+
+	// "disabled" field predicates.
+	Disabled    *bool `json:"disabled,omitempty"`
+	DisabledNEQ *bool `json:"disabledNEQ,omitempty"`
+
+	// "customizable" field predicates.
+	Customizable    *bool `json:"customizable,omitempty"`
+	CustomizableNEQ *bool `json:"customizableNEQ,omitempty"`
+
+	// "order" field predicates.
+	Order      *int  `json:"order,omitempty"`
+	OrderNEQ   *int  `json:"orderNEQ,omitempty"`
+	OrderIn    []int `json:"orderIn,omitempty"`
+	OrderNotIn []int `json:"orderNotIn,omitempty"`
+	OrderGT    *int  `json:"orderGT,omitempty"`
+	OrderGTE   *int  `json:"orderGTE,omitempty"`
+	OrderLT    *int  `json:"orderLT,omitempty"`
+	OrderLTE   *int  `json:"orderLTE,omitempty"`
+
+	// "created_at" field predicates.
+	CreatedAt      *time.Time  `json:"createdAt,omitempty"`
+	CreatedAtNEQ   *time.Time  `json:"createdAtNEQ,omitempty"`
+	CreatedAtIn    []time.Time `json:"createdAtIn,omitempty"`
+	CreatedAtNotIn []time.Time `json:"createdAtNotIn,omitempty"`
+	CreatedAtGT    *time.Time  `json:"createdAtGT,omitempty"`
+	CreatedAtGTE   *time.Time  `json:"createdAtGTE,omitempty"`
+	CreatedAtLT    *time.Time  `json:"createdAtLT,omitempty"`
+	CreatedAtLTE   *time.Time  `json:"createdAtLTE,omitempty"`
+
+	// "updated_at" field predicates.
+	UpdatedAt      *time.Time  `json:"updatedAt,omitempty"`
+	UpdatedAtNEQ   *time.Time  `json:"updatedAtNEQ,omitempty"`
+	UpdatedAtIn    []time.Time `json:"updatedAtIn,omitempty"`
+	UpdatedAtNotIn []time.Time `json:"updatedAtNotIn,omitempty"`
+	UpdatedAtGT    *time.Time  `json:"updatedAtGT,omitempty"`
+	UpdatedAtGTE   *time.Time  `json:"updatedAtGTE,omitempty"`
+	UpdatedAtLT    *time.Time  `json:"updatedAtLT,omitempty"`
+	UpdatedAtLTE   *time.Time  `json:"updatedAtLTE,omitempty"`
+
+	// "project" edge predicates.
+	HasProject     *bool                `json:"hasProject,omitempty"`
+	HasProjectWith []*ProjectWhereInput `json:"hasProjectWith,omitempty"`
+
+	// "task_column" edge predicates.
+	HasTaskColumn     *bool                   `json:"hasTaskColumn,omitempty"`
+	HasTaskColumnWith []*TaskColumnWhereInput `json:"hasTaskColumnWith,omitempty"`
+}
+
+// Filter applies the ProjectTaskColumnWhereInput filter on the ProjectTaskColumnQuery builder.
+func (i *ProjectTaskColumnWhereInput) Filter(q *ProjectTaskColumnQuery) (*ProjectTaskColumnQuery, error) {
+	if i == nil {
+		return q, nil
+	}
+	p, err := i.P()
+	if err != nil {
+		return nil, err
+	}
+	return q.Where(p), nil
+}
+
+// P returns a predicate for filtering projecttaskcolumns.
+// An error is returned if the input is empty or invalid.
+func (i *ProjectTaskColumnWhereInput) P() (predicate.ProjectTaskColumn, error) {
+	var predicates []predicate.ProjectTaskColumn
+	if i.Not != nil {
+		p, err := i.Not.P()
+		if err != nil {
+			return nil, err
+		}
+		predicates = append(predicates, projecttaskcolumn.Not(p))
+	}
+	switch n := len(i.Or); {
+	case n == 1:
+		p, err := i.Or[0].P()
+		if err != nil {
+			return nil, err
+		}
+		predicates = append(predicates, p)
+	case n > 1:
+		or := make([]predicate.ProjectTaskColumn, 0, n)
+		for _, w := range i.Or {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			or = append(or, p)
+		}
+		predicates = append(predicates, projecttaskcolumn.Or(or...))
+	}
+	switch n := len(i.And); {
+	case n == 1:
+		p, err := i.And[0].P()
+		if err != nil {
+			return nil, err
+		}
+		predicates = append(predicates, p)
+	case n > 1:
+		and := make([]predicate.ProjectTaskColumn, 0, n)
+		for _, w := range i.And {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			and = append(and, p)
+		}
+		predicates = append(predicates, projecttaskcolumn.And(and...))
+	}
+	if i.ID != nil {
+		predicates = append(predicates, projecttaskcolumn.IDEQ(*i.ID))
+	}
+	if i.IDNEQ != nil {
+		predicates = append(predicates, projecttaskcolumn.IDNEQ(*i.IDNEQ))
+	}
+	if len(i.IDIn) > 0 {
+		predicates = append(predicates, projecttaskcolumn.IDIn(i.IDIn...))
+	}
+	if len(i.IDNotIn) > 0 {
+		predicates = append(predicates, projecttaskcolumn.IDNotIn(i.IDNotIn...))
+	}
+	if i.IDGT != nil {
+		predicates = append(predicates, projecttaskcolumn.IDGT(*i.IDGT))
+	}
+	if i.IDGTE != nil {
+		predicates = append(predicates, projecttaskcolumn.IDGTE(*i.IDGTE))
+	}
+	if i.IDLT != nil {
+		predicates = append(predicates, projecttaskcolumn.IDLT(*i.IDLT))
+	}
+	if i.IDLTE != nil {
+		predicates = append(predicates, projecttaskcolumn.IDLTE(*i.IDLTE))
+	}
+	if i.ProjectID != nil {
+		predicates = append(predicates, projecttaskcolumn.ProjectIDEQ(*i.ProjectID))
+	}
+	if i.ProjectIDNEQ != nil {
+		predicates = append(predicates, projecttaskcolumn.ProjectIDNEQ(*i.ProjectIDNEQ))
+	}
+	if len(i.ProjectIDIn) > 0 {
+		predicates = append(predicates, projecttaskcolumn.ProjectIDIn(i.ProjectIDIn...))
+	}
+	if len(i.ProjectIDNotIn) > 0 {
+		predicates = append(predicates, projecttaskcolumn.ProjectIDNotIn(i.ProjectIDNotIn...))
+	}
+	if i.ProjectIDGT != nil {
+		predicates = append(predicates, projecttaskcolumn.ProjectIDGT(*i.ProjectIDGT))
+	}
+	if i.ProjectIDGTE != nil {
+		predicates = append(predicates, projecttaskcolumn.ProjectIDGTE(*i.ProjectIDGTE))
+	}
+	if i.ProjectIDLT != nil {
+		predicates = append(predicates, projecttaskcolumn.ProjectIDLT(*i.ProjectIDLT))
+	}
+	if i.ProjectIDLTE != nil {
+		predicates = append(predicates, projecttaskcolumn.ProjectIDLTE(*i.ProjectIDLTE))
+	}
+	if i.ProjectIDContains != nil {
+		predicates = append(predicates, projecttaskcolumn.ProjectIDContains(*i.ProjectIDContains))
+	}
+	if i.ProjectIDHasPrefix != nil {
+		predicates = append(predicates, projecttaskcolumn.ProjectIDHasPrefix(*i.ProjectIDHasPrefix))
+	}
+	if i.ProjectIDHasSuffix != nil {
+		predicates = append(predicates, projecttaskcolumn.ProjectIDHasSuffix(*i.ProjectIDHasSuffix))
+	}
+	if i.ProjectIDEqualFold != nil {
+		predicates = append(predicates, projecttaskcolumn.ProjectIDEqualFold(*i.ProjectIDEqualFold))
+	}
+	if i.ProjectIDContainsFold != nil {
+		predicates = append(predicates, projecttaskcolumn.ProjectIDContainsFold(*i.ProjectIDContainsFold))
+	}
+	if i.TaskColumnID != nil {
+		predicates = append(predicates, projecttaskcolumn.TaskColumnIDEQ(*i.TaskColumnID))
+	}
+	if i.TaskColumnIDNEQ != nil {
+		predicates = append(predicates, projecttaskcolumn.TaskColumnIDNEQ(*i.TaskColumnIDNEQ))
+	}
+	if len(i.TaskColumnIDIn) > 0 {
+		predicates = append(predicates, projecttaskcolumn.TaskColumnIDIn(i.TaskColumnIDIn...))
+	}
+	if len(i.TaskColumnIDNotIn) > 0 {
+		predicates = append(predicates, projecttaskcolumn.TaskColumnIDNotIn(i.TaskColumnIDNotIn...))
+	}
+	if i.TaskColumnIDGT != nil {
+		predicates = append(predicates, projecttaskcolumn.TaskColumnIDGT(*i.TaskColumnIDGT))
+	}
+	if i.TaskColumnIDGTE != nil {
+		predicates = append(predicates, projecttaskcolumn.TaskColumnIDGTE(*i.TaskColumnIDGTE))
+	}
+	if i.TaskColumnIDLT != nil {
+		predicates = append(predicates, projecttaskcolumn.TaskColumnIDLT(*i.TaskColumnIDLT))
+	}
+	if i.TaskColumnIDLTE != nil {
+		predicates = append(predicates, projecttaskcolumn.TaskColumnIDLTE(*i.TaskColumnIDLTE))
+	}
+	if i.TaskColumnIDContains != nil {
+		predicates = append(predicates, projecttaskcolumn.TaskColumnIDContains(*i.TaskColumnIDContains))
+	}
+	if i.TaskColumnIDHasPrefix != nil {
+		predicates = append(predicates, projecttaskcolumn.TaskColumnIDHasPrefix(*i.TaskColumnIDHasPrefix))
+	}
+	if i.TaskColumnIDHasSuffix != nil {
+		predicates = append(predicates, projecttaskcolumn.TaskColumnIDHasSuffix(*i.TaskColumnIDHasSuffix))
+	}
+	if i.TaskColumnIDEqualFold != nil {
+		predicates = append(predicates, projecttaskcolumn.TaskColumnIDEqualFold(*i.TaskColumnIDEqualFold))
+	}
+	if i.TaskColumnIDContainsFold != nil {
+		predicates = append(predicates, projecttaskcolumn.TaskColumnIDContainsFold(*i.TaskColumnIDContainsFold))
+	}
+	if i.Width != nil {
+		predicates = append(predicates, projecttaskcolumn.WidthEQ(*i.Width))
+	}
+	if i.WidthNEQ != nil {
+		predicates = append(predicates, projecttaskcolumn.WidthNEQ(*i.WidthNEQ))
+	}
+	if len(i.WidthIn) > 0 {
+		predicates = append(predicates, projecttaskcolumn.WidthIn(i.WidthIn...))
+	}
+	if len(i.WidthNotIn) > 0 {
+		predicates = append(predicates, projecttaskcolumn.WidthNotIn(i.WidthNotIn...))
+	}
+	if i.WidthGT != nil {
+		predicates = append(predicates, projecttaskcolumn.WidthGT(*i.WidthGT))
+	}
+	if i.WidthGTE != nil {
+		predicates = append(predicates, projecttaskcolumn.WidthGTE(*i.WidthGTE))
+	}
+	if i.WidthLT != nil {
+		predicates = append(predicates, projecttaskcolumn.WidthLT(*i.WidthLT))
+	}
+	if i.WidthLTE != nil {
+		predicates = append(predicates, projecttaskcolumn.WidthLTE(*i.WidthLTE))
+	}
+	if i.WidthContains != nil {
+		predicates = append(predicates, projecttaskcolumn.WidthContains(*i.WidthContains))
+	}
+	if i.WidthHasPrefix != nil {
+		predicates = append(predicates, projecttaskcolumn.WidthHasPrefix(*i.WidthHasPrefix))
+	}
+	if i.WidthHasSuffix != nil {
+		predicates = append(predicates, projecttaskcolumn.WidthHasSuffix(*i.WidthHasSuffix))
+	}
+	if i.WidthEqualFold != nil {
+		predicates = append(predicates, projecttaskcolumn.WidthEqualFold(*i.WidthEqualFold))
+	}
+	if i.WidthContainsFold != nil {
+		predicates = append(predicates, projecttaskcolumn.WidthContainsFold(*i.WidthContainsFold))
+	}
+	if i.Disabled != nil {
+		predicates = append(predicates, projecttaskcolumn.DisabledEQ(*i.Disabled))
+	}
+	if i.DisabledNEQ != nil {
+		predicates = append(predicates, projecttaskcolumn.DisabledNEQ(*i.DisabledNEQ))
+	}
+	if i.Customizable != nil {
+		predicates = append(predicates, projecttaskcolumn.CustomizableEQ(*i.Customizable))
+	}
+	if i.CustomizableNEQ != nil {
+		predicates = append(predicates, projecttaskcolumn.CustomizableNEQ(*i.CustomizableNEQ))
+	}
+	if i.Order != nil {
+		predicates = append(predicates, projecttaskcolumn.OrderEQ(*i.Order))
+	}
+	if i.OrderNEQ != nil {
+		predicates = append(predicates, projecttaskcolumn.OrderNEQ(*i.OrderNEQ))
+	}
+	if len(i.OrderIn) > 0 {
+		predicates = append(predicates, projecttaskcolumn.OrderIn(i.OrderIn...))
+	}
+	if len(i.OrderNotIn) > 0 {
+		predicates = append(predicates, projecttaskcolumn.OrderNotIn(i.OrderNotIn...))
+	}
+	if i.OrderGT != nil {
+		predicates = append(predicates, projecttaskcolumn.OrderGT(*i.OrderGT))
+	}
+	if i.OrderGTE != nil {
+		predicates = append(predicates, projecttaskcolumn.OrderGTE(*i.OrderGTE))
+	}
+	if i.OrderLT != nil {
+		predicates = append(predicates, projecttaskcolumn.OrderLT(*i.OrderLT))
+	}
+	if i.OrderLTE != nil {
+		predicates = append(predicates, projecttaskcolumn.OrderLTE(*i.OrderLTE))
+	}
+	if i.CreatedAt != nil {
+		predicates = append(predicates, projecttaskcolumn.CreatedAtEQ(*i.CreatedAt))
+	}
+	if i.CreatedAtNEQ != nil {
+		predicates = append(predicates, projecttaskcolumn.CreatedAtNEQ(*i.CreatedAtNEQ))
+	}
+	if len(i.CreatedAtIn) > 0 {
+		predicates = append(predicates, projecttaskcolumn.CreatedAtIn(i.CreatedAtIn...))
+	}
+	if len(i.CreatedAtNotIn) > 0 {
+		predicates = append(predicates, projecttaskcolumn.CreatedAtNotIn(i.CreatedAtNotIn...))
+	}
+	if i.CreatedAtGT != nil {
+		predicates = append(predicates, projecttaskcolumn.CreatedAtGT(*i.CreatedAtGT))
+	}
+	if i.CreatedAtGTE != nil {
+		predicates = append(predicates, projecttaskcolumn.CreatedAtGTE(*i.CreatedAtGTE))
+	}
+	if i.CreatedAtLT != nil {
+		predicates = append(predicates, projecttaskcolumn.CreatedAtLT(*i.CreatedAtLT))
+	}
+	if i.CreatedAtLTE != nil {
+		predicates = append(predicates, projecttaskcolumn.CreatedAtLTE(*i.CreatedAtLTE))
+	}
+	if i.UpdatedAt != nil {
+		predicates = append(predicates, projecttaskcolumn.UpdatedAtEQ(*i.UpdatedAt))
+	}
+	if i.UpdatedAtNEQ != nil {
+		predicates = append(predicates, projecttaskcolumn.UpdatedAtNEQ(*i.UpdatedAtNEQ))
+	}
+	if len(i.UpdatedAtIn) > 0 {
+		predicates = append(predicates, projecttaskcolumn.UpdatedAtIn(i.UpdatedAtIn...))
+	}
+	if len(i.UpdatedAtNotIn) > 0 {
+		predicates = append(predicates, projecttaskcolumn.UpdatedAtNotIn(i.UpdatedAtNotIn...))
+	}
+	if i.UpdatedAtGT != nil {
+		predicates = append(predicates, projecttaskcolumn.UpdatedAtGT(*i.UpdatedAtGT))
+	}
+	if i.UpdatedAtGTE != nil {
+		predicates = append(predicates, projecttaskcolumn.UpdatedAtGTE(*i.UpdatedAtGTE))
+	}
+	if i.UpdatedAtLT != nil {
+		predicates = append(predicates, projecttaskcolumn.UpdatedAtLT(*i.UpdatedAtLT))
+	}
+	if i.UpdatedAtLTE != nil {
+		predicates = append(predicates, projecttaskcolumn.UpdatedAtLTE(*i.UpdatedAtLTE))
+	}
+
+	if i.HasProject != nil {
+		p := projecttaskcolumn.HasProject()
+		if !*i.HasProject {
+			p = projecttaskcolumn.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasProjectWith) > 0 {
+		with := make([]predicate.Project, 0, len(i.HasProjectWith))
+		for _, w := range i.HasProjectWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, projecttaskcolumn.HasProjectWith(with...))
+	}
+	if i.HasTaskColumn != nil {
+		p := projecttaskcolumn.HasTaskColumn()
+		if !*i.HasTaskColumn {
+			p = projecttaskcolumn.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasTaskColumnWith) > 0 {
+		with := make([]predicate.TaskColumn, 0, len(i.HasTaskColumnWith))
+		for _, w := range i.HasTaskColumnWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, projecttaskcolumn.HasTaskColumnWith(with...))
+	}
+	switch len(predicates) {
+	case 0:
+		return nil, fmt.Errorf("project-management-demo-backend/ent: empty predicate ProjectTaskColumnWhereInput")
+	case 1:
+		return predicates[0], nil
+	default:
+		return projecttaskcolumn.And(predicates...), nil
+	}
+}
+
 // ProjectTeammateWhereInput represents a where input for filtering ProjectTeammate queries.
 type ProjectTeammateWhereInput struct {
 	Not *ProjectTeammateWhereInput   `json:"not,omitempty"`
@@ -3762,6 +4224,10 @@ type TaskColumnWhereInput struct {
 	// "teammate_task_columns" edge predicates.
 	HasTeammateTaskColumns     *bool                           `json:"hasTeammateTaskColumns,omitempty"`
 	HasTeammateTaskColumnsWith []*TeammateTaskColumnWhereInput `json:"hasTeammateTaskColumnsWith,omitempty"`
+
+	// "project_task_columns" edge predicates.
+	HasProjectTaskColumns     *bool                          `json:"hasProjectTaskColumns,omitempty"`
+	HasProjectTaskColumnsWith []*ProjectTaskColumnWhereInput `json:"hasProjectTaskColumnsWith,omitempty"`
 }
 
 // Filter applies the TaskColumnWhereInput filter on the TaskColumnQuery builder.
@@ -3964,6 +4430,24 @@ func (i *TaskColumnWhereInput) P() (predicate.TaskColumn, error) {
 			with = append(with, p)
 		}
 		predicates = append(predicates, taskcolumn.HasTeammateTaskColumnsWith(with...))
+	}
+	if i.HasProjectTaskColumns != nil {
+		p := taskcolumn.HasProjectTaskColumns()
+		if !*i.HasProjectTaskColumns {
+			p = taskcolumn.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasProjectTaskColumnsWith) > 0 {
+		with := make([]predicate.ProjectTaskColumn, 0, len(i.HasProjectTaskColumnsWith))
+		for _, w := range i.HasProjectTaskColumnsWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, taskcolumn.HasProjectTaskColumnsWith(with...))
 	}
 	switch len(predicates) {
 	case 0:

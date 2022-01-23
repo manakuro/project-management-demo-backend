@@ -15,6 +15,7 @@ import (
 	"project-management-demo-backend/ent/projectbasecolor"
 	"project-management-demo-backend/ent/projecticon"
 	"project-management-demo-backend/ent/projectlightcolor"
+	"project-management-demo-backend/ent/projecttaskcolumn"
 	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/ent/schema/editor"
 	"project-management-demo-backend/ent/schema/testuserprofile"
@@ -50,6 +51,7 @@ const (
 	TypeProjectBaseColor   = "ProjectBaseColor"
 	TypeProjectIcon        = "ProjectIcon"
 	TypeProjectLightColor  = "ProjectLightColor"
+	TypeProjectTaskColumn  = "ProjectTaskColumn"
 	TypeProjectTeammate    = "ProjectTeammate"
 	TypeTaskColumn         = "TaskColumn"
 	TypeTeammate           = "Teammate"
@@ -3040,35 +3042,38 @@ func (m *MyTasksTabStatusMutation) ResetEdge(name string) error {
 // ProjectMutation represents an operation that mutates the Project nodes in the graph.
 type ProjectMutation struct {
 	config
-	op                         Op
-	typ                        string
-	id                         *ulid.ID
-	name                       *string
-	description                *editor.Description
-	description_title          *string
-	due_date                   *time.Time
-	created_at                 *time.Time
-	updated_at                 *time.Time
-	clearedFields              map[string]struct{}
-	workspace                  *ulid.ID
-	clearedworkspace           bool
-	project_base_color         *ulid.ID
-	clearedproject_base_color  bool
-	project_light_color        *ulid.ID
-	clearedproject_light_color bool
-	project_icon               *ulid.ID
-	clearedproject_icon        bool
-	teammate                   *ulid.ID
-	clearedteammate            bool
-	project_teammates          map[ulid.ID]struct{}
-	removedproject_teammates   map[ulid.ID]struct{}
-	clearedproject_teammates   bool
-	favorite_projects          map[ulid.ID]struct{}
-	removedfavorite_projects   map[ulid.ID]struct{}
-	clearedfavorite_projects   bool
-	done                       bool
-	oldValue                   func(context.Context) (*Project, error)
-	predicates                 []predicate.Project
+	op                          Op
+	typ                         string
+	id                          *ulid.ID
+	name                        *string
+	description                 *editor.Description
+	description_title           *string
+	due_date                    *time.Time
+	created_at                  *time.Time
+	updated_at                  *time.Time
+	clearedFields               map[string]struct{}
+	workspace                   *ulid.ID
+	clearedworkspace            bool
+	project_base_color          *ulid.ID
+	clearedproject_base_color   bool
+	project_light_color         *ulid.ID
+	clearedproject_light_color  bool
+	project_icon                *ulid.ID
+	clearedproject_icon         bool
+	teammate                    *ulid.ID
+	clearedteammate             bool
+	project_teammates           map[ulid.ID]struct{}
+	removedproject_teammates    map[ulid.ID]struct{}
+	clearedproject_teammates    bool
+	favorite_projects           map[ulid.ID]struct{}
+	removedfavorite_projects    map[ulid.ID]struct{}
+	clearedfavorite_projects    bool
+	project_task_columns        map[ulid.ID]struct{}
+	removedproject_task_columns map[ulid.ID]struct{}
+	clearedproject_task_columns bool
+	done                        bool
+	oldValue                    func(context.Context) (*Project, error)
+	predicates                  []predicate.Project
 }
 
 var _ ent.Mutation = (*ProjectMutation)(nil)
@@ -3803,6 +3808,60 @@ func (m *ProjectMutation) ResetFavoriteProjects() {
 	m.removedfavorite_projects = nil
 }
 
+// AddProjectTaskColumnIDs adds the "project_task_columns" edge to the ProjectTaskColumn entity by ids.
+func (m *ProjectMutation) AddProjectTaskColumnIDs(ids ...ulid.ID) {
+	if m.project_task_columns == nil {
+		m.project_task_columns = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		m.project_task_columns[ids[i]] = struct{}{}
+	}
+}
+
+// ClearProjectTaskColumns clears the "project_task_columns" edge to the ProjectTaskColumn entity.
+func (m *ProjectMutation) ClearProjectTaskColumns() {
+	m.clearedproject_task_columns = true
+}
+
+// ProjectTaskColumnsCleared reports if the "project_task_columns" edge to the ProjectTaskColumn entity was cleared.
+func (m *ProjectMutation) ProjectTaskColumnsCleared() bool {
+	return m.clearedproject_task_columns
+}
+
+// RemoveProjectTaskColumnIDs removes the "project_task_columns" edge to the ProjectTaskColumn entity by IDs.
+func (m *ProjectMutation) RemoveProjectTaskColumnIDs(ids ...ulid.ID) {
+	if m.removedproject_task_columns == nil {
+		m.removedproject_task_columns = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		delete(m.project_task_columns, ids[i])
+		m.removedproject_task_columns[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedProjectTaskColumns returns the removed IDs of the "project_task_columns" edge to the ProjectTaskColumn entity.
+func (m *ProjectMutation) RemovedProjectTaskColumnsIDs() (ids []ulid.ID) {
+	for id := range m.removedproject_task_columns {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ProjectTaskColumnsIDs returns the "project_task_columns" edge IDs in the mutation.
+func (m *ProjectMutation) ProjectTaskColumnsIDs() (ids []ulid.ID) {
+	for id := range m.project_task_columns {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetProjectTaskColumns resets all changes to the "project_task_columns" edge.
+func (m *ProjectMutation) ResetProjectTaskColumns() {
+	m.project_task_columns = nil
+	m.clearedproject_task_columns = false
+	m.removedproject_task_columns = nil
+}
+
 // Where appends a list predicates to the ProjectMutation builder.
 func (m *ProjectMutation) Where(ps ...predicate.Project) {
 	m.predicates = append(m.predicates, ps...)
@@ -4091,7 +4150,7 @@ func (m *ProjectMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *ProjectMutation) AddedEdges() []string {
-	edges := make([]string, 0, 7)
+	edges := make([]string, 0, 8)
 	if m.workspace != nil {
 		edges = append(edges, project.EdgeWorkspace)
 	}
@@ -4112,6 +4171,9 @@ func (m *ProjectMutation) AddedEdges() []string {
 	}
 	if m.favorite_projects != nil {
 		edges = append(edges, project.EdgeFavoriteProjects)
+	}
+	if m.project_task_columns != nil {
+		edges = append(edges, project.EdgeProjectTaskColumns)
 	}
 	return edges
 }
@@ -4152,18 +4214,27 @@ func (m *ProjectMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case project.EdgeProjectTaskColumns:
+		ids := make([]ent.Value, 0, len(m.project_task_columns))
+		for id := range m.project_task_columns {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *ProjectMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 7)
+	edges := make([]string, 0, 8)
 	if m.removedproject_teammates != nil {
 		edges = append(edges, project.EdgeProjectTeammates)
 	}
 	if m.removedfavorite_projects != nil {
 		edges = append(edges, project.EdgeFavoriteProjects)
+	}
+	if m.removedproject_task_columns != nil {
+		edges = append(edges, project.EdgeProjectTaskColumns)
 	}
 	return edges
 }
@@ -4184,13 +4255,19 @@ func (m *ProjectMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case project.EdgeProjectTaskColumns:
+		ids := make([]ent.Value, 0, len(m.removedproject_task_columns))
+		for id := range m.removedproject_task_columns {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *ProjectMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 7)
+	edges := make([]string, 0, 8)
 	if m.clearedworkspace {
 		edges = append(edges, project.EdgeWorkspace)
 	}
@@ -4211,6 +4288,9 @@ func (m *ProjectMutation) ClearedEdges() []string {
 	}
 	if m.clearedfavorite_projects {
 		edges = append(edges, project.EdgeFavoriteProjects)
+	}
+	if m.clearedproject_task_columns {
+		edges = append(edges, project.EdgeProjectTaskColumns)
 	}
 	return edges
 }
@@ -4233,6 +4313,8 @@ func (m *ProjectMutation) EdgeCleared(name string) bool {
 		return m.clearedproject_teammates
 	case project.EdgeFavoriteProjects:
 		return m.clearedfavorite_projects
+	case project.EdgeProjectTaskColumns:
+		return m.clearedproject_task_columns
 	}
 	return false
 }
@@ -4284,6 +4366,9 @@ func (m *ProjectMutation) ResetEdge(name string) error {
 		return nil
 	case project.EdgeFavoriteProjects:
 		m.ResetFavoriteProjects()
+		return nil
+	case project.EdgeProjectTaskColumns:
+		m.ResetProjectTaskColumns()
 		return nil
 	}
 	return fmt.Errorf("unknown Project edge %s", name)
@@ -5921,6 +6006,818 @@ func (m *ProjectLightColorMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown ProjectLightColor edge %s", name)
 }
 
+// ProjectTaskColumnMutation represents an operation that mutates the ProjectTaskColumn nodes in the graph.
+type ProjectTaskColumnMutation struct {
+	config
+	op                 Op
+	typ                string
+	id                 *ulid.ID
+	width              *string
+	disabled           *bool
+	customizable       *bool
+	_order             *int
+	add_order          *int
+	created_at         *time.Time
+	updated_at         *time.Time
+	clearedFields      map[string]struct{}
+	project            *ulid.ID
+	clearedproject     bool
+	task_column        *ulid.ID
+	clearedtask_column bool
+	done               bool
+	oldValue           func(context.Context) (*ProjectTaskColumn, error)
+	predicates         []predicate.ProjectTaskColumn
+}
+
+var _ ent.Mutation = (*ProjectTaskColumnMutation)(nil)
+
+// projecttaskcolumnOption allows management of the mutation configuration using functional options.
+type projecttaskcolumnOption func(*ProjectTaskColumnMutation)
+
+// newProjectTaskColumnMutation creates new mutation for the ProjectTaskColumn entity.
+func newProjectTaskColumnMutation(c config, op Op, opts ...projecttaskcolumnOption) *ProjectTaskColumnMutation {
+	m := &ProjectTaskColumnMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeProjectTaskColumn,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withProjectTaskColumnID sets the ID field of the mutation.
+func withProjectTaskColumnID(id ulid.ID) projecttaskcolumnOption {
+	return func(m *ProjectTaskColumnMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *ProjectTaskColumn
+		)
+		m.oldValue = func(ctx context.Context) (*ProjectTaskColumn, error) {
+			once.Do(func() {
+				if m.done {
+					err = fmt.Errorf("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().ProjectTaskColumn.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withProjectTaskColumn sets the old ProjectTaskColumn of the mutation.
+func withProjectTaskColumn(node *ProjectTaskColumn) projecttaskcolumnOption {
+	return func(m *ProjectTaskColumnMutation) {
+		m.oldValue = func(context.Context) (*ProjectTaskColumn, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m ProjectTaskColumnMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m ProjectTaskColumnMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, fmt.Errorf("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of ProjectTaskColumn entities.
+func (m *ProjectTaskColumnMutation) SetID(id ulid.ID) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *ProjectTaskColumnMutation) ID() (id ulid.ID, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// SetProjectID sets the "project_id" field.
+func (m *ProjectTaskColumnMutation) SetProjectID(u ulid.ID) {
+	m.project = &u
+}
+
+// ProjectID returns the value of the "project_id" field in the mutation.
+func (m *ProjectTaskColumnMutation) ProjectID() (r ulid.ID, exists bool) {
+	v := m.project
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldProjectID returns the old "project_id" field's value of the ProjectTaskColumn entity.
+// If the ProjectTaskColumn object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProjectTaskColumnMutation) OldProjectID(ctx context.Context) (v ulid.ID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldProjectID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldProjectID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldProjectID: %w", err)
+	}
+	return oldValue.ProjectID, nil
+}
+
+// ResetProjectID resets all changes to the "project_id" field.
+func (m *ProjectTaskColumnMutation) ResetProjectID() {
+	m.project = nil
+}
+
+// SetTaskColumnID sets the "task_column_id" field.
+func (m *ProjectTaskColumnMutation) SetTaskColumnID(u ulid.ID) {
+	m.task_column = &u
+}
+
+// TaskColumnID returns the value of the "task_column_id" field in the mutation.
+func (m *ProjectTaskColumnMutation) TaskColumnID() (r ulid.ID, exists bool) {
+	v := m.task_column
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTaskColumnID returns the old "task_column_id" field's value of the ProjectTaskColumn entity.
+// If the ProjectTaskColumn object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProjectTaskColumnMutation) OldTaskColumnID(ctx context.Context) (v ulid.ID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldTaskColumnID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldTaskColumnID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTaskColumnID: %w", err)
+	}
+	return oldValue.TaskColumnID, nil
+}
+
+// ResetTaskColumnID resets all changes to the "task_column_id" field.
+func (m *ProjectTaskColumnMutation) ResetTaskColumnID() {
+	m.task_column = nil
+}
+
+// SetWidth sets the "width" field.
+func (m *ProjectTaskColumnMutation) SetWidth(s string) {
+	m.width = &s
+}
+
+// Width returns the value of the "width" field in the mutation.
+func (m *ProjectTaskColumnMutation) Width() (r string, exists bool) {
+	v := m.width
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldWidth returns the old "width" field's value of the ProjectTaskColumn entity.
+// If the ProjectTaskColumn object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProjectTaskColumnMutation) OldWidth(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldWidth is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldWidth requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldWidth: %w", err)
+	}
+	return oldValue.Width, nil
+}
+
+// ResetWidth resets all changes to the "width" field.
+func (m *ProjectTaskColumnMutation) ResetWidth() {
+	m.width = nil
+}
+
+// SetDisabled sets the "disabled" field.
+func (m *ProjectTaskColumnMutation) SetDisabled(b bool) {
+	m.disabled = &b
+}
+
+// Disabled returns the value of the "disabled" field in the mutation.
+func (m *ProjectTaskColumnMutation) Disabled() (r bool, exists bool) {
+	v := m.disabled
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDisabled returns the old "disabled" field's value of the ProjectTaskColumn entity.
+// If the ProjectTaskColumn object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProjectTaskColumnMutation) OldDisabled(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldDisabled is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldDisabled requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDisabled: %w", err)
+	}
+	return oldValue.Disabled, nil
+}
+
+// ResetDisabled resets all changes to the "disabled" field.
+func (m *ProjectTaskColumnMutation) ResetDisabled() {
+	m.disabled = nil
+}
+
+// SetCustomizable sets the "customizable" field.
+func (m *ProjectTaskColumnMutation) SetCustomizable(b bool) {
+	m.customizable = &b
+}
+
+// Customizable returns the value of the "customizable" field in the mutation.
+func (m *ProjectTaskColumnMutation) Customizable() (r bool, exists bool) {
+	v := m.customizable
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCustomizable returns the old "customizable" field's value of the ProjectTaskColumn entity.
+// If the ProjectTaskColumn object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProjectTaskColumnMutation) OldCustomizable(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldCustomizable is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldCustomizable requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCustomizable: %w", err)
+	}
+	return oldValue.Customizable, nil
+}
+
+// ResetCustomizable resets all changes to the "customizable" field.
+func (m *ProjectTaskColumnMutation) ResetCustomizable() {
+	m.customizable = nil
+}
+
+// SetOrder sets the "order" field.
+func (m *ProjectTaskColumnMutation) SetOrder(i int) {
+	m._order = &i
+	m.add_order = nil
+}
+
+// Order returns the value of the "order" field in the mutation.
+func (m *ProjectTaskColumnMutation) Order() (r int, exists bool) {
+	v := m._order
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldOrder returns the old "order" field's value of the ProjectTaskColumn entity.
+// If the ProjectTaskColumn object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProjectTaskColumnMutation) OldOrder(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldOrder is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldOrder requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldOrder: %w", err)
+	}
+	return oldValue.Order, nil
+}
+
+// AddOrder adds i to the "order" field.
+func (m *ProjectTaskColumnMutation) AddOrder(i int) {
+	if m.add_order != nil {
+		*m.add_order += i
+	} else {
+		m.add_order = &i
+	}
+}
+
+// AddedOrder returns the value that was added to the "order" field in this mutation.
+func (m *ProjectTaskColumnMutation) AddedOrder() (r int, exists bool) {
+	v := m.add_order
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetOrder resets all changes to the "order" field.
+func (m *ProjectTaskColumnMutation) ResetOrder() {
+	m._order = nil
+	m.add_order = nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *ProjectTaskColumnMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *ProjectTaskColumnMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the ProjectTaskColumn entity.
+// If the ProjectTaskColumn object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProjectTaskColumnMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *ProjectTaskColumnMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *ProjectTaskColumnMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *ProjectTaskColumnMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the ProjectTaskColumn entity.
+// If the ProjectTaskColumn object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProjectTaskColumnMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *ProjectTaskColumnMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// ClearProject clears the "project" edge to the Project entity.
+func (m *ProjectTaskColumnMutation) ClearProject() {
+	m.clearedproject = true
+}
+
+// ProjectCleared reports if the "project" edge to the Project entity was cleared.
+func (m *ProjectTaskColumnMutation) ProjectCleared() bool {
+	return m.clearedproject
+}
+
+// ProjectIDs returns the "project" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// ProjectID instead. It exists only for internal usage by the builders.
+func (m *ProjectTaskColumnMutation) ProjectIDs() (ids []ulid.ID) {
+	if id := m.project; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetProject resets all changes to the "project" edge.
+func (m *ProjectTaskColumnMutation) ResetProject() {
+	m.project = nil
+	m.clearedproject = false
+}
+
+// ClearTaskColumn clears the "task_column" edge to the TaskColumn entity.
+func (m *ProjectTaskColumnMutation) ClearTaskColumn() {
+	m.clearedtask_column = true
+}
+
+// TaskColumnCleared reports if the "task_column" edge to the TaskColumn entity was cleared.
+func (m *ProjectTaskColumnMutation) TaskColumnCleared() bool {
+	return m.clearedtask_column
+}
+
+// TaskColumnIDs returns the "task_column" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// TaskColumnID instead. It exists only for internal usage by the builders.
+func (m *ProjectTaskColumnMutation) TaskColumnIDs() (ids []ulid.ID) {
+	if id := m.task_column; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetTaskColumn resets all changes to the "task_column" edge.
+func (m *ProjectTaskColumnMutation) ResetTaskColumn() {
+	m.task_column = nil
+	m.clearedtask_column = false
+}
+
+// Where appends a list predicates to the ProjectTaskColumnMutation builder.
+func (m *ProjectTaskColumnMutation) Where(ps ...predicate.ProjectTaskColumn) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// Op returns the operation name.
+func (m *ProjectTaskColumnMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (ProjectTaskColumn).
+func (m *ProjectTaskColumnMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *ProjectTaskColumnMutation) Fields() []string {
+	fields := make([]string, 0, 8)
+	if m.project != nil {
+		fields = append(fields, projecttaskcolumn.FieldProjectID)
+	}
+	if m.task_column != nil {
+		fields = append(fields, projecttaskcolumn.FieldTaskColumnID)
+	}
+	if m.width != nil {
+		fields = append(fields, projecttaskcolumn.FieldWidth)
+	}
+	if m.disabled != nil {
+		fields = append(fields, projecttaskcolumn.FieldDisabled)
+	}
+	if m.customizable != nil {
+		fields = append(fields, projecttaskcolumn.FieldCustomizable)
+	}
+	if m._order != nil {
+		fields = append(fields, projecttaskcolumn.FieldOrder)
+	}
+	if m.created_at != nil {
+		fields = append(fields, projecttaskcolumn.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, projecttaskcolumn.FieldUpdatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *ProjectTaskColumnMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case projecttaskcolumn.FieldProjectID:
+		return m.ProjectID()
+	case projecttaskcolumn.FieldTaskColumnID:
+		return m.TaskColumnID()
+	case projecttaskcolumn.FieldWidth:
+		return m.Width()
+	case projecttaskcolumn.FieldDisabled:
+		return m.Disabled()
+	case projecttaskcolumn.FieldCustomizable:
+		return m.Customizable()
+	case projecttaskcolumn.FieldOrder:
+		return m.Order()
+	case projecttaskcolumn.FieldCreatedAt:
+		return m.CreatedAt()
+	case projecttaskcolumn.FieldUpdatedAt:
+		return m.UpdatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *ProjectTaskColumnMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case projecttaskcolumn.FieldProjectID:
+		return m.OldProjectID(ctx)
+	case projecttaskcolumn.FieldTaskColumnID:
+		return m.OldTaskColumnID(ctx)
+	case projecttaskcolumn.FieldWidth:
+		return m.OldWidth(ctx)
+	case projecttaskcolumn.FieldDisabled:
+		return m.OldDisabled(ctx)
+	case projecttaskcolumn.FieldCustomizable:
+		return m.OldCustomizable(ctx)
+	case projecttaskcolumn.FieldOrder:
+		return m.OldOrder(ctx)
+	case projecttaskcolumn.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case projecttaskcolumn.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown ProjectTaskColumn field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ProjectTaskColumnMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case projecttaskcolumn.FieldProjectID:
+		v, ok := value.(ulid.ID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetProjectID(v)
+		return nil
+	case projecttaskcolumn.FieldTaskColumnID:
+		v, ok := value.(ulid.ID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTaskColumnID(v)
+		return nil
+	case projecttaskcolumn.FieldWidth:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetWidth(v)
+		return nil
+	case projecttaskcolumn.FieldDisabled:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDisabled(v)
+		return nil
+	case projecttaskcolumn.FieldCustomizable:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCustomizable(v)
+		return nil
+	case projecttaskcolumn.FieldOrder:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetOrder(v)
+		return nil
+	case projecttaskcolumn.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case projecttaskcolumn.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown ProjectTaskColumn field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *ProjectTaskColumnMutation) AddedFields() []string {
+	var fields []string
+	if m.add_order != nil {
+		fields = append(fields, projecttaskcolumn.FieldOrder)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *ProjectTaskColumnMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case projecttaskcolumn.FieldOrder:
+		return m.AddedOrder()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ProjectTaskColumnMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case projecttaskcolumn.FieldOrder:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddOrder(v)
+		return nil
+	}
+	return fmt.Errorf("unknown ProjectTaskColumn numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *ProjectTaskColumnMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *ProjectTaskColumnMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *ProjectTaskColumnMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown ProjectTaskColumn nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *ProjectTaskColumnMutation) ResetField(name string) error {
+	switch name {
+	case projecttaskcolumn.FieldProjectID:
+		m.ResetProjectID()
+		return nil
+	case projecttaskcolumn.FieldTaskColumnID:
+		m.ResetTaskColumnID()
+		return nil
+	case projecttaskcolumn.FieldWidth:
+		m.ResetWidth()
+		return nil
+	case projecttaskcolumn.FieldDisabled:
+		m.ResetDisabled()
+		return nil
+	case projecttaskcolumn.FieldCustomizable:
+		m.ResetCustomizable()
+		return nil
+	case projecttaskcolumn.FieldOrder:
+		m.ResetOrder()
+		return nil
+	case projecttaskcolumn.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case projecttaskcolumn.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown ProjectTaskColumn field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *ProjectTaskColumnMutation) AddedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.project != nil {
+		edges = append(edges, projecttaskcolumn.EdgeProject)
+	}
+	if m.task_column != nil {
+		edges = append(edges, projecttaskcolumn.EdgeTaskColumn)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *ProjectTaskColumnMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case projecttaskcolumn.EdgeProject:
+		if id := m.project; id != nil {
+			return []ent.Value{*id}
+		}
+	case projecttaskcolumn.EdgeTaskColumn:
+		if id := m.task_column; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *ProjectTaskColumnMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 2)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *ProjectTaskColumnMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *ProjectTaskColumnMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.clearedproject {
+		edges = append(edges, projecttaskcolumn.EdgeProject)
+	}
+	if m.clearedtask_column {
+		edges = append(edges, projecttaskcolumn.EdgeTaskColumn)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *ProjectTaskColumnMutation) EdgeCleared(name string) bool {
+	switch name {
+	case projecttaskcolumn.EdgeProject:
+		return m.clearedproject
+	case projecttaskcolumn.EdgeTaskColumn:
+		return m.clearedtask_column
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *ProjectTaskColumnMutation) ClearEdge(name string) error {
+	switch name {
+	case projecttaskcolumn.EdgeProject:
+		m.ClearProject()
+		return nil
+	case projecttaskcolumn.EdgeTaskColumn:
+		m.ClearTaskColumn()
+		return nil
+	}
+	return fmt.Errorf("unknown ProjectTaskColumn unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *ProjectTaskColumnMutation) ResetEdge(name string) error {
+	switch name {
+	case projecttaskcolumn.EdgeProject:
+		m.ResetProject()
+		return nil
+	case projecttaskcolumn.EdgeTaskColumn:
+		m.ResetTaskColumn()
+		return nil
+	}
+	return fmt.Errorf("unknown ProjectTaskColumn edge %s", name)
+}
+
 // ProjectTeammateMutation represents an operation that mutates the ProjectTeammate nodes in the graph.
 type ProjectTeammateMutation struct {
 	config
@@ -6603,6 +7500,9 @@ type TaskColumnMutation struct {
 	teammate_task_columns        map[ulid.ID]struct{}
 	removedteammate_task_columns map[ulid.ID]struct{}
 	clearedteammate_task_columns bool
+	project_task_columns         map[ulid.ID]struct{}
+	removedproject_task_columns  map[ulid.ID]struct{}
+	clearedproject_task_columns  bool
 	done                         bool
 	oldValue                     func(context.Context) (*TaskColumn, error)
 	predicates                   []predicate.TaskColumn
@@ -6891,6 +7791,60 @@ func (m *TaskColumnMutation) ResetTeammateTaskColumns() {
 	m.removedteammate_task_columns = nil
 }
 
+// AddProjectTaskColumnIDs adds the "project_task_columns" edge to the ProjectTaskColumn entity by ids.
+func (m *TaskColumnMutation) AddProjectTaskColumnIDs(ids ...ulid.ID) {
+	if m.project_task_columns == nil {
+		m.project_task_columns = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		m.project_task_columns[ids[i]] = struct{}{}
+	}
+}
+
+// ClearProjectTaskColumns clears the "project_task_columns" edge to the ProjectTaskColumn entity.
+func (m *TaskColumnMutation) ClearProjectTaskColumns() {
+	m.clearedproject_task_columns = true
+}
+
+// ProjectTaskColumnsCleared reports if the "project_task_columns" edge to the ProjectTaskColumn entity was cleared.
+func (m *TaskColumnMutation) ProjectTaskColumnsCleared() bool {
+	return m.clearedproject_task_columns
+}
+
+// RemoveProjectTaskColumnIDs removes the "project_task_columns" edge to the ProjectTaskColumn entity by IDs.
+func (m *TaskColumnMutation) RemoveProjectTaskColumnIDs(ids ...ulid.ID) {
+	if m.removedproject_task_columns == nil {
+		m.removedproject_task_columns = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		delete(m.project_task_columns, ids[i])
+		m.removedproject_task_columns[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedProjectTaskColumns returns the removed IDs of the "project_task_columns" edge to the ProjectTaskColumn entity.
+func (m *TaskColumnMutation) RemovedProjectTaskColumnsIDs() (ids []ulid.ID) {
+	for id := range m.removedproject_task_columns {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ProjectTaskColumnsIDs returns the "project_task_columns" edge IDs in the mutation.
+func (m *TaskColumnMutation) ProjectTaskColumnsIDs() (ids []ulid.ID) {
+	for id := range m.project_task_columns {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetProjectTaskColumns resets all changes to the "project_task_columns" edge.
+func (m *TaskColumnMutation) ResetProjectTaskColumns() {
+	m.project_task_columns = nil
+	m.clearedproject_task_columns = false
+	m.removedproject_task_columns = nil
+}
+
 // Where appends a list predicates to the TaskColumnMutation builder.
 func (m *TaskColumnMutation) Where(ps ...predicate.TaskColumn) {
 	m.predicates = append(m.predicates, ps...)
@@ -7060,9 +8014,12 @@ func (m *TaskColumnMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *TaskColumnMutation) AddedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.teammate_task_columns != nil {
 		edges = append(edges, taskcolumn.EdgeTeammateTaskColumns)
+	}
+	if m.project_task_columns != nil {
+		edges = append(edges, taskcolumn.EdgeProjectTaskColumns)
 	}
 	return edges
 }
@@ -7077,15 +8034,24 @@ func (m *TaskColumnMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case taskcolumn.EdgeProjectTaskColumns:
+		ids := make([]ent.Value, 0, len(m.project_task_columns))
+		for id := range m.project_task_columns {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *TaskColumnMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.removedteammate_task_columns != nil {
 		edges = append(edges, taskcolumn.EdgeTeammateTaskColumns)
+	}
+	if m.removedproject_task_columns != nil {
+		edges = append(edges, taskcolumn.EdgeProjectTaskColumns)
 	}
 	return edges
 }
@@ -7100,15 +8066,24 @@ func (m *TaskColumnMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case taskcolumn.EdgeProjectTaskColumns:
+		ids := make([]ent.Value, 0, len(m.removedproject_task_columns))
+		for id := range m.removedproject_task_columns {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *TaskColumnMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.clearedteammate_task_columns {
 		edges = append(edges, taskcolumn.EdgeTeammateTaskColumns)
+	}
+	if m.clearedproject_task_columns {
+		edges = append(edges, taskcolumn.EdgeProjectTaskColumns)
 	}
 	return edges
 }
@@ -7119,6 +8094,8 @@ func (m *TaskColumnMutation) EdgeCleared(name string) bool {
 	switch name {
 	case taskcolumn.EdgeTeammateTaskColumns:
 		return m.clearedteammate_task_columns
+	case taskcolumn.EdgeProjectTaskColumns:
+		return m.clearedproject_task_columns
 	}
 	return false
 }
@@ -7137,6 +8114,9 @@ func (m *TaskColumnMutation) ResetEdge(name string) error {
 	switch name {
 	case taskcolumn.EdgeTeammateTaskColumns:
 		m.ResetTeammateTaskColumns()
+		return nil
+	case taskcolumn.EdgeProjectTaskColumns:
+		m.ResetProjectTaskColumns()
 		return nil
 	}
 	return fmt.Errorf("unknown TaskColumn edge %s", name)
