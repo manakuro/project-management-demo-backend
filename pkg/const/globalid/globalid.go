@@ -12,6 +12,7 @@ import (
 	"project-management-demo-backend/ent/projectbasecolor"
 	"project-management-demo-backend/ent/projecticon"
 	"project-management-demo-backend/ent/projectlightcolor"
+	"project-management-demo-backend/ent/projecttaskcolumn"
 	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/ent/taskcolumn"
 	"project-management-demo-backend/ent/teammate"
@@ -124,7 +125,7 @@ func New() GlobalIDs {
 		},
 		ProjectTaskColumn: field{
 			Prefix: "0APR",
-			Table:  teammatetaskcolumn.Table,
+			Table:  projecttaskcolumn.Table,
 		},
 	}
 }

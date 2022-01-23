@@ -3,6 +3,8 @@ enum TaskColumnType {
   ASSIGNEE
   DUE_DATE
   PROJECT
+  PROJECTS
+  PRIORITY
   TAGS
   CUSTOM
 }

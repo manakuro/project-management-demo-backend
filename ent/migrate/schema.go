@@ -304,7 +304,7 @@ var (
 	TaskColumnsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString},
 		{Name: "name", Type: field.TypeString, Size: 255},
-		{Name: "type", Type: field.TypeEnum, Enums: []string{"TASK_NAME", "ASSIGNEE", "DUE_DATE", "PROJECT", "TAGS", "CUSTOM"}},
+		{Name: "type", Type: field.TypeEnum, Enums: []string{"TASK_NAME", "ASSIGNEE", "DUE_DATE", "PROJECT", "PROJECTS", "PRIORITY", "TAGS", "CUSTOM"}},
 		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
 		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
 	}

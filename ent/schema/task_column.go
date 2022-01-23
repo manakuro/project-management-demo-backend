@@ -35,6 +35,8 @@ func (TaskColumnMixin) Fields() []ent.Field {
 				"Assignee", "ASSIGNEE",
 				"DueDate", "DUE_DATE",
 				"Project", "PROJECT",
+				"Projects", "PROJECTS",
+				"Priority", "PRIORITY",
 				"Tags", "TAGS",
 				"Custom", "CUSTOM",
 			),

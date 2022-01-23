@@ -35,6 +35,7 @@ func main() {
 	feed.FavoriteWorkspace(ctx, client)
 	feed.MyTasksTabStatus(ctx, client)
 	feed.TeammateTaskColumn(ctx, client)
+	feed.ProjectTaskColumn(ctx, client)
 
 	feed.TestUser(ctx, client)
 	feed.TestTodo(ctx, client)
