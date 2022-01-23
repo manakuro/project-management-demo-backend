@@ -48,6 +48,8 @@ const (
 	EdgeProjectTeammates = "project_teammates"
 	// EdgeFavoriteProjects holds the string denoting the favorite_projects edge name in mutations.
 	EdgeFavoriteProjects = "favorite_projects"
+	// EdgeProjectTaskColumns holds the string denoting the project_task_columns edge name in mutations.
+	EdgeProjectTaskColumns = "project_task_columns"
 	// Table holds the table name of the project in the database.
 	Table = "projects"
 	// WorkspaceTable is the table that holds the workspace relation/edge.
@@ -99,6 +101,13 @@ const (
 	FavoriteProjectsInverseTable = "favorite_projects"
 	// FavoriteProjectsColumn is the table column denoting the favorite_projects relation/edge.
 	FavoriteProjectsColumn = "project_id"
+	// ProjectTaskColumnsTable is the table that holds the project_task_columns relation/edge.
+	ProjectTaskColumnsTable = "project_task_columns"
+	// ProjectTaskColumnsInverseTable is the table name for the ProjectTaskColumn entity.
+	// It exists in this package in order to avoid circular dependency with the "projecttaskcolumn" package.
+	ProjectTaskColumnsInverseTable = "project_task_columns"
+	// ProjectTaskColumnsColumn is the table column denoting the project_task_columns relation/edge.
+	ProjectTaskColumnsColumn = "project_id"
 )
 
 // Columns holds all SQL columns for project fields.

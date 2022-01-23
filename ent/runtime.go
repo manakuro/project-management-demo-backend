@@ -12,6 +12,7 @@ import (
 	"project-management-demo-backend/ent/projectbasecolor"
 	"project-management-demo-backend/ent/projecticon"
 	"project-management-demo-backend/ent/projectlightcolor"
+	"project-management-demo-backend/ent/projecttaskcolumn"
 	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/ent/schema"
 	"project-management-demo-backend/ent/schema/ulid"
@@ -324,6 +325,45 @@ func init() {
 	projectlightcolorDescID := projectlightcolorMixinFields0[0].Descriptor()
 	// projectlightcolor.DefaultID holds the default value on creation for the id field.
 	projectlightcolor.DefaultID = projectlightcolorDescID.Default.(func() ulid.ID)
+	projecttaskcolumnMixin := schema.ProjectTaskColumn{}.Mixin()
+	projecttaskcolumnMixinFields0 := projecttaskcolumnMixin[0].Fields()
+	_ = projecttaskcolumnMixinFields0
+	projecttaskcolumnMixinFields1 := projecttaskcolumnMixin[1].Fields()
+	_ = projecttaskcolumnMixinFields1
+	projecttaskcolumnMixinFields2 := projecttaskcolumnMixin[2].Fields()
+	_ = projecttaskcolumnMixinFields2
+	projecttaskcolumnFields := schema.ProjectTaskColumn{}.Fields()
+	_ = projecttaskcolumnFields
+	// projecttaskcolumnDescWidth is the schema descriptor for width field.
+	projecttaskcolumnDescWidth := projecttaskcolumnMixinFields1[2].Descriptor()
+	// projecttaskcolumn.WidthValidator is a validator for the "width" field. It is called by the builders before save.
+	projecttaskcolumn.WidthValidator = func() func(string) error {
+		validators := projecttaskcolumnDescWidth.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(width string) error {
+			for _, fn := range fns {
+				if err := fn(width); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// projecttaskcolumnDescCreatedAt is the schema descriptor for created_at field.
+	projecttaskcolumnDescCreatedAt := projecttaskcolumnMixinFields2[0].Descriptor()
+	// projecttaskcolumn.DefaultCreatedAt holds the default value on creation for the created_at field.
+	projecttaskcolumn.DefaultCreatedAt = projecttaskcolumnDescCreatedAt.Default.(func() time.Time)
+	// projecttaskcolumnDescUpdatedAt is the schema descriptor for updated_at field.
+	projecttaskcolumnDescUpdatedAt := projecttaskcolumnMixinFields2[1].Descriptor()
+	// projecttaskcolumn.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	projecttaskcolumn.DefaultUpdatedAt = projecttaskcolumnDescUpdatedAt.Default.(func() time.Time)
+	// projecttaskcolumnDescID is the schema descriptor for id field.
+	projecttaskcolumnDescID := projecttaskcolumnMixinFields0[0].Descriptor()
+	// projecttaskcolumn.DefaultID holds the default value on creation for the id field.
+	projecttaskcolumn.DefaultID = projecttaskcolumnDescID.Default.(func() ulid.ID)
 	projectteammateMixin := schema.ProjectTeammate{}.Mixin()
 	projectteammateMixinFields0 := projectteammateMixin[0].Fields()
 	_ = projectteammateMixinFields0

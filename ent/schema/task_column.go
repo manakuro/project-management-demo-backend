@@ -50,6 +50,13 @@ func (TaskColumn) Edges() []ent.Edge {
 					annotation.Edge{FieldName: "teammate_task_column_id"},
 				),
 			),
+
+		edge.To("project_task_columns", ProjectTaskColumn.Type).
+			Annotations(
+				schema.Annotation(
+					annotation.Edge{FieldName: "project_task_column_id"},
+				),
+			),
 	}
 }
 

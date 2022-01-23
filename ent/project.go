@@ -67,9 +67,11 @@ type ProjectEdges struct {
 	ProjectTeammates []*ProjectTeammate `json:"project_teammates,omitempty"`
 	// FavoriteProjects holds the value of the favorite_projects edge.
 	FavoriteProjects []*FavoriteProject `json:"favorite_projects,omitempty"`
+	// ProjectTaskColumns holds the value of the project_task_columns edge.
+	ProjectTaskColumns []*ProjectTaskColumn `json:"project_task_columns,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [7]bool
+	loadedTypes [8]bool
 }
 
 // WorkspaceOrErr returns the Workspace value or an error if the edge
@@ -158,6 +160,15 @@ func (e ProjectEdges) FavoriteProjectsOrErr() ([]*FavoriteProject, error) {
 		return e.FavoriteProjects, nil
 	}
 	return nil, &NotLoadedError{edge: "favorite_projects"}
+}
+
+// ProjectTaskColumnsOrErr returns the ProjectTaskColumns value or an error if the edge
+// was not loaded in eager-loading.
+func (e ProjectEdges) ProjectTaskColumnsOrErr() ([]*ProjectTaskColumn, error) {
+	if e.loadedTypes[7] {
+		return e.ProjectTaskColumns, nil
+	}
+	return nil, &NotLoadedError{edge: "project_task_columns"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -300,6 +311,11 @@ func (pr *Project) QueryProjectTeammates() *ProjectTeammateQuery {
 // QueryFavoriteProjects queries the "favorite_projects" edge of the Project entity.
 func (pr *Project) QueryFavoriteProjects() *FavoriteProjectQuery {
 	return (&ProjectClient{config: pr.config}).QueryFavoriteProjects(pr)
+}
+
+// QueryProjectTaskColumns queries the "project_task_columns" edge of the Project entity.
+func (pr *Project) QueryProjectTaskColumns() *ProjectTaskColumnQuery {
+	return (&ProjectClient{config: pr.config}).QueryProjectTaskColumns(pr)
 }
 
 // Update returns a builder for updating this Project.

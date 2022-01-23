@@ -47,6 +47,7 @@ type GlobalIDs struct {
 	MyTasksTabStatus   field
 	TaskColumn         field
 	TeammateTaskColumn field
+	ProjectTaskColumn  field
 }
 
 // New generates a map object that is intended to be used as global identification for node interface query.
@@ -119,6 +120,10 @@ func New() GlobalIDs {
 		},
 		TeammateTaskColumn: field{
 			Prefix: "0APQ",
+			Table:  teammatetaskcolumn.Table,
+		},
+		ProjectTaskColumn: field{
+			Prefix: "0APR",
 			Table:  teammatetaskcolumn.Table,
 		},
 	}

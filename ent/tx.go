@@ -30,6 +30,8 @@ type Tx struct {
 	ProjectIcon *ProjectIconClient
 	// ProjectLightColor is the client for interacting with the ProjectLightColor builders.
 	ProjectLightColor *ProjectLightColorClient
+	// ProjectTaskColumn is the client for interacting with the ProjectTaskColumn builders.
+	ProjectTaskColumn *ProjectTaskColumnClient
 	// ProjectTeammate is the client for interacting with the ProjectTeammate builders.
 	ProjectTeammate *ProjectTeammateClient
 	// TaskColumn is the client for interacting with the TaskColumn builders.
@@ -190,6 +192,7 @@ func (tx *Tx) init() {
 	tx.ProjectBaseColor = NewProjectBaseColorClient(tx.config)
 	tx.ProjectIcon = NewProjectIconClient(tx.config)
 	tx.ProjectLightColor = NewProjectLightColorClient(tx.config)
+	tx.ProjectTaskColumn = NewProjectTaskColumnClient(tx.config)
 	tx.ProjectTeammate = NewProjectTeammateClient(tx.config)
 	tx.TaskColumn = NewTaskColumnClient(tx.config)
 	tx.Teammate = NewTeammateClient(tx.config)

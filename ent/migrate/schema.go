@@ -238,6 +238,38 @@ var (
 			},
 		},
 	}
+	// ProjectTaskColumnsColumns holds the columns for the "project_task_columns" table.
+	ProjectTaskColumnsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+		{Name: "width", Type: field.TypeString, Size: 255},
+		{Name: "disabled", Type: field.TypeBool},
+		{Name: "customizable", Type: field.TypeBool},
+		{Name: "order", Type: field.TypeInt},
+		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
+		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
+		{Name: "project_id", Type: field.TypeString, Nullable: true},
+		{Name: "task_column_id", Type: field.TypeString, Nullable: true},
+	}
+	// ProjectTaskColumnsTable holds the schema information for the "project_task_columns" table.
+	ProjectTaskColumnsTable = &schema.Table{
+		Name:       "project_task_columns",
+		Columns:    ProjectTaskColumnsColumns,
+		PrimaryKey: []*schema.Column{ProjectTaskColumnsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "project_task_columns_projects_project_task_columns",
+				Columns:    []*schema.Column{ProjectTaskColumnsColumns[7]},
+				RefColumns: []*schema.Column{ProjectsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "project_task_columns_task_columns_project_task_columns",
+				Columns:    []*schema.Column{ProjectTaskColumnsColumns[8]},
+				RefColumns: []*schema.Column{TaskColumnsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
 	// ProjectTeammatesColumns holds the columns for the "project_teammates" table.
 	ProjectTeammatesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString},
@@ -432,6 +464,7 @@ var (
 		ProjectBaseColorsTable,
 		ProjectIconsTable,
 		ProjectLightColorsTable,
+		ProjectTaskColumnsTable,
 		ProjectTeammatesTable,
 		TaskColumnsTable,
 		TeammatesTable,
@@ -458,6 +491,8 @@ func init() {
 	ProjectBaseColorsTable.ForeignKeys[0].RefTable = ColorsTable
 	ProjectIconsTable.ForeignKeys[0].RefTable = IconsTable
 	ProjectLightColorsTable.ForeignKeys[0].RefTable = ColorsTable
+	ProjectTaskColumnsTable.ForeignKeys[0].RefTable = ProjectsTable
+	ProjectTaskColumnsTable.ForeignKeys[1].RefTable = TaskColumnsTable
 	ProjectTeammatesTable.ForeignKeys[0].RefTable = ProjectsTable
 	ProjectTeammatesTable.ForeignKeys[1].RefTable = TeammatesTable
 	TeammateTaskColumnsTable.ForeignKeys[0].RefTable = TaskColumnsTable
