@@ -22,6 +22,7 @@ import (
 	"project-management-demo-backend/ent/projecttaskcolumn"
 	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/ent/taskcolumn"
+	"project-management-demo-backend/ent/tasksection"
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/teammatetaskcolumn"
 	"project-management-demo-backend/ent/testtodo"
@@ -63,6 +64,8 @@ type Client struct {
 	ProjectTeammate *ProjectTeammateClient
 	// TaskColumn is the client for interacting with the TaskColumn builders.
 	TaskColumn *TaskColumnClient
+	// TaskSection is the client for interacting with the TaskSection builders.
+	TaskSection *TaskSectionClient
 	// Teammate is the client for interacting with the Teammate builders.
 	Teammate *TeammateClient
 	// TeammateTaskColumn is the client for interacting with the TeammateTaskColumn builders.
@@ -100,6 +103,7 @@ func (c *Client) init() {
 	c.ProjectTaskColumn = NewProjectTaskColumnClient(c.config)
 	c.ProjectTeammate = NewProjectTeammateClient(c.config)
 	c.TaskColumn = NewTaskColumnClient(c.config)
+	c.TaskSection = NewTaskSectionClient(c.config)
 	c.Teammate = NewTeammateClient(c.config)
 	c.TeammateTaskColumn = NewTeammateTaskColumnClient(c.config)
 	c.TestTodo = NewTestTodoClient(c.config)
@@ -151,6 +155,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		ProjectTaskColumn:  NewProjectTaskColumnClient(cfg),
 		ProjectTeammate:    NewProjectTeammateClient(cfg),
 		TaskColumn:         NewTaskColumnClient(cfg),
+		TaskSection:        NewTaskSectionClient(cfg),
 		Teammate:           NewTeammateClient(cfg),
 		TeammateTaskColumn: NewTeammateTaskColumnClient(cfg),
 		TestTodo:           NewTestTodoClient(cfg),
@@ -187,6 +192,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		ProjectTaskColumn:  NewProjectTaskColumnClient(cfg),
 		ProjectTeammate:    NewProjectTeammateClient(cfg),
 		TaskColumn:         NewTaskColumnClient(cfg),
+		TaskSection:        NewTaskSectionClient(cfg),
 		Teammate:           NewTeammateClient(cfg),
 		TeammateTaskColumn: NewTeammateTaskColumnClient(cfg),
 		TestTodo:           NewTestTodoClient(cfg),
@@ -234,6 +240,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.ProjectTaskColumn.Use(hooks...)
 	c.ProjectTeammate.Use(hooks...)
 	c.TaskColumn.Use(hooks...)
+	c.TaskSection.Use(hooks...)
 	c.Teammate.Use(hooks...)
 	c.TeammateTaskColumn.Use(hooks...)
 	c.TestTodo.Use(hooks...)
@@ -1784,6 +1791,96 @@ func (c *TaskColumnClient) QueryProjectTaskColumns(tc *TaskColumn) *ProjectTaskC
 // Hooks returns the client hooks.
 func (c *TaskColumnClient) Hooks() []Hook {
 	return c.hooks.TaskColumn
+}
+
+// TaskSectionClient is a client for the TaskSection schema.
+type TaskSectionClient struct {
+	config
+}
+
+// NewTaskSectionClient returns a client for the TaskSection from the given config.
+func NewTaskSectionClient(c config) *TaskSectionClient {
+	return &TaskSectionClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `tasksection.Hooks(f(g(h())))`.
+func (c *TaskSectionClient) Use(hooks ...Hook) {
+	c.hooks.TaskSection = append(c.hooks.TaskSection, hooks...)
+}
+
+// Create returns a create builder for TaskSection.
+func (c *TaskSectionClient) Create() *TaskSectionCreate {
+	mutation := newTaskSectionMutation(c.config, OpCreate)
+	return &TaskSectionCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of TaskSection entities.
+func (c *TaskSectionClient) CreateBulk(builders ...*TaskSectionCreate) *TaskSectionCreateBulk {
+	return &TaskSectionCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for TaskSection.
+func (c *TaskSectionClient) Update() *TaskSectionUpdate {
+	mutation := newTaskSectionMutation(c.config, OpUpdate)
+	return &TaskSectionUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *TaskSectionClient) UpdateOne(ts *TaskSection) *TaskSectionUpdateOne {
+	mutation := newTaskSectionMutation(c.config, OpUpdateOne, withTaskSection(ts))
+	return &TaskSectionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *TaskSectionClient) UpdateOneID(id ulid.ID) *TaskSectionUpdateOne {
+	mutation := newTaskSectionMutation(c.config, OpUpdateOne, withTaskSectionID(id))
+	return &TaskSectionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for TaskSection.
+func (c *TaskSectionClient) Delete() *TaskSectionDelete {
+	mutation := newTaskSectionMutation(c.config, OpDelete)
+	return &TaskSectionDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *TaskSectionClient) DeleteOne(ts *TaskSection) *TaskSectionDeleteOne {
+	return c.DeleteOneID(ts.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *TaskSectionClient) DeleteOneID(id ulid.ID) *TaskSectionDeleteOne {
+	builder := c.Delete().Where(tasksection.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &TaskSectionDeleteOne{builder}
+}
+
+// Query returns a query builder for TaskSection.
+func (c *TaskSectionClient) Query() *TaskSectionQuery {
+	return &TaskSectionQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a TaskSection entity by its id.
+func (c *TaskSectionClient) Get(ctx context.Context, id ulid.ID) (*TaskSection, error) {
+	return c.Query().Where(tasksection.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *TaskSectionClient) GetX(ctx context.Context, id ulid.ID) *TaskSection {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *TaskSectionClient) Hooks() []Hook {
+	return c.hooks.TaskSection
 }
 
 // TeammateClient is a client for the Teammate schema.

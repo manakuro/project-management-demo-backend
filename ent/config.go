@@ -36,6 +36,7 @@ type hooks struct {
 	ProjectTaskColumn  []ent.Hook
 	ProjectTeammate    []ent.Hook
 	TaskColumn         []ent.Hook
+	TaskSection        []ent.Hook
 	Teammate           []ent.Hook
 	TeammateTaskColumn []ent.Hook
 	TestTodo           []ent.Hook

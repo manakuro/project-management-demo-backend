@@ -19,6 +19,7 @@ import (
 	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/taskcolumn"
+	"project-management-demo-backend/ent/tasksection"
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/teammatetaskcolumn"
 	"project-management-demo-backend/ent/testtodo"
@@ -960,6 +961,41 @@ func (tc *TaskColumn) Node(ctx context.Context) (node *Node, err error) {
 	return node, nil
 }
 
+func (ts *TaskSection) Node(ctx context.Context) (node *Node, err error) {
+	node = &Node{
+		ID:     ts.ID,
+		Type:   "TaskSection",
+		Fields: make([]*Field, 3),
+		Edges:  make([]*Edge, 0),
+	}
+	var buf []byte
+	if buf, err = json.Marshal(ts.Name); err != nil {
+		return nil, err
+	}
+	node.Fields[0] = &Field{
+		Type:  "string",
+		Name:  "name",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(ts.CreatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[1] = &Field{
+		Type:  "time.Time",
+		Name:  "created_at",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(ts.UpdatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[2] = &Field{
+		Type:  "time.Time",
+		Name:  "updated_at",
+		Value: string(buf),
+	}
+	return node, nil
+}
+
 func (t *Teammate) Node(ctx context.Context) (node *Node, err error) {
 	node = &Node{
 		ID:     t.ID,
@@ -1671,6 +1707,15 @@ func (c *Client) noder(ctx context.Context, table string, id ulid.ID) (Noder, er
 			return nil, err
 		}
 		return n, nil
+	case tasksection.Table:
+		n, err := c.TaskSection.Query().
+			Where(tasksection.ID(id)).
+			CollectFields(ctx, "TaskSection").
+			Only(ctx)
+		if err != nil {
+			return nil, err
+		}
+		return n, nil
 	case teammate.Table:
 		n, err := c.Teammate.Query().
 			Where(teammate.ID(id)).
@@ -1945,6 +1990,19 @@ func (c *Client) noders(ctx context.Context, table string, ids []ulid.ID) ([]Nod
 		nodes, err := c.TaskColumn.Query().
 			Where(taskcolumn.IDIn(ids...)).
 			CollectFields(ctx, "TaskColumn").
+			All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, node := range nodes {
+			for _, noder := range idmap[node.ID] {
+				*noder = node
+			}
+		}
+	case tasksection.Table:
+		nodes, err := c.TaskSection.Query().
+			Where(tasksection.IDIn(ids...)).
+			CollectFields(ctx, "TaskSection").
 			All(ctx)
 		if err != nil {
 			return nil, err

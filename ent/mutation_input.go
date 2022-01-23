@@ -952,6 +952,55 @@ func (u *TaskColumnUpdateOne) SetInput(i UpdateTaskColumnInput) *TaskColumnUpdat
 	return u
 }
 
+// CreateTaskSectionInput represents a mutation input for creating tasksections.
+type CreateTaskSectionInput struct {
+	Name      string
+	CreatedAt *time.Time
+	UpdatedAt *time.Time
+}
+
+// Mutate applies the CreateTaskSectionInput on the TaskSectionCreate builder.
+func (i *CreateTaskSectionInput) Mutate(m *TaskSectionCreate) {
+	m.SetName(i.Name)
+	if v := i.CreatedAt; v != nil {
+		m.SetCreatedAt(*v)
+	}
+	if v := i.UpdatedAt; v != nil {
+		m.SetUpdatedAt(*v)
+	}
+}
+
+// SetInput applies the change-set in the CreateTaskSectionInput on the create builder.
+func (c *TaskSectionCreate) SetInput(i CreateTaskSectionInput) *TaskSectionCreate {
+	i.Mutate(c)
+	return c
+}
+
+// UpdateTaskSectionInput represents a mutation input for updating tasksections.
+type UpdateTaskSectionInput struct {
+	ID   ulid.ID
+	Name *string
+}
+
+// Mutate applies the UpdateTaskSectionInput on the TaskSectionMutation.
+func (i *UpdateTaskSectionInput) Mutate(m *TaskSectionMutation) {
+	if v := i.Name; v != nil {
+		m.SetName(*v)
+	}
+}
+
+// SetInput applies the change-set in the UpdateTaskSectionInput on the update builder.
+func (u *TaskSectionUpdate) SetInput(i UpdateTaskSectionInput) *TaskSectionUpdate {
+	i.Mutate(u.Mutation())
+	return u
+}
+
+// SetInput applies the change-set in the UpdateTaskSectionInput on the update-one builder.
+func (u *TaskSectionUpdateOne) SetInput(i UpdateTaskSectionInput) *TaskSectionUpdateOne {
+	i.Mutate(u.Mutation())
+	return u
+}
+
 // CreateTeammateInput represents a mutation input for creating teammates.
 type CreateTeammateInput struct {
 	Name                  string
