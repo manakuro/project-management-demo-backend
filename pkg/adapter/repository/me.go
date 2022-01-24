@@ -27,7 +27,7 @@ func (r *meRepository) Get(ctx context.Context, id model.ID) (*model.Me, error) 
 	}
 	q.Where(teammate.IDEQ(id))
 
-	t, err := q.Only(ctx)
+	me, err := q.Only(ctx)
 
 	if err != nil {
 		if ent.IsNotSingular(err) {
@@ -42,12 +42,12 @@ func (r *meRepository) Get(ctx context.Context, id model.ID) (*model.Me, error) 
 	}
 
 	return &model.Me{
-		ID:        t.ID,
-		Name:      t.Name,
-		Image:     t.Image,
-		Email:     t.Email,
-		CreatedAt: t.CreatedAt,
-		UpdatedAt: t.UpdatedAt,
+		ID:        me.ID,
+		Name:      me.Name,
+		Image:     me.Image,
+		Email:     me.Email,
+		CreatedAt: me.CreatedAt,
+		UpdatedAt: me.UpdatedAt,
 	}, nil
 }
 

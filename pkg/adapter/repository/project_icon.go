@@ -17,8 +17,8 @@ func NewProjectIconRepository(client *ent.Client) ur.ProjectIcon {
 	return &projectIconRepository{client: client}
 }
 
-func (p *projectIconRepository) Get(ctx context.Context, where *model.ProjectIconWhereInput) (*model.ProjectIcon, error) {
-	q := p.client.ProjectIcon.Query()
+func (r *projectIconRepository) Get(ctx context.Context, where *model.ProjectIconWhereInput) (*model.ProjectIcon, error) {
+	q := r.client.ProjectIcon.Query()
 
 	q, err := where.Filter(q)
 	if err != nil {
@@ -40,8 +40,8 @@ func (p *projectIconRepository) Get(ctx context.Context, where *model.ProjectIco
 	return result, nil
 }
 
-func (p *projectIconRepository) List(ctx context.Context) ([]*model.ProjectIcon, error) {
-	result, err := p.client.ProjectIcon.Query().All(ctx)
+func (r *projectIconRepository) List(ctx context.Context) ([]*model.ProjectIcon, error) {
+	result, err := r.client.ProjectIcon.Query().All(ctx)
 	if err != nil {
 		return nil, model.NewDBError(err)
 	}
@@ -49,8 +49,8 @@ func (p *projectIconRepository) List(ctx context.Context) ([]*model.ProjectIcon,
 	return result, nil
 }
 
-func (p *projectIconRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ProjectIconWhereInput, requestedFields []string) (*model.ProjectIconConnection, error) {
-	q := p.client.ProjectIcon.Query()
+func (r *projectIconRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ProjectIconWhereInput, requestedFields []string) (*model.ProjectIconConnection, error) {
+	q := r.client.ProjectIcon.Query()
 
 	if collection.Contains(requestedFields, "edges.node.icon") {
 		q.WithIcon()
@@ -63,8 +63,8 @@ func (p *projectIconRepository) ListWithPagination(ctx context.Context, after *m
 	return result, nil
 }
 
-func (p *projectIconRepository) Create(ctx context.Context, input model.CreateProjectIconInput) (*model.ProjectIcon, error) {
-	result, err := p.client.
+func (r *projectIconRepository) Create(ctx context.Context, input model.CreateProjectIconInput) (*model.ProjectIcon, error) {
+	result, err := r.client.
 		ProjectIcon.
 		Create().
 		SetInput(input).
@@ -77,8 +77,8 @@ func (p *projectIconRepository) Create(ctx context.Context, input model.CreatePr
 	return result, nil
 }
 
-func (p *projectIconRepository) Update(ctx context.Context, input model.UpdateProjectIconInput) (*model.ProjectIcon, error) {
-	result, err := p.client.
+func (r *projectIconRepository) Update(ctx context.Context, input model.UpdateProjectIconInput) (*model.ProjectIcon, error) {
+	result, err := r.client.
 		ProjectIcon.
 		UpdateOneID(input.ID).
 		SetInput(input).

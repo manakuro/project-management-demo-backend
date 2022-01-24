@@ -27,7 +27,7 @@ func (r *iconRepository) Get(ctx context.Context, id model.ID) (*model.Icon, err
 	}
 	q.Where(icon.IDEQ(id))
 
-	u, err := q.Only(ctx)
+	result, err := q.Only(ctx)
 
 	if err != nil {
 		if ent.IsNotSingular(err) {
@@ -41,34 +41,37 @@ func (r *iconRepository) Get(ctx context.Context, id model.ID) (*model.Icon, err
 		return nil, model.NewDBError(err)
 	}
 
-	return u, nil
+	return result, nil
 }
 
 func (r *iconRepository) List(ctx context.Context) ([]*model.Icon, error) {
-	us, err := r.client.
+	result, err := r.client.
 		Icon.
 		Query().
 		All(ctx)
+
 	if err != nil {
 		return nil, model.NewDBError(err)
 	}
 
-	return us, nil
+	return result, nil
 }
 
 func (r *iconRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.IconWhereInput) (*model.IconConnection, error) {
-	us, err := r.client.
+	result, err := r.client.
 		Icon.
 		Query().
 		Paginate(ctx, after, first, before, last, ent.WithIconFilter(where.Filter))
+
 	if err != nil {
 		return nil, model.NewDBError(err)
 	}
-	return us, nil
+
+	return result, nil
 }
 
 func (r *iconRepository) Create(ctx context.Context, input model.CreateIconInput) (*model.Icon, error) {
-	u, err := r.client.
+	result, err := r.client.
 		Icon.
 		Create().
 		SetInput(input).
@@ -78,11 +81,11 @@ func (r *iconRepository) Create(ctx context.Context, input model.CreateIconInput
 		return nil, model.NewDBError(err)
 	}
 
-	return u, nil
+	return result, nil
 }
 
 func (r *iconRepository) Update(ctx context.Context, input model.UpdateIconInput) (*model.Icon, error) {
-	u, err := r.client.
+	result, err := r.client.
 		Icon.UpdateOneID(input.ID).
 		SetInput(input).
 		Save(ctx)
@@ -95,5 +98,5 @@ func (r *iconRepository) Update(ctx context.Context, input model.UpdateIconInput
 		return nil, model.NewDBError(err)
 	}
 
-	return u, nil
+	return result, nil
 }

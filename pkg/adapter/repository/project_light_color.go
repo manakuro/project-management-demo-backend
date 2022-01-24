@@ -17,8 +17,8 @@ func NewProjectLightColorRepository(client *ent.Client) ur.ProjectLightColor {
 	return &projectLightColorRepository{client: client}
 }
 
-func (p *projectLightColorRepository) Get(ctx context.Context, where *model.ProjectLightColorWhereInput) (*model.ProjectLightColor, error) {
-	q := p.client.ProjectLightColor.Query()
+func (r *projectLightColorRepository) Get(ctx context.Context, where *model.ProjectLightColorWhereInput) (*model.ProjectLightColor, error) {
+	q := r.client.ProjectLightColor.Query()
 
 	q, err := where.Filter(q)
 	if err != nil {
@@ -40,31 +40,31 @@ func (p *projectLightColorRepository) Get(ctx context.Context, where *model.Proj
 	return result, nil
 }
 
-func (p *projectLightColorRepository) List(ctx context.Context) ([]*model.ProjectLightColor, error) {
-	ps, err := p.client.ProjectLightColor.Query().All(ctx)
+func (r *projectLightColorRepository) List(ctx context.Context) ([]*model.ProjectLightColor, error) {
+	result, err := r.client.ProjectLightColor.Query().All(ctx)
 	if err != nil {
 		return nil, model.NewDBError(err)
 	}
 
-	return ps, nil
+	return result, nil
 }
 
-func (p *projectLightColorRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ProjectLightColorWhereInput, requestedFields []string) (*model.ProjectLightColorConnection, error) {
-	q := p.client.ProjectLightColor.Query()
+func (r *projectLightColorRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ProjectLightColorWhereInput, requestedFields []string) (*model.ProjectLightColorConnection, error) {
+	q := r.client.ProjectLightColor.Query()
 
 	if collection.Contains(requestedFields, "edges.node.color") {
 		q.WithColor()
 	}
 
-	us, err := q.Paginate(ctx, after, first, before, last, ent.WithProjectLightColorFilter(where.Filter))
+	result, err := q.Paginate(ctx, after, first, before, last, ent.WithProjectLightColorFilter(where.Filter))
 	if err != nil {
 		return nil, model.NewDBError(err)
 	}
-	return us, nil
+	return result, nil
 }
 
-func (p *projectLightColorRepository) Create(ctx context.Context, input model.CreateProjectLightColorInput) (*model.ProjectLightColor, error) {
-	u, err := p.client.
+func (r *projectLightColorRepository) Create(ctx context.Context, input model.CreateProjectLightColorInput) (*model.ProjectLightColor, error) {
+	result, err := r.client.
 		ProjectLightColor.
 		Create().
 		SetInput(input).
@@ -74,11 +74,11 @@ func (p *projectLightColorRepository) Create(ctx context.Context, input model.Cr
 		return nil, model.NewDBError(err)
 	}
 
-	return u, nil
+	return result, nil
 }
 
-func (p *projectLightColorRepository) Update(ctx context.Context, input model.UpdateProjectLightColorInput) (*model.ProjectLightColor, error) {
-	u, err := p.client.
+func (r *projectLightColorRepository) Update(ctx context.Context, input model.UpdateProjectLightColorInput) (*model.ProjectLightColor, error) {
+	result, err := r.client.
 		ProjectLightColor.
 		UpdateOneID(input.ID).
 		SetInput(input).
@@ -92,5 +92,5 @@ func (p *projectLightColorRepository) Update(ctx context.Context, input model.Up
 		return nil, model.NewDBError(err)
 	}
 
-	return u, nil
+	return result, nil
 }

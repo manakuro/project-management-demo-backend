@@ -23,7 +23,7 @@ func (r *testTodoRepository) Get(ctx context.Context, id *model.ID) (*model.Test
 		q.Where(testtodo.IDEQ(*id))
 	}
 
-	u, err := q.Only(ctx)
+	result, err := q.Only(ctx)
 
 	if err != nil {
 		if ent.IsNotSingular(err) {
@@ -37,22 +37,22 @@ func (r *testTodoRepository) Get(ctx context.Context, id *model.ID) (*model.Test
 		return nil, model.NewDBError(err)
 	}
 
-	return u, nil
+	return result, nil
 }
 
 func (r *testTodoRepository) List(ctx context.Context) ([]*model.TestTodo, error) {
-	ts, err := r.client.
+	result, err := r.client.
 		TestTodo.
 		Query().
 		All(ctx)
 	if err != nil {
 		return nil, model.NewDBError(err)
 	}
-	return ts, nil
+	return result, nil
 }
 
 func (r *testTodoRepository) Create(ctx context.Context, input model.CreateTestTodoInput) (*model.TestTodo, error) {
-	u, err := r.client.
+	result, err := r.client.
 		TestTodo.
 		Create().
 		SetInput(input).
@@ -62,11 +62,11 @@ func (r *testTodoRepository) Create(ctx context.Context, input model.CreateTestT
 		return nil, model.NewDBError(err)
 	}
 
-	return u, nil
+	return result, nil
 }
 
 func (r *testTodoRepository) Update(ctx context.Context, input model.UpdateTestTodoInput) (*model.TestTodo, error) {
-	u, err := r.client.
+	result, err := r.client.
 		TestTodo.UpdateOneID(input.ID).
 		SetInput(input).
 		Save(ctx)
@@ -79,5 +79,5 @@ func (r *testTodoRepository) Update(ctx context.Context, input model.UpdateTestT
 		return nil, model.NewDBError(err)
 	}
 
-	return u, nil
+	return result, nil
 }

@@ -17,8 +17,8 @@ func NewWorkspaceTeammateRepository(client *ent.Client) ur.WorkspaceTeammate {
 	return &workspaceTeammateRepository{client: client}
 }
 
-func (p *workspaceTeammateRepository) Get(ctx context.Context, where *model.WorkspaceTeammateWhereInput) (*model.WorkspaceTeammate, error) {
-	q := p.client.WorkspaceTeammate.Query()
+func (r *workspaceTeammateRepository) Get(ctx context.Context, where *model.WorkspaceTeammateWhereInput) (*model.WorkspaceTeammate, error) {
+	q := r.client.WorkspaceTeammate.Query()
 
 	q, err := where.Filter(q)
 	if err != nil {
@@ -40,8 +40,8 @@ func (p *workspaceTeammateRepository) Get(ctx context.Context, where *model.Work
 	return result, nil
 }
 
-func (p *workspaceTeammateRepository) List(ctx context.Context) ([]*model.WorkspaceTeammate, error) {
-	result, err := p.client.
+func (r *workspaceTeammateRepository) List(ctx context.Context) ([]*model.WorkspaceTeammate, error) {
+	result, err := r.client.
 		WorkspaceTeammate.Query().All(ctx)
 	if err != nil {
 		return nil, model.NewDBError(err)
@@ -50,8 +50,8 @@ func (p *workspaceTeammateRepository) List(ctx context.Context) ([]*model.Worksp
 	return result, nil
 }
 
-func (p *workspaceTeammateRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.WorkspaceTeammateWhereInput, requestedFields []string) (*model.WorkspaceTeammateConnection, error) {
-	q := p.client.WorkspaceTeammate.Query()
+func (r *workspaceTeammateRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.WorkspaceTeammateWhereInput, requestedFields []string) (*model.WorkspaceTeammateConnection, error) {
+	q := r.client.WorkspaceTeammate.Query()
 
 	if collection.Contains(requestedFields, "edges.node.workspace") {
 		q.WithWorkspace()
@@ -68,8 +68,8 @@ func (p *workspaceTeammateRepository) ListWithPagination(ctx context.Context, af
 	return result, nil
 }
 
-func (p *workspaceTeammateRepository) Create(ctx context.Context, input model.CreateWorkspaceTeammateInput) (*model.WorkspaceTeammate, error) {
-	result, err := p.client.
+func (r *workspaceTeammateRepository) Create(ctx context.Context, input model.CreateWorkspaceTeammateInput) (*model.WorkspaceTeammate, error) {
+	result, err := r.client.
 		WorkspaceTeammate.
 		Create().
 		SetInput(input).
@@ -82,8 +82,8 @@ func (p *workspaceTeammateRepository) Create(ctx context.Context, input model.Cr
 	return result, nil
 }
 
-func (p *workspaceTeammateRepository) Update(ctx context.Context, input model.UpdateWorkspaceTeammateInput) (*model.WorkspaceTeammate, error) {
-	result, err := p.client.
+func (r *workspaceTeammateRepository) Update(ctx context.Context, input model.UpdateWorkspaceTeammateInput) (*model.WorkspaceTeammate, error) {
+	result, err := r.client.
 		WorkspaceTeammate.UpdateOneID(input.ID).
 		SetInput(input).
 		Save(ctx)

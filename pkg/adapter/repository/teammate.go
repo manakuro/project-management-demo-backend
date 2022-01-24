@@ -27,7 +27,7 @@ func (r *teammateRepository) Get(ctx context.Context, id model.ID) (*model.Teamm
 	}
 	q.Where(teammate.IDEQ(id))
 
-	u, err := q.Only(ctx)
+	result, err := q.Only(ctx)
 
 	if err != nil {
 		if ent.IsNotSingular(err) {
@@ -41,32 +41,32 @@ func (r *teammateRepository) Get(ctx context.Context, id model.ID) (*model.Teamm
 		return nil, model.NewDBError(err)
 	}
 
-	return u, nil
+	return result, nil
 }
 
 func (r *teammateRepository) List(ctx context.Context) ([]*model.Teammate, error) {
-	us, err := r.client.
+	result, err := r.client.
 		Teammate.Query().All(ctx)
 	if err != nil {
 		return nil, model.NewDBError(err)
 	}
 
-	return us, nil
+	return result, nil
 }
 
 func (r *teammateRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TeammateWhereInput) (*model.TeammateConnection, error) {
-	us, err := r.client.
+	result, err := r.client.
 		Teammate.
 		Query().
 		Paginate(ctx, after, first, before, last, ent.WithTeammateFilter(where.Filter))
 	if err != nil {
 		return nil, model.NewDBError(err)
 	}
-	return us, nil
+	return result, nil
 }
 
 func (r *teammateRepository) Create(ctx context.Context, input model.CreateTeammateInput) (*model.Teammate, error) {
-	u, err := r.client.
+	result, err := r.client.
 		Teammate.
 		Create().
 		SetInput(input).
@@ -76,11 +76,11 @@ func (r *teammateRepository) Create(ctx context.Context, input model.CreateTeamm
 		return nil, model.NewDBError(err)
 	}
 
-	return u, nil
+	return result, nil
 }
 
 func (r *teammateRepository) Update(ctx context.Context, input model.UpdateTeammateInput) (*model.Teammate, error) {
-	u, err := r.client.
+	result, err := r.client.
 		Teammate.UpdateOneID(input.ID).
 		SetInput(input).
 		Save(ctx)
@@ -93,5 +93,5 @@ func (r *teammateRepository) Update(ctx context.Context, input model.UpdateTeamm
 		return nil, model.NewDBError(err)
 	}
 
-	return u, nil
+	return result, nil
 }

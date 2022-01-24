@@ -17,8 +17,8 @@ func NewProjectTeammateRepository(client *ent.Client) ur.ProjectTeammate {
 	return &projectTeammateRepository{client: client}
 }
 
-func (p *projectTeammateRepository) Get(ctx context.Context, where *model.ProjectTeammateWhereInput) (*model.ProjectTeammate, error) {
-	q := p.client.ProjectTeammate.Query()
+func (r *projectTeammateRepository) Get(ctx context.Context, where *model.ProjectTeammateWhereInput) (*model.ProjectTeammate, error) {
+	q := r.client.ProjectTeammate.Query()
 
 	q, err := where.Filter(q)
 	if err != nil {
@@ -40,8 +40,8 @@ func (p *projectTeammateRepository) Get(ctx context.Context, where *model.Projec
 	return result, nil
 }
 
-func (p *projectTeammateRepository) List(ctx context.Context) ([]*model.ProjectTeammate, error) {
-	result, err := p.client.
+func (r *projectTeammateRepository) List(ctx context.Context) ([]*model.ProjectTeammate, error) {
+	result, err := r.client.
 		ProjectTeammate.Query().All(ctx)
 	if err != nil {
 		return nil, model.NewDBError(err)
@@ -50,8 +50,8 @@ func (p *projectTeammateRepository) List(ctx context.Context) ([]*model.ProjectT
 	return result, nil
 }
 
-func (p *projectTeammateRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ProjectTeammateWhereInput, requestedFields []string) (*model.ProjectTeammateConnection, error) {
-	q := p.client.ProjectTeammate.Query()
+func (r *projectTeammateRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ProjectTeammateWhereInput, requestedFields []string) (*model.ProjectTeammateConnection, error) {
+	q := r.client.ProjectTeammate.Query()
 
 	if collection.Contains(requestedFields, "edges.node.project") {
 		q.WithProject()
@@ -68,8 +68,8 @@ func (p *projectTeammateRepository) ListWithPagination(ctx context.Context, afte
 	return result, nil
 }
 
-func (p *projectTeammateRepository) Create(ctx context.Context, input model.CreateProjectTeammateInput) (*model.ProjectTeammate, error) {
-	result, err := p.client.
+func (r *projectTeammateRepository) Create(ctx context.Context, input model.CreateProjectTeammateInput) (*model.ProjectTeammate, error) {
+	result, err := r.client.
 		ProjectTeammate.
 		Create().
 		SetInput(input).
@@ -82,8 +82,8 @@ func (p *projectTeammateRepository) Create(ctx context.Context, input model.Crea
 	return result, nil
 }
 
-func (p *projectTeammateRepository) Update(ctx context.Context, input model.UpdateProjectTeammateInput) (*model.ProjectTeammate, error) {
-	result, err := p.client.
+func (r *projectTeammateRepository) Update(ctx context.Context, input model.UpdateProjectTeammateInput) (*model.ProjectTeammate, error) {
+	result, err := r.client.
 		ProjectTeammate.UpdateOneID(input.ID).
 		SetInput(input).
 		Save(ctx)
