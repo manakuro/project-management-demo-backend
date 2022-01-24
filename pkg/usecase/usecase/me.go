@@ -6,7 +6,7 @@ import (
 	"project-management-demo-backend/pkg/usecase/repository"
 )
 
-type me struct {
+type meUsecase struct {
 	meRepository repository.Me
 }
 
@@ -18,13 +18,13 @@ type Me interface {
 
 // NewMeUsecase generates test user repository
 func NewMeUsecase(r repository.Me) Me {
-	return &me{meRepository: r}
+	return &meUsecase{meRepository: r}
 }
 
-func (t *me) Get(ctx context.Context, id model.ID) (*model.Me, error) {
-	return t.meRepository.Get(ctx, id)
+func (u *meUsecase) Get(ctx context.Context, id model.ID) (*model.Me, error) {
+	return u.meRepository.Get(ctx, id)
 }
 
-func (t *me) Update(ctx context.Context, input model.UpdateMeInput) (*model.Me, error) {
-	return t.meRepository.Update(ctx, input)
+func (u *meUsecase) Update(ctx context.Context, input model.UpdateMeInput) (*model.Me, error) {
+	return u.meRepository.Update(ctx, input)
 }

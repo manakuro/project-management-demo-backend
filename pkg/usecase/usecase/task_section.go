@@ -6,7 +6,7 @@ import (
 	"project-management-demo-backend/pkg/usecase/repository"
 )
 
-type taskSection struct {
+type taskSectionUsecase struct {
 	taskSectionRepository repository.TaskSection
 }
 
@@ -21,25 +21,25 @@ type TaskSection interface {
 
 // NewTaskSectionUsecase generates test user repository
 func NewTaskSectionUsecase(r repository.TaskSection) TaskSection {
-	return &taskSection{taskSectionRepository: r}
+	return &taskSectionUsecase{taskSectionRepository: r}
 }
 
-func (t *taskSection) Get(ctx context.Context, where *model.TaskSectionWhereInput) (*model.TaskSection, error) {
-	return t.taskSectionRepository.Get(ctx, where)
+func (u *taskSectionUsecase) Get(ctx context.Context, where *model.TaskSectionWhereInput) (*model.TaskSection, error) {
+	return u.taskSectionRepository.Get(ctx, where)
 }
 
-func (t *taskSection) List(ctx context.Context) ([]*model.TaskSection, error) {
-	return t.taskSectionRepository.List(ctx)
+func (u *taskSectionUsecase) List(ctx context.Context) ([]*model.TaskSection, error) {
+	return u.taskSectionRepository.List(ctx)
 }
 
-func (t *taskSection) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TaskSectionWhereInput, requestedFields []string) (*model.TaskSectionConnection, error) {
-	return t.taskSectionRepository.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
+func (u *taskSectionUsecase) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TaskSectionWhereInput, requestedFields []string) (*model.TaskSectionConnection, error) {
+	return u.taskSectionRepository.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
 }
 
-func (t *taskSection) Create(ctx context.Context, input model.CreateTaskSectionInput) (*model.TaskSection, error) {
-	return t.taskSectionRepository.Create(ctx, input)
+func (u *taskSectionUsecase) Create(ctx context.Context, input model.CreateTaskSectionInput) (*model.TaskSection, error) {
+	return u.taskSectionRepository.Create(ctx, input)
 }
 
-func (t *taskSection) Update(ctx context.Context, input model.UpdateTaskSectionInput) (*model.TaskSection, error) {
-	return t.taskSectionRepository.Update(ctx, input)
+func (u *taskSectionUsecase) Update(ctx context.Context, input model.UpdateTaskSectionInput) (*model.TaskSection, error) {
+	return u.taskSectionRepository.Update(ctx, input)
 }

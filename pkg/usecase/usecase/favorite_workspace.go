@@ -6,7 +6,7 @@ import (
 	"project-management-demo-backend/pkg/usecase/repository"
 )
 
-type favoriteWorkspace struct {
+type favoriteWorkspaceUsecase struct {
 	favoriteWorkspaceRepository repository.FavoriteWorkspace
 }
 
@@ -23,33 +23,33 @@ type FavoriteWorkspace interface {
 
 // NewFavoriteWorkspaceUsecase generates test user repository
 func NewFavoriteWorkspaceUsecase(r repository.FavoriteWorkspace) FavoriteWorkspace {
-	return &favoriteWorkspace{favoriteWorkspaceRepository: r}
+	return &favoriteWorkspaceUsecase{favoriteWorkspaceRepository: r}
 }
 
-func (f *favoriteWorkspace) Get(ctx context.Context, where *model.FavoriteWorkspaceWhereInput) (*model.FavoriteWorkspace, error) {
-	return f.favoriteWorkspaceRepository.Get(ctx, where)
+func (u *favoriteWorkspaceUsecase) Get(ctx context.Context, where *model.FavoriteWorkspaceWhereInput) (*model.FavoriteWorkspace, error) {
+	return u.favoriteWorkspaceRepository.Get(ctx, where)
 }
 
-func (f *favoriteWorkspace) List(ctx context.Context) ([]*model.FavoriteWorkspace, error) {
-	return f.favoriteWorkspaceRepository.List(ctx)
+func (u *favoriteWorkspaceUsecase) List(ctx context.Context) ([]*model.FavoriteWorkspace, error) {
+	return u.favoriteWorkspaceRepository.List(ctx)
 }
 
-func (f *favoriteWorkspace) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.FavoriteWorkspaceWhereInput, requestedFields []string) (*model.FavoriteWorkspaceConnection, error) {
-	return f.favoriteWorkspaceRepository.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
+func (u *favoriteWorkspaceUsecase) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.FavoriteWorkspaceWhereInput, requestedFields []string) (*model.FavoriteWorkspaceConnection, error) {
+	return u.favoriteWorkspaceRepository.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
 }
 
-func (f *favoriteWorkspace) Create(ctx context.Context, input model.CreateFavoriteWorkspaceInput) (*model.FavoriteWorkspace, error) {
-	return f.favoriteWorkspaceRepository.Create(ctx, input)
+func (u *favoriteWorkspaceUsecase) Create(ctx context.Context, input model.CreateFavoriteWorkspaceInput) (*model.FavoriteWorkspace, error) {
+	return u.favoriteWorkspaceRepository.Create(ctx, input)
 }
 
-func (f *favoriteWorkspace) Update(ctx context.Context, input model.UpdateFavoriteWorkspaceInput) (*model.FavoriteWorkspace, error) {
-	return f.favoriteWorkspaceRepository.Update(ctx, input)
+func (u *favoriteWorkspaceUsecase) Update(ctx context.Context, input model.UpdateFavoriteWorkspaceInput) (*model.FavoriteWorkspace, error) {
+	return u.favoriteWorkspaceRepository.Update(ctx, input)
 }
 
-func (f *favoriteWorkspace) Delete(ctx context.Context, input model.DeleteFavoriteWorkspaceInput) (*model.FavoriteWorkspace, error) {
-	return f.favoriteWorkspaceRepository.Delete(ctx, input)
+func (u *favoriteWorkspaceUsecase) Delete(ctx context.Context, input model.DeleteFavoriteWorkspaceInput) (*model.FavoriteWorkspace, error) {
+	return u.favoriteWorkspaceRepository.Delete(ctx, input)
 }
 
-func (f *favoriteWorkspace) FavoriteWorkspaceIDs(ctx context.Context, teammateID model.ID, workspaceID *model.ID) ([]model.ID, error) {
-	return f.favoriteWorkspaceRepository.FavoriteWorkspaceIDs(ctx, teammateID, workspaceID)
+func (u *favoriteWorkspaceUsecase) FavoriteWorkspaceIDs(ctx context.Context, teammateID model.ID, workspaceID *model.ID) ([]model.ID, error) {
+	return u.favoriteWorkspaceRepository.FavoriteWorkspaceIDs(ctx, teammateID, workspaceID)
 }

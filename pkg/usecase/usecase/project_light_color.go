@@ -6,7 +6,7 @@ import (
 	"project-management-demo-backend/pkg/usecase/repository"
 )
 
-type projectLightColor struct {
+type projectLightColorUsecase struct {
 	projectLightColorRepository repository.ProjectLightColor
 }
 
@@ -21,25 +21,25 @@ type ProjectLightColor interface {
 
 // NewProjectLightColorUsecase generates test user repository
 func NewProjectLightColorUsecase(r repository.ProjectLightColor) ProjectLightColor {
-	return &projectLightColor{projectLightColorRepository: r}
+	return &projectLightColorUsecase{projectLightColorRepository: r}
 }
 
-func (p *projectLightColor) Get(ctx context.Context, where *model.ProjectLightColorWhereInput) (*model.ProjectLightColor, error) {
-	return p.projectLightColorRepository.Get(ctx, where)
+func (u *projectLightColorUsecase) Get(ctx context.Context, where *model.ProjectLightColorWhereInput) (*model.ProjectLightColor, error) {
+	return u.projectLightColorRepository.Get(ctx, where)
 }
 
-func (p *projectLightColor) List(ctx context.Context) ([]*model.ProjectLightColor, error) {
-	return p.projectLightColorRepository.List(ctx)
+func (u *projectLightColorUsecase) List(ctx context.Context) ([]*model.ProjectLightColor, error) {
+	return u.projectLightColorRepository.List(ctx)
 }
 
-func (p *projectLightColor) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ProjectLightColorWhereInput, requestedFields []string) (*model.ProjectLightColorConnection, error) {
-	return p.projectLightColorRepository.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
+func (u *projectLightColorUsecase) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ProjectLightColorWhereInput, requestedFields []string) (*model.ProjectLightColorConnection, error) {
+	return u.projectLightColorRepository.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
 }
 
-func (p *projectLightColor) Create(ctx context.Context, input model.CreateProjectLightColorInput) (*model.ProjectLightColor, error) {
-	return p.projectLightColorRepository.Create(ctx, input)
+func (u *projectLightColorUsecase) Create(ctx context.Context, input model.CreateProjectLightColorInput) (*model.ProjectLightColor, error) {
+	return u.projectLightColorRepository.Create(ctx, input)
 }
 
-func (p *projectLightColor) Update(ctx context.Context, input model.UpdateProjectLightColorInput) (*model.ProjectLightColor, error) {
-	return p.projectLightColorRepository.Update(ctx, input)
+func (u *projectLightColorUsecase) Update(ctx context.Context, input model.UpdateProjectLightColorInput) (*model.ProjectLightColor, error) {
+	return u.projectLightColorRepository.Update(ctx, input)
 }

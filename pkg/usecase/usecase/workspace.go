@@ -6,7 +6,7 @@ import (
 	"project-management-demo-backend/pkg/usecase/repository"
 )
 
-type workspace struct {
+type workspaceUsecase struct {
 	workspaceRepository repository.Workspace
 }
 
@@ -21,25 +21,25 @@ type Workspace interface {
 
 // NewWorkspaceUsecase generates test user repository
 func NewWorkspaceUsecase(r repository.Workspace) Workspace {
-	return &workspace{workspaceRepository: r}
+	return &workspaceUsecase{workspaceRepository: r}
 }
 
-func (t *workspace) Get(ctx context.Context, where *model.WorkspaceWhereInput, requestFields []string) (*model.Workspace, error) {
-	return t.workspaceRepository.Get(ctx, where, requestFields)
+func (u *workspaceUsecase) Get(ctx context.Context, where *model.WorkspaceWhereInput, requestFields []string) (*model.Workspace, error) {
+	return u.workspaceRepository.Get(ctx, where, requestFields)
 }
 
-func (t *workspace) List(ctx context.Context) ([]*model.Workspace, error) {
-	return t.workspaceRepository.List(ctx)
+func (u *workspaceUsecase) List(ctx context.Context) ([]*model.Workspace, error) {
+	return u.workspaceRepository.List(ctx)
 }
 
-func (t *workspace) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.WorkspaceWhereInput, requestFields []string) (*model.WorkspaceConnection, error) {
-	return t.workspaceRepository.ListWithPagination(ctx, after, first, before, last, where, requestFields)
+func (u *workspaceUsecase) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.WorkspaceWhereInput, requestFields []string) (*model.WorkspaceConnection, error) {
+	return u.workspaceRepository.ListWithPagination(ctx, after, first, before, last, where, requestFields)
 }
 
-func (t *workspace) Create(ctx context.Context, input model.CreateWorkspaceInput) (*model.Workspace, error) {
-	return t.workspaceRepository.Create(ctx, input)
+func (u *workspaceUsecase) Create(ctx context.Context, input model.CreateWorkspaceInput) (*model.Workspace, error) {
+	return u.workspaceRepository.Create(ctx, input)
 }
 
-func (t *workspace) Update(ctx context.Context, input model.UpdateWorkspaceInput) (*model.Workspace, error) {
-	return t.workspaceRepository.Update(ctx, input)
+func (u *workspaceUsecase) Update(ctx context.Context, input model.UpdateWorkspaceInput) (*model.Workspace, error) {
+	return u.workspaceRepository.Update(ctx, input)
 }

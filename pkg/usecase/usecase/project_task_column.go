@@ -6,7 +6,7 @@ import (
 	"project-management-demo-backend/pkg/usecase/repository"
 )
 
-type projectTaskColumn struct {
+type projectTaskColumnUsecase struct {
 	projectTaskColumnRepository repository.ProjectTaskColumn
 }
 
@@ -21,25 +21,25 @@ type ProjectTaskColumn interface {
 
 // NewProjectTaskColumnUsecase generates test user repository
 func NewProjectTaskColumnUsecase(r repository.ProjectTaskColumn) ProjectTaskColumn {
-	return &projectTaskColumn{projectTaskColumnRepository: r}
+	return &projectTaskColumnUsecase{projectTaskColumnRepository: r}
 }
 
-func (p *projectTaskColumn) Get(ctx context.Context, where *model.ProjectTaskColumnWhereInput) (*model.ProjectTaskColumn, error) {
-	return p.projectTaskColumnRepository.Get(ctx, where)
+func (u *projectTaskColumnUsecase) Get(ctx context.Context, where *model.ProjectTaskColumnWhereInput) (*model.ProjectTaskColumn, error) {
+	return u.projectTaskColumnRepository.Get(ctx, where)
 }
 
-func (p *projectTaskColumn) List(ctx context.Context) ([]*model.ProjectTaskColumn, error) {
-	return p.projectTaskColumnRepository.List(ctx)
+func (u *projectTaskColumnUsecase) List(ctx context.Context) ([]*model.ProjectTaskColumn, error) {
+	return u.projectTaskColumnRepository.List(ctx)
 }
 
-func (p *projectTaskColumn) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ProjectTaskColumnWhereInput, requestedFields []string) (*model.ProjectTaskColumnConnection, error) {
-	return p.projectTaskColumnRepository.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
+func (u *projectTaskColumnUsecase) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ProjectTaskColumnWhereInput, requestedFields []string) (*model.ProjectTaskColumnConnection, error) {
+	return u.projectTaskColumnRepository.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
 }
 
-func (p *projectTaskColumn) Create(ctx context.Context, input model.CreateProjectTaskColumnInput) (*model.ProjectTaskColumn, error) {
-	return p.projectTaskColumnRepository.Create(ctx, input)
+func (u *projectTaskColumnUsecase) Create(ctx context.Context, input model.CreateProjectTaskColumnInput) (*model.ProjectTaskColumn, error) {
+	return u.projectTaskColumnRepository.Create(ctx, input)
 }
 
-func (p *projectTaskColumn) Update(ctx context.Context, input model.UpdateProjectTaskColumnInput) (*model.ProjectTaskColumn, error) {
-	return p.projectTaskColumnRepository.Update(ctx, input)
+func (u *projectTaskColumnUsecase) Update(ctx context.Context, input model.UpdateProjectTaskColumnInput) (*model.ProjectTaskColumn, error) {
+	return u.projectTaskColumnRepository.Update(ctx, input)
 }

@@ -6,7 +6,7 @@ import (
 	"project-management-demo-backend/pkg/usecase/repository"
 )
 
-type workspaceTeammate struct {
+type workspaceTeammateUsecase struct {
 	workspaceTeammateRepository repository.WorkspaceTeammate
 }
 
@@ -21,25 +21,25 @@ type WorkspaceTeammate interface {
 
 // NewWorkspaceTeammateUsecase generates test user repository
 func NewWorkspaceTeammateUsecase(r repository.WorkspaceTeammate) WorkspaceTeammate {
-	return &workspaceTeammate{workspaceTeammateRepository: r}
+	return &workspaceTeammateUsecase{workspaceTeammateRepository: r}
 }
 
-func (w *workspaceTeammate) Get(ctx context.Context, where *model.WorkspaceTeammateWhereInput) (*model.WorkspaceTeammate, error) {
-	return w.workspaceTeammateRepository.Get(ctx, where)
+func (u *workspaceTeammateUsecase) Get(ctx context.Context, where *model.WorkspaceTeammateWhereInput) (*model.WorkspaceTeammate, error) {
+	return u.workspaceTeammateRepository.Get(ctx, where)
 }
 
-func (w *workspaceTeammate) List(ctx context.Context) ([]*model.WorkspaceTeammate, error) {
-	return w.workspaceTeammateRepository.List(ctx)
+func (u *workspaceTeammateUsecase) List(ctx context.Context) ([]*model.WorkspaceTeammate, error) {
+	return u.workspaceTeammateRepository.List(ctx)
 }
 
-func (w *workspaceTeammate) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.WorkspaceTeammateWhereInput, requestedFields []string) (*model.WorkspaceTeammateConnection, error) {
-	return w.workspaceTeammateRepository.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
+func (u *workspaceTeammateUsecase) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.WorkspaceTeammateWhereInput, requestedFields []string) (*model.WorkspaceTeammateConnection, error) {
+	return u.workspaceTeammateRepository.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
 }
 
-func (w *workspaceTeammate) Create(ctx context.Context, input model.CreateWorkspaceTeammateInput) (*model.WorkspaceTeammate, error) {
-	return w.workspaceTeammateRepository.Create(ctx, input)
+func (u *workspaceTeammateUsecase) Create(ctx context.Context, input model.CreateWorkspaceTeammateInput) (*model.WorkspaceTeammate, error) {
+	return u.workspaceTeammateRepository.Create(ctx, input)
 }
 
-func (w *workspaceTeammate) Update(ctx context.Context, input model.UpdateWorkspaceTeammateInput) (*model.WorkspaceTeammate, error) {
-	return w.workspaceTeammateRepository.Update(ctx, input)
+func (u *workspaceTeammateUsecase) Update(ctx context.Context, input model.UpdateWorkspaceTeammateInput) (*model.WorkspaceTeammate, error) {
+	return u.workspaceTeammateRepository.Update(ctx, input)
 }

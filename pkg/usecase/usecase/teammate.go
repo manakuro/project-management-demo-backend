@@ -6,7 +6,7 @@ import (
 	"project-management-demo-backend/pkg/usecase/repository"
 )
 
-type teammate struct {
+type teammateUsecase struct {
 	teammateRepository repository.Teammate
 }
 
@@ -21,25 +21,25 @@ type Teammate interface {
 
 // NewTeammateUsecase generates test user repository
 func NewTeammateUsecase(r repository.Teammate) Teammate {
-	return &teammate{teammateRepository: r}
+	return &teammateUsecase{teammateRepository: r}
 }
 
-func (t *teammate) Get(ctx context.Context, id model.ID) (*model.Teammate, error) {
-	return t.teammateRepository.Get(ctx, id)
+func (u *teammateUsecase) Get(ctx context.Context, id model.ID) (*model.Teammate, error) {
+	return u.teammateRepository.Get(ctx, id)
 }
 
-func (t *teammate) List(ctx context.Context) ([]*model.Teammate, error) {
-	return t.teammateRepository.List(ctx)
+func (u *teammateUsecase) List(ctx context.Context) ([]*model.Teammate, error) {
+	return u.teammateRepository.List(ctx)
 }
 
-func (t *teammate) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TeammateWhereInput) (*model.TeammateConnection, error) {
-	return t.teammateRepository.ListWithPagination(ctx, after, first, before, last, where)
+func (u *teammateUsecase) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TeammateWhereInput) (*model.TeammateConnection, error) {
+	return u.teammateRepository.ListWithPagination(ctx, after, first, before, last, where)
 }
 
-func (t *teammate) Create(ctx context.Context, input model.CreateTeammateInput) (*model.Teammate, error) {
-	return t.teammateRepository.Create(ctx, input)
+func (u *teammateUsecase) Create(ctx context.Context, input model.CreateTeammateInput) (*model.Teammate, error) {
+	return u.teammateRepository.Create(ctx, input)
 }
 
-func (t *teammate) Update(ctx context.Context, input model.UpdateTeammateInput) (*model.Teammate, error) {
-	return t.teammateRepository.Update(ctx, input)
+func (u *teammateUsecase) Update(ctx context.Context, input model.UpdateTeammateInput) (*model.Teammate, error) {
+	return u.teammateRepository.Update(ctx, input)
 }

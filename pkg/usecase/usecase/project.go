@@ -6,7 +6,7 @@ import (
 	"project-management-demo-backend/pkg/usecase/repository"
 )
 
-type project struct {
+type projectUsecase struct {
 	projectRepository repository.Project
 }
 
@@ -21,25 +21,25 @@ type Project interface {
 
 // NewProjectUsecase generates test user repository
 func NewProjectUsecase(r repository.Project) Project {
-	return &project{projectRepository: r}
+	return &projectUsecase{projectRepository: r}
 }
 
-func (t *project) Get(ctx context.Context, where *model.ProjectWhereInput) (*model.Project, error) {
-	return t.projectRepository.Get(ctx, where)
+func (u *projectUsecase) Get(ctx context.Context, where *model.ProjectWhereInput) (*model.Project, error) {
+	return u.projectRepository.Get(ctx, where)
 }
 
-func (t *project) List(ctx context.Context) ([]*model.Project, error) {
-	return t.projectRepository.List(ctx)
+func (u *projectUsecase) List(ctx context.Context) ([]*model.Project, error) {
+	return u.projectRepository.List(ctx)
 }
 
-func (t *project) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ProjectWhereInput, requestedFields []string) (*model.ProjectConnection, error) {
-	return t.projectRepository.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
+func (u *projectUsecase) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ProjectWhereInput, requestedFields []string) (*model.ProjectConnection, error) {
+	return u.projectRepository.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
 }
 
-func (t *project) Create(ctx context.Context, input model.CreateProjectInput) (*model.Project, error) {
-	return t.projectRepository.Create(ctx, input)
+func (u *projectUsecase) Create(ctx context.Context, input model.CreateProjectInput) (*model.Project, error) {
+	return u.projectRepository.Create(ctx, input)
 }
 
-func (t *project) Update(ctx context.Context, input model.UpdateProjectInput) (*model.Project, error) {
-	return t.projectRepository.Update(ctx, input)
+func (u *projectUsecase) Update(ctx context.Context, input model.UpdateProjectInput) (*model.Project, error) {
+	return u.projectRepository.Update(ctx, input)
 }

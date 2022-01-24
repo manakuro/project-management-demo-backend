@@ -6,7 +6,7 @@ import (
 	"project-management-demo-backend/pkg/usecase/repository"
 )
 
-type projectTeammate struct {
+type projectTeammateUsecase struct {
 	projectTeammateRepository repository.ProjectTeammate
 }
 
@@ -21,25 +21,25 @@ type ProjectTeammate interface {
 
 // NewProjectTeammateUsecase generates test user repository
 func NewProjectTeammateUsecase(r repository.ProjectTeammate) ProjectTeammate {
-	return &projectTeammate{projectTeammateRepository: r}
+	return &projectTeammateUsecase{projectTeammateRepository: r}
 }
 
-func (p *projectTeammate) Get(ctx context.Context, where *model.ProjectTeammateWhereInput) (*model.ProjectTeammate, error) {
-	return p.projectTeammateRepository.Get(ctx, where)
+func (u *projectTeammateUsecase) Get(ctx context.Context, where *model.ProjectTeammateWhereInput) (*model.ProjectTeammate, error) {
+	return u.projectTeammateRepository.Get(ctx, where)
 }
 
-func (p *projectTeammate) List(ctx context.Context) ([]*model.ProjectTeammate, error) {
-	return p.projectTeammateRepository.List(ctx)
+func (u *projectTeammateUsecase) List(ctx context.Context) ([]*model.ProjectTeammate, error) {
+	return u.projectTeammateRepository.List(ctx)
 }
 
-func (p *projectTeammate) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ProjectTeammateWhereInput, requestedFields []string) (*model.ProjectTeammateConnection, error) {
-	return p.projectTeammateRepository.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
+func (u *projectTeammateUsecase) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ProjectTeammateWhereInput, requestedFields []string) (*model.ProjectTeammateConnection, error) {
+	return u.projectTeammateRepository.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
 }
 
-func (p *projectTeammate) Create(ctx context.Context, input model.CreateProjectTeammateInput) (*model.ProjectTeammate, error) {
-	return p.projectTeammateRepository.Create(ctx, input)
+func (u *projectTeammateUsecase) Create(ctx context.Context, input model.CreateProjectTeammateInput) (*model.ProjectTeammate, error) {
+	return u.projectTeammateRepository.Create(ctx, input)
 }
 
-func (p *projectTeammate) Update(ctx context.Context, input model.UpdateProjectTeammateInput) (*model.ProjectTeammate, error) {
-	return p.projectTeammateRepository.Update(ctx, input)
+func (u *projectTeammateUsecase) Update(ctx context.Context, input model.UpdateProjectTeammateInput) (*model.ProjectTeammate, error) {
+	return u.projectTeammateRepository.Update(ctx, input)
 }

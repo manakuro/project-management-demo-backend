@@ -6,7 +6,7 @@ import (
 	"project-management-demo-backend/pkg/usecase/repository"
 )
 
-type testTodo struct {
+type testTodoUsecase struct {
 	testTodoRepository repository.TestTodo
 }
 
@@ -20,21 +20,21 @@ type TestTodo interface {
 
 // NewTestTodoUsecase generates test user repository
 func NewTestTodoUsecase(r repository.TestTodo) TestTodo {
-	return &testTodo{testTodoRepository: r}
+	return &testTodoUsecase{testTodoRepository: r}
 }
 
-func (t *testTodo) Get(ctx context.Context, id *model.ID) (*model.TestTodo, error) {
-	return t.testTodoRepository.Get(ctx, id)
+func (u *testTodoUsecase) Get(ctx context.Context, id *model.ID) (*model.TestTodo, error) {
+	return u.testTodoRepository.Get(ctx, id)
 }
 
-func (t *testTodo) List(ctx context.Context) ([]*model.TestTodo, error) {
-	return t.testTodoRepository.List(ctx)
+func (u *testTodoUsecase) List(ctx context.Context) ([]*model.TestTodo, error) {
+	return u.testTodoRepository.List(ctx)
 }
 
-func (t *testTodo) Create(ctx context.Context, input model.CreateTestTodoInput) (*model.TestTodo, error) {
-	return t.testTodoRepository.Create(ctx, input)
+func (u *testTodoUsecase) Create(ctx context.Context, input model.CreateTestTodoInput) (*model.TestTodo, error) {
+	return u.testTodoRepository.Create(ctx, input)
 }
 
-func (t *testTodo) Update(ctx context.Context, input model.UpdateTestTodoInput) (*model.TestTodo, error) {
-	return t.testTodoRepository.Update(ctx, input)
+func (u *testTodoUsecase) Update(ctx context.Context, input model.UpdateTestTodoInput) (*model.TestTodo, error) {
+	return u.testTodoRepository.Update(ctx, input)
 }

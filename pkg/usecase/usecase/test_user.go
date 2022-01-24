@@ -6,7 +6,7 @@ import (
 	"project-management-demo-backend/pkg/usecase/repository"
 )
 
-type testUser struct {
+type testUserUsecase struct {
 	testUserRepository repository.TestUser
 }
 
@@ -22,29 +22,29 @@ type TestUser interface {
 
 // NewTestUserUsecase generates test user repository
 func NewTestUserUsecase(r repository.TestUser) TestUser {
-	return &testUser{testUserRepository: r}
+	return &testUserUsecase{testUserRepository: r}
 }
 
-func (t *testUser) Get(ctx context.Context, id model.ID, age *int) (*model.TestUser, error) {
-	return t.testUserRepository.Get(ctx, id, age)
+func (u *testUserUsecase) Get(ctx context.Context, id model.ID, age *int) (*model.TestUser, error) {
+	return u.testUserRepository.Get(ctx, id, age)
 }
 
-func (t *testUser) List(ctx context.Context) ([]*model.TestUser, error) {
-	return t.testUserRepository.List(ctx)
+func (u *testUserUsecase) List(ctx context.Context) ([]*model.TestUser, error) {
+	return u.testUserRepository.List(ctx)
 }
 
-func (t *testUser) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TestUserWhereInput, requestedFields []string) (*model.TestUserConnection, error) {
-	return t.testUserRepository.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
+func (u *testUserUsecase) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TestUserWhereInput, requestedFields []string) (*model.TestUserConnection, error) {
+	return u.testUserRepository.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
 }
 
-func (t *testUser) Create(ctx context.Context, input model.CreateTestUserInput) (*model.TestUser, error) {
-	return t.testUserRepository.Create(ctx, input)
+func (u *testUserUsecase) Create(ctx context.Context, input model.CreateTestUserInput) (*model.TestUser, error) {
+	return u.testUserRepository.Create(ctx, input)
 }
 
-func (t *testUser) CreateWithTodo(ctx context.Context, input model.CreateTestUserInput) (*model.TestUser, error) {
-	return t.testUserRepository.CreateWithTodo(ctx, input)
+func (u *testUserUsecase) CreateWithTodo(ctx context.Context, input model.CreateTestUserInput) (*model.TestUser, error) {
+	return u.testUserRepository.CreateWithTodo(ctx, input)
 }
 
-func (t *testUser) Update(ctx context.Context, input model.UpdateTestUserInput) (*model.TestUser, error) {
-	return t.testUserRepository.Update(ctx, input)
+func (u *testUserUsecase) Update(ctx context.Context, input model.UpdateTestUserInput) (*model.TestUser, error) {
+	return u.testUserRepository.Update(ctx, input)
 }

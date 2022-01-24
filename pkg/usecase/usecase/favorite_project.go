@@ -6,7 +6,7 @@ import (
 	"project-management-demo-backend/pkg/usecase/repository"
 )
 
-type favoriteProject struct {
+type favoriteProjectUsecase struct {
 	favoriteProjectRepository repository.FavoriteProject
 }
 
@@ -23,33 +23,33 @@ type FavoriteProject interface {
 
 // NewFavoriteProjectUsecase generates test user repository
 func NewFavoriteProjectUsecase(r repository.FavoriteProject) FavoriteProject {
-	return &favoriteProject{favoriteProjectRepository: r}
+	return &favoriteProjectUsecase{favoriteProjectRepository: r}
 }
 
-func (f *favoriteProject) Get(ctx context.Context, where *model.FavoriteProjectWhereInput) (*model.FavoriteProject, error) {
-	return f.favoriteProjectRepository.Get(ctx, where)
+func (u *favoriteProjectUsecase) Get(ctx context.Context, where *model.FavoriteProjectWhereInput) (*model.FavoriteProject, error) {
+	return u.favoriteProjectRepository.Get(ctx, where)
 }
 
-func (f *favoriteProject) List(ctx context.Context) ([]*model.FavoriteProject, error) {
-	return f.favoriteProjectRepository.List(ctx)
+func (u *favoriteProjectUsecase) List(ctx context.Context) ([]*model.FavoriteProject, error) {
+	return u.favoriteProjectRepository.List(ctx)
 }
 
-func (f *favoriteProject) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.FavoriteProjectWhereInput, requestedFields []string) (*model.FavoriteProjectConnection, error) {
-	return f.favoriteProjectRepository.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
+func (u *favoriteProjectUsecase) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.FavoriteProjectWhereInput, requestedFields []string) (*model.FavoriteProjectConnection, error) {
+	return u.favoriteProjectRepository.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
 }
 
-func (f *favoriteProject) Create(ctx context.Context, input model.CreateFavoriteProjectInput) (*model.FavoriteProject, error) {
-	return f.favoriteProjectRepository.Create(ctx, input)
+func (u *favoriteProjectUsecase) Create(ctx context.Context, input model.CreateFavoriteProjectInput) (*model.FavoriteProject, error) {
+	return u.favoriteProjectRepository.Create(ctx, input)
 }
 
-func (f *favoriteProject) Update(ctx context.Context, input model.UpdateFavoriteProjectInput) (*model.FavoriteProject, error) {
-	return f.favoriteProjectRepository.Update(ctx, input)
+func (u *favoriteProjectUsecase) Update(ctx context.Context, input model.UpdateFavoriteProjectInput) (*model.FavoriteProject, error) {
+	return u.favoriteProjectRepository.Update(ctx, input)
 }
 
-func (f *favoriteProject) Delete(ctx context.Context, input model.DeleteFavoriteProjectInput) (*model.FavoriteProject, error) {
-	return f.favoriteProjectRepository.Delete(ctx, input)
+func (u *favoriteProjectUsecase) Delete(ctx context.Context, input model.DeleteFavoriteProjectInput) (*model.FavoriteProject, error) {
+	return u.favoriteProjectRepository.Delete(ctx, input)
 }
 
-func (f *favoriteProject) FavoriteProjectIDs(ctx context.Context, teammateID model.ID) ([]model.ID, error) {
-	return f.favoriteProjectRepository.FavoriteProjectIDs(ctx, teammateID)
+func (u *favoriteProjectUsecase) FavoriteProjectIDs(ctx context.Context, teammateID model.ID) ([]model.ID, error) {
+	return u.favoriteProjectRepository.FavoriteProjectIDs(ctx, teammateID)
 }
