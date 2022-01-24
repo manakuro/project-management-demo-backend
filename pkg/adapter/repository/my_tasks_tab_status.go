@@ -25,7 +25,7 @@ func (r *myTasksTabStatusRepository) Get(ctx context.Context, where *model.MyTas
 		return nil, model.NewInvalidParamError(nil)
 	}
 
-	result, err := q.Only(ctx)
+	res, err := q.Only(ctx)
 
 	if err != nil {
 		if ent.IsNotSingular(err) {
@@ -37,16 +37,16 @@ func (r *myTasksTabStatusRepository) Get(ctx context.Context, where *model.MyTas
 		return nil, model.NewDBError(err)
 	}
 
-	return result, nil
+	return res, nil
 }
 
 func (r *myTasksTabStatusRepository) List(ctx context.Context) ([]*model.MyTasksTabStatus, error) {
-	result, err := r.client.MyTasksTabStatus.Query().All(ctx)
+	res, err := r.client.MyTasksTabStatus.Query().All(ctx)
 	if err != nil {
 		return nil, model.NewDBError(err)
 	}
 
-	return result, nil
+	return res, nil
 }
 
 func (r *myTasksTabStatusRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.MyTasksTabStatusWhereInput, requestedFields []string) (*model.MyTasksTabStatusConnection, error) {
@@ -60,15 +60,15 @@ func (r *myTasksTabStatusRepository) ListWithPagination(ctx context.Context, aft
 		q.WithTeammate()
 	}
 
-	result, err := q.Paginate(ctx, after, first, before, last, ent.WithMyTasksTabStatusFilter(where.Filter))
+	res, err := q.Paginate(ctx, after, first, before, last, ent.WithMyTasksTabStatusFilter(where.Filter))
 	if err != nil {
 		return nil, model.NewDBError(err)
 	}
-	return result, nil
+	return res, nil
 }
 
 func (r *myTasksTabStatusRepository) Create(ctx context.Context, input model.CreateMyTasksTabStatusInput) (*model.MyTasksTabStatus, error) {
-	result, err := r.client.
+	res, err := r.client.
 		MyTasksTabStatus.
 		Create().
 		SetInput(input).
@@ -78,11 +78,11 @@ func (r *myTasksTabStatusRepository) Create(ctx context.Context, input model.Cre
 		return nil, model.NewDBError(err)
 	}
 
-	return result, nil
+	return res, nil
 }
 
 func (r *myTasksTabStatusRepository) Update(ctx context.Context, input model.UpdateMyTasksTabStatusInput) (*model.MyTasksTabStatus, error) {
-	result, err := r.client.
+	res, err := r.client.
 		MyTasksTabStatus.UpdateOneID(input.ID).
 		SetInput(input).
 		Save(ctx)
@@ -95,5 +95,5 @@ func (r *myTasksTabStatusRepository) Update(ctx context.Context, input model.Upd
 		return nil, model.NewDBError(err)
 	}
 
-	return result, nil
+	return res, nil
 }

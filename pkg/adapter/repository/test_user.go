@@ -32,7 +32,7 @@ func (r *testUserRepository) Get(ctx context.Context, id model.ID, age *int) (*m
 		q.Where(testuser.AgeEQ(*age))
 	}
 
-	u, err := q.Only(ctx)
+	res, err := q.Only(ctx)
 
 	if err != nil {
 		if ent.IsNotSingular(err) {
@@ -47,17 +47,17 @@ func (r *testUserRepository) Get(ctx context.Context, id model.ID, age *int) (*m
 		return nil, model.NewDBError(err)
 	}
 
-	return u, nil
+	return res, nil
 }
 
 func (r *testUserRepository) List(ctx context.Context) ([]*model.TestUser, error) {
-	us, err := r.client.
+	res, err := r.client.
 		TestUser.Query().All(ctx)
 	if err != nil {
 		return nil, model.NewDBError(err)
 	}
 
-	return us, nil
+	return res, nil
 }
 
 func (r *testUserRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TestUserWhereInput, requestedFields []string) (*model.TestUserConnection, error) {
@@ -67,15 +67,15 @@ func (r *testUserRepository) ListWithPagination(ctx context.Context, after *mode
 		q.WithTestTodos()
 	}
 
-	us, err := q.Paginate(ctx, after, first, before, last, ent.WithTestUserFilter(where.Filter))
+	res, err := q.Paginate(ctx, after, first, before, last, ent.WithTestUserFilter(where.Filter))
 	if err != nil {
 		return nil, model.NewDBError(err)
 	}
-	return us, nil
+	return res, nil
 }
 
 func (r *testUserRepository) Create(ctx context.Context, input model.CreateTestUserInput) (*model.TestUser, error) {
-	u, err := r.client.
+	res, err := r.client.
 		TestUser.
 		Create().
 		SetInput(input).
@@ -85,7 +85,7 @@ func (r *testUserRepository) Create(ctx context.Context, input model.CreateTestU
 		return nil, model.NewDBError(err)
 	}
 
-	return u, nil
+	return res, nil
 }
 
 func (r *testUserRepository) CreateWithTodo(ctx context.Context, input model.CreateTestUserInput) (*model.TestUser, error) {
@@ -112,7 +112,7 @@ func (r *testUserRepository) CreateWithTodo(ctx context.Context, input model.Cre
 }
 
 func (r *testUserRepository) Update(ctx context.Context, input model.UpdateTestUserInput) (*model.TestUser, error) {
-	u, err := r.client.
+	res, err := r.client.
 		TestUser.UpdateOneID(input.ID).
 		SetInput(input).
 		Save(ctx)
@@ -125,5 +125,5 @@ func (r *testUserRepository) Update(ctx context.Context, input model.UpdateTestU
 		return nil, model.NewDBError(err)
 	}
 
-	return u, nil
+	return res, nil
 }

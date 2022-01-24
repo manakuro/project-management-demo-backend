@@ -26,7 +26,7 @@ func (r *favoriteProjectRepository) Get(ctx context.Context, where *model.Favori
 		return nil, model.NewInvalidParamError(nil)
 	}
 
-	result, err := q.Only(ctx)
+	res, err := q.Only(ctx)
 
 	if err != nil {
 		if ent.IsNotSingular(err) {
@@ -38,17 +38,17 @@ func (r *favoriteProjectRepository) Get(ctx context.Context, where *model.Favori
 		return nil, model.NewDBError(err)
 	}
 
-	return result, nil
+	return res, nil
 }
 
 func (r *favoriteProjectRepository) List(ctx context.Context) ([]*model.FavoriteProject, error) {
-	result, err := r.client.
+	res, err := r.client.
 		FavoriteProject.Query().All(ctx)
 	if err != nil {
 		return nil, model.NewDBError(err)
 	}
 
-	return result, nil
+	return res, nil
 }
 
 func (r *favoriteProjectRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.FavoriteProjectWhereInput, requestedFields []string) (*model.FavoriteProjectConnection, error) {
@@ -62,15 +62,15 @@ func (r *favoriteProjectRepository) ListWithPagination(ctx context.Context, afte
 		q.WithTeammate()
 	}
 
-	result, err := q.Paginate(ctx, after, first, before, last, ent.WithFavoriteProjectFilter(where.Filter))
+	res, err := q.Paginate(ctx, after, first, before, last, ent.WithFavoriteProjectFilter(where.Filter))
 	if err != nil {
 		return nil, model.NewDBError(err)
 	}
-	return result, nil
+	return res, nil
 }
 
 func (r *favoriteProjectRepository) Create(ctx context.Context, input model.CreateFavoriteProjectInput) (*model.FavoriteProject, error) {
-	result, err := r.client.
+	res, err := r.client.
 		FavoriteProject.
 		Create().
 		SetInput(input).
@@ -80,11 +80,11 @@ func (r *favoriteProjectRepository) Create(ctx context.Context, input model.Crea
 		return nil, model.NewDBError(err)
 	}
 
-	return result, nil
+	return res, nil
 }
 
 func (r *favoriteProjectRepository) Update(ctx context.Context, input model.UpdateFavoriteProjectInput) (*model.FavoriteProject, error) {
-	result, err := r.client.
+	res, err := r.client.
 		FavoriteProject.UpdateOneID(input.ID).
 		SetInput(input).
 		Save(ctx)
@@ -97,7 +97,7 @@ func (r *favoriteProjectRepository) Update(ctx context.Context, input model.Upda
 		return nil, model.NewDBError(err)
 	}
 
-	return result, nil
+	return res, nil
 }
 
 func (r *favoriteProjectRepository) Delete(ctx context.Context, input model.DeleteFavoriteProjectInput) (*model.FavoriteProject, error) {
@@ -128,7 +128,7 @@ func (r *favoriteProjectRepository) Delete(ctx context.Context, input model.Dele
 }
 
 func (r *favoriteProjectRepository) FavoriteProjectIDs(ctx context.Context, teammateID model.ID) ([]model.ID, error) {
-	result, err := r.client.FavoriteProject.Query().Where(favoriteproject.TeammateID(teammateID)).All(ctx)
+	res, err := r.client.FavoriteProject.Query().Where(favoriteproject.TeammateID(teammateID)).All(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
 			return nil, nil
@@ -137,8 +137,8 @@ func (r *favoriteProjectRepository) FavoriteProjectIDs(ctx context.Context, team
 		return nil, model.NewDBError(err)
 	}
 
-	ids := make([]model.ID, len(result))
-	for i, fp := range result {
+	ids := make([]model.ID, len(res))
+	for i, fp := range res {
 		ids[i] = fp.ProjectID
 	}
 

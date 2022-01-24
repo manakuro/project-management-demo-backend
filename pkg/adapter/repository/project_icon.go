@@ -25,7 +25,7 @@ func (r *projectIconRepository) Get(ctx context.Context, where *model.ProjectIco
 		return nil, model.NewInvalidParamError(nil)
 	}
 
-	result, err := q.Only(ctx)
+	res, err := q.Only(ctx)
 
 	if err != nil {
 		if ent.IsNotSingular(err) {
@@ -37,16 +37,16 @@ func (r *projectIconRepository) Get(ctx context.Context, where *model.ProjectIco
 		return nil, model.NewDBError(err)
 	}
 
-	return result, nil
+	return res, nil
 }
 
 func (r *projectIconRepository) List(ctx context.Context) ([]*model.ProjectIcon, error) {
-	result, err := r.client.ProjectIcon.Query().All(ctx)
+	res, err := r.client.ProjectIcon.Query().All(ctx)
 	if err != nil {
 		return nil, model.NewDBError(err)
 	}
 
-	return result, nil
+	return res, nil
 }
 
 func (r *projectIconRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ProjectIconWhereInput, requestedFields []string) (*model.ProjectIconConnection, error) {
@@ -56,15 +56,15 @@ func (r *projectIconRepository) ListWithPagination(ctx context.Context, after *m
 		q.WithIcon()
 	}
 
-	result, err := q.Paginate(ctx, after, first, before, last, ent.WithProjectIconFilter(where.Filter))
+	res, err := q.Paginate(ctx, after, first, before, last, ent.WithProjectIconFilter(where.Filter))
 	if err != nil {
 		return nil, model.NewDBError(err)
 	}
-	return result, nil
+	return res, nil
 }
 
 func (r *projectIconRepository) Create(ctx context.Context, input model.CreateProjectIconInput) (*model.ProjectIcon, error) {
-	result, err := r.client.
+	res, err := r.client.
 		ProjectIcon.
 		Create().
 		SetInput(input).
@@ -74,11 +74,11 @@ func (r *projectIconRepository) Create(ctx context.Context, input model.CreatePr
 		return nil, model.NewDBError(err)
 	}
 
-	return result, nil
+	return res, nil
 }
 
 func (r *projectIconRepository) Update(ctx context.Context, input model.UpdateProjectIconInput) (*model.ProjectIcon, error) {
-	result, err := r.client.
+	res, err := r.client.
 		ProjectIcon.
 		UpdateOneID(input.ID).
 		SetInput(input).
@@ -92,5 +92,5 @@ func (r *projectIconRepository) Update(ctx context.Context, input model.UpdatePr
 		return nil, model.NewDBError(err)
 	}
 
-	return result, nil
+	return res, nil
 }

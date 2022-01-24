@@ -25,7 +25,7 @@ func (r *teammateTaskColumnRepository) Get(ctx context.Context, where *model.Tea
 		return nil, model.NewInvalidParamError(nil)
 	}
 
-	result, err := q.Only(ctx)
+	res, err := q.Only(ctx)
 
 	if err != nil {
 		if ent.IsNotSingular(err) {
@@ -37,16 +37,16 @@ func (r *teammateTaskColumnRepository) Get(ctx context.Context, where *model.Tea
 		return nil, model.NewDBError(err)
 	}
 
-	return result, nil
+	return res, nil
 }
 
 func (r *teammateTaskColumnRepository) List(ctx context.Context) ([]*model.TeammateTaskColumn, error) {
-	result, err := r.client.TeammateTaskColumn.Query().All(ctx)
+	res, err := r.client.TeammateTaskColumn.Query().All(ctx)
 	if err != nil {
 		return nil, model.NewDBError(err)
 	}
 
-	return result, nil
+	return res, nil
 }
 
 func (r *teammateTaskColumnRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TeammateTaskColumnWhereInput, requestedFields []string) (*model.TeammateTaskColumnConnection, error) {
@@ -60,15 +60,15 @@ func (r *teammateTaskColumnRepository) ListWithPagination(ctx context.Context, a
 		q.WithTeammate()
 	}
 
-	result, err := q.Paginate(ctx, after, first, before, last, ent.WithTeammateTaskColumnFilter(where.Filter))
+	res, err := q.Paginate(ctx, after, first, before, last, ent.WithTeammateTaskColumnFilter(where.Filter))
 	if err != nil {
 		return nil, model.NewDBError(err)
 	}
-	return result, nil
+	return res, nil
 }
 
 func (r *teammateTaskColumnRepository) Create(ctx context.Context, input model.CreateTeammateTaskColumnInput) (*model.TeammateTaskColumn, error) {
-	result, err := r.client.
+	res, err := r.client.
 		TeammateTaskColumn.
 		Create().
 		SetInput(input).
@@ -78,11 +78,11 @@ func (r *teammateTaskColumnRepository) Create(ctx context.Context, input model.C
 		return nil, model.NewDBError(err)
 	}
 
-	return result, nil
+	return res, nil
 }
 
 func (r *teammateTaskColumnRepository) Update(ctx context.Context, input model.UpdateTeammateTaskColumnInput) (*model.TeammateTaskColumn, error) {
-	result, err := r.client.
+	res, err := r.client.
 		TeammateTaskColumn.UpdateOneID(input.ID).
 		SetInput(input).
 		Save(ctx)
@@ -95,5 +95,5 @@ func (r *teammateTaskColumnRepository) Update(ctx context.Context, input model.U
 		return nil, model.NewDBError(err)
 	}
 
-	return result, nil
+	return res, nil
 }

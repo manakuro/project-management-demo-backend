@@ -25,7 +25,7 @@ func (r *projectRepository) Get(ctx context.Context, where *model.ProjectWhereIn
 		return nil, model.NewInvalidParamError(nil)
 	}
 
-	result, err := q.Only(ctx)
+	res, err := q.Only(ctx)
 
 	if err != nil {
 		if ent.IsNotSingular(err) {
@@ -37,16 +37,16 @@ func (r *projectRepository) Get(ctx context.Context, where *model.ProjectWhereIn
 		return nil, model.NewDBError(err)
 	}
 
-	return result, nil
+	return res, nil
 }
 
 func (r *projectRepository) List(ctx context.Context) ([]*model.Project, error) {
-	result, err := r.client.Project.Query().All(ctx)
+	res, err := r.client.Project.Query().All(ctx)
 	if err != nil {
 		return nil, model.NewDBError(err)
 	}
 
-	return result, nil
+	return res, nil
 }
 
 func (r *projectRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ProjectWhereInput, requestedFields []string) (*model.ProjectConnection, error) {
@@ -73,15 +73,15 @@ func (r *projectRepository) ListWithPagination(ctx context.Context, after *model
 		})
 	}
 
-	result, err := q.Paginate(ctx, after, first, before, last, ent.WithProjectFilter(where.Filter))
+	res, err := q.Paginate(ctx, after, first, before, last, ent.WithProjectFilter(where.Filter))
 	if err != nil {
 		return nil, model.NewDBError(err)
 	}
-	return result, nil
+	return res, nil
 }
 
 func (r *projectRepository) Create(ctx context.Context, input model.CreateProjectInput) (*model.Project, error) {
-	result, err := r.client.
+	res, err := r.client.
 		Project.
 		Create().
 		SetInput(input).
@@ -91,11 +91,11 @@ func (r *projectRepository) Create(ctx context.Context, input model.CreateProjec
 		return nil, model.NewDBError(err)
 	}
 
-	return result, nil
+	return res, nil
 }
 
 func (r *projectRepository) Update(ctx context.Context, input model.UpdateProjectInput) (*model.Project, error) {
-	result, err := r.client.
+	res, err := r.client.
 		Project.UpdateOneID(input.ID).
 		SetInput(input).
 		Save(ctx)
@@ -108,5 +108,5 @@ func (r *projectRepository) Update(ctx context.Context, input model.UpdateProjec
 		return nil, model.NewDBError(err)
 	}
 
-	return result, nil
+	return res, nil
 }

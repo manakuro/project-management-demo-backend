@@ -26,7 +26,7 @@ func (r *favoriteWorkspaceRepository) Get(ctx context.Context, where *model.Favo
 		return nil, model.NewInvalidParamError(nil)
 	}
 
-	result, err := q.Only(ctx)
+	res, err := q.Only(ctx)
 
 	if err != nil {
 		if ent.IsNotSingular(err) {
@@ -38,17 +38,17 @@ func (r *favoriteWorkspaceRepository) Get(ctx context.Context, where *model.Favo
 		return nil, model.NewDBError(err)
 	}
 
-	return result, nil
+	return res, nil
 }
 
 func (r *favoriteWorkspaceRepository) List(ctx context.Context) ([]*model.FavoriteWorkspace, error) {
-	result, err := r.client.
+	res, err := r.client.
 		FavoriteWorkspace.Query().All(ctx)
 	if err != nil {
 		return nil, model.NewDBError(err)
 	}
 
-	return result, nil
+	return res, nil
 }
 
 func (r *favoriteWorkspaceRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.FavoriteWorkspaceWhereInput, requestedFields []string) (*model.FavoriteWorkspaceConnection, error) {
@@ -62,15 +62,15 @@ func (r *favoriteWorkspaceRepository) ListWithPagination(ctx context.Context, af
 		q.WithTeammate()
 	}
 
-	result, err := q.Paginate(ctx, after, first, before, last, ent.WithFavoriteWorkspaceFilter(where.Filter))
+	res, err := q.Paginate(ctx, after, first, before, last, ent.WithFavoriteWorkspaceFilter(where.Filter))
 	if err != nil {
 		return nil, model.NewDBError(err)
 	}
-	return result, nil
+	return res, nil
 }
 
 func (r *favoriteWorkspaceRepository) Create(ctx context.Context, input model.CreateFavoriteWorkspaceInput) (*model.FavoriteWorkspace, error) {
-	result, err := r.client.
+	res, err := r.client.
 		FavoriteWorkspace.
 		Create().
 		SetInput(input).
@@ -80,11 +80,11 @@ func (r *favoriteWorkspaceRepository) Create(ctx context.Context, input model.Cr
 		return nil, model.NewDBError(err)
 	}
 
-	return result, nil
+	return res, nil
 }
 
 func (r *favoriteWorkspaceRepository) Update(ctx context.Context, input model.UpdateFavoriteWorkspaceInput) (*model.FavoriteWorkspace, error) {
-	result, err := r.client.
+	res, err := r.client.
 		FavoriteWorkspace.UpdateOneID(input.ID).
 		SetInput(input).
 		Save(ctx)
@@ -97,7 +97,7 @@ func (r *favoriteWorkspaceRepository) Update(ctx context.Context, input model.Up
 		return nil, model.NewDBError(err)
 	}
 
-	return result, nil
+	return res, nil
 }
 
 func (r *favoriteWorkspaceRepository) Delete(ctx context.Context, input model.DeleteFavoriteWorkspaceInput) (*model.FavoriteWorkspace, error) {
@@ -136,7 +136,7 @@ func (r *favoriteWorkspaceRepository) FavoriteWorkspaceIDs(ctx context.Context, 
 		q.Where(favoriteworkspace.WorkspaceID(*workspaceID))
 	}
 
-	result, err := q.Where(favoriteworkspace.TeammateID(teammateID)).All(ctx)
+	res, err := q.Where(favoriteworkspace.TeammateID(teammateID)).All(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
 			return nil, nil
@@ -145,8 +145,8 @@ func (r *favoriteWorkspaceRepository) FavoriteWorkspaceIDs(ctx context.Context, 
 		return nil, model.NewDBError(err)
 	}
 
-	ids := make([]model.ID, len(result))
-	for i, fp := range result {
+	ids := make([]model.ID, len(res))
+	for i, fp := range res {
 		ids[i] = fp.WorkspaceID
 	}
 

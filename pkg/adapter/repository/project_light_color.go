@@ -25,7 +25,7 @@ func (r *projectLightColorRepository) Get(ctx context.Context, where *model.Proj
 		return nil, model.NewInvalidParamError(nil)
 	}
 
-	result, err := q.Only(ctx)
+	res, err := q.Only(ctx)
 
 	if err != nil {
 		if ent.IsNotSingular(err) {
@@ -37,16 +37,16 @@ func (r *projectLightColorRepository) Get(ctx context.Context, where *model.Proj
 		return nil, model.NewDBError(err)
 	}
 
-	return result, nil
+	return res, nil
 }
 
 func (r *projectLightColorRepository) List(ctx context.Context) ([]*model.ProjectLightColor, error) {
-	result, err := r.client.ProjectLightColor.Query().All(ctx)
+	res, err := r.client.ProjectLightColor.Query().All(ctx)
 	if err != nil {
 		return nil, model.NewDBError(err)
 	}
 
-	return result, nil
+	return res, nil
 }
 
 func (r *projectLightColorRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ProjectLightColorWhereInput, requestedFields []string) (*model.ProjectLightColorConnection, error) {
@@ -56,15 +56,15 @@ func (r *projectLightColorRepository) ListWithPagination(ctx context.Context, af
 		q.WithColor()
 	}
 
-	result, err := q.Paginate(ctx, after, first, before, last, ent.WithProjectLightColorFilter(where.Filter))
+	res, err := q.Paginate(ctx, after, first, before, last, ent.WithProjectLightColorFilter(where.Filter))
 	if err != nil {
 		return nil, model.NewDBError(err)
 	}
-	return result, nil
+	return res, nil
 }
 
 func (r *projectLightColorRepository) Create(ctx context.Context, input model.CreateProjectLightColorInput) (*model.ProjectLightColor, error) {
-	result, err := r.client.
+	res, err := r.client.
 		ProjectLightColor.
 		Create().
 		SetInput(input).
@@ -74,11 +74,11 @@ func (r *projectLightColorRepository) Create(ctx context.Context, input model.Cr
 		return nil, model.NewDBError(err)
 	}
 
-	return result, nil
+	return res, nil
 }
 
 func (r *projectLightColorRepository) Update(ctx context.Context, input model.UpdateProjectLightColorInput) (*model.ProjectLightColor, error) {
-	result, err := r.client.
+	res, err := r.client.
 		ProjectLightColor.
 		UpdateOneID(input.ID).
 		SetInput(input).
@@ -92,5 +92,5 @@ func (r *projectLightColorRepository) Update(ctx context.Context, input model.Up
 		return nil, model.NewDBError(err)
 	}
 
-	return result, nil
+	return res, nil
 }

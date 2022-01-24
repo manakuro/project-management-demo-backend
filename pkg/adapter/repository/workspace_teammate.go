@@ -25,7 +25,7 @@ func (r *workspaceTeammateRepository) Get(ctx context.Context, where *model.Work
 		return nil, model.NewInvalidParamError(nil)
 	}
 
-	result, err := q.Only(ctx)
+	res, err := q.Only(ctx)
 
 	if err != nil {
 		if ent.IsNotSingular(err) {
@@ -37,17 +37,17 @@ func (r *workspaceTeammateRepository) Get(ctx context.Context, where *model.Work
 		return nil, model.NewDBError(err)
 	}
 
-	return result, nil
+	return res, nil
 }
 
 func (r *workspaceTeammateRepository) List(ctx context.Context) ([]*model.WorkspaceTeammate, error) {
-	result, err := r.client.
+	res, err := r.client.
 		WorkspaceTeammate.Query().All(ctx)
 	if err != nil {
 		return nil, model.NewDBError(err)
 	}
 
-	return result, nil
+	return res, nil
 }
 
 func (r *workspaceTeammateRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.WorkspaceTeammateWhereInput, requestedFields []string) (*model.WorkspaceTeammateConnection, error) {
@@ -61,15 +61,15 @@ func (r *workspaceTeammateRepository) ListWithPagination(ctx context.Context, af
 		q.WithTeammate()
 	}
 
-	result, err := q.Paginate(ctx, after, first, before, last, ent.WithWorkspaceTeammateFilter(where.Filter))
+	res, err := q.Paginate(ctx, after, first, before, last, ent.WithWorkspaceTeammateFilter(where.Filter))
 	if err != nil {
 		return nil, model.NewDBError(err)
 	}
-	return result, nil
+	return res, nil
 }
 
 func (r *workspaceTeammateRepository) Create(ctx context.Context, input model.CreateWorkspaceTeammateInput) (*model.WorkspaceTeammate, error) {
-	result, err := r.client.
+	res, err := r.client.
 		WorkspaceTeammate.
 		Create().
 		SetInput(input).
@@ -79,11 +79,11 @@ func (r *workspaceTeammateRepository) Create(ctx context.Context, input model.Cr
 		return nil, model.NewDBError(err)
 	}
 
-	return result, nil
+	return res, nil
 }
 
 func (r *workspaceTeammateRepository) Update(ctx context.Context, input model.UpdateWorkspaceTeammateInput) (*model.WorkspaceTeammate, error) {
-	result, err := r.client.
+	res, err := r.client.
 		WorkspaceTeammate.UpdateOneID(input.ID).
 		SetInput(input).
 		Save(ctx)
@@ -96,5 +96,5 @@ func (r *workspaceTeammateRepository) Update(ctx context.Context, input model.Up
 		return nil, model.NewDBError(err)
 	}
 
-	return result, nil
+	return res, nil
 }

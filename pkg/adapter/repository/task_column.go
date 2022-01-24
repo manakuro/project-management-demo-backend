@@ -24,7 +24,7 @@ func (r *taskColumnRepository) Get(ctx context.Context, where *model.TaskColumnW
 		return nil, model.NewInvalidParamError(nil)
 	}
 
-	result, err := q.Only(ctx)
+	res, err := q.Only(ctx)
 
 	if err != nil {
 		if ent.IsNotSingular(err) {
@@ -36,30 +36,30 @@ func (r *taskColumnRepository) Get(ctx context.Context, where *model.TaskColumnW
 		return nil, model.NewDBError(err)
 	}
 
-	return result, nil
+	return res, nil
 }
 
 func (r *taskColumnRepository) List(ctx context.Context) ([]*model.TaskColumn, error) {
-	result, err := r.client.TaskColumn.Query().All(ctx)
+	res, err := r.client.TaskColumn.Query().All(ctx)
 	if err != nil {
 		return nil, model.NewDBError(err)
 	}
 
-	return result, nil
+	return res, nil
 }
 
 func (r *taskColumnRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TaskColumnWhereInput, requestedFields []string) (*model.TaskColumnConnection, error) {
 	q := r.client.TaskColumn.Query()
 
-	result, err := q.Paginate(ctx, after, first, before, last, ent.WithTaskColumnFilter(where.Filter))
+	res, err := q.Paginate(ctx, after, first, before, last, ent.WithTaskColumnFilter(where.Filter))
 	if err != nil {
 		return nil, model.NewDBError(err)
 	}
-	return result, nil
+	return res, nil
 }
 
 func (r *taskColumnRepository) Create(ctx context.Context, input model.CreateTaskColumnInput) (*model.TaskColumn, error) {
-	result, err := r.client.
+	res, err := r.client.
 		TaskColumn.
 		Create().
 		SetInput(input).
@@ -69,11 +69,11 @@ func (r *taskColumnRepository) Create(ctx context.Context, input model.CreateTas
 		return nil, model.NewDBError(err)
 	}
 
-	return result, nil
+	return res, nil
 }
 
 func (r *taskColumnRepository) Update(ctx context.Context, input model.UpdateTaskColumnInput) (*model.TaskColumn, error) {
-	result, err := r.client.
+	res, err := r.client.
 		TaskColumn.UpdateOneID(input.ID).
 		SetInput(input).
 		Save(ctx)
@@ -86,5 +86,5 @@ func (r *taskColumnRepository) Update(ctx context.Context, input model.UpdateTas
 		return nil, model.NewDBError(err)
 	}
 
-	return result, nil
+	return res, nil
 }

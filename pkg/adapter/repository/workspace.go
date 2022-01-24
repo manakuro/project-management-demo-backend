@@ -38,7 +38,7 @@ func (r *workspaceRepository) Get(ctx context.Context, where *model.WorkspaceWhe
 		})
 	}
 
-	result, err := q.Only(ctx)
+	res, err := q.Only(ctx)
 
 	if err != nil {
 		if ent.IsNotSingular(err) {
@@ -50,17 +50,17 @@ func (r *workspaceRepository) Get(ctx context.Context, where *model.WorkspaceWhe
 		return nil, model.NewDBError(err)
 	}
 
-	return result, nil
+	return res, nil
 }
 
 func (r *workspaceRepository) List(ctx context.Context) ([]*model.Workspace, error) {
-	result, err := r.client.
+	res, err := r.client.
 		Workspace.Query().All(ctx)
 	if err != nil {
 		return nil, model.NewDBError(err)
 	}
 
-	return result, nil
+	return res, nil
 }
 
 func (r *workspaceRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.WorkspaceWhereInput, requestFields []string) (*model.WorkspaceConnection, error) {
@@ -74,15 +74,15 @@ func (r *workspaceRepository) ListWithPagination(ctx context.Context, after *mod
 		})
 	}
 
-	result, err := q.Paginate(ctx, after, first, before, last, ent.WithWorkspaceFilter(where.Filter))
+	res, err := q.Paginate(ctx, after, first, before, last, ent.WithWorkspaceFilter(where.Filter))
 	if err != nil {
 		return nil, model.NewDBError(err)
 	}
-	return result, nil
+	return res, nil
 }
 
 func (r *workspaceRepository) Create(ctx context.Context, input model.CreateWorkspaceInput) (*model.Workspace, error) {
-	result, err := r.client.
+	res, err := r.client.
 		Workspace.
 		Create().
 		SetInput(input).
@@ -92,11 +92,11 @@ func (r *workspaceRepository) Create(ctx context.Context, input model.CreateWork
 		return nil, model.NewDBError(err)
 	}
 
-	return result, nil
+	return res, nil
 }
 
 func (r *workspaceRepository) Update(ctx context.Context, input model.UpdateWorkspaceInput) (*model.Workspace, error) {
-	result, err := r.client.
+	res, err := r.client.
 		Workspace.UpdateOneID(input.ID).
 		SetInput(input).
 		Save(ctx)
@@ -109,5 +109,5 @@ func (r *workspaceRepository) Update(ctx context.Context, input model.UpdateWork
 		return nil, model.NewDBError(err)
 	}
 
-	return result, nil
+	return res, nil
 }

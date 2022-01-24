@@ -24,7 +24,7 @@ func (r *taskSectionRepository) Get(ctx context.Context, where *model.TaskSectio
 		return nil, model.NewInvalidParamError(nil)
 	}
 
-	result, err := q.Only(ctx)
+	res, err := q.Only(ctx)
 
 	if err != nil {
 		if ent.IsNotSingular(err) {
@@ -36,30 +36,30 @@ func (r *taskSectionRepository) Get(ctx context.Context, where *model.TaskSectio
 		return nil, model.NewDBError(err)
 	}
 
-	return result, nil
+	return res, nil
 }
 
 func (r *taskSectionRepository) List(ctx context.Context) ([]*model.TaskSection, error) {
-	result, err := r.client.TaskSection.Query().All(ctx)
+	res, err := r.client.TaskSection.Query().All(ctx)
 	if err != nil {
 		return nil, model.NewDBError(err)
 	}
 
-	return result, nil
+	return res, nil
 }
 
 func (r *taskSectionRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TaskSectionWhereInput, requestedFields []string) (*model.TaskSectionConnection, error) {
 	q := r.client.TaskSection.Query()
 
-	result, err := q.Paginate(ctx, after, first, before, last, ent.WithTaskSectionFilter(where.Filter))
+	res, err := q.Paginate(ctx, after, first, before, last, ent.WithTaskSectionFilter(where.Filter))
 	if err != nil {
 		return nil, model.NewDBError(err)
 	}
-	return result, nil
+	return res, nil
 }
 
 func (r *taskSectionRepository) Create(ctx context.Context, input model.CreateTaskSectionInput) (*model.TaskSection, error) {
-	result, err := r.client.
+	res, err := r.client.
 		TaskSection.
 		Create().
 		SetInput(input).
@@ -69,11 +69,11 @@ func (r *taskSectionRepository) Create(ctx context.Context, input model.CreateTa
 		return nil, model.NewDBError(err)
 	}
 
-	return result, nil
+	return res, nil
 }
 
 func (r *taskSectionRepository) Update(ctx context.Context, input model.UpdateTaskSectionInput) (*model.TaskSection, error) {
-	result, err := r.client.
+	res, err := r.client.
 		TaskSection.UpdateOneID(input.ID).
 		SetInput(input).
 		Save(ctx)
@@ -86,5 +86,5 @@ func (r *taskSectionRepository) Update(ctx context.Context, input model.UpdateTa
 		return nil, model.NewDBError(err)
 	}
 
-	return result, nil
+	return res, nil
 }

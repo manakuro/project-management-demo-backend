@@ -25,7 +25,7 @@ func (r *projectTaskColumnRepository) Get(ctx context.Context, where *model.Proj
 		return nil, model.NewInvalidParamError(nil)
 	}
 
-	result, err := q.Only(ctx)
+	res, err := q.Only(ctx)
 
 	if err != nil {
 		if ent.IsNotSingular(err) {
@@ -37,16 +37,16 @@ func (r *projectTaskColumnRepository) Get(ctx context.Context, where *model.Proj
 		return nil, model.NewDBError(err)
 	}
 
-	return result, nil
+	return res, nil
 }
 
 func (r *projectTaskColumnRepository) List(ctx context.Context) ([]*model.ProjectTaskColumn, error) {
-	result, err := r.client.ProjectTaskColumn.Query().All(ctx)
+	res, err := r.client.ProjectTaskColumn.Query().All(ctx)
 	if err != nil {
 		return nil, model.NewDBError(err)
 	}
 
-	return result, nil
+	return res, nil
 }
 
 func (r *projectTaskColumnRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ProjectTaskColumnWhereInput, requestedFields []string) (*model.ProjectTaskColumnConnection, error) {
@@ -60,15 +60,15 @@ func (r *projectTaskColumnRepository) ListWithPagination(ctx context.Context, af
 		q.WithProject()
 	}
 
-	result, err := q.Paginate(ctx, after, first, before, last, ent.WithProjectTaskColumnFilter(where.Filter))
+	res, err := q.Paginate(ctx, after, first, before, last, ent.WithProjectTaskColumnFilter(where.Filter))
 	if err != nil {
 		return nil, model.NewDBError(err)
 	}
-	return result, nil
+	return res, nil
 }
 
 func (r *projectTaskColumnRepository) Create(ctx context.Context, input model.CreateProjectTaskColumnInput) (*model.ProjectTaskColumn, error) {
-	result, err := r.client.
+	res, err := r.client.
 		ProjectTaskColumn.
 		Create().
 		SetInput(input).
@@ -78,11 +78,11 @@ func (r *projectTaskColumnRepository) Create(ctx context.Context, input model.Cr
 		return nil, model.NewDBError(err)
 	}
 
-	return result, nil
+	return res, nil
 }
 
 func (r *projectTaskColumnRepository) Update(ctx context.Context, input model.UpdateProjectTaskColumnInput) (*model.ProjectTaskColumn, error) {
-	result, err := r.client.
+	res, err := r.client.
 		ProjectTaskColumn.UpdateOneID(input.ID).
 		SetInput(input).
 		Save(ctx)
@@ -95,5 +95,5 @@ func (r *projectTaskColumnRepository) Update(ctx context.Context, input model.Up
 		return nil, model.NewDBError(err)
 	}
 
-	return result, nil
+	return res, nil
 }

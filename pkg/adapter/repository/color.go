@@ -27,7 +27,7 @@ func (r *colorRepository) Get(ctx context.Context, id model.ID) (*model.Color, e
 	}
 	q.Where(color.IDEQ(id))
 
-	result, err := q.Only(ctx)
+	res, err := q.Only(ctx)
 
 	if err != nil {
 		if ent.IsNotSingular(err) {
@@ -41,20 +41,20 @@ func (r *colorRepository) Get(ctx context.Context, id model.ID) (*model.Color, e
 		return nil, model.NewDBError(err)
 	}
 
-	return result, nil
+	return res, nil
 }
 
 func (r *colorRepository) List(ctx context.Context) ([]*model.Color, error) {
-	result, err := r.client.Color.Query().All(ctx)
+	res, err := r.client.Color.Query().All(ctx)
 	if err != nil {
 		return nil, model.NewDBError(err)
 	}
 
-	return result, nil
+	return res, nil
 }
 
 func (r *colorRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ColorWhereInput) (*model.ColorConnection, error) {
-	result, err := r.client.
+	res, err := r.client.
 		Color.
 		Query().
 		Paginate(ctx, after, first, before, last, ent.WithColorFilter(where.Filter))
@@ -63,11 +63,11 @@ func (r *colorRepository) ListWithPagination(ctx context.Context, after *model.C
 		return nil, model.NewDBError(err)
 	}
 
-	return result, nil
+	return res, nil
 }
 
 func (r *colorRepository) Create(ctx context.Context, input model.CreateColorInput) (*model.Color, error) {
-	result, err := r.client.
+	res, err := r.client.
 		Color.
 		Create().
 		SetInput(input).
@@ -77,11 +77,11 @@ func (r *colorRepository) Create(ctx context.Context, input model.CreateColorInp
 		return nil, model.NewDBError(err)
 	}
 
-	return result, nil
+	return res, nil
 }
 
 func (r *colorRepository) Update(ctx context.Context, input model.UpdateColorInput) (*model.Color, error) {
-	result, err := r.client.
+	res, err := r.client.
 		Color.UpdateOneID(input.ID).
 		SetInput(input).
 		Save(ctx)
@@ -94,5 +94,5 @@ func (r *colorRepository) Update(ctx context.Context, input model.UpdateColorInp
 		return nil, model.NewDBError(err)
 	}
 
-	return result, nil
+	return res, nil
 }
