@@ -42,6 +42,9 @@ type ProjectTeammate func(*sql.Selector)
 // TaskColumn is the predicate function for taskcolumn builders.
 type TaskColumn func(*sql.Selector)
 
+// TaskSection is the predicate function for tasksection builders.
+type TaskSection func(*sql.Selector)
+
 // Teammate is the predicate function for teammate builders.
 type Teammate func(*sql.Selector)
 

@@ -314,6 +314,19 @@ var (
 		Columns:    TaskColumnsColumns,
 		PrimaryKey: []*schema.Column{TaskColumnsColumns[0]},
 	}
+	// TaskSectionsColumns holds the columns for the "task_sections" table.
+	TaskSectionsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+		{Name: "name", Type: field.TypeString, Size: 255},
+		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
+		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
+	}
+	// TaskSectionsTable holds the schema information for the "task_sections" table.
+	TaskSectionsTable = &schema.Table{
+		Name:       "task_sections",
+		Columns:    TaskSectionsColumns,
+		PrimaryKey: []*schema.Column{TaskSectionsColumns[0]},
+	}
 	// TeammatesColumns holds the columns for the "teammates" table.
 	TeammatesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString},
@@ -467,6 +480,7 @@ var (
 		ProjectTaskColumnsTable,
 		ProjectTeammatesTable,
 		TaskColumnsTable,
+		TaskSectionsTable,
 		TeammatesTable,
 		TeammateTaskColumnsTable,
 		TestTodosTable,
