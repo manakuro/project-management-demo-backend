@@ -45,8 +45,8 @@ func (r *projectResolver) TeammateIds(ctx context.Context, obj *ent.Project) ([]
 	}
 
 	ids := make([]string, len(projectTeammates))
-	for i, projectTeammate := range projectTeammates {
-		ids[i] = string(projectTeammate.TeammateID)
+	for i, pt := range projectTeammates {
+		ids[i] = string(pt.TeammateID)
 	}
 
 	return ids, nil

@@ -15,46 +15,46 @@ import (
 )
 
 func (r *mutationResolver) CreateTaskSection(ctx context.Context, input ent.CreateTaskSectionInput) (*ent.TaskSection, error) {
-	result, err := r.controller.TaskSection.Create(ctx, input)
+	t, err := r.controller.TaskSection.Create(ctx, input)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
-	return result, nil
+	return t, nil
 }
 
 func (r *mutationResolver) UpdateTaskSection(ctx context.Context, input ent.UpdateTaskSectionInput) (*ent.TaskSection, error) {
-	result, err := r.controller.TaskSection.Update(ctx, input)
+	t, err := r.controller.TaskSection.Update(ctx, input)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
 
 	for _, u := range r.subscriptions.TaskSectionUpdated {
-		if u.ID == result.ID {
-			u.Ch <- result
+		if u.ID == t.ID {
+			u.Ch <- t
 		}
 	}
 
-	return result, nil
+	return t, nil
 }
 
 func (r *queryResolver) TaskSection(ctx context.Context, where *ent.TaskSectionWhereInput) (*ent.TaskSection, error) {
-	result, err := r.controller.TaskSection.Get(ctx, where)
+	t, err := r.controller.TaskSection.Get(ctx, where)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
 
-	return result, nil
+	return t, nil
 }
 
 func (r *queryResolver) TaskSections(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskSectionWhereInput) (*ent.TaskSectionConnection, error) {
 	requestedFields := graphqlutil.GetRequestedFields(ctx)
 
-	result, err := r.controller.TaskSection.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
+	ts, err := r.controller.TaskSection.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
 
-	return result, nil
+	return ts, nil
 }
 
 func (r *subscriptionResolver) TaskSectionUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.TaskSection, error) {

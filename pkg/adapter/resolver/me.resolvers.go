@@ -23,30 +23,30 @@ func (r *meResolver) UpdatedAt(ctx context.Context, obj *model.Me) (string, erro
 }
 
 func (r *mutationResolver) UpdateMe(ctx context.Context, input model.UpdateMeInput) (*model.Me, error) {
-	m, err := r.controller.Me.Update(ctx, input)
+	me, err := r.controller.Me.Update(ctx, input)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
 
 	for _, mu := range r.subscriptions.MeUpdated {
-		if mu.ID == m.ID {
-			mu.Ch <- m
+		if mu.ID == me.ID {
+			mu.Ch <- me
 		}
 	}
 
 	for _, tu := range r.subscriptions.TeammateUpdated {
-		if tu.ID == m.ID {
+		if tu.ID == me.ID {
 			tu.Ch <- &model.Teammate{
-				ID:        m.ID,
-				Email:     m.Email,
-				Name:      m.Name,
-				CreatedAt: m.CreatedAt,
-				UpdatedAt: m.UpdatedAt,
+				ID:        me.ID,
+				Email:     me.Email,
+				Name:      me.Name,
+				CreatedAt: me.CreatedAt,
+				UpdatedAt: me.UpdatedAt,
 			}
 		}
 	}
 
-	return m, err
+	return me, err
 }
 
 func (r *queryResolver) Me(ctx context.Context) (*model.Me, error) {

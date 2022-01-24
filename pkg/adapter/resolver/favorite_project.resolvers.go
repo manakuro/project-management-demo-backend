@@ -42,7 +42,7 @@ func (r *mutationResolver) CreateFavoriteProject(ctx context.Context, input ent.
 }
 
 func (r *mutationResolver) DeleteFavoriteProject(ctx context.Context, input model.DeleteFavoriteProjectInput) (*ent.FavoriteProject, error) {
-	result, err := r.controller.FavoriteProject.Delete(ctx, input)
+	f, err := r.controller.FavoriteProject.Delete(ctx, input)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
@@ -56,7 +56,7 @@ func (r *mutationResolver) DeleteFavoriteProject(ctx context.Context, input mode
 		}
 	}()
 
-	return result, nil
+	return f, nil
 }
 
 func (r *queryResolver) FavoriteProject(ctx context.Context, where *ent.FavoriteProjectWhereInput) (*ent.FavoriteProject, error) {

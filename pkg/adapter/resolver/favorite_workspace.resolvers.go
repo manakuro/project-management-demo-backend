@@ -42,7 +42,7 @@ func (r *mutationResolver) CreateFavoriteWorkspace(ctx context.Context, input en
 }
 
 func (r *mutationResolver) DeleteFavoriteWorkspace(ctx context.Context, input model.DeleteFavoriteWorkspaceInput) (*ent.FavoriteWorkspace, error) {
-	result, err := r.controller.FavoriteWorkspace.Delete(ctx, input)
+	f, err := r.controller.FavoriteWorkspace.Delete(ctx, input)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
@@ -56,7 +56,7 @@ func (r *mutationResolver) DeleteFavoriteWorkspace(ctx context.Context, input mo
 		}
 	}()
 
-	return result, nil
+	return f, nil
 }
 
 func (r *queryResolver) FavoriteWorkspace(ctx context.Context, where *ent.FavoriteWorkspaceWhereInput) (*ent.FavoriteWorkspace, error) {

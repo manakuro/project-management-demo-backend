@@ -13,46 +13,46 @@ import (
 )
 
 func (r *mutationResolver) CreateTaskColumn(ctx context.Context, input ent.CreateTaskColumnInput) (*ent.TaskColumn, error) {
-	result, err := r.controller.TaskColumn.Create(ctx, input)
+	t, err := r.controller.TaskColumn.Create(ctx, input)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
 
-	return result, nil
+	return t, nil
 }
 
 func (r *mutationResolver) UpdateTaskColumn(ctx context.Context, input ent.UpdateTaskColumnInput) (*ent.TaskColumn, error) {
-	result, err := r.controller.TaskColumn.Update(ctx, input)
+	t, err := r.controller.TaskColumn.Update(ctx, input)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
 
 	for _, u := range r.subscriptions.TaskColumnUpdated {
-		if u.ID == result.ID {
-			u.Ch <- result
+		if u.ID == t.ID {
+			u.Ch <- t
 		}
 	}
 
-	return result, nil
+	return t, nil
 }
 
 func (r *queryResolver) TaskColumn(ctx context.Context, where *ent.TaskColumnWhereInput) (*ent.TaskColumn, error) {
-	result, err := r.controller.TaskColumn.Get(ctx, where)
+	t, err := r.controller.TaskColumn.Get(ctx, where)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
-	return result, nil
+	return t, nil
 }
 
 func (r *queryResolver) TaskColumns(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskColumnWhereInput) (*ent.TaskColumnConnection, error) {
 	requestedFields := graphqlutil.GetRequestedFields(ctx)
 
-	result, err := r.controller.TaskColumn.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
+	ts, err := r.controller.TaskColumn.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
 
-	return result, nil
+	return ts, nil
 }
 
 func (r *taskColumnResolver) CreatedAt(ctx context.Context, obj *ent.TaskColumn) (string, error) {

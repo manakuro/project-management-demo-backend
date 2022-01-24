@@ -15,26 +15,26 @@ import (
 )
 
 func (r *mutationResolver) CreateProjectTaskColumn(ctx context.Context, input ent.CreateProjectTaskColumnInput) (*ent.ProjectTaskColumn, error) {
-	result, err := r.controller.ProjectTaskColumn.Create(ctx, input)
+	p, err := r.controller.ProjectTaskColumn.Create(ctx, input)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
-	return result, nil
+	return p, nil
 }
 
 func (r *mutationResolver) UpdateProjectTaskColumn(ctx context.Context, input ent.UpdateProjectTaskColumnInput) (*ent.ProjectTaskColumn, error) {
-	result, err := r.controller.ProjectTaskColumn.Update(ctx, input)
+	p, err := r.controller.ProjectTaskColumn.Update(ctx, input)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
 
 	for _, u := range r.subscriptions.ProjectTaskColumnUpdated {
-		if u.ID == result.ID {
-			u.Ch <- result
+		if u.ID == p.ID {
+			u.Ch <- p
 		}
 	}
 
-	return result, nil
+	return p, nil
 }
 
 func (r *projectTaskColumnResolver) CreatedAt(ctx context.Context, obj *ent.ProjectTaskColumn) (string, error) {
@@ -46,22 +46,22 @@ func (r *projectTaskColumnResolver) UpdatedAt(ctx context.Context, obj *ent.Proj
 }
 
 func (r *queryResolver) ProjectTaskColumn(ctx context.Context, where *ent.ProjectTaskColumnWhereInput) (*ent.ProjectTaskColumn, error) {
-	result, err := r.controller.ProjectTaskColumn.Get(ctx, where)
+	p, err := r.controller.ProjectTaskColumn.Get(ctx, where)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
-	return result, nil
+	return p, nil
 }
 
 func (r *queryResolver) ProjectTaskColumns(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectTaskColumnWhereInput) (*ent.ProjectTaskColumnConnection, error) {
 	requestedFields := graphqlutil.GetRequestedFields(ctx)
 
-	result, err := r.controller.ProjectTaskColumn.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
+	ps, err := r.controller.ProjectTaskColumn.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
 
-	return result, nil
+	return ps, nil
 }
 
 func (r *subscriptionResolver) ProjectTaskColumnUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.ProjectTaskColumn, error) {

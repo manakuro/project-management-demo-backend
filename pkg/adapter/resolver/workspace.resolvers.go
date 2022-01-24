@@ -15,46 +15,46 @@ import (
 )
 
 func (r *mutationResolver) CreateWorkspace(ctx context.Context, input ent.CreateWorkspaceInput) (*ent.Workspace, error) {
-	u, err := r.controller.Workspace.Create(ctx, input)
+	w, err := r.controller.Workspace.Create(ctx, input)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
-	return u, nil
+	return w, nil
 }
 
 func (r *mutationResolver) UpdateWorkspace(ctx context.Context, input ent.UpdateWorkspaceInput) (*ent.Workspace, error) {
-	u, err := r.controller.Workspace.Update(ctx, input)
+	w, err := r.controller.Workspace.Update(ctx, input)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
 
-	for _, tu := range r.subscriptions.WorkspaceUpdated {
-		if tu.ID == u.ID {
-			tu.Ch <- u
+	for _, wu := range r.subscriptions.WorkspaceUpdated {
+		if wu.ID == w.ID {
+			wu.Ch <- w
 		}
 	}
 
-	return u, nil
+	return w, nil
 }
 
 func (r *queryResolver) Workspace(ctx context.Context, where *ent.WorkspaceWhereInput) (*ent.Workspace, error) {
 	requestFields := graphqlutil.GetRequestedFields(ctx)
 
-	u, err := r.controller.Workspace.Get(ctx, where, requestFields)
+	ws, err := r.controller.Workspace.Get(ctx, where, requestFields)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
-	return u, nil
+	return ws, nil
 }
 
 func (r *queryResolver) Workspaces(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.WorkspaceWhereInput) (*ent.WorkspaceConnection, error) {
 	requestFields := graphqlutil.GetRequestedFields(ctx)
 
-	us, err := r.controller.Workspace.ListWithPagination(ctx, after, first, before, last, where, requestFields)
+	ws, err := r.controller.Workspace.ListWithPagination(ctx, after, first, before, last, where, requestFields)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
-	return us, nil
+	return ws, nil
 }
 
 func (r *subscriptionResolver) WorkspaceUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.Workspace, error) {

@@ -15,26 +15,26 @@ import (
 )
 
 func (r *mutationResolver) CreateProjectIcon(ctx context.Context, input ent.CreateProjectIconInput) (*ent.ProjectIcon, error) {
-	p, err := r.controller.ProjectIcon.Create(ctx, input)
+	pi, err := r.controller.ProjectIcon.Create(ctx, input)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
-	return p, nil
+	return pi, nil
 }
 
 func (r *mutationResolver) UpdateProjectIcon(ctx context.Context, input ent.UpdateProjectIconInput) (*ent.ProjectIcon, error) {
-	p, err := r.controller.ProjectIcon.Update(ctx, input)
+	pi, err := r.controller.ProjectIcon.Update(ctx, input)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
 
 	for _, pu := range r.subscriptions.ProjectIconUpdated {
-		if pu.ID == p.ID {
-			pu.Ch <- p
+		if pu.ID == pi.ID {
+			pu.Ch <- pi
 		}
 	}
 
-	return p, nil
+	return pi, nil
 }
 
 func (r *projectIconResolver) CreatedAt(ctx context.Context, obj *ent.ProjectIcon) (string, error) {
@@ -46,21 +46,21 @@ func (r *projectIconResolver) UpdatedAt(ctx context.Context, obj *ent.ProjectIco
 }
 
 func (r *queryResolver) ProjectIcon(ctx context.Context, where *ent.ProjectIconWhereInput) (*ent.ProjectIcon, error) {
-	p, err := r.controller.ProjectIcon.Get(ctx, where)
+	pi, err := r.controller.ProjectIcon.Get(ctx, where)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
-	return p, nil
+	return pi, nil
 }
 
 func (r *queryResolver) ProjectIcons(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectIconWhereInput) (*ent.ProjectIconConnection, error) {
 	requestedFields := graphqlutil.GetRequestedFields(ctx)
 
-	ps, err := r.controller.ProjectIcon.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
+	pis, err := r.controller.ProjectIcon.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
-	return ps, nil
+	return pis, nil
 }
 
 func (r *subscriptionResolver) ProjectIconUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.ProjectIcon, error) {

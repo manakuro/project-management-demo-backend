@@ -15,52 +15,52 @@ import (
 )
 
 func (r *mutationResolver) CreateTestUser(ctx context.Context, input ent.CreateTestUserInput) (*ent.TestUser, error) {
-	u, err := r.controller.TestUser.Create(ctx, input)
+	t, err := r.controller.TestUser.Create(ctx, input)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
-	return u, nil
+	return t, nil
 }
 
 func (r *mutationResolver) CreateTestUserAndTodo(ctx context.Context, input ent.CreateTestUserInput) (*ent.TestUser, error) {
-	u, err := r.controller.TestUser.CreateWithTodo(ctx, input)
+	t, err := r.controller.TestUser.CreateWithTodo(ctx, input)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
-	return u, nil
+	return t, nil
 }
 
 func (r *mutationResolver) UpdateTestUser(ctx context.Context, input ent.UpdateTestUserInput) (*ent.TestUser, error) {
-	u, err := r.controller.TestUser.Update(ctx, input)
+	t, err := r.controller.TestUser.Update(ctx, input)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
 
 	for _, tu := range r.subscriptions.TestUserUpdated {
-		if tu.ID == u.ID {
-			tu.Ch <- u
+		if tu.ID == t.ID {
+			tu.Ch <- t
 		}
 	}
 
-	return u, nil
+	return t, nil
 }
 
 func (r *queryResolver) TestUser(ctx context.Context, id ulid.ID, age *int) (*ent.TestUser, error) {
-	u, err := r.controller.TestUser.Get(ctx, id, age)
+	t, err := r.controller.TestUser.Get(ctx, id, age)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
-	return u, nil
+	return t, nil
 }
 
 func (r *queryResolver) TestUsers(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TestUserWhereInput) (*ent.TestUserConnection, error) {
 	requestedFields := graphqlutil.GetRequestedFields(ctx)
 
-	us, err := r.controller.TestUser.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
+	ts, err := r.controller.TestUser.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
-	return us, nil
+	return ts, nil
 }
 
 func (r *subscriptionResolver) TestUserUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.TestUser, error) {

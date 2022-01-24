@@ -15,46 +15,46 @@ import (
 )
 
 func (r *mutationResolver) CreateTeammateTaskColumn(ctx context.Context, input ent.CreateTeammateTaskColumnInput) (*ent.TeammateTaskColumn, error) {
-	result, err := r.controller.TeammateTaskColumn.Create(ctx, input)
+	t, err := r.controller.TeammateTaskColumn.Create(ctx, input)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
 
-	return result, nil
+	return t, nil
 }
 
 func (r *mutationResolver) UpdateTeammateTaskColumn(ctx context.Context, input ent.UpdateTeammateTaskColumnInput) (*ent.TeammateTaskColumn, error) {
-	result, err := r.controller.TeammateTaskColumn.Update(ctx, input)
+	t, err := r.controller.TeammateTaskColumn.Update(ctx, input)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
 
 	for _, u := range r.subscriptions.TeammateTaskColumnUpdated {
-		if u.ID == result.ID {
-			u.Ch <- result
+		if u.ID == t.ID {
+			u.Ch <- t
 		}
 	}
 
-	return result, nil
+	return t, nil
 }
 
 func (r *queryResolver) TeammateTaskColumn(ctx context.Context, where *ent.TeammateTaskColumnWhereInput) (*ent.TeammateTaskColumn, error) {
-	result, err := r.controller.TeammateTaskColumn.Get(ctx, where)
+	t, err := r.controller.TeammateTaskColumn.Get(ctx, where)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
-	return result, nil
+	return t, nil
 }
 
 func (r *queryResolver) TeammateTaskColumns(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TeammateTaskColumnWhereInput) (*ent.TeammateTaskColumnConnection, error) {
 	requestedFields := graphqlutil.GetRequestedFields(ctx)
 
-	result, err := r.controller.TeammateTaskColumn.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
+	ts, err := r.controller.TeammateTaskColumn.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
 
-	return result, nil
+	return ts, nil
 }
 
 func (r *subscriptionResolver) TeammateTaskColumnUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.TeammateTaskColumn, error) {

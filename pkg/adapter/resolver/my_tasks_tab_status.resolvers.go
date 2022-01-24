@@ -15,27 +15,27 @@ import (
 )
 
 func (r *mutationResolver) CreateMyTasksTabStatus(ctx context.Context, input ent.CreateMyTasksTabStatusInput) (*ent.MyTasksTabStatus, error) {
-	result, err := r.controller.MyTasksTabStatus.Create(ctx, input)
+	m, err := r.controller.MyTasksTabStatus.Create(ctx, input)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
 
-	return result, nil
+	return m, nil
 }
 
 func (r *mutationResolver) UpdateMyTasksTabStatus(ctx context.Context, input ent.UpdateMyTasksTabStatusInput) (*ent.MyTasksTabStatus, error) {
-	result, err := r.controller.MyTasksTabStatus.Update(ctx, input)
+	m, err := r.controller.MyTasksTabStatus.Update(ctx, input)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
 
 	for _, u := range r.subscriptions.MyTasksTabStatusUpdated {
-		if u.ID == result.ID {
-			u.Ch <- result
+		if u.ID == m.ID {
+			u.Ch <- m
 		}
 	}
 
-	return result, nil
+	return m, nil
 }
 
 func (r *myTasksTabStatusResolver) CreatedAt(ctx context.Context, obj *ent.MyTasksTabStatus) (string, error) {
@@ -47,12 +47,12 @@ func (r *myTasksTabStatusResolver) UpdatedAt(ctx context.Context, obj *ent.MyTas
 }
 
 func (r *queryResolver) MyTasksTabStatus(ctx context.Context, where *ent.MyTasksTabStatusWhereInput) (*ent.MyTasksTabStatus, error) {
-	result, err := r.controller.MyTasksTabStatus.Get(ctx, where)
+	m, err := r.controller.MyTasksTabStatus.Get(ctx, where)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
 
-	return result, nil
+	return m, nil
 }
 
 func (r *queryResolver) MyTasksTabStatuses(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.MyTasksTabStatusWhereInput) (*ent.MyTasksTabStatusConnection, error) {
