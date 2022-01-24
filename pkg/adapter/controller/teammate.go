@@ -15,33 +15,33 @@ type Teammate interface {
 	Update(ctx context.Context, input model.UpdateTeammateInput) (*model.Teammate, error)
 }
 
-type teammate struct {
+type teammateController struct {
 	teammateUsecase usecase.Teammate
 }
 
-// NewTeammateController generates teammate controller
+// NewTeammateController generates teammateController controller
 func NewTeammateController(tu usecase.Teammate) Teammate {
-	return &teammate{
+	return &teammateController{
 		teammateUsecase: tu,
 	}
 }
 
-func (t *teammate) Get(ctx context.Context, id model.ID) (*model.Teammate, error) {
-	return t.teammateUsecase.Get(ctx, id)
+func (c *teammateController) Get(ctx context.Context, id model.ID) (*model.Teammate, error) {
+	return c.teammateUsecase.Get(ctx, id)
 }
 
-func (t *teammate) List(ctx context.Context) ([]*model.Teammate, error) {
-	return t.teammateUsecase.List(ctx)
+func (c *teammateController) List(ctx context.Context) ([]*model.Teammate, error) {
+	return c.teammateUsecase.List(ctx)
 }
 
-func (t *teammate) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TeammateWhereInput) (*model.TeammateConnection, error) {
-	return t.teammateUsecase.ListWithPagination(ctx, after, first, before, last, where)
+func (c *teammateController) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TeammateWhereInput) (*model.TeammateConnection, error) {
+	return c.teammateUsecase.ListWithPagination(ctx, after, first, before, last, where)
 }
 
-func (t *teammate) Create(ctx context.Context, input model.CreateTeammateInput) (*model.Teammate, error) {
-	return t.teammateUsecase.Create(ctx, input)
+func (c *teammateController) Create(ctx context.Context, input model.CreateTeammateInput) (*model.Teammate, error) {
+	return c.teammateUsecase.Create(ctx, input)
 }
 
-func (t *teammate) Update(ctx context.Context, input model.UpdateTeammateInput) (*model.Teammate, error) {
-	return t.teammateUsecase.Update(ctx, input)
+func (c *teammateController) Update(ctx context.Context, input model.UpdateTeammateInput) (*model.Teammate, error) {
+	return c.teammateUsecase.Update(ctx, input)
 }

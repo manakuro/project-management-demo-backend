@@ -15,33 +15,33 @@ type TeammateTaskColumn interface {
 	Update(ctx context.Context, input model.UpdateTeammateTaskColumnInput) (*model.TeammateTaskColumn, error)
 }
 
-type teammateTaskColumn struct {
+type teammateTaskColumnController struct {
 	teammateTaskColumnUsecase usecase.TeammateTaskColumn
 }
 
-// NewTeammateTaskColumnController generates teammateTaskColumn controller
+// NewTeammateTaskColumnController generates teammateTaskColumnController controller
 func NewTeammateTaskColumnController(pt usecase.TeammateTaskColumn) TeammateTaskColumn {
-	return &teammateTaskColumn{
+	return &teammateTaskColumnController{
 		teammateTaskColumnUsecase: pt,
 	}
 }
 
-func (s *teammateTaskColumn) Get(ctx context.Context, where *model.TeammateTaskColumnWhereInput) (*model.TeammateTaskColumn, error) {
-	return s.teammateTaskColumnUsecase.Get(ctx, where)
+func (c *teammateTaskColumnController) Get(ctx context.Context, where *model.TeammateTaskColumnWhereInput) (*model.TeammateTaskColumn, error) {
+	return c.teammateTaskColumnUsecase.Get(ctx, where)
 }
 
-func (s *teammateTaskColumn) List(ctx context.Context) ([]*model.TeammateTaskColumn, error) {
-	return s.teammateTaskColumnUsecase.List(ctx)
+func (c *teammateTaskColumnController) List(ctx context.Context) ([]*model.TeammateTaskColumn, error) {
+	return c.teammateTaskColumnUsecase.List(ctx)
 }
 
-func (s *teammateTaskColumn) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TeammateTaskColumnWhereInput, requestedFields []string) (*model.TeammateTaskColumnConnection, error) {
-	return s.teammateTaskColumnUsecase.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
+func (c *teammateTaskColumnController) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TeammateTaskColumnWhereInput, requestedFields []string) (*model.TeammateTaskColumnConnection, error) {
+	return c.teammateTaskColumnUsecase.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
 }
 
-func (s *teammateTaskColumn) Create(ctx context.Context, input model.CreateTeammateTaskColumnInput) (*model.TeammateTaskColumn, error) {
-	return s.teammateTaskColumnUsecase.Create(ctx, input)
+func (c *teammateTaskColumnController) Create(ctx context.Context, input model.CreateTeammateTaskColumnInput) (*model.TeammateTaskColumn, error) {
+	return c.teammateTaskColumnUsecase.Create(ctx, input)
 }
 
-func (s *teammateTaskColumn) Update(ctx context.Context, input model.UpdateTeammateTaskColumnInput) (*model.TeammateTaskColumn, error) {
-	return s.teammateTaskColumnUsecase.Update(ctx, input)
+func (c *teammateTaskColumnController) Update(ctx context.Context, input model.UpdateTeammateTaskColumnInput) (*model.TeammateTaskColumn, error) {
+	return c.teammateTaskColumnUsecase.Update(ctx, input)
 }

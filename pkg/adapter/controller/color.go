@@ -15,33 +15,33 @@ type Color interface {
 	Update(ctx context.Context, input model.UpdateColorInput) (*model.Color, error)
 }
 
-type color struct {
+type colorController struct {
 	colorUsecase usecase.Color
 }
 
 // NewColorController generates color controller
 func NewColorController(tu usecase.Color) Color {
-	return &color{
+	return &colorController{
 		colorUsecase: tu,
 	}
 }
 
-func (t *color) Get(ctx context.Context, id model.ID) (*model.Color, error) {
-	return t.colorUsecase.Get(ctx, id)
+func (c *colorController) Get(ctx context.Context, id model.ID) (*model.Color, error) {
+	return c.colorUsecase.Get(ctx, id)
 }
 
-func (t *color) List(ctx context.Context) ([]*model.Color, error) {
-	return t.colorUsecase.List(ctx)
+func (c *colorController) List(ctx context.Context) ([]*model.Color, error) {
+	return c.colorUsecase.List(ctx)
 }
 
-func (t *color) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ColorWhereInput) (*model.ColorConnection, error) {
-	return t.colorUsecase.ListWithPagination(ctx, after, first, before, last, where)
+func (c *colorController) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ColorWhereInput) (*model.ColorConnection, error) {
+	return c.colorUsecase.ListWithPagination(ctx, after, first, before, last, where)
 }
 
-func (t *color) Create(ctx context.Context, input model.CreateColorInput) (*model.Color, error) {
-	return t.colorUsecase.Create(ctx, input)
+func (c *colorController) Create(ctx context.Context, input model.CreateColorInput) (*model.Color, error) {
+	return c.colorUsecase.Create(ctx, input)
 }
 
-func (t *color) Update(ctx context.Context, input model.UpdateColorInput) (*model.Color, error) {
-	return t.colorUsecase.Update(ctx, input)
+func (c *colorController) Update(ctx context.Context, input model.UpdateColorInput) (*model.Color, error) {
+	return c.colorUsecase.Update(ctx, input)
 }

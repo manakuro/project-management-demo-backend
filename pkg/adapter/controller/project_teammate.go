@@ -15,33 +15,33 @@ type ProjectTeammate interface {
 	Update(ctx context.Context, input model.UpdateProjectTeammateInput) (*model.ProjectTeammate, error)
 }
 
-type projectTeammate struct {
+type projectTeammateController struct {
 	projectTeammateUsecase usecase.ProjectTeammate
 }
 
 // NewProjectTeammateController generates projectTeammate controller
 func NewProjectTeammateController(pt usecase.ProjectTeammate) ProjectTeammate {
-	return &projectTeammate{
+	return &projectTeammateController{
 		projectTeammateUsecase: pt,
 	}
 }
 
-func (p *projectTeammate) Get(ctx context.Context, where *model.ProjectTeammateWhereInput) (*model.ProjectTeammate, error) {
-	return p.projectTeammateUsecase.Get(ctx, where)
+func (c *projectTeammateController) Get(ctx context.Context, where *model.ProjectTeammateWhereInput) (*model.ProjectTeammate, error) {
+	return c.projectTeammateUsecase.Get(ctx, where)
 }
 
-func (p *projectTeammate) List(ctx context.Context) ([]*model.ProjectTeammate, error) {
-	return p.projectTeammateUsecase.List(ctx)
+func (c *projectTeammateController) List(ctx context.Context) ([]*model.ProjectTeammate, error) {
+	return c.projectTeammateUsecase.List(ctx)
 }
 
-func (p *projectTeammate) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ProjectTeammateWhereInput, requestedFields []string) (*model.ProjectTeammateConnection, error) {
-	return p.projectTeammateUsecase.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
+func (c *projectTeammateController) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ProjectTeammateWhereInput, requestedFields []string) (*model.ProjectTeammateConnection, error) {
+	return c.projectTeammateUsecase.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
 }
 
-func (p *projectTeammate) Create(ctx context.Context, input model.CreateProjectTeammateInput) (*model.ProjectTeammate, error) {
-	return p.projectTeammateUsecase.Create(ctx, input)
+func (c *projectTeammateController) Create(ctx context.Context, input model.CreateProjectTeammateInput) (*model.ProjectTeammate, error) {
+	return c.projectTeammateUsecase.Create(ctx, input)
 }
 
-func (p *projectTeammate) Update(ctx context.Context, input model.UpdateProjectTeammateInput) (*model.ProjectTeammate, error) {
-	return p.projectTeammateUsecase.Update(ctx, input)
+func (c *projectTeammateController) Update(ctx context.Context, input model.UpdateProjectTeammateInput) (*model.ProjectTeammate, error) {
+	return c.projectTeammateUsecase.Update(ctx, input)
 }

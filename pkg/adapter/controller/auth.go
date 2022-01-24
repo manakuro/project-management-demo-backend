@@ -7,20 +7,20 @@ import (
 	uauth "project-management-demo-backend/pkg/util/auth"
 )
 
-type auth struct{}
+type authController struct{}
 
 // Auth is an interface of controller
 type Auth interface {
 	RevokeRefreshTokens(ctx Context) error
 }
 
-// NewAuthController generates test auth controller
+// NewAuthController generates test authController controller
 func NewAuthController() Auth {
-	return &auth{}
+	return &authController{}
 }
 
-func (a *auth) RevokeRefreshTokens(ctx Context) error {
-	c := ctx.Request().Context()
+func (c *authController) RevokeRefreshTokens(ctx Context) error {
+	requestCtx := ctx.Request().Context()
 
 	var params struct {
 		UID string `json:"uid"`
@@ -29,12 +29,12 @@ func (a *auth) RevokeRefreshTokens(ctx Context) error {
 		return handler.HandleRestError(ctx, model.NewInvalidParamError(nil))
 	}
 
-	client, err := uauth.NewClient(c)
+	client, err := uauth.NewClient(requestCtx)
 	if err != nil {
 		return err
 	}
 
-	if err = client.RevokeRefreshTokens(c, params.UID); err != nil {
+	if err = client.RevokeRefreshTokens(requestCtx, params.UID); err != nil {
 		return handler.HandleRestError(ctx, err)
 	}
 

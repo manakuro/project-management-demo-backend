@@ -15,33 +15,33 @@ type ProjectIcon interface {
 	Update(ctx context.Context, input model.UpdateProjectIconInput) (*model.ProjectIcon, error)
 }
 
-type projectIcon struct {
+type projectIconController struct {
 	projectIconUsecase usecase.ProjectIcon
 }
 
 // NewProjectIconController generates projectIcon controller
 func NewProjectIconController(p usecase.ProjectIcon) ProjectIcon {
-	return &projectIcon{
+	return &projectIconController{
 		projectIconUsecase: p,
 	}
 }
 
-func (p *projectIcon) Get(ctx context.Context, where *model.ProjectIconWhereInput) (*model.ProjectIcon, error) {
-	return p.projectIconUsecase.Get(ctx, where)
+func (c *projectIconController) Get(ctx context.Context, where *model.ProjectIconWhereInput) (*model.ProjectIcon, error) {
+	return c.projectIconUsecase.Get(ctx, where)
 }
 
-func (p *projectIcon) List(ctx context.Context) ([]*model.ProjectIcon, error) {
-	return p.projectIconUsecase.List(ctx)
+func (c *projectIconController) List(ctx context.Context) ([]*model.ProjectIcon, error) {
+	return c.projectIconUsecase.List(ctx)
 }
 
-func (p *projectIcon) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ProjectIconWhereInput, requestedFields []string) (*model.ProjectIconConnection, error) {
-	return p.projectIconUsecase.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
+func (c *projectIconController) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ProjectIconWhereInput, requestedFields []string) (*model.ProjectIconConnection, error) {
+	return c.projectIconUsecase.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
 }
 
-func (p *projectIcon) Create(ctx context.Context, input model.CreateProjectIconInput) (*model.ProjectIcon, error) {
-	return p.projectIconUsecase.Create(ctx, input)
+func (c *projectIconController) Create(ctx context.Context, input model.CreateProjectIconInput) (*model.ProjectIcon, error) {
+	return c.projectIconUsecase.Create(ctx, input)
 }
 
-func (p *projectIcon) Update(ctx context.Context, input model.UpdateProjectIconInput) (*model.ProjectIcon, error) {
-	return p.projectIconUsecase.Update(ctx, input)
+func (c *projectIconController) Update(ctx context.Context, input model.UpdateProjectIconInput) (*model.ProjectIcon, error) {
+	return c.projectIconUsecase.Update(ctx, input)
 }

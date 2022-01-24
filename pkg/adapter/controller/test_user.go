@@ -16,37 +16,37 @@ type TestUser interface {
 	Update(ctx context.Context, input model.UpdateTestUserInput) (*model.TestUser, error)
 }
 
-type testUser struct {
+type testUserController struct {
 	testUserUsecase usecase.TestUser
 }
 
 // NewTestUserController generates test user controller
 func NewTestUserController(tu usecase.TestUser) TestUser {
-	return &testUser{
+	return &testUserController{
 		testUserUsecase: tu,
 	}
 }
 
-func (t *testUser) Get(ctx context.Context, id model.ID, age *int) (*model.TestUser, error) {
-	return t.testUserUsecase.Get(ctx, id, age)
+func (c *testUserController) Get(ctx context.Context, id model.ID, age *int) (*model.TestUser, error) {
+	return c.testUserUsecase.Get(ctx, id, age)
 }
 
-func (t *testUser) List(ctx context.Context) ([]*model.TestUser, error) {
-	return t.testUserUsecase.List(ctx)
+func (c *testUserController) List(ctx context.Context) ([]*model.TestUser, error) {
+	return c.testUserUsecase.List(ctx)
 }
 
-func (t *testUser) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TestUserWhereInput, requestedFields []string) (*model.TestUserConnection, error) {
-	return t.testUserUsecase.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
+func (c *testUserController) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TestUserWhereInput, requestedFields []string) (*model.TestUserConnection, error) {
+	return c.testUserUsecase.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
 }
 
-func (t *testUser) Create(ctx context.Context, input model.CreateTestUserInput) (*model.TestUser, error) {
-	return t.testUserUsecase.Create(ctx, input)
+func (c *testUserController) Create(ctx context.Context, input model.CreateTestUserInput) (*model.TestUser, error) {
+	return c.testUserUsecase.Create(ctx, input)
 }
 
-func (t *testUser) CreateWithTodo(ctx context.Context, input model.CreateTestUserInput) (*model.TestUser, error) {
-	return t.testUserUsecase.CreateWithTodo(ctx, input)
+func (c *testUserController) CreateWithTodo(ctx context.Context, input model.CreateTestUserInput) (*model.TestUser, error) {
+	return c.testUserUsecase.CreateWithTodo(ctx, input)
 }
 
-func (t *testUser) Update(ctx context.Context, input model.UpdateTestUserInput) (*model.TestUser, error) {
-	return t.testUserUsecase.Update(ctx, input)
+func (c *testUserController) Update(ctx context.Context, input model.UpdateTestUserInput) (*model.TestUser, error) {
+	return c.testUserUsecase.Update(ctx, input)
 }

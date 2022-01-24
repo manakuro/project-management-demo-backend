@@ -15,33 +15,33 @@ type WorkspaceTeammate interface {
 	Update(ctx context.Context, input model.UpdateWorkspaceTeammateInput) (*model.WorkspaceTeammate, error)
 }
 
-type workspaceTeammate struct {
+type workspaceTeammateController struct {
 	workspaceTeammateUsecase usecase.WorkspaceTeammate
 }
 
 // NewWorkspaceTeammateController generates workspaceTeammate controller
 func NewWorkspaceTeammateController(wt usecase.WorkspaceTeammate) WorkspaceTeammate {
-	return &workspaceTeammate{
+	return &workspaceTeammateController{
 		workspaceTeammateUsecase: wt,
 	}
 }
 
-func (p *workspaceTeammate) Get(ctx context.Context, where *model.WorkspaceTeammateWhereInput) (*model.WorkspaceTeammate, error) {
-	return p.workspaceTeammateUsecase.Get(ctx, where)
+func (c *workspaceTeammateController) Get(ctx context.Context, where *model.WorkspaceTeammateWhereInput) (*model.WorkspaceTeammate, error) {
+	return c.workspaceTeammateUsecase.Get(ctx, where)
 }
 
-func (p *workspaceTeammate) List(ctx context.Context) ([]*model.WorkspaceTeammate, error) {
-	return p.workspaceTeammateUsecase.List(ctx)
+func (c *workspaceTeammateController) List(ctx context.Context) ([]*model.WorkspaceTeammate, error) {
+	return c.workspaceTeammateUsecase.List(ctx)
 }
 
-func (p *workspaceTeammate) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.WorkspaceTeammateWhereInput, requestedFields []string) (*model.WorkspaceTeammateConnection, error) {
-	return p.workspaceTeammateUsecase.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
+func (c *workspaceTeammateController) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.WorkspaceTeammateWhereInput, requestedFields []string) (*model.WorkspaceTeammateConnection, error) {
+	return c.workspaceTeammateUsecase.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
 }
 
-func (p *workspaceTeammate) Create(ctx context.Context, input model.CreateWorkspaceTeammateInput) (*model.WorkspaceTeammate, error) {
-	return p.workspaceTeammateUsecase.Create(ctx, input)
+func (c *workspaceTeammateController) Create(ctx context.Context, input model.CreateWorkspaceTeammateInput) (*model.WorkspaceTeammate, error) {
+	return c.workspaceTeammateUsecase.Create(ctx, input)
 }
 
-func (p *workspaceTeammate) Update(ctx context.Context, input model.UpdateWorkspaceTeammateInput) (*model.WorkspaceTeammate, error) {
-	return p.workspaceTeammateUsecase.Update(ctx, input)
+func (c *workspaceTeammateController) Update(ctx context.Context, input model.UpdateWorkspaceTeammateInput) (*model.WorkspaceTeammate, error) {
+	return c.workspaceTeammateUsecase.Update(ctx, input)
 }

@@ -17,41 +17,41 @@ type FavoriteProject interface {
 	FavoriteProjectIDs(ctx context.Context, teammateID model.ID) ([]model.ID, error)
 }
 
-type favoriteProject struct {
+type favoriteProjectController struct {
 	favoriteProjectUsecase usecase.FavoriteProject
 }
 
 // NewFavoriteProjectController generates favoriteProject controller
 func NewFavoriteProjectController(pt usecase.FavoriteProject) FavoriteProject {
-	return &favoriteProject{
+	return &favoriteProjectController{
 		favoriteProjectUsecase: pt,
 	}
 }
 
-func (f *favoriteProject) Get(ctx context.Context, where *model.FavoriteProjectWhereInput) (*model.FavoriteProject, error) {
-	return f.favoriteProjectUsecase.Get(ctx, where)
+func (c *favoriteProjectController) Get(ctx context.Context, where *model.FavoriteProjectWhereInput) (*model.FavoriteProject, error) {
+	return c.favoriteProjectUsecase.Get(ctx, where)
 }
 
-func (f *favoriteProject) List(ctx context.Context) ([]*model.FavoriteProject, error) {
-	return f.favoriteProjectUsecase.List(ctx)
+func (c *favoriteProjectController) List(ctx context.Context) ([]*model.FavoriteProject, error) {
+	return c.favoriteProjectUsecase.List(ctx)
 }
 
-func (f *favoriteProject) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.FavoriteProjectWhereInput, requestedFields []string) (*model.FavoriteProjectConnection, error) {
-	return f.favoriteProjectUsecase.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
+func (c *favoriteProjectController) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.FavoriteProjectWhereInput, requestedFields []string) (*model.FavoriteProjectConnection, error) {
+	return c.favoriteProjectUsecase.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
 }
 
-func (f *favoriteProject) Create(ctx context.Context, input model.CreateFavoriteProjectInput) (*model.FavoriteProject, error) {
-	return f.favoriteProjectUsecase.Create(ctx, input)
+func (c *favoriteProjectController) Create(ctx context.Context, input model.CreateFavoriteProjectInput) (*model.FavoriteProject, error) {
+	return c.favoriteProjectUsecase.Create(ctx, input)
 }
 
-func (f *favoriteProject) Update(ctx context.Context, input model.UpdateFavoriteProjectInput) (*model.FavoriteProject, error) {
-	return f.favoriteProjectUsecase.Update(ctx, input)
+func (c *favoriteProjectController) Update(ctx context.Context, input model.UpdateFavoriteProjectInput) (*model.FavoriteProject, error) {
+	return c.favoriteProjectUsecase.Update(ctx, input)
 }
 
-func (f *favoriteProject) Delete(ctx context.Context, input model.DeleteFavoriteProjectInput) (*model.FavoriteProject, error) {
-	return f.favoriteProjectUsecase.Delete(ctx, input)
+func (c *favoriteProjectController) Delete(ctx context.Context, input model.DeleteFavoriteProjectInput) (*model.FavoriteProject, error) {
+	return c.favoriteProjectUsecase.Delete(ctx, input)
 }
 
-func (f *favoriteProject) FavoriteProjectIDs(ctx context.Context, teammateID model.ID) ([]model.ID, error) {
-	return f.favoriteProjectUsecase.FavoriteProjectIDs(ctx, teammateID)
+func (c *favoriteProjectController) FavoriteProjectIDs(ctx context.Context, teammateID model.ID) ([]model.ID, error) {
+	return c.favoriteProjectUsecase.FavoriteProjectIDs(ctx, teammateID)
 }

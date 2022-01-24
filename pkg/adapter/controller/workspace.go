@@ -15,33 +15,33 @@ type Workspace interface {
 	Update(ctx context.Context, input model.UpdateWorkspaceInput) (*model.Workspace, error)
 }
 
-type workspace struct {
+type workspaceController struct {
 	workspaceUsecase usecase.Workspace
 }
 
 // NewWorkspaceController generates workspace controller
 func NewWorkspaceController(tu usecase.Workspace) Workspace {
-	return &workspace{
+	return &workspaceController{
 		workspaceUsecase: tu,
 	}
 }
 
-func (t *workspace) Get(ctx context.Context, where *model.WorkspaceWhereInput, requestFields []string) (*model.Workspace, error) {
-	return t.workspaceUsecase.Get(ctx, where, requestFields)
+func (c *workspaceController) Get(ctx context.Context, where *model.WorkspaceWhereInput, requestFields []string) (*model.Workspace, error) {
+	return c.workspaceUsecase.Get(ctx, where, requestFields)
 }
 
-func (t *workspace) List(ctx context.Context) ([]*model.Workspace, error) {
-	return t.workspaceUsecase.List(ctx)
+func (c *workspaceController) List(ctx context.Context) ([]*model.Workspace, error) {
+	return c.workspaceUsecase.List(ctx)
 }
 
-func (t *workspace) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.WorkspaceWhereInput, requestFields []string) (*model.WorkspaceConnection, error) {
-	return t.workspaceUsecase.ListWithPagination(ctx, after, first, before, last, where, requestFields)
+func (c *workspaceController) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.WorkspaceWhereInput, requestFields []string) (*model.WorkspaceConnection, error) {
+	return c.workspaceUsecase.ListWithPagination(ctx, after, first, before, last, where, requestFields)
 }
 
-func (t *workspace) Create(ctx context.Context, input model.CreateWorkspaceInput) (*model.Workspace, error) {
-	return t.workspaceUsecase.Create(ctx, input)
+func (c *workspaceController) Create(ctx context.Context, input model.CreateWorkspaceInput) (*model.Workspace, error) {
+	return c.workspaceUsecase.Create(ctx, input)
 }
 
-func (t *workspace) Update(ctx context.Context, input model.UpdateWorkspaceInput) (*model.Workspace, error) {
-	return t.workspaceUsecase.Update(ctx, input)
+func (c *workspaceController) Update(ctx context.Context, input model.UpdateWorkspaceInput) (*model.Workspace, error) {
+	return c.workspaceUsecase.Update(ctx, input)
 }

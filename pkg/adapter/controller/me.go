@@ -12,21 +12,21 @@ type Me interface {
 	Update(ctx context.Context, input model.UpdateMeInput) (*model.Me, error)
 }
 
-type me struct {
+type meController struct {
 	meUsecase usecase.Me
 }
 
 // NewMeController generates me controller
 func NewMeController(tu usecase.Me) Me {
-	return &me{
+	return &meController{
 		meUsecase: tu,
 	}
 }
 
-func (t *me) Get(ctx context.Context, id model.ID) (*model.Me, error) {
-	return t.meUsecase.Get(ctx, id)
+func (c *meController) Get(ctx context.Context, id model.ID) (*model.Me, error) {
+	return c.meUsecase.Get(ctx, id)
 }
 
-func (t *me) Update(ctx context.Context, input model.UpdateMeInput) (*model.Me, error) {
-	return t.meUsecase.Update(ctx, input)
+func (c *meController) Update(ctx context.Context, input model.UpdateMeInput) (*model.Me, error) {
+	return c.meUsecase.Update(ctx, input)
 }

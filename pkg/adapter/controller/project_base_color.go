@@ -15,33 +15,33 @@ type ProjectBaseColor interface {
 	Update(ctx context.Context, input model.UpdateProjectBaseColorInput) (*model.ProjectBaseColor, error)
 }
 
-type projectBaseColor struct {
+type projectBaseColorController struct {
 	projectBaseColorUsecase usecase.ProjectBaseColor
 }
 
 // NewProjectBaseColorController generates projectBaseColor controller
 func NewProjectBaseColorController(p usecase.ProjectBaseColor) ProjectBaseColor {
-	return &projectBaseColor{
+	return &projectBaseColorController{
 		projectBaseColorUsecase: p,
 	}
 }
 
-func (p *projectBaseColor) Get(ctx context.Context, where *model.ProjectBaseColorWhereInput) (*model.ProjectBaseColor, error) {
-	return p.projectBaseColorUsecase.Get(ctx, where)
+func (c *projectBaseColorController) Get(ctx context.Context, where *model.ProjectBaseColorWhereInput) (*model.ProjectBaseColor, error) {
+	return c.projectBaseColorUsecase.Get(ctx, where)
 }
 
-func (p *projectBaseColor) List(ctx context.Context) ([]*model.ProjectBaseColor, error) {
-	return p.projectBaseColorUsecase.List(ctx)
+func (c *projectBaseColorController) List(ctx context.Context) ([]*model.ProjectBaseColor, error) {
+	return c.projectBaseColorUsecase.List(ctx)
 }
 
-func (p *projectBaseColor) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ProjectBaseColorWhereInput, requestedFields []string) (*model.ProjectBaseColorConnection, error) {
-	return p.projectBaseColorUsecase.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
+func (c *projectBaseColorController) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ProjectBaseColorWhereInput, requestedFields []string) (*model.ProjectBaseColorConnection, error) {
+	return c.projectBaseColorUsecase.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
 }
 
-func (p *projectBaseColor) Create(ctx context.Context, input model.CreateProjectBaseColorInput) (*model.ProjectBaseColor, error) {
-	return p.projectBaseColorUsecase.Create(ctx, input)
+func (c *projectBaseColorController) Create(ctx context.Context, input model.CreateProjectBaseColorInput) (*model.ProjectBaseColor, error) {
+	return c.projectBaseColorUsecase.Create(ctx, input)
 }
 
-func (p *projectBaseColor) Update(ctx context.Context, input model.UpdateProjectBaseColorInput) (*model.ProjectBaseColor, error) {
-	return p.projectBaseColorUsecase.Update(ctx, input)
+func (c *projectBaseColorController) Update(ctx context.Context, input model.UpdateProjectBaseColorInput) (*model.ProjectBaseColor, error) {
+	return c.projectBaseColorUsecase.Update(ctx, input)
 }

@@ -15,33 +15,33 @@ type ProjectTaskColumn interface {
 	Update(ctx context.Context, input model.UpdateProjectTaskColumnInput) (*model.ProjectTaskColumn, error)
 }
 
-type projectTaskColumn struct {
+type projectTaskColumnController struct {
 	projectTaskColumnUsecase usecase.ProjectTaskColumn
 }
 
 // NewProjectTaskColumnController generates projectTaskColumn controller
 func NewProjectTaskColumnController(pt usecase.ProjectTaskColumn) ProjectTaskColumn {
-	return &projectTaskColumn{
+	return &projectTaskColumnController{
 		projectTaskColumnUsecase: pt,
 	}
 }
 
-func (p *projectTaskColumn) Get(ctx context.Context, where *model.ProjectTaskColumnWhereInput) (*model.ProjectTaskColumn, error) {
-	return p.projectTaskColumnUsecase.Get(ctx, where)
+func (c *projectTaskColumnController) Get(ctx context.Context, where *model.ProjectTaskColumnWhereInput) (*model.ProjectTaskColumn, error) {
+	return c.projectTaskColumnUsecase.Get(ctx, where)
 }
 
-func (p *projectTaskColumn) List(ctx context.Context) ([]*model.ProjectTaskColumn, error) {
-	return p.projectTaskColumnUsecase.List(ctx)
+func (c *projectTaskColumnController) List(ctx context.Context) ([]*model.ProjectTaskColumn, error) {
+	return c.projectTaskColumnUsecase.List(ctx)
 }
 
-func (p *projectTaskColumn) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ProjectTaskColumnWhereInput, requestedFields []string) (*model.ProjectTaskColumnConnection, error) {
-	return p.projectTaskColumnUsecase.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
+func (c *projectTaskColumnController) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ProjectTaskColumnWhereInput, requestedFields []string) (*model.ProjectTaskColumnConnection, error) {
+	return c.projectTaskColumnUsecase.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
 }
 
-func (p *projectTaskColumn) Create(ctx context.Context, input model.CreateProjectTaskColumnInput) (*model.ProjectTaskColumn, error) {
-	return p.projectTaskColumnUsecase.Create(ctx, input)
+func (c *projectTaskColumnController) Create(ctx context.Context, input model.CreateProjectTaskColumnInput) (*model.ProjectTaskColumn, error) {
+	return c.projectTaskColumnUsecase.Create(ctx, input)
 }
 
-func (p *projectTaskColumn) Update(ctx context.Context, input model.UpdateProjectTaskColumnInput) (*model.ProjectTaskColumn, error) {
-	return p.projectTaskColumnUsecase.Update(ctx, input)
+func (c *projectTaskColumnController) Update(ctx context.Context, input model.UpdateProjectTaskColumnInput) (*model.ProjectTaskColumn, error) {
+	return c.projectTaskColumnUsecase.Update(ctx, input)
 }

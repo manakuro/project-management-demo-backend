@@ -15,33 +15,33 @@ type TaskSection interface {
 	Update(ctx context.Context, input model.UpdateTaskSectionInput) (*model.TaskSection, error)
 }
 
-type taskSection struct {
+type taskSectionController struct {
 	taskSectionUsecase usecase.TaskSection
 }
 
 // NewTaskSectionController generates taskSection controller
 func NewTaskSectionController(pt usecase.TaskSection) TaskSection {
-	return &taskSection{
+	return &taskSectionController{
 		taskSectionUsecase: pt,
 	}
 }
 
-func (t *taskSection) Get(ctx context.Context, where *model.TaskSectionWhereInput) (*model.TaskSection, error) {
-	return t.taskSectionUsecase.Get(ctx, where)
+func (c *taskSectionController) Get(ctx context.Context, where *model.TaskSectionWhereInput) (*model.TaskSection, error) {
+	return c.taskSectionUsecase.Get(ctx, where)
 }
 
-func (t *taskSection) List(ctx context.Context) ([]*model.TaskSection, error) {
-	return t.taskSectionUsecase.List(ctx)
+func (c *taskSectionController) List(ctx context.Context) ([]*model.TaskSection, error) {
+	return c.taskSectionUsecase.List(ctx)
 }
 
-func (t *taskSection) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TaskSectionWhereInput, requestedFields []string) (*model.TaskSectionConnection, error) {
-	return t.taskSectionUsecase.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
+func (c *taskSectionController) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TaskSectionWhereInput, requestedFields []string) (*model.TaskSectionConnection, error) {
+	return c.taskSectionUsecase.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
 }
 
-func (t *taskSection) Create(ctx context.Context, input model.CreateTaskSectionInput) (*model.TaskSection, error) {
-	return t.taskSectionUsecase.Create(ctx, input)
+func (c *taskSectionController) Create(ctx context.Context, input model.CreateTaskSectionInput) (*model.TaskSection, error) {
+	return c.taskSectionUsecase.Create(ctx, input)
 }
 
-func (t *taskSection) Update(ctx context.Context, input model.UpdateTaskSectionInput) (*model.TaskSection, error) {
-	return t.taskSectionUsecase.Update(ctx, input)
+func (c *taskSectionController) Update(ctx context.Context, input model.UpdateTaskSectionInput) (*model.TaskSection, error) {
+	return c.taskSectionUsecase.Update(ctx, input)
 }

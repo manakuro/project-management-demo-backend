@@ -15,33 +15,33 @@ type Icon interface {
 	Update(ctx context.Context, input model.UpdateIconInput) (*model.Icon, error)
 }
 
-type icon struct {
+type iconController struct {
 	iconUsecase usecase.Icon
 }
 
 // NewIconController generates icon controller
 func NewIconController(tu usecase.Icon) Icon {
-	return &icon{
+	return &iconController{
 		iconUsecase: tu,
 	}
 }
 
-func (t *icon) Get(ctx context.Context, id model.ID) (*model.Icon, error) {
-	return t.iconUsecase.Get(ctx, id)
+func (c *iconController) Get(ctx context.Context, id model.ID) (*model.Icon, error) {
+	return c.iconUsecase.Get(ctx, id)
 }
 
-func (t *icon) List(ctx context.Context) ([]*model.Icon, error) {
-	return t.iconUsecase.List(ctx)
+func (c *iconController) List(ctx context.Context) ([]*model.Icon, error) {
+	return c.iconUsecase.List(ctx)
 }
 
-func (t *icon) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.IconWhereInput) (*model.IconConnection, error) {
-	return t.iconUsecase.ListWithPagination(ctx, after, first, before, last, where)
+func (c *iconController) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.IconWhereInput) (*model.IconConnection, error) {
+	return c.iconUsecase.ListWithPagination(ctx, after, first, before, last, where)
 }
 
-func (t *icon) Create(ctx context.Context, input model.CreateIconInput) (*model.Icon, error) {
-	return t.iconUsecase.Create(ctx, input)
+func (c *iconController) Create(ctx context.Context, input model.CreateIconInput) (*model.Icon, error) {
+	return c.iconUsecase.Create(ctx, input)
 }
 
-func (t *icon) Update(ctx context.Context, input model.UpdateIconInput) (*model.Icon, error) {
-	return t.iconUsecase.Update(ctx, input)
+func (c *iconController) Update(ctx context.Context, input model.UpdateIconInput) (*model.Icon, error) {
+	return c.iconUsecase.Update(ctx, input)
 }
