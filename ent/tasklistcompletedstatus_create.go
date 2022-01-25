@@ -33,14 +33,6 @@ func (tlcsc *TaskListCompletedStatusCreate) SetStatusCode(tc tasklistcompletedst
 	return tlcsc
 }
 
-// SetNillableStatusCode sets the "status_code" field if the given value is not nil.
-func (tlcsc *TaskListCompletedStatusCreate) SetNillableStatusCode(tc *tasklistcompletedstatus.StatusCode) *TaskListCompletedStatusCreate {
-	if tc != nil {
-		tlcsc.SetStatusCode(*tc)
-	}
-	return tlcsc
-}
-
 // SetCreatedAt sets the "created_at" field.
 func (tlcsc *TaskListCompletedStatusCreate) SetCreatedAt(t time.Time) *TaskListCompletedStatusCreate {
 	tlcsc.mutation.SetCreatedAt(t)
@@ -154,10 +146,6 @@ func (tlcsc *TaskListCompletedStatusCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (tlcsc *TaskListCompletedStatusCreate) defaults() {
-	if _, ok := tlcsc.mutation.StatusCode(); !ok {
-		v := tasklistcompletedstatus.DefaultStatusCode
-		tlcsc.mutation.SetStatusCode(v)
-	}
 	if _, ok := tlcsc.mutation.CreatedAt(); !ok {
 		v := tasklistcompletedstatus.DefaultCreatedAt()
 		tlcsc.mutation.SetCreatedAt(v)

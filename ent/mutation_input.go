@@ -956,7 +956,7 @@ func (u *TaskColumnUpdateOne) SetInput(i UpdateTaskColumnInput) *TaskColumnUpdat
 // CreateTaskListCompletedStatusInput represents a mutation input for creating tasklistcompletedstatusslice.
 type CreateTaskListCompletedStatusInput struct {
 	Name       string
-	StatusCode *tasklistcompletedstatus.StatusCode
+	StatusCode tasklistcompletedstatus.StatusCode
 	CreatedAt  *time.Time
 	UpdatedAt  *time.Time
 }
@@ -964,9 +964,7 @@ type CreateTaskListCompletedStatusInput struct {
 // Mutate applies the CreateTaskListCompletedStatusInput on the TaskListCompletedStatusCreate builder.
 func (i *CreateTaskListCompletedStatusInput) Mutate(m *TaskListCompletedStatusCreate) {
 	m.SetName(i.Name)
-	if v := i.StatusCode; v != nil {
-		m.SetStatusCode(*v)
-	}
+	m.SetStatusCode(i.StatusCode)
 	if v := i.CreatedAt; v != nil {
 		m.SetCreatedAt(*v)
 	}

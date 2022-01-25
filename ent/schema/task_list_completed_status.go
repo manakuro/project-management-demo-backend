@@ -29,14 +29,13 @@ func (TaskListCompletedStatusMixin) Fields() []ent.Field {
 			NamedValues(
 				"Incomplete", "INCOMPLETE",
 				"Completed", "COMPLETED",
-				"AllCompleted", "ALL_COMPLETED",
 				"CompletedToday", "COMPLETED_TODAY",
 				"CompletedYesterday", "COMPLETED_YESTERDAY",
 				"Completed1Week", "COMPLETED_1_WEEK",
 				"Completed2Weeks", "COMPLETED_2_WEEKS",
 				"Completed3Weeks", "COMPLETED_3_WEEKS",
 				"All", "ALL",
-			).Default("INCOMPLETE"),
+			),
 	}
 }
 

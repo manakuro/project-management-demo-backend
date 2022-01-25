@@ -60,14 +60,10 @@ var (
 // StatusCode defines the type for the "status_code" enum field.
 type StatusCode string
 
-// StatusCodeIncomplete is the default value of the StatusCode enum.
-const DefaultStatusCode = StatusCodeIncomplete
-
 // StatusCode values.
 const (
 	StatusCodeIncomplete         StatusCode = "INCOMPLETE"
 	StatusCodeCompleted          StatusCode = "COMPLETED"
-	StatusCodeAllCompleted       StatusCode = "ALL_COMPLETED"
 	StatusCodeCompletedToday     StatusCode = "COMPLETED_TODAY"
 	StatusCodeCompletedYesterday StatusCode = "COMPLETED_YESTERDAY"
 	StatusCodeCompleted1Week     StatusCode = "COMPLETED_1_WEEK"
@@ -83,7 +79,7 @@ func (sc StatusCode) String() string {
 // StatusCodeValidator is a validator for the "status_code" field enum values. It is called by the builders before save.
 func StatusCodeValidator(sc StatusCode) error {
 	switch sc {
-	case StatusCodeIncomplete, StatusCodeCompleted, StatusCodeAllCompleted, StatusCodeCompletedToday, StatusCodeCompletedYesterday, StatusCodeCompleted1Week, StatusCodeCompleted2Weeks, StatusCodeCompleted3Weeks, StatusCodeAll:
+	case StatusCodeIncomplete, StatusCodeCompleted, StatusCodeCompletedToday, StatusCodeCompletedYesterday, StatusCodeCompleted1Week, StatusCodeCompleted2Weeks, StatusCodeCompleted3Weeks, StatusCodeAll:
 		return nil
 	default:
 		return fmt.Errorf("tasklistcompletedstatus: invalid enum value for status_code field: %q", sc)

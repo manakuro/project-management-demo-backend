@@ -30,6 +30,7 @@ func main() {
 	feed.ProjectTeammate(ctx, client)
 	feed.WorkspaceTeammate(ctx, client)
 	feed.TaskColumn(ctx, client)
+	feed.TaskListCompletedStatus(ctx, client)
 	feed.TaskSection(ctx, client)
 
 	feed.FavoriteProject(ctx, client)

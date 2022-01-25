@@ -38,14 +38,6 @@ func (tlcsu *TaskListCompletedStatusUpdate) SetStatusCode(tc tasklistcompletedst
 	return tlcsu
 }
 
-// SetNillableStatusCode sets the "status_code" field if the given value is not nil.
-func (tlcsu *TaskListCompletedStatusUpdate) SetNillableStatusCode(tc *tasklistcompletedstatus.StatusCode) *TaskListCompletedStatusUpdate {
-	if tc != nil {
-		tlcsu.SetStatusCode(*tc)
-	}
-	return tlcsu
-}
-
 // Mutation returns the TaskListCompletedStatusMutation object of the builder.
 func (tlcsu *TaskListCompletedStatusUpdate) Mutation() *TaskListCompletedStatusMutation {
 	return tlcsu.mutation
@@ -186,14 +178,6 @@ func (tlcsuo *TaskListCompletedStatusUpdateOne) SetName(s string) *TaskListCompl
 // SetStatusCode sets the "status_code" field.
 func (tlcsuo *TaskListCompletedStatusUpdateOne) SetStatusCode(tc tasklistcompletedstatus.StatusCode) *TaskListCompletedStatusUpdateOne {
 	tlcsuo.mutation.SetStatusCode(tc)
-	return tlcsuo
-}
-
-// SetNillableStatusCode sets the "status_code" field if the given value is not nil.
-func (tlcsuo *TaskListCompletedStatusUpdateOne) SetNillableStatusCode(tc *tasklistcompletedstatus.StatusCode) *TaskListCompletedStatusUpdateOne {
-	if tc != nil {
-		tlcsuo.SetStatusCode(*tc)
-	}
 	return tlcsuo
 }
 

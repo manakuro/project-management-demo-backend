@@ -318,7 +318,7 @@ var (
 	TaskListCompletedStatusColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString},
 		{Name: "name", Type: field.TypeString, Size: 255},
-		{Name: "status_code", Type: field.TypeEnum, Enums: []string{"INCOMPLETE", "COMPLETED", "ALL_COMPLETED", "COMPLETED_TODAY", "COMPLETED_YESTERDAY", "COMPLETED_1_WEEK", "COMPLETED_2_WEEKS", "COMPLETED_3_WEEKS", "ALL"}, Default: "INCOMPLETE"},
+		{Name: "status_code", Type: field.TypeEnum, Enums: []string{"INCOMPLETE", "COMPLETED", "COMPLETED_TODAY", "COMPLETED_YESTERDAY", "COMPLETED_1_WEEK", "COMPLETED_2_WEEKS", "COMPLETED_3_WEEKS", "ALL"}},
 		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
 		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
 	}
