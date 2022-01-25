@@ -22,6 +22,7 @@ import (
 	"project-management-demo-backend/ent/projecttaskcolumn"
 	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/ent/taskcolumn"
+	"project-management-demo-backend/ent/tasklistcompletedstatus"
 	"project-management-demo-backend/ent/tasksection"
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/teammatetaskcolumn"
@@ -64,6 +65,8 @@ type Client struct {
 	ProjectTeammate *ProjectTeammateClient
 	// TaskColumn is the client for interacting with the TaskColumn builders.
 	TaskColumn *TaskColumnClient
+	// TaskListCompletedStatus is the client for interacting with the TaskListCompletedStatus builders.
+	TaskListCompletedStatus *TaskListCompletedStatusClient
 	// TaskSection is the client for interacting with the TaskSection builders.
 	TaskSection *TaskSectionClient
 	// Teammate is the client for interacting with the Teammate builders.
@@ -103,6 +106,7 @@ func (c *Client) init() {
 	c.ProjectTaskColumn = NewProjectTaskColumnClient(c.config)
 	c.ProjectTeammate = NewProjectTeammateClient(c.config)
 	c.TaskColumn = NewTaskColumnClient(c.config)
+	c.TaskListCompletedStatus = NewTaskListCompletedStatusClient(c.config)
 	c.TaskSection = NewTaskSectionClient(c.config)
 	c.Teammate = NewTeammateClient(c.config)
 	c.TeammateTaskColumn = NewTeammateTaskColumnClient(c.config)
@@ -141,27 +145,28 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:                ctx,
-		config:             cfg,
-		Color:              NewColorClient(cfg),
-		FavoriteProject:    NewFavoriteProjectClient(cfg),
-		FavoriteWorkspace:  NewFavoriteWorkspaceClient(cfg),
-		Icon:               NewIconClient(cfg),
-		MyTasksTabStatus:   NewMyTasksTabStatusClient(cfg),
-		Project:            NewProjectClient(cfg),
-		ProjectBaseColor:   NewProjectBaseColorClient(cfg),
-		ProjectIcon:        NewProjectIconClient(cfg),
-		ProjectLightColor:  NewProjectLightColorClient(cfg),
-		ProjectTaskColumn:  NewProjectTaskColumnClient(cfg),
-		ProjectTeammate:    NewProjectTeammateClient(cfg),
-		TaskColumn:         NewTaskColumnClient(cfg),
-		TaskSection:        NewTaskSectionClient(cfg),
-		Teammate:           NewTeammateClient(cfg),
-		TeammateTaskColumn: NewTeammateTaskColumnClient(cfg),
-		TestTodo:           NewTestTodoClient(cfg),
-		TestUser:           NewTestUserClient(cfg),
-		Workspace:          NewWorkspaceClient(cfg),
-		WorkspaceTeammate:  NewWorkspaceTeammateClient(cfg),
+		ctx:                     ctx,
+		config:                  cfg,
+		Color:                   NewColorClient(cfg),
+		FavoriteProject:         NewFavoriteProjectClient(cfg),
+		FavoriteWorkspace:       NewFavoriteWorkspaceClient(cfg),
+		Icon:                    NewIconClient(cfg),
+		MyTasksTabStatus:        NewMyTasksTabStatusClient(cfg),
+		Project:                 NewProjectClient(cfg),
+		ProjectBaseColor:        NewProjectBaseColorClient(cfg),
+		ProjectIcon:             NewProjectIconClient(cfg),
+		ProjectLightColor:       NewProjectLightColorClient(cfg),
+		ProjectTaskColumn:       NewProjectTaskColumnClient(cfg),
+		ProjectTeammate:         NewProjectTeammateClient(cfg),
+		TaskColumn:              NewTaskColumnClient(cfg),
+		TaskListCompletedStatus: NewTaskListCompletedStatusClient(cfg),
+		TaskSection:             NewTaskSectionClient(cfg),
+		Teammate:                NewTeammateClient(cfg),
+		TeammateTaskColumn:      NewTeammateTaskColumnClient(cfg),
+		TestTodo:                NewTestTodoClient(cfg),
+		TestUser:                NewTestUserClient(cfg),
+		Workspace:               NewWorkspaceClient(cfg),
+		WorkspaceTeammate:       NewWorkspaceTeammateClient(cfg),
 	}, nil
 }
 
@@ -179,26 +184,27 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		config:             cfg,
-		Color:              NewColorClient(cfg),
-		FavoriteProject:    NewFavoriteProjectClient(cfg),
-		FavoriteWorkspace:  NewFavoriteWorkspaceClient(cfg),
-		Icon:               NewIconClient(cfg),
-		MyTasksTabStatus:   NewMyTasksTabStatusClient(cfg),
-		Project:            NewProjectClient(cfg),
-		ProjectBaseColor:   NewProjectBaseColorClient(cfg),
-		ProjectIcon:        NewProjectIconClient(cfg),
-		ProjectLightColor:  NewProjectLightColorClient(cfg),
-		ProjectTaskColumn:  NewProjectTaskColumnClient(cfg),
-		ProjectTeammate:    NewProjectTeammateClient(cfg),
-		TaskColumn:         NewTaskColumnClient(cfg),
-		TaskSection:        NewTaskSectionClient(cfg),
-		Teammate:           NewTeammateClient(cfg),
-		TeammateTaskColumn: NewTeammateTaskColumnClient(cfg),
-		TestTodo:           NewTestTodoClient(cfg),
-		TestUser:           NewTestUserClient(cfg),
-		Workspace:          NewWorkspaceClient(cfg),
-		WorkspaceTeammate:  NewWorkspaceTeammateClient(cfg),
+		config:                  cfg,
+		Color:                   NewColorClient(cfg),
+		FavoriteProject:         NewFavoriteProjectClient(cfg),
+		FavoriteWorkspace:       NewFavoriteWorkspaceClient(cfg),
+		Icon:                    NewIconClient(cfg),
+		MyTasksTabStatus:        NewMyTasksTabStatusClient(cfg),
+		Project:                 NewProjectClient(cfg),
+		ProjectBaseColor:        NewProjectBaseColorClient(cfg),
+		ProjectIcon:             NewProjectIconClient(cfg),
+		ProjectLightColor:       NewProjectLightColorClient(cfg),
+		ProjectTaskColumn:       NewProjectTaskColumnClient(cfg),
+		ProjectTeammate:         NewProjectTeammateClient(cfg),
+		TaskColumn:              NewTaskColumnClient(cfg),
+		TaskListCompletedStatus: NewTaskListCompletedStatusClient(cfg),
+		TaskSection:             NewTaskSectionClient(cfg),
+		Teammate:                NewTeammateClient(cfg),
+		TeammateTaskColumn:      NewTeammateTaskColumnClient(cfg),
+		TestTodo:                NewTestTodoClient(cfg),
+		TestUser:                NewTestUserClient(cfg),
+		Workspace:               NewWorkspaceClient(cfg),
+		WorkspaceTeammate:       NewWorkspaceTeammateClient(cfg),
 	}, nil
 }
 
@@ -240,6 +246,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.ProjectTaskColumn.Use(hooks...)
 	c.ProjectTeammate.Use(hooks...)
 	c.TaskColumn.Use(hooks...)
+	c.TaskListCompletedStatus.Use(hooks...)
 	c.TaskSection.Use(hooks...)
 	c.Teammate.Use(hooks...)
 	c.TeammateTaskColumn.Use(hooks...)
@@ -1791,6 +1798,96 @@ func (c *TaskColumnClient) QueryProjectTaskColumns(tc *TaskColumn) *ProjectTaskC
 // Hooks returns the client hooks.
 func (c *TaskColumnClient) Hooks() []Hook {
 	return c.hooks.TaskColumn
+}
+
+// TaskListCompletedStatusClient is a client for the TaskListCompletedStatus schema.
+type TaskListCompletedStatusClient struct {
+	config
+}
+
+// NewTaskListCompletedStatusClient returns a client for the TaskListCompletedStatus from the given config.
+func NewTaskListCompletedStatusClient(c config) *TaskListCompletedStatusClient {
+	return &TaskListCompletedStatusClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `tasklistcompletedstatus.Hooks(f(g(h())))`.
+func (c *TaskListCompletedStatusClient) Use(hooks ...Hook) {
+	c.hooks.TaskListCompletedStatus = append(c.hooks.TaskListCompletedStatus, hooks...)
+}
+
+// Create returns a create builder for TaskListCompletedStatus.
+func (c *TaskListCompletedStatusClient) Create() *TaskListCompletedStatusCreate {
+	mutation := newTaskListCompletedStatusMutation(c.config, OpCreate)
+	return &TaskListCompletedStatusCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of TaskListCompletedStatus entities.
+func (c *TaskListCompletedStatusClient) CreateBulk(builders ...*TaskListCompletedStatusCreate) *TaskListCompletedStatusCreateBulk {
+	return &TaskListCompletedStatusCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for TaskListCompletedStatus.
+func (c *TaskListCompletedStatusClient) Update() *TaskListCompletedStatusUpdate {
+	mutation := newTaskListCompletedStatusMutation(c.config, OpUpdate)
+	return &TaskListCompletedStatusUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *TaskListCompletedStatusClient) UpdateOne(tlcs *TaskListCompletedStatus) *TaskListCompletedStatusUpdateOne {
+	mutation := newTaskListCompletedStatusMutation(c.config, OpUpdateOne, withTaskListCompletedStatus(tlcs))
+	return &TaskListCompletedStatusUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *TaskListCompletedStatusClient) UpdateOneID(id ulid.ID) *TaskListCompletedStatusUpdateOne {
+	mutation := newTaskListCompletedStatusMutation(c.config, OpUpdateOne, withTaskListCompletedStatusID(id))
+	return &TaskListCompletedStatusUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for TaskListCompletedStatus.
+func (c *TaskListCompletedStatusClient) Delete() *TaskListCompletedStatusDelete {
+	mutation := newTaskListCompletedStatusMutation(c.config, OpDelete)
+	return &TaskListCompletedStatusDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *TaskListCompletedStatusClient) DeleteOne(tlcs *TaskListCompletedStatus) *TaskListCompletedStatusDeleteOne {
+	return c.DeleteOneID(tlcs.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *TaskListCompletedStatusClient) DeleteOneID(id ulid.ID) *TaskListCompletedStatusDeleteOne {
+	builder := c.Delete().Where(tasklistcompletedstatus.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &TaskListCompletedStatusDeleteOne{builder}
+}
+
+// Query returns a query builder for TaskListCompletedStatus.
+func (c *TaskListCompletedStatusClient) Query() *TaskListCompletedStatusQuery {
+	return &TaskListCompletedStatusQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a TaskListCompletedStatus entity by its id.
+func (c *TaskListCompletedStatusClient) Get(ctx context.Context, id ulid.ID) (*TaskListCompletedStatus, error) {
+	return c.Query().Where(tasklistcompletedstatus.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *TaskListCompletedStatusClient) GetX(ctx context.Context, id ulid.ID) *TaskListCompletedStatus {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *TaskListCompletedStatusClient) Hooks() []Hook {
+	return c.hooks.TaskListCompletedStatus
 }
 
 // TaskSectionClient is a client for the TaskSection schema.

@@ -19,6 +19,7 @@ import (
 	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/taskcolumn"
+	"project-management-demo-backend/ent/tasklistcompletedstatus"
 	"project-management-demo-backend/ent/tasksection"
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/teammatetaskcolumn"
@@ -961,6 +962,49 @@ func (tc *TaskColumn) Node(ctx context.Context) (node *Node, err error) {
 	return node, nil
 }
 
+func (tlcs *TaskListCompletedStatus) Node(ctx context.Context) (node *Node, err error) {
+	node = &Node{
+		ID:     tlcs.ID,
+		Type:   "TaskListCompletedStatus",
+		Fields: make([]*Field, 4),
+		Edges:  make([]*Edge, 0),
+	}
+	var buf []byte
+	if buf, err = json.Marshal(tlcs.Name); err != nil {
+		return nil, err
+	}
+	node.Fields[0] = &Field{
+		Type:  "string",
+		Name:  "name",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(tlcs.StatusCode); err != nil {
+		return nil, err
+	}
+	node.Fields[1] = &Field{
+		Type:  "tasklistcompletedstatus.StatusCode",
+		Name:  "status_code",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(tlcs.CreatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[2] = &Field{
+		Type:  "time.Time",
+		Name:  "created_at",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(tlcs.UpdatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[3] = &Field{
+		Type:  "time.Time",
+		Name:  "updated_at",
+		Value: string(buf),
+	}
+	return node, nil
+}
+
 func (ts *TaskSection) Node(ctx context.Context) (node *Node, err error) {
 	node = &Node{
 		ID:     ts.ID,
@@ -1707,6 +1751,15 @@ func (c *Client) noder(ctx context.Context, table string, id ulid.ID) (Noder, er
 			return nil, err
 		}
 		return n, nil
+	case tasklistcompletedstatus.Table:
+		n, err := c.TaskListCompletedStatus.Query().
+			Where(tasklistcompletedstatus.ID(id)).
+			CollectFields(ctx, "TaskListCompletedStatus").
+			Only(ctx)
+		if err != nil {
+			return nil, err
+		}
+		return n, nil
 	case tasksection.Table:
 		n, err := c.TaskSection.Query().
 			Where(tasksection.ID(id)).
@@ -1990,6 +2043,19 @@ func (c *Client) noders(ctx context.Context, table string, ids []ulid.ID) ([]Nod
 		nodes, err := c.TaskColumn.Query().
 			Where(taskcolumn.IDIn(ids...)).
 			CollectFields(ctx, "TaskColumn").
+			All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, node := range nodes {
+			for _, noder := range idmap[node.ID] {
+				*noder = node
+			}
+		}
+	case tasklistcompletedstatus.Table:
+		nodes, err := c.TaskListCompletedStatus.Query().
+			Where(tasklistcompletedstatus.IDIn(ids...)).
+			CollectFields(ctx, "TaskListCompletedStatus").
 			All(ctx)
 		if err != nil {
 			return nil, err

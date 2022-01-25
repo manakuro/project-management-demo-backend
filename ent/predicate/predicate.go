@@ -42,6 +42,9 @@ type ProjectTeammate func(*sql.Selector)
 // TaskColumn is the predicate function for taskcolumn builders.
 type TaskColumn func(*sql.Selector)
 
+// TaskListCompletedStatus is the predicate function for tasklistcompletedstatus builders.
+type TaskListCompletedStatus func(*sql.Selector)
+
 // TaskSection is the predicate function for tasksection builders.
 type TaskSection func(*sql.Selector)
 

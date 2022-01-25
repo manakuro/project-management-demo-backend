@@ -314,6 +314,20 @@ var (
 		Columns:    TaskColumnsColumns,
 		PrimaryKey: []*schema.Column{TaskColumnsColumns[0]},
 	}
+	// TaskListCompletedStatusColumns holds the columns for the "task_list_completed_status" table.
+	TaskListCompletedStatusColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+		{Name: "name", Type: field.TypeString, Size: 255},
+		{Name: "status_code", Type: field.TypeEnum, Enums: []string{"INCOMPLETE", "COMPLETED", "ALL_COMPLETED", "COMPLETED_TODAY", "COMPLETED_YESTERDAY", "COMPLETED_1_WEEK", "COMPLETED_2_WEEKS", "COMPLETED_3_WEEKS", "ALL"}, Default: "INCOMPLETE"},
+		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
+		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
+	}
+	// TaskListCompletedStatusTable holds the schema information for the "task_list_completed_status" table.
+	TaskListCompletedStatusTable = &schema.Table{
+		Name:       "task_list_completed_status",
+		Columns:    TaskListCompletedStatusColumns,
+		PrimaryKey: []*schema.Column{TaskListCompletedStatusColumns[0]},
+	}
 	// TaskSectionsColumns holds the columns for the "task_sections" table.
 	TaskSectionsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString},
@@ -480,6 +494,7 @@ var (
 		ProjectTaskColumnsTable,
 		ProjectTeammatesTable,
 		TaskColumnsTable,
+		TaskListCompletedStatusTable,
 		TaskSectionsTable,
 		TeammatesTable,
 		TeammateTaskColumnsTable,

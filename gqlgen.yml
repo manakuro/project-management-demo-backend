@@ -64,4 +64,7 @@ models:
   TaskColumnType:
     model:
         - project-management-demo-backend/ent/taskcolumn.Type
+  TaskListCompletedStatusCode:
+    model:
+      - project-management-demo-backend/ent/tasklistcompletedstatus.StatusCode
 

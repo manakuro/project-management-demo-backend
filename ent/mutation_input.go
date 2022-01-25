@@ -8,6 +8,7 @@ import (
 	"project-management-demo-backend/ent/schema/testuserprofile"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/taskcolumn"
+	"project-management-demo-backend/ent/tasklistcompletedstatus"
 	"project-management-demo-backend/ent/testtodo"
 	"time"
 )
@@ -948,6 +949,63 @@ func (u *TaskColumnUpdate) SetInput(i UpdateTaskColumnInput) *TaskColumnUpdate {
 
 // SetInput applies the change-set in the UpdateTaskColumnInput on the update-one builder.
 func (u *TaskColumnUpdateOne) SetInput(i UpdateTaskColumnInput) *TaskColumnUpdateOne {
+	i.Mutate(u.Mutation())
+	return u
+}
+
+// CreateTaskListCompletedStatusInput represents a mutation input for creating tasklistcompletedstatusslice.
+type CreateTaskListCompletedStatusInput struct {
+	Name       string
+	StatusCode *tasklistcompletedstatus.StatusCode
+	CreatedAt  *time.Time
+	UpdatedAt  *time.Time
+}
+
+// Mutate applies the CreateTaskListCompletedStatusInput on the TaskListCompletedStatusCreate builder.
+func (i *CreateTaskListCompletedStatusInput) Mutate(m *TaskListCompletedStatusCreate) {
+	m.SetName(i.Name)
+	if v := i.StatusCode; v != nil {
+		m.SetStatusCode(*v)
+	}
+	if v := i.CreatedAt; v != nil {
+		m.SetCreatedAt(*v)
+	}
+	if v := i.UpdatedAt; v != nil {
+		m.SetUpdatedAt(*v)
+	}
+}
+
+// SetInput applies the change-set in the CreateTaskListCompletedStatusInput on the create builder.
+func (c *TaskListCompletedStatusCreate) SetInput(i CreateTaskListCompletedStatusInput) *TaskListCompletedStatusCreate {
+	i.Mutate(c)
+	return c
+}
+
+// UpdateTaskListCompletedStatusInput represents a mutation input for updating tasklistcompletedstatusslice.
+type UpdateTaskListCompletedStatusInput struct {
+	ID         ulid.ID
+	Name       *string
+	StatusCode *tasklistcompletedstatus.StatusCode
+}
+
+// Mutate applies the UpdateTaskListCompletedStatusInput on the TaskListCompletedStatusMutation.
+func (i *UpdateTaskListCompletedStatusInput) Mutate(m *TaskListCompletedStatusMutation) {
+	if v := i.Name; v != nil {
+		m.SetName(*v)
+	}
+	if v := i.StatusCode; v != nil {
+		m.SetStatusCode(*v)
+	}
+}
+
+// SetInput applies the change-set in the UpdateTaskListCompletedStatusInput on the update builder.
+func (u *TaskListCompletedStatusUpdate) SetInput(i UpdateTaskListCompletedStatusInput) *TaskListCompletedStatusUpdate {
+	i.Mutate(u.Mutation())
+	return u
+}
+
+// SetInput applies the change-set in the UpdateTaskListCompletedStatusInput on the update-one builder.
+func (u *TaskListCompletedStatusUpdateOne) SetInput(i UpdateTaskListCompletedStatusInput) *TaskListCompletedStatusUpdateOne {
 	i.Mutate(u.Mutation())
 	return u
 }

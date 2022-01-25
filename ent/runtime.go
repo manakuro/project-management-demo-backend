@@ -17,6 +17,7 @@ import (
 	"project-management-demo-backend/ent/schema"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/taskcolumn"
+	"project-management-demo-backend/ent/tasklistcompletedstatus"
 	"project-management-demo-backend/ent/tasksection"
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/teammatetaskcolumn"
@@ -429,6 +430,45 @@ func init() {
 	taskcolumnDescID := taskcolumnMixinFields0[0].Descriptor()
 	// taskcolumn.DefaultID holds the default value on creation for the id field.
 	taskcolumn.DefaultID = taskcolumnDescID.Default.(func() ulid.ID)
+	tasklistcompletedstatusMixin := schema.TaskListCompletedStatus{}.Mixin()
+	tasklistcompletedstatusMixinFields0 := tasklistcompletedstatusMixin[0].Fields()
+	_ = tasklistcompletedstatusMixinFields0
+	tasklistcompletedstatusMixinFields1 := tasklistcompletedstatusMixin[1].Fields()
+	_ = tasklistcompletedstatusMixinFields1
+	tasklistcompletedstatusMixinFields2 := tasklistcompletedstatusMixin[2].Fields()
+	_ = tasklistcompletedstatusMixinFields2
+	tasklistcompletedstatusFields := schema.TaskListCompletedStatus{}.Fields()
+	_ = tasklistcompletedstatusFields
+	// tasklistcompletedstatusDescName is the schema descriptor for name field.
+	tasklistcompletedstatusDescName := tasklistcompletedstatusMixinFields1[0].Descriptor()
+	// tasklistcompletedstatus.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	tasklistcompletedstatus.NameValidator = func() func(string) error {
+		validators := tasklistcompletedstatusDescName.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(name string) error {
+			for _, fn := range fns {
+				if err := fn(name); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// tasklistcompletedstatusDescCreatedAt is the schema descriptor for created_at field.
+	tasklistcompletedstatusDescCreatedAt := tasklistcompletedstatusMixinFields2[0].Descriptor()
+	// tasklistcompletedstatus.DefaultCreatedAt holds the default value on creation for the created_at field.
+	tasklistcompletedstatus.DefaultCreatedAt = tasklistcompletedstatusDescCreatedAt.Default.(func() time.Time)
+	// tasklistcompletedstatusDescUpdatedAt is the schema descriptor for updated_at field.
+	tasklistcompletedstatusDescUpdatedAt := tasklistcompletedstatusMixinFields2[1].Descriptor()
+	// tasklistcompletedstatus.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	tasklistcompletedstatus.DefaultUpdatedAt = tasklistcompletedstatusDescUpdatedAt.Default.(func() time.Time)
+	// tasklistcompletedstatusDescID is the schema descriptor for id field.
+	tasklistcompletedstatusDescID := tasklistcompletedstatusMixinFields0[0].Descriptor()
+	// tasklistcompletedstatus.DefaultID holds the default value on creation for the id field.
+	tasklistcompletedstatus.DefaultID = tasklistcompletedstatusDescID.Default.(func() ulid.ID)
 	tasksectionMixin := schema.TaskSection{}.Mixin()
 	tasksectionMixinFields0 := tasksectionMixin[0].Fields()
 	_ = tasksectionMixinFields0

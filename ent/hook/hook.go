@@ -164,6 +164,19 @@ func (f TaskColumnFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, 
 	return f(ctx, mv)
 }
 
+// The TaskListCompletedStatusFunc type is an adapter to allow the use of ordinary
+// function as TaskListCompletedStatus mutator.
+type TaskListCompletedStatusFunc func(context.Context, *ent.TaskListCompletedStatusMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f TaskListCompletedStatusFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.TaskListCompletedStatusMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.TaskListCompletedStatusMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The TaskSectionFunc type is an adapter to allow the use of ordinary
 // function as TaskSection mutator.
 type TaskSectionFunc func(context.Context, *ent.TaskSectionMutation) (ent.Value, error)
