@@ -328,6 +328,20 @@ var (
 		Columns:    TaskListCompletedStatusColumns,
 		PrimaryKey: []*schema.Column{TaskListCompletedStatusColumns[0]},
 	}
+	// TaskListSortStatusColumns holds the columns for the "task_list_sort_status" table.
+	TaskListSortStatusColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+		{Name: "name", Type: field.TypeString, Size: 255},
+		{Name: "status_code", Type: field.TypeEnum, Enums: []string{"NONE", "DUE_DATE", "LIKES", "ALPHABETICAL", "PROJECT", "ASSIGNEE", "CREATION_TIME", "PRIORITY"}},
+		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
+		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
+	}
+	// TaskListSortStatusTable holds the schema information for the "task_list_sort_status" table.
+	TaskListSortStatusTable = &schema.Table{
+		Name:       "task_list_sort_status",
+		Columns:    TaskListSortStatusColumns,
+		PrimaryKey: []*schema.Column{TaskListSortStatusColumns[0]},
+	}
 	// TaskSectionsColumns holds the columns for the "task_sections" table.
 	TaskSectionsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString},
@@ -495,6 +509,7 @@ var (
 		ProjectTeammatesTable,
 		TaskColumnsTable,
 		TaskListCompletedStatusTable,
+		TaskListSortStatusTable,
 		TaskSectionsTable,
 		TeammatesTable,
 		TeammateTaskColumnsTable,

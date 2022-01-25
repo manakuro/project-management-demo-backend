@@ -67,4 +67,7 @@ models:
   TaskListCompletedStatusCode:
     model:
       - project-management-demo-backend/ent/tasklistcompletedstatus.StatusCode
+  TaskListSortStatusCode:
+    model:
+      - project-management-demo-backend/ent/tasklistsortstatus.StatusCode
 

@@ -9,6 +9,7 @@ import (
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/taskcolumn"
 	"project-management-demo-backend/ent/tasklistcompletedstatus"
+	"project-management-demo-backend/ent/tasklistsortstatus"
 	"project-management-demo-backend/ent/testtodo"
 	"time"
 )
@@ -1004,6 +1005,61 @@ func (u *TaskListCompletedStatusUpdate) SetInput(i UpdateTaskListCompletedStatus
 
 // SetInput applies the change-set in the UpdateTaskListCompletedStatusInput on the update-one builder.
 func (u *TaskListCompletedStatusUpdateOne) SetInput(i UpdateTaskListCompletedStatusInput) *TaskListCompletedStatusUpdateOne {
+	i.Mutate(u.Mutation())
+	return u
+}
+
+// CreateTaskListSortStatusInput represents a mutation input for creating tasklistsortstatusslice.
+type CreateTaskListSortStatusInput struct {
+	Name       string
+	StatusCode tasklistsortstatus.StatusCode
+	CreatedAt  *time.Time
+	UpdatedAt  *time.Time
+}
+
+// Mutate applies the CreateTaskListSortStatusInput on the TaskListSortStatusCreate builder.
+func (i *CreateTaskListSortStatusInput) Mutate(m *TaskListSortStatusCreate) {
+	m.SetName(i.Name)
+	m.SetStatusCode(i.StatusCode)
+	if v := i.CreatedAt; v != nil {
+		m.SetCreatedAt(*v)
+	}
+	if v := i.UpdatedAt; v != nil {
+		m.SetUpdatedAt(*v)
+	}
+}
+
+// SetInput applies the change-set in the CreateTaskListSortStatusInput on the create builder.
+func (c *TaskListSortStatusCreate) SetInput(i CreateTaskListSortStatusInput) *TaskListSortStatusCreate {
+	i.Mutate(c)
+	return c
+}
+
+// UpdateTaskListSortStatusInput represents a mutation input for updating tasklistsortstatusslice.
+type UpdateTaskListSortStatusInput struct {
+	ID         ulid.ID
+	Name       *string
+	StatusCode *tasklistsortstatus.StatusCode
+}
+
+// Mutate applies the UpdateTaskListSortStatusInput on the TaskListSortStatusMutation.
+func (i *UpdateTaskListSortStatusInput) Mutate(m *TaskListSortStatusMutation) {
+	if v := i.Name; v != nil {
+		m.SetName(*v)
+	}
+	if v := i.StatusCode; v != nil {
+		m.SetStatusCode(*v)
+	}
+}
+
+// SetInput applies the change-set in the UpdateTaskListSortStatusInput on the update builder.
+func (u *TaskListSortStatusUpdate) SetInput(i UpdateTaskListSortStatusInput) *TaskListSortStatusUpdate {
+	i.Mutate(u.Mutation())
+	return u
+}
+
+// SetInput applies the change-set in the UpdateTaskListSortStatusInput on the update-one builder.
+func (u *TaskListSortStatusUpdateOne) SetInput(i UpdateTaskListSortStatusInput) *TaskListSortStatusUpdateOne {
 	i.Mutate(u.Mutation())
 	return u
 }
