@@ -21,6 +21,7 @@ import (
 	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/taskcolumn"
+	"project-management-demo-backend/ent/tasklistcompletedstatus"
 	"project-management-demo-backend/ent/tasksection"
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/teammatetaskcolumn"
@@ -2972,6 +2973,233 @@ func (tc *TaskColumn) ToEdge(order *TaskColumnOrder) *TaskColumnEdge {
 	return &TaskColumnEdge{
 		Node:   tc,
 		Cursor: order.Field.toCursor(tc),
+	}
+}
+
+// TaskListCompletedStatusEdge is the edge representation of TaskListCompletedStatus.
+type TaskListCompletedStatusEdge struct {
+	Node   *TaskListCompletedStatus `json:"node"`
+	Cursor Cursor                   `json:"cursor"`
+}
+
+// TaskListCompletedStatusConnection is the connection containing edges to TaskListCompletedStatus.
+type TaskListCompletedStatusConnection struct {
+	Edges      []*TaskListCompletedStatusEdge `json:"edges"`
+	PageInfo   PageInfo                       `json:"pageInfo"`
+	TotalCount int                            `json:"totalCount"`
+}
+
+// TaskListCompletedStatusPaginateOption enables pagination customization.
+type TaskListCompletedStatusPaginateOption func(*taskListCompletedStatusPager) error
+
+// WithTaskListCompletedStatusOrder configures pagination ordering.
+func WithTaskListCompletedStatusOrder(order *TaskListCompletedStatusOrder) TaskListCompletedStatusPaginateOption {
+	if order == nil {
+		order = DefaultTaskListCompletedStatusOrder
+	}
+	o := *order
+	return func(pager *taskListCompletedStatusPager) error {
+		if err := o.Direction.Validate(); err != nil {
+			return err
+		}
+		if o.Field == nil {
+			o.Field = DefaultTaskListCompletedStatusOrder.Field
+		}
+		pager.order = &o
+		return nil
+	}
+}
+
+// WithTaskListCompletedStatusFilter configures pagination filter.
+func WithTaskListCompletedStatusFilter(filter func(*TaskListCompletedStatusQuery) (*TaskListCompletedStatusQuery, error)) TaskListCompletedStatusPaginateOption {
+	return func(pager *taskListCompletedStatusPager) error {
+		if filter == nil {
+			return errors.New("TaskListCompletedStatusQuery filter cannot be nil")
+		}
+		pager.filter = filter
+		return nil
+	}
+}
+
+type taskListCompletedStatusPager struct {
+	order  *TaskListCompletedStatusOrder
+	filter func(*TaskListCompletedStatusQuery) (*TaskListCompletedStatusQuery, error)
+}
+
+func newTaskListCompletedStatusPager(opts []TaskListCompletedStatusPaginateOption) (*taskListCompletedStatusPager, error) {
+	pager := &taskListCompletedStatusPager{}
+	for _, opt := range opts {
+		if err := opt(pager); err != nil {
+			return nil, err
+		}
+	}
+	if pager.order == nil {
+		pager.order = DefaultTaskListCompletedStatusOrder
+	}
+	return pager, nil
+}
+
+func (p *taskListCompletedStatusPager) applyFilter(query *TaskListCompletedStatusQuery) (*TaskListCompletedStatusQuery, error) {
+	if p.filter != nil {
+		return p.filter(query)
+	}
+	return query, nil
+}
+
+func (p *taskListCompletedStatusPager) toCursor(tlcs *TaskListCompletedStatus) Cursor {
+	return p.order.Field.toCursor(tlcs)
+}
+
+func (p *taskListCompletedStatusPager) applyCursors(query *TaskListCompletedStatusQuery, after, before *Cursor) *TaskListCompletedStatusQuery {
+	for _, predicate := range cursorsToPredicates(
+		p.order.Direction, after, before,
+		p.order.Field.field, DefaultTaskListCompletedStatusOrder.Field.field,
+	) {
+		query = query.Where(predicate)
+	}
+	return query
+}
+
+func (p *taskListCompletedStatusPager) applyOrder(query *TaskListCompletedStatusQuery, reverse bool) *TaskListCompletedStatusQuery {
+	direction := p.order.Direction
+	if reverse {
+		direction = direction.reverse()
+	}
+	query = query.Order(direction.orderFunc(p.order.Field.field))
+	if p.order.Field != DefaultTaskListCompletedStatusOrder.Field {
+		query = query.Order(direction.orderFunc(DefaultTaskListCompletedStatusOrder.Field.field))
+	}
+	return query
+}
+
+// Paginate executes the query and returns a relay based cursor connection to TaskListCompletedStatus.
+func (tlcs *TaskListCompletedStatusQuery) Paginate(
+	ctx context.Context, after *Cursor, first *int,
+	before *Cursor, last *int, opts ...TaskListCompletedStatusPaginateOption,
+) (*TaskListCompletedStatusConnection, error) {
+	if err := validateFirstLast(first, last); err != nil {
+		return nil, err
+	}
+	pager, err := newTaskListCompletedStatusPager(opts)
+	if err != nil {
+		return nil, err
+	}
+
+	if tlcs, err = pager.applyFilter(tlcs); err != nil {
+		return nil, err
+	}
+
+	conn := &TaskListCompletedStatusConnection{Edges: []*TaskListCompletedStatusEdge{}}
+	if !hasCollectedField(ctx, edgesField) || first != nil && *first == 0 || last != nil && *last == 0 {
+		if hasCollectedField(ctx, totalCountField) ||
+			hasCollectedField(ctx, pageInfoField) {
+			count, err := tlcs.Count(ctx)
+			if err != nil {
+				return nil, err
+			}
+			conn.TotalCount = count
+			conn.PageInfo.HasNextPage = first != nil && count > 0
+			conn.PageInfo.HasPreviousPage = last != nil && count > 0
+		}
+		return conn, nil
+	}
+
+	if (after != nil || first != nil || before != nil || last != nil) && hasCollectedField(ctx, totalCountField) {
+		count, err := tlcs.Clone().Count(ctx)
+		if err != nil {
+			return nil, err
+		}
+		conn.TotalCount = count
+	}
+
+	tlcs = pager.applyCursors(tlcs, after, before)
+	tlcs = pager.applyOrder(tlcs, last != nil)
+	var limit int
+	if first != nil {
+		limit = *first + 1
+	} else if last != nil {
+		limit = *last + 1
+	}
+	if limit > 0 {
+		tlcs = tlcs.Limit(limit)
+	}
+
+	if field := getCollectedField(ctx, edgesField, nodeField); field != nil {
+		tlcs = tlcs.collectField(graphql.GetOperationContext(ctx), *field)
+	}
+
+	nodes, err := tlcs.All(ctx)
+	if err != nil || len(nodes) == 0 {
+		return conn, err
+	}
+
+	if len(nodes) == limit {
+		conn.PageInfo.HasNextPage = first != nil
+		conn.PageInfo.HasPreviousPage = last != nil
+		nodes = nodes[:len(nodes)-1]
+	}
+
+	var nodeAt func(int) *TaskListCompletedStatus
+	if last != nil {
+		n := len(nodes) - 1
+		nodeAt = func(i int) *TaskListCompletedStatus {
+			return nodes[n-i]
+		}
+	} else {
+		nodeAt = func(i int) *TaskListCompletedStatus {
+			return nodes[i]
+		}
+	}
+
+	conn.Edges = make([]*TaskListCompletedStatusEdge, len(nodes))
+	for i := range nodes {
+		node := nodeAt(i)
+		conn.Edges[i] = &TaskListCompletedStatusEdge{
+			Node:   node,
+			Cursor: pager.toCursor(node),
+		}
+	}
+
+	conn.PageInfo.StartCursor = &conn.Edges[0].Cursor
+	conn.PageInfo.EndCursor = &conn.Edges[len(conn.Edges)-1].Cursor
+	if conn.TotalCount == 0 {
+		conn.TotalCount = len(nodes)
+	}
+
+	return conn, nil
+}
+
+// TaskListCompletedStatusOrderField defines the ordering field of TaskListCompletedStatus.
+type TaskListCompletedStatusOrderField struct {
+	field    string
+	toCursor func(*TaskListCompletedStatus) Cursor
+}
+
+// TaskListCompletedStatusOrder defines the ordering of TaskListCompletedStatus.
+type TaskListCompletedStatusOrder struct {
+	Direction OrderDirection                     `json:"direction"`
+	Field     *TaskListCompletedStatusOrderField `json:"field"`
+}
+
+// DefaultTaskListCompletedStatusOrder is the default ordering of TaskListCompletedStatus.
+var DefaultTaskListCompletedStatusOrder = &TaskListCompletedStatusOrder{
+	Direction: OrderDirectionAsc,
+	Field: &TaskListCompletedStatusOrderField{
+		field: tasklistcompletedstatus.FieldID,
+		toCursor: func(tlcs *TaskListCompletedStatus) Cursor {
+			return Cursor{ID: tlcs.ID}
+		},
+	},
+}
+
+// ToEdge converts TaskListCompletedStatus into TaskListCompletedStatusEdge.
+func (tlcs *TaskListCompletedStatus) ToEdge(order *TaskListCompletedStatusOrder) *TaskListCompletedStatusEdge {
+	if order == nil {
+		order = DefaultTaskListCompletedStatusOrder
+	}
+	return &TaskListCompletedStatusEdge{
+		Node:   tlcs,
+		Cursor: order.Field.toCursor(tlcs),
 	}
 }
 

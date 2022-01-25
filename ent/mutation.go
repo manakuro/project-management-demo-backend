@@ -21,6 +21,7 @@ import (
 	"project-management-demo-backend/ent/schema/testuserprofile"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/taskcolumn"
+	"project-management-demo-backend/ent/tasklistcompletedstatus"
 	"project-management-demo-backend/ent/tasksection"
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/teammatetaskcolumn"
@@ -43,25 +44,26 @@ const (
 	OpUpdateOne = ent.OpUpdateOne
 
 	// Node types.
-	TypeColor              = "Color"
-	TypeFavoriteProject    = "FavoriteProject"
-	TypeFavoriteWorkspace  = "FavoriteWorkspace"
-	TypeIcon               = "Icon"
-	TypeMyTasksTabStatus   = "MyTasksTabStatus"
-	TypeProject            = "Project"
-	TypeProjectBaseColor   = "ProjectBaseColor"
-	TypeProjectIcon        = "ProjectIcon"
-	TypeProjectLightColor  = "ProjectLightColor"
-	TypeProjectTaskColumn  = "ProjectTaskColumn"
-	TypeProjectTeammate    = "ProjectTeammate"
-	TypeTaskColumn         = "TaskColumn"
-	TypeTaskSection        = "TaskSection"
-	TypeTeammate           = "Teammate"
-	TypeTeammateTaskColumn = "TeammateTaskColumn"
-	TypeTestTodo           = "TestTodo"
-	TypeTestUser           = "TestUser"
-	TypeWorkspace          = "Workspace"
-	TypeWorkspaceTeammate  = "WorkspaceTeammate"
+	TypeColor                   = "Color"
+	TypeFavoriteProject         = "FavoriteProject"
+	TypeFavoriteWorkspace       = "FavoriteWorkspace"
+	TypeIcon                    = "Icon"
+	TypeMyTasksTabStatus        = "MyTasksTabStatus"
+	TypeProject                 = "Project"
+	TypeProjectBaseColor        = "ProjectBaseColor"
+	TypeProjectIcon             = "ProjectIcon"
+	TypeProjectLightColor       = "ProjectLightColor"
+	TypeProjectTaskColumn       = "ProjectTaskColumn"
+	TypeProjectTeammate         = "ProjectTeammate"
+	TypeTaskColumn              = "TaskColumn"
+	TypeTaskListCompletedStatus = "TaskListCompletedStatus"
+	TypeTaskSection             = "TaskSection"
+	TypeTeammate                = "Teammate"
+	TypeTeammateTaskColumn      = "TeammateTaskColumn"
+	TypeTestTodo                = "TestTodo"
+	TypeTestUser                = "TestUser"
+	TypeWorkspace               = "Workspace"
+	TypeWorkspaceTeammate       = "WorkspaceTeammate"
 )
 
 // ColorMutation represents an operation that mutates the Color nodes in the graph.
@@ -8122,6 +8124,466 @@ func (m *TaskColumnMutation) ResetEdge(name string) error {
 		return nil
 	}
 	return fmt.Errorf("unknown TaskColumn edge %s", name)
+}
+
+// TaskListCompletedStatusMutation represents an operation that mutates the TaskListCompletedStatus nodes in the graph.
+type TaskListCompletedStatusMutation struct {
+	config
+	op            Op
+	typ           string
+	id            *ulid.ID
+	name          *string
+	status_code   *tasklistcompletedstatus.StatusCode
+	created_at    *time.Time
+	updated_at    *time.Time
+	clearedFields map[string]struct{}
+	done          bool
+	oldValue      func(context.Context) (*TaskListCompletedStatus, error)
+	predicates    []predicate.TaskListCompletedStatus
+}
+
+var _ ent.Mutation = (*TaskListCompletedStatusMutation)(nil)
+
+// tasklistcompletedstatusOption allows management of the mutation configuration using functional options.
+type tasklistcompletedstatusOption func(*TaskListCompletedStatusMutation)
+
+// newTaskListCompletedStatusMutation creates new mutation for the TaskListCompletedStatus entity.
+func newTaskListCompletedStatusMutation(c config, op Op, opts ...tasklistcompletedstatusOption) *TaskListCompletedStatusMutation {
+	m := &TaskListCompletedStatusMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeTaskListCompletedStatus,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withTaskListCompletedStatusID sets the ID field of the mutation.
+func withTaskListCompletedStatusID(id ulid.ID) tasklistcompletedstatusOption {
+	return func(m *TaskListCompletedStatusMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *TaskListCompletedStatus
+		)
+		m.oldValue = func(ctx context.Context) (*TaskListCompletedStatus, error) {
+			once.Do(func() {
+				if m.done {
+					err = fmt.Errorf("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().TaskListCompletedStatus.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withTaskListCompletedStatus sets the old TaskListCompletedStatus of the mutation.
+func withTaskListCompletedStatus(node *TaskListCompletedStatus) tasklistcompletedstatusOption {
+	return func(m *TaskListCompletedStatusMutation) {
+		m.oldValue = func(context.Context) (*TaskListCompletedStatus, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m TaskListCompletedStatusMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m TaskListCompletedStatusMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, fmt.Errorf("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of TaskListCompletedStatus entities.
+func (m *TaskListCompletedStatusMutation) SetID(id ulid.ID) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *TaskListCompletedStatusMutation) ID() (id ulid.ID, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// SetName sets the "name" field.
+func (m *TaskListCompletedStatusMutation) SetName(s string) {
+	m.name = &s
+}
+
+// Name returns the value of the "name" field in the mutation.
+func (m *TaskListCompletedStatusMutation) Name() (r string, exists bool) {
+	v := m.name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldName returns the old "name" field's value of the TaskListCompletedStatus entity.
+// If the TaskListCompletedStatus object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TaskListCompletedStatusMutation) OldName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldName: %w", err)
+	}
+	return oldValue.Name, nil
+}
+
+// ResetName resets all changes to the "name" field.
+func (m *TaskListCompletedStatusMutation) ResetName() {
+	m.name = nil
+}
+
+// SetStatusCode sets the "status_code" field.
+func (m *TaskListCompletedStatusMutation) SetStatusCode(tc tasklistcompletedstatus.StatusCode) {
+	m.status_code = &tc
+}
+
+// StatusCode returns the value of the "status_code" field in the mutation.
+func (m *TaskListCompletedStatusMutation) StatusCode() (r tasklistcompletedstatus.StatusCode, exists bool) {
+	v := m.status_code
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStatusCode returns the old "status_code" field's value of the TaskListCompletedStatus entity.
+// If the TaskListCompletedStatus object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TaskListCompletedStatusMutation) OldStatusCode(ctx context.Context) (v tasklistcompletedstatus.StatusCode, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldStatusCode is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldStatusCode requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStatusCode: %w", err)
+	}
+	return oldValue.StatusCode, nil
+}
+
+// ResetStatusCode resets all changes to the "status_code" field.
+func (m *TaskListCompletedStatusMutation) ResetStatusCode() {
+	m.status_code = nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *TaskListCompletedStatusMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *TaskListCompletedStatusMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the TaskListCompletedStatus entity.
+// If the TaskListCompletedStatus object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TaskListCompletedStatusMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *TaskListCompletedStatusMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *TaskListCompletedStatusMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *TaskListCompletedStatusMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the TaskListCompletedStatus entity.
+// If the TaskListCompletedStatus object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TaskListCompletedStatusMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *TaskListCompletedStatusMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// Where appends a list predicates to the TaskListCompletedStatusMutation builder.
+func (m *TaskListCompletedStatusMutation) Where(ps ...predicate.TaskListCompletedStatus) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// Op returns the operation name.
+func (m *TaskListCompletedStatusMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (TaskListCompletedStatus).
+func (m *TaskListCompletedStatusMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *TaskListCompletedStatusMutation) Fields() []string {
+	fields := make([]string, 0, 4)
+	if m.name != nil {
+		fields = append(fields, tasklistcompletedstatus.FieldName)
+	}
+	if m.status_code != nil {
+		fields = append(fields, tasklistcompletedstatus.FieldStatusCode)
+	}
+	if m.created_at != nil {
+		fields = append(fields, tasklistcompletedstatus.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, tasklistcompletedstatus.FieldUpdatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *TaskListCompletedStatusMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case tasklistcompletedstatus.FieldName:
+		return m.Name()
+	case tasklistcompletedstatus.FieldStatusCode:
+		return m.StatusCode()
+	case tasklistcompletedstatus.FieldCreatedAt:
+		return m.CreatedAt()
+	case tasklistcompletedstatus.FieldUpdatedAt:
+		return m.UpdatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *TaskListCompletedStatusMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case tasklistcompletedstatus.FieldName:
+		return m.OldName(ctx)
+	case tasklistcompletedstatus.FieldStatusCode:
+		return m.OldStatusCode(ctx)
+	case tasklistcompletedstatus.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case tasklistcompletedstatus.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown TaskListCompletedStatus field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *TaskListCompletedStatusMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case tasklistcompletedstatus.FieldName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetName(v)
+		return nil
+	case tasklistcompletedstatus.FieldStatusCode:
+		v, ok := value.(tasklistcompletedstatus.StatusCode)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStatusCode(v)
+		return nil
+	case tasklistcompletedstatus.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case tasklistcompletedstatus.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown TaskListCompletedStatus field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *TaskListCompletedStatusMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *TaskListCompletedStatusMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *TaskListCompletedStatusMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown TaskListCompletedStatus numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *TaskListCompletedStatusMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *TaskListCompletedStatusMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *TaskListCompletedStatusMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown TaskListCompletedStatus nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *TaskListCompletedStatusMutation) ResetField(name string) error {
+	switch name {
+	case tasklistcompletedstatus.FieldName:
+		m.ResetName()
+		return nil
+	case tasklistcompletedstatus.FieldStatusCode:
+		m.ResetStatusCode()
+		return nil
+	case tasklistcompletedstatus.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case tasklistcompletedstatus.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown TaskListCompletedStatus field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *TaskListCompletedStatusMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *TaskListCompletedStatusMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *TaskListCompletedStatusMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *TaskListCompletedStatusMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *TaskListCompletedStatusMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *TaskListCompletedStatusMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *TaskListCompletedStatusMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown TaskListCompletedStatus unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *TaskListCompletedStatusMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown TaskListCompletedStatus edge %s", name)
 }
 
 // TaskSectionMutation represents an operation that mutates the TaskSection nodes in the graph.
