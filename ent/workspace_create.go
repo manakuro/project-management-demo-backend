@@ -11,6 +11,7 @@ import (
 	"project-management-demo-backend/ent/schema/editor"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/teammate"
+	"project-management-demo-backend/ent/teammatetaskliststatus"
 	"project-management-demo-backend/ent/teammatetasktabstatus"
 	"project-management-demo-backend/ent/workspace"
 	"project-management-demo-backend/ent/workspaceteammate"
@@ -156,6 +157,21 @@ func (wc *WorkspaceCreate) AddTeammateTaskTabStatuses(t ...*TeammateTaskTabStatu
 		ids[i] = t[i].ID
 	}
 	return wc.AddTeammateTaskTabStatusIDs(ids...)
+}
+
+// AddTeammateTaskListStatusIDs adds the "teammate_task_list_statuses" edge to the TeammateTaskListStatus entity by IDs.
+func (wc *WorkspaceCreate) AddTeammateTaskListStatusIDs(ids ...ulid.ID) *WorkspaceCreate {
+	wc.mutation.AddTeammateTaskListStatusIDs(ids...)
+	return wc
+}
+
+// AddTeammateTaskListStatuses adds the "teammate_task_list_statuses" edges to the TeammateTaskListStatus entity.
+func (wc *WorkspaceCreate) AddTeammateTaskListStatuses(t ...*TeammateTaskListStatus) *WorkspaceCreate {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return wc.AddTeammateTaskListStatusIDs(ids...)
 }
 
 // Mutation returns the WorkspaceMutation object of the builder.
@@ -420,6 +436,25 @@ func (wc *WorkspaceCreate) createSpec() (*Workspace, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: teammatetasktabstatus.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := wc.mutation.TeammateTaskListStatusesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   workspace.TeammateTaskListStatusesTable,
+			Columns: []string{workspace.TeammateTaskListStatusesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: teammatetaskliststatus.FieldID,
 				},
 			},
 		}

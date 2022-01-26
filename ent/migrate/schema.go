@@ -373,6 +373,48 @@ var (
 			},
 		},
 	}
+	// TeammateTaskListStatusColumns holds the columns for the "teammate_task_list_status" table.
+	TeammateTaskListStatusColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
+		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
+		{Name: "task_list_completed_status_id", Type: field.TypeString, Nullable: true},
+		{Name: "task_list_sort_status_id", Type: field.TypeString, Nullable: true},
+		{Name: "teammate_id", Type: field.TypeString, Nullable: true},
+		{Name: "workspace_id", Type: field.TypeString, Nullable: true},
+	}
+	// TeammateTaskListStatusTable holds the schema information for the "teammate_task_list_status" table.
+	TeammateTaskListStatusTable = &schema.Table{
+		Name:       "teammate_task_list_status",
+		Columns:    TeammateTaskListStatusColumns,
+		PrimaryKey: []*schema.Column{TeammateTaskListStatusColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "teammate_task_list_status_task_list_completed_status_teammate_task_list_statuses",
+				Columns:    []*schema.Column{TeammateTaskListStatusColumns[3]},
+				RefColumns: []*schema.Column{TaskListCompletedStatusColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "teammate_task_list_status_task_list_sort_status_teammate_task_list_statuses",
+				Columns:    []*schema.Column{TeammateTaskListStatusColumns[4]},
+				RefColumns: []*schema.Column{TaskListSortStatusColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "teammate_task_list_status_teammates_teammate_task_list_statuses",
+				Columns:    []*schema.Column{TeammateTaskListStatusColumns[5]},
+				RefColumns: []*schema.Column{TeammatesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "teammate_task_list_status_workspaces_teammate_task_list_statuses",
+				Columns:    []*schema.Column{TeammateTaskListStatusColumns[6]},
+				RefColumns: []*schema.Column{WorkspacesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
 	// TeammateTaskTabStatusColumns holds the columns for the "teammate_task_tab_status" table.
 	TeammateTaskTabStatusColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString},
@@ -512,6 +554,7 @@ var (
 		TaskSectionsTable,
 		TeammatesTable,
 		TeammateTaskColumnsTable,
+		TeammateTaskListStatusTable,
 		TeammateTaskTabStatusTable,
 		TestTodosTable,
 		TestUsersTable,
@@ -539,6 +582,10 @@ func init() {
 	ProjectTeammatesTable.ForeignKeys[1].RefTable = TeammatesTable
 	TeammateTaskColumnsTable.ForeignKeys[0].RefTable = TaskColumnsTable
 	TeammateTaskColumnsTable.ForeignKeys[1].RefTable = TeammatesTable
+	TeammateTaskListStatusTable.ForeignKeys[0].RefTable = TaskListCompletedStatusTable
+	TeammateTaskListStatusTable.ForeignKeys[1].RefTable = TaskListSortStatusTable
+	TeammateTaskListStatusTable.ForeignKeys[2].RefTable = TeammatesTable
+	TeammateTaskListStatusTable.ForeignKeys[3].RefTable = WorkspacesTable
 	TeammateTaskTabStatusTable.ForeignKeys[0].RefTable = TeammatesTable
 	TeammateTaskTabStatusTable.ForeignKeys[1].RefTable = WorkspacesTable
 	TestTodosTable.ForeignKeys[0].RefTable = TestUsersTable

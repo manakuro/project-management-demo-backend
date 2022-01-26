@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/tasklistcompletedstatus"
+	"project-management-demo-backend/ent/teammatetaskliststatus"
 	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -73,6 +74,21 @@ func (tlcsc *TaskListCompletedStatusCreate) SetNillableID(u *ulid.ID) *TaskListC
 		tlcsc.SetID(*u)
 	}
 	return tlcsc
+}
+
+// AddTeammateTaskListStatusIDs adds the "teammate_task_list_statuses" edge to the TeammateTaskListStatus entity by IDs.
+func (tlcsc *TaskListCompletedStatusCreate) AddTeammateTaskListStatusIDs(ids ...ulid.ID) *TaskListCompletedStatusCreate {
+	tlcsc.mutation.AddTeammateTaskListStatusIDs(ids...)
+	return tlcsc
+}
+
+// AddTeammateTaskListStatuses adds the "teammate_task_list_statuses" edges to the TeammateTaskListStatus entity.
+func (tlcsc *TaskListCompletedStatusCreate) AddTeammateTaskListStatuses(t ...*TeammateTaskListStatus) *TaskListCompletedStatusCreate {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return tlcsc.AddTeammateTaskListStatusIDs(ids...)
 }
 
 // Mutation returns the TaskListCompletedStatusMutation object of the builder.
@@ -247,6 +263,25 @@ func (tlcsc *TaskListCompletedStatusCreate) createSpec() (*TaskListCompletedStat
 			Column: tasklistcompletedstatus.FieldUpdatedAt,
 		})
 		_node.UpdatedAt = value
+	}
+	if nodes := tlcsc.mutation.TeammateTaskListStatusesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   tasklistcompletedstatus.TeammateTaskListStatusesTable,
+			Columns: []string{tasklistcompletedstatus.TeammateTaskListStatusesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: teammatetaskliststatus.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }

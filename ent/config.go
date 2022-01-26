@@ -40,6 +40,7 @@ type hooks struct {
 	TaskSection             []ent.Hook
 	Teammate                []ent.Hook
 	TeammateTaskColumn      []ent.Hook
+	TeammateTaskListStatus  []ent.Hook
 	TeammateTaskTabStatus   []ent.Hook
 	TestTodo                []ent.Hook
 	TestUser                []ent.Hook

@@ -19,6 +19,7 @@ import (
 	"project-management-demo-backend/ent/tasksection"
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/teammatetaskcolumn"
+	"project-management-demo-backend/ent/teammatetaskliststatus"
 	"project-management-demo-backend/ent/teammatetasktabstatus"
 	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/ent/testuser"
@@ -55,6 +56,7 @@ type GlobalIDs struct {
 	TaskSection             field
 	TaskListCompletedStatus field
 	TaskListSortStatus      field
+	TeammateTaskListStatus  field
 }
 
 // New generates a map object that is intended to be used as global identification for node interface query.
@@ -144,6 +146,10 @@ func New() GlobalIDs {
 		TaskListSortStatus: field{
 			Prefix: "0AU",
 			Table:  tasklistsortstatus.Table,
+		},
+		TeammateTaskListStatus: field{
+			Prefix: "0AV",
+			Table:  teammatetaskliststatus.Table,
 		},
 	}
 }

@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 )
 
 // ID filters vertices based on their ID field.
@@ -422,6 +423,34 @@ func UpdatedAtLT(v time.Time) predicate.TaskListCompletedStatus {
 func UpdatedAtLTE(v time.Time) predicate.TaskListCompletedStatus {
 	return predicate.TaskListCompletedStatus(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldUpdatedAt), v))
+	})
+}
+
+// HasTeammateTaskListStatuses applies the HasEdge predicate on the "teammate_task_list_statuses" edge.
+func HasTeammateTaskListStatuses() predicate.TaskListCompletedStatus {
+	return predicate.TaskListCompletedStatus(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(TeammateTaskListStatusesTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, TeammateTaskListStatusesTable, TeammateTaskListStatusesColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasTeammateTaskListStatusesWith applies the HasEdge predicate on the "teammate_task_list_statuses" edge with a given conditions (other predicates).
+func HasTeammateTaskListStatusesWith(preds ...predicate.TeammateTaskListStatus) predicate.TaskListCompletedStatus {
+	return predicate.TaskListCompletedStatus(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(TeammateTaskListStatusesInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, TeammateTaskListStatusesTable, TeammateTaskListStatusesColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
 	})
 }
 

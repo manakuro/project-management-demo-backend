@@ -50,9 +50,11 @@ type TeammateEdges struct {
 	TeammateTaskTabStatuses []*TeammateTaskTabStatus `json:"teammate_task_tab_statuses,omitempty"`
 	// TeammateTaskColumns holds the value of the teammate_task_columns edge.
 	TeammateTaskColumns []*TeammateTaskColumn `json:"teammate_task_columns,omitempty"`
+	// TeammateTaskListStatuses holds the value of the teammate_task_list_statuses edge.
+	TeammateTaskListStatuses []*TeammateTaskListStatus `json:"teammate_task_list_statuses,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [8]bool
+	loadedTypes [9]bool
 }
 
 // WorkspacesOrErr returns the Workspaces value or an error if the edge
@@ -125,6 +127,15 @@ func (e TeammateEdges) TeammateTaskColumnsOrErr() ([]*TeammateTaskColumn, error)
 		return e.TeammateTaskColumns, nil
 	}
 	return nil, &NotLoadedError{edge: "teammate_task_columns"}
+}
+
+// TeammateTaskListStatusesOrErr returns the TeammateTaskListStatuses value or an error if the edge
+// was not loaded in eager-loading.
+func (e TeammateEdges) TeammateTaskListStatusesOrErr() ([]*TeammateTaskListStatus, error) {
+	if e.loadedTypes[8] {
+		return e.TeammateTaskListStatuses, nil
+	}
+	return nil, &NotLoadedError{edge: "teammate_task_list_statuses"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -232,6 +243,11 @@ func (t *Teammate) QueryTeammateTaskTabStatuses() *TeammateTaskTabStatusQuery {
 // QueryTeammateTaskColumns queries the "teammate_task_columns" edge of the Teammate entity.
 func (t *Teammate) QueryTeammateTaskColumns() *TeammateTaskColumnQuery {
 	return (&TeammateClient{config: t.config}).QueryTeammateTaskColumns(t)
+}
+
+// QueryTeammateTaskListStatuses queries the "teammate_task_list_statuses" edge of the Teammate entity.
+func (t *Teammate) QueryTeammateTaskListStatuses() *TeammateTaskListStatusQuery {
+	return (&TeammateClient{config: t.config}).QueryTeammateTaskListStatuses(t)
 }
 
 // Update returns a builder for updating this Teammate.

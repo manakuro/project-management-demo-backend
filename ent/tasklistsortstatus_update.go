@@ -6,7 +6,9 @@ import (
 	"context"
 	"fmt"
 	"project-management-demo-backend/ent/predicate"
+	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/tasklistsortstatus"
+	"project-management-demo-backend/ent/teammatetaskliststatus"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -38,9 +40,45 @@ func (tlssu *TaskListSortStatusUpdate) SetStatusCode(tc tasklistsortstatus.Statu
 	return tlssu
 }
 
+// AddTeammateTaskListStatusIDs adds the "teammate_task_list_statuses" edge to the TeammateTaskListStatus entity by IDs.
+func (tlssu *TaskListSortStatusUpdate) AddTeammateTaskListStatusIDs(ids ...ulid.ID) *TaskListSortStatusUpdate {
+	tlssu.mutation.AddTeammateTaskListStatusIDs(ids...)
+	return tlssu
+}
+
+// AddTeammateTaskListStatuses adds the "teammate_task_list_statuses" edges to the TeammateTaskListStatus entity.
+func (tlssu *TaskListSortStatusUpdate) AddTeammateTaskListStatuses(t ...*TeammateTaskListStatus) *TaskListSortStatusUpdate {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return tlssu.AddTeammateTaskListStatusIDs(ids...)
+}
+
 // Mutation returns the TaskListSortStatusMutation object of the builder.
 func (tlssu *TaskListSortStatusUpdate) Mutation() *TaskListSortStatusMutation {
 	return tlssu.mutation
+}
+
+// ClearTeammateTaskListStatuses clears all "teammate_task_list_statuses" edges to the TeammateTaskListStatus entity.
+func (tlssu *TaskListSortStatusUpdate) ClearTeammateTaskListStatuses() *TaskListSortStatusUpdate {
+	tlssu.mutation.ClearTeammateTaskListStatuses()
+	return tlssu
+}
+
+// RemoveTeammateTaskListStatusIDs removes the "teammate_task_list_statuses" edge to TeammateTaskListStatus entities by IDs.
+func (tlssu *TaskListSortStatusUpdate) RemoveTeammateTaskListStatusIDs(ids ...ulid.ID) *TaskListSortStatusUpdate {
+	tlssu.mutation.RemoveTeammateTaskListStatusIDs(ids...)
+	return tlssu
+}
+
+// RemoveTeammateTaskListStatuses removes "teammate_task_list_statuses" edges to TeammateTaskListStatus entities.
+func (tlssu *TaskListSortStatusUpdate) RemoveTeammateTaskListStatuses(t ...*TeammateTaskListStatus) *TaskListSortStatusUpdate {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return tlssu.RemoveTeammateTaskListStatusIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -150,6 +188,60 @@ func (tlssu *TaskListSortStatusUpdate) sqlSave(ctx context.Context) (n int, err 
 			Column: tasklistsortstatus.FieldStatusCode,
 		})
 	}
+	if tlssu.mutation.TeammateTaskListStatusesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   tasklistsortstatus.TeammateTaskListStatusesTable,
+			Columns: []string{tasklistsortstatus.TeammateTaskListStatusesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: teammatetaskliststatus.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tlssu.mutation.RemovedTeammateTaskListStatusesIDs(); len(nodes) > 0 && !tlssu.mutation.TeammateTaskListStatusesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   tasklistsortstatus.TeammateTaskListStatusesTable,
+			Columns: []string{tasklistsortstatus.TeammateTaskListStatusesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: teammatetaskliststatus.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tlssu.mutation.TeammateTaskListStatusesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   tasklistsortstatus.TeammateTaskListStatusesTable,
+			Columns: []string{tasklistsortstatus.TeammateTaskListStatusesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: teammatetaskliststatus.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, tlssu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{tasklistsortstatus.Label}
@@ -181,9 +273,45 @@ func (tlssuo *TaskListSortStatusUpdateOne) SetStatusCode(tc tasklistsortstatus.S
 	return tlssuo
 }
 
+// AddTeammateTaskListStatusIDs adds the "teammate_task_list_statuses" edge to the TeammateTaskListStatus entity by IDs.
+func (tlssuo *TaskListSortStatusUpdateOne) AddTeammateTaskListStatusIDs(ids ...ulid.ID) *TaskListSortStatusUpdateOne {
+	tlssuo.mutation.AddTeammateTaskListStatusIDs(ids...)
+	return tlssuo
+}
+
+// AddTeammateTaskListStatuses adds the "teammate_task_list_statuses" edges to the TeammateTaskListStatus entity.
+func (tlssuo *TaskListSortStatusUpdateOne) AddTeammateTaskListStatuses(t ...*TeammateTaskListStatus) *TaskListSortStatusUpdateOne {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return tlssuo.AddTeammateTaskListStatusIDs(ids...)
+}
+
 // Mutation returns the TaskListSortStatusMutation object of the builder.
 func (tlssuo *TaskListSortStatusUpdateOne) Mutation() *TaskListSortStatusMutation {
 	return tlssuo.mutation
+}
+
+// ClearTeammateTaskListStatuses clears all "teammate_task_list_statuses" edges to the TeammateTaskListStatus entity.
+func (tlssuo *TaskListSortStatusUpdateOne) ClearTeammateTaskListStatuses() *TaskListSortStatusUpdateOne {
+	tlssuo.mutation.ClearTeammateTaskListStatuses()
+	return tlssuo
+}
+
+// RemoveTeammateTaskListStatusIDs removes the "teammate_task_list_statuses" edge to TeammateTaskListStatus entities by IDs.
+func (tlssuo *TaskListSortStatusUpdateOne) RemoveTeammateTaskListStatusIDs(ids ...ulid.ID) *TaskListSortStatusUpdateOne {
+	tlssuo.mutation.RemoveTeammateTaskListStatusIDs(ids...)
+	return tlssuo
+}
+
+// RemoveTeammateTaskListStatuses removes "teammate_task_list_statuses" edges to TeammateTaskListStatus entities.
+func (tlssuo *TaskListSortStatusUpdateOne) RemoveTeammateTaskListStatuses(t ...*TeammateTaskListStatus) *TaskListSortStatusUpdateOne {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return tlssuo.RemoveTeammateTaskListStatusIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -316,6 +444,60 @@ func (tlssuo *TaskListSortStatusUpdateOne) sqlSave(ctx context.Context) (_node *
 			Value:  value,
 			Column: tasklistsortstatus.FieldStatusCode,
 		})
+	}
+	if tlssuo.mutation.TeammateTaskListStatusesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   tasklistsortstatus.TeammateTaskListStatusesTable,
+			Columns: []string{tasklistsortstatus.TeammateTaskListStatusesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: teammatetaskliststatus.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tlssuo.mutation.RemovedTeammateTaskListStatusesIDs(); len(nodes) > 0 && !tlssuo.mutation.TeammateTaskListStatusesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   tasklistsortstatus.TeammateTaskListStatusesTable,
+			Columns: []string{tasklistsortstatus.TeammateTaskListStatusesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: teammatetaskliststatus.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tlssuo.mutation.TeammateTaskListStatusesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   tasklistsortstatus.TeammateTaskListStatusesTable,
+			Columns: []string{tasklistsortstatus.TeammateTaskListStatusesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: teammatetaskliststatus.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_node = &TaskListSortStatus{config: tlssuo.config}
 	_spec.Assign = _node.assignValues

@@ -22,6 +22,7 @@ import (
 	"project-management-demo-backend/ent/tasksection"
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/teammatetaskcolumn"
+	"project-management-demo-backend/ent/teammatetaskliststatus"
 	"project-management-demo-backend/ent/teammatetasktabstatus"
 	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/ent/testuser"
@@ -4169,6 +4170,10 @@ type TaskListCompletedStatusWhereInput struct {
 	UpdatedAtGTE   *time.Time  `json:"updatedAtGTE,omitempty"`
 	UpdatedAtLT    *time.Time  `json:"updatedAtLT,omitempty"`
 	UpdatedAtLTE   *time.Time  `json:"updatedAtLTE,omitempty"`
+
+	// "teammate_task_list_statuses" edge predicates.
+	HasTeammateTaskListStatuses     *bool                               `json:"hasTeammateTaskListStatuses,omitempty"`
+	HasTeammateTaskListStatusesWith []*TeammateTaskListStatusWhereInput `json:"hasTeammateTaskListStatusesWith,omitempty"`
 }
 
 // Filter applies the TaskListCompletedStatusWhereInput filter on the TaskListCompletedStatusQuery builder.
@@ -4354,6 +4359,24 @@ func (i *TaskListCompletedStatusWhereInput) P() (predicate.TaskListCompletedStat
 		predicates = append(predicates, tasklistcompletedstatus.UpdatedAtLTE(*i.UpdatedAtLTE))
 	}
 
+	if i.HasTeammateTaskListStatuses != nil {
+		p := tasklistcompletedstatus.HasTeammateTaskListStatuses()
+		if !*i.HasTeammateTaskListStatuses {
+			p = tasklistcompletedstatus.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasTeammateTaskListStatusesWith) > 0 {
+		with := make([]predicate.TeammateTaskListStatus, 0, len(i.HasTeammateTaskListStatusesWith))
+		for _, w := range i.HasTeammateTaskListStatusesWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, tasklistcompletedstatus.HasTeammateTaskListStatusesWith(with...))
+	}
 	switch len(predicates) {
 	case 0:
 		return nil, fmt.Errorf("project-management-demo-backend/ent: empty predicate TaskListCompletedStatusWhereInput")
@@ -4420,6 +4443,10 @@ type TaskListSortStatusWhereInput struct {
 	UpdatedAtGTE   *time.Time  `json:"updatedAtGTE,omitempty"`
 	UpdatedAtLT    *time.Time  `json:"updatedAtLT,omitempty"`
 	UpdatedAtLTE   *time.Time  `json:"updatedAtLTE,omitempty"`
+
+	// "teammate_task_list_statuses" edge predicates.
+	HasTeammateTaskListStatuses     *bool                               `json:"hasTeammateTaskListStatuses,omitempty"`
+	HasTeammateTaskListStatusesWith []*TeammateTaskListStatusWhereInput `json:"hasTeammateTaskListStatusesWith,omitempty"`
 }
 
 // Filter applies the TaskListSortStatusWhereInput filter on the TaskListSortStatusQuery builder.
@@ -4605,6 +4632,24 @@ func (i *TaskListSortStatusWhereInput) P() (predicate.TaskListSortStatus, error)
 		predicates = append(predicates, tasklistsortstatus.UpdatedAtLTE(*i.UpdatedAtLTE))
 	}
 
+	if i.HasTeammateTaskListStatuses != nil {
+		p := tasklistsortstatus.HasTeammateTaskListStatuses()
+		if !*i.HasTeammateTaskListStatuses {
+			p = tasklistsortstatus.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasTeammateTaskListStatusesWith) > 0 {
+		with := make([]predicate.TeammateTaskListStatus, 0, len(i.HasTeammateTaskListStatusesWith))
+		for _, w := range i.HasTeammateTaskListStatusesWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, tasklistsortstatus.HasTeammateTaskListStatusesWith(with...))
+	}
 	switch len(predicates) {
 	case 0:
 		return nil, fmt.Errorf("project-management-demo-backend/ent: empty predicate TaskListSortStatusWhereInput")
@@ -4960,6 +5005,10 @@ type TeammateWhereInput struct {
 	// "teammate_task_columns" edge predicates.
 	HasTeammateTaskColumns     *bool                           `json:"hasTeammateTaskColumns,omitempty"`
 	HasTeammateTaskColumnsWith []*TeammateTaskColumnWhereInput `json:"hasTeammateTaskColumnsWith,omitempty"`
+
+	// "teammate_task_list_statuses" edge predicates.
+	HasTeammateTaskListStatuses     *bool                               `json:"hasTeammateTaskListStatuses,omitempty"`
+	HasTeammateTaskListStatusesWith []*TeammateTaskListStatusWhereInput `json:"hasTeammateTaskListStatusesWith,omitempty"`
 }
 
 // Filter applies the TeammateWhereInput filter on the TeammateQuery builder.
@@ -5354,6 +5403,24 @@ func (i *TeammateWhereInput) P() (predicate.Teammate, error) {
 			with = append(with, p)
 		}
 		predicates = append(predicates, teammate.HasTeammateTaskColumnsWith(with...))
+	}
+	if i.HasTeammateTaskListStatuses != nil {
+		p := teammate.HasTeammateTaskListStatuses()
+		if !*i.HasTeammateTaskListStatuses {
+			p = teammate.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasTeammateTaskListStatusesWith) > 0 {
+		with := make([]predicate.TeammateTaskListStatus, 0, len(i.HasTeammateTaskListStatusesWith))
+		for _, w := range i.HasTeammateTaskListStatusesWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, teammate.HasTeammateTaskListStatusesWith(with...))
 	}
 	switch len(predicates) {
 	case 0:
@@ -5801,6 +5868,489 @@ func (i *TeammateTaskColumnWhereInput) P() (predicate.TeammateTaskColumn, error)
 		return predicates[0], nil
 	default:
 		return teammatetaskcolumn.And(predicates...), nil
+	}
+}
+
+// TeammateTaskListStatusWhereInput represents a where input for filtering TeammateTaskListStatus queries.
+type TeammateTaskListStatusWhereInput struct {
+	Not *TeammateTaskListStatusWhereInput   `json:"not,omitempty"`
+	Or  []*TeammateTaskListStatusWhereInput `json:"or,omitempty"`
+	And []*TeammateTaskListStatusWhereInput `json:"and,omitempty"`
+
+	// "id" field predicates.
+	ID      *ulid.ID  `json:"id,omitempty"`
+	IDNEQ   *ulid.ID  `json:"idNEQ,omitempty"`
+	IDIn    []ulid.ID `json:"idIn,omitempty"`
+	IDNotIn []ulid.ID `json:"idNotIn,omitempty"`
+	IDGT    *ulid.ID  `json:"idGT,omitempty"`
+	IDGTE   *ulid.ID  `json:"idGTE,omitempty"`
+	IDLT    *ulid.ID  `json:"idLT,omitempty"`
+	IDLTE   *ulid.ID  `json:"idLTE,omitempty"`
+
+	// "workspace_id" field predicates.
+	WorkspaceID             *ulid.ID  `json:"workspaceID,omitempty"`
+	WorkspaceIDNEQ          *ulid.ID  `json:"workspaceIDNEQ,omitempty"`
+	WorkspaceIDIn           []ulid.ID `json:"workspaceIDIn,omitempty"`
+	WorkspaceIDNotIn        []ulid.ID `json:"workspaceIDNotIn,omitempty"`
+	WorkspaceIDGT           *ulid.ID  `json:"workspaceIDGT,omitempty"`
+	WorkspaceIDGTE          *ulid.ID  `json:"workspaceIDGTE,omitempty"`
+	WorkspaceIDLT           *ulid.ID  `json:"workspaceIDLT,omitempty"`
+	WorkspaceIDLTE          *ulid.ID  `json:"workspaceIDLTE,omitempty"`
+	WorkspaceIDContains     *ulid.ID  `json:"workspaceIDContains,omitempty"`
+	WorkspaceIDHasPrefix    *ulid.ID  `json:"workspaceIDHasPrefix,omitempty"`
+	WorkspaceIDHasSuffix    *ulid.ID  `json:"workspaceIDHasSuffix,omitempty"`
+	WorkspaceIDEqualFold    *ulid.ID  `json:"workspaceIDEqualFold,omitempty"`
+	WorkspaceIDContainsFold *ulid.ID  `json:"workspaceIDContainsFold,omitempty"`
+
+	// "teammate_id" field predicates.
+	TeammateID             *ulid.ID  `json:"teammateID,omitempty"`
+	TeammateIDNEQ          *ulid.ID  `json:"teammateIDNEQ,omitempty"`
+	TeammateIDIn           []ulid.ID `json:"teammateIDIn,omitempty"`
+	TeammateIDNotIn        []ulid.ID `json:"teammateIDNotIn,omitempty"`
+	TeammateIDGT           *ulid.ID  `json:"teammateIDGT,omitempty"`
+	TeammateIDGTE          *ulid.ID  `json:"teammateIDGTE,omitempty"`
+	TeammateIDLT           *ulid.ID  `json:"teammateIDLT,omitempty"`
+	TeammateIDLTE          *ulid.ID  `json:"teammateIDLTE,omitempty"`
+	TeammateIDContains     *ulid.ID  `json:"teammateIDContains,omitempty"`
+	TeammateIDHasPrefix    *ulid.ID  `json:"teammateIDHasPrefix,omitempty"`
+	TeammateIDHasSuffix    *ulid.ID  `json:"teammateIDHasSuffix,omitempty"`
+	TeammateIDEqualFold    *ulid.ID  `json:"teammateIDEqualFold,omitempty"`
+	TeammateIDContainsFold *ulid.ID  `json:"teammateIDContainsFold,omitempty"`
+
+	// "task_list_completed_status_id" field predicates.
+	TaskListCompletedStatusID             *ulid.ID  `json:"taskListCompletedStatusID,omitempty"`
+	TaskListCompletedStatusIDNEQ          *ulid.ID  `json:"taskListCompletedStatusIDNEQ,omitempty"`
+	TaskListCompletedStatusIDIn           []ulid.ID `json:"taskListCompletedStatusIDIn,omitempty"`
+	TaskListCompletedStatusIDNotIn        []ulid.ID `json:"taskListCompletedStatusIDNotIn,omitempty"`
+	TaskListCompletedStatusIDGT           *ulid.ID  `json:"taskListCompletedStatusIDGT,omitempty"`
+	TaskListCompletedStatusIDGTE          *ulid.ID  `json:"taskListCompletedStatusIDGTE,omitempty"`
+	TaskListCompletedStatusIDLT           *ulid.ID  `json:"taskListCompletedStatusIDLT,omitempty"`
+	TaskListCompletedStatusIDLTE          *ulid.ID  `json:"taskListCompletedStatusIDLTE,omitempty"`
+	TaskListCompletedStatusIDContains     *ulid.ID  `json:"taskListCompletedStatusIDContains,omitempty"`
+	TaskListCompletedStatusIDHasPrefix    *ulid.ID  `json:"taskListCompletedStatusIDHasPrefix,omitempty"`
+	TaskListCompletedStatusIDHasSuffix    *ulid.ID  `json:"taskListCompletedStatusIDHasSuffix,omitempty"`
+	TaskListCompletedStatusIDEqualFold    *ulid.ID  `json:"taskListCompletedStatusIDEqualFold,omitempty"`
+	TaskListCompletedStatusIDContainsFold *ulid.ID  `json:"taskListCompletedStatusIDContainsFold,omitempty"`
+
+	// "task_list_sort_status_id" field predicates.
+	TaskListSortStatusID             *ulid.ID  `json:"taskListSortStatusID,omitempty"`
+	TaskListSortStatusIDNEQ          *ulid.ID  `json:"taskListSortStatusIDNEQ,omitempty"`
+	TaskListSortStatusIDIn           []ulid.ID `json:"taskListSortStatusIDIn,omitempty"`
+	TaskListSortStatusIDNotIn        []ulid.ID `json:"taskListSortStatusIDNotIn,omitempty"`
+	TaskListSortStatusIDGT           *ulid.ID  `json:"taskListSortStatusIDGT,omitempty"`
+	TaskListSortStatusIDGTE          *ulid.ID  `json:"taskListSortStatusIDGTE,omitempty"`
+	TaskListSortStatusIDLT           *ulid.ID  `json:"taskListSortStatusIDLT,omitempty"`
+	TaskListSortStatusIDLTE          *ulid.ID  `json:"taskListSortStatusIDLTE,omitempty"`
+	TaskListSortStatusIDContains     *ulid.ID  `json:"taskListSortStatusIDContains,omitempty"`
+	TaskListSortStatusIDHasPrefix    *ulid.ID  `json:"taskListSortStatusIDHasPrefix,omitempty"`
+	TaskListSortStatusIDHasSuffix    *ulid.ID  `json:"taskListSortStatusIDHasSuffix,omitempty"`
+	TaskListSortStatusIDEqualFold    *ulid.ID  `json:"taskListSortStatusIDEqualFold,omitempty"`
+	TaskListSortStatusIDContainsFold *ulid.ID  `json:"taskListSortStatusIDContainsFold,omitempty"`
+
+	// "created_at" field predicates.
+	CreatedAt      *time.Time  `json:"createdAt,omitempty"`
+	CreatedAtNEQ   *time.Time  `json:"createdAtNEQ,omitempty"`
+	CreatedAtIn    []time.Time `json:"createdAtIn,omitempty"`
+	CreatedAtNotIn []time.Time `json:"createdAtNotIn,omitempty"`
+	CreatedAtGT    *time.Time  `json:"createdAtGT,omitempty"`
+	CreatedAtGTE   *time.Time  `json:"createdAtGTE,omitempty"`
+	CreatedAtLT    *time.Time  `json:"createdAtLT,omitempty"`
+	CreatedAtLTE   *time.Time  `json:"createdAtLTE,omitempty"`
+
+	// "updated_at" field predicates.
+	UpdatedAt      *time.Time  `json:"updatedAt,omitempty"`
+	UpdatedAtNEQ   *time.Time  `json:"updatedAtNEQ,omitempty"`
+	UpdatedAtIn    []time.Time `json:"updatedAtIn,omitempty"`
+	UpdatedAtNotIn []time.Time `json:"updatedAtNotIn,omitempty"`
+	UpdatedAtGT    *time.Time  `json:"updatedAtGT,omitempty"`
+	UpdatedAtGTE   *time.Time  `json:"updatedAtGTE,omitempty"`
+	UpdatedAtLT    *time.Time  `json:"updatedAtLT,omitempty"`
+	UpdatedAtLTE   *time.Time  `json:"updatedAtLTE,omitempty"`
+
+	// "workspace" edge predicates.
+	HasWorkspace     *bool                  `json:"hasWorkspace,omitempty"`
+	HasWorkspaceWith []*WorkspaceWhereInput `json:"hasWorkspaceWith,omitempty"`
+
+	// "teammate" edge predicates.
+	HasTeammate     *bool                 `json:"hasTeammate,omitempty"`
+	HasTeammateWith []*TeammateWhereInput `json:"hasTeammateWith,omitempty"`
+
+	// "task_list_completed_status" edge predicates.
+	HasTaskListCompletedStatus     *bool                                `json:"hasTaskListCompletedStatus,omitempty"`
+	HasTaskListCompletedStatusWith []*TaskListCompletedStatusWhereInput `json:"hasTaskListCompletedStatusWith,omitempty"`
+
+	// "task_list_sort_status" edge predicates.
+	HasTaskListSortStatus     *bool                           `json:"hasTaskListSortStatus,omitempty"`
+	HasTaskListSortStatusWith []*TaskListSortStatusWhereInput `json:"hasTaskListSortStatusWith,omitempty"`
+}
+
+// Filter applies the TeammateTaskListStatusWhereInput filter on the TeammateTaskListStatusQuery builder.
+func (i *TeammateTaskListStatusWhereInput) Filter(q *TeammateTaskListStatusQuery) (*TeammateTaskListStatusQuery, error) {
+	if i == nil {
+		return q, nil
+	}
+	p, err := i.P()
+	if err != nil {
+		return nil, err
+	}
+	return q.Where(p), nil
+}
+
+// P returns a predicate for filtering teammatetaskliststatusslice.
+// An error is returned if the input is empty or invalid.
+func (i *TeammateTaskListStatusWhereInput) P() (predicate.TeammateTaskListStatus, error) {
+	var predicates []predicate.TeammateTaskListStatus
+	if i.Not != nil {
+		p, err := i.Not.P()
+		if err != nil {
+			return nil, err
+		}
+		predicates = append(predicates, teammatetaskliststatus.Not(p))
+	}
+	switch n := len(i.Or); {
+	case n == 1:
+		p, err := i.Or[0].P()
+		if err != nil {
+			return nil, err
+		}
+		predicates = append(predicates, p)
+	case n > 1:
+		or := make([]predicate.TeammateTaskListStatus, 0, n)
+		for _, w := range i.Or {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			or = append(or, p)
+		}
+		predicates = append(predicates, teammatetaskliststatus.Or(or...))
+	}
+	switch n := len(i.And); {
+	case n == 1:
+		p, err := i.And[0].P()
+		if err != nil {
+			return nil, err
+		}
+		predicates = append(predicates, p)
+	case n > 1:
+		and := make([]predicate.TeammateTaskListStatus, 0, n)
+		for _, w := range i.And {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			and = append(and, p)
+		}
+		predicates = append(predicates, teammatetaskliststatus.And(and...))
+	}
+	if i.ID != nil {
+		predicates = append(predicates, teammatetaskliststatus.IDEQ(*i.ID))
+	}
+	if i.IDNEQ != nil {
+		predicates = append(predicates, teammatetaskliststatus.IDNEQ(*i.IDNEQ))
+	}
+	if len(i.IDIn) > 0 {
+		predicates = append(predicates, teammatetaskliststatus.IDIn(i.IDIn...))
+	}
+	if len(i.IDNotIn) > 0 {
+		predicates = append(predicates, teammatetaskliststatus.IDNotIn(i.IDNotIn...))
+	}
+	if i.IDGT != nil {
+		predicates = append(predicates, teammatetaskliststatus.IDGT(*i.IDGT))
+	}
+	if i.IDGTE != nil {
+		predicates = append(predicates, teammatetaskliststatus.IDGTE(*i.IDGTE))
+	}
+	if i.IDLT != nil {
+		predicates = append(predicates, teammatetaskliststatus.IDLT(*i.IDLT))
+	}
+	if i.IDLTE != nil {
+		predicates = append(predicates, teammatetaskliststatus.IDLTE(*i.IDLTE))
+	}
+	if i.WorkspaceID != nil {
+		predicates = append(predicates, teammatetaskliststatus.WorkspaceIDEQ(*i.WorkspaceID))
+	}
+	if i.WorkspaceIDNEQ != nil {
+		predicates = append(predicates, teammatetaskliststatus.WorkspaceIDNEQ(*i.WorkspaceIDNEQ))
+	}
+	if len(i.WorkspaceIDIn) > 0 {
+		predicates = append(predicates, teammatetaskliststatus.WorkspaceIDIn(i.WorkspaceIDIn...))
+	}
+	if len(i.WorkspaceIDNotIn) > 0 {
+		predicates = append(predicates, teammatetaskliststatus.WorkspaceIDNotIn(i.WorkspaceIDNotIn...))
+	}
+	if i.WorkspaceIDGT != nil {
+		predicates = append(predicates, teammatetaskliststatus.WorkspaceIDGT(*i.WorkspaceIDGT))
+	}
+	if i.WorkspaceIDGTE != nil {
+		predicates = append(predicates, teammatetaskliststatus.WorkspaceIDGTE(*i.WorkspaceIDGTE))
+	}
+	if i.WorkspaceIDLT != nil {
+		predicates = append(predicates, teammatetaskliststatus.WorkspaceIDLT(*i.WorkspaceIDLT))
+	}
+	if i.WorkspaceIDLTE != nil {
+		predicates = append(predicates, teammatetaskliststatus.WorkspaceIDLTE(*i.WorkspaceIDLTE))
+	}
+	if i.WorkspaceIDContains != nil {
+		predicates = append(predicates, teammatetaskliststatus.WorkspaceIDContains(*i.WorkspaceIDContains))
+	}
+	if i.WorkspaceIDHasPrefix != nil {
+		predicates = append(predicates, teammatetaskliststatus.WorkspaceIDHasPrefix(*i.WorkspaceIDHasPrefix))
+	}
+	if i.WorkspaceIDHasSuffix != nil {
+		predicates = append(predicates, teammatetaskliststatus.WorkspaceIDHasSuffix(*i.WorkspaceIDHasSuffix))
+	}
+	if i.WorkspaceIDEqualFold != nil {
+		predicates = append(predicates, teammatetaskliststatus.WorkspaceIDEqualFold(*i.WorkspaceIDEqualFold))
+	}
+	if i.WorkspaceIDContainsFold != nil {
+		predicates = append(predicates, teammatetaskliststatus.WorkspaceIDContainsFold(*i.WorkspaceIDContainsFold))
+	}
+	if i.TeammateID != nil {
+		predicates = append(predicates, teammatetaskliststatus.TeammateIDEQ(*i.TeammateID))
+	}
+	if i.TeammateIDNEQ != nil {
+		predicates = append(predicates, teammatetaskliststatus.TeammateIDNEQ(*i.TeammateIDNEQ))
+	}
+	if len(i.TeammateIDIn) > 0 {
+		predicates = append(predicates, teammatetaskliststatus.TeammateIDIn(i.TeammateIDIn...))
+	}
+	if len(i.TeammateIDNotIn) > 0 {
+		predicates = append(predicates, teammatetaskliststatus.TeammateIDNotIn(i.TeammateIDNotIn...))
+	}
+	if i.TeammateIDGT != nil {
+		predicates = append(predicates, teammatetaskliststatus.TeammateIDGT(*i.TeammateIDGT))
+	}
+	if i.TeammateIDGTE != nil {
+		predicates = append(predicates, teammatetaskliststatus.TeammateIDGTE(*i.TeammateIDGTE))
+	}
+	if i.TeammateIDLT != nil {
+		predicates = append(predicates, teammatetaskliststatus.TeammateIDLT(*i.TeammateIDLT))
+	}
+	if i.TeammateIDLTE != nil {
+		predicates = append(predicates, teammatetaskliststatus.TeammateIDLTE(*i.TeammateIDLTE))
+	}
+	if i.TeammateIDContains != nil {
+		predicates = append(predicates, teammatetaskliststatus.TeammateIDContains(*i.TeammateIDContains))
+	}
+	if i.TeammateIDHasPrefix != nil {
+		predicates = append(predicates, teammatetaskliststatus.TeammateIDHasPrefix(*i.TeammateIDHasPrefix))
+	}
+	if i.TeammateIDHasSuffix != nil {
+		predicates = append(predicates, teammatetaskliststatus.TeammateIDHasSuffix(*i.TeammateIDHasSuffix))
+	}
+	if i.TeammateIDEqualFold != nil {
+		predicates = append(predicates, teammatetaskliststatus.TeammateIDEqualFold(*i.TeammateIDEqualFold))
+	}
+	if i.TeammateIDContainsFold != nil {
+		predicates = append(predicates, teammatetaskliststatus.TeammateIDContainsFold(*i.TeammateIDContainsFold))
+	}
+	if i.TaskListCompletedStatusID != nil {
+		predicates = append(predicates, teammatetaskliststatus.TaskListCompletedStatusIDEQ(*i.TaskListCompletedStatusID))
+	}
+	if i.TaskListCompletedStatusIDNEQ != nil {
+		predicates = append(predicates, teammatetaskliststatus.TaskListCompletedStatusIDNEQ(*i.TaskListCompletedStatusIDNEQ))
+	}
+	if len(i.TaskListCompletedStatusIDIn) > 0 {
+		predicates = append(predicates, teammatetaskliststatus.TaskListCompletedStatusIDIn(i.TaskListCompletedStatusIDIn...))
+	}
+	if len(i.TaskListCompletedStatusIDNotIn) > 0 {
+		predicates = append(predicates, teammatetaskliststatus.TaskListCompletedStatusIDNotIn(i.TaskListCompletedStatusIDNotIn...))
+	}
+	if i.TaskListCompletedStatusIDGT != nil {
+		predicates = append(predicates, teammatetaskliststatus.TaskListCompletedStatusIDGT(*i.TaskListCompletedStatusIDGT))
+	}
+	if i.TaskListCompletedStatusIDGTE != nil {
+		predicates = append(predicates, teammatetaskliststatus.TaskListCompletedStatusIDGTE(*i.TaskListCompletedStatusIDGTE))
+	}
+	if i.TaskListCompletedStatusIDLT != nil {
+		predicates = append(predicates, teammatetaskliststatus.TaskListCompletedStatusIDLT(*i.TaskListCompletedStatusIDLT))
+	}
+	if i.TaskListCompletedStatusIDLTE != nil {
+		predicates = append(predicates, teammatetaskliststatus.TaskListCompletedStatusIDLTE(*i.TaskListCompletedStatusIDLTE))
+	}
+	if i.TaskListCompletedStatusIDContains != nil {
+		predicates = append(predicates, teammatetaskliststatus.TaskListCompletedStatusIDContains(*i.TaskListCompletedStatusIDContains))
+	}
+	if i.TaskListCompletedStatusIDHasPrefix != nil {
+		predicates = append(predicates, teammatetaskliststatus.TaskListCompletedStatusIDHasPrefix(*i.TaskListCompletedStatusIDHasPrefix))
+	}
+	if i.TaskListCompletedStatusIDHasSuffix != nil {
+		predicates = append(predicates, teammatetaskliststatus.TaskListCompletedStatusIDHasSuffix(*i.TaskListCompletedStatusIDHasSuffix))
+	}
+	if i.TaskListCompletedStatusIDEqualFold != nil {
+		predicates = append(predicates, teammatetaskliststatus.TaskListCompletedStatusIDEqualFold(*i.TaskListCompletedStatusIDEqualFold))
+	}
+	if i.TaskListCompletedStatusIDContainsFold != nil {
+		predicates = append(predicates, teammatetaskliststatus.TaskListCompletedStatusIDContainsFold(*i.TaskListCompletedStatusIDContainsFold))
+	}
+	if i.TaskListSortStatusID != nil {
+		predicates = append(predicates, teammatetaskliststatus.TaskListSortStatusIDEQ(*i.TaskListSortStatusID))
+	}
+	if i.TaskListSortStatusIDNEQ != nil {
+		predicates = append(predicates, teammatetaskliststatus.TaskListSortStatusIDNEQ(*i.TaskListSortStatusIDNEQ))
+	}
+	if len(i.TaskListSortStatusIDIn) > 0 {
+		predicates = append(predicates, teammatetaskliststatus.TaskListSortStatusIDIn(i.TaskListSortStatusIDIn...))
+	}
+	if len(i.TaskListSortStatusIDNotIn) > 0 {
+		predicates = append(predicates, teammatetaskliststatus.TaskListSortStatusIDNotIn(i.TaskListSortStatusIDNotIn...))
+	}
+	if i.TaskListSortStatusIDGT != nil {
+		predicates = append(predicates, teammatetaskliststatus.TaskListSortStatusIDGT(*i.TaskListSortStatusIDGT))
+	}
+	if i.TaskListSortStatusIDGTE != nil {
+		predicates = append(predicates, teammatetaskliststatus.TaskListSortStatusIDGTE(*i.TaskListSortStatusIDGTE))
+	}
+	if i.TaskListSortStatusIDLT != nil {
+		predicates = append(predicates, teammatetaskliststatus.TaskListSortStatusIDLT(*i.TaskListSortStatusIDLT))
+	}
+	if i.TaskListSortStatusIDLTE != nil {
+		predicates = append(predicates, teammatetaskliststatus.TaskListSortStatusIDLTE(*i.TaskListSortStatusIDLTE))
+	}
+	if i.TaskListSortStatusIDContains != nil {
+		predicates = append(predicates, teammatetaskliststatus.TaskListSortStatusIDContains(*i.TaskListSortStatusIDContains))
+	}
+	if i.TaskListSortStatusIDHasPrefix != nil {
+		predicates = append(predicates, teammatetaskliststatus.TaskListSortStatusIDHasPrefix(*i.TaskListSortStatusIDHasPrefix))
+	}
+	if i.TaskListSortStatusIDHasSuffix != nil {
+		predicates = append(predicates, teammatetaskliststatus.TaskListSortStatusIDHasSuffix(*i.TaskListSortStatusIDHasSuffix))
+	}
+	if i.TaskListSortStatusIDEqualFold != nil {
+		predicates = append(predicates, teammatetaskliststatus.TaskListSortStatusIDEqualFold(*i.TaskListSortStatusIDEqualFold))
+	}
+	if i.TaskListSortStatusIDContainsFold != nil {
+		predicates = append(predicates, teammatetaskliststatus.TaskListSortStatusIDContainsFold(*i.TaskListSortStatusIDContainsFold))
+	}
+	if i.CreatedAt != nil {
+		predicates = append(predicates, teammatetaskliststatus.CreatedAtEQ(*i.CreatedAt))
+	}
+	if i.CreatedAtNEQ != nil {
+		predicates = append(predicates, teammatetaskliststatus.CreatedAtNEQ(*i.CreatedAtNEQ))
+	}
+	if len(i.CreatedAtIn) > 0 {
+		predicates = append(predicates, teammatetaskliststatus.CreatedAtIn(i.CreatedAtIn...))
+	}
+	if len(i.CreatedAtNotIn) > 0 {
+		predicates = append(predicates, teammatetaskliststatus.CreatedAtNotIn(i.CreatedAtNotIn...))
+	}
+	if i.CreatedAtGT != nil {
+		predicates = append(predicates, teammatetaskliststatus.CreatedAtGT(*i.CreatedAtGT))
+	}
+	if i.CreatedAtGTE != nil {
+		predicates = append(predicates, teammatetaskliststatus.CreatedAtGTE(*i.CreatedAtGTE))
+	}
+	if i.CreatedAtLT != nil {
+		predicates = append(predicates, teammatetaskliststatus.CreatedAtLT(*i.CreatedAtLT))
+	}
+	if i.CreatedAtLTE != nil {
+		predicates = append(predicates, teammatetaskliststatus.CreatedAtLTE(*i.CreatedAtLTE))
+	}
+	if i.UpdatedAt != nil {
+		predicates = append(predicates, teammatetaskliststatus.UpdatedAtEQ(*i.UpdatedAt))
+	}
+	if i.UpdatedAtNEQ != nil {
+		predicates = append(predicates, teammatetaskliststatus.UpdatedAtNEQ(*i.UpdatedAtNEQ))
+	}
+	if len(i.UpdatedAtIn) > 0 {
+		predicates = append(predicates, teammatetaskliststatus.UpdatedAtIn(i.UpdatedAtIn...))
+	}
+	if len(i.UpdatedAtNotIn) > 0 {
+		predicates = append(predicates, teammatetaskliststatus.UpdatedAtNotIn(i.UpdatedAtNotIn...))
+	}
+	if i.UpdatedAtGT != nil {
+		predicates = append(predicates, teammatetaskliststatus.UpdatedAtGT(*i.UpdatedAtGT))
+	}
+	if i.UpdatedAtGTE != nil {
+		predicates = append(predicates, teammatetaskliststatus.UpdatedAtGTE(*i.UpdatedAtGTE))
+	}
+	if i.UpdatedAtLT != nil {
+		predicates = append(predicates, teammatetaskliststatus.UpdatedAtLT(*i.UpdatedAtLT))
+	}
+	if i.UpdatedAtLTE != nil {
+		predicates = append(predicates, teammatetaskliststatus.UpdatedAtLTE(*i.UpdatedAtLTE))
+	}
+
+	if i.HasWorkspace != nil {
+		p := teammatetaskliststatus.HasWorkspace()
+		if !*i.HasWorkspace {
+			p = teammatetaskliststatus.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasWorkspaceWith) > 0 {
+		with := make([]predicate.Workspace, 0, len(i.HasWorkspaceWith))
+		for _, w := range i.HasWorkspaceWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, teammatetaskliststatus.HasWorkspaceWith(with...))
+	}
+	if i.HasTeammate != nil {
+		p := teammatetaskliststatus.HasTeammate()
+		if !*i.HasTeammate {
+			p = teammatetaskliststatus.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasTeammateWith) > 0 {
+		with := make([]predicate.Teammate, 0, len(i.HasTeammateWith))
+		for _, w := range i.HasTeammateWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, teammatetaskliststatus.HasTeammateWith(with...))
+	}
+	if i.HasTaskListCompletedStatus != nil {
+		p := teammatetaskliststatus.HasTaskListCompletedStatus()
+		if !*i.HasTaskListCompletedStatus {
+			p = teammatetaskliststatus.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasTaskListCompletedStatusWith) > 0 {
+		with := make([]predicate.TaskListCompletedStatus, 0, len(i.HasTaskListCompletedStatusWith))
+		for _, w := range i.HasTaskListCompletedStatusWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, teammatetaskliststatus.HasTaskListCompletedStatusWith(with...))
+	}
+	if i.HasTaskListSortStatus != nil {
+		p := teammatetaskliststatus.HasTaskListSortStatus()
+		if !*i.HasTaskListSortStatus {
+			p = teammatetaskliststatus.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasTaskListSortStatusWith) > 0 {
+		with := make([]predicate.TaskListSortStatus, 0, len(i.HasTaskListSortStatusWith))
+		for _, w := range i.HasTaskListSortStatusWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, teammatetaskliststatus.HasTaskListSortStatusWith(with...))
+	}
+	switch len(predicates) {
+	case 0:
+		return nil, fmt.Errorf("project-management-demo-backend/ent: empty predicate TeammateTaskListStatusWhereInput")
+	case 1:
+		return predicates[0], nil
+	default:
+		return teammatetaskliststatus.And(predicates...), nil
 	}
 }
 
@@ -6896,6 +7446,10 @@ type WorkspaceWhereInput struct {
 	// "teammate_task_tab_statuses" edge predicates.
 	HasTeammateTaskTabStatuses     *bool                              `json:"hasTeammateTaskTabStatuses,omitempty"`
 	HasTeammateTaskTabStatusesWith []*TeammateTaskTabStatusWhereInput `json:"hasTeammateTaskTabStatusesWith,omitempty"`
+
+	// "teammate_task_list_statuses" edge predicates.
+	HasTeammateTaskListStatuses     *bool                               `json:"hasTeammateTaskListStatuses,omitempty"`
+	HasTeammateTaskListStatusesWith []*TeammateTaskListStatusWhereInput `json:"hasTeammateTaskListStatusesWith,omitempty"`
 }
 
 // Filter applies the WorkspaceWhereInput filter on the WorkspaceQuery builder.
@@ -7197,6 +7751,24 @@ func (i *WorkspaceWhereInput) P() (predicate.Workspace, error) {
 			with = append(with, p)
 		}
 		predicates = append(predicates, workspace.HasTeammateTaskTabStatusesWith(with...))
+	}
+	if i.HasTeammateTaskListStatuses != nil {
+		p := workspace.HasTeammateTaskListStatuses()
+		if !*i.HasTeammateTaskListStatuses {
+			p = workspace.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasTeammateTaskListStatusesWith) > 0 {
+		with := make([]predicate.TeammateTaskListStatus, 0, len(i.HasTeammateTaskListStatusesWith))
+		for _, w := range i.HasTeammateTaskListStatusesWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, workspace.HasTeammateTaskListStatusesWith(with...))
 	}
 	switch len(predicates) {
 	case 0:

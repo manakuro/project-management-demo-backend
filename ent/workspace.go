@@ -47,9 +47,11 @@ type WorkspaceEdges struct {
 	FavoriteWorkspaces []*FavoriteWorkspace `json:"favorite_workspaces,omitempty"`
 	// TeammateTaskTabStatuses holds the value of the teammate_task_tab_statuses edge.
 	TeammateTaskTabStatuses []*TeammateTaskTabStatus `json:"teammate_task_tab_statuses,omitempty"`
+	// TeammateTaskListStatuses holds the value of the teammate_task_list_statuses edge.
+	TeammateTaskListStatuses []*TeammateTaskListStatus `json:"teammate_task_list_statuses,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [5]bool
+	loadedTypes [6]bool
 }
 
 // TeammateOrErr returns the Teammate value or an error if the edge
@@ -100,6 +102,15 @@ func (e WorkspaceEdges) TeammateTaskTabStatusesOrErr() ([]*TeammateTaskTabStatus
 		return e.TeammateTaskTabStatuses, nil
 	}
 	return nil, &NotLoadedError{edge: "teammate_task_tab_statuses"}
+}
+
+// TeammateTaskListStatusesOrErr returns the TeammateTaskListStatuses value or an error if the edge
+// was not loaded in eager-loading.
+func (e WorkspaceEdges) TeammateTaskListStatusesOrErr() ([]*TeammateTaskListStatus, error) {
+	if e.loadedTypes[5] {
+		return e.TeammateTaskListStatuses, nil
+	}
+	return nil, &NotLoadedError{edge: "teammate_task_list_statuses"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -196,6 +207,11 @@ func (w *Workspace) QueryFavoriteWorkspaces() *FavoriteWorkspaceQuery {
 // QueryTeammateTaskTabStatuses queries the "teammate_task_tab_statuses" edge of the Workspace entity.
 func (w *Workspace) QueryTeammateTaskTabStatuses() *TeammateTaskTabStatusQuery {
 	return (&WorkspaceClient{config: w.config}).QueryTeammateTaskTabStatuses(w)
+}
+
+// QueryTeammateTaskListStatuses queries the "teammate_task_list_statuses" edge of the Workspace entity.
+func (w *Workspace) QueryTeammateTaskListStatuses() *TeammateTaskListStatusQuery {
+	return (&WorkspaceClient{config: w.config}).QueryTeammateTaskListStatuses(w)
 }
 
 // Update returns a builder for updating this Workspace.
