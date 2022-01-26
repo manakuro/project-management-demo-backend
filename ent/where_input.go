@@ -5411,11 +5411,11 @@ type TeammateTabStatusWhereInput struct {
 	TeammateIDEqualFold    *ulid.ID  `json:"teammateIDEqualFold,omitempty"`
 	TeammateIDContainsFold *ulid.ID  `json:"teammateIDContainsFold,omitempty"`
 
-	// "status" field predicates.
-	Status      *teammatetabstatus.Status  `json:"status,omitempty"`
-	StatusNEQ   *teammatetabstatus.Status  `json:"statusNEQ,omitempty"`
-	StatusIn    []teammatetabstatus.Status `json:"statusIn,omitempty"`
-	StatusNotIn []teammatetabstatus.Status `json:"statusNotIn,omitempty"`
+	// "status_code" field predicates.
+	StatusCode      *teammatetabstatus.StatusCode  `json:"statusCode,omitempty"`
+	StatusCodeNEQ   *teammatetabstatus.StatusCode  `json:"statusCodeNEQ,omitempty"`
+	StatusCodeIn    []teammatetabstatus.StatusCode `json:"statusCodeIn,omitempty"`
+	StatusCodeNotIn []teammatetabstatus.StatusCode `json:"statusCodeNotIn,omitempty"`
 
 	// "created_at" field predicates.
 	CreatedAt      *time.Time  `json:"createdAt,omitempty"`
@@ -5607,17 +5607,17 @@ func (i *TeammateTabStatusWhereInput) P() (predicate.TeammateTabStatus, error) {
 	if i.TeammateIDContainsFold != nil {
 		predicates = append(predicates, teammatetabstatus.TeammateIDContainsFold(*i.TeammateIDContainsFold))
 	}
-	if i.Status != nil {
-		predicates = append(predicates, teammatetabstatus.StatusEQ(*i.Status))
+	if i.StatusCode != nil {
+		predicates = append(predicates, teammatetabstatus.StatusCodeEQ(*i.StatusCode))
 	}
-	if i.StatusNEQ != nil {
-		predicates = append(predicates, teammatetabstatus.StatusNEQ(*i.StatusNEQ))
+	if i.StatusCodeNEQ != nil {
+		predicates = append(predicates, teammatetabstatus.StatusCodeNEQ(*i.StatusCodeNEQ))
 	}
-	if len(i.StatusIn) > 0 {
-		predicates = append(predicates, teammatetabstatus.StatusIn(i.StatusIn...))
+	if len(i.StatusCodeIn) > 0 {
+		predicates = append(predicates, teammatetabstatus.StatusCodeIn(i.StatusCodeIn...))
 	}
-	if len(i.StatusNotIn) > 0 {
-		predicates = append(predicates, teammatetabstatus.StatusNotIn(i.StatusNotIn...))
+	if len(i.StatusCodeNotIn) > 0 {
+		predicates = append(predicates, teammatetabstatus.StatusCodeNotIn(i.StatusCodeNotIn...))
 	}
 	if i.CreatedAt != nil {
 		predicates = append(predicates, teammatetabstatus.CreatedAtEQ(*i.CreatedAt))

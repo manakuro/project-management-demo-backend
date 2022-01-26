@@ -60,7 +60,7 @@ models:
         - project-management-demo-backend/ent/testtodo.Status
   TeammateTabStatusCode:
       model:
-        - project-management-demo-backend/ent/teammatetabstatus.Status
+        - project-management-demo-backend/ent/teammatetabstatus.StatusCode
   TaskColumnType:
     model:
         - project-management-demo-backend/ent/taskcolumn.Type

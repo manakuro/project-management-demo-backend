@@ -1766,11 +1766,11 @@ input TeammateTabStatusWhereInput {
   teammateIDEqualFold: ID
   teammateIDContainsFold: ID
   
-  """status field predicates"""
-  status: TeammateTabStatusCode
-  statusNEQ: TeammateTabStatusCode
-  statusIn: [TeammateTabStatusCode!]
-  statusNotIn: [TeammateTabStatusCode!]
+  """status_code field predicates"""
+  statusCode: TeammateTabStatusCode
+  statusCodeNEQ: TeammateTabStatusCode
+  statusCodeIn: [TeammateTabStatusCode!]
+  statusCodeNotIn: [TeammateTabStatusCode!]
   
   """created_at field predicates"""
   createdAt: Time

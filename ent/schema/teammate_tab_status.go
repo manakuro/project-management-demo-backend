@@ -32,7 +32,7 @@ func (TeammateTabStatusMixin) Fields() []ent.Field {
 			GoType(ulid.ID("")),
 		field.String("teammate_id").
 			GoType(ulid.ID("")),
-		field.Enum("status").
+		field.Enum("status_code").
 			NamedValues(
 				"List", "LIST",
 				"Board", "BOARD",

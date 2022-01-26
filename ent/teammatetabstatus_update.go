@@ -42,16 +42,16 @@ func (ttsu *TeammateTabStatusUpdate) SetTeammateID(u ulid.ID) *TeammateTabStatus
 	return ttsu
 }
 
-// SetStatus sets the "status" field.
-func (ttsu *TeammateTabStatusUpdate) SetStatus(t teammatetabstatus.Status) *TeammateTabStatusUpdate {
-	ttsu.mutation.SetStatus(t)
+// SetStatusCode sets the "status_code" field.
+func (ttsu *TeammateTabStatusUpdate) SetStatusCode(tc teammatetabstatus.StatusCode) *TeammateTabStatusUpdate {
+	ttsu.mutation.SetStatusCode(tc)
 	return ttsu
 }
 
-// SetNillableStatus sets the "status" field if the given value is not nil.
-func (ttsu *TeammateTabStatusUpdate) SetNillableStatus(t *teammatetabstatus.Status) *TeammateTabStatusUpdate {
-	if t != nil {
-		ttsu.SetStatus(*t)
+// SetNillableStatusCode sets the "status_code" field if the given value is not nil.
+func (ttsu *TeammateTabStatusUpdate) SetNillableStatusCode(tc *teammatetabstatus.StatusCode) *TeammateTabStatusUpdate {
+	if tc != nil {
+		ttsu.SetStatusCode(*tc)
 	}
 	return ttsu
 }
@@ -145,9 +145,9 @@ func (ttsu *TeammateTabStatusUpdate) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (ttsu *TeammateTabStatusUpdate) check() error {
-	if v, ok := ttsu.mutation.Status(); ok {
-		if err := teammatetabstatus.StatusValidator(v); err != nil {
-			return &ValidationError{Name: "status", err: fmt.Errorf("ent: validator failed for field \"status\": %w", err)}
+	if v, ok := ttsu.mutation.StatusCode(); ok {
+		if err := teammatetabstatus.StatusCodeValidator(v); err != nil {
+			return &ValidationError{Name: "status_code", err: fmt.Errorf("ent: validator failed for field \"status_code\": %w", err)}
 		}
 	}
 	if _, ok := ttsu.mutation.WorkspaceID(); ttsu.mutation.WorkspaceCleared() && !ok {
@@ -177,11 +177,11 @@ func (ttsu *TeammateTabStatusUpdate) sqlSave(ctx context.Context) (n int, err er
 			}
 		}
 	}
-	if value, ok := ttsu.mutation.Status(); ok {
+	if value, ok := ttsu.mutation.StatusCode(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeEnum,
 			Value:  value,
-			Column: teammatetabstatus.FieldStatus,
+			Column: teammatetabstatus.FieldStatusCode,
 		})
 	}
 	if ttsu.mutation.WorkspaceCleared() {
@@ -285,16 +285,16 @@ func (ttsuo *TeammateTabStatusUpdateOne) SetTeammateID(u ulid.ID) *TeammateTabSt
 	return ttsuo
 }
 
-// SetStatus sets the "status" field.
-func (ttsuo *TeammateTabStatusUpdateOne) SetStatus(t teammatetabstatus.Status) *TeammateTabStatusUpdateOne {
-	ttsuo.mutation.SetStatus(t)
+// SetStatusCode sets the "status_code" field.
+func (ttsuo *TeammateTabStatusUpdateOne) SetStatusCode(tc teammatetabstatus.StatusCode) *TeammateTabStatusUpdateOne {
+	ttsuo.mutation.SetStatusCode(tc)
 	return ttsuo
 }
 
-// SetNillableStatus sets the "status" field if the given value is not nil.
-func (ttsuo *TeammateTabStatusUpdateOne) SetNillableStatus(t *teammatetabstatus.Status) *TeammateTabStatusUpdateOne {
-	if t != nil {
-		ttsuo.SetStatus(*t)
+// SetNillableStatusCode sets the "status_code" field if the given value is not nil.
+func (ttsuo *TeammateTabStatusUpdateOne) SetNillableStatusCode(tc *teammatetabstatus.StatusCode) *TeammateTabStatusUpdateOne {
+	if tc != nil {
+		ttsuo.SetStatusCode(*tc)
 	}
 	return ttsuo
 }
@@ -395,9 +395,9 @@ func (ttsuo *TeammateTabStatusUpdateOne) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (ttsuo *TeammateTabStatusUpdateOne) check() error {
-	if v, ok := ttsuo.mutation.Status(); ok {
-		if err := teammatetabstatus.StatusValidator(v); err != nil {
-			return &ValidationError{Name: "status", err: fmt.Errorf("ent: validator failed for field \"status\": %w", err)}
+	if v, ok := ttsuo.mutation.StatusCode(); ok {
+		if err := teammatetabstatus.StatusCodeValidator(v); err != nil {
+			return &ValidationError{Name: "status_code", err: fmt.Errorf("ent: validator failed for field \"status_code\": %w", err)}
 		}
 	}
 	if _, ok := ttsuo.mutation.WorkspaceID(); ttsuo.mutation.WorkspaceCleared() && !ok {
@@ -444,11 +444,11 @@ func (ttsuo *TeammateTabStatusUpdateOne) sqlSave(ctx context.Context) (_node *Te
 			}
 		}
 	}
-	if value, ok := ttsuo.mutation.Status(); ok {
+	if value, ok := ttsuo.mutation.StatusCode(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeEnum,
 			Value:  value,
-			Column: teammatetabstatus.FieldStatus,
+			Column: teammatetabstatus.FieldStatusCode,
 		})
 	}
 	if ttsuo.mutation.WorkspaceCleared() {

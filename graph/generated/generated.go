@@ -546,7 +546,7 @@ type ComplexityRoot struct {
 	TeammateTabStatus struct {
 		CreatedAt   func(childComplexity int) int
 		ID          func(childComplexity int) int
-		Status      func(childComplexity int) int
+		StatusCode  func(childComplexity int) int
 		Teammate    func(childComplexity int) int
 		TeammateID  func(childComplexity int) int
 		UpdatedAt   func(childComplexity int) int
@@ -3582,12 +3582,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.TeammateTabStatus.ID(childComplexity), true
 
-	case "TeammateTabStatus.status":
-		if e.complexity.TeammateTabStatus.Status == nil {
+	case "TeammateTabStatus.statusCode":
+		if e.complexity.TeammateTabStatus.StatusCode == nil {
 			break
 		}
 
-		return e.complexity.TeammateTabStatus.Status(childComplexity), true
+		return e.complexity.TeammateTabStatus.StatusCode(childComplexity), true
 
 	case "TeammateTabStatus.teammate":
 		if e.complexity.TeammateTabStatus.Teammate == nil {
@@ -6078,11 +6078,11 @@ input TeammateTabStatusWhereInput {
   teammateIDEqualFold: ID
   teammateIDContainsFold: ID
   
-  """status field predicates"""
-  status: TeammateTabStatusCode
-  statusNEQ: TeammateTabStatusCode
-  statusIn: [TeammateTabStatusCode!]
-  statusNotIn: [TeammateTabStatusCode!]
+  """status_code field predicates"""
+  statusCode: TeammateTabStatusCode
+  statusCodeNEQ: TeammateTabStatusCode
+  statusCodeIn: [TeammateTabStatusCode!]
+  statusCodeNotIn: [TeammateTabStatusCode!]
   
   """created_at field predicates"""
   createdAt: Time
@@ -6827,7 +6827,7 @@ type TeammateTabStatus implements Node {
   workspace: Workspace!
   teammateId: ID!
   teammate: Teammate!
-  status: TeammateTabStatusCode
+  statusCode: TeammateTabStatusCode
   createdAt: String!
   updatedAt: String!
 }
@@ -6850,7 +6850,7 @@ input UpdateTeammateTabStatusInput {
   id: ID!
   workspaceId: ID
   teammateId: ID
-  status: TeammateTabStatusCode
+  statusCode: TeammateTabStatusCode
 }
 
 extend type Subscription {
@@ -21086,7 +21086,7 @@ func (ec *executionContext) _TeammateTabStatus_teammate(ctx context.Context, fie
 	return ec.marshalNTeammate2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTeammate(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _TeammateTabStatus_status(ctx context.Context, field graphql.CollectedField, obj *ent.TeammateTabStatus) (ret graphql.Marshaler) {
+func (ec *executionContext) _TeammateTabStatus_statusCode(ctx context.Context, field graphql.CollectedField, obj *ent.TeammateTabStatus) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -21104,7 +21104,7 @@ func (ec *executionContext) _TeammateTabStatus_status(ctx context.Context, field
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Status, nil
+		return obj.StatusCode, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -21113,9 +21113,9 @@ func (ec *executionContext) _TeammateTabStatus_status(ctx context.Context, field
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.(teammatetabstatus.Status)
+	res := resTmp.(teammatetabstatus.StatusCode)
 	fc.Result = res
-	return ec.marshalOTeammateTabStatusCode2projectᚑmanagementᚑdemoᚑbackendᚋentᚋteammatetabstatusᚐStatus(ctx, field.Selections, res)
+	return ec.marshalOTeammateTabStatusCode2projectᚑmanagementᚑdemoᚑbackendᚋentᚋteammatetabstatusᚐStatusCode(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _TeammateTabStatus_createdAt(ctx context.Context, field graphql.CollectedField, obj *ent.TeammateTabStatus) (ret graphql.Marshaler) {
@@ -33059,35 +33059,35 @@ func (ec *executionContext) unmarshalInputTeammateTabStatusWhereInput(ctx contex
 			if err != nil {
 				return it, err
 			}
-		case "status":
+		case "statusCode":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("status"))
-			it.Status, err = ec.unmarshalOTeammateTabStatusCode2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋteammatetabstatusᚐStatus(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("statusCode"))
+			it.StatusCode, err = ec.unmarshalOTeammateTabStatusCode2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋteammatetabstatusᚐStatusCode(ctx, v)
 			if err != nil {
 				return it, err
 			}
-		case "statusNEQ":
+		case "statusCodeNEQ":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("statusNEQ"))
-			it.StatusNEQ, err = ec.unmarshalOTeammateTabStatusCode2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋteammatetabstatusᚐStatus(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("statusCodeNEQ"))
+			it.StatusCodeNEQ, err = ec.unmarshalOTeammateTabStatusCode2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋteammatetabstatusᚐStatusCode(ctx, v)
 			if err != nil {
 				return it, err
 			}
-		case "statusIn":
+		case "statusCodeIn":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("statusIn"))
-			it.StatusIn, err = ec.unmarshalOTeammateTabStatusCode2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋteammatetabstatusᚐStatusᚄ(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("statusCodeIn"))
+			it.StatusCodeIn, err = ec.unmarshalOTeammateTabStatusCode2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋteammatetabstatusᚐStatusCodeᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
-		case "statusNotIn":
+		case "statusCodeNotIn":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("statusNotIn"))
-			it.StatusNotIn, err = ec.unmarshalOTeammateTabStatusCode2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋteammatetabstatusᚐStatusᚄ(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("statusCodeNotIn"))
+			it.StatusCodeNotIn, err = ec.unmarshalOTeammateTabStatusCode2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋteammatetabstatusᚐStatusCodeᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -36342,11 +36342,11 @@ func (ec *executionContext) unmarshalInputUpdateTeammateTabStatusInput(ctx conte
 			if err != nil {
 				return it, err
 			}
-		case "status":
+		case "statusCode":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("status"))
-			it.Status, err = ec.unmarshalOTeammateTabStatusCode2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋteammatetabstatusᚐStatus(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("statusCode"))
+			it.StatusCode, err = ec.unmarshalOTeammateTabStatusCode2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋteammatetabstatusᚐStatusCode(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -41148,8 +41148,8 @@ func (ec *executionContext) _TeammateTabStatus(ctx context.Context, sel ast.Sele
 				}
 				return res
 			})
-		case "status":
-			out.Values[i] = ec._TeammateTabStatus_status(ctx, field, obj)
+		case "statusCode":
+			out.Values[i] = ec._TeammateTabStatus_statusCode(ctx, field, obj)
 		case "createdAt":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
@@ -43126,13 +43126,13 @@ func (ec *executionContext) marshalNTeammateTabStatus2ᚖprojectᚑmanagementᚑ
 	return ec._TeammateTabStatus(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNTeammateTabStatusCode2projectᚑmanagementᚑdemoᚑbackendᚋentᚋteammatetabstatusᚐStatus(ctx context.Context, v interface{}) (teammatetabstatus.Status, error) {
-	var res teammatetabstatus.Status
+func (ec *executionContext) unmarshalNTeammateTabStatusCode2projectᚑmanagementᚑdemoᚑbackendᚋentᚋteammatetabstatusᚐStatusCode(ctx context.Context, v interface{}) (teammatetabstatus.StatusCode, error) {
+	var res teammatetabstatus.StatusCode
 	err := res.UnmarshalGQL(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNTeammateTabStatusCode2projectᚑmanagementᚑdemoᚑbackendᚋentᚋteammatetabstatusᚐStatus(ctx context.Context, sel ast.SelectionSet, v teammatetabstatus.Status) graphql.Marshaler {
+func (ec *executionContext) marshalNTeammateTabStatusCode2projectᚑmanagementᚑdemoᚑbackendᚋentᚋteammatetabstatusᚐStatusCode(ctx context.Context, sel ast.SelectionSet, v teammatetabstatus.StatusCode) graphql.Marshaler {
 	return v
 }
 
@@ -45782,17 +45782,17 @@ func (ec *executionContext) marshalOTeammateTabStatus2ᚖprojectᚑmanagementᚑ
 	return ec._TeammateTabStatus(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalOTeammateTabStatusCode2projectᚑmanagementᚑdemoᚑbackendᚋentᚋteammatetabstatusᚐStatus(ctx context.Context, v interface{}) (teammatetabstatus.Status, error) {
-	var res teammatetabstatus.Status
+func (ec *executionContext) unmarshalOTeammateTabStatusCode2projectᚑmanagementᚑdemoᚑbackendᚋentᚋteammatetabstatusᚐStatusCode(ctx context.Context, v interface{}) (teammatetabstatus.StatusCode, error) {
+	var res teammatetabstatus.StatusCode
 	err := res.UnmarshalGQL(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalOTeammateTabStatusCode2projectᚑmanagementᚑdemoᚑbackendᚋentᚋteammatetabstatusᚐStatus(ctx context.Context, sel ast.SelectionSet, v teammatetabstatus.Status) graphql.Marshaler {
+func (ec *executionContext) marshalOTeammateTabStatusCode2projectᚑmanagementᚑdemoᚑbackendᚋentᚋteammatetabstatusᚐStatusCode(ctx context.Context, sel ast.SelectionSet, v teammatetabstatus.StatusCode) graphql.Marshaler {
 	return v
 }
 
-func (ec *executionContext) unmarshalOTeammateTabStatusCode2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋteammatetabstatusᚐStatusᚄ(ctx context.Context, v interface{}) ([]teammatetabstatus.Status, error) {
+func (ec *executionContext) unmarshalOTeammateTabStatusCode2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋteammatetabstatusᚐStatusCodeᚄ(ctx context.Context, v interface{}) ([]teammatetabstatus.StatusCode, error) {
 	if v == nil {
 		return nil, nil
 	}
@@ -45805,10 +45805,10 @@ func (ec *executionContext) unmarshalOTeammateTabStatusCode2ᚕprojectᚑmanagem
 		}
 	}
 	var err error
-	res := make([]teammatetabstatus.Status, len(vSlice))
+	res := make([]teammatetabstatus.StatusCode, len(vSlice))
 	for i := range vSlice {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
-		res[i], err = ec.unmarshalNTeammateTabStatusCode2projectᚑmanagementᚑdemoᚑbackendᚋentᚋteammatetabstatusᚐStatus(ctx, vSlice[i])
+		res[i], err = ec.unmarshalNTeammateTabStatusCode2projectᚑmanagementᚑdemoᚑbackendᚋentᚋteammatetabstatusᚐStatusCode(ctx, vSlice[i])
 		if err != nil {
 			return nil, err
 		}
@@ -45816,7 +45816,7 @@ func (ec *executionContext) unmarshalOTeammateTabStatusCode2ᚕprojectᚑmanagem
 	return res, nil
 }
 
-func (ec *executionContext) marshalOTeammateTabStatusCode2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋteammatetabstatusᚐStatusᚄ(ctx context.Context, sel ast.SelectionSet, v []teammatetabstatus.Status) graphql.Marshaler {
+func (ec *executionContext) marshalOTeammateTabStatusCode2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋteammatetabstatusᚐStatusCodeᚄ(ctx context.Context, sel ast.SelectionSet, v []teammatetabstatus.StatusCode) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -45843,7 +45843,7 @@ func (ec *executionContext) marshalOTeammateTabStatusCode2ᚕprojectᚑmanagemen
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalNTeammateTabStatusCode2projectᚑmanagementᚑdemoᚑbackendᚋentᚋteammatetabstatusᚐStatus(ctx, sel, v[i])
+			ret[i] = ec.marshalNTeammateTabStatusCode2projectᚑmanagementᚑdemoᚑbackendᚋentᚋteammatetabstatusᚐStatusCode(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -45863,16 +45863,16 @@ func (ec *executionContext) marshalOTeammateTabStatusCode2ᚕprojectᚑmanagemen
 	return ret
 }
 
-func (ec *executionContext) unmarshalOTeammateTabStatusCode2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋteammatetabstatusᚐStatus(ctx context.Context, v interface{}) (*teammatetabstatus.Status, error) {
+func (ec *executionContext) unmarshalOTeammateTabStatusCode2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋteammatetabstatusᚐStatusCode(ctx context.Context, v interface{}) (*teammatetabstatus.StatusCode, error) {
 	if v == nil {
 		return nil, nil
 	}
-	var res = new(teammatetabstatus.Status)
+	var res = new(teammatetabstatus.StatusCode)
 	err := res.UnmarshalGQL(v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalOTeammateTabStatusCode2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋteammatetabstatusᚐStatus(ctx context.Context, sel ast.SelectionSet, v *teammatetabstatus.Status) graphql.Marshaler {
+func (ec *executionContext) marshalOTeammateTabStatusCode2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋteammatetabstatusᚐStatusCode(ctx context.Context, sel ast.SelectionSet, v *teammatetabstatus.StatusCode) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}

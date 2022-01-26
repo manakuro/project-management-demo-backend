@@ -35,16 +35,16 @@ func (ttsc *TeammateTabStatusCreate) SetTeammateID(u ulid.ID) *TeammateTabStatus
 	return ttsc
 }
 
-// SetStatus sets the "status" field.
-func (ttsc *TeammateTabStatusCreate) SetStatus(t teammatetabstatus.Status) *TeammateTabStatusCreate {
-	ttsc.mutation.SetStatus(t)
+// SetStatusCode sets the "status_code" field.
+func (ttsc *TeammateTabStatusCreate) SetStatusCode(tc teammatetabstatus.StatusCode) *TeammateTabStatusCreate {
+	ttsc.mutation.SetStatusCode(tc)
 	return ttsc
 }
 
-// SetNillableStatus sets the "status" field if the given value is not nil.
-func (ttsc *TeammateTabStatusCreate) SetNillableStatus(t *teammatetabstatus.Status) *TeammateTabStatusCreate {
-	if t != nil {
-		ttsc.SetStatus(*t)
+// SetNillableStatusCode sets the "status_code" field if the given value is not nil.
+func (ttsc *TeammateTabStatusCreate) SetNillableStatusCode(tc *teammatetabstatus.StatusCode) *TeammateTabStatusCreate {
+	if tc != nil {
+		ttsc.SetStatusCode(*tc)
 	}
 	return ttsc
 }
@@ -172,9 +172,9 @@ func (ttsc *TeammateTabStatusCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (ttsc *TeammateTabStatusCreate) defaults() {
-	if _, ok := ttsc.mutation.Status(); !ok {
-		v := teammatetabstatus.DefaultStatus
-		ttsc.mutation.SetStatus(v)
+	if _, ok := ttsc.mutation.StatusCode(); !ok {
+		v := teammatetabstatus.DefaultStatusCode
+		ttsc.mutation.SetStatusCode(v)
 	}
 	if _, ok := ttsc.mutation.CreatedAt(); !ok {
 		v := teammatetabstatus.DefaultCreatedAt()
@@ -198,12 +198,12 @@ func (ttsc *TeammateTabStatusCreate) check() error {
 	if _, ok := ttsc.mutation.TeammateID(); !ok {
 		return &ValidationError{Name: "teammate_id", err: errors.New(`ent: missing required field "teammate_id"`)}
 	}
-	if _, ok := ttsc.mutation.Status(); !ok {
-		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "status"`)}
+	if _, ok := ttsc.mutation.StatusCode(); !ok {
+		return &ValidationError{Name: "status_code", err: errors.New(`ent: missing required field "status_code"`)}
 	}
-	if v, ok := ttsc.mutation.Status(); ok {
-		if err := teammatetabstatus.StatusValidator(v); err != nil {
-			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "status": %w`, err)}
+	if v, ok := ttsc.mutation.StatusCode(); ok {
+		if err := teammatetabstatus.StatusCodeValidator(v); err != nil {
+			return &ValidationError{Name: "status_code", err: fmt.Errorf(`ent: validator failed for field "status_code": %w`, err)}
 		}
 	}
 	if _, ok := ttsc.mutation.CreatedAt(); !ok {
@@ -250,13 +250,13 @@ func (ttsc *TeammateTabStatusCreate) createSpec() (*TeammateTabStatus, *sqlgraph
 		_node.ID = id
 		_spec.ID.Value = id
 	}
-	if value, ok := ttsc.mutation.Status(); ok {
+	if value, ok := ttsc.mutation.StatusCode(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeEnum,
 			Value:  value,
-			Column: teammatetabstatus.FieldStatus,
+			Column: teammatetabstatus.FieldStatusCode,
 		})
-		_node.Status = value
+		_node.StatusCode = value
 	}
 	if value, ok := ttsc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

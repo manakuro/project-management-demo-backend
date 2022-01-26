@@ -1168,12 +1168,12 @@ func (tts *TeammateTabStatus) Node(ctx context.Context) (node *Node, err error) 
 		Name:  "teammate_id",
 		Value: string(buf),
 	}
-	if buf, err = json.Marshal(tts.Status); err != nil {
+	if buf, err = json.Marshal(tts.StatusCode); err != nil {
 		return nil, err
 	}
 	node.Fields[2] = &Field{
-		Type:  "teammatetabstatus.Status",
-		Name:  "status",
+		Type:  "teammatetabstatus.StatusCode",
+		Name:  "status_code",
 		Value: string(buf),
 	}
 	if buf, err = json.Marshal(tts.CreatedAt); err != nil {

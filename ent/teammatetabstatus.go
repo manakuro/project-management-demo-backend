@@ -23,8 +23,8 @@ type TeammateTabStatus struct {
 	WorkspaceID ulid.ID `json:"workspace_id,omitempty"`
 	// TeammateID holds the value of the "teammate_id" field.
 	TeammateID ulid.ID `json:"teammate_id,omitempty"`
-	// Status holds the value of the "status" field.
-	Status teammatetabstatus.Status `json:"status,omitempty"`
+	// StatusCode holds the value of the "status_code" field.
+	StatusCode teammatetabstatus.StatusCode `json:"status_code,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -78,7 +78,7 @@ func (*TeammateTabStatus) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case teammatetabstatus.FieldStatus:
+		case teammatetabstatus.FieldStatusCode:
 			values[i] = new(sql.NullString)
 		case teammatetabstatus.FieldCreatedAt, teammatetabstatus.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -117,11 +117,11 @@ func (tts *TeammateTabStatus) assignValues(columns []string, values []interface{
 			} else if value != nil {
 				tts.TeammateID = *value
 			}
-		case teammatetabstatus.FieldStatus:
+		case teammatetabstatus.FieldStatusCode:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field status", values[i])
+				return fmt.Errorf("unexpected type %T for field status_code", values[i])
 			} else if value.Valid {
-				tts.Status = teammatetabstatus.Status(value.String)
+				tts.StatusCode = teammatetabstatus.StatusCode(value.String)
 			}
 		case teammatetabstatus.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -177,8 +177,8 @@ func (tts *TeammateTabStatus) String() string {
 	builder.WriteString(fmt.Sprintf("%v", tts.WorkspaceID))
 	builder.WriteString(", teammate_id=")
 	builder.WriteString(fmt.Sprintf("%v", tts.TeammateID))
-	builder.WriteString(", status=")
-	builder.WriteString(fmt.Sprintf("%v", tts.Status))
+	builder.WriteString(", status_code=")
+	builder.WriteString(fmt.Sprintf("%v", tts.StatusCode))
 	builder.WriteString(", created_at=")
 	builder.WriteString(tts.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", updated_at=")

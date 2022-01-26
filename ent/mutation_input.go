@@ -1201,7 +1201,7 @@ func (u *TeammateUpdateOne) SetInput(i UpdateTeammateInput) *TeammateUpdateOne {
 
 // CreateTeammateTabStatusInput represents a mutation input for creating teammatetabstatusslice.
 type CreateTeammateTabStatusInput struct {
-	Status      *teammatetabstatus.Status
+	StatusCode  *teammatetabstatus.StatusCode
 	CreatedAt   *time.Time
 	UpdatedAt   *time.Time
 	WorkspaceID ulid.ID
@@ -1210,8 +1210,8 @@ type CreateTeammateTabStatusInput struct {
 
 // Mutate applies the CreateTeammateTabStatusInput on the TeammateTabStatusCreate builder.
 func (i *CreateTeammateTabStatusInput) Mutate(m *TeammateTabStatusCreate) {
-	if v := i.Status; v != nil {
-		m.SetStatus(*v)
+	if v := i.StatusCode; v != nil {
+		m.SetStatusCode(*v)
 	}
 	if v := i.CreatedAt; v != nil {
 		m.SetCreatedAt(*v)
@@ -1232,7 +1232,7 @@ func (c *TeammateTabStatusCreate) SetInput(i CreateTeammateTabStatusInput) *Team
 // UpdateTeammateTabStatusInput represents a mutation input for updating teammatetabstatusslice.
 type UpdateTeammateTabStatusInput struct {
 	ID             ulid.ID
-	Status         *teammatetabstatus.Status
+	StatusCode     *teammatetabstatus.StatusCode
 	WorkspaceID    *ulid.ID
 	ClearWorkspace bool
 	TeammateID     *ulid.ID
@@ -1241,8 +1241,8 @@ type UpdateTeammateTabStatusInput struct {
 
 // Mutate applies the UpdateTeammateTabStatusInput on the TeammateTabStatusMutation.
 func (i *UpdateTeammateTabStatusInput) Mutate(m *TeammateTabStatusMutation) {
-	if v := i.Status; v != nil {
-		m.SetStatus(*v)
+	if v := i.StatusCode; v != nil {
+		m.SetStatusCode(*v)
 	}
 	if i.ClearWorkspace {
 		m.ClearWorkspace()

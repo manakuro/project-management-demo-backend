@@ -354,22 +354,22 @@ func TeammateIDContainsFold(v ulid.ID) predicate.TeammateTabStatus {
 	})
 }
 
-// StatusEQ applies the EQ predicate on the "status" field.
-func StatusEQ(v Status) predicate.TeammateTabStatus {
+// StatusCodeEQ applies the EQ predicate on the "status_code" field.
+func StatusCodeEQ(v StatusCode) predicate.TeammateTabStatus {
 	return predicate.TeammateTabStatus(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldStatus), v))
+		s.Where(sql.EQ(s.C(FieldStatusCode), v))
 	})
 }
 
-// StatusNEQ applies the NEQ predicate on the "status" field.
-func StatusNEQ(v Status) predicate.TeammateTabStatus {
+// StatusCodeNEQ applies the NEQ predicate on the "status_code" field.
+func StatusCodeNEQ(v StatusCode) predicate.TeammateTabStatus {
 	return predicate.TeammateTabStatus(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldStatus), v))
+		s.Where(sql.NEQ(s.C(FieldStatusCode), v))
 	})
 }
 
-// StatusIn applies the In predicate on the "status" field.
-func StatusIn(vs ...Status) predicate.TeammateTabStatus {
+// StatusCodeIn applies the In predicate on the "status_code" field.
+func StatusCodeIn(vs ...StatusCode) predicate.TeammateTabStatus {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -381,12 +381,12 @@ func StatusIn(vs ...Status) predicate.TeammateTabStatus {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.In(s.C(FieldStatus), v...))
+		s.Where(sql.In(s.C(FieldStatusCode), v...))
 	})
 }
 
-// StatusNotIn applies the NotIn predicate on the "status" field.
-func StatusNotIn(vs ...Status) predicate.TeammateTabStatus {
+// StatusCodeNotIn applies the NotIn predicate on the "status_code" field.
+func StatusCodeNotIn(vs ...StatusCode) predicate.TeammateTabStatus {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -398,7 +398,7 @@ func StatusNotIn(vs ...Status) predicate.TeammateTabStatus {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.NotIn(s.C(FieldStatus), v...))
+		s.Where(sql.NotIn(s.C(FieldStatusCode), v...))
 	})
 }
 

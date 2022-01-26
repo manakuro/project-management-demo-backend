@@ -11,7 +11,7 @@ type TeammateTabStatus implements Node {
   workspace: Workspace!
   teammateId: ID!
   teammate: Teammate!
-  status: TeammateTabStatusCode
+  statusCode: TeammateTabStatusCode
   createdAt: String!
   updatedAt: String!
 }
@@ -34,7 +34,7 @@ input UpdateTeammateTabStatusInput {
   id: ID!
   workspaceId: ID
   teammateId: ID
-  status: TeammateTabStatusCode
+  statusCode: TeammateTabStatusCode
 }
 
 extend type Subscription {

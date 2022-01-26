@@ -19,8 +19,8 @@ const (
 	FieldWorkspaceID = "workspace_id"
 	// FieldTeammateID holds the string denoting the teammate_id field in the database.
 	FieldTeammateID = "teammate_id"
-	// FieldStatus holds the string denoting the status field in the database.
-	FieldStatus = "status"
+	// FieldStatusCode holds the string denoting the status_code field in the database.
+	FieldStatusCode = "status_code"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
@@ -52,7 +52,7 @@ var Columns = []string{
 	FieldID,
 	FieldWorkspaceID,
 	FieldTeammateID,
-	FieldStatus,
+	FieldStatusCode,
 	FieldCreatedAt,
 	FieldUpdatedAt,
 }
@@ -76,48 +76,48 @@ var (
 	DefaultID func() ulid.ID
 )
 
-// Status defines the type for the "status" enum field.
-type Status string
+// StatusCode defines the type for the "status_code" enum field.
+type StatusCode string
 
-// StatusList is the default value of the Status enum.
-const DefaultStatus = StatusList
+// StatusCodeList is the default value of the StatusCode enum.
+const DefaultStatusCode = StatusCodeList
 
-// Status values.
+// StatusCode values.
 const (
-	StatusList     Status = "LIST"
-	StatusBoard    Status = "BOARD"
-	StatusCalendar Status = "CALENDAR"
-	StatusFiles    Status = "FILES"
+	StatusCodeList     StatusCode = "LIST"
+	StatusCodeBoard    StatusCode = "BOARD"
+	StatusCodeCalendar StatusCode = "CALENDAR"
+	StatusCodeFiles    StatusCode = "FILES"
 )
 
-func (s Status) String() string {
-	return string(s)
+func (sc StatusCode) String() string {
+	return string(sc)
 }
 
-// StatusValidator is a validator for the "status" field enum values. It is called by the builders before save.
-func StatusValidator(s Status) error {
-	switch s {
-	case StatusList, StatusBoard, StatusCalendar, StatusFiles:
+// StatusCodeValidator is a validator for the "status_code" field enum values. It is called by the builders before save.
+func StatusCodeValidator(sc StatusCode) error {
+	switch sc {
+	case StatusCodeList, StatusCodeBoard, StatusCodeCalendar, StatusCodeFiles:
 		return nil
 	default:
-		return fmt.Errorf("teammatetabstatus: invalid enum value for status field: %q", s)
+		return fmt.Errorf("teammatetabstatus: invalid enum value for status_code field: %q", sc)
 	}
 }
 
 // MarshalGQL implements graphql.Marshaler interface.
-func (s Status) MarshalGQL(w io.Writer) {
-	io.WriteString(w, strconv.Quote(s.String()))
+func (sc StatusCode) MarshalGQL(w io.Writer) {
+	io.WriteString(w, strconv.Quote(sc.String()))
 }
 
 // UnmarshalGQL implements graphql.Unmarshaler interface.
-func (s *Status) UnmarshalGQL(val interface{}) error {
+func (sc *StatusCode) UnmarshalGQL(val interface{}) error {
 	str, ok := val.(string)
 	if !ok {
 		return fmt.Errorf("enum %T must be a string", val)
 	}
-	*s = Status(str)
-	if err := StatusValidator(*s); err != nil {
-		return fmt.Errorf("%s is not a valid Status", str)
+	*sc = StatusCode(str)
+	if err := StatusCodeValidator(*sc); err != nil {
+		return fmt.Errorf("%s is not a valid StatusCode", str)
 	}
 	return nil
 }

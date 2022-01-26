@@ -344,7 +344,7 @@ var (
 	// TeammateTabStatusColumns holds the columns for the "teammate_tab_status" table.
 	TeammateTabStatusColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString},
-		{Name: "status", Type: field.TypeEnum, Enums: []string{"LIST", "BOARD", "CALENDAR", "FILES"}, Default: "LIST"},
+		{Name: "status_code", Type: field.TypeEnum, Enums: []string{"LIST", "BOARD", "CALENDAR", "FILES"}, Default: "LIST"},
 		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
 		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
 		{Name: "teammate_id", Type: field.TypeString, Nullable: true},

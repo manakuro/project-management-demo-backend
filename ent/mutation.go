@@ -10034,7 +10034,7 @@ type TeammateTabStatusMutation struct {
 	op               Op
 	typ              string
 	id               *ulid.ID
-	status           *teammatetabstatus.Status
+	status_code      *teammatetabstatus.StatusCode
 	created_at       *time.Time
 	updated_at       *time.Time
 	clearedFields    map[string]struct{}
@@ -10204,40 +10204,40 @@ func (m *TeammateTabStatusMutation) ResetTeammateID() {
 	m.teammate = nil
 }
 
-// SetStatus sets the "status" field.
-func (m *TeammateTabStatusMutation) SetStatus(t teammatetabstatus.Status) {
-	m.status = &t
+// SetStatusCode sets the "status_code" field.
+func (m *TeammateTabStatusMutation) SetStatusCode(tc teammatetabstatus.StatusCode) {
+	m.status_code = &tc
 }
 
-// Status returns the value of the "status" field in the mutation.
-func (m *TeammateTabStatusMutation) Status() (r teammatetabstatus.Status, exists bool) {
-	v := m.status
+// StatusCode returns the value of the "status_code" field in the mutation.
+func (m *TeammateTabStatusMutation) StatusCode() (r teammatetabstatus.StatusCode, exists bool) {
+	v := m.status_code
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldStatus returns the old "status" field's value of the TeammateTabStatus entity.
+// OldStatusCode returns the old "status_code" field's value of the TeammateTabStatus entity.
 // If the TeammateTabStatus object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *TeammateTabStatusMutation) OldStatus(ctx context.Context) (v teammatetabstatus.Status, err error) {
+func (m *TeammateTabStatusMutation) OldStatusCode(ctx context.Context) (v teammatetabstatus.StatusCode, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, fmt.Errorf("OldStatus is only allowed on UpdateOne operations")
+		return v, fmt.Errorf("OldStatusCode is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, fmt.Errorf("OldStatus requires an ID field in the mutation")
+		return v, fmt.Errorf("OldStatusCode requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldStatus: %w", err)
+		return v, fmt.Errorf("querying old value for OldStatusCode: %w", err)
 	}
-	return oldValue.Status, nil
+	return oldValue.StatusCode, nil
 }
 
-// ResetStatus resets all changes to the "status" field.
-func (m *TeammateTabStatusMutation) ResetStatus() {
-	m.status = nil
+// ResetStatusCode resets all changes to the "status_code" field.
+func (m *TeammateTabStatusMutation) ResetStatusCode() {
+	m.status_code = nil
 }
 
 // SetCreatedAt sets the "created_at" field.
@@ -10390,8 +10390,8 @@ func (m *TeammateTabStatusMutation) Fields() []string {
 	if m.teammate != nil {
 		fields = append(fields, teammatetabstatus.FieldTeammateID)
 	}
-	if m.status != nil {
-		fields = append(fields, teammatetabstatus.FieldStatus)
+	if m.status_code != nil {
+		fields = append(fields, teammatetabstatus.FieldStatusCode)
 	}
 	if m.created_at != nil {
 		fields = append(fields, teammatetabstatus.FieldCreatedAt)
@@ -10411,8 +10411,8 @@ func (m *TeammateTabStatusMutation) Field(name string) (ent.Value, bool) {
 		return m.WorkspaceID()
 	case teammatetabstatus.FieldTeammateID:
 		return m.TeammateID()
-	case teammatetabstatus.FieldStatus:
-		return m.Status()
+	case teammatetabstatus.FieldStatusCode:
+		return m.StatusCode()
 	case teammatetabstatus.FieldCreatedAt:
 		return m.CreatedAt()
 	case teammatetabstatus.FieldUpdatedAt:
@@ -10430,8 +10430,8 @@ func (m *TeammateTabStatusMutation) OldField(ctx context.Context, name string) (
 		return m.OldWorkspaceID(ctx)
 	case teammatetabstatus.FieldTeammateID:
 		return m.OldTeammateID(ctx)
-	case teammatetabstatus.FieldStatus:
-		return m.OldStatus(ctx)
+	case teammatetabstatus.FieldStatusCode:
+		return m.OldStatusCode(ctx)
 	case teammatetabstatus.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case teammatetabstatus.FieldUpdatedAt:
@@ -10459,12 +10459,12 @@ func (m *TeammateTabStatusMutation) SetField(name string, value ent.Value) error
 		}
 		m.SetTeammateID(v)
 		return nil
-	case teammatetabstatus.FieldStatus:
-		v, ok := value.(teammatetabstatus.Status)
+	case teammatetabstatus.FieldStatusCode:
+		v, ok := value.(teammatetabstatus.StatusCode)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetStatus(v)
+		m.SetStatusCode(v)
 		return nil
 	case teammatetabstatus.FieldCreatedAt:
 		v, ok := value.(time.Time)
@@ -10535,8 +10535,8 @@ func (m *TeammateTabStatusMutation) ResetField(name string) error {
 	case teammatetabstatus.FieldTeammateID:
 		m.ResetTeammateID()
 		return nil
-	case teammatetabstatus.FieldStatus:
-		m.ResetStatus()
+	case teammatetabstatus.FieldStatusCode:
+		m.ResetStatusCode()
 		return nil
 	case teammatetabstatus.FieldCreatedAt:
 		m.ResetCreatedAt()
