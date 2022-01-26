@@ -1,8 +1,12 @@
 package schema
 
 import (
+	"project-management-demo-backend/ent/annotation"
 	"project-management-demo-backend/ent/mixin"
 	"project-management-demo-backend/pkg/const/globalid"
+
+	"entgo.io/ent/schema"
+	"entgo.io/ent/schema/edge"
 
 	"entgo.io/ent"
 	"entgo.io/ent/schema/field"
@@ -41,7 +45,14 @@ func (TaskListSortStatusMixin) Fields() []ent.Field {
 
 // Edges of the TaskListSortStatus.
 func (TaskListSortStatus) Edges() []ent.Edge {
-	return nil
+	return []ent.Edge{
+		edge.To("teammate_task_list_statuses", TeammateTaskListStatus.Type).
+			Annotations(
+				schema.Annotation(
+					annotation.Edge{FieldName: "teammate_task_list_status_id"},
+				),
+			),
+	}
 }
 
 // Mixin of the TaskListSortStatus.

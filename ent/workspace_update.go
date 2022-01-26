@@ -12,6 +12,7 @@ import (
 	"project-management-demo-backend/ent/schema/editor"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/teammate"
+	"project-management-demo-backend/ent/teammatetaskliststatus"
 	"project-management-demo-backend/ent/teammatetasktabstatus"
 	"project-management-demo-backend/ent/workspace"
 	"project-management-demo-backend/ent/workspaceteammate"
@@ -123,6 +124,21 @@ func (wu *WorkspaceUpdate) AddTeammateTaskTabStatuses(t ...*TeammateTaskTabStatu
 	return wu.AddTeammateTaskTabStatusIDs(ids...)
 }
 
+// AddTeammateTaskListStatusIDs adds the "teammate_task_list_statuses" edge to the TeammateTaskListStatus entity by IDs.
+func (wu *WorkspaceUpdate) AddTeammateTaskListStatusIDs(ids ...ulid.ID) *WorkspaceUpdate {
+	wu.mutation.AddTeammateTaskListStatusIDs(ids...)
+	return wu
+}
+
+// AddTeammateTaskListStatuses adds the "teammate_task_list_statuses" edges to the TeammateTaskListStatus entity.
+func (wu *WorkspaceUpdate) AddTeammateTaskListStatuses(t ...*TeammateTaskListStatus) *WorkspaceUpdate {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return wu.AddTeammateTaskListStatusIDs(ids...)
+}
+
 // Mutation returns the WorkspaceMutation object of the builder.
 func (wu *WorkspaceUpdate) Mutation() *WorkspaceMutation {
 	return wu.mutation
@@ -216,6 +232,27 @@ func (wu *WorkspaceUpdate) RemoveTeammateTaskTabStatuses(t ...*TeammateTaskTabSt
 		ids[i] = t[i].ID
 	}
 	return wu.RemoveTeammateTaskTabStatusIDs(ids...)
+}
+
+// ClearTeammateTaskListStatuses clears all "teammate_task_list_statuses" edges to the TeammateTaskListStatus entity.
+func (wu *WorkspaceUpdate) ClearTeammateTaskListStatuses() *WorkspaceUpdate {
+	wu.mutation.ClearTeammateTaskListStatuses()
+	return wu
+}
+
+// RemoveTeammateTaskListStatusIDs removes the "teammate_task_list_statuses" edge to TeammateTaskListStatus entities by IDs.
+func (wu *WorkspaceUpdate) RemoveTeammateTaskListStatusIDs(ids ...ulid.ID) *WorkspaceUpdate {
+	wu.mutation.RemoveTeammateTaskListStatusIDs(ids...)
+	return wu
+}
+
+// RemoveTeammateTaskListStatuses removes "teammate_task_list_statuses" edges to TeammateTaskListStatus entities.
+func (wu *WorkspaceUpdate) RemoveTeammateTaskListStatuses(t ...*TeammateTaskListStatus) *WorkspaceUpdate {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return wu.RemoveTeammateTaskListStatusIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -574,6 +611,60 @@ func (wu *WorkspaceUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if wu.mutation.TeammateTaskListStatusesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   workspace.TeammateTaskListStatusesTable,
+			Columns: []string{workspace.TeammateTaskListStatusesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: teammatetaskliststatus.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := wu.mutation.RemovedTeammateTaskListStatusesIDs(); len(nodes) > 0 && !wu.mutation.TeammateTaskListStatusesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   workspace.TeammateTaskListStatusesTable,
+			Columns: []string{workspace.TeammateTaskListStatusesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: teammatetaskliststatus.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := wu.mutation.TeammateTaskListStatusesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   workspace.TeammateTaskListStatusesTable,
+			Columns: []string{workspace.TeammateTaskListStatusesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: teammatetaskliststatus.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, wu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{workspace.Label}
@@ -682,6 +773,21 @@ func (wuo *WorkspaceUpdateOne) AddTeammateTaskTabStatuses(t ...*TeammateTaskTabS
 	return wuo.AddTeammateTaskTabStatusIDs(ids...)
 }
 
+// AddTeammateTaskListStatusIDs adds the "teammate_task_list_statuses" edge to the TeammateTaskListStatus entity by IDs.
+func (wuo *WorkspaceUpdateOne) AddTeammateTaskListStatusIDs(ids ...ulid.ID) *WorkspaceUpdateOne {
+	wuo.mutation.AddTeammateTaskListStatusIDs(ids...)
+	return wuo
+}
+
+// AddTeammateTaskListStatuses adds the "teammate_task_list_statuses" edges to the TeammateTaskListStatus entity.
+func (wuo *WorkspaceUpdateOne) AddTeammateTaskListStatuses(t ...*TeammateTaskListStatus) *WorkspaceUpdateOne {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return wuo.AddTeammateTaskListStatusIDs(ids...)
+}
+
 // Mutation returns the WorkspaceMutation object of the builder.
 func (wuo *WorkspaceUpdateOne) Mutation() *WorkspaceMutation {
 	return wuo.mutation
@@ -775,6 +881,27 @@ func (wuo *WorkspaceUpdateOne) RemoveTeammateTaskTabStatuses(t ...*TeammateTaskT
 		ids[i] = t[i].ID
 	}
 	return wuo.RemoveTeammateTaskTabStatusIDs(ids...)
+}
+
+// ClearTeammateTaskListStatuses clears all "teammate_task_list_statuses" edges to the TeammateTaskListStatus entity.
+func (wuo *WorkspaceUpdateOne) ClearTeammateTaskListStatuses() *WorkspaceUpdateOne {
+	wuo.mutation.ClearTeammateTaskListStatuses()
+	return wuo
+}
+
+// RemoveTeammateTaskListStatusIDs removes the "teammate_task_list_statuses" edge to TeammateTaskListStatus entities by IDs.
+func (wuo *WorkspaceUpdateOne) RemoveTeammateTaskListStatusIDs(ids ...ulid.ID) *WorkspaceUpdateOne {
+	wuo.mutation.RemoveTeammateTaskListStatusIDs(ids...)
+	return wuo
+}
+
+// RemoveTeammateTaskListStatuses removes "teammate_task_list_statuses" edges to TeammateTaskListStatus entities.
+func (wuo *WorkspaceUpdateOne) RemoveTeammateTaskListStatuses(t ...*TeammateTaskListStatus) *WorkspaceUpdateOne {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return wuo.RemoveTeammateTaskListStatusIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -1149,6 +1276,60 @@ func (wuo *WorkspaceUpdateOne) sqlSave(ctx context.Context) (_node *Workspace, e
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: teammatetasktabstatus.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if wuo.mutation.TeammateTaskListStatusesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   workspace.TeammateTaskListStatusesTable,
+			Columns: []string{workspace.TeammateTaskListStatusesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: teammatetaskliststatus.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := wuo.mutation.RemovedTeammateTaskListStatusesIDs(); len(nodes) > 0 && !wuo.mutation.TeammateTaskListStatusesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   workspace.TeammateTaskListStatusesTable,
+			Columns: []string{workspace.TeammateTaskListStatusesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: teammatetaskliststatus.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := wuo.mutation.TeammateTaskListStatusesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   workspace.TeammateTaskListStatusesTable,
+			Columns: []string{workspace.TeammateTaskListStatusesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: teammatetaskliststatus.FieldID,
 				},
 			},
 		}

@@ -23,8 +23,17 @@ const (
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
 	FieldUpdatedAt = "updated_at"
+	// EdgeTeammateTaskListStatuses holds the string denoting the teammate_task_list_statuses edge name in mutations.
+	EdgeTeammateTaskListStatuses = "teammate_task_list_statuses"
 	// Table holds the table name of the tasklistcompletedstatus in the database.
 	Table = "task_list_completed_status"
+	// TeammateTaskListStatusesTable is the table that holds the teammate_task_list_statuses relation/edge.
+	TeammateTaskListStatusesTable = "teammate_task_list_status"
+	// TeammateTaskListStatusesInverseTable is the table name for the TeammateTaskListStatus entity.
+	// It exists in this package in order to avoid circular dependency with the "teammatetaskliststatus" package.
+	TeammateTaskListStatusesInverseTable = "teammate_task_list_status"
+	// TeammateTaskListStatusesColumn is the table column denoting the teammate_task_list_statuses relation/edge.
+	TeammateTaskListStatusesColumn = "task_list_completed_status_id"
 )
 
 // Columns holds all SQL columns for tasklistcompletedstatus fields.

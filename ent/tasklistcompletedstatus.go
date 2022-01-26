@@ -25,6 +25,27 @@ type TaskListCompletedStatus struct {
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	// Edges holds the relations/edges for other nodes in the graph.
+	// The values are being populated by the TaskListCompletedStatusQuery when eager-loading is set.
+	Edges TaskListCompletedStatusEdges `json:"edges"`
+}
+
+// TaskListCompletedStatusEdges holds the relations/edges for other nodes in the graph.
+type TaskListCompletedStatusEdges struct {
+	// TeammateTaskListStatuses holds the value of the teammate_task_list_statuses edge.
+	TeammateTaskListStatuses []*TeammateTaskListStatus `json:"teammate_task_list_statuses,omitempty"`
+	// loadedTypes holds the information for reporting if a
+	// type was loaded (or requested) in eager-loading or not.
+	loadedTypes [1]bool
+}
+
+// TeammateTaskListStatusesOrErr returns the TeammateTaskListStatuses value or an error if the edge
+// was not loaded in eager-loading.
+func (e TaskListCompletedStatusEdges) TeammateTaskListStatusesOrErr() ([]*TeammateTaskListStatus, error) {
+	if e.loadedTypes[0] {
+		return e.TeammateTaskListStatuses, nil
+	}
+	return nil, &NotLoadedError{edge: "teammate_task_list_statuses"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -86,6 +107,11 @@ func (tlcs *TaskListCompletedStatus) assignValues(columns []string, values []int
 		}
 	}
 	return nil
+}
+
+// QueryTeammateTaskListStatuses queries the "teammate_task_list_statuses" edge of the TaskListCompletedStatus entity.
+func (tlcs *TaskListCompletedStatus) QueryTeammateTaskListStatuses() *TeammateTaskListStatusQuery {
+	return (&TaskListCompletedStatusClient{config: tlcs.config}).QueryTeammateTaskListStatuses(tlcs)
 }
 
 // Update returns a builder for updating this TaskListCompletedStatus.

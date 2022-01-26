@@ -4,12 +4,14 @@ package ent
 
 import (
 	"context"
+	"database/sql/driver"
 	"errors"
 	"fmt"
 	"math"
 	"project-management-demo-backend/ent/predicate"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/tasklistcompletedstatus"
+	"project-management-demo-backend/ent/teammatetaskliststatus"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -25,6 +27,8 @@ type TaskListCompletedStatusQuery struct {
 	order      []OrderFunc
 	fields     []string
 	predicates []predicate.TaskListCompletedStatus
+	// eager-loading edges.
+	withTeammateTaskListStatuses *TeammateTaskListStatusQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -59,6 +63,28 @@ func (tlcsq *TaskListCompletedStatusQuery) Unique(unique bool) *TaskListComplete
 func (tlcsq *TaskListCompletedStatusQuery) Order(o ...OrderFunc) *TaskListCompletedStatusQuery {
 	tlcsq.order = append(tlcsq.order, o...)
 	return tlcsq
+}
+
+// QueryTeammateTaskListStatuses chains the current query on the "teammate_task_list_statuses" edge.
+func (tlcsq *TaskListCompletedStatusQuery) QueryTeammateTaskListStatuses() *TeammateTaskListStatusQuery {
+	query := &TeammateTaskListStatusQuery{config: tlcsq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := tlcsq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := tlcsq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(tasklistcompletedstatus.Table, tasklistcompletedstatus.FieldID, selector),
+			sqlgraph.To(teammatetaskliststatus.Table, teammatetaskliststatus.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, tasklistcompletedstatus.TeammateTaskListStatusesTable, tasklistcompletedstatus.TeammateTaskListStatusesColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(tlcsq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // First returns the first TaskListCompletedStatus entity from the query.
@@ -237,15 +263,27 @@ func (tlcsq *TaskListCompletedStatusQuery) Clone() *TaskListCompletedStatusQuery
 		return nil
 	}
 	return &TaskListCompletedStatusQuery{
-		config:     tlcsq.config,
-		limit:      tlcsq.limit,
-		offset:     tlcsq.offset,
-		order:      append([]OrderFunc{}, tlcsq.order...),
-		predicates: append([]predicate.TaskListCompletedStatus{}, tlcsq.predicates...),
+		config:                       tlcsq.config,
+		limit:                        tlcsq.limit,
+		offset:                       tlcsq.offset,
+		order:                        append([]OrderFunc{}, tlcsq.order...),
+		predicates:                   append([]predicate.TaskListCompletedStatus{}, tlcsq.predicates...),
+		withTeammateTaskListStatuses: tlcsq.withTeammateTaskListStatuses.Clone(),
 		// clone intermediate query.
 		sql:  tlcsq.sql.Clone(),
 		path: tlcsq.path,
 	}
+}
+
+// WithTeammateTaskListStatuses tells the query-builder to eager-load the nodes that are connected to
+// the "teammate_task_list_statuses" edge. The optional arguments are used to configure the query builder of the edge.
+func (tlcsq *TaskListCompletedStatusQuery) WithTeammateTaskListStatuses(opts ...func(*TeammateTaskListStatusQuery)) *TaskListCompletedStatusQuery {
+	query := &TeammateTaskListStatusQuery{config: tlcsq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	tlcsq.withTeammateTaskListStatuses = query
+	return tlcsq
 }
 
 // GroupBy is used to group vertices by one or more fields/columns.
@@ -311,8 +349,11 @@ func (tlcsq *TaskListCompletedStatusQuery) prepareQuery(ctx context.Context) err
 
 func (tlcsq *TaskListCompletedStatusQuery) sqlAll(ctx context.Context) ([]*TaskListCompletedStatus, error) {
 	var (
-		nodes = []*TaskListCompletedStatus{}
-		_spec = tlcsq.querySpec()
+		nodes       = []*TaskListCompletedStatus{}
+		_spec       = tlcsq.querySpec()
+		loadedTypes = [1]bool{
+			tlcsq.withTeammateTaskListStatuses != nil,
+		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
 		node := &TaskListCompletedStatus{config: tlcsq.config}
@@ -324,6 +365,7 @@ func (tlcsq *TaskListCompletedStatusQuery) sqlAll(ctx context.Context) ([]*TaskL
 			return fmt.Errorf("ent: Assign called without calling ScanValues")
 		}
 		node := nodes[len(nodes)-1]
+		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
 	if err := sqlgraph.QueryNodes(ctx, tlcsq.driver, _spec); err != nil {
@@ -332,6 +374,32 @@ func (tlcsq *TaskListCompletedStatusQuery) sqlAll(ctx context.Context) ([]*TaskL
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
+
+	if query := tlcsq.withTeammateTaskListStatuses; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[ulid.ID]*TaskListCompletedStatus)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.TeammateTaskListStatuses = []*TeammateTaskListStatus{}
+		}
+		query.Where(predicate.TeammateTaskListStatus(func(s *sql.Selector) {
+			s.Where(sql.InValues(tasklistcompletedstatus.TeammateTaskListStatusesColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.TaskListCompletedStatusID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "task_list_completed_status_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.TeammateTaskListStatuses = append(node.Edges.TeammateTaskListStatuses, n)
+		}
+	}
+
 	return nodes, nil
 }
 

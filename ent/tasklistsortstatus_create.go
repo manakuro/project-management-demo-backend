@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/tasklistsortstatus"
+	"project-management-demo-backend/ent/teammatetaskliststatus"
 	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -73,6 +74,21 @@ func (tlssc *TaskListSortStatusCreate) SetNillableID(u *ulid.ID) *TaskListSortSt
 		tlssc.SetID(*u)
 	}
 	return tlssc
+}
+
+// AddTeammateTaskListStatusIDs adds the "teammate_task_list_statuses" edge to the TeammateTaskListStatus entity by IDs.
+func (tlssc *TaskListSortStatusCreate) AddTeammateTaskListStatusIDs(ids ...ulid.ID) *TaskListSortStatusCreate {
+	tlssc.mutation.AddTeammateTaskListStatusIDs(ids...)
+	return tlssc
+}
+
+// AddTeammateTaskListStatuses adds the "teammate_task_list_statuses" edges to the TeammateTaskListStatus entity.
+func (tlssc *TaskListSortStatusCreate) AddTeammateTaskListStatuses(t ...*TeammateTaskListStatus) *TaskListSortStatusCreate {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return tlssc.AddTeammateTaskListStatusIDs(ids...)
 }
 
 // Mutation returns the TaskListSortStatusMutation object of the builder.
@@ -247,6 +263,25 @@ func (tlssc *TaskListSortStatusCreate) createSpec() (*TaskListSortStatus, *sqlgr
 			Column: tasklistsortstatus.FieldUpdatedAt,
 		})
 		_node.UpdatedAt = value
+	}
+	if nodes := tlssc.mutation.TeammateTaskListStatusesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   tasklistsortstatus.TeammateTaskListStatusesTable,
+			Columns: []string{tasklistsortstatus.TeammateTaskListStatusesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: teammatetaskliststatus.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }
