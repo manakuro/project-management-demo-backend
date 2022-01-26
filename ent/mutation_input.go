@@ -309,6 +309,7 @@ type CreateProjectInput struct {
 	FavoriteProjectIDs       []ulid.ID
 	ProjectTaskColumnIDs     []ulid.ID
 	ProjectTaskListStatusIDs []ulid.ID
+	ProjectTaskSectionIDs    []ulid.ID
 }
 
 // Mutate applies the CreateProjectInput on the ProjectCreate builder.
@@ -341,6 +342,9 @@ func (i *CreateProjectInput) Mutate(m *ProjectCreate) {
 	}
 	if ids := i.ProjectTaskListStatusIDs; len(ids) > 0 {
 		m.AddProjectTaskListStatusIDs(ids...)
+	}
+	if ids := i.ProjectTaskSectionIDs; len(ids) > 0 {
+		m.AddProjectTaskSectionIDs(ids...)
 	}
 }
 
@@ -375,6 +379,8 @@ type UpdateProjectInput struct {
 	RemoveProjectTaskColumnIDs     []ulid.ID
 	AddProjectTaskListStatusIDs    []ulid.ID
 	RemoveProjectTaskListStatusIDs []ulid.ID
+	AddProjectTaskSectionIDs       []ulid.ID
+	RemoveProjectTaskSectionIDs    []ulid.ID
 }
 
 // Mutate applies the UpdateProjectInput on the ProjectMutation.
@@ -444,6 +450,12 @@ func (i *UpdateProjectInput) Mutate(m *ProjectMutation) {
 	}
 	if ids := i.RemoveProjectTaskListStatusIDs; len(ids) > 0 {
 		m.RemoveProjectTaskListStatusIDs(ids...)
+	}
+	if ids := i.AddProjectTaskSectionIDs; len(ids) > 0 {
+		m.AddProjectTaskSectionIDs(ids...)
+	}
+	if ids := i.RemoveProjectTaskSectionIDs; len(ids) > 0 {
+		m.RemoveProjectTaskSectionIDs(ids...)
 	}
 }
 
@@ -810,6 +822,65 @@ func (u *ProjectTaskListStatusUpdate) SetInput(i UpdateProjectTaskListStatusInpu
 
 // SetInput applies the change-set in the UpdateProjectTaskListStatusInput on the update-one builder.
 func (u *ProjectTaskListStatusUpdateOne) SetInput(i UpdateProjectTaskListStatusInput) *ProjectTaskListStatusUpdateOne {
+	i.Mutate(u.Mutation())
+	return u
+}
+
+// CreateProjectTaskSectionInput represents a mutation input for creating projecttasksections.
+type CreateProjectTaskSectionInput struct {
+	Name      string
+	CreatedAt *time.Time
+	UpdatedAt *time.Time
+	ProjectID ulid.ID
+}
+
+// Mutate applies the CreateProjectTaskSectionInput on the ProjectTaskSectionCreate builder.
+func (i *CreateProjectTaskSectionInput) Mutate(m *ProjectTaskSectionCreate) {
+	m.SetName(i.Name)
+	if v := i.CreatedAt; v != nil {
+		m.SetCreatedAt(*v)
+	}
+	if v := i.UpdatedAt; v != nil {
+		m.SetUpdatedAt(*v)
+	}
+	m.SetProjectID(i.ProjectID)
+}
+
+// SetInput applies the change-set in the CreateProjectTaskSectionInput on the create builder.
+func (c *ProjectTaskSectionCreate) SetInput(i CreateProjectTaskSectionInput) *ProjectTaskSectionCreate {
+	i.Mutate(c)
+	return c
+}
+
+// UpdateProjectTaskSectionInput represents a mutation input for updating projecttasksections.
+type UpdateProjectTaskSectionInput struct {
+	ID           ulid.ID
+	Name         *string
+	ProjectID    *ulid.ID
+	ClearProject bool
+}
+
+// Mutate applies the UpdateProjectTaskSectionInput on the ProjectTaskSectionMutation.
+func (i *UpdateProjectTaskSectionInput) Mutate(m *ProjectTaskSectionMutation) {
+	if v := i.Name; v != nil {
+		m.SetName(*v)
+	}
+	if i.ClearProject {
+		m.ClearProject()
+	}
+	if v := i.ProjectID; v != nil {
+		m.SetProjectID(*v)
+	}
+}
+
+// SetInput applies the change-set in the UpdateProjectTaskSectionInput on the update builder.
+func (u *ProjectTaskSectionUpdate) SetInput(i UpdateProjectTaskSectionInput) *ProjectTaskSectionUpdate {
+	i.Mutate(u.Mutation())
+	return u
+}
+
+// SetInput applies the change-set in the UpdateProjectTaskSectionInput on the update-one builder.
+func (u *ProjectTaskSectionUpdateOne) SetInput(i UpdateProjectTaskSectionInput) *ProjectTaskSectionUpdateOne {
 	i.Mutate(u.Mutation())
 	return u
 }

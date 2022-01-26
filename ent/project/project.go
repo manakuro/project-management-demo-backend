@@ -52,6 +52,8 @@ const (
 	EdgeProjectTaskColumns = "project_task_columns"
 	// EdgeProjectTaskListStatuses holds the string denoting the project_task_list_statuses edge name in mutations.
 	EdgeProjectTaskListStatuses = "project_task_list_statuses"
+	// EdgeProjectTaskSections holds the string denoting the project_task_sections edge name in mutations.
+	EdgeProjectTaskSections = "project_task_sections"
 	// Table holds the table name of the project in the database.
 	Table = "projects"
 	// WorkspaceTable is the table that holds the workspace relation/edge.
@@ -117,6 +119,13 @@ const (
 	ProjectTaskListStatusesInverseTable = "project_task_list_status"
 	// ProjectTaskListStatusesColumn is the table column denoting the project_task_list_statuses relation/edge.
 	ProjectTaskListStatusesColumn = "project_id"
+	// ProjectTaskSectionsTable is the table that holds the project_task_sections relation/edge.
+	ProjectTaskSectionsTable = "project_task_sections"
+	// ProjectTaskSectionsInverseTable is the table name for the ProjectTaskSection entity.
+	// It exists in this package in order to avoid circular dependency with the "projecttasksection" package.
+	ProjectTaskSectionsInverseTable = "project_task_sections"
+	// ProjectTaskSectionsColumn is the table column denoting the project_task_sections relation/edge.
+	ProjectTaskSectionsColumn = "project_id"
 )
 
 // Columns holds all SQL columns for project fields.

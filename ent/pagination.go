@@ -18,6 +18,7 @@ import (
 	"project-management-demo-backend/ent/projectlightcolor"
 	"project-management-demo-backend/ent/projecttaskcolumn"
 	"project-management-demo-backend/ent/projecttaskliststatus"
+	"project-management-demo-backend/ent/projecttasksection"
 	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/taskcolumn"
@@ -2523,6 +2524,233 @@ func (ptls *ProjectTaskListStatus) ToEdge(order *ProjectTaskListStatusOrder) *Pr
 	return &ProjectTaskListStatusEdge{
 		Node:   ptls,
 		Cursor: order.Field.toCursor(ptls),
+	}
+}
+
+// ProjectTaskSectionEdge is the edge representation of ProjectTaskSection.
+type ProjectTaskSectionEdge struct {
+	Node   *ProjectTaskSection `json:"node"`
+	Cursor Cursor              `json:"cursor"`
+}
+
+// ProjectTaskSectionConnection is the connection containing edges to ProjectTaskSection.
+type ProjectTaskSectionConnection struct {
+	Edges      []*ProjectTaskSectionEdge `json:"edges"`
+	PageInfo   PageInfo                  `json:"pageInfo"`
+	TotalCount int                       `json:"totalCount"`
+}
+
+// ProjectTaskSectionPaginateOption enables pagination customization.
+type ProjectTaskSectionPaginateOption func(*projectTaskSectionPager) error
+
+// WithProjectTaskSectionOrder configures pagination ordering.
+func WithProjectTaskSectionOrder(order *ProjectTaskSectionOrder) ProjectTaskSectionPaginateOption {
+	if order == nil {
+		order = DefaultProjectTaskSectionOrder
+	}
+	o := *order
+	return func(pager *projectTaskSectionPager) error {
+		if err := o.Direction.Validate(); err != nil {
+			return err
+		}
+		if o.Field == nil {
+			o.Field = DefaultProjectTaskSectionOrder.Field
+		}
+		pager.order = &o
+		return nil
+	}
+}
+
+// WithProjectTaskSectionFilter configures pagination filter.
+func WithProjectTaskSectionFilter(filter func(*ProjectTaskSectionQuery) (*ProjectTaskSectionQuery, error)) ProjectTaskSectionPaginateOption {
+	return func(pager *projectTaskSectionPager) error {
+		if filter == nil {
+			return errors.New("ProjectTaskSectionQuery filter cannot be nil")
+		}
+		pager.filter = filter
+		return nil
+	}
+}
+
+type projectTaskSectionPager struct {
+	order  *ProjectTaskSectionOrder
+	filter func(*ProjectTaskSectionQuery) (*ProjectTaskSectionQuery, error)
+}
+
+func newProjectTaskSectionPager(opts []ProjectTaskSectionPaginateOption) (*projectTaskSectionPager, error) {
+	pager := &projectTaskSectionPager{}
+	for _, opt := range opts {
+		if err := opt(pager); err != nil {
+			return nil, err
+		}
+	}
+	if pager.order == nil {
+		pager.order = DefaultProjectTaskSectionOrder
+	}
+	return pager, nil
+}
+
+func (p *projectTaskSectionPager) applyFilter(query *ProjectTaskSectionQuery) (*ProjectTaskSectionQuery, error) {
+	if p.filter != nil {
+		return p.filter(query)
+	}
+	return query, nil
+}
+
+func (p *projectTaskSectionPager) toCursor(pts *ProjectTaskSection) Cursor {
+	return p.order.Field.toCursor(pts)
+}
+
+func (p *projectTaskSectionPager) applyCursors(query *ProjectTaskSectionQuery, after, before *Cursor) *ProjectTaskSectionQuery {
+	for _, predicate := range cursorsToPredicates(
+		p.order.Direction, after, before,
+		p.order.Field.field, DefaultProjectTaskSectionOrder.Field.field,
+	) {
+		query = query.Where(predicate)
+	}
+	return query
+}
+
+func (p *projectTaskSectionPager) applyOrder(query *ProjectTaskSectionQuery, reverse bool) *ProjectTaskSectionQuery {
+	direction := p.order.Direction
+	if reverse {
+		direction = direction.reverse()
+	}
+	query = query.Order(direction.orderFunc(p.order.Field.field))
+	if p.order.Field != DefaultProjectTaskSectionOrder.Field {
+		query = query.Order(direction.orderFunc(DefaultProjectTaskSectionOrder.Field.field))
+	}
+	return query
+}
+
+// Paginate executes the query and returns a relay based cursor connection to ProjectTaskSection.
+func (pts *ProjectTaskSectionQuery) Paginate(
+	ctx context.Context, after *Cursor, first *int,
+	before *Cursor, last *int, opts ...ProjectTaskSectionPaginateOption,
+) (*ProjectTaskSectionConnection, error) {
+	if err := validateFirstLast(first, last); err != nil {
+		return nil, err
+	}
+	pager, err := newProjectTaskSectionPager(opts)
+	if err != nil {
+		return nil, err
+	}
+
+	if pts, err = pager.applyFilter(pts); err != nil {
+		return nil, err
+	}
+
+	conn := &ProjectTaskSectionConnection{Edges: []*ProjectTaskSectionEdge{}}
+	if !hasCollectedField(ctx, edgesField) || first != nil && *first == 0 || last != nil && *last == 0 {
+		if hasCollectedField(ctx, totalCountField) ||
+			hasCollectedField(ctx, pageInfoField) {
+			count, err := pts.Count(ctx)
+			if err != nil {
+				return nil, err
+			}
+			conn.TotalCount = count
+			conn.PageInfo.HasNextPage = first != nil && count > 0
+			conn.PageInfo.HasPreviousPage = last != nil && count > 0
+		}
+		return conn, nil
+	}
+
+	if (after != nil || first != nil || before != nil || last != nil) && hasCollectedField(ctx, totalCountField) {
+		count, err := pts.Clone().Count(ctx)
+		if err != nil {
+			return nil, err
+		}
+		conn.TotalCount = count
+	}
+
+	pts = pager.applyCursors(pts, after, before)
+	pts = pager.applyOrder(pts, last != nil)
+	var limit int
+	if first != nil {
+		limit = *first + 1
+	} else if last != nil {
+		limit = *last + 1
+	}
+	if limit > 0 {
+		pts = pts.Limit(limit)
+	}
+
+	if field := getCollectedField(ctx, edgesField, nodeField); field != nil {
+		pts = pts.collectField(graphql.GetOperationContext(ctx), *field)
+	}
+
+	nodes, err := pts.All(ctx)
+	if err != nil || len(nodes) == 0 {
+		return conn, err
+	}
+
+	if len(nodes) == limit {
+		conn.PageInfo.HasNextPage = first != nil
+		conn.PageInfo.HasPreviousPage = last != nil
+		nodes = nodes[:len(nodes)-1]
+	}
+
+	var nodeAt func(int) *ProjectTaskSection
+	if last != nil {
+		n := len(nodes) - 1
+		nodeAt = func(i int) *ProjectTaskSection {
+			return nodes[n-i]
+		}
+	} else {
+		nodeAt = func(i int) *ProjectTaskSection {
+			return nodes[i]
+		}
+	}
+
+	conn.Edges = make([]*ProjectTaskSectionEdge, len(nodes))
+	for i := range nodes {
+		node := nodeAt(i)
+		conn.Edges[i] = &ProjectTaskSectionEdge{
+			Node:   node,
+			Cursor: pager.toCursor(node),
+		}
+	}
+
+	conn.PageInfo.StartCursor = &conn.Edges[0].Cursor
+	conn.PageInfo.EndCursor = &conn.Edges[len(conn.Edges)-1].Cursor
+	if conn.TotalCount == 0 {
+		conn.TotalCount = len(nodes)
+	}
+
+	return conn, nil
+}
+
+// ProjectTaskSectionOrderField defines the ordering field of ProjectTaskSection.
+type ProjectTaskSectionOrderField struct {
+	field    string
+	toCursor func(*ProjectTaskSection) Cursor
+}
+
+// ProjectTaskSectionOrder defines the ordering of ProjectTaskSection.
+type ProjectTaskSectionOrder struct {
+	Direction OrderDirection                `json:"direction"`
+	Field     *ProjectTaskSectionOrderField `json:"field"`
+}
+
+// DefaultProjectTaskSectionOrder is the default ordering of ProjectTaskSection.
+var DefaultProjectTaskSectionOrder = &ProjectTaskSectionOrder{
+	Direction: OrderDirectionAsc,
+	Field: &ProjectTaskSectionOrderField{
+		field: projecttasksection.FieldID,
+		toCursor: func(pts *ProjectTaskSection) Cursor {
+			return Cursor{ID: pts.ID}
+		},
+	},
+}
+
+// ToEdge converts ProjectTaskSection into ProjectTaskSectionEdge.
+func (pts *ProjectTaskSection) ToEdge(order *ProjectTaskSectionOrder) *ProjectTaskSectionEdge {
+	if order == nil {
+		order = DefaultProjectTaskSectionOrder
+	}
+	return &ProjectTaskSectionEdge{
+		Node:   pts,
+		Cursor: order.Field.toCursor(pts),
 	}
 }
 

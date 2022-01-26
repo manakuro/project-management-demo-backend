@@ -36,6 +36,9 @@ type ProjectTaskColumn func(*sql.Selector)
 // ProjectTaskListStatus is the predicate function for projecttaskliststatus builders.
 type ProjectTaskListStatus func(*sql.Selector)
 
+// ProjectTaskSection is the predicate function for projecttasksection builders.
+type ProjectTaskSection func(*sql.Selector)
+
 // ProjectTeammate is the predicate function for projectteammate builders.
 type ProjectTeammate func(*sql.Selector)
 
