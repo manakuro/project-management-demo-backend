@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"project-management-demo-backend/ent/projecttaskliststatus"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/tasklistcompletedstatus"
 	"project-management-demo-backend/ent/teammatetaskliststatus"
@@ -89,6 +90,21 @@ func (tlcsc *TaskListCompletedStatusCreate) AddTeammateTaskListStatuses(t ...*Te
 		ids[i] = t[i].ID
 	}
 	return tlcsc.AddTeammateTaskListStatusIDs(ids...)
+}
+
+// AddProjectTaskListStatusIDs adds the "project_task_list_statuses" edge to the ProjectTaskListStatus entity by IDs.
+func (tlcsc *TaskListCompletedStatusCreate) AddProjectTaskListStatusIDs(ids ...ulid.ID) *TaskListCompletedStatusCreate {
+	tlcsc.mutation.AddProjectTaskListStatusIDs(ids...)
+	return tlcsc
+}
+
+// AddProjectTaskListStatuses adds the "project_task_list_statuses" edges to the ProjectTaskListStatus entity.
+func (tlcsc *TaskListCompletedStatusCreate) AddProjectTaskListStatuses(p ...*ProjectTaskListStatus) *TaskListCompletedStatusCreate {
+	ids := make([]ulid.ID, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return tlcsc.AddProjectTaskListStatusIDs(ids...)
 }
 
 // Mutation returns the TaskListCompletedStatusMutation object of the builder.
@@ -275,6 +291,25 @@ func (tlcsc *TaskListCompletedStatusCreate) createSpec() (*TaskListCompletedStat
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: teammatetaskliststatus.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := tlcsc.mutation.ProjectTaskListStatusesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   tasklistcompletedstatus.ProjectTaskListStatusesTable,
+			Columns: []string{tasklistcompletedstatus.ProjectTaskListStatusesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: projecttaskliststatus.FieldID,
 				},
 			},
 		}

@@ -15,6 +15,7 @@ import (
 	"project-management-demo-backend/ent/projecticon"
 	"project-management-demo-backend/ent/projectlightcolor"
 	"project-management-demo-backend/ent/projecttaskcolumn"
+	"project-management-demo-backend/ent/projecttaskliststatus"
 	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/teammate"
@@ -35,14 +36,15 @@ type ProjectQuery struct {
 	fields     []string
 	predicates []predicate.Project
 	// eager-loading edges.
-	withWorkspace          *WorkspaceQuery
-	withProjectBaseColor   *ProjectBaseColorQuery
-	withProjectLightColor  *ProjectLightColorQuery
-	withProjectIcon        *ProjectIconQuery
-	withTeammate           *TeammateQuery
-	withProjectTeammates   *ProjectTeammateQuery
-	withFavoriteProjects   *FavoriteProjectQuery
-	withProjectTaskColumns *ProjectTaskColumnQuery
+	withWorkspace               *WorkspaceQuery
+	withProjectBaseColor        *ProjectBaseColorQuery
+	withProjectLightColor       *ProjectLightColorQuery
+	withProjectIcon             *ProjectIconQuery
+	withTeammate                *TeammateQuery
+	withProjectTeammates        *ProjectTeammateQuery
+	withFavoriteProjects        *FavoriteProjectQuery
+	withProjectTaskColumns      *ProjectTaskColumnQuery
+	withProjectTaskListStatuses *ProjectTaskListStatusQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -255,6 +257,28 @@ func (pq *ProjectQuery) QueryProjectTaskColumns() *ProjectTaskColumnQuery {
 	return query
 }
 
+// QueryProjectTaskListStatuses chains the current query on the "project_task_list_statuses" edge.
+func (pq *ProjectQuery) QueryProjectTaskListStatuses() *ProjectTaskListStatusQuery {
+	query := &ProjectTaskListStatusQuery{config: pq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := pq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := pq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(project.Table, project.FieldID, selector),
+			sqlgraph.To(projecttaskliststatus.Table, projecttaskliststatus.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, project.ProjectTaskListStatusesTable, project.ProjectTaskListStatusesColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // First returns the first Project entity from the query.
 // Returns a *NotFoundError when no Project was found.
 func (pq *ProjectQuery) First(ctx context.Context) (*Project, error) {
@@ -431,19 +455,20 @@ func (pq *ProjectQuery) Clone() *ProjectQuery {
 		return nil
 	}
 	return &ProjectQuery{
-		config:                 pq.config,
-		limit:                  pq.limit,
-		offset:                 pq.offset,
-		order:                  append([]OrderFunc{}, pq.order...),
-		predicates:             append([]predicate.Project{}, pq.predicates...),
-		withWorkspace:          pq.withWorkspace.Clone(),
-		withProjectBaseColor:   pq.withProjectBaseColor.Clone(),
-		withProjectLightColor:  pq.withProjectLightColor.Clone(),
-		withProjectIcon:        pq.withProjectIcon.Clone(),
-		withTeammate:           pq.withTeammate.Clone(),
-		withProjectTeammates:   pq.withProjectTeammates.Clone(),
-		withFavoriteProjects:   pq.withFavoriteProjects.Clone(),
-		withProjectTaskColumns: pq.withProjectTaskColumns.Clone(),
+		config:                      pq.config,
+		limit:                       pq.limit,
+		offset:                      pq.offset,
+		order:                       append([]OrderFunc{}, pq.order...),
+		predicates:                  append([]predicate.Project{}, pq.predicates...),
+		withWorkspace:               pq.withWorkspace.Clone(),
+		withProjectBaseColor:        pq.withProjectBaseColor.Clone(),
+		withProjectLightColor:       pq.withProjectLightColor.Clone(),
+		withProjectIcon:             pq.withProjectIcon.Clone(),
+		withTeammate:                pq.withTeammate.Clone(),
+		withProjectTeammates:        pq.withProjectTeammates.Clone(),
+		withFavoriteProjects:        pq.withFavoriteProjects.Clone(),
+		withProjectTaskColumns:      pq.withProjectTaskColumns.Clone(),
+		withProjectTaskListStatuses: pq.withProjectTaskListStatuses.Clone(),
 		// clone intermediate query.
 		sql:  pq.sql.Clone(),
 		path: pq.path,
@@ -538,6 +563,17 @@ func (pq *ProjectQuery) WithProjectTaskColumns(opts ...func(*ProjectTaskColumnQu
 	return pq
 }
 
+// WithProjectTaskListStatuses tells the query-builder to eager-load the nodes that are connected to
+// the "project_task_list_statuses" edge. The optional arguments are used to configure the query builder of the edge.
+func (pq *ProjectQuery) WithProjectTaskListStatuses(opts ...func(*ProjectTaskListStatusQuery)) *ProjectQuery {
+	query := &ProjectTaskListStatusQuery{config: pq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	pq.withProjectTaskListStatuses = query
+	return pq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -603,7 +639,7 @@ func (pq *ProjectQuery) sqlAll(ctx context.Context) ([]*Project, error) {
 	var (
 		nodes       = []*Project{}
 		_spec       = pq.querySpec()
-		loadedTypes = [8]bool{
+		loadedTypes = [9]bool{
 			pq.withWorkspace != nil,
 			pq.withProjectBaseColor != nil,
 			pq.withProjectLightColor != nil,
@@ -612,6 +648,7 @@ func (pq *ProjectQuery) sqlAll(ctx context.Context) ([]*Project, error) {
 			pq.withProjectTeammates != nil,
 			pq.withFavoriteProjects != nil,
 			pq.withProjectTaskColumns != nil,
+			pq.withProjectTaskListStatuses != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -836,6 +873,31 @@ func (pq *ProjectQuery) sqlAll(ctx context.Context) ([]*Project, error) {
 				return nil, fmt.Errorf(`unexpected foreign-key "project_id" returned %v for node %v`, fk, n.ID)
 			}
 			node.Edges.ProjectTaskColumns = append(node.Edges.ProjectTaskColumns, n)
+		}
+	}
+
+	if query := pq.withProjectTaskListStatuses; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[ulid.ID]*Project)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.ProjectTaskListStatuses = []*ProjectTaskListStatus{}
+		}
+		query.Where(predicate.ProjectTaskListStatus(func(s *sql.Selector) {
+			s.Where(sql.InValues(project.ProjectTaskListStatusesColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.ProjectID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "project_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.ProjectTaskListStatuses = append(node.Edges.ProjectTaskListStatuses, n)
 		}
 	}
 

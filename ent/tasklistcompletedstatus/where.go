@@ -454,6 +454,34 @@ func HasTeammateTaskListStatusesWith(preds ...predicate.TeammateTaskListStatus) 
 	})
 }
 
+// HasProjectTaskListStatuses applies the HasEdge predicate on the "project_task_list_statuses" edge.
+func HasProjectTaskListStatuses() predicate.TaskListCompletedStatus {
+	return predicate.TaskListCompletedStatus(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(ProjectTaskListStatusesTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ProjectTaskListStatusesTable, ProjectTaskListStatusesColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasProjectTaskListStatusesWith applies the HasEdge predicate on the "project_task_list_statuses" edge with a given conditions (other predicates).
+func HasProjectTaskListStatusesWith(preds ...predicate.ProjectTaskListStatus) predicate.TaskListCompletedStatus {
+	return predicate.TaskListCompletedStatus(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(ProjectTaskListStatusesInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ProjectTaskListStatusesTable, ProjectTaskListStatusesColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.TaskListCompletedStatus) predicate.TaskListCompletedStatus {
 	return predicate.TaskListCompletedStatus(func(s *sql.Selector) {

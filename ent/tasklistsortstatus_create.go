@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"project-management-demo-backend/ent/projecttaskliststatus"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/tasklistsortstatus"
 	"project-management-demo-backend/ent/teammatetaskliststatus"
@@ -89,6 +90,21 @@ func (tlssc *TaskListSortStatusCreate) AddTeammateTaskListStatuses(t ...*Teammat
 		ids[i] = t[i].ID
 	}
 	return tlssc.AddTeammateTaskListStatusIDs(ids...)
+}
+
+// AddProjectTaskListStatusIDs adds the "project_task_list_statuses" edge to the ProjectTaskListStatus entity by IDs.
+func (tlssc *TaskListSortStatusCreate) AddProjectTaskListStatusIDs(ids ...ulid.ID) *TaskListSortStatusCreate {
+	tlssc.mutation.AddProjectTaskListStatusIDs(ids...)
+	return tlssc
+}
+
+// AddProjectTaskListStatuses adds the "project_task_list_statuses" edges to the ProjectTaskListStatus entity.
+func (tlssc *TaskListSortStatusCreate) AddProjectTaskListStatuses(p ...*ProjectTaskListStatus) *TaskListSortStatusCreate {
+	ids := make([]ulid.ID, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return tlssc.AddProjectTaskListStatusIDs(ids...)
 }
 
 // Mutation returns the TaskListSortStatusMutation object of the builder.
@@ -275,6 +291,25 @@ func (tlssc *TaskListSortStatusCreate) createSpec() (*TaskListSortStatus, *sqlgr
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: teammatetaskliststatus.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := tlssc.mutation.ProjectTaskListStatusesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   tasklistsortstatus.ProjectTaskListStatusesTable,
+			Columns: []string{tasklistsortstatus.ProjectTaskListStatusesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: projecttaskliststatus.FieldID,
 				},
 			},
 		}

@@ -13,6 +13,7 @@ import (
 	"project-management-demo-backend/ent/projecticon"
 	"project-management-demo-backend/ent/projectlightcolor"
 	"project-management-demo-backend/ent/projecttaskcolumn"
+	"project-management-demo-backend/ent/projecttaskliststatus"
 	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/ent/schema/editor"
 	"project-management-demo-backend/ent/schema/ulid"
@@ -176,6 +177,21 @@ func (pu *ProjectUpdate) AddProjectTaskColumns(p ...*ProjectTaskColumn) *Project
 	return pu.AddProjectTaskColumnIDs(ids...)
 }
 
+// AddProjectTaskListStatusIDs adds the "project_task_list_statuses" edge to the ProjectTaskListStatus entity by IDs.
+func (pu *ProjectUpdate) AddProjectTaskListStatusIDs(ids ...ulid.ID) *ProjectUpdate {
+	pu.mutation.AddProjectTaskListStatusIDs(ids...)
+	return pu
+}
+
+// AddProjectTaskListStatuses adds the "project_task_list_statuses" edges to the ProjectTaskListStatus entity.
+func (pu *ProjectUpdate) AddProjectTaskListStatuses(p ...*ProjectTaskListStatus) *ProjectUpdate {
+	ids := make([]ulid.ID, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return pu.AddProjectTaskListStatusIDs(ids...)
+}
+
 // Mutation returns the ProjectMutation object of the builder.
 func (pu *ProjectUpdate) Mutation() *ProjectMutation {
 	return pu.mutation
@@ -272,6 +288,27 @@ func (pu *ProjectUpdate) RemoveProjectTaskColumns(p ...*ProjectTaskColumn) *Proj
 		ids[i] = p[i].ID
 	}
 	return pu.RemoveProjectTaskColumnIDs(ids...)
+}
+
+// ClearProjectTaskListStatuses clears all "project_task_list_statuses" edges to the ProjectTaskListStatus entity.
+func (pu *ProjectUpdate) ClearProjectTaskListStatuses() *ProjectUpdate {
+	pu.mutation.ClearProjectTaskListStatuses()
+	return pu
+}
+
+// RemoveProjectTaskListStatusIDs removes the "project_task_list_statuses" edge to ProjectTaskListStatus entities by IDs.
+func (pu *ProjectUpdate) RemoveProjectTaskListStatusIDs(ids ...ulid.ID) *ProjectUpdate {
+	pu.mutation.RemoveProjectTaskListStatusIDs(ids...)
+	return pu
+}
+
+// RemoveProjectTaskListStatuses removes "project_task_list_statuses" edges to ProjectTaskListStatus entities.
+func (pu *ProjectUpdate) RemoveProjectTaskListStatuses(p ...*ProjectTaskListStatus) *ProjectUpdate {
+	ids := make([]ulid.ID, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return pu.RemoveProjectTaskListStatusIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -747,6 +784,60 @@ func (pu *ProjectUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if pu.mutation.ProjectTaskListStatusesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   project.ProjectTaskListStatusesTable,
+			Columns: []string{project.ProjectTaskListStatusesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: projecttaskliststatus.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.RemovedProjectTaskListStatusesIDs(); len(nodes) > 0 && !pu.mutation.ProjectTaskListStatusesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   project.ProjectTaskListStatusesTable,
+			Columns: []string{project.ProjectTaskListStatusesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: projecttaskliststatus.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.ProjectTaskListStatusesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   project.ProjectTaskListStatusesTable,
+			Columns: []string{project.ProjectTaskListStatusesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: projecttaskliststatus.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, pu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{project.Label}
@@ -904,6 +995,21 @@ func (puo *ProjectUpdateOne) AddProjectTaskColumns(p ...*ProjectTaskColumn) *Pro
 	return puo.AddProjectTaskColumnIDs(ids...)
 }
 
+// AddProjectTaskListStatusIDs adds the "project_task_list_statuses" edge to the ProjectTaskListStatus entity by IDs.
+func (puo *ProjectUpdateOne) AddProjectTaskListStatusIDs(ids ...ulid.ID) *ProjectUpdateOne {
+	puo.mutation.AddProjectTaskListStatusIDs(ids...)
+	return puo
+}
+
+// AddProjectTaskListStatuses adds the "project_task_list_statuses" edges to the ProjectTaskListStatus entity.
+func (puo *ProjectUpdateOne) AddProjectTaskListStatuses(p ...*ProjectTaskListStatus) *ProjectUpdateOne {
+	ids := make([]ulid.ID, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return puo.AddProjectTaskListStatusIDs(ids...)
+}
+
 // Mutation returns the ProjectMutation object of the builder.
 func (puo *ProjectUpdateOne) Mutation() *ProjectMutation {
 	return puo.mutation
@@ -1000,6 +1106,27 @@ func (puo *ProjectUpdateOne) RemoveProjectTaskColumns(p ...*ProjectTaskColumn) *
 		ids[i] = p[i].ID
 	}
 	return puo.RemoveProjectTaskColumnIDs(ids...)
+}
+
+// ClearProjectTaskListStatuses clears all "project_task_list_statuses" edges to the ProjectTaskListStatus entity.
+func (puo *ProjectUpdateOne) ClearProjectTaskListStatuses() *ProjectUpdateOne {
+	puo.mutation.ClearProjectTaskListStatuses()
+	return puo
+}
+
+// RemoveProjectTaskListStatusIDs removes the "project_task_list_statuses" edge to ProjectTaskListStatus entities by IDs.
+func (puo *ProjectUpdateOne) RemoveProjectTaskListStatusIDs(ids ...ulid.ID) *ProjectUpdateOne {
+	puo.mutation.RemoveProjectTaskListStatusIDs(ids...)
+	return puo
+}
+
+// RemoveProjectTaskListStatuses removes "project_task_list_statuses" edges to ProjectTaskListStatus entities.
+func (puo *ProjectUpdateOne) RemoveProjectTaskListStatuses(p ...*ProjectTaskListStatus) *ProjectUpdateOne {
+	ids := make([]ulid.ID, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return puo.RemoveProjectTaskListStatusIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -1491,6 +1618,60 @@ func (puo *ProjectUpdateOne) sqlSave(ctx context.Context) (_node *Project, err e
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: projecttaskcolumn.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if puo.mutation.ProjectTaskListStatusesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   project.ProjectTaskListStatusesTable,
+			Columns: []string{project.ProjectTaskListStatusesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: projecttaskliststatus.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.RemovedProjectTaskListStatusesIDs(); len(nodes) > 0 && !puo.mutation.ProjectTaskListStatusesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   project.ProjectTaskListStatusesTable,
+			Columns: []string{project.ProjectTaskListStatusesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: projecttaskliststatus.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.ProjectTaskListStatusesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   project.ProjectTaskListStatusesTable,
+			Columns: []string{project.ProjectTaskListStatusesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: projecttaskliststatus.FieldID,
 				},
 			},
 		}

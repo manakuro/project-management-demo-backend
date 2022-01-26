@@ -124,6 +124,14 @@ func (pr *Project) ProjectTaskColumns(ctx context.Context) ([]*ProjectTaskColumn
 	return result, err
 }
 
+func (pr *Project) ProjectTaskListStatuses(ctx context.Context) ([]*ProjectTaskListStatus, error) {
+	result, err := pr.Edges.ProjectTaskListStatusesOrErr()
+	if IsNotLoaded(err) {
+		result, err = pr.QueryProjectTaskListStatuses().All(ctx)
+	}
+	return result, err
+}
+
 func (pbc *ProjectBaseColor) Projects(ctx context.Context) ([]*Project, error) {
 	result, err := pbc.Edges.ProjectsOrErr()
 	if IsNotLoaded(err) {
@@ -188,6 +196,30 @@ func (ptc *ProjectTaskColumn) TaskColumn(ctx context.Context) (*TaskColumn, erro
 	return result, err
 }
 
+func (ptls *ProjectTaskListStatus) Project(ctx context.Context) (*Project, error) {
+	result, err := ptls.Edges.ProjectOrErr()
+	if IsNotLoaded(err) {
+		result, err = ptls.QueryProject().Only(ctx)
+	}
+	return result, err
+}
+
+func (ptls *ProjectTaskListStatus) TaskListCompletedStatus(ctx context.Context) (*TaskListCompletedStatus, error) {
+	result, err := ptls.Edges.TaskListCompletedStatusOrErr()
+	if IsNotLoaded(err) {
+		result, err = ptls.QueryTaskListCompletedStatus().Only(ctx)
+	}
+	return result, err
+}
+
+func (ptls *ProjectTaskListStatus) TaskListSortStatus(ctx context.Context) (*TaskListSortStatus, error) {
+	result, err := ptls.Edges.TaskListSortStatusOrErr()
+	if IsNotLoaded(err) {
+		result, err = ptls.QueryTaskListSortStatus().Only(ctx)
+	}
+	return result, err
+}
+
 func (pt *ProjectTeammate) Project(ctx context.Context) (*Project, error) {
 	result, err := pt.Edges.ProjectOrErr()
 	if IsNotLoaded(err) {
@@ -228,10 +260,26 @@ func (tlcs *TaskListCompletedStatus) TeammateTaskListStatuses(ctx context.Contex
 	return result, err
 }
 
+func (tlcs *TaskListCompletedStatus) ProjectTaskListStatuses(ctx context.Context) ([]*ProjectTaskListStatus, error) {
+	result, err := tlcs.Edges.ProjectTaskListStatusesOrErr()
+	if IsNotLoaded(err) {
+		result, err = tlcs.QueryProjectTaskListStatuses().All(ctx)
+	}
+	return result, err
+}
+
 func (tlss *TaskListSortStatus) TeammateTaskListStatuses(ctx context.Context) ([]*TeammateTaskListStatus, error) {
 	result, err := tlss.Edges.TeammateTaskListStatusesOrErr()
 	if IsNotLoaded(err) {
 		result, err = tlss.QueryTeammateTaskListStatuses().All(ctx)
+	}
+	return result, err
+}
+
+func (tlss *TaskListSortStatus) ProjectTaskListStatuses(ctx context.Context) ([]*ProjectTaskListStatus, error) {
+	result, err := tlss.Edges.ProjectTaskListStatusesOrErr()
+	if IsNotLoaded(err) {
+		result, err = tlss.QueryProjectTaskListStatuses().All(ctx)
 	}
 	return result, err
 }

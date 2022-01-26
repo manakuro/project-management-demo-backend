@@ -12,6 +12,7 @@ import (
 	"project-management-demo-backend/ent/projecticon"
 	"project-management-demo-backend/ent/projectlightcolor"
 	"project-management-demo-backend/ent/projecttaskcolumn"
+	"project-management-demo-backend/ent/projecttaskliststatus"
 	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/ent/schema/editor"
 	"project-management-demo-backend/ent/schema/ulid"
@@ -208,6 +209,21 @@ func (pc *ProjectCreate) AddProjectTaskColumns(p ...*ProjectTaskColumn) *Project
 		ids[i] = p[i].ID
 	}
 	return pc.AddProjectTaskColumnIDs(ids...)
+}
+
+// AddProjectTaskListStatusIDs adds the "project_task_list_statuses" edge to the ProjectTaskListStatus entity by IDs.
+func (pc *ProjectCreate) AddProjectTaskListStatusIDs(ids ...ulid.ID) *ProjectCreate {
+	pc.mutation.AddProjectTaskListStatusIDs(ids...)
+	return pc
+}
+
+// AddProjectTaskListStatuses adds the "project_task_list_statuses" edges to the ProjectTaskListStatus entity.
+func (pc *ProjectCreate) AddProjectTaskListStatuses(p ...*ProjectTaskListStatus) *ProjectCreate {
+	ids := make([]ulid.ID, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return pc.AddProjectTaskListStatusIDs(ids...)
 }
 
 // Mutation returns the ProjectMutation object of the builder.
@@ -588,6 +604,25 @@ func (pc *ProjectCreate) createSpec() (*Project, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: projecttaskcolumn.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := pc.mutation.ProjectTaskListStatusesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   project.ProjectTaskListStatusesTable,
+			Columns: []string{project.ProjectTaskListStatusesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: projecttaskliststatus.FieldID,
 				},
 			},
 		}

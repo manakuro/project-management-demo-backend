@@ -34,9 +34,11 @@ type TaskListCompletedStatus struct {
 type TaskListCompletedStatusEdges struct {
 	// TeammateTaskListStatuses holds the value of the teammate_task_list_statuses edge.
 	TeammateTaskListStatuses []*TeammateTaskListStatus `json:"teammate_task_list_statuses,omitempty"`
+	// ProjectTaskListStatuses holds the value of the project_task_list_statuses edge.
+	ProjectTaskListStatuses []*ProjectTaskListStatus `json:"project_task_list_statuses,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [2]bool
 }
 
 // TeammateTaskListStatusesOrErr returns the TeammateTaskListStatuses value or an error if the edge
@@ -46,6 +48,15 @@ func (e TaskListCompletedStatusEdges) TeammateTaskListStatusesOrErr() ([]*Teamma
 		return e.TeammateTaskListStatuses, nil
 	}
 	return nil, &NotLoadedError{edge: "teammate_task_list_statuses"}
+}
+
+// ProjectTaskListStatusesOrErr returns the ProjectTaskListStatuses value or an error if the edge
+// was not loaded in eager-loading.
+func (e TaskListCompletedStatusEdges) ProjectTaskListStatusesOrErr() ([]*ProjectTaskListStatus, error) {
+	if e.loadedTypes[1] {
+		return e.ProjectTaskListStatuses, nil
+	}
+	return nil, &NotLoadedError{edge: "project_task_list_statuses"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -112,6 +123,11 @@ func (tlcs *TaskListCompletedStatus) assignValues(columns []string, values []int
 // QueryTeammateTaskListStatuses queries the "teammate_task_list_statuses" edge of the TaskListCompletedStatus entity.
 func (tlcs *TaskListCompletedStatus) QueryTeammateTaskListStatuses() *TeammateTaskListStatusQuery {
 	return (&TaskListCompletedStatusClient{config: tlcs.config}).QueryTeammateTaskListStatuses(tlcs)
+}
+
+// QueryProjectTaskListStatuses queries the "project_task_list_statuses" edge of the TaskListCompletedStatus entity.
+func (tlcs *TaskListCompletedStatus) QueryProjectTaskListStatuses() *ProjectTaskListStatusQuery {
+	return (&TaskListCompletedStatusClient{config: tlcs.config}).QueryProjectTaskListStatuses(tlcs)
 }
 
 // Update returns a builder for updating this TaskListCompletedStatus.

@@ -125,6 +125,19 @@ func (f ProjectTaskColumnFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.
 	return f(ctx, mv)
 }
 
+// The ProjectTaskListStatusFunc type is an adapter to allow the use of ordinary
+// function as ProjectTaskListStatus mutator.
+type ProjectTaskListStatusFunc func(context.Context, *ent.ProjectTaskListStatusMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ProjectTaskListStatusFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.ProjectTaskListStatusMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ProjectTaskListStatusMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The ProjectTeammateFunc type is an adapter to allow the use of ordinary
 // function as ProjectTeammate mutator.
 type ProjectTeammateFunc func(context.Context, *ent.ProjectTeammateMutation) (ent.Value, error)

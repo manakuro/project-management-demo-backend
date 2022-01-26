@@ -19,6 +19,7 @@ import (
 	"project-management-demo-backend/ent/projecticon"
 	"project-management-demo-backend/ent/projectlightcolor"
 	"project-management-demo-backend/ent/projecttaskcolumn"
+	"project-management-demo-backend/ent/projecttaskliststatus"
 	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/ent/taskcolumn"
 	"project-management-demo-backend/ent/tasklistcompletedstatus"
@@ -61,6 +62,8 @@ type Client struct {
 	ProjectLightColor *ProjectLightColorClient
 	// ProjectTaskColumn is the client for interacting with the ProjectTaskColumn builders.
 	ProjectTaskColumn *ProjectTaskColumnClient
+	// ProjectTaskListStatus is the client for interacting with the ProjectTaskListStatus builders.
+	ProjectTaskListStatus *ProjectTaskListStatusClient
 	// ProjectTeammate is the client for interacting with the ProjectTeammate builders.
 	ProjectTeammate *ProjectTeammateClient
 	// TaskColumn is the client for interacting with the TaskColumn builders.
@@ -109,6 +112,7 @@ func (c *Client) init() {
 	c.ProjectIcon = NewProjectIconClient(c.config)
 	c.ProjectLightColor = NewProjectLightColorClient(c.config)
 	c.ProjectTaskColumn = NewProjectTaskColumnClient(c.config)
+	c.ProjectTaskListStatus = NewProjectTaskListStatusClient(c.config)
 	c.ProjectTeammate = NewProjectTeammateClient(c.config)
 	c.TaskColumn = NewTaskColumnClient(c.config)
 	c.TaskListCompletedStatus = NewTaskListCompletedStatusClient(c.config)
@@ -164,6 +168,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		ProjectIcon:             NewProjectIconClient(cfg),
 		ProjectLightColor:       NewProjectLightColorClient(cfg),
 		ProjectTaskColumn:       NewProjectTaskColumnClient(cfg),
+		ProjectTaskListStatus:   NewProjectTaskListStatusClient(cfg),
 		ProjectTeammate:         NewProjectTeammateClient(cfg),
 		TaskColumn:              NewTaskColumnClient(cfg),
 		TaskListCompletedStatus: NewTaskListCompletedStatusClient(cfg),
@@ -204,6 +209,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		ProjectIcon:             NewProjectIconClient(cfg),
 		ProjectLightColor:       NewProjectLightColorClient(cfg),
 		ProjectTaskColumn:       NewProjectTaskColumnClient(cfg),
+		ProjectTaskListStatus:   NewProjectTaskListStatusClient(cfg),
 		ProjectTeammate:         NewProjectTeammateClient(cfg),
 		TaskColumn:              NewTaskColumnClient(cfg),
 		TaskListCompletedStatus: NewTaskListCompletedStatusClient(cfg),
@@ -255,6 +261,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.ProjectIcon.Use(hooks...)
 	c.ProjectLightColor.Use(hooks...)
 	c.ProjectTaskColumn.Use(hooks...)
+	c.ProjectTaskListStatus.Use(hooks...)
 	c.ProjectTeammate.Use(hooks...)
 	c.TaskColumn.Use(hooks...)
 	c.TaskListCompletedStatus.Use(hooks...)
@@ -955,6 +962,22 @@ func (c *ProjectClient) QueryProjectTaskColumns(pr *Project) *ProjectTaskColumnQ
 	return query
 }
 
+// QueryProjectTaskListStatuses queries the project_task_list_statuses edge of a Project.
+func (c *ProjectClient) QueryProjectTaskListStatuses(pr *Project) *ProjectTaskListStatusQuery {
+	query := &ProjectTaskListStatusQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := pr.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(project.Table, project.FieldID, id),
+			sqlgraph.To(projecttaskliststatus.Table, projecttaskliststatus.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, project.ProjectTaskListStatusesTable, project.ProjectTaskListStatusesColumn),
+		)
+		fromV = sqlgraph.Neighbors(pr.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *ProjectClient) Hooks() []Hook {
 	return c.hooks.Project
@@ -1448,6 +1471,144 @@ func (c *ProjectTaskColumnClient) Hooks() []Hook {
 	return c.hooks.ProjectTaskColumn
 }
 
+// ProjectTaskListStatusClient is a client for the ProjectTaskListStatus schema.
+type ProjectTaskListStatusClient struct {
+	config
+}
+
+// NewProjectTaskListStatusClient returns a client for the ProjectTaskListStatus from the given config.
+func NewProjectTaskListStatusClient(c config) *ProjectTaskListStatusClient {
+	return &ProjectTaskListStatusClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `projecttaskliststatus.Hooks(f(g(h())))`.
+func (c *ProjectTaskListStatusClient) Use(hooks ...Hook) {
+	c.hooks.ProjectTaskListStatus = append(c.hooks.ProjectTaskListStatus, hooks...)
+}
+
+// Create returns a create builder for ProjectTaskListStatus.
+func (c *ProjectTaskListStatusClient) Create() *ProjectTaskListStatusCreate {
+	mutation := newProjectTaskListStatusMutation(c.config, OpCreate)
+	return &ProjectTaskListStatusCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of ProjectTaskListStatus entities.
+func (c *ProjectTaskListStatusClient) CreateBulk(builders ...*ProjectTaskListStatusCreate) *ProjectTaskListStatusCreateBulk {
+	return &ProjectTaskListStatusCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for ProjectTaskListStatus.
+func (c *ProjectTaskListStatusClient) Update() *ProjectTaskListStatusUpdate {
+	mutation := newProjectTaskListStatusMutation(c.config, OpUpdate)
+	return &ProjectTaskListStatusUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ProjectTaskListStatusClient) UpdateOne(ptls *ProjectTaskListStatus) *ProjectTaskListStatusUpdateOne {
+	mutation := newProjectTaskListStatusMutation(c.config, OpUpdateOne, withProjectTaskListStatus(ptls))
+	return &ProjectTaskListStatusUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ProjectTaskListStatusClient) UpdateOneID(id ulid.ID) *ProjectTaskListStatusUpdateOne {
+	mutation := newProjectTaskListStatusMutation(c.config, OpUpdateOne, withProjectTaskListStatusID(id))
+	return &ProjectTaskListStatusUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for ProjectTaskListStatus.
+func (c *ProjectTaskListStatusClient) Delete() *ProjectTaskListStatusDelete {
+	mutation := newProjectTaskListStatusMutation(c.config, OpDelete)
+	return &ProjectTaskListStatusDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *ProjectTaskListStatusClient) DeleteOne(ptls *ProjectTaskListStatus) *ProjectTaskListStatusDeleteOne {
+	return c.DeleteOneID(ptls.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *ProjectTaskListStatusClient) DeleteOneID(id ulid.ID) *ProjectTaskListStatusDeleteOne {
+	builder := c.Delete().Where(projecttaskliststatus.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ProjectTaskListStatusDeleteOne{builder}
+}
+
+// Query returns a query builder for ProjectTaskListStatus.
+func (c *ProjectTaskListStatusClient) Query() *ProjectTaskListStatusQuery {
+	return &ProjectTaskListStatusQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a ProjectTaskListStatus entity by its id.
+func (c *ProjectTaskListStatusClient) Get(ctx context.Context, id ulid.ID) (*ProjectTaskListStatus, error) {
+	return c.Query().Where(projecttaskliststatus.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ProjectTaskListStatusClient) GetX(ctx context.Context, id ulid.ID) *ProjectTaskListStatus {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryProject queries the project edge of a ProjectTaskListStatus.
+func (c *ProjectTaskListStatusClient) QueryProject(ptls *ProjectTaskListStatus) *ProjectQuery {
+	query := &ProjectQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := ptls.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(projecttaskliststatus.Table, projecttaskliststatus.FieldID, id),
+			sqlgraph.To(project.Table, project.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, projecttaskliststatus.ProjectTable, projecttaskliststatus.ProjectColumn),
+		)
+		fromV = sqlgraph.Neighbors(ptls.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryTaskListCompletedStatus queries the task_list_completed_status edge of a ProjectTaskListStatus.
+func (c *ProjectTaskListStatusClient) QueryTaskListCompletedStatus(ptls *ProjectTaskListStatus) *TaskListCompletedStatusQuery {
+	query := &TaskListCompletedStatusQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := ptls.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(projecttaskliststatus.Table, projecttaskliststatus.FieldID, id),
+			sqlgraph.To(tasklistcompletedstatus.Table, tasklistcompletedstatus.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, projecttaskliststatus.TaskListCompletedStatusTable, projecttaskliststatus.TaskListCompletedStatusColumn),
+		)
+		fromV = sqlgraph.Neighbors(ptls.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryTaskListSortStatus queries the task_list_sort_status edge of a ProjectTaskListStatus.
+func (c *ProjectTaskListStatusClient) QueryTaskListSortStatus(ptls *ProjectTaskListStatus) *TaskListSortStatusQuery {
+	query := &TaskListSortStatusQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := ptls.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(projecttaskliststatus.Table, projecttaskliststatus.FieldID, id),
+			sqlgraph.To(tasklistsortstatus.Table, tasklistsortstatus.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, projecttaskliststatus.TaskListSortStatusTable, projecttaskliststatus.TaskListSortStatusColumn),
+		)
+		fromV = sqlgraph.Neighbors(ptls.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *ProjectTaskListStatusClient) Hooks() []Hook {
+	return c.hooks.ProjectTaskListStatus
+}
+
 // ProjectTeammateClient is a client for the ProjectTeammate schema.
 type ProjectTeammateClient struct {
 	config
@@ -1793,6 +1954,22 @@ func (c *TaskListCompletedStatusClient) QueryTeammateTaskListStatuses(tlcs *Task
 	return query
 }
 
+// QueryProjectTaskListStatuses queries the project_task_list_statuses edge of a TaskListCompletedStatus.
+func (c *TaskListCompletedStatusClient) QueryProjectTaskListStatuses(tlcs *TaskListCompletedStatus) *ProjectTaskListStatusQuery {
+	query := &ProjectTaskListStatusQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := tlcs.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(tasklistcompletedstatus.Table, tasklistcompletedstatus.FieldID, id),
+			sqlgraph.To(projecttaskliststatus.Table, projecttaskliststatus.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, tasklistcompletedstatus.ProjectTaskListStatusesTable, tasklistcompletedstatus.ProjectTaskListStatusesColumn),
+		)
+		fromV = sqlgraph.Neighbors(tlcs.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *TaskListCompletedStatusClient) Hooks() []Hook {
 	return c.hooks.TaskListCompletedStatus
@@ -1892,6 +2069,22 @@ func (c *TaskListSortStatusClient) QueryTeammateTaskListStatuses(tlss *TaskListS
 			sqlgraph.From(tasklistsortstatus.Table, tasklistsortstatus.FieldID, id),
 			sqlgraph.To(teammatetaskliststatus.Table, teammatetaskliststatus.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, tasklistsortstatus.TeammateTaskListStatusesTable, tasklistsortstatus.TeammateTaskListStatusesColumn),
+		)
+		fromV = sqlgraph.Neighbors(tlss.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryProjectTaskListStatuses queries the project_task_list_statuses edge of a TaskListSortStatus.
+func (c *TaskListSortStatusClient) QueryProjectTaskListStatuses(tlss *TaskListSortStatus) *ProjectTaskListStatusQuery {
+	query := &ProjectTaskListStatusQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := tlss.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(tasklistsortstatus.Table, tasklistsortstatus.FieldID, id),
+			sqlgraph.To(projecttaskliststatus.Table, projecttaskliststatus.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, tasklistsortstatus.ProjectTaskListStatusesTable, tasklistsortstatus.ProjectTaskListStatusesColumn),
 		)
 		fromV = sqlgraph.Neighbors(tlss.driver.Dialect(), step)
 		return fromV, nil

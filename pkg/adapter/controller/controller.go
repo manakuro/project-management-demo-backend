@@ -13,6 +13,7 @@ type Controller struct {
 	ProjectIcon             interface{ ProjectIcon }
 	ProjectLightColor       interface{ ProjectLightColor }
 	ProjectTaskColumn       interface{ ProjectTaskColumn }
+	ProjectTaskListStatus   interface{ ProjectTaskListStatus }
 	ProjectTeammate         interface{ ProjectTeammate }
 	TaskColumn              interface{ TaskColumn }
 	TaskListCompletedStatus interface{ TaskListCompletedStatus }
