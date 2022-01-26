@@ -25,6 +25,7 @@ import (
 	"project-management-demo-backend/ent/taskcolumn"
 	"project-management-demo-backend/ent/tasklistcompletedstatus"
 	"project-management-demo-backend/ent/tasklistsortstatus"
+	"project-management-demo-backend/ent/taskpriority"
 	"project-management-demo-backend/ent/tasksection"
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/teammatetaskcolumn"
@@ -76,6 +77,8 @@ type Client struct {
 	TaskListCompletedStatus *TaskListCompletedStatusClient
 	// TaskListSortStatus is the client for interacting with the TaskListSortStatus builders.
 	TaskListSortStatus *TaskListSortStatusClient
+	// TaskPriority is the client for interacting with the TaskPriority builders.
+	TaskPriority *TaskPriorityClient
 	// TaskSection is the client for interacting with the TaskSection builders.
 	TaskSection *TaskSectionClient
 	// Teammate is the client for interacting with the Teammate builders.
@@ -124,6 +127,7 @@ func (c *Client) init() {
 	c.TaskColumn = NewTaskColumnClient(c.config)
 	c.TaskListCompletedStatus = NewTaskListCompletedStatusClient(c.config)
 	c.TaskListSortStatus = NewTaskListSortStatusClient(c.config)
+	c.TaskPriority = NewTaskPriorityClient(c.config)
 	c.TaskSection = NewTaskSectionClient(c.config)
 	c.Teammate = NewTeammateClient(c.config)
 	c.TeammateTaskColumn = NewTeammateTaskColumnClient(c.config)
@@ -182,6 +186,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		TaskColumn:              NewTaskColumnClient(cfg),
 		TaskListCompletedStatus: NewTaskListCompletedStatusClient(cfg),
 		TaskListSortStatus:      NewTaskListSortStatusClient(cfg),
+		TaskPriority:            NewTaskPriorityClient(cfg),
 		TaskSection:             NewTaskSectionClient(cfg),
 		Teammate:                NewTeammateClient(cfg),
 		TeammateTaskColumn:      NewTeammateTaskColumnClient(cfg),
@@ -225,6 +230,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		TaskColumn:              NewTaskColumnClient(cfg),
 		TaskListCompletedStatus: NewTaskListCompletedStatusClient(cfg),
 		TaskListSortStatus:      NewTaskListSortStatusClient(cfg),
+		TaskPriority:            NewTaskPriorityClient(cfg),
 		TaskSection:             NewTaskSectionClient(cfg),
 		Teammate:                NewTeammateClient(cfg),
 		TeammateTaskColumn:      NewTeammateTaskColumnClient(cfg),
@@ -279,6 +285,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.TaskColumn.Use(hooks...)
 	c.TaskListCompletedStatus.Use(hooks...)
 	c.TaskListSortStatus.Use(hooks...)
+	c.TaskPriority.Use(hooks...)
 	c.TaskSection.Use(hooks...)
 	c.Teammate.Use(hooks...)
 	c.TeammateTaskColumn.Use(hooks...)
@@ -401,6 +408,22 @@ func (c *ColorClient) QueryProjectLightColors(co *Color) *ProjectLightColorQuery
 			sqlgraph.From(color.Table, color.FieldID, id),
 			sqlgraph.To(projectlightcolor.Table, projectlightcolor.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, color.ProjectLightColorsTable, color.ProjectLightColorsColumn),
+		)
+		fromV = sqlgraph.Neighbors(co.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryTaskPriorities queries the task_priorities edge of a Color.
+func (c *ColorClient) QueryTaskPriorities(co *Color) *TaskPriorityQuery {
+	query := &TaskPriorityQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := co.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(color.Table, color.FieldID, id),
+			sqlgraph.To(taskpriority.Table, taskpriority.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, color.TaskPrioritiesTable, color.TaskPrioritiesColumn),
 		)
 		fromV = sqlgraph.Neighbors(co.driver.Dialect(), step)
 		return fromV, nil
@@ -2231,6 +2254,112 @@ func (c *TaskListSortStatusClient) QueryProjectTaskListStatuses(tlss *TaskListSo
 // Hooks returns the client hooks.
 func (c *TaskListSortStatusClient) Hooks() []Hook {
 	return c.hooks.TaskListSortStatus
+}
+
+// TaskPriorityClient is a client for the TaskPriority schema.
+type TaskPriorityClient struct {
+	config
+}
+
+// NewTaskPriorityClient returns a client for the TaskPriority from the given config.
+func NewTaskPriorityClient(c config) *TaskPriorityClient {
+	return &TaskPriorityClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `taskpriority.Hooks(f(g(h())))`.
+func (c *TaskPriorityClient) Use(hooks ...Hook) {
+	c.hooks.TaskPriority = append(c.hooks.TaskPriority, hooks...)
+}
+
+// Create returns a create builder for TaskPriority.
+func (c *TaskPriorityClient) Create() *TaskPriorityCreate {
+	mutation := newTaskPriorityMutation(c.config, OpCreate)
+	return &TaskPriorityCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of TaskPriority entities.
+func (c *TaskPriorityClient) CreateBulk(builders ...*TaskPriorityCreate) *TaskPriorityCreateBulk {
+	return &TaskPriorityCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for TaskPriority.
+func (c *TaskPriorityClient) Update() *TaskPriorityUpdate {
+	mutation := newTaskPriorityMutation(c.config, OpUpdate)
+	return &TaskPriorityUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *TaskPriorityClient) UpdateOne(tp *TaskPriority) *TaskPriorityUpdateOne {
+	mutation := newTaskPriorityMutation(c.config, OpUpdateOne, withTaskPriority(tp))
+	return &TaskPriorityUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *TaskPriorityClient) UpdateOneID(id ulid.ID) *TaskPriorityUpdateOne {
+	mutation := newTaskPriorityMutation(c.config, OpUpdateOne, withTaskPriorityID(id))
+	return &TaskPriorityUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for TaskPriority.
+func (c *TaskPriorityClient) Delete() *TaskPriorityDelete {
+	mutation := newTaskPriorityMutation(c.config, OpDelete)
+	return &TaskPriorityDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *TaskPriorityClient) DeleteOne(tp *TaskPriority) *TaskPriorityDeleteOne {
+	return c.DeleteOneID(tp.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *TaskPriorityClient) DeleteOneID(id ulid.ID) *TaskPriorityDeleteOne {
+	builder := c.Delete().Where(taskpriority.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &TaskPriorityDeleteOne{builder}
+}
+
+// Query returns a query builder for TaskPriority.
+func (c *TaskPriorityClient) Query() *TaskPriorityQuery {
+	return &TaskPriorityQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a TaskPriority entity by its id.
+func (c *TaskPriorityClient) Get(ctx context.Context, id ulid.ID) (*TaskPriority, error) {
+	return c.Query().Where(taskpriority.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *TaskPriorityClient) GetX(ctx context.Context, id ulid.ID) *TaskPriority {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryColor queries the color edge of a TaskPriority.
+func (c *TaskPriorityClient) QueryColor(tp *TaskPriority) *ColorQuery {
+	query := &ColorQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := tp.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(taskpriority.Table, taskpriority.FieldID, id),
+			sqlgraph.To(color.Table, color.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, taskpriority.ColorTable, taskpriority.ColorColumn),
+		)
+		fromV = sqlgraph.Neighbors(tp.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *TaskPriorityClient) Hooks() []Hook {
+	return c.hooks.TaskPriority
 }
 
 // TaskSectionClient is a client for the TaskSection schema.

@@ -9,6 +9,7 @@ import (
 	"project-management-demo-backend/ent/taskcolumn"
 	"project-management-demo-backend/ent/tasklistcompletedstatus"
 	"project-management-demo-backend/ent/tasklistsortstatus"
+	"project-management-demo-backend/ent/taskpriority"
 	"project-management-demo-backend/ent/teammatetasktabstatus"
 	"project-management-demo-backend/ent/testtodo"
 	"time"
@@ -23,6 +24,7 @@ type CreateColorInput struct {
 	UpdatedAt            *time.Time
 	ProjectBaseColorIDs  []ulid.ID
 	ProjectLightColorIDs []ulid.ID
+	TaskPriorityIDs      []ulid.ID
 }
 
 // Mutate applies the CreateColorInput on the ColorCreate builder.
@@ -42,6 +44,9 @@ func (i *CreateColorInput) Mutate(m *ColorCreate) {
 	if ids := i.ProjectLightColorIDs; len(ids) > 0 {
 		m.AddProjectLightColorIDs(ids...)
 	}
+	if ids := i.TaskPriorityIDs; len(ids) > 0 {
+		m.AddTaskPriorityIDs(ids...)
+	}
 }
 
 // SetInput applies the change-set in the CreateColorInput on the create builder.
@@ -60,6 +65,8 @@ type UpdateColorInput struct {
 	RemoveProjectBaseColorIDs  []ulid.ID
 	AddProjectLightColorIDs    []ulid.ID
 	RemoveProjectLightColorIDs []ulid.ID
+	AddTaskPriorityIDs         []ulid.ID
+	RemoveTaskPriorityIDs      []ulid.ID
 }
 
 // Mutate applies the UpdateColorInput on the ColorMutation.
@@ -84,6 +91,12 @@ func (i *UpdateColorInput) Mutate(m *ColorMutation) {
 	}
 	if ids := i.RemoveProjectLightColorIDs; len(ids) > 0 {
 		m.RemoveProjectLightColorIDs(ids...)
+	}
+	if ids := i.AddTaskPriorityIDs; len(ids) > 0 {
+		m.AddTaskPriorityIDs(ids...)
+	}
+	if ids := i.RemoveTaskPriorityIDs; len(ids) > 0 {
+		m.RemoveTaskPriorityIDs(ids...)
 	}
 }
 
@@ -1193,6 +1206,71 @@ func (u *TaskListSortStatusUpdate) SetInput(i UpdateTaskListSortStatusInput) *Ta
 
 // SetInput applies the change-set in the UpdateTaskListSortStatusInput on the update-one builder.
 func (u *TaskListSortStatusUpdateOne) SetInput(i UpdateTaskListSortStatusInput) *TaskListSortStatusUpdateOne {
+	i.Mutate(u.Mutation())
+	return u
+}
+
+// CreateTaskPriorityInput represents a mutation input for creating taskpriorities.
+type CreateTaskPriorityInput struct {
+	Name         string
+	PriorityType taskpriority.PriorityType
+	CreatedAt    *time.Time
+	UpdatedAt    *time.Time
+	ColorID      ulid.ID
+}
+
+// Mutate applies the CreateTaskPriorityInput on the TaskPriorityCreate builder.
+func (i *CreateTaskPriorityInput) Mutate(m *TaskPriorityCreate) {
+	m.SetName(i.Name)
+	m.SetPriorityType(i.PriorityType)
+	if v := i.CreatedAt; v != nil {
+		m.SetCreatedAt(*v)
+	}
+	if v := i.UpdatedAt; v != nil {
+		m.SetUpdatedAt(*v)
+	}
+	m.SetColorID(i.ColorID)
+}
+
+// SetInput applies the change-set in the CreateTaskPriorityInput on the create builder.
+func (c *TaskPriorityCreate) SetInput(i CreateTaskPriorityInput) *TaskPriorityCreate {
+	i.Mutate(c)
+	return c
+}
+
+// UpdateTaskPriorityInput represents a mutation input for updating taskpriorities.
+type UpdateTaskPriorityInput struct {
+	ID           ulid.ID
+	Name         *string
+	PriorityType *taskpriority.PriorityType
+	ColorID      *ulid.ID
+	ClearColor   bool
+}
+
+// Mutate applies the UpdateTaskPriorityInput on the TaskPriorityMutation.
+func (i *UpdateTaskPriorityInput) Mutate(m *TaskPriorityMutation) {
+	if v := i.Name; v != nil {
+		m.SetName(*v)
+	}
+	if v := i.PriorityType; v != nil {
+		m.SetPriorityType(*v)
+	}
+	if i.ClearColor {
+		m.ClearColor()
+	}
+	if v := i.ColorID; v != nil {
+		m.SetColorID(*v)
+	}
+}
+
+// SetInput applies the change-set in the UpdateTaskPriorityInput on the update builder.
+func (u *TaskPriorityUpdate) SetInput(i UpdateTaskPriorityInput) *TaskPriorityUpdate {
+	i.Mutate(u.Mutation())
+	return u
+}
+
+// SetInput applies the change-set in the UpdateTaskPriorityInput on the update-one builder.
+func (u *TaskPriorityUpdateOne) SetInput(i UpdateTaskPriorityInput) *TaskPriorityUpdateOne {
 	i.Mutate(u.Mutation())
 	return u
 }

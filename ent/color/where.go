@@ -670,6 +670,34 @@ func HasProjectLightColorsWith(preds ...predicate.ProjectLightColor) predicate.C
 	})
 }
 
+// HasTaskPriorities applies the HasEdge predicate on the "task_priorities" edge.
+func HasTaskPriorities() predicate.Color {
+	return predicate.Color(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(TaskPrioritiesTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, TaskPrioritiesTable, TaskPrioritiesColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasTaskPrioritiesWith applies the HasEdge predicate on the "task_priorities" edge with a given conditions (other predicates).
+func HasTaskPrioritiesWith(preds ...predicate.TaskPriority) predicate.Color {
+	return predicate.Color(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(TaskPrioritiesInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, TaskPrioritiesTable, TaskPrioritiesColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Color) predicate.Color {
 	return predicate.Color(func(s *sql.Selector) {

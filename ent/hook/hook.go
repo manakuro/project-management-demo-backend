@@ -203,6 +203,19 @@ func (f TaskListSortStatusFunc) Mutate(ctx context.Context, m ent.Mutation) (ent
 	return f(ctx, mv)
 }
 
+// The TaskPriorityFunc type is an adapter to allow the use of ordinary
+// function as TaskPriority mutator.
+type TaskPriorityFunc func(context.Context, *ent.TaskPriorityMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f TaskPriorityFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.TaskPriorityMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.TaskPriorityMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The TaskSectionFunc type is an adapter to allow the use of ordinary
 // function as TaskSection mutator.
 type TaskSectionFunc func(context.Context, *ent.TaskSectionMutation) (ent.Value, error)

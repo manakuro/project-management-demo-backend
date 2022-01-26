@@ -22,6 +22,7 @@ import (
 	"project-management-demo-backend/ent/taskcolumn"
 	"project-management-demo-backend/ent/tasklistcompletedstatus"
 	"project-management-demo-backend/ent/tasklistsortstatus"
+	"project-management-demo-backend/ent/taskpriority"
 	"project-management-demo-backend/ent/tasksection"
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/teammatetaskcolumn"
@@ -70,7 +71,7 @@ func (c *Color) Node(ctx context.Context) (node *Node, err error) {
 		ID:     c.ID,
 		Type:   "Color",
 		Fields: make([]*Field, 5),
-		Edges:  make([]*Edge, 2),
+		Edges:  make([]*Edge, 3),
 	}
 	var buf []byte
 	if buf, err = json.Marshal(c.Name); err != nil {
@@ -130,6 +131,16 @@ func (c *Color) Node(ctx context.Context) (node *Node, err error) {
 	err = c.QueryProjectLightColors().
 		Select(projectlightcolor.FieldID).
 		Scan(ctx, &node.Edges[1].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[2] = &Edge{
+		Type: "TaskPriority",
+		Name: "task_priorities",
+	}
+	err = c.QueryTaskPriorities().
+		Select(taskpriority.FieldID).
+		Scan(ctx, &node.Edges[2].IDs)
 	if err != nil {
 		return nil, err
 	}
@@ -1170,6 +1181,67 @@ func (tlss *TaskListSortStatus) Node(ctx context.Context) (node *Node, err error
 	err = tlss.QueryProjectTaskListStatuses().
 		Select(projecttaskliststatus.FieldID).
 		Scan(ctx, &node.Edges[1].IDs)
+	if err != nil {
+		return nil, err
+	}
+	return node, nil
+}
+
+func (tp *TaskPriority) Node(ctx context.Context) (node *Node, err error) {
+	node = &Node{
+		ID:     tp.ID,
+		Type:   "TaskPriority",
+		Fields: make([]*Field, 5),
+		Edges:  make([]*Edge, 1),
+	}
+	var buf []byte
+	if buf, err = json.Marshal(tp.ColorID); err != nil {
+		return nil, err
+	}
+	node.Fields[0] = &Field{
+		Type:  "ulid.ID",
+		Name:  "color_id",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(tp.Name); err != nil {
+		return nil, err
+	}
+	node.Fields[1] = &Field{
+		Type:  "string",
+		Name:  "name",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(tp.PriorityType); err != nil {
+		return nil, err
+	}
+	node.Fields[2] = &Field{
+		Type:  "taskpriority.PriorityType",
+		Name:  "priority_type",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(tp.CreatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[3] = &Field{
+		Type:  "time.Time",
+		Name:  "created_at",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(tp.UpdatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[4] = &Field{
+		Type:  "time.Time",
+		Name:  "updated_at",
+		Value: string(buf),
+	}
+	node.Edges[0] = &Edge{
+		Type: "Color",
+		Name: "color",
+	}
+	err = tp.QueryColor().
+		Select(color.FieldID).
+		Scan(ctx, &node.Edges[0].IDs)
 	if err != nil {
 		return nil, err
 	}
@@ -2238,6 +2310,15 @@ func (c *Client) noder(ctx context.Context, table string, id ulid.ID) (Noder, er
 			return nil, err
 		}
 		return n, nil
+	case taskpriority.Table:
+		n, err := c.TaskPriority.Query().
+			Where(taskpriority.ID(id)).
+			CollectFields(ctx, "TaskPriority").
+			Only(ctx)
+		if err != nil {
+			return nil, err
+		}
+		return n, nil
 	case tasksection.Table:
 		n, err := c.TaskSection.Query().
 			Where(tasksection.ID(id)).
@@ -2587,6 +2668,19 @@ func (c *Client) noders(ctx context.Context, table string, ids []ulid.ID) ([]Nod
 		nodes, err := c.TaskListSortStatus.Query().
 			Where(tasklistsortstatus.IDIn(ids...)).
 			CollectFields(ctx, "TaskListSortStatus").
+			All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, node := range nodes {
+			for _, noder := range idmap[node.ID] {
+				*noder = node
+			}
+		}
+	case taskpriority.Table:
+		nodes, err := c.TaskPriority.Query().
+			Where(taskpriority.IDIn(ids...)).
+			CollectFields(ctx, "TaskPriority").
 			All(ctx)
 		if err != nil {
 			return nil, err

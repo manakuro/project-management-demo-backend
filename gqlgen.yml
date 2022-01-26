@@ -70,4 +70,7 @@ models:
   TaskListSortStatusCode:
     model:
       - project-management-demo-backend/ent/tasklistsortstatus.StatusCode
+  TaskPriorityType:
+    model:
+      - project-management-demo-backend/ent/taskpriority.PriorityType
 

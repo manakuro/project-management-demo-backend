@@ -10,6 +10,7 @@ import (
 	"project-management-demo-backend/ent/projectbasecolor"
 	"project-management-demo-backend/ent/projectlightcolor"
 	"project-management-demo-backend/ent/schema/ulid"
+	"project-management-demo-backend/ent/taskpriority"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -77,6 +78,21 @@ func (cu *ColorUpdate) AddProjectLightColors(p ...*ProjectLightColor) *ColorUpda
 	return cu.AddProjectLightColorIDs(ids...)
 }
 
+// AddTaskPriorityIDs adds the "task_priorities" edge to the TaskPriority entity by IDs.
+func (cu *ColorUpdate) AddTaskPriorityIDs(ids ...ulid.ID) *ColorUpdate {
+	cu.mutation.AddTaskPriorityIDs(ids...)
+	return cu
+}
+
+// AddTaskPriorities adds the "task_priorities" edges to the TaskPriority entity.
+func (cu *ColorUpdate) AddTaskPriorities(t ...*TaskPriority) *ColorUpdate {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return cu.AddTaskPriorityIDs(ids...)
+}
+
 // Mutation returns the ColorMutation object of the builder.
 func (cu *ColorUpdate) Mutation() *ColorMutation {
 	return cu.mutation
@@ -122,6 +138,27 @@ func (cu *ColorUpdate) RemoveProjectLightColors(p ...*ProjectLightColor) *ColorU
 		ids[i] = p[i].ID
 	}
 	return cu.RemoveProjectLightColorIDs(ids...)
+}
+
+// ClearTaskPriorities clears all "task_priorities" edges to the TaskPriority entity.
+func (cu *ColorUpdate) ClearTaskPriorities() *ColorUpdate {
+	cu.mutation.ClearTaskPriorities()
+	return cu
+}
+
+// RemoveTaskPriorityIDs removes the "task_priorities" edge to TaskPriority entities by IDs.
+func (cu *ColorUpdate) RemoveTaskPriorityIDs(ids ...ulid.ID) *ColorUpdate {
+	cu.mutation.RemoveTaskPriorityIDs(ids...)
+	return cu
+}
+
+// RemoveTaskPriorities removes "task_priorities" edges to TaskPriority entities.
+func (cu *ColorUpdate) RemoveTaskPriorities(t ...*TaskPriority) *ColorUpdate {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return cu.RemoveTaskPriorityIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -351,6 +388,60 @@ func (cu *ColorUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if cu.mutation.TaskPrioritiesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   color.TaskPrioritiesTable,
+			Columns: []string{color.TaskPrioritiesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: taskpriority.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cu.mutation.RemovedTaskPrioritiesIDs(); len(nodes) > 0 && !cu.mutation.TaskPrioritiesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   color.TaskPrioritiesTable,
+			Columns: []string{color.TaskPrioritiesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: taskpriority.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cu.mutation.TaskPrioritiesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   color.TaskPrioritiesTable,
+			Columns: []string{color.TaskPrioritiesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: taskpriority.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, cu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{color.Label}
@@ -418,6 +509,21 @@ func (cuo *ColorUpdateOne) AddProjectLightColors(p ...*ProjectLightColor) *Color
 	return cuo.AddProjectLightColorIDs(ids...)
 }
 
+// AddTaskPriorityIDs adds the "task_priorities" edge to the TaskPriority entity by IDs.
+func (cuo *ColorUpdateOne) AddTaskPriorityIDs(ids ...ulid.ID) *ColorUpdateOne {
+	cuo.mutation.AddTaskPriorityIDs(ids...)
+	return cuo
+}
+
+// AddTaskPriorities adds the "task_priorities" edges to the TaskPriority entity.
+func (cuo *ColorUpdateOne) AddTaskPriorities(t ...*TaskPriority) *ColorUpdateOne {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return cuo.AddTaskPriorityIDs(ids...)
+}
+
 // Mutation returns the ColorMutation object of the builder.
 func (cuo *ColorUpdateOne) Mutation() *ColorMutation {
 	return cuo.mutation
@@ -463,6 +569,27 @@ func (cuo *ColorUpdateOne) RemoveProjectLightColors(p ...*ProjectLightColor) *Co
 		ids[i] = p[i].ID
 	}
 	return cuo.RemoveProjectLightColorIDs(ids...)
+}
+
+// ClearTaskPriorities clears all "task_priorities" edges to the TaskPriority entity.
+func (cuo *ColorUpdateOne) ClearTaskPriorities() *ColorUpdateOne {
+	cuo.mutation.ClearTaskPriorities()
+	return cuo
+}
+
+// RemoveTaskPriorityIDs removes the "task_priorities" edge to TaskPriority entities by IDs.
+func (cuo *ColorUpdateOne) RemoveTaskPriorityIDs(ids ...ulid.ID) *ColorUpdateOne {
+	cuo.mutation.RemoveTaskPriorityIDs(ids...)
+	return cuo
+}
+
+// RemoveTaskPriorities removes "task_priorities" edges to TaskPriority entities.
+func (cuo *ColorUpdateOne) RemoveTaskPriorities(t ...*TaskPriority) *ColorUpdateOne {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return cuo.RemoveTaskPriorityIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -708,6 +835,60 @@ func (cuo *ColorUpdateOne) sqlSave(ctx context.Context) (_node *Color, err error
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: projectlightcolor.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if cuo.mutation.TaskPrioritiesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   color.TaskPrioritiesTable,
+			Columns: []string{color.TaskPrioritiesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: taskpriority.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cuo.mutation.RemovedTaskPrioritiesIDs(); len(nodes) > 0 && !cuo.mutation.TaskPrioritiesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   color.TaskPrioritiesTable,
+			Columns: []string{color.TaskPrioritiesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: taskpriority.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cuo.mutation.TaskPrioritiesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   color.TaskPrioritiesTable,
+			Columns: []string{color.TaskPrioritiesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: taskpriority.FieldID,
 				},
 			},
 		}

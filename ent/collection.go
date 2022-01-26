@@ -189,6 +189,18 @@ func (tlss *TaskListSortStatusQuery) collectField(ctx *graphql.OperationContext,
 }
 
 // CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
+func (tp *TaskPriorityQuery) CollectFields(ctx context.Context, satisfies ...string) *TaskPriorityQuery {
+	if fc := graphql.GetFieldContext(ctx); fc != nil {
+		tp = tp.collectField(graphql.GetOperationContext(ctx), fc.Field, satisfies...)
+	}
+	return tp
+}
+
+func (tp *TaskPriorityQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *TaskPriorityQuery {
+	return tp
+}
+
+// CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
 func (ts *TaskSectionQuery) CollectFields(ctx context.Context, satisfies ...string) *TaskSectionQuery {
 	if fc := graphql.GetFieldContext(ctx); fc != nil {
 		ts = ts.collectField(graphql.GetOperationContext(ctx), fc.Field, satisfies...)
