@@ -189,18 +189,6 @@ func (t *TeammateQuery) collectField(ctx *graphql.OperationContext, field graphq
 }
 
 // CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
-func (tts *TeammateTabStatusQuery) CollectFields(ctx context.Context, satisfies ...string) *TeammateTabStatusQuery {
-	if fc := graphql.GetFieldContext(ctx); fc != nil {
-		tts = tts.collectField(graphql.GetOperationContext(ctx), fc.Field, satisfies...)
-	}
-	return tts
-}
-
-func (tts *TeammateTabStatusQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *TeammateTabStatusQuery {
-	return tts
-}
-
-// CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
 func (ttc *TeammateTaskColumnQuery) CollectFields(ctx context.Context, satisfies ...string) *TeammateTaskColumnQuery {
 	if fc := graphql.GetFieldContext(ctx); fc != nil {
 		ttc = ttc.collectField(graphql.GetOperationContext(ctx), fc.Field, satisfies...)
@@ -210,6 +198,18 @@ func (ttc *TeammateTaskColumnQuery) CollectFields(ctx context.Context, satisfies
 
 func (ttc *TeammateTaskColumnQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *TeammateTaskColumnQuery {
 	return ttc
+}
+
+// CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
+func (ttts *TeammateTaskTabStatusQuery) CollectFields(ctx context.Context, satisfies ...string) *TeammateTaskTabStatusQuery {
+	if fc := graphql.GetFieldContext(ctx); fc != nil {
+		ttts = ttts.collectField(graphql.GetOperationContext(ctx), fc.Field, satisfies...)
+	}
+	return ttts
+}
+
+func (ttts *TeammateTaskTabStatusQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *TeammateTaskTabStatusQuery {
+	return ttts
 }
 
 // CollectFields tells the query-builder to eagerly load connected nodes by resolver context.

@@ -15,8 +15,8 @@ import (
 	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/teammate"
-	"project-management-demo-backend/ent/teammatetabstatus"
 	"project-management-demo-backend/ent/teammatetaskcolumn"
+	"project-management-demo-backend/ent/teammatetasktabstatus"
 	"project-management-demo-backend/ent/workspace"
 	"project-management-demo-backend/ent/workspaceteammate"
 
@@ -35,14 +35,14 @@ type TeammateQuery struct {
 	fields     []string
 	predicates []predicate.Teammate
 	// eager-loading edges.
-	withWorkspaces          *WorkspaceQuery
-	withProjects            *ProjectQuery
-	withProjectTeammates    *ProjectTeammateQuery
-	withWorkspaceTeammates  *WorkspaceTeammateQuery
-	withFavoriteProjects    *FavoriteProjectQuery
-	withFavoriteWorkspaces  *FavoriteWorkspaceQuery
-	withTeammateTabStatuses *TeammateTabStatusQuery
-	withTeammateTaskColumns *TeammateTaskColumnQuery
+	withWorkspaces              *WorkspaceQuery
+	withProjects                *ProjectQuery
+	withProjectTeammates        *ProjectTeammateQuery
+	withWorkspaceTeammates      *WorkspaceTeammateQuery
+	withFavoriteProjects        *FavoriteProjectQuery
+	withFavoriteWorkspaces      *FavoriteWorkspaceQuery
+	withTeammateTaskTabStatuses *TeammateTaskTabStatusQuery
+	withTeammateTaskColumns     *TeammateTaskColumnQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -211,9 +211,9 @@ func (tq *TeammateQuery) QueryFavoriteWorkspaces() *FavoriteWorkspaceQuery {
 	return query
 }
 
-// QueryTeammateTabStatuses chains the current query on the "teammate_tab_statuses" edge.
-func (tq *TeammateQuery) QueryTeammateTabStatuses() *TeammateTabStatusQuery {
-	query := &TeammateTabStatusQuery{config: tq.config}
+// QueryTeammateTaskTabStatuses chains the current query on the "teammate_task_tab_statuses" edge.
+func (tq *TeammateQuery) QueryTeammateTaskTabStatuses() *TeammateTaskTabStatusQuery {
+	query := &TeammateTaskTabStatusQuery{config: tq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := tq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -224,8 +224,8 @@ func (tq *TeammateQuery) QueryTeammateTabStatuses() *TeammateTabStatusQuery {
 		}
 		step := sqlgraph.NewStep(
 			sqlgraph.From(teammate.Table, teammate.FieldID, selector),
-			sqlgraph.To(teammatetabstatus.Table, teammatetabstatus.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, teammate.TeammateTabStatusesTable, teammate.TeammateTabStatusesColumn),
+			sqlgraph.To(teammatetasktabstatus.Table, teammatetasktabstatus.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, teammate.TeammateTaskTabStatusesTable, teammate.TeammateTaskTabStatusesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(tq.driver.Dialect(), step)
 		return fromU, nil
@@ -431,19 +431,19 @@ func (tq *TeammateQuery) Clone() *TeammateQuery {
 		return nil
 	}
 	return &TeammateQuery{
-		config:                  tq.config,
-		limit:                   tq.limit,
-		offset:                  tq.offset,
-		order:                   append([]OrderFunc{}, tq.order...),
-		predicates:              append([]predicate.Teammate{}, tq.predicates...),
-		withWorkspaces:          tq.withWorkspaces.Clone(),
-		withProjects:            tq.withProjects.Clone(),
-		withProjectTeammates:    tq.withProjectTeammates.Clone(),
-		withWorkspaceTeammates:  tq.withWorkspaceTeammates.Clone(),
-		withFavoriteProjects:    tq.withFavoriteProjects.Clone(),
-		withFavoriteWorkspaces:  tq.withFavoriteWorkspaces.Clone(),
-		withTeammateTabStatuses: tq.withTeammateTabStatuses.Clone(),
-		withTeammateTaskColumns: tq.withTeammateTaskColumns.Clone(),
+		config:                      tq.config,
+		limit:                       tq.limit,
+		offset:                      tq.offset,
+		order:                       append([]OrderFunc{}, tq.order...),
+		predicates:                  append([]predicate.Teammate{}, tq.predicates...),
+		withWorkspaces:              tq.withWorkspaces.Clone(),
+		withProjects:                tq.withProjects.Clone(),
+		withProjectTeammates:        tq.withProjectTeammates.Clone(),
+		withWorkspaceTeammates:      tq.withWorkspaceTeammates.Clone(),
+		withFavoriteProjects:        tq.withFavoriteProjects.Clone(),
+		withFavoriteWorkspaces:      tq.withFavoriteWorkspaces.Clone(),
+		withTeammateTaskTabStatuses: tq.withTeammateTaskTabStatuses.Clone(),
+		withTeammateTaskColumns:     tq.withTeammateTaskColumns.Clone(),
 		// clone intermediate query.
 		sql:  tq.sql.Clone(),
 		path: tq.path,
@@ -516,14 +516,14 @@ func (tq *TeammateQuery) WithFavoriteWorkspaces(opts ...func(*FavoriteWorkspaceQ
 	return tq
 }
 
-// WithTeammateTabStatuses tells the query-builder to eager-load the nodes that are connected to
-// the "teammate_tab_statuses" edge. The optional arguments are used to configure the query builder of the edge.
-func (tq *TeammateQuery) WithTeammateTabStatuses(opts ...func(*TeammateTabStatusQuery)) *TeammateQuery {
-	query := &TeammateTabStatusQuery{config: tq.config}
+// WithTeammateTaskTabStatuses tells the query-builder to eager-load the nodes that are connected to
+// the "teammate_task_tab_statuses" edge. The optional arguments are used to configure the query builder of the edge.
+func (tq *TeammateQuery) WithTeammateTaskTabStatuses(opts ...func(*TeammateTaskTabStatusQuery)) *TeammateQuery {
+	query := &TeammateTaskTabStatusQuery{config: tq.config}
 	for _, opt := range opts {
 		opt(query)
 	}
-	tq.withTeammateTabStatuses = query
+	tq.withTeammateTaskTabStatuses = query
 	return tq
 }
 
@@ -610,7 +610,7 @@ func (tq *TeammateQuery) sqlAll(ctx context.Context) ([]*Teammate, error) {
 			tq.withWorkspaceTeammates != nil,
 			tq.withFavoriteProjects != nil,
 			tq.withFavoriteWorkspaces != nil,
-			tq.withTeammateTabStatuses != nil,
+			tq.withTeammateTaskTabStatuses != nil,
 			tq.withTeammateTaskColumns != nil,
 		}
 	)
@@ -784,16 +784,16 @@ func (tq *TeammateQuery) sqlAll(ctx context.Context) ([]*Teammate, error) {
 		}
 	}
 
-	if query := tq.withTeammateTabStatuses; query != nil {
+	if query := tq.withTeammateTaskTabStatuses; query != nil {
 		fks := make([]driver.Value, 0, len(nodes))
 		nodeids := make(map[ulid.ID]*Teammate)
 		for i := range nodes {
 			fks = append(fks, nodes[i].ID)
 			nodeids[nodes[i].ID] = nodes[i]
-			nodes[i].Edges.TeammateTabStatuses = []*TeammateTabStatus{}
+			nodes[i].Edges.TeammateTaskTabStatuses = []*TeammateTaskTabStatus{}
 		}
-		query.Where(predicate.TeammateTabStatus(func(s *sql.Selector) {
-			s.Where(sql.InValues(teammate.TeammateTabStatusesColumn, fks...))
+		query.Where(predicate.TeammateTaskTabStatus(func(s *sql.Selector) {
+			s.Where(sql.InValues(teammate.TeammateTaskTabStatusesColumn, fks...))
 		}))
 		neighbors, err := query.All(ctx)
 		if err != nil {
@@ -805,7 +805,7 @@ func (tq *TeammateQuery) sqlAll(ctx context.Context) ([]*Teammate, error) {
 			if !ok {
 				return nil, fmt.Errorf(`unexpected foreign-key "teammate_id" returned %v for node %v`, fk, n.ID)
 			}
-			node.Edges.TeammateTabStatuses = append(node.Edges.TeammateTabStatuses, n)
+			node.Edges.TeammateTaskTabStatuses = append(node.Edges.TeammateTaskTabStatuses, n)
 		}
 	}
 

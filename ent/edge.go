@@ -268,10 +268,10 @@ func (t *Teammate) FavoriteWorkspaces(ctx context.Context) ([]*FavoriteWorkspace
 	return result, err
 }
 
-func (t *Teammate) TeammateTabStatuses(ctx context.Context) ([]*TeammateTabStatus, error) {
-	result, err := t.Edges.TeammateTabStatusesOrErr()
+func (t *Teammate) TeammateTaskTabStatuses(ctx context.Context) ([]*TeammateTaskTabStatus, error) {
+	result, err := t.Edges.TeammateTaskTabStatusesOrErr()
 	if IsNotLoaded(err) {
-		result, err = t.QueryTeammateTabStatuses().All(ctx)
+		result, err = t.QueryTeammateTaskTabStatuses().All(ctx)
 	}
 	return result, err
 }
@@ -280,22 +280,6 @@ func (t *Teammate) TeammateTaskColumns(ctx context.Context) ([]*TeammateTaskColu
 	result, err := t.Edges.TeammateTaskColumnsOrErr()
 	if IsNotLoaded(err) {
 		result, err = t.QueryTeammateTaskColumns().All(ctx)
-	}
-	return result, err
-}
-
-func (tts *TeammateTabStatus) Workspace(ctx context.Context) (*Workspace, error) {
-	result, err := tts.Edges.WorkspaceOrErr()
-	if IsNotLoaded(err) {
-		result, err = tts.QueryWorkspace().Only(ctx)
-	}
-	return result, err
-}
-
-func (tts *TeammateTabStatus) Teammate(ctx context.Context) (*Teammate, error) {
-	result, err := tts.Edges.TeammateOrErr()
-	if IsNotLoaded(err) {
-		result, err = tts.QueryTeammate().Only(ctx)
 	}
 	return result, err
 }
@@ -312,6 +296,22 @@ func (ttc *TeammateTaskColumn) TaskColumn(ctx context.Context) (*TaskColumn, err
 	result, err := ttc.Edges.TaskColumnOrErr()
 	if IsNotLoaded(err) {
 		result, err = ttc.QueryTaskColumn().Only(ctx)
+	}
+	return result, err
+}
+
+func (ttts *TeammateTaskTabStatus) Workspace(ctx context.Context) (*Workspace, error) {
+	result, err := ttts.Edges.WorkspaceOrErr()
+	if IsNotLoaded(err) {
+		result, err = ttts.QueryWorkspace().Only(ctx)
+	}
+	return result, err
+}
+
+func (ttts *TeammateTaskTabStatus) Teammate(ctx context.Context) (*Teammate, error) {
+	result, err := ttts.Edges.TeammateOrErr()
+	if IsNotLoaded(err) {
+		result, err = ttts.QueryTeammate().Only(ctx)
 	}
 	return result, err
 }
@@ -364,10 +364,10 @@ func (w *Workspace) FavoriteWorkspaces(ctx context.Context) ([]*FavoriteWorkspac
 	return result, err
 }
 
-func (w *Workspace) TeammateTabStatuses(ctx context.Context) ([]*TeammateTabStatus, error) {
-	result, err := w.Edges.TeammateTabStatusesOrErr()
+func (w *Workspace) TeammateTaskTabStatuses(ctx context.Context) ([]*TeammateTaskTabStatus, error) {
+	result, err := w.Edges.TeammateTaskTabStatusesOrErr()
 	if IsNotLoaded(err) {
-		result, err = w.QueryTeammateTabStatuses().All(ctx)
+		result, err = w.QueryTeammateTaskTabStatuses().All(ctx)
 	}
 	return result, err
 }

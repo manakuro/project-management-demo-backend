@@ -39,8 +39,8 @@ type hooks struct {
 	TaskListSortStatus      []ent.Hook
 	TaskSection             []ent.Hook
 	Teammate                []ent.Hook
-	TeammateTabStatus       []ent.Hook
 	TeammateTaskColumn      []ent.Hook
+	TeammateTaskTabStatus   []ent.Hook
 	TestTodo                []ent.Hook
 	TestUser                []ent.Hook
 	Workspace               []ent.Hook

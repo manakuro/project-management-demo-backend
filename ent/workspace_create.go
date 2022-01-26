@@ -11,7 +11,7 @@ import (
 	"project-management-demo-backend/ent/schema/editor"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/teammate"
-	"project-management-demo-backend/ent/teammatetabstatus"
+	"project-management-demo-backend/ent/teammatetasktabstatus"
 	"project-management-demo-backend/ent/workspace"
 	"project-management-demo-backend/ent/workspaceteammate"
 	"time"
@@ -143,19 +143,19 @@ func (wc *WorkspaceCreate) AddFavoriteWorkspaces(f ...*FavoriteWorkspace) *Works
 	return wc.AddFavoriteWorkspaceIDs(ids...)
 }
 
-// AddTeammateTabStatusIDs adds the "teammate_tab_statuses" edge to the TeammateTabStatus entity by IDs.
-func (wc *WorkspaceCreate) AddTeammateTabStatusIDs(ids ...ulid.ID) *WorkspaceCreate {
-	wc.mutation.AddTeammateTabStatusIDs(ids...)
+// AddTeammateTaskTabStatusIDs adds the "teammate_task_tab_statuses" edge to the TeammateTaskTabStatus entity by IDs.
+func (wc *WorkspaceCreate) AddTeammateTaskTabStatusIDs(ids ...ulid.ID) *WorkspaceCreate {
+	wc.mutation.AddTeammateTaskTabStatusIDs(ids...)
 	return wc
 }
 
-// AddTeammateTabStatuses adds the "teammate_tab_statuses" edges to the TeammateTabStatus entity.
-func (wc *WorkspaceCreate) AddTeammateTabStatuses(t ...*TeammateTabStatus) *WorkspaceCreate {
+// AddTeammateTaskTabStatuses adds the "teammate_task_tab_statuses" edges to the TeammateTaskTabStatus entity.
+func (wc *WorkspaceCreate) AddTeammateTaskTabStatuses(t ...*TeammateTaskTabStatus) *WorkspaceCreate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
 		ids[i] = t[i].ID
 	}
-	return wc.AddTeammateTabStatusIDs(ids...)
+	return wc.AddTeammateTaskTabStatusIDs(ids...)
 }
 
 // Mutation returns the WorkspaceMutation object of the builder.
@@ -409,17 +409,17 @@ func (wc *WorkspaceCreate) createSpec() (*Workspace, *sqlgraph.CreateSpec) {
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := wc.mutation.TeammateTabStatusesIDs(); len(nodes) > 0 {
+	if nodes := wc.mutation.TeammateTaskTabStatusesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   workspace.TeammateTabStatusesTable,
-			Columns: []string{workspace.TeammateTabStatusesColumn},
+			Table:   workspace.TeammateTaskTabStatusesTable,
+			Columns: []string{workspace.TeammateTaskTabStatusesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
-					Column: teammatetabstatus.FieldID,
+					Column: teammatetasktabstatus.FieldID,
 				},
 			},
 		}

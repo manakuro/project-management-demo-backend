@@ -12,8 +12,8 @@ import (
 	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/teammate"
-	"project-management-demo-backend/ent/teammatetabstatus"
 	"project-management-demo-backend/ent/teammatetaskcolumn"
+	"project-management-demo-backend/ent/teammatetasktabstatus"
 	"project-management-demo-backend/ent/workspace"
 	"project-management-demo-backend/ent/workspaceteammate"
 	"time"
@@ -179,19 +179,19 @@ func (tc *TeammateCreate) AddFavoriteWorkspaces(f ...*FavoriteWorkspace) *Teamma
 	return tc.AddFavoriteWorkspaceIDs(ids...)
 }
 
-// AddTeammateTabStatusIDs adds the "teammate_tab_statuses" edge to the TeammateTabStatus entity by IDs.
-func (tc *TeammateCreate) AddTeammateTabStatusIDs(ids ...ulid.ID) *TeammateCreate {
-	tc.mutation.AddTeammateTabStatusIDs(ids...)
+// AddTeammateTaskTabStatusIDs adds the "teammate_task_tab_statuses" edge to the TeammateTaskTabStatus entity by IDs.
+func (tc *TeammateCreate) AddTeammateTaskTabStatusIDs(ids ...ulid.ID) *TeammateCreate {
+	tc.mutation.AddTeammateTaskTabStatusIDs(ids...)
 	return tc
 }
 
-// AddTeammateTabStatuses adds the "teammate_tab_statuses" edges to the TeammateTabStatus entity.
-func (tc *TeammateCreate) AddTeammateTabStatuses(t ...*TeammateTabStatus) *TeammateCreate {
+// AddTeammateTaskTabStatuses adds the "teammate_task_tab_statuses" edges to the TeammateTaskTabStatus entity.
+func (tc *TeammateCreate) AddTeammateTaskTabStatuses(t ...*TeammateTaskTabStatus) *TeammateCreate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
 		ids[i] = t[i].ID
 	}
-	return tc.AddTeammateTabStatusIDs(ids...)
+	return tc.AddTeammateTaskTabStatusIDs(ids...)
 }
 
 // AddTeammateTaskColumnIDs adds the "teammate_task_columns" edge to the TeammateTaskColumn entity by IDs.
@@ -512,17 +512,17 @@ func (tc *TeammateCreate) createSpec() (*Teammate, *sqlgraph.CreateSpec) {
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := tc.mutation.TeammateTabStatusesIDs(); len(nodes) > 0 {
+	if nodes := tc.mutation.TeammateTaskTabStatusesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   teammate.TeammateTabStatusesTable,
-			Columns: []string{teammate.TeammateTabStatusesColumn},
+			Table:   teammate.TeammateTaskTabStatusesTable,
+			Columns: []string{teammate.TeammateTaskTabStatusesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
-					Column: teammatetabstatus.FieldID,
+					Column: teammatetasktabstatus.FieldID,
 				},
 			},
 		}

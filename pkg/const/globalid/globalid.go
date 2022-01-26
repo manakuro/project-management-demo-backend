@@ -18,8 +18,8 @@ import (
 	"project-management-demo-backend/ent/tasklistsortstatus"
 	"project-management-demo-backend/ent/tasksection"
 	"project-management-demo-backend/ent/teammate"
-	"project-management-demo-backend/ent/teammatetabstatus"
 	"project-management-demo-backend/ent/teammatetaskcolumn"
+	"project-management-demo-backend/ent/teammatetasktabstatus"
 	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/ent/testuser"
 	"project-management-demo-backend/ent/workspace"
@@ -48,7 +48,7 @@ type GlobalIDs struct {
 	TestUser                field
 	Workspace               field
 	WorkspaceTeammate       field
-	TeammateTabStatus       field
+	TeammateTaskTabStatus   field
 	TaskColumn              field
 	TeammateTaskColumn      field
 	ProjectTaskColumn       field
@@ -117,9 +117,9 @@ func New() GlobalIDs {
 			Prefix: "0AN",
 			Table:  favoriteworkspace.Table,
 		},
-		TeammateTabStatus: field{
+		TeammateTaskTabStatus: field{
 			Prefix: "0AO",
-			Table:  teammatetabstatus.Table,
+			Table:  teammatetasktabstatus.Table,
 		},
 		TaskColumn: field{
 			Prefix: "0AP",

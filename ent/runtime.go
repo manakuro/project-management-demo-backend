@@ -20,8 +20,8 @@ import (
 	"project-management-demo-backend/ent/tasklistsortstatus"
 	"project-management-demo-backend/ent/tasksection"
 	"project-management-demo-backend/ent/teammate"
-	"project-management-demo-backend/ent/teammatetabstatus"
 	"project-management-demo-backend/ent/teammatetaskcolumn"
+	"project-management-demo-backend/ent/teammatetasktabstatus"
 	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/ent/testuser"
 	"project-management-demo-backend/ent/workspace"
@@ -574,27 +574,6 @@ func init() {
 	teammateDescID := teammateMixinFields0[0].Descriptor()
 	// teammate.DefaultID holds the default value on creation for the id field.
 	teammate.DefaultID = teammateDescID.Default.(func() ulid.ID)
-	teammatetabstatusMixin := schema.TeammateTabStatus{}.Mixin()
-	teammatetabstatusMixinFields0 := teammatetabstatusMixin[0].Fields()
-	_ = teammatetabstatusMixinFields0
-	teammatetabstatusMixinFields1 := teammatetabstatusMixin[1].Fields()
-	_ = teammatetabstatusMixinFields1
-	teammatetabstatusMixinFields2 := teammatetabstatusMixin[2].Fields()
-	_ = teammatetabstatusMixinFields2
-	teammatetabstatusFields := schema.TeammateTabStatus{}.Fields()
-	_ = teammatetabstatusFields
-	// teammatetabstatusDescCreatedAt is the schema descriptor for created_at field.
-	teammatetabstatusDescCreatedAt := teammatetabstatusMixinFields2[0].Descriptor()
-	// teammatetabstatus.DefaultCreatedAt holds the default value on creation for the created_at field.
-	teammatetabstatus.DefaultCreatedAt = teammatetabstatusDescCreatedAt.Default.(func() time.Time)
-	// teammatetabstatusDescUpdatedAt is the schema descriptor for updated_at field.
-	teammatetabstatusDescUpdatedAt := teammatetabstatusMixinFields2[1].Descriptor()
-	// teammatetabstatus.DefaultUpdatedAt holds the default value on creation for the updated_at field.
-	teammatetabstatus.DefaultUpdatedAt = teammatetabstatusDescUpdatedAt.Default.(func() time.Time)
-	// teammatetabstatusDescID is the schema descriptor for id field.
-	teammatetabstatusDescID := teammatetabstatusMixinFields0[0].Descriptor()
-	// teammatetabstatus.DefaultID holds the default value on creation for the id field.
-	teammatetabstatus.DefaultID = teammatetabstatusDescID.Default.(func() ulid.ID)
 	teammatetaskcolumnMixin := schema.TeammateTaskColumn{}.Mixin()
 	teammatetaskcolumnMixinFields0 := teammatetaskcolumnMixin[0].Fields()
 	_ = teammatetaskcolumnMixinFields0
@@ -634,6 +613,27 @@ func init() {
 	teammatetaskcolumnDescID := teammatetaskcolumnMixinFields0[0].Descriptor()
 	// teammatetaskcolumn.DefaultID holds the default value on creation for the id field.
 	teammatetaskcolumn.DefaultID = teammatetaskcolumnDescID.Default.(func() ulid.ID)
+	teammatetasktabstatusMixin := schema.TeammateTaskTabStatus{}.Mixin()
+	teammatetasktabstatusMixinFields0 := teammatetasktabstatusMixin[0].Fields()
+	_ = teammatetasktabstatusMixinFields0
+	teammatetasktabstatusMixinFields1 := teammatetasktabstatusMixin[1].Fields()
+	_ = teammatetasktabstatusMixinFields1
+	teammatetasktabstatusMixinFields2 := teammatetasktabstatusMixin[2].Fields()
+	_ = teammatetasktabstatusMixinFields2
+	teammatetasktabstatusFields := schema.TeammateTaskTabStatus{}.Fields()
+	_ = teammatetasktabstatusFields
+	// teammatetasktabstatusDescCreatedAt is the schema descriptor for created_at field.
+	teammatetasktabstatusDescCreatedAt := teammatetasktabstatusMixinFields2[0].Descriptor()
+	// teammatetasktabstatus.DefaultCreatedAt holds the default value on creation for the created_at field.
+	teammatetasktabstatus.DefaultCreatedAt = teammatetasktabstatusDescCreatedAt.Default.(func() time.Time)
+	// teammatetasktabstatusDescUpdatedAt is the schema descriptor for updated_at field.
+	teammatetasktabstatusDescUpdatedAt := teammatetasktabstatusMixinFields2[1].Descriptor()
+	// teammatetasktabstatus.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	teammatetasktabstatus.DefaultUpdatedAt = teammatetasktabstatusDescUpdatedAt.Default.(func() time.Time)
+	// teammatetasktabstatusDescID is the schema descriptor for id field.
+	teammatetasktabstatusDescID := teammatetasktabstatusMixinFields0[0].Descriptor()
+	// teammatetasktabstatus.DefaultID holds the default value on creation for the id field.
+	teammatetasktabstatus.DefaultID = teammatetasktabstatusDescID.Default.(func() ulid.ID)
 	testtodoMixin := schema.TestTodo{}.Mixin()
 	testtodoMixinFields0 := testtodoMixin[0].Fields()
 	_ = testtodoMixinFields0

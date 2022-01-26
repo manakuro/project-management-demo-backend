@@ -42,10 +42,10 @@ type Tx struct {
 	TaskSection *TaskSectionClient
 	// Teammate is the client for interacting with the Teammate builders.
 	Teammate *TeammateClient
-	// TeammateTabStatus is the client for interacting with the TeammateTabStatus builders.
-	TeammateTabStatus *TeammateTabStatusClient
 	// TeammateTaskColumn is the client for interacting with the TeammateTaskColumn builders.
 	TeammateTaskColumn *TeammateTaskColumnClient
+	// TeammateTaskTabStatus is the client for interacting with the TeammateTaskTabStatus builders.
+	TeammateTaskTabStatus *TeammateTaskTabStatusClient
 	// TestTodo is the client for interacting with the TestTodo builders.
 	TestTodo *TestTodoClient
 	// TestUser is the client for interacting with the TestUser builders.
@@ -204,8 +204,8 @@ func (tx *Tx) init() {
 	tx.TaskListSortStatus = NewTaskListSortStatusClient(tx.config)
 	tx.TaskSection = NewTaskSectionClient(tx.config)
 	tx.Teammate = NewTeammateClient(tx.config)
-	tx.TeammateTabStatus = NewTeammateTabStatusClient(tx.config)
 	tx.TeammateTaskColumn = NewTeammateTaskColumnClient(tx.config)
+	tx.TeammateTaskTabStatus = NewTeammateTaskTabStatusClient(tx.config)
 	tx.TestTodo = NewTestTodoClient(tx.config)
 	tx.TestUser = NewTestUserClient(tx.config)
 	tx.Workspace = NewWorkspaceClient(tx.config)

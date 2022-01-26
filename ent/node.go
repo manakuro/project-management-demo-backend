@@ -22,8 +22,8 @@ import (
 	"project-management-demo-backend/ent/tasklistsortstatus"
 	"project-management-demo-backend/ent/tasksection"
 	"project-management-demo-backend/ent/teammate"
-	"project-management-demo-backend/ent/teammatetabstatus"
 	"project-management-demo-backend/ent/teammatetaskcolumn"
+	"project-management-demo-backend/ent/teammatetasktabstatus"
 	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/ent/testuser"
 	"project-management-demo-backend/ent/workspace"
@@ -1122,11 +1122,11 @@ func (t *Teammate) Node(ctx context.Context) (node *Node, err error) {
 		return nil, err
 	}
 	node.Edges[6] = &Edge{
-		Type: "TeammateTabStatus",
-		Name: "teammate_tab_statuses",
+		Type: "TeammateTaskTabStatus",
+		Name: "teammate_task_tab_statuses",
 	}
-	err = t.QueryTeammateTabStatuses().
-		Select(teammatetabstatus.FieldID).
+	err = t.QueryTeammateTaskTabStatuses().
+		Select(teammatetasktabstatus.FieldID).
 		Scan(ctx, &node.Edges[6].IDs)
 	if err != nil {
 		return nil, err
@@ -1138,77 +1138,6 @@ func (t *Teammate) Node(ctx context.Context) (node *Node, err error) {
 	err = t.QueryTeammateTaskColumns().
 		Select(teammatetaskcolumn.FieldID).
 		Scan(ctx, &node.Edges[7].IDs)
-	if err != nil {
-		return nil, err
-	}
-	return node, nil
-}
-
-func (tts *TeammateTabStatus) Node(ctx context.Context) (node *Node, err error) {
-	node = &Node{
-		ID:     tts.ID,
-		Type:   "TeammateTabStatus",
-		Fields: make([]*Field, 5),
-		Edges:  make([]*Edge, 2),
-	}
-	var buf []byte
-	if buf, err = json.Marshal(tts.WorkspaceID); err != nil {
-		return nil, err
-	}
-	node.Fields[0] = &Field{
-		Type:  "ulid.ID",
-		Name:  "workspace_id",
-		Value: string(buf),
-	}
-	if buf, err = json.Marshal(tts.TeammateID); err != nil {
-		return nil, err
-	}
-	node.Fields[1] = &Field{
-		Type:  "ulid.ID",
-		Name:  "teammate_id",
-		Value: string(buf),
-	}
-	if buf, err = json.Marshal(tts.StatusCode); err != nil {
-		return nil, err
-	}
-	node.Fields[2] = &Field{
-		Type:  "teammatetabstatus.StatusCode",
-		Name:  "status_code",
-		Value: string(buf),
-	}
-	if buf, err = json.Marshal(tts.CreatedAt); err != nil {
-		return nil, err
-	}
-	node.Fields[3] = &Field{
-		Type:  "time.Time",
-		Name:  "created_at",
-		Value: string(buf),
-	}
-	if buf, err = json.Marshal(tts.UpdatedAt); err != nil {
-		return nil, err
-	}
-	node.Fields[4] = &Field{
-		Type:  "time.Time",
-		Name:  "updated_at",
-		Value: string(buf),
-	}
-	node.Edges[0] = &Edge{
-		Type: "Workspace",
-		Name: "workspace",
-	}
-	err = tts.QueryWorkspace().
-		Select(workspace.FieldID).
-		Scan(ctx, &node.Edges[0].IDs)
-	if err != nil {
-		return nil, err
-	}
-	node.Edges[1] = &Edge{
-		Type: "Teammate",
-		Name: "teammate",
-	}
-	err = tts.QueryTeammate().
-		Select(teammate.FieldID).
-		Scan(ctx, &node.Edges[1].IDs)
 	if err != nil {
 		return nil, err
 	}
@@ -1303,6 +1232,77 @@ func (ttc *TeammateTaskColumn) Node(ctx context.Context) (node *Node, err error)
 	}
 	err = ttc.QueryTaskColumn().
 		Select(taskcolumn.FieldID).
+		Scan(ctx, &node.Edges[1].IDs)
+	if err != nil {
+		return nil, err
+	}
+	return node, nil
+}
+
+func (ttts *TeammateTaskTabStatus) Node(ctx context.Context) (node *Node, err error) {
+	node = &Node{
+		ID:     ttts.ID,
+		Type:   "TeammateTaskTabStatus",
+		Fields: make([]*Field, 5),
+		Edges:  make([]*Edge, 2),
+	}
+	var buf []byte
+	if buf, err = json.Marshal(ttts.WorkspaceID); err != nil {
+		return nil, err
+	}
+	node.Fields[0] = &Field{
+		Type:  "ulid.ID",
+		Name:  "workspace_id",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(ttts.TeammateID); err != nil {
+		return nil, err
+	}
+	node.Fields[1] = &Field{
+		Type:  "ulid.ID",
+		Name:  "teammate_id",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(ttts.StatusCode); err != nil {
+		return nil, err
+	}
+	node.Fields[2] = &Field{
+		Type:  "teammatetasktabstatus.StatusCode",
+		Name:  "status_code",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(ttts.CreatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[3] = &Field{
+		Type:  "time.Time",
+		Name:  "created_at",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(ttts.UpdatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[4] = &Field{
+		Type:  "time.Time",
+		Name:  "updated_at",
+		Value: string(buf),
+	}
+	node.Edges[0] = &Edge{
+		Type: "Workspace",
+		Name: "workspace",
+	}
+	err = ttts.QueryWorkspace().
+		Select(workspace.FieldID).
+		Scan(ctx, &node.Edges[0].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[1] = &Edge{
+		Type: "Teammate",
+		Name: "teammate",
+	}
+	err = ttts.QueryTeammate().
+		Select(teammate.FieldID).
 		Scan(ctx, &node.Edges[1].IDs)
 	if err != nil {
 		return nil, err
@@ -1529,11 +1529,11 @@ func (w *Workspace) Node(ctx context.Context) (node *Node, err error) {
 		return nil, err
 	}
 	node.Edges[4] = &Edge{
-		Type: "TeammateTabStatus",
-		Name: "teammate_tab_statuses",
+		Type: "TeammateTaskTabStatus",
+		Name: "teammate_task_tab_statuses",
 	}
-	err = w.QueryTeammateTabStatuses().
-		Select(teammatetabstatus.FieldID).
+	err = w.QueryTeammateTaskTabStatuses().
+		Select(teammatetasktabstatus.FieldID).
 		Scan(ctx, &node.Edges[4].IDs)
 	if err != nil {
 		return nil, err
@@ -1822,19 +1822,19 @@ func (c *Client) noder(ctx context.Context, table string, id ulid.ID) (Noder, er
 			return nil, err
 		}
 		return n, nil
-	case teammatetabstatus.Table:
-		n, err := c.TeammateTabStatus.Query().
-			Where(teammatetabstatus.ID(id)).
-			CollectFields(ctx, "TeammateTabStatus").
+	case teammatetaskcolumn.Table:
+		n, err := c.TeammateTaskColumn.Query().
+			Where(teammatetaskcolumn.ID(id)).
+			CollectFields(ctx, "TeammateTaskColumn").
 			Only(ctx)
 		if err != nil {
 			return nil, err
 		}
 		return n, nil
-	case teammatetaskcolumn.Table:
-		n, err := c.TeammateTaskColumn.Query().
-			Where(teammatetaskcolumn.ID(id)).
-			CollectFields(ctx, "TeammateTaskColumn").
+	case teammatetasktabstatus.Table:
+		n, err := c.TeammateTaskTabStatus.Query().
+			Where(teammatetasktabstatus.ID(id)).
+			CollectFields(ctx, "TeammateTaskTabStatus").
 			Only(ctx)
 		if err != nil {
 			return nil, err
@@ -2144,10 +2144,10 @@ func (c *Client) noders(ctx context.Context, table string, ids []ulid.ID) ([]Nod
 				*noder = node
 			}
 		}
-	case teammatetabstatus.Table:
-		nodes, err := c.TeammateTabStatus.Query().
-			Where(teammatetabstatus.IDIn(ids...)).
-			CollectFields(ctx, "TeammateTabStatus").
+	case teammatetaskcolumn.Table:
+		nodes, err := c.TeammateTaskColumn.Query().
+			Where(teammatetaskcolumn.IDIn(ids...)).
+			CollectFields(ctx, "TeammateTaskColumn").
 			All(ctx)
 		if err != nil {
 			return nil, err
@@ -2157,10 +2157,10 @@ func (c *Client) noders(ctx context.Context, table string, ids []ulid.ID) ([]Nod
 				*noder = node
 			}
 		}
-	case teammatetaskcolumn.Table:
-		nodes, err := c.TeammateTaskColumn.Query().
-			Where(teammatetaskcolumn.IDIn(ids...)).
-			CollectFields(ctx, "TeammateTaskColumn").
+	case teammatetasktabstatus.Table:
+		nodes, err := c.TeammateTaskTabStatus.Query().
+			Where(teammatetasktabstatus.IDIn(ids...)).
+			CollectFields(ctx, "TeammateTaskTabStatus").
 			All(ctx)
 		if err != nil {
 			return nil, err

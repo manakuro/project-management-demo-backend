@@ -51,11 +51,11 @@ type TaskSection func(*sql.Selector)
 // Teammate is the predicate function for teammate builders.
 type Teammate func(*sql.Selector)
 
-// TeammateTabStatus is the predicate function for teammatetabstatus builders.
-type TeammateTabStatus func(*sql.Selector)
-
 // TeammateTaskColumn is the predicate function for teammatetaskcolumn builders.
 type TeammateTaskColumn func(*sql.Selector)
+
+// TeammateTaskTabStatus is the predicate function for teammatetasktabstatus builders.
+type TeammateTaskTabStatus func(*sql.Selector)
 
 // TestTodo is the predicate function for testtodo builders.
 type TestTodo func(*sql.Selector)

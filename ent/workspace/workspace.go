@@ -30,8 +30,8 @@ const (
 	EdgeWorkspaceTeammates = "workspace_teammates"
 	// EdgeFavoriteWorkspaces holds the string denoting the favorite_workspaces edge name in mutations.
 	EdgeFavoriteWorkspaces = "favorite_workspaces"
-	// EdgeTeammateTabStatuses holds the string denoting the teammate_tab_statuses edge name in mutations.
-	EdgeTeammateTabStatuses = "teammate_tab_statuses"
+	// EdgeTeammateTaskTabStatuses holds the string denoting the teammate_task_tab_statuses edge name in mutations.
+	EdgeTeammateTaskTabStatuses = "teammate_task_tab_statuses"
 	// Table holds the table name of the workspace in the database.
 	Table = "workspaces"
 	// TeammateTable is the table that holds the teammate relation/edge.
@@ -62,13 +62,13 @@ const (
 	FavoriteWorkspacesInverseTable = "favorite_workspaces"
 	// FavoriteWorkspacesColumn is the table column denoting the favorite_workspaces relation/edge.
 	FavoriteWorkspacesColumn = "workspace_id"
-	// TeammateTabStatusesTable is the table that holds the teammate_tab_statuses relation/edge.
-	TeammateTabStatusesTable = "teammate_tab_status"
-	// TeammateTabStatusesInverseTable is the table name for the TeammateTabStatus entity.
-	// It exists in this package in order to avoid circular dependency with the "teammatetabstatus" package.
-	TeammateTabStatusesInverseTable = "teammate_tab_status"
-	// TeammateTabStatusesColumn is the table column denoting the teammate_tab_statuses relation/edge.
-	TeammateTabStatusesColumn = "workspace_id"
+	// TeammateTaskTabStatusesTable is the table that holds the teammate_task_tab_statuses relation/edge.
+	TeammateTaskTabStatusesTable = "teammate_task_tab_status"
+	// TeammateTaskTabStatusesInverseTable is the table name for the TeammateTaskTabStatus entity.
+	// It exists in this package in order to avoid circular dependency with the "teammatetasktabstatus" package.
+	TeammateTaskTabStatusesInverseTable = "teammate_task_tab_status"
+	// TeammateTaskTabStatusesColumn is the table column denoting the teammate_task_tab_statuses relation/edge.
+	TeammateTaskTabStatusesColumn = "workspace_id"
 )
 
 // Columns holds all SQL columns for workspace fields.

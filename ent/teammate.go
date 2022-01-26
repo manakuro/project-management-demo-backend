@@ -46,8 +46,8 @@ type TeammateEdges struct {
 	FavoriteProjects []*FavoriteProject `json:"favorite_projects,omitempty"`
 	// FavoriteWorkspaces holds the value of the favorite_workspaces edge.
 	FavoriteWorkspaces []*FavoriteWorkspace `json:"favorite_workspaces,omitempty"`
-	// TeammateTabStatuses holds the value of the teammate_tab_statuses edge.
-	TeammateTabStatuses []*TeammateTabStatus `json:"teammate_tab_statuses,omitempty"`
+	// TeammateTaskTabStatuses holds the value of the teammate_task_tab_statuses edge.
+	TeammateTaskTabStatuses []*TeammateTaskTabStatus `json:"teammate_task_tab_statuses,omitempty"`
 	// TeammateTaskColumns holds the value of the teammate_task_columns edge.
 	TeammateTaskColumns []*TeammateTaskColumn `json:"teammate_task_columns,omitempty"`
 	// loadedTypes holds the information for reporting if a
@@ -109,13 +109,13 @@ func (e TeammateEdges) FavoriteWorkspacesOrErr() ([]*FavoriteWorkspace, error) {
 	return nil, &NotLoadedError{edge: "favorite_workspaces"}
 }
 
-// TeammateTabStatusesOrErr returns the TeammateTabStatuses value or an error if the edge
+// TeammateTaskTabStatusesOrErr returns the TeammateTaskTabStatuses value or an error if the edge
 // was not loaded in eager-loading.
-func (e TeammateEdges) TeammateTabStatusesOrErr() ([]*TeammateTabStatus, error) {
+func (e TeammateEdges) TeammateTaskTabStatusesOrErr() ([]*TeammateTaskTabStatus, error) {
 	if e.loadedTypes[6] {
-		return e.TeammateTabStatuses, nil
+		return e.TeammateTaskTabStatuses, nil
 	}
-	return nil, &NotLoadedError{edge: "teammate_tab_statuses"}
+	return nil, &NotLoadedError{edge: "teammate_task_tab_statuses"}
 }
 
 // TeammateTaskColumnsOrErr returns the TeammateTaskColumns value or an error if the edge
@@ -224,9 +224,9 @@ func (t *Teammate) QueryFavoriteWorkspaces() *FavoriteWorkspaceQuery {
 	return (&TeammateClient{config: t.config}).QueryFavoriteWorkspaces(t)
 }
 
-// QueryTeammateTabStatuses queries the "teammate_tab_statuses" edge of the Teammate entity.
-func (t *Teammate) QueryTeammateTabStatuses() *TeammateTabStatusQuery {
-	return (&TeammateClient{config: t.config}).QueryTeammateTabStatuses(t)
+// QueryTeammateTaskTabStatuses queries the "teammate_task_tab_statuses" edge of the Teammate entity.
+func (t *Teammate) QueryTeammateTaskTabStatuses() *TeammateTaskTabStatusQuery {
+	return (&TeammateClient{config: t.config}).QueryTeammateTaskTabStatuses(t)
 }
 
 // QueryTeammateTaskColumns queries the "teammate_task_columns" edge of the Teammate entity.

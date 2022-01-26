@@ -15,18 +15,18 @@ import (
 	entMixin "entgo.io/ent/schema/mixin"
 )
 
-// TeammateTabStatus holds the schema definition for the Test entity.
-type TeammateTabStatus struct {
+// TeammateTaskTabStatus holds the schema definition for the Test entity.
+type TeammateTaskTabStatus struct {
 	ent.Schema
 }
 
-// TeammateTabStatusMixin defines Fields
-type TeammateTabStatusMixin struct {
+// TeammateTaskTabStatusMixin defines Fields
+type TeammateTaskTabStatusMixin struct {
 	entMixin.Schema
 }
 
-// Fields of the TeammateTabStatus.
-func (TeammateTabStatusMixin) Fields() []ent.Field {
+// Fields of the TeammateTaskTabStatus.
+func (TeammateTaskTabStatusMixin) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("workspace_id").
 			GoType(ulid.ID("")),
@@ -42,11 +42,11 @@ func (TeammateTabStatusMixin) Fields() []ent.Field {
 	}
 }
 
-// Edges of the TeammateTabStatus.
-func (TeammateTabStatus) Edges() []ent.Edge {
+// Edges of the TeammateTaskTabStatus.
+func (TeammateTaskTabStatus) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("workspace", Workspace.Type).
-			Ref("teammate_tab_statuses").
+			Ref("teammate_task_tab_statuses").
 			Field("workspace_id").
 			Unique().
 			Required().
@@ -56,7 +56,7 @@ func (TeammateTabStatus) Edges() []ent.Edge {
 				),
 			),
 		edge.From("teammate", Teammate.Type).
-			Ref("teammate_tab_statuses").
+			Ref("teammate_task_tab_statuses").
 			Field("teammate_id").
 			Unique().
 			Required().
@@ -68,11 +68,11 @@ func (TeammateTabStatus) Edges() []ent.Edge {
 	}
 }
 
-// Mixin of the TeammateTabStatus.
-func (TeammateTabStatus) Mixin() []ent.Mixin {
+// Mixin of the TeammateTaskTabStatus.
+func (TeammateTaskTabStatus) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		mixin.NewUlid(globalid.New().TeammateTabStatus.Prefix),
-		TeammateTabStatusMixin{},
+		mixin.NewUlid(globalid.New().TeammateTaskTabStatus.Prefix),
+		TeammateTaskTabStatusMixin{},
 		mixin.NewDatetime(),
 	}
 }

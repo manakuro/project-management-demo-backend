@@ -74,10 +74,10 @@ func (Teammate) Edges() []ent.Edge {
 					annotation.Edge{FieldName: "favorite_workspace_id"},
 				),
 			),
-		edge.To("teammate_tab_statuses", TeammateTabStatus.Type).
+		edge.To("teammate_task_tab_statuses", TeammateTaskTabStatus.Type).
 			Annotations(
 				schema.Annotation(
-					annotation.Edge{FieldName: "teammate_tab_status_id"},
+					annotation.Edge{FieldName: "teammate_task_tab_status_id"},
 				),
 			),
 		edge.To("teammate_task_columns", TeammateTaskColumn.Type).
