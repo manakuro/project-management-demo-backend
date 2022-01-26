@@ -40,6 +40,7 @@ func main() {
 	feed.TeammateTaskColumn(ctx, client)
 	feed.TeammateTaskListStatus(ctx, client)
 	feed.ProjectTaskColumn(ctx, client)
+	feed.ProjectTaskListStatus(ctx, client)
 
 	feed.TestUser(ctx, client)
 	feed.TestTodo(ctx, client)
