@@ -13,6 +13,7 @@ import (
 	"project-management-demo-backend/ent/projectlightcolor"
 	"project-management-demo-backend/ent/projecttaskcolumn"
 	"project-management-demo-backend/ent/projecttaskliststatus"
+	"project-management-demo-backend/ent/projecttasksection"
 	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/ent/schema"
 	"project-management-demo-backend/ent/schema/ulid"
@@ -368,6 +369,45 @@ func init() {
 	projecttaskliststatusDescID := projecttaskliststatusMixinFields0[0].Descriptor()
 	// projecttaskliststatus.DefaultID holds the default value on creation for the id field.
 	projecttaskliststatus.DefaultID = projecttaskliststatusDescID.Default.(func() ulid.ID)
+	projecttasksectionMixin := schema.ProjectTaskSection{}.Mixin()
+	projecttasksectionMixinFields0 := projecttasksectionMixin[0].Fields()
+	_ = projecttasksectionMixinFields0
+	projecttasksectionMixinFields1 := projecttasksectionMixin[1].Fields()
+	_ = projecttasksectionMixinFields1
+	projecttasksectionMixinFields2 := projecttasksectionMixin[2].Fields()
+	_ = projecttasksectionMixinFields2
+	projecttasksectionFields := schema.ProjectTaskSection{}.Fields()
+	_ = projecttasksectionFields
+	// projecttasksectionDescName is the schema descriptor for name field.
+	projecttasksectionDescName := projecttasksectionMixinFields1[1].Descriptor()
+	// projecttasksection.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	projecttasksection.NameValidator = func() func(string) error {
+		validators := projecttasksectionDescName.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(name string) error {
+			for _, fn := range fns {
+				if err := fn(name); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// projecttasksectionDescCreatedAt is the schema descriptor for created_at field.
+	projecttasksectionDescCreatedAt := projecttasksectionMixinFields2[0].Descriptor()
+	// projecttasksection.DefaultCreatedAt holds the default value on creation for the created_at field.
+	projecttasksection.DefaultCreatedAt = projecttasksectionDescCreatedAt.Default.(func() time.Time)
+	// projecttasksectionDescUpdatedAt is the schema descriptor for updated_at field.
+	projecttasksectionDescUpdatedAt := projecttasksectionMixinFields2[1].Descriptor()
+	// projecttasksection.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	projecttasksection.DefaultUpdatedAt = projecttasksectionDescUpdatedAt.Default.(func() time.Time)
+	// projecttasksectionDescID is the schema descriptor for id field.
+	projecttasksectionDescID := projecttasksectionMixinFields0[0].Descriptor()
+	// projecttasksection.DefaultID holds the default value on creation for the id field.
+	projecttasksection.DefaultID = projecttasksectionDescID.Default.(func() ulid.ID)
 	projectteammateMixin := schema.ProjectTeammate{}.Mixin()
 	projectteammateMixinFields0 := projectteammateMixin[0].Fields()
 	_ = projectteammateMixinFields0

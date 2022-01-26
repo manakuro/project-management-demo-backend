@@ -35,6 +35,7 @@ func main() {
 	feed.TaskSection(ctx, client)
 
 	feed.TeammateTaskSection(ctx, client)
+	feed.ProjectTaskSection(ctx, client)
 
 	feed.FavoriteProject(ctx, client)
 	feed.FavoriteWorkspace(ctx, client)

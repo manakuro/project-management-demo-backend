@@ -13,6 +13,7 @@ import (
 	"project-management-demo-backend/ent/projectlightcolor"
 	"project-management-demo-backend/ent/projecttaskcolumn"
 	"project-management-demo-backend/ent/projecttaskliststatus"
+	"project-management-demo-backend/ent/projecttasksection"
 	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/ent/schema/editor"
 	"project-management-demo-backend/ent/schema/ulid"
@@ -224,6 +225,21 @@ func (pc *ProjectCreate) AddProjectTaskListStatuses(p ...*ProjectTaskListStatus)
 		ids[i] = p[i].ID
 	}
 	return pc.AddProjectTaskListStatusIDs(ids...)
+}
+
+// AddProjectTaskSectionIDs adds the "project_task_sections" edge to the ProjectTaskSection entity by IDs.
+func (pc *ProjectCreate) AddProjectTaskSectionIDs(ids ...ulid.ID) *ProjectCreate {
+	pc.mutation.AddProjectTaskSectionIDs(ids...)
+	return pc
+}
+
+// AddProjectTaskSections adds the "project_task_sections" edges to the ProjectTaskSection entity.
+func (pc *ProjectCreate) AddProjectTaskSections(p ...*ProjectTaskSection) *ProjectCreate {
+	ids := make([]ulid.ID, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return pc.AddProjectTaskSectionIDs(ids...)
 }
 
 // Mutation returns the ProjectMutation object of the builder.
@@ -623,6 +639,25 @@ func (pc *ProjectCreate) createSpec() (*Project, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: projecttaskliststatus.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := pc.mutation.ProjectTaskSectionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   project.ProjectTaskSectionsTable,
+			Columns: []string{project.ProjectTaskSectionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: projecttasksection.FieldID,
 				},
 			},
 		}

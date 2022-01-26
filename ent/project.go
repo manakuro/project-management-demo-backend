@@ -71,9 +71,11 @@ type ProjectEdges struct {
 	ProjectTaskColumns []*ProjectTaskColumn `json:"project_task_columns,omitempty"`
 	// ProjectTaskListStatuses holds the value of the project_task_list_statuses edge.
 	ProjectTaskListStatuses []*ProjectTaskListStatus `json:"project_task_list_statuses,omitempty"`
+	// ProjectTaskSections holds the value of the project_task_sections edge.
+	ProjectTaskSections []*ProjectTaskSection `json:"project_task_sections,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [9]bool
+	loadedTypes [10]bool
 }
 
 // WorkspaceOrErr returns the Workspace value or an error if the edge
@@ -180,6 +182,15 @@ func (e ProjectEdges) ProjectTaskListStatusesOrErr() ([]*ProjectTaskListStatus, 
 		return e.ProjectTaskListStatuses, nil
 	}
 	return nil, &NotLoadedError{edge: "project_task_list_statuses"}
+}
+
+// ProjectTaskSectionsOrErr returns the ProjectTaskSections value or an error if the edge
+// was not loaded in eager-loading.
+func (e ProjectEdges) ProjectTaskSectionsOrErr() ([]*ProjectTaskSection, error) {
+	if e.loadedTypes[9] {
+		return e.ProjectTaskSections, nil
+	}
+	return nil, &NotLoadedError{edge: "project_task_sections"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -332,6 +343,11 @@ func (pr *Project) QueryProjectTaskColumns() *ProjectTaskColumnQuery {
 // QueryProjectTaskListStatuses queries the "project_task_list_statuses" edge of the Project entity.
 func (pr *Project) QueryProjectTaskListStatuses() *ProjectTaskListStatusQuery {
 	return (&ProjectClient{config: pr.config}).QueryProjectTaskListStatuses(pr)
+}
+
+// QueryProjectTaskSections queries the "project_task_sections" edge of the Project entity.
+func (pr *Project) QueryProjectTaskSections() *ProjectTaskSectionQuery {
+	return (&ProjectClient{config: pr.config}).QueryProjectTaskSections(pr)
 }
 
 // Update returns a builder for updating this Project.

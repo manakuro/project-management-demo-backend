@@ -132,6 +132,14 @@ func (pr *Project) ProjectTaskListStatuses(ctx context.Context) ([]*ProjectTaskL
 	return result, err
 }
 
+func (pr *Project) ProjectTaskSections(ctx context.Context) ([]*ProjectTaskSection, error) {
+	result, err := pr.Edges.ProjectTaskSectionsOrErr()
+	if IsNotLoaded(err) {
+		result, err = pr.QueryProjectTaskSections().All(ctx)
+	}
+	return result, err
+}
+
 func (pbc *ProjectBaseColor) Projects(ctx context.Context) ([]*Project, error) {
 	result, err := pbc.Edges.ProjectsOrErr()
 	if IsNotLoaded(err) {
@@ -216,6 +224,14 @@ func (ptls *ProjectTaskListStatus) TaskListSortStatus(ctx context.Context) (*Tas
 	result, err := ptls.Edges.TaskListSortStatusOrErr()
 	if IsNotLoaded(err) {
 		result, err = ptls.QueryTaskListSortStatus().Only(ctx)
+	}
+	return result, err
+}
+
+func (pts *ProjectTaskSection) Project(ctx context.Context) (*Project, error) {
+	result, err := pts.Edges.ProjectOrErr()
+	if IsNotLoaded(err) {
+		result, err = pts.QueryProject().Only(ctx)
 	}
 	return result, err
 }

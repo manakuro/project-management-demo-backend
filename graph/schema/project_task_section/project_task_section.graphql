@@ -1,0 +1,41 @@
+type ProjectTaskSection implements Node {
+  id: ID!
+  projectId: ID!
+  project: Project!
+  name: String!
+  createdAt: String!
+  updatedAt: String!
+}
+type ProjectTaskSectionConnection {
+  totalCount: Int!
+  pageInfo: PageInfo!
+  edges: [ProjectTaskSectionEdge]
+}
+type ProjectTaskSectionEdge {
+  node: ProjectTaskSection
+  cursor: Cursor!
+}
+
+input CreateProjectTaskSectionInput {
+  projectId: ID!
+}
+
+input UpdateProjectTaskSectionInput {
+  id: ID!
+  projectId: ID
+  name: String
+}
+
+extend type Subscription {
+  projectTaskSectionUpdated(id: ID!): ProjectTaskSection!
+}
+
+extend type Query {
+  projectTaskSection(where: ProjectTaskSectionWhereInput): ProjectTaskSection
+  projectTaskSections(after: Cursor, first: Int, before: Cursor, last: Int, where: ProjectTaskSectionWhereInput): ProjectTaskSectionConnection
+}
+
+extend type Mutation {
+  createProjectTaskSection(input: CreateProjectTaskSectionInput!): ProjectTaskSection!
+  updateProjectTaskSection(input: UpdateProjectTaskSectionInput!): ProjectTaskSection!
+}
