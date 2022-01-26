@@ -146,6 +146,12 @@ type TeammateTaskSectionUpdated struct {
 	Ch chan *model.TeammateTaskSection
 }
 
+// ProjectTaskSectionUpdated of channel
+type ProjectTaskSectionUpdated struct {
+	ID model.ID
+	Ch chan *model.ProjectTaskSection
+}
+
 // Subscriptions hold an id and a channel of subscription.
 type Subscriptions struct {
 	ColorUpdated                  map[string]ColorUpdated
@@ -159,6 +165,7 @@ type Subscriptions struct {
 	ProjectLightColorUpdated      map[string]ProjectLightColorUpdated
 	ProjectTaskColumnUpdated      map[string]ProjectTaskColumnUpdated
 	ProjectTaskListStatusUpdated  map[string]ProjectTaskListStatusUpdated
+	ProjectTaskSectionUpdated     map[string]ProjectTaskSectionUpdated
 	ProjectTeammateUpdated        map[string]ProjectTeammateUpdated
 	ProjectUpdated                map[string]ProjectUpdated
 	TaskColumnUpdated             map[string]TaskColumnUpdated
