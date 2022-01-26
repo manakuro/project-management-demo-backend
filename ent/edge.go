@@ -356,6 +356,14 @@ func (t *Teammate) TeammateTaskListStatuses(ctx context.Context) ([]*TeammateTas
 	return result, err
 }
 
+func (t *Teammate) TeammateTaskSections(ctx context.Context) ([]*TeammateTaskSection, error) {
+	result, err := t.Edges.TeammateTaskSectionsOrErr()
+	if IsNotLoaded(err) {
+		result, err = t.QueryTeammateTaskSections().All(ctx)
+	}
+	return result, err
+}
+
 func (ttc *TeammateTaskColumn) Teammate(ctx context.Context) (*Teammate, error) {
 	result, err := ttc.Edges.TeammateOrErr()
 	if IsNotLoaded(err) {
@@ -400,6 +408,22 @@ func (ttls *TeammateTaskListStatus) TaskListSortStatus(ctx context.Context) (*Ta
 	result, err := ttls.Edges.TaskListSortStatusOrErr()
 	if IsNotLoaded(err) {
 		result, err = ttls.QueryTaskListSortStatus().Only(ctx)
+	}
+	return result, err
+}
+
+func (tts *TeammateTaskSection) Teammate(ctx context.Context) (*Teammate, error) {
+	result, err := tts.Edges.TeammateOrErr()
+	if IsNotLoaded(err) {
+		result, err = tts.QueryTeammate().Only(ctx)
+	}
+	return result, err
+}
+
+func (tts *TeammateTaskSection) Workspace(ctx context.Context) (*Workspace, error) {
+	result, err := tts.Edges.WorkspaceOrErr()
+	if IsNotLoaded(err) {
+		result, err = tts.QueryWorkspace().Only(ctx)
 	}
 	return result, err
 }
@@ -480,6 +504,14 @@ func (w *Workspace) TeammateTaskListStatuses(ctx context.Context) ([]*TeammateTa
 	result, err := w.Edges.TeammateTaskListStatusesOrErr()
 	if IsNotLoaded(err) {
 		result, err = w.QueryTeammateTaskListStatuses().All(ctx)
+	}
+	return result, err
+}
+
+func (w *Workspace) TeammateTaskSections(ctx context.Context) ([]*TeammateTaskSection, error) {
+	result, err := w.Edges.TeammateTaskSectionsOrErr()
+	if IsNotLoaded(err) {
+		result, err = w.QueryTeammateTaskSections().All(ctx)
 	}
 	return result, err
 }

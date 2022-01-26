@@ -450,6 +450,36 @@ var (
 			},
 		},
 	}
+	// TeammateTaskSectionsColumns holds the columns for the "teammate_task_sections" table.
+	TeammateTaskSectionsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+		{Name: "name", Type: field.TypeString, Size: 255},
+		{Name: "assigned", Type: field.TypeBool},
+		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
+		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
+		{Name: "teammate_id", Type: field.TypeString, Nullable: true},
+		{Name: "workspace_id", Type: field.TypeString, Nullable: true},
+	}
+	// TeammateTaskSectionsTable holds the schema information for the "teammate_task_sections" table.
+	TeammateTaskSectionsTable = &schema.Table{
+		Name:       "teammate_task_sections",
+		Columns:    TeammateTaskSectionsColumns,
+		PrimaryKey: []*schema.Column{TeammateTaskSectionsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "teammate_task_sections_teammates_teammate_task_sections",
+				Columns:    []*schema.Column{TeammateTaskSectionsColumns[5]},
+				RefColumns: []*schema.Column{TeammatesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "teammate_task_sections_workspaces_teammate_task_sections",
+				Columns:    []*schema.Column{TeammateTaskSectionsColumns[6]},
+				RefColumns: []*schema.Column{WorkspacesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
 	// TeammateTaskTabStatusColumns holds the columns for the "teammate_task_tab_status" table.
 	TeammateTaskTabStatusColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString},
@@ -591,6 +621,7 @@ var (
 		TeammatesTable,
 		TeammateTaskColumnsTable,
 		TeammateTaskListStatusTable,
+		TeammateTaskSectionsTable,
 		TeammateTaskTabStatusTable,
 		TestTodosTable,
 		TestUsersTable,
@@ -625,6 +656,8 @@ func init() {
 	TeammateTaskListStatusTable.ForeignKeys[1].RefTable = TaskListSortStatusTable
 	TeammateTaskListStatusTable.ForeignKeys[2].RefTable = TeammatesTable
 	TeammateTaskListStatusTable.ForeignKeys[3].RefTable = WorkspacesTable
+	TeammateTaskSectionsTable.ForeignKeys[0].RefTable = TeammatesTable
+	TeammateTaskSectionsTable.ForeignKeys[1].RefTable = WorkspacesTable
 	TeammateTaskTabStatusTable.ForeignKeys[0].RefTable = TeammatesTable
 	TeammateTaskTabStatusTable.ForeignKeys[1].RefTable = WorkspacesTable
 	TestTodosTable.ForeignKeys[0].RefTable = TestUsersTable

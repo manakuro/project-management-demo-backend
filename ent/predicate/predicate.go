@@ -60,6 +60,9 @@ type TeammateTaskColumn func(*sql.Selector)
 // TeammateTaskListStatus is the predicate function for teammatetaskliststatus builders.
 type TeammateTaskListStatus func(*sql.Selector)
 
+// TeammateTaskSection is the predicate function for teammatetasksection builders.
+type TeammateTaskSection func(*sql.Selector)
+
 // TeammateTaskTabStatus is the predicate function for teammatetasktabstatus builders.
 type TeammateTaskTabStatus func(*sql.Selector)
 

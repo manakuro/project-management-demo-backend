@@ -14,6 +14,7 @@ import (
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/teammatetaskcolumn"
 	"project-management-demo-backend/ent/teammatetaskliststatus"
+	"project-management-demo-backend/ent/teammatetasksection"
 	"project-management-demo-backend/ent/teammatetasktabstatus"
 	"project-management-demo-backend/ent/workspace"
 	"project-management-demo-backend/ent/workspaceteammate"
@@ -223,6 +224,21 @@ func (tc *TeammateCreate) AddTeammateTaskListStatuses(t ...*TeammateTaskListStat
 		ids[i] = t[i].ID
 	}
 	return tc.AddTeammateTaskListStatusIDs(ids...)
+}
+
+// AddTeammateTaskSectionIDs adds the "teammate_task_sections" edge to the TeammateTaskSection entity by IDs.
+func (tc *TeammateCreate) AddTeammateTaskSectionIDs(ids ...ulid.ID) *TeammateCreate {
+	tc.mutation.AddTeammateTaskSectionIDs(ids...)
+	return tc
+}
+
+// AddTeammateTaskSections adds the "teammate_task_sections" edges to the TeammateTaskSection entity.
+func (tc *TeammateCreate) AddTeammateTaskSections(t ...*TeammateTaskSection) *TeammateCreate {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return tc.AddTeammateTaskSectionIDs(ids...)
 }
 
 // Mutation returns the TeammateMutation object of the builder.
@@ -577,6 +593,25 @@ func (tc *TeammateCreate) createSpec() (*Teammate, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: teammatetaskliststatus.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := tc.mutation.TeammateTaskSectionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   teammate.TeammateTaskSectionsTable,
+			Columns: []string{teammate.TeammateTaskSectionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: teammatetasksection.FieldID,
 				},
 			},
 		}
