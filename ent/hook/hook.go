@@ -242,6 +242,19 @@ func (f TeammateTaskListStatusFunc) Mutate(ctx context.Context, m ent.Mutation) 
 	return f(ctx, mv)
 }
 
+// The TeammateTaskSectionFunc type is an adapter to allow the use of ordinary
+// function as TeammateTaskSection mutator.
+type TeammateTaskSectionFunc func(context.Context, *ent.TeammateTaskSectionMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f TeammateTaskSectionFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.TeammateTaskSectionMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.TeammateTaskSectionMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The TeammateTaskTabStatusFunc type is an adapter to allow the use of ordinary
 // function as TeammateTaskTabStatus mutator.
 type TeammateTaskTabStatusFunc func(context.Context, *ent.TeammateTaskTabStatusMutation) (ent.Value, error)

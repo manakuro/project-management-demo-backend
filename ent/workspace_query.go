@@ -14,6 +14,7 @@ import (
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/teammatetaskliststatus"
+	"project-management-demo-backend/ent/teammatetasksection"
 	"project-management-demo-backend/ent/teammatetasktabstatus"
 	"project-management-demo-backend/ent/workspace"
 	"project-management-demo-backend/ent/workspaceteammate"
@@ -39,6 +40,7 @@ type WorkspaceQuery struct {
 	withFavoriteWorkspaces       *FavoriteWorkspaceQuery
 	withTeammateTaskTabStatuses  *TeammateTaskTabStatusQuery
 	withTeammateTaskListStatuses *TeammateTaskListStatusQuery
+	withTeammateTaskSections     *TeammateTaskSectionQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -200,6 +202,28 @@ func (wq *WorkspaceQuery) QueryTeammateTaskListStatuses() *TeammateTaskListStatu
 			sqlgraph.From(workspace.Table, workspace.FieldID, selector),
 			sqlgraph.To(teammatetaskliststatus.Table, teammatetaskliststatus.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, workspace.TeammateTaskListStatusesTable, workspace.TeammateTaskListStatusesColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(wq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryTeammateTaskSections chains the current query on the "teammate_task_sections" edge.
+func (wq *WorkspaceQuery) QueryTeammateTaskSections() *TeammateTaskSectionQuery {
+	query := &TeammateTaskSectionQuery{config: wq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := wq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := wq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(workspace.Table, workspace.FieldID, selector),
+			sqlgraph.To(teammatetasksection.Table, teammatetasksection.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, workspace.TeammateTaskSectionsTable, workspace.TeammateTaskSectionsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(wq.driver.Dialect(), step)
 		return fromU, nil
@@ -394,6 +418,7 @@ func (wq *WorkspaceQuery) Clone() *WorkspaceQuery {
 		withFavoriteWorkspaces:       wq.withFavoriteWorkspaces.Clone(),
 		withTeammateTaskTabStatuses:  wq.withTeammateTaskTabStatuses.Clone(),
 		withTeammateTaskListStatuses: wq.withTeammateTaskListStatuses.Clone(),
+		withTeammateTaskSections:     wq.withTeammateTaskSections.Clone(),
 		// clone intermediate query.
 		sql:  wq.sql.Clone(),
 		path: wq.path,
@@ -466,6 +491,17 @@ func (wq *WorkspaceQuery) WithTeammateTaskListStatuses(opts ...func(*TeammateTas
 	return wq
 }
 
+// WithTeammateTaskSections tells the query-builder to eager-load the nodes that are connected to
+// the "teammate_task_sections" edge. The optional arguments are used to configure the query builder of the edge.
+func (wq *WorkspaceQuery) WithTeammateTaskSections(opts ...func(*TeammateTaskSectionQuery)) *WorkspaceQuery {
+	query := &TeammateTaskSectionQuery{config: wq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	wq.withTeammateTaskSections = query
+	return wq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -531,13 +567,14 @@ func (wq *WorkspaceQuery) sqlAll(ctx context.Context) ([]*Workspace, error) {
 	var (
 		nodes       = []*Workspace{}
 		_spec       = wq.querySpec()
-		loadedTypes = [6]bool{
+		loadedTypes = [7]bool{
 			wq.withTeammate != nil,
 			wq.withProjects != nil,
 			wq.withWorkspaceTeammates != nil,
 			wq.withFavoriteWorkspaces != nil,
 			wq.withTeammateTaskTabStatuses != nil,
 			wq.withTeammateTaskListStatuses != nil,
+			wq.withTeammateTaskSections != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -708,6 +745,31 @@ func (wq *WorkspaceQuery) sqlAll(ctx context.Context) ([]*Workspace, error) {
 				return nil, fmt.Errorf(`unexpected foreign-key "workspace_id" returned %v for node %v`, fk, n.ID)
 			}
 			node.Edges.TeammateTaskListStatuses = append(node.Edges.TeammateTaskListStatuses, n)
+		}
+	}
+
+	if query := wq.withTeammateTaskSections; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[ulid.ID]*Workspace)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.TeammateTaskSections = []*TeammateTaskSection{}
+		}
+		query.Where(predicate.TeammateTaskSection(func(s *sql.Selector) {
+			s.Where(sql.InValues(workspace.TeammateTaskSectionsColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.WorkspaceID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "workspace_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.TeammateTaskSections = append(node.Edges.TeammateTaskSections, n)
 		}
 	}
 

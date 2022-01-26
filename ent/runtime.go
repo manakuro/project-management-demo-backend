@@ -23,6 +23,7 @@ import (
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/teammatetaskcolumn"
 	"project-management-demo-backend/ent/teammatetaskliststatus"
+	"project-management-demo-backend/ent/teammatetasksection"
 	"project-management-demo-backend/ent/teammatetasktabstatus"
 	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/ent/testuser"
@@ -653,6 +654,45 @@ func init() {
 	teammatetaskliststatusDescID := teammatetaskliststatusMixinFields0[0].Descriptor()
 	// teammatetaskliststatus.DefaultID holds the default value on creation for the id field.
 	teammatetaskliststatus.DefaultID = teammatetaskliststatusDescID.Default.(func() ulid.ID)
+	teammatetasksectionMixin := schema.TeammateTaskSection{}.Mixin()
+	teammatetasksectionMixinFields0 := teammatetasksectionMixin[0].Fields()
+	_ = teammatetasksectionMixinFields0
+	teammatetasksectionMixinFields1 := teammatetasksectionMixin[1].Fields()
+	_ = teammatetasksectionMixinFields1
+	teammatetasksectionMixinFields2 := teammatetasksectionMixin[2].Fields()
+	_ = teammatetasksectionMixinFields2
+	teammatetasksectionFields := schema.TeammateTaskSection{}.Fields()
+	_ = teammatetasksectionFields
+	// teammatetasksectionDescName is the schema descriptor for name field.
+	teammatetasksectionDescName := teammatetasksectionMixinFields1[2].Descriptor()
+	// teammatetasksection.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	teammatetasksection.NameValidator = func() func(string) error {
+		validators := teammatetasksectionDescName.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(name string) error {
+			for _, fn := range fns {
+				if err := fn(name); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// teammatetasksectionDescCreatedAt is the schema descriptor for created_at field.
+	teammatetasksectionDescCreatedAt := teammatetasksectionMixinFields2[0].Descriptor()
+	// teammatetasksection.DefaultCreatedAt holds the default value on creation for the created_at field.
+	teammatetasksection.DefaultCreatedAt = teammatetasksectionDescCreatedAt.Default.(func() time.Time)
+	// teammatetasksectionDescUpdatedAt is the schema descriptor for updated_at field.
+	teammatetasksectionDescUpdatedAt := teammatetasksectionMixinFields2[1].Descriptor()
+	// teammatetasksection.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	teammatetasksection.DefaultUpdatedAt = teammatetasksectionDescUpdatedAt.Default.(func() time.Time)
+	// teammatetasksectionDescID is the schema descriptor for id field.
+	teammatetasksectionDescID := teammatetasksectionMixinFields0[0].Descriptor()
+	// teammatetasksection.DefaultID holds the default value on creation for the id field.
+	teammatetasksection.DefaultID = teammatetasksectionDescID.Default.(func() ulid.ID)
 	teammatetasktabstatusMixin := schema.TeammateTaskTabStatus{}.Mixin()
 	teammatetasktabstatusMixinFields0 := teammatetasktabstatusMixin[0].Fields()
 	_ = teammatetasktabstatusMixinFields0

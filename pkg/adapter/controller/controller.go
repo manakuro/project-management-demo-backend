@@ -22,6 +22,7 @@ type Controller struct {
 	Teammate                interface{ Teammate }
 	TeammateTaskColumn      interface{ TeammateTaskColumn }
 	TeammateTaskListStatus  interface{ TeammateTaskListStatus }
+	TeammateTaskSection     interface{ TeammateTaskSection }
 	TeammateTaskTabStatus   interface{ TeammateTaskTabStatus }
 	TestTodo                interface{ TestTodo }
 	TestUser                interface{ TestUser }

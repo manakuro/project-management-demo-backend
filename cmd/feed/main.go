@@ -34,6 +34,8 @@ func main() {
 	feed.TaskListSortStatus(ctx, client)
 	feed.TaskSection(ctx, client)
 
+	feed.TeammateTaskSection(ctx, client)
+
 	feed.FavoriteProject(ctx, client)
 	feed.FavoriteWorkspace(ctx, client)
 	feed.TeammateTaskTabStatus(ctx, client)

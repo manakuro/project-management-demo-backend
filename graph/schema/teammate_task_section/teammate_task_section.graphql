@@ -1,0 +1,46 @@
+type TeammateTaskSection implements Node {
+  id: ID!
+  workspaceId: ID!
+  workspace: Workspace!
+  teammateId: ID!
+  teammate: Teammate!
+  name: String!
+  assigned: Boolean!
+  createdAt: String!
+  updatedAt: String!
+}
+type TeammateTaskSectionConnection {
+  totalCount: Int!
+  pageInfo: PageInfo!
+  edges: [TeammateTaskSectionEdge]
+}
+type TeammateTaskSectionEdge {
+  node: TeammateTaskSection
+  cursor: Cursor!
+}
+
+input CreateTeammateTaskSectionInput {
+  workspaceId: ID!
+  teammateId: ID!
+}
+
+input UpdateTeammateTaskSectionInput {
+  id: ID!
+  workspaceId: ID
+  teammateId: ID
+  name: String
+}
+
+extend type Subscription {
+  teammateTaskSectionUpdated(id: ID!): TeammateTaskSection!
+}
+
+extend type Query {
+  teammateTaskSection(where: TeammateTaskSectionWhereInput): TeammateTaskSection
+  teammateTaskSections(after: Cursor, first: Int, before: Cursor, last: Int, where: TeammateTaskSectionWhereInput): TeammateTaskSectionConnection
+}
+
+extend type Mutation {
+  createTeammateTaskSection(input: CreateTeammateTaskSectionInput!): TeammateTaskSection!
+  updateTeammateTaskSection(input: UpdateTeammateTaskSectionInput!): TeammateTaskSection!
+}
