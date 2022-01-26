@@ -20,8 +20,6 @@ type Tx struct {
 	FavoriteWorkspace *FavoriteWorkspaceClient
 	// Icon is the client for interacting with the Icon builders.
 	Icon *IconClient
-	// MyTasksTabStatus is the client for interacting with the MyTasksTabStatus builders.
-	MyTasksTabStatus *MyTasksTabStatusClient
 	// Project is the client for interacting with the Project builders.
 	Project *ProjectClient
 	// ProjectBaseColor is the client for interacting with the ProjectBaseColor builders.
@@ -46,6 +44,8 @@ type Tx struct {
 	Teammate *TeammateClient
 	// TeammateTaskColumn is the client for interacting with the TeammateTaskColumn builders.
 	TeammateTaskColumn *TeammateTaskColumnClient
+	// TeammateTaskTabStatus is the client for interacting with the TeammateTaskTabStatus builders.
+	TeammateTaskTabStatus *TeammateTaskTabStatusClient
 	// TestTodo is the client for interacting with the TestTodo builders.
 	TestTodo *TestTodoClient
 	// TestUser is the client for interacting with the TestUser builders.
@@ -193,7 +193,6 @@ func (tx *Tx) init() {
 	tx.FavoriteProject = NewFavoriteProjectClient(tx.config)
 	tx.FavoriteWorkspace = NewFavoriteWorkspaceClient(tx.config)
 	tx.Icon = NewIconClient(tx.config)
-	tx.MyTasksTabStatus = NewMyTasksTabStatusClient(tx.config)
 	tx.Project = NewProjectClient(tx.config)
 	tx.ProjectBaseColor = NewProjectBaseColorClient(tx.config)
 	tx.ProjectIcon = NewProjectIconClient(tx.config)
@@ -206,6 +205,7 @@ func (tx *Tx) init() {
 	tx.TaskSection = NewTaskSectionClient(tx.config)
 	tx.Teammate = NewTeammateClient(tx.config)
 	tx.TeammateTaskColumn = NewTeammateTaskColumnClient(tx.config)
+	tx.TeammateTaskTabStatus = NewTeammateTaskTabStatusClient(tx.config)
 	tx.TestTodo = NewTestTodoClient(tx.config)
 	tx.TestUser = NewTestUserClient(tx.config)
 	tx.Workspace = NewWorkspaceClient(tx.config)

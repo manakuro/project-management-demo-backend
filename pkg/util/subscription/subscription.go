@@ -98,10 +98,10 @@ type FavoriteWorkspaceIDsUpdated struct {
 	Ch         chan []model.ID
 }
 
-// MyTasksTabStatusUpdated of channel
-type MyTasksTabStatusUpdated struct {
+// TeammateTaskTabStatusUpdated of channel
+type TeammateTaskTabStatusUpdated struct {
 	ID model.ID
-	Ch chan *model.MyTasksTabStatus
+	Ch chan *model.TeammateTaskTabStatus
 }
 
 // TaskColumnUpdated of channel
@@ -130,26 +130,26 @@ type TaskSectionUpdated struct {
 
 // Subscriptions hold an id and a channel of subscription.
 type Subscriptions struct {
-	ColorUpdated                map[string]ColorUpdated
-	FavoriteProjectCreated      map[string]FavoriteProjectCreated
-	FavoriteProjectIDsUpdated   map[string]FavoriteProjectIDsUpdated
-	FavoriteWorkspaceIDsUpdated map[string]FavoriteWorkspaceIDsUpdated
-	IconUpdated                 map[string]IconUpdated
-	MeUpdated                   map[string]MeUpdated
-	MyTasksTabStatusUpdated     map[string]MyTasksTabStatusUpdated
-	ProjectBaseColorUpdated     map[string]ProjectBaseColorUpdated
-	ProjectIconUpdated          map[string]ProjectIconUpdated
-	ProjectLightColorUpdated    map[string]ProjectLightColorUpdated
-	ProjectTaskColumnUpdated    map[string]ProjectTaskColumnUpdated
-	ProjectTeammateUpdated      map[string]ProjectTeammateUpdated
-	ProjectUpdated              map[string]ProjectUpdated
-	TaskColumnUpdated           map[string]TaskColumnUpdated
-	TaskSectionUpdated          map[string]TaskSectionUpdated
-	TeammateTaskColumnUpdated   map[string]TeammateTaskColumnUpdated
-	TeammateUpdated             map[string]TeammateUpdated
-	TestUserUpdated             map[string]TestUserUpdated
-	WorkspaceTeammateUpdated    map[string]WorkspaceTeammateUpdated
-	WorkspaceUpdated            map[string]WorkspaceUpdated
+	ColorUpdated                 map[string]ColorUpdated
+	FavoriteProjectCreated       map[string]FavoriteProjectCreated
+	FavoriteProjectIDsUpdated    map[string]FavoriteProjectIDsUpdated
+	FavoriteWorkspaceIDsUpdated  map[string]FavoriteWorkspaceIDsUpdated
+	IconUpdated                  map[string]IconUpdated
+	MeUpdated                    map[string]MeUpdated
+	TeammateTaskTabStatusUpdated map[string]TeammateTaskTabStatusUpdated
+	ProjectBaseColorUpdated      map[string]ProjectBaseColorUpdated
+	ProjectIconUpdated           map[string]ProjectIconUpdated
+	ProjectLightColorUpdated     map[string]ProjectLightColorUpdated
+	ProjectTaskColumnUpdated     map[string]ProjectTaskColumnUpdated
+	ProjectTeammateUpdated       map[string]ProjectTeammateUpdated
+	ProjectUpdated               map[string]ProjectUpdated
+	TaskColumnUpdated            map[string]TaskColumnUpdated
+	TaskSectionUpdated           map[string]TaskSectionUpdated
+	TeammateTaskColumnUpdated    map[string]TeammateTaskColumnUpdated
+	TeammateUpdated              map[string]TeammateUpdated
+	TestUserUpdated              map[string]TestUserUpdated
+	WorkspaceTeammateUpdated     map[string]WorkspaceTeammateUpdated
+	WorkspaceUpdated             map[string]WorkspaceUpdated
 }
 
 // NewKey generates a random hex string with length of 16.

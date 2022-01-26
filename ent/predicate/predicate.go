@@ -18,9 +18,6 @@ type FavoriteWorkspace func(*sql.Selector)
 // Icon is the predicate function for icon builders.
 type Icon func(*sql.Selector)
 
-// MyTasksTabStatus is the predicate function for mytaskstabstatus builders.
-type MyTasksTabStatus func(*sql.Selector)
-
 // Project is the predicate function for project builders.
 type Project func(*sql.Selector)
 
@@ -56,6 +53,9 @@ type Teammate func(*sql.Selector)
 
 // TeammateTaskColumn is the predicate function for teammatetaskcolumn builders.
 type TeammateTaskColumn func(*sql.Selector)
+
+// TeammateTaskTabStatus is the predicate function for teammatetasktabstatus builders.
+type TeammateTaskTabStatus func(*sql.Selector)
 
 // TestTodo is the predicate function for testtodo builders.
 type TestTodo func(*sql.Selector)

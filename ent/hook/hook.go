@@ -60,19 +60,6 @@ func (f IconFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error)
 	return f(ctx, mv)
 }
 
-// The MyTasksTabStatusFunc type is an adapter to allow the use of ordinary
-// function as MyTasksTabStatus mutator.
-type MyTasksTabStatusFunc func(context.Context, *ent.MyTasksTabStatusMutation) (ent.Value, error)
-
-// Mutate calls f(ctx, m).
-func (f MyTasksTabStatusFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	mv, ok := m.(*ent.MyTasksTabStatusMutation)
-	if !ok {
-		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.MyTasksTabStatusMutation", m)
-	}
-	return f(ctx, mv)
-}
-
 // The ProjectFunc type is an adapter to allow the use of ordinary
 // function as Project mutator.
 type ProjectFunc func(context.Context, *ent.ProjectMutation) (ent.Value, error)
@@ -225,6 +212,19 @@ func (f TeammateTaskColumnFunc) Mutate(ctx context.Context, m ent.Mutation) (ent
 	mv, ok := m.(*ent.TeammateTaskColumnMutation)
 	if !ok {
 		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.TeammateTaskColumnMutation", m)
+	}
+	return f(ctx, mv)
+}
+
+// The TeammateTaskTabStatusFunc type is an adapter to allow the use of ordinary
+// function as TeammateTaskTabStatus mutator.
+type TeammateTaskTabStatusFunc func(context.Context, *ent.TeammateTaskTabStatusMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f TeammateTaskTabStatusFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.TeammateTaskTabStatusMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.TeammateTaskTabStatusMutation", m)
 	}
 	return f(ctx, mv)
 }

@@ -15,24 +15,24 @@ import (
 	entMixin "entgo.io/ent/schema/mixin"
 )
 
-// MyTasksTabStatus holds the schema definition for the Test entity.
-type MyTasksTabStatus struct {
+// TeammateTaskTabStatus holds the schema definition for the Test entity.
+type TeammateTaskTabStatus struct {
 	ent.Schema
 }
 
-// MyTasksTabStatusMixin defines Fields
-type MyTasksTabStatusMixin struct {
+// TeammateTaskTabStatusMixin defines Fields
+type TeammateTaskTabStatusMixin struct {
 	entMixin.Schema
 }
 
-// Fields of the MyTasksTabStatus.
-func (MyTasksTabStatusMixin) Fields() []ent.Field {
+// Fields of the TeammateTaskTabStatus.
+func (TeammateTaskTabStatusMixin) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("workspace_id").
 			GoType(ulid.ID("")),
 		field.String("teammate_id").
 			GoType(ulid.ID("")),
-		field.Enum("status").
+		field.Enum("status_code").
 			NamedValues(
 				"List", "LIST",
 				"Board", "BOARD",
@@ -42,11 +42,11 @@ func (MyTasksTabStatusMixin) Fields() []ent.Field {
 	}
 }
 
-// Edges of the MyTasksTabStatus.
-func (MyTasksTabStatus) Edges() []ent.Edge {
+// Edges of the TeammateTaskTabStatus.
+func (TeammateTaskTabStatus) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("workspace", Workspace.Type).
-			Ref("my_tasks_tab_statuses").
+			Ref("teammate_task_tab_statuses").
 			Field("workspace_id").
 			Unique().
 			Required().
@@ -56,7 +56,7 @@ func (MyTasksTabStatus) Edges() []ent.Edge {
 				),
 			),
 		edge.From("teammate", Teammate.Type).
-			Ref("my_tasks_tab_statuses").
+			Ref("teammate_task_tab_statuses").
 			Field("teammate_id").
 			Unique().
 			Required().
@@ -68,11 +68,11 @@ func (MyTasksTabStatus) Edges() []ent.Edge {
 	}
 }
 
-// Mixin of the MyTasksTabStatus.
-func (MyTasksTabStatus) Mixin() []ent.Mixin {
+// Mixin of the TeammateTaskTabStatus.
+func (TeammateTaskTabStatus) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		mixin.NewUlid(globalid.New().MyTasksTabStatus.Prefix),
-		MyTasksTabStatusMixin{},
+		mixin.NewUlid(globalid.New().TeammateTaskTabStatus.Prefix),
+		TeammateTaskTabStatusMixin{},
 		mixin.NewDatetime(),
 	}
 }

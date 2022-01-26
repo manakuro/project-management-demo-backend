@@ -9,7 +9,6 @@ import (
 	"project-management-demo-backend/ent/favoriteproject"
 	"project-management-demo-backend/ent/favoriteworkspace"
 	"project-management-demo-backend/ent/icon"
-	"project-management-demo-backend/ent/mytaskstabstatus"
 	"project-management-demo-backend/ent/predicate"
 	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/projectbasecolor"
@@ -26,6 +25,7 @@ import (
 	"project-management-demo-backend/ent/tasksection"
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/teammatetaskcolumn"
+	"project-management-demo-backend/ent/teammatetasktabstatus"
 	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/ent/testuser"
 	"project-management-demo-backend/ent/workspace"
@@ -49,7 +49,6 @@ const (
 	TypeFavoriteProject         = "FavoriteProject"
 	TypeFavoriteWorkspace       = "FavoriteWorkspace"
 	TypeIcon                    = "Icon"
-	TypeMyTasksTabStatus        = "MyTasksTabStatus"
 	TypeProject                 = "Project"
 	TypeProjectBaseColor        = "ProjectBaseColor"
 	TypeProjectIcon             = "ProjectIcon"
@@ -62,6 +61,7 @@ const (
 	TypeTaskSection             = "TaskSection"
 	TypeTeammate                = "Teammate"
 	TypeTeammateTaskColumn      = "TeammateTaskColumn"
+	TypeTeammateTaskTabStatus   = "TeammateTaskTabStatus"
 	TypeTestTodo                = "TestTodo"
 	TypeTestUser                = "TestUser"
 	TypeWorkspace               = "Workspace"
@@ -2429,620 +2429,6 @@ func (m *IconMutation) ResetEdge(name string) error {
 		return nil
 	}
 	return fmt.Errorf("unknown Icon edge %s", name)
-}
-
-// MyTasksTabStatusMutation represents an operation that mutates the MyTasksTabStatus nodes in the graph.
-type MyTasksTabStatusMutation struct {
-	config
-	op               Op
-	typ              string
-	id               *ulid.ID
-	status           *mytaskstabstatus.Status
-	created_at       *time.Time
-	updated_at       *time.Time
-	clearedFields    map[string]struct{}
-	workspace        *ulid.ID
-	clearedworkspace bool
-	teammate         *ulid.ID
-	clearedteammate  bool
-	done             bool
-	oldValue         func(context.Context) (*MyTasksTabStatus, error)
-	predicates       []predicate.MyTasksTabStatus
-}
-
-var _ ent.Mutation = (*MyTasksTabStatusMutation)(nil)
-
-// mytaskstabstatusOption allows management of the mutation configuration using functional options.
-type mytaskstabstatusOption func(*MyTasksTabStatusMutation)
-
-// newMyTasksTabStatusMutation creates new mutation for the MyTasksTabStatus entity.
-func newMyTasksTabStatusMutation(c config, op Op, opts ...mytaskstabstatusOption) *MyTasksTabStatusMutation {
-	m := &MyTasksTabStatusMutation{
-		config:        c,
-		op:            op,
-		typ:           TypeMyTasksTabStatus,
-		clearedFields: make(map[string]struct{}),
-	}
-	for _, opt := range opts {
-		opt(m)
-	}
-	return m
-}
-
-// withMyTasksTabStatusID sets the ID field of the mutation.
-func withMyTasksTabStatusID(id ulid.ID) mytaskstabstatusOption {
-	return func(m *MyTasksTabStatusMutation) {
-		var (
-			err   error
-			once  sync.Once
-			value *MyTasksTabStatus
-		)
-		m.oldValue = func(ctx context.Context) (*MyTasksTabStatus, error) {
-			once.Do(func() {
-				if m.done {
-					err = fmt.Errorf("querying old values post mutation is not allowed")
-				} else {
-					value, err = m.Client().MyTasksTabStatus.Get(ctx, id)
-				}
-			})
-			return value, err
-		}
-		m.id = &id
-	}
-}
-
-// withMyTasksTabStatus sets the old MyTasksTabStatus of the mutation.
-func withMyTasksTabStatus(node *MyTasksTabStatus) mytaskstabstatusOption {
-	return func(m *MyTasksTabStatusMutation) {
-		m.oldValue = func(context.Context) (*MyTasksTabStatus, error) {
-			return node, nil
-		}
-		m.id = &node.ID
-	}
-}
-
-// Client returns a new `ent.Client` from the mutation. If the mutation was
-// executed in a transaction (ent.Tx), a transactional client is returned.
-func (m MyTasksTabStatusMutation) Client() *Client {
-	client := &Client{config: m.config}
-	client.init()
-	return client
-}
-
-// Tx returns an `ent.Tx` for mutations that were executed in transactions;
-// it returns an error otherwise.
-func (m MyTasksTabStatusMutation) Tx() (*Tx, error) {
-	if _, ok := m.driver.(*txDriver); !ok {
-		return nil, fmt.Errorf("ent: mutation is not running in a transaction")
-	}
-	tx := &Tx{config: m.config}
-	tx.init()
-	return tx, nil
-}
-
-// SetID sets the value of the id field. Note that this
-// operation is only accepted on creation of MyTasksTabStatus entities.
-func (m *MyTasksTabStatusMutation) SetID(id ulid.ID) {
-	m.id = &id
-}
-
-// ID returns the ID value in the mutation. Note that the ID is only available
-// if it was provided to the builder or after it was returned from the database.
-func (m *MyTasksTabStatusMutation) ID() (id ulid.ID, exists bool) {
-	if m.id == nil {
-		return
-	}
-	return *m.id, true
-}
-
-// SetWorkspaceID sets the "workspace_id" field.
-func (m *MyTasksTabStatusMutation) SetWorkspaceID(u ulid.ID) {
-	m.workspace = &u
-}
-
-// WorkspaceID returns the value of the "workspace_id" field in the mutation.
-func (m *MyTasksTabStatusMutation) WorkspaceID() (r ulid.ID, exists bool) {
-	v := m.workspace
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldWorkspaceID returns the old "workspace_id" field's value of the MyTasksTabStatus entity.
-// If the MyTasksTabStatus object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *MyTasksTabStatusMutation) OldWorkspaceID(ctx context.Context) (v ulid.ID, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, fmt.Errorf("OldWorkspaceID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, fmt.Errorf("OldWorkspaceID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldWorkspaceID: %w", err)
-	}
-	return oldValue.WorkspaceID, nil
-}
-
-// ResetWorkspaceID resets all changes to the "workspace_id" field.
-func (m *MyTasksTabStatusMutation) ResetWorkspaceID() {
-	m.workspace = nil
-}
-
-// SetTeammateID sets the "teammate_id" field.
-func (m *MyTasksTabStatusMutation) SetTeammateID(u ulid.ID) {
-	m.teammate = &u
-}
-
-// TeammateID returns the value of the "teammate_id" field in the mutation.
-func (m *MyTasksTabStatusMutation) TeammateID() (r ulid.ID, exists bool) {
-	v := m.teammate
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldTeammateID returns the old "teammate_id" field's value of the MyTasksTabStatus entity.
-// If the MyTasksTabStatus object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *MyTasksTabStatusMutation) OldTeammateID(ctx context.Context) (v ulid.ID, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, fmt.Errorf("OldTeammateID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, fmt.Errorf("OldTeammateID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldTeammateID: %w", err)
-	}
-	return oldValue.TeammateID, nil
-}
-
-// ResetTeammateID resets all changes to the "teammate_id" field.
-func (m *MyTasksTabStatusMutation) ResetTeammateID() {
-	m.teammate = nil
-}
-
-// SetStatus sets the "status" field.
-func (m *MyTasksTabStatusMutation) SetStatus(value mytaskstabstatus.Status) {
-	m.status = &value
-}
-
-// Status returns the value of the "status" field in the mutation.
-func (m *MyTasksTabStatusMutation) Status() (r mytaskstabstatus.Status, exists bool) {
-	v := m.status
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldStatus returns the old "status" field's value of the MyTasksTabStatus entity.
-// If the MyTasksTabStatus object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *MyTasksTabStatusMutation) OldStatus(ctx context.Context) (v mytaskstabstatus.Status, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, fmt.Errorf("OldStatus is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, fmt.Errorf("OldStatus requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldStatus: %w", err)
-	}
-	return oldValue.Status, nil
-}
-
-// ResetStatus resets all changes to the "status" field.
-func (m *MyTasksTabStatusMutation) ResetStatus() {
-	m.status = nil
-}
-
-// SetCreatedAt sets the "created_at" field.
-func (m *MyTasksTabStatusMutation) SetCreatedAt(t time.Time) {
-	m.created_at = &t
-}
-
-// CreatedAt returns the value of the "created_at" field in the mutation.
-func (m *MyTasksTabStatusMutation) CreatedAt() (r time.Time, exists bool) {
-	v := m.created_at
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldCreatedAt returns the old "created_at" field's value of the MyTasksTabStatus entity.
-// If the MyTasksTabStatus object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *MyTasksTabStatusMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, fmt.Errorf("OldCreatedAt is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, fmt.Errorf("OldCreatedAt requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
-	}
-	return oldValue.CreatedAt, nil
-}
-
-// ResetCreatedAt resets all changes to the "created_at" field.
-func (m *MyTasksTabStatusMutation) ResetCreatedAt() {
-	m.created_at = nil
-}
-
-// SetUpdatedAt sets the "updated_at" field.
-func (m *MyTasksTabStatusMutation) SetUpdatedAt(t time.Time) {
-	m.updated_at = &t
-}
-
-// UpdatedAt returns the value of the "updated_at" field in the mutation.
-func (m *MyTasksTabStatusMutation) UpdatedAt() (r time.Time, exists bool) {
-	v := m.updated_at
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldUpdatedAt returns the old "updated_at" field's value of the MyTasksTabStatus entity.
-// If the MyTasksTabStatus object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *MyTasksTabStatusMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, fmt.Errorf("OldUpdatedAt is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, fmt.Errorf("OldUpdatedAt requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
-	}
-	return oldValue.UpdatedAt, nil
-}
-
-// ResetUpdatedAt resets all changes to the "updated_at" field.
-func (m *MyTasksTabStatusMutation) ResetUpdatedAt() {
-	m.updated_at = nil
-}
-
-// ClearWorkspace clears the "workspace" edge to the Workspace entity.
-func (m *MyTasksTabStatusMutation) ClearWorkspace() {
-	m.clearedworkspace = true
-}
-
-// WorkspaceCleared reports if the "workspace" edge to the Workspace entity was cleared.
-func (m *MyTasksTabStatusMutation) WorkspaceCleared() bool {
-	return m.clearedworkspace
-}
-
-// WorkspaceIDs returns the "workspace" edge IDs in the mutation.
-// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// WorkspaceID instead. It exists only for internal usage by the builders.
-func (m *MyTasksTabStatusMutation) WorkspaceIDs() (ids []ulid.ID) {
-	if id := m.workspace; id != nil {
-		ids = append(ids, *id)
-	}
-	return
-}
-
-// ResetWorkspace resets all changes to the "workspace" edge.
-func (m *MyTasksTabStatusMutation) ResetWorkspace() {
-	m.workspace = nil
-	m.clearedworkspace = false
-}
-
-// ClearTeammate clears the "teammate" edge to the Teammate entity.
-func (m *MyTasksTabStatusMutation) ClearTeammate() {
-	m.clearedteammate = true
-}
-
-// TeammateCleared reports if the "teammate" edge to the Teammate entity was cleared.
-func (m *MyTasksTabStatusMutation) TeammateCleared() bool {
-	return m.clearedteammate
-}
-
-// TeammateIDs returns the "teammate" edge IDs in the mutation.
-// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// TeammateID instead. It exists only for internal usage by the builders.
-func (m *MyTasksTabStatusMutation) TeammateIDs() (ids []ulid.ID) {
-	if id := m.teammate; id != nil {
-		ids = append(ids, *id)
-	}
-	return
-}
-
-// ResetTeammate resets all changes to the "teammate" edge.
-func (m *MyTasksTabStatusMutation) ResetTeammate() {
-	m.teammate = nil
-	m.clearedteammate = false
-}
-
-// Where appends a list predicates to the MyTasksTabStatusMutation builder.
-func (m *MyTasksTabStatusMutation) Where(ps ...predicate.MyTasksTabStatus) {
-	m.predicates = append(m.predicates, ps...)
-}
-
-// Op returns the operation name.
-func (m *MyTasksTabStatusMutation) Op() Op {
-	return m.op
-}
-
-// Type returns the node type of this mutation (MyTasksTabStatus).
-func (m *MyTasksTabStatusMutation) Type() string {
-	return m.typ
-}
-
-// Fields returns all fields that were changed during this mutation. Note that in
-// order to get all numeric fields that were incremented/decremented, call
-// AddedFields().
-func (m *MyTasksTabStatusMutation) Fields() []string {
-	fields := make([]string, 0, 5)
-	if m.workspace != nil {
-		fields = append(fields, mytaskstabstatus.FieldWorkspaceID)
-	}
-	if m.teammate != nil {
-		fields = append(fields, mytaskstabstatus.FieldTeammateID)
-	}
-	if m.status != nil {
-		fields = append(fields, mytaskstabstatus.FieldStatus)
-	}
-	if m.created_at != nil {
-		fields = append(fields, mytaskstabstatus.FieldCreatedAt)
-	}
-	if m.updated_at != nil {
-		fields = append(fields, mytaskstabstatus.FieldUpdatedAt)
-	}
-	return fields
-}
-
-// Field returns the value of a field with the given name. The second boolean
-// return value indicates that this field was not set, or was not defined in the
-// schema.
-func (m *MyTasksTabStatusMutation) Field(name string) (ent.Value, bool) {
-	switch name {
-	case mytaskstabstatus.FieldWorkspaceID:
-		return m.WorkspaceID()
-	case mytaskstabstatus.FieldTeammateID:
-		return m.TeammateID()
-	case mytaskstabstatus.FieldStatus:
-		return m.Status()
-	case mytaskstabstatus.FieldCreatedAt:
-		return m.CreatedAt()
-	case mytaskstabstatus.FieldUpdatedAt:
-		return m.UpdatedAt()
-	}
-	return nil, false
-}
-
-// OldField returns the old value of the field from the database. An error is
-// returned if the mutation operation is not UpdateOne, or the query to the
-// database failed.
-func (m *MyTasksTabStatusMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
-	switch name {
-	case mytaskstabstatus.FieldWorkspaceID:
-		return m.OldWorkspaceID(ctx)
-	case mytaskstabstatus.FieldTeammateID:
-		return m.OldTeammateID(ctx)
-	case mytaskstabstatus.FieldStatus:
-		return m.OldStatus(ctx)
-	case mytaskstabstatus.FieldCreatedAt:
-		return m.OldCreatedAt(ctx)
-	case mytaskstabstatus.FieldUpdatedAt:
-		return m.OldUpdatedAt(ctx)
-	}
-	return nil, fmt.Errorf("unknown MyTasksTabStatus field %s", name)
-}
-
-// SetField sets the value of a field with the given name. It returns an error if
-// the field is not defined in the schema, or if the type mismatched the field
-// type.
-func (m *MyTasksTabStatusMutation) SetField(name string, value ent.Value) error {
-	switch name {
-	case mytaskstabstatus.FieldWorkspaceID:
-		v, ok := value.(ulid.ID)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetWorkspaceID(v)
-		return nil
-	case mytaskstabstatus.FieldTeammateID:
-		v, ok := value.(ulid.ID)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetTeammateID(v)
-		return nil
-	case mytaskstabstatus.FieldStatus:
-		v, ok := value.(mytaskstabstatus.Status)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetStatus(v)
-		return nil
-	case mytaskstabstatus.FieldCreatedAt:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetCreatedAt(v)
-		return nil
-	case mytaskstabstatus.FieldUpdatedAt:
-		v, ok := value.(time.Time)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetUpdatedAt(v)
-		return nil
-	}
-	return fmt.Errorf("unknown MyTasksTabStatus field %s", name)
-}
-
-// AddedFields returns all numeric fields that were incremented/decremented during
-// this mutation.
-func (m *MyTasksTabStatusMutation) AddedFields() []string {
-	return nil
-}
-
-// AddedField returns the numeric value that was incremented/decremented on a field
-// with the given name. The second boolean return value indicates that this field
-// was not set, or was not defined in the schema.
-func (m *MyTasksTabStatusMutation) AddedField(name string) (ent.Value, bool) {
-	return nil, false
-}
-
-// AddField adds the value to the field with the given name. It returns an error if
-// the field is not defined in the schema, or if the type mismatched the field
-// type.
-func (m *MyTasksTabStatusMutation) AddField(name string, value ent.Value) error {
-	switch name {
-	}
-	return fmt.Errorf("unknown MyTasksTabStatus numeric field %s", name)
-}
-
-// ClearedFields returns all nullable fields that were cleared during this
-// mutation.
-func (m *MyTasksTabStatusMutation) ClearedFields() []string {
-	return nil
-}
-
-// FieldCleared returns a boolean indicating if a field with the given name was
-// cleared in this mutation.
-func (m *MyTasksTabStatusMutation) FieldCleared(name string) bool {
-	_, ok := m.clearedFields[name]
-	return ok
-}
-
-// ClearField clears the value of the field with the given name. It returns an
-// error if the field is not defined in the schema.
-func (m *MyTasksTabStatusMutation) ClearField(name string) error {
-	return fmt.Errorf("unknown MyTasksTabStatus nullable field %s", name)
-}
-
-// ResetField resets all changes in the mutation for the field with the given name.
-// It returns an error if the field is not defined in the schema.
-func (m *MyTasksTabStatusMutation) ResetField(name string) error {
-	switch name {
-	case mytaskstabstatus.FieldWorkspaceID:
-		m.ResetWorkspaceID()
-		return nil
-	case mytaskstabstatus.FieldTeammateID:
-		m.ResetTeammateID()
-		return nil
-	case mytaskstabstatus.FieldStatus:
-		m.ResetStatus()
-		return nil
-	case mytaskstabstatus.FieldCreatedAt:
-		m.ResetCreatedAt()
-		return nil
-	case mytaskstabstatus.FieldUpdatedAt:
-		m.ResetUpdatedAt()
-		return nil
-	}
-	return fmt.Errorf("unknown MyTasksTabStatus field %s", name)
-}
-
-// AddedEdges returns all edge names that were set/added in this mutation.
-func (m *MyTasksTabStatusMutation) AddedEdges() []string {
-	edges := make([]string, 0, 2)
-	if m.workspace != nil {
-		edges = append(edges, mytaskstabstatus.EdgeWorkspace)
-	}
-	if m.teammate != nil {
-		edges = append(edges, mytaskstabstatus.EdgeTeammate)
-	}
-	return edges
-}
-
-// AddedIDs returns all IDs (to other nodes) that were added for the given edge
-// name in this mutation.
-func (m *MyTasksTabStatusMutation) AddedIDs(name string) []ent.Value {
-	switch name {
-	case mytaskstabstatus.EdgeWorkspace:
-		if id := m.workspace; id != nil {
-			return []ent.Value{*id}
-		}
-	case mytaskstabstatus.EdgeTeammate:
-		if id := m.teammate; id != nil {
-			return []ent.Value{*id}
-		}
-	}
-	return nil
-}
-
-// RemovedEdges returns all edge names that were removed in this mutation.
-func (m *MyTasksTabStatusMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 2)
-	return edges
-}
-
-// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
-// the given name in this mutation.
-func (m *MyTasksTabStatusMutation) RemovedIDs(name string) []ent.Value {
-	switch name {
-	}
-	return nil
-}
-
-// ClearedEdges returns all edge names that were cleared in this mutation.
-func (m *MyTasksTabStatusMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 2)
-	if m.clearedworkspace {
-		edges = append(edges, mytaskstabstatus.EdgeWorkspace)
-	}
-	if m.clearedteammate {
-		edges = append(edges, mytaskstabstatus.EdgeTeammate)
-	}
-	return edges
-}
-
-// EdgeCleared returns a boolean which indicates if the edge with the given name
-// was cleared in this mutation.
-func (m *MyTasksTabStatusMutation) EdgeCleared(name string) bool {
-	switch name {
-	case mytaskstabstatus.EdgeWorkspace:
-		return m.clearedworkspace
-	case mytaskstabstatus.EdgeTeammate:
-		return m.clearedteammate
-	}
-	return false
-}
-
-// ClearEdge clears the value of the edge with the given name. It returns an error
-// if that edge is not defined in the schema.
-func (m *MyTasksTabStatusMutation) ClearEdge(name string) error {
-	switch name {
-	case mytaskstabstatus.EdgeWorkspace:
-		m.ClearWorkspace()
-		return nil
-	case mytaskstabstatus.EdgeTeammate:
-		m.ClearTeammate()
-		return nil
-	}
-	return fmt.Errorf("unknown MyTasksTabStatus unique edge %s", name)
-}
-
-// ResetEdge resets all changes to the edge with the given name in this mutation.
-// It returns an error if the edge is not defined in the schema.
-func (m *MyTasksTabStatusMutation) ResetEdge(name string) error {
-	switch name {
-	case mytaskstabstatus.EdgeWorkspace:
-		m.ResetWorkspace()
-		return nil
-	case mytaskstabstatus.EdgeTeammate:
-		m.ResetTeammate()
-		return nil
-	}
-	return fmt.Errorf("unknown MyTasksTabStatus edge %s", name)
 }
 
 // ProjectMutation represents an operation that mutates the Project nodes in the graph.
@@ -9457,42 +8843,42 @@ func (m *TaskSectionMutation) ResetEdge(name string) error {
 // TeammateMutation represents an operation that mutates the Teammate nodes in the graph.
 type TeammateMutation struct {
 	config
-	op                           Op
-	typ                          string
-	id                           *ulid.ID
-	name                         *string
-	image                        *string
-	email                        *string
-	created_at                   *time.Time
-	updated_at                   *time.Time
-	clearedFields                map[string]struct{}
-	workspaces                   map[ulid.ID]struct{}
-	removedworkspaces            map[ulid.ID]struct{}
-	clearedworkspaces            bool
-	projects                     map[ulid.ID]struct{}
-	removedprojects              map[ulid.ID]struct{}
-	clearedprojects              bool
-	project_teammates            map[ulid.ID]struct{}
-	removedproject_teammates     map[ulid.ID]struct{}
-	clearedproject_teammates     bool
-	workspace_teammates          map[ulid.ID]struct{}
-	removedworkspace_teammates   map[ulid.ID]struct{}
-	clearedworkspace_teammates   bool
-	favorite_projects            map[ulid.ID]struct{}
-	removedfavorite_projects     map[ulid.ID]struct{}
-	clearedfavorite_projects     bool
-	favorite_workspaces          map[ulid.ID]struct{}
-	removedfavorite_workspaces   map[ulid.ID]struct{}
-	clearedfavorite_workspaces   bool
-	my_tasks_tab_statuses        map[ulid.ID]struct{}
-	removedmy_tasks_tab_statuses map[ulid.ID]struct{}
-	clearedmy_tasks_tab_statuses bool
-	teammate_task_columns        map[ulid.ID]struct{}
-	removedteammate_task_columns map[ulid.ID]struct{}
-	clearedteammate_task_columns bool
-	done                         bool
-	oldValue                     func(context.Context) (*Teammate, error)
-	predicates                   []predicate.Teammate
+	op                                Op
+	typ                               string
+	id                                *ulid.ID
+	name                              *string
+	image                             *string
+	email                             *string
+	created_at                        *time.Time
+	updated_at                        *time.Time
+	clearedFields                     map[string]struct{}
+	workspaces                        map[ulid.ID]struct{}
+	removedworkspaces                 map[ulid.ID]struct{}
+	clearedworkspaces                 bool
+	projects                          map[ulid.ID]struct{}
+	removedprojects                   map[ulid.ID]struct{}
+	clearedprojects                   bool
+	project_teammates                 map[ulid.ID]struct{}
+	removedproject_teammates          map[ulid.ID]struct{}
+	clearedproject_teammates          bool
+	workspace_teammates               map[ulid.ID]struct{}
+	removedworkspace_teammates        map[ulid.ID]struct{}
+	clearedworkspace_teammates        bool
+	favorite_projects                 map[ulid.ID]struct{}
+	removedfavorite_projects          map[ulid.ID]struct{}
+	clearedfavorite_projects          bool
+	favorite_workspaces               map[ulid.ID]struct{}
+	removedfavorite_workspaces        map[ulid.ID]struct{}
+	clearedfavorite_workspaces        bool
+	teammate_task_tab_statuses        map[ulid.ID]struct{}
+	removedteammate_task_tab_statuses map[ulid.ID]struct{}
+	clearedteammate_task_tab_statuses bool
+	teammate_task_columns             map[ulid.ID]struct{}
+	removedteammate_task_columns      map[ulid.ID]struct{}
+	clearedteammate_task_columns      bool
+	done                              bool
+	oldValue                          func(context.Context) (*Teammate, error)
+	predicates                        []predicate.Teammate
 }
 
 var _ ent.Mutation = (*TeammateMutation)(nil)
@@ -10084,58 +9470,58 @@ func (m *TeammateMutation) ResetFavoriteWorkspaces() {
 	m.removedfavorite_workspaces = nil
 }
 
-// AddMyTasksTabStatusIDs adds the "my_tasks_tab_statuses" edge to the MyTasksTabStatus entity by ids.
-func (m *TeammateMutation) AddMyTasksTabStatusIDs(ids ...ulid.ID) {
-	if m.my_tasks_tab_statuses == nil {
-		m.my_tasks_tab_statuses = make(map[ulid.ID]struct{})
+// AddTeammateTaskTabStatusIDs adds the "teammate_task_tab_statuses" edge to the TeammateTaskTabStatus entity by ids.
+func (m *TeammateMutation) AddTeammateTaskTabStatusIDs(ids ...ulid.ID) {
+	if m.teammate_task_tab_statuses == nil {
+		m.teammate_task_tab_statuses = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		m.my_tasks_tab_statuses[ids[i]] = struct{}{}
+		m.teammate_task_tab_statuses[ids[i]] = struct{}{}
 	}
 }
 
-// ClearMyTasksTabStatuses clears the "my_tasks_tab_statuses" edge to the MyTasksTabStatus entity.
-func (m *TeammateMutation) ClearMyTasksTabStatuses() {
-	m.clearedmy_tasks_tab_statuses = true
+// ClearTeammateTaskTabStatuses clears the "teammate_task_tab_statuses" edge to the TeammateTaskTabStatus entity.
+func (m *TeammateMutation) ClearTeammateTaskTabStatuses() {
+	m.clearedteammate_task_tab_statuses = true
 }
 
-// MyTasksTabStatusesCleared reports if the "my_tasks_tab_statuses" edge to the MyTasksTabStatus entity was cleared.
-func (m *TeammateMutation) MyTasksTabStatusesCleared() bool {
-	return m.clearedmy_tasks_tab_statuses
+// TeammateTaskTabStatusesCleared reports if the "teammate_task_tab_statuses" edge to the TeammateTaskTabStatus entity was cleared.
+func (m *TeammateMutation) TeammateTaskTabStatusesCleared() bool {
+	return m.clearedteammate_task_tab_statuses
 }
 
-// RemoveMyTasksTabStatusIDs removes the "my_tasks_tab_statuses" edge to the MyTasksTabStatus entity by IDs.
-func (m *TeammateMutation) RemoveMyTasksTabStatusIDs(ids ...ulid.ID) {
-	if m.removedmy_tasks_tab_statuses == nil {
-		m.removedmy_tasks_tab_statuses = make(map[ulid.ID]struct{})
+// RemoveTeammateTaskTabStatusIDs removes the "teammate_task_tab_statuses" edge to the TeammateTaskTabStatus entity by IDs.
+func (m *TeammateMutation) RemoveTeammateTaskTabStatusIDs(ids ...ulid.ID) {
+	if m.removedteammate_task_tab_statuses == nil {
+		m.removedteammate_task_tab_statuses = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		delete(m.my_tasks_tab_statuses, ids[i])
-		m.removedmy_tasks_tab_statuses[ids[i]] = struct{}{}
+		delete(m.teammate_task_tab_statuses, ids[i])
+		m.removedteammate_task_tab_statuses[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedMyTasksTabStatuses returns the removed IDs of the "my_tasks_tab_statuses" edge to the MyTasksTabStatus entity.
-func (m *TeammateMutation) RemovedMyTasksTabStatusesIDs() (ids []ulid.ID) {
-	for id := range m.removedmy_tasks_tab_statuses {
+// RemovedTeammateTaskTabStatuses returns the removed IDs of the "teammate_task_tab_statuses" edge to the TeammateTaskTabStatus entity.
+func (m *TeammateMutation) RemovedTeammateTaskTabStatusesIDs() (ids []ulid.ID) {
+	for id := range m.removedteammate_task_tab_statuses {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// MyTasksTabStatusesIDs returns the "my_tasks_tab_statuses" edge IDs in the mutation.
-func (m *TeammateMutation) MyTasksTabStatusesIDs() (ids []ulid.ID) {
-	for id := range m.my_tasks_tab_statuses {
+// TeammateTaskTabStatusesIDs returns the "teammate_task_tab_statuses" edge IDs in the mutation.
+func (m *TeammateMutation) TeammateTaskTabStatusesIDs() (ids []ulid.ID) {
+	for id := range m.teammate_task_tab_statuses {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetMyTasksTabStatuses resets all changes to the "my_tasks_tab_statuses" edge.
-func (m *TeammateMutation) ResetMyTasksTabStatuses() {
-	m.my_tasks_tab_statuses = nil
-	m.clearedmy_tasks_tab_statuses = false
-	m.removedmy_tasks_tab_statuses = nil
+// ResetTeammateTaskTabStatuses resets all changes to the "teammate_task_tab_statuses" edge.
+func (m *TeammateMutation) ResetTeammateTaskTabStatuses() {
+	m.teammate_task_tab_statuses = nil
+	m.clearedteammate_task_tab_statuses = false
+	m.removedteammate_task_tab_statuses = nil
 }
 
 // AddTeammateTaskColumnIDs adds the "teammate_task_columns" edge to the TeammateTaskColumn entity by ids.
@@ -10397,8 +9783,8 @@ func (m *TeammateMutation) AddedEdges() []string {
 	if m.favorite_workspaces != nil {
 		edges = append(edges, teammate.EdgeFavoriteWorkspaces)
 	}
-	if m.my_tasks_tab_statuses != nil {
-		edges = append(edges, teammate.EdgeMyTasksTabStatuses)
+	if m.teammate_task_tab_statuses != nil {
+		edges = append(edges, teammate.EdgeTeammateTaskTabStatuses)
 	}
 	if m.teammate_task_columns != nil {
 		edges = append(edges, teammate.EdgeTeammateTaskColumns)
@@ -10446,9 +9832,9 @@ func (m *TeammateMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
-	case teammate.EdgeMyTasksTabStatuses:
-		ids := make([]ent.Value, 0, len(m.my_tasks_tab_statuses))
-		for id := range m.my_tasks_tab_statuses {
+	case teammate.EdgeTeammateTaskTabStatuses:
+		ids := make([]ent.Value, 0, len(m.teammate_task_tab_statuses))
+		for id := range m.teammate_task_tab_statuses {
 			ids = append(ids, id)
 		}
 		return ids
@@ -10483,8 +9869,8 @@ func (m *TeammateMutation) RemovedEdges() []string {
 	if m.removedfavorite_workspaces != nil {
 		edges = append(edges, teammate.EdgeFavoriteWorkspaces)
 	}
-	if m.removedmy_tasks_tab_statuses != nil {
-		edges = append(edges, teammate.EdgeMyTasksTabStatuses)
+	if m.removedteammate_task_tab_statuses != nil {
+		edges = append(edges, teammate.EdgeTeammateTaskTabStatuses)
 	}
 	if m.removedteammate_task_columns != nil {
 		edges = append(edges, teammate.EdgeTeammateTaskColumns)
@@ -10532,9 +9918,9 @@ func (m *TeammateMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
-	case teammate.EdgeMyTasksTabStatuses:
-		ids := make([]ent.Value, 0, len(m.removedmy_tasks_tab_statuses))
-		for id := range m.removedmy_tasks_tab_statuses {
+	case teammate.EdgeTeammateTaskTabStatuses:
+		ids := make([]ent.Value, 0, len(m.removedteammate_task_tab_statuses))
+		for id := range m.removedteammate_task_tab_statuses {
 			ids = append(ids, id)
 		}
 		return ids
@@ -10569,8 +9955,8 @@ func (m *TeammateMutation) ClearedEdges() []string {
 	if m.clearedfavorite_workspaces {
 		edges = append(edges, teammate.EdgeFavoriteWorkspaces)
 	}
-	if m.clearedmy_tasks_tab_statuses {
-		edges = append(edges, teammate.EdgeMyTasksTabStatuses)
+	if m.clearedteammate_task_tab_statuses {
+		edges = append(edges, teammate.EdgeTeammateTaskTabStatuses)
 	}
 	if m.clearedteammate_task_columns {
 		edges = append(edges, teammate.EdgeTeammateTaskColumns)
@@ -10594,8 +9980,8 @@ func (m *TeammateMutation) EdgeCleared(name string) bool {
 		return m.clearedfavorite_projects
 	case teammate.EdgeFavoriteWorkspaces:
 		return m.clearedfavorite_workspaces
-	case teammate.EdgeMyTasksTabStatuses:
-		return m.clearedmy_tasks_tab_statuses
+	case teammate.EdgeTeammateTaskTabStatuses:
+		return m.clearedteammate_task_tab_statuses
 	case teammate.EdgeTeammateTaskColumns:
 		return m.clearedteammate_task_columns
 	}
@@ -10632,8 +10018,8 @@ func (m *TeammateMutation) ResetEdge(name string) error {
 	case teammate.EdgeFavoriteWorkspaces:
 		m.ResetFavoriteWorkspaces()
 		return nil
-	case teammate.EdgeMyTasksTabStatuses:
-		m.ResetMyTasksTabStatuses()
+	case teammate.EdgeTeammateTaskTabStatuses:
+		m.ResetTeammateTaskTabStatuses()
 		return nil
 	case teammate.EdgeTeammateTaskColumns:
 		m.ResetTeammateTaskColumns()
@@ -11452,6 +10838,620 @@ func (m *TeammateTaskColumnMutation) ResetEdge(name string) error {
 		return nil
 	}
 	return fmt.Errorf("unknown TeammateTaskColumn edge %s", name)
+}
+
+// TeammateTaskTabStatusMutation represents an operation that mutates the TeammateTaskTabStatus nodes in the graph.
+type TeammateTaskTabStatusMutation struct {
+	config
+	op               Op
+	typ              string
+	id               *ulid.ID
+	status_code      *teammatetasktabstatus.StatusCode
+	created_at       *time.Time
+	updated_at       *time.Time
+	clearedFields    map[string]struct{}
+	workspace        *ulid.ID
+	clearedworkspace bool
+	teammate         *ulid.ID
+	clearedteammate  bool
+	done             bool
+	oldValue         func(context.Context) (*TeammateTaskTabStatus, error)
+	predicates       []predicate.TeammateTaskTabStatus
+}
+
+var _ ent.Mutation = (*TeammateTaskTabStatusMutation)(nil)
+
+// teammatetasktabstatusOption allows management of the mutation configuration using functional options.
+type teammatetasktabstatusOption func(*TeammateTaskTabStatusMutation)
+
+// newTeammateTaskTabStatusMutation creates new mutation for the TeammateTaskTabStatus entity.
+func newTeammateTaskTabStatusMutation(c config, op Op, opts ...teammatetasktabstatusOption) *TeammateTaskTabStatusMutation {
+	m := &TeammateTaskTabStatusMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeTeammateTaskTabStatus,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withTeammateTaskTabStatusID sets the ID field of the mutation.
+func withTeammateTaskTabStatusID(id ulid.ID) teammatetasktabstatusOption {
+	return func(m *TeammateTaskTabStatusMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *TeammateTaskTabStatus
+		)
+		m.oldValue = func(ctx context.Context) (*TeammateTaskTabStatus, error) {
+			once.Do(func() {
+				if m.done {
+					err = fmt.Errorf("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().TeammateTaskTabStatus.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withTeammateTaskTabStatus sets the old TeammateTaskTabStatus of the mutation.
+func withTeammateTaskTabStatus(node *TeammateTaskTabStatus) teammatetasktabstatusOption {
+	return func(m *TeammateTaskTabStatusMutation) {
+		m.oldValue = func(context.Context) (*TeammateTaskTabStatus, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m TeammateTaskTabStatusMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m TeammateTaskTabStatusMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, fmt.Errorf("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of TeammateTaskTabStatus entities.
+func (m *TeammateTaskTabStatusMutation) SetID(id ulid.ID) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *TeammateTaskTabStatusMutation) ID() (id ulid.ID, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// SetWorkspaceID sets the "workspace_id" field.
+func (m *TeammateTaskTabStatusMutation) SetWorkspaceID(u ulid.ID) {
+	m.workspace = &u
+}
+
+// WorkspaceID returns the value of the "workspace_id" field in the mutation.
+func (m *TeammateTaskTabStatusMutation) WorkspaceID() (r ulid.ID, exists bool) {
+	v := m.workspace
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldWorkspaceID returns the old "workspace_id" field's value of the TeammateTaskTabStatus entity.
+// If the TeammateTaskTabStatus object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TeammateTaskTabStatusMutation) OldWorkspaceID(ctx context.Context) (v ulid.ID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldWorkspaceID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldWorkspaceID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldWorkspaceID: %w", err)
+	}
+	return oldValue.WorkspaceID, nil
+}
+
+// ResetWorkspaceID resets all changes to the "workspace_id" field.
+func (m *TeammateTaskTabStatusMutation) ResetWorkspaceID() {
+	m.workspace = nil
+}
+
+// SetTeammateID sets the "teammate_id" field.
+func (m *TeammateTaskTabStatusMutation) SetTeammateID(u ulid.ID) {
+	m.teammate = &u
+}
+
+// TeammateID returns the value of the "teammate_id" field in the mutation.
+func (m *TeammateTaskTabStatusMutation) TeammateID() (r ulid.ID, exists bool) {
+	v := m.teammate
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTeammateID returns the old "teammate_id" field's value of the TeammateTaskTabStatus entity.
+// If the TeammateTaskTabStatus object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TeammateTaskTabStatusMutation) OldTeammateID(ctx context.Context) (v ulid.ID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldTeammateID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldTeammateID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTeammateID: %w", err)
+	}
+	return oldValue.TeammateID, nil
+}
+
+// ResetTeammateID resets all changes to the "teammate_id" field.
+func (m *TeammateTaskTabStatusMutation) ResetTeammateID() {
+	m.teammate = nil
+}
+
+// SetStatusCode sets the "status_code" field.
+func (m *TeammateTaskTabStatusMutation) SetStatusCode(tc teammatetasktabstatus.StatusCode) {
+	m.status_code = &tc
+}
+
+// StatusCode returns the value of the "status_code" field in the mutation.
+func (m *TeammateTaskTabStatusMutation) StatusCode() (r teammatetasktabstatus.StatusCode, exists bool) {
+	v := m.status_code
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldStatusCode returns the old "status_code" field's value of the TeammateTaskTabStatus entity.
+// If the TeammateTaskTabStatus object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TeammateTaskTabStatusMutation) OldStatusCode(ctx context.Context) (v teammatetasktabstatus.StatusCode, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldStatusCode is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldStatusCode requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldStatusCode: %w", err)
+	}
+	return oldValue.StatusCode, nil
+}
+
+// ResetStatusCode resets all changes to the "status_code" field.
+func (m *TeammateTaskTabStatusMutation) ResetStatusCode() {
+	m.status_code = nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *TeammateTaskTabStatusMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *TeammateTaskTabStatusMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the TeammateTaskTabStatus entity.
+// If the TeammateTaskTabStatus object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TeammateTaskTabStatusMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *TeammateTaskTabStatusMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *TeammateTaskTabStatusMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *TeammateTaskTabStatusMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the TeammateTaskTabStatus entity.
+// If the TeammateTaskTabStatus object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TeammateTaskTabStatusMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *TeammateTaskTabStatusMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// ClearWorkspace clears the "workspace" edge to the Workspace entity.
+func (m *TeammateTaskTabStatusMutation) ClearWorkspace() {
+	m.clearedworkspace = true
+}
+
+// WorkspaceCleared reports if the "workspace" edge to the Workspace entity was cleared.
+func (m *TeammateTaskTabStatusMutation) WorkspaceCleared() bool {
+	return m.clearedworkspace
+}
+
+// WorkspaceIDs returns the "workspace" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// WorkspaceID instead. It exists only for internal usage by the builders.
+func (m *TeammateTaskTabStatusMutation) WorkspaceIDs() (ids []ulid.ID) {
+	if id := m.workspace; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetWorkspace resets all changes to the "workspace" edge.
+func (m *TeammateTaskTabStatusMutation) ResetWorkspace() {
+	m.workspace = nil
+	m.clearedworkspace = false
+}
+
+// ClearTeammate clears the "teammate" edge to the Teammate entity.
+func (m *TeammateTaskTabStatusMutation) ClearTeammate() {
+	m.clearedteammate = true
+}
+
+// TeammateCleared reports if the "teammate" edge to the Teammate entity was cleared.
+func (m *TeammateTaskTabStatusMutation) TeammateCleared() bool {
+	return m.clearedteammate
+}
+
+// TeammateIDs returns the "teammate" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// TeammateID instead. It exists only for internal usage by the builders.
+func (m *TeammateTaskTabStatusMutation) TeammateIDs() (ids []ulid.ID) {
+	if id := m.teammate; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetTeammate resets all changes to the "teammate" edge.
+func (m *TeammateTaskTabStatusMutation) ResetTeammate() {
+	m.teammate = nil
+	m.clearedteammate = false
+}
+
+// Where appends a list predicates to the TeammateTaskTabStatusMutation builder.
+func (m *TeammateTaskTabStatusMutation) Where(ps ...predicate.TeammateTaskTabStatus) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// Op returns the operation name.
+func (m *TeammateTaskTabStatusMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (TeammateTaskTabStatus).
+func (m *TeammateTaskTabStatusMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *TeammateTaskTabStatusMutation) Fields() []string {
+	fields := make([]string, 0, 5)
+	if m.workspace != nil {
+		fields = append(fields, teammatetasktabstatus.FieldWorkspaceID)
+	}
+	if m.teammate != nil {
+		fields = append(fields, teammatetasktabstatus.FieldTeammateID)
+	}
+	if m.status_code != nil {
+		fields = append(fields, teammatetasktabstatus.FieldStatusCode)
+	}
+	if m.created_at != nil {
+		fields = append(fields, teammatetasktabstatus.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, teammatetasktabstatus.FieldUpdatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *TeammateTaskTabStatusMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case teammatetasktabstatus.FieldWorkspaceID:
+		return m.WorkspaceID()
+	case teammatetasktabstatus.FieldTeammateID:
+		return m.TeammateID()
+	case teammatetasktabstatus.FieldStatusCode:
+		return m.StatusCode()
+	case teammatetasktabstatus.FieldCreatedAt:
+		return m.CreatedAt()
+	case teammatetasktabstatus.FieldUpdatedAt:
+		return m.UpdatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *TeammateTaskTabStatusMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case teammatetasktabstatus.FieldWorkspaceID:
+		return m.OldWorkspaceID(ctx)
+	case teammatetasktabstatus.FieldTeammateID:
+		return m.OldTeammateID(ctx)
+	case teammatetasktabstatus.FieldStatusCode:
+		return m.OldStatusCode(ctx)
+	case teammatetasktabstatus.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case teammatetasktabstatus.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown TeammateTaskTabStatus field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *TeammateTaskTabStatusMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case teammatetasktabstatus.FieldWorkspaceID:
+		v, ok := value.(ulid.ID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetWorkspaceID(v)
+		return nil
+	case teammatetasktabstatus.FieldTeammateID:
+		v, ok := value.(ulid.ID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTeammateID(v)
+		return nil
+	case teammatetasktabstatus.FieldStatusCode:
+		v, ok := value.(teammatetasktabstatus.StatusCode)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetStatusCode(v)
+		return nil
+	case teammatetasktabstatus.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case teammatetasktabstatus.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown TeammateTaskTabStatus field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *TeammateTaskTabStatusMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *TeammateTaskTabStatusMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *TeammateTaskTabStatusMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown TeammateTaskTabStatus numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *TeammateTaskTabStatusMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *TeammateTaskTabStatusMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *TeammateTaskTabStatusMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown TeammateTaskTabStatus nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *TeammateTaskTabStatusMutation) ResetField(name string) error {
+	switch name {
+	case teammatetasktabstatus.FieldWorkspaceID:
+		m.ResetWorkspaceID()
+		return nil
+	case teammatetasktabstatus.FieldTeammateID:
+		m.ResetTeammateID()
+		return nil
+	case teammatetasktabstatus.FieldStatusCode:
+		m.ResetStatusCode()
+		return nil
+	case teammatetasktabstatus.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case teammatetasktabstatus.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown TeammateTaskTabStatus field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *TeammateTaskTabStatusMutation) AddedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.workspace != nil {
+		edges = append(edges, teammatetasktabstatus.EdgeWorkspace)
+	}
+	if m.teammate != nil {
+		edges = append(edges, teammatetasktabstatus.EdgeTeammate)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *TeammateTaskTabStatusMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case teammatetasktabstatus.EdgeWorkspace:
+		if id := m.workspace; id != nil {
+			return []ent.Value{*id}
+		}
+	case teammatetasktabstatus.EdgeTeammate:
+		if id := m.teammate; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *TeammateTaskTabStatusMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 2)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *TeammateTaskTabStatusMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *TeammateTaskTabStatusMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.clearedworkspace {
+		edges = append(edges, teammatetasktabstatus.EdgeWorkspace)
+	}
+	if m.clearedteammate {
+		edges = append(edges, teammatetasktabstatus.EdgeTeammate)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *TeammateTaskTabStatusMutation) EdgeCleared(name string) bool {
+	switch name {
+	case teammatetasktabstatus.EdgeWorkspace:
+		return m.clearedworkspace
+	case teammatetasktabstatus.EdgeTeammate:
+		return m.clearedteammate
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *TeammateTaskTabStatusMutation) ClearEdge(name string) error {
+	switch name {
+	case teammatetasktabstatus.EdgeWorkspace:
+		m.ClearWorkspace()
+		return nil
+	case teammatetasktabstatus.EdgeTeammate:
+		m.ClearTeammate()
+		return nil
+	}
+	return fmt.Errorf("unknown TeammateTaskTabStatus unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *TeammateTaskTabStatusMutation) ResetEdge(name string) error {
+	switch name {
+	case teammatetasktabstatus.EdgeWorkspace:
+		m.ResetWorkspace()
+		return nil
+	case teammatetasktabstatus.EdgeTeammate:
+		m.ResetTeammate()
+		return nil
+	}
+	return fmt.Errorf("unknown TeammateTaskTabStatus edge %s", name)
 }
 
 // TestTodoMutation represents an operation that mutates the TestTodo nodes in the graph.
@@ -12781,31 +12781,31 @@ func (m *TestUserMutation) ResetEdge(name string) error {
 // WorkspaceMutation represents an operation that mutates the Workspace nodes in the graph.
 type WorkspaceMutation struct {
 	config
-	op                           Op
-	typ                          string
-	id                           *ulid.ID
-	name                         *string
-	description                  *editor.Description
-	created_at                   *time.Time
-	updated_at                   *time.Time
-	clearedFields                map[string]struct{}
-	teammate                     *ulid.ID
-	clearedteammate              bool
-	projects                     map[ulid.ID]struct{}
-	removedprojects              map[ulid.ID]struct{}
-	clearedprojects              bool
-	workspace_teammates          map[ulid.ID]struct{}
-	removedworkspace_teammates   map[ulid.ID]struct{}
-	clearedworkspace_teammates   bool
-	favorite_workspaces          map[ulid.ID]struct{}
-	removedfavorite_workspaces   map[ulid.ID]struct{}
-	clearedfavorite_workspaces   bool
-	my_tasks_tab_statuses        map[ulid.ID]struct{}
-	removedmy_tasks_tab_statuses map[ulid.ID]struct{}
-	clearedmy_tasks_tab_statuses bool
-	done                         bool
-	oldValue                     func(context.Context) (*Workspace, error)
-	predicates                   []predicate.Workspace
+	op                                Op
+	typ                               string
+	id                                *ulid.ID
+	name                              *string
+	description                       *editor.Description
+	created_at                        *time.Time
+	updated_at                        *time.Time
+	clearedFields                     map[string]struct{}
+	teammate                          *ulid.ID
+	clearedteammate                   bool
+	projects                          map[ulid.ID]struct{}
+	removedprojects                   map[ulid.ID]struct{}
+	clearedprojects                   bool
+	workspace_teammates               map[ulid.ID]struct{}
+	removedworkspace_teammates        map[ulid.ID]struct{}
+	clearedworkspace_teammates        bool
+	favorite_workspaces               map[ulid.ID]struct{}
+	removedfavorite_workspaces        map[ulid.ID]struct{}
+	clearedfavorite_workspaces        bool
+	teammate_task_tab_statuses        map[ulid.ID]struct{}
+	removedteammate_task_tab_statuses map[ulid.ID]struct{}
+	clearedteammate_task_tab_statuses bool
+	done                              bool
+	oldValue                          func(context.Context) (*Workspace, error)
+	predicates                        []predicate.Workspace
 }
 
 var _ ent.Mutation = (*WorkspaceMutation)(nil)
@@ -13274,58 +13274,58 @@ func (m *WorkspaceMutation) ResetFavoriteWorkspaces() {
 	m.removedfavorite_workspaces = nil
 }
 
-// AddMyTasksTabStatusIDs adds the "my_tasks_tab_statuses" edge to the MyTasksTabStatus entity by ids.
-func (m *WorkspaceMutation) AddMyTasksTabStatusIDs(ids ...ulid.ID) {
-	if m.my_tasks_tab_statuses == nil {
-		m.my_tasks_tab_statuses = make(map[ulid.ID]struct{})
+// AddTeammateTaskTabStatusIDs adds the "teammate_task_tab_statuses" edge to the TeammateTaskTabStatus entity by ids.
+func (m *WorkspaceMutation) AddTeammateTaskTabStatusIDs(ids ...ulid.ID) {
+	if m.teammate_task_tab_statuses == nil {
+		m.teammate_task_tab_statuses = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		m.my_tasks_tab_statuses[ids[i]] = struct{}{}
+		m.teammate_task_tab_statuses[ids[i]] = struct{}{}
 	}
 }
 
-// ClearMyTasksTabStatuses clears the "my_tasks_tab_statuses" edge to the MyTasksTabStatus entity.
-func (m *WorkspaceMutation) ClearMyTasksTabStatuses() {
-	m.clearedmy_tasks_tab_statuses = true
+// ClearTeammateTaskTabStatuses clears the "teammate_task_tab_statuses" edge to the TeammateTaskTabStatus entity.
+func (m *WorkspaceMutation) ClearTeammateTaskTabStatuses() {
+	m.clearedteammate_task_tab_statuses = true
 }
 
-// MyTasksTabStatusesCleared reports if the "my_tasks_tab_statuses" edge to the MyTasksTabStatus entity was cleared.
-func (m *WorkspaceMutation) MyTasksTabStatusesCleared() bool {
-	return m.clearedmy_tasks_tab_statuses
+// TeammateTaskTabStatusesCleared reports if the "teammate_task_tab_statuses" edge to the TeammateTaskTabStatus entity was cleared.
+func (m *WorkspaceMutation) TeammateTaskTabStatusesCleared() bool {
+	return m.clearedteammate_task_tab_statuses
 }
 
-// RemoveMyTasksTabStatusIDs removes the "my_tasks_tab_statuses" edge to the MyTasksTabStatus entity by IDs.
-func (m *WorkspaceMutation) RemoveMyTasksTabStatusIDs(ids ...ulid.ID) {
-	if m.removedmy_tasks_tab_statuses == nil {
-		m.removedmy_tasks_tab_statuses = make(map[ulid.ID]struct{})
+// RemoveTeammateTaskTabStatusIDs removes the "teammate_task_tab_statuses" edge to the TeammateTaskTabStatus entity by IDs.
+func (m *WorkspaceMutation) RemoveTeammateTaskTabStatusIDs(ids ...ulid.ID) {
+	if m.removedteammate_task_tab_statuses == nil {
+		m.removedteammate_task_tab_statuses = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		delete(m.my_tasks_tab_statuses, ids[i])
-		m.removedmy_tasks_tab_statuses[ids[i]] = struct{}{}
+		delete(m.teammate_task_tab_statuses, ids[i])
+		m.removedteammate_task_tab_statuses[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedMyTasksTabStatuses returns the removed IDs of the "my_tasks_tab_statuses" edge to the MyTasksTabStatus entity.
-func (m *WorkspaceMutation) RemovedMyTasksTabStatusesIDs() (ids []ulid.ID) {
-	for id := range m.removedmy_tasks_tab_statuses {
+// RemovedTeammateTaskTabStatuses returns the removed IDs of the "teammate_task_tab_statuses" edge to the TeammateTaskTabStatus entity.
+func (m *WorkspaceMutation) RemovedTeammateTaskTabStatusesIDs() (ids []ulid.ID) {
+	for id := range m.removedteammate_task_tab_statuses {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// MyTasksTabStatusesIDs returns the "my_tasks_tab_statuses" edge IDs in the mutation.
-func (m *WorkspaceMutation) MyTasksTabStatusesIDs() (ids []ulid.ID) {
-	for id := range m.my_tasks_tab_statuses {
+// TeammateTaskTabStatusesIDs returns the "teammate_task_tab_statuses" edge IDs in the mutation.
+func (m *WorkspaceMutation) TeammateTaskTabStatusesIDs() (ids []ulid.ID) {
+	for id := range m.teammate_task_tab_statuses {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetMyTasksTabStatuses resets all changes to the "my_tasks_tab_statuses" edge.
-func (m *WorkspaceMutation) ResetMyTasksTabStatuses() {
-	m.my_tasks_tab_statuses = nil
-	m.clearedmy_tasks_tab_statuses = false
-	m.removedmy_tasks_tab_statuses = nil
+// ResetTeammateTaskTabStatuses resets all changes to the "teammate_task_tab_statuses" edge.
+func (m *WorkspaceMutation) ResetTeammateTaskTabStatuses() {
+	m.teammate_task_tab_statuses = nil
+	m.clearedteammate_task_tab_statuses = false
+	m.removedteammate_task_tab_statuses = nil
 }
 
 // Where appends a list predicates to the WorkspaceMutation builder.
@@ -13527,8 +13527,8 @@ func (m *WorkspaceMutation) AddedEdges() []string {
 	if m.favorite_workspaces != nil {
 		edges = append(edges, workspace.EdgeFavoriteWorkspaces)
 	}
-	if m.my_tasks_tab_statuses != nil {
-		edges = append(edges, workspace.EdgeMyTasksTabStatuses)
+	if m.teammate_task_tab_statuses != nil {
+		edges = append(edges, workspace.EdgeTeammateTaskTabStatuses)
 	}
 	return edges
 }
@@ -13559,9 +13559,9 @@ func (m *WorkspaceMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
-	case workspace.EdgeMyTasksTabStatuses:
-		ids := make([]ent.Value, 0, len(m.my_tasks_tab_statuses))
-		for id := range m.my_tasks_tab_statuses {
+	case workspace.EdgeTeammateTaskTabStatuses:
+		ids := make([]ent.Value, 0, len(m.teammate_task_tab_statuses))
+		for id := range m.teammate_task_tab_statuses {
 			ids = append(ids, id)
 		}
 		return ids
@@ -13581,8 +13581,8 @@ func (m *WorkspaceMutation) RemovedEdges() []string {
 	if m.removedfavorite_workspaces != nil {
 		edges = append(edges, workspace.EdgeFavoriteWorkspaces)
 	}
-	if m.removedmy_tasks_tab_statuses != nil {
-		edges = append(edges, workspace.EdgeMyTasksTabStatuses)
+	if m.removedteammate_task_tab_statuses != nil {
+		edges = append(edges, workspace.EdgeTeammateTaskTabStatuses)
 	}
 	return edges
 }
@@ -13609,9 +13609,9 @@ func (m *WorkspaceMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
-	case workspace.EdgeMyTasksTabStatuses:
-		ids := make([]ent.Value, 0, len(m.removedmy_tasks_tab_statuses))
-		for id := range m.removedmy_tasks_tab_statuses {
+	case workspace.EdgeTeammateTaskTabStatuses:
+		ids := make([]ent.Value, 0, len(m.removedteammate_task_tab_statuses))
+		for id := range m.removedteammate_task_tab_statuses {
 			ids = append(ids, id)
 		}
 		return ids
@@ -13634,8 +13634,8 @@ func (m *WorkspaceMutation) ClearedEdges() []string {
 	if m.clearedfavorite_workspaces {
 		edges = append(edges, workspace.EdgeFavoriteWorkspaces)
 	}
-	if m.clearedmy_tasks_tab_statuses {
-		edges = append(edges, workspace.EdgeMyTasksTabStatuses)
+	if m.clearedteammate_task_tab_statuses {
+		edges = append(edges, workspace.EdgeTeammateTaskTabStatuses)
 	}
 	return edges
 }
@@ -13652,8 +13652,8 @@ func (m *WorkspaceMutation) EdgeCleared(name string) bool {
 		return m.clearedworkspace_teammates
 	case workspace.EdgeFavoriteWorkspaces:
 		return m.clearedfavorite_workspaces
-	case workspace.EdgeMyTasksTabStatuses:
-		return m.clearedmy_tasks_tab_statuses
+	case workspace.EdgeTeammateTaskTabStatuses:
+		return m.clearedteammate_task_tab_statuses
 	}
 	return false
 }
@@ -13685,8 +13685,8 @@ func (m *WorkspaceMutation) ResetEdge(name string) error {
 	case workspace.EdgeFavoriteWorkspaces:
 		m.ResetFavoriteWorkspaces()
 		return nil
-	case workspace.EdgeMyTasksTabStatuses:
-		m.ResetMyTasksTabStatuses()
+	case workspace.EdgeTeammateTaskTabStatuses:
+		m.ResetTeammateTaskTabStatuses()
 		return nil
 	}
 	return fmt.Errorf("unknown Workspace edge %s", name)

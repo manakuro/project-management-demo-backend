@@ -45,8 +45,8 @@ type WorkspaceEdges struct {
 	WorkspaceTeammates []*WorkspaceTeammate `json:"workspace_teammates,omitempty"`
 	// FavoriteWorkspaces holds the value of the favorite_workspaces edge.
 	FavoriteWorkspaces []*FavoriteWorkspace `json:"favorite_workspaces,omitempty"`
-	// MyTasksTabStatuses holds the value of the my_tasks_tab_statuses edge.
-	MyTasksTabStatuses []*MyTasksTabStatus `json:"my_tasks_tab_statuses,omitempty"`
+	// TeammateTaskTabStatuses holds the value of the teammate_task_tab_statuses edge.
+	TeammateTaskTabStatuses []*TeammateTaskTabStatus `json:"teammate_task_tab_statuses,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [5]bool
@@ -93,13 +93,13 @@ func (e WorkspaceEdges) FavoriteWorkspacesOrErr() ([]*FavoriteWorkspace, error) 
 	return nil, &NotLoadedError{edge: "favorite_workspaces"}
 }
 
-// MyTasksTabStatusesOrErr returns the MyTasksTabStatuses value or an error if the edge
+// TeammateTaskTabStatusesOrErr returns the TeammateTaskTabStatuses value or an error if the edge
 // was not loaded in eager-loading.
-func (e WorkspaceEdges) MyTasksTabStatusesOrErr() ([]*MyTasksTabStatus, error) {
+func (e WorkspaceEdges) TeammateTaskTabStatusesOrErr() ([]*TeammateTaskTabStatus, error) {
 	if e.loadedTypes[4] {
-		return e.MyTasksTabStatuses, nil
+		return e.TeammateTaskTabStatuses, nil
 	}
-	return nil, &NotLoadedError{edge: "my_tasks_tab_statuses"}
+	return nil, &NotLoadedError{edge: "teammate_task_tab_statuses"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -193,9 +193,9 @@ func (w *Workspace) QueryFavoriteWorkspaces() *FavoriteWorkspaceQuery {
 	return (&WorkspaceClient{config: w.config}).QueryFavoriteWorkspaces(w)
 }
 
-// QueryMyTasksTabStatuses queries the "my_tasks_tab_statuses" edge of the Workspace entity.
-func (w *Workspace) QueryMyTasksTabStatuses() *MyTasksTabStatusQuery {
-	return (&WorkspaceClient{config: w.config}).QueryMyTasksTabStatuses(w)
+// QueryTeammateTaskTabStatuses queries the "teammate_task_tab_statuses" edge of the Workspace entity.
+func (w *Workspace) QueryTeammateTaskTabStatuses() *TeammateTaskTabStatusQuery {
+	return (&WorkspaceClient{config: w.config}).QueryTeammateTaskTabStatuses(w)
 }
 
 // Update returns a builder for updating this Workspace.

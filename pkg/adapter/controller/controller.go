@@ -8,7 +8,7 @@ type Controller struct {
 	FavoriteWorkspace       interface{ FavoriteWorkspace }
 	Icon                    interface{ Icon }
 	Me                      interface{ Me }
-	MyTasksTabStatus        interface{ MyTasksTabStatus }
+	TeammateTaskTabStatus   interface{ TeammateTaskTabStatus }
 	Project                 interface{ Project }
 	ProjectBaseColor        interface{ ProjectBaseColor }
 	ProjectIcon             interface{ ProjectIcon }

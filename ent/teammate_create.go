@@ -8,12 +8,12 @@ import (
 	"fmt"
 	"project-management-demo-backend/ent/favoriteproject"
 	"project-management-demo-backend/ent/favoriteworkspace"
-	"project-management-demo-backend/ent/mytaskstabstatus"
 	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/teammatetaskcolumn"
+	"project-management-demo-backend/ent/teammatetasktabstatus"
 	"project-management-demo-backend/ent/workspace"
 	"project-management-demo-backend/ent/workspaceteammate"
 	"time"
@@ -179,19 +179,19 @@ func (tc *TeammateCreate) AddFavoriteWorkspaces(f ...*FavoriteWorkspace) *Teamma
 	return tc.AddFavoriteWorkspaceIDs(ids...)
 }
 
-// AddMyTasksTabStatusIDs adds the "my_tasks_tab_statuses" edge to the MyTasksTabStatus entity by IDs.
-func (tc *TeammateCreate) AddMyTasksTabStatusIDs(ids ...ulid.ID) *TeammateCreate {
-	tc.mutation.AddMyTasksTabStatusIDs(ids...)
+// AddTeammateTaskTabStatusIDs adds the "teammate_task_tab_statuses" edge to the TeammateTaskTabStatus entity by IDs.
+func (tc *TeammateCreate) AddTeammateTaskTabStatusIDs(ids ...ulid.ID) *TeammateCreate {
+	tc.mutation.AddTeammateTaskTabStatusIDs(ids...)
 	return tc
 }
 
-// AddMyTasksTabStatuses adds the "my_tasks_tab_statuses" edges to the MyTasksTabStatus entity.
-func (tc *TeammateCreate) AddMyTasksTabStatuses(m ...*MyTasksTabStatus) *TeammateCreate {
-	ids := make([]ulid.ID, len(m))
-	for i := range m {
-		ids[i] = m[i].ID
+// AddTeammateTaskTabStatuses adds the "teammate_task_tab_statuses" edges to the TeammateTaskTabStatus entity.
+func (tc *TeammateCreate) AddTeammateTaskTabStatuses(t ...*TeammateTaskTabStatus) *TeammateCreate {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
 	}
-	return tc.AddMyTasksTabStatusIDs(ids...)
+	return tc.AddTeammateTaskTabStatusIDs(ids...)
 }
 
 // AddTeammateTaskColumnIDs adds the "teammate_task_columns" edge to the TeammateTaskColumn entity by IDs.
@@ -512,17 +512,17 @@ func (tc *TeammateCreate) createSpec() (*Teammate, *sqlgraph.CreateSpec) {
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := tc.mutation.MyTasksTabStatusesIDs(); len(nodes) > 0 {
+	if nodes := tc.mutation.TeammateTaskTabStatusesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   teammate.MyTasksTabStatusesTable,
-			Columns: []string{teammate.MyTasksTabStatusesColumn},
+			Table:   teammate.TeammateTaskTabStatusesTable,
+			Columns: []string{teammate.TeammateTaskTabStatusesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
-					Column: mytaskstabstatus.FieldID,
+					Column: teammatetasktabstatus.FieldID,
 				},
 			},
 		}

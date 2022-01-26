@@ -28,7 +28,6 @@ type hooks struct {
 	FavoriteProject         []ent.Hook
 	FavoriteWorkspace       []ent.Hook
 	Icon                    []ent.Hook
-	MyTasksTabStatus        []ent.Hook
 	Project                 []ent.Hook
 	ProjectBaseColor        []ent.Hook
 	ProjectIcon             []ent.Hook
@@ -41,6 +40,7 @@ type hooks struct {
 	TaskSection             []ent.Hook
 	Teammate                []ent.Hook
 	TeammateTaskColumn      []ent.Hook
+	TeammateTaskTabStatus   []ent.Hook
 	TestTodo                []ent.Hook
 	TestUser                []ent.Hook
 	Workspace               []ent.Hook
