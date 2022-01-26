@@ -58,6 +58,7 @@ type ResolverRoot interface {
 	ProjectIcon() ProjectIconResolver
 	ProjectLightColor() ProjectLightColorResolver
 	ProjectTaskColumn() ProjectTaskColumnResolver
+	ProjectTaskListStatus() ProjectTaskListStatusResolver
 	ProjectTeammate() ProjectTeammateResolver
 	Query() QueryResolver
 	Subscription() SubscriptionResolver
@@ -200,6 +201,7 @@ type ComplexityRoot struct {
 		CreateProjectIcon             func(childComplexity int, input ent.CreateProjectIconInput) int
 		CreateProjectLightColor       func(childComplexity int, input ent.CreateProjectLightColorInput) int
 		CreateProjectTaskColumn       func(childComplexity int, input ent.CreateProjectTaskColumnInput) int
+		CreateProjectTaskListStatus   func(childComplexity int, input ent.CreateProjectTaskListStatusInput) int
 		CreateProjectTeammate         func(childComplexity int, input ent.CreateProjectTeammateInput) int
 		CreateTaskColumn              func(childComplexity int, input ent.CreateTaskColumnInput) int
 		CreateTaskListCompletedStatus func(childComplexity int, input ent.CreateTaskListCompletedStatusInput) int
@@ -224,6 +226,7 @@ type ComplexityRoot struct {
 		UpdateProjectIcon             func(childComplexity int, input ent.UpdateProjectIconInput) int
 		UpdateProjectLightColor       func(childComplexity int, input ent.UpdateProjectLightColorInput) int
 		UpdateProjectTaskColumn       func(childComplexity int, input ent.UpdateProjectTaskColumnInput) int
+		UpdateProjectTaskListStatus   func(childComplexity int, input ent.UpdateProjectTaskListStatusInput) int
 		UpdateProjectTeammate         func(childComplexity int, input ent.UpdateProjectTeammateInput) int
 		UpdateTaskColumn              func(childComplexity int, input ent.UpdateTaskColumnInput) int
 		UpdateTaskListCompletedStatus func(childComplexity int, input ent.UpdateTaskListCompletedStatusInput) int
@@ -356,6 +359,29 @@ type ComplexityRoot struct {
 		Node   func(childComplexity int) int
 	}
 
+	ProjectTaskListStatus struct {
+		CreatedAt                 func(childComplexity int) int
+		ID                        func(childComplexity int) int
+		Project                   func(childComplexity int) int
+		ProjectID                 func(childComplexity int) int
+		TaskListCompletedStatus   func(childComplexity int) int
+		TaskListCompletedStatusID func(childComplexity int) int
+		TaskListSortStatus        func(childComplexity int) int
+		TaskListSortStatusID      func(childComplexity int) int
+		UpdatedAt                 func(childComplexity int) int
+	}
+
+	ProjectTaskListStatusConnection struct {
+		Edges      func(childComplexity int) int
+		PageInfo   func(childComplexity int) int
+		TotalCount func(childComplexity int) int
+	}
+
+	ProjectTaskListStatusEdge struct {
+		Cursor func(childComplexity int) int
+		Node   func(childComplexity int) int
+	}
+
 	ProjectTeammate struct {
 		CreatedAt  func(childComplexity int) int
 		ID         func(childComplexity int) int
@@ -402,6 +428,8 @@ type ComplexityRoot struct {
 		ProjectLightColors             func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectLightColorWhereInput) int
 		ProjectTaskColumn              func(childComplexity int, where *ent.ProjectTaskColumnWhereInput) int
 		ProjectTaskColumns             func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectTaskColumnWhereInput) int
+		ProjectTaskListStatusStatus    func(childComplexity int, where *ent.ProjectTaskListStatusWhereInput) int
+		ProjectTaskListStatusStatuses  func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectTaskListStatusWhereInput) int
 		ProjectTeammate                func(childComplexity int, where *ent.ProjectTeammateWhereInput) int
 		ProjectTeammates               func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectTeammateWhereInput) int
 		Projects                       func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectWhereInput) int
@@ -442,6 +470,7 @@ type ComplexityRoot struct {
 		ProjectIconUpdated                  func(childComplexity int, id ulid.ID) int
 		ProjectLightColorUpdated            func(childComplexity int, id ulid.ID) int
 		ProjectTaskColumnUpdated            func(childComplexity int, id ulid.ID) int
+		ProjectTaskListStatusStatusUpdated  func(childComplexity int, id ulid.ID) int
 		ProjectTeammateUpdated              func(childComplexity int, id ulid.ID) int
 		ProjectUpdated                      func(childComplexity int, id ulid.ID) int
 		TaskSectionUpdated                  func(childComplexity int, id ulid.ID) int
@@ -755,6 +784,8 @@ type MutationResolver interface {
 	UpdateProjectLightColor(ctx context.Context, input ent.UpdateProjectLightColorInput) (*ent.ProjectLightColor, error)
 	CreateProjectTaskColumn(ctx context.Context, input ent.CreateProjectTaskColumnInput) (*ent.ProjectTaskColumn, error)
 	UpdateProjectTaskColumn(ctx context.Context, input ent.UpdateProjectTaskColumnInput) (*ent.ProjectTaskColumn, error)
+	CreateProjectTaskListStatus(ctx context.Context, input ent.CreateProjectTaskListStatusInput) (*ent.ProjectTaskListStatus, error)
+	UpdateProjectTaskListStatus(ctx context.Context, input ent.UpdateProjectTaskListStatusInput) (*ent.ProjectTaskListStatus, error)
 	CreateProjectTeammate(ctx context.Context, input ent.CreateProjectTeammateInput) (*ent.ProjectTeammate, error)
 	UpdateProjectTeammate(ctx context.Context, input ent.UpdateProjectTeammateInput) (*ent.ProjectTeammate, error)
 	CreateTaskColumn(ctx context.Context, input ent.CreateTaskColumnInput) (*ent.TaskColumn, error)
@@ -806,6 +837,10 @@ type ProjectTaskColumnResolver interface {
 	CreatedAt(ctx context.Context, obj *ent.ProjectTaskColumn) (string, error)
 	UpdatedAt(ctx context.Context, obj *ent.ProjectTaskColumn) (string, error)
 }
+type ProjectTaskListStatusResolver interface {
+	CreatedAt(ctx context.Context, obj *ent.ProjectTaskListStatus) (string, error)
+	UpdatedAt(ctx context.Context, obj *ent.ProjectTaskListStatus) (string, error)
+}
 type ProjectTeammateResolver interface {
 	CreatedAt(ctx context.Context, obj *ent.ProjectTeammate) (string, error)
 	UpdatedAt(ctx context.Context, obj *ent.ProjectTeammate) (string, error)
@@ -834,6 +869,8 @@ type QueryResolver interface {
 	ProjectLightColors(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectLightColorWhereInput) (*ent.ProjectLightColorConnection, error)
 	ProjectTaskColumn(ctx context.Context, where *ent.ProjectTaskColumnWhereInput) (*ent.ProjectTaskColumn, error)
 	ProjectTaskColumns(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectTaskColumnWhereInput) (*ent.ProjectTaskColumnConnection, error)
+	ProjectTaskListStatusStatus(ctx context.Context, where *ent.ProjectTaskListStatusWhereInput) (*ent.ProjectTaskListStatus, error)
+	ProjectTaskListStatusStatuses(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectTaskListStatusWhereInput) (*ent.ProjectTaskListStatusConnection, error)
 	ProjectTeammate(ctx context.Context, where *ent.ProjectTeammateWhereInput) (*ent.ProjectTeammate, error)
 	ProjectTeammates(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectTeammateWhereInput) (*ent.ProjectTeammateConnection, error)
 	TaskColumn(ctx context.Context, where *ent.TaskColumnWhereInput) (*ent.TaskColumn, error)
@@ -873,6 +910,7 @@ type SubscriptionResolver interface {
 	ProjectIconUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.ProjectIcon, error)
 	ProjectLightColorUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.ProjectLightColor, error)
 	ProjectTaskColumnUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.ProjectTaskColumn, error)
+	ProjectTaskListStatusStatusUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.ProjectTaskListStatus, error)
 	ProjectTeammateUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.ProjectTeammate, error)
 	TaskSectionUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.TaskSection, error)
 	TeammateUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.Teammate, error)
@@ -1475,6 +1513,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.CreateProjectTaskColumn(childComplexity, args["input"].(ent.CreateProjectTaskColumnInput)), true
 
+	case "Mutation.createProjectTaskListStatus":
+		if e.complexity.Mutation.CreateProjectTaskListStatus == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createProjectTaskListStatus_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateProjectTaskListStatus(childComplexity, args["input"].(ent.CreateProjectTaskListStatusInput)), true
+
 	case "Mutation.createProjectTeammate":
 		if e.complexity.Mutation.CreateProjectTeammate == nil {
 			break
@@ -1762,6 +1812,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.UpdateProjectTaskColumn(childComplexity, args["input"].(ent.UpdateProjectTaskColumnInput)), true
+
+	case "Mutation.updateProjectTaskListStatus":
+		if e.complexity.Mutation.UpdateProjectTaskListStatus == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateProjectTaskListStatus_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateProjectTaskListStatus(childComplexity, args["input"].(ent.UpdateProjectTaskListStatusInput)), true
 
 	case "Mutation.updateProjectTeammate":
 		if e.complexity.Mutation.UpdateProjectTeammate == nil {
@@ -2402,6 +2464,104 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.ProjectTaskColumnEdge.Node(childComplexity), true
 
+	case "ProjectTaskListStatus.createdAt":
+		if e.complexity.ProjectTaskListStatus.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.ProjectTaskListStatus.CreatedAt(childComplexity), true
+
+	case "ProjectTaskListStatus.id":
+		if e.complexity.ProjectTaskListStatus.ID == nil {
+			break
+		}
+
+		return e.complexity.ProjectTaskListStatus.ID(childComplexity), true
+
+	case "ProjectTaskListStatus.project":
+		if e.complexity.ProjectTaskListStatus.Project == nil {
+			break
+		}
+
+		return e.complexity.ProjectTaskListStatus.Project(childComplexity), true
+
+	case "ProjectTaskListStatus.projectId":
+		if e.complexity.ProjectTaskListStatus.ProjectID == nil {
+			break
+		}
+
+		return e.complexity.ProjectTaskListStatus.ProjectID(childComplexity), true
+
+	case "ProjectTaskListStatus.taskListCompletedStatus":
+		if e.complexity.ProjectTaskListStatus.TaskListCompletedStatus == nil {
+			break
+		}
+
+		return e.complexity.ProjectTaskListStatus.TaskListCompletedStatus(childComplexity), true
+
+	case "ProjectTaskListStatus.taskListCompletedStatusId":
+		if e.complexity.ProjectTaskListStatus.TaskListCompletedStatusID == nil {
+			break
+		}
+
+		return e.complexity.ProjectTaskListStatus.TaskListCompletedStatusID(childComplexity), true
+
+	case "ProjectTaskListStatus.taskListSortStatus":
+		if e.complexity.ProjectTaskListStatus.TaskListSortStatus == nil {
+			break
+		}
+
+		return e.complexity.ProjectTaskListStatus.TaskListSortStatus(childComplexity), true
+
+	case "ProjectTaskListStatus.taskListSortStatusId":
+		if e.complexity.ProjectTaskListStatus.TaskListSortStatusID == nil {
+			break
+		}
+
+		return e.complexity.ProjectTaskListStatus.TaskListSortStatusID(childComplexity), true
+
+	case "ProjectTaskListStatus.updatedAt":
+		if e.complexity.ProjectTaskListStatus.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.ProjectTaskListStatus.UpdatedAt(childComplexity), true
+
+	case "ProjectTaskListStatusConnection.edges":
+		if e.complexity.ProjectTaskListStatusConnection.Edges == nil {
+			break
+		}
+
+		return e.complexity.ProjectTaskListStatusConnection.Edges(childComplexity), true
+
+	case "ProjectTaskListStatusConnection.pageInfo":
+		if e.complexity.ProjectTaskListStatusConnection.PageInfo == nil {
+			break
+		}
+
+		return e.complexity.ProjectTaskListStatusConnection.PageInfo(childComplexity), true
+
+	case "ProjectTaskListStatusConnection.totalCount":
+		if e.complexity.ProjectTaskListStatusConnection.TotalCount == nil {
+			break
+		}
+
+		return e.complexity.ProjectTaskListStatusConnection.TotalCount(childComplexity), true
+
+	case "ProjectTaskListStatusEdge.cursor":
+		if e.complexity.ProjectTaskListStatusEdge.Cursor == nil {
+			break
+		}
+
+		return e.complexity.ProjectTaskListStatusEdge.Cursor(childComplexity), true
+
+	case "ProjectTaskListStatusEdge.node":
+		if e.complexity.ProjectTaskListStatusEdge.Node == nil {
+			break
+		}
+
+		return e.complexity.ProjectTaskListStatusEdge.Node(childComplexity), true
+
 	case "ProjectTeammate.createdAt":
 		if e.complexity.ProjectTeammate.CreatedAt == nil {
 			break
@@ -2758,6 +2918,30 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.ProjectTaskColumns(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["where"].(*ent.ProjectTaskColumnWhereInput)), true
+
+	case "Query.projectTaskListStatusStatus":
+		if e.complexity.Query.ProjectTaskListStatusStatus == nil {
+			break
+		}
+
+		args, err := ec.field_Query_projectTaskListStatusStatus_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.ProjectTaskListStatusStatus(childComplexity, args["where"].(*ent.ProjectTaskListStatusWhereInput)), true
+
+	case "Query.projectTaskListStatusStatuses":
+		if e.complexity.Query.ProjectTaskListStatusStatuses == nil {
+			break
+		}
+
+		args, err := ec.field_Query_projectTaskListStatusStatuses_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.ProjectTaskListStatusStatuses(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["where"].(*ent.ProjectTaskListStatusWhereInput)), true
 
 	case "Query.projectTeammate":
 		if e.complexity.Query.ProjectTeammate == nil {
@@ -3197,6 +3381,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Subscription.ProjectTaskColumnUpdated(childComplexity, args["id"].(ulid.ID)), true
+
+	case "Subscription.projectTaskListStatusStatusUpdated":
+		if e.complexity.Subscription.ProjectTaskListStatusStatusUpdated == nil {
+			break
+		}
+
+		args, err := ec.field_Subscription_projectTaskListStatusStatusUpdated_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Subscription.ProjectTaskListStatusStatusUpdated(childComplexity, args["id"].(ulid.ID)), true
 
 	case "Subscription.projectTeammateUpdated":
 		if e.complexity.Subscription.ProjectTeammateUpdated == nil {
@@ -5250,6 +5446,10 @@ input ProjectWhereInput {
   """project_task_columns edge predicates"""
   hasProjectTaskColumns: Boolean
   hasProjectTaskColumnsWith: [ProjectTaskColumnWhereInput!]
+  
+  """project_task_list_statuses edge predicates"""
+  hasProjectTaskListStatuses: Boolean
+  hasProjectTaskListStatusesWith: [ProjectTaskListStatusWhereInput!]
 }
 
 """
@@ -6200,6 +6400,10 @@ input TaskListCompletedStatusWhereInput {
   """teammate_task_list_statuses edge predicates"""
   hasTeammateTaskListStatuses: Boolean
   hasTeammateTaskListStatusesWith: [TeammateTaskListStatusWhereInput!]
+  
+  """project_task_list_statuses edge predicates"""
+  hasProjectTaskListStatuses: Boolean
+  hasProjectTaskListStatusesWith: [ProjectTaskListStatusWhereInput!]
 }
 
 """
@@ -6265,6 +6469,10 @@ input TaskListSortStatusWhereInput {
   """teammate_task_list_statuses edge predicates"""
   hasTeammateTaskListStatuses: Boolean
   hasTeammateTaskListStatusesWith: [TeammateTaskListStatusWhereInput!]
+  
+  """project_task_list_statuses edge predicates"""
+  hasProjectTaskListStatuses: Boolean
+  hasProjectTaskListStatusesWith: [ProjectTaskListStatusWhereInput!]
 }
 
 """
@@ -6457,6 +6665,103 @@ input TeammateTaskListStatusWhereInput {
   """teammate edge predicates"""
   hasTeammate: Boolean
   hasTeammateWith: [TeammateWhereInput!]
+  
+  """task_list_completed_status edge predicates"""
+  hasTaskListCompletedStatus: Boolean
+  hasTaskListCompletedStatusWith: [TaskListCompletedStatusWhereInput!]
+  
+  """task_list_sort_status edge predicates"""
+  hasTaskListSortStatus: Boolean
+  hasTaskListSortStatusWith: [TaskListSortStatusWhereInput!]
+}
+
+"""
+ProjectTaskListStatusWhereInput is used for filtering ProjectTaskListStatus objects.
+Input was generated by ent.
+"""
+input ProjectTaskListStatusWhereInput {
+  not: ProjectTaskListStatusWhereInput
+  and: [ProjectTaskListStatusWhereInput!]
+  or: [ProjectTaskListStatusWhereInput!]
+  
+  """project_id field predicates"""
+  projectID: ID
+  projectIDNEQ: ID
+  projectIDIn: [ID!]
+  projectIDNotIn: [ID!]
+  projectIDGT: ID
+  projectIDGTE: ID
+  projectIDLT: ID
+  projectIDLTE: ID
+  projectIDContains: ID
+  projectIDHasPrefix: ID
+  projectIDHasSuffix: ID
+  projectIDEqualFold: ID
+  projectIDContainsFold: ID
+  
+  """task_list_completed_status_id field predicates"""
+  taskListCompletedStatusID: ID
+  taskListCompletedStatusIDNEQ: ID
+  taskListCompletedStatusIDIn: [ID!]
+  taskListCompletedStatusIDNotIn: [ID!]
+  taskListCompletedStatusIDGT: ID
+  taskListCompletedStatusIDGTE: ID
+  taskListCompletedStatusIDLT: ID
+  taskListCompletedStatusIDLTE: ID
+  taskListCompletedStatusIDContains: ID
+  taskListCompletedStatusIDHasPrefix: ID
+  taskListCompletedStatusIDHasSuffix: ID
+  taskListCompletedStatusIDEqualFold: ID
+  taskListCompletedStatusIDContainsFold: ID
+  
+  """task_list_sort_status_id field predicates"""
+  taskListSortStatusID: ID
+  taskListSortStatusIDNEQ: ID
+  taskListSortStatusIDIn: [ID!]
+  taskListSortStatusIDNotIn: [ID!]
+  taskListSortStatusIDGT: ID
+  taskListSortStatusIDGTE: ID
+  taskListSortStatusIDLT: ID
+  taskListSortStatusIDLTE: ID
+  taskListSortStatusIDContains: ID
+  taskListSortStatusIDHasPrefix: ID
+  taskListSortStatusIDHasSuffix: ID
+  taskListSortStatusIDEqualFold: ID
+  taskListSortStatusIDContainsFold: ID
+  
+  """created_at field predicates"""
+  createdAt: Time
+  createdAtNEQ: Time
+  createdAtIn: [Time!]
+  createdAtNotIn: [Time!]
+  createdAtGT: Time
+  createdAtGTE: Time
+  createdAtLT: Time
+  createdAtLTE: Time
+  
+  """updated_at field predicates"""
+  updatedAt: Time
+  updatedAtNEQ: Time
+  updatedAtIn: [Time!]
+  updatedAtNotIn: [Time!]
+  updatedAtGT: Time
+  updatedAtGTE: Time
+  updatedAtLT: Time
+  updatedAtLTE: Time
+  
+  """id field predicates"""
+  id: ID
+  idNEQ: ID
+  idIn: [ID!]
+  idNotIn: [ID!]
+  idGT: ID
+  idGTE: ID
+  idLT: ID
+  idLTE: ID
+  
+  """project edge predicates"""
+  hasProject: Boolean
+  hasProjectWith: [ProjectWhereInput!]
   
   """task_list_completed_status edge predicates"""
   hasTaskListCompletedStatus: Boolean
@@ -6857,6 +7162,54 @@ extend type Query {
 extend type Mutation {
   createProjectTaskColumn(input: CreateProjectTaskColumnInput!): ProjectTaskColumn!
   updateProjectTaskColumn(input: UpdateProjectTaskColumnInput!): ProjectTaskColumn!
+}
+`, BuiltIn: false},
+	{Name: "graph/schema/project_task_list_status/project_task_list_status.graphql", Input: `type ProjectTaskListStatus implements Node {
+  id: ID!
+  projectId: ID!
+  project: Project!
+  taskListCompletedStatusId: ID!
+  taskListCompletedStatus: TaskListCompletedStatus!
+  taskListSortStatusId: ID!
+  taskListSortStatus: TaskListSortStatus!
+  createdAt: String!
+  updatedAt: String!
+}
+type ProjectTaskListStatusConnection {
+  totalCount: Int!
+  pageInfo: PageInfo!
+  edges: [ProjectTaskListStatusEdge]
+}
+type ProjectTaskListStatusEdge {
+  node: ProjectTaskListStatus
+  cursor: Cursor!
+}
+
+input CreateProjectTaskListStatusInput {
+  projectId: ID!
+  taskListCompletedStatusId: ID!
+  taskListSortStatusId: ID!
+}
+
+input UpdateProjectTaskListStatusInput {
+  id: ID!
+  projectId: ID
+  taskListCompletedStatusId: ID
+  taskListSortStatusId: ID
+}
+
+extend type Subscription {
+  projectTaskListStatusStatusUpdated(id: ID!): ProjectTaskListStatus!
+}
+
+extend type Query {
+  projectTaskListStatusStatus(where: ProjectTaskListStatusWhereInput): ProjectTaskListStatus
+  projectTaskListStatusStatuses(after: Cursor, first: Int, before: Cursor, last: Int, where: ProjectTaskListStatusWhereInput): ProjectTaskListStatusConnection
+}
+
+extend type Mutation {
+  createProjectTaskListStatus(input: CreateProjectTaskListStatusInput!): ProjectTaskListStatus!
+  updateProjectTaskListStatus(input: UpdateProjectTaskListStatusInput!): ProjectTaskListStatus!
 }
 `, BuiltIn: false},
 	{Name: "graph/schema/project_teammate/project_teammate.graphql", Input: `type ProjectTeammate implements Node {
@@ -7652,6 +8005,21 @@ func (ec *executionContext) field_Mutation_createProjectTaskColumn_args(ctx cont
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_createProjectTaskListStatus_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 ent.CreateProjectTaskListStatusInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNCreateProjectTaskListStatusInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐCreateProjectTaskListStatusInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_createProjectTeammate_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -8004,6 +8372,21 @@ func (ec *executionContext) field_Mutation_updateProjectTaskColumn_args(ctx cont
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNUpdateProjectTaskColumnInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐUpdateProjectTaskColumnInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_updateProjectTaskListStatus_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 ent.UpdateProjectTaskListStatusInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNUpdateProjectTaskListStatusInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐUpdateProjectTaskListStatusInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -8826,6 +9209,72 @@ func (ec *executionContext) field_Query_projectTaskColumns_args(ctx context.Cont
 	if tmp, ok := rawArgs["where"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
 		arg4, err = ec.unmarshalOProjectTaskColumnWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTaskColumnWhereInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["where"] = arg4
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_projectTaskListStatusStatus_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *ent.ProjectTaskListStatusWhereInput
+	if tmp, ok := rawArgs["where"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
+		arg0, err = ec.unmarshalOProjectTaskListStatusWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTaskListStatusWhereInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["where"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_projectTaskListStatusStatuses_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *ent.Cursor
+	if tmp, ok := rawArgs["after"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
+		arg0, err = ec.unmarshalOCursor2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐCursor(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["after"] = arg0
+	var arg1 *int
+	if tmp, ok := rawArgs["first"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("first"))
+		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["first"] = arg1
+	var arg2 *ent.Cursor
+	if tmp, ok := rawArgs["before"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("before"))
+		arg2, err = ec.unmarshalOCursor2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐCursor(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["before"] = arg2
+	var arg3 *int
+	if tmp, ok := rawArgs["last"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("last"))
+		arg3, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["last"] = arg3
+	var arg4 *ent.ProjectTaskListStatusWhereInput
+	if tmp, ok := rawArgs["where"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
+		arg4, err = ec.unmarshalOProjectTaskListStatusWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTaskListStatusWhereInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -9852,6 +10301,21 @@ func (ec *executionContext) field_Subscription_projectLightColorUpdated_args(ctx
 }
 
 func (ec *executionContext) field_Subscription_projectTaskColumnUpdated_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 ulid.ID
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Subscription_projectTaskListStatusStatusUpdated_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 ulid.ID
@@ -12902,6 +13366,90 @@ func (ec *executionContext) _Mutation_updateProjectTaskColumn(ctx context.Contex
 	res := resTmp.(*ent.ProjectTaskColumn)
 	fc.Result = res
 	return ec.marshalNProjectTaskColumn2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTaskColumn(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_createProjectTaskListStatus(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_createProjectTaskListStatus_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreateProjectTaskListStatus(rctx, args["input"].(ent.CreateProjectTaskListStatusInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.ProjectTaskListStatus)
+	fc.Result = res
+	return ec.marshalNProjectTaskListStatus2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTaskListStatus(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_updateProjectTaskListStatus(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_updateProjectTaskListStatus_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdateProjectTaskListStatus(rctx, args["input"].(ent.UpdateProjectTaskListStatusInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.ProjectTaskListStatus)
+	fc.Result = res
+	return ec.marshalNProjectTaskListStatus2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTaskListStatus(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_createProjectTeammate(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -16417,6 +16965,490 @@ func (ec *executionContext) _ProjectTaskColumnEdge_cursor(ctx context.Context, f
 	return ec.marshalNCursor2projectᚑmanagementᚑdemoᚑbackendᚋentᚐCursor(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _ProjectTaskListStatus_id(ctx context.Context, field graphql.CollectedField, obj *ent.ProjectTaskListStatus) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ProjectTaskListStatus",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(ulid.ID)
+	fc.Result = res
+	return ec.marshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ProjectTaskListStatus_projectId(ctx context.Context, field graphql.CollectedField, obj *ent.ProjectTaskListStatus) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ProjectTaskListStatus",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ProjectID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(ulid.ID)
+	fc.Result = res
+	return ec.marshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ProjectTaskListStatus_project(ctx context.Context, field graphql.CollectedField, obj *ent.ProjectTaskListStatus) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ProjectTaskListStatus",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Project(ctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.Project)
+	fc.Result = res
+	return ec.marshalNProject2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProject(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ProjectTaskListStatus_taskListCompletedStatusId(ctx context.Context, field graphql.CollectedField, obj *ent.ProjectTaskListStatus) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ProjectTaskListStatus",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TaskListCompletedStatusID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(ulid.ID)
+	fc.Result = res
+	return ec.marshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ProjectTaskListStatus_taskListCompletedStatus(ctx context.Context, field graphql.CollectedField, obj *ent.ProjectTaskListStatus) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ProjectTaskListStatus",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TaskListCompletedStatus(ctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.TaskListCompletedStatus)
+	fc.Result = res
+	return ec.marshalNTaskListCompletedStatus2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskListCompletedStatus(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ProjectTaskListStatus_taskListSortStatusId(ctx context.Context, field graphql.CollectedField, obj *ent.ProjectTaskListStatus) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ProjectTaskListStatus",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TaskListSortStatusID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(ulid.ID)
+	fc.Result = res
+	return ec.marshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ProjectTaskListStatus_taskListSortStatus(ctx context.Context, field graphql.CollectedField, obj *ent.ProjectTaskListStatus) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ProjectTaskListStatus",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TaskListSortStatus(ctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.TaskListSortStatus)
+	fc.Result = res
+	return ec.marshalNTaskListSortStatus2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskListSortStatus(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ProjectTaskListStatus_createdAt(ctx context.Context, field graphql.CollectedField, obj *ent.ProjectTaskListStatus) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ProjectTaskListStatus",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.ProjectTaskListStatus().CreatedAt(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ProjectTaskListStatus_updatedAt(ctx context.Context, field graphql.CollectedField, obj *ent.ProjectTaskListStatus) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ProjectTaskListStatus",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.ProjectTaskListStatus().UpdatedAt(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ProjectTaskListStatusConnection_totalCount(ctx context.Context, field graphql.CollectedField, obj *ent.ProjectTaskListStatusConnection) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ProjectTaskListStatusConnection",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TotalCount, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ProjectTaskListStatusConnection_pageInfo(ctx context.Context, field graphql.CollectedField, obj *ent.ProjectTaskListStatusConnection) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ProjectTaskListStatusConnection",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PageInfo, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(ent.PageInfo)
+	fc.Result = res
+	return ec.marshalNPageInfo2projectᚑmanagementᚑdemoᚑbackendᚋentᚐPageInfo(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ProjectTaskListStatusConnection_edges(ctx context.Context, field graphql.CollectedField, obj *ent.ProjectTaskListStatusConnection) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ProjectTaskListStatusConnection",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Edges, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*ent.ProjectTaskListStatusEdge)
+	fc.Result = res
+	return ec.marshalOProjectTaskListStatusEdge2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTaskListStatusEdge(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ProjectTaskListStatusEdge_node(ctx context.Context, field graphql.CollectedField, obj *ent.ProjectTaskListStatusEdge) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ProjectTaskListStatusEdge",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Node, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*ent.ProjectTaskListStatus)
+	fc.Result = res
+	return ec.marshalOProjectTaskListStatus2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTaskListStatus(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ProjectTaskListStatusEdge_cursor(ctx context.Context, field graphql.CollectedField, obj *ent.ProjectTaskListStatusEdge) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ProjectTaskListStatusEdge",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Cursor, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(ent.Cursor)
+	fc.Result = res
+	return ec.marshalNCursor2projectᚑmanagementᚑdemoᚑbackendᚋentᚐCursor(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _ProjectTeammate_id(ctx context.Context, field graphql.CollectedField, obj *ent.ProjectTeammate) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -17798,6 +18830,84 @@ func (ec *executionContext) _Query_projectTaskColumns(ctx context.Context, field
 	res := resTmp.(*ent.ProjectTaskColumnConnection)
 	fc.Result = res
 	return ec.marshalOProjectTaskColumnConnection2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTaskColumnConnection(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_projectTaskListStatusStatus(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_projectTaskListStatusStatus_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().ProjectTaskListStatusStatus(rctx, args["where"].(*ent.ProjectTaskListStatusWhereInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*ent.ProjectTaskListStatus)
+	fc.Result = res
+	return ec.marshalOProjectTaskListStatus2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTaskListStatus(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_projectTaskListStatusStatuses(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_projectTaskListStatusStatuses_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().ProjectTaskListStatusStatuses(rctx, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["where"].(*ent.ProjectTaskListStatusWhereInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*ent.ProjectTaskListStatusConnection)
+	fc.Result = res
+	return ec.marshalOProjectTaskListStatusConnection2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTaskListStatusConnection(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_projectTeammate(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -19448,6 +20558,58 @@ func (ec *executionContext) _Subscription_projectTaskColumnUpdated(ctx context.C
 			graphql.MarshalString(field.Alias).MarshalGQL(w)
 			w.Write([]byte{':'})
 			ec.marshalNProjectTaskColumn2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTaskColumn(ctx, field.Selections, res).MarshalGQL(w)
+			w.Write([]byte{'}'})
+		})
+	}
+}
+
+func (ec *executionContext) _Subscription_projectTaskListStatusStatusUpdated(ctx context.Context, field graphql.CollectedField) (ret func() graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = nil
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Subscription",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Subscription_projectTaskListStatusStatusUpdated_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return nil
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Subscription().ProjectTaskListStatusStatusUpdated(rctx, args["id"].(ulid.ID))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return nil
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return nil
+	}
+	return func() graphql.Marshaler {
+		res, ok := <-resTmp.(<-chan *ent.ProjectTaskListStatus)
+		if !ok {
+			return nil
+		}
+		return graphql.WriterFunc(func(w io.Writer) {
+			w.Write([]byte{'{'})
+			graphql.MarshalString(field.Alias).MarshalGQL(w)
+			w.Write([]byte{':'})
+			ec.marshalNProjectTaskListStatus2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTaskListStatus(ctx, field.Selections, res).MarshalGQL(w)
 			w.Write([]byte{'}'})
 		})
 	}
@@ -27079,6 +28241,45 @@ func (ec *executionContext) unmarshalInputCreateProjectTaskColumnInput(ctx conte
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputCreateProjectTaskListStatusInput(ctx context.Context, obj interface{}) (ent.CreateProjectTaskListStatusInput, error) {
+	var it ent.CreateProjectTaskListStatusInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "projectId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("projectId"))
+			it.ProjectID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskListCompletedStatusId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskListCompletedStatusId"))
+			it.TaskListCompletedStatusID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskListSortStatusId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskListSortStatusId"))
+			it.TaskListSortStatusID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputCreateProjectTeammateInput(ctx context.Context, obj interface{}) (ent.CreateProjectTeammateInput, error) {
 	var it ent.CreateProjectTeammateInput
 	asMap := map[string]interface{}{}
@@ -30930,6 +32131,597 @@ func (ec *executionContext) unmarshalInputProjectTaskColumnWhereInput(ctx contex
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputProjectTaskListStatusWhereInput(ctx context.Context, obj interface{}) (ent.ProjectTaskListStatusWhereInput, error) {
+	var it ent.ProjectTaskListStatusWhereInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "not":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("not"))
+			it.Not, err = ec.unmarshalOProjectTaskListStatusWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTaskListStatusWhereInput(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "and":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("and"))
+			it.And, err = ec.unmarshalOProjectTaskListStatusWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTaskListStatusWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "or":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("or"))
+			it.Or, err = ec.unmarshalOProjectTaskListStatusWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTaskListStatusWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "projectID":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("projectID"))
+			it.ProjectID, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "projectIDNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("projectIDNEQ"))
+			it.ProjectIDNEQ, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "projectIDIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("projectIDIn"))
+			it.ProjectIDIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "projectIDNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("projectIDNotIn"))
+			it.ProjectIDNotIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "projectIDGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("projectIDGT"))
+			it.ProjectIDGT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "projectIDGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("projectIDGTE"))
+			it.ProjectIDGTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "projectIDLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("projectIDLT"))
+			it.ProjectIDLT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "projectIDLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("projectIDLTE"))
+			it.ProjectIDLTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "projectIDContains":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("projectIDContains"))
+			it.ProjectIDContains, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "projectIDHasPrefix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("projectIDHasPrefix"))
+			it.ProjectIDHasPrefix, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "projectIDHasSuffix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("projectIDHasSuffix"))
+			it.ProjectIDHasSuffix, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "projectIDEqualFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("projectIDEqualFold"))
+			it.ProjectIDEqualFold, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "projectIDContainsFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("projectIDContainsFold"))
+			it.ProjectIDContainsFold, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskListCompletedStatusID":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskListCompletedStatusID"))
+			it.TaskListCompletedStatusID, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskListCompletedStatusIDNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskListCompletedStatusIDNEQ"))
+			it.TaskListCompletedStatusIDNEQ, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskListCompletedStatusIDIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskListCompletedStatusIDIn"))
+			it.TaskListCompletedStatusIDIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskListCompletedStatusIDNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskListCompletedStatusIDNotIn"))
+			it.TaskListCompletedStatusIDNotIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskListCompletedStatusIDGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskListCompletedStatusIDGT"))
+			it.TaskListCompletedStatusIDGT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskListCompletedStatusIDGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskListCompletedStatusIDGTE"))
+			it.TaskListCompletedStatusIDGTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskListCompletedStatusIDLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskListCompletedStatusIDLT"))
+			it.TaskListCompletedStatusIDLT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskListCompletedStatusIDLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskListCompletedStatusIDLTE"))
+			it.TaskListCompletedStatusIDLTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskListCompletedStatusIDContains":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskListCompletedStatusIDContains"))
+			it.TaskListCompletedStatusIDContains, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskListCompletedStatusIDHasPrefix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskListCompletedStatusIDHasPrefix"))
+			it.TaskListCompletedStatusIDHasPrefix, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskListCompletedStatusIDHasSuffix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskListCompletedStatusIDHasSuffix"))
+			it.TaskListCompletedStatusIDHasSuffix, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskListCompletedStatusIDEqualFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskListCompletedStatusIDEqualFold"))
+			it.TaskListCompletedStatusIDEqualFold, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskListCompletedStatusIDContainsFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskListCompletedStatusIDContainsFold"))
+			it.TaskListCompletedStatusIDContainsFold, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskListSortStatusID":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskListSortStatusID"))
+			it.TaskListSortStatusID, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskListSortStatusIDNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskListSortStatusIDNEQ"))
+			it.TaskListSortStatusIDNEQ, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskListSortStatusIDIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskListSortStatusIDIn"))
+			it.TaskListSortStatusIDIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskListSortStatusIDNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskListSortStatusIDNotIn"))
+			it.TaskListSortStatusIDNotIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskListSortStatusIDGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskListSortStatusIDGT"))
+			it.TaskListSortStatusIDGT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskListSortStatusIDGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskListSortStatusIDGTE"))
+			it.TaskListSortStatusIDGTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskListSortStatusIDLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskListSortStatusIDLT"))
+			it.TaskListSortStatusIDLT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskListSortStatusIDLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskListSortStatusIDLTE"))
+			it.TaskListSortStatusIDLTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskListSortStatusIDContains":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskListSortStatusIDContains"))
+			it.TaskListSortStatusIDContains, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskListSortStatusIDHasPrefix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskListSortStatusIDHasPrefix"))
+			it.TaskListSortStatusIDHasPrefix, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskListSortStatusIDHasSuffix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskListSortStatusIDHasSuffix"))
+			it.TaskListSortStatusIDHasSuffix, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskListSortStatusIDEqualFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskListSortStatusIDEqualFold"))
+			it.TaskListSortStatusIDEqualFold, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskListSortStatusIDContainsFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskListSortStatusIDContainsFold"))
+			it.TaskListSortStatusIDContainsFold, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAt":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAt"))
+			it.CreatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtNEQ"))
+			it.CreatedAtNEQ, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtIn"))
+			it.CreatedAtIn, err = ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtNotIn"))
+			it.CreatedAtNotIn, err = ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtGT"))
+			it.CreatedAtGT, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtGTE"))
+			it.CreatedAtGTE, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtLT"))
+			it.CreatedAtLT, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtLTE"))
+			it.CreatedAtLTE, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAt":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAt"))
+			it.UpdatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtNEQ"))
+			it.UpdatedAtNEQ, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtIn"))
+			it.UpdatedAtIn, err = ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtNotIn"))
+			it.UpdatedAtNotIn, err = ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtGT"))
+			it.UpdatedAtGT, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtGTE"))
+			it.UpdatedAtGTE, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtLT"))
+			it.UpdatedAtLT, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtLTE"))
+			it.UpdatedAtLTE, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			it.ID, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idNEQ"))
+			it.IDNEQ, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idIn"))
+			it.IDIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idNotIn"))
+			it.IDNotIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idGT"))
+			it.IDGT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idGTE"))
+			it.IDGTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idLT"))
+			it.IDLT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idLTE"))
+			it.IDLTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasProject":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasProject"))
+			it.HasProject, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasProjectWith":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasProjectWith"))
+			it.HasProjectWith, err = ec.unmarshalOProjectWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasTaskListCompletedStatus":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasTaskListCompletedStatus"))
+			it.HasTaskListCompletedStatus, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasTaskListCompletedStatusWith":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasTaskListCompletedStatusWith"))
+			it.HasTaskListCompletedStatusWith, err = ec.unmarshalOTaskListCompletedStatusWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskListCompletedStatusWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasTaskListSortStatus":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasTaskListSortStatus"))
+			it.HasTaskListSortStatus, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasTaskListSortStatusWith":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasTaskListSortStatusWith"))
+			it.HasTaskListSortStatusWith, err = ec.unmarshalOTaskListSortStatusWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskListSortStatusWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputProjectTeammateWhereInput(ctx context.Context, obj interface{}) (ent.ProjectTeammateWhereInput, error) {
 	var it ent.ProjectTeammateWhereInput
 	asMap := map[string]interface{}{}
@@ -32666,6 +34458,22 @@ func (ec *executionContext) unmarshalInputProjectWhereInput(ctx context.Context,
 			if err != nil {
 				return it, err
 			}
+		case "hasProjectTaskListStatuses":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasProjectTaskListStatuses"))
+			it.HasProjectTaskListStatuses, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasProjectTaskListStatusesWith":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasProjectTaskListStatusesWith"))
+			it.HasProjectTaskListStatusesWith, err = ec.unmarshalOProjectTaskListStatusWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTaskListStatusWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		}
 	}
 
@@ -33448,6 +35256,22 @@ func (ec *executionContext) unmarshalInputTaskListCompletedStatusWhereInput(ctx 
 			if err != nil {
 				return it, err
 			}
+		case "hasProjectTaskListStatuses":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasProjectTaskListStatuses"))
+			it.HasProjectTaskListStatuses, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasProjectTaskListStatusesWith":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasProjectTaskListStatusesWith"))
+			it.HasProjectTaskListStatusesWith, err = ec.unmarshalOProjectTaskListStatusWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTaskListStatusWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		}
 	}
 
@@ -33828,6 +35652,22 @@ func (ec *executionContext) unmarshalInputTaskListSortStatusWhereInput(ctx conte
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasTeammateTaskListStatusesWith"))
 			it.HasTeammateTaskListStatusesWith, err = ec.unmarshalOTeammateTaskListStatusWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTeammateTaskListStatusWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasProjectTaskListStatuses":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasProjectTaskListStatuses"))
+			it.HasProjectTaskListStatuses, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasProjectTaskListStatusesWith":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasProjectTaskListStatusesWith"))
+			it.HasProjectTaskListStatusesWith, err = ec.unmarshalOProjectTaskListStatusWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTaskListStatusWhereInputᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -38164,6 +40004,53 @@ func (ec *executionContext) unmarshalInputUpdateProjectTaskColumnInput(ctx conte
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputUpdateProjectTaskListStatusInput(ctx context.Context, obj interface{}) (ent.UpdateProjectTaskListStatusInput, error) {
+	var it ent.UpdateProjectTaskListStatusInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			it.ID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "projectId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("projectId"))
+			it.ProjectID, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskListCompletedStatusId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskListCompletedStatusId"))
+			it.TaskListCompletedStatusID, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskListSortStatusId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskListSortStatusId"))
+			it.TaskListSortStatusID, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputUpdateProjectTeammateInput(ctx context.Context, obj interface{}) (ent.UpdateProjectTeammateInput, error) {
 	var it ent.UpdateProjectTeammateInput
 	asMap := map[string]interface{}{}
@@ -39922,6 +41809,11 @@ func (ec *executionContext) _Node(ctx context.Context, sel ast.SelectionSet, obj
 			return graphql.Null
 		}
 		return ec._ProjectTaskColumn(ctx, sel, obj)
+	case *ent.ProjectTaskListStatus:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._ProjectTaskListStatus(ctx, sel, obj)
 	case *ent.ProjectTeammate:
 		if obj == nil {
 			return graphql.Null
@@ -40850,6 +42742,16 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			}
 		case "updateProjectTaskColumn":
 			out.Values[i] = ec._Mutation_updateProjectTaskColumn(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "createProjectTaskListStatus":
+			out.Values[i] = ec._Mutation_createProjectTaskListStatus(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "updateProjectTaskListStatus":
+			out.Values[i] = ec._Mutation_updateProjectTaskListStatus(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -41849,6 +43751,181 @@ func (ec *executionContext) _ProjectTaskColumnEdge(ctx context.Context, sel ast.
 	return out
 }
 
+var projectTaskListStatusImplementors = []string{"ProjectTaskListStatus", "Node"}
+
+func (ec *executionContext) _ProjectTaskListStatus(ctx context.Context, sel ast.SelectionSet, obj *ent.ProjectTaskListStatus) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, projectTaskListStatusImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("ProjectTaskListStatus")
+		case "id":
+			out.Values[i] = ec._ProjectTaskListStatus_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "projectId":
+			out.Values[i] = ec._ProjectTaskListStatus_projectId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "project":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._ProjectTaskListStatus_project(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "taskListCompletedStatusId":
+			out.Values[i] = ec._ProjectTaskListStatus_taskListCompletedStatusId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "taskListCompletedStatus":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._ProjectTaskListStatus_taskListCompletedStatus(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "taskListSortStatusId":
+			out.Values[i] = ec._ProjectTaskListStatus_taskListSortStatusId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "taskListSortStatus":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._ProjectTaskListStatus_taskListSortStatus(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "createdAt":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._ProjectTaskListStatus_createdAt(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "updatedAt":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._ProjectTaskListStatus_updatedAt(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var projectTaskListStatusConnectionImplementors = []string{"ProjectTaskListStatusConnection"}
+
+func (ec *executionContext) _ProjectTaskListStatusConnection(ctx context.Context, sel ast.SelectionSet, obj *ent.ProjectTaskListStatusConnection) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, projectTaskListStatusConnectionImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("ProjectTaskListStatusConnection")
+		case "totalCount":
+			out.Values[i] = ec._ProjectTaskListStatusConnection_totalCount(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "pageInfo":
+			out.Values[i] = ec._ProjectTaskListStatusConnection_pageInfo(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "edges":
+			out.Values[i] = ec._ProjectTaskListStatusConnection_edges(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var projectTaskListStatusEdgeImplementors = []string{"ProjectTaskListStatusEdge"}
+
+func (ec *executionContext) _ProjectTaskListStatusEdge(ctx context.Context, sel ast.SelectionSet, obj *ent.ProjectTaskListStatusEdge) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, projectTaskListStatusEdgeImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("ProjectTaskListStatusEdge")
+		case "node":
+			out.Values[i] = ec._ProjectTaskListStatusEdge_node(ctx, field, obj)
+		case "cursor":
+			out.Values[i] = ec._ProjectTaskListStatusEdge_cursor(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var projectTeammateImplementors = []string{"ProjectTeammate", "Node"}
 
 func (ec *executionContext) _ProjectTeammate(ctx context.Context, sel ast.SelectionSet, obj *ent.ProjectTeammate) graphql.Marshaler {
@@ -42292,6 +44369,28 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 				res = ec._Query_projectTaskColumns(ctx, field)
 				return res
 			})
+		case "projectTaskListStatusStatus":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_projectTaskListStatusStatus(ctx, field)
+				return res
+			})
+		case "projectTaskListStatusStatuses":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_projectTaskListStatusStatuses(ctx, field)
+				return res
+			})
 		case "projectTeammate":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
@@ -42631,6 +44730,8 @@ func (ec *executionContext) _Subscription(ctx context.Context, sel ast.Selection
 		return ec._Subscription_projectLightColorUpdated(ctx, fields[0])
 	case "projectTaskColumnUpdated":
 		return ec._Subscription_projectTaskColumnUpdated(ctx, fields[0])
+	case "projectTaskListStatusStatusUpdated":
+		return ec._Subscription_projectTaskListStatusStatusUpdated(ctx, fields[0])
 	case "projectTeammateUpdated":
 		return ec._Subscription_projectTeammateUpdated(ctx, fields[0])
 	case "taskSectionUpdated":
@@ -44770,6 +46871,11 @@ func (ec *executionContext) unmarshalNCreateProjectTaskColumnInput2projectᚑman
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
+func (ec *executionContext) unmarshalNCreateProjectTaskListStatusInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐCreateProjectTaskListStatusInput(ctx context.Context, v interface{}) (ent.CreateProjectTaskListStatusInput, error) {
+	res, err := ec.unmarshalInputCreateProjectTaskListStatusInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNCreateProjectTeammateInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐCreateProjectTeammateInput(ctx context.Context, v interface{}) (ent.CreateProjectTeammateInput, error) {
 	res, err := ec.unmarshalInputCreateProjectTeammateInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -45239,6 +47345,25 @@ func (ec *executionContext) marshalNProjectTaskColumn2ᚖprojectᚑmanagementᚑ
 
 func (ec *executionContext) unmarshalNProjectTaskColumnWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTaskColumnWhereInput(ctx context.Context, v interface{}) (*ent.ProjectTaskColumnWhereInput, error) {
 	res, err := ec.unmarshalInputProjectTaskColumnWhereInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNProjectTaskListStatus2projectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTaskListStatus(ctx context.Context, sel ast.SelectionSet, v ent.ProjectTaskListStatus) graphql.Marshaler {
+	return ec._ProjectTaskListStatus(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNProjectTaskListStatus2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTaskListStatus(ctx context.Context, sel ast.SelectionSet, v *ent.ProjectTaskListStatus) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._ProjectTaskListStatus(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNProjectTaskListStatusWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTaskListStatusWhereInput(ctx context.Context, v interface{}) (*ent.ProjectTaskListStatusWhereInput, error) {
+	res, err := ec.unmarshalInputProjectTaskListStatusWhereInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
@@ -45728,6 +47853,11 @@ func (ec *executionContext) unmarshalNUpdateProjectLightColorInput2projectᚑman
 
 func (ec *executionContext) unmarshalNUpdateProjectTaskColumnInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐUpdateProjectTaskColumnInput(ctx context.Context, v interface{}) (ent.UpdateProjectTaskColumnInput, error) {
 	res, err := ec.unmarshalInputUpdateProjectTaskColumnInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNUpdateProjectTaskListStatusInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐUpdateProjectTaskListStatusInput(ctx context.Context, v interface{}) (ent.UpdateProjectTaskListStatusInput, error) {
+	res, err := ec.unmarshalInputUpdateProjectTaskListStatusInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
@@ -47265,6 +49395,100 @@ func (ec *executionContext) unmarshalOProjectTaskColumnWhereInput2ᚖprojectᚑm
 		return nil, nil
 	}
 	res, err := ec.unmarshalInputProjectTaskColumnWhereInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOProjectTaskListStatus2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTaskListStatus(ctx context.Context, sel ast.SelectionSet, v *ent.ProjectTaskListStatus) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._ProjectTaskListStatus(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOProjectTaskListStatusConnection2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTaskListStatusConnection(ctx context.Context, sel ast.SelectionSet, v *ent.ProjectTaskListStatusConnection) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._ProjectTaskListStatusConnection(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOProjectTaskListStatusEdge2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTaskListStatusEdge(ctx context.Context, sel ast.SelectionSet, v []*ent.ProjectTaskListStatusEdge) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalOProjectTaskListStatusEdge2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTaskListStatusEdge(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	return ret
+}
+
+func (ec *executionContext) marshalOProjectTaskListStatusEdge2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTaskListStatusEdge(ctx context.Context, sel ast.SelectionSet, v *ent.ProjectTaskListStatusEdge) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._ProjectTaskListStatusEdge(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalOProjectTaskListStatusWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTaskListStatusWhereInputᚄ(ctx context.Context, v interface{}) ([]*ent.ProjectTaskListStatusWhereInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var vSlice []interface{}
+	if v != nil {
+		if tmp1, ok := v.([]interface{}); ok {
+			vSlice = tmp1
+		} else {
+			vSlice = []interface{}{v}
+		}
+	}
+	var err error
+	res := make([]*ent.ProjectTaskListStatusWhereInput, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNProjectTaskListStatusWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTaskListStatusWhereInput(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) unmarshalOProjectTaskListStatusWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTaskListStatusWhereInput(ctx context.Context, v interface{}) (*ent.ProjectTaskListStatusWhereInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputProjectTaskListStatusWhereInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 

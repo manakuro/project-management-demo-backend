@@ -34,6 +34,7 @@ func (r *registry) NewController() controller.Controller {
 		ProjectIcon:             r.NewProjectIconController(),
 		ProjectLightColor:       r.NewProjectLightColorController(),
 		ProjectTaskColumn:       r.NewProjectTaskColumnController(),
+		ProjectTaskListStatus:   r.NewProjectTaskListStatusController(),
 		ProjectTeammate:         r.NewProjectTeammateController(),
 		TaskColumn:              r.NewTaskColumnController(),
 		TaskListCompletedStatus: r.NewTaskListCompletedStatusController(),
