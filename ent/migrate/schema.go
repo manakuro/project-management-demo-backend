@@ -241,6 +241,41 @@ var (
 			},
 		},
 	}
+	// ProjectTaskListStatusColumns holds the columns for the "project_task_list_status" table.
+	ProjectTaskListStatusColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
+		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
+		{Name: "project_id", Type: field.TypeString, Nullable: true},
+		{Name: "task_list_completed_status_id", Type: field.TypeString, Nullable: true},
+		{Name: "task_list_sort_status_id", Type: field.TypeString, Nullable: true},
+	}
+	// ProjectTaskListStatusTable holds the schema information for the "project_task_list_status" table.
+	ProjectTaskListStatusTable = &schema.Table{
+		Name:       "project_task_list_status",
+		Columns:    ProjectTaskListStatusColumns,
+		PrimaryKey: []*schema.Column{ProjectTaskListStatusColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "project_task_list_status_projects_project_task_list_statuses",
+				Columns:    []*schema.Column{ProjectTaskListStatusColumns[3]},
+				RefColumns: []*schema.Column{ProjectsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "project_task_list_status_task_list_completed_status_project_task_list_statuses",
+				Columns:    []*schema.Column{ProjectTaskListStatusColumns[4]},
+				RefColumns: []*schema.Column{TaskListCompletedStatusColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "project_task_list_status_task_list_sort_status_project_task_list_statuses",
+				Columns:    []*schema.Column{ProjectTaskListStatusColumns[5]},
+				RefColumns: []*schema.Column{TaskListSortStatusColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
 	// ProjectTeammatesColumns holds the columns for the "project_teammates" table.
 	ProjectTeammatesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString},
@@ -547,6 +582,7 @@ var (
 		ProjectIconsTable,
 		ProjectLightColorsTable,
 		ProjectTaskColumnsTable,
+		ProjectTaskListStatusTable,
 		ProjectTeammatesTable,
 		TaskColumnsTable,
 		TaskListCompletedStatusTable,
@@ -578,6 +614,9 @@ func init() {
 	ProjectLightColorsTable.ForeignKeys[0].RefTable = ColorsTable
 	ProjectTaskColumnsTable.ForeignKeys[0].RefTable = ProjectsTable
 	ProjectTaskColumnsTable.ForeignKeys[1].RefTable = TaskColumnsTable
+	ProjectTaskListStatusTable.ForeignKeys[0].RefTable = ProjectsTable
+	ProjectTaskListStatusTable.ForeignKeys[1].RefTable = TaskListCompletedStatusTable
+	ProjectTaskListStatusTable.ForeignKeys[2].RefTable = TaskListSortStatusTable
 	ProjectTeammatesTable.ForeignKeys[0].RefTable = ProjectsTable
 	ProjectTeammatesTable.ForeignKeys[1].RefTable = TeammatesTable
 	TeammateTaskColumnsTable.ForeignKeys[0].RefTable = TaskColumnsTable

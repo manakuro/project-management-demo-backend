@@ -294,20 +294,21 @@ func (u *IconUpdateOne) SetInput(i UpdateIconInput) *IconUpdateOne {
 
 // CreateProjectInput represents a mutation input for creating projects.
 type CreateProjectInput struct {
-	Name                 string
-	Description          editor.Description
-	DescriptionTitle     string
-	DueDate              *time.Time
-	CreatedAt            *time.Time
-	UpdatedAt            *time.Time
-	WorkspaceID          ulid.ID
-	ProjectBaseColorID   ulid.ID
-	ProjectLightColorID  ulid.ID
-	ProjectIconID        ulid.ID
-	CreatedBy            ulid.ID
-	ProjectTeammateIDs   []ulid.ID
-	FavoriteProjectIDs   []ulid.ID
-	ProjectTaskColumnIDs []ulid.ID
+	Name                     string
+	Description              editor.Description
+	DescriptionTitle         string
+	DueDate                  *time.Time
+	CreatedAt                *time.Time
+	UpdatedAt                *time.Time
+	WorkspaceID              ulid.ID
+	ProjectBaseColorID       ulid.ID
+	ProjectLightColorID      ulid.ID
+	ProjectIconID            ulid.ID
+	CreatedBy                ulid.ID
+	ProjectTeammateIDs       []ulid.ID
+	FavoriteProjectIDs       []ulid.ID
+	ProjectTaskColumnIDs     []ulid.ID
+	ProjectTaskListStatusIDs []ulid.ID
 }
 
 // Mutate applies the CreateProjectInput on the ProjectCreate builder.
@@ -338,6 +339,9 @@ func (i *CreateProjectInput) Mutate(m *ProjectCreate) {
 	if ids := i.ProjectTaskColumnIDs; len(ids) > 0 {
 		m.AddProjectTaskColumnIDs(ids...)
 	}
+	if ids := i.ProjectTaskListStatusIDs; len(ids) > 0 {
+		m.AddProjectTaskListStatusIDs(ids...)
+	}
 }
 
 // SetInput applies the change-set in the CreateProjectInput on the create builder.
@@ -348,27 +352,29 @@ func (c *ProjectCreate) SetInput(i CreateProjectInput) *ProjectCreate {
 
 // UpdateProjectInput represents a mutation input for updating projects.
 type UpdateProjectInput struct {
-	ID                         ulid.ID
-	Name                       *string
-	Description                *editor.Description
-	DescriptionTitle           *string
-	DueDate                    *time.Time
-	WorkspaceID                *ulid.ID
-	ClearWorkspace             bool
-	ProjectBaseColorID         *ulid.ID
-	ClearProjectBaseColor      bool
-	ProjectLightColorID        *ulid.ID
-	ClearProjectLightColor     bool
-	ProjectIconID              *ulid.ID
-	ClearProjectIcon           bool
-	CreatedBy                  *ulid.ID
-	ClearTeammate              bool
-	AddProjectTeammateIDs      []ulid.ID
-	RemoveProjectTeammateIDs   []ulid.ID
-	AddFavoriteProjectIDs      []ulid.ID
-	RemoveFavoriteProjectIDs   []ulid.ID
-	AddProjectTaskColumnIDs    []ulid.ID
-	RemoveProjectTaskColumnIDs []ulid.ID
+	ID                             ulid.ID
+	Name                           *string
+	Description                    *editor.Description
+	DescriptionTitle               *string
+	DueDate                        *time.Time
+	WorkspaceID                    *ulid.ID
+	ClearWorkspace                 bool
+	ProjectBaseColorID             *ulid.ID
+	ClearProjectBaseColor          bool
+	ProjectLightColorID            *ulid.ID
+	ClearProjectLightColor         bool
+	ProjectIconID                  *ulid.ID
+	ClearProjectIcon               bool
+	CreatedBy                      *ulid.ID
+	ClearTeammate                  bool
+	AddProjectTeammateIDs          []ulid.ID
+	RemoveProjectTeammateIDs       []ulid.ID
+	AddFavoriteProjectIDs          []ulid.ID
+	RemoveFavoriteProjectIDs       []ulid.ID
+	AddProjectTaskColumnIDs        []ulid.ID
+	RemoveProjectTaskColumnIDs     []ulid.ID
+	AddProjectTaskListStatusIDs    []ulid.ID
+	RemoveProjectTaskListStatusIDs []ulid.ID
 }
 
 // Mutate applies the UpdateProjectInput on the ProjectMutation.
@@ -432,6 +438,12 @@ func (i *UpdateProjectInput) Mutate(m *ProjectMutation) {
 	}
 	if ids := i.RemoveProjectTaskColumnIDs; len(ids) > 0 {
 		m.RemoveProjectTaskColumnIDs(ids...)
+	}
+	if ids := i.AddProjectTaskListStatusIDs; len(ids) > 0 {
+		m.AddProjectTaskListStatusIDs(ids...)
+	}
+	if ids := i.RemoveProjectTaskListStatusIDs; len(ids) > 0 {
+		m.RemoveProjectTaskListStatusIDs(ids...)
 	}
 }
 
@@ -729,6 +741,79 @@ func (u *ProjectTaskColumnUpdateOne) SetInput(i UpdateProjectTaskColumnInput) *P
 	return u
 }
 
+// CreateProjectTaskListStatusInput represents a mutation input for creating projecttaskliststatusslice.
+type CreateProjectTaskListStatusInput struct {
+	CreatedAt                 *time.Time
+	UpdatedAt                 *time.Time
+	ProjectID                 ulid.ID
+	TaskListCompletedStatusID ulid.ID
+	TaskListSortStatusID      ulid.ID
+}
+
+// Mutate applies the CreateProjectTaskListStatusInput on the ProjectTaskListStatusCreate builder.
+func (i *CreateProjectTaskListStatusInput) Mutate(m *ProjectTaskListStatusCreate) {
+	if v := i.CreatedAt; v != nil {
+		m.SetCreatedAt(*v)
+	}
+	if v := i.UpdatedAt; v != nil {
+		m.SetUpdatedAt(*v)
+	}
+	m.SetProjectID(i.ProjectID)
+	m.SetTaskListCompletedStatusID(i.TaskListCompletedStatusID)
+	m.SetTaskListSortStatusID(i.TaskListSortStatusID)
+}
+
+// SetInput applies the change-set in the CreateProjectTaskListStatusInput on the create builder.
+func (c *ProjectTaskListStatusCreate) SetInput(i CreateProjectTaskListStatusInput) *ProjectTaskListStatusCreate {
+	i.Mutate(c)
+	return c
+}
+
+// UpdateProjectTaskListStatusInput represents a mutation input for updating projecttaskliststatusslice.
+type UpdateProjectTaskListStatusInput struct {
+	ID                           ulid.ID
+	ProjectID                    *ulid.ID
+	ClearProject                 bool
+	TaskListCompletedStatusID    *ulid.ID
+	ClearTaskListCompletedStatus bool
+	TaskListSortStatusID         *ulid.ID
+	ClearTaskListSortStatus      bool
+}
+
+// Mutate applies the UpdateProjectTaskListStatusInput on the ProjectTaskListStatusMutation.
+func (i *UpdateProjectTaskListStatusInput) Mutate(m *ProjectTaskListStatusMutation) {
+	if i.ClearProject {
+		m.ClearProject()
+	}
+	if v := i.ProjectID; v != nil {
+		m.SetProjectID(*v)
+	}
+	if i.ClearTaskListCompletedStatus {
+		m.ClearTaskListCompletedStatus()
+	}
+	if v := i.TaskListCompletedStatusID; v != nil {
+		m.SetTaskListCompletedStatusID(*v)
+	}
+	if i.ClearTaskListSortStatus {
+		m.ClearTaskListSortStatus()
+	}
+	if v := i.TaskListSortStatusID; v != nil {
+		m.SetTaskListSortStatusID(*v)
+	}
+}
+
+// SetInput applies the change-set in the UpdateProjectTaskListStatusInput on the update builder.
+func (u *ProjectTaskListStatusUpdate) SetInput(i UpdateProjectTaskListStatusInput) *ProjectTaskListStatusUpdate {
+	i.Mutate(u.Mutation())
+	return u
+}
+
+// SetInput applies the change-set in the UpdateProjectTaskListStatusInput on the update-one builder.
+func (u *ProjectTaskListStatusUpdateOne) SetInput(i UpdateProjectTaskListStatusInput) *ProjectTaskListStatusUpdateOne {
+	i.Mutate(u.Mutation())
+	return u
+}
+
 // CreateProjectTeammateInput represents a mutation input for creating projectteammates.
 type CreateProjectTeammateInput struct {
 	Role       string
@@ -890,6 +975,7 @@ type CreateTaskListCompletedStatusInput struct {
 	CreatedAt                 *time.Time
 	UpdatedAt                 *time.Time
 	TeammateTaskListStatusIDs []ulid.ID
+	ProjectTaskListStatusIDs  []ulid.ID
 }
 
 // Mutate applies the CreateTaskListCompletedStatusInput on the TaskListCompletedStatusCreate builder.
@@ -904,6 +990,9 @@ func (i *CreateTaskListCompletedStatusInput) Mutate(m *TaskListCompletedStatusCr
 	}
 	if ids := i.TeammateTaskListStatusIDs; len(ids) > 0 {
 		m.AddTeammateTaskListStatusIDs(ids...)
+	}
+	if ids := i.ProjectTaskListStatusIDs; len(ids) > 0 {
+		m.AddProjectTaskListStatusIDs(ids...)
 	}
 }
 
@@ -920,6 +1009,8 @@ type UpdateTaskListCompletedStatusInput struct {
 	StatusCode                      *tasklistcompletedstatus.StatusCode
 	AddTeammateTaskListStatusIDs    []ulid.ID
 	RemoveTeammateTaskListStatusIDs []ulid.ID
+	AddProjectTaskListStatusIDs     []ulid.ID
+	RemoveProjectTaskListStatusIDs  []ulid.ID
 }
 
 // Mutate applies the UpdateTaskListCompletedStatusInput on the TaskListCompletedStatusMutation.
@@ -935,6 +1026,12 @@ func (i *UpdateTaskListCompletedStatusInput) Mutate(m *TaskListCompletedStatusMu
 	}
 	if ids := i.RemoveTeammateTaskListStatusIDs; len(ids) > 0 {
 		m.RemoveTeammateTaskListStatusIDs(ids...)
+	}
+	if ids := i.AddProjectTaskListStatusIDs; len(ids) > 0 {
+		m.AddProjectTaskListStatusIDs(ids...)
+	}
+	if ids := i.RemoveProjectTaskListStatusIDs; len(ids) > 0 {
+		m.RemoveProjectTaskListStatusIDs(ids...)
 	}
 }
 
@@ -957,6 +1054,7 @@ type CreateTaskListSortStatusInput struct {
 	CreatedAt                 *time.Time
 	UpdatedAt                 *time.Time
 	TeammateTaskListStatusIDs []ulid.ID
+	ProjectTaskListStatusIDs  []ulid.ID
 }
 
 // Mutate applies the CreateTaskListSortStatusInput on the TaskListSortStatusCreate builder.
@@ -971,6 +1069,9 @@ func (i *CreateTaskListSortStatusInput) Mutate(m *TaskListSortStatusCreate) {
 	}
 	if ids := i.TeammateTaskListStatusIDs; len(ids) > 0 {
 		m.AddTeammateTaskListStatusIDs(ids...)
+	}
+	if ids := i.ProjectTaskListStatusIDs; len(ids) > 0 {
+		m.AddProjectTaskListStatusIDs(ids...)
 	}
 }
 
@@ -987,6 +1088,8 @@ type UpdateTaskListSortStatusInput struct {
 	StatusCode                      *tasklistsortstatus.StatusCode
 	AddTeammateTaskListStatusIDs    []ulid.ID
 	RemoveTeammateTaskListStatusIDs []ulid.ID
+	AddProjectTaskListStatusIDs     []ulid.ID
+	RemoveProjectTaskListStatusIDs  []ulid.ID
 }
 
 // Mutate applies the UpdateTaskListSortStatusInput on the TaskListSortStatusMutation.
@@ -1002,6 +1105,12 @@ func (i *UpdateTaskListSortStatusInput) Mutate(m *TaskListSortStatusMutation) {
 	}
 	if ids := i.RemoveTeammateTaskListStatusIDs; len(ids) > 0 {
 		m.RemoveTeammateTaskListStatusIDs(ids...)
+	}
+	if ids := i.AddProjectTaskListStatusIDs; len(ids) > 0 {
+		m.AddProjectTaskListStatusIDs(ids...)
+	}
+	if ids := i.RemoveProjectTaskListStatusIDs; len(ids) > 0 {
+		m.RemoveProjectTaskListStatusIDs(ids...)
 	}
 }
 

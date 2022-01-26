@@ -15,6 +15,7 @@ import (
 	"project-management-demo-backend/ent/projecticon"
 	"project-management-demo-backend/ent/projectlightcolor"
 	"project-management-demo-backend/ent/projecttaskcolumn"
+	"project-management-demo-backend/ent/projecttaskliststatus"
 	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/taskcolumn"
@@ -317,7 +318,7 @@ func (pr *Project) Node(ctx context.Context) (node *Node, err error) {
 		ID:     pr.ID,
 		Type:   "Project",
 		Fields: make([]*Field, 11),
-		Edges:  make([]*Edge, 8),
+		Edges:  make([]*Edge, 9),
 	}
 	var buf []byte
 	if buf, err = json.Marshal(pr.WorkspaceID); err != nil {
@@ -485,6 +486,16 @@ func (pr *Project) Node(ctx context.Context) (node *Node, err error) {
 	err = pr.QueryProjectTaskColumns().
 		Select(projecttaskcolumn.FieldID).
 		Scan(ctx, &node.Edges[7].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[8] = &Edge{
+		Type: "ProjectTaskListStatus",
+		Name: "project_task_list_statuses",
+	}
+	err = pr.QueryProjectTaskListStatuses().
+		Select(projecttaskliststatus.FieldID).
+		Scan(ctx, &node.Edges[8].IDs)
 	if err != nil {
 		return nil, err
 	}
@@ -751,6 +762,87 @@ func (ptc *ProjectTaskColumn) Node(ctx context.Context) (node *Node, err error) 
 	return node, nil
 }
 
+func (ptls *ProjectTaskListStatus) Node(ctx context.Context) (node *Node, err error) {
+	node = &Node{
+		ID:     ptls.ID,
+		Type:   "ProjectTaskListStatus",
+		Fields: make([]*Field, 5),
+		Edges:  make([]*Edge, 3),
+	}
+	var buf []byte
+	if buf, err = json.Marshal(ptls.ProjectID); err != nil {
+		return nil, err
+	}
+	node.Fields[0] = &Field{
+		Type:  "ulid.ID",
+		Name:  "project_id",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(ptls.TaskListCompletedStatusID); err != nil {
+		return nil, err
+	}
+	node.Fields[1] = &Field{
+		Type:  "ulid.ID",
+		Name:  "task_list_completed_status_id",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(ptls.TaskListSortStatusID); err != nil {
+		return nil, err
+	}
+	node.Fields[2] = &Field{
+		Type:  "ulid.ID",
+		Name:  "task_list_sort_status_id",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(ptls.CreatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[3] = &Field{
+		Type:  "time.Time",
+		Name:  "created_at",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(ptls.UpdatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[4] = &Field{
+		Type:  "time.Time",
+		Name:  "updated_at",
+		Value: string(buf),
+	}
+	node.Edges[0] = &Edge{
+		Type: "Project",
+		Name: "project",
+	}
+	err = ptls.QueryProject().
+		Select(project.FieldID).
+		Scan(ctx, &node.Edges[0].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[1] = &Edge{
+		Type: "TaskListCompletedStatus",
+		Name: "task_list_completed_status",
+	}
+	err = ptls.QueryTaskListCompletedStatus().
+		Select(tasklistcompletedstatus.FieldID).
+		Scan(ctx, &node.Edges[1].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[2] = &Edge{
+		Type: "TaskListSortStatus",
+		Name: "task_list_sort_status",
+	}
+	err = ptls.QueryTaskListSortStatus().
+		Select(tasklistsortstatus.FieldID).
+		Scan(ctx, &node.Edges[2].IDs)
+	if err != nil {
+		return nil, err
+	}
+	return node, nil
+}
+
 func (pt *ProjectTeammate) Node(ctx context.Context) (node *Node, err error) {
 	node = &Node{
 		ID:     pt.ID,
@@ -898,7 +990,7 @@ func (tlcs *TaskListCompletedStatus) Node(ctx context.Context) (node *Node, err 
 		ID:     tlcs.ID,
 		Type:   "TaskListCompletedStatus",
 		Fields: make([]*Field, 4),
-		Edges:  make([]*Edge, 1),
+		Edges:  make([]*Edge, 2),
 	}
 	var buf []byte
 	if buf, err = json.Marshal(tlcs.Name); err != nil {
@@ -943,6 +1035,16 @@ func (tlcs *TaskListCompletedStatus) Node(ctx context.Context) (node *Node, err 
 	if err != nil {
 		return nil, err
 	}
+	node.Edges[1] = &Edge{
+		Type: "ProjectTaskListStatus",
+		Name: "project_task_list_statuses",
+	}
+	err = tlcs.QueryProjectTaskListStatuses().
+		Select(projecttaskliststatus.FieldID).
+		Scan(ctx, &node.Edges[1].IDs)
+	if err != nil {
+		return nil, err
+	}
 	return node, nil
 }
 
@@ -951,7 +1053,7 @@ func (tlss *TaskListSortStatus) Node(ctx context.Context) (node *Node, err error
 		ID:     tlss.ID,
 		Type:   "TaskListSortStatus",
 		Fields: make([]*Field, 4),
-		Edges:  make([]*Edge, 1),
+		Edges:  make([]*Edge, 2),
 	}
 	var buf []byte
 	if buf, err = json.Marshal(tlss.Name); err != nil {
@@ -993,6 +1095,16 @@ func (tlss *TaskListSortStatus) Node(ctx context.Context) (node *Node, err error
 	err = tlss.QueryTeammateTaskListStatuses().
 		Select(teammatetaskliststatus.FieldID).
 		Scan(ctx, &node.Edges[0].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[1] = &Edge{
+		Type: "ProjectTaskListStatus",
+		Name: "project_task_list_statuses",
+	}
+	err = tlss.QueryProjectTaskListStatuses().
+		Select(projecttaskliststatus.FieldID).
+		Scan(ctx, &node.Edges[1].IDs)
 	if err != nil {
 		return nil, err
 	}
@@ -1908,6 +2020,15 @@ func (c *Client) noder(ctx context.Context, table string, id ulid.ID) (Noder, er
 			return nil, err
 		}
 		return n, nil
+	case projecttaskliststatus.Table:
+		n, err := c.ProjectTaskListStatus.Query().
+			Where(projecttaskliststatus.ID(id)).
+			CollectFields(ctx, "ProjectTaskListStatus").
+			Only(ctx)
+		if err != nil {
+			return nil, err
+		}
+		return n, nil
 	case projectteammate.Table:
 		n, err := c.ProjectTeammate.Query().
 			Where(projectteammate.ID(id)).
@@ -2206,6 +2327,19 @@ func (c *Client) noders(ctx context.Context, table string, ids []ulid.ID) ([]Nod
 		nodes, err := c.ProjectTaskColumn.Query().
 			Where(projecttaskcolumn.IDIn(ids...)).
 			CollectFields(ctx, "ProjectTaskColumn").
+			All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, node := range nodes {
+			for _, noder := range idmap[node.ID] {
+				*noder = node
+			}
+		}
+	case projecttaskliststatus.Table:
+		nodes, err := c.ProjectTaskListStatus.Query().
+			Where(projecttaskliststatus.IDIn(ids...)).
+			CollectFields(ctx, "ProjectTaskListStatus").
 			All(ctx)
 		if err != nil {
 			return nil, err

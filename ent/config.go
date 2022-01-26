@@ -33,6 +33,7 @@ type hooks struct {
 	ProjectIcon             []ent.Hook
 	ProjectLightColor       []ent.Hook
 	ProjectTaskColumn       []ent.Hook
+	ProjectTaskListStatus   []ent.Hook
 	ProjectTeammate         []ent.Hook
 	TaskColumn              []ent.Hook
 	TaskListCompletedStatus []ent.Hook

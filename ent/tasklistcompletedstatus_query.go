@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"math"
 	"project-management-demo-backend/ent/predicate"
+	"project-management-demo-backend/ent/projecttaskliststatus"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/tasklistcompletedstatus"
 	"project-management-demo-backend/ent/teammatetaskliststatus"
@@ -29,6 +30,7 @@ type TaskListCompletedStatusQuery struct {
 	predicates []predicate.TaskListCompletedStatus
 	// eager-loading edges.
 	withTeammateTaskListStatuses *TeammateTaskListStatusQuery
+	withProjectTaskListStatuses  *ProjectTaskListStatusQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -80,6 +82,28 @@ func (tlcsq *TaskListCompletedStatusQuery) QueryTeammateTaskListStatuses() *Team
 			sqlgraph.From(tasklistcompletedstatus.Table, tasklistcompletedstatus.FieldID, selector),
 			sqlgraph.To(teammatetaskliststatus.Table, teammatetaskliststatus.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, tasklistcompletedstatus.TeammateTaskListStatusesTable, tasklistcompletedstatus.TeammateTaskListStatusesColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(tlcsq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryProjectTaskListStatuses chains the current query on the "project_task_list_statuses" edge.
+func (tlcsq *TaskListCompletedStatusQuery) QueryProjectTaskListStatuses() *ProjectTaskListStatusQuery {
+	query := &ProjectTaskListStatusQuery{config: tlcsq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := tlcsq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := tlcsq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(tasklistcompletedstatus.Table, tasklistcompletedstatus.FieldID, selector),
+			sqlgraph.To(projecttaskliststatus.Table, projecttaskliststatus.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, tasklistcompletedstatus.ProjectTaskListStatusesTable, tasklistcompletedstatus.ProjectTaskListStatusesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(tlcsq.driver.Dialect(), step)
 		return fromU, nil
@@ -269,6 +293,7 @@ func (tlcsq *TaskListCompletedStatusQuery) Clone() *TaskListCompletedStatusQuery
 		order:                        append([]OrderFunc{}, tlcsq.order...),
 		predicates:                   append([]predicate.TaskListCompletedStatus{}, tlcsq.predicates...),
 		withTeammateTaskListStatuses: tlcsq.withTeammateTaskListStatuses.Clone(),
+		withProjectTaskListStatuses:  tlcsq.withProjectTaskListStatuses.Clone(),
 		// clone intermediate query.
 		sql:  tlcsq.sql.Clone(),
 		path: tlcsq.path,
@@ -283,6 +308,17 @@ func (tlcsq *TaskListCompletedStatusQuery) WithTeammateTaskListStatuses(opts ...
 		opt(query)
 	}
 	tlcsq.withTeammateTaskListStatuses = query
+	return tlcsq
+}
+
+// WithProjectTaskListStatuses tells the query-builder to eager-load the nodes that are connected to
+// the "project_task_list_statuses" edge. The optional arguments are used to configure the query builder of the edge.
+func (tlcsq *TaskListCompletedStatusQuery) WithProjectTaskListStatuses(opts ...func(*ProjectTaskListStatusQuery)) *TaskListCompletedStatusQuery {
+	query := &ProjectTaskListStatusQuery{config: tlcsq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	tlcsq.withProjectTaskListStatuses = query
 	return tlcsq
 }
 
@@ -351,8 +387,9 @@ func (tlcsq *TaskListCompletedStatusQuery) sqlAll(ctx context.Context) ([]*TaskL
 	var (
 		nodes       = []*TaskListCompletedStatus{}
 		_spec       = tlcsq.querySpec()
-		loadedTypes = [1]bool{
+		loadedTypes = [2]bool{
 			tlcsq.withTeammateTaskListStatuses != nil,
+			tlcsq.withProjectTaskListStatuses != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -397,6 +434,31 @@ func (tlcsq *TaskListCompletedStatusQuery) sqlAll(ctx context.Context) ([]*TaskL
 				return nil, fmt.Errorf(`unexpected foreign-key "task_list_completed_status_id" returned %v for node %v`, fk, n.ID)
 			}
 			node.Edges.TeammateTaskListStatuses = append(node.Edges.TeammateTaskListStatuses, n)
+		}
+	}
+
+	if query := tlcsq.withProjectTaskListStatuses; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[ulid.ID]*TaskListCompletedStatus)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.ProjectTaskListStatuses = []*ProjectTaskListStatus{}
+		}
+		query.Where(predicate.ProjectTaskListStatus(func(s *sql.Selector) {
+			s.Where(sql.InValues(tasklistcompletedstatus.ProjectTaskListStatusesColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.TaskListCompletedStatusID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "task_list_completed_status_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.ProjectTaskListStatuses = append(node.Edges.ProjectTaskListStatuses, n)
 		}
 	}
 

@@ -15,6 +15,7 @@ import (
 	"project-management-demo-backend/ent/projecticon"
 	"project-management-demo-backend/ent/projectlightcolor"
 	"project-management-demo-backend/ent/projecttaskcolumn"
+	"project-management-demo-backend/ent/projecttaskliststatus"
 	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/ent/schema/editor"
 	"project-management-demo-backend/ent/schema/testuserprofile"
@@ -55,6 +56,7 @@ const (
 	TypeProjectIcon             = "ProjectIcon"
 	TypeProjectLightColor       = "ProjectLightColor"
 	TypeProjectTaskColumn       = "ProjectTaskColumn"
+	TypeProjectTaskListStatus   = "ProjectTaskListStatus"
 	TypeProjectTeammate         = "ProjectTeammate"
 	TypeTaskColumn              = "TaskColumn"
 	TypeTaskListCompletedStatus = "TaskListCompletedStatus"
@@ -2436,38 +2438,41 @@ func (m *IconMutation) ResetEdge(name string) error {
 // ProjectMutation represents an operation that mutates the Project nodes in the graph.
 type ProjectMutation struct {
 	config
-	op                          Op
-	typ                         string
-	id                          *ulid.ID
-	name                        *string
-	description                 *editor.Description
-	description_title           *string
-	due_date                    *time.Time
-	created_at                  *time.Time
-	updated_at                  *time.Time
-	clearedFields               map[string]struct{}
-	workspace                   *ulid.ID
-	clearedworkspace            bool
-	project_base_color          *ulid.ID
-	clearedproject_base_color   bool
-	project_light_color         *ulid.ID
-	clearedproject_light_color  bool
-	project_icon                *ulid.ID
-	clearedproject_icon         bool
-	teammate                    *ulid.ID
-	clearedteammate             bool
-	project_teammates           map[ulid.ID]struct{}
-	removedproject_teammates    map[ulid.ID]struct{}
-	clearedproject_teammates    bool
-	favorite_projects           map[ulid.ID]struct{}
-	removedfavorite_projects    map[ulid.ID]struct{}
-	clearedfavorite_projects    bool
-	project_task_columns        map[ulid.ID]struct{}
-	removedproject_task_columns map[ulid.ID]struct{}
-	clearedproject_task_columns bool
-	done                        bool
-	oldValue                    func(context.Context) (*Project, error)
-	predicates                  []predicate.Project
+	op                                Op
+	typ                               string
+	id                                *ulid.ID
+	name                              *string
+	description                       *editor.Description
+	description_title                 *string
+	due_date                          *time.Time
+	created_at                        *time.Time
+	updated_at                        *time.Time
+	clearedFields                     map[string]struct{}
+	workspace                         *ulid.ID
+	clearedworkspace                  bool
+	project_base_color                *ulid.ID
+	clearedproject_base_color         bool
+	project_light_color               *ulid.ID
+	clearedproject_light_color        bool
+	project_icon                      *ulid.ID
+	clearedproject_icon               bool
+	teammate                          *ulid.ID
+	clearedteammate                   bool
+	project_teammates                 map[ulid.ID]struct{}
+	removedproject_teammates          map[ulid.ID]struct{}
+	clearedproject_teammates          bool
+	favorite_projects                 map[ulid.ID]struct{}
+	removedfavorite_projects          map[ulid.ID]struct{}
+	clearedfavorite_projects          bool
+	project_task_columns              map[ulid.ID]struct{}
+	removedproject_task_columns       map[ulid.ID]struct{}
+	clearedproject_task_columns       bool
+	project_task_list_statuses        map[ulid.ID]struct{}
+	removedproject_task_list_statuses map[ulid.ID]struct{}
+	clearedproject_task_list_statuses bool
+	done                              bool
+	oldValue                          func(context.Context) (*Project, error)
+	predicates                        []predicate.Project
 }
 
 var _ ent.Mutation = (*ProjectMutation)(nil)
@@ -3256,6 +3261,60 @@ func (m *ProjectMutation) ResetProjectTaskColumns() {
 	m.removedproject_task_columns = nil
 }
 
+// AddProjectTaskListStatusIDs adds the "project_task_list_statuses" edge to the ProjectTaskListStatus entity by ids.
+func (m *ProjectMutation) AddProjectTaskListStatusIDs(ids ...ulid.ID) {
+	if m.project_task_list_statuses == nil {
+		m.project_task_list_statuses = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		m.project_task_list_statuses[ids[i]] = struct{}{}
+	}
+}
+
+// ClearProjectTaskListStatuses clears the "project_task_list_statuses" edge to the ProjectTaskListStatus entity.
+func (m *ProjectMutation) ClearProjectTaskListStatuses() {
+	m.clearedproject_task_list_statuses = true
+}
+
+// ProjectTaskListStatusesCleared reports if the "project_task_list_statuses" edge to the ProjectTaskListStatus entity was cleared.
+func (m *ProjectMutation) ProjectTaskListStatusesCleared() bool {
+	return m.clearedproject_task_list_statuses
+}
+
+// RemoveProjectTaskListStatusIDs removes the "project_task_list_statuses" edge to the ProjectTaskListStatus entity by IDs.
+func (m *ProjectMutation) RemoveProjectTaskListStatusIDs(ids ...ulid.ID) {
+	if m.removedproject_task_list_statuses == nil {
+		m.removedproject_task_list_statuses = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		delete(m.project_task_list_statuses, ids[i])
+		m.removedproject_task_list_statuses[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedProjectTaskListStatuses returns the removed IDs of the "project_task_list_statuses" edge to the ProjectTaskListStatus entity.
+func (m *ProjectMutation) RemovedProjectTaskListStatusesIDs() (ids []ulid.ID) {
+	for id := range m.removedproject_task_list_statuses {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ProjectTaskListStatusesIDs returns the "project_task_list_statuses" edge IDs in the mutation.
+func (m *ProjectMutation) ProjectTaskListStatusesIDs() (ids []ulid.ID) {
+	for id := range m.project_task_list_statuses {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetProjectTaskListStatuses resets all changes to the "project_task_list_statuses" edge.
+func (m *ProjectMutation) ResetProjectTaskListStatuses() {
+	m.project_task_list_statuses = nil
+	m.clearedproject_task_list_statuses = false
+	m.removedproject_task_list_statuses = nil
+}
+
 // Where appends a list predicates to the ProjectMutation builder.
 func (m *ProjectMutation) Where(ps ...predicate.Project) {
 	m.predicates = append(m.predicates, ps...)
@@ -3544,7 +3603,7 @@ func (m *ProjectMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *ProjectMutation) AddedEdges() []string {
-	edges := make([]string, 0, 8)
+	edges := make([]string, 0, 9)
 	if m.workspace != nil {
 		edges = append(edges, project.EdgeWorkspace)
 	}
@@ -3568,6 +3627,9 @@ func (m *ProjectMutation) AddedEdges() []string {
 	}
 	if m.project_task_columns != nil {
 		edges = append(edges, project.EdgeProjectTaskColumns)
+	}
+	if m.project_task_list_statuses != nil {
+		edges = append(edges, project.EdgeProjectTaskListStatuses)
 	}
 	return edges
 }
@@ -3614,13 +3676,19 @@ func (m *ProjectMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case project.EdgeProjectTaskListStatuses:
+		ids := make([]ent.Value, 0, len(m.project_task_list_statuses))
+		for id := range m.project_task_list_statuses {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *ProjectMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 8)
+	edges := make([]string, 0, 9)
 	if m.removedproject_teammates != nil {
 		edges = append(edges, project.EdgeProjectTeammates)
 	}
@@ -3629,6 +3697,9 @@ func (m *ProjectMutation) RemovedEdges() []string {
 	}
 	if m.removedproject_task_columns != nil {
 		edges = append(edges, project.EdgeProjectTaskColumns)
+	}
+	if m.removedproject_task_list_statuses != nil {
+		edges = append(edges, project.EdgeProjectTaskListStatuses)
 	}
 	return edges
 }
@@ -3655,13 +3726,19 @@ func (m *ProjectMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case project.EdgeProjectTaskListStatuses:
+		ids := make([]ent.Value, 0, len(m.removedproject_task_list_statuses))
+		for id := range m.removedproject_task_list_statuses {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *ProjectMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 8)
+	edges := make([]string, 0, 9)
 	if m.clearedworkspace {
 		edges = append(edges, project.EdgeWorkspace)
 	}
@@ -3686,6 +3763,9 @@ func (m *ProjectMutation) ClearedEdges() []string {
 	if m.clearedproject_task_columns {
 		edges = append(edges, project.EdgeProjectTaskColumns)
 	}
+	if m.clearedproject_task_list_statuses {
+		edges = append(edges, project.EdgeProjectTaskListStatuses)
+	}
 	return edges
 }
 
@@ -3709,6 +3789,8 @@ func (m *ProjectMutation) EdgeCleared(name string) bool {
 		return m.clearedfavorite_projects
 	case project.EdgeProjectTaskColumns:
 		return m.clearedproject_task_columns
+	case project.EdgeProjectTaskListStatuses:
+		return m.clearedproject_task_list_statuses
 	}
 	return false
 }
@@ -3763,6 +3845,9 @@ func (m *ProjectMutation) ResetEdge(name string) error {
 		return nil
 	case project.EdgeProjectTaskColumns:
 		m.ResetProjectTaskColumns()
+		return nil
+	case project.EdgeProjectTaskListStatuses:
+		m.ResetProjectTaskListStatuses()
 		return nil
 	}
 	return fmt.Errorf("unknown Project edge %s", name)
@@ -6212,6 +6297,665 @@ func (m *ProjectTaskColumnMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown ProjectTaskColumn edge %s", name)
 }
 
+// ProjectTaskListStatusMutation represents an operation that mutates the ProjectTaskListStatus nodes in the graph.
+type ProjectTaskListStatusMutation struct {
+	config
+	op                                Op
+	typ                               string
+	id                                *ulid.ID
+	created_at                        *time.Time
+	updated_at                        *time.Time
+	clearedFields                     map[string]struct{}
+	project                           *ulid.ID
+	clearedproject                    bool
+	task_list_completed_status        *ulid.ID
+	clearedtask_list_completed_status bool
+	task_list_sort_status             *ulid.ID
+	clearedtask_list_sort_status      bool
+	done                              bool
+	oldValue                          func(context.Context) (*ProjectTaskListStatus, error)
+	predicates                        []predicate.ProjectTaskListStatus
+}
+
+var _ ent.Mutation = (*ProjectTaskListStatusMutation)(nil)
+
+// projecttaskliststatusOption allows management of the mutation configuration using functional options.
+type projecttaskliststatusOption func(*ProjectTaskListStatusMutation)
+
+// newProjectTaskListStatusMutation creates new mutation for the ProjectTaskListStatus entity.
+func newProjectTaskListStatusMutation(c config, op Op, opts ...projecttaskliststatusOption) *ProjectTaskListStatusMutation {
+	m := &ProjectTaskListStatusMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeProjectTaskListStatus,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withProjectTaskListStatusID sets the ID field of the mutation.
+func withProjectTaskListStatusID(id ulid.ID) projecttaskliststatusOption {
+	return func(m *ProjectTaskListStatusMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *ProjectTaskListStatus
+		)
+		m.oldValue = func(ctx context.Context) (*ProjectTaskListStatus, error) {
+			once.Do(func() {
+				if m.done {
+					err = fmt.Errorf("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().ProjectTaskListStatus.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withProjectTaskListStatus sets the old ProjectTaskListStatus of the mutation.
+func withProjectTaskListStatus(node *ProjectTaskListStatus) projecttaskliststatusOption {
+	return func(m *ProjectTaskListStatusMutation) {
+		m.oldValue = func(context.Context) (*ProjectTaskListStatus, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m ProjectTaskListStatusMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m ProjectTaskListStatusMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, fmt.Errorf("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of ProjectTaskListStatus entities.
+func (m *ProjectTaskListStatusMutation) SetID(id ulid.ID) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *ProjectTaskListStatusMutation) ID() (id ulid.ID, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// SetProjectID sets the "project_id" field.
+func (m *ProjectTaskListStatusMutation) SetProjectID(u ulid.ID) {
+	m.project = &u
+}
+
+// ProjectID returns the value of the "project_id" field in the mutation.
+func (m *ProjectTaskListStatusMutation) ProjectID() (r ulid.ID, exists bool) {
+	v := m.project
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldProjectID returns the old "project_id" field's value of the ProjectTaskListStatus entity.
+// If the ProjectTaskListStatus object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProjectTaskListStatusMutation) OldProjectID(ctx context.Context) (v ulid.ID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldProjectID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldProjectID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldProjectID: %w", err)
+	}
+	return oldValue.ProjectID, nil
+}
+
+// ResetProjectID resets all changes to the "project_id" field.
+func (m *ProjectTaskListStatusMutation) ResetProjectID() {
+	m.project = nil
+}
+
+// SetTaskListCompletedStatusID sets the "task_list_completed_status_id" field.
+func (m *ProjectTaskListStatusMutation) SetTaskListCompletedStatusID(u ulid.ID) {
+	m.task_list_completed_status = &u
+}
+
+// TaskListCompletedStatusID returns the value of the "task_list_completed_status_id" field in the mutation.
+func (m *ProjectTaskListStatusMutation) TaskListCompletedStatusID() (r ulid.ID, exists bool) {
+	v := m.task_list_completed_status
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTaskListCompletedStatusID returns the old "task_list_completed_status_id" field's value of the ProjectTaskListStatus entity.
+// If the ProjectTaskListStatus object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProjectTaskListStatusMutation) OldTaskListCompletedStatusID(ctx context.Context) (v ulid.ID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldTaskListCompletedStatusID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldTaskListCompletedStatusID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTaskListCompletedStatusID: %w", err)
+	}
+	return oldValue.TaskListCompletedStatusID, nil
+}
+
+// ResetTaskListCompletedStatusID resets all changes to the "task_list_completed_status_id" field.
+func (m *ProjectTaskListStatusMutation) ResetTaskListCompletedStatusID() {
+	m.task_list_completed_status = nil
+}
+
+// SetTaskListSortStatusID sets the "task_list_sort_status_id" field.
+func (m *ProjectTaskListStatusMutation) SetTaskListSortStatusID(u ulid.ID) {
+	m.task_list_sort_status = &u
+}
+
+// TaskListSortStatusID returns the value of the "task_list_sort_status_id" field in the mutation.
+func (m *ProjectTaskListStatusMutation) TaskListSortStatusID() (r ulid.ID, exists bool) {
+	v := m.task_list_sort_status
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTaskListSortStatusID returns the old "task_list_sort_status_id" field's value of the ProjectTaskListStatus entity.
+// If the ProjectTaskListStatus object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProjectTaskListStatusMutation) OldTaskListSortStatusID(ctx context.Context) (v ulid.ID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldTaskListSortStatusID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldTaskListSortStatusID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTaskListSortStatusID: %w", err)
+	}
+	return oldValue.TaskListSortStatusID, nil
+}
+
+// ResetTaskListSortStatusID resets all changes to the "task_list_sort_status_id" field.
+func (m *ProjectTaskListStatusMutation) ResetTaskListSortStatusID() {
+	m.task_list_sort_status = nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *ProjectTaskListStatusMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *ProjectTaskListStatusMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the ProjectTaskListStatus entity.
+// If the ProjectTaskListStatus object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProjectTaskListStatusMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *ProjectTaskListStatusMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *ProjectTaskListStatusMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *ProjectTaskListStatusMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the ProjectTaskListStatus entity.
+// If the ProjectTaskListStatus object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ProjectTaskListStatusMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *ProjectTaskListStatusMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// ClearProject clears the "project" edge to the Project entity.
+func (m *ProjectTaskListStatusMutation) ClearProject() {
+	m.clearedproject = true
+}
+
+// ProjectCleared reports if the "project" edge to the Project entity was cleared.
+func (m *ProjectTaskListStatusMutation) ProjectCleared() bool {
+	return m.clearedproject
+}
+
+// ProjectIDs returns the "project" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// ProjectID instead. It exists only for internal usage by the builders.
+func (m *ProjectTaskListStatusMutation) ProjectIDs() (ids []ulid.ID) {
+	if id := m.project; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetProject resets all changes to the "project" edge.
+func (m *ProjectTaskListStatusMutation) ResetProject() {
+	m.project = nil
+	m.clearedproject = false
+}
+
+// ClearTaskListCompletedStatus clears the "task_list_completed_status" edge to the TaskListCompletedStatus entity.
+func (m *ProjectTaskListStatusMutation) ClearTaskListCompletedStatus() {
+	m.clearedtask_list_completed_status = true
+}
+
+// TaskListCompletedStatusCleared reports if the "task_list_completed_status" edge to the TaskListCompletedStatus entity was cleared.
+func (m *ProjectTaskListStatusMutation) TaskListCompletedStatusCleared() bool {
+	return m.clearedtask_list_completed_status
+}
+
+// TaskListCompletedStatusIDs returns the "task_list_completed_status" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// TaskListCompletedStatusID instead. It exists only for internal usage by the builders.
+func (m *ProjectTaskListStatusMutation) TaskListCompletedStatusIDs() (ids []ulid.ID) {
+	if id := m.task_list_completed_status; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetTaskListCompletedStatus resets all changes to the "task_list_completed_status" edge.
+func (m *ProjectTaskListStatusMutation) ResetTaskListCompletedStatus() {
+	m.task_list_completed_status = nil
+	m.clearedtask_list_completed_status = false
+}
+
+// ClearTaskListSortStatus clears the "task_list_sort_status" edge to the TaskListSortStatus entity.
+func (m *ProjectTaskListStatusMutation) ClearTaskListSortStatus() {
+	m.clearedtask_list_sort_status = true
+}
+
+// TaskListSortStatusCleared reports if the "task_list_sort_status" edge to the TaskListSortStatus entity was cleared.
+func (m *ProjectTaskListStatusMutation) TaskListSortStatusCleared() bool {
+	return m.clearedtask_list_sort_status
+}
+
+// TaskListSortStatusIDs returns the "task_list_sort_status" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// TaskListSortStatusID instead. It exists only for internal usage by the builders.
+func (m *ProjectTaskListStatusMutation) TaskListSortStatusIDs() (ids []ulid.ID) {
+	if id := m.task_list_sort_status; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetTaskListSortStatus resets all changes to the "task_list_sort_status" edge.
+func (m *ProjectTaskListStatusMutation) ResetTaskListSortStatus() {
+	m.task_list_sort_status = nil
+	m.clearedtask_list_sort_status = false
+}
+
+// Where appends a list predicates to the ProjectTaskListStatusMutation builder.
+func (m *ProjectTaskListStatusMutation) Where(ps ...predicate.ProjectTaskListStatus) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// Op returns the operation name.
+func (m *ProjectTaskListStatusMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (ProjectTaskListStatus).
+func (m *ProjectTaskListStatusMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *ProjectTaskListStatusMutation) Fields() []string {
+	fields := make([]string, 0, 5)
+	if m.project != nil {
+		fields = append(fields, projecttaskliststatus.FieldProjectID)
+	}
+	if m.task_list_completed_status != nil {
+		fields = append(fields, projecttaskliststatus.FieldTaskListCompletedStatusID)
+	}
+	if m.task_list_sort_status != nil {
+		fields = append(fields, projecttaskliststatus.FieldTaskListSortStatusID)
+	}
+	if m.created_at != nil {
+		fields = append(fields, projecttaskliststatus.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, projecttaskliststatus.FieldUpdatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *ProjectTaskListStatusMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case projecttaskliststatus.FieldProjectID:
+		return m.ProjectID()
+	case projecttaskliststatus.FieldTaskListCompletedStatusID:
+		return m.TaskListCompletedStatusID()
+	case projecttaskliststatus.FieldTaskListSortStatusID:
+		return m.TaskListSortStatusID()
+	case projecttaskliststatus.FieldCreatedAt:
+		return m.CreatedAt()
+	case projecttaskliststatus.FieldUpdatedAt:
+		return m.UpdatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *ProjectTaskListStatusMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case projecttaskliststatus.FieldProjectID:
+		return m.OldProjectID(ctx)
+	case projecttaskliststatus.FieldTaskListCompletedStatusID:
+		return m.OldTaskListCompletedStatusID(ctx)
+	case projecttaskliststatus.FieldTaskListSortStatusID:
+		return m.OldTaskListSortStatusID(ctx)
+	case projecttaskliststatus.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case projecttaskliststatus.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown ProjectTaskListStatus field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ProjectTaskListStatusMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case projecttaskliststatus.FieldProjectID:
+		v, ok := value.(ulid.ID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetProjectID(v)
+		return nil
+	case projecttaskliststatus.FieldTaskListCompletedStatusID:
+		v, ok := value.(ulid.ID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTaskListCompletedStatusID(v)
+		return nil
+	case projecttaskliststatus.FieldTaskListSortStatusID:
+		v, ok := value.(ulid.ID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTaskListSortStatusID(v)
+		return nil
+	case projecttaskliststatus.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case projecttaskliststatus.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown ProjectTaskListStatus field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *ProjectTaskListStatusMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *ProjectTaskListStatusMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ProjectTaskListStatusMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown ProjectTaskListStatus numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *ProjectTaskListStatusMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *ProjectTaskListStatusMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *ProjectTaskListStatusMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown ProjectTaskListStatus nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *ProjectTaskListStatusMutation) ResetField(name string) error {
+	switch name {
+	case projecttaskliststatus.FieldProjectID:
+		m.ResetProjectID()
+		return nil
+	case projecttaskliststatus.FieldTaskListCompletedStatusID:
+		m.ResetTaskListCompletedStatusID()
+		return nil
+	case projecttaskliststatus.FieldTaskListSortStatusID:
+		m.ResetTaskListSortStatusID()
+		return nil
+	case projecttaskliststatus.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case projecttaskliststatus.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown ProjectTaskListStatus field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *ProjectTaskListStatusMutation) AddedEdges() []string {
+	edges := make([]string, 0, 3)
+	if m.project != nil {
+		edges = append(edges, projecttaskliststatus.EdgeProject)
+	}
+	if m.task_list_completed_status != nil {
+		edges = append(edges, projecttaskliststatus.EdgeTaskListCompletedStatus)
+	}
+	if m.task_list_sort_status != nil {
+		edges = append(edges, projecttaskliststatus.EdgeTaskListSortStatus)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *ProjectTaskListStatusMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case projecttaskliststatus.EdgeProject:
+		if id := m.project; id != nil {
+			return []ent.Value{*id}
+		}
+	case projecttaskliststatus.EdgeTaskListCompletedStatus:
+		if id := m.task_list_completed_status; id != nil {
+			return []ent.Value{*id}
+		}
+	case projecttaskliststatus.EdgeTaskListSortStatus:
+		if id := m.task_list_sort_status; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *ProjectTaskListStatusMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 3)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *ProjectTaskListStatusMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *ProjectTaskListStatusMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 3)
+	if m.clearedproject {
+		edges = append(edges, projecttaskliststatus.EdgeProject)
+	}
+	if m.clearedtask_list_completed_status {
+		edges = append(edges, projecttaskliststatus.EdgeTaskListCompletedStatus)
+	}
+	if m.clearedtask_list_sort_status {
+		edges = append(edges, projecttaskliststatus.EdgeTaskListSortStatus)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *ProjectTaskListStatusMutation) EdgeCleared(name string) bool {
+	switch name {
+	case projecttaskliststatus.EdgeProject:
+		return m.clearedproject
+	case projecttaskliststatus.EdgeTaskListCompletedStatus:
+		return m.clearedtask_list_completed_status
+	case projecttaskliststatus.EdgeTaskListSortStatus:
+		return m.clearedtask_list_sort_status
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *ProjectTaskListStatusMutation) ClearEdge(name string) error {
+	switch name {
+	case projecttaskliststatus.EdgeProject:
+		m.ClearProject()
+		return nil
+	case projecttaskliststatus.EdgeTaskListCompletedStatus:
+		m.ClearTaskListCompletedStatus()
+		return nil
+	case projecttaskliststatus.EdgeTaskListSortStatus:
+		m.ClearTaskListSortStatus()
+		return nil
+	}
+	return fmt.Errorf("unknown ProjectTaskListStatus unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *ProjectTaskListStatusMutation) ResetEdge(name string) error {
+	switch name {
+	case projecttaskliststatus.EdgeProject:
+		m.ResetProject()
+		return nil
+	case projecttaskliststatus.EdgeTaskListCompletedStatus:
+		m.ResetTaskListCompletedStatus()
+		return nil
+	case projecttaskliststatus.EdgeTaskListSortStatus:
+		m.ResetTaskListSortStatus()
+		return nil
+	}
+	return fmt.Errorf("unknown ProjectTaskListStatus edge %s", name)
+}
+
 // ProjectTeammateMutation represents an operation that mutates the ProjectTeammate nodes in the graph.
 type ProjectTeammateMutation struct {
 	config
@@ -7530,6 +8274,9 @@ type TaskListCompletedStatusMutation struct {
 	teammate_task_list_statuses        map[ulid.ID]struct{}
 	removedteammate_task_list_statuses map[ulid.ID]struct{}
 	clearedteammate_task_list_statuses bool
+	project_task_list_statuses         map[ulid.ID]struct{}
+	removedproject_task_list_statuses  map[ulid.ID]struct{}
+	clearedproject_task_list_statuses  bool
 	done                               bool
 	oldValue                           func(context.Context) (*TaskListCompletedStatus, error)
 	predicates                         []predicate.TaskListCompletedStatus
@@ -7818,6 +8565,60 @@ func (m *TaskListCompletedStatusMutation) ResetTeammateTaskListStatuses() {
 	m.removedteammate_task_list_statuses = nil
 }
 
+// AddProjectTaskListStatusIDs adds the "project_task_list_statuses" edge to the ProjectTaskListStatus entity by ids.
+func (m *TaskListCompletedStatusMutation) AddProjectTaskListStatusIDs(ids ...ulid.ID) {
+	if m.project_task_list_statuses == nil {
+		m.project_task_list_statuses = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		m.project_task_list_statuses[ids[i]] = struct{}{}
+	}
+}
+
+// ClearProjectTaskListStatuses clears the "project_task_list_statuses" edge to the ProjectTaskListStatus entity.
+func (m *TaskListCompletedStatusMutation) ClearProjectTaskListStatuses() {
+	m.clearedproject_task_list_statuses = true
+}
+
+// ProjectTaskListStatusesCleared reports if the "project_task_list_statuses" edge to the ProjectTaskListStatus entity was cleared.
+func (m *TaskListCompletedStatusMutation) ProjectTaskListStatusesCleared() bool {
+	return m.clearedproject_task_list_statuses
+}
+
+// RemoveProjectTaskListStatusIDs removes the "project_task_list_statuses" edge to the ProjectTaskListStatus entity by IDs.
+func (m *TaskListCompletedStatusMutation) RemoveProjectTaskListStatusIDs(ids ...ulid.ID) {
+	if m.removedproject_task_list_statuses == nil {
+		m.removedproject_task_list_statuses = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		delete(m.project_task_list_statuses, ids[i])
+		m.removedproject_task_list_statuses[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedProjectTaskListStatuses returns the removed IDs of the "project_task_list_statuses" edge to the ProjectTaskListStatus entity.
+func (m *TaskListCompletedStatusMutation) RemovedProjectTaskListStatusesIDs() (ids []ulid.ID) {
+	for id := range m.removedproject_task_list_statuses {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ProjectTaskListStatusesIDs returns the "project_task_list_statuses" edge IDs in the mutation.
+func (m *TaskListCompletedStatusMutation) ProjectTaskListStatusesIDs() (ids []ulid.ID) {
+	for id := range m.project_task_list_statuses {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetProjectTaskListStatuses resets all changes to the "project_task_list_statuses" edge.
+func (m *TaskListCompletedStatusMutation) ResetProjectTaskListStatuses() {
+	m.project_task_list_statuses = nil
+	m.clearedproject_task_list_statuses = false
+	m.removedproject_task_list_statuses = nil
+}
+
 // Where appends a list predicates to the TaskListCompletedStatusMutation builder.
 func (m *TaskListCompletedStatusMutation) Where(ps ...predicate.TaskListCompletedStatus) {
 	m.predicates = append(m.predicates, ps...)
@@ -7987,9 +8788,12 @@ func (m *TaskListCompletedStatusMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *TaskListCompletedStatusMutation) AddedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.teammate_task_list_statuses != nil {
 		edges = append(edges, tasklistcompletedstatus.EdgeTeammateTaskListStatuses)
+	}
+	if m.project_task_list_statuses != nil {
+		edges = append(edges, tasklistcompletedstatus.EdgeProjectTaskListStatuses)
 	}
 	return edges
 }
@@ -8004,15 +8808,24 @@ func (m *TaskListCompletedStatusMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case tasklistcompletedstatus.EdgeProjectTaskListStatuses:
+		ids := make([]ent.Value, 0, len(m.project_task_list_statuses))
+		for id := range m.project_task_list_statuses {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *TaskListCompletedStatusMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.removedteammate_task_list_statuses != nil {
 		edges = append(edges, tasklistcompletedstatus.EdgeTeammateTaskListStatuses)
+	}
+	if m.removedproject_task_list_statuses != nil {
+		edges = append(edges, tasklistcompletedstatus.EdgeProjectTaskListStatuses)
 	}
 	return edges
 }
@@ -8027,15 +8840,24 @@ func (m *TaskListCompletedStatusMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case tasklistcompletedstatus.EdgeProjectTaskListStatuses:
+		ids := make([]ent.Value, 0, len(m.removedproject_task_list_statuses))
+		for id := range m.removedproject_task_list_statuses {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *TaskListCompletedStatusMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.clearedteammate_task_list_statuses {
 		edges = append(edges, tasklistcompletedstatus.EdgeTeammateTaskListStatuses)
+	}
+	if m.clearedproject_task_list_statuses {
+		edges = append(edges, tasklistcompletedstatus.EdgeProjectTaskListStatuses)
 	}
 	return edges
 }
@@ -8046,6 +8868,8 @@ func (m *TaskListCompletedStatusMutation) EdgeCleared(name string) bool {
 	switch name {
 	case tasklistcompletedstatus.EdgeTeammateTaskListStatuses:
 		return m.clearedteammate_task_list_statuses
+	case tasklistcompletedstatus.EdgeProjectTaskListStatuses:
+		return m.clearedproject_task_list_statuses
 	}
 	return false
 }
@@ -8065,6 +8889,9 @@ func (m *TaskListCompletedStatusMutation) ResetEdge(name string) error {
 	case tasklistcompletedstatus.EdgeTeammateTaskListStatuses:
 		m.ResetTeammateTaskListStatuses()
 		return nil
+	case tasklistcompletedstatus.EdgeProjectTaskListStatuses:
+		m.ResetProjectTaskListStatuses()
+		return nil
 	}
 	return fmt.Errorf("unknown TaskListCompletedStatus edge %s", name)
 }
@@ -8083,6 +8910,9 @@ type TaskListSortStatusMutation struct {
 	teammate_task_list_statuses        map[ulid.ID]struct{}
 	removedteammate_task_list_statuses map[ulid.ID]struct{}
 	clearedteammate_task_list_statuses bool
+	project_task_list_statuses         map[ulid.ID]struct{}
+	removedproject_task_list_statuses  map[ulid.ID]struct{}
+	clearedproject_task_list_statuses  bool
 	done                               bool
 	oldValue                           func(context.Context) (*TaskListSortStatus, error)
 	predicates                         []predicate.TaskListSortStatus
@@ -8371,6 +9201,60 @@ func (m *TaskListSortStatusMutation) ResetTeammateTaskListStatuses() {
 	m.removedteammate_task_list_statuses = nil
 }
 
+// AddProjectTaskListStatusIDs adds the "project_task_list_statuses" edge to the ProjectTaskListStatus entity by ids.
+func (m *TaskListSortStatusMutation) AddProjectTaskListStatusIDs(ids ...ulid.ID) {
+	if m.project_task_list_statuses == nil {
+		m.project_task_list_statuses = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		m.project_task_list_statuses[ids[i]] = struct{}{}
+	}
+}
+
+// ClearProjectTaskListStatuses clears the "project_task_list_statuses" edge to the ProjectTaskListStatus entity.
+func (m *TaskListSortStatusMutation) ClearProjectTaskListStatuses() {
+	m.clearedproject_task_list_statuses = true
+}
+
+// ProjectTaskListStatusesCleared reports if the "project_task_list_statuses" edge to the ProjectTaskListStatus entity was cleared.
+func (m *TaskListSortStatusMutation) ProjectTaskListStatusesCleared() bool {
+	return m.clearedproject_task_list_statuses
+}
+
+// RemoveProjectTaskListStatusIDs removes the "project_task_list_statuses" edge to the ProjectTaskListStatus entity by IDs.
+func (m *TaskListSortStatusMutation) RemoveProjectTaskListStatusIDs(ids ...ulid.ID) {
+	if m.removedproject_task_list_statuses == nil {
+		m.removedproject_task_list_statuses = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		delete(m.project_task_list_statuses, ids[i])
+		m.removedproject_task_list_statuses[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedProjectTaskListStatuses returns the removed IDs of the "project_task_list_statuses" edge to the ProjectTaskListStatus entity.
+func (m *TaskListSortStatusMutation) RemovedProjectTaskListStatusesIDs() (ids []ulid.ID) {
+	for id := range m.removedproject_task_list_statuses {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ProjectTaskListStatusesIDs returns the "project_task_list_statuses" edge IDs in the mutation.
+func (m *TaskListSortStatusMutation) ProjectTaskListStatusesIDs() (ids []ulid.ID) {
+	for id := range m.project_task_list_statuses {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetProjectTaskListStatuses resets all changes to the "project_task_list_statuses" edge.
+func (m *TaskListSortStatusMutation) ResetProjectTaskListStatuses() {
+	m.project_task_list_statuses = nil
+	m.clearedproject_task_list_statuses = false
+	m.removedproject_task_list_statuses = nil
+}
+
 // Where appends a list predicates to the TaskListSortStatusMutation builder.
 func (m *TaskListSortStatusMutation) Where(ps ...predicate.TaskListSortStatus) {
 	m.predicates = append(m.predicates, ps...)
@@ -8540,9 +9424,12 @@ func (m *TaskListSortStatusMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *TaskListSortStatusMutation) AddedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.teammate_task_list_statuses != nil {
 		edges = append(edges, tasklistsortstatus.EdgeTeammateTaskListStatuses)
+	}
+	if m.project_task_list_statuses != nil {
+		edges = append(edges, tasklistsortstatus.EdgeProjectTaskListStatuses)
 	}
 	return edges
 }
@@ -8557,15 +9444,24 @@ func (m *TaskListSortStatusMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case tasklistsortstatus.EdgeProjectTaskListStatuses:
+		ids := make([]ent.Value, 0, len(m.project_task_list_statuses))
+		for id := range m.project_task_list_statuses {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *TaskListSortStatusMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.removedteammate_task_list_statuses != nil {
 		edges = append(edges, tasklistsortstatus.EdgeTeammateTaskListStatuses)
+	}
+	if m.removedproject_task_list_statuses != nil {
+		edges = append(edges, tasklistsortstatus.EdgeProjectTaskListStatuses)
 	}
 	return edges
 }
@@ -8580,15 +9476,24 @@ func (m *TaskListSortStatusMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case tasklistsortstatus.EdgeProjectTaskListStatuses:
+		ids := make([]ent.Value, 0, len(m.removedproject_task_list_statuses))
+		for id := range m.removedproject_task_list_statuses {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *TaskListSortStatusMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.clearedteammate_task_list_statuses {
 		edges = append(edges, tasklistsortstatus.EdgeTeammateTaskListStatuses)
+	}
+	if m.clearedproject_task_list_statuses {
+		edges = append(edges, tasklistsortstatus.EdgeProjectTaskListStatuses)
 	}
 	return edges
 }
@@ -8599,6 +9504,8 @@ func (m *TaskListSortStatusMutation) EdgeCleared(name string) bool {
 	switch name {
 	case tasklistsortstatus.EdgeTeammateTaskListStatuses:
 		return m.clearedteammate_task_list_statuses
+	case tasklistsortstatus.EdgeProjectTaskListStatuses:
+		return m.clearedproject_task_list_statuses
 	}
 	return false
 }
@@ -8617,6 +9524,9 @@ func (m *TaskListSortStatusMutation) ResetEdge(name string) error {
 	switch name {
 	case tasklistsortstatus.EdgeTeammateTaskListStatuses:
 		m.ResetTeammateTaskListStatuses()
+		return nil
+	case tasklistsortstatus.EdgeProjectTaskListStatuses:
+		m.ResetProjectTaskListStatuses()
 		return nil
 	}
 	return fmt.Errorf("unknown TaskListSortStatus edge %s", name)

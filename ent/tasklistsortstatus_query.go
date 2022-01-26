@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"math"
 	"project-management-demo-backend/ent/predicate"
+	"project-management-demo-backend/ent/projecttaskliststatus"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/tasklistsortstatus"
 	"project-management-demo-backend/ent/teammatetaskliststatus"
@@ -29,6 +30,7 @@ type TaskListSortStatusQuery struct {
 	predicates []predicate.TaskListSortStatus
 	// eager-loading edges.
 	withTeammateTaskListStatuses *TeammateTaskListStatusQuery
+	withProjectTaskListStatuses  *ProjectTaskListStatusQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -80,6 +82,28 @@ func (tlssq *TaskListSortStatusQuery) QueryTeammateTaskListStatuses() *TeammateT
 			sqlgraph.From(tasklistsortstatus.Table, tasklistsortstatus.FieldID, selector),
 			sqlgraph.To(teammatetaskliststatus.Table, teammatetaskliststatus.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, tasklistsortstatus.TeammateTaskListStatusesTable, tasklistsortstatus.TeammateTaskListStatusesColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(tlssq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryProjectTaskListStatuses chains the current query on the "project_task_list_statuses" edge.
+func (tlssq *TaskListSortStatusQuery) QueryProjectTaskListStatuses() *ProjectTaskListStatusQuery {
+	query := &ProjectTaskListStatusQuery{config: tlssq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := tlssq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := tlssq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(tasklistsortstatus.Table, tasklistsortstatus.FieldID, selector),
+			sqlgraph.To(projecttaskliststatus.Table, projecttaskliststatus.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, tasklistsortstatus.ProjectTaskListStatusesTable, tasklistsortstatus.ProjectTaskListStatusesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(tlssq.driver.Dialect(), step)
 		return fromU, nil
@@ -269,6 +293,7 @@ func (tlssq *TaskListSortStatusQuery) Clone() *TaskListSortStatusQuery {
 		order:                        append([]OrderFunc{}, tlssq.order...),
 		predicates:                   append([]predicate.TaskListSortStatus{}, tlssq.predicates...),
 		withTeammateTaskListStatuses: tlssq.withTeammateTaskListStatuses.Clone(),
+		withProjectTaskListStatuses:  tlssq.withProjectTaskListStatuses.Clone(),
 		// clone intermediate query.
 		sql:  tlssq.sql.Clone(),
 		path: tlssq.path,
@@ -283,6 +308,17 @@ func (tlssq *TaskListSortStatusQuery) WithTeammateTaskListStatuses(opts ...func(
 		opt(query)
 	}
 	tlssq.withTeammateTaskListStatuses = query
+	return tlssq
+}
+
+// WithProjectTaskListStatuses tells the query-builder to eager-load the nodes that are connected to
+// the "project_task_list_statuses" edge. The optional arguments are used to configure the query builder of the edge.
+func (tlssq *TaskListSortStatusQuery) WithProjectTaskListStatuses(opts ...func(*ProjectTaskListStatusQuery)) *TaskListSortStatusQuery {
+	query := &ProjectTaskListStatusQuery{config: tlssq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	tlssq.withProjectTaskListStatuses = query
 	return tlssq
 }
 
@@ -351,8 +387,9 @@ func (tlssq *TaskListSortStatusQuery) sqlAll(ctx context.Context) ([]*TaskListSo
 	var (
 		nodes       = []*TaskListSortStatus{}
 		_spec       = tlssq.querySpec()
-		loadedTypes = [1]bool{
+		loadedTypes = [2]bool{
 			tlssq.withTeammateTaskListStatuses != nil,
+			tlssq.withProjectTaskListStatuses != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -397,6 +434,31 @@ func (tlssq *TaskListSortStatusQuery) sqlAll(ctx context.Context) ([]*TaskListSo
 				return nil, fmt.Errorf(`unexpected foreign-key "task_list_sort_status_id" returned %v for node %v`, fk, n.ID)
 			}
 			node.Edges.TeammateTaskListStatuses = append(node.Edges.TeammateTaskListStatuses, n)
+		}
+	}
+
+	if query := tlssq.withProjectTaskListStatuses; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[ulid.ID]*TaskListSortStatus)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.ProjectTaskListStatuses = []*ProjectTaskListStatus{}
+		}
+		query.Where(predicate.ProjectTaskListStatus(func(s *sql.Selector) {
+			s.Where(sql.InValues(tasklistsortstatus.ProjectTaskListStatusesColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.TaskListSortStatusID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "task_list_sort_status_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.ProjectTaskListStatuses = append(node.Edges.ProjectTaskListStatuses, n)
 		}
 	}
 

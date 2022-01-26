@@ -12,6 +12,7 @@ import (
 	"project-management-demo-backend/ent/projecticon"
 	"project-management-demo-backend/ent/projectlightcolor"
 	"project-management-demo-backend/ent/projecttaskcolumn"
+	"project-management-demo-backend/ent/projecttaskliststatus"
 	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/ent/schema"
 	"project-management-demo-backend/ent/schema/ulid"
@@ -347,6 +348,25 @@ func init() {
 	projecttaskcolumnDescID := projecttaskcolumnMixinFields0[0].Descriptor()
 	// projecttaskcolumn.DefaultID holds the default value on creation for the id field.
 	projecttaskcolumn.DefaultID = projecttaskcolumnDescID.Default.(func() ulid.ID)
+	projecttaskliststatusMixin := schema.ProjectTaskListStatus{}.Mixin()
+	projecttaskliststatusMixinFields0 := projecttaskliststatusMixin[0].Fields()
+	_ = projecttaskliststatusMixinFields0
+	projecttaskliststatusMixinFields2 := projecttaskliststatusMixin[2].Fields()
+	_ = projecttaskliststatusMixinFields2
+	projecttaskliststatusFields := schema.ProjectTaskListStatus{}.Fields()
+	_ = projecttaskliststatusFields
+	// projecttaskliststatusDescCreatedAt is the schema descriptor for created_at field.
+	projecttaskliststatusDescCreatedAt := projecttaskliststatusMixinFields2[0].Descriptor()
+	// projecttaskliststatus.DefaultCreatedAt holds the default value on creation for the created_at field.
+	projecttaskliststatus.DefaultCreatedAt = projecttaskliststatusDescCreatedAt.Default.(func() time.Time)
+	// projecttaskliststatusDescUpdatedAt is the schema descriptor for updated_at field.
+	projecttaskliststatusDescUpdatedAt := projecttaskliststatusMixinFields2[1].Descriptor()
+	// projecttaskliststatus.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	projecttaskliststatus.DefaultUpdatedAt = projecttaskliststatusDescUpdatedAt.Default.(func() time.Time)
+	// projecttaskliststatusDescID is the schema descriptor for id field.
+	projecttaskliststatusDescID := projecttaskliststatusMixinFields0[0].Descriptor()
+	// projecttaskliststatus.DefaultID holds the default value on creation for the id field.
+	projecttaskliststatus.DefaultID = projecttaskliststatusDescID.Default.(func() ulid.ID)
 	projectteammateMixin := schema.ProjectTeammate{}.Mixin()
 	projectteammateMixinFields0 := projectteammateMixin[0].Fields()
 	_ = projectteammateMixinFields0
