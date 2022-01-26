@@ -782,25 +782,25 @@ func HasFavoriteWorkspacesWith(preds ...predicate.FavoriteWorkspace) predicate.T
 	})
 }
 
-// HasMyTasksTabStatuses applies the HasEdge predicate on the "my_tasks_tab_statuses" edge.
-func HasMyTasksTabStatuses() predicate.Teammate {
+// HasTeammateTabStatuses applies the HasEdge predicate on the "teammate_tab_statuses" edge.
+func HasTeammateTabStatuses() predicate.Teammate {
 	return predicate.Teammate(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(MyTasksTabStatusesTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, MyTasksTabStatusesTable, MyTasksTabStatusesColumn),
+			sqlgraph.To(TeammateTabStatusesTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, TeammateTabStatusesTable, TeammateTabStatusesColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasMyTasksTabStatusesWith applies the HasEdge predicate on the "my_tasks_tab_statuses" edge with a given conditions (other predicates).
-func HasMyTasksTabStatusesWith(preds ...predicate.MyTasksTabStatus) predicate.Teammate {
+// HasTeammateTabStatusesWith applies the HasEdge predicate on the "teammate_tab_statuses" edge with a given conditions (other predicates).
+func HasTeammateTabStatusesWith(preds ...predicate.TeammateTabStatus) predicate.Teammate {
 	return predicate.Teammate(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(MyTasksTabStatusesInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, MyTasksTabStatusesTable, MyTasksTabStatusesColumn),
+			sqlgraph.To(TeammateTabStatusesInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, TeammateTabStatusesTable, TeammateTabStatusesColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

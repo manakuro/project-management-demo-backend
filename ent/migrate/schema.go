@@ -93,35 +93,6 @@ var (
 		Columns:    IconsColumns,
 		PrimaryKey: []*schema.Column{IconsColumns[0]},
 	}
-	// MyTasksTabStatusColumns holds the columns for the "my_tasks_tab_status" table.
-	MyTasksTabStatusColumns = []*schema.Column{
-		{Name: "id", Type: field.TypeString},
-		{Name: "status", Type: field.TypeEnum, Enums: []string{"LIST", "BOARD", "CALENDAR", "FILES"}, Default: "LIST"},
-		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
-		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
-		{Name: "teammate_id", Type: field.TypeString, Nullable: true},
-		{Name: "workspace_id", Type: field.TypeString, Nullable: true},
-	}
-	// MyTasksTabStatusTable holds the schema information for the "my_tasks_tab_status" table.
-	MyTasksTabStatusTable = &schema.Table{
-		Name:       "my_tasks_tab_status",
-		Columns:    MyTasksTabStatusColumns,
-		PrimaryKey: []*schema.Column{MyTasksTabStatusColumns[0]},
-		ForeignKeys: []*schema.ForeignKey{
-			{
-				Symbol:     "my_tasks_tab_status_teammates_my_tasks_tab_statuses",
-				Columns:    []*schema.Column{MyTasksTabStatusColumns[4]},
-				RefColumns: []*schema.Column{TeammatesColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-			{
-				Symbol:     "my_tasks_tab_status_workspaces_my_tasks_tab_statuses",
-				Columns:    []*schema.Column{MyTasksTabStatusColumns[5]},
-				RefColumns: []*schema.Column{WorkspacesColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-		},
-	}
 	// ProjectsColumns holds the columns for the "projects" table.
 	ProjectsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString},
@@ -370,6 +341,35 @@ var (
 		Columns:    TeammatesColumns,
 		PrimaryKey: []*schema.Column{TeammatesColumns[0]},
 	}
+	// TeammateTabStatusColumns holds the columns for the "teammate_tab_status" table.
+	TeammateTabStatusColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+		{Name: "status", Type: field.TypeEnum, Enums: []string{"LIST", "BOARD", "CALENDAR", "FILES"}, Default: "LIST"},
+		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
+		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
+		{Name: "teammate_id", Type: field.TypeString, Nullable: true},
+		{Name: "workspace_id", Type: field.TypeString, Nullable: true},
+	}
+	// TeammateTabStatusTable holds the schema information for the "teammate_tab_status" table.
+	TeammateTabStatusTable = &schema.Table{
+		Name:       "teammate_tab_status",
+		Columns:    TeammateTabStatusColumns,
+		PrimaryKey: []*schema.Column{TeammateTabStatusColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "teammate_tab_status_teammates_teammate_tab_statuses",
+				Columns:    []*schema.Column{TeammateTabStatusColumns[4]},
+				RefColumns: []*schema.Column{TeammatesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "teammate_tab_status_workspaces_teammate_tab_statuses",
+				Columns:    []*schema.Column{TeammateTabStatusColumns[5]},
+				RefColumns: []*schema.Column{WorkspacesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
 	// TeammateTaskColumnsColumns holds the columns for the "teammate_task_columns" table.
 	TeammateTaskColumnsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString},
@@ -500,7 +500,6 @@ var (
 		FavoriteProjectsTable,
 		FavoriteWorkspacesTable,
 		IconsTable,
-		MyTasksTabStatusTable,
 		ProjectsTable,
 		ProjectBaseColorsTable,
 		ProjectIconsTable,
@@ -512,6 +511,7 @@ var (
 		TaskListSortStatusTable,
 		TaskSectionsTable,
 		TeammatesTable,
+		TeammateTabStatusTable,
 		TeammateTaskColumnsTable,
 		TestTodosTable,
 		TestUsersTable,
@@ -525,8 +525,6 @@ func init() {
 	FavoriteProjectsTable.ForeignKeys[1].RefTable = TeammatesTable
 	FavoriteWorkspacesTable.ForeignKeys[0].RefTable = TeammatesTable
 	FavoriteWorkspacesTable.ForeignKeys[1].RefTable = WorkspacesTable
-	MyTasksTabStatusTable.ForeignKeys[0].RefTable = TeammatesTable
-	MyTasksTabStatusTable.ForeignKeys[1].RefTable = WorkspacesTable
 	ProjectsTable.ForeignKeys[0].RefTable = ProjectBaseColorsTable
 	ProjectsTable.ForeignKeys[1].RefTable = ProjectIconsTable
 	ProjectsTable.ForeignKeys[2].RefTable = ProjectLightColorsTable
@@ -539,6 +537,8 @@ func init() {
 	ProjectTaskColumnsTable.ForeignKeys[1].RefTable = TaskColumnsTable
 	ProjectTeammatesTable.ForeignKeys[0].RefTable = ProjectsTable
 	ProjectTeammatesTable.ForeignKeys[1].RefTable = TeammatesTable
+	TeammateTabStatusTable.ForeignKeys[0].RefTable = TeammatesTable
+	TeammateTabStatusTable.ForeignKeys[1].RefTable = WorkspacesTable
 	TeammateTaskColumnsTable.ForeignKeys[0].RefTable = TaskColumnsTable
 	TeammateTaskColumnsTable.ForeignKeys[1].RefTable = TeammatesTable
 	TestTodosTable.ForeignKeys[0].RefTable = TestUsersTable

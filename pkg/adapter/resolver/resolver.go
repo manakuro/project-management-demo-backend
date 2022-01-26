@@ -36,7 +36,7 @@ func NewSchema(client *ent.Client, controller controller.Controller) graphql.Exe
 				FavoriteWorkspaceIDsUpdated: map[string]subscription.FavoriteWorkspaceIDsUpdated{},
 				IconUpdated:                 map[string]subscription.IconUpdated{},
 				MeUpdated:                   map[string]subscription.MeUpdated{},
-				MyTasksTabStatusUpdated:     map[string]subscription.MyTasksTabStatusUpdated{},
+				TeammateTabStatusUpdated:    map[string]subscription.TeammateTabStatusUpdated{},
 				ProjectBaseColorUpdated:     map[string]subscription.ProjectBaseColorUpdated{},
 				ProjectIconUpdated:          map[string]subscription.ProjectIconUpdated{},
 				ProjectLightColorUpdated:    map[string]subscription.ProjectLightColorUpdated{},

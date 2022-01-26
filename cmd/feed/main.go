@@ -36,7 +36,7 @@ func main() {
 
 	feed.FavoriteProject(ctx, client)
 	feed.FavoriteWorkspace(ctx, client)
-	feed.MyTasksTabStatus(ctx, client)
+	feed.TeammateTabStatus(ctx, client)
 	feed.TeammateTaskColumn(ctx, client)
 	feed.ProjectTaskColumn(ctx, client)
 

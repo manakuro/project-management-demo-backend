@@ -9,7 +9,6 @@ import (
 	"project-management-demo-backend/ent/favoriteproject"
 	"project-management-demo-backend/ent/favoriteworkspace"
 	"project-management-demo-backend/ent/icon"
-	"project-management-demo-backend/ent/mytaskstabstatus"
 	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/projectbasecolor"
 	"project-management-demo-backend/ent/projecticon"
@@ -21,6 +20,7 @@ import (
 	"project-management-demo-backend/ent/tasklistsortstatus"
 	"project-management-demo-backend/ent/tasksection"
 	"project-management-demo-backend/ent/teammate"
+	"project-management-demo-backend/ent/teammatetabstatus"
 	"project-management-demo-backend/ent/teammatetaskcolumn"
 	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/ent/testuser"
@@ -53,7 +53,6 @@ func columnChecker(table string) func(string) error {
 		favoriteproject.Table:         favoriteproject.ValidColumn,
 		favoriteworkspace.Table:       favoriteworkspace.ValidColumn,
 		icon.Table:                    icon.ValidColumn,
-		mytaskstabstatus.Table:        mytaskstabstatus.ValidColumn,
 		project.Table:                 project.ValidColumn,
 		projectbasecolor.Table:        projectbasecolor.ValidColumn,
 		projecticon.Table:             projecticon.ValidColumn,
@@ -65,6 +64,7 @@ func columnChecker(table string) func(string) error {
 		tasklistsortstatus.Table:      tasklistsortstatus.ValidColumn,
 		tasksection.Table:             tasksection.ValidColumn,
 		teammate.Table:                teammate.ValidColumn,
+		teammatetabstatus.Table:       teammatetabstatus.ValidColumn,
 		teammatetaskcolumn.Table:      teammatetaskcolumn.ValidColumn,
 		testtodo.Table:                testtodo.ValidColumn,
 		testuser.Table:                testuser.ValidColumn,

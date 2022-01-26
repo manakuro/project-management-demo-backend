@@ -4,9 +4,9 @@ package ent
 
 import (
 	"fmt"
-	"project-management-demo-backend/ent/mytaskstabstatus"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/teammate"
+	"project-management-demo-backend/ent/teammatetabstatus"
 	"project-management-demo-backend/ent/workspace"
 	"strings"
 	"time"
@@ -14,8 +14,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
-// MyTasksTabStatus is the model entity for the MyTasksTabStatus schema.
-type MyTasksTabStatus struct {
+// TeammateTabStatus is the model entity for the TeammateTabStatus schema.
+type TeammateTabStatus struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID ulid.ID `json:"id,omitempty"`
@@ -24,18 +24,18 @@ type MyTasksTabStatus struct {
 	// TeammateID holds the value of the "teammate_id" field.
 	TeammateID ulid.ID `json:"teammate_id,omitempty"`
 	// Status holds the value of the "status" field.
-	Status mytaskstabstatus.Status `json:"status,omitempty"`
+	Status teammatetabstatus.Status `json:"status,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
-	// The values are being populated by the MyTasksTabStatusQuery when eager-loading is set.
-	Edges MyTasksTabStatusEdges `json:"edges"`
+	// The values are being populated by the TeammateTabStatusQuery when eager-loading is set.
+	Edges TeammateTabStatusEdges `json:"edges"`
 }
 
-// MyTasksTabStatusEdges holds the relations/edges for other nodes in the graph.
-type MyTasksTabStatusEdges struct {
+// TeammateTabStatusEdges holds the relations/edges for other nodes in the graph.
+type TeammateTabStatusEdges struct {
 	// Workspace holds the value of the workspace edge.
 	Workspace *Workspace `json:"workspace,omitempty"`
 	// Teammate holds the value of the teammate edge.
@@ -47,7 +47,7 @@ type MyTasksTabStatusEdges struct {
 
 // WorkspaceOrErr returns the Workspace value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e MyTasksTabStatusEdges) WorkspaceOrErr() (*Workspace, error) {
+func (e TeammateTabStatusEdges) WorkspaceOrErr() (*Workspace, error) {
 	if e.loadedTypes[0] {
 		if e.Workspace == nil {
 			// The edge workspace was loaded in eager-loading,
@@ -61,7 +61,7 @@ func (e MyTasksTabStatusEdges) WorkspaceOrErr() (*Workspace, error) {
 
 // TeammateOrErr returns the Teammate value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e MyTasksTabStatusEdges) TeammateOrErr() (*Teammate, error) {
+func (e TeammateTabStatusEdges) TeammateOrErr() (*Teammate, error) {
 	if e.loadedTypes[1] {
 		if e.Teammate == nil {
 			// The edge teammate was loaded in eager-loading,
@@ -74,124 +74,124 @@ func (e MyTasksTabStatusEdges) TeammateOrErr() (*Teammate, error) {
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
-func (*MyTasksTabStatus) scanValues(columns []string) ([]interface{}, error) {
+func (*TeammateTabStatus) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case mytaskstabstatus.FieldStatus:
+		case teammatetabstatus.FieldStatus:
 			values[i] = new(sql.NullString)
-		case mytaskstabstatus.FieldCreatedAt, mytaskstabstatus.FieldUpdatedAt:
+		case teammatetabstatus.FieldCreatedAt, teammatetabstatus.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
-		case mytaskstabstatus.FieldID, mytaskstabstatus.FieldWorkspaceID, mytaskstabstatus.FieldTeammateID:
+		case teammatetabstatus.FieldID, teammatetabstatus.FieldWorkspaceID, teammatetabstatus.FieldTeammateID:
 			values[i] = new(ulid.ID)
 		default:
-			return nil, fmt.Errorf("unexpected column %q for type MyTasksTabStatus", columns[i])
+			return nil, fmt.Errorf("unexpected column %q for type TeammateTabStatus", columns[i])
 		}
 	}
 	return values, nil
 }
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
-// to the MyTasksTabStatus fields.
-func (mtts *MyTasksTabStatus) assignValues(columns []string, values []interface{}) error {
+// to the TeammateTabStatus fields.
+func (tts *TeammateTabStatus) assignValues(columns []string, values []interface{}) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
 	for i := range columns {
 		switch columns[i] {
-		case mytaskstabstatus.FieldID:
+		case teammatetabstatus.FieldID:
 			if value, ok := values[i].(*ulid.ID); !ok {
 				return fmt.Errorf("unexpected type %T for field id", values[i])
 			} else if value != nil {
-				mtts.ID = *value
+				tts.ID = *value
 			}
-		case mytaskstabstatus.FieldWorkspaceID:
+		case teammatetabstatus.FieldWorkspaceID:
 			if value, ok := values[i].(*ulid.ID); !ok {
 				return fmt.Errorf("unexpected type %T for field workspace_id", values[i])
 			} else if value != nil {
-				mtts.WorkspaceID = *value
+				tts.WorkspaceID = *value
 			}
-		case mytaskstabstatus.FieldTeammateID:
+		case teammatetabstatus.FieldTeammateID:
 			if value, ok := values[i].(*ulid.ID); !ok {
 				return fmt.Errorf("unexpected type %T for field teammate_id", values[i])
 			} else if value != nil {
-				mtts.TeammateID = *value
+				tts.TeammateID = *value
 			}
-		case mytaskstabstatus.FieldStatus:
+		case teammatetabstatus.FieldStatus:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field status", values[i])
 			} else if value.Valid {
-				mtts.Status = mytaskstabstatus.Status(value.String)
+				tts.Status = teammatetabstatus.Status(value.String)
 			}
-		case mytaskstabstatus.FieldCreatedAt:
+		case teammatetabstatus.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
-				mtts.CreatedAt = value.Time
+				tts.CreatedAt = value.Time
 			}
-		case mytaskstabstatus.FieldUpdatedAt:
+		case teammatetabstatus.FieldUpdatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
 			} else if value.Valid {
-				mtts.UpdatedAt = value.Time
+				tts.UpdatedAt = value.Time
 			}
 		}
 	}
 	return nil
 }
 
-// QueryWorkspace queries the "workspace" edge of the MyTasksTabStatus entity.
-func (mtts *MyTasksTabStatus) QueryWorkspace() *WorkspaceQuery {
-	return (&MyTasksTabStatusClient{config: mtts.config}).QueryWorkspace(mtts)
+// QueryWorkspace queries the "workspace" edge of the TeammateTabStatus entity.
+func (tts *TeammateTabStatus) QueryWorkspace() *WorkspaceQuery {
+	return (&TeammateTabStatusClient{config: tts.config}).QueryWorkspace(tts)
 }
 
-// QueryTeammate queries the "teammate" edge of the MyTasksTabStatus entity.
-func (mtts *MyTasksTabStatus) QueryTeammate() *TeammateQuery {
-	return (&MyTasksTabStatusClient{config: mtts.config}).QueryTeammate(mtts)
+// QueryTeammate queries the "teammate" edge of the TeammateTabStatus entity.
+func (tts *TeammateTabStatus) QueryTeammate() *TeammateQuery {
+	return (&TeammateTabStatusClient{config: tts.config}).QueryTeammate(tts)
 }
 
-// Update returns a builder for updating this MyTasksTabStatus.
-// Note that you need to call MyTasksTabStatus.Unwrap() before calling this method if this MyTasksTabStatus
+// Update returns a builder for updating this TeammateTabStatus.
+// Note that you need to call TeammateTabStatus.Unwrap() before calling this method if this TeammateTabStatus
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (mtts *MyTasksTabStatus) Update() *MyTasksTabStatusUpdateOne {
-	return (&MyTasksTabStatusClient{config: mtts.config}).UpdateOne(mtts)
+func (tts *TeammateTabStatus) Update() *TeammateTabStatusUpdateOne {
+	return (&TeammateTabStatusClient{config: tts.config}).UpdateOne(tts)
 }
 
-// Unwrap unwraps the MyTasksTabStatus entity that was returned from a transaction after it was closed,
+// Unwrap unwraps the TeammateTabStatus entity that was returned from a transaction after it was closed,
 // so that all future queries will be executed through the driver which created the transaction.
-func (mtts *MyTasksTabStatus) Unwrap() *MyTasksTabStatus {
-	tx, ok := mtts.config.driver.(*txDriver)
+func (tts *TeammateTabStatus) Unwrap() *TeammateTabStatus {
+	tx, ok := tts.config.driver.(*txDriver)
 	if !ok {
-		panic("ent: MyTasksTabStatus is not a transactional entity")
+		panic("ent: TeammateTabStatus is not a transactional entity")
 	}
-	mtts.config.driver = tx.drv
-	return mtts
+	tts.config.driver = tx.drv
+	return tts
 }
 
 // String implements the fmt.Stringer.
-func (mtts *MyTasksTabStatus) String() string {
+func (tts *TeammateTabStatus) String() string {
 	var builder strings.Builder
-	builder.WriteString("MyTasksTabStatus(")
-	builder.WriteString(fmt.Sprintf("id=%v", mtts.ID))
+	builder.WriteString("TeammateTabStatus(")
+	builder.WriteString(fmt.Sprintf("id=%v", tts.ID))
 	builder.WriteString(", workspace_id=")
-	builder.WriteString(fmt.Sprintf("%v", mtts.WorkspaceID))
+	builder.WriteString(fmt.Sprintf("%v", tts.WorkspaceID))
 	builder.WriteString(", teammate_id=")
-	builder.WriteString(fmt.Sprintf("%v", mtts.TeammateID))
+	builder.WriteString(fmt.Sprintf("%v", tts.TeammateID))
 	builder.WriteString(", status=")
-	builder.WriteString(fmt.Sprintf("%v", mtts.Status))
+	builder.WriteString(fmt.Sprintf("%v", tts.Status))
 	builder.WriteString(", created_at=")
-	builder.WriteString(mtts.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(tts.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", updated_at=")
-	builder.WriteString(mtts.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(tts.UpdatedAt.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }
 
-// MyTasksTabStatusSlice is a parsable slice of MyTasksTabStatus.
-type MyTasksTabStatusSlice []*MyTasksTabStatus
+// TeammateTabStatusSlice is a parsable slice of TeammateTabStatus.
+type TeammateTabStatusSlice []*TeammateTabStatus
 
-func (mtts MyTasksTabStatusSlice) config(cfg config) {
-	for _i := range mtts {
-		mtts[_i].config = cfg
+func (tts TeammateTabStatusSlice) config(cfg config) {
+	for _i := range tts {
+		tts[_i].config = cfg
 	}
 }

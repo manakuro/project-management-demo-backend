@@ -98,10 +98,10 @@ type FavoriteWorkspaceIDsUpdated struct {
 	Ch         chan []model.ID
 }
 
-// MyTasksTabStatusUpdated of channel
-type MyTasksTabStatusUpdated struct {
+// TeammateTabStatusUpdated of channel
+type TeammateTabStatusUpdated struct {
 	ID model.ID
-	Ch chan *model.MyTasksTabStatus
+	Ch chan *model.TeammateTabStatus
 }
 
 // TaskColumnUpdated of channel
@@ -136,7 +136,7 @@ type Subscriptions struct {
 	FavoriteWorkspaceIDsUpdated map[string]FavoriteWorkspaceIDsUpdated
 	IconUpdated                 map[string]IconUpdated
 	MeUpdated                   map[string]MeUpdated
-	MyTasksTabStatusUpdated     map[string]MyTasksTabStatusUpdated
+	TeammateTabStatusUpdated    map[string]TeammateTabStatusUpdated
 	ProjectBaseColorUpdated     map[string]ProjectBaseColorUpdated
 	ProjectIconUpdated          map[string]ProjectIconUpdated
 	ProjectLightColorUpdated    map[string]ProjectLightColorUpdated

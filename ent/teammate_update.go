@@ -7,12 +7,12 @@ import (
 	"fmt"
 	"project-management-demo-backend/ent/favoriteproject"
 	"project-management-demo-backend/ent/favoriteworkspace"
-	"project-management-demo-backend/ent/mytaskstabstatus"
 	"project-management-demo-backend/ent/predicate"
 	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/teammate"
+	"project-management-demo-backend/ent/teammatetabstatus"
 	"project-management-demo-backend/ent/teammatetaskcolumn"
 	"project-management-demo-backend/ent/workspace"
 	"project-management-demo-backend/ent/workspaceteammate"
@@ -143,19 +143,19 @@ func (tu *TeammateUpdate) AddFavoriteWorkspaces(f ...*FavoriteWorkspace) *Teamma
 	return tu.AddFavoriteWorkspaceIDs(ids...)
 }
 
-// AddMyTasksTabStatusIDs adds the "my_tasks_tab_statuses" edge to the MyTasksTabStatus entity by IDs.
-func (tu *TeammateUpdate) AddMyTasksTabStatusIDs(ids ...ulid.ID) *TeammateUpdate {
-	tu.mutation.AddMyTasksTabStatusIDs(ids...)
+// AddTeammateTabStatusIDs adds the "teammate_tab_statuses" edge to the TeammateTabStatus entity by IDs.
+func (tu *TeammateUpdate) AddTeammateTabStatusIDs(ids ...ulid.ID) *TeammateUpdate {
+	tu.mutation.AddTeammateTabStatusIDs(ids...)
 	return tu
 }
 
-// AddMyTasksTabStatuses adds the "my_tasks_tab_statuses" edges to the MyTasksTabStatus entity.
-func (tu *TeammateUpdate) AddMyTasksTabStatuses(m ...*MyTasksTabStatus) *TeammateUpdate {
-	ids := make([]ulid.ID, len(m))
-	for i := range m {
-		ids[i] = m[i].ID
+// AddTeammateTabStatuses adds the "teammate_tab_statuses" edges to the TeammateTabStatus entity.
+func (tu *TeammateUpdate) AddTeammateTabStatuses(t ...*TeammateTabStatus) *TeammateUpdate {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
 	}
-	return tu.AddMyTasksTabStatusIDs(ids...)
+	return tu.AddTeammateTabStatusIDs(ids...)
 }
 
 // AddTeammateTaskColumnIDs adds the "teammate_task_columns" edge to the TeammateTaskColumn entity by IDs.
@@ -304,25 +304,25 @@ func (tu *TeammateUpdate) RemoveFavoriteWorkspaces(f ...*FavoriteWorkspace) *Tea
 	return tu.RemoveFavoriteWorkspaceIDs(ids...)
 }
 
-// ClearMyTasksTabStatuses clears all "my_tasks_tab_statuses" edges to the MyTasksTabStatus entity.
-func (tu *TeammateUpdate) ClearMyTasksTabStatuses() *TeammateUpdate {
-	tu.mutation.ClearMyTasksTabStatuses()
+// ClearTeammateTabStatuses clears all "teammate_tab_statuses" edges to the TeammateTabStatus entity.
+func (tu *TeammateUpdate) ClearTeammateTabStatuses() *TeammateUpdate {
+	tu.mutation.ClearTeammateTabStatuses()
 	return tu
 }
 
-// RemoveMyTasksTabStatusIDs removes the "my_tasks_tab_statuses" edge to MyTasksTabStatus entities by IDs.
-func (tu *TeammateUpdate) RemoveMyTasksTabStatusIDs(ids ...ulid.ID) *TeammateUpdate {
-	tu.mutation.RemoveMyTasksTabStatusIDs(ids...)
+// RemoveTeammateTabStatusIDs removes the "teammate_tab_statuses" edge to TeammateTabStatus entities by IDs.
+func (tu *TeammateUpdate) RemoveTeammateTabStatusIDs(ids ...ulid.ID) *TeammateUpdate {
+	tu.mutation.RemoveTeammateTabStatusIDs(ids...)
 	return tu
 }
 
-// RemoveMyTasksTabStatuses removes "my_tasks_tab_statuses" edges to MyTasksTabStatus entities.
-func (tu *TeammateUpdate) RemoveMyTasksTabStatuses(m ...*MyTasksTabStatus) *TeammateUpdate {
-	ids := make([]ulid.ID, len(m))
-	for i := range m {
-		ids[i] = m[i].ID
+// RemoveTeammateTabStatuses removes "teammate_tab_statuses" edges to TeammateTabStatus entities.
+func (tu *TeammateUpdate) RemoveTeammateTabStatuses(t ...*TeammateTabStatus) *TeammateUpdate {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
 	}
-	return tu.RemoveMyTasksTabStatusIDs(ids...)
+	return tu.RemoveTeammateTabStatusIDs(ids...)
 }
 
 // ClearTeammateTaskColumns clears all "teammate_task_columns" edges to the TeammateTaskColumn entity.
@@ -789,33 +789,33 @@ func (tu *TeammateUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if tu.mutation.MyTasksTabStatusesCleared() {
+	if tu.mutation.TeammateTabStatusesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   teammate.MyTasksTabStatusesTable,
-			Columns: []string{teammate.MyTasksTabStatusesColumn},
+			Table:   teammate.TeammateTabStatusesTable,
+			Columns: []string{teammate.TeammateTabStatusesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
-					Column: mytaskstabstatus.FieldID,
+					Column: teammatetabstatus.FieldID,
 				},
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := tu.mutation.RemovedMyTasksTabStatusesIDs(); len(nodes) > 0 && !tu.mutation.MyTasksTabStatusesCleared() {
+	if nodes := tu.mutation.RemovedTeammateTabStatusesIDs(); len(nodes) > 0 && !tu.mutation.TeammateTabStatusesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   teammate.MyTasksTabStatusesTable,
-			Columns: []string{teammate.MyTasksTabStatusesColumn},
+			Table:   teammate.TeammateTabStatusesTable,
+			Columns: []string{teammate.TeammateTabStatusesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
-					Column: mytaskstabstatus.FieldID,
+					Column: teammatetabstatus.FieldID,
 				},
 			},
 		}
@@ -824,17 +824,17 @@ func (tu *TeammateUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := tu.mutation.MyTasksTabStatusesIDs(); len(nodes) > 0 {
+	if nodes := tu.mutation.TeammateTabStatusesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   teammate.MyTasksTabStatusesTable,
-			Columns: []string{teammate.MyTasksTabStatusesColumn},
+			Table:   teammate.TeammateTabStatusesTable,
+			Columns: []string{teammate.TeammateTabStatusesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
-					Column: mytaskstabstatus.FieldID,
+					Column: teammatetabstatus.FieldID,
 				},
 			},
 		}
@@ -1024,19 +1024,19 @@ func (tuo *TeammateUpdateOne) AddFavoriteWorkspaces(f ...*FavoriteWorkspace) *Te
 	return tuo.AddFavoriteWorkspaceIDs(ids...)
 }
 
-// AddMyTasksTabStatusIDs adds the "my_tasks_tab_statuses" edge to the MyTasksTabStatus entity by IDs.
-func (tuo *TeammateUpdateOne) AddMyTasksTabStatusIDs(ids ...ulid.ID) *TeammateUpdateOne {
-	tuo.mutation.AddMyTasksTabStatusIDs(ids...)
+// AddTeammateTabStatusIDs adds the "teammate_tab_statuses" edge to the TeammateTabStatus entity by IDs.
+func (tuo *TeammateUpdateOne) AddTeammateTabStatusIDs(ids ...ulid.ID) *TeammateUpdateOne {
+	tuo.mutation.AddTeammateTabStatusIDs(ids...)
 	return tuo
 }
 
-// AddMyTasksTabStatuses adds the "my_tasks_tab_statuses" edges to the MyTasksTabStatus entity.
-func (tuo *TeammateUpdateOne) AddMyTasksTabStatuses(m ...*MyTasksTabStatus) *TeammateUpdateOne {
-	ids := make([]ulid.ID, len(m))
-	for i := range m {
-		ids[i] = m[i].ID
+// AddTeammateTabStatuses adds the "teammate_tab_statuses" edges to the TeammateTabStatus entity.
+func (tuo *TeammateUpdateOne) AddTeammateTabStatuses(t ...*TeammateTabStatus) *TeammateUpdateOne {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
 	}
-	return tuo.AddMyTasksTabStatusIDs(ids...)
+	return tuo.AddTeammateTabStatusIDs(ids...)
 }
 
 // AddTeammateTaskColumnIDs adds the "teammate_task_columns" edge to the TeammateTaskColumn entity by IDs.
@@ -1185,25 +1185,25 @@ func (tuo *TeammateUpdateOne) RemoveFavoriteWorkspaces(f ...*FavoriteWorkspace) 
 	return tuo.RemoveFavoriteWorkspaceIDs(ids...)
 }
 
-// ClearMyTasksTabStatuses clears all "my_tasks_tab_statuses" edges to the MyTasksTabStatus entity.
-func (tuo *TeammateUpdateOne) ClearMyTasksTabStatuses() *TeammateUpdateOne {
-	tuo.mutation.ClearMyTasksTabStatuses()
+// ClearTeammateTabStatuses clears all "teammate_tab_statuses" edges to the TeammateTabStatus entity.
+func (tuo *TeammateUpdateOne) ClearTeammateTabStatuses() *TeammateUpdateOne {
+	tuo.mutation.ClearTeammateTabStatuses()
 	return tuo
 }
 
-// RemoveMyTasksTabStatusIDs removes the "my_tasks_tab_statuses" edge to MyTasksTabStatus entities by IDs.
-func (tuo *TeammateUpdateOne) RemoveMyTasksTabStatusIDs(ids ...ulid.ID) *TeammateUpdateOne {
-	tuo.mutation.RemoveMyTasksTabStatusIDs(ids...)
+// RemoveTeammateTabStatusIDs removes the "teammate_tab_statuses" edge to TeammateTabStatus entities by IDs.
+func (tuo *TeammateUpdateOne) RemoveTeammateTabStatusIDs(ids ...ulid.ID) *TeammateUpdateOne {
+	tuo.mutation.RemoveTeammateTabStatusIDs(ids...)
 	return tuo
 }
 
-// RemoveMyTasksTabStatuses removes "my_tasks_tab_statuses" edges to MyTasksTabStatus entities.
-func (tuo *TeammateUpdateOne) RemoveMyTasksTabStatuses(m ...*MyTasksTabStatus) *TeammateUpdateOne {
-	ids := make([]ulid.ID, len(m))
-	for i := range m {
-		ids[i] = m[i].ID
+// RemoveTeammateTabStatuses removes "teammate_tab_statuses" edges to TeammateTabStatus entities.
+func (tuo *TeammateUpdateOne) RemoveTeammateTabStatuses(t ...*TeammateTabStatus) *TeammateUpdateOne {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
 	}
-	return tuo.RemoveMyTasksTabStatusIDs(ids...)
+	return tuo.RemoveTeammateTabStatusIDs(ids...)
 }
 
 // ClearTeammateTaskColumns clears all "teammate_task_columns" edges to the TeammateTaskColumn entity.
@@ -1694,33 +1694,33 @@ func (tuo *TeammateUpdateOne) sqlSave(ctx context.Context) (_node *Teammate, err
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if tuo.mutation.MyTasksTabStatusesCleared() {
+	if tuo.mutation.TeammateTabStatusesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   teammate.MyTasksTabStatusesTable,
-			Columns: []string{teammate.MyTasksTabStatusesColumn},
+			Table:   teammate.TeammateTabStatusesTable,
+			Columns: []string{teammate.TeammateTabStatusesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
-					Column: mytaskstabstatus.FieldID,
+					Column: teammatetabstatus.FieldID,
 				},
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := tuo.mutation.RemovedMyTasksTabStatusesIDs(); len(nodes) > 0 && !tuo.mutation.MyTasksTabStatusesCleared() {
+	if nodes := tuo.mutation.RemovedTeammateTabStatusesIDs(); len(nodes) > 0 && !tuo.mutation.TeammateTabStatusesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   teammate.MyTasksTabStatusesTable,
-			Columns: []string{teammate.MyTasksTabStatusesColumn},
+			Table:   teammate.TeammateTabStatusesTable,
+			Columns: []string{teammate.TeammateTabStatusesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
-					Column: mytaskstabstatus.FieldID,
+					Column: teammatetabstatus.FieldID,
 				},
 			},
 		}
@@ -1729,17 +1729,17 @@ func (tuo *TeammateUpdateOne) sqlSave(ctx context.Context) (_node *Teammate, err
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := tuo.mutation.MyTasksTabStatusesIDs(); len(nodes) > 0 {
+	if nodes := tuo.mutation.TeammateTabStatusesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
-			Table:   teammate.MyTasksTabStatusesTable,
-			Columns: []string{teammate.MyTasksTabStatusesColumn},
+			Table:   teammate.TeammateTabStatusesTable,
+			Columns: []string{teammate.TeammateTabStatusesColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
-					Column: mytaskstabstatus.FieldID,
+					Column: teammatetabstatus.FieldID,
 				},
 			},
 		}

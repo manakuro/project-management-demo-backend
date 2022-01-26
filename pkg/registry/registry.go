@@ -29,7 +29,7 @@ func (r *registry) NewController() controller.Controller {
 		FavoriteWorkspace:       r.NewFavoriteWorkspaceController(),
 		Icon:                    r.NewIconController(),
 		Me:                      r.NewMeController(),
-		MyTasksTabStatus:        r.NewMyTasksTabStatusController(),
+		TeammateTabStatus:       r.NewTeammateTabStatusController(),
 		Project:                 r.NewProjectController(),
 		ProjectBaseColor:        r.NewProjectBaseColorController(),
 		ProjectIcon:             r.NewProjectIconController(),
