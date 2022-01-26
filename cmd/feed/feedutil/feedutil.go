@@ -11,6 +11,8 @@ import (
 	"project-management-demo-backend/ent/projecticon"
 	"project-management-demo-backend/ent/projectlightcolor"
 	"project-management-demo-backend/ent/taskcolumn"
+	"project-management-demo-backend/ent/tasklistcompletedstatus"
+	"project-management-demo-backend/ent/tasklistsortstatus"
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/testuser"
 	"project-management-demo-backend/ent/workspace"
@@ -18,106 +20,126 @@ import (
 
 // GetTeammateByEmail gets teammate by email.
 func GetTeammateByEmail(ctx context.Context, client *ent.Client, email string) *ent.Teammate {
-	t, err := client.Teammate.Query().Where(teammate.EmailEQ(email)).Only(ctx)
+	res, err := client.Teammate.Query().Where(teammate.EmailEQ(email)).Only(ctx)
 	if err != nil {
 		log.Fatalf("getTeammateByEmail: failed get teammate: %v", err)
 	}
 
-	return t
+	return res
 }
 
 // GetProjectByName gets project by name.
 func GetProjectByName(ctx context.Context, client *ent.Client, name string) *ent.Project {
-	p, err := client.Project.Query().Where(project.NameEQ(name)).Only(ctx)
+	res, err := client.Project.Query().Where(project.NameEQ(name)).Only(ctx)
 	if err != nil {
 		log.Fatalf("GetProjectByName: failed get project: %v", err)
 	}
 
-	return p
+	return res
 }
 
 // GetColor gets color by name.
 func GetColor(ctx context.Context, client *ent.Client, val string) *ent.Color {
-	c, err := client.Color.Query().Where(color.ColorEQ(val)).Only(ctx)
+	res, err := client.Color.Query().Where(color.ColorEQ(val)).Only(ctx)
 	if err != nil {
 		log.Fatalf("GetColor: failed to get color: %v", err)
 	}
 
-	return c
+	return res
 }
 
 // GetIcon gets icon by name.
 func GetIcon(ctx context.Context, client *ent.Client, val string) *ent.Icon {
-	i, err := client.Icon.Query().Where(icon.IconEQ(val)).Only(ctx)
+	res, err := client.Icon.Query().Where(icon.IconEQ(val)).Only(ctx)
 	if err != nil {
 		log.Fatalf("GetIcon: failed to get icon: %v", err)
 	}
 
-	return i
+	return res
 }
 
 // GetWorkspace gets workspace.
 func GetWorkspace(ctx context.Context, client *ent.Client) *ent.Workspace {
-	w, err := client.Workspace.Query().Where(workspace.NameEQ("My Workspace")).Only(ctx)
+	res, err := client.Workspace.Query().Where(workspace.NameEQ("My Workspace")).Only(ctx)
 	if err != nil {
 		log.Fatalf("GetWorkspace: failed get workspace: %v", err)
 	}
 
-	return w
+	return res
 }
 
 // GetTestUserByName gets test user.
 func GetTestUserByName(ctx context.Context, client *ent.Client, name string) *ent.TestUser {
-	t, err := client.TestUser.Query().Where(testuser.NameEQ(name)).Only(ctx)
+	res, err := client.TestUser.Query().Where(testuser.NameEQ(name)).Only(ctx)
 	if err != nil {
 		log.Fatalf("GetTestUser: failed get test user: %v", err)
 	}
 
-	return t
+	return res
 }
 
 // GetProjectBaseColorByColor gets project base color data.
 func GetProjectBaseColorByColor(ctx context.Context, client *ent.Client, val string) *ent.ProjectBaseColor {
 	c := GetColor(ctx, client, val)
 
-	p, err := client.ProjectBaseColor.Query().Where(projectbasecolor.ColorID(c.ID)).Only(ctx)
+	res, err := client.ProjectBaseColor.Query().Where(projectbasecolor.ColorID(c.ID)).Only(ctx)
 	if err != nil {
 		log.Fatalf("GetProjectBaseColorByColor: failed get project base color: %v", err)
 	}
 
-	return p
+	return res
 }
 
 // GetProjectLightColorByColor gets project light color data.
 func GetProjectLightColorByColor(ctx context.Context, client *ent.Client, val string) *ent.ProjectLightColor {
 	c := GetColor(ctx, client, val)
 
-	p, err := client.ProjectLightColor.Query().Where(projectlightcolor.ColorID(c.ID)).Only(ctx)
+	res, err := client.ProjectLightColor.Query().Where(projectlightcolor.ColorID(c.ID)).Only(ctx)
 	if err != nil {
 		log.Fatalf("GetProjectLightColorByColor: failed get project light color: %v", err)
 	}
 
-	return p
+	return res
 }
 
 // GetProjectIconByIcon gets project icon data.
 func GetProjectIconByIcon(ctx context.Context, client *ent.Client, val string) *ent.ProjectIcon {
 	i := GetIcon(ctx, client, val)
 
-	p, err := client.ProjectIcon.Query().Where(projecticon.IconID(i.ID)).Only(ctx)
+	res, err := client.ProjectIcon.Query().Where(projecticon.IconID(i.ID)).Only(ctx)
 	if err != nil {
 		log.Fatalf("GetProjectIconByIcon: failed get project icon: %v", err)
 	}
 
-	return p
+	return res
 }
 
 // GetTaskColumnByName gets task column data.
 func GetTaskColumnByName(ctx context.Context, client *ent.Client, val string) *ent.TaskColumn {
-	c, err := client.TaskColumn.Query().Where(taskcolumn.NameEQ(val)).Only(ctx)
+	res, err := client.TaskColumn.Query().Where(taskcolumn.NameEQ(val)).Only(ctx)
 	if err != nil {
 		log.Fatalf("GetTaskColumnByName: failed get data: %v", err)
 	}
 
-	return c
+	return res
+}
+
+// GetTaskListCompletedStatusByName gets task list completed status data.
+func GetTaskListCompletedStatusByName(ctx context.Context, client *ent.Client, val string) *ent.TaskListCompletedStatus {
+	res, err := client.TaskListCompletedStatus.Query().Where(tasklistcompletedstatus.NameEQ(val)).Only(ctx)
+	if err != nil {
+		log.Fatalf("GetTaskListCompletedStatusByName: failed get data: %v", err)
+	}
+
+	return res
+}
+
+// GetTaskListSortStatusByName gets task list sort status data.
+func GetTaskListSortStatusByName(ctx context.Context, client *ent.Client, val string) *ent.TaskListSortStatus {
+	res, err := client.TaskListSortStatus.Query().Where(tasklistsortstatus.NameEQ(val)).Only(ctx)
+	if err != nil {
+		log.Fatalf("GetTaskListSortStatusByName: failed get data: %v", err)
+	}
+
+	return res
 }
