@@ -20,6 +20,14 @@ func (c *Color) ProjectLightColors(ctx context.Context) ([]*ProjectLightColor, e
 	return result, err
 }
 
+func (c *Color) TaskPriorities(ctx context.Context) ([]*TaskPriority, error) {
+	result, err := c.Edges.TaskPrioritiesOrErr()
+	if IsNotLoaded(err) {
+		result, err = c.QueryTaskPriorities().All(ctx)
+	}
+	return result, err
+}
+
 func (fp *FavoriteProject) Project(ctx context.Context) (*Project, error) {
 	result, err := fp.Edges.ProjectOrErr()
 	if IsNotLoaded(err) {
@@ -296,6 +304,14 @@ func (tlss *TaskListSortStatus) ProjectTaskListStatuses(ctx context.Context) ([]
 	result, err := tlss.Edges.ProjectTaskListStatusesOrErr()
 	if IsNotLoaded(err) {
 		result, err = tlss.QueryProjectTaskListStatuses().All(ctx)
+	}
+	return result, err
+}
+
+func (tp *TaskPriority) Color(ctx context.Context) (*Color, error) {
+	result, err := tp.Edges.ColorOrErr()
+	if IsNotLoaded(err) {
+		result, err = tp.QueryColor().Only(ctx)
 	}
 	return result, err
 }

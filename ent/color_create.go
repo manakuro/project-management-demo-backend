@@ -10,6 +10,7 @@ import (
 	"project-management-demo-backend/ent/projectbasecolor"
 	"project-management-demo-backend/ent/projectlightcolor"
 	"project-management-demo-backend/ent/schema/ulid"
+	"project-management-demo-backend/ent/taskpriority"
 	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -111,6 +112,21 @@ func (cc *ColorCreate) AddProjectLightColors(p ...*ProjectLightColor) *ColorCrea
 		ids[i] = p[i].ID
 	}
 	return cc.AddProjectLightColorIDs(ids...)
+}
+
+// AddTaskPriorityIDs adds the "task_priorities" edge to the TaskPriority entity by IDs.
+func (cc *ColorCreate) AddTaskPriorityIDs(ids ...ulid.ID) *ColorCreate {
+	cc.mutation.AddTaskPriorityIDs(ids...)
+	return cc
+}
+
+// AddTaskPriorities adds the "task_priorities" edges to the TaskPriority entity.
+func (cc *ColorCreate) AddTaskPriorities(t ...*TaskPriority) *ColorCreate {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return cc.AddTaskPriorityIDs(ids...)
 }
 
 // Mutation returns the ColorMutation object of the builder.
@@ -332,6 +348,25 @@ func (cc *ColorCreate) createSpec() (*Color, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: projectlightcolor.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := cc.mutation.TaskPrioritiesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   color.TaskPrioritiesTable,
+			Columns: []string{color.TaskPrioritiesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: taskpriority.FieldID,
 				},
 			},
 		}

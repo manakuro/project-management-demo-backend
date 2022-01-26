@@ -13,6 +13,7 @@ import (
 	"project-management-demo-backend/ent/projectbasecolor"
 	"project-management-demo-backend/ent/projectlightcolor"
 	"project-management-demo-backend/ent/schema/ulid"
+	"project-management-demo-backend/ent/taskpriority"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -31,6 +32,7 @@ type ColorQuery struct {
 	// eager-loading edges.
 	withProjectBaseColors  *ProjectBaseColorQuery
 	withProjectLightColors *ProjectLightColorQuery
+	withTaskPriorities     *TaskPriorityQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -104,6 +106,28 @@ func (cq *ColorQuery) QueryProjectLightColors() *ProjectLightColorQuery {
 			sqlgraph.From(color.Table, color.FieldID, selector),
 			sqlgraph.To(projectlightcolor.Table, projectlightcolor.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, color.ProjectLightColorsTable, color.ProjectLightColorsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryTaskPriorities chains the current query on the "task_priorities" edge.
+func (cq *ColorQuery) QueryTaskPriorities() *TaskPriorityQuery {
+	query := &TaskPriorityQuery{config: cq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := cq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := cq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(color.Table, color.FieldID, selector),
+			sqlgraph.To(taskpriority.Table, taskpriority.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, color.TaskPrioritiesTable, color.TaskPrioritiesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
 		return fromU, nil
@@ -294,6 +318,7 @@ func (cq *ColorQuery) Clone() *ColorQuery {
 		predicates:             append([]predicate.Color{}, cq.predicates...),
 		withProjectBaseColors:  cq.withProjectBaseColors.Clone(),
 		withProjectLightColors: cq.withProjectLightColors.Clone(),
+		withTaskPriorities:     cq.withTaskPriorities.Clone(),
 		// clone intermediate query.
 		sql:  cq.sql.Clone(),
 		path: cq.path,
@@ -319,6 +344,17 @@ func (cq *ColorQuery) WithProjectLightColors(opts ...func(*ProjectLightColorQuer
 		opt(query)
 	}
 	cq.withProjectLightColors = query
+	return cq
+}
+
+// WithTaskPriorities tells the query-builder to eager-load the nodes that are connected to
+// the "task_priorities" edge. The optional arguments are used to configure the query builder of the edge.
+func (cq *ColorQuery) WithTaskPriorities(opts ...func(*TaskPriorityQuery)) *ColorQuery {
+	query := &TaskPriorityQuery{config: cq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	cq.withTaskPriorities = query
 	return cq
 }
 
@@ -387,9 +423,10 @@ func (cq *ColorQuery) sqlAll(ctx context.Context) ([]*Color, error) {
 	var (
 		nodes       = []*Color{}
 		_spec       = cq.querySpec()
-		loadedTypes = [2]bool{
+		loadedTypes = [3]bool{
 			cq.withProjectBaseColors != nil,
 			cq.withProjectLightColors != nil,
+			cq.withTaskPriorities != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -459,6 +496,31 @@ func (cq *ColorQuery) sqlAll(ctx context.Context) ([]*Color, error) {
 				return nil, fmt.Errorf(`unexpected foreign-key "color_id" returned %v for node %v`, fk, n.ID)
 			}
 			node.Edges.ProjectLightColors = append(node.Edges.ProjectLightColors, n)
+		}
+	}
+
+	if query := cq.withTaskPriorities; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[ulid.ID]*Color)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.TaskPriorities = []*TaskPriority{}
+		}
+		query.Where(predicate.TaskPriority(func(s *sql.Selector) {
+			s.Where(sql.InValues(color.TaskPrioritiesColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.ColorID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "color_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.TaskPriorities = append(node.Edges.TaskPriorities, n)
 		}
 	}
 

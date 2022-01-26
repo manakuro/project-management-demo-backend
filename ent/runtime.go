@@ -20,6 +20,7 @@ import (
 	"project-management-demo-backend/ent/taskcolumn"
 	"project-management-demo-backend/ent/tasklistcompletedstatus"
 	"project-management-demo-backend/ent/tasklistsortstatus"
+	"project-management-demo-backend/ent/taskpriority"
 	"project-management-demo-backend/ent/tasksection"
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/teammatetaskcolumn"
@@ -550,6 +551,45 @@ func init() {
 	tasklistsortstatusDescID := tasklistsortstatusMixinFields0[0].Descriptor()
 	// tasklistsortstatus.DefaultID holds the default value on creation for the id field.
 	tasklistsortstatus.DefaultID = tasklistsortstatusDescID.Default.(func() ulid.ID)
+	taskpriorityMixin := schema.TaskPriority{}.Mixin()
+	taskpriorityMixinFields0 := taskpriorityMixin[0].Fields()
+	_ = taskpriorityMixinFields0
+	taskpriorityMixinFields1 := taskpriorityMixin[1].Fields()
+	_ = taskpriorityMixinFields1
+	taskpriorityMixinFields2 := taskpriorityMixin[2].Fields()
+	_ = taskpriorityMixinFields2
+	taskpriorityFields := schema.TaskPriority{}.Fields()
+	_ = taskpriorityFields
+	// taskpriorityDescName is the schema descriptor for name field.
+	taskpriorityDescName := taskpriorityMixinFields1[1].Descriptor()
+	// taskpriority.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	taskpriority.NameValidator = func() func(string) error {
+		validators := taskpriorityDescName.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(name string) error {
+			for _, fn := range fns {
+				if err := fn(name); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// taskpriorityDescCreatedAt is the schema descriptor for created_at field.
+	taskpriorityDescCreatedAt := taskpriorityMixinFields2[0].Descriptor()
+	// taskpriority.DefaultCreatedAt holds the default value on creation for the created_at field.
+	taskpriority.DefaultCreatedAt = taskpriorityDescCreatedAt.Default.(func() time.Time)
+	// taskpriorityDescUpdatedAt is the schema descriptor for updated_at field.
+	taskpriorityDescUpdatedAt := taskpriorityMixinFields2[1].Descriptor()
+	// taskpriority.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	taskpriority.DefaultUpdatedAt = taskpriorityDescUpdatedAt.Default.(func() time.Time)
+	// taskpriorityDescID is the schema descriptor for id field.
+	taskpriorityDescID := taskpriorityMixinFields0[0].Descriptor()
+	// taskpriority.DefaultID holds the default value on creation for the id field.
+	taskpriority.DefaultID = taskpriorityDescID.Default.(func() ulid.ID)
 	tasksectionMixin := schema.TaskSection{}.Mixin()
 	tasksectionMixinFields0 := tasksectionMixin[0].Fields()
 	_ = tasksectionMixinFields0

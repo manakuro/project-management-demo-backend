@@ -1,0 +1,14 @@
+package registry
+
+import (
+	"project-management-demo-backend/pkg/adapter/controller"
+	"project-management-demo-backend/pkg/adapter/repository"
+	"project-management-demo-backend/pkg/usecase/usecase"
+)
+
+func (r *registry) NewTaskPriorityController() controller.TaskPriority {
+	repo := repository.NewTaskPriorityRepository(r.client)
+	u := usecase.NewTaskPriorityUsecase(repo)
+
+	return controller.NewTaskPriorityController(u)
+}

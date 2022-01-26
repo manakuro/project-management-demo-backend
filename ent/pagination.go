@@ -24,6 +24,7 @@ import (
 	"project-management-demo-backend/ent/taskcolumn"
 	"project-management-demo-backend/ent/tasklistcompletedstatus"
 	"project-management-demo-backend/ent/tasklistsortstatus"
+	"project-management-demo-backend/ent/taskpriority"
 	"project-management-demo-backend/ent/tasksection"
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/teammatetaskcolumn"
@@ -3659,6 +3660,233 @@ func (tlss *TaskListSortStatus) ToEdge(order *TaskListSortStatusOrder) *TaskList
 	return &TaskListSortStatusEdge{
 		Node:   tlss,
 		Cursor: order.Field.toCursor(tlss),
+	}
+}
+
+// TaskPriorityEdge is the edge representation of TaskPriority.
+type TaskPriorityEdge struct {
+	Node   *TaskPriority `json:"node"`
+	Cursor Cursor        `json:"cursor"`
+}
+
+// TaskPriorityConnection is the connection containing edges to TaskPriority.
+type TaskPriorityConnection struct {
+	Edges      []*TaskPriorityEdge `json:"edges"`
+	PageInfo   PageInfo            `json:"pageInfo"`
+	TotalCount int                 `json:"totalCount"`
+}
+
+// TaskPriorityPaginateOption enables pagination customization.
+type TaskPriorityPaginateOption func(*taskPriorityPager) error
+
+// WithTaskPriorityOrder configures pagination ordering.
+func WithTaskPriorityOrder(order *TaskPriorityOrder) TaskPriorityPaginateOption {
+	if order == nil {
+		order = DefaultTaskPriorityOrder
+	}
+	o := *order
+	return func(pager *taskPriorityPager) error {
+		if err := o.Direction.Validate(); err != nil {
+			return err
+		}
+		if o.Field == nil {
+			o.Field = DefaultTaskPriorityOrder.Field
+		}
+		pager.order = &o
+		return nil
+	}
+}
+
+// WithTaskPriorityFilter configures pagination filter.
+func WithTaskPriorityFilter(filter func(*TaskPriorityQuery) (*TaskPriorityQuery, error)) TaskPriorityPaginateOption {
+	return func(pager *taskPriorityPager) error {
+		if filter == nil {
+			return errors.New("TaskPriorityQuery filter cannot be nil")
+		}
+		pager.filter = filter
+		return nil
+	}
+}
+
+type taskPriorityPager struct {
+	order  *TaskPriorityOrder
+	filter func(*TaskPriorityQuery) (*TaskPriorityQuery, error)
+}
+
+func newTaskPriorityPager(opts []TaskPriorityPaginateOption) (*taskPriorityPager, error) {
+	pager := &taskPriorityPager{}
+	for _, opt := range opts {
+		if err := opt(pager); err != nil {
+			return nil, err
+		}
+	}
+	if pager.order == nil {
+		pager.order = DefaultTaskPriorityOrder
+	}
+	return pager, nil
+}
+
+func (p *taskPriorityPager) applyFilter(query *TaskPriorityQuery) (*TaskPriorityQuery, error) {
+	if p.filter != nil {
+		return p.filter(query)
+	}
+	return query, nil
+}
+
+func (p *taskPriorityPager) toCursor(tp *TaskPriority) Cursor {
+	return p.order.Field.toCursor(tp)
+}
+
+func (p *taskPriorityPager) applyCursors(query *TaskPriorityQuery, after, before *Cursor) *TaskPriorityQuery {
+	for _, predicate := range cursorsToPredicates(
+		p.order.Direction, after, before,
+		p.order.Field.field, DefaultTaskPriorityOrder.Field.field,
+	) {
+		query = query.Where(predicate)
+	}
+	return query
+}
+
+func (p *taskPriorityPager) applyOrder(query *TaskPriorityQuery, reverse bool) *TaskPriorityQuery {
+	direction := p.order.Direction
+	if reverse {
+		direction = direction.reverse()
+	}
+	query = query.Order(direction.orderFunc(p.order.Field.field))
+	if p.order.Field != DefaultTaskPriorityOrder.Field {
+		query = query.Order(direction.orderFunc(DefaultTaskPriorityOrder.Field.field))
+	}
+	return query
+}
+
+// Paginate executes the query and returns a relay based cursor connection to TaskPriority.
+func (tp *TaskPriorityQuery) Paginate(
+	ctx context.Context, after *Cursor, first *int,
+	before *Cursor, last *int, opts ...TaskPriorityPaginateOption,
+) (*TaskPriorityConnection, error) {
+	if err := validateFirstLast(first, last); err != nil {
+		return nil, err
+	}
+	pager, err := newTaskPriorityPager(opts)
+	if err != nil {
+		return nil, err
+	}
+
+	if tp, err = pager.applyFilter(tp); err != nil {
+		return nil, err
+	}
+
+	conn := &TaskPriorityConnection{Edges: []*TaskPriorityEdge{}}
+	if !hasCollectedField(ctx, edgesField) || first != nil && *first == 0 || last != nil && *last == 0 {
+		if hasCollectedField(ctx, totalCountField) ||
+			hasCollectedField(ctx, pageInfoField) {
+			count, err := tp.Count(ctx)
+			if err != nil {
+				return nil, err
+			}
+			conn.TotalCount = count
+			conn.PageInfo.HasNextPage = first != nil && count > 0
+			conn.PageInfo.HasPreviousPage = last != nil && count > 0
+		}
+		return conn, nil
+	}
+
+	if (after != nil || first != nil || before != nil || last != nil) && hasCollectedField(ctx, totalCountField) {
+		count, err := tp.Clone().Count(ctx)
+		if err != nil {
+			return nil, err
+		}
+		conn.TotalCount = count
+	}
+
+	tp = pager.applyCursors(tp, after, before)
+	tp = pager.applyOrder(tp, last != nil)
+	var limit int
+	if first != nil {
+		limit = *first + 1
+	} else if last != nil {
+		limit = *last + 1
+	}
+	if limit > 0 {
+		tp = tp.Limit(limit)
+	}
+
+	if field := getCollectedField(ctx, edgesField, nodeField); field != nil {
+		tp = tp.collectField(graphql.GetOperationContext(ctx), *field)
+	}
+
+	nodes, err := tp.All(ctx)
+	if err != nil || len(nodes) == 0 {
+		return conn, err
+	}
+
+	if len(nodes) == limit {
+		conn.PageInfo.HasNextPage = first != nil
+		conn.PageInfo.HasPreviousPage = last != nil
+		nodes = nodes[:len(nodes)-1]
+	}
+
+	var nodeAt func(int) *TaskPriority
+	if last != nil {
+		n := len(nodes) - 1
+		nodeAt = func(i int) *TaskPriority {
+			return nodes[n-i]
+		}
+	} else {
+		nodeAt = func(i int) *TaskPriority {
+			return nodes[i]
+		}
+	}
+
+	conn.Edges = make([]*TaskPriorityEdge, len(nodes))
+	for i := range nodes {
+		node := nodeAt(i)
+		conn.Edges[i] = &TaskPriorityEdge{
+			Node:   node,
+			Cursor: pager.toCursor(node),
+		}
+	}
+
+	conn.PageInfo.StartCursor = &conn.Edges[0].Cursor
+	conn.PageInfo.EndCursor = &conn.Edges[len(conn.Edges)-1].Cursor
+	if conn.TotalCount == 0 {
+		conn.TotalCount = len(nodes)
+	}
+
+	return conn, nil
+}
+
+// TaskPriorityOrderField defines the ordering field of TaskPriority.
+type TaskPriorityOrderField struct {
+	field    string
+	toCursor func(*TaskPriority) Cursor
+}
+
+// TaskPriorityOrder defines the ordering of TaskPriority.
+type TaskPriorityOrder struct {
+	Direction OrderDirection          `json:"direction"`
+	Field     *TaskPriorityOrderField `json:"field"`
+}
+
+// DefaultTaskPriorityOrder is the default ordering of TaskPriority.
+var DefaultTaskPriorityOrder = &TaskPriorityOrder{
+	Direction: OrderDirectionAsc,
+	Field: &TaskPriorityOrderField{
+		field: taskpriority.FieldID,
+		toCursor: func(tp *TaskPriority) Cursor {
+			return Cursor{ID: tp.ID}
+		},
+	},
+}
+
+// ToEdge converts TaskPriority into TaskPriorityEdge.
+func (tp *TaskPriority) ToEdge(order *TaskPriorityOrder) *TaskPriorityEdge {
+	if order == nil {
+		order = DefaultTaskPriorityOrder
+	}
+	return &TaskPriorityEdge{
+		Node:   tp,
+		Cursor: order.Field.toCursor(tp),
 	}
 }
 

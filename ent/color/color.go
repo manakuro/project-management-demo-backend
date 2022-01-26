@@ -26,6 +26,8 @@ const (
 	EdgeProjectBaseColors = "project_base_colors"
 	// EdgeProjectLightColors holds the string denoting the project_light_colors edge name in mutations.
 	EdgeProjectLightColors = "project_light_colors"
+	// EdgeTaskPriorities holds the string denoting the task_priorities edge name in mutations.
+	EdgeTaskPriorities = "task_priorities"
 	// Table holds the table name of the color in the database.
 	Table = "colors"
 	// ProjectBaseColorsTable is the table that holds the project_base_colors relation/edge.
@@ -42,6 +44,13 @@ const (
 	ProjectLightColorsInverseTable = "project_light_colors"
 	// ProjectLightColorsColumn is the table column denoting the project_light_colors relation/edge.
 	ProjectLightColorsColumn = "color_id"
+	// TaskPrioritiesTable is the table that holds the task_priorities relation/edge.
+	TaskPrioritiesTable = "task_priorities"
+	// TaskPrioritiesInverseTable is the table name for the TaskPriority entity.
+	// It exists in this package in order to avoid circular dependency with the "taskpriority" package.
+	TaskPrioritiesInverseTable = "task_priorities"
+	// TaskPrioritiesColumn is the table column denoting the task_priorities relation/edge.
+	TaskPrioritiesColumn = "color_id"
 )
 
 // Columns holds all SQL columns for color fields.
