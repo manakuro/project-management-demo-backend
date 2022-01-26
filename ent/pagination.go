@@ -22,6 +22,7 @@ import (
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/taskcolumn"
 	"project-management-demo-backend/ent/tasklistcompletedstatus"
+	"project-management-demo-backend/ent/tasklistsortstatus"
 	"project-management-demo-backend/ent/tasksection"
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/teammatetaskcolumn"
@@ -3200,6 +3201,233 @@ func (tlcs *TaskListCompletedStatus) ToEdge(order *TaskListCompletedStatusOrder)
 	return &TaskListCompletedStatusEdge{
 		Node:   tlcs,
 		Cursor: order.Field.toCursor(tlcs),
+	}
+}
+
+// TaskListSortStatusEdge is the edge representation of TaskListSortStatus.
+type TaskListSortStatusEdge struct {
+	Node   *TaskListSortStatus `json:"node"`
+	Cursor Cursor              `json:"cursor"`
+}
+
+// TaskListSortStatusConnection is the connection containing edges to TaskListSortStatus.
+type TaskListSortStatusConnection struct {
+	Edges      []*TaskListSortStatusEdge `json:"edges"`
+	PageInfo   PageInfo                  `json:"pageInfo"`
+	TotalCount int                       `json:"totalCount"`
+}
+
+// TaskListSortStatusPaginateOption enables pagination customization.
+type TaskListSortStatusPaginateOption func(*taskListSortStatusPager) error
+
+// WithTaskListSortStatusOrder configures pagination ordering.
+func WithTaskListSortStatusOrder(order *TaskListSortStatusOrder) TaskListSortStatusPaginateOption {
+	if order == nil {
+		order = DefaultTaskListSortStatusOrder
+	}
+	o := *order
+	return func(pager *taskListSortStatusPager) error {
+		if err := o.Direction.Validate(); err != nil {
+			return err
+		}
+		if o.Field == nil {
+			o.Field = DefaultTaskListSortStatusOrder.Field
+		}
+		pager.order = &o
+		return nil
+	}
+}
+
+// WithTaskListSortStatusFilter configures pagination filter.
+func WithTaskListSortStatusFilter(filter func(*TaskListSortStatusQuery) (*TaskListSortStatusQuery, error)) TaskListSortStatusPaginateOption {
+	return func(pager *taskListSortStatusPager) error {
+		if filter == nil {
+			return errors.New("TaskListSortStatusQuery filter cannot be nil")
+		}
+		pager.filter = filter
+		return nil
+	}
+}
+
+type taskListSortStatusPager struct {
+	order  *TaskListSortStatusOrder
+	filter func(*TaskListSortStatusQuery) (*TaskListSortStatusQuery, error)
+}
+
+func newTaskListSortStatusPager(opts []TaskListSortStatusPaginateOption) (*taskListSortStatusPager, error) {
+	pager := &taskListSortStatusPager{}
+	for _, opt := range opts {
+		if err := opt(pager); err != nil {
+			return nil, err
+		}
+	}
+	if pager.order == nil {
+		pager.order = DefaultTaskListSortStatusOrder
+	}
+	return pager, nil
+}
+
+func (p *taskListSortStatusPager) applyFilter(query *TaskListSortStatusQuery) (*TaskListSortStatusQuery, error) {
+	if p.filter != nil {
+		return p.filter(query)
+	}
+	return query, nil
+}
+
+func (p *taskListSortStatusPager) toCursor(tlss *TaskListSortStatus) Cursor {
+	return p.order.Field.toCursor(tlss)
+}
+
+func (p *taskListSortStatusPager) applyCursors(query *TaskListSortStatusQuery, after, before *Cursor) *TaskListSortStatusQuery {
+	for _, predicate := range cursorsToPredicates(
+		p.order.Direction, after, before,
+		p.order.Field.field, DefaultTaskListSortStatusOrder.Field.field,
+	) {
+		query = query.Where(predicate)
+	}
+	return query
+}
+
+func (p *taskListSortStatusPager) applyOrder(query *TaskListSortStatusQuery, reverse bool) *TaskListSortStatusQuery {
+	direction := p.order.Direction
+	if reverse {
+		direction = direction.reverse()
+	}
+	query = query.Order(direction.orderFunc(p.order.Field.field))
+	if p.order.Field != DefaultTaskListSortStatusOrder.Field {
+		query = query.Order(direction.orderFunc(DefaultTaskListSortStatusOrder.Field.field))
+	}
+	return query
+}
+
+// Paginate executes the query and returns a relay based cursor connection to TaskListSortStatus.
+func (tlss *TaskListSortStatusQuery) Paginate(
+	ctx context.Context, after *Cursor, first *int,
+	before *Cursor, last *int, opts ...TaskListSortStatusPaginateOption,
+) (*TaskListSortStatusConnection, error) {
+	if err := validateFirstLast(first, last); err != nil {
+		return nil, err
+	}
+	pager, err := newTaskListSortStatusPager(opts)
+	if err != nil {
+		return nil, err
+	}
+
+	if tlss, err = pager.applyFilter(tlss); err != nil {
+		return nil, err
+	}
+
+	conn := &TaskListSortStatusConnection{Edges: []*TaskListSortStatusEdge{}}
+	if !hasCollectedField(ctx, edgesField) || first != nil && *first == 0 || last != nil && *last == 0 {
+		if hasCollectedField(ctx, totalCountField) ||
+			hasCollectedField(ctx, pageInfoField) {
+			count, err := tlss.Count(ctx)
+			if err != nil {
+				return nil, err
+			}
+			conn.TotalCount = count
+			conn.PageInfo.HasNextPage = first != nil && count > 0
+			conn.PageInfo.HasPreviousPage = last != nil && count > 0
+		}
+		return conn, nil
+	}
+
+	if (after != nil || first != nil || before != nil || last != nil) && hasCollectedField(ctx, totalCountField) {
+		count, err := tlss.Clone().Count(ctx)
+		if err != nil {
+			return nil, err
+		}
+		conn.TotalCount = count
+	}
+
+	tlss = pager.applyCursors(tlss, after, before)
+	tlss = pager.applyOrder(tlss, last != nil)
+	var limit int
+	if first != nil {
+		limit = *first + 1
+	} else if last != nil {
+		limit = *last + 1
+	}
+	if limit > 0 {
+		tlss = tlss.Limit(limit)
+	}
+
+	if field := getCollectedField(ctx, edgesField, nodeField); field != nil {
+		tlss = tlss.collectField(graphql.GetOperationContext(ctx), *field)
+	}
+
+	nodes, err := tlss.All(ctx)
+	if err != nil || len(nodes) == 0 {
+		return conn, err
+	}
+
+	if len(nodes) == limit {
+		conn.PageInfo.HasNextPage = first != nil
+		conn.PageInfo.HasPreviousPage = last != nil
+		nodes = nodes[:len(nodes)-1]
+	}
+
+	var nodeAt func(int) *TaskListSortStatus
+	if last != nil {
+		n := len(nodes) - 1
+		nodeAt = func(i int) *TaskListSortStatus {
+			return nodes[n-i]
+		}
+	} else {
+		nodeAt = func(i int) *TaskListSortStatus {
+			return nodes[i]
+		}
+	}
+
+	conn.Edges = make([]*TaskListSortStatusEdge, len(nodes))
+	for i := range nodes {
+		node := nodeAt(i)
+		conn.Edges[i] = &TaskListSortStatusEdge{
+			Node:   node,
+			Cursor: pager.toCursor(node),
+		}
+	}
+
+	conn.PageInfo.StartCursor = &conn.Edges[0].Cursor
+	conn.PageInfo.EndCursor = &conn.Edges[len(conn.Edges)-1].Cursor
+	if conn.TotalCount == 0 {
+		conn.TotalCount = len(nodes)
+	}
+
+	return conn, nil
+}
+
+// TaskListSortStatusOrderField defines the ordering field of TaskListSortStatus.
+type TaskListSortStatusOrderField struct {
+	field    string
+	toCursor func(*TaskListSortStatus) Cursor
+}
+
+// TaskListSortStatusOrder defines the ordering of TaskListSortStatus.
+type TaskListSortStatusOrder struct {
+	Direction OrderDirection                `json:"direction"`
+	Field     *TaskListSortStatusOrderField `json:"field"`
+}
+
+// DefaultTaskListSortStatusOrder is the default ordering of TaskListSortStatus.
+var DefaultTaskListSortStatusOrder = &TaskListSortStatusOrder{
+	Direction: OrderDirectionAsc,
+	Field: &TaskListSortStatusOrderField{
+		field: tasklistsortstatus.FieldID,
+		toCursor: func(tlss *TaskListSortStatus) Cursor {
+			return Cursor{ID: tlss.ID}
+		},
+	},
+}
+
+// ToEdge converts TaskListSortStatus into TaskListSortStatusEdge.
+func (tlss *TaskListSortStatus) ToEdge(order *TaskListSortStatusOrder) *TaskListSortStatusEdge {
+	if order == nil {
+		order = DefaultTaskListSortStatusOrder
+	}
+	return &TaskListSortStatusEdge{
+		Node:   tlss,
+		Cursor: order.Field.toCursor(tlss),
 	}
 }
 

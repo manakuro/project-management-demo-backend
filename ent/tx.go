@@ -38,6 +38,8 @@ type Tx struct {
 	TaskColumn *TaskColumnClient
 	// TaskListCompletedStatus is the client for interacting with the TaskListCompletedStatus builders.
 	TaskListCompletedStatus *TaskListCompletedStatusClient
+	// TaskListSortStatus is the client for interacting with the TaskListSortStatus builders.
+	TaskListSortStatus *TaskListSortStatusClient
 	// TaskSection is the client for interacting with the TaskSection builders.
 	TaskSection *TaskSectionClient
 	// Teammate is the client for interacting with the Teammate builders.
@@ -200,6 +202,7 @@ func (tx *Tx) init() {
 	tx.ProjectTeammate = NewProjectTeammateClient(tx.config)
 	tx.TaskColumn = NewTaskColumnClient(tx.config)
 	tx.TaskListCompletedStatus = NewTaskListCompletedStatusClient(tx.config)
+	tx.TaskListSortStatus = NewTaskListSortStatusClient(tx.config)
 	tx.TaskSection = NewTaskSectionClient(tx.config)
 	tx.Teammate = NewTeammateClient(tx.config)
 	tx.TeammateTaskColumn = NewTeammateTaskColumnClient(tx.config)

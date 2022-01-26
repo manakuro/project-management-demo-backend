@@ -23,6 +23,7 @@ import (
 	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/ent/taskcolumn"
 	"project-management-demo-backend/ent/tasklistcompletedstatus"
+	"project-management-demo-backend/ent/tasklistsortstatus"
 	"project-management-demo-backend/ent/tasksection"
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/teammatetaskcolumn"
@@ -67,6 +68,8 @@ type Client struct {
 	TaskColumn *TaskColumnClient
 	// TaskListCompletedStatus is the client for interacting with the TaskListCompletedStatus builders.
 	TaskListCompletedStatus *TaskListCompletedStatusClient
+	// TaskListSortStatus is the client for interacting with the TaskListSortStatus builders.
+	TaskListSortStatus *TaskListSortStatusClient
 	// TaskSection is the client for interacting with the TaskSection builders.
 	TaskSection *TaskSectionClient
 	// Teammate is the client for interacting with the Teammate builders.
@@ -107,6 +110,7 @@ func (c *Client) init() {
 	c.ProjectTeammate = NewProjectTeammateClient(c.config)
 	c.TaskColumn = NewTaskColumnClient(c.config)
 	c.TaskListCompletedStatus = NewTaskListCompletedStatusClient(c.config)
+	c.TaskListSortStatus = NewTaskListSortStatusClient(c.config)
 	c.TaskSection = NewTaskSectionClient(c.config)
 	c.Teammate = NewTeammateClient(c.config)
 	c.TeammateTaskColumn = NewTeammateTaskColumnClient(c.config)
@@ -160,6 +164,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		ProjectTeammate:         NewProjectTeammateClient(cfg),
 		TaskColumn:              NewTaskColumnClient(cfg),
 		TaskListCompletedStatus: NewTaskListCompletedStatusClient(cfg),
+		TaskListSortStatus:      NewTaskListSortStatusClient(cfg),
 		TaskSection:             NewTaskSectionClient(cfg),
 		Teammate:                NewTeammateClient(cfg),
 		TeammateTaskColumn:      NewTeammateTaskColumnClient(cfg),
@@ -198,6 +203,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		ProjectTeammate:         NewProjectTeammateClient(cfg),
 		TaskColumn:              NewTaskColumnClient(cfg),
 		TaskListCompletedStatus: NewTaskListCompletedStatusClient(cfg),
+		TaskListSortStatus:      NewTaskListSortStatusClient(cfg),
 		TaskSection:             NewTaskSectionClient(cfg),
 		Teammate:                NewTeammateClient(cfg),
 		TeammateTaskColumn:      NewTeammateTaskColumnClient(cfg),
@@ -247,6 +253,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.ProjectTeammate.Use(hooks...)
 	c.TaskColumn.Use(hooks...)
 	c.TaskListCompletedStatus.Use(hooks...)
+	c.TaskListSortStatus.Use(hooks...)
 	c.TaskSection.Use(hooks...)
 	c.Teammate.Use(hooks...)
 	c.TeammateTaskColumn.Use(hooks...)
@@ -1888,6 +1895,96 @@ func (c *TaskListCompletedStatusClient) GetX(ctx context.Context, id ulid.ID) *T
 // Hooks returns the client hooks.
 func (c *TaskListCompletedStatusClient) Hooks() []Hook {
 	return c.hooks.TaskListCompletedStatus
+}
+
+// TaskListSortStatusClient is a client for the TaskListSortStatus schema.
+type TaskListSortStatusClient struct {
+	config
+}
+
+// NewTaskListSortStatusClient returns a client for the TaskListSortStatus from the given config.
+func NewTaskListSortStatusClient(c config) *TaskListSortStatusClient {
+	return &TaskListSortStatusClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `tasklistsortstatus.Hooks(f(g(h())))`.
+func (c *TaskListSortStatusClient) Use(hooks ...Hook) {
+	c.hooks.TaskListSortStatus = append(c.hooks.TaskListSortStatus, hooks...)
+}
+
+// Create returns a create builder for TaskListSortStatus.
+func (c *TaskListSortStatusClient) Create() *TaskListSortStatusCreate {
+	mutation := newTaskListSortStatusMutation(c.config, OpCreate)
+	return &TaskListSortStatusCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of TaskListSortStatus entities.
+func (c *TaskListSortStatusClient) CreateBulk(builders ...*TaskListSortStatusCreate) *TaskListSortStatusCreateBulk {
+	return &TaskListSortStatusCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for TaskListSortStatus.
+func (c *TaskListSortStatusClient) Update() *TaskListSortStatusUpdate {
+	mutation := newTaskListSortStatusMutation(c.config, OpUpdate)
+	return &TaskListSortStatusUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *TaskListSortStatusClient) UpdateOne(tlss *TaskListSortStatus) *TaskListSortStatusUpdateOne {
+	mutation := newTaskListSortStatusMutation(c.config, OpUpdateOne, withTaskListSortStatus(tlss))
+	return &TaskListSortStatusUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *TaskListSortStatusClient) UpdateOneID(id ulid.ID) *TaskListSortStatusUpdateOne {
+	mutation := newTaskListSortStatusMutation(c.config, OpUpdateOne, withTaskListSortStatusID(id))
+	return &TaskListSortStatusUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for TaskListSortStatus.
+func (c *TaskListSortStatusClient) Delete() *TaskListSortStatusDelete {
+	mutation := newTaskListSortStatusMutation(c.config, OpDelete)
+	return &TaskListSortStatusDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *TaskListSortStatusClient) DeleteOne(tlss *TaskListSortStatus) *TaskListSortStatusDeleteOne {
+	return c.DeleteOneID(tlss.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *TaskListSortStatusClient) DeleteOneID(id ulid.ID) *TaskListSortStatusDeleteOne {
+	builder := c.Delete().Where(tasklistsortstatus.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &TaskListSortStatusDeleteOne{builder}
+}
+
+// Query returns a query builder for TaskListSortStatus.
+func (c *TaskListSortStatusClient) Query() *TaskListSortStatusQuery {
+	return &TaskListSortStatusQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a TaskListSortStatus entity by its id.
+func (c *TaskListSortStatusClient) Get(ctx context.Context, id ulid.ID) (*TaskListSortStatus, error) {
+	return c.Query().Where(tasklistsortstatus.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *TaskListSortStatusClient) GetX(ctx context.Context, id ulid.ID) *TaskListSortStatus {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *TaskListSortStatusClient) Hooks() []Hook {
+	return c.hooks.TaskListSortStatus
 }
 
 // TaskSectionClient is a client for the TaskSection schema.
