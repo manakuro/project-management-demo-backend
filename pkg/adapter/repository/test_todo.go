@@ -5,6 +5,7 @@ import (
 	"project-management-demo-backend/ent"
 	"project-management-demo-backend/pkg/entity/model"
 	ur "project-management-demo-backend/pkg/usecase/repository"
+	"project-management-demo-backend/pkg/util/collection"
 )
 
 type testTodoRepository struct {
@@ -50,6 +51,10 @@ func (r *testTodoRepository) List(ctx context.Context) ([]*model.TestTodo, error
 
 func (r *testTodoRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TestTodoWhereInput, requestedFields []string) (*model.TestTodoConnection, error) {
 	q := r.client.TestTodo.Query()
+
+	if collection.Contains(requestedFields, "edges.node.children") {
+		q.WithChildren()
+	}
 
 	res, err := q.Paginate(ctx, after, first, before, last, ent.WithTestTodoFilter(where.Filter))
 	if err != nil {

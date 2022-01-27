@@ -43,11 +43,11 @@ func (i ID) MarshalGQL(w io.Writer) {
 
 // Scan implements the Scanner interface.
 func (i *ID) Scan(src interface{}) error {
-	if src == nil {
-		return fmt.Errorf("pulid: expected a value")
-		// @see https://github.com/ent/ent/issues/1481#issuecomment-823219929
-		//return nil
-	}
+	//if src == nil {
+	//	return fmt.Errorf("pulid: expected a value")
+	//	// @see https://github.com/ent/ent/issues/1481#issuecomment-823219929
+	//	//return nil
+	//}
 
 	switch s := src.(type) {
 	case string:
@@ -55,6 +55,8 @@ func (i *ID) Scan(src interface{}) error {
 	case []byte:
 		str := string(s)
 		*i = ID(str)
+	case nil:
+		*i = ""
 	default:
 		return fmt.Errorf("pulid: expected a string %v", s)
 	}

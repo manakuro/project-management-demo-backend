@@ -733,14 +733,16 @@ type ComplexityRoot struct {
 	}
 
 	TestTodo struct {
-		CreatedAt  func(childComplexity int) int
-		DueDate    func(childComplexity int) int
-		ID         func(childComplexity int) int
-		Name       func(childComplexity int) int
-		Priority   func(childComplexity int) int
-		Status     func(childComplexity int) int
-		TestUserID func(childComplexity int) int
-		UpdatedAt  func(childComplexity int) int
+		Children     func(childComplexity int) int
+		CreatedAt    func(childComplexity int) int
+		DueDate      func(childComplexity int) int
+		ID           func(childComplexity int) int
+		Name         func(childComplexity int) int
+		ParentTodoID func(childComplexity int) int
+		Priority     func(childComplexity int) int
+		Status       func(childComplexity int) int
+		TestUserID   func(childComplexity int) int
+		UpdatedAt    func(childComplexity int) int
 	}
 
 	TestTodoConnection struct {
@@ -4732,6 +4734,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.TeammateTaskTabStatusEdge.Node(childComplexity), true
 
+	case "TestTodo.children":
+		if e.complexity.TestTodo.Children == nil {
+			break
+		}
+
+		return e.complexity.TestTodo.Children(childComplexity), true
+
 	case "TestTodo.createdAt":
 		if e.complexity.TestTodo.CreatedAt == nil {
 			break
@@ -4759,6 +4768,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.TestTodo.Name(childComplexity), true
+
+	case "TestTodo.parentToDoId":
+		if e.complexity.TestTodo.ParentTodoID == nil {
+			break
+		}
+
+		return e.complexity.TestTodo.ParentTodoID(childComplexity), true
 
 	case "TestTodo.priority":
 		if e.complexity.TestTodo.Priority == nil {
@@ -5408,6 +5424,23 @@ input TestTodoWhereInput {
   testUserIDEqualFold: ID
   testUserIDContainsFold: ID
   
+  """parent_todo_id field predicates"""
+  parentTodoID: ID
+  parentTodoIDNEQ: ID
+  parentTodoIDIn: [ID!]
+  parentTodoIDNotIn: [ID!]
+  parentTodoIDGT: ID
+  parentTodoIDGTE: ID
+  parentTodoIDLT: ID
+  parentTodoIDLTE: ID
+  parentTodoIDContains: ID
+  parentTodoIDHasPrefix: ID
+  parentTodoIDHasSuffix: ID
+  parentTodoIDIsNil: Boolean
+  parentTodoIDNotNil: Boolean
+  parentTodoIDEqualFold: ID
+  parentTodoIDContainsFold: ID
+  
   """name field predicates"""
   name: String
   nameNEQ: String
@@ -5484,6 +5517,14 @@ input TestTodoWhereInput {
   """test_user edge predicates"""
   hasTestUser: Boolean
   hasTestUserWith: [TestUserWhereInput!]
+  
+  """parent edge predicates"""
+  hasParent: Boolean
+  hasParentWith: [TestTodoWhereInput!]
+  
+  """children edge predicates"""
+  hasChildren: Boolean
+  hasChildrenWith: [TestTodoWhereInput!]
 }
 
 """
@@ -8691,6 +8732,8 @@ type TestTodo {
   status: TestTodoStatus!
   priority: Int!
   testUserID: ID
+  parentToDoId: ID!
+  children: [TestTodo!]!
   createdAt: String!
   updatedAt: String!
   dueDate: String!
@@ -27778,6 +27821,76 @@ func (ec *executionContext) _TestTodo_testUserID(ctx context.Context, field grap
 	return ec.marshalOID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _TestTodo_parentToDoId(ctx context.Context, field graphql.CollectedField, obj *ent.TestTodo) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "TestTodo",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ParentTodoID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(ulid.ID)
+	fc.Result = res
+	return ec.marshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _TestTodo_children(ctx context.Context, field graphql.CollectedField, obj *ent.TestTodo) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "TestTodo",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Children(ctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*ent.TestTodo)
+	fc.Result = res
+	return ec.marshalNTestTodo2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTestTodoᚄ(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _TestTodo_createdAt(ctx context.Context, field graphql.CollectedField, obj *ent.TestTodo) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -43873,6 +43986,126 @@ func (ec *executionContext) unmarshalInputTestTodoWhereInput(ctx context.Context
 			if err != nil {
 				return it, err
 			}
+		case "parentTodoID":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentTodoID"))
+			it.ParentTodoID, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "parentTodoIDNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentTodoIDNEQ"))
+			it.ParentTodoIDNEQ, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "parentTodoIDIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentTodoIDIn"))
+			it.ParentTodoIDIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "parentTodoIDNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentTodoIDNotIn"))
+			it.ParentTodoIDNotIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "parentTodoIDGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentTodoIDGT"))
+			it.ParentTodoIDGT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "parentTodoIDGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentTodoIDGTE"))
+			it.ParentTodoIDGTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "parentTodoIDLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentTodoIDLT"))
+			it.ParentTodoIDLT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "parentTodoIDLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentTodoIDLTE"))
+			it.ParentTodoIDLTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "parentTodoIDContains":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentTodoIDContains"))
+			it.ParentTodoIDContains, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "parentTodoIDHasPrefix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentTodoIDHasPrefix"))
+			it.ParentTodoIDHasPrefix, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "parentTodoIDHasSuffix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentTodoIDHasSuffix"))
+			it.ParentTodoIDHasSuffix, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "parentTodoIDIsNil":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentTodoIDIsNil"))
+			it.ParentTodoIDIsNil, err = ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "parentTodoIDNotNil":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentTodoIDNotNil"))
+			it.ParentTodoIDNotNil, err = ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "parentTodoIDEqualFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentTodoIDEqualFold"))
+			it.ParentTodoIDEqualFold, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "parentTodoIDContainsFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parentTodoIDContainsFold"))
+			it.ParentTodoIDContainsFold, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		case "name":
 			var err error
 
@@ -44358,6 +44591,38 @@ func (ec *executionContext) unmarshalInputTestTodoWhereInput(ctx context.Context
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasTestUserWith"))
 			it.HasTestUserWith, err = ec.unmarshalOTestUserWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTestUserWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasParent":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasParent"))
+			it.HasParent, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasParentWith":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasParentWith"))
+			it.HasParentWith, err = ec.unmarshalOTestTodoWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTestTodoWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasChildren":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasChildren"))
+			it.HasChildren, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasChildrenWith":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasChildrenWith"))
+			it.HasChildrenWith, err = ec.unmarshalOTestTodoWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTestTodoWhereInputᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -51868,6 +52133,25 @@ func (ec *executionContext) _TestTodo(ctx context.Context, sel ast.SelectionSet,
 			}
 		case "testUserID":
 			out.Values[i] = ec._TestTodo_testUserID(ctx, field, obj)
+		case "parentToDoId":
+			out.Values[i] = ec._TestTodo_parentToDoId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "children":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._TestTodo_children(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
 		case "createdAt":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {

@@ -9,6 +9,8 @@ type TestTodo {
   status: TestTodoStatus!
   priority: Int!
   testUserID: ID
+  parentToDoId: ID!
+  children: [TestTodo!]!
   createdAt: String!
   updatedAt: String!
   dueDate: String!
