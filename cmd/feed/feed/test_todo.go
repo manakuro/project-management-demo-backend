@@ -13,21 +13,48 @@ func TestTodo(ctx context.Context, client *ent.Client) {
 	if err != nil {
 		log.Fatalf("TestTodo failed to delete data: %v", err)
 	}
-
 	id := feedutil.GetTestUserByName(ctx, client, testUserFeed.tom.Name).ID
+
+	parentTodo, err := client.TestTodo.Create().SetInput(ent.CreateTestTodoInput{
+		TestUserID: &id,
+	}).Save(ctx)
+	if err != nil {
+		log.Fatalf("TestTodo failed to feed data: %v", err)
+	}
+
+	c1, err := client.TestTodo.
+		Create().
+		SetInput(ent.CreateTestTodoInput{
+			TestUserID: &id,
+		}).
+		SetParent(parentTodo).
+		Save(ctx)
+	if err != nil {
+		log.Fatalf("TestTodo failed to feed data: %v", err)
+	}
+
+	_, err = client.TestTodo.
+		Create().
+		SetTestUserID(id).
+		SetParent(c1).
+		Save(ctx)
+	if err != nil {
+		log.Fatalf("TestTodo failed to feed data: %v", err)
+	}
+
 	ts := []ent.CreateTestTodoInput{
-		{TestUserID: &id},
-		{TestUserID: &id},
-		{TestUserID: &id},
-		{TestUserID: &id},
-		{TestUserID: &id},
-		{TestUserID: &id},
-		{TestUserID: &id},
-		{TestUserID: &id},
-		{TestUserID: &id},
-		{TestUserID: &id},
-		{TestUserID: &id},
-		{TestUserID: &id},
+		{TestUserID: &id, ParentTodoID: &parentTodo.ID},
+		{TestUserID: &id, ParentTodoID: &parentTodo.ID},
+		{TestUserID: &id, ParentTodoID: &parentTodo.ID},
+		{TestUserID: &id, ParentTodoID: &parentTodo.ID},
+		{TestUserID: &id, ParentTodoID: &parentTodo.ID},
+		{TestUserID: &id, ParentTodoID: &parentTodo.ID},
+		{TestUserID: &id, ParentTodoID: &parentTodo.ID},
+		{TestUserID: &id, ParentTodoID: &parentTodo.ID},
+		{TestUserID: &id, ParentTodoID: &parentTodo.ID},
+		{TestUserID: &id, ParentTodoID: &parentTodo.ID},
+		{TestUserID: &id, ParentTodoID: &parentTodo.ID},
+		{TestUserID: &id, ParentTodoID: &parentTodo.ID},
 	}
 	bulk := make([]*ent.TestTodoCreate, len(ts))
 	for i, t := range ts {

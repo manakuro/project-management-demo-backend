@@ -36,6 +36,20 @@ func (ttc *TestTodoCreate) SetNillableTestUserID(u *ulid.ID) *TestTodoCreate {
 	return ttc
 }
 
+// SetParentTodoID sets the "parent_todo_id" field.
+func (ttc *TestTodoCreate) SetParentTodoID(u ulid.ID) *TestTodoCreate {
+	ttc.mutation.SetParentTodoID(u)
+	return ttc
+}
+
+// SetNillableParentTodoID sets the "parent_todo_id" field if the given value is not nil.
+func (ttc *TestTodoCreate) SetNillableParentTodoID(u *ulid.ID) *TestTodoCreate {
+	if u != nil {
+		ttc.SetParentTodoID(*u)
+	}
+	return ttc
+}
+
 // SetName sets the "name" field.
 func (ttc *TestTodoCreate) SetName(s string) *TestTodoCreate {
 	ttc.mutation.SetName(s)
@@ -137,6 +151,40 @@ func (ttc *TestTodoCreate) SetNillableID(u *ulid.ID) *TestTodoCreate {
 // SetTestUser sets the "test_user" edge to the TestUser entity.
 func (ttc *TestTodoCreate) SetTestUser(t *TestUser) *TestTodoCreate {
 	return ttc.SetTestUserID(t.ID)
+}
+
+// SetParentID sets the "parent" edge to the TestTodo entity by ID.
+func (ttc *TestTodoCreate) SetParentID(id ulid.ID) *TestTodoCreate {
+	ttc.mutation.SetParentID(id)
+	return ttc
+}
+
+// SetNillableParentID sets the "parent" edge to the TestTodo entity by ID if the given value is not nil.
+func (ttc *TestTodoCreate) SetNillableParentID(id *ulid.ID) *TestTodoCreate {
+	if id != nil {
+		ttc = ttc.SetParentID(*id)
+	}
+	return ttc
+}
+
+// SetParent sets the "parent" edge to the TestTodo entity.
+func (ttc *TestTodoCreate) SetParent(t *TestTodo) *TestTodoCreate {
+	return ttc.SetParentID(t.ID)
+}
+
+// AddChildIDs adds the "children" edge to the TestTodo entity by IDs.
+func (ttc *TestTodoCreate) AddChildIDs(ids ...ulid.ID) *TestTodoCreate {
+	ttc.mutation.AddChildIDs(ids...)
+	return ttc
+}
+
+// AddChildren adds the "children" edges to the TestTodo entity.
+func (ttc *TestTodoCreate) AddChildren(t ...*TestTodo) *TestTodoCreate {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return ttc.AddChildIDs(ids...)
 }
 
 // Mutation returns the TestTodoMutation object of the builder.
@@ -356,6 +404,45 @@ func (ttc *TestTodoCreate) createSpec() (*TestTodo, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.TestUserID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ttc.mutation.ParentIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   testtodo.ParentTable,
+			Columns: []string{testtodo.ParentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: testtodo.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.ParentTodoID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ttc.mutation.ChildrenIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   testtodo.ChildrenTable,
+			Columns: []string{testtodo.ChildrenColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: testtodo.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

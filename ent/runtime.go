@@ -804,11 +804,11 @@ func init() {
 	testtodoFields := schema.TestTodo{}.Fields()
 	_ = testtodoFields
 	// testtodoDescName is the schema descriptor for name field.
-	testtodoDescName := testtodoMixinFields1[1].Descriptor()
+	testtodoDescName := testtodoMixinFields1[2].Descriptor()
 	// testtodo.DefaultName holds the default value on creation for the name field.
 	testtodo.DefaultName = testtodoDescName.Default.(string)
 	// testtodoDescPriority is the schema descriptor for priority field.
-	testtodoDescPriority := testtodoMixinFields1[3].Descriptor()
+	testtodoDescPriority := testtodoMixinFields1[4].Descriptor()
 	// testtodo.DefaultPriority holds the default value on creation for the priority field.
 	testtodo.DefaultPriority = testtodoDescPriority.Default.(int)
 	// testtodoDescCreatedAt is the schema descriptor for created_at field.

@@ -93,6 +93,23 @@ input TestTodoWhereInput {
   testUserIDEqualFold: ID
   testUserIDContainsFold: ID
   
+  """parent_todo_id field predicates"""
+  parentTodoID: ID
+  parentTodoIDNEQ: ID
+  parentTodoIDIn: [ID!]
+  parentTodoIDNotIn: [ID!]
+  parentTodoIDGT: ID
+  parentTodoIDGTE: ID
+  parentTodoIDLT: ID
+  parentTodoIDLTE: ID
+  parentTodoIDContains: ID
+  parentTodoIDHasPrefix: ID
+  parentTodoIDHasSuffix: ID
+  parentTodoIDIsNil: Boolean
+  parentTodoIDNotNil: Boolean
+  parentTodoIDEqualFold: ID
+  parentTodoIDContainsFold: ID
+  
   """name field predicates"""
   name: String
   nameNEQ: String
@@ -169,6 +186,14 @@ input TestTodoWhereInput {
   """test_user edge predicates"""
   hasTestUser: Boolean
   hasTestUserWith: [TestUserWhereInput!]
+  
+  """parent edge predicates"""
+  hasParent: Boolean
+  hasParentWith: [TestTodoWhereInput!]
+  
+  """children edge predicates"""
+  hasChildren: Boolean
+  hasChildrenWith: [TestTodoWhereInput!]
 }
 
 """

@@ -15416,6 +15416,11 @@ type TestTodoMutation struct {
 	clearedFields    map[string]struct{}
 	test_user        *ulid.ID
 	clearedtest_user bool
+	parent           *ulid.ID
+	clearedparent    bool
+	children         map[ulid.ID]struct{}
+	removedchildren  map[ulid.ID]struct{}
+	clearedchildren  bool
 	done             bool
 	oldValue         func(context.Context) (*TestTodo, error)
 	predicates       []predicate.TestTodo
@@ -15553,6 +15558,55 @@ func (m *TestTodoMutation) TestUserIDCleared() bool {
 func (m *TestTodoMutation) ResetTestUserID() {
 	m.test_user = nil
 	delete(m.clearedFields, testtodo.FieldTestUserID)
+}
+
+// SetParentTodoID sets the "parent_todo_id" field.
+func (m *TestTodoMutation) SetParentTodoID(u ulid.ID) {
+	m.parent = &u
+}
+
+// ParentTodoID returns the value of the "parent_todo_id" field in the mutation.
+func (m *TestTodoMutation) ParentTodoID() (r ulid.ID, exists bool) {
+	v := m.parent
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldParentTodoID returns the old "parent_todo_id" field's value of the TestTodo entity.
+// If the TestTodo object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TestTodoMutation) OldParentTodoID(ctx context.Context) (v ulid.ID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldParentTodoID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldParentTodoID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldParentTodoID: %w", err)
+	}
+	return oldValue.ParentTodoID, nil
+}
+
+// ClearParentTodoID clears the value of the "parent_todo_id" field.
+func (m *TestTodoMutation) ClearParentTodoID() {
+	m.parent = nil
+	m.clearedFields[testtodo.FieldParentTodoID] = struct{}{}
+}
+
+// ParentTodoIDCleared returns if the "parent_todo_id" field was cleared in this mutation.
+func (m *TestTodoMutation) ParentTodoIDCleared() bool {
+	_, ok := m.clearedFields[testtodo.FieldParentTodoID]
+	return ok
+}
+
+// ResetParentTodoID resets all changes to the "parent_todo_id" field.
+func (m *TestTodoMutation) ResetParentTodoID() {
+	m.parent = nil
+	delete(m.clearedFields, testtodo.FieldParentTodoID)
 }
 
 // SetName sets the "name" field.
@@ -15830,6 +15884,99 @@ func (m *TestTodoMutation) ResetTestUser() {
 	m.clearedtest_user = false
 }
 
+// SetParentID sets the "parent" edge to the TestTodo entity by id.
+func (m *TestTodoMutation) SetParentID(id ulid.ID) {
+	m.parent = &id
+}
+
+// ClearParent clears the "parent" edge to the TestTodo entity.
+func (m *TestTodoMutation) ClearParent() {
+	m.clearedparent = true
+}
+
+// ParentCleared reports if the "parent" edge to the TestTodo entity was cleared.
+func (m *TestTodoMutation) ParentCleared() bool {
+	return m.ParentTodoIDCleared() || m.clearedparent
+}
+
+// ParentID returns the "parent" edge ID in the mutation.
+func (m *TestTodoMutation) ParentID() (id ulid.ID, exists bool) {
+	if m.parent != nil {
+		return *m.parent, true
+	}
+	return
+}
+
+// ParentIDs returns the "parent" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// ParentID instead. It exists only for internal usage by the builders.
+func (m *TestTodoMutation) ParentIDs() (ids []ulid.ID) {
+	if id := m.parent; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetParent resets all changes to the "parent" edge.
+func (m *TestTodoMutation) ResetParent() {
+	m.parent = nil
+	m.clearedparent = false
+}
+
+// AddChildIDs adds the "children" edge to the TestTodo entity by ids.
+func (m *TestTodoMutation) AddChildIDs(ids ...ulid.ID) {
+	if m.children == nil {
+		m.children = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		m.children[ids[i]] = struct{}{}
+	}
+}
+
+// ClearChildren clears the "children" edge to the TestTodo entity.
+func (m *TestTodoMutation) ClearChildren() {
+	m.clearedchildren = true
+}
+
+// ChildrenCleared reports if the "children" edge to the TestTodo entity was cleared.
+func (m *TestTodoMutation) ChildrenCleared() bool {
+	return m.clearedchildren
+}
+
+// RemoveChildIDs removes the "children" edge to the TestTodo entity by IDs.
+func (m *TestTodoMutation) RemoveChildIDs(ids ...ulid.ID) {
+	if m.removedchildren == nil {
+		m.removedchildren = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		delete(m.children, ids[i])
+		m.removedchildren[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedChildren returns the removed IDs of the "children" edge to the TestTodo entity.
+func (m *TestTodoMutation) RemovedChildrenIDs() (ids []ulid.ID) {
+	for id := range m.removedchildren {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ChildrenIDs returns the "children" edge IDs in the mutation.
+func (m *TestTodoMutation) ChildrenIDs() (ids []ulid.ID) {
+	for id := range m.children {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetChildren resets all changes to the "children" edge.
+func (m *TestTodoMutation) ResetChildren() {
+	m.children = nil
+	m.clearedchildren = false
+	m.removedchildren = nil
+}
+
 // Where appends a list predicates to the TestTodoMutation builder.
 func (m *TestTodoMutation) Where(ps ...predicate.TestTodo) {
 	m.predicates = append(m.predicates, ps...)
@@ -15849,9 +15996,12 @@ func (m *TestTodoMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *TestTodoMutation) Fields() []string {
-	fields := make([]string, 0, 7)
+	fields := make([]string, 0, 8)
 	if m.test_user != nil {
 		fields = append(fields, testtodo.FieldTestUserID)
+	}
+	if m.parent != nil {
+		fields = append(fields, testtodo.FieldParentTodoID)
 	}
 	if m.name != nil {
 		fields = append(fields, testtodo.FieldName)
@@ -15881,6 +16031,8 @@ func (m *TestTodoMutation) Field(name string) (ent.Value, bool) {
 	switch name {
 	case testtodo.FieldTestUserID:
 		return m.TestUserID()
+	case testtodo.FieldParentTodoID:
+		return m.ParentTodoID()
 	case testtodo.FieldName:
 		return m.Name()
 	case testtodo.FieldStatus:
@@ -15904,6 +16056,8 @@ func (m *TestTodoMutation) OldField(ctx context.Context, name string) (ent.Value
 	switch name {
 	case testtodo.FieldTestUserID:
 		return m.OldTestUserID(ctx)
+	case testtodo.FieldParentTodoID:
+		return m.OldParentTodoID(ctx)
 	case testtodo.FieldName:
 		return m.OldName(ctx)
 	case testtodo.FieldStatus:
@@ -15931,6 +16085,13 @@ func (m *TestTodoMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetTestUserID(v)
+		return nil
+	case testtodo.FieldParentTodoID:
+		v, ok := value.(ulid.ID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetParentTodoID(v)
 		return nil
 	case testtodo.FieldName:
 		v, ok := value.(string)
@@ -16022,6 +16183,9 @@ func (m *TestTodoMutation) ClearedFields() []string {
 	if m.FieldCleared(testtodo.FieldTestUserID) {
 		fields = append(fields, testtodo.FieldTestUserID)
 	}
+	if m.FieldCleared(testtodo.FieldParentTodoID) {
+		fields = append(fields, testtodo.FieldParentTodoID)
+	}
 	if m.FieldCleared(testtodo.FieldDueDate) {
 		fields = append(fields, testtodo.FieldDueDate)
 	}
@@ -16042,6 +16206,9 @@ func (m *TestTodoMutation) ClearField(name string) error {
 	case testtodo.FieldTestUserID:
 		m.ClearTestUserID()
 		return nil
+	case testtodo.FieldParentTodoID:
+		m.ClearParentTodoID()
+		return nil
 	case testtodo.FieldDueDate:
 		m.ClearDueDate()
 		return nil
@@ -16055,6 +16222,9 @@ func (m *TestTodoMutation) ResetField(name string) error {
 	switch name {
 	case testtodo.FieldTestUserID:
 		m.ResetTestUserID()
+		return nil
+	case testtodo.FieldParentTodoID:
+		m.ResetParentTodoID()
 		return nil
 	case testtodo.FieldName:
 		m.ResetName()
@@ -16080,9 +16250,15 @@ func (m *TestTodoMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *TestTodoMutation) AddedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 3)
 	if m.test_user != nil {
 		edges = append(edges, testtodo.EdgeTestUser)
+	}
+	if m.parent != nil {
+		edges = append(edges, testtodo.EdgeParent)
+	}
+	if m.children != nil {
+		edges = append(edges, testtodo.EdgeChildren)
 	}
 	return edges
 }
@@ -16095,13 +16271,26 @@ func (m *TestTodoMutation) AddedIDs(name string) []ent.Value {
 		if id := m.test_user; id != nil {
 			return []ent.Value{*id}
 		}
+	case testtodo.EdgeParent:
+		if id := m.parent; id != nil {
+			return []ent.Value{*id}
+		}
+	case testtodo.EdgeChildren:
+		ids := make([]ent.Value, 0, len(m.children))
+		for id := range m.children {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *TestTodoMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 3)
+	if m.removedchildren != nil {
+		edges = append(edges, testtodo.EdgeChildren)
+	}
 	return edges
 }
 
@@ -16109,15 +16298,27 @@ func (m *TestTodoMutation) RemovedEdges() []string {
 // the given name in this mutation.
 func (m *TestTodoMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
+	case testtodo.EdgeChildren:
+		ids := make([]ent.Value, 0, len(m.removedchildren))
+		for id := range m.removedchildren {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *TestTodoMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 3)
 	if m.clearedtest_user {
 		edges = append(edges, testtodo.EdgeTestUser)
+	}
+	if m.clearedparent {
+		edges = append(edges, testtodo.EdgeParent)
+	}
+	if m.clearedchildren {
+		edges = append(edges, testtodo.EdgeChildren)
 	}
 	return edges
 }
@@ -16128,6 +16329,10 @@ func (m *TestTodoMutation) EdgeCleared(name string) bool {
 	switch name {
 	case testtodo.EdgeTestUser:
 		return m.clearedtest_user
+	case testtodo.EdgeParent:
+		return m.clearedparent
+	case testtodo.EdgeChildren:
+		return m.clearedchildren
 	}
 	return false
 }
@@ -16139,6 +16344,9 @@ func (m *TestTodoMutation) ClearEdge(name string) error {
 	case testtodo.EdgeTestUser:
 		m.ClearTestUser()
 		return nil
+	case testtodo.EdgeParent:
+		m.ClearParent()
+		return nil
 	}
 	return fmt.Errorf("unknown TestTodo unique edge %s", name)
 }
@@ -16149,6 +16357,12 @@ func (m *TestTodoMutation) ResetEdge(name string) error {
 	switch name {
 	case testtodo.EdgeTestUser:
 		m.ResetTestUser()
+		return nil
+	case testtodo.EdgeParent:
+		m.ResetParent()
+		return nil
+	case testtodo.EdgeChildren:
+		m.ResetChildren()
 		return nil
 	}
 	return fmt.Errorf("unknown TestTodo edge %s", name)

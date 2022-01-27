@@ -8310,6 +8310,23 @@ type TestTodoWhereInput struct {
 	TestUserIDEqualFold    *ulid.ID  `json:"testUserIDEqualFold,omitempty"`
 	TestUserIDContainsFold *ulid.ID  `json:"testUserIDContainsFold,omitempty"`
 
+	// "parent_todo_id" field predicates.
+	ParentTodoID             *ulid.ID  `json:"parentTodoID,omitempty"`
+	ParentTodoIDNEQ          *ulid.ID  `json:"parentTodoIDNEQ,omitempty"`
+	ParentTodoIDIn           []ulid.ID `json:"parentTodoIDIn,omitempty"`
+	ParentTodoIDNotIn        []ulid.ID `json:"parentTodoIDNotIn,omitempty"`
+	ParentTodoIDGT           *ulid.ID  `json:"parentTodoIDGT,omitempty"`
+	ParentTodoIDGTE          *ulid.ID  `json:"parentTodoIDGTE,omitempty"`
+	ParentTodoIDLT           *ulid.ID  `json:"parentTodoIDLT,omitempty"`
+	ParentTodoIDLTE          *ulid.ID  `json:"parentTodoIDLTE,omitempty"`
+	ParentTodoIDContains     *ulid.ID  `json:"parentTodoIDContains,omitempty"`
+	ParentTodoIDHasPrefix    *ulid.ID  `json:"parentTodoIDHasPrefix,omitempty"`
+	ParentTodoIDHasSuffix    *ulid.ID  `json:"parentTodoIDHasSuffix,omitempty"`
+	ParentTodoIDIsNil        bool      `json:"parentTodoIDIsNil,omitempty"`
+	ParentTodoIDNotNil       bool      `json:"parentTodoIDNotNil,omitempty"`
+	ParentTodoIDEqualFold    *ulid.ID  `json:"parentTodoIDEqualFold,omitempty"`
+	ParentTodoIDContainsFold *ulid.ID  `json:"parentTodoIDContainsFold,omitempty"`
+
 	// "name" field predicates.
 	Name             *string  `json:"name,omitempty"`
 	NameNEQ          *string  `json:"nameNEQ,omitempty"`
@@ -8376,6 +8393,14 @@ type TestTodoWhereInput struct {
 	// "test_user" edge predicates.
 	HasTestUser     *bool                 `json:"hasTestUser,omitempty"`
 	HasTestUserWith []*TestUserWhereInput `json:"hasTestUserWith,omitempty"`
+
+	// "parent" edge predicates.
+	HasParent     *bool                 `json:"hasParent,omitempty"`
+	HasParentWith []*TestTodoWhereInput `json:"hasParentWith,omitempty"`
+
+	// "children" edge predicates.
+	HasChildren     *bool                 `json:"hasChildren,omitempty"`
+	HasChildrenWith []*TestTodoWhereInput `json:"hasChildrenWith,omitempty"`
 }
 
 // Filter applies the TestTodoWhereInput filter on the TestTodoQuery builder.
@@ -8505,6 +8530,51 @@ func (i *TestTodoWhereInput) P() (predicate.TestTodo, error) {
 	}
 	if i.TestUserIDContainsFold != nil {
 		predicates = append(predicates, testtodo.TestUserIDContainsFold(*i.TestUserIDContainsFold))
+	}
+	if i.ParentTodoID != nil {
+		predicates = append(predicates, testtodo.ParentTodoIDEQ(*i.ParentTodoID))
+	}
+	if i.ParentTodoIDNEQ != nil {
+		predicates = append(predicates, testtodo.ParentTodoIDNEQ(*i.ParentTodoIDNEQ))
+	}
+	if len(i.ParentTodoIDIn) > 0 {
+		predicates = append(predicates, testtodo.ParentTodoIDIn(i.ParentTodoIDIn...))
+	}
+	if len(i.ParentTodoIDNotIn) > 0 {
+		predicates = append(predicates, testtodo.ParentTodoIDNotIn(i.ParentTodoIDNotIn...))
+	}
+	if i.ParentTodoIDGT != nil {
+		predicates = append(predicates, testtodo.ParentTodoIDGT(*i.ParentTodoIDGT))
+	}
+	if i.ParentTodoIDGTE != nil {
+		predicates = append(predicates, testtodo.ParentTodoIDGTE(*i.ParentTodoIDGTE))
+	}
+	if i.ParentTodoIDLT != nil {
+		predicates = append(predicates, testtodo.ParentTodoIDLT(*i.ParentTodoIDLT))
+	}
+	if i.ParentTodoIDLTE != nil {
+		predicates = append(predicates, testtodo.ParentTodoIDLTE(*i.ParentTodoIDLTE))
+	}
+	if i.ParentTodoIDContains != nil {
+		predicates = append(predicates, testtodo.ParentTodoIDContains(*i.ParentTodoIDContains))
+	}
+	if i.ParentTodoIDHasPrefix != nil {
+		predicates = append(predicates, testtodo.ParentTodoIDHasPrefix(*i.ParentTodoIDHasPrefix))
+	}
+	if i.ParentTodoIDHasSuffix != nil {
+		predicates = append(predicates, testtodo.ParentTodoIDHasSuffix(*i.ParentTodoIDHasSuffix))
+	}
+	if i.ParentTodoIDIsNil {
+		predicates = append(predicates, testtodo.ParentTodoIDIsNil())
+	}
+	if i.ParentTodoIDNotNil {
+		predicates = append(predicates, testtodo.ParentTodoIDNotNil())
+	}
+	if i.ParentTodoIDEqualFold != nil {
+		predicates = append(predicates, testtodo.ParentTodoIDEqualFold(*i.ParentTodoIDEqualFold))
+	}
+	if i.ParentTodoIDContainsFold != nil {
+		predicates = append(predicates, testtodo.ParentTodoIDContainsFold(*i.ParentTodoIDContainsFold))
 	}
 	if i.Name != nil {
 		predicates = append(predicates, testtodo.NameEQ(*i.Name))
@@ -8677,6 +8747,42 @@ func (i *TestTodoWhereInput) P() (predicate.TestTodo, error) {
 			with = append(with, p)
 		}
 		predicates = append(predicates, testtodo.HasTestUserWith(with...))
+	}
+	if i.HasParent != nil {
+		p := testtodo.HasParent()
+		if !*i.HasParent {
+			p = testtodo.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasParentWith) > 0 {
+		with := make([]predicate.TestTodo, 0, len(i.HasParentWith))
+		for _, w := range i.HasParentWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, testtodo.HasParentWith(with...))
+	}
+	if i.HasChildren != nil {
+		p := testtodo.HasChildren()
+		if !*i.HasChildren {
+			p = testtodo.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasChildrenWith) > 0 {
+		with := make([]predicate.TestTodo, 0, len(i.HasChildrenWith))
+		for _, w := range i.HasChildrenWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, testtodo.HasChildrenWith(with...))
 	}
 	switch len(predicates) {
 	case 0:

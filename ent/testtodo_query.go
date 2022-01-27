@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"database/sql/driver"
 	"errors"
 	"fmt"
 	"math"
@@ -28,6 +29,8 @@ type TestTodoQuery struct {
 	predicates []predicate.TestTodo
 	// eager-loading edges.
 	withTestUser *TestUserQuery
+	withParent   *TestTodoQuery
+	withChildren *TestTodoQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -79,6 +82,50 @@ func (ttq *TestTodoQuery) QueryTestUser() *TestUserQuery {
 			sqlgraph.From(testtodo.Table, testtodo.FieldID, selector),
 			sqlgraph.To(testuser.Table, testuser.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, testtodo.TestUserTable, testtodo.TestUserColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(ttq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryParent chains the current query on the "parent" edge.
+func (ttq *TestTodoQuery) QueryParent() *TestTodoQuery {
+	query := &TestTodoQuery{config: ttq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := ttq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := ttq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(testtodo.Table, testtodo.FieldID, selector),
+			sqlgraph.To(testtodo.Table, testtodo.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, testtodo.ParentTable, testtodo.ParentColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(ttq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryChildren chains the current query on the "children" edge.
+func (ttq *TestTodoQuery) QueryChildren() *TestTodoQuery {
+	query := &TestTodoQuery{config: ttq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := ttq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := ttq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(testtodo.Table, testtodo.FieldID, selector),
+			sqlgraph.To(testtodo.Table, testtodo.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, testtodo.ChildrenTable, testtodo.ChildrenColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(ttq.driver.Dialect(), step)
 		return fromU, nil
@@ -268,6 +315,8 @@ func (ttq *TestTodoQuery) Clone() *TestTodoQuery {
 		order:        append([]OrderFunc{}, ttq.order...),
 		predicates:   append([]predicate.TestTodo{}, ttq.predicates...),
 		withTestUser: ttq.withTestUser.Clone(),
+		withParent:   ttq.withParent.Clone(),
+		withChildren: ttq.withChildren.Clone(),
 		// clone intermediate query.
 		sql:  ttq.sql.Clone(),
 		path: ttq.path,
@@ -282,6 +331,28 @@ func (ttq *TestTodoQuery) WithTestUser(opts ...func(*TestUserQuery)) *TestTodoQu
 		opt(query)
 	}
 	ttq.withTestUser = query
+	return ttq
+}
+
+// WithParent tells the query-builder to eager-load the nodes that are connected to
+// the "parent" edge. The optional arguments are used to configure the query builder of the edge.
+func (ttq *TestTodoQuery) WithParent(opts ...func(*TestTodoQuery)) *TestTodoQuery {
+	query := &TestTodoQuery{config: ttq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	ttq.withParent = query
+	return ttq
+}
+
+// WithChildren tells the query-builder to eager-load the nodes that are connected to
+// the "children" edge. The optional arguments are used to configure the query builder of the edge.
+func (ttq *TestTodoQuery) WithChildren(opts ...func(*TestTodoQuery)) *TestTodoQuery {
+	query := &TestTodoQuery{config: ttq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	ttq.withChildren = query
 	return ttq
 }
 
@@ -350,8 +421,10 @@ func (ttq *TestTodoQuery) sqlAll(ctx context.Context) ([]*TestTodo, error) {
 	var (
 		nodes       = []*TestTodo{}
 		_spec       = ttq.querySpec()
-		loadedTypes = [1]bool{
+		loadedTypes = [3]bool{
 			ttq.withTestUser != nil,
+			ttq.withParent != nil,
+			ttq.withChildren != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -397,6 +470,57 @@ func (ttq *TestTodoQuery) sqlAll(ctx context.Context) ([]*TestTodo, error) {
 			for i := range nodes {
 				nodes[i].Edges.TestUser = n
 			}
+		}
+	}
+
+	if query := ttq.withParent; query != nil {
+		ids := make([]ulid.ID, 0, len(nodes))
+		nodeids := make(map[ulid.ID][]*TestTodo)
+		for i := range nodes {
+			fk := nodes[i].ParentTodoID
+			if _, ok := nodeids[fk]; !ok {
+				ids = append(ids, fk)
+			}
+			nodeids[fk] = append(nodeids[fk], nodes[i])
+		}
+		query.Where(testtodo.IDIn(ids...))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nodeids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "parent_todo_id" returned %v`, n.ID)
+			}
+			for i := range nodes {
+				nodes[i].Edges.Parent = n
+			}
+		}
+	}
+
+	if query := ttq.withChildren; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[ulid.ID]*TestTodo)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.Children = []*TestTodo{}
+		}
+		query.Where(predicate.TestTodo(func(s *sql.Selector) {
+			s.Where(sql.InValues(testtodo.ChildrenColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.ParentTodoID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "parent_todo_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.Children = append(node.Edges.Children, n)
 		}
 	}
 

@@ -1823,13 +1823,15 @@ func (u *TeammateTaskTabStatusUpdateOne) SetInput(i UpdateTeammateTaskTabStatusI
 
 // CreateTestTodoInput represents a mutation input for creating testtodos.
 type CreateTestTodoInput struct {
-	Name       *string
-	Status     *testtodo.Status
-	Priority   *int
-	DueDate    *time.Time
-	CreatedAt  *time.Time
-	UpdatedAt  *time.Time
-	TestUserID *ulid.ID
+	Name         *string
+	Status       *testtodo.Status
+	Priority     *int
+	DueDate      *time.Time
+	CreatedAt    *time.Time
+	UpdatedAt    *time.Time
+	TestUserID   *ulid.ID
+	ParentTodoID *ulid.ID
+	ChildIDs     []ulid.ID
 }
 
 // Mutate applies the CreateTestTodoInput on the TestTodoCreate builder.
@@ -1855,6 +1857,12 @@ func (i *CreateTestTodoInput) Mutate(m *TestTodoCreate) {
 	if v := i.TestUserID; v != nil {
 		m.SetTestUserID(*v)
 	}
+	if v := i.ParentTodoID; v != nil {
+		m.SetParentID(*v)
+	}
+	if ids := i.ChildIDs; len(ids) > 0 {
+		m.AddChildIDs(ids...)
+	}
 }
 
 // SetInput applies the change-set in the CreateTestTodoInput on the create builder.
@@ -1865,14 +1873,18 @@ func (c *TestTodoCreate) SetInput(i CreateTestTodoInput) *TestTodoCreate {
 
 // UpdateTestTodoInput represents a mutation input for updating testtodos.
 type UpdateTestTodoInput struct {
-	ID            ulid.ID
-	Name          *string
-	Status        *testtodo.Status
-	Priority      *int
-	DueDate       *time.Time
-	ClearDueDate  bool
-	TestUserID    *ulid.ID
-	ClearTestUser bool
+	ID             ulid.ID
+	Name           *string
+	Status         *testtodo.Status
+	Priority       *int
+	DueDate        *time.Time
+	ClearDueDate   bool
+	TestUserID     *ulid.ID
+	ClearTestUser  bool
+	ParentTodoID   *ulid.ID
+	ClearParent    bool
+	AddChildIDs    []ulid.ID
+	RemoveChildIDs []ulid.ID
 }
 
 // Mutate applies the UpdateTestTodoInput on the TestTodoMutation.
@@ -1897,6 +1909,18 @@ func (i *UpdateTestTodoInput) Mutate(m *TestTodoMutation) {
 	}
 	if v := i.TestUserID; v != nil {
 		m.SetTestUserID(*v)
+	}
+	if i.ClearParent {
+		m.ClearParent()
+	}
+	if v := i.ParentTodoID; v != nil {
+		m.SetParentID(*v)
+	}
+	if ids := i.AddChildIDs; len(ids) > 0 {
+		m.AddChildIDs(ids...)
+	}
+	if ids := i.RemoveChildIDs; len(ids) > 0 {
+		m.RemoveChildIDs(ids...)
 	}
 }
 

@@ -563,6 +563,7 @@ var (
 		{Name: "due_date", Type: field.TypeTime, Nullable: true, SchemaType: map[string]string{"mysql": "datetime"}},
 		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
 		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
+		{Name: "parent_todo_id", Type: field.TypeString, Nullable: true},
 		{Name: "test_user_id", Type: field.TypeString, Nullable: true},
 	}
 	// TestTodosTable holds the schema information for the "test_todos" table.
@@ -572,8 +573,14 @@ var (
 		PrimaryKey: []*schema.Column{TestTodosColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "test_todos_test_users_test_todos",
+				Symbol:     "test_todos_test_todos_children",
 				Columns:    []*schema.Column{TestTodosColumns[7]},
+				RefColumns: []*schema.Column{TestTodosColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "test_todos_test_users_test_todos",
+				Columns:    []*schema.Column{TestTodosColumns[8]},
 				RefColumns: []*schema.Column{TestUsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
@@ -710,7 +717,8 @@ func init() {
 	TeammateTaskSectionsTable.ForeignKeys[1].RefTable = WorkspacesTable
 	TeammateTaskTabStatusTable.ForeignKeys[0].RefTable = TeammatesTable
 	TeammateTaskTabStatusTable.ForeignKeys[1].RefTable = WorkspacesTable
-	TestTodosTable.ForeignKeys[0].RefTable = TestUsersTable
+	TestTodosTable.ForeignKeys[0].RefTable = TestTodosTable
+	TestTodosTable.ForeignKeys[1].RefTable = TestUsersTable
 	WorkspacesTable.ForeignKeys[0].RefTable = TeammatesTable
 	WorkspaceTeammatesTable.ForeignKeys[0].RefTable = TeammatesTable
 	WorkspaceTeammatesTable.ForeignKeys[1].RefTable = WorkspacesTable

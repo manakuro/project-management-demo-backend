@@ -3323,6 +3323,38 @@ func (c *TestTodoClient) QueryTestUser(tt *TestTodo) *TestUserQuery {
 	return query
 }
 
+// QueryParent queries the parent edge of a TestTodo.
+func (c *TestTodoClient) QueryParent(tt *TestTodo) *TestTodoQuery {
+	query := &TestTodoQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := tt.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(testtodo.Table, testtodo.FieldID, id),
+			sqlgraph.To(testtodo.Table, testtodo.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, testtodo.ParentTable, testtodo.ParentColumn),
+		)
+		fromV = sqlgraph.Neighbors(tt.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryChildren queries the children edge of a TestTodo.
+func (c *TestTodoClient) QueryChildren(tt *TestTodo) *TestTodoQuery {
+	query := &TestTodoQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := tt.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(testtodo.Table, testtodo.FieldID, id),
+			sqlgraph.To(testtodo.Table, testtodo.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, testtodo.ChildrenTable, testtodo.ChildrenColumn),
+		)
+		fromV = sqlgraph.Neighbors(tt.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *TestTodoClient) Hooks() []Hook {
 	return c.hooks.TestTodo

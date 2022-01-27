@@ -484,6 +484,22 @@ func (tt *TestTodo) TestUser(ctx context.Context) (*TestUser, error) {
 	return result, MaskNotFound(err)
 }
 
+func (tt *TestTodo) Parent(ctx context.Context) (*TestTodo, error) {
+	result, err := tt.Edges.ParentOrErr()
+	if IsNotLoaded(err) {
+		result, err = tt.QueryParent().Only(ctx)
+	}
+	return result, MaskNotFound(err)
+}
+
+func (tt *TestTodo) Children(ctx context.Context) ([]*TestTodo, error) {
+	result, err := tt.Edges.ChildrenOrErr()
+	if IsNotLoaded(err) {
+		result, err = tt.QueryChildren().All(ctx)
+	}
+	return result, err
+}
+
 func (tu *TestUser) TestTodos(ctx context.Context) ([]*TestTodo, error) {
 	result, err := tu.Edges.TestTodosOrErr()
 	if IsNotLoaded(err) {

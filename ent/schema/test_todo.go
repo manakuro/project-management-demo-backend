@@ -33,6 +33,9 @@ func (TestTodoMixin) Fields() []ent.Field {
 		field.String("test_user_id").
 			GoType(ulid.ID("")).
 			Optional(),
+		field.String("parent_todo_id").
+			GoType(ulid.ID("")).
+			Optional(),
 		field.String("name").Default(""),
 		field.Enum("status").
 			NamedValues(
@@ -60,6 +63,15 @@ func (TestTodo) Edges() []ent.Edge {
 			Annotations(
 				schema.Annotation(
 					annotation.Edge{FieldName: "test_user_id"},
+				),
+			),
+		edge.To("children", TestTodo.Type).
+			From("parent").
+			Field("parent_todo_id").
+			Unique().
+			Annotations(
+				schema.Annotation(
+					annotation.Edge{FieldName: "parent_todo_id"},
 				),
 			),
 	}
