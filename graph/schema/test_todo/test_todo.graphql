@@ -11,7 +11,18 @@ type TestTodo {
   testUserID: ID
   createdAt: String!
   updatedAt: String!
+  dueDate: String!
 }
+type TestTodoConnection {
+  totalCount: Int!
+  pageInfo: PageInfo!
+  edges: [TestTodoEdge]
+}
+type TestTodoEdge {
+  node: TestTodo
+  cursor: Cursor!
+}
+
 input CreateTestTodoInput {
   name: String!
   status: TestTodoStatus = IN_PROGRESS
@@ -27,8 +38,8 @@ input UpdateTestTodoInput {
 }
 
 extend type Query {
-  testTodo(id: ID): TestTodo
-  testTodos: [TestTodo!]!
+  testTodo(where: TestTodoWhereInput): TestTodo
+  testTodos(after: Cursor, first: Int, before: Cursor, last: Int, where: TestTodoWhereInput): TestTodoConnection
 }
 
 extend type Mutation {

@@ -26,6 +26,8 @@ type TestTodo struct {
 	Status testtodo.Status `json:"status,omitempty"`
 	// Priority holds the value of the "priority" field.
 	Priority int `json:"priority,omitempty"`
+	// DueDate holds the value of the "due_date" field.
+	DueDate *time.Time `json:"due_date,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -67,7 +69,7 @@ func (*TestTodo) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullInt64)
 		case testtodo.FieldName, testtodo.FieldStatus:
 			values[i] = new(sql.NullString)
-		case testtodo.FieldCreatedAt, testtodo.FieldUpdatedAt:
+		case testtodo.FieldDueDate, testtodo.FieldCreatedAt, testtodo.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
 		case testtodo.FieldID, testtodo.FieldTestUserID:
 			values[i] = new(ulid.ID)
@@ -115,6 +117,13 @@ func (tt *TestTodo) assignValues(columns []string, values []interface{}) error {
 				return fmt.Errorf("unexpected type %T for field priority", values[i])
 			} else if value.Valid {
 				tt.Priority = int(value.Int64)
+			}
+		case testtodo.FieldDueDate:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field due_date", values[i])
+			} else if value.Valid {
+				tt.DueDate = new(time.Time)
+				*tt.DueDate = value.Time
 			}
 		case testtodo.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -169,6 +178,10 @@ func (tt *TestTodo) String() string {
 	builder.WriteString(fmt.Sprintf("%v", tt.Status))
 	builder.WriteString(", priority=")
 	builder.WriteString(fmt.Sprintf("%v", tt.Priority))
+	if v := tt.DueDate; v != nil {
+		builder.WriteString(", due_date=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
 	builder.WriteString(", created_at=")
 	builder.WriteString(tt.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", updated_at=")

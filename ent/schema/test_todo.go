@@ -6,6 +6,8 @@ import (
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/pkg/const/globalid"
 
+	"entgo.io/ent/dialect"
+
 	"entgo.io/ent/schema"
 
 	"entgo.io/ent/schema/edge"
@@ -39,6 +41,12 @@ func (TestTodoMixin) Fields() []ent.Field {
 			).
 			Default("IN_PROGRESS"),
 		field.Int("priority").Default(0),
+		field.Time("due_date").
+			Nillable().
+			Optional().
+			SchemaType(map[string]string{
+				dialect.MySQL: "datetime",
+			}),
 	}
 }
 

@@ -15410,6 +15410,7 @@ type TestTodoMutation struct {
 	status           *testtodo.Status
 	priority         *int
 	addpriority      *int
+	due_date         *time.Time
 	created_at       *time.Time
 	updated_at       *time.Time
 	clearedFields    map[string]struct{}
@@ -15682,6 +15683,55 @@ func (m *TestTodoMutation) ResetPriority() {
 	m.addpriority = nil
 }
 
+// SetDueDate sets the "due_date" field.
+func (m *TestTodoMutation) SetDueDate(t time.Time) {
+	m.due_date = &t
+}
+
+// DueDate returns the value of the "due_date" field in the mutation.
+func (m *TestTodoMutation) DueDate() (r time.Time, exists bool) {
+	v := m.due_date
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDueDate returns the old "due_date" field's value of the TestTodo entity.
+// If the TestTodo object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TestTodoMutation) OldDueDate(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldDueDate is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldDueDate requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDueDate: %w", err)
+	}
+	return oldValue.DueDate, nil
+}
+
+// ClearDueDate clears the value of the "due_date" field.
+func (m *TestTodoMutation) ClearDueDate() {
+	m.due_date = nil
+	m.clearedFields[testtodo.FieldDueDate] = struct{}{}
+}
+
+// DueDateCleared returns if the "due_date" field was cleared in this mutation.
+func (m *TestTodoMutation) DueDateCleared() bool {
+	_, ok := m.clearedFields[testtodo.FieldDueDate]
+	return ok
+}
+
+// ResetDueDate resets all changes to the "due_date" field.
+func (m *TestTodoMutation) ResetDueDate() {
+	m.due_date = nil
+	delete(m.clearedFields, testtodo.FieldDueDate)
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (m *TestTodoMutation) SetCreatedAt(t time.Time) {
 	m.created_at = &t
@@ -15799,7 +15849,7 @@ func (m *TestTodoMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *TestTodoMutation) Fields() []string {
-	fields := make([]string, 0, 6)
+	fields := make([]string, 0, 7)
 	if m.test_user != nil {
 		fields = append(fields, testtodo.FieldTestUserID)
 	}
@@ -15811,6 +15861,9 @@ func (m *TestTodoMutation) Fields() []string {
 	}
 	if m.priority != nil {
 		fields = append(fields, testtodo.FieldPriority)
+	}
+	if m.due_date != nil {
+		fields = append(fields, testtodo.FieldDueDate)
 	}
 	if m.created_at != nil {
 		fields = append(fields, testtodo.FieldCreatedAt)
@@ -15834,6 +15887,8 @@ func (m *TestTodoMutation) Field(name string) (ent.Value, bool) {
 		return m.Status()
 	case testtodo.FieldPriority:
 		return m.Priority()
+	case testtodo.FieldDueDate:
+		return m.DueDate()
 	case testtodo.FieldCreatedAt:
 		return m.CreatedAt()
 	case testtodo.FieldUpdatedAt:
@@ -15855,6 +15910,8 @@ func (m *TestTodoMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldStatus(ctx)
 	case testtodo.FieldPriority:
 		return m.OldPriority(ctx)
+	case testtodo.FieldDueDate:
+		return m.OldDueDate(ctx)
 	case testtodo.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case testtodo.FieldUpdatedAt:
@@ -15895,6 +15952,13 @@ func (m *TestTodoMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetPriority(v)
+		return nil
+	case testtodo.FieldDueDate:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDueDate(v)
 		return nil
 	case testtodo.FieldCreatedAt:
 		v, ok := value.(time.Time)
@@ -15958,6 +16022,9 @@ func (m *TestTodoMutation) ClearedFields() []string {
 	if m.FieldCleared(testtodo.FieldTestUserID) {
 		fields = append(fields, testtodo.FieldTestUserID)
 	}
+	if m.FieldCleared(testtodo.FieldDueDate) {
+		fields = append(fields, testtodo.FieldDueDate)
+	}
 	return fields
 }
 
@@ -15974,6 +16041,9 @@ func (m *TestTodoMutation) ClearField(name string) error {
 	switch name {
 	case testtodo.FieldTestUserID:
 		m.ClearTestUserID()
+		return nil
+	case testtodo.FieldDueDate:
+		m.ClearDueDate()
 		return nil
 	}
 	return fmt.Errorf("unknown TestTodo nullable field %s", name)
@@ -15994,6 +16064,9 @@ func (m *TestTodoMutation) ResetField(name string) error {
 		return nil
 	case testtodo.FieldPriority:
 		m.ResetPriority()
+		return nil
+	case testtodo.FieldDueDate:
+		m.ResetDueDate()
 		return nil
 	case testtodo.FieldCreatedAt:
 		m.ResetCreatedAt()

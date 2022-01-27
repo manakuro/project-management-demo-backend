@@ -115,6 +115,13 @@ func Priority(v int) predicate.TestTodo {
 	})
 }
 
+// DueDate applies equality check predicate on the "due_date" field. It's identical to DueDateEQ.
+func DueDate(v time.Time) predicate.TestTodo {
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldDueDate), v))
+	})
+}
+
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.TestTodo {
 	return predicate.TestTodo(func(s *sql.Selector) {
@@ -491,6 +498,96 @@ func PriorityLT(v int) predicate.TestTodo {
 func PriorityLTE(v int) predicate.TestTodo {
 	return predicate.TestTodo(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldPriority), v))
+	})
+}
+
+// DueDateEQ applies the EQ predicate on the "due_date" field.
+func DueDateEQ(v time.Time) predicate.TestTodo {
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldDueDate), v))
+	})
+}
+
+// DueDateNEQ applies the NEQ predicate on the "due_date" field.
+func DueDateNEQ(v time.Time) predicate.TestTodo {
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldDueDate), v))
+	})
+}
+
+// DueDateIn applies the In predicate on the "due_date" field.
+func DueDateIn(vs ...time.Time) predicate.TestTodo {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.TestTodo(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldDueDate), v...))
+	})
+}
+
+// DueDateNotIn applies the NotIn predicate on the "due_date" field.
+func DueDateNotIn(vs ...time.Time) predicate.TestTodo {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.TestTodo(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldDueDate), v...))
+	})
+}
+
+// DueDateGT applies the GT predicate on the "due_date" field.
+func DueDateGT(v time.Time) predicate.TestTodo {
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldDueDate), v))
+	})
+}
+
+// DueDateGTE applies the GTE predicate on the "due_date" field.
+func DueDateGTE(v time.Time) predicate.TestTodo {
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldDueDate), v))
+	})
+}
+
+// DueDateLT applies the LT predicate on the "due_date" field.
+func DueDateLT(v time.Time) predicate.TestTodo {
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldDueDate), v))
+	})
+}
+
+// DueDateLTE applies the LTE predicate on the "due_date" field.
+func DueDateLTE(v time.Time) predicate.TestTodo {
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldDueDate), v))
+	})
+}
+
+// DueDateIsNil applies the IsNil predicate on the "due_date" field.
+func DueDateIsNil() predicate.TestTodo {
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldDueDate)))
+	})
+}
+
+// DueDateNotNil applies the NotNil predicate on the "due_date" field.
+func DueDateNotNil() predicate.TestTodo {
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldDueDate)))
 	})
 }
 

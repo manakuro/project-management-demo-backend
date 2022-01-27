@@ -8341,6 +8341,18 @@ type TestTodoWhereInput struct {
 	PriorityLT    *int  `json:"priorityLT,omitempty"`
 	PriorityLTE   *int  `json:"priorityLTE,omitempty"`
 
+	// "due_date" field predicates.
+	DueDate       *time.Time  `json:"dueDate,omitempty"`
+	DueDateNEQ    *time.Time  `json:"dueDateNEQ,omitempty"`
+	DueDateIn     []time.Time `json:"dueDateIn,omitempty"`
+	DueDateNotIn  []time.Time `json:"dueDateNotIn,omitempty"`
+	DueDateGT     *time.Time  `json:"dueDateGT,omitempty"`
+	DueDateGTE    *time.Time  `json:"dueDateGTE,omitempty"`
+	DueDateLT     *time.Time  `json:"dueDateLT,omitempty"`
+	DueDateLTE    *time.Time  `json:"dueDateLTE,omitempty"`
+	DueDateIsNil  bool        `json:"dueDateIsNil,omitempty"`
+	DueDateNotNil bool        `json:"dueDateNotNil,omitempty"`
+
 	// "created_at" field predicates.
 	CreatedAt      *time.Time  `json:"createdAt,omitempty"`
 	CreatedAtNEQ   *time.Time  `json:"createdAtNEQ,omitempty"`
@@ -8568,6 +8580,36 @@ func (i *TestTodoWhereInput) P() (predicate.TestTodo, error) {
 	}
 	if i.PriorityLTE != nil {
 		predicates = append(predicates, testtodo.PriorityLTE(*i.PriorityLTE))
+	}
+	if i.DueDate != nil {
+		predicates = append(predicates, testtodo.DueDateEQ(*i.DueDate))
+	}
+	if i.DueDateNEQ != nil {
+		predicates = append(predicates, testtodo.DueDateNEQ(*i.DueDateNEQ))
+	}
+	if len(i.DueDateIn) > 0 {
+		predicates = append(predicates, testtodo.DueDateIn(i.DueDateIn...))
+	}
+	if len(i.DueDateNotIn) > 0 {
+		predicates = append(predicates, testtodo.DueDateNotIn(i.DueDateNotIn...))
+	}
+	if i.DueDateGT != nil {
+		predicates = append(predicates, testtodo.DueDateGT(*i.DueDateGT))
+	}
+	if i.DueDateGTE != nil {
+		predicates = append(predicates, testtodo.DueDateGTE(*i.DueDateGTE))
+	}
+	if i.DueDateLT != nil {
+		predicates = append(predicates, testtodo.DueDateLT(*i.DueDateLT))
+	}
+	if i.DueDateLTE != nil {
+		predicates = append(predicates, testtodo.DueDateLTE(*i.DueDateLTE))
+	}
+	if i.DueDateIsNil {
+		predicates = append(predicates, testtodo.DueDateIsNil())
+	}
+	if i.DueDateNotNil {
+		predicates = append(predicates, testtodo.DueDateNotNil())
 	}
 	if i.CreatedAt != nil {
 		predicates = append(predicates, testtodo.CreatedAtEQ(*i.CreatedAt))

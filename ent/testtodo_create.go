@@ -78,6 +78,20 @@ func (ttc *TestTodoCreate) SetNillablePriority(i *int) *TestTodoCreate {
 	return ttc
 }
 
+// SetDueDate sets the "due_date" field.
+func (ttc *TestTodoCreate) SetDueDate(t time.Time) *TestTodoCreate {
+	ttc.mutation.SetDueDate(t)
+	return ttc
+}
+
+// SetNillableDueDate sets the "due_date" field if the given value is not nil.
+func (ttc *TestTodoCreate) SetNillableDueDate(t *time.Time) *TestTodoCreate {
+	if t != nil {
+		ttc.SetDueDate(*t)
+	}
+	return ttc
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (ttc *TestTodoCreate) SetCreatedAt(t time.Time) *TestTodoCreate {
 	ttc.mutation.SetCreatedAt(t)
@@ -299,6 +313,14 @@ func (ttc *TestTodoCreate) createSpec() (*TestTodo, *sqlgraph.CreateSpec) {
 			Column: testtodo.FieldPriority,
 		})
 		_node.Priority = value
+	}
+	if value, ok := ttc.mutation.DueDate(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: testtodo.FieldDueDate,
+		})
+		_node.DueDate = &value
 	}
 	if value, ok := ttc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

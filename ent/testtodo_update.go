@@ -9,6 +9,7 @@ import (
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/ent/testuser"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -94,6 +95,26 @@ func (ttu *TestTodoUpdate) SetNillablePriority(i *int) *TestTodoUpdate {
 // AddPriority adds i to the "priority" field.
 func (ttu *TestTodoUpdate) AddPriority(i int) *TestTodoUpdate {
 	ttu.mutation.AddPriority(i)
+	return ttu
+}
+
+// SetDueDate sets the "due_date" field.
+func (ttu *TestTodoUpdate) SetDueDate(t time.Time) *TestTodoUpdate {
+	ttu.mutation.SetDueDate(t)
+	return ttu
+}
+
+// SetNillableDueDate sets the "due_date" field if the given value is not nil.
+func (ttu *TestTodoUpdate) SetNillableDueDate(t *time.Time) *TestTodoUpdate {
+	if t != nil {
+		ttu.SetDueDate(*t)
+	}
+	return ttu
+}
+
+// ClearDueDate clears the value of the "due_date" field.
+func (ttu *TestTodoUpdate) ClearDueDate() *TestTodoUpdate {
+	ttu.mutation.ClearDueDate()
 	return ttu
 }
 
@@ -229,6 +250,19 @@ func (ttu *TestTodoUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: testtodo.FieldPriority,
 		})
 	}
+	if value, ok := ttu.mutation.DueDate(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: testtodo.FieldDueDate,
+		})
+	}
+	if ttu.mutation.DueDateCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: testtodo.FieldDueDate,
+		})
+	}
 	if ttu.mutation.TestUserCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -349,6 +383,26 @@ func (ttuo *TestTodoUpdateOne) SetNillablePriority(i *int) *TestTodoUpdateOne {
 // AddPriority adds i to the "priority" field.
 func (ttuo *TestTodoUpdateOne) AddPriority(i int) *TestTodoUpdateOne {
 	ttuo.mutation.AddPriority(i)
+	return ttuo
+}
+
+// SetDueDate sets the "due_date" field.
+func (ttuo *TestTodoUpdateOne) SetDueDate(t time.Time) *TestTodoUpdateOne {
+	ttuo.mutation.SetDueDate(t)
+	return ttuo
+}
+
+// SetNillableDueDate sets the "due_date" field if the given value is not nil.
+func (ttuo *TestTodoUpdateOne) SetNillableDueDate(t *time.Time) *TestTodoUpdateOne {
+	if t != nil {
+		ttuo.SetDueDate(*t)
+	}
+	return ttuo
+}
+
+// ClearDueDate clears the value of the "due_date" field.
+func (ttuo *TestTodoUpdateOne) ClearDueDate() *TestTodoUpdateOne {
+	ttuo.mutation.ClearDueDate()
 	return ttuo
 }
 
@@ -506,6 +560,19 @@ func (ttuo *TestTodoUpdateOne) sqlSave(ctx context.Context) (_node *TestTodo, er
 			Type:   field.TypeInt,
 			Value:  value,
 			Column: testtodo.FieldPriority,
+		})
+	}
+	if value, ok := ttuo.mutation.DueDate(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: testtodo.FieldDueDate,
+		})
+	}
+	if ttuo.mutation.DueDateCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: testtodo.FieldDueDate,
 		})
 	}
 	if ttuo.mutation.TestUserCleared() {

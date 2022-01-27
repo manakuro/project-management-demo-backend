@@ -1826,6 +1826,7 @@ type CreateTestTodoInput struct {
 	Name       *string
 	Status     *testtodo.Status
 	Priority   *int
+	DueDate    *time.Time
 	CreatedAt  *time.Time
 	UpdatedAt  *time.Time
 	TestUserID *ulid.ID
@@ -1841,6 +1842,9 @@ func (i *CreateTestTodoInput) Mutate(m *TestTodoCreate) {
 	}
 	if v := i.Priority; v != nil {
 		m.SetPriority(*v)
+	}
+	if v := i.DueDate; v != nil {
+		m.SetDueDate(*v)
 	}
 	if v := i.CreatedAt; v != nil {
 		m.SetCreatedAt(*v)
@@ -1865,6 +1869,8 @@ type UpdateTestTodoInput struct {
 	Name          *string
 	Status        *testtodo.Status
 	Priority      *int
+	DueDate       *time.Time
+	ClearDueDate  bool
 	TestUserID    *ulid.ID
 	ClearTestUser bool
 }
@@ -1879,6 +1885,12 @@ func (i *UpdateTestTodoInput) Mutate(m *TestTodoMutation) {
 	}
 	if v := i.Priority; v != nil {
 		m.SetPriority(*v)
+	}
+	if i.ClearDueDate {
+		m.ClearDueDate()
+	}
+	if v := i.DueDate; v != nil {
+		m.SetDueDate(*v)
 	}
 	if i.ClearTestUser {
 		m.ClearTestUser()

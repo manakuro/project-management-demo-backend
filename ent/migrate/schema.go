@@ -560,6 +560,7 @@ var (
 		{Name: "name", Type: field.TypeString, Default: ""},
 		{Name: "status", Type: field.TypeEnum, Enums: []string{"IN_PROGRESS", "COMPLETED"}, Default: "IN_PROGRESS"},
 		{Name: "priority", Type: field.TypeInt, Default: 0},
+		{Name: "due_date", Type: field.TypeTime, Nullable: true, SchemaType: map[string]string{"mysql": "datetime"}},
 		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
 		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
 		{Name: "test_user_id", Type: field.TypeString, Nullable: true},
@@ -572,7 +573,7 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "test_todos_test_users_test_todos",
-				Columns:    []*schema.Column{TestTodosColumns[6]},
+				Columns:    []*schema.Column{TestTodosColumns[7]},
 				RefColumns: []*schema.Column{TestUsersColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
