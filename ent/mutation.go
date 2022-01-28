@@ -11298,19 +11298,21 @@ func (m *TaskColumnMutation) ResetEdge(name string) error {
 // TaskLikeMutation represents an operation that mutates the TaskLike nodes in the graph.
 type TaskLikeMutation struct {
 	config
-	op              Op
-	typ             string
-	id              *ulid.ID
-	created_at      *time.Time
-	updated_at      *time.Time
-	clearedFields   map[string]struct{}
-	task            *ulid.ID
-	clearedtask     bool
-	teammate        *ulid.ID
-	clearedteammate bool
-	done            bool
-	oldValue        func(context.Context) (*TaskLike, error)
-	predicates      []predicate.TaskLike
+	op               Op
+	typ              string
+	id               *ulid.ID
+	created_at       *time.Time
+	updated_at       *time.Time
+	clearedFields    map[string]struct{}
+	task             *ulid.ID
+	clearedtask      bool
+	teammate         *ulid.ID
+	clearedteammate  bool
+	workspace        *ulid.ID
+	clearedworkspace bool
+	done             bool
+	oldValue         func(context.Context) (*TaskLike, error)
+	predicates       []predicate.TaskLike
 }
 
 var _ ent.Mutation = (*TaskLikeMutation)(nil)
@@ -11470,6 +11472,42 @@ func (m *TaskLikeMutation) ResetTeammateID() {
 	m.teammate = nil
 }
 
+// SetWorkspaceID sets the "workspace_id" field.
+func (m *TaskLikeMutation) SetWorkspaceID(u ulid.ID) {
+	m.workspace = &u
+}
+
+// WorkspaceID returns the value of the "workspace_id" field in the mutation.
+func (m *TaskLikeMutation) WorkspaceID() (r ulid.ID, exists bool) {
+	v := m.workspace
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldWorkspaceID returns the old "workspace_id" field's value of the TaskLike entity.
+// If the TaskLike object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TaskLikeMutation) OldWorkspaceID(ctx context.Context) (v ulid.ID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldWorkspaceID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldWorkspaceID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldWorkspaceID: %w", err)
+	}
+	return oldValue.WorkspaceID, nil
+}
+
+// ResetWorkspaceID resets all changes to the "workspace_id" field.
+func (m *TaskLikeMutation) ResetWorkspaceID() {
+	m.workspace = nil
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (m *TaskLikeMutation) SetCreatedAt(t time.Time) {
 	m.created_at = &t
@@ -11594,6 +11632,32 @@ func (m *TaskLikeMutation) ResetTeammate() {
 	m.clearedteammate = false
 }
 
+// ClearWorkspace clears the "workspace" edge to the Workspace entity.
+func (m *TaskLikeMutation) ClearWorkspace() {
+	m.clearedworkspace = true
+}
+
+// WorkspaceCleared reports if the "workspace" edge to the Workspace entity was cleared.
+func (m *TaskLikeMutation) WorkspaceCleared() bool {
+	return m.clearedworkspace
+}
+
+// WorkspaceIDs returns the "workspace" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// WorkspaceID instead. It exists only for internal usage by the builders.
+func (m *TaskLikeMutation) WorkspaceIDs() (ids []ulid.ID) {
+	if id := m.workspace; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetWorkspace resets all changes to the "workspace" edge.
+func (m *TaskLikeMutation) ResetWorkspace() {
+	m.workspace = nil
+	m.clearedworkspace = false
+}
+
 // Where appends a list predicates to the TaskLikeMutation builder.
 func (m *TaskLikeMutation) Where(ps ...predicate.TaskLike) {
 	m.predicates = append(m.predicates, ps...)
@@ -11613,12 +11677,15 @@ func (m *TaskLikeMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *TaskLikeMutation) Fields() []string {
-	fields := make([]string, 0, 4)
+	fields := make([]string, 0, 5)
 	if m.task != nil {
 		fields = append(fields, tasklike.FieldTaskID)
 	}
 	if m.teammate != nil {
 		fields = append(fields, tasklike.FieldTeammateID)
+	}
+	if m.workspace != nil {
+		fields = append(fields, tasklike.FieldWorkspaceID)
 	}
 	if m.created_at != nil {
 		fields = append(fields, tasklike.FieldCreatedAt)
@@ -11638,6 +11705,8 @@ func (m *TaskLikeMutation) Field(name string) (ent.Value, bool) {
 		return m.TaskID()
 	case tasklike.FieldTeammateID:
 		return m.TeammateID()
+	case tasklike.FieldWorkspaceID:
+		return m.WorkspaceID()
 	case tasklike.FieldCreatedAt:
 		return m.CreatedAt()
 	case tasklike.FieldUpdatedAt:
@@ -11655,6 +11724,8 @@ func (m *TaskLikeMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldTaskID(ctx)
 	case tasklike.FieldTeammateID:
 		return m.OldTeammateID(ctx)
+	case tasklike.FieldWorkspaceID:
+		return m.OldWorkspaceID(ctx)
 	case tasklike.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case tasklike.FieldUpdatedAt:
@@ -11681,6 +11752,13 @@ func (m *TaskLikeMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetTeammateID(v)
+		return nil
+	case tasklike.FieldWorkspaceID:
+		v, ok := value.(ulid.ID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetWorkspaceID(v)
 		return nil
 	case tasklike.FieldCreatedAt:
 		v, ok := value.(time.Time)
@@ -11751,6 +11829,9 @@ func (m *TaskLikeMutation) ResetField(name string) error {
 	case tasklike.FieldTeammateID:
 		m.ResetTeammateID()
 		return nil
+	case tasklike.FieldWorkspaceID:
+		m.ResetWorkspaceID()
+		return nil
 	case tasklike.FieldCreatedAt:
 		m.ResetCreatedAt()
 		return nil
@@ -11763,12 +11844,15 @@ func (m *TaskLikeMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *TaskLikeMutation) AddedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.task != nil {
 		edges = append(edges, tasklike.EdgeTask)
 	}
 	if m.teammate != nil {
 		edges = append(edges, tasklike.EdgeTeammate)
+	}
+	if m.workspace != nil {
+		edges = append(edges, tasklike.EdgeWorkspace)
 	}
 	return edges
 }
@@ -11785,13 +11869,17 @@ func (m *TaskLikeMutation) AddedIDs(name string) []ent.Value {
 		if id := m.teammate; id != nil {
 			return []ent.Value{*id}
 		}
+	case tasklike.EdgeWorkspace:
+		if id := m.workspace; id != nil {
+			return []ent.Value{*id}
+		}
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *TaskLikeMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	return edges
 }
 
@@ -11805,12 +11893,15 @@ func (m *TaskLikeMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *TaskLikeMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.clearedtask {
 		edges = append(edges, tasklike.EdgeTask)
 	}
 	if m.clearedteammate {
 		edges = append(edges, tasklike.EdgeTeammate)
+	}
+	if m.clearedworkspace {
+		edges = append(edges, tasklike.EdgeWorkspace)
 	}
 	return edges
 }
@@ -11823,6 +11914,8 @@ func (m *TaskLikeMutation) EdgeCleared(name string) bool {
 		return m.clearedtask
 	case tasklike.EdgeTeammate:
 		return m.clearedteammate
+	case tasklike.EdgeWorkspace:
+		return m.clearedworkspace
 	}
 	return false
 }
@@ -11837,6 +11930,9 @@ func (m *TaskLikeMutation) ClearEdge(name string) error {
 	case tasklike.EdgeTeammate:
 		m.ClearTeammate()
 		return nil
+	case tasklike.EdgeWorkspace:
+		m.ClearWorkspace()
+		return nil
 	}
 	return fmt.Errorf("unknown TaskLike unique edge %s", name)
 }
@@ -11850,6 +11946,9 @@ func (m *TaskLikeMutation) ResetEdge(name string) error {
 		return nil
 	case tasklike.EdgeTeammate:
 		m.ResetTeammate()
+		return nil
+	case tasklike.EdgeWorkspace:
+		m.ResetWorkspace()
 		return nil
 	}
 	return fmt.Errorf("unknown TaskLike edge %s", name)
@@ -21078,6 +21177,9 @@ type WorkspaceMutation struct {
 	teammate_task_sections             map[ulid.ID]struct{}
 	removedteammate_task_sections      map[ulid.ID]struct{}
 	clearedteammate_task_sections      bool
+	task_likes                         map[ulid.ID]struct{}
+	removedtask_likes                  map[ulid.ID]struct{}
+	clearedtask_likes                  bool
 	done                               bool
 	oldValue                           func(context.Context) (*Workspace, error)
 	predicates                         []predicate.Workspace
@@ -21711,6 +21813,60 @@ func (m *WorkspaceMutation) ResetTeammateTaskSections() {
 	m.removedteammate_task_sections = nil
 }
 
+// AddTaskLikeIDs adds the "task_likes" edge to the TaskLike entity by ids.
+func (m *WorkspaceMutation) AddTaskLikeIDs(ids ...ulid.ID) {
+	if m.task_likes == nil {
+		m.task_likes = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		m.task_likes[ids[i]] = struct{}{}
+	}
+}
+
+// ClearTaskLikes clears the "task_likes" edge to the TaskLike entity.
+func (m *WorkspaceMutation) ClearTaskLikes() {
+	m.clearedtask_likes = true
+}
+
+// TaskLikesCleared reports if the "task_likes" edge to the TaskLike entity was cleared.
+func (m *WorkspaceMutation) TaskLikesCleared() bool {
+	return m.clearedtask_likes
+}
+
+// RemoveTaskLikeIDs removes the "task_likes" edge to the TaskLike entity by IDs.
+func (m *WorkspaceMutation) RemoveTaskLikeIDs(ids ...ulid.ID) {
+	if m.removedtask_likes == nil {
+		m.removedtask_likes = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		delete(m.task_likes, ids[i])
+		m.removedtask_likes[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedTaskLikes returns the removed IDs of the "task_likes" edge to the TaskLike entity.
+func (m *WorkspaceMutation) RemovedTaskLikesIDs() (ids []ulid.ID) {
+	for id := range m.removedtask_likes {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// TaskLikesIDs returns the "task_likes" edge IDs in the mutation.
+func (m *WorkspaceMutation) TaskLikesIDs() (ids []ulid.ID) {
+	for id := range m.task_likes {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetTaskLikes resets all changes to the "task_likes" edge.
+func (m *WorkspaceMutation) ResetTaskLikes() {
+	m.task_likes = nil
+	m.clearedtask_likes = false
+	m.removedtask_likes = nil
+}
+
 // Where appends a list predicates to the WorkspaceMutation builder.
 func (m *WorkspaceMutation) Where(ps ...predicate.Workspace) {
 	m.predicates = append(m.predicates, ps...)
@@ -21897,7 +22053,7 @@ func (m *WorkspaceMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *WorkspaceMutation) AddedEdges() []string {
-	edges := make([]string, 0, 7)
+	edges := make([]string, 0, 8)
 	if m.teammate != nil {
 		edges = append(edges, workspace.EdgeTeammate)
 	}
@@ -21918,6 +22074,9 @@ func (m *WorkspaceMutation) AddedEdges() []string {
 	}
 	if m.teammate_task_sections != nil {
 		edges = append(edges, workspace.EdgeTeammateTaskSections)
+	}
+	if m.task_likes != nil {
+		edges = append(edges, workspace.EdgeTaskLikes)
 	}
 	return edges
 }
@@ -21966,13 +22125,19 @@ func (m *WorkspaceMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case workspace.EdgeTaskLikes:
+		ids := make([]ent.Value, 0, len(m.task_likes))
+		for id := range m.task_likes {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *WorkspaceMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 7)
+	edges := make([]string, 0, 8)
 	if m.removedprojects != nil {
 		edges = append(edges, workspace.EdgeProjects)
 	}
@@ -21990,6 +22155,9 @@ func (m *WorkspaceMutation) RemovedEdges() []string {
 	}
 	if m.removedteammate_task_sections != nil {
 		edges = append(edges, workspace.EdgeTeammateTaskSections)
+	}
+	if m.removedtask_likes != nil {
+		edges = append(edges, workspace.EdgeTaskLikes)
 	}
 	return edges
 }
@@ -22034,13 +22202,19 @@ func (m *WorkspaceMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case workspace.EdgeTaskLikes:
+		ids := make([]ent.Value, 0, len(m.removedtask_likes))
+		for id := range m.removedtask_likes {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *WorkspaceMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 7)
+	edges := make([]string, 0, 8)
 	if m.clearedteammate {
 		edges = append(edges, workspace.EdgeTeammate)
 	}
@@ -22061,6 +22235,9 @@ func (m *WorkspaceMutation) ClearedEdges() []string {
 	}
 	if m.clearedteammate_task_sections {
 		edges = append(edges, workspace.EdgeTeammateTaskSections)
+	}
+	if m.clearedtask_likes {
+		edges = append(edges, workspace.EdgeTaskLikes)
 	}
 	return edges
 }
@@ -22083,6 +22260,8 @@ func (m *WorkspaceMutation) EdgeCleared(name string) bool {
 		return m.clearedteammate_task_list_statuses
 	case workspace.EdgeTeammateTaskSections:
 		return m.clearedteammate_task_sections
+	case workspace.EdgeTaskLikes:
+		return m.clearedtask_likes
 	}
 	return false
 }
@@ -22122,6 +22301,9 @@ func (m *WorkspaceMutation) ResetEdge(name string) error {
 		return nil
 	case workspace.EdgeTeammateTaskSections:
 		m.ResetTeammateTaskSections()
+		return nil
+	case workspace.EdgeTaskLikes:
+		m.ResetTaskLikes()
 		return nil
 	}
 	return fmt.Errorf("unknown Workspace edge %s", name)

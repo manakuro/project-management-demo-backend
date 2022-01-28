@@ -11,6 +11,7 @@ import (
 	"project-management-demo-backend/ent/task"
 	"project-management-demo-backend/ent/tasklike"
 	"project-management-demo-backend/ent/teammate"
+	"project-management-demo-backend/ent/workspace"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -42,6 +43,12 @@ func (tlu *TaskLikeUpdate) SetTeammateID(u ulid.ID) *TaskLikeUpdate {
 	return tlu
 }
 
+// SetWorkspaceID sets the "workspace_id" field.
+func (tlu *TaskLikeUpdate) SetWorkspaceID(u ulid.ID) *TaskLikeUpdate {
+	tlu.mutation.SetWorkspaceID(u)
+	return tlu
+}
+
 // SetTask sets the "task" edge to the Task entity.
 func (tlu *TaskLikeUpdate) SetTask(t *Task) *TaskLikeUpdate {
 	return tlu.SetTaskID(t.ID)
@@ -50,6 +57,11 @@ func (tlu *TaskLikeUpdate) SetTask(t *Task) *TaskLikeUpdate {
 // SetTeammate sets the "teammate" edge to the Teammate entity.
 func (tlu *TaskLikeUpdate) SetTeammate(t *Teammate) *TaskLikeUpdate {
 	return tlu.SetTeammateID(t.ID)
+}
+
+// SetWorkspace sets the "workspace" edge to the Workspace entity.
+func (tlu *TaskLikeUpdate) SetWorkspace(w *Workspace) *TaskLikeUpdate {
+	return tlu.SetWorkspaceID(w.ID)
 }
 
 // Mutation returns the TaskLikeMutation object of the builder.
@@ -66,6 +78,12 @@ func (tlu *TaskLikeUpdate) ClearTask() *TaskLikeUpdate {
 // ClearTeammate clears the "teammate" edge to the Teammate entity.
 func (tlu *TaskLikeUpdate) ClearTeammate() *TaskLikeUpdate {
 	tlu.mutation.ClearTeammate()
+	return tlu
+}
+
+// ClearWorkspace clears the "workspace" edge to the Workspace entity.
+func (tlu *TaskLikeUpdate) ClearWorkspace() *TaskLikeUpdate {
+	tlu.mutation.ClearWorkspace()
 	return tlu
 }
 
@@ -136,6 +154,9 @@ func (tlu *TaskLikeUpdate) check() error {
 	}
 	if _, ok := tlu.mutation.TeammateID(); tlu.mutation.TeammateCleared() && !ok {
 		return errors.New("ent: clearing a required unique edge \"teammate\"")
+	}
+	if _, ok := tlu.mutation.WorkspaceID(); tlu.mutation.WorkspaceCleared() && !ok {
+		return errors.New("ent: clearing a required unique edge \"workspace\"")
 	}
 	return nil
 }
@@ -228,6 +249,41 @@ func (tlu *TaskLikeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if tlu.mutation.WorkspaceCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   tasklike.WorkspaceTable,
+			Columns: []string{tasklike.WorkspaceColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: workspace.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tlu.mutation.WorkspaceIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   tasklike.WorkspaceTable,
+			Columns: []string{tasklike.WorkspaceColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: workspace.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, tlu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{tasklike.Label}
@@ -259,6 +315,12 @@ func (tluo *TaskLikeUpdateOne) SetTeammateID(u ulid.ID) *TaskLikeUpdateOne {
 	return tluo
 }
 
+// SetWorkspaceID sets the "workspace_id" field.
+func (tluo *TaskLikeUpdateOne) SetWorkspaceID(u ulid.ID) *TaskLikeUpdateOne {
+	tluo.mutation.SetWorkspaceID(u)
+	return tluo
+}
+
 // SetTask sets the "task" edge to the Task entity.
 func (tluo *TaskLikeUpdateOne) SetTask(t *Task) *TaskLikeUpdateOne {
 	return tluo.SetTaskID(t.ID)
@@ -267,6 +329,11 @@ func (tluo *TaskLikeUpdateOne) SetTask(t *Task) *TaskLikeUpdateOne {
 // SetTeammate sets the "teammate" edge to the Teammate entity.
 func (tluo *TaskLikeUpdateOne) SetTeammate(t *Teammate) *TaskLikeUpdateOne {
 	return tluo.SetTeammateID(t.ID)
+}
+
+// SetWorkspace sets the "workspace" edge to the Workspace entity.
+func (tluo *TaskLikeUpdateOne) SetWorkspace(w *Workspace) *TaskLikeUpdateOne {
+	return tluo.SetWorkspaceID(w.ID)
 }
 
 // Mutation returns the TaskLikeMutation object of the builder.
@@ -283,6 +350,12 @@ func (tluo *TaskLikeUpdateOne) ClearTask() *TaskLikeUpdateOne {
 // ClearTeammate clears the "teammate" edge to the Teammate entity.
 func (tluo *TaskLikeUpdateOne) ClearTeammate() *TaskLikeUpdateOne {
 	tluo.mutation.ClearTeammate()
+	return tluo
+}
+
+// ClearWorkspace clears the "workspace" edge to the Workspace entity.
+func (tluo *TaskLikeUpdateOne) ClearWorkspace() *TaskLikeUpdateOne {
+	tluo.mutation.ClearWorkspace()
 	return tluo
 }
 
@@ -360,6 +433,9 @@ func (tluo *TaskLikeUpdateOne) check() error {
 	}
 	if _, ok := tluo.mutation.TeammateID(); tluo.mutation.TeammateCleared() && !ok {
 		return errors.New("ent: clearing a required unique edge \"teammate\"")
+	}
+	if _, ok := tluo.mutation.WorkspaceID(); tluo.mutation.WorkspaceCleared() && !ok {
+		return errors.New("ent: clearing a required unique edge \"workspace\"")
 	}
 	return nil
 }
@@ -461,6 +537,41 @@ func (tluo *TaskLikeUpdateOne) sqlSave(ctx context.Context) (_node *TaskLike, er
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: teammate.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if tluo.mutation.WorkspaceCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   tasklike.WorkspaceTable,
+			Columns: []string{tasklike.WorkspaceColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: workspace.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tluo.mutation.WorkspaceIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   tasklike.WorkspaceTable,
+			Columns: []string{tasklike.WorkspaceColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: workspace.FieldID,
 				},
 			},
 		}

@@ -388,6 +388,14 @@ func (tl *TaskLike) Teammate(ctx context.Context) (*Teammate, error) {
 	return result, err
 }
 
+func (tl *TaskLike) Workspace(ctx context.Context) (*Workspace, error) {
+	result, err := tl.Edges.WorkspaceOrErr()
+	if IsNotLoaded(err) {
+		result, err = tl.QueryWorkspace().Only(ctx)
+	}
+	return result, err
+}
+
 func (tlcs *TaskListCompletedStatus) TeammateTaskListStatuses(ctx context.Context) ([]*TeammateTaskListStatus, error) {
 	result, err := tlcs.Edges.TeammateTaskListStatusesOrErr()
 	if IsNotLoaded(err) {
@@ -736,6 +744,14 @@ func (w *Workspace) TeammateTaskSections(ctx context.Context) ([]*TeammateTaskSe
 	result, err := w.Edges.TeammateTaskSectionsOrErr()
 	if IsNotLoaded(err) {
 		result, err = w.QueryTeammateTaskSections().All(ctx)
+	}
+	return result, err
+}
+
+func (w *Workspace) TaskLikes(ctx context.Context) ([]*TaskLike, error) {
+	result, err := w.Edges.TaskLikesOrErr()
+	if IsNotLoaded(err) {
+		result, err = w.QueryTaskLikes().All(ctx)
 	}
 	return result, err
 }

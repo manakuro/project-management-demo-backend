@@ -16,6 +16,8 @@ const (
 	FieldTaskID = "task_id"
 	// FieldTeammateID holds the string denoting the teammate_id field in the database.
 	FieldTeammateID = "teammate_id"
+	// FieldWorkspaceID holds the string denoting the workspace_id field in the database.
+	FieldWorkspaceID = "workspace_id"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
@@ -24,6 +26,8 @@ const (
 	EdgeTask = "task"
 	// EdgeTeammate holds the string denoting the teammate edge name in mutations.
 	EdgeTeammate = "teammate"
+	// EdgeWorkspace holds the string denoting the workspace edge name in mutations.
+	EdgeWorkspace = "workspace"
 	// Table holds the table name of the tasklike in the database.
 	Table = "task_likes"
 	// TaskTable is the table that holds the task relation/edge.
@@ -40,6 +44,13 @@ const (
 	TeammateInverseTable = "teammates"
 	// TeammateColumn is the table column denoting the teammate relation/edge.
 	TeammateColumn = "teammate_id"
+	// WorkspaceTable is the table that holds the workspace relation/edge.
+	WorkspaceTable = "task_likes"
+	// WorkspaceInverseTable is the table name for the Workspace entity.
+	// It exists in this package in order to avoid circular dependency with the "workspace" package.
+	WorkspaceInverseTable = "workspaces"
+	// WorkspaceColumn is the table column denoting the workspace relation/edge.
+	WorkspaceColumn = "workspace_id"
 )
 
 // Columns holds all SQL columns for tasklike fields.
@@ -47,6 +58,7 @@ var Columns = []string{
 	FieldID,
 	FieldTaskID,
 	FieldTeammateID,
+	FieldWorkspaceID,
 	FieldCreatedAt,
 	FieldUpdatedAt,
 }

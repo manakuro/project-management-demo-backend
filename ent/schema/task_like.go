@@ -32,6 +32,8 @@ func (TaskLikeMixin) Fields() []ent.Field {
 			GoType(ulid.ID("")),
 		field.String("teammate_id").
 			GoType(ulid.ID("")),
+		field.String("workspace_id").
+			GoType(ulid.ID("")),
 	}
 }
 
@@ -56,6 +58,16 @@ func (TaskLike) Edges() []ent.Edge {
 			Annotations(
 				schema.Annotation(
 					annotation.Edge{FieldName: "teammate_id"},
+				),
+			),
+		edge.From("workspace", Workspace.Type).
+			Ref("task_likes").
+			Field("workspace_id").
+			Unique().
+			Required().
+			Annotations(
+				schema.Annotation(
+					annotation.Edge{FieldName: "workspace_id"},
 				),
 			),
 	}

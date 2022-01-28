@@ -444,6 +444,10 @@ input WorkspaceWhereInput {
   """teammate_task_sections edge predicates"""
   hasTeammateTaskSections: Boolean
   hasTeammateTaskSectionsWith: [TeammateTaskSectionWhereInput!]
+  
+  """task_likes edge predicates"""
+  hasTaskLikes: Boolean
+  hasTaskLikesWith: [TaskLikeWhereInput!]
 }
 
 """
@@ -2825,6 +2829,21 @@ input TaskLikeWhereInput {
   teammateIDEqualFold: ID
   teammateIDContainsFold: ID
   
+  """workspace_id field predicates"""
+  workspaceID: ID
+  workspaceIDNEQ: ID
+  workspaceIDIn: [ID!]
+  workspaceIDNotIn: [ID!]
+  workspaceIDGT: ID
+  workspaceIDGTE: ID
+  workspaceIDLT: ID
+  workspaceIDLTE: ID
+  workspaceIDContains: ID
+  workspaceIDHasPrefix: ID
+  workspaceIDHasSuffix: ID
+  workspaceIDEqualFold: ID
+  workspaceIDContainsFold: ID
+  
   """created_at field predicates"""
   createdAt: Time
   createdAtNEQ: Time
@@ -2862,4 +2881,8 @@ input TaskLikeWhereInput {
   """teammate edge predicates"""
   hasTeammate: Boolean
   hasTeammateWith: [TeammateWhereInput!]
+  
+  """workspace edge predicates"""
+  hasWorkspace: Boolean
+  hasWorkspaceWith: [WorkspaceWhereInput!]
 }

@@ -2529,6 +2529,22 @@ func (c *TaskLikeClient) QueryTeammate(tl *TaskLike) *TeammateQuery {
 	return query
 }
 
+// QueryWorkspace queries the workspace edge of a TaskLike.
+func (c *TaskLikeClient) QueryWorkspace(tl *TaskLike) *WorkspaceQuery {
+	query := &WorkspaceQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := tl.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(tasklike.Table, tasklike.FieldID, id),
+			sqlgraph.To(workspace.Table, workspace.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, tasklike.WorkspaceTable, tasklike.WorkspaceColumn),
+		)
+		fromV = sqlgraph.Neighbors(tl.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *TaskLikeClient) Hooks() []Hook {
 	return c.hooks.TaskLike
@@ -4396,6 +4412,22 @@ func (c *WorkspaceClient) QueryTeammateTaskSections(w *Workspace) *TeammateTaskS
 			sqlgraph.From(workspace.Table, workspace.FieldID, id),
 			sqlgraph.To(teammatetasksection.Table, teammatetasksection.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, workspace.TeammateTaskSectionsTable, workspace.TeammateTaskSectionsColumn),
+		)
+		fromV = sqlgraph.Neighbors(w.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryTaskLikes queries the task_likes edge of a Workspace.
+func (c *WorkspaceClient) QueryTaskLikes(w *Workspace) *TaskLikeQuery {
+	query := &TaskLikeQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := w.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(workspace.Table, workspace.FieldID, id),
+			sqlgraph.To(tasklike.Table, tasklike.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, workspace.TaskLikesTable, workspace.TaskLikesColumn),
 		)
 		fromV = sqlgraph.Neighbors(w.driver.Dialect(), step)
 		return fromV, nil

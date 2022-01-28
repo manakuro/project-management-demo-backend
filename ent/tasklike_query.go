@@ -12,6 +12,7 @@ import (
 	"project-management-demo-backend/ent/task"
 	"project-management-demo-backend/ent/tasklike"
 	"project-management-demo-backend/ent/teammate"
+	"project-management-demo-backend/ent/workspace"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -28,8 +29,9 @@ type TaskLikeQuery struct {
 	fields     []string
 	predicates []predicate.TaskLike
 	// eager-loading edges.
-	withTask     *TaskQuery
-	withTeammate *TeammateQuery
+	withTask      *TaskQuery
+	withTeammate  *TeammateQuery
+	withWorkspace *WorkspaceQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -103,6 +105,28 @@ func (tlq *TaskLikeQuery) QueryTeammate() *TeammateQuery {
 			sqlgraph.From(tasklike.Table, tasklike.FieldID, selector),
 			sqlgraph.To(teammate.Table, teammate.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, tasklike.TeammateTable, tasklike.TeammateColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(tlq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryWorkspace chains the current query on the "workspace" edge.
+func (tlq *TaskLikeQuery) QueryWorkspace() *WorkspaceQuery {
+	query := &WorkspaceQuery{config: tlq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := tlq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := tlq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(tasklike.Table, tasklike.FieldID, selector),
+			sqlgraph.To(workspace.Table, workspace.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, tasklike.WorkspaceTable, tasklike.WorkspaceColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(tlq.driver.Dialect(), step)
 		return fromU, nil
@@ -286,13 +310,14 @@ func (tlq *TaskLikeQuery) Clone() *TaskLikeQuery {
 		return nil
 	}
 	return &TaskLikeQuery{
-		config:       tlq.config,
-		limit:        tlq.limit,
-		offset:       tlq.offset,
-		order:        append([]OrderFunc{}, tlq.order...),
-		predicates:   append([]predicate.TaskLike{}, tlq.predicates...),
-		withTask:     tlq.withTask.Clone(),
-		withTeammate: tlq.withTeammate.Clone(),
+		config:        tlq.config,
+		limit:         tlq.limit,
+		offset:        tlq.offset,
+		order:         append([]OrderFunc{}, tlq.order...),
+		predicates:    append([]predicate.TaskLike{}, tlq.predicates...),
+		withTask:      tlq.withTask.Clone(),
+		withTeammate:  tlq.withTeammate.Clone(),
+		withWorkspace: tlq.withWorkspace.Clone(),
 		// clone intermediate query.
 		sql:  tlq.sql.Clone(),
 		path: tlq.path,
@@ -318,6 +343,17 @@ func (tlq *TaskLikeQuery) WithTeammate(opts ...func(*TeammateQuery)) *TaskLikeQu
 		opt(query)
 	}
 	tlq.withTeammate = query
+	return tlq
+}
+
+// WithWorkspace tells the query-builder to eager-load the nodes that are connected to
+// the "workspace" edge. The optional arguments are used to configure the query builder of the edge.
+func (tlq *TaskLikeQuery) WithWorkspace(opts ...func(*WorkspaceQuery)) *TaskLikeQuery {
+	query := &WorkspaceQuery{config: tlq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	tlq.withWorkspace = query
 	return tlq
 }
 
@@ -386,9 +422,10 @@ func (tlq *TaskLikeQuery) sqlAll(ctx context.Context) ([]*TaskLike, error) {
 	var (
 		nodes       = []*TaskLike{}
 		_spec       = tlq.querySpec()
-		loadedTypes = [2]bool{
+		loadedTypes = [3]bool{
 			tlq.withTask != nil,
 			tlq.withTeammate != nil,
+			tlq.withWorkspace != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -459,6 +496,32 @@ func (tlq *TaskLikeQuery) sqlAll(ctx context.Context) ([]*TaskLike, error) {
 			}
 			for i := range nodes {
 				nodes[i].Edges.Teammate = n
+			}
+		}
+	}
+
+	if query := tlq.withWorkspace; query != nil {
+		ids := make([]ulid.ID, 0, len(nodes))
+		nodeids := make(map[ulid.ID][]*TaskLike)
+		for i := range nodes {
+			fk := nodes[i].WorkspaceID
+			if _, ok := nodeids[fk]; !ok {
+				ids = append(ids, fk)
+			}
+			nodeids[fk] = append(nodeids[fk], nodes[i])
+		}
+		query.Where(workspace.IDIn(ids...))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nodeids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "workspace_id" returned %v`, n.ID)
+			}
+			for i := range nodes {
+				nodes[i].Edges.Workspace = n
 			}
 		}
 	}

@@ -8,6 +8,7 @@ import (
 	"project-management-demo-backend/ent/task"
 	"project-management-demo-backend/ent/tasklike"
 	"project-management-demo-backend/ent/teammate"
+	"project-management-demo-backend/ent/workspace"
 	"strings"
 	"time"
 
@@ -23,6 +24,8 @@ type TaskLike struct {
 	TaskID ulid.ID `json:"task_id,omitempty"`
 	// TeammateID holds the value of the "teammate_id" field.
 	TeammateID ulid.ID `json:"teammate_id,omitempty"`
+	// WorkspaceID holds the value of the "workspace_id" field.
+	WorkspaceID ulid.ID `json:"workspace_id,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -38,9 +41,11 @@ type TaskLikeEdges struct {
 	Task *Task `json:"task,omitempty"`
 	// Teammate holds the value of the teammate edge.
 	Teammate *Teammate `json:"teammate,omitempty"`
+	// Workspace holds the value of the workspace edge.
+	Workspace *Workspace `json:"workspace,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [3]bool
 }
 
 // TaskOrErr returns the Task value or an error if the edge
@@ -71,6 +76,20 @@ func (e TaskLikeEdges) TeammateOrErr() (*Teammate, error) {
 	return nil, &NotLoadedError{edge: "teammate"}
 }
 
+// WorkspaceOrErr returns the Workspace value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e TaskLikeEdges) WorkspaceOrErr() (*Workspace, error) {
+	if e.loadedTypes[2] {
+		if e.Workspace == nil {
+			// The edge workspace was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: workspace.Label}
+		}
+		return e.Workspace, nil
+	}
+	return nil, &NotLoadedError{edge: "workspace"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*TaskLike) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
@@ -78,7 +97,7 @@ func (*TaskLike) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case tasklike.FieldCreatedAt, tasklike.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
-		case tasklike.FieldID, tasklike.FieldTaskID, tasklike.FieldTeammateID:
+		case tasklike.FieldID, tasklike.FieldTaskID, tasklike.FieldTeammateID, tasklike.FieldWorkspaceID:
 			values[i] = new(ulid.ID)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type TaskLike", columns[i])
@@ -113,6 +132,12 @@ func (tl *TaskLike) assignValues(columns []string, values []interface{}) error {
 			} else if value != nil {
 				tl.TeammateID = *value
 			}
+		case tasklike.FieldWorkspaceID:
+			if value, ok := values[i].(*ulid.ID); !ok {
+				return fmt.Errorf("unexpected type %T for field workspace_id", values[i])
+			} else if value != nil {
+				tl.WorkspaceID = *value
+			}
 		case tasklike.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
@@ -138,6 +163,11 @@ func (tl *TaskLike) QueryTask() *TaskQuery {
 // QueryTeammate queries the "teammate" edge of the TaskLike entity.
 func (tl *TaskLike) QueryTeammate() *TeammateQuery {
 	return (&TaskLikeClient{config: tl.config}).QueryTeammate(tl)
+}
+
+// QueryWorkspace queries the "workspace" edge of the TaskLike entity.
+func (tl *TaskLike) QueryWorkspace() *WorkspaceQuery {
+	return (&TaskLikeClient{config: tl.config}).QueryWorkspace(tl)
 }
 
 // Update returns a builder for updating this TaskLike.
@@ -167,6 +197,8 @@ func (tl *TaskLike) String() string {
 	builder.WriteString(fmt.Sprintf("%v", tl.TaskID))
 	builder.WriteString(", teammate_id=")
 	builder.WriteString(fmt.Sprintf("%v", tl.TeammateID))
+	builder.WriteString(", workspace_id=")
+	builder.WriteString(fmt.Sprintf("%v", tl.WorkspaceID))
 	builder.WriteString(", created_at=")
 	builder.WriteString(tl.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", updated_at=")

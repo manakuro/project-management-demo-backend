@@ -426,6 +426,7 @@ var (
 		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
 		{Name: "task_id", Type: field.TypeString, Nullable: true},
 		{Name: "teammate_id", Type: field.TypeString, Nullable: true},
+		{Name: "workspace_id", Type: field.TypeString, Nullable: true},
 	}
 	// TaskLikesTable holds the schema information for the "task_likes" table.
 	TaskLikesTable = &schema.Table{
@@ -443,6 +444,12 @@ var (
 				Symbol:     "task_likes_teammates_task_likes",
 				Columns:    []*schema.Column{TaskLikesColumns[4]},
 				RefColumns: []*schema.Column{TeammatesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "task_likes_workspaces_task_likes",
+				Columns:    []*schema.Column{TaskLikesColumns[5]},
+				RefColumns: []*schema.Column{WorkspacesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
@@ -866,6 +873,7 @@ func init() {
 	TasksTable.ForeignKeys[2].RefTable = TeammatesTable
 	TaskLikesTable.ForeignKeys[0].RefTable = TasksTable
 	TaskLikesTable.ForeignKeys[1].RefTable = TeammatesTable
+	TaskLikesTable.ForeignKeys[2].RefTable = WorkspacesTable
 	TaskPrioritiesTable.ForeignKeys[0].RefTable = ColorsTable
 	TeammateTasksTable.ForeignKeys[0].RefTable = TasksTable
 	TeammateTasksTable.ForeignKeys[1].RefTable = TeammatesTable

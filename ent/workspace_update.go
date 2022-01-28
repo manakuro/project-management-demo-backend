@@ -11,6 +11,7 @@ import (
 	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/schema/editor"
 	"project-management-demo-backend/ent/schema/ulid"
+	"project-management-demo-backend/ent/tasklike"
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/teammatetaskliststatus"
 	"project-management-demo-backend/ent/teammatetasksection"
@@ -155,6 +156,21 @@ func (wu *WorkspaceUpdate) AddTeammateTaskSections(t ...*TeammateTaskSection) *W
 	return wu.AddTeammateTaskSectionIDs(ids...)
 }
 
+// AddTaskLikeIDs adds the "task_likes" edge to the TaskLike entity by IDs.
+func (wu *WorkspaceUpdate) AddTaskLikeIDs(ids ...ulid.ID) *WorkspaceUpdate {
+	wu.mutation.AddTaskLikeIDs(ids...)
+	return wu
+}
+
+// AddTaskLikes adds the "task_likes" edges to the TaskLike entity.
+func (wu *WorkspaceUpdate) AddTaskLikes(t ...*TaskLike) *WorkspaceUpdate {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return wu.AddTaskLikeIDs(ids...)
+}
+
 // Mutation returns the WorkspaceMutation object of the builder.
 func (wu *WorkspaceUpdate) Mutation() *WorkspaceMutation {
 	return wu.mutation
@@ -290,6 +306,27 @@ func (wu *WorkspaceUpdate) RemoveTeammateTaskSections(t ...*TeammateTaskSection)
 		ids[i] = t[i].ID
 	}
 	return wu.RemoveTeammateTaskSectionIDs(ids...)
+}
+
+// ClearTaskLikes clears all "task_likes" edges to the TaskLike entity.
+func (wu *WorkspaceUpdate) ClearTaskLikes() *WorkspaceUpdate {
+	wu.mutation.ClearTaskLikes()
+	return wu
+}
+
+// RemoveTaskLikeIDs removes the "task_likes" edge to TaskLike entities by IDs.
+func (wu *WorkspaceUpdate) RemoveTaskLikeIDs(ids ...ulid.ID) *WorkspaceUpdate {
+	wu.mutation.RemoveTaskLikeIDs(ids...)
+	return wu
+}
+
+// RemoveTaskLikes removes "task_likes" edges to TaskLike entities.
+func (wu *WorkspaceUpdate) RemoveTaskLikes(t ...*TaskLike) *WorkspaceUpdate {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return wu.RemoveTaskLikeIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -756,6 +793,60 @@ func (wu *WorkspaceUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if wu.mutation.TaskLikesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   workspace.TaskLikesTable,
+			Columns: []string{workspace.TaskLikesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: tasklike.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := wu.mutation.RemovedTaskLikesIDs(); len(nodes) > 0 && !wu.mutation.TaskLikesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   workspace.TaskLikesTable,
+			Columns: []string{workspace.TaskLikesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: tasklike.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := wu.mutation.TaskLikesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   workspace.TaskLikesTable,
+			Columns: []string{workspace.TaskLikesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: tasklike.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, wu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{workspace.Label}
@@ -894,6 +985,21 @@ func (wuo *WorkspaceUpdateOne) AddTeammateTaskSections(t ...*TeammateTaskSection
 	return wuo.AddTeammateTaskSectionIDs(ids...)
 }
 
+// AddTaskLikeIDs adds the "task_likes" edge to the TaskLike entity by IDs.
+func (wuo *WorkspaceUpdateOne) AddTaskLikeIDs(ids ...ulid.ID) *WorkspaceUpdateOne {
+	wuo.mutation.AddTaskLikeIDs(ids...)
+	return wuo
+}
+
+// AddTaskLikes adds the "task_likes" edges to the TaskLike entity.
+func (wuo *WorkspaceUpdateOne) AddTaskLikes(t ...*TaskLike) *WorkspaceUpdateOne {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return wuo.AddTaskLikeIDs(ids...)
+}
+
 // Mutation returns the WorkspaceMutation object of the builder.
 func (wuo *WorkspaceUpdateOne) Mutation() *WorkspaceMutation {
 	return wuo.mutation
@@ -1029,6 +1135,27 @@ func (wuo *WorkspaceUpdateOne) RemoveTeammateTaskSections(t ...*TeammateTaskSect
 		ids[i] = t[i].ID
 	}
 	return wuo.RemoveTeammateTaskSectionIDs(ids...)
+}
+
+// ClearTaskLikes clears all "task_likes" edges to the TaskLike entity.
+func (wuo *WorkspaceUpdateOne) ClearTaskLikes() *WorkspaceUpdateOne {
+	wuo.mutation.ClearTaskLikes()
+	return wuo
+}
+
+// RemoveTaskLikeIDs removes the "task_likes" edge to TaskLike entities by IDs.
+func (wuo *WorkspaceUpdateOne) RemoveTaskLikeIDs(ids ...ulid.ID) *WorkspaceUpdateOne {
+	wuo.mutation.RemoveTaskLikeIDs(ids...)
+	return wuo
+}
+
+// RemoveTaskLikes removes "task_likes" edges to TaskLike entities.
+func (wuo *WorkspaceUpdateOne) RemoveTaskLikes(t ...*TaskLike) *WorkspaceUpdateOne {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return wuo.RemoveTaskLikeIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -1511,6 +1638,60 @@ func (wuo *WorkspaceUpdateOne) sqlSave(ctx context.Context) (_node *Workspace, e
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: teammatetasksection.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if wuo.mutation.TaskLikesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   workspace.TaskLikesTable,
+			Columns: []string{workspace.TaskLikesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: tasklike.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := wuo.mutation.RemovedTaskLikesIDs(); len(nodes) > 0 && !wuo.mutation.TaskLikesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   workspace.TaskLikesTable,
+			Columns: []string{workspace.TaskLikesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: tasklike.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := wuo.mutation.TaskLikesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   workspace.TaskLikesTable,
+			Columns: []string{workspace.TaskLikesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: tasklike.FieldID,
 				},
 			},
 		}

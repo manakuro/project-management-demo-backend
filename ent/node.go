@@ -1347,8 +1347,8 @@ func (tl *TaskLike) Node(ctx context.Context) (node *Node, err error) {
 	node = &Node{
 		ID:     tl.ID,
 		Type:   "TaskLike",
-		Fields: make([]*Field, 4),
-		Edges:  make([]*Edge, 2),
+		Fields: make([]*Field, 5),
+		Edges:  make([]*Edge, 3),
 	}
 	var buf []byte
 	if buf, err = json.Marshal(tl.TaskID); err != nil {
@@ -1367,10 +1367,18 @@ func (tl *TaskLike) Node(ctx context.Context) (node *Node, err error) {
 		Name:  "teammate_id",
 		Value: string(buf),
 	}
-	if buf, err = json.Marshal(tl.CreatedAt); err != nil {
+	if buf, err = json.Marshal(tl.WorkspaceID); err != nil {
 		return nil, err
 	}
 	node.Fields[2] = &Field{
+		Type:  "ulid.ID",
+		Name:  "workspace_id",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(tl.CreatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[3] = &Field{
 		Type:  "time.Time",
 		Name:  "created_at",
 		Value: string(buf),
@@ -1378,7 +1386,7 @@ func (tl *TaskLike) Node(ctx context.Context) (node *Node, err error) {
 	if buf, err = json.Marshal(tl.UpdatedAt); err != nil {
 		return nil, err
 	}
-	node.Fields[3] = &Field{
+	node.Fields[4] = &Field{
 		Type:  "time.Time",
 		Name:  "updated_at",
 		Value: string(buf),
@@ -1400,6 +1408,16 @@ func (tl *TaskLike) Node(ctx context.Context) (node *Node, err error) {
 	err = tl.QueryTeammate().
 		Select(teammate.FieldID).
 		Scan(ctx, &node.Edges[1].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[2] = &Edge{
+		Type: "Workspace",
+		Name: "workspace",
+	}
+	err = tl.QueryWorkspace().
+		Select(workspace.FieldID).
+		Scan(ctx, &node.Edges[2].IDs)
 	if err != nil {
 		return nil, err
 	}
@@ -2433,7 +2451,7 @@ func (w *Workspace) Node(ctx context.Context) (node *Node, err error) {
 		ID:     w.ID,
 		Type:   "Workspace",
 		Fields: make([]*Field, 5),
-		Edges:  make([]*Edge, 7),
+		Edges:  make([]*Edge, 8),
 	}
 	var buf []byte
 	if buf, err = json.Marshal(w.CreatedBy); err != nil {
@@ -2543,6 +2561,16 @@ func (w *Workspace) Node(ctx context.Context) (node *Node, err error) {
 	err = w.QueryTeammateTaskSections().
 		Select(teammatetasksection.FieldID).
 		Scan(ctx, &node.Edges[6].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[7] = &Edge{
+		Type: "TaskLike",
+		Name: "task_likes",
+	}
+	err = w.QueryTaskLikes().
+		Select(tasklike.FieldID).
+		Scan(ctx, &node.Edges[7].IDs)
 	if err != nil {
 		return nil, err
 	}

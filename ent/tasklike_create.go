@@ -10,6 +10,7 @@ import (
 	"project-management-demo-backend/ent/task"
 	"project-management-demo-backend/ent/tasklike"
 	"project-management-demo-backend/ent/teammate"
+	"project-management-demo-backend/ent/workspace"
 	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -32,6 +33,12 @@ func (tlc *TaskLikeCreate) SetTaskID(u ulid.ID) *TaskLikeCreate {
 // SetTeammateID sets the "teammate_id" field.
 func (tlc *TaskLikeCreate) SetTeammateID(u ulid.ID) *TaskLikeCreate {
 	tlc.mutation.SetTeammateID(u)
+	return tlc
+}
+
+// SetWorkspaceID sets the "workspace_id" field.
+func (tlc *TaskLikeCreate) SetWorkspaceID(u ulid.ID) *TaskLikeCreate {
+	tlc.mutation.SetWorkspaceID(u)
 	return tlc
 }
 
@@ -85,6 +92,11 @@ func (tlc *TaskLikeCreate) SetTask(t *Task) *TaskLikeCreate {
 // SetTeammate sets the "teammate" edge to the Teammate entity.
 func (tlc *TaskLikeCreate) SetTeammate(t *Teammate) *TaskLikeCreate {
 	return tlc.SetTeammateID(t.ID)
+}
+
+// SetWorkspace sets the "workspace" edge to the Workspace entity.
+func (tlc *TaskLikeCreate) SetWorkspace(w *Workspace) *TaskLikeCreate {
+	return tlc.SetWorkspaceID(w.ID)
 }
 
 // Mutation returns the TaskLikeMutation object of the builder.
@@ -180,6 +192,9 @@ func (tlc *TaskLikeCreate) check() error {
 	if _, ok := tlc.mutation.TeammateID(); !ok {
 		return &ValidationError{Name: "teammate_id", err: errors.New(`ent: missing required field "teammate_id"`)}
 	}
+	if _, ok := tlc.mutation.WorkspaceID(); !ok {
+		return &ValidationError{Name: "workspace_id", err: errors.New(`ent: missing required field "workspace_id"`)}
+	}
 	if _, ok := tlc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
 	}
@@ -191,6 +206,9 @@ func (tlc *TaskLikeCreate) check() error {
 	}
 	if _, ok := tlc.mutation.TeammateID(); !ok {
 		return &ValidationError{Name: "teammate", err: errors.New("ent: missing required edge \"teammate\"")}
+	}
+	if _, ok := tlc.mutation.WorkspaceID(); !ok {
+		return &ValidationError{Name: "workspace", err: errors.New("ent: missing required edge \"workspace\"")}
 	}
 	return nil
 }
@@ -278,6 +296,26 @@ func (tlc *TaskLikeCreate) createSpec() (*TaskLike, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.TeammateID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := tlc.mutation.WorkspaceIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   tasklike.WorkspaceTable,
+			Columns: []string{tasklike.WorkspaceColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: workspace.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.WorkspaceID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
