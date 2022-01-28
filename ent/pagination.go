@@ -28,6 +28,7 @@ import (
 	"project-management-demo-backend/ent/taskpriority"
 	"project-management-demo-backend/ent/tasksection"
 	"project-management-demo-backend/ent/teammate"
+	"project-management-demo-backend/ent/teammatetask"
 	"project-management-demo-backend/ent/teammatetaskcolumn"
 	"project-management-demo-backend/ent/teammatetaskliststatus"
 	"project-management-demo-backend/ent/teammatetasksection"
@@ -4569,6 +4570,233 @@ func (t *Teammate) ToEdge(order *TeammateOrder) *TeammateEdge {
 	return &TeammateEdge{
 		Node:   t,
 		Cursor: order.Field.toCursor(t),
+	}
+}
+
+// TeammateTaskEdge is the edge representation of TeammateTask.
+type TeammateTaskEdge struct {
+	Node   *TeammateTask `json:"node"`
+	Cursor Cursor        `json:"cursor"`
+}
+
+// TeammateTaskConnection is the connection containing edges to TeammateTask.
+type TeammateTaskConnection struct {
+	Edges      []*TeammateTaskEdge `json:"edges"`
+	PageInfo   PageInfo            `json:"pageInfo"`
+	TotalCount int                 `json:"totalCount"`
+}
+
+// TeammateTaskPaginateOption enables pagination customization.
+type TeammateTaskPaginateOption func(*teammateTaskPager) error
+
+// WithTeammateTaskOrder configures pagination ordering.
+func WithTeammateTaskOrder(order *TeammateTaskOrder) TeammateTaskPaginateOption {
+	if order == nil {
+		order = DefaultTeammateTaskOrder
+	}
+	o := *order
+	return func(pager *teammateTaskPager) error {
+		if err := o.Direction.Validate(); err != nil {
+			return err
+		}
+		if o.Field == nil {
+			o.Field = DefaultTeammateTaskOrder.Field
+		}
+		pager.order = &o
+		return nil
+	}
+}
+
+// WithTeammateTaskFilter configures pagination filter.
+func WithTeammateTaskFilter(filter func(*TeammateTaskQuery) (*TeammateTaskQuery, error)) TeammateTaskPaginateOption {
+	return func(pager *teammateTaskPager) error {
+		if filter == nil {
+			return errors.New("TeammateTaskQuery filter cannot be nil")
+		}
+		pager.filter = filter
+		return nil
+	}
+}
+
+type teammateTaskPager struct {
+	order  *TeammateTaskOrder
+	filter func(*TeammateTaskQuery) (*TeammateTaskQuery, error)
+}
+
+func newTeammateTaskPager(opts []TeammateTaskPaginateOption) (*teammateTaskPager, error) {
+	pager := &teammateTaskPager{}
+	for _, opt := range opts {
+		if err := opt(pager); err != nil {
+			return nil, err
+		}
+	}
+	if pager.order == nil {
+		pager.order = DefaultTeammateTaskOrder
+	}
+	return pager, nil
+}
+
+func (p *teammateTaskPager) applyFilter(query *TeammateTaskQuery) (*TeammateTaskQuery, error) {
+	if p.filter != nil {
+		return p.filter(query)
+	}
+	return query, nil
+}
+
+func (p *teammateTaskPager) toCursor(tt *TeammateTask) Cursor {
+	return p.order.Field.toCursor(tt)
+}
+
+func (p *teammateTaskPager) applyCursors(query *TeammateTaskQuery, after, before *Cursor) *TeammateTaskQuery {
+	for _, predicate := range cursorsToPredicates(
+		p.order.Direction, after, before,
+		p.order.Field.field, DefaultTeammateTaskOrder.Field.field,
+	) {
+		query = query.Where(predicate)
+	}
+	return query
+}
+
+func (p *teammateTaskPager) applyOrder(query *TeammateTaskQuery, reverse bool) *TeammateTaskQuery {
+	direction := p.order.Direction
+	if reverse {
+		direction = direction.reverse()
+	}
+	query = query.Order(direction.orderFunc(p.order.Field.field))
+	if p.order.Field != DefaultTeammateTaskOrder.Field {
+		query = query.Order(direction.orderFunc(DefaultTeammateTaskOrder.Field.field))
+	}
+	return query
+}
+
+// Paginate executes the query and returns a relay based cursor connection to TeammateTask.
+func (tt *TeammateTaskQuery) Paginate(
+	ctx context.Context, after *Cursor, first *int,
+	before *Cursor, last *int, opts ...TeammateTaskPaginateOption,
+) (*TeammateTaskConnection, error) {
+	if err := validateFirstLast(first, last); err != nil {
+		return nil, err
+	}
+	pager, err := newTeammateTaskPager(opts)
+	if err != nil {
+		return nil, err
+	}
+
+	if tt, err = pager.applyFilter(tt); err != nil {
+		return nil, err
+	}
+
+	conn := &TeammateTaskConnection{Edges: []*TeammateTaskEdge{}}
+	if !hasCollectedField(ctx, edgesField) || first != nil && *first == 0 || last != nil && *last == 0 {
+		if hasCollectedField(ctx, totalCountField) ||
+			hasCollectedField(ctx, pageInfoField) {
+			count, err := tt.Count(ctx)
+			if err != nil {
+				return nil, err
+			}
+			conn.TotalCount = count
+			conn.PageInfo.HasNextPage = first != nil && count > 0
+			conn.PageInfo.HasPreviousPage = last != nil && count > 0
+		}
+		return conn, nil
+	}
+
+	if (after != nil || first != nil || before != nil || last != nil) && hasCollectedField(ctx, totalCountField) {
+		count, err := tt.Clone().Count(ctx)
+		if err != nil {
+			return nil, err
+		}
+		conn.TotalCount = count
+	}
+
+	tt = pager.applyCursors(tt, after, before)
+	tt = pager.applyOrder(tt, last != nil)
+	var limit int
+	if first != nil {
+		limit = *first + 1
+	} else if last != nil {
+		limit = *last + 1
+	}
+	if limit > 0 {
+		tt = tt.Limit(limit)
+	}
+
+	if field := getCollectedField(ctx, edgesField, nodeField); field != nil {
+		tt = tt.collectField(graphql.GetOperationContext(ctx), *field)
+	}
+
+	nodes, err := tt.All(ctx)
+	if err != nil || len(nodes) == 0 {
+		return conn, err
+	}
+
+	if len(nodes) == limit {
+		conn.PageInfo.HasNextPage = first != nil
+		conn.PageInfo.HasPreviousPage = last != nil
+		nodes = nodes[:len(nodes)-1]
+	}
+
+	var nodeAt func(int) *TeammateTask
+	if last != nil {
+		n := len(nodes) - 1
+		nodeAt = func(i int) *TeammateTask {
+			return nodes[n-i]
+		}
+	} else {
+		nodeAt = func(i int) *TeammateTask {
+			return nodes[i]
+		}
+	}
+
+	conn.Edges = make([]*TeammateTaskEdge, len(nodes))
+	for i := range nodes {
+		node := nodeAt(i)
+		conn.Edges[i] = &TeammateTaskEdge{
+			Node:   node,
+			Cursor: pager.toCursor(node),
+		}
+	}
+
+	conn.PageInfo.StartCursor = &conn.Edges[0].Cursor
+	conn.PageInfo.EndCursor = &conn.Edges[len(conn.Edges)-1].Cursor
+	if conn.TotalCount == 0 {
+		conn.TotalCount = len(nodes)
+	}
+
+	return conn, nil
+}
+
+// TeammateTaskOrderField defines the ordering field of TeammateTask.
+type TeammateTaskOrderField struct {
+	field    string
+	toCursor func(*TeammateTask) Cursor
+}
+
+// TeammateTaskOrder defines the ordering of TeammateTask.
+type TeammateTaskOrder struct {
+	Direction OrderDirection          `json:"direction"`
+	Field     *TeammateTaskOrderField `json:"field"`
+}
+
+// DefaultTeammateTaskOrder is the default ordering of TeammateTask.
+var DefaultTeammateTaskOrder = &TeammateTaskOrder{
+	Direction: OrderDirectionAsc,
+	Field: &TeammateTaskOrderField{
+		field: teammatetask.FieldID,
+		toCursor: func(tt *TeammateTask) Cursor {
+			return Cursor{ID: tt.ID}
+		},
+	},
+}
+
+// ToEdge converts TeammateTask into TeammateTaskEdge.
+func (tt *TeammateTask) ToEdge(order *TeammateTaskOrder) *TeammateTaskEdge {
+	if order == nil {
+		order = DefaultTeammateTaskOrder
+	}
+	return &TeammateTaskEdge{
+		Node:   tt,
+		Cursor: order.Field.toCursor(tt),
 	}
 }
 

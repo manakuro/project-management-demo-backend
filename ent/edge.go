@@ -292,6 +292,14 @@ func (t *Task) SubTasks(ctx context.Context) ([]*Task, error) {
 	return result, err
 }
 
+func (t *Task) TeammateTasks(ctx context.Context) ([]*TeammateTask, error) {
+	result, err := t.Edges.TeammateTasksOrErr()
+	if IsNotLoaded(err) {
+		result, err = t.QueryTeammateTasks().All(ctx)
+	}
+	return result, err
+}
+
 func (tc *TaskColumn) TeammateTaskColumns(ctx context.Context) ([]*TeammateTaskColumn, error) {
 	result, err := tc.Edges.TeammateTaskColumnsOrErr()
 	if IsNotLoaded(err) {
@@ -444,6 +452,38 @@ func (t *Teammate) Tasks(ctx context.Context) ([]*Task, error) {
 	return result, err
 }
 
+func (t *Teammate) TeammateTasks(ctx context.Context) ([]*TeammateTask, error) {
+	result, err := t.Edges.TeammateTasksOrErr()
+	if IsNotLoaded(err) {
+		result, err = t.QueryTeammateTasks().All(ctx)
+	}
+	return result, err
+}
+
+func (tt *TeammateTask) Teammate(ctx context.Context) (*Teammate, error) {
+	result, err := tt.Edges.TeammateOrErr()
+	if IsNotLoaded(err) {
+		result, err = tt.QueryTeammate().Only(ctx)
+	}
+	return result, err
+}
+
+func (tt *TeammateTask) Task(ctx context.Context) (*Task, error) {
+	result, err := tt.Edges.TaskOrErr()
+	if IsNotLoaded(err) {
+		result, err = tt.QueryTask().Only(ctx)
+	}
+	return result, err
+}
+
+func (tt *TeammateTask) TeammateTaskSection(ctx context.Context) (*TeammateTaskSection, error) {
+	result, err := tt.Edges.TeammateTaskSectionOrErr()
+	if IsNotLoaded(err) {
+		result, err = tt.QueryTeammateTaskSection().Only(ctx)
+	}
+	return result, err
+}
+
 func (ttc *TeammateTaskColumn) Teammate(ctx context.Context) (*Teammate, error) {
 	result, err := ttc.Edges.TeammateOrErr()
 	if IsNotLoaded(err) {
@@ -504,6 +544,14 @@ func (tts *TeammateTaskSection) Workspace(ctx context.Context) (*Workspace, erro
 	result, err := tts.Edges.WorkspaceOrErr()
 	if IsNotLoaded(err) {
 		result, err = tts.QueryWorkspace().Only(ctx)
+	}
+	return result, err
+}
+
+func (tts *TeammateTaskSection) TeammateTasks(ctx context.Context) ([]*TeammateTask, error) {
+	result, err := tts.Edges.TeammateTasksOrErr()
+	if IsNotLoaded(err) {
+		result, err = tts.QueryTeammateTasks().All(ctx)
 	}
 	return result, err
 }

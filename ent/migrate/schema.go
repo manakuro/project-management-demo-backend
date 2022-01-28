@@ -463,6 +463,41 @@ var (
 		Columns:    TeammatesColumns,
 		PrimaryKey: []*schema.Column{TeammatesColumns[0]},
 	}
+	// TeammateTasksColumns holds the columns for the "teammate_tasks" table.
+	TeammateTasksColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
+		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
+		{Name: "task_id", Type: field.TypeString, Nullable: true},
+		{Name: "teammate_id", Type: field.TypeString, Nullable: true},
+		{Name: "teammate_task_section_id", Type: field.TypeString, Nullable: true},
+	}
+	// TeammateTasksTable holds the schema information for the "teammate_tasks" table.
+	TeammateTasksTable = &schema.Table{
+		Name:       "teammate_tasks",
+		Columns:    TeammateTasksColumns,
+		PrimaryKey: []*schema.Column{TeammateTasksColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "teammate_tasks_tasks_teammate_tasks",
+				Columns:    []*schema.Column{TeammateTasksColumns[3]},
+				RefColumns: []*schema.Column{TasksColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "teammate_tasks_teammates_teammate_tasks",
+				Columns:    []*schema.Column{TeammateTasksColumns[4]},
+				RefColumns: []*schema.Column{TeammatesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "teammate_tasks_teammate_task_sections_teammate_tasks",
+				Columns:    []*schema.Column{TeammateTasksColumns[5]},
+				RefColumns: []*schema.Column{TeammateTaskSectionsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
 	// TeammateTaskColumnsColumns holds the columns for the "teammate_task_columns" table.
 	TeammateTaskColumnsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString},
@@ -725,6 +760,7 @@ var (
 		TaskPrioritiesTable,
 		TaskSectionsTable,
 		TeammatesTable,
+		TeammateTasksTable,
 		TeammateTaskColumnsTable,
 		TeammateTaskListStatusTable,
 		TeammateTaskSectionsTable,
@@ -761,6 +797,9 @@ func init() {
 	TasksTable.ForeignKeys[1].RefTable = TaskPrioritiesTable
 	TasksTable.ForeignKeys[2].RefTable = TeammatesTable
 	TaskPrioritiesTable.ForeignKeys[0].RefTable = ColorsTable
+	TeammateTasksTable.ForeignKeys[0].RefTable = TasksTable
+	TeammateTasksTable.ForeignKeys[1].RefTable = TeammatesTable
+	TeammateTasksTable.ForeignKeys[2].RefTable = TeammateTaskSectionsTable
 	TeammateTaskColumnsTable.ForeignKeys[0].RefTable = TaskColumnsTable
 	TeammateTaskColumnsTable.ForeignKeys[1].RefTable = TeammatesTable
 	TeammateTaskListStatusTable.ForeignKeys[0].RefTable = TaskListCompletedStatusTable

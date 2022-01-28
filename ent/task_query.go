@@ -13,6 +13,7 @@ import (
 	"project-management-demo-backend/ent/task"
 	"project-management-demo-backend/ent/taskpriority"
 	"project-management-demo-backend/ent/teammate"
+	"project-management-demo-backend/ent/teammatetask"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -29,10 +30,11 @@ type TaskQuery struct {
 	fields     []string
 	predicates []predicate.Task
 	// eager-loading edges.
-	withTeammate     *TeammateQuery
-	withTaskPriority *TaskPriorityQuery
-	withParent       *TaskQuery
-	withSubTasks     *TaskQuery
+	withTeammate      *TeammateQuery
+	withTaskPriority  *TaskPriorityQuery
+	withParent        *TaskQuery
+	withSubTasks      *TaskQuery
+	withTeammateTasks *TeammateTaskQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -150,6 +152,28 @@ func (tq *TaskQuery) QuerySubTasks() *TaskQuery {
 			sqlgraph.From(task.Table, task.FieldID, selector),
 			sqlgraph.To(task.Table, task.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, task.SubTasksTable, task.SubTasksColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(tq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryTeammateTasks chains the current query on the "teammate_tasks" edge.
+func (tq *TaskQuery) QueryTeammateTasks() *TeammateTaskQuery {
+	query := &TeammateTaskQuery{config: tq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := tq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := tq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(task.Table, task.FieldID, selector),
+			sqlgraph.To(teammatetask.Table, teammatetask.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, task.TeammateTasksTable, task.TeammateTasksColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(tq.driver.Dialect(), step)
 		return fromU, nil
@@ -333,15 +357,16 @@ func (tq *TaskQuery) Clone() *TaskQuery {
 		return nil
 	}
 	return &TaskQuery{
-		config:           tq.config,
-		limit:            tq.limit,
-		offset:           tq.offset,
-		order:            append([]OrderFunc{}, tq.order...),
-		predicates:       append([]predicate.Task{}, tq.predicates...),
-		withTeammate:     tq.withTeammate.Clone(),
-		withTaskPriority: tq.withTaskPriority.Clone(),
-		withParent:       tq.withParent.Clone(),
-		withSubTasks:     tq.withSubTasks.Clone(),
+		config:            tq.config,
+		limit:             tq.limit,
+		offset:            tq.offset,
+		order:             append([]OrderFunc{}, tq.order...),
+		predicates:        append([]predicate.Task{}, tq.predicates...),
+		withTeammate:      tq.withTeammate.Clone(),
+		withTaskPriority:  tq.withTaskPriority.Clone(),
+		withParent:        tq.withParent.Clone(),
+		withSubTasks:      tq.withSubTasks.Clone(),
+		withTeammateTasks: tq.withTeammateTasks.Clone(),
 		// clone intermediate query.
 		sql:  tq.sql.Clone(),
 		path: tq.path,
@@ -389,6 +414,17 @@ func (tq *TaskQuery) WithSubTasks(opts ...func(*TaskQuery)) *TaskQuery {
 		opt(query)
 	}
 	tq.withSubTasks = query
+	return tq
+}
+
+// WithTeammateTasks tells the query-builder to eager-load the nodes that are connected to
+// the "teammate_tasks" edge. The optional arguments are used to configure the query builder of the edge.
+func (tq *TaskQuery) WithTeammateTasks(opts ...func(*TeammateTaskQuery)) *TaskQuery {
+	query := &TeammateTaskQuery{config: tq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	tq.withTeammateTasks = query
 	return tq
 }
 
@@ -457,11 +493,12 @@ func (tq *TaskQuery) sqlAll(ctx context.Context) ([]*Task, error) {
 	var (
 		nodes       = []*Task{}
 		_spec       = tq.querySpec()
-		loadedTypes = [4]bool{
+		loadedTypes = [5]bool{
 			tq.withTeammate != nil,
 			tq.withTaskPriority != nil,
 			tq.withParent != nil,
 			tq.withSubTasks != nil,
+			tq.withTeammateTasks != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -584,6 +621,31 @@ func (tq *TaskQuery) sqlAll(ctx context.Context) ([]*Task, error) {
 				return nil, fmt.Errorf(`unexpected foreign-key "task_parent_id" returned %v for node %v`, fk, n.ID)
 			}
 			node.Edges.SubTasks = append(node.Edges.SubTasks, n)
+		}
+	}
+
+	if query := tq.withTeammateTasks; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[ulid.ID]*Task)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.TeammateTasks = []*TeammateTask{}
+		}
+		query.Where(predicate.TeammateTask(func(s *sql.Selector) {
+			s.Where(sql.InValues(task.TeammateTasksColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.TaskID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "task_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.TeammateTasks = append(node.Edges.TeammateTasks, n)
 		}
 	}
 

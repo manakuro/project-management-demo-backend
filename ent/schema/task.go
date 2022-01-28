@@ -102,6 +102,11 @@ func (Task) Edges() []ent.Edge {
 					annotation.Edge{FieldName: "task_parent_id"},
 				),
 			),
+		edge.To("teammate_tasks", TeammateTask.Type).Annotations(
+			schema.Annotation(
+				annotation.Edge{FieldName: "teammate_task_id"},
+			),
+		),
 	}
 }
 

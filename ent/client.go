@@ -29,6 +29,7 @@ import (
 	"project-management-demo-backend/ent/taskpriority"
 	"project-management-demo-backend/ent/tasksection"
 	"project-management-demo-backend/ent/teammate"
+	"project-management-demo-backend/ent/teammatetask"
 	"project-management-demo-backend/ent/teammatetaskcolumn"
 	"project-management-demo-backend/ent/teammatetaskliststatus"
 	"project-management-demo-backend/ent/teammatetasksection"
@@ -86,6 +87,8 @@ type Client struct {
 	TaskSection *TaskSectionClient
 	// Teammate is the client for interacting with the Teammate builders.
 	Teammate *TeammateClient
+	// TeammateTask is the client for interacting with the TeammateTask builders.
+	TeammateTask *TeammateTaskClient
 	// TeammateTaskColumn is the client for interacting with the TeammateTaskColumn builders.
 	TeammateTaskColumn *TeammateTaskColumnClient
 	// TeammateTaskListStatus is the client for interacting with the TeammateTaskListStatus builders.
@@ -134,6 +137,7 @@ func (c *Client) init() {
 	c.TaskPriority = NewTaskPriorityClient(c.config)
 	c.TaskSection = NewTaskSectionClient(c.config)
 	c.Teammate = NewTeammateClient(c.config)
+	c.TeammateTask = NewTeammateTaskClient(c.config)
 	c.TeammateTaskColumn = NewTeammateTaskColumnClient(c.config)
 	c.TeammateTaskListStatus = NewTeammateTaskListStatusClient(c.config)
 	c.TeammateTaskSection = NewTeammateTaskSectionClient(c.config)
@@ -194,6 +198,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		TaskPriority:            NewTaskPriorityClient(cfg),
 		TaskSection:             NewTaskSectionClient(cfg),
 		Teammate:                NewTeammateClient(cfg),
+		TeammateTask:            NewTeammateTaskClient(cfg),
 		TeammateTaskColumn:      NewTeammateTaskColumnClient(cfg),
 		TeammateTaskListStatus:  NewTeammateTaskListStatusClient(cfg),
 		TeammateTaskSection:     NewTeammateTaskSectionClient(cfg),
@@ -239,6 +244,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		TaskPriority:            NewTaskPriorityClient(cfg),
 		TaskSection:             NewTaskSectionClient(cfg),
 		Teammate:                NewTeammateClient(cfg),
+		TeammateTask:            NewTeammateTaskClient(cfg),
 		TeammateTaskColumn:      NewTeammateTaskColumnClient(cfg),
 		TeammateTaskListStatus:  NewTeammateTaskListStatusClient(cfg),
 		TeammateTaskSection:     NewTeammateTaskSectionClient(cfg),
@@ -295,6 +301,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.TaskPriority.Use(hooks...)
 	c.TaskSection.Use(hooks...)
 	c.Teammate.Use(hooks...)
+	c.TeammateTask.Use(hooks...)
 	c.TeammateTaskColumn.Use(hooks...)
 	c.TeammateTaskListStatus.Use(hooks...)
 	c.TeammateTaskSection.Use(hooks...)
@@ -2046,6 +2053,22 @@ func (c *TaskClient) QuerySubTasks(t *Task) *TaskQuery {
 	return query
 }
 
+// QueryTeammateTasks queries the teammate_tasks edge of a Task.
+func (c *TaskClient) QueryTeammateTasks(t *Task) *TeammateTaskQuery {
+	query := &TeammateTaskQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := t.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(task.Table, task.FieldID, id),
+			sqlgraph.To(teammatetask.Table, teammatetask.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, task.TeammateTasksTable, task.TeammateTasksColumn),
+		)
+		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *TaskClient) Hooks() []Hook {
 	return c.hooks.Task
@@ -2890,9 +2913,163 @@ func (c *TeammateClient) QueryTasks(t *Teammate) *TaskQuery {
 	return query
 }
 
+// QueryTeammateTasks queries the teammate_tasks edge of a Teammate.
+func (c *TeammateClient) QueryTeammateTasks(t *Teammate) *TeammateTaskQuery {
+	query := &TeammateTaskQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := t.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(teammate.Table, teammate.FieldID, id),
+			sqlgraph.To(teammatetask.Table, teammatetask.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, teammate.TeammateTasksTable, teammate.TeammateTasksColumn),
+		)
+		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *TeammateClient) Hooks() []Hook {
 	return c.hooks.Teammate
+}
+
+// TeammateTaskClient is a client for the TeammateTask schema.
+type TeammateTaskClient struct {
+	config
+}
+
+// NewTeammateTaskClient returns a client for the TeammateTask from the given config.
+func NewTeammateTaskClient(c config) *TeammateTaskClient {
+	return &TeammateTaskClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `teammatetask.Hooks(f(g(h())))`.
+func (c *TeammateTaskClient) Use(hooks ...Hook) {
+	c.hooks.TeammateTask = append(c.hooks.TeammateTask, hooks...)
+}
+
+// Create returns a create builder for TeammateTask.
+func (c *TeammateTaskClient) Create() *TeammateTaskCreate {
+	mutation := newTeammateTaskMutation(c.config, OpCreate)
+	return &TeammateTaskCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of TeammateTask entities.
+func (c *TeammateTaskClient) CreateBulk(builders ...*TeammateTaskCreate) *TeammateTaskCreateBulk {
+	return &TeammateTaskCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for TeammateTask.
+func (c *TeammateTaskClient) Update() *TeammateTaskUpdate {
+	mutation := newTeammateTaskMutation(c.config, OpUpdate)
+	return &TeammateTaskUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *TeammateTaskClient) UpdateOne(tt *TeammateTask) *TeammateTaskUpdateOne {
+	mutation := newTeammateTaskMutation(c.config, OpUpdateOne, withTeammateTask(tt))
+	return &TeammateTaskUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *TeammateTaskClient) UpdateOneID(id ulid.ID) *TeammateTaskUpdateOne {
+	mutation := newTeammateTaskMutation(c.config, OpUpdateOne, withTeammateTaskID(id))
+	return &TeammateTaskUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for TeammateTask.
+func (c *TeammateTaskClient) Delete() *TeammateTaskDelete {
+	mutation := newTeammateTaskMutation(c.config, OpDelete)
+	return &TeammateTaskDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *TeammateTaskClient) DeleteOne(tt *TeammateTask) *TeammateTaskDeleteOne {
+	return c.DeleteOneID(tt.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *TeammateTaskClient) DeleteOneID(id ulid.ID) *TeammateTaskDeleteOne {
+	builder := c.Delete().Where(teammatetask.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &TeammateTaskDeleteOne{builder}
+}
+
+// Query returns a query builder for TeammateTask.
+func (c *TeammateTaskClient) Query() *TeammateTaskQuery {
+	return &TeammateTaskQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a TeammateTask entity by its id.
+func (c *TeammateTaskClient) Get(ctx context.Context, id ulid.ID) (*TeammateTask, error) {
+	return c.Query().Where(teammatetask.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *TeammateTaskClient) GetX(ctx context.Context, id ulid.ID) *TeammateTask {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryTeammate queries the teammate edge of a TeammateTask.
+func (c *TeammateTaskClient) QueryTeammate(tt *TeammateTask) *TeammateQuery {
+	query := &TeammateQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := tt.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(teammatetask.Table, teammatetask.FieldID, id),
+			sqlgraph.To(teammate.Table, teammate.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, teammatetask.TeammateTable, teammatetask.TeammateColumn),
+		)
+		fromV = sqlgraph.Neighbors(tt.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryTask queries the task edge of a TeammateTask.
+func (c *TeammateTaskClient) QueryTask(tt *TeammateTask) *TaskQuery {
+	query := &TaskQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := tt.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(teammatetask.Table, teammatetask.FieldID, id),
+			sqlgraph.To(task.Table, task.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, teammatetask.TaskTable, teammatetask.TaskColumn),
+		)
+		fromV = sqlgraph.Neighbors(tt.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryTeammateTaskSection queries the teammate_task_section edge of a TeammateTask.
+func (c *TeammateTaskClient) QueryTeammateTaskSection(tt *TeammateTask) *TeammateTaskSectionQuery {
+	query := &TeammateTaskSectionQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := tt.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(teammatetask.Table, teammatetask.FieldID, id),
+			sqlgraph.To(teammatetasksection.Table, teammatetasksection.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, teammatetask.TeammateTaskSectionTable, teammatetask.TeammateTaskSectionColumn),
+		)
+		fromV = sqlgraph.Neighbors(tt.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *TeammateTaskClient) Hooks() []Hook {
+	return c.hooks.TeammateTask
 }
 
 // TeammateTaskColumnClient is a client for the TeammateTaskColumn schema.
@@ -3281,6 +3458,22 @@ func (c *TeammateTaskSectionClient) QueryWorkspace(tts *TeammateTaskSection) *Wo
 			sqlgraph.From(teammatetasksection.Table, teammatetasksection.FieldID, id),
 			sqlgraph.To(workspace.Table, workspace.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, teammatetasksection.WorkspaceTable, teammatetasksection.WorkspaceColumn),
+		)
+		fromV = sqlgraph.Neighbors(tts.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryTeammateTasks queries the teammate_tasks edge of a TeammateTaskSection.
+func (c *TeammateTaskSectionClient) QueryTeammateTasks(tts *TeammateTaskSection) *TeammateTaskQuery {
+	query := &TeammateTaskQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := tts.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(teammatetasksection.Table, teammatetasksection.FieldID, id),
+			sqlgraph.To(teammatetask.Table, teammatetask.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, teammatetasksection.TeammateTasksTable, teammatetasksection.TeammateTasksColumn),
 		)
 		fromV = sqlgraph.Neighbors(tts.driver.Dialect(), step)
 		return fromV, nil

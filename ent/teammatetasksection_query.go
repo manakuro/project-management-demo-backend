@@ -4,12 +4,14 @@ package ent
 
 import (
 	"context"
+	"database/sql/driver"
 	"errors"
 	"fmt"
 	"math"
 	"project-management-demo-backend/ent/predicate"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/teammate"
+	"project-management-demo-backend/ent/teammatetask"
 	"project-management-demo-backend/ent/teammatetasksection"
 	"project-management-demo-backend/ent/workspace"
 
@@ -28,8 +30,9 @@ type TeammateTaskSectionQuery struct {
 	fields     []string
 	predicates []predicate.TeammateTaskSection
 	// eager-loading edges.
-	withTeammate  *TeammateQuery
-	withWorkspace *WorkspaceQuery
+	withTeammate      *TeammateQuery
+	withWorkspace     *WorkspaceQuery
+	withTeammateTasks *TeammateTaskQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -103,6 +106,28 @@ func (ttsq *TeammateTaskSectionQuery) QueryWorkspace() *WorkspaceQuery {
 			sqlgraph.From(teammatetasksection.Table, teammatetasksection.FieldID, selector),
 			sqlgraph.To(workspace.Table, workspace.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, teammatetasksection.WorkspaceTable, teammatetasksection.WorkspaceColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(ttsq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryTeammateTasks chains the current query on the "teammate_tasks" edge.
+func (ttsq *TeammateTaskSectionQuery) QueryTeammateTasks() *TeammateTaskQuery {
+	query := &TeammateTaskQuery{config: ttsq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := ttsq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := ttsq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(teammatetasksection.Table, teammatetasksection.FieldID, selector),
+			sqlgraph.To(teammatetask.Table, teammatetask.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, teammatetasksection.TeammateTasksTable, teammatetasksection.TeammateTasksColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(ttsq.driver.Dialect(), step)
 		return fromU, nil
@@ -286,13 +311,14 @@ func (ttsq *TeammateTaskSectionQuery) Clone() *TeammateTaskSectionQuery {
 		return nil
 	}
 	return &TeammateTaskSectionQuery{
-		config:        ttsq.config,
-		limit:         ttsq.limit,
-		offset:        ttsq.offset,
-		order:         append([]OrderFunc{}, ttsq.order...),
-		predicates:    append([]predicate.TeammateTaskSection{}, ttsq.predicates...),
-		withTeammate:  ttsq.withTeammate.Clone(),
-		withWorkspace: ttsq.withWorkspace.Clone(),
+		config:            ttsq.config,
+		limit:             ttsq.limit,
+		offset:            ttsq.offset,
+		order:             append([]OrderFunc{}, ttsq.order...),
+		predicates:        append([]predicate.TeammateTaskSection{}, ttsq.predicates...),
+		withTeammate:      ttsq.withTeammate.Clone(),
+		withWorkspace:     ttsq.withWorkspace.Clone(),
+		withTeammateTasks: ttsq.withTeammateTasks.Clone(),
 		// clone intermediate query.
 		sql:  ttsq.sql.Clone(),
 		path: ttsq.path,
@@ -318,6 +344,17 @@ func (ttsq *TeammateTaskSectionQuery) WithWorkspace(opts ...func(*WorkspaceQuery
 		opt(query)
 	}
 	ttsq.withWorkspace = query
+	return ttsq
+}
+
+// WithTeammateTasks tells the query-builder to eager-load the nodes that are connected to
+// the "teammate_tasks" edge. The optional arguments are used to configure the query builder of the edge.
+func (ttsq *TeammateTaskSectionQuery) WithTeammateTasks(opts ...func(*TeammateTaskQuery)) *TeammateTaskSectionQuery {
+	query := &TeammateTaskQuery{config: ttsq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	ttsq.withTeammateTasks = query
 	return ttsq
 }
 
@@ -386,9 +423,10 @@ func (ttsq *TeammateTaskSectionQuery) sqlAll(ctx context.Context) ([]*TeammateTa
 	var (
 		nodes       = []*TeammateTaskSection{}
 		_spec       = ttsq.querySpec()
-		loadedTypes = [2]bool{
+		loadedTypes = [3]bool{
 			ttsq.withTeammate != nil,
 			ttsq.withWorkspace != nil,
+			ttsq.withTeammateTasks != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -460,6 +498,31 @@ func (ttsq *TeammateTaskSectionQuery) sqlAll(ctx context.Context) ([]*TeammateTa
 			for i := range nodes {
 				nodes[i].Edges.Workspace = n
 			}
+		}
+	}
+
+	if query := ttsq.withTeammateTasks; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[ulid.ID]*TeammateTaskSection)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.TeammateTasks = []*TeammateTask{}
+		}
+		query.Where(predicate.TeammateTask(func(s *sql.Selector) {
+			s.Where(sql.InValues(teammatetasksection.TeammateTasksColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.TeammateTaskSectionID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "teammate_task_section_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.TeammateTasks = append(node.Edges.TeammateTasks, n)
 		}
 	}
 
