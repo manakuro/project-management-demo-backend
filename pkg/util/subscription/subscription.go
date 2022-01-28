@@ -8,154 +8,160 @@ import (
 	"github.com/thanhpk/randstr"
 )
 
-// TestUserUpdated of channel
+// TestUserUpdated is a channel for subscription.
 type TestUserUpdated struct {
 	ID ulid.ID
 	Ch chan *ent.TestUser
 }
 
-// TeammateUpdated of channel
+// TeammateUpdated is a channel for subscription.
 type TeammateUpdated struct {
 	ID ulid.ID
 	Ch chan *ent.Teammate
 }
 
-// WorkspaceUpdated of channel
+// WorkspaceUpdated is a channel for subscription.
 type WorkspaceUpdated struct {
 	ID ulid.ID
 	Ch chan *ent.Workspace
 }
 
-// ColorUpdated of channel
+// ColorUpdated is a channel for subscription.
 type ColorUpdated struct {
 	ID ulid.ID
 	Ch chan *ent.Color
 }
 
-// IconUpdated of channel
+// IconUpdated is a channel for subscription.
 type IconUpdated struct {
 	ID ulid.ID
 	Ch chan *ent.Icon
 }
 
-// ProjectUpdated of channel
+// ProjectUpdated is a channel for subscription.
 type ProjectUpdated struct {
 	ID ulid.ID
 	Ch chan *ent.Project
 }
 
-// ProjectTeammateUpdated of channel
+// ProjectTeammateUpdated is a channel for subscription.
 type ProjectTeammateUpdated struct {
 	ID ulid.ID
 	Ch chan *ent.ProjectTeammate
 }
 
-// ProjectBaseColorUpdated of channel
+// ProjectBaseColorUpdated is a channel for subscription.
 type ProjectBaseColorUpdated struct {
 	ID ulid.ID
 	Ch chan *ent.ProjectBaseColor
 }
 
-// ProjectLightColorUpdated of channel
+// ProjectLightColorUpdated is a channel for subscription.
 type ProjectLightColorUpdated struct {
 	ID ulid.ID
 	Ch chan *ent.ProjectLightColor
 }
 
-// ProjectIconUpdated of channel
+// ProjectIconUpdated is a channel for subscription.
 type ProjectIconUpdated struct {
 	ID ulid.ID
 	Ch chan *ent.ProjectIcon
 }
 
-// MeUpdated of channel
+// MeUpdated is a channel for subscription.
 type MeUpdated struct {
 	ID ulid.ID
 	Ch chan *model.Me
 }
 
-// WorkspaceTeammateUpdated of channel
+// WorkspaceTeammateUpdated is a channel for subscription.
 type WorkspaceTeammateUpdated struct {
 	ID ulid.ID
 	Ch chan *model.WorkspaceTeammate
 }
 
-// FavoriteProjectCreated of channel
+// FavoriteProjectCreated is a channel for subscription.
 type FavoriteProjectCreated struct {
 	TeammateID ulid.ID
 	Ch         chan *model.FavoriteProject
 }
 
-// FavoriteProjectIDsUpdated of channel
+// FavoriteProjectIDsUpdated is a channel for subscription.
 type FavoriteProjectIDsUpdated struct {
 	TeammateID model.ID
 	Ch         chan []model.ID
 }
 
-// FavoriteWorkspaceIDsUpdated of channel
+// FavoriteWorkspaceIDsUpdated is a channel for subscription.
 type FavoriteWorkspaceIDsUpdated struct {
 	TeammateID model.ID
 	Ch         chan []model.ID
 }
 
-// TeammateTaskTabStatusUpdated of channel
+// TeammateTaskTabStatusUpdated is a channel for subscription.
 type TeammateTaskTabStatusUpdated struct {
 	ID model.ID
 	Ch chan *model.TeammateTaskTabStatus
 }
 
-// TaskColumnUpdated of channel
+// TaskColumnUpdated is a channel for subscription.
 type TaskColumnUpdated struct {
 	ID model.ID
 	Ch chan *model.TaskColumn
 }
 
-// TeammateTaskColumnUpdated of channel
+// TeammateTaskColumnUpdated is a channel for subscription.
 type TeammateTaskColumnUpdated struct {
 	ID model.ID
 	Ch chan *model.TeammateTaskColumn
 }
 
-// ProjectTaskColumnUpdated of channel
+// ProjectTaskColumnUpdated is a channel for subscription.
 type ProjectTaskColumnUpdated struct {
 	ID model.ID
 	Ch chan *model.ProjectTaskColumn
 }
 
-// TaskSectionUpdated of channel
+// TaskSectionUpdated is a channel for subscription.
 type TaskSectionUpdated struct {
 	ID model.ID
 	Ch chan *model.TaskSection
 }
 
-// TeammateTaskListStatusUpdated of channel
+// TeammateTaskListStatusUpdated is a channel for subscription.
 type TeammateTaskListStatusUpdated struct {
 	ID model.ID
 	Ch chan *model.TeammateTaskListStatus
 }
 
-// ProjectTaskListStatusUpdated of channel
+// ProjectTaskListStatusUpdated is a channel for subscription.
 type ProjectTaskListStatusUpdated struct {
 	ID model.ID
 	Ch chan *model.ProjectTaskListStatus
 }
 
-// TeammateTaskSectionUpdated of channel
+// TeammateTaskSectionUpdated is a channel for subscription.
 type TeammateTaskSectionUpdated struct {
 	ID model.ID
 	Ch chan *model.TeammateTaskSection
 }
 
-// ProjectTaskSectionUpdated of channel
+// ProjectTaskSectionUpdated is a channel for subscription.
 type ProjectTaskSectionUpdated struct {
 	ID model.ID
 	Ch chan *model.ProjectTaskSection
 }
 
-// TaskUpdated of channel
+// TaskUpdated is a channel for subscription.
 type TaskUpdated struct {
 	ID model.ID
 	Ch chan *model.Task
+}
+
+// TeammateTaskUpdated is a channel for subscription.
+type TeammateTaskUpdated struct {
+	ID model.ID
+	Ch chan *model.TeammateTask
 }
 
 // Subscriptions hold an id and a channel of subscription.
@@ -181,6 +187,7 @@ type Subscriptions struct {
 	TeammateTaskListStatusUpdated map[string]TeammateTaskListStatusUpdated
 	TeammateTaskSectionUpdated    map[string]TeammateTaskSectionUpdated
 	TeammateTaskTabStatusUpdated  map[string]TeammateTaskTabStatusUpdated
+	TeammateTaskUpdated           map[string]TeammateTaskUpdated
 	TeammateUpdated               map[string]TeammateUpdated
 	TestUserUpdated               map[string]TestUserUpdated
 	WorkspaceTeammateUpdated      map[string]WorkspaceTeammateUpdated

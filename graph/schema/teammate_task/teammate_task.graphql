@@ -1,0 +1,47 @@
+type TeammateTask implements Node {
+  id: ID!
+  teammateId: ID!
+  teammate: Teammate!
+  taskId: ID!
+  task: Task!
+  teammateTaskSectionId: ID!
+  teammateTaskSection: TeammateTaskSection!
+  createdAt: String!
+  updatedAt: String!
+}
+type TeammateTaskConnection {
+  totalCount: Int!
+  pageInfo: PageInfo!
+  edges: [TeammateTaskEdge]
+}
+type TeammateTaskEdge {
+  node: TeammateTask
+  cursor: Cursor!
+}
+
+input CreateTeammateTaskInput {
+  taskId: ID!
+  teammateId: ID!
+  teammateTaskSectionId: ID!
+}
+
+input UpdateTeammateTaskInput {
+  id: ID!
+  taskId: ID
+  teammateId: ID
+  teammateTaskSectionId: ID
+}
+
+extend type Subscription {
+  teammateTaskUpdated(id: ID!): TeammateTask!
+}
+
+extend type Query {
+  teammateTask(where: TeammateTaskWhereInput): TeammateTask
+  teammateTasks(after: Cursor, first: Int, before: Cursor, last: Int, where: TeammateTaskWhereInput): TeammateTaskConnection
+}
+
+extend type Mutation {
+  createTeammateTask(input: CreateTeammateTaskInput!): TeammateTask!
+  updateTeammateTask(input: UpdateTeammateTaskInput!): TeammateTask!
+}
