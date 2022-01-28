@@ -41,6 +41,8 @@ func main() {
 	feed.ProjectTaskSection(ctx, client)
 	feed.ProjectTask(ctx, client)
 
+	feed.TaskLike(ctx, client)
+
 	feed.FavoriteProject(ctx, client)
 	feed.FavoriteWorkspace(ctx, client)
 	feed.TeammateTaskTabStatus(ctx, client)
