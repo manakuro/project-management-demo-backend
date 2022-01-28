@@ -1,0 +1,61 @@
+type Task implements Node {
+  id: ID!
+  name: String!
+  taskParentId: ID!
+  taskPriorityId: ID!
+  assigneeId: ID!
+  createdBy: ID!
+  completed: Boolean!
+  completedAt: String!
+  isNew: Boolean!
+  dueDate: String!
+  dueTime: String!
+  subTasks: [Task!]!
+  createdAt: String!
+  updatedAt: String!
+}
+type TaskConnection {
+  totalCount: Int!
+  pageInfo: PageInfo!
+  edges: [TaskEdge]
+}
+type TaskEdge {
+  node: Task
+  cursor: Cursor!
+}
+
+input CreateTaskInput {
+  name: String!
+  isNew: Boolean
+  taskParentId: ID
+  createdBy: ID!
+}
+
+input UpdateTaskInput {
+  id: ID!
+  name: String
+  taskParentId: ID
+  taskPriorityId: ID
+  assigneeId: ID
+  createdBy: ID
+  completed: Boolean
+  completedAt: Time
+  isNew: Boolean
+  dueDate: Time
+  dueTime: Time
+  addSubTaskIDs: [ID!]
+}
+
+extend type Subscription {
+  taskUpdated(id: ID!): Task!
+}
+
+extend type Query {
+  task(where: TaskWhereInput): Task
+  tasks(after: Cursor, first: Int, before: Cursor, last: Int, where: TaskWhereInput): TaskConnection
+}
+
+extend type Mutation {
+  createTask(input: CreateTaskInput!): Task!
+  updateTask(input: UpdateTaskInput!): Task!
+}
