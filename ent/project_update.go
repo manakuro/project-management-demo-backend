@@ -12,6 +12,7 @@ import (
 	"project-management-demo-backend/ent/projectbasecolor"
 	"project-management-demo-backend/ent/projecticon"
 	"project-management-demo-backend/ent/projectlightcolor"
+	"project-management-demo-backend/ent/projecttask"
 	"project-management-demo-backend/ent/projecttaskcolumn"
 	"project-management-demo-backend/ent/projecttaskliststatus"
 	"project-management-demo-backend/ent/projecttasksection"
@@ -214,6 +215,21 @@ func (pu *ProjectUpdate) AddProjectTaskSections(p ...*ProjectTaskSection) *Proje
 	return pu.AddProjectTaskSectionIDs(ids...)
 }
 
+// AddProjectTaskIDs adds the "project_tasks" edge to the ProjectTask entity by IDs.
+func (pu *ProjectUpdate) AddProjectTaskIDs(ids ...ulid.ID) *ProjectUpdate {
+	pu.mutation.AddProjectTaskIDs(ids...)
+	return pu
+}
+
+// AddProjectTasks adds the "project_tasks" edges to the ProjectTask entity.
+func (pu *ProjectUpdate) AddProjectTasks(p ...*ProjectTask) *ProjectUpdate {
+	ids := make([]ulid.ID, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return pu.AddProjectTaskIDs(ids...)
+}
+
 // Mutation returns the ProjectMutation object of the builder.
 func (pu *ProjectUpdate) Mutation() *ProjectMutation {
 	return pu.mutation
@@ -352,6 +368,27 @@ func (pu *ProjectUpdate) RemoveProjectTaskSections(p ...*ProjectTaskSection) *Pr
 		ids[i] = p[i].ID
 	}
 	return pu.RemoveProjectTaskSectionIDs(ids...)
+}
+
+// ClearProjectTasks clears all "project_tasks" edges to the ProjectTask entity.
+func (pu *ProjectUpdate) ClearProjectTasks() *ProjectUpdate {
+	pu.mutation.ClearProjectTasks()
+	return pu
+}
+
+// RemoveProjectTaskIDs removes the "project_tasks" edge to ProjectTask entities by IDs.
+func (pu *ProjectUpdate) RemoveProjectTaskIDs(ids ...ulid.ID) *ProjectUpdate {
+	pu.mutation.RemoveProjectTaskIDs(ids...)
+	return pu
+}
+
+// RemoveProjectTasks removes "project_tasks" edges to ProjectTask entities.
+func (pu *ProjectUpdate) RemoveProjectTasks(p ...*ProjectTask) *ProjectUpdate {
+	ids := make([]ulid.ID, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return pu.RemoveProjectTaskIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -941,6 +978,60 @@ func (pu *ProjectUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if pu.mutation.ProjectTasksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   project.ProjectTasksTable,
+			Columns: []string{project.ProjectTasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: projecttask.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.RemovedProjectTasksIDs(); len(nodes) > 0 && !pu.mutation.ProjectTasksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   project.ProjectTasksTable,
+			Columns: []string{project.ProjectTasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: projecttask.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.ProjectTasksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   project.ProjectTasksTable,
+			Columns: []string{project.ProjectTasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: projecttask.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, pu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{project.Label}
@@ -1134,6 +1225,21 @@ func (puo *ProjectUpdateOne) AddProjectTaskSections(p ...*ProjectTaskSection) *P
 	return puo.AddProjectTaskSectionIDs(ids...)
 }
 
+// AddProjectTaskIDs adds the "project_tasks" edge to the ProjectTask entity by IDs.
+func (puo *ProjectUpdateOne) AddProjectTaskIDs(ids ...ulid.ID) *ProjectUpdateOne {
+	puo.mutation.AddProjectTaskIDs(ids...)
+	return puo
+}
+
+// AddProjectTasks adds the "project_tasks" edges to the ProjectTask entity.
+func (puo *ProjectUpdateOne) AddProjectTasks(p ...*ProjectTask) *ProjectUpdateOne {
+	ids := make([]ulid.ID, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return puo.AddProjectTaskIDs(ids...)
+}
+
 // Mutation returns the ProjectMutation object of the builder.
 func (puo *ProjectUpdateOne) Mutation() *ProjectMutation {
 	return puo.mutation
@@ -1272,6 +1378,27 @@ func (puo *ProjectUpdateOne) RemoveProjectTaskSections(p ...*ProjectTaskSection)
 		ids[i] = p[i].ID
 	}
 	return puo.RemoveProjectTaskSectionIDs(ids...)
+}
+
+// ClearProjectTasks clears all "project_tasks" edges to the ProjectTask entity.
+func (puo *ProjectUpdateOne) ClearProjectTasks() *ProjectUpdateOne {
+	puo.mutation.ClearProjectTasks()
+	return puo
+}
+
+// RemoveProjectTaskIDs removes the "project_tasks" edge to ProjectTask entities by IDs.
+func (puo *ProjectUpdateOne) RemoveProjectTaskIDs(ids ...ulid.ID) *ProjectUpdateOne {
+	puo.mutation.RemoveProjectTaskIDs(ids...)
+	return puo
+}
+
+// RemoveProjectTasks removes "project_tasks" edges to ProjectTask entities.
+func (puo *ProjectUpdateOne) RemoveProjectTasks(p ...*ProjectTask) *ProjectUpdateOne {
+	ids := make([]ulid.ID, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return puo.RemoveProjectTaskIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -1877,6 +2004,60 @@ func (puo *ProjectUpdateOne) sqlSave(ctx context.Context) (_node *Project, err e
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: projecttasksection.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if puo.mutation.ProjectTasksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   project.ProjectTasksTable,
+			Columns: []string{project.ProjectTasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: projecttask.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.RemovedProjectTasksIDs(); len(nodes) > 0 && !puo.mutation.ProjectTasksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   project.ProjectTasksTable,
+			Columns: []string{project.ProjectTasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: projecttask.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.ProjectTasksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   project.ProjectTasksTable,
+			Columns: []string{project.ProjectTasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: projecttask.FieldID,
 				},
 			},
 		}

@@ -209,6 +209,41 @@ var (
 			},
 		},
 	}
+	// ProjectTasksColumns holds the columns for the "project_tasks" table.
+	ProjectTasksColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
+		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
+		{Name: "project_id", Type: field.TypeString, Nullable: true},
+		{Name: "project_task_section_id", Type: field.TypeString, Nullable: true},
+		{Name: "task_id", Type: field.TypeString, Nullable: true},
+	}
+	// ProjectTasksTable holds the schema information for the "project_tasks" table.
+	ProjectTasksTable = &schema.Table{
+		Name:       "project_tasks",
+		Columns:    ProjectTasksColumns,
+		PrimaryKey: []*schema.Column{ProjectTasksColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "project_tasks_projects_project_tasks",
+				Columns:    []*schema.Column{ProjectTasksColumns[3]},
+				RefColumns: []*schema.Column{ProjectsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "project_tasks_project_task_sections_project_tasks",
+				Columns:    []*schema.Column{ProjectTasksColumns[4]},
+				RefColumns: []*schema.Column{ProjectTaskSectionsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "project_tasks_tasks_project_tasks",
+				Columns:    []*schema.Column{ProjectTasksColumns[5]},
+				RefColumns: []*schema.Column{TasksColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
 	// ProjectTaskColumnsColumns holds the columns for the "project_task_columns" table.
 	ProjectTaskColumnsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString},
@@ -749,6 +784,7 @@ var (
 		ProjectBaseColorsTable,
 		ProjectIconsTable,
 		ProjectLightColorsTable,
+		ProjectTasksTable,
 		ProjectTaskColumnsTable,
 		ProjectTaskListStatusTable,
 		ProjectTaskSectionsTable,
@@ -785,6 +821,9 @@ func init() {
 	ProjectBaseColorsTable.ForeignKeys[0].RefTable = ColorsTable
 	ProjectIconsTable.ForeignKeys[0].RefTable = IconsTable
 	ProjectLightColorsTable.ForeignKeys[0].RefTable = ColorsTable
+	ProjectTasksTable.ForeignKeys[0].RefTable = ProjectsTable
+	ProjectTasksTable.ForeignKeys[1].RefTable = ProjectTaskSectionsTable
+	ProjectTasksTable.ForeignKeys[2].RefTable = TasksTable
 	ProjectTaskColumnsTable.ForeignKeys[0].RefTable = ProjectsTable
 	ProjectTaskColumnsTable.ForeignKeys[1].RefTable = TaskColumnsTable
 	ProjectTaskListStatusTable.ForeignKeys[0].RefTable = ProjectsTable
