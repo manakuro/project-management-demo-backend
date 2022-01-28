@@ -170,6 +170,12 @@ type ProjectTaskUpdated struct {
 	Ch chan *model.ProjectTask
 }
 
+// TaskLikesUpdated is a channel for subscription.
+type TaskLikesUpdated struct {
+	Where model.TaskLikeWhereInput
+	Ch    chan []*model.TaskLike
+}
+
 // Subscriptions hold an id and a channel of subscription.
 type Subscriptions struct {
 	ColorUpdated                  map[string]ColorUpdated
@@ -188,6 +194,7 @@ type Subscriptions struct {
 	ProjectTeammateUpdated        map[string]ProjectTeammateUpdated
 	ProjectUpdated                map[string]ProjectUpdated
 	TaskColumnUpdated             map[string]TaskColumnUpdated
+	TaskLikesUpdated              map[string]TaskLikesUpdated
 	TaskSectionUpdated            map[string]TaskSectionUpdated
 	TaskUpdated                   map[string]TaskUpdated
 	TeammateTaskColumnUpdated     map[string]TeammateTaskColumnUpdated
