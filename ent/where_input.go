@@ -8310,6 +8310,23 @@ type TestTodoWhereInput struct {
 	TestUserIDEqualFold    *ulid.ID  `json:"testUserIDEqualFold,omitempty"`
 	TestUserIDContainsFold *ulid.ID  `json:"testUserIDContainsFold,omitempty"`
 
+	// "created_by" field predicates.
+	CreatedBy             *ulid.ID  `json:"createdBy,omitempty"`
+	CreatedByNEQ          *ulid.ID  `json:"createdByNEQ,omitempty"`
+	CreatedByIn           []ulid.ID `json:"createdByIn,omitempty"`
+	CreatedByNotIn        []ulid.ID `json:"createdByNotIn,omitempty"`
+	CreatedByGT           *ulid.ID  `json:"createdByGT,omitempty"`
+	CreatedByGTE          *ulid.ID  `json:"createdByGTE,omitempty"`
+	CreatedByLT           *ulid.ID  `json:"createdByLT,omitempty"`
+	CreatedByLTE          *ulid.ID  `json:"createdByLTE,omitempty"`
+	CreatedByContains     *ulid.ID  `json:"createdByContains,omitempty"`
+	CreatedByHasPrefix    *ulid.ID  `json:"createdByHasPrefix,omitempty"`
+	CreatedByHasSuffix    *ulid.ID  `json:"createdByHasSuffix,omitempty"`
+	CreatedByIsNil        bool      `json:"createdByIsNil,omitempty"`
+	CreatedByNotNil       bool      `json:"createdByNotNil,omitempty"`
+	CreatedByEqualFold    *ulid.ID  `json:"createdByEqualFold,omitempty"`
+	CreatedByContainsFold *ulid.ID  `json:"createdByContainsFold,omitempty"`
+
 	// "parent_todo_id" field predicates.
 	ParentTodoID             *ulid.ID  `json:"parentTodoID,omitempty"`
 	ParentTodoIDNEQ          *ulid.ID  `json:"parentTodoIDNEQ,omitempty"`
@@ -8530,6 +8547,51 @@ func (i *TestTodoWhereInput) P() (predicate.TestTodo, error) {
 	}
 	if i.TestUserIDContainsFold != nil {
 		predicates = append(predicates, testtodo.TestUserIDContainsFold(*i.TestUserIDContainsFold))
+	}
+	if i.CreatedBy != nil {
+		predicates = append(predicates, testtodo.CreatedByEQ(*i.CreatedBy))
+	}
+	if i.CreatedByNEQ != nil {
+		predicates = append(predicates, testtodo.CreatedByNEQ(*i.CreatedByNEQ))
+	}
+	if len(i.CreatedByIn) > 0 {
+		predicates = append(predicates, testtodo.CreatedByIn(i.CreatedByIn...))
+	}
+	if len(i.CreatedByNotIn) > 0 {
+		predicates = append(predicates, testtodo.CreatedByNotIn(i.CreatedByNotIn...))
+	}
+	if i.CreatedByGT != nil {
+		predicates = append(predicates, testtodo.CreatedByGT(*i.CreatedByGT))
+	}
+	if i.CreatedByGTE != nil {
+		predicates = append(predicates, testtodo.CreatedByGTE(*i.CreatedByGTE))
+	}
+	if i.CreatedByLT != nil {
+		predicates = append(predicates, testtodo.CreatedByLT(*i.CreatedByLT))
+	}
+	if i.CreatedByLTE != nil {
+		predicates = append(predicates, testtodo.CreatedByLTE(*i.CreatedByLTE))
+	}
+	if i.CreatedByContains != nil {
+		predicates = append(predicates, testtodo.CreatedByContains(*i.CreatedByContains))
+	}
+	if i.CreatedByHasPrefix != nil {
+		predicates = append(predicates, testtodo.CreatedByHasPrefix(*i.CreatedByHasPrefix))
+	}
+	if i.CreatedByHasSuffix != nil {
+		predicates = append(predicates, testtodo.CreatedByHasSuffix(*i.CreatedByHasSuffix))
+	}
+	if i.CreatedByIsNil {
+		predicates = append(predicates, testtodo.CreatedByIsNil())
+	}
+	if i.CreatedByNotNil {
+		predicates = append(predicates, testtodo.CreatedByNotNil())
+	}
+	if i.CreatedByEqualFold != nil {
+		predicates = append(predicates, testtodo.CreatedByEqualFold(*i.CreatedByEqualFold))
+	}
+	if i.CreatedByContainsFold != nil {
+		predicates = append(predicates, testtodo.CreatedByContainsFold(*i.CreatedByContainsFold))
 	}
 	if i.ParentTodoID != nil {
 		predicates = append(predicates, testtodo.ParentTodoIDEQ(*i.ParentTodoID))

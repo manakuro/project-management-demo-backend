@@ -93,6 +93,23 @@ input TestTodoWhereInput {
   testUserIDEqualFold: ID
   testUserIDContainsFold: ID
   
+  """created_by field predicates"""
+  createdBy: String
+  createdByNEQ: String
+  createdByIn: [String!]
+  createdByNotIn: [String!]
+  createdByGT: String
+  createdByGTE: String
+  createdByLT: String
+  createdByLTE: String
+  createdByContains: String
+  createdByHasPrefix: String
+  createdByHasSuffix: String
+  createdByIsNil: Boolean
+  createdByNotNil: Boolean
+  createdByEqualFold: String
+  createdByContainsFold: String
+  
   """parent_todo_id field predicates"""
   parentTodoID: ID
   parentTodoIDNEQ: ID

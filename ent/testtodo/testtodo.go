@@ -17,6 +17,8 @@ const (
 	FieldID = "id"
 	// FieldTestUserID holds the string denoting the test_user_id field in the database.
 	FieldTestUserID = "test_user_id"
+	// FieldCreatedBy holds the string denoting the created_by field in the database.
+	FieldCreatedBy = "created_by"
 	// FieldParentTodoID holds the string denoting the parent_todo_id field in the database.
 	FieldParentTodoID = "parent_todo_id"
 	// FieldName holds the string denoting the name field in the database.
@@ -60,6 +62,7 @@ const (
 var Columns = []string{
 	FieldID,
 	FieldTestUserID,
+	FieldCreatedBy,
 	FieldParentTodoID,
 	FieldName,
 	FieldStatus,

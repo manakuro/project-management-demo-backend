@@ -557,6 +557,7 @@ var (
 	// TestTodosColumns holds the columns for the "test_todos" table.
 	TestTodosColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString},
+		{Name: "created_by", Type: field.TypeString, Nullable: true},
 		{Name: "name", Type: field.TypeString, Default: ""},
 		{Name: "status", Type: field.TypeEnum, Enums: []string{"IN_PROGRESS", "COMPLETED"}, Default: "IN_PROGRESS"},
 		{Name: "priority", Type: field.TypeInt, Default: 0},
@@ -574,15 +575,22 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "test_todos_test_todos_children",
-				Columns:    []*schema.Column{TestTodosColumns[7]},
+				Columns:    []*schema.Column{TestTodosColumns[8]},
 				RefColumns: []*schema.Column{TestTodosColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "test_todos_test_users_test_todos",
-				Columns:    []*schema.Column{TestTodosColumns[8]},
+				Columns:    []*schema.Column{TestTodosColumns[9]},
 				RefColumns: []*schema.Column{TestUsersColumns[0]},
 				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "testtodo_created_by",
+				Unique:  false,
+				Columns: []*schema.Column{TestTodosColumns[1]},
 			},
 		},
 	}

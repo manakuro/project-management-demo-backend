@@ -101,6 +101,13 @@ func TestUserID(v ulid.ID) predicate.TestTodo {
 	})
 }
 
+// CreatedBy applies equality check predicate on the "created_by" field. It's identical to CreatedByEQ.
+func CreatedBy(v ulid.ID) predicate.TestTodo {
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldCreatedBy), v))
+	})
+}
+
 // ParentTodoID applies equality check predicate on the "parent_todo_id" field. It's identical to ParentTodoIDEQ.
 func ParentTodoID(v ulid.ID) predicate.TestTodo {
 	return predicate.TestTodo(func(s *sql.Selector) {
@@ -270,6 +277,136 @@ func TestUserIDContainsFold(v ulid.ID) predicate.TestTodo {
 	vc := string(v)
 	return predicate.TestTodo(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldTestUserID), vc))
+	})
+}
+
+// CreatedByEQ applies the EQ predicate on the "created_by" field.
+func CreatedByEQ(v ulid.ID) predicate.TestTodo {
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldCreatedBy), v))
+	})
+}
+
+// CreatedByNEQ applies the NEQ predicate on the "created_by" field.
+func CreatedByNEQ(v ulid.ID) predicate.TestTodo {
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldCreatedBy), v))
+	})
+}
+
+// CreatedByIn applies the In predicate on the "created_by" field.
+func CreatedByIn(vs ...ulid.ID) predicate.TestTodo {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.TestTodo(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldCreatedBy), v...))
+	})
+}
+
+// CreatedByNotIn applies the NotIn predicate on the "created_by" field.
+func CreatedByNotIn(vs ...ulid.ID) predicate.TestTodo {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.TestTodo(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldCreatedBy), v...))
+	})
+}
+
+// CreatedByGT applies the GT predicate on the "created_by" field.
+func CreatedByGT(v ulid.ID) predicate.TestTodo {
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldCreatedBy), v))
+	})
+}
+
+// CreatedByGTE applies the GTE predicate on the "created_by" field.
+func CreatedByGTE(v ulid.ID) predicate.TestTodo {
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldCreatedBy), v))
+	})
+}
+
+// CreatedByLT applies the LT predicate on the "created_by" field.
+func CreatedByLT(v ulid.ID) predicate.TestTodo {
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldCreatedBy), v))
+	})
+}
+
+// CreatedByLTE applies the LTE predicate on the "created_by" field.
+func CreatedByLTE(v ulid.ID) predicate.TestTodo {
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldCreatedBy), v))
+	})
+}
+
+// CreatedByContains applies the Contains predicate on the "created_by" field.
+func CreatedByContains(v ulid.ID) predicate.TestTodo {
+	vc := string(v)
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldCreatedBy), vc))
+	})
+}
+
+// CreatedByHasPrefix applies the HasPrefix predicate on the "created_by" field.
+func CreatedByHasPrefix(v ulid.ID) predicate.TestTodo {
+	vc := string(v)
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldCreatedBy), vc))
+	})
+}
+
+// CreatedByHasSuffix applies the HasSuffix predicate on the "created_by" field.
+func CreatedByHasSuffix(v ulid.ID) predicate.TestTodo {
+	vc := string(v)
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldCreatedBy), vc))
+	})
+}
+
+// CreatedByIsNil applies the IsNil predicate on the "created_by" field.
+func CreatedByIsNil() predicate.TestTodo {
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldCreatedBy)))
+	})
+}
+
+// CreatedByNotNil applies the NotNil predicate on the "created_by" field.
+func CreatedByNotNil() predicate.TestTodo {
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldCreatedBy)))
+	})
+}
+
+// CreatedByEqualFold applies the EqualFold predicate on the "created_by" field.
+func CreatedByEqualFold(v ulid.ID) predicate.TestTodo {
+	vc := string(v)
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldCreatedBy), vc))
+	})
+}
+
+// CreatedByContainsFold applies the ContainsFold predicate on the "created_by" field.
+func CreatedByContainsFold(v ulid.ID) predicate.TestTodo {
+	vc := string(v)
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldCreatedBy), vc))
 	})
 }
 

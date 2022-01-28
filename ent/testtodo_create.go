@@ -36,6 +36,20 @@ func (ttc *TestTodoCreate) SetNillableTestUserID(u *ulid.ID) *TestTodoCreate {
 	return ttc
 }
 
+// SetCreatedBy sets the "created_by" field.
+func (ttc *TestTodoCreate) SetCreatedBy(u ulid.ID) *TestTodoCreate {
+	ttc.mutation.SetCreatedBy(u)
+	return ttc
+}
+
+// SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
+func (ttc *TestTodoCreate) SetNillableCreatedBy(u *ulid.ID) *TestTodoCreate {
+	if u != nil {
+		ttc.SetCreatedBy(*u)
+	}
+	return ttc
+}
+
 // SetParentTodoID sets the "parent_todo_id" field.
 func (ttc *TestTodoCreate) SetParentTodoID(u ulid.ID) *TestTodoCreate {
 	ttc.mutation.SetParentTodoID(u)
@@ -337,6 +351,14 @@ func (ttc *TestTodoCreate) createSpec() (*TestTodo, *sqlgraph.CreateSpec) {
 	if id, ok := ttc.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = id
+	}
+	if value, ok := ttc.mutation.CreatedBy(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: testtodo.FieldCreatedBy,
+		})
+		_node.CreatedBy = value
 	}
 	if value, ok := ttc.mutation.Name(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

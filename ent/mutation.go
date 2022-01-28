@@ -15406,6 +15406,7 @@ type TestTodoMutation struct {
 	op               Op
 	typ              string
 	id               *ulid.ID
+	created_by       *ulid.ID
 	name             *string
 	status           *testtodo.Status
 	priority         *int
@@ -15558,6 +15559,55 @@ func (m *TestTodoMutation) TestUserIDCleared() bool {
 func (m *TestTodoMutation) ResetTestUserID() {
 	m.test_user = nil
 	delete(m.clearedFields, testtodo.FieldTestUserID)
+}
+
+// SetCreatedBy sets the "created_by" field.
+func (m *TestTodoMutation) SetCreatedBy(u ulid.ID) {
+	m.created_by = &u
+}
+
+// CreatedBy returns the value of the "created_by" field in the mutation.
+func (m *TestTodoMutation) CreatedBy() (r ulid.ID, exists bool) {
+	v := m.created_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedBy returns the old "created_by" field's value of the TestTodo entity.
+// If the TestTodo object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TestTodoMutation) OldCreatedBy(ctx context.Context) (v ulid.ID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldCreatedBy is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldCreatedBy requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedBy: %w", err)
+	}
+	return oldValue.CreatedBy, nil
+}
+
+// ClearCreatedBy clears the value of the "created_by" field.
+func (m *TestTodoMutation) ClearCreatedBy() {
+	m.created_by = nil
+	m.clearedFields[testtodo.FieldCreatedBy] = struct{}{}
+}
+
+// CreatedByCleared returns if the "created_by" field was cleared in this mutation.
+func (m *TestTodoMutation) CreatedByCleared() bool {
+	_, ok := m.clearedFields[testtodo.FieldCreatedBy]
+	return ok
+}
+
+// ResetCreatedBy resets all changes to the "created_by" field.
+func (m *TestTodoMutation) ResetCreatedBy() {
+	m.created_by = nil
+	delete(m.clearedFields, testtodo.FieldCreatedBy)
 }
 
 // SetParentTodoID sets the "parent_todo_id" field.
@@ -15996,9 +16046,12 @@ func (m *TestTodoMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *TestTodoMutation) Fields() []string {
-	fields := make([]string, 0, 8)
+	fields := make([]string, 0, 9)
 	if m.test_user != nil {
 		fields = append(fields, testtodo.FieldTestUserID)
+	}
+	if m.created_by != nil {
+		fields = append(fields, testtodo.FieldCreatedBy)
 	}
 	if m.parent != nil {
 		fields = append(fields, testtodo.FieldParentTodoID)
@@ -16031,6 +16084,8 @@ func (m *TestTodoMutation) Field(name string) (ent.Value, bool) {
 	switch name {
 	case testtodo.FieldTestUserID:
 		return m.TestUserID()
+	case testtodo.FieldCreatedBy:
+		return m.CreatedBy()
 	case testtodo.FieldParentTodoID:
 		return m.ParentTodoID()
 	case testtodo.FieldName:
@@ -16056,6 +16111,8 @@ func (m *TestTodoMutation) OldField(ctx context.Context, name string) (ent.Value
 	switch name {
 	case testtodo.FieldTestUserID:
 		return m.OldTestUserID(ctx)
+	case testtodo.FieldCreatedBy:
+		return m.OldCreatedBy(ctx)
 	case testtodo.FieldParentTodoID:
 		return m.OldParentTodoID(ctx)
 	case testtodo.FieldName:
@@ -16085,6 +16142,13 @@ func (m *TestTodoMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetTestUserID(v)
+		return nil
+	case testtodo.FieldCreatedBy:
+		v, ok := value.(ulid.ID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedBy(v)
 		return nil
 	case testtodo.FieldParentTodoID:
 		v, ok := value.(ulid.ID)
@@ -16183,6 +16247,9 @@ func (m *TestTodoMutation) ClearedFields() []string {
 	if m.FieldCleared(testtodo.FieldTestUserID) {
 		fields = append(fields, testtodo.FieldTestUserID)
 	}
+	if m.FieldCleared(testtodo.FieldCreatedBy) {
+		fields = append(fields, testtodo.FieldCreatedBy)
+	}
 	if m.FieldCleared(testtodo.FieldParentTodoID) {
 		fields = append(fields, testtodo.FieldParentTodoID)
 	}
@@ -16206,6 +16273,9 @@ func (m *TestTodoMutation) ClearField(name string) error {
 	case testtodo.FieldTestUserID:
 		m.ClearTestUserID()
 		return nil
+	case testtodo.FieldCreatedBy:
+		m.ClearCreatedBy()
+		return nil
 	case testtodo.FieldParentTodoID:
 		m.ClearParentTodoID()
 		return nil
@@ -16222,6 +16292,9 @@ func (m *TestTodoMutation) ResetField(name string) error {
 	switch name {
 	case testtodo.FieldTestUserID:
 		m.ResetTestUserID()
+		return nil
+	case testtodo.FieldCreatedBy:
+		m.ResetCreatedBy()
 		return nil
 	case testtodo.FieldParentTodoID:
 		m.ResetParentTodoID()

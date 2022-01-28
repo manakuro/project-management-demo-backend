@@ -20,6 +20,8 @@ type TestTodo struct {
 	ID ulid.ID `json:"id,omitempty"`
 	// TestUserID holds the value of the "test_user_id" field.
 	TestUserID ulid.ID `json:"test_user_id,omitempty"`
+	// CreatedBy holds the value of the "created_by" field.
+	CreatedBy ulid.ID `json:"created_by,omitempty"`
 	// ParentTodoID holds the value of the "parent_todo_id" field.
 	ParentTodoID ulid.ID `json:"parent_todo_id,omitempty"`
 	// Name holds the value of the "name" field.
@@ -100,7 +102,7 @@ func (*TestTodo) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullString)
 		case testtodo.FieldDueDate, testtodo.FieldCreatedAt, testtodo.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
-		case testtodo.FieldID, testtodo.FieldTestUserID, testtodo.FieldParentTodoID:
+		case testtodo.FieldID, testtodo.FieldTestUserID, testtodo.FieldCreatedBy, testtodo.FieldParentTodoID:
 			values[i] = new(ulid.ID)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type TestTodo", columns[i])
@@ -128,6 +130,12 @@ func (tt *TestTodo) assignValues(columns []string, values []interface{}) error {
 				return fmt.Errorf("unexpected type %T for field test_user_id", values[i])
 			} else if value != nil {
 				tt.TestUserID = *value
+			}
+		case testtodo.FieldCreatedBy:
+			if value, ok := values[i].(*ulid.ID); !ok {
+				return fmt.Errorf("unexpected type %T for field created_by", values[i])
+			} else if value != nil {
+				tt.CreatedBy = *value
 			}
 		case testtodo.FieldParentTodoID:
 			if value, ok := values[i].(*ulid.ID); !ok {
@@ -217,6 +225,8 @@ func (tt *TestTodo) String() string {
 	builder.WriteString(fmt.Sprintf("id=%v", tt.ID))
 	builder.WriteString(", test_user_id=")
 	builder.WriteString(fmt.Sprintf("%v", tt.TestUserID))
+	builder.WriteString(", created_by=")
+	builder.WriteString(fmt.Sprintf("%v", tt.CreatedBy))
 	builder.WriteString(", parent_todo_id=")
 	builder.WriteString(fmt.Sprintf("%v", tt.ParentTodoID))
 	builder.WriteString(", name=")

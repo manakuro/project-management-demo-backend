@@ -43,18 +43,18 @@ func TestTodo(ctx context.Context, client *ent.Client) {
 	}
 
 	ts := []ent.CreateTestTodoInput{
-		{TestUserID: &id, ParentTodoID: &parentTodo.ID},
-		{TestUserID: &id, ParentTodoID: &parentTodo.ID},
-		{TestUserID: &id, ParentTodoID: &parentTodo.ID},
-		{TestUserID: &id, ParentTodoID: &parentTodo.ID},
-		{TestUserID: &id, ParentTodoID: &parentTodo.ID},
-		{TestUserID: &id, ParentTodoID: &parentTodo.ID},
-		{TestUserID: &id, ParentTodoID: &parentTodo.ID},
-		{TestUserID: &id, ParentTodoID: &parentTodo.ID},
-		{TestUserID: &id, ParentTodoID: &parentTodo.ID},
-		{TestUserID: &id, ParentTodoID: &parentTodo.ID},
-		{TestUserID: &id, ParentTodoID: &parentTodo.ID},
-		{TestUserID: &id, ParentTodoID: &parentTodo.ID},
+		{TestUserID: &id, ParentTodoID: &parentTodo.ID, CreatedBy: &id},
+		{TestUserID: &id, ParentTodoID: &parentTodo.ID, CreatedBy: &id},
+		{TestUserID: &id, ParentTodoID: &parentTodo.ID, CreatedBy: &id},
+		{TestUserID: &id, ParentTodoID: &parentTodo.ID, CreatedBy: &id},
+		{TestUserID: &id, ParentTodoID: &parentTodo.ID, CreatedBy: &id},
+		{TestUserID: &id, ParentTodoID: &parentTodo.ID, CreatedBy: &id},
+		{TestUserID: &id, ParentTodoID: &parentTodo.ID, CreatedBy: &id},
+		{TestUserID: &id, ParentTodoID: &parentTodo.ID, CreatedBy: &id},
+		{TestUserID: &id, ParentTodoID: &parentTodo.ID, CreatedBy: &id},
+		{TestUserID: &id, ParentTodoID: &parentTodo.ID, CreatedBy: &id},
+		{TestUserID: &id, ParentTodoID: &parentTodo.ID, CreatedBy: &id},
+		{TestUserID: &id, ParentTodoID: &parentTodo.ID, CreatedBy: &id},
 	}
 	bulk := make([]*ent.TestTodoCreate, len(ts))
 	for i, t := range ts {
