@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"project-management-demo-backend/ent/color"
 	"project-management-demo-backend/ent/schema/ulid"
+	"project-management-demo-backend/ent/task"
 	"project-management-demo-backend/ent/taskpriority"
 	"time"
 
@@ -85,6 +86,21 @@ func (tpc *TaskPriorityCreate) SetNillableID(u *ulid.ID) *TaskPriorityCreate {
 // SetColor sets the "color" edge to the Color entity.
 func (tpc *TaskPriorityCreate) SetColor(c *Color) *TaskPriorityCreate {
 	return tpc.SetColorID(c.ID)
+}
+
+// AddTaskIDs adds the "tasks" edge to the Task entity by IDs.
+func (tpc *TaskPriorityCreate) AddTaskIDs(ids ...ulid.ID) *TaskPriorityCreate {
+	tpc.mutation.AddTaskIDs(ids...)
+	return tpc
+}
+
+// AddTasks adds the "tasks" edges to the Task entity.
+func (tpc *TaskPriorityCreate) AddTasks(t ...*Task) *TaskPriorityCreate {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return tpc.AddTaskIDs(ids...)
 }
 
 // Mutation returns the TaskPriorityMutation object of the builder.
@@ -284,6 +300,25 @@ func (tpc *TaskPriorityCreate) createSpec() (*TaskPriority, *sqlgraph.CreateSpec
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.ColorID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := tpc.mutation.TasksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   taskpriority.TasksTable,
+			Columns: []string{taskpriority.TasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: task.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

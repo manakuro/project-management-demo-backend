@@ -6,10 +6,10 @@ package resolver
 import (
 	"context"
 	"project-management-demo-backend/ent"
-	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/graph/generated"
 	"project-management-demo-backend/pkg/adapter/handler"
 	"project-management-demo-backend/pkg/util/datetime"
+	"project-management-demo-backend/pkg/util/graphqlutil"
 )
 
 func (r *mutationResolver) CreateTestTodo(ctx context.Context, input ent.CreateTestTodoInput) (*ent.TestTodo, error) {
@@ -28,16 +28,18 @@ func (r *mutationResolver) UpdateTestTodo(ctx context.Context, input ent.UpdateT
 	return t, nil
 }
 
-func (r *queryResolver) TestTodo(ctx context.Context, id *ulid.ID) (*ent.TestTodo, error) {
-	t, err := r.controller.TestTodo.Get(ctx, id)
+func (r *queryResolver) TestTodo(ctx context.Context, where *ent.TestTodoWhereInput) (*ent.TestTodo, error) {
+	t, err := r.controller.TestTodo.Get(ctx, where)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
 	return t, nil
 }
 
-func (r *queryResolver) TestTodos(ctx context.Context) ([]*ent.TestTodo, error) {
-	ts, err := r.controller.TestTodo.List(ctx)
+func (r *queryResolver) TestTodos(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TestTodoWhereInput) (*ent.TestTodoConnection, error) {
+	requestFields := graphqlutil.GetRequestedFields(ctx)
+
+	ts, err := r.controller.TestTodo.ListWithPagination(ctx, after, first, before, last, where, requestFields)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
@@ -50,6 +52,14 @@ func (r *testTodoResolver) CreatedAt(ctx context.Context, obj *ent.TestTodo) (st
 
 func (r *testTodoResolver) UpdatedAt(ctx context.Context, obj *ent.TestTodo) (string, error) {
 	return datetime.FormatDate(obj.UpdatedAt), nil
+}
+
+func (r *testTodoResolver) DueDate(ctx context.Context, obj *ent.TestTodo) (string, error) {
+	if obj.DueDate == nil {
+		return "", nil
+	}
+
+	return datetime.FormatDate(*obj.DueDate), nil
 }
 
 // TestTodo returns generated.TestTodoResolver implementation.

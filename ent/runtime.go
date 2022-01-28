@@ -17,6 +17,7 @@ import (
 	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/ent/schema"
 	"project-management-demo-backend/ent/schema/ulid"
+	"project-management-demo-backend/ent/task"
 	"project-management-demo-backend/ent/taskcolumn"
 	"project-management-demo-backend/ent/tasklistcompletedstatus"
 	"project-management-demo-backend/ent/tasklistsortstatus"
@@ -434,6 +435,53 @@ func init() {
 	projectteammateDescID := projectteammateMixinFields0[0].Descriptor()
 	// projectteammate.DefaultID holds the default value on creation for the id field.
 	projectteammate.DefaultID = projectteammateDescID.Default.(func() ulid.ID)
+	taskMixin := schema.Task{}.Mixin()
+	taskMixinFields0 := taskMixin[0].Fields()
+	_ = taskMixinFields0
+	taskMixinFields1 := taskMixin[1].Fields()
+	_ = taskMixinFields1
+	taskMixinFields2 := taskMixin[2].Fields()
+	_ = taskMixinFields2
+	taskFields := schema.Task{}.Fields()
+	_ = taskFields
+	// taskDescCompleted is the schema descriptor for completed field.
+	taskDescCompleted := taskMixinFields1[4].Descriptor()
+	// task.DefaultCompleted holds the default value on creation for the completed field.
+	task.DefaultCompleted = taskDescCompleted.Default.(bool)
+	// taskDescIsNew is the schema descriptor for is_new field.
+	taskDescIsNew := taskMixinFields1[6].Descriptor()
+	// task.DefaultIsNew holds the default value on creation for the is_new field.
+	task.DefaultIsNew = taskDescIsNew.Default.(bool)
+	// taskDescName is the schema descriptor for name field.
+	taskDescName := taskMixinFields1[7].Descriptor()
+	// task.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	task.NameValidator = func() func(string) error {
+		validators := taskDescName.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(name string) error {
+			for _, fn := range fns {
+				if err := fn(name); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// taskDescCreatedAt is the schema descriptor for created_at field.
+	taskDescCreatedAt := taskMixinFields2[0].Descriptor()
+	// task.DefaultCreatedAt holds the default value on creation for the created_at field.
+	task.DefaultCreatedAt = taskDescCreatedAt.Default.(func() time.Time)
+	// taskDescUpdatedAt is the schema descriptor for updated_at field.
+	taskDescUpdatedAt := taskMixinFields2[1].Descriptor()
+	// task.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	task.DefaultUpdatedAt = taskDescUpdatedAt.Default.(func() time.Time)
+	// taskDescID is the schema descriptor for id field.
+	taskDescID := taskMixinFields0[0].Descriptor()
+	// task.DefaultID holds the default value on creation for the id field.
+	task.DefaultID = taskDescID.Default.(func() ulid.ID)
 	taskcolumnMixin := schema.TaskColumn{}.Mixin()
 	taskcolumnMixinFields0 := taskcolumnMixin[0].Fields()
 	_ = taskcolumnMixinFields0
@@ -804,11 +852,11 @@ func init() {
 	testtodoFields := schema.TestTodo{}.Fields()
 	_ = testtodoFields
 	// testtodoDescName is the schema descriptor for name field.
-	testtodoDescName := testtodoMixinFields1[1].Descriptor()
+	testtodoDescName := testtodoMixinFields1[3].Descriptor()
 	// testtodo.DefaultName holds the default value on creation for the name field.
 	testtodo.DefaultName = testtodoDescName.Default.(string)
 	// testtodoDescPriority is the schema descriptor for priority field.
-	testtodoDescPriority := testtodoMixinFields1[3].Descriptor()
+	testtodoDescPriority := testtodoMixinFields1[5].Descriptor()
 	// testtodo.DefaultPriority holds the default value on creation for the priority field.
 	testtodo.DefaultPriority = testtodoDescPriority.Default.(int)
 	// testtodoDescCreatedAt is the schema descriptor for created_at field.

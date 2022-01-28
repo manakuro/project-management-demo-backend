@@ -35,6 +35,8 @@ func main() {
 	feed.TaskSection(ctx, client)
 	feed.TaskPriority(ctx, client)
 
+	feed.Task(ctx, client)
+
 	feed.TeammateTaskSection(ctx, client)
 	feed.ProjectTaskSection(ctx, client)
 

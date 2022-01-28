@@ -9,6 +9,7 @@ import (
 	"project-management-demo-backend/ent/color"
 	"project-management-demo-backend/ent/predicate"
 	"project-management-demo-backend/ent/schema/ulid"
+	"project-management-demo-backend/ent/task"
 	"project-management-demo-backend/ent/taskpriority"
 
 	"entgo.io/ent/dialect/sql"
@@ -52,6 +53,21 @@ func (tpu *TaskPriorityUpdate) SetColor(c *Color) *TaskPriorityUpdate {
 	return tpu.SetColorID(c.ID)
 }
 
+// AddTaskIDs adds the "tasks" edge to the Task entity by IDs.
+func (tpu *TaskPriorityUpdate) AddTaskIDs(ids ...ulid.ID) *TaskPriorityUpdate {
+	tpu.mutation.AddTaskIDs(ids...)
+	return tpu
+}
+
+// AddTasks adds the "tasks" edges to the Task entity.
+func (tpu *TaskPriorityUpdate) AddTasks(t ...*Task) *TaskPriorityUpdate {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return tpu.AddTaskIDs(ids...)
+}
+
 // Mutation returns the TaskPriorityMutation object of the builder.
 func (tpu *TaskPriorityUpdate) Mutation() *TaskPriorityMutation {
 	return tpu.mutation
@@ -61,6 +77,27 @@ func (tpu *TaskPriorityUpdate) Mutation() *TaskPriorityMutation {
 func (tpu *TaskPriorityUpdate) ClearColor() *TaskPriorityUpdate {
 	tpu.mutation.ClearColor()
 	return tpu
+}
+
+// ClearTasks clears all "tasks" edges to the Task entity.
+func (tpu *TaskPriorityUpdate) ClearTasks() *TaskPriorityUpdate {
+	tpu.mutation.ClearTasks()
+	return tpu
+}
+
+// RemoveTaskIDs removes the "tasks" edge to Task entities by IDs.
+func (tpu *TaskPriorityUpdate) RemoveTaskIDs(ids ...ulid.ID) *TaskPriorityUpdate {
+	tpu.mutation.RemoveTaskIDs(ids...)
+	return tpu
+}
+
+// RemoveTasks removes "tasks" edges to Task entities.
+func (tpu *TaskPriorityUpdate) RemoveTasks(t ...*Task) *TaskPriorityUpdate {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return tpu.RemoveTaskIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -208,6 +245,60 @@ func (tpu *TaskPriorityUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if tpu.mutation.TasksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   taskpriority.TasksTable,
+			Columns: []string{taskpriority.TasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: task.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tpu.mutation.RemovedTasksIDs(); len(nodes) > 0 && !tpu.mutation.TasksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   taskpriority.TasksTable,
+			Columns: []string{taskpriority.TasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: task.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tpu.mutation.TasksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   taskpriority.TasksTable,
+			Columns: []string{taskpriority.TasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: task.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, tpu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{taskpriority.Label}
@@ -250,6 +341,21 @@ func (tpuo *TaskPriorityUpdateOne) SetColor(c *Color) *TaskPriorityUpdateOne {
 	return tpuo.SetColorID(c.ID)
 }
 
+// AddTaskIDs adds the "tasks" edge to the Task entity by IDs.
+func (tpuo *TaskPriorityUpdateOne) AddTaskIDs(ids ...ulid.ID) *TaskPriorityUpdateOne {
+	tpuo.mutation.AddTaskIDs(ids...)
+	return tpuo
+}
+
+// AddTasks adds the "tasks" edges to the Task entity.
+func (tpuo *TaskPriorityUpdateOne) AddTasks(t ...*Task) *TaskPriorityUpdateOne {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return tpuo.AddTaskIDs(ids...)
+}
+
 // Mutation returns the TaskPriorityMutation object of the builder.
 func (tpuo *TaskPriorityUpdateOne) Mutation() *TaskPriorityMutation {
 	return tpuo.mutation
@@ -259,6 +365,27 @@ func (tpuo *TaskPriorityUpdateOne) Mutation() *TaskPriorityMutation {
 func (tpuo *TaskPriorityUpdateOne) ClearColor() *TaskPriorityUpdateOne {
 	tpuo.mutation.ClearColor()
 	return tpuo
+}
+
+// ClearTasks clears all "tasks" edges to the Task entity.
+func (tpuo *TaskPriorityUpdateOne) ClearTasks() *TaskPriorityUpdateOne {
+	tpuo.mutation.ClearTasks()
+	return tpuo
+}
+
+// RemoveTaskIDs removes the "tasks" edge to Task entities by IDs.
+func (tpuo *TaskPriorityUpdateOne) RemoveTaskIDs(ids ...ulid.ID) *TaskPriorityUpdateOne {
+	tpuo.mutation.RemoveTaskIDs(ids...)
+	return tpuo
+}
+
+// RemoveTasks removes "tasks" edges to Task entities.
+func (tpuo *TaskPriorityUpdateOne) RemoveTasks(t ...*Task) *TaskPriorityUpdateOne {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return tpuo.RemoveTaskIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -422,6 +549,60 @@ func (tpuo *TaskPriorityUpdateOne) sqlSave(ctx context.Context) (_node *TaskPrio
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: color.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if tpuo.mutation.TasksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   taskpriority.TasksTable,
+			Columns: []string{taskpriority.TasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: task.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tpuo.mutation.RemovedTasksIDs(); len(nodes) > 0 && !tpuo.mutation.TasksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   taskpriority.TasksTable,
+			Columns: []string{taskpriority.TasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: task.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tpuo.mutation.TasksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   taskpriority.TasksTable,
+			Columns: []string{taskpriority.TasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: task.FieldID,
 				},
 			},
 		}

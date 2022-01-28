@@ -17,18 +17,28 @@ const (
 	FieldID = "id"
 	// FieldTestUserID holds the string denoting the test_user_id field in the database.
 	FieldTestUserID = "test_user_id"
+	// FieldCreatedBy holds the string denoting the created_by field in the database.
+	FieldCreatedBy = "created_by"
+	// FieldParentTodoID holds the string denoting the parent_todo_id field in the database.
+	FieldParentTodoID = "parent_todo_id"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
 	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
 	// FieldPriority holds the string denoting the priority field in the database.
 	FieldPriority = "priority"
+	// FieldDueDate holds the string denoting the due_date field in the database.
+	FieldDueDate = "due_date"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
 	FieldUpdatedAt = "updated_at"
 	// EdgeTestUser holds the string denoting the test_user edge name in mutations.
 	EdgeTestUser = "test_user"
+	// EdgeParent holds the string denoting the parent edge name in mutations.
+	EdgeParent = "parent"
+	// EdgeChildren holds the string denoting the children edge name in mutations.
+	EdgeChildren = "children"
 	// Table holds the table name of the testtodo in the database.
 	Table = "test_todos"
 	// TestUserTable is the table that holds the test_user relation/edge.
@@ -38,15 +48,26 @@ const (
 	TestUserInverseTable = "test_users"
 	// TestUserColumn is the table column denoting the test_user relation/edge.
 	TestUserColumn = "test_user_id"
+	// ParentTable is the table that holds the parent relation/edge.
+	ParentTable = "test_todos"
+	// ParentColumn is the table column denoting the parent relation/edge.
+	ParentColumn = "parent_todo_id"
+	// ChildrenTable is the table that holds the children relation/edge.
+	ChildrenTable = "test_todos"
+	// ChildrenColumn is the table column denoting the children relation/edge.
+	ChildrenColumn = "parent_todo_id"
 )
 
 // Columns holds all SQL columns for testtodo fields.
 var Columns = []string{
 	FieldID,
 	FieldTestUserID,
+	FieldCreatedBy,
+	FieldParentTodoID,
 	FieldName,
 	FieldStatus,
 	FieldPriority,
+	FieldDueDate,
 	FieldCreatedAt,
 	FieldUpdatedAt,
 }

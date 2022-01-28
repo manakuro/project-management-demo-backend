@@ -3,33 +3,33 @@ package repository
 import (
 	"context"
 	"project-management-demo-backend/ent"
-	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/pkg/entity/model"
 	ur "project-management-demo-backend/pkg/usecase/repository"
+	"project-management-demo-backend/pkg/util/collection"
 )
 
 type testTodoRepository struct {
 	client *ent.Client
 }
 
-// NewTestTodoRepository generates test user repository
+// NewTestTodoRepository generates testTodo repository
 func NewTestTodoRepository(client *ent.Client) ur.TestTodo {
 	return &testTodoRepository{client: client}
 }
 
-func (r *testTodoRepository) Get(ctx context.Context, id *model.ID) (*model.TestTodo, error) {
+func (r *testTodoRepository) Get(ctx context.Context, where *model.TestTodoWhereInput) (*model.TestTodo, error) {
 	q := r.client.TestTodo.Query()
-	if id != nil {
-		q.Where(testtodo.IDEQ(*id))
+
+	q, err := where.Filter(q)
+	if err != nil {
+		return nil, model.NewInvalidParamError(nil)
 	}
 
 	res, err := q.Only(ctx)
 
 	if err != nil {
 		if ent.IsNotSingular(err) {
-			return nil, model.NewNotFoundError(err, map[string]interface{}{
-				"id": id,
-			})
+			return nil, model.NewNotFoundError(err, nil)
 		}
 		if ent.IsNotFound(err) {
 			return nil, nil
@@ -41,10 +41,22 @@ func (r *testTodoRepository) Get(ctx context.Context, id *model.ID) (*model.Test
 }
 
 func (r *testTodoRepository) List(ctx context.Context) ([]*model.TestTodo, error) {
-	res, err := r.client.
-		TestTodo.
-		Query().
-		All(ctx)
+	res, err := r.client.TestTodo.Query().All(ctx)
+	if err != nil {
+		return nil, model.NewDBError(err)
+	}
+
+	return res, nil
+}
+
+func (r *testTodoRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TestTodoWhereInput, requestedFields []string) (*model.TestTodoConnection, error) {
+	q := r.client.TestTodo.Query()
+
+	if collection.Contains(requestedFields, "edges.node.children") {
+		q.WithChildren()
+	}
+
+	res, err := q.Paginate(ctx, after, first, before, last, ent.WithTestTodoFilter(where.Filter))
 	if err != nil {
 		return nil, model.NewDBError(err)
 	}

@@ -27,6 +27,8 @@ const (
 	FieldUpdatedAt = "updated_at"
 	// EdgeColor holds the string denoting the color edge name in mutations.
 	EdgeColor = "color"
+	// EdgeTasks holds the string denoting the tasks edge name in mutations.
+	EdgeTasks = "tasks"
 	// Table holds the table name of the taskpriority in the database.
 	Table = "task_priorities"
 	// ColorTable is the table that holds the color relation/edge.
@@ -36,6 +38,13 @@ const (
 	ColorInverseTable = "colors"
 	// ColorColumn is the table column denoting the color relation/edge.
 	ColorColumn = "color_id"
+	// TasksTable is the table that holds the tasks relation/edge.
+	TasksTable = "tasks"
+	// TasksInverseTable is the table name for the Task entity.
+	// It exists in this package in order to avoid circular dependency with the "task" package.
+	TasksInverseTable = "tasks"
+	// TasksColumn is the table column denoting the tasks relation/edge.
+	TasksColumn = "task_priority_id"
 )
 
 // Columns holds all SQL columns for taskpriority fields.

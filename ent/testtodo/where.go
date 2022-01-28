@@ -101,6 +101,20 @@ func TestUserID(v ulid.ID) predicate.TestTodo {
 	})
 }
 
+// CreatedBy applies equality check predicate on the "created_by" field. It's identical to CreatedByEQ.
+func CreatedBy(v ulid.ID) predicate.TestTodo {
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldCreatedBy), v))
+	})
+}
+
+// ParentTodoID applies equality check predicate on the "parent_todo_id" field. It's identical to ParentTodoIDEQ.
+func ParentTodoID(v ulid.ID) predicate.TestTodo {
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldParentTodoID), v))
+	})
+}
+
 // Name applies equality check predicate on the "name" field. It's identical to NameEQ.
 func Name(v string) predicate.TestTodo {
 	return predicate.TestTodo(func(s *sql.Selector) {
@@ -112,6 +126,13 @@ func Name(v string) predicate.TestTodo {
 func Priority(v int) predicate.TestTodo {
 	return predicate.TestTodo(func(s *sql.Selector) {
 		s.Where(sql.EQ(s.C(FieldPriority), v))
+	})
+}
+
+// DueDate applies equality check predicate on the "due_date" field. It's identical to DueDateEQ.
+func DueDate(v time.Time) predicate.TestTodo {
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldDueDate), v))
 	})
 }
 
@@ -256,6 +277,266 @@ func TestUserIDContainsFold(v ulid.ID) predicate.TestTodo {
 	vc := string(v)
 	return predicate.TestTodo(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldTestUserID), vc))
+	})
+}
+
+// CreatedByEQ applies the EQ predicate on the "created_by" field.
+func CreatedByEQ(v ulid.ID) predicate.TestTodo {
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldCreatedBy), v))
+	})
+}
+
+// CreatedByNEQ applies the NEQ predicate on the "created_by" field.
+func CreatedByNEQ(v ulid.ID) predicate.TestTodo {
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldCreatedBy), v))
+	})
+}
+
+// CreatedByIn applies the In predicate on the "created_by" field.
+func CreatedByIn(vs ...ulid.ID) predicate.TestTodo {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.TestTodo(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldCreatedBy), v...))
+	})
+}
+
+// CreatedByNotIn applies the NotIn predicate on the "created_by" field.
+func CreatedByNotIn(vs ...ulid.ID) predicate.TestTodo {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.TestTodo(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldCreatedBy), v...))
+	})
+}
+
+// CreatedByGT applies the GT predicate on the "created_by" field.
+func CreatedByGT(v ulid.ID) predicate.TestTodo {
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldCreatedBy), v))
+	})
+}
+
+// CreatedByGTE applies the GTE predicate on the "created_by" field.
+func CreatedByGTE(v ulid.ID) predicate.TestTodo {
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldCreatedBy), v))
+	})
+}
+
+// CreatedByLT applies the LT predicate on the "created_by" field.
+func CreatedByLT(v ulid.ID) predicate.TestTodo {
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldCreatedBy), v))
+	})
+}
+
+// CreatedByLTE applies the LTE predicate on the "created_by" field.
+func CreatedByLTE(v ulid.ID) predicate.TestTodo {
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldCreatedBy), v))
+	})
+}
+
+// CreatedByContains applies the Contains predicate on the "created_by" field.
+func CreatedByContains(v ulid.ID) predicate.TestTodo {
+	vc := string(v)
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldCreatedBy), vc))
+	})
+}
+
+// CreatedByHasPrefix applies the HasPrefix predicate on the "created_by" field.
+func CreatedByHasPrefix(v ulid.ID) predicate.TestTodo {
+	vc := string(v)
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldCreatedBy), vc))
+	})
+}
+
+// CreatedByHasSuffix applies the HasSuffix predicate on the "created_by" field.
+func CreatedByHasSuffix(v ulid.ID) predicate.TestTodo {
+	vc := string(v)
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldCreatedBy), vc))
+	})
+}
+
+// CreatedByIsNil applies the IsNil predicate on the "created_by" field.
+func CreatedByIsNil() predicate.TestTodo {
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldCreatedBy)))
+	})
+}
+
+// CreatedByNotNil applies the NotNil predicate on the "created_by" field.
+func CreatedByNotNil() predicate.TestTodo {
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldCreatedBy)))
+	})
+}
+
+// CreatedByEqualFold applies the EqualFold predicate on the "created_by" field.
+func CreatedByEqualFold(v ulid.ID) predicate.TestTodo {
+	vc := string(v)
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldCreatedBy), vc))
+	})
+}
+
+// CreatedByContainsFold applies the ContainsFold predicate on the "created_by" field.
+func CreatedByContainsFold(v ulid.ID) predicate.TestTodo {
+	vc := string(v)
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldCreatedBy), vc))
+	})
+}
+
+// ParentTodoIDEQ applies the EQ predicate on the "parent_todo_id" field.
+func ParentTodoIDEQ(v ulid.ID) predicate.TestTodo {
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldParentTodoID), v))
+	})
+}
+
+// ParentTodoIDNEQ applies the NEQ predicate on the "parent_todo_id" field.
+func ParentTodoIDNEQ(v ulid.ID) predicate.TestTodo {
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldParentTodoID), v))
+	})
+}
+
+// ParentTodoIDIn applies the In predicate on the "parent_todo_id" field.
+func ParentTodoIDIn(vs ...ulid.ID) predicate.TestTodo {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.TestTodo(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldParentTodoID), v...))
+	})
+}
+
+// ParentTodoIDNotIn applies the NotIn predicate on the "parent_todo_id" field.
+func ParentTodoIDNotIn(vs ...ulid.ID) predicate.TestTodo {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.TestTodo(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldParentTodoID), v...))
+	})
+}
+
+// ParentTodoIDGT applies the GT predicate on the "parent_todo_id" field.
+func ParentTodoIDGT(v ulid.ID) predicate.TestTodo {
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldParentTodoID), v))
+	})
+}
+
+// ParentTodoIDGTE applies the GTE predicate on the "parent_todo_id" field.
+func ParentTodoIDGTE(v ulid.ID) predicate.TestTodo {
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldParentTodoID), v))
+	})
+}
+
+// ParentTodoIDLT applies the LT predicate on the "parent_todo_id" field.
+func ParentTodoIDLT(v ulid.ID) predicate.TestTodo {
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldParentTodoID), v))
+	})
+}
+
+// ParentTodoIDLTE applies the LTE predicate on the "parent_todo_id" field.
+func ParentTodoIDLTE(v ulid.ID) predicate.TestTodo {
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldParentTodoID), v))
+	})
+}
+
+// ParentTodoIDContains applies the Contains predicate on the "parent_todo_id" field.
+func ParentTodoIDContains(v ulid.ID) predicate.TestTodo {
+	vc := string(v)
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldParentTodoID), vc))
+	})
+}
+
+// ParentTodoIDHasPrefix applies the HasPrefix predicate on the "parent_todo_id" field.
+func ParentTodoIDHasPrefix(v ulid.ID) predicate.TestTodo {
+	vc := string(v)
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldParentTodoID), vc))
+	})
+}
+
+// ParentTodoIDHasSuffix applies the HasSuffix predicate on the "parent_todo_id" field.
+func ParentTodoIDHasSuffix(v ulid.ID) predicate.TestTodo {
+	vc := string(v)
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldParentTodoID), vc))
+	})
+}
+
+// ParentTodoIDIsNil applies the IsNil predicate on the "parent_todo_id" field.
+func ParentTodoIDIsNil() predicate.TestTodo {
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldParentTodoID)))
+	})
+}
+
+// ParentTodoIDNotNil applies the NotNil predicate on the "parent_todo_id" field.
+func ParentTodoIDNotNil() predicate.TestTodo {
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldParentTodoID)))
+	})
+}
+
+// ParentTodoIDEqualFold applies the EqualFold predicate on the "parent_todo_id" field.
+func ParentTodoIDEqualFold(v ulid.ID) predicate.TestTodo {
+	vc := string(v)
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldParentTodoID), vc))
+	})
+}
+
+// ParentTodoIDContainsFold applies the ContainsFold predicate on the "parent_todo_id" field.
+func ParentTodoIDContainsFold(v ulid.ID) predicate.TestTodo {
+	vc := string(v)
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldParentTodoID), vc))
 	})
 }
 
@@ -494,6 +775,96 @@ func PriorityLTE(v int) predicate.TestTodo {
 	})
 }
 
+// DueDateEQ applies the EQ predicate on the "due_date" field.
+func DueDateEQ(v time.Time) predicate.TestTodo {
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldDueDate), v))
+	})
+}
+
+// DueDateNEQ applies the NEQ predicate on the "due_date" field.
+func DueDateNEQ(v time.Time) predicate.TestTodo {
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldDueDate), v))
+	})
+}
+
+// DueDateIn applies the In predicate on the "due_date" field.
+func DueDateIn(vs ...time.Time) predicate.TestTodo {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.TestTodo(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldDueDate), v...))
+	})
+}
+
+// DueDateNotIn applies the NotIn predicate on the "due_date" field.
+func DueDateNotIn(vs ...time.Time) predicate.TestTodo {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.TestTodo(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldDueDate), v...))
+	})
+}
+
+// DueDateGT applies the GT predicate on the "due_date" field.
+func DueDateGT(v time.Time) predicate.TestTodo {
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldDueDate), v))
+	})
+}
+
+// DueDateGTE applies the GTE predicate on the "due_date" field.
+func DueDateGTE(v time.Time) predicate.TestTodo {
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldDueDate), v))
+	})
+}
+
+// DueDateLT applies the LT predicate on the "due_date" field.
+func DueDateLT(v time.Time) predicate.TestTodo {
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldDueDate), v))
+	})
+}
+
+// DueDateLTE applies the LTE predicate on the "due_date" field.
+func DueDateLTE(v time.Time) predicate.TestTodo {
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldDueDate), v))
+	})
+}
+
+// DueDateIsNil applies the IsNil predicate on the "due_date" field.
+func DueDateIsNil() predicate.TestTodo {
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldDueDate)))
+	})
+}
+
+// DueDateNotNil applies the NotNil predicate on the "due_date" field.
+func DueDateNotNil() predicate.TestTodo {
+	return predicate.TestTodo(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldDueDate)))
+	})
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.TestTodo {
 	return predicate.TestTodo(func(s *sql.Selector) {
@@ -665,6 +1036,62 @@ func HasTestUserWith(preds ...predicate.TestUser) predicate.TestTodo {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(TestUserInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, TestUserTable, TestUserColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasParent applies the HasEdge predicate on the "parent" edge.
+func HasParent() predicate.TestTodo {
+	return predicate.TestTodo(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(ParentTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, ParentTable, ParentColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasParentWith applies the HasEdge predicate on the "parent" edge with a given conditions (other predicates).
+func HasParentWith(preds ...predicate.TestTodo) predicate.TestTodo {
+	return predicate.TestTodo(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, ParentTable, ParentColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasChildren applies the HasEdge predicate on the "children" edge.
+func HasChildren() predicate.TestTodo {
+	return predicate.TestTodo(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(ChildrenTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ChildrenTable, ChildrenColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasChildrenWith applies the HasEdge predicate on the "children" edge with a given conditions (other predicates).
+func HasChildrenWith(preds ...predicate.TestTodo) predicate.TestTodo {
+	return predicate.TestTodo(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ChildrenTable, ChildrenColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

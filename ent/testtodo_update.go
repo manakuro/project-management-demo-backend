@@ -9,6 +9,7 @@ import (
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/ent/testuser"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -45,6 +46,46 @@ func (ttu *TestTodoUpdate) SetNillableTestUserID(u *ulid.ID) *TestTodoUpdate {
 // ClearTestUserID clears the value of the "test_user_id" field.
 func (ttu *TestTodoUpdate) ClearTestUserID() *TestTodoUpdate {
 	ttu.mutation.ClearTestUserID()
+	return ttu
+}
+
+// SetCreatedBy sets the "created_by" field.
+func (ttu *TestTodoUpdate) SetCreatedBy(u ulid.ID) *TestTodoUpdate {
+	ttu.mutation.SetCreatedBy(u)
+	return ttu
+}
+
+// SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
+func (ttu *TestTodoUpdate) SetNillableCreatedBy(u *ulid.ID) *TestTodoUpdate {
+	if u != nil {
+		ttu.SetCreatedBy(*u)
+	}
+	return ttu
+}
+
+// ClearCreatedBy clears the value of the "created_by" field.
+func (ttu *TestTodoUpdate) ClearCreatedBy() *TestTodoUpdate {
+	ttu.mutation.ClearCreatedBy()
+	return ttu
+}
+
+// SetParentTodoID sets the "parent_todo_id" field.
+func (ttu *TestTodoUpdate) SetParentTodoID(u ulid.ID) *TestTodoUpdate {
+	ttu.mutation.SetParentTodoID(u)
+	return ttu
+}
+
+// SetNillableParentTodoID sets the "parent_todo_id" field if the given value is not nil.
+func (ttu *TestTodoUpdate) SetNillableParentTodoID(u *ulid.ID) *TestTodoUpdate {
+	if u != nil {
+		ttu.SetParentTodoID(*u)
+	}
+	return ttu
+}
+
+// ClearParentTodoID clears the value of the "parent_todo_id" field.
+func (ttu *TestTodoUpdate) ClearParentTodoID() *TestTodoUpdate {
+	ttu.mutation.ClearParentTodoID()
 	return ttu
 }
 
@@ -97,9 +138,63 @@ func (ttu *TestTodoUpdate) AddPriority(i int) *TestTodoUpdate {
 	return ttu
 }
 
+// SetDueDate sets the "due_date" field.
+func (ttu *TestTodoUpdate) SetDueDate(t time.Time) *TestTodoUpdate {
+	ttu.mutation.SetDueDate(t)
+	return ttu
+}
+
+// SetNillableDueDate sets the "due_date" field if the given value is not nil.
+func (ttu *TestTodoUpdate) SetNillableDueDate(t *time.Time) *TestTodoUpdate {
+	if t != nil {
+		ttu.SetDueDate(*t)
+	}
+	return ttu
+}
+
+// ClearDueDate clears the value of the "due_date" field.
+func (ttu *TestTodoUpdate) ClearDueDate() *TestTodoUpdate {
+	ttu.mutation.ClearDueDate()
+	return ttu
+}
+
 // SetTestUser sets the "test_user" edge to the TestUser entity.
 func (ttu *TestTodoUpdate) SetTestUser(t *TestUser) *TestTodoUpdate {
 	return ttu.SetTestUserID(t.ID)
+}
+
+// SetParentID sets the "parent" edge to the TestTodo entity by ID.
+func (ttu *TestTodoUpdate) SetParentID(id ulid.ID) *TestTodoUpdate {
+	ttu.mutation.SetParentID(id)
+	return ttu
+}
+
+// SetNillableParentID sets the "parent" edge to the TestTodo entity by ID if the given value is not nil.
+func (ttu *TestTodoUpdate) SetNillableParentID(id *ulid.ID) *TestTodoUpdate {
+	if id != nil {
+		ttu = ttu.SetParentID(*id)
+	}
+	return ttu
+}
+
+// SetParent sets the "parent" edge to the TestTodo entity.
+func (ttu *TestTodoUpdate) SetParent(t *TestTodo) *TestTodoUpdate {
+	return ttu.SetParentID(t.ID)
+}
+
+// AddChildIDs adds the "children" edge to the TestTodo entity by IDs.
+func (ttu *TestTodoUpdate) AddChildIDs(ids ...ulid.ID) *TestTodoUpdate {
+	ttu.mutation.AddChildIDs(ids...)
+	return ttu
+}
+
+// AddChildren adds the "children" edges to the TestTodo entity.
+func (ttu *TestTodoUpdate) AddChildren(t ...*TestTodo) *TestTodoUpdate {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return ttu.AddChildIDs(ids...)
 }
 
 // Mutation returns the TestTodoMutation object of the builder.
@@ -111,6 +206,33 @@ func (ttu *TestTodoUpdate) Mutation() *TestTodoMutation {
 func (ttu *TestTodoUpdate) ClearTestUser() *TestTodoUpdate {
 	ttu.mutation.ClearTestUser()
 	return ttu
+}
+
+// ClearParent clears the "parent" edge to the TestTodo entity.
+func (ttu *TestTodoUpdate) ClearParent() *TestTodoUpdate {
+	ttu.mutation.ClearParent()
+	return ttu
+}
+
+// ClearChildren clears all "children" edges to the TestTodo entity.
+func (ttu *TestTodoUpdate) ClearChildren() *TestTodoUpdate {
+	ttu.mutation.ClearChildren()
+	return ttu
+}
+
+// RemoveChildIDs removes the "children" edge to TestTodo entities by IDs.
+func (ttu *TestTodoUpdate) RemoveChildIDs(ids ...ulid.ID) *TestTodoUpdate {
+	ttu.mutation.RemoveChildIDs(ids...)
+	return ttu
+}
+
+// RemoveChildren removes "children" edges to TestTodo entities.
+func (ttu *TestTodoUpdate) RemoveChildren(t ...*TestTodo) *TestTodoUpdate {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return ttu.RemoveChildIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -201,6 +323,19 @@ func (ttu *TestTodoUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			}
 		}
 	}
+	if value, ok := ttu.mutation.CreatedBy(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: testtodo.FieldCreatedBy,
+		})
+	}
+	if ttu.mutation.CreatedByCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: testtodo.FieldCreatedBy,
+		})
+	}
 	if value, ok := ttu.mutation.Name(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -227,6 +362,19 @@ func (ttu *TestTodoUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Type:   field.TypeInt,
 			Value:  value,
 			Column: testtodo.FieldPriority,
+		})
+	}
+	if value, ok := ttu.mutation.DueDate(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: testtodo.FieldDueDate,
+		})
+	}
+	if ttu.mutation.DueDateCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: testtodo.FieldDueDate,
 		})
 	}
 	if ttu.mutation.TestUserCleared() {
@@ -256,6 +404,95 @@ func (ttu *TestTodoUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: testuser.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ttu.mutation.ParentCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   testtodo.ParentTable,
+			Columns: []string{testtodo.ParentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: testtodo.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ttu.mutation.ParentIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   testtodo.ParentTable,
+			Columns: []string{testtodo.ParentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: testtodo.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ttu.mutation.ChildrenCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   testtodo.ChildrenTable,
+			Columns: []string{testtodo.ChildrenColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: testtodo.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ttu.mutation.RemovedChildrenIDs(); len(nodes) > 0 && !ttu.mutation.ChildrenCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   testtodo.ChildrenTable,
+			Columns: []string{testtodo.ChildrenColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: testtodo.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ttu.mutation.ChildrenIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   testtodo.ChildrenTable,
+			Columns: []string{testtodo.ChildrenColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: testtodo.FieldID,
 				},
 			},
 		}
@@ -300,6 +537,46 @@ func (ttuo *TestTodoUpdateOne) SetNillableTestUserID(u *ulid.ID) *TestTodoUpdate
 // ClearTestUserID clears the value of the "test_user_id" field.
 func (ttuo *TestTodoUpdateOne) ClearTestUserID() *TestTodoUpdateOne {
 	ttuo.mutation.ClearTestUserID()
+	return ttuo
+}
+
+// SetCreatedBy sets the "created_by" field.
+func (ttuo *TestTodoUpdateOne) SetCreatedBy(u ulid.ID) *TestTodoUpdateOne {
+	ttuo.mutation.SetCreatedBy(u)
+	return ttuo
+}
+
+// SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
+func (ttuo *TestTodoUpdateOne) SetNillableCreatedBy(u *ulid.ID) *TestTodoUpdateOne {
+	if u != nil {
+		ttuo.SetCreatedBy(*u)
+	}
+	return ttuo
+}
+
+// ClearCreatedBy clears the value of the "created_by" field.
+func (ttuo *TestTodoUpdateOne) ClearCreatedBy() *TestTodoUpdateOne {
+	ttuo.mutation.ClearCreatedBy()
+	return ttuo
+}
+
+// SetParentTodoID sets the "parent_todo_id" field.
+func (ttuo *TestTodoUpdateOne) SetParentTodoID(u ulid.ID) *TestTodoUpdateOne {
+	ttuo.mutation.SetParentTodoID(u)
+	return ttuo
+}
+
+// SetNillableParentTodoID sets the "parent_todo_id" field if the given value is not nil.
+func (ttuo *TestTodoUpdateOne) SetNillableParentTodoID(u *ulid.ID) *TestTodoUpdateOne {
+	if u != nil {
+		ttuo.SetParentTodoID(*u)
+	}
+	return ttuo
+}
+
+// ClearParentTodoID clears the value of the "parent_todo_id" field.
+func (ttuo *TestTodoUpdateOne) ClearParentTodoID() *TestTodoUpdateOne {
+	ttuo.mutation.ClearParentTodoID()
 	return ttuo
 }
 
@@ -352,9 +629,63 @@ func (ttuo *TestTodoUpdateOne) AddPriority(i int) *TestTodoUpdateOne {
 	return ttuo
 }
 
+// SetDueDate sets the "due_date" field.
+func (ttuo *TestTodoUpdateOne) SetDueDate(t time.Time) *TestTodoUpdateOne {
+	ttuo.mutation.SetDueDate(t)
+	return ttuo
+}
+
+// SetNillableDueDate sets the "due_date" field if the given value is not nil.
+func (ttuo *TestTodoUpdateOne) SetNillableDueDate(t *time.Time) *TestTodoUpdateOne {
+	if t != nil {
+		ttuo.SetDueDate(*t)
+	}
+	return ttuo
+}
+
+// ClearDueDate clears the value of the "due_date" field.
+func (ttuo *TestTodoUpdateOne) ClearDueDate() *TestTodoUpdateOne {
+	ttuo.mutation.ClearDueDate()
+	return ttuo
+}
+
 // SetTestUser sets the "test_user" edge to the TestUser entity.
 func (ttuo *TestTodoUpdateOne) SetTestUser(t *TestUser) *TestTodoUpdateOne {
 	return ttuo.SetTestUserID(t.ID)
+}
+
+// SetParentID sets the "parent" edge to the TestTodo entity by ID.
+func (ttuo *TestTodoUpdateOne) SetParentID(id ulid.ID) *TestTodoUpdateOne {
+	ttuo.mutation.SetParentID(id)
+	return ttuo
+}
+
+// SetNillableParentID sets the "parent" edge to the TestTodo entity by ID if the given value is not nil.
+func (ttuo *TestTodoUpdateOne) SetNillableParentID(id *ulid.ID) *TestTodoUpdateOne {
+	if id != nil {
+		ttuo = ttuo.SetParentID(*id)
+	}
+	return ttuo
+}
+
+// SetParent sets the "parent" edge to the TestTodo entity.
+func (ttuo *TestTodoUpdateOne) SetParent(t *TestTodo) *TestTodoUpdateOne {
+	return ttuo.SetParentID(t.ID)
+}
+
+// AddChildIDs adds the "children" edge to the TestTodo entity by IDs.
+func (ttuo *TestTodoUpdateOne) AddChildIDs(ids ...ulid.ID) *TestTodoUpdateOne {
+	ttuo.mutation.AddChildIDs(ids...)
+	return ttuo
+}
+
+// AddChildren adds the "children" edges to the TestTodo entity.
+func (ttuo *TestTodoUpdateOne) AddChildren(t ...*TestTodo) *TestTodoUpdateOne {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return ttuo.AddChildIDs(ids...)
 }
 
 // Mutation returns the TestTodoMutation object of the builder.
@@ -366,6 +697,33 @@ func (ttuo *TestTodoUpdateOne) Mutation() *TestTodoMutation {
 func (ttuo *TestTodoUpdateOne) ClearTestUser() *TestTodoUpdateOne {
 	ttuo.mutation.ClearTestUser()
 	return ttuo
+}
+
+// ClearParent clears the "parent" edge to the TestTodo entity.
+func (ttuo *TestTodoUpdateOne) ClearParent() *TestTodoUpdateOne {
+	ttuo.mutation.ClearParent()
+	return ttuo
+}
+
+// ClearChildren clears all "children" edges to the TestTodo entity.
+func (ttuo *TestTodoUpdateOne) ClearChildren() *TestTodoUpdateOne {
+	ttuo.mutation.ClearChildren()
+	return ttuo
+}
+
+// RemoveChildIDs removes the "children" edge to TestTodo entities by IDs.
+func (ttuo *TestTodoUpdateOne) RemoveChildIDs(ids ...ulid.ID) *TestTodoUpdateOne {
+	ttuo.mutation.RemoveChildIDs(ids...)
+	return ttuo
+}
+
+// RemoveChildren removes "children" edges to TestTodo entities.
+func (ttuo *TestTodoUpdateOne) RemoveChildren(t ...*TestTodo) *TestTodoUpdateOne {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return ttuo.RemoveChildIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -480,6 +838,19 @@ func (ttuo *TestTodoUpdateOne) sqlSave(ctx context.Context) (_node *TestTodo, er
 			}
 		}
 	}
+	if value, ok := ttuo.mutation.CreatedBy(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: testtodo.FieldCreatedBy,
+		})
+	}
+	if ttuo.mutation.CreatedByCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Column: testtodo.FieldCreatedBy,
+		})
+	}
 	if value, ok := ttuo.mutation.Name(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -506,6 +877,19 @@ func (ttuo *TestTodoUpdateOne) sqlSave(ctx context.Context) (_node *TestTodo, er
 			Type:   field.TypeInt,
 			Value:  value,
 			Column: testtodo.FieldPriority,
+		})
+	}
+	if value, ok := ttuo.mutation.DueDate(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: testtodo.FieldDueDate,
+		})
+	}
+	if ttuo.mutation.DueDateCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Column: testtodo.FieldDueDate,
 		})
 	}
 	if ttuo.mutation.TestUserCleared() {
@@ -535,6 +919,95 @@ func (ttuo *TestTodoUpdateOne) sqlSave(ctx context.Context) (_node *TestTodo, er
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: testuser.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ttuo.mutation.ParentCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   testtodo.ParentTable,
+			Columns: []string{testtodo.ParentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: testtodo.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ttuo.mutation.ParentIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   testtodo.ParentTable,
+			Columns: []string{testtodo.ParentColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: testtodo.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ttuo.mutation.ChildrenCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   testtodo.ChildrenTable,
+			Columns: []string{testtodo.ChildrenColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: testtodo.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ttuo.mutation.RemovedChildrenIDs(); len(nodes) > 0 && !ttuo.mutation.ChildrenCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   testtodo.ChildrenTable,
+			Columns: []string{testtodo.ChildrenColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: testtodo.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ttuo.mutation.ChildrenIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   testtodo.ChildrenTable,
+			Columns: []string{testtodo.ChildrenColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: testtodo.FieldID,
 				},
 			},
 		}

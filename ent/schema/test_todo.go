@@ -6,6 +6,10 @@ import (
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/pkg/const/globalid"
 
+	"entgo.io/ent/schema/index"
+
+	"entgo.io/ent/dialect"
+
 	"entgo.io/ent/schema"
 
 	"entgo.io/ent/schema/edge"
@@ -31,6 +35,15 @@ func (TestTodoMixin) Fields() []ent.Field {
 		field.String("test_user_id").
 			GoType(ulid.ID("")).
 			Optional(),
+		field.String("created_by").
+			GoType(ulid.ID("")).
+			Optional().
+			Annotations(
+				annotation.WhereInput{Type: "ID"},
+			),
+		field.String("parent_todo_id").
+			GoType(ulid.ID("")).
+			Optional(),
 		field.String("name").Default(""),
 		field.Enum("status").
 			NamedValues(
@@ -39,6 +52,19 @@ func (TestTodoMixin) Fields() []ent.Field {
 			).
 			Default("IN_PROGRESS"),
 		field.Int("priority").Default(0),
+		field.Time("due_date").
+			Nillable().
+			Optional().
+			SchemaType(map[string]string{
+				dialect.MySQL: "datetime",
+			}),
+	}
+}
+
+// Indexes of the TestTodo.
+func (TestTodo) Indexes() []ent.Index {
+	return []ent.Index{
+		index.Fields("created_by"),
 	}
 }
 
@@ -52,6 +78,15 @@ func (TestTodo) Edges() []ent.Edge {
 			Annotations(
 				schema.Annotation(
 					annotation.Edge{FieldName: "test_user_id"},
+				),
+			),
+		edge.To("children", TestTodo.Type).
+			From("parent").
+			Field("parent_todo_id").
+			Unique().
+			Annotations(
+				schema.Annotation(
+					annotation.Edge{FieldName: "parent_todo_id"},
 				),
 			),
 	}

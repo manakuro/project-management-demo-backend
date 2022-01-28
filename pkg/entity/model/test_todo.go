@@ -12,3 +12,9 @@ type CreateTestTodoInput = ent.CreateTestTodoInput
 
 // UpdateTestTodoInput represents a mutation input for updating test users.
 type UpdateTestTodoInput = ent.UpdateTestTodoInput
+
+// TestTodoConnection is the connection containing edges to TestTodo.
+type TestTodoConnection = ent.TestTodoConnection
+
+// TestTodoWhereInput represents a where input.
+type TestTodoWhereInput = ent.TestTodoWhereInput
