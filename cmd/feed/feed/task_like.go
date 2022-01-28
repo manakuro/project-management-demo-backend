@@ -16,27 +16,33 @@ func TaskLike(ctx context.Context, client *ent.Client) {
 	manatoID := feedutil.GetTeammateByEmail(ctx, client, teammateFeed.manato.Email).ID
 	danID := feedutil.GetTeammateByEmail(ctx, client, teammateFeed.dan.Email).ID
 	kentID := feedutil.GetTeammateByEmail(ctx, client, teammateFeed.kent.Email).ID
+	workspace := feedutil.GetWorkspace(ctx, client)
 
 	ts := []ent.CreateTaskLikeInput{
 		{
-			TeammateID: manatoID,
-			TaskID:     feedutil.GetTaskByName(ctx, client, taskAssignedFeed.task1.Name).ID,
+			TeammateID:  manatoID,
+			TaskID:      feedutil.GetTaskByName(ctx, client, taskAssignedFeed.task1.Name).ID,
+			WorkspaceID: workspace.ID,
 		},
 		{
-			TeammateID: danID,
-			TaskID:     feedutil.GetTaskByName(ctx, client, taskAssignedFeed.task1.Name).ID,
+			TeammateID:  danID,
+			TaskID:      feedutil.GetTaskByName(ctx, client, taskAssignedFeed.task1.Name).ID,
+			WorkspaceID: workspace.ID,
 		},
 		{
-			TeammateID: kentID,
-			TaskID:     feedutil.GetTaskByName(ctx, client, taskAssignedFeed.task1.Name).ID,
+			TeammateID:  kentID,
+			TaskID:      feedutil.GetTaskByName(ctx, client, taskAssignedFeed.task1.Name).ID,
+			WorkspaceID: workspace.ID,
 		},
 		{
-			TeammateID: manatoID,
-			TaskID:     feedutil.GetTaskByName(ctx, client, taskAssignedFeed.task2.Name).ID,
+			TeammateID:  manatoID,
+			TaskID:      feedutil.GetTaskByName(ctx, client, taskAssignedFeed.task2.Name).ID,
+			WorkspaceID: workspace.ID,
 		},
 		{
-			TeammateID: danID,
-			TaskID:     feedutil.GetTaskByName(ctx, client, taskAssignedFeed.task2.Name).ID,
+			TeammateID:  danID,
+			TaskID:      feedutil.GetTaskByName(ctx, client, taskAssignedFeed.task2.Name).ID,
+			WorkspaceID: workspace.ID,
 		},
 	}
 	bulk := make([]*ent.TaskLikeCreate, len(ts))
