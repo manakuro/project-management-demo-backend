@@ -13,9 +13,11 @@ import (
 	"project-management-demo-backend/ent/taskcolumn"
 	"project-management-demo-backend/ent/tasklistcompletedstatus"
 	"project-management-demo-backend/ent/tasklistsortstatus"
+	"project-management-demo-backend/ent/taskpriority"
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/testuser"
 	"project-management-demo-backend/ent/workspace"
+	"time"
 )
 
 // GetTeammateByEmail gets teammate by email.
@@ -142,4 +144,22 @@ func GetTaskListSortStatusByName(ctx context.Context, client *ent.Client, val st
 	}
 
 	return res
+}
+
+// GetTaskPriorityByName gets task priority data.
+func GetTaskPriorityByName(ctx context.Context, client *ent.Client, val string) *ent.TaskPriority {
+	res, err := client.TaskPriority.Query().Where(taskpriority.NameEQ(val)).Only(ctx)
+	if err != nil {
+		log.Fatalf("GetTaskListSortStatusByName: failed get data: %v", err)
+	}
+
+	return res
+}
+
+// AddDate adds time.
+func AddDate(date int) *time.Time {
+	t := time.Now()
+	t.AddDate(0, 0, date)
+
+	return &t
 }
