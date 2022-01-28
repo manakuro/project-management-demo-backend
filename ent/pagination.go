@@ -24,6 +24,7 @@ import (
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/task"
 	"project-management-demo-backend/ent/taskcolumn"
+	"project-management-demo-backend/ent/tasklike"
 	"project-management-demo-backend/ent/tasklistcompletedstatus"
 	"project-management-demo-backend/ent/tasklistsortstatus"
 	"project-management-demo-backend/ent/taskpriority"
@@ -3663,6 +3664,233 @@ func (tc *TaskColumn) ToEdge(order *TaskColumnOrder) *TaskColumnEdge {
 	return &TaskColumnEdge{
 		Node:   tc,
 		Cursor: order.Field.toCursor(tc),
+	}
+}
+
+// TaskLikeEdge is the edge representation of TaskLike.
+type TaskLikeEdge struct {
+	Node   *TaskLike `json:"node"`
+	Cursor Cursor    `json:"cursor"`
+}
+
+// TaskLikeConnection is the connection containing edges to TaskLike.
+type TaskLikeConnection struct {
+	Edges      []*TaskLikeEdge `json:"edges"`
+	PageInfo   PageInfo        `json:"pageInfo"`
+	TotalCount int             `json:"totalCount"`
+}
+
+// TaskLikePaginateOption enables pagination customization.
+type TaskLikePaginateOption func(*taskLikePager) error
+
+// WithTaskLikeOrder configures pagination ordering.
+func WithTaskLikeOrder(order *TaskLikeOrder) TaskLikePaginateOption {
+	if order == nil {
+		order = DefaultTaskLikeOrder
+	}
+	o := *order
+	return func(pager *taskLikePager) error {
+		if err := o.Direction.Validate(); err != nil {
+			return err
+		}
+		if o.Field == nil {
+			o.Field = DefaultTaskLikeOrder.Field
+		}
+		pager.order = &o
+		return nil
+	}
+}
+
+// WithTaskLikeFilter configures pagination filter.
+func WithTaskLikeFilter(filter func(*TaskLikeQuery) (*TaskLikeQuery, error)) TaskLikePaginateOption {
+	return func(pager *taskLikePager) error {
+		if filter == nil {
+			return errors.New("TaskLikeQuery filter cannot be nil")
+		}
+		pager.filter = filter
+		return nil
+	}
+}
+
+type taskLikePager struct {
+	order  *TaskLikeOrder
+	filter func(*TaskLikeQuery) (*TaskLikeQuery, error)
+}
+
+func newTaskLikePager(opts []TaskLikePaginateOption) (*taskLikePager, error) {
+	pager := &taskLikePager{}
+	for _, opt := range opts {
+		if err := opt(pager); err != nil {
+			return nil, err
+		}
+	}
+	if pager.order == nil {
+		pager.order = DefaultTaskLikeOrder
+	}
+	return pager, nil
+}
+
+func (p *taskLikePager) applyFilter(query *TaskLikeQuery) (*TaskLikeQuery, error) {
+	if p.filter != nil {
+		return p.filter(query)
+	}
+	return query, nil
+}
+
+func (p *taskLikePager) toCursor(tl *TaskLike) Cursor {
+	return p.order.Field.toCursor(tl)
+}
+
+func (p *taskLikePager) applyCursors(query *TaskLikeQuery, after, before *Cursor) *TaskLikeQuery {
+	for _, predicate := range cursorsToPredicates(
+		p.order.Direction, after, before,
+		p.order.Field.field, DefaultTaskLikeOrder.Field.field,
+	) {
+		query = query.Where(predicate)
+	}
+	return query
+}
+
+func (p *taskLikePager) applyOrder(query *TaskLikeQuery, reverse bool) *TaskLikeQuery {
+	direction := p.order.Direction
+	if reverse {
+		direction = direction.reverse()
+	}
+	query = query.Order(direction.orderFunc(p.order.Field.field))
+	if p.order.Field != DefaultTaskLikeOrder.Field {
+		query = query.Order(direction.orderFunc(DefaultTaskLikeOrder.Field.field))
+	}
+	return query
+}
+
+// Paginate executes the query and returns a relay based cursor connection to TaskLike.
+func (tl *TaskLikeQuery) Paginate(
+	ctx context.Context, after *Cursor, first *int,
+	before *Cursor, last *int, opts ...TaskLikePaginateOption,
+) (*TaskLikeConnection, error) {
+	if err := validateFirstLast(first, last); err != nil {
+		return nil, err
+	}
+	pager, err := newTaskLikePager(opts)
+	if err != nil {
+		return nil, err
+	}
+
+	if tl, err = pager.applyFilter(tl); err != nil {
+		return nil, err
+	}
+
+	conn := &TaskLikeConnection{Edges: []*TaskLikeEdge{}}
+	if !hasCollectedField(ctx, edgesField) || first != nil && *first == 0 || last != nil && *last == 0 {
+		if hasCollectedField(ctx, totalCountField) ||
+			hasCollectedField(ctx, pageInfoField) {
+			count, err := tl.Count(ctx)
+			if err != nil {
+				return nil, err
+			}
+			conn.TotalCount = count
+			conn.PageInfo.HasNextPage = first != nil && count > 0
+			conn.PageInfo.HasPreviousPage = last != nil && count > 0
+		}
+		return conn, nil
+	}
+
+	if (after != nil || first != nil || before != nil || last != nil) && hasCollectedField(ctx, totalCountField) {
+		count, err := tl.Clone().Count(ctx)
+		if err != nil {
+			return nil, err
+		}
+		conn.TotalCount = count
+	}
+
+	tl = pager.applyCursors(tl, after, before)
+	tl = pager.applyOrder(tl, last != nil)
+	var limit int
+	if first != nil {
+		limit = *first + 1
+	} else if last != nil {
+		limit = *last + 1
+	}
+	if limit > 0 {
+		tl = tl.Limit(limit)
+	}
+
+	if field := getCollectedField(ctx, edgesField, nodeField); field != nil {
+		tl = tl.collectField(graphql.GetOperationContext(ctx), *field)
+	}
+
+	nodes, err := tl.All(ctx)
+	if err != nil || len(nodes) == 0 {
+		return conn, err
+	}
+
+	if len(nodes) == limit {
+		conn.PageInfo.HasNextPage = first != nil
+		conn.PageInfo.HasPreviousPage = last != nil
+		nodes = nodes[:len(nodes)-1]
+	}
+
+	var nodeAt func(int) *TaskLike
+	if last != nil {
+		n := len(nodes) - 1
+		nodeAt = func(i int) *TaskLike {
+			return nodes[n-i]
+		}
+	} else {
+		nodeAt = func(i int) *TaskLike {
+			return nodes[i]
+		}
+	}
+
+	conn.Edges = make([]*TaskLikeEdge, len(nodes))
+	for i := range nodes {
+		node := nodeAt(i)
+		conn.Edges[i] = &TaskLikeEdge{
+			Node:   node,
+			Cursor: pager.toCursor(node),
+		}
+	}
+
+	conn.PageInfo.StartCursor = &conn.Edges[0].Cursor
+	conn.PageInfo.EndCursor = &conn.Edges[len(conn.Edges)-1].Cursor
+	if conn.TotalCount == 0 {
+		conn.TotalCount = len(nodes)
+	}
+
+	return conn, nil
+}
+
+// TaskLikeOrderField defines the ordering field of TaskLike.
+type TaskLikeOrderField struct {
+	field    string
+	toCursor func(*TaskLike) Cursor
+}
+
+// TaskLikeOrder defines the ordering of TaskLike.
+type TaskLikeOrder struct {
+	Direction OrderDirection      `json:"direction"`
+	Field     *TaskLikeOrderField `json:"field"`
+}
+
+// DefaultTaskLikeOrder is the default ordering of TaskLike.
+var DefaultTaskLikeOrder = &TaskLikeOrder{
+	Direction: OrderDirectionAsc,
+	Field: &TaskLikeOrderField{
+		field: tasklike.FieldID,
+		toCursor: func(tl *TaskLike) Cursor {
+			return Cursor{ID: tl.ID}
+		},
+	},
+}
+
+// ToEdge converts TaskLike into TaskLikeEdge.
+func (tl *TaskLike) ToEdge(order *TaskLikeOrder) *TaskLikeEdge {
+	if order == nil {
+		order = DefaultTaskLikeOrder
+	}
+	return &TaskLikeEdge{
+		Node:   tl,
+		Cursor: order.Field.toCursor(tl),
 	}
 }
 

@@ -348,6 +348,14 @@ func (t *Task) ProjectTasks(ctx context.Context) ([]*ProjectTask, error) {
 	return result, err
 }
 
+func (t *Task) TaskLikes(ctx context.Context) ([]*TaskLike, error) {
+	result, err := t.Edges.TaskLikesOrErr()
+	if IsNotLoaded(err) {
+		result, err = t.QueryTaskLikes().All(ctx)
+	}
+	return result, err
+}
+
 func (tc *TaskColumn) TeammateTaskColumns(ctx context.Context) ([]*TeammateTaskColumn, error) {
 	result, err := tc.Edges.TeammateTaskColumnsOrErr()
 	if IsNotLoaded(err) {
@@ -360,6 +368,22 @@ func (tc *TaskColumn) ProjectTaskColumns(ctx context.Context) ([]*ProjectTaskCol
 	result, err := tc.Edges.ProjectTaskColumnsOrErr()
 	if IsNotLoaded(err) {
 		result, err = tc.QueryProjectTaskColumns().All(ctx)
+	}
+	return result, err
+}
+
+func (tl *TaskLike) Task(ctx context.Context) (*Task, error) {
+	result, err := tl.Edges.TaskOrErr()
+	if IsNotLoaded(err) {
+		result, err = tl.QueryTask().Only(ctx)
+	}
+	return result, err
+}
+
+func (tl *TaskLike) Teammate(ctx context.Context) (*Teammate, error) {
+	result, err := tl.Edges.TeammateOrErr()
+	if IsNotLoaded(err) {
+		result, err = tl.QueryTeammate().Only(ctx)
 	}
 	return result, err
 }
@@ -504,6 +528,14 @@ func (t *Teammate) TeammateTasks(ctx context.Context) ([]*TeammateTask, error) {
 	result, err := t.Edges.TeammateTasksOrErr()
 	if IsNotLoaded(err) {
 		result, err = t.QueryTeammateTasks().All(ctx)
+	}
+	return result, err
+}
+
+func (t *Teammate) TaskLikes(ctx context.Context) ([]*TaskLike, error) {
+	result, err := t.Edges.TaskLikesOrErr()
+	if IsNotLoaded(err) {
+		result, err = t.QueryTaskLikes().All(ctx)
 	}
 	return result, err
 }

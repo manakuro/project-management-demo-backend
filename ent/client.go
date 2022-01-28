@@ -25,6 +25,7 @@ import (
 	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/ent/task"
 	"project-management-demo-backend/ent/taskcolumn"
+	"project-management-demo-backend/ent/tasklike"
 	"project-management-demo-backend/ent/tasklistcompletedstatus"
 	"project-management-demo-backend/ent/tasklistsortstatus"
 	"project-management-demo-backend/ent/taskpriority"
@@ -80,6 +81,8 @@ type Client struct {
 	Task *TaskClient
 	// TaskColumn is the client for interacting with the TaskColumn builders.
 	TaskColumn *TaskColumnClient
+	// TaskLike is the client for interacting with the TaskLike builders.
+	TaskLike *TaskLikeClient
 	// TaskListCompletedStatus is the client for interacting with the TaskListCompletedStatus builders.
 	TaskListCompletedStatus *TaskListCompletedStatusClient
 	// TaskListSortStatus is the client for interacting with the TaskListSortStatus builders.
@@ -136,6 +139,7 @@ func (c *Client) init() {
 	c.ProjectTeammate = NewProjectTeammateClient(c.config)
 	c.Task = NewTaskClient(c.config)
 	c.TaskColumn = NewTaskColumnClient(c.config)
+	c.TaskLike = NewTaskLikeClient(c.config)
 	c.TaskListCompletedStatus = NewTaskListCompletedStatusClient(c.config)
 	c.TaskListSortStatus = NewTaskListSortStatusClient(c.config)
 	c.TaskPriority = NewTaskPriorityClient(c.config)
@@ -198,6 +202,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		ProjectTeammate:         NewProjectTeammateClient(cfg),
 		Task:                    NewTaskClient(cfg),
 		TaskColumn:              NewTaskColumnClient(cfg),
+		TaskLike:                NewTaskLikeClient(cfg),
 		TaskListCompletedStatus: NewTaskListCompletedStatusClient(cfg),
 		TaskListSortStatus:      NewTaskListSortStatusClient(cfg),
 		TaskPriority:            NewTaskPriorityClient(cfg),
@@ -245,6 +250,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		ProjectTeammate:         NewProjectTeammateClient(cfg),
 		Task:                    NewTaskClient(cfg),
 		TaskColumn:              NewTaskColumnClient(cfg),
+		TaskLike:                NewTaskLikeClient(cfg),
 		TaskListCompletedStatus: NewTaskListCompletedStatusClient(cfg),
 		TaskListSortStatus:      NewTaskListSortStatusClient(cfg),
 		TaskPriority:            NewTaskPriorityClient(cfg),
@@ -303,6 +309,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.ProjectTeammate.Use(hooks...)
 	c.Task.Use(hooks...)
 	c.TaskColumn.Use(hooks...)
+	c.TaskLike.Use(hooks...)
 	c.TaskListCompletedStatus.Use(hooks...)
 	c.TaskListSortStatus.Use(hooks...)
 	c.TaskPriority.Use(hooks...)
@@ -2262,6 +2269,22 @@ func (c *TaskClient) QueryProjectTasks(t *Task) *ProjectTaskQuery {
 	return query
 }
 
+// QueryTaskLikes queries the task_likes edge of a Task.
+func (c *TaskClient) QueryTaskLikes(t *Task) *TaskLikeQuery {
+	query := &TaskLikeQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := t.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(task.Table, task.FieldID, id),
+			sqlgraph.To(tasklike.Table, tasklike.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, task.TaskLikesTable, task.TaskLikesColumn),
+		)
+		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *TaskClient) Hooks() []Hook {
 	return c.hooks.Task
@@ -2387,6 +2410,128 @@ func (c *TaskColumnClient) QueryProjectTaskColumns(tc *TaskColumn) *ProjectTaskC
 // Hooks returns the client hooks.
 func (c *TaskColumnClient) Hooks() []Hook {
 	return c.hooks.TaskColumn
+}
+
+// TaskLikeClient is a client for the TaskLike schema.
+type TaskLikeClient struct {
+	config
+}
+
+// NewTaskLikeClient returns a client for the TaskLike from the given config.
+func NewTaskLikeClient(c config) *TaskLikeClient {
+	return &TaskLikeClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `tasklike.Hooks(f(g(h())))`.
+func (c *TaskLikeClient) Use(hooks ...Hook) {
+	c.hooks.TaskLike = append(c.hooks.TaskLike, hooks...)
+}
+
+// Create returns a create builder for TaskLike.
+func (c *TaskLikeClient) Create() *TaskLikeCreate {
+	mutation := newTaskLikeMutation(c.config, OpCreate)
+	return &TaskLikeCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of TaskLike entities.
+func (c *TaskLikeClient) CreateBulk(builders ...*TaskLikeCreate) *TaskLikeCreateBulk {
+	return &TaskLikeCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for TaskLike.
+func (c *TaskLikeClient) Update() *TaskLikeUpdate {
+	mutation := newTaskLikeMutation(c.config, OpUpdate)
+	return &TaskLikeUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *TaskLikeClient) UpdateOne(tl *TaskLike) *TaskLikeUpdateOne {
+	mutation := newTaskLikeMutation(c.config, OpUpdateOne, withTaskLike(tl))
+	return &TaskLikeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *TaskLikeClient) UpdateOneID(id ulid.ID) *TaskLikeUpdateOne {
+	mutation := newTaskLikeMutation(c.config, OpUpdateOne, withTaskLikeID(id))
+	return &TaskLikeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for TaskLike.
+func (c *TaskLikeClient) Delete() *TaskLikeDelete {
+	mutation := newTaskLikeMutation(c.config, OpDelete)
+	return &TaskLikeDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *TaskLikeClient) DeleteOne(tl *TaskLike) *TaskLikeDeleteOne {
+	return c.DeleteOneID(tl.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *TaskLikeClient) DeleteOneID(id ulid.ID) *TaskLikeDeleteOne {
+	builder := c.Delete().Where(tasklike.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &TaskLikeDeleteOne{builder}
+}
+
+// Query returns a query builder for TaskLike.
+func (c *TaskLikeClient) Query() *TaskLikeQuery {
+	return &TaskLikeQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a TaskLike entity by its id.
+func (c *TaskLikeClient) Get(ctx context.Context, id ulid.ID) (*TaskLike, error) {
+	return c.Query().Where(tasklike.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *TaskLikeClient) GetX(ctx context.Context, id ulid.ID) *TaskLike {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryTask queries the task edge of a TaskLike.
+func (c *TaskLikeClient) QueryTask(tl *TaskLike) *TaskQuery {
+	query := &TaskQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := tl.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(tasklike.Table, tasklike.FieldID, id),
+			sqlgraph.To(task.Table, task.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, tasklike.TaskTable, tasklike.TaskColumn),
+		)
+		fromV = sqlgraph.Neighbors(tl.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryTeammate queries the teammate edge of a TaskLike.
+func (c *TaskLikeClient) QueryTeammate(tl *TaskLike) *TeammateQuery {
+	query := &TeammateQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := tl.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(tasklike.Table, tasklike.FieldID, id),
+			sqlgraph.To(teammate.Table, teammate.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, tasklike.TeammateTable, tasklike.TeammateColumn),
+		)
+		fromV = sqlgraph.Neighbors(tl.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *TaskLikeClient) Hooks() []Hook {
+	return c.hooks.TaskLike
 }
 
 // TaskListCompletedStatusClient is a client for the TaskListCompletedStatus schema.
@@ -3115,6 +3260,22 @@ func (c *TeammateClient) QueryTeammateTasks(t *Teammate) *TeammateTaskQuery {
 			sqlgraph.From(teammate.Table, teammate.FieldID, id),
 			sqlgraph.To(teammatetask.Table, teammatetask.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, teammate.TeammateTasksTable, teammate.TeammateTasksColumn),
+		)
+		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryTaskLikes queries the task_likes edge of a Teammate.
+func (c *TeammateClient) QueryTaskLikes(t *Teammate) *TaskLikeQuery {
+	query := &TaskLikeQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := t.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(teammate.Table, teammate.FieldID, id),
+			sqlgraph.To(tasklike.Table, tasklike.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, teammate.TaskLikesTable, teammate.TaskLikesColumn),
 		)
 		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
 		return fromV, nil
