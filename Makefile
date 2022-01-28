@@ -11,7 +11,6 @@ install:
 
 # Start dev server
 start:
-	make migrate_schema
 	air
 
 # Set up database
