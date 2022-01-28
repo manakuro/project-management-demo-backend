@@ -39,7 +39,10 @@ func (TaskMixin) Fields() []ent.Field {
 			GoType(ulid.ID("")).
 			Optional(),
 		field.String("created_by").
-			GoType(ulid.ID("")),
+			GoType(ulid.ID("")).
+			Annotations(
+				annotation.WhereInput{Type: "ID"},
+			),
 		field.Bool("completed").
 			Default(false),
 		field.Time("completed_at").
