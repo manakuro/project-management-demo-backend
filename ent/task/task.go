@@ -44,6 +44,8 @@ const (
 	EdgeParent = "parent"
 	// EdgeSubTasks holds the string denoting the sub_tasks edge name in mutations.
 	EdgeSubTasks = "sub_tasks"
+	// EdgeTeammateTasks holds the string denoting the teammate_tasks edge name in mutations.
+	EdgeTeammateTasks = "teammate_tasks"
 	// Table holds the table name of the task in the database.
 	Table = "tasks"
 	// TeammateTable is the table that holds the teammate relation/edge.
@@ -68,6 +70,13 @@ const (
 	SubTasksTable = "tasks"
 	// SubTasksColumn is the table column denoting the sub_tasks relation/edge.
 	SubTasksColumn = "task_parent_id"
+	// TeammateTasksTable is the table that holds the teammate_tasks relation/edge.
+	TeammateTasksTable = "teammate_tasks"
+	// TeammateTasksInverseTable is the table name for the TeammateTask entity.
+	// It exists in this package in order to avoid circular dependency with the "teammatetask" package.
+	TeammateTasksInverseTable = "teammate_tasks"
+	// TeammateTasksColumn is the table column denoting the teammate_tasks relation/edge.
+	TeammateTasksColumn = "task_id"
 )
 
 // Columns holds all SQL columns for task fields.

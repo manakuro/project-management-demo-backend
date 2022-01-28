@@ -44,6 +44,7 @@ func (r *registry) NewController() controller.Controller {
 		TaskPriority:            r.NewTaskPriorityController(),
 		TaskSection:             r.NewTaskSectionController(),
 		Teammate:                r.NewTeammateController(),
+		TeammateTask:            r.NewTeammateTaskController(),
 		TeammateTaskColumn:      r.NewTeammateTaskColumnController(),
 		TeammateTaskListStatus:  r.NewTeammateTaskListStatusController(),
 		TeammateTaskSection:     r.NewTeammateTaskSectionController(),

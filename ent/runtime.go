@@ -24,6 +24,7 @@ import (
 	"project-management-demo-backend/ent/taskpriority"
 	"project-management-demo-backend/ent/tasksection"
 	"project-management-demo-backend/ent/teammate"
+	"project-management-demo-backend/ent/teammatetask"
 	"project-management-demo-backend/ent/teammatetaskcolumn"
 	"project-management-demo-backend/ent/teammatetaskliststatus"
 	"project-management-demo-backend/ent/teammatetasksection"
@@ -720,6 +721,25 @@ func init() {
 	teammateDescID := teammateMixinFields0[0].Descriptor()
 	// teammate.DefaultID holds the default value on creation for the id field.
 	teammate.DefaultID = teammateDescID.Default.(func() ulid.ID)
+	teammatetaskMixin := schema.TeammateTask{}.Mixin()
+	teammatetaskMixinFields0 := teammatetaskMixin[0].Fields()
+	_ = teammatetaskMixinFields0
+	teammatetaskMixinFields2 := teammatetaskMixin[2].Fields()
+	_ = teammatetaskMixinFields2
+	teammatetaskFields := schema.TeammateTask{}.Fields()
+	_ = teammatetaskFields
+	// teammatetaskDescCreatedAt is the schema descriptor for created_at field.
+	teammatetaskDescCreatedAt := teammatetaskMixinFields2[0].Descriptor()
+	// teammatetask.DefaultCreatedAt holds the default value on creation for the created_at field.
+	teammatetask.DefaultCreatedAt = teammatetaskDescCreatedAt.Default.(func() time.Time)
+	// teammatetaskDescUpdatedAt is the schema descriptor for updated_at field.
+	teammatetaskDescUpdatedAt := teammatetaskMixinFields2[1].Descriptor()
+	// teammatetask.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	teammatetask.DefaultUpdatedAt = teammatetaskDescUpdatedAt.Default.(func() time.Time)
+	// teammatetaskDescID is the schema descriptor for id field.
+	teammatetaskDescID := teammatetaskMixinFields0[0].Descriptor()
+	// teammatetask.DefaultID holds the default value on creation for the id field.
+	teammatetask.DefaultID = teammatetaskDescID.Default.(func() ulid.ID)
 	teammatetaskcolumnMixin := schema.TeammateTaskColumn{}.Mixin()
 	teammatetaskcolumnMixinFields0 := teammatetaskcolumnMixin[0].Fields()
 	_ = teammatetaskcolumnMixinFields0

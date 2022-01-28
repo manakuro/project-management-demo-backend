@@ -10,11 +10,13 @@ import (
 	"project-management-demo-backend/ent/projectbasecolor"
 	"project-management-demo-backend/ent/projecticon"
 	"project-management-demo-backend/ent/projectlightcolor"
+	"project-management-demo-backend/ent/task"
 	"project-management-demo-backend/ent/taskcolumn"
 	"project-management-demo-backend/ent/tasklistcompletedstatus"
 	"project-management-demo-backend/ent/tasklistsortstatus"
 	"project-management-demo-backend/ent/taskpriority"
 	"project-management-demo-backend/ent/teammate"
+	"project-management-demo-backend/ent/teammatetasksection"
 	"project-management-demo-backend/ent/testuser"
 	"project-management-demo-backend/ent/workspace"
 	"time"
@@ -149,6 +151,26 @@ func GetTaskListSortStatusByName(ctx context.Context, client *ent.Client, val st
 // GetTaskPriorityByName gets task priority data.
 func GetTaskPriorityByName(ctx context.Context, client *ent.Client, val string) *ent.TaskPriority {
 	res, err := client.TaskPriority.Query().Where(taskpriority.NameEQ(val)).Only(ctx)
+	if err != nil {
+		log.Fatalf("GetTaskListSortStatusByName: failed get data: %v", err)
+	}
+
+	return res
+}
+
+// GetTaskByName gets task data.
+func GetTaskByName(ctx context.Context, client *ent.Client, val string) *ent.Task {
+	res, err := client.Task.Query().Where(task.NameEQ(val)).Only(ctx)
+	if err != nil {
+		log.Fatalf("GetTaskListSortStatusByName: failed get data: %v", err)
+	}
+
+	return res
+}
+
+// GetTeammateTaskSectionByName gets teammate task section data.
+func GetTeammateTaskSectionByName(ctx context.Context, client *ent.Client, val string) *ent.TeammateTaskSection {
+	res, err := client.TeammateTaskSection.Query().Where(teammatetasksection.NameEQ(val)).Only(ctx)
 	if err != nil {
 		log.Fatalf("GetTaskListSortStatusByName: failed get data: %v", err)
 	}

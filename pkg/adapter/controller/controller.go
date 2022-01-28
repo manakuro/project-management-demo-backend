@@ -23,6 +23,7 @@ type Controller struct {
 	TaskPriority            interface{ TaskPriority }
 	TaskSection             interface{ TaskSection }
 	Teammate                interface{ Teammate }
+	TeammateTask            interface{ TeammateTask }
 	TeammateTaskColumn      interface{ TeammateTaskColumn }
 	TeammateTaskListStatus  interface{ TeammateTaskListStatus }
 	TeammateTaskSection     interface{ TeammateTaskSection }

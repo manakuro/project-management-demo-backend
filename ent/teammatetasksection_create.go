@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/teammate"
+	"project-management-demo-backend/ent/teammatetask"
 	"project-management-demo-backend/ent/teammatetasksection"
 	"project-management-demo-backend/ent/workspace"
 	"time"
@@ -97,6 +98,21 @@ func (ttsc *TeammateTaskSectionCreate) SetTeammate(t *Teammate) *TeammateTaskSec
 // SetWorkspace sets the "workspace" edge to the Workspace entity.
 func (ttsc *TeammateTaskSectionCreate) SetWorkspace(w *Workspace) *TeammateTaskSectionCreate {
 	return ttsc.SetWorkspaceID(w.ID)
+}
+
+// AddTeammateTaskIDs adds the "teammate_tasks" edge to the TeammateTask entity by IDs.
+func (ttsc *TeammateTaskSectionCreate) AddTeammateTaskIDs(ids ...ulid.ID) *TeammateTaskSectionCreate {
+	ttsc.mutation.AddTeammateTaskIDs(ids...)
+	return ttsc
+}
+
+// AddTeammateTasks adds the "teammate_tasks" edges to the TeammateTask entity.
+func (ttsc *TeammateTaskSectionCreate) AddTeammateTasks(t ...*TeammateTask) *TeammateTaskSectionCreate {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return ttsc.AddTeammateTaskIDs(ids...)
 }
 
 // Mutation returns the TeammateTaskSectionMutation object of the builder.
@@ -317,6 +333,25 @@ func (ttsc *TeammateTaskSectionCreate) createSpec() (*TeammateTaskSection, *sqlg
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.WorkspaceID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ttsc.mutation.TeammateTasksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   teammatetasksection.TeammateTasksTable,
+			Columns: []string{teammatetasksection.TeammateTasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: teammatetask.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

@@ -979,19 +979,20 @@ func (u *ProjectTeammateUpdateOne) SetInput(i UpdateProjectTeammateInput) *Proje
 
 // CreateTaskInput represents a mutation input for creating tasks.
 type CreateTaskInput struct {
-	CreatedBy      ulid.ID
-	Completed      *bool
-	CompletedAt    *time.Time
-	IsNew          *bool
-	Name           string
-	DueDate        *time.Time
-	DueTime        *time.Time
-	CreatedAt      *time.Time
-	UpdatedAt      *time.Time
-	AssigneeID     *ulid.ID
-	TaskPriorityID ulid.ID
-	TaskParentID   *ulid.ID
-	SubTaskIDs     []ulid.ID
+	CreatedBy       ulid.ID
+	Completed       *bool
+	CompletedAt     *time.Time
+	IsNew           *bool
+	Name            string
+	DueDate         *time.Time
+	DueTime         *time.Time
+	CreatedAt       *time.Time
+	UpdatedAt       *time.Time
+	AssigneeID      *ulid.ID
+	TaskPriorityID  ulid.ID
+	TaskParentID    *ulid.ID
+	SubTaskIDs      []ulid.ID
+	TeammateTaskIDs []ulid.ID
 }
 
 // Mutate applies the CreateTaskInput on the TaskCreate builder.
@@ -1029,6 +1030,9 @@ func (i *CreateTaskInput) Mutate(m *TaskCreate) {
 	if ids := i.SubTaskIDs; len(ids) > 0 {
 		m.AddSubTaskIDs(ids...)
 	}
+	if ids := i.TeammateTaskIDs; len(ids) > 0 {
+		m.AddTeammateTaskIDs(ids...)
+	}
 }
 
 // SetInput applies the change-set in the CreateTaskInput on the create builder.
@@ -1039,25 +1043,27 @@ func (c *TaskCreate) SetInput(i CreateTaskInput) *TaskCreate {
 
 // UpdateTaskInput represents a mutation input for updating tasks.
 type UpdateTaskInput struct {
-	ID                ulid.ID
-	CreatedBy         *ulid.ID
-	Completed         *bool
-	CompletedAt       *time.Time
-	ClearCompletedAt  bool
-	IsNew             *bool
-	Name              *string
-	DueDate           *time.Time
-	ClearDueDate      bool
-	DueTime           *time.Time
-	ClearDueTime      bool
-	AssigneeID        *ulid.ID
-	ClearTeammate     bool
-	TaskPriorityID    *ulid.ID
-	ClearTaskPriority bool
-	TaskParentID      *ulid.ID
-	ClearParent       bool
-	AddSubTaskIDs     []ulid.ID
-	RemoveSubTaskIDs  []ulid.ID
+	ID                    ulid.ID
+	CreatedBy             *ulid.ID
+	Completed             *bool
+	CompletedAt           *time.Time
+	ClearCompletedAt      bool
+	IsNew                 *bool
+	Name                  *string
+	DueDate               *time.Time
+	ClearDueDate          bool
+	DueTime               *time.Time
+	ClearDueTime          bool
+	AssigneeID            *ulid.ID
+	ClearTeammate         bool
+	TaskPriorityID        *ulid.ID
+	ClearTaskPriority     bool
+	TaskParentID          *ulid.ID
+	ClearParent           bool
+	AddSubTaskIDs         []ulid.ID
+	RemoveSubTaskIDs      []ulid.ID
+	AddTeammateTaskIDs    []ulid.ID
+	RemoveTeammateTaskIDs []ulid.ID
 }
 
 // Mutate applies the UpdateTaskInput on the TaskMutation.
@@ -1115,6 +1121,12 @@ func (i *UpdateTaskInput) Mutate(m *TaskMutation) {
 	}
 	if ids := i.RemoveSubTaskIDs; len(ids) > 0 {
 		m.RemoveSubTaskIDs(ids...)
+	}
+	if ids := i.AddTeammateTaskIDs; len(ids) > 0 {
+		m.AddTeammateTaskIDs(ids...)
+	}
+	if ids := i.RemoveTeammateTaskIDs; len(ids) > 0 {
+		m.RemoveTeammateTaskIDs(ids...)
 	}
 }
 
@@ -1511,6 +1523,7 @@ type CreateTeammateInput struct {
 	TeammateTaskListStatusIDs []ulid.ID
 	TeammateTaskSectionIDs    []ulid.ID
 	TaskIDs                   []ulid.ID
+	TeammateTaskIDs           []ulid.ID
 }
 
 // Mutate applies the CreateTeammateInput on the TeammateCreate builder.
@@ -1557,6 +1570,9 @@ func (i *CreateTeammateInput) Mutate(m *TeammateCreate) {
 	if ids := i.TaskIDs; len(ids) > 0 {
 		m.AddTaskIDs(ids...)
 	}
+	if ids := i.TeammateTaskIDs; len(ids) > 0 {
+		m.AddTeammateTaskIDs(ids...)
+	}
 }
 
 // SetInput applies the change-set in the CreateTeammateInput on the create builder.
@@ -1593,6 +1609,8 @@ type UpdateTeammateInput struct {
 	RemoveTeammateTaskSectionIDs    []ulid.ID
 	AddTaskIDs                      []ulid.ID
 	RemoveTaskIDs                   []ulid.ID
+	AddTeammateTaskIDs              []ulid.ID
+	RemoveTeammateTaskIDs           []ulid.ID
 }
 
 // Mutate applies the UpdateTeammateInput on the TeammateMutation.
@@ -1672,6 +1690,12 @@ func (i *UpdateTeammateInput) Mutate(m *TeammateMutation) {
 	if ids := i.RemoveTaskIDs; len(ids) > 0 {
 		m.RemoveTaskIDs(ids...)
 	}
+	if ids := i.AddTeammateTaskIDs; len(ids) > 0 {
+		m.AddTeammateTaskIDs(ids...)
+	}
+	if ids := i.RemoveTeammateTaskIDs; len(ids) > 0 {
+		m.RemoveTeammateTaskIDs(ids...)
+	}
 }
 
 // SetInput applies the change-set in the UpdateTeammateInput on the update builder.
@@ -1682,6 +1706,79 @@ func (u *TeammateUpdate) SetInput(i UpdateTeammateInput) *TeammateUpdate {
 
 // SetInput applies the change-set in the UpdateTeammateInput on the update-one builder.
 func (u *TeammateUpdateOne) SetInput(i UpdateTeammateInput) *TeammateUpdateOne {
+	i.Mutate(u.Mutation())
+	return u
+}
+
+// CreateTeammateTaskInput represents a mutation input for creating teammatetasks.
+type CreateTeammateTaskInput struct {
+	CreatedAt             *time.Time
+	UpdatedAt             *time.Time
+	TeammateID            ulid.ID
+	TaskID                ulid.ID
+	TeammateTaskSectionID ulid.ID
+}
+
+// Mutate applies the CreateTeammateTaskInput on the TeammateTaskCreate builder.
+func (i *CreateTeammateTaskInput) Mutate(m *TeammateTaskCreate) {
+	if v := i.CreatedAt; v != nil {
+		m.SetCreatedAt(*v)
+	}
+	if v := i.UpdatedAt; v != nil {
+		m.SetUpdatedAt(*v)
+	}
+	m.SetTeammateID(i.TeammateID)
+	m.SetTaskID(i.TaskID)
+	m.SetTeammateTaskSectionID(i.TeammateTaskSectionID)
+}
+
+// SetInput applies the change-set in the CreateTeammateTaskInput on the create builder.
+func (c *TeammateTaskCreate) SetInput(i CreateTeammateTaskInput) *TeammateTaskCreate {
+	i.Mutate(c)
+	return c
+}
+
+// UpdateTeammateTaskInput represents a mutation input for updating teammatetasks.
+type UpdateTeammateTaskInput struct {
+	ID                       ulid.ID
+	TeammateID               *ulid.ID
+	ClearTeammate            bool
+	TaskID                   *ulid.ID
+	ClearTask                bool
+	TeammateTaskSectionID    *ulid.ID
+	ClearTeammateTaskSection bool
+}
+
+// Mutate applies the UpdateTeammateTaskInput on the TeammateTaskMutation.
+func (i *UpdateTeammateTaskInput) Mutate(m *TeammateTaskMutation) {
+	if i.ClearTeammate {
+		m.ClearTeammate()
+	}
+	if v := i.TeammateID; v != nil {
+		m.SetTeammateID(*v)
+	}
+	if i.ClearTask {
+		m.ClearTask()
+	}
+	if v := i.TaskID; v != nil {
+		m.SetTaskID(*v)
+	}
+	if i.ClearTeammateTaskSection {
+		m.ClearTeammateTaskSection()
+	}
+	if v := i.TeammateTaskSectionID; v != nil {
+		m.SetTeammateTaskSectionID(*v)
+	}
+}
+
+// SetInput applies the change-set in the UpdateTeammateTaskInput on the update builder.
+func (u *TeammateTaskUpdate) SetInput(i UpdateTeammateTaskInput) *TeammateTaskUpdate {
+	i.Mutate(u.Mutation())
+	return u
+}
+
+// SetInput applies the change-set in the UpdateTeammateTaskInput on the update-one builder.
+func (u *TeammateTaskUpdateOne) SetInput(i UpdateTeammateTaskInput) *TeammateTaskUpdateOne {
 	i.Mutate(u.Mutation())
 	return u
 }
@@ -1858,12 +1955,13 @@ func (u *TeammateTaskListStatusUpdateOne) SetInput(i UpdateTeammateTaskListStatu
 
 // CreateTeammateTaskSectionInput represents a mutation input for creating teammatetasksections.
 type CreateTeammateTaskSectionInput struct {
-	Name        string
-	Assigned    bool
-	CreatedAt   *time.Time
-	UpdatedAt   *time.Time
-	TeammateID  ulid.ID
-	WorkspaceID ulid.ID
+	Name            string
+	Assigned        bool
+	CreatedAt       *time.Time
+	UpdatedAt       *time.Time
+	TeammateID      ulid.ID
+	WorkspaceID     ulid.ID
+	TeammateTaskIDs []ulid.ID
 }
 
 // Mutate applies the CreateTeammateTaskSectionInput on the TeammateTaskSectionCreate builder.
@@ -1878,6 +1976,9 @@ func (i *CreateTeammateTaskSectionInput) Mutate(m *TeammateTaskSectionCreate) {
 	}
 	m.SetTeammateID(i.TeammateID)
 	m.SetWorkspaceID(i.WorkspaceID)
+	if ids := i.TeammateTaskIDs; len(ids) > 0 {
+		m.AddTeammateTaskIDs(ids...)
+	}
 }
 
 // SetInput applies the change-set in the CreateTeammateTaskSectionInput on the create builder.
@@ -1888,13 +1989,15 @@ func (c *TeammateTaskSectionCreate) SetInput(i CreateTeammateTaskSectionInput) *
 
 // UpdateTeammateTaskSectionInput represents a mutation input for updating teammatetasksections.
 type UpdateTeammateTaskSectionInput struct {
-	ID             ulid.ID
-	Name           *string
-	Assigned       *bool
-	TeammateID     *ulid.ID
-	ClearTeammate  bool
-	WorkspaceID    *ulid.ID
-	ClearWorkspace bool
+	ID                    ulid.ID
+	Name                  *string
+	Assigned              *bool
+	TeammateID            *ulid.ID
+	ClearTeammate         bool
+	WorkspaceID           *ulid.ID
+	ClearWorkspace        bool
+	AddTeammateTaskIDs    []ulid.ID
+	RemoveTeammateTaskIDs []ulid.ID
 }
 
 // Mutate applies the UpdateTeammateTaskSectionInput on the TeammateTaskSectionMutation.
@@ -1916,6 +2019,12 @@ func (i *UpdateTeammateTaskSectionInput) Mutate(m *TeammateTaskSectionMutation) 
 	}
 	if v := i.WorkspaceID; v != nil {
 		m.SetWorkspaceID(*v)
+	}
+	if ids := i.AddTeammateTaskIDs; len(ids) > 0 {
+		m.AddTeammateTaskIDs(ids...)
+	}
+	if ids := i.RemoveTeammateTaskIDs; len(ids) > 0 {
+		m.RemoveTeammateTaskIDs(ids...)
 	}
 }
 
