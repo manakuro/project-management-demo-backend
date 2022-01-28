@@ -33,6 +33,7 @@ func (r *registry) NewController() controller.Controller {
 		ProjectBaseColor:        r.NewProjectBaseColorController(),
 		ProjectIcon:             r.NewProjectIconController(),
 		ProjectLightColor:       r.NewProjectLightColorController(),
+		ProjectTask:             r.NewProjectTaskController(),
 		ProjectTaskColumn:       r.NewProjectTaskColumnController(),
 		ProjectTaskListStatus:   r.NewProjectTaskListStatusController(),
 		ProjectTaskSection:      r.NewProjectTaskSectionController(),

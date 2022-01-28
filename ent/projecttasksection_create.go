@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"project-management-demo-backend/ent/project"
+	"project-management-demo-backend/ent/projecttask"
 	"project-management-demo-backend/ent/projecttasksection"
 	"project-management-demo-backend/ent/schema/ulid"
 	"time"
@@ -79,6 +80,21 @@ func (ptsc *ProjectTaskSectionCreate) SetNillableID(u *ulid.ID) *ProjectTaskSect
 // SetProject sets the "project" edge to the Project entity.
 func (ptsc *ProjectTaskSectionCreate) SetProject(p *Project) *ProjectTaskSectionCreate {
 	return ptsc.SetProjectID(p.ID)
+}
+
+// AddProjectTaskIDs adds the "project_tasks" edge to the ProjectTask entity by IDs.
+func (ptsc *ProjectTaskSectionCreate) AddProjectTaskIDs(ids ...ulid.ID) *ProjectTaskSectionCreate {
+	ptsc.mutation.AddProjectTaskIDs(ids...)
+	return ptsc
+}
+
+// AddProjectTasks adds the "project_tasks" edges to the ProjectTask entity.
+func (ptsc *ProjectTaskSectionCreate) AddProjectTasks(p ...*ProjectTask) *ProjectTaskSectionCreate {
+	ids := make([]ulid.ID, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return ptsc.AddProjectTaskIDs(ids...)
 }
 
 // Mutation returns the ProjectTaskSectionMutation object of the builder.
@@ -262,6 +278,25 @@ func (ptsc *ProjectTaskSectionCreate) createSpec() (*ProjectTaskSection, *sqlgra
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.ProjectID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ptsc.mutation.ProjectTasksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   projecttasksection.ProjectTasksTable,
+			Columns: []string{projecttasksection.ProjectTasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: projecttask.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

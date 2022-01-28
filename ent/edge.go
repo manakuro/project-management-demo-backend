@@ -148,6 +148,14 @@ func (pr *Project) ProjectTaskSections(ctx context.Context) ([]*ProjectTaskSecti
 	return result, err
 }
 
+func (pr *Project) ProjectTasks(ctx context.Context) ([]*ProjectTask, error) {
+	result, err := pr.Edges.ProjectTasksOrErr()
+	if IsNotLoaded(err) {
+		result, err = pr.QueryProjectTasks().All(ctx)
+	}
+	return result, err
+}
+
 func (pbc *ProjectBaseColor) Projects(ctx context.Context) ([]*Project, error) {
 	result, err := pbc.Edges.ProjectsOrErr()
 	if IsNotLoaded(err) {
@@ -196,6 +204,30 @@ func (plc *ProjectLightColor) Color(ctx context.Context) (*Color, error) {
 	return result, err
 }
 
+func (pt *ProjectTask) Project(ctx context.Context) (*Project, error) {
+	result, err := pt.Edges.ProjectOrErr()
+	if IsNotLoaded(err) {
+		result, err = pt.QueryProject().Only(ctx)
+	}
+	return result, err
+}
+
+func (pt *ProjectTask) Task(ctx context.Context) (*Task, error) {
+	result, err := pt.Edges.TaskOrErr()
+	if IsNotLoaded(err) {
+		result, err = pt.QueryTask().Only(ctx)
+	}
+	return result, err
+}
+
+func (pt *ProjectTask) ProjectTaskSection(ctx context.Context) (*ProjectTaskSection, error) {
+	result, err := pt.Edges.ProjectTaskSectionOrErr()
+	if IsNotLoaded(err) {
+		result, err = pt.QueryProjectTaskSection().Only(ctx)
+	}
+	return result, err
+}
+
 func (ptc *ProjectTaskColumn) Project(ctx context.Context) (*Project, error) {
 	result, err := ptc.Edges.ProjectOrErr()
 	if IsNotLoaded(err) {
@@ -240,6 +272,14 @@ func (pts *ProjectTaskSection) Project(ctx context.Context) (*Project, error) {
 	result, err := pts.Edges.ProjectOrErr()
 	if IsNotLoaded(err) {
 		result, err = pts.QueryProject().Only(ctx)
+	}
+	return result, err
+}
+
+func (pts *ProjectTaskSection) ProjectTasks(ctx context.Context) ([]*ProjectTask, error) {
+	result, err := pts.Edges.ProjectTasksOrErr()
+	if IsNotLoaded(err) {
+		result, err = pts.QueryProjectTasks().All(ctx)
 	}
 	return result, err
 }
@@ -296,6 +336,14 @@ func (t *Task) TeammateTasks(ctx context.Context) ([]*TeammateTask, error) {
 	result, err := t.Edges.TeammateTasksOrErr()
 	if IsNotLoaded(err) {
 		result, err = t.QueryTeammateTasks().All(ctx)
+	}
+	return result, err
+}
+
+func (t *Task) ProjectTasks(ctx context.Context) ([]*ProjectTask, error) {
+	result, err := t.Edges.ProjectTasksOrErr()
+	if IsNotLoaded(err) {
+		result, err = t.QueryProjectTasks().All(ctx)
 	}
 	return result, err
 }

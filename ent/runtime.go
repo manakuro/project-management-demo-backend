@@ -11,6 +11,7 @@ import (
 	"project-management-demo-backend/ent/projectbasecolor"
 	"project-management-demo-backend/ent/projecticon"
 	"project-management-demo-backend/ent/projectlightcolor"
+	"project-management-demo-backend/ent/projecttask"
 	"project-management-demo-backend/ent/projecttaskcolumn"
 	"project-management-demo-backend/ent/projecttaskliststatus"
 	"project-management-demo-backend/ent/projecttasksection"
@@ -310,6 +311,25 @@ func init() {
 	projectlightcolorDescID := projectlightcolorMixinFields0[0].Descriptor()
 	// projectlightcolor.DefaultID holds the default value on creation for the id field.
 	projectlightcolor.DefaultID = projectlightcolorDescID.Default.(func() ulid.ID)
+	projecttaskMixin := schema.ProjectTask{}.Mixin()
+	projecttaskMixinFields0 := projecttaskMixin[0].Fields()
+	_ = projecttaskMixinFields0
+	projecttaskMixinFields2 := projecttaskMixin[2].Fields()
+	_ = projecttaskMixinFields2
+	projecttaskFields := schema.ProjectTask{}.Fields()
+	_ = projecttaskFields
+	// projecttaskDescCreatedAt is the schema descriptor for created_at field.
+	projecttaskDescCreatedAt := projecttaskMixinFields2[0].Descriptor()
+	// projecttask.DefaultCreatedAt holds the default value on creation for the created_at field.
+	projecttask.DefaultCreatedAt = projecttaskDescCreatedAt.Default.(func() time.Time)
+	// projecttaskDescUpdatedAt is the schema descriptor for updated_at field.
+	projecttaskDescUpdatedAt := projecttaskMixinFields2[1].Descriptor()
+	// projecttask.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	projecttask.DefaultUpdatedAt = projecttaskDescUpdatedAt.Default.(func() time.Time)
+	// projecttaskDescID is the schema descriptor for id field.
+	projecttaskDescID := projecttaskMixinFields0[0].Descriptor()
+	// projecttask.DefaultID holds the default value on creation for the id field.
+	projecttask.DefaultID = projecttaskDescID.Default.(func() ulid.ID)
 	projecttaskcolumnMixin := schema.ProjectTaskColumn{}.Mixin()
 	projecttaskcolumnMixinFields0 := projecttaskcolumnMixin[0].Fields()
 	_ = projecttaskcolumnMixinFields0

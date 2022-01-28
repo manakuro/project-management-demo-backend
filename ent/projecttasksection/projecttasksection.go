@@ -22,6 +22,8 @@ const (
 	FieldUpdatedAt = "updated_at"
 	// EdgeProject holds the string denoting the project edge name in mutations.
 	EdgeProject = "project"
+	// EdgeProjectTasks holds the string denoting the project_tasks edge name in mutations.
+	EdgeProjectTasks = "project_tasks"
 	// Table holds the table name of the projecttasksection in the database.
 	Table = "project_task_sections"
 	// ProjectTable is the table that holds the project relation/edge.
@@ -31,6 +33,13 @@ const (
 	ProjectInverseTable = "projects"
 	// ProjectColumn is the table column denoting the project relation/edge.
 	ProjectColumn = "project_id"
+	// ProjectTasksTable is the table that holds the project_tasks relation/edge.
+	ProjectTasksTable = "project_tasks"
+	// ProjectTasksInverseTable is the table name for the ProjectTask entity.
+	// It exists in this package in order to avoid circular dependency with the "projecttask" package.
+	ProjectTasksInverseTable = "project_tasks"
+	// ProjectTasksColumn is the table column denoting the project_tasks relation/edge.
+	ProjectTasksColumn = "project_task_section_id"
 )
 
 // Columns holds all SQL columns for projecttasksection fields.

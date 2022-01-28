@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"math"
 	"project-management-demo-backend/ent/predicate"
+	"project-management-demo-backend/ent/projecttask"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/task"
 	"project-management-demo-backend/ent/taskpriority"
@@ -35,6 +36,7 @@ type TaskQuery struct {
 	withParent        *TaskQuery
 	withSubTasks      *TaskQuery
 	withTeammateTasks *TeammateTaskQuery
+	withProjectTasks  *ProjectTaskQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -174,6 +176,28 @@ func (tq *TaskQuery) QueryTeammateTasks() *TeammateTaskQuery {
 			sqlgraph.From(task.Table, task.FieldID, selector),
 			sqlgraph.To(teammatetask.Table, teammatetask.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, task.TeammateTasksTable, task.TeammateTasksColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(tq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryProjectTasks chains the current query on the "project_tasks" edge.
+func (tq *TaskQuery) QueryProjectTasks() *ProjectTaskQuery {
+	query := &ProjectTaskQuery{config: tq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := tq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := tq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(task.Table, task.FieldID, selector),
+			sqlgraph.To(projecttask.Table, projecttask.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, task.ProjectTasksTable, task.ProjectTasksColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(tq.driver.Dialect(), step)
 		return fromU, nil
@@ -367,6 +391,7 @@ func (tq *TaskQuery) Clone() *TaskQuery {
 		withParent:        tq.withParent.Clone(),
 		withSubTasks:      tq.withSubTasks.Clone(),
 		withTeammateTasks: tq.withTeammateTasks.Clone(),
+		withProjectTasks:  tq.withProjectTasks.Clone(),
 		// clone intermediate query.
 		sql:  tq.sql.Clone(),
 		path: tq.path,
@@ -425,6 +450,17 @@ func (tq *TaskQuery) WithTeammateTasks(opts ...func(*TeammateTaskQuery)) *TaskQu
 		opt(query)
 	}
 	tq.withTeammateTasks = query
+	return tq
+}
+
+// WithProjectTasks tells the query-builder to eager-load the nodes that are connected to
+// the "project_tasks" edge. The optional arguments are used to configure the query builder of the edge.
+func (tq *TaskQuery) WithProjectTasks(opts ...func(*ProjectTaskQuery)) *TaskQuery {
+	query := &ProjectTaskQuery{config: tq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	tq.withProjectTasks = query
 	return tq
 }
 
@@ -493,12 +529,13 @@ func (tq *TaskQuery) sqlAll(ctx context.Context) ([]*Task, error) {
 	var (
 		nodes       = []*Task{}
 		_spec       = tq.querySpec()
-		loadedTypes = [5]bool{
+		loadedTypes = [6]bool{
 			tq.withTeammate != nil,
 			tq.withTaskPriority != nil,
 			tq.withParent != nil,
 			tq.withSubTasks != nil,
 			tq.withTeammateTasks != nil,
+			tq.withProjectTasks != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -646,6 +683,31 @@ func (tq *TaskQuery) sqlAll(ctx context.Context) ([]*Task, error) {
 				return nil, fmt.Errorf(`unexpected foreign-key "task_id" returned %v for node %v`, fk, n.ID)
 			}
 			node.Edges.TeammateTasks = append(node.Edges.TeammateTasks, n)
+		}
+	}
+
+	if query := tq.withProjectTasks; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[ulid.ID]*Task)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.ProjectTasks = []*ProjectTask{}
+		}
+		query.Where(predicate.ProjectTask(func(s *sql.Selector) {
+			s.Where(sql.InValues(task.ProjectTasksColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.TaskID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "task_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.ProjectTasks = append(node.Edges.ProjectTasks, n)
 		}
 	}
 

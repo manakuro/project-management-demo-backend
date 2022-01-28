@@ -60,9 +60,11 @@ type TaskEdges struct {
 	SubTasks []*Task `json:"sub_tasks,omitempty"`
 	// TeammateTasks holds the value of the teammate_tasks edge.
 	TeammateTasks []*TeammateTask `json:"teammate_tasks,omitempty"`
+	// ProjectTasks holds the value of the project_tasks edge.
+	ProjectTasks []*ProjectTask `json:"project_tasks,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [5]bool
+	loadedTypes [6]bool
 }
 
 // TeammateOrErr returns the Teammate value or an error if the edge
@@ -123,6 +125,15 @@ func (e TaskEdges) TeammateTasksOrErr() ([]*TeammateTask, error) {
 		return e.TeammateTasks, nil
 	}
 	return nil, &NotLoadedError{edge: "teammate_tasks"}
+}
+
+// ProjectTasksOrErr returns the ProjectTasks value or an error if the edge
+// was not loaded in eager-loading.
+func (e TaskEdges) ProjectTasksOrErr() ([]*ProjectTask, error) {
+	if e.loadedTypes[5] {
+		return e.ProjectTasks, nil
+	}
+	return nil, &NotLoadedError{edge: "project_tasks"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -262,6 +273,11 @@ func (t *Task) QuerySubTasks() *TaskQuery {
 // QueryTeammateTasks queries the "teammate_tasks" edge of the Task entity.
 func (t *Task) QueryTeammateTasks() *TeammateTaskQuery {
 	return (&TaskClient{config: t.config}).QueryTeammateTasks(t)
+}
+
+// QueryProjectTasks queries the "project_tasks" edge of the Task entity.
+func (t *Task) QueryProjectTasks() *ProjectTaskQuery {
+	return (&TaskClient{config: t.config}).QueryProjectTasks(t)
 }
 
 // Update returns a builder for updating this Task.

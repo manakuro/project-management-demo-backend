@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"project-management-demo-backend/ent/predicate"
 	"project-management-demo-backend/ent/project"
+	"project-management-demo-backend/ent/projecttask"
 	"project-management-demo-backend/ent/projecttasksection"
 	"project-management-demo-backend/ent/schema/ulid"
 
@@ -46,6 +47,21 @@ func (ptsu *ProjectTaskSectionUpdate) SetProject(p *Project) *ProjectTaskSection
 	return ptsu.SetProjectID(p.ID)
 }
 
+// AddProjectTaskIDs adds the "project_tasks" edge to the ProjectTask entity by IDs.
+func (ptsu *ProjectTaskSectionUpdate) AddProjectTaskIDs(ids ...ulid.ID) *ProjectTaskSectionUpdate {
+	ptsu.mutation.AddProjectTaskIDs(ids...)
+	return ptsu
+}
+
+// AddProjectTasks adds the "project_tasks" edges to the ProjectTask entity.
+func (ptsu *ProjectTaskSectionUpdate) AddProjectTasks(p ...*ProjectTask) *ProjectTaskSectionUpdate {
+	ids := make([]ulid.ID, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return ptsu.AddProjectTaskIDs(ids...)
+}
+
 // Mutation returns the ProjectTaskSectionMutation object of the builder.
 func (ptsu *ProjectTaskSectionUpdate) Mutation() *ProjectTaskSectionMutation {
 	return ptsu.mutation
@@ -55,6 +71,27 @@ func (ptsu *ProjectTaskSectionUpdate) Mutation() *ProjectTaskSectionMutation {
 func (ptsu *ProjectTaskSectionUpdate) ClearProject() *ProjectTaskSectionUpdate {
 	ptsu.mutation.ClearProject()
 	return ptsu
+}
+
+// ClearProjectTasks clears all "project_tasks" edges to the ProjectTask entity.
+func (ptsu *ProjectTaskSectionUpdate) ClearProjectTasks() *ProjectTaskSectionUpdate {
+	ptsu.mutation.ClearProjectTasks()
+	return ptsu
+}
+
+// RemoveProjectTaskIDs removes the "project_tasks" edge to ProjectTask entities by IDs.
+func (ptsu *ProjectTaskSectionUpdate) RemoveProjectTaskIDs(ids ...ulid.ID) *ProjectTaskSectionUpdate {
+	ptsu.mutation.RemoveProjectTaskIDs(ids...)
+	return ptsu
+}
+
+// RemoveProjectTasks removes "project_tasks" edges to ProjectTask entities.
+func (ptsu *ProjectTaskSectionUpdate) RemoveProjectTasks(p ...*ProjectTask) *ProjectTaskSectionUpdate {
+	ids := make([]ulid.ID, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return ptsu.RemoveProjectTaskIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -190,6 +227,60 @@ func (ptsu *ProjectTaskSectionUpdate) sqlSave(ctx context.Context) (n int, err e
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if ptsu.mutation.ProjectTasksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   projecttasksection.ProjectTasksTable,
+			Columns: []string{projecttasksection.ProjectTasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: projecttask.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ptsu.mutation.RemovedProjectTasksIDs(); len(nodes) > 0 && !ptsu.mutation.ProjectTasksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   projecttasksection.ProjectTasksTable,
+			Columns: []string{projecttasksection.ProjectTasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: projecttask.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ptsu.mutation.ProjectTasksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   projecttasksection.ProjectTasksTable,
+			Columns: []string{projecttasksection.ProjectTasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: projecttask.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, ptsu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{projecttasksection.Label}
@@ -226,6 +317,21 @@ func (ptsuo *ProjectTaskSectionUpdateOne) SetProject(p *Project) *ProjectTaskSec
 	return ptsuo.SetProjectID(p.ID)
 }
 
+// AddProjectTaskIDs adds the "project_tasks" edge to the ProjectTask entity by IDs.
+func (ptsuo *ProjectTaskSectionUpdateOne) AddProjectTaskIDs(ids ...ulid.ID) *ProjectTaskSectionUpdateOne {
+	ptsuo.mutation.AddProjectTaskIDs(ids...)
+	return ptsuo
+}
+
+// AddProjectTasks adds the "project_tasks" edges to the ProjectTask entity.
+func (ptsuo *ProjectTaskSectionUpdateOne) AddProjectTasks(p ...*ProjectTask) *ProjectTaskSectionUpdateOne {
+	ids := make([]ulid.ID, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return ptsuo.AddProjectTaskIDs(ids...)
+}
+
 // Mutation returns the ProjectTaskSectionMutation object of the builder.
 func (ptsuo *ProjectTaskSectionUpdateOne) Mutation() *ProjectTaskSectionMutation {
 	return ptsuo.mutation
@@ -235,6 +341,27 @@ func (ptsuo *ProjectTaskSectionUpdateOne) Mutation() *ProjectTaskSectionMutation
 func (ptsuo *ProjectTaskSectionUpdateOne) ClearProject() *ProjectTaskSectionUpdateOne {
 	ptsuo.mutation.ClearProject()
 	return ptsuo
+}
+
+// ClearProjectTasks clears all "project_tasks" edges to the ProjectTask entity.
+func (ptsuo *ProjectTaskSectionUpdateOne) ClearProjectTasks() *ProjectTaskSectionUpdateOne {
+	ptsuo.mutation.ClearProjectTasks()
+	return ptsuo
+}
+
+// RemoveProjectTaskIDs removes the "project_tasks" edge to ProjectTask entities by IDs.
+func (ptsuo *ProjectTaskSectionUpdateOne) RemoveProjectTaskIDs(ids ...ulid.ID) *ProjectTaskSectionUpdateOne {
+	ptsuo.mutation.RemoveProjectTaskIDs(ids...)
+	return ptsuo
+}
+
+// RemoveProjectTasks removes "project_tasks" edges to ProjectTask entities.
+func (ptsuo *ProjectTaskSectionUpdateOne) RemoveProjectTasks(p ...*ProjectTask) *ProjectTaskSectionUpdateOne {
+	ids := make([]ulid.ID, len(p))
+	for i := range p {
+		ids[i] = p[i].ID
+	}
+	return ptsuo.RemoveProjectTaskIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -386,6 +513,60 @@ func (ptsuo *ProjectTaskSectionUpdateOne) sqlSave(ctx context.Context) (_node *P
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: project.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ptsuo.mutation.ProjectTasksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   projecttasksection.ProjectTasksTable,
+			Columns: []string{projecttasksection.ProjectTasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: projecttask.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ptsuo.mutation.RemovedProjectTasksIDs(); len(nodes) > 0 && !ptsuo.mutation.ProjectTasksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   projecttasksection.ProjectTasksTable,
+			Columns: []string{projecttasksection.ProjectTasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: projecttask.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ptsuo.mutation.ProjectTasksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   projecttasksection.ProjectTasksTable,
+			Columns: []string{projecttasksection.ProjectTasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: projecttask.FieldID,
 				},
 			},
 		}

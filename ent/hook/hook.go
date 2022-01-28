@@ -112,6 +112,19 @@ func (f ProjectLightColorFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.
 	return f(ctx, mv)
 }
 
+// The ProjectTaskFunc type is an adapter to allow the use of ordinary
+// function as ProjectTask mutator.
+type ProjectTaskFunc func(context.Context, *ent.ProjectTaskMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ProjectTaskFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.ProjectTaskMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ProjectTaskMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The ProjectTaskColumnFunc type is an adapter to allow the use of ordinary
 // function as ProjectTaskColumn mutator.
 type ProjectTaskColumnFunc func(context.Context, *ent.ProjectTaskColumnMutation) (ent.Value, error)
