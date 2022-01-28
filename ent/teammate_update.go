@@ -11,6 +11,7 @@ import (
 	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/ent/schema/ulid"
+	"project-management-demo-backend/ent/task"
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/teammatetaskcolumn"
 	"project-management-demo-backend/ent/teammatetaskliststatus"
@@ -203,6 +204,21 @@ func (tu *TeammateUpdate) AddTeammateTaskSections(t ...*TeammateTaskSection) *Te
 		ids[i] = t[i].ID
 	}
 	return tu.AddTeammateTaskSectionIDs(ids...)
+}
+
+// AddTaskIDs adds the "tasks" edge to the Task entity by IDs.
+func (tu *TeammateUpdate) AddTaskIDs(ids ...ulid.ID) *TeammateUpdate {
+	tu.mutation.AddTaskIDs(ids...)
+	return tu
+}
+
+// AddTasks adds the "tasks" edges to the Task entity.
+func (tu *TeammateUpdate) AddTasks(t ...*Task) *TeammateUpdate {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return tu.AddTaskIDs(ids...)
 }
 
 // Mutation returns the TeammateMutation object of the builder.
@@ -418,6 +434,27 @@ func (tu *TeammateUpdate) RemoveTeammateTaskSections(t ...*TeammateTaskSection) 
 		ids[i] = t[i].ID
 	}
 	return tu.RemoveTeammateTaskSectionIDs(ids...)
+}
+
+// ClearTasks clears all "tasks" edges to the Task entity.
+func (tu *TeammateUpdate) ClearTasks() *TeammateUpdate {
+	tu.mutation.ClearTasks()
+	return tu
+}
+
+// RemoveTaskIDs removes the "tasks" edge to Task entities by IDs.
+func (tu *TeammateUpdate) RemoveTaskIDs(ids ...ulid.ID) *TeammateUpdate {
+	tu.mutation.RemoveTaskIDs(ids...)
+	return tu
+}
+
+// RemoveTasks removes "tasks" edges to Task entities.
+func (tu *TeammateUpdate) RemoveTasks(t ...*Task) *TeammateUpdate {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return tu.RemoveTaskIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -1079,6 +1116,60 @@ func (tu *TeammateUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if tu.mutation.TasksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   teammate.TasksTable,
+			Columns: []string{teammate.TasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: task.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tu.mutation.RemovedTasksIDs(); len(nodes) > 0 && !tu.mutation.TasksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   teammate.TasksTable,
+			Columns: []string{teammate.TasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: task.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tu.mutation.TasksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   teammate.TasksTable,
+			Columns: []string{teammate.TasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: task.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, tu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{teammate.Label}
@@ -1264,6 +1355,21 @@ func (tuo *TeammateUpdateOne) AddTeammateTaskSections(t ...*TeammateTaskSection)
 		ids[i] = t[i].ID
 	}
 	return tuo.AddTeammateTaskSectionIDs(ids...)
+}
+
+// AddTaskIDs adds the "tasks" edge to the Task entity by IDs.
+func (tuo *TeammateUpdateOne) AddTaskIDs(ids ...ulid.ID) *TeammateUpdateOne {
+	tuo.mutation.AddTaskIDs(ids...)
+	return tuo
+}
+
+// AddTasks adds the "tasks" edges to the Task entity.
+func (tuo *TeammateUpdateOne) AddTasks(t ...*Task) *TeammateUpdateOne {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return tuo.AddTaskIDs(ids...)
 }
 
 // Mutation returns the TeammateMutation object of the builder.
@@ -1479,6 +1585,27 @@ func (tuo *TeammateUpdateOne) RemoveTeammateTaskSections(t ...*TeammateTaskSecti
 		ids[i] = t[i].ID
 	}
 	return tuo.RemoveTeammateTaskSectionIDs(ids...)
+}
+
+// ClearTasks clears all "tasks" edges to the Task entity.
+func (tuo *TeammateUpdateOne) ClearTasks() *TeammateUpdateOne {
+	tuo.mutation.ClearTasks()
+	return tuo
+}
+
+// RemoveTaskIDs removes the "tasks" edge to Task entities by IDs.
+func (tuo *TeammateUpdateOne) RemoveTaskIDs(ids ...ulid.ID) *TeammateUpdateOne {
+	tuo.mutation.RemoveTaskIDs(ids...)
+	return tuo
+}
+
+// RemoveTasks removes "tasks" edges to Task entities.
+func (tuo *TeammateUpdateOne) RemoveTasks(t ...*Task) *TeammateUpdateOne {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return tuo.RemoveTaskIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -2156,6 +2283,60 @@ func (tuo *TeammateUpdateOne) sqlSave(ctx context.Context) (_node *Teammate, err
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: teammatetasksection.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if tuo.mutation.TasksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   teammate.TasksTable,
+			Columns: []string{teammate.TasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: task.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tuo.mutation.RemovedTasksIDs(); len(nodes) > 0 && !tuo.mutation.TasksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   teammate.TasksTable,
+			Columns: []string{teammate.TasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: task.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tuo.mutation.TasksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   teammate.TasksTable,
+			Columns: []string{teammate.TasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: task.FieldID,
 				},
 			},
 		}

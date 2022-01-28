@@ -37,9 +37,11 @@ type TaskPriority struct {
 type TaskPriorityEdges struct {
 	// Color holds the value of the color edge.
 	Color *Color `json:"color,omitempty"`
+	// Tasks holds the value of the tasks edge.
+	Tasks []*Task `json:"tasks,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [2]bool
 }
 
 // ColorOrErr returns the Color value or an error if the edge
@@ -54,6 +56,15 @@ func (e TaskPriorityEdges) ColorOrErr() (*Color, error) {
 		return e.Color, nil
 	}
 	return nil, &NotLoadedError{edge: "color"}
+}
+
+// TasksOrErr returns the Tasks value or an error if the edge
+// was not loaded in eager-loading.
+func (e TaskPriorityEdges) TasksOrErr() ([]*Task, error) {
+	if e.loadedTypes[1] {
+		return e.Tasks, nil
+	}
+	return nil, &NotLoadedError{edge: "tasks"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -126,6 +137,11 @@ func (tp *TaskPriority) assignValues(columns []string, values []interface{}) err
 // QueryColor queries the "color" edge of the TaskPriority entity.
 func (tp *TaskPriority) QueryColor() *ColorQuery {
 	return (&TaskPriorityClient{config: tp.config}).QueryColor(tp)
+}
+
+// QueryTasks queries the "tasks" edge of the TaskPriority entity.
+func (tp *TaskPriority) QueryTasks() *TaskQuery {
+	return (&TaskPriorityClient{config: tp.config}).QueryTasks(tp)
 }
 
 // Update returns a builder for updating this TaskPriority.

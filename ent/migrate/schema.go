@@ -328,6 +328,48 @@ var (
 			},
 		},
 	}
+	// TasksColumns holds the columns for the "tasks" table.
+	TasksColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+		{Name: "created_by", Type: field.TypeString},
+		{Name: "completed", Type: field.TypeBool, Default: false},
+		{Name: "completed_at", Type: field.TypeTime, Nullable: true, SchemaType: map[string]string{"mysql": "datetime"}},
+		{Name: "is_new", Type: field.TypeBool, Default: false},
+		{Name: "name", Type: field.TypeString, Size: 255},
+		{Name: "due_date", Type: field.TypeTime, Nullable: true, SchemaType: map[string]string{"mysql": "datetime"}},
+		{Name: "due_time", Type: field.TypeTime, Nullable: true, SchemaType: map[string]string{"mysql": "datetime"}},
+		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
+		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
+		{Name: "task_parent_id", Type: field.TypeString, Nullable: true},
+		{Name: "task_priority_id", Type: field.TypeString, Nullable: true},
+		{Name: "assignee_id", Type: field.TypeString, Nullable: true},
+	}
+	// TasksTable holds the schema information for the "tasks" table.
+	TasksTable = &schema.Table{
+		Name:       "tasks",
+		Columns:    TasksColumns,
+		PrimaryKey: []*schema.Column{TasksColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "tasks_tasks_sub_tasks",
+				Columns:    []*schema.Column{TasksColumns[10]},
+				RefColumns: []*schema.Column{TasksColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "tasks_task_priorities_tasks",
+				Columns:    []*schema.Column{TasksColumns[11]},
+				RefColumns: []*schema.Column{TaskPrioritiesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "tasks_teammates_tasks",
+				Columns:    []*schema.Column{TasksColumns[12]},
+				RefColumns: []*schema.Column{TeammatesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
 	// TaskColumnsColumns holds the columns for the "task_columns" table.
 	TaskColumnsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString},
@@ -676,6 +718,7 @@ var (
 		ProjectTaskListStatusTable,
 		ProjectTaskSectionsTable,
 		ProjectTeammatesTable,
+		TasksTable,
 		TaskColumnsTable,
 		TaskListCompletedStatusTable,
 		TaskListSortStatusTable,
@@ -714,6 +757,9 @@ func init() {
 	ProjectTaskSectionsTable.ForeignKeys[0].RefTable = ProjectsTable
 	ProjectTeammatesTable.ForeignKeys[0].RefTable = ProjectsTable
 	ProjectTeammatesTable.ForeignKeys[1].RefTable = TeammatesTable
+	TasksTable.ForeignKeys[0].RefTable = TasksTable
+	TasksTable.ForeignKeys[1].RefTable = TaskPrioritiesTable
+	TasksTable.ForeignKeys[2].RefTable = TeammatesTable
 	TaskPrioritiesTable.ForeignKeys[0].RefTable = ColorsTable
 	TeammateTaskColumnsTable.ForeignKeys[0].RefTable = TaskColumnsTable
 	TeammateTaskColumnsTable.ForeignKeys[1].RefTable = TeammatesTable

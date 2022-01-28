@@ -164,6 +164,19 @@ func (f ProjectTeammateFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Va
 	return f(ctx, mv)
 }
 
+// The TaskFunc type is an adapter to allow the use of ordinary
+// function as Task mutator.
+type TaskFunc func(context.Context, *ent.TaskMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f TaskFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.TaskMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.TaskMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The TaskColumnFunc type is an adapter to allow the use of ordinary
 // function as TaskColumn mutator.
 type TaskColumnFunc func(context.Context, *ent.TaskColumnMutation) (ent.Value, error)

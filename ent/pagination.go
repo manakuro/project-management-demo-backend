@@ -21,6 +21,7 @@ import (
 	"project-management-demo-backend/ent/projecttasksection"
 	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/ent/schema/ulid"
+	"project-management-demo-backend/ent/task"
 	"project-management-demo-backend/ent/taskcolumn"
 	"project-management-demo-backend/ent/tasklistcompletedstatus"
 	"project-management-demo-backend/ent/tasklistsortstatus"
@@ -2979,6 +2980,233 @@ func (pt *ProjectTeammate) ToEdge(order *ProjectTeammateOrder) *ProjectTeammateE
 	return &ProjectTeammateEdge{
 		Node:   pt,
 		Cursor: order.Field.toCursor(pt),
+	}
+}
+
+// TaskEdge is the edge representation of Task.
+type TaskEdge struct {
+	Node   *Task  `json:"node"`
+	Cursor Cursor `json:"cursor"`
+}
+
+// TaskConnection is the connection containing edges to Task.
+type TaskConnection struct {
+	Edges      []*TaskEdge `json:"edges"`
+	PageInfo   PageInfo    `json:"pageInfo"`
+	TotalCount int         `json:"totalCount"`
+}
+
+// TaskPaginateOption enables pagination customization.
+type TaskPaginateOption func(*taskPager) error
+
+// WithTaskOrder configures pagination ordering.
+func WithTaskOrder(order *TaskOrder) TaskPaginateOption {
+	if order == nil {
+		order = DefaultTaskOrder
+	}
+	o := *order
+	return func(pager *taskPager) error {
+		if err := o.Direction.Validate(); err != nil {
+			return err
+		}
+		if o.Field == nil {
+			o.Field = DefaultTaskOrder.Field
+		}
+		pager.order = &o
+		return nil
+	}
+}
+
+// WithTaskFilter configures pagination filter.
+func WithTaskFilter(filter func(*TaskQuery) (*TaskQuery, error)) TaskPaginateOption {
+	return func(pager *taskPager) error {
+		if filter == nil {
+			return errors.New("TaskQuery filter cannot be nil")
+		}
+		pager.filter = filter
+		return nil
+	}
+}
+
+type taskPager struct {
+	order  *TaskOrder
+	filter func(*TaskQuery) (*TaskQuery, error)
+}
+
+func newTaskPager(opts []TaskPaginateOption) (*taskPager, error) {
+	pager := &taskPager{}
+	for _, opt := range opts {
+		if err := opt(pager); err != nil {
+			return nil, err
+		}
+	}
+	if pager.order == nil {
+		pager.order = DefaultTaskOrder
+	}
+	return pager, nil
+}
+
+func (p *taskPager) applyFilter(query *TaskQuery) (*TaskQuery, error) {
+	if p.filter != nil {
+		return p.filter(query)
+	}
+	return query, nil
+}
+
+func (p *taskPager) toCursor(t *Task) Cursor {
+	return p.order.Field.toCursor(t)
+}
+
+func (p *taskPager) applyCursors(query *TaskQuery, after, before *Cursor) *TaskQuery {
+	for _, predicate := range cursorsToPredicates(
+		p.order.Direction, after, before,
+		p.order.Field.field, DefaultTaskOrder.Field.field,
+	) {
+		query = query.Where(predicate)
+	}
+	return query
+}
+
+func (p *taskPager) applyOrder(query *TaskQuery, reverse bool) *TaskQuery {
+	direction := p.order.Direction
+	if reverse {
+		direction = direction.reverse()
+	}
+	query = query.Order(direction.orderFunc(p.order.Field.field))
+	if p.order.Field != DefaultTaskOrder.Field {
+		query = query.Order(direction.orderFunc(DefaultTaskOrder.Field.field))
+	}
+	return query
+}
+
+// Paginate executes the query and returns a relay based cursor connection to Task.
+func (t *TaskQuery) Paginate(
+	ctx context.Context, after *Cursor, first *int,
+	before *Cursor, last *int, opts ...TaskPaginateOption,
+) (*TaskConnection, error) {
+	if err := validateFirstLast(first, last); err != nil {
+		return nil, err
+	}
+	pager, err := newTaskPager(opts)
+	if err != nil {
+		return nil, err
+	}
+
+	if t, err = pager.applyFilter(t); err != nil {
+		return nil, err
+	}
+
+	conn := &TaskConnection{Edges: []*TaskEdge{}}
+	if !hasCollectedField(ctx, edgesField) || first != nil && *first == 0 || last != nil && *last == 0 {
+		if hasCollectedField(ctx, totalCountField) ||
+			hasCollectedField(ctx, pageInfoField) {
+			count, err := t.Count(ctx)
+			if err != nil {
+				return nil, err
+			}
+			conn.TotalCount = count
+			conn.PageInfo.HasNextPage = first != nil && count > 0
+			conn.PageInfo.HasPreviousPage = last != nil && count > 0
+		}
+		return conn, nil
+	}
+
+	if (after != nil || first != nil || before != nil || last != nil) && hasCollectedField(ctx, totalCountField) {
+		count, err := t.Clone().Count(ctx)
+		if err != nil {
+			return nil, err
+		}
+		conn.TotalCount = count
+	}
+
+	t = pager.applyCursors(t, after, before)
+	t = pager.applyOrder(t, last != nil)
+	var limit int
+	if first != nil {
+		limit = *first + 1
+	} else if last != nil {
+		limit = *last + 1
+	}
+	if limit > 0 {
+		t = t.Limit(limit)
+	}
+
+	if field := getCollectedField(ctx, edgesField, nodeField); field != nil {
+		t = t.collectField(graphql.GetOperationContext(ctx), *field)
+	}
+
+	nodes, err := t.All(ctx)
+	if err != nil || len(nodes) == 0 {
+		return conn, err
+	}
+
+	if len(nodes) == limit {
+		conn.PageInfo.HasNextPage = first != nil
+		conn.PageInfo.HasPreviousPage = last != nil
+		nodes = nodes[:len(nodes)-1]
+	}
+
+	var nodeAt func(int) *Task
+	if last != nil {
+		n := len(nodes) - 1
+		nodeAt = func(i int) *Task {
+			return nodes[n-i]
+		}
+	} else {
+		nodeAt = func(i int) *Task {
+			return nodes[i]
+		}
+	}
+
+	conn.Edges = make([]*TaskEdge, len(nodes))
+	for i := range nodes {
+		node := nodeAt(i)
+		conn.Edges[i] = &TaskEdge{
+			Node:   node,
+			Cursor: pager.toCursor(node),
+		}
+	}
+
+	conn.PageInfo.StartCursor = &conn.Edges[0].Cursor
+	conn.PageInfo.EndCursor = &conn.Edges[len(conn.Edges)-1].Cursor
+	if conn.TotalCount == 0 {
+		conn.TotalCount = len(nodes)
+	}
+
+	return conn, nil
+}
+
+// TaskOrderField defines the ordering field of Task.
+type TaskOrderField struct {
+	field    string
+	toCursor func(*Task) Cursor
+}
+
+// TaskOrder defines the ordering of Task.
+type TaskOrder struct {
+	Direction OrderDirection  `json:"direction"`
+	Field     *TaskOrderField `json:"field"`
+}
+
+// DefaultTaskOrder is the default ordering of Task.
+var DefaultTaskOrder = &TaskOrder{
+	Direction: OrderDirectionAsc,
+	Field: &TaskOrderField{
+		field: task.FieldID,
+		toCursor: func(t *Task) Cursor {
+			return Cursor{ID: t.ID}
+		},
+	},
+}
+
+// ToEdge converts Task into TaskEdge.
+func (t *Task) ToEdge(order *TaskOrder) *TaskEdge {
+	if order == nil {
+		order = DefaultTaskOrder
+	}
+	return &TaskEdge{
+		Node:   t,
+		Cursor: order.Field.toCursor(t),
 	}
 }
 

@@ -18,6 +18,7 @@ import (
 	"project-management-demo-backend/ent/projecttasksection"
 	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/ent/schema/ulid"
+	"project-management-demo-backend/ent/task"
 	"project-management-demo-backend/ent/taskcolumn"
 	"project-management-demo-backend/ent/tasklistcompletedstatus"
 	"project-management-demo-backend/ent/tasklistsortstatus"
@@ -4605,6 +4606,705 @@ func (i *ProjectTeammateWhereInput) P() (predicate.ProjectTeammate, error) {
 	}
 }
 
+// TaskWhereInput represents a where input for filtering Task queries.
+type TaskWhereInput struct {
+	Not *TaskWhereInput   `json:"not,omitempty"`
+	Or  []*TaskWhereInput `json:"or,omitempty"`
+	And []*TaskWhereInput `json:"and,omitempty"`
+
+	// "id" field predicates.
+	ID      *ulid.ID  `json:"id,omitempty"`
+	IDNEQ   *ulid.ID  `json:"idNEQ,omitempty"`
+	IDIn    []ulid.ID `json:"idIn,omitempty"`
+	IDNotIn []ulid.ID `json:"idNotIn,omitempty"`
+	IDGT    *ulid.ID  `json:"idGT,omitempty"`
+	IDGTE   *ulid.ID  `json:"idGTE,omitempty"`
+	IDLT    *ulid.ID  `json:"idLT,omitempty"`
+	IDLTE   *ulid.ID  `json:"idLTE,omitempty"`
+
+	// "task_parent_id" field predicates.
+	TaskParentID             *ulid.ID  `json:"taskParentID,omitempty"`
+	TaskParentIDNEQ          *ulid.ID  `json:"taskParentIDNEQ,omitempty"`
+	TaskParentIDIn           []ulid.ID `json:"taskParentIDIn,omitempty"`
+	TaskParentIDNotIn        []ulid.ID `json:"taskParentIDNotIn,omitempty"`
+	TaskParentIDGT           *ulid.ID  `json:"taskParentIDGT,omitempty"`
+	TaskParentIDGTE          *ulid.ID  `json:"taskParentIDGTE,omitempty"`
+	TaskParentIDLT           *ulid.ID  `json:"taskParentIDLT,omitempty"`
+	TaskParentIDLTE          *ulid.ID  `json:"taskParentIDLTE,omitempty"`
+	TaskParentIDContains     *ulid.ID  `json:"taskParentIDContains,omitempty"`
+	TaskParentIDHasPrefix    *ulid.ID  `json:"taskParentIDHasPrefix,omitempty"`
+	TaskParentIDHasSuffix    *ulid.ID  `json:"taskParentIDHasSuffix,omitempty"`
+	TaskParentIDIsNil        bool      `json:"taskParentIDIsNil,omitempty"`
+	TaskParentIDNotNil       bool      `json:"taskParentIDNotNil,omitempty"`
+	TaskParentIDEqualFold    *ulid.ID  `json:"taskParentIDEqualFold,omitempty"`
+	TaskParentIDContainsFold *ulid.ID  `json:"taskParentIDContainsFold,omitempty"`
+
+	// "task_priority_id" field predicates.
+	TaskPriorityID             *ulid.ID  `json:"taskPriorityID,omitempty"`
+	TaskPriorityIDNEQ          *ulid.ID  `json:"taskPriorityIDNEQ,omitempty"`
+	TaskPriorityIDIn           []ulid.ID `json:"taskPriorityIDIn,omitempty"`
+	TaskPriorityIDNotIn        []ulid.ID `json:"taskPriorityIDNotIn,omitempty"`
+	TaskPriorityIDGT           *ulid.ID  `json:"taskPriorityIDGT,omitempty"`
+	TaskPriorityIDGTE          *ulid.ID  `json:"taskPriorityIDGTE,omitempty"`
+	TaskPriorityIDLT           *ulid.ID  `json:"taskPriorityIDLT,omitempty"`
+	TaskPriorityIDLTE          *ulid.ID  `json:"taskPriorityIDLTE,omitempty"`
+	TaskPriorityIDContains     *ulid.ID  `json:"taskPriorityIDContains,omitempty"`
+	TaskPriorityIDHasPrefix    *ulid.ID  `json:"taskPriorityIDHasPrefix,omitempty"`
+	TaskPriorityIDHasSuffix    *ulid.ID  `json:"taskPriorityIDHasSuffix,omitempty"`
+	TaskPriorityIDEqualFold    *ulid.ID  `json:"taskPriorityIDEqualFold,omitempty"`
+	TaskPriorityIDContainsFold *ulid.ID  `json:"taskPriorityIDContainsFold,omitempty"`
+
+	// "assignee_id" field predicates.
+	AssigneeID             *ulid.ID  `json:"assigneeID,omitempty"`
+	AssigneeIDNEQ          *ulid.ID  `json:"assigneeIDNEQ,omitempty"`
+	AssigneeIDIn           []ulid.ID `json:"assigneeIDIn,omitempty"`
+	AssigneeIDNotIn        []ulid.ID `json:"assigneeIDNotIn,omitempty"`
+	AssigneeIDGT           *ulid.ID  `json:"assigneeIDGT,omitempty"`
+	AssigneeIDGTE          *ulid.ID  `json:"assigneeIDGTE,omitempty"`
+	AssigneeIDLT           *ulid.ID  `json:"assigneeIDLT,omitempty"`
+	AssigneeIDLTE          *ulid.ID  `json:"assigneeIDLTE,omitempty"`
+	AssigneeIDContains     *ulid.ID  `json:"assigneeIDContains,omitempty"`
+	AssigneeIDHasPrefix    *ulid.ID  `json:"assigneeIDHasPrefix,omitempty"`
+	AssigneeIDHasSuffix    *ulid.ID  `json:"assigneeIDHasSuffix,omitempty"`
+	AssigneeIDIsNil        bool      `json:"assigneeIDIsNil,omitempty"`
+	AssigneeIDNotNil       bool      `json:"assigneeIDNotNil,omitempty"`
+	AssigneeIDEqualFold    *ulid.ID  `json:"assigneeIDEqualFold,omitempty"`
+	AssigneeIDContainsFold *ulid.ID  `json:"assigneeIDContainsFold,omitempty"`
+
+	// "created_by" field predicates.
+	CreatedBy             *ulid.ID  `json:"createdBy,omitempty"`
+	CreatedByNEQ          *ulid.ID  `json:"createdByNEQ,omitempty"`
+	CreatedByIn           []ulid.ID `json:"createdByIn,omitempty"`
+	CreatedByNotIn        []ulid.ID `json:"createdByNotIn,omitempty"`
+	CreatedByGT           *ulid.ID  `json:"createdByGT,omitempty"`
+	CreatedByGTE          *ulid.ID  `json:"createdByGTE,omitempty"`
+	CreatedByLT           *ulid.ID  `json:"createdByLT,omitempty"`
+	CreatedByLTE          *ulid.ID  `json:"createdByLTE,omitempty"`
+	CreatedByContains     *ulid.ID  `json:"createdByContains,omitempty"`
+	CreatedByHasPrefix    *ulid.ID  `json:"createdByHasPrefix,omitempty"`
+	CreatedByHasSuffix    *ulid.ID  `json:"createdByHasSuffix,omitempty"`
+	CreatedByEqualFold    *ulid.ID  `json:"createdByEqualFold,omitempty"`
+	CreatedByContainsFold *ulid.ID  `json:"createdByContainsFold,omitempty"`
+
+	// "completed" field predicates.
+	Completed    *bool `json:"completed,omitempty"`
+	CompletedNEQ *bool `json:"completedNEQ,omitempty"`
+
+	// "completed_at" field predicates.
+	CompletedAt       *time.Time  `json:"completedAt,omitempty"`
+	CompletedAtNEQ    *time.Time  `json:"completedAtNEQ,omitempty"`
+	CompletedAtIn     []time.Time `json:"completedAtIn,omitempty"`
+	CompletedAtNotIn  []time.Time `json:"completedAtNotIn,omitempty"`
+	CompletedAtGT     *time.Time  `json:"completedAtGT,omitempty"`
+	CompletedAtGTE    *time.Time  `json:"completedAtGTE,omitempty"`
+	CompletedAtLT     *time.Time  `json:"completedAtLT,omitempty"`
+	CompletedAtLTE    *time.Time  `json:"completedAtLTE,omitempty"`
+	CompletedAtIsNil  bool        `json:"completedAtIsNil,omitempty"`
+	CompletedAtNotNil bool        `json:"completedAtNotNil,omitempty"`
+
+	// "is_new" field predicates.
+	IsNew    *bool `json:"isNew,omitempty"`
+	IsNewNEQ *bool `json:"isNewNEQ,omitempty"`
+
+	// "name" field predicates.
+	Name             *string  `json:"name,omitempty"`
+	NameNEQ          *string  `json:"nameNEQ,omitempty"`
+	NameIn           []string `json:"nameIn,omitempty"`
+	NameNotIn        []string `json:"nameNotIn,omitempty"`
+	NameGT           *string  `json:"nameGT,omitempty"`
+	NameGTE          *string  `json:"nameGTE,omitempty"`
+	NameLT           *string  `json:"nameLT,omitempty"`
+	NameLTE          *string  `json:"nameLTE,omitempty"`
+	NameContains     *string  `json:"nameContains,omitempty"`
+	NameHasPrefix    *string  `json:"nameHasPrefix,omitempty"`
+	NameHasSuffix    *string  `json:"nameHasSuffix,omitempty"`
+	NameEqualFold    *string  `json:"nameEqualFold,omitempty"`
+	NameContainsFold *string  `json:"nameContainsFold,omitempty"`
+
+	// "due_date" field predicates.
+	DueDate       *time.Time  `json:"dueDate,omitempty"`
+	DueDateNEQ    *time.Time  `json:"dueDateNEQ,omitempty"`
+	DueDateIn     []time.Time `json:"dueDateIn,omitempty"`
+	DueDateNotIn  []time.Time `json:"dueDateNotIn,omitempty"`
+	DueDateGT     *time.Time  `json:"dueDateGT,omitempty"`
+	DueDateGTE    *time.Time  `json:"dueDateGTE,omitempty"`
+	DueDateLT     *time.Time  `json:"dueDateLT,omitempty"`
+	DueDateLTE    *time.Time  `json:"dueDateLTE,omitempty"`
+	DueDateIsNil  bool        `json:"dueDateIsNil,omitempty"`
+	DueDateNotNil bool        `json:"dueDateNotNil,omitempty"`
+
+	// "due_time" field predicates.
+	DueTime       *time.Time  `json:"dueTime,omitempty"`
+	DueTimeNEQ    *time.Time  `json:"dueTimeNEQ,omitempty"`
+	DueTimeIn     []time.Time `json:"dueTimeIn,omitempty"`
+	DueTimeNotIn  []time.Time `json:"dueTimeNotIn,omitempty"`
+	DueTimeGT     *time.Time  `json:"dueTimeGT,omitempty"`
+	DueTimeGTE    *time.Time  `json:"dueTimeGTE,omitempty"`
+	DueTimeLT     *time.Time  `json:"dueTimeLT,omitempty"`
+	DueTimeLTE    *time.Time  `json:"dueTimeLTE,omitempty"`
+	DueTimeIsNil  bool        `json:"dueTimeIsNil,omitempty"`
+	DueTimeNotNil bool        `json:"dueTimeNotNil,omitempty"`
+
+	// "created_at" field predicates.
+	CreatedAt      *time.Time  `json:"createdAt,omitempty"`
+	CreatedAtNEQ   *time.Time  `json:"createdAtNEQ,omitempty"`
+	CreatedAtIn    []time.Time `json:"createdAtIn,omitempty"`
+	CreatedAtNotIn []time.Time `json:"createdAtNotIn,omitempty"`
+	CreatedAtGT    *time.Time  `json:"createdAtGT,omitempty"`
+	CreatedAtGTE   *time.Time  `json:"createdAtGTE,omitempty"`
+	CreatedAtLT    *time.Time  `json:"createdAtLT,omitempty"`
+	CreatedAtLTE   *time.Time  `json:"createdAtLTE,omitempty"`
+
+	// "updated_at" field predicates.
+	UpdatedAt      *time.Time  `json:"updatedAt,omitempty"`
+	UpdatedAtNEQ   *time.Time  `json:"updatedAtNEQ,omitempty"`
+	UpdatedAtIn    []time.Time `json:"updatedAtIn,omitempty"`
+	UpdatedAtNotIn []time.Time `json:"updatedAtNotIn,omitempty"`
+	UpdatedAtGT    *time.Time  `json:"updatedAtGT,omitempty"`
+	UpdatedAtGTE   *time.Time  `json:"updatedAtGTE,omitempty"`
+	UpdatedAtLT    *time.Time  `json:"updatedAtLT,omitempty"`
+	UpdatedAtLTE   *time.Time  `json:"updatedAtLTE,omitempty"`
+
+	// "teammate" edge predicates.
+	HasTeammate     *bool                 `json:"hasTeammate,omitempty"`
+	HasTeammateWith []*TeammateWhereInput `json:"hasTeammateWith,omitempty"`
+
+	// "task_priority" edge predicates.
+	HasTaskPriority     *bool                     `json:"hasTaskPriority,omitempty"`
+	HasTaskPriorityWith []*TaskPriorityWhereInput `json:"hasTaskPriorityWith,omitempty"`
+
+	// "parent" edge predicates.
+	HasParent     *bool             `json:"hasParent,omitempty"`
+	HasParentWith []*TaskWhereInput `json:"hasParentWith,omitempty"`
+
+	// "sub_tasks" edge predicates.
+	HasSubTasks     *bool             `json:"hasSubTasks,omitempty"`
+	HasSubTasksWith []*TaskWhereInput `json:"hasSubTasksWith,omitempty"`
+}
+
+// Filter applies the TaskWhereInput filter on the TaskQuery builder.
+func (i *TaskWhereInput) Filter(q *TaskQuery) (*TaskQuery, error) {
+	if i == nil {
+		return q, nil
+	}
+	p, err := i.P()
+	if err != nil {
+		return nil, err
+	}
+	return q.Where(p), nil
+}
+
+// P returns a predicate for filtering tasks.
+// An error is returned if the input is empty or invalid.
+func (i *TaskWhereInput) P() (predicate.Task, error) {
+	var predicates []predicate.Task
+	if i.Not != nil {
+		p, err := i.Not.P()
+		if err != nil {
+			return nil, err
+		}
+		predicates = append(predicates, task.Not(p))
+	}
+	switch n := len(i.Or); {
+	case n == 1:
+		p, err := i.Or[0].P()
+		if err != nil {
+			return nil, err
+		}
+		predicates = append(predicates, p)
+	case n > 1:
+		or := make([]predicate.Task, 0, n)
+		for _, w := range i.Or {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			or = append(or, p)
+		}
+		predicates = append(predicates, task.Or(or...))
+	}
+	switch n := len(i.And); {
+	case n == 1:
+		p, err := i.And[0].P()
+		if err != nil {
+			return nil, err
+		}
+		predicates = append(predicates, p)
+	case n > 1:
+		and := make([]predicate.Task, 0, n)
+		for _, w := range i.And {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			and = append(and, p)
+		}
+		predicates = append(predicates, task.And(and...))
+	}
+	if i.ID != nil {
+		predicates = append(predicates, task.IDEQ(*i.ID))
+	}
+	if i.IDNEQ != nil {
+		predicates = append(predicates, task.IDNEQ(*i.IDNEQ))
+	}
+	if len(i.IDIn) > 0 {
+		predicates = append(predicates, task.IDIn(i.IDIn...))
+	}
+	if len(i.IDNotIn) > 0 {
+		predicates = append(predicates, task.IDNotIn(i.IDNotIn...))
+	}
+	if i.IDGT != nil {
+		predicates = append(predicates, task.IDGT(*i.IDGT))
+	}
+	if i.IDGTE != nil {
+		predicates = append(predicates, task.IDGTE(*i.IDGTE))
+	}
+	if i.IDLT != nil {
+		predicates = append(predicates, task.IDLT(*i.IDLT))
+	}
+	if i.IDLTE != nil {
+		predicates = append(predicates, task.IDLTE(*i.IDLTE))
+	}
+	if i.TaskParentID != nil {
+		predicates = append(predicates, task.TaskParentIDEQ(*i.TaskParentID))
+	}
+	if i.TaskParentIDNEQ != nil {
+		predicates = append(predicates, task.TaskParentIDNEQ(*i.TaskParentIDNEQ))
+	}
+	if len(i.TaskParentIDIn) > 0 {
+		predicates = append(predicates, task.TaskParentIDIn(i.TaskParentIDIn...))
+	}
+	if len(i.TaskParentIDNotIn) > 0 {
+		predicates = append(predicates, task.TaskParentIDNotIn(i.TaskParentIDNotIn...))
+	}
+	if i.TaskParentIDGT != nil {
+		predicates = append(predicates, task.TaskParentIDGT(*i.TaskParentIDGT))
+	}
+	if i.TaskParentIDGTE != nil {
+		predicates = append(predicates, task.TaskParentIDGTE(*i.TaskParentIDGTE))
+	}
+	if i.TaskParentIDLT != nil {
+		predicates = append(predicates, task.TaskParentIDLT(*i.TaskParentIDLT))
+	}
+	if i.TaskParentIDLTE != nil {
+		predicates = append(predicates, task.TaskParentIDLTE(*i.TaskParentIDLTE))
+	}
+	if i.TaskParentIDContains != nil {
+		predicates = append(predicates, task.TaskParentIDContains(*i.TaskParentIDContains))
+	}
+	if i.TaskParentIDHasPrefix != nil {
+		predicates = append(predicates, task.TaskParentIDHasPrefix(*i.TaskParentIDHasPrefix))
+	}
+	if i.TaskParentIDHasSuffix != nil {
+		predicates = append(predicates, task.TaskParentIDHasSuffix(*i.TaskParentIDHasSuffix))
+	}
+	if i.TaskParentIDIsNil {
+		predicates = append(predicates, task.TaskParentIDIsNil())
+	}
+	if i.TaskParentIDNotNil {
+		predicates = append(predicates, task.TaskParentIDNotNil())
+	}
+	if i.TaskParentIDEqualFold != nil {
+		predicates = append(predicates, task.TaskParentIDEqualFold(*i.TaskParentIDEqualFold))
+	}
+	if i.TaskParentIDContainsFold != nil {
+		predicates = append(predicates, task.TaskParentIDContainsFold(*i.TaskParentIDContainsFold))
+	}
+	if i.TaskPriorityID != nil {
+		predicates = append(predicates, task.TaskPriorityIDEQ(*i.TaskPriorityID))
+	}
+	if i.TaskPriorityIDNEQ != nil {
+		predicates = append(predicates, task.TaskPriorityIDNEQ(*i.TaskPriorityIDNEQ))
+	}
+	if len(i.TaskPriorityIDIn) > 0 {
+		predicates = append(predicates, task.TaskPriorityIDIn(i.TaskPriorityIDIn...))
+	}
+	if len(i.TaskPriorityIDNotIn) > 0 {
+		predicates = append(predicates, task.TaskPriorityIDNotIn(i.TaskPriorityIDNotIn...))
+	}
+	if i.TaskPriorityIDGT != nil {
+		predicates = append(predicates, task.TaskPriorityIDGT(*i.TaskPriorityIDGT))
+	}
+	if i.TaskPriorityIDGTE != nil {
+		predicates = append(predicates, task.TaskPriorityIDGTE(*i.TaskPriorityIDGTE))
+	}
+	if i.TaskPriorityIDLT != nil {
+		predicates = append(predicates, task.TaskPriorityIDLT(*i.TaskPriorityIDLT))
+	}
+	if i.TaskPriorityIDLTE != nil {
+		predicates = append(predicates, task.TaskPriorityIDLTE(*i.TaskPriorityIDLTE))
+	}
+	if i.TaskPriorityIDContains != nil {
+		predicates = append(predicates, task.TaskPriorityIDContains(*i.TaskPriorityIDContains))
+	}
+	if i.TaskPriorityIDHasPrefix != nil {
+		predicates = append(predicates, task.TaskPriorityIDHasPrefix(*i.TaskPriorityIDHasPrefix))
+	}
+	if i.TaskPriorityIDHasSuffix != nil {
+		predicates = append(predicates, task.TaskPriorityIDHasSuffix(*i.TaskPriorityIDHasSuffix))
+	}
+	if i.TaskPriorityIDEqualFold != nil {
+		predicates = append(predicates, task.TaskPriorityIDEqualFold(*i.TaskPriorityIDEqualFold))
+	}
+	if i.TaskPriorityIDContainsFold != nil {
+		predicates = append(predicates, task.TaskPriorityIDContainsFold(*i.TaskPriorityIDContainsFold))
+	}
+	if i.AssigneeID != nil {
+		predicates = append(predicates, task.AssigneeIDEQ(*i.AssigneeID))
+	}
+	if i.AssigneeIDNEQ != nil {
+		predicates = append(predicates, task.AssigneeIDNEQ(*i.AssigneeIDNEQ))
+	}
+	if len(i.AssigneeIDIn) > 0 {
+		predicates = append(predicates, task.AssigneeIDIn(i.AssigneeIDIn...))
+	}
+	if len(i.AssigneeIDNotIn) > 0 {
+		predicates = append(predicates, task.AssigneeIDNotIn(i.AssigneeIDNotIn...))
+	}
+	if i.AssigneeIDGT != nil {
+		predicates = append(predicates, task.AssigneeIDGT(*i.AssigneeIDGT))
+	}
+	if i.AssigneeIDGTE != nil {
+		predicates = append(predicates, task.AssigneeIDGTE(*i.AssigneeIDGTE))
+	}
+	if i.AssigneeIDLT != nil {
+		predicates = append(predicates, task.AssigneeIDLT(*i.AssigneeIDLT))
+	}
+	if i.AssigneeIDLTE != nil {
+		predicates = append(predicates, task.AssigneeIDLTE(*i.AssigneeIDLTE))
+	}
+	if i.AssigneeIDContains != nil {
+		predicates = append(predicates, task.AssigneeIDContains(*i.AssigneeIDContains))
+	}
+	if i.AssigneeIDHasPrefix != nil {
+		predicates = append(predicates, task.AssigneeIDHasPrefix(*i.AssigneeIDHasPrefix))
+	}
+	if i.AssigneeIDHasSuffix != nil {
+		predicates = append(predicates, task.AssigneeIDHasSuffix(*i.AssigneeIDHasSuffix))
+	}
+	if i.AssigneeIDIsNil {
+		predicates = append(predicates, task.AssigneeIDIsNil())
+	}
+	if i.AssigneeIDNotNil {
+		predicates = append(predicates, task.AssigneeIDNotNil())
+	}
+	if i.AssigneeIDEqualFold != nil {
+		predicates = append(predicates, task.AssigneeIDEqualFold(*i.AssigneeIDEqualFold))
+	}
+	if i.AssigneeIDContainsFold != nil {
+		predicates = append(predicates, task.AssigneeIDContainsFold(*i.AssigneeIDContainsFold))
+	}
+	if i.CreatedBy != nil {
+		predicates = append(predicates, task.CreatedByEQ(*i.CreatedBy))
+	}
+	if i.CreatedByNEQ != nil {
+		predicates = append(predicates, task.CreatedByNEQ(*i.CreatedByNEQ))
+	}
+	if len(i.CreatedByIn) > 0 {
+		predicates = append(predicates, task.CreatedByIn(i.CreatedByIn...))
+	}
+	if len(i.CreatedByNotIn) > 0 {
+		predicates = append(predicates, task.CreatedByNotIn(i.CreatedByNotIn...))
+	}
+	if i.CreatedByGT != nil {
+		predicates = append(predicates, task.CreatedByGT(*i.CreatedByGT))
+	}
+	if i.CreatedByGTE != nil {
+		predicates = append(predicates, task.CreatedByGTE(*i.CreatedByGTE))
+	}
+	if i.CreatedByLT != nil {
+		predicates = append(predicates, task.CreatedByLT(*i.CreatedByLT))
+	}
+	if i.CreatedByLTE != nil {
+		predicates = append(predicates, task.CreatedByLTE(*i.CreatedByLTE))
+	}
+	if i.CreatedByContains != nil {
+		predicates = append(predicates, task.CreatedByContains(*i.CreatedByContains))
+	}
+	if i.CreatedByHasPrefix != nil {
+		predicates = append(predicates, task.CreatedByHasPrefix(*i.CreatedByHasPrefix))
+	}
+	if i.CreatedByHasSuffix != nil {
+		predicates = append(predicates, task.CreatedByHasSuffix(*i.CreatedByHasSuffix))
+	}
+	if i.CreatedByEqualFold != nil {
+		predicates = append(predicates, task.CreatedByEqualFold(*i.CreatedByEqualFold))
+	}
+	if i.CreatedByContainsFold != nil {
+		predicates = append(predicates, task.CreatedByContainsFold(*i.CreatedByContainsFold))
+	}
+	if i.Completed != nil {
+		predicates = append(predicates, task.CompletedEQ(*i.Completed))
+	}
+	if i.CompletedNEQ != nil {
+		predicates = append(predicates, task.CompletedNEQ(*i.CompletedNEQ))
+	}
+	if i.CompletedAt != nil {
+		predicates = append(predicates, task.CompletedAtEQ(*i.CompletedAt))
+	}
+	if i.CompletedAtNEQ != nil {
+		predicates = append(predicates, task.CompletedAtNEQ(*i.CompletedAtNEQ))
+	}
+	if len(i.CompletedAtIn) > 0 {
+		predicates = append(predicates, task.CompletedAtIn(i.CompletedAtIn...))
+	}
+	if len(i.CompletedAtNotIn) > 0 {
+		predicates = append(predicates, task.CompletedAtNotIn(i.CompletedAtNotIn...))
+	}
+	if i.CompletedAtGT != nil {
+		predicates = append(predicates, task.CompletedAtGT(*i.CompletedAtGT))
+	}
+	if i.CompletedAtGTE != nil {
+		predicates = append(predicates, task.CompletedAtGTE(*i.CompletedAtGTE))
+	}
+	if i.CompletedAtLT != nil {
+		predicates = append(predicates, task.CompletedAtLT(*i.CompletedAtLT))
+	}
+	if i.CompletedAtLTE != nil {
+		predicates = append(predicates, task.CompletedAtLTE(*i.CompletedAtLTE))
+	}
+	if i.CompletedAtIsNil {
+		predicates = append(predicates, task.CompletedAtIsNil())
+	}
+	if i.CompletedAtNotNil {
+		predicates = append(predicates, task.CompletedAtNotNil())
+	}
+	if i.IsNew != nil {
+		predicates = append(predicates, task.IsNewEQ(*i.IsNew))
+	}
+	if i.IsNewNEQ != nil {
+		predicates = append(predicates, task.IsNewNEQ(*i.IsNewNEQ))
+	}
+	if i.Name != nil {
+		predicates = append(predicates, task.NameEQ(*i.Name))
+	}
+	if i.NameNEQ != nil {
+		predicates = append(predicates, task.NameNEQ(*i.NameNEQ))
+	}
+	if len(i.NameIn) > 0 {
+		predicates = append(predicates, task.NameIn(i.NameIn...))
+	}
+	if len(i.NameNotIn) > 0 {
+		predicates = append(predicates, task.NameNotIn(i.NameNotIn...))
+	}
+	if i.NameGT != nil {
+		predicates = append(predicates, task.NameGT(*i.NameGT))
+	}
+	if i.NameGTE != nil {
+		predicates = append(predicates, task.NameGTE(*i.NameGTE))
+	}
+	if i.NameLT != nil {
+		predicates = append(predicates, task.NameLT(*i.NameLT))
+	}
+	if i.NameLTE != nil {
+		predicates = append(predicates, task.NameLTE(*i.NameLTE))
+	}
+	if i.NameContains != nil {
+		predicates = append(predicates, task.NameContains(*i.NameContains))
+	}
+	if i.NameHasPrefix != nil {
+		predicates = append(predicates, task.NameHasPrefix(*i.NameHasPrefix))
+	}
+	if i.NameHasSuffix != nil {
+		predicates = append(predicates, task.NameHasSuffix(*i.NameHasSuffix))
+	}
+	if i.NameEqualFold != nil {
+		predicates = append(predicates, task.NameEqualFold(*i.NameEqualFold))
+	}
+	if i.NameContainsFold != nil {
+		predicates = append(predicates, task.NameContainsFold(*i.NameContainsFold))
+	}
+	if i.DueDate != nil {
+		predicates = append(predicates, task.DueDateEQ(*i.DueDate))
+	}
+	if i.DueDateNEQ != nil {
+		predicates = append(predicates, task.DueDateNEQ(*i.DueDateNEQ))
+	}
+	if len(i.DueDateIn) > 0 {
+		predicates = append(predicates, task.DueDateIn(i.DueDateIn...))
+	}
+	if len(i.DueDateNotIn) > 0 {
+		predicates = append(predicates, task.DueDateNotIn(i.DueDateNotIn...))
+	}
+	if i.DueDateGT != nil {
+		predicates = append(predicates, task.DueDateGT(*i.DueDateGT))
+	}
+	if i.DueDateGTE != nil {
+		predicates = append(predicates, task.DueDateGTE(*i.DueDateGTE))
+	}
+	if i.DueDateLT != nil {
+		predicates = append(predicates, task.DueDateLT(*i.DueDateLT))
+	}
+	if i.DueDateLTE != nil {
+		predicates = append(predicates, task.DueDateLTE(*i.DueDateLTE))
+	}
+	if i.DueDateIsNil {
+		predicates = append(predicates, task.DueDateIsNil())
+	}
+	if i.DueDateNotNil {
+		predicates = append(predicates, task.DueDateNotNil())
+	}
+	if i.DueTime != nil {
+		predicates = append(predicates, task.DueTimeEQ(*i.DueTime))
+	}
+	if i.DueTimeNEQ != nil {
+		predicates = append(predicates, task.DueTimeNEQ(*i.DueTimeNEQ))
+	}
+	if len(i.DueTimeIn) > 0 {
+		predicates = append(predicates, task.DueTimeIn(i.DueTimeIn...))
+	}
+	if len(i.DueTimeNotIn) > 0 {
+		predicates = append(predicates, task.DueTimeNotIn(i.DueTimeNotIn...))
+	}
+	if i.DueTimeGT != nil {
+		predicates = append(predicates, task.DueTimeGT(*i.DueTimeGT))
+	}
+	if i.DueTimeGTE != nil {
+		predicates = append(predicates, task.DueTimeGTE(*i.DueTimeGTE))
+	}
+	if i.DueTimeLT != nil {
+		predicates = append(predicates, task.DueTimeLT(*i.DueTimeLT))
+	}
+	if i.DueTimeLTE != nil {
+		predicates = append(predicates, task.DueTimeLTE(*i.DueTimeLTE))
+	}
+	if i.DueTimeIsNil {
+		predicates = append(predicates, task.DueTimeIsNil())
+	}
+	if i.DueTimeNotNil {
+		predicates = append(predicates, task.DueTimeNotNil())
+	}
+	if i.CreatedAt != nil {
+		predicates = append(predicates, task.CreatedAtEQ(*i.CreatedAt))
+	}
+	if i.CreatedAtNEQ != nil {
+		predicates = append(predicates, task.CreatedAtNEQ(*i.CreatedAtNEQ))
+	}
+	if len(i.CreatedAtIn) > 0 {
+		predicates = append(predicates, task.CreatedAtIn(i.CreatedAtIn...))
+	}
+	if len(i.CreatedAtNotIn) > 0 {
+		predicates = append(predicates, task.CreatedAtNotIn(i.CreatedAtNotIn...))
+	}
+	if i.CreatedAtGT != nil {
+		predicates = append(predicates, task.CreatedAtGT(*i.CreatedAtGT))
+	}
+	if i.CreatedAtGTE != nil {
+		predicates = append(predicates, task.CreatedAtGTE(*i.CreatedAtGTE))
+	}
+	if i.CreatedAtLT != nil {
+		predicates = append(predicates, task.CreatedAtLT(*i.CreatedAtLT))
+	}
+	if i.CreatedAtLTE != nil {
+		predicates = append(predicates, task.CreatedAtLTE(*i.CreatedAtLTE))
+	}
+	if i.UpdatedAt != nil {
+		predicates = append(predicates, task.UpdatedAtEQ(*i.UpdatedAt))
+	}
+	if i.UpdatedAtNEQ != nil {
+		predicates = append(predicates, task.UpdatedAtNEQ(*i.UpdatedAtNEQ))
+	}
+	if len(i.UpdatedAtIn) > 0 {
+		predicates = append(predicates, task.UpdatedAtIn(i.UpdatedAtIn...))
+	}
+	if len(i.UpdatedAtNotIn) > 0 {
+		predicates = append(predicates, task.UpdatedAtNotIn(i.UpdatedAtNotIn...))
+	}
+	if i.UpdatedAtGT != nil {
+		predicates = append(predicates, task.UpdatedAtGT(*i.UpdatedAtGT))
+	}
+	if i.UpdatedAtGTE != nil {
+		predicates = append(predicates, task.UpdatedAtGTE(*i.UpdatedAtGTE))
+	}
+	if i.UpdatedAtLT != nil {
+		predicates = append(predicates, task.UpdatedAtLT(*i.UpdatedAtLT))
+	}
+	if i.UpdatedAtLTE != nil {
+		predicates = append(predicates, task.UpdatedAtLTE(*i.UpdatedAtLTE))
+	}
+
+	if i.HasTeammate != nil {
+		p := task.HasTeammate()
+		if !*i.HasTeammate {
+			p = task.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasTeammateWith) > 0 {
+		with := make([]predicate.Teammate, 0, len(i.HasTeammateWith))
+		for _, w := range i.HasTeammateWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, task.HasTeammateWith(with...))
+	}
+	if i.HasTaskPriority != nil {
+		p := task.HasTaskPriority()
+		if !*i.HasTaskPriority {
+			p = task.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasTaskPriorityWith) > 0 {
+		with := make([]predicate.TaskPriority, 0, len(i.HasTaskPriorityWith))
+		for _, w := range i.HasTaskPriorityWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, task.HasTaskPriorityWith(with...))
+	}
+	if i.HasParent != nil {
+		p := task.HasParent()
+		if !*i.HasParent {
+			p = task.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasParentWith) > 0 {
+		with := make([]predicate.Task, 0, len(i.HasParentWith))
+		for _, w := range i.HasParentWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, task.HasParentWith(with...))
+	}
+	if i.HasSubTasks != nil {
+		p := task.HasSubTasks()
+		if !*i.HasSubTasks {
+			p = task.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasSubTasksWith) > 0 {
+		with := make([]predicate.Task, 0, len(i.HasSubTasksWith))
+		for _, w := range i.HasSubTasksWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, task.HasSubTasksWith(with...))
+	}
+	switch len(predicates) {
+	case 0:
+		return nil, fmt.Errorf("project-management-demo-backend/ent: empty predicate TaskWhereInput")
+	case 1:
+		return predicates[0], nil
+	default:
+		return task.And(predicates...), nil
+	}
+}
+
 // TaskColumnWhereInput represents a where input for filtering TaskColumn queries.
 type TaskColumnWhereInput struct {
 	Not *TaskColumnWhereInput   `json:"not,omitempty"`
@@ -5565,6 +6265,10 @@ type TaskPriorityWhereInput struct {
 	// "color" edge predicates.
 	HasColor     *bool              `json:"hasColor,omitempty"`
 	HasColorWith []*ColorWhereInput `json:"hasColorWith,omitempty"`
+
+	// "tasks" edge predicates.
+	HasTasks     *bool             `json:"hasTasks,omitempty"`
+	HasTasksWith []*TaskWhereInput `json:"hasTasksWith,omitempty"`
 }
 
 // Filter applies the TaskPriorityWhereInput filter on the TaskPriorityQuery builder.
@@ -5806,6 +6510,24 @@ func (i *TaskPriorityWhereInput) P() (predicate.TaskPriority, error) {
 			with = append(with, p)
 		}
 		predicates = append(predicates, taskpriority.HasColorWith(with...))
+	}
+	if i.HasTasks != nil {
+		p := taskpriority.HasTasks()
+		if !*i.HasTasks {
+			p = taskpriority.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasTasksWith) > 0 {
+		with := make([]predicate.Task, 0, len(i.HasTasksWith))
+		for _, w := range i.HasTasksWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, taskpriority.HasTasksWith(with...))
 	}
 	switch len(predicates) {
 	case 0:
@@ -6170,6 +6892,10 @@ type TeammateWhereInput struct {
 	// "teammate_task_sections" edge predicates.
 	HasTeammateTaskSections     *bool                            `json:"hasTeammateTaskSections,omitempty"`
 	HasTeammateTaskSectionsWith []*TeammateTaskSectionWhereInput `json:"hasTeammateTaskSectionsWith,omitempty"`
+
+	// "tasks" edge predicates.
+	HasTasks     *bool             `json:"hasTasks,omitempty"`
+	HasTasksWith []*TaskWhereInput `json:"hasTasksWith,omitempty"`
 }
 
 // Filter applies the TeammateWhereInput filter on the TeammateQuery builder.
@@ -6600,6 +7326,24 @@ func (i *TeammateWhereInput) P() (predicate.Teammate, error) {
 			with = append(with, p)
 		}
 		predicates = append(predicates, teammate.HasTeammateTaskSectionsWith(with...))
+	}
+	if i.HasTasks != nil {
+		p := teammate.HasTasks()
+		if !*i.HasTasks {
+			p = teammate.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasTasksWith) > 0 {
+		with := make([]predicate.Task, 0, len(i.HasTasksWith))
+		for _, w := range i.HasTasksWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, teammate.HasTasksWith(with...))
 	}
 	switch len(predicates) {
 	case 0:

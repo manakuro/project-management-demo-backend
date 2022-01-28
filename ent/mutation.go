@@ -21,6 +21,7 @@ import (
 	"project-management-demo-backend/ent/schema/editor"
 	"project-management-demo-backend/ent/schema/testuserprofile"
 	"project-management-demo-backend/ent/schema/ulid"
+	"project-management-demo-backend/ent/task"
 	"project-management-demo-backend/ent/taskcolumn"
 	"project-management-demo-backend/ent/tasklistcompletedstatus"
 	"project-management-demo-backend/ent/tasklistsortstatus"
@@ -62,6 +63,7 @@ const (
 	TypeProjectTaskListStatus   = "ProjectTaskListStatus"
 	TypeProjectTaskSection      = "ProjectTaskSection"
 	TypeProjectTeammate         = "ProjectTeammate"
+	TypeTask                    = "Task"
 	TypeTaskColumn              = "TaskColumn"
 	TypeTaskListCompletedStatus = "TaskListCompletedStatus"
 	TypeTaskListSortStatus      = "TaskListSortStatus"
@@ -8311,6 +8313,1250 @@ func (m *ProjectTeammateMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown ProjectTeammate edge %s", name)
 }
 
+// TaskMutation represents an operation that mutates the Task nodes in the graph.
+type TaskMutation struct {
+	config
+	op                   Op
+	typ                  string
+	id                   *ulid.ID
+	created_by           *ulid.ID
+	completed            *bool
+	completed_at         *time.Time
+	is_new               *bool
+	name                 *string
+	due_date             *time.Time
+	due_time             *time.Time
+	created_at           *time.Time
+	updated_at           *time.Time
+	clearedFields        map[string]struct{}
+	teammate             *ulid.ID
+	clearedteammate      bool
+	task_priority        *ulid.ID
+	clearedtask_priority bool
+	parent               *ulid.ID
+	clearedparent        bool
+	sub_tasks            map[ulid.ID]struct{}
+	removedsub_tasks     map[ulid.ID]struct{}
+	clearedsub_tasks     bool
+	done                 bool
+	oldValue             func(context.Context) (*Task, error)
+	predicates           []predicate.Task
+}
+
+var _ ent.Mutation = (*TaskMutation)(nil)
+
+// taskOption allows management of the mutation configuration using functional options.
+type taskOption func(*TaskMutation)
+
+// newTaskMutation creates new mutation for the Task entity.
+func newTaskMutation(c config, op Op, opts ...taskOption) *TaskMutation {
+	m := &TaskMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeTask,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withTaskID sets the ID field of the mutation.
+func withTaskID(id ulid.ID) taskOption {
+	return func(m *TaskMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *Task
+		)
+		m.oldValue = func(ctx context.Context) (*Task, error) {
+			once.Do(func() {
+				if m.done {
+					err = fmt.Errorf("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().Task.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withTask sets the old Task of the mutation.
+func withTask(node *Task) taskOption {
+	return func(m *TaskMutation) {
+		m.oldValue = func(context.Context) (*Task, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m TaskMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m TaskMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, fmt.Errorf("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of Task entities.
+func (m *TaskMutation) SetID(id ulid.ID) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *TaskMutation) ID() (id ulid.ID, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// SetTaskParentID sets the "task_parent_id" field.
+func (m *TaskMutation) SetTaskParentID(u ulid.ID) {
+	m.parent = &u
+}
+
+// TaskParentID returns the value of the "task_parent_id" field in the mutation.
+func (m *TaskMutation) TaskParentID() (r ulid.ID, exists bool) {
+	v := m.parent
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTaskParentID returns the old "task_parent_id" field's value of the Task entity.
+// If the Task object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TaskMutation) OldTaskParentID(ctx context.Context) (v ulid.ID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldTaskParentID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldTaskParentID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTaskParentID: %w", err)
+	}
+	return oldValue.TaskParentID, nil
+}
+
+// ClearTaskParentID clears the value of the "task_parent_id" field.
+func (m *TaskMutation) ClearTaskParentID() {
+	m.parent = nil
+	m.clearedFields[task.FieldTaskParentID] = struct{}{}
+}
+
+// TaskParentIDCleared returns if the "task_parent_id" field was cleared in this mutation.
+func (m *TaskMutation) TaskParentIDCleared() bool {
+	_, ok := m.clearedFields[task.FieldTaskParentID]
+	return ok
+}
+
+// ResetTaskParentID resets all changes to the "task_parent_id" field.
+func (m *TaskMutation) ResetTaskParentID() {
+	m.parent = nil
+	delete(m.clearedFields, task.FieldTaskParentID)
+}
+
+// SetTaskPriorityID sets the "task_priority_id" field.
+func (m *TaskMutation) SetTaskPriorityID(u ulid.ID) {
+	m.task_priority = &u
+}
+
+// TaskPriorityID returns the value of the "task_priority_id" field in the mutation.
+func (m *TaskMutation) TaskPriorityID() (r ulid.ID, exists bool) {
+	v := m.task_priority
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTaskPriorityID returns the old "task_priority_id" field's value of the Task entity.
+// If the Task object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TaskMutation) OldTaskPriorityID(ctx context.Context) (v ulid.ID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldTaskPriorityID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldTaskPriorityID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTaskPriorityID: %w", err)
+	}
+	return oldValue.TaskPriorityID, nil
+}
+
+// ResetTaskPriorityID resets all changes to the "task_priority_id" field.
+func (m *TaskMutation) ResetTaskPriorityID() {
+	m.task_priority = nil
+}
+
+// SetAssigneeID sets the "assignee_id" field.
+func (m *TaskMutation) SetAssigneeID(u ulid.ID) {
+	m.teammate = &u
+}
+
+// AssigneeID returns the value of the "assignee_id" field in the mutation.
+func (m *TaskMutation) AssigneeID() (r ulid.ID, exists bool) {
+	v := m.teammate
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAssigneeID returns the old "assignee_id" field's value of the Task entity.
+// If the Task object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TaskMutation) OldAssigneeID(ctx context.Context) (v ulid.ID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldAssigneeID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldAssigneeID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAssigneeID: %w", err)
+	}
+	return oldValue.AssigneeID, nil
+}
+
+// ClearAssigneeID clears the value of the "assignee_id" field.
+func (m *TaskMutation) ClearAssigneeID() {
+	m.teammate = nil
+	m.clearedFields[task.FieldAssigneeID] = struct{}{}
+}
+
+// AssigneeIDCleared returns if the "assignee_id" field was cleared in this mutation.
+func (m *TaskMutation) AssigneeIDCleared() bool {
+	_, ok := m.clearedFields[task.FieldAssigneeID]
+	return ok
+}
+
+// ResetAssigneeID resets all changes to the "assignee_id" field.
+func (m *TaskMutation) ResetAssigneeID() {
+	m.teammate = nil
+	delete(m.clearedFields, task.FieldAssigneeID)
+}
+
+// SetCreatedBy sets the "created_by" field.
+func (m *TaskMutation) SetCreatedBy(u ulid.ID) {
+	m.created_by = &u
+}
+
+// CreatedBy returns the value of the "created_by" field in the mutation.
+func (m *TaskMutation) CreatedBy() (r ulid.ID, exists bool) {
+	v := m.created_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedBy returns the old "created_by" field's value of the Task entity.
+// If the Task object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TaskMutation) OldCreatedBy(ctx context.Context) (v ulid.ID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldCreatedBy is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldCreatedBy requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedBy: %w", err)
+	}
+	return oldValue.CreatedBy, nil
+}
+
+// ResetCreatedBy resets all changes to the "created_by" field.
+func (m *TaskMutation) ResetCreatedBy() {
+	m.created_by = nil
+}
+
+// SetCompleted sets the "completed" field.
+func (m *TaskMutation) SetCompleted(b bool) {
+	m.completed = &b
+}
+
+// Completed returns the value of the "completed" field in the mutation.
+func (m *TaskMutation) Completed() (r bool, exists bool) {
+	v := m.completed
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCompleted returns the old "completed" field's value of the Task entity.
+// If the Task object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TaskMutation) OldCompleted(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldCompleted is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldCompleted requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCompleted: %w", err)
+	}
+	return oldValue.Completed, nil
+}
+
+// ResetCompleted resets all changes to the "completed" field.
+func (m *TaskMutation) ResetCompleted() {
+	m.completed = nil
+}
+
+// SetCompletedAt sets the "completed_at" field.
+func (m *TaskMutation) SetCompletedAt(t time.Time) {
+	m.completed_at = &t
+}
+
+// CompletedAt returns the value of the "completed_at" field in the mutation.
+func (m *TaskMutation) CompletedAt() (r time.Time, exists bool) {
+	v := m.completed_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCompletedAt returns the old "completed_at" field's value of the Task entity.
+// If the Task object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TaskMutation) OldCompletedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldCompletedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldCompletedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCompletedAt: %w", err)
+	}
+	return oldValue.CompletedAt, nil
+}
+
+// ClearCompletedAt clears the value of the "completed_at" field.
+func (m *TaskMutation) ClearCompletedAt() {
+	m.completed_at = nil
+	m.clearedFields[task.FieldCompletedAt] = struct{}{}
+}
+
+// CompletedAtCleared returns if the "completed_at" field was cleared in this mutation.
+func (m *TaskMutation) CompletedAtCleared() bool {
+	_, ok := m.clearedFields[task.FieldCompletedAt]
+	return ok
+}
+
+// ResetCompletedAt resets all changes to the "completed_at" field.
+func (m *TaskMutation) ResetCompletedAt() {
+	m.completed_at = nil
+	delete(m.clearedFields, task.FieldCompletedAt)
+}
+
+// SetIsNew sets the "is_new" field.
+func (m *TaskMutation) SetIsNew(b bool) {
+	m.is_new = &b
+}
+
+// IsNew returns the value of the "is_new" field in the mutation.
+func (m *TaskMutation) IsNew() (r bool, exists bool) {
+	v := m.is_new
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsNew returns the old "is_new" field's value of the Task entity.
+// If the Task object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TaskMutation) OldIsNew(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldIsNew is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldIsNew requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsNew: %w", err)
+	}
+	return oldValue.IsNew, nil
+}
+
+// ResetIsNew resets all changes to the "is_new" field.
+func (m *TaskMutation) ResetIsNew() {
+	m.is_new = nil
+}
+
+// SetName sets the "name" field.
+func (m *TaskMutation) SetName(s string) {
+	m.name = &s
+}
+
+// Name returns the value of the "name" field in the mutation.
+func (m *TaskMutation) Name() (r string, exists bool) {
+	v := m.name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldName returns the old "name" field's value of the Task entity.
+// If the Task object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TaskMutation) OldName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldName: %w", err)
+	}
+	return oldValue.Name, nil
+}
+
+// ResetName resets all changes to the "name" field.
+func (m *TaskMutation) ResetName() {
+	m.name = nil
+}
+
+// SetDueDate sets the "due_date" field.
+func (m *TaskMutation) SetDueDate(t time.Time) {
+	m.due_date = &t
+}
+
+// DueDate returns the value of the "due_date" field in the mutation.
+func (m *TaskMutation) DueDate() (r time.Time, exists bool) {
+	v := m.due_date
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDueDate returns the old "due_date" field's value of the Task entity.
+// If the Task object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TaskMutation) OldDueDate(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldDueDate is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldDueDate requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDueDate: %w", err)
+	}
+	return oldValue.DueDate, nil
+}
+
+// ClearDueDate clears the value of the "due_date" field.
+func (m *TaskMutation) ClearDueDate() {
+	m.due_date = nil
+	m.clearedFields[task.FieldDueDate] = struct{}{}
+}
+
+// DueDateCleared returns if the "due_date" field was cleared in this mutation.
+func (m *TaskMutation) DueDateCleared() bool {
+	_, ok := m.clearedFields[task.FieldDueDate]
+	return ok
+}
+
+// ResetDueDate resets all changes to the "due_date" field.
+func (m *TaskMutation) ResetDueDate() {
+	m.due_date = nil
+	delete(m.clearedFields, task.FieldDueDate)
+}
+
+// SetDueTime sets the "due_time" field.
+func (m *TaskMutation) SetDueTime(t time.Time) {
+	m.due_time = &t
+}
+
+// DueTime returns the value of the "due_time" field in the mutation.
+func (m *TaskMutation) DueTime() (r time.Time, exists bool) {
+	v := m.due_time
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDueTime returns the old "due_time" field's value of the Task entity.
+// If the Task object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TaskMutation) OldDueTime(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldDueTime is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldDueTime requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDueTime: %w", err)
+	}
+	return oldValue.DueTime, nil
+}
+
+// ClearDueTime clears the value of the "due_time" field.
+func (m *TaskMutation) ClearDueTime() {
+	m.due_time = nil
+	m.clearedFields[task.FieldDueTime] = struct{}{}
+}
+
+// DueTimeCleared returns if the "due_time" field was cleared in this mutation.
+func (m *TaskMutation) DueTimeCleared() bool {
+	_, ok := m.clearedFields[task.FieldDueTime]
+	return ok
+}
+
+// ResetDueTime resets all changes to the "due_time" field.
+func (m *TaskMutation) ResetDueTime() {
+	m.due_time = nil
+	delete(m.clearedFields, task.FieldDueTime)
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *TaskMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *TaskMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the Task entity.
+// If the Task object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TaskMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *TaskMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *TaskMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *TaskMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the Task entity.
+// If the Task object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TaskMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *TaskMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// SetTeammateID sets the "teammate" edge to the Teammate entity by id.
+func (m *TaskMutation) SetTeammateID(id ulid.ID) {
+	m.teammate = &id
+}
+
+// ClearTeammate clears the "teammate" edge to the Teammate entity.
+func (m *TaskMutation) ClearTeammate() {
+	m.clearedteammate = true
+}
+
+// TeammateCleared reports if the "teammate" edge to the Teammate entity was cleared.
+func (m *TaskMutation) TeammateCleared() bool {
+	return m.AssigneeIDCleared() || m.clearedteammate
+}
+
+// TeammateID returns the "teammate" edge ID in the mutation.
+func (m *TaskMutation) TeammateID() (id ulid.ID, exists bool) {
+	if m.teammate != nil {
+		return *m.teammate, true
+	}
+	return
+}
+
+// TeammateIDs returns the "teammate" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// TeammateID instead. It exists only for internal usage by the builders.
+func (m *TaskMutation) TeammateIDs() (ids []ulid.ID) {
+	if id := m.teammate; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetTeammate resets all changes to the "teammate" edge.
+func (m *TaskMutation) ResetTeammate() {
+	m.teammate = nil
+	m.clearedteammate = false
+}
+
+// ClearTaskPriority clears the "task_priority" edge to the TaskPriority entity.
+func (m *TaskMutation) ClearTaskPriority() {
+	m.clearedtask_priority = true
+}
+
+// TaskPriorityCleared reports if the "task_priority" edge to the TaskPriority entity was cleared.
+func (m *TaskMutation) TaskPriorityCleared() bool {
+	return m.clearedtask_priority
+}
+
+// TaskPriorityIDs returns the "task_priority" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// TaskPriorityID instead. It exists only for internal usage by the builders.
+func (m *TaskMutation) TaskPriorityIDs() (ids []ulid.ID) {
+	if id := m.task_priority; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetTaskPriority resets all changes to the "task_priority" edge.
+func (m *TaskMutation) ResetTaskPriority() {
+	m.task_priority = nil
+	m.clearedtask_priority = false
+}
+
+// SetParentID sets the "parent" edge to the Task entity by id.
+func (m *TaskMutation) SetParentID(id ulid.ID) {
+	m.parent = &id
+}
+
+// ClearParent clears the "parent" edge to the Task entity.
+func (m *TaskMutation) ClearParent() {
+	m.clearedparent = true
+}
+
+// ParentCleared reports if the "parent" edge to the Task entity was cleared.
+func (m *TaskMutation) ParentCleared() bool {
+	return m.TaskParentIDCleared() || m.clearedparent
+}
+
+// ParentID returns the "parent" edge ID in the mutation.
+func (m *TaskMutation) ParentID() (id ulid.ID, exists bool) {
+	if m.parent != nil {
+		return *m.parent, true
+	}
+	return
+}
+
+// ParentIDs returns the "parent" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// ParentID instead. It exists only for internal usage by the builders.
+func (m *TaskMutation) ParentIDs() (ids []ulid.ID) {
+	if id := m.parent; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetParent resets all changes to the "parent" edge.
+func (m *TaskMutation) ResetParent() {
+	m.parent = nil
+	m.clearedparent = false
+}
+
+// AddSubTaskIDs adds the "sub_tasks" edge to the Task entity by ids.
+func (m *TaskMutation) AddSubTaskIDs(ids ...ulid.ID) {
+	if m.sub_tasks == nil {
+		m.sub_tasks = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		m.sub_tasks[ids[i]] = struct{}{}
+	}
+}
+
+// ClearSubTasks clears the "sub_tasks" edge to the Task entity.
+func (m *TaskMutation) ClearSubTasks() {
+	m.clearedsub_tasks = true
+}
+
+// SubTasksCleared reports if the "sub_tasks" edge to the Task entity was cleared.
+func (m *TaskMutation) SubTasksCleared() bool {
+	return m.clearedsub_tasks
+}
+
+// RemoveSubTaskIDs removes the "sub_tasks" edge to the Task entity by IDs.
+func (m *TaskMutation) RemoveSubTaskIDs(ids ...ulid.ID) {
+	if m.removedsub_tasks == nil {
+		m.removedsub_tasks = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		delete(m.sub_tasks, ids[i])
+		m.removedsub_tasks[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedSubTasks returns the removed IDs of the "sub_tasks" edge to the Task entity.
+func (m *TaskMutation) RemovedSubTasksIDs() (ids []ulid.ID) {
+	for id := range m.removedsub_tasks {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// SubTasksIDs returns the "sub_tasks" edge IDs in the mutation.
+func (m *TaskMutation) SubTasksIDs() (ids []ulid.ID) {
+	for id := range m.sub_tasks {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetSubTasks resets all changes to the "sub_tasks" edge.
+func (m *TaskMutation) ResetSubTasks() {
+	m.sub_tasks = nil
+	m.clearedsub_tasks = false
+	m.removedsub_tasks = nil
+}
+
+// Where appends a list predicates to the TaskMutation builder.
+func (m *TaskMutation) Where(ps ...predicate.Task) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// Op returns the operation name.
+func (m *TaskMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (Task).
+func (m *TaskMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *TaskMutation) Fields() []string {
+	fields := make([]string, 0, 12)
+	if m.parent != nil {
+		fields = append(fields, task.FieldTaskParentID)
+	}
+	if m.task_priority != nil {
+		fields = append(fields, task.FieldTaskPriorityID)
+	}
+	if m.teammate != nil {
+		fields = append(fields, task.FieldAssigneeID)
+	}
+	if m.created_by != nil {
+		fields = append(fields, task.FieldCreatedBy)
+	}
+	if m.completed != nil {
+		fields = append(fields, task.FieldCompleted)
+	}
+	if m.completed_at != nil {
+		fields = append(fields, task.FieldCompletedAt)
+	}
+	if m.is_new != nil {
+		fields = append(fields, task.FieldIsNew)
+	}
+	if m.name != nil {
+		fields = append(fields, task.FieldName)
+	}
+	if m.due_date != nil {
+		fields = append(fields, task.FieldDueDate)
+	}
+	if m.due_time != nil {
+		fields = append(fields, task.FieldDueTime)
+	}
+	if m.created_at != nil {
+		fields = append(fields, task.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, task.FieldUpdatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *TaskMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case task.FieldTaskParentID:
+		return m.TaskParentID()
+	case task.FieldTaskPriorityID:
+		return m.TaskPriorityID()
+	case task.FieldAssigneeID:
+		return m.AssigneeID()
+	case task.FieldCreatedBy:
+		return m.CreatedBy()
+	case task.FieldCompleted:
+		return m.Completed()
+	case task.FieldCompletedAt:
+		return m.CompletedAt()
+	case task.FieldIsNew:
+		return m.IsNew()
+	case task.FieldName:
+		return m.Name()
+	case task.FieldDueDate:
+		return m.DueDate()
+	case task.FieldDueTime:
+		return m.DueTime()
+	case task.FieldCreatedAt:
+		return m.CreatedAt()
+	case task.FieldUpdatedAt:
+		return m.UpdatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *TaskMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case task.FieldTaskParentID:
+		return m.OldTaskParentID(ctx)
+	case task.FieldTaskPriorityID:
+		return m.OldTaskPriorityID(ctx)
+	case task.FieldAssigneeID:
+		return m.OldAssigneeID(ctx)
+	case task.FieldCreatedBy:
+		return m.OldCreatedBy(ctx)
+	case task.FieldCompleted:
+		return m.OldCompleted(ctx)
+	case task.FieldCompletedAt:
+		return m.OldCompletedAt(ctx)
+	case task.FieldIsNew:
+		return m.OldIsNew(ctx)
+	case task.FieldName:
+		return m.OldName(ctx)
+	case task.FieldDueDate:
+		return m.OldDueDate(ctx)
+	case task.FieldDueTime:
+		return m.OldDueTime(ctx)
+	case task.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case task.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown Task field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *TaskMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case task.FieldTaskParentID:
+		v, ok := value.(ulid.ID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTaskParentID(v)
+		return nil
+	case task.FieldTaskPriorityID:
+		v, ok := value.(ulid.ID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTaskPriorityID(v)
+		return nil
+	case task.FieldAssigneeID:
+		v, ok := value.(ulid.ID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAssigneeID(v)
+		return nil
+	case task.FieldCreatedBy:
+		v, ok := value.(ulid.ID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedBy(v)
+		return nil
+	case task.FieldCompleted:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCompleted(v)
+		return nil
+	case task.FieldCompletedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCompletedAt(v)
+		return nil
+	case task.FieldIsNew:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsNew(v)
+		return nil
+	case task.FieldName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetName(v)
+		return nil
+	case task.FieldDueDate:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDueDate(v)
+		return nil
+	case task.FieldDueTime:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDueTime(v)
+		return nil
+	case task.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case task.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Task field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *TaskMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *TaskMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *TaskMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown Task numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *TaskMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(task.FieldTaskParentID) {
+		fields = append(fields, task.FieldTaskParentID)
+	}
+	if m.FieldCleared(task.FieldAssigneeID) {
+		fields = append(fields, task.FieldAssigneeID)
+	}
+	if m.FieldCleared(task.FieldCompletedAt) {
+		fields = append(fields, task.FieldCompletedAt)
+	}
+	if m.FieldCleared(task.FieldDueDate) {
+		fields = append(fields, task.FieldDueDate)
+	}
+	if m.FieldCleared(task.FieldDueTime) {
+		fields = append(fields, task.FieldDueTime)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *TaskMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *TaskMutation) ClearField(name string) error {
+	switch name {
+	case task.FieldTaskParentID:
+		m.ClearTaskParentID()
+		return nil
+	case task.FieldAssigneeID:
+		m.ClearAssigneeID()
+		return nil
+	case task.FieldCompletedAt:
+		m.ClearCompletedAt()
+		return nil
+	case task.FieldDueDate:
+		m.ClearDueDate()
+		return nil
+	case task.FieldDueTime:
+		m.ClearDueTime()
+		return nil
+	}
+	return fmt.Errorf("unknown Task nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *TaskMutation) ResetField(name string) error {
+	switch name {
+	case task.FieldTaskParentID:
+		m.ResetTaskParentID()
+		return nil
+	case task.FieldTaskPriorityID:
+		m.ResetTaskPriorityID()
+		return nil
+	case task.FieldAssigneeID:
+		m.ResetAssigneeID()
+		return nil
+	case task.FieldCreatedBy:
+		m.ResetCreatedBy()
+		return nil
+	case task.FieldCompleted:
+		m.ResetCompleted()
+		return nil
+	case task.FieldCompletedAt:
+		m.ResetCompletedAt()
+		return nil
+	case task.FieldIsNew:
+		m.ResetIsNew()
+		return nil
+	case task.FieldName:
+		m.ResetName()
+		return nil
+	case task.FieldDueDate:
+		m.ResetDueDate()
+		return nil
+	case task.FieldDueTime:
+		m.ResetDueTime()
+		return nil
+	case task.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case task.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown Task field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *TaskMutation) AddedEdges() []string {
+	edges := make([]string, 0, 4)
+	if m.teammate != nil {
+		edges = append(edges, task.EdgeTeammate)
+	}
+	if m.task_priority != nil {
+		edges = append(edges, task.EdgeTaskPriority)
+	}
+	if m.parent != nil {
+		edges = append(edges, task.EdgeParent)
+	}
+	if m.sub_tasks != nil {
+		edges = append(edges, task.EdgeSubTasks)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *TaskMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case task.EdgeTeammate:
+		if id := m.teammate; id != nil {
+			return []ent.Value{*id}
+		}
+	case task.EdgeTaskPriority:
+		if id := m.task_priority; id != nil {
+			return []ent.Value{*id}
+		}
+	case task.EdgeParent:
+		if id := m.parent; id != nil {
+			return []ent.Value{*id}
+		}
+	case task.EdgeSubTasks:
+		ids := make([]ent.Value, 0, len(m.sub_tasks))
+		for id := range m.sub_tasks {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *TaskMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 4)
+	if m.removedsub_tasks != nil {
+		edges = append(edges, task.EdgeSubTasks)
+	}
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *TaskMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case task.EdgeSubTasks:
+		ids := make([]ent.Value, 0, len(m.removedsub_tasks))
+		for id := range m.removedsub_tasks {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *TaskMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 4)
+	if m.clearedteammate {
+		edges = append(edges, task.EdgeTeammate)
+	}
+	if m.clearedtask_priority {
+		edges = append(edges, task.EdgeTaskPriority)
+	}
+	if m.clearedparent {
+		edges = append(edges, task.EdgeParent)
+	}
+	if m.clearedsub_tasks {
+		edges = append(edges, task.EdgeSubTasks)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *TaskMutation) EdgeCleared(name string) bool {
+	switch name {
+	case task.EdgeTeammate:
+		return m.clearedteammate
+	case task.EdgeTaskPriority:
+		return m.clearedtask_priority
+	case task.EdgeParent:
+		return m.clearedparent
+	case task.EdgeSubTasks:
+		return m.clearedsub_tasks
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *TaskMutation) ClearEdge(name string) error {
+	switch name {
+	case task.EdgeTeammate:
+		m.ClearTeammate()
+		return nil
+	case task.EdgeTaskPriority:
+		m.ClearTaskPriority()
+		return nil
+	case task.EdgeParent:
+		m.ClearParent()
+		return nil
+	}
+	return fmt.Errorf("unknown Task unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *TaskMutation) ResetEdge(name string) error {
+	switch name {
+	case task.EdgeTeammate:
+		m.ResetTeammate()
+		return nil
+	case task.EdgeTaskPriority:
+		m.ResetTaskPriority()
+		return nil
+	case task.EdgeParent:
+		m.ResetParent()
+		return nil
+	case task.EdgeSubTasks:
+		m.ResetSubTasks()
+		return nil
+	}
+	return fmt.Errorf("unknown Task edge %s", name)
+}
+
 // TaskColumnMutation represents an operation that mutates the TaskColumn nodes in the graph.
 type TaskColumnMutation struct {
 	config
@@ -10232,6 +11478,9 @@ type TaskPriorityMutation struct {
 	clearedFields map[string]struct{}
 	color         *ulid.ID
 	clearedcolor  bool
+	tasks         map[ulid.ID]struct{}
+	removedtasks  map[ulid.ID]struct{}
+	clearedtasks  bool
 	done          bool
 	oldValue      func(context.Context) (*TaskPriority, error)
 	predicates    []predicate.TaskPriority
@@ -10528,6 +11777,60 @@ func (m *TaskPriorityMutation) ResetColor() {
 	m.clearedcolor = false
 }
 
+// AddTaskIDs adds the "tasks" edge to the Task entity by ids.
+func (m *TaskPriorityMutation) AddTaskIDs(ids ...ulid.ID) {
+	if m.tasks == nil {
+		m.tasks = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		m.tasks[ids[i]] = struct{}{}
+	}
+}
+
+// ClearTasks clears the "tasks" edge to the Task entity.
+func (m *TaskPriorityMutation) ClearTasks() {
+	m.clearedtasks = true
+}
+
+// TasksCleared reports if the "tasks" edge to the Task entity was cleared.
+func (m *TaskPriorityMutation) TasksCleared() bool {
+	return m.clearedtasks
+}
+
+// RemoveTaskIDs removes the "tasks" edge to the Task entity by IDs.
+func (m *TaskPriorityMutation) RemoveTaskIDs(ids ...ulid.ID) {
+	if m.removedtasks == nil {
+		m.removedtasks = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		delete(m.tasks, ids[i])
+		m.removedtasks[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedTasks returns the removed IDs of the "tasks" edge to the Task entity.
+func (m *TaskPriorityMutation) RemovedTasksIDs() (ids []ulid.ID) {
+	for id := range m.removedtasks {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// TasksIDs returns the "tasks" edge IDs in the mutation.
+func (m *TaskPriorityMutation) TasksIDs() (ids []ulid.ID) {
+	for id := range m.tasks {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetTasks resets all changes to the "tasks" edge.
+func (m *TaskPriorityMutation) ResetTasks() {
+	m.tasks = nil
+	m.clearedtasks = false
+	m.removedtasks = nil
+}
+
 // Where appends a list predicates to the TaskPriorityMutation builder.
 func (m *TaskPriorityMutation) Where(ps ...predicate.TaskPriority) {
 	m.predicates = append(m.predicates, ps...)
@@ -10714,9 +12017,12 @@ func (m *TaskPriorityMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *TaskPriorityMutation) AddedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.color != nil {
 		edges = append(edges, taskpriority.EdgeColor)
+	}
+	if m.tasks != nil {
+		edges = append(edges, taskpriority.EdgeTasks)
 	}
 	return edges
 }
@@ -10729,13 +12035,22 @@ func (m *TaskPriorityMutation) AddedIDs(name string) []ent.Value {
 		if id := m.color; id != nil {
 			return []ent.Value{*id}
 		}
+	case taskpriority.EdgeTasks:
+		ids := make([]ent.Value, 0, len(m.tasks))
+		for id := range m.tasks {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *TaskPriorityMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
+	if m.removedtasks != nil {
+		edges = append(edges, taskpriority.EdgeTasks)
+	}
 	return edges
 }
 
@@ -10743,15 +12058,24 @@ func (m *TaskPriorityMutation) RemovedEdges() []string {
 // the given name in this mutation.
 func (m *TaskPriorityMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
+	case taskpriority.EdgeTasks:
+		ids := make([]ent.Value, 0, len(m.removedtasks))
+		for id := range m.removedtasks {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *TaskPriorityMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.clearedcolor {
 		edges = append(edges, taskpriority.EdgeColor)
+	}
+	if m.clearedtasks {
+		edges = append(edges, taskpriority.EdgeTasks)
 	}
 	return edges
 }
@@ -10762,6 +12086,8 @@ func (m *TaskPriorityMutation) EdgeCleared(name string) bool {
 	switch name {
 	case taskpriority.EdgeColor:
 		return m.clearedcolor
+	case taskpriority.EdgeTasks:
+		return m.clearedtasks
 	}
 	return false
 }
@@ -10783,6 +12109,9 @@ func (m *TaskPriorityMutation) ResetEdge(name string) error {
 	switch name {
 	case taskpriority.EdgeColor:
 		m.ResetColor()
+		return nil
+	case taskpriority.EdgeTasks:
+		m.ResetTasks()
 		return nil
 	}
 	return fmt.Errorf("unknown TaskPriority edge %s", name)
@@ -11236,6 +12565,9 @@ type TeammateMutation struct {
 	teammate_task_sections             map[ulid.ID]struct{}
 	removedteammate_task_sections      map[ulid.ID]struct{}
 	clearedteammate_task_sections      bool
+	tasks                              map[ulid.ID]struct{}
+	removedtasks                       map[ulid.ID]struct{}
+	clearedtasks                       bool
 	done                               bool
 	oldValue                           func(context.Context) (*Teammate, error)
 	predicates                         []predicate.Teammate
@@ -12046,6 +13378,60 @@ func (m *TeammateMutation) ResetTeammateTaskSections() {
 	m.removedteammate_task_sections = nil
 }
 
+// AddTaskIDs adds the "tasks" edge to the Task entity by ids.
+func (m *TeammateMutation) AddTaskIDs(ids ...ulid.ID) {
+	if m.tasks == nil {
+		m.tasks = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		m.tasks[ids[i]] = struct{}{}
+	}
+}
+
+// ClearTasks clears the "tasks" edge to the Task entity.
+func (m *TeammateMutation) ClearTasks() {
+	m.clearedtasks = true
+}
+
+// TasksCleared reports if the "tasks" edge to the Task entity was cleared.
+func (m *TeammateMutation) TasksCleared() bool {
+	return m.clearedtasks
+}
+
+// RemoveTaskIDs removes the "tasks" edge to the Task entity by IDs.
+func (m *TeammateMutation) RemoveTaskIDs(ids ...ulid.ID) {
+	if m.removedtasks == nil {
+		m.removedtasks = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		delete(m.tasks, ids[i])
+		m.removedtasks[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedTasks returns the removed IDs of the "tasks" edge to the Task entity.
+func (m *TeammateMutation) RemovedTasksIDs() (ids []ulid.ID) {
+	for id := range m.removedtasks {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// TasksIDs returns the "tasks" edge IDs in the mutation.
+func (m *TeammateMutation) TasksIDs() (ids []ulid.ID) {
+	for id := range m.tasks {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetTasks resets all changes to the "tasks" edge.
+func (m *TeammateMutation) ResetTasks() {
+	m.tasks = nil
+	m.clearedtasks = false
+	m.removedtasks = nil
+}
+
 // Where appends a list predicates to the TeammateMutation builder.
 func (m *TeammateMutation) Where(ps ...predicate.Teammate) {
 	m.predicates = append(m.predicates, ps...)
@@ -12232,7 +13618,7 @@ func (m *TeammateMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *TeammateMutation) AddedEdges() []string {
-	edges := make([]string, 0, 10)
+	edges := make([]string, 0, 11)
 	if m.workspaces != nil {
 		edges = append(edges, teammate.EdgeWorkspaces)
 	}
@@ -12262,6 +13648,9 @@ func (m *TeammateMutation) AddedEdges() []string {
 	}
 	if m.teammate_task_sections != nil {
 		edges = append(edges, teammate.EdgeTeammateTaskSections)
+	}
+	if m.tasks != nil {
+		edges = append(edges, teammate.EdgeTasks)
 	}
 	return edges
 }
@@ -12330,13 +13719,19 @@ func (m *TeammateMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case teammate.EdgeTasks:
+		ids := make([]ent.Value, 0, len(m.tasks))
+		for id := range m.tasks {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *TeammateMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 10)
+	edges := make([]string, 0, 11)
 	if m.removedworkspaces != nil {
 		edges = append(edges, teammate.EdgeWorkspaces)
 	}
@@ -12366,6 +13761,9 @@ func (m *TeammateMutation) RemovedEdges() []string {
 	}
 	if m.removedteammate_task_sections != nil {
 		edges = append(edges, teammate.EdgeTeammateTaskSections)
+	}
+	if m.removedtasks != nil {
+		edges = append(edges, teammate.EdgeTasks)
 	}
 	return edges
 }
@@ -12434,13 +13832,19 @@ func (m *TeammateMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case teammate.EdgeTasks:
+		ids := make([]ent.Value, 0, len(m.removedtasks))
+		for id := range m.removedtasks {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *TeammateMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 10)
+	edges := make([]string, 0, 11)
 	if m.clearedworkspaces {
 		edges = append(edges, teammate.EdgeWorkspaces)
 	}
@@ -12471,6 +13875,9 @@ func (m *TeammateMutation) ClearedEdges() []string {
 	if m.clearedteammate_task_sections {
 		edges = append(edges, teammate.EdgeTeammateTaskSections)
 	}
+	if m.clearedtasks {
+		edges = append(edges, teammate.EdgeTasks)
+	}
 	return edges
 }
 
@@ -12498,6 +13905,8 @@ func (m *TeammateMutation) EdgeCleared(name string) bool {
 		return m.clearedteammate_task_list_statuses
 	case teammate.EdgeTeammateTaskSections:
 		return m.clearedteammate_task_sections
+	case teammate.EdgeTasks:
+		return m.clearedtasks
 	}
 	return false
 }
@@ -12543,6 +13952,9 @@ func (m *TeammateMutation) ResetEdge(name string) error {
 		return nil
 	case teammate.EdgeTeammateTaskSections:
 		m.ResetTeammateTaskSections()
+		return nil
+	case teammate.EdgeTasks:
+		m.ResetTasks()
 		return nil
 	}
 	return fmt.Errorf("unknown Teammate edge %s", name)

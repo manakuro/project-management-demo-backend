@@ -19,6 +19,7 @@ import (
 	"project-management-demo-backend/ent/projecttasksection"
 	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/ent/schema/ulid"
+	"project-management-demo-backend/ent/task"
 	"project-management-demo-backend/ent/taskcolumn"
 	"project-management-demo-backend/ent/tasklistcompletedstatus"
 	"project-management-demo-backend/ent/tasklistsortstatus"
@@ -998,6 +999,153 @@ func (pt *ProjectTeammate) Node(ctx context.Context) (node *Node, err error) {
 	return node, nil
 }
 
+func (t *Task) Node(ctx context.Context) (node *Node, err error) {
+	node = &Node{
+		ID:     t.ID,
+		Type:   "Task",
+		Fields: make([]*Field, 12),
+		Edges:  make([]*Edge, 4),
+	}
+	var buf []byte
+	if buf, err = json.Marshal(t.TaskParentID); err != nil {
+		return nil, err
+	}
+	node.Fields[0] = &Field{
+		Type:  "ulid.ID",
+		Name:  "task_parent_id",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(t.TaskPriorityID); err != nil {
+		return nil, err
+	}
+	node.Fields[1] = &Field{
+		Type:  "ulid.ID",
+		Name:  "task_priority_id",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(t.AssigneeID); err != nil {
+		return nil, err
+	}
+	node.Fields[2] = &Field{
+		Type:  "ulid.ID",
+		Name:  "assignee_id",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(t.CreatedBy); err != nil {
+		return nil, err
+	}
+	node.Fields[3] = &Field{
+		Type:  "ulid.ID",
+		Name:  "created_by",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(t.Completed); err != nil {
+		return nil, err
+	}
+	node.Fields[4] = &Field{
+		Type:  "bool",
+		Name:  "completed",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(t.CompletedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[5] = &Field{
+		Type:  "time.Time",
+		Name:  "completed_at",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(t.IsNew); err != nil {
+		return nil, err
+	}
+	node.Fields[6] = &Field{
+		Type:  "bool",
+		Name:  "is_new",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(t.Name); err != nil {
+		return nil, err
+	}
+	node.Fields[7] = &Field{
+		Type:  "string",
+		Name:  "name",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(t.DueDate); err != nil {
+		return nil, err
+	}
+	node.Fields[8] = &Field{
+		Type:  "time.Time",
+		Name:  "due_date",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(t.DueTime); err != nil {
+		return nil, err
+	}
+	node.Fields[9] = &Field{
+		Type:  "time.Time",
+		Name:  "due_time",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(t.CreatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[10] = &Field{
+		Type:  "time.Time",
+		Name:  "created_at",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(t.UpdatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[11] = &Field{
+		Type:  "time.Time",
+		Name:  "updated_at",
+		Value: string(buf),
+	}
+	node.Edges[0] = &Edge{
+		Type: "Teammate",
+		Name: "teammate",
+	}
+	err = t.QueryTeammate().
+		Select(teammate.FieldID).
+		Scan(ctx, &node.Edges[0].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[1] = &Edge{
+		Type: "TaskPriority",
+		Name: "task_priority",
+	}
+	err = t.QueryTaskPriority().
+		Select(taskpriority.FieldID).
+		Scan(ctx, &node.Edges[1].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[2] = &Edge{
+		Type: "Task",
+		Name: "parent",
+	}
+	err = t.QueryParent().
+		Select(task.FieldID).
+		Scan(ctx, &node.Edges[2].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[3] = &Edge{
+		Type: "Task",
+		Name: "sub_tasks",
+	}
+	err = t.QuerySubTasks().
+		Select(task.FieldID).
+		Scan(ctx, &node.Edges[3].IDs)
+	if err != nil {
+		return nil, err
+	}
+	return node, nil
+}
+
 func (tc *TaskColumn) Node(ctx context.Context) (node *Node, err error) {
 	node = &Node{
 		ID:     tc.ID,
@@ -1192,7 +1340,7 @@ func (tp *TaskPriority) Node(ctx context.Context) (node *Node, err error) {
 		ID:     tp.ID,
 		Type:   "TaskPriority",
 		Fields: make([]*Field, 5),
-		Edges:  make([]*Edge, 1),
+		Edges:  make([]*Edge, 2),
 	}
 	var buf []byte
 	if buf, err = json.Marshal(tp.ColorID); err != nil {
@@ -1245,6 +1393,16 @@ func (tp *TaskPriority) Node(ctx context.Context) (node *Node, err error) {
 	if err != nil {
 		return nil, err
 	}
+	node.Edges[1] = &Edge{
+		Type: "Task",
+		Name: "tasks",
+	}
+	err = tp.QueryTasks().
+		Select(task.FieldID).
+		Scan(ctx, &node.Edges[1].IDs)
+	if err != nil {
+		return nil, err
+	}
 	return node, nil
 }
 
@@ -1288,7 +1446,7 @@ func (t *Teammate) Node(ctx context.Context) (node *Node, err error) {
 		ID:     t.ID,
 		Type:   "Teammate",
 		Fields: make([]*Field, 5),
-		Edges:  make([]*Edge, 10),
+		Edges:  make([]*Edge, 11),
 	}
 	var buf []byte
 	if buf, err = json.Marshal(t.Name); err != nil {
@@ -1428,6 +1586,16 @@ func (t *Teammate) Node(ctx context.Context) (node *Node, err error) {
 	err = t.QueryTeammateTaskSections().
 		Select(teammatetasksection.FieldID).
 		Scan(ctx, &node.Edges[9].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[10] = &Edge{
+		Type: "Task",
+		Name: "tasks",
+	}
+	err = t.QueryTasks().
+		Select(task.FieldID).
+		Scan(ctx, &node.Edges[10].IDs)
 	if err != nil {
 		return nil, err
 	}
@@ -2327,6 +2495,15 @@ func (c *Client) noder(ctx context.Context, table string, id ulid.ID) (Noder, er
 			return nil, err
 		}
 		return n, nil
+	case task.Table:
+		n, err := c.Task.Query().
+			Where(task.ID(id)).
+			CollectFields(ctx, "Task").
+			Only(ctx)
+		if err != nil {
+			return nil, err
+		}
+		return n, nil
 	case taskcolumn.Table:
 		n, err := c.TaskColumn.Query().
 			Where(taskcolumn.ID(id)).
@@ -2673,6 +2850,19 @@ func (c *Client) noders(ctx context.Context, table string, ids []ulid.ID) ([]Nod
 		nodes, err := c.ProjectTeammate.Query().
 			Where(projectteammate.IDIn(ids...)).
 			CollectFields(ctx, "ProjectTeammate").
+			All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, node := range nodes {
+			for _, noder := range idmap[node.ID] {
+				*noder = node
+			}
+		}
+	case task.Table:
+		nodes, err := c.Task.Query().
+			Where(task.IDIn(ids...)).
+			CollectFields(ctx, "Task").
 			All(ctx)
 		if err != nil {
 			return nil, err

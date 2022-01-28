@@ -260,6 +260,38 @@ func (pt *ProjectTeammate) Teammate(ctx context.Context) (*Teammate, error) {
 	return result, err
 }
 
+func (t *Task) Teammate(ctx context.Context) (*Teammate, error) {
+	result, err := t.Edges.TeammateOrErr()
+	if IsNotLoaded(err) {
+		result, err = t.QueryTeammate().Only(ctx)
+	}
+	return result, MaskNotFound(err)
+}
+
+func (t *Task) TaskPriority(ctx context.Context) (*TaskPriority, error) {
+	result, err := t.Edges.TaskPriorityOrErr()
+	if IsNotLoaded(err) {
+		result, err = t.QueryTaskPriority().Only(ctx)
+	}
+	return result, err
+}
+
+func (t *Task) Parent(ctx context.Context) (*Task, error) {
+	result, err := t.Edges.ParentOrErr()
+	if IsNotLoaded(err) {
+		result, err = t.QueryParent().Only(ctx)
+	}
+	return result, MaskNotFound(err)
+}
+
+func (t *Task) SubTasks(ctx context.Context) ([]*Task, error) {
+	result, err := t.Edges.SubTasksOrErr()
+	if IsNotLoaded(err) {
+		result, err = t.QuerySubTasks().All(ctx)
+	}
+	return result, err
+}
+
 func (tc *TaskColumn) TeammateTaskColumns(ctx context.Context) ([]*TeammateTaskColumn, error) {
 	result, err := tc.Edges.TeammateTaskColumnsOrErr()
 	if IsNotLoaded(err) {
@@ -312,6 +344,14 @@ func (tp *TaskPriority) Color(ctx context.Context) (*Color, error) {
 	result, err := tp.Edges.ColorOrErr()
 	if IsNotLoaded(err) {
 		result, err = tp.QueryColor().Only(ctx)
+	}
+	return result, err
+}
+
+func (tp *TaskPriority) Tasks(ctx context.Context) ([]*Task, error) {
+	result, err := tp.Edges.TasksOrErr()
+	if IsNotLoaded(err) {
+		result, err = tp.QueryTasks().All(ctx)
 	}
 	return result, err
 }
@@ -392,6 +432,14 @@ func (t *Teammate) TeammateTaskSections(ctx context.Context) ([]*TeammateTaskSec
 	result, err := t.Edges.TeammateTaskSectionsOrErr()
 	if IsNotLoaded(err) {
 		result, err = t.QueryTeammateTaskSections().All(ctx)
+	}
+	return result, err
+}
+
+func (t *Teammate) Tasks(ctx context.Context) ([]*Task, error) {
+	result, err := t.Edges.TasksOrErr()
+	if IsNotLoaded(err) {
+		result, err = t.QueryTasks().All(ctx)
 	}
 	return result, err
 }

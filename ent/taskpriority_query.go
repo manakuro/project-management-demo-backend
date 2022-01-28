@@ -4,12 +4,14 @@ package ent
 
 import (
 	"context"
+	"database/sql/driver"
 	"errors"
 	"fmt"
 	"math"
 	"project-management-demo-backend/ent/color"
 	"project-management-demo-backend/ent/predicate"
 	"project-management-demo-backend/ent/schema/ulid"
+	"project-management-demo-backend/ent/task"
 	"project-management-demo-backend/ent/taskpriority"
 
 	"entgo.io/ent/dialect/sql"
@@ -28,6 +30,7 @@ type TaskPriorityQuery struct {
 	predicates []predicate.TaskPriority
 	// eager-loading edges.
 	withColor *ColorQuery
+	withTasks *TaskQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -79,6 +82,28 @@ func (tpq *TaskPriorityQuery) QueryColor() *ColorQuery {
 			sqlgraph.From(taskpriority.Table, taskpriority.FieldID, selector),
 			sqlgraph.To(color.Table, color.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, taskpriority.ColorTable, taskpriority.ColorColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(tpq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryTasks chains the current query on the "tasks" edge.
+func (tpq *TaskPriorityQuery) QueryTasks() *TaskQuery {
+	query := &TaskQuery{config: tpq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := tpq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := tpq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(taskpriority.Table, taskpriority.FieldID, selector),
+			sqlgraph.To(task.Table, task.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, taskpriority.TasksTable, taskpriority.TasksColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(tpq.driver.Dialect(), step)
 		return fromU, nil
@@ -268,6 +293,7 @@ func (tpq *TaskPriorityQuery) Clone() *TaskPriorityQuery {
 		order:      append([]OrderFunc{}, tpq.order...),
 		predicates: append([]predicate.TaskPriority{}, tpq.predicates...),
 		withColor:  tpq.withColor.Clone(),
+		withTasks:  tpq.withTasks.Clone(),
 		// clone intermediate query.
 		sql:  tpq.sql.Clone(),
 		path: tpq.path,
@@ -282,6 +308,17 @@ func (tpq *TaskPriorityQuery) WithColor(opts ...func(*ColorQuery)) *TaskPriority
 		opt(query)
 	}
 	tpq.withColor = query
+	return tpq
+}
+
+// WithTasks tells the query-builder to eager-load the nodes that are connected to
+// the "tasks" edge. The optional arguments are used to configure the query builder of the edge.
+func (tpq *TaskPriorityQuery) WithTasks(opts ...func(*TaskQuery)) *TaskPriorityQuery {
+	query := &TaskQuery{config: tpq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	tpq.withTasks = query
 	return tpq
 }
 
@@ -350,8 +387,9 @@ func (tpq *TaskPriorityQuery) sqlAll(ctx context.Context) ([]*TaskPriority, erro
 	var (
 		nodes       = []*TaskPriority{}
 		_spec       = tpq.querySpec()
-		loadedTypes = [1]bool{
+		loadedTypes = [2]bool{
 			tpq.withColor != nil,
+			tpq.withTasks != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -397,6 +435,31 @@ func (tpq *TaskPriorityQuery) sqlAll(ctx context.Context) ([]*TaskPriority, erro
 			for i := range nodes {
 				nodes[i].Edges.Color = n
 			}
+		}
+	}
+
+	if query := tpq.withTasks; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[ulid.ID]*TaskPriority)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.Tasks = []*Task{}
+		}
+		query.Where(predicate.Task(func(s *sql.Selector) {
+			s.Where(sql.InValues(taskpriority.TasksColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.TaskPriorityID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "task_priority_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.Tasks = append(node.Edges.Tasks, n)
 		}
 	}
 
