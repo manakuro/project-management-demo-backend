@@ -26,6 +26,7 @@ func TestTodo(ctx context.Context, client *ent.Client) {
 		Create().
 		SetInput(ent.CreateTestTodoInput{
 			TestUserID: &id,
+			CreatedBy:  id,
 		}).
 		SetParent(parentTodo).
 		Save(ctx)
@@ -37,24 +38,25 @@ func TestTodo(ctx context.Context, client *ent.Client) {
 		Create().
 		SetTestUserID(id).
 		SetParent(c1).
+		SetCreatedBy(id).
 		Save(ctx)
 	if err != nil {
 		log.Fatalf("TestTodo failed to feed data: %v", err)
 	}
 
 	ts := []ent.CreateTestTodoInput{
-		{TestUserID: &id, ParentTodoID: &parentTodo.ID, CreatedBy: &id},
-		{TestUserID: &id, ParentTodoID: &parentTodo.ID, CreatedBy: &id},
-		{TestUserID: &id, ParentTodoID: &parentTodo.ID, CreatedBy: &id},
-		{TestUserID: &id, ParentTodoID: &parentTodo.ID, CreatedBy: &id},
-		{TestUserID: &id, ParentTodoID: &parentTodo.ID, CreatedBy: &id},
-		{TestUserID: &id, ParentTodoID: &parentTodo.ID, CreatedBy: &id},
-		{TestUserID: &id, ParentTodoID: &parentTodo.ID, CreatedBy: &id},
-		{TestUserID: &id, ParentTodoID: &parentTodo.ID, CreatedBy: &id},
-		{TestUserID: &id, ParentTodoID: &parentTodo.ID, CreatedBy: &id},
-		{TestUserID: &id, ParentTodoID: &parentTodo.ID, CreatedBy: &id},
-		{TestUserID: &id, ParentTodoID: &parentTodo.ID, CreatedBy: &id},
-		{TestUserID: &id, ParentTodoID: &parentTodo.ID, CreatedBy: &id},
+		{TestUserID: &id, ParentTodoID: &parentTodo.ID, CreatedBy: id},
+		{TestUserID: &id, ParentTodoID: &parentTodo.ID, CreatedBy: id},
+		{TestUserID: &id, ParentTodoID: &parentTodo.ID, CreatedBy: id},
+		{TestUserID: &id, ParentTodoID: &parentTodo.ID, CreatedBy: id},
+		{TestUserID: &id, ParentTodoID: &parentTodo.ID, CreatedBy: id},
+		{TestUserID: &id, ParentTodoID: &parentTodo.ID, CreatedBy: id},
+		{TestUserID: &id, ParentTodoID: &parentTodo.ID, CreatedBy: id},
+		{TestUserID: &id, ParentTodoID: &parentTodo.ID, CreatedBy: id},
+		{TestUserID: &id, ParentTodoID: &parentTodo.ID, CreatedBy: id},
+		{TestUserID: &id, ParentTodoID: &parentTodo.ID, CreatedBy: id},
+		{TestUserID: &id, ParentTodoID: &parentTodo.ID, CreatedBy: id},
+		{TestUserID: &id, ParentTodoID: &parentTodo.ID, CreatedBy: id},
 	}
 	bulk := make([]*ent.TestTodoCreate, len(ts))
 	for i, t := range ts {

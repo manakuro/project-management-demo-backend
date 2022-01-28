@@ -380,20 +380,6 @@ func CreatedByHasSuffix(v ulid.ID) predicate.TestTodo {
 	})
 }
 
-// CreatedByIsNil applies the IsNil predicate on the "created_by" field.
-func CreatedByIsNil() predicate.TestTodo {
-	return predicate.TestTodo(func(s *sql.Selector) {
-		s.Where(sql.IsNull(s.C(FieldCreatedBy)))
-	})
-}
-
-// CreatedByNotNil applies the NotNil predicate on the "created_by" field.
-func CreatedByNotNil() predicate.TestTodo {
-	return predicate.TestTodo(func(s *sql.Selector) {
-		s.Where(sql.NotNull(s.C(FieldCreatedBy)))
-	})
-}
-
 // CreatedByEqualFold applies the EqualFold predicate on the "created_by" field.
 func CreatedByEqualFold(v ulid.ID) predicate.TestTodo {
 	vc := string(v)

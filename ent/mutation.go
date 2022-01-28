@@ -17004,22 +17004,9 @@ func (m *TestTodoMutation) OldCreatedBy(ctx context.Context) (v ulid.ID, err err
 	return oldValue.CreatedBy, nil
 }
 
-// ClearCreatedBy clears the value of the "created_by" field.
-func (m *TestTodoMutation) ClearCreatedBy() {
-	m.created_by = nil
-	m.clearedFields[testtodo.FieldCreatedBy] = struct{}{}
-}
-
-// CreatedByCleared returns if the "created_by" field was cleared in this mutation.
-func (m *TestTodoMutation) CreatedByCleared() bool {
-	_, ok := m.clearedFields[testtodo.FieldCreatedBy]
-	return ok
-}
-
 // ResetCreatedBy resets all changes to the "created_by" field.
 func (m *TestTodoMutation) ResetCreatedBy() {
 	m.created_by = nil
-	delete(m.clearedFields, testtodo.FieldCreatedBy)
 }
 
 // SetParentTodoID sets the "parent_todo_id" field.
@@ -17659,9 +17646,6 @@ func (m *TestTodoMutation) ClearedFields() []string {
 	if m.FieldCleared(testtodo.FieldTestUserID) {
 		fields = append(fields, testtodo.FieldTestUserID)
 	}
-	if m.FieldCleared(testtodo.FieldCreatedBy) {
-		fields = append(fields, testtodo.FieldCreatedBy)
-	}
 	if m.FieldCleared(testtodo.FieldParentTodoID) {
 		fields = append(fields, testtodo.FieldParentTodoID)
 	}
@@ -17684,9 +17668,6 @@ func (m *TestTodoMutation) ClearField(name string) error {
 	switch name {
 	case testtodo.FieldTestUserID:
 		m.ClearTestUserID()
-		return nil
-	case testtodo.FieldCreatedBy:
-		m.ClearCreatedBy()
 		return nil
 	case testtodo.FieldParentTodoID:
 		m.ClearParentTodoID()

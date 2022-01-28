@@ -599,7 +599,7 @@ var (
 	// TestTodosColumns holds the columns for the "test_todos" table.
 	TestTodosColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString},
-		{Name: "created_by", Type: field.TypeString, Nullable: true},
+		{Name: "created_by", Type: field.TypeString},
 		{Name: "name", Type: field.TypeString, Default: ""},
 		{Name: "status", Type: field.TypeEnum, Enums: []string{"IN_PROGRESS", "COMPLETED"}, Default: "IN_PROGRESS"},
 		{Name: "priority", Type: field.TypeInt, Default: 0},

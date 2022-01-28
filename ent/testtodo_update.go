@@ -55,20 +55,6 @@ func (ttu *TestTodoUpdate) SetCreatedBy(u ulid.ID) *TestTodoUpdate {
 	return ttu
 }
 
-// SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (ttu *TestTodoUpdate) SetNillableCreatedBy(u *ulid.ID) *TestTodoUpdate {
-	if u != nil {
-		ttu.SetCreatedBy(*u)
-	}
-	return ttu
-}
-
-// ClearCreatedBy clears the value of the "created_by" field.
-func (ttu *TestTodoUpdate) ClearCreatedBy() *TestTodoUpdate {
-	ttu.mutation.ClearCreatedBy()
-	return ttu
-}
-
 // SetParentTodoID sets the "parent_todo_id" field.
 func (ttu *TestTodoUpdate) SetParentTodoID(u ulid.ID) *TestTodoUpdate {
 	ttu.mutation.SetParentTodoID(u)
@@ -330,12 +316,6 @@ func (ttu *TestTodoUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: testtodo.FieldCreatedBy,
 		})
 	}
-	if ttu.mutation.CreatedByCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Column: testtodo.FieldCreatedBy,
-		})
-	}
 	if value, ok := ttu.mutation.Name(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
@@ -543,20 +523,6 @@ func (ttuo *TestTodoUpdateOne) ClearTestUserID() *TestTodoUpdateOne {
 // SetCreatedBy sets the "created_by" field.
 func (ttuo *TestTodoUpdateOne) SetCreatedBy(u ulid.ID) *TestTodoUpdateOne {
 	ttuo.mutation.SetCreatedBy(u)
-	return ttuo
-}
-
-// SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (ttuo *TestTodoUpdateOne) SetNillableCreatedBy(u *ulid.ID) *TestTodoUpdateOne {
-	if u != nil {
-		ttuo.SetCreatedBy(*u)
-	}
-	return ttuo
-}
-
-// ClearCreatedBy clears the value of the "created_by" field.
-func (ttuo *TestTodoUpdateOne) ClearCreatedBy() *TestTodoUpdateOne {
-	ttuo.mutation.ClearCreatedBy()
 	return ttuo
 }
 
@@ -842,12 +808,6 @@ func (ttuo *TestTodoUpdateOne) sqlSave(ctx context.Context) (_node *TestTodo, er
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeString,
 			Value:  value,
-			Column: testtodo.FieldCreatedBy,
-		})
-	}
-	if ttuo.mutation.CreatedByCleared() {
-		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
 			Column: testtodo.FieldCreatedBy,
 		})
 	}

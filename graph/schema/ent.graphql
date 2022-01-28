@@ -105,8 +105,6 @@ input TestTodoWhereInput {
   createdByContains: ID
   createdByHasPrefix: ID
   createdByHasSuffix: ID
-  createdByIsNil: ID
-  createdByNotNil: ID
   createdByEqualFold: ID
   createdByContainsFold: ID
   

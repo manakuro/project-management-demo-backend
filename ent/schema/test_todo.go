@@ -37,7 +37,6 @@ func (TestTodoMixin) Fields() []ent.Field {
 			Optional(),
 		field.String("created_by").
 			GoType(ulid.ID("")).
-			Optional().
 			Annotations(
 				annotation.WhereInput{Type: "ID"},
 			),

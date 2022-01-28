@@ -42,14 +42,6 @@ func (ttc *TestTodoCreate) SetCreatedBy(u ulid.ID) *TestTodoCreate {
 	return ttc
 }
 
-// SetNillableCreatedBy sets the "created_by" field if the given value is not nil.
-func (ttc *TestTodoCreate) SetNillableCreatedBy(u *ulid.ID) *TestTodoCreate {
-	if u != nil {
-		ttc.SetCreatedBy(*u)
-	}
-	return ttc
-}
-
 // SetParentTodoID sets the "parent_todo_id" field.
 func (ttc *TestTodoCreate) SetParentTodoID(u ulid.ID) *TestTodoCreate {
 	ttc.mutation.SetParentTodoID(u)
@@ -300,6 +292,9 @@ func (ttc *TestTodoCreate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (ttc *TestTodoCreate) check() error {
+	if _, ok := ttc.mutation.CreatedBy(); !ok {
+		return &ValidationError{Name: "created_by", err: errors.New(`ent: missing required field "created_by"`)}
+	}
 	if _, ok := ttc.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "name"`)}
 	}

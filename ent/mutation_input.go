@@ -2000,7 +2000,7 @@ func (u *TeammateTaskTabStatusUpdateOne) SetInput(i UpdateTeammateTaskTabStatusI
 
 // CreateTestTodoInput represents a mutation input for creating testtodos.
 type CreateTestTodoInput struct {
-	CreatedBy    *ulid.ID
+	CreatedBy    ulid.ID
 	Name         *string
 	Status       *testtodo.Status
 	Priority     *int
@@ -2014,9 +2014,7 @@ type CreateTestTodoInput struct {
 
 // Mutate applies the CreateTestTodoInput on the TestTodoCreate builder.
 func (i *CreateTestTodoInput) Mutate(m *TestTodoCreate) {
-	if v := i.CreatedBy; v != nil {
-		m.SetCreatedBy(*v)
-	}
+	m.SetCreatedBy(i.CreatedBy)
 	if v := i.Name; v != nil {
 		m.SetName(*v)
 	}
@@ -2056,7 +2054,6 @@ func (c *TestTodoCreate) SetInput(i CreateTestTodoInput) *TestTodoCreate {
 type UpdateTestTodoInput struct {
 	ID             ulid.ID
 	CreatedBy      *ulid.ID
-	ClearCreatedBy bool
 	Name           *string
 	Status         *testtodo.Status
 	Priority       *int
@@ -2072,9 +2069,6 @@ type UpdateTestTodoInput struct {
 
 // Mutate applies the UpdateTestTodoInput on the TestTodoMutation.
 func (i *UpdateTestTodoInput) Mutate(m *TestTodoMutation) {
-	if i.ClearCreatedBy {
-		m.ClearCreatedBy()
-	}
 	if v := i.CreatedBy; v != nil {
 		m.SetCreatedBy(*v)
 	}

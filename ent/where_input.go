@@ -9066,8 +9066,6 @@ type TestTodoWhereInput struct {
 	CreatedByContains     *ulid.ID  `json:"createdByContains,omitempty"`
 	CreatedByHasPrefix    *ulid.ID  `json:"createdByHasPrefix,omitempty"`
 	CreatedByHasSuffix    *ulid.ID  `json:"createdByHasSuffix,omitempty"`
-	CreatedByIsNil        bool      `json:"createdByIsNil,omitempty"`
-	CreatedByNotNil       bool      `json:"createdByNotNil,omitempty"`
 	CreatedByEqualFold    *ulid.ID  `json:"createdByEqualFold,omitempty"`
 	CreatedByContainsFold *ulid.ID  `json:"createdByContainsFold,omitempty"`
 
@@ -9324,12 +9322,6 @@ func (i *TestTodoWhereInput) P() (predicate.TestTodo, error) {
 	}
 	if i.CreatedByHasSuffix != nil {
 		predicates = append(predicates, testtodo.CreatedByHasSuffix(*i.CreatedByHasSuffix))
-	}
-	if i.CreatedByIsNil {
-		predicates = append(predicates, testtodo.CreatedByIsNil())
-	}
-	if i.CreatedByNotNil {
-		predicates = append(predicates, testtodo.CreatedByNotNil())
 	}
 	if i.CreatedByEqualFold != nil {
 		predicates = append(predicates, testtodo.CreatedByEqualFold(*i.CreatedByEqualFold))
