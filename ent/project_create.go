@@ -313,10 +313,6 @@ func (pc *ProjectCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (pc *ProjectCreate) defaults() {
-	if _, ok := pc.mutation.DueDate(); !ok {
-		v := project.DefaultDueDate()
-		pc.mutation.SetDueDate(v)
-	}
 	if _, ok := pc.mutation.CreatedAt(); !ok {
 		v := project.DefaultCreatedAt()
 		pc.mutation.SetCreatedAt(v)
@@ -366,9 +362,6 @@ func (pc *ProjectCreate) check() error {
 		if err := project.DescriptionTitleValidator(v); err != nil {
 			return &ValidationError{Name: "description_title", err: fmt.Errorf(`ent: validator failed for field "description_title": %w`, err)}
 		}
-	}
-	if _, ok := pc.mutation.DueDate(); !ok {
-		return &ValidationError{Name: "due_date", err: errors.New(`ent: missing required field "due_date"`)}
 	}
 	if _, ok := pc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
@@ -453,7 +446,7 @@ func (pc *ProjectCreate) createSpec() (*Project, *sqlgraph.CreateSpec) {
 			Value:  value,
 			Column: project.FieldDueDate,
 		})
-		_node.DueDate = value
+		_node.DueDate = &value
 	}
 	if value, ok := pc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{

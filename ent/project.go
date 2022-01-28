@@ -41,7 +41,7 @@ type Project struct {
 	// DescriptionTitle holds the value of the "description_title" field.
 	DescriptionTitle string `json:"description_title,omitempty"`
 	// DueDate holds the value of the "due_date" field.
-	DueDate time.Time `json:"due_date,omitempty"`
+	DueDate *time.Time `json:"due_date,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -281,7 +281,8 @@ func (pr *Project) assignValues(columns []string, values []interface{}) error {
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field due_date", values[i])
 			} else if value.Valid {
-				pr.DueDate = value.Time
+				pr.DueDate = new(time.Time)
+				*pr.DueDate = value.Time
 			}
 		case project.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -389,8 +390,10 @@ func (pr *Project) String() string {
 	builder.WriteString(fmt.Sprintf("%v", pr.Description))
 	builder.WriteString(", description_title=")
 	builder.WriteString(pr.DescriptionTitle)
-	builder.WriteString(", due_date=")
-	builder.WriteString(pr.DueDate.Format(time.ANSIC))
+	if v := pr.DueDate; v != nil {
+		builder.WriteString(", due_date=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
 	builder.WriteString(", created_at=")
 	builder.WriteString(pr.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", updated_at=")

@@ -1536,14 +1536,16 @@ type ProjectWhereInput struct {
 	DescriptionTitleContainsFold *string  `json:"descriptionTitleContainsFold,omitempty"`
 
 	// "due_date" field predicates.
-	DueDate      *time.Time  `json:"dueDate,omitempty"`
-	DueDateNEQ   *time.Time  `json:"dueDateNEQ,omitempty"`
-	DueDateIn    []time.Time `json:"dueDateIn,omitempty"`
-	DueDateNotIn []time.Time `json:"dueDateNotIn,omitempty"`
-	DueDateGT    *time.Time  `json:"dueDateGT,omitempty"`
-	DueDateGTE   *time.Time  `json:"dueDateGTE,omitempty"`
-	DueDateLT    *time.Time  `json:"dueDateLT,omitempty"`
-	DueDateLTE   *time.Time  `json:"dueDateLTE,omitempty"`
+	DueDate       *time.Time  `json:"dueDate,omitempty"`
+	DueDateNEQ    *time.Time  `json:"dueDateNEQ,omitempty"`
+	DueDateIn     []time.Time `json:"dueDateIn,omitempty"`
+	DueDateNotIn  []time.Time `json:"dueDateNotIn,omitempty"`
+	DueDateGT     *time.Time  `json:"dueDateGT,omitempty"`
+	DueDateGTE    *time.Time  `json:"dueDateGTE,omitempty"`
+	DueDateLT     *time.Time  `json:"dueDateLT,omitempty"`
+	DueDateLTE    *time.Time  `json:"dueDateLTE,omitempty"`
+	DueDateIsNil  bool        `json:"dueDateIsNil,omitempty"`
+	DueDateNotNil bool        `json:"dueDateNotNil,omitempty"`
 
 	// "created_at" field predicates.
 	CreatedAt      *time.Time  `json:"createdAt,omitempty"`
@@ -1985,6 +1987,12 @@ func (i *ProjectWhereInput) P() (predicate.Project, error) {
 	}
 	if i.DueDateLTE != nil {
 		predicates = append(predicates, project.DueDateLTE(*i.DueDateLTE))
+	}
+	if i.DueDateIsNil {
+		predicates = append(predicates, project.DueDateIsNil())
+	}
+	if i.DueDateNotNil {
+		predicates = append(predicates, project.DueDateNotNil())
 	}
 	if i.CreatedAt != nil {
 		predicates = append(predicates, project.CreatedAtEQ(*i.CreatedAt))

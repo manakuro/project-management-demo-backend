@@ -102,6 +102,12 @@ func (pu *ProjectUpdate) SetNillableDueDate(t *time.Time) *ProjectUpdate {
 	return pu
 }
 
+// ClearDueDate clears the value of the "due_date" field.
+func (pu *ProjectUpdate) ClearDueDate() *ProjectUpdate {
+	pu.mutation.ClearDueDate()
+	return pu
+}
+
 // SetWorkspace sets the "workspace" edge to the Workspace entity.
 func (pu *ProjectUpdate) SetWorkspace(w *Workspace) *ProjectUpdate {
 	return pu.SetWorkspaceID(w.ID)
@@ -481,6 +487,12 @@ func (pu *ProjectUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
+			Column: project.FieldDueDate,
+		})
+	}
+	if pu.mutation.DueDateCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
 			Column: project.FieldDueDate,
 		})
 	}
@@ -1010,6 +1022,12 @@ func (puo *ProjectUpdateOne) SetNillableDueDate(t *time.Time) *ProjectUpdateOne 
 	return puo
 }
 
+// ClearDueDate clears the value of the "due_date" field.
+func (puo *ProjectUpdateOne) ClearDueDate() *ProjectUpdateOne {
+	puo.mutation.ClearDueDate()
+	return puo
+}
+
 // SetWorkspace sets the "workspace" edge to the Workspace entity.
 func (puo *ProjectUpdateOne) SetWorkspace(w *Workspace) *ProjectUpdateOne {
 	return puo.SetWorkspaceID(w.ID)
@@ -1413,6 +1431,12 @@ func (puo *ProjectUpdateOne) sqlSave(ctx context.Context) (_node *Project, err e
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
+			Column: project.FieldDueDate,
+		})
+	}
+	if puo.mutation.DueDateCleared() {
+		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
 			Column: project.FieldDueDate,
 		})
 	}

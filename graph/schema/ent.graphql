@@ -732,6 +732,8 @@ input ProjectWhereInput {
   dueDateGTE: Time
   dueDateLT: Time
   dueDateLTE: Time
+  dueDateIsNil: Boolean
+  dueDateNotNil: Boolean
   
   """created_at field predicates"""
   createdAt: Time

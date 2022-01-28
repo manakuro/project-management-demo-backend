@@ -53,7 +53,11 @@ func (r *projectResolver) TeammateIds(ctx context.Context, obj *ent.Project) ([]
 }
 
 func (r *projectResolver) DueDate(ctx context.Context, obj *ent.Project) (string, error) {
-	return datetime.FormatDate(obj.DueDate), nil
+	if obj.DueDate == nil {
+		return "", nil
+	}
+
+	return datetime.FormatDate(*obj.DueDate), nil
 }
 
 func (r *projectResolver) CreatedAt(ctx context.Context, obj *ent.Project) (string, error) {

@@ -159,8 +159,6 @@ var (
 	NameValidator func(string) error
 	// DescriptionTitleValidator is a validator for the "description_title" field. It is called by the builders before save.
 	DescriptionTitleValidator func(string) error
-	// DefaultDueDate holds the default value on creation for the "due_date" field.
-	DefaultDueDate func() time.Time
 	// DefaultCreatedAt holds the default value on creation for the "created_at" field.
 	DefaultCreatedAt func() time.Time
 	// DefaultUpdatedAt holds the default value on creation for the "updated_at" field.

@@ -6304,6 +6304,8 @@ input ProjectWhereInput {
   dueDateGTE: Time
   dueDateLT: Time
   dueDateLTE: Time
+  dueDateIsNil: Boolean
+  dueDateNotNil: Boolean
   
   """created_at field predicates"""
   createdAt: Time
@@ -39810,6 +39812,22 @@ func (ec *executionContext) unmarshalInputProjectWhereInput(ctx context.Context,
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("dueDateLTE"))
 			it.DueDateLTE, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "dueDateIsNil":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("dueDateIsNil"))
+			it.DueDateIsNil, err = ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "dueDateNotNil":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("dueDateNotNil"))
+			it.DueDateNotNil, err = ec.unmarshalOBoolean2bool(ctx, v)
 			if err != nil {
 				return it, err
 			}

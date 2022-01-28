@@ -2959,7 +2959,7 @@ func (m *ProjectMutation) DueDate() (r time.Time, exists bool) {
 // OldDueDate returns the old "due_date" field's value of the Project entity.
 // If the Project object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ProjectMutation) OldDueDate(ctx context.Context) (v time.Time, err error) {
+func (m *ProjectMutation) OldDueDate(ctx context.Context) (v *time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, fmt.Errorf("OldDueDate is only allowed on UpdateOne operations")
 	}
@@ -2973,9 +2973,22 @@ func (m *ProjectMutation) OldDueDate(ctx context.Context) (v time.Time, err erro
 	return oldValue.DueDate, nil
 }
 
+// ClearDueDate clears the value of the "due_date" field.
+func (m *ProjectMutation) ClearDueDate() {
+	m.due_date = nil
+	m.clearedFields[project.FieldDueDate] = struct{}{}
+}
+
+// DueDateCleared returns if the "due_date" field was cleared in this mutation.
+func (m *ProjectMutation) DueDateCleared() bool {
+	_, ok := m.clearedFields[project.FieldDueDate]
+	return ok
+}
+
 // ResetDueDate resets all changes to the "due_date" field.
 func (m *ProjectMutation) ResetDueDate() {
 	m.due_date = nil
+	delete(m.clearedFields, project.FieldDueDate)
 }
 
 // SetCreatedAt sets the "created_at" field.
@@ -3692,7 +3705,11 @@ func (m *ProjectMutation) AddField(name string, value ent.Value) error {
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
 func (m *ProjectMutation) ClearedFields() []string {
-	return nil
+	var fields []string
+	if m.FieldCleared(project.FieldDueDate) {
+		fields = append(fields, project.FieldDueDate)
+	}
+	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
@@ -3705,6 +3722,11 @@ func (m *ProjectMutation) FieldCleared(name string) bool {
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
 func (m *ProjectMutation) ClearField(name string) error {
+	switch name {
+	case project.FieldDueDate:
+		m.ClearDueDate()
+		return nil
+	}
 	return fmt.Errorf("unknown Project nullable field %s", name)
 }
 

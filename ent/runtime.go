@@ -240,10 +240,6 @@ func init() {
 	projectDescDescriptionTitle := projectMixinFields1[7].Descriptor()
 	// project.DescriptionTitleValidator is a validator for the "description_title" field. It is called by the builders before save.
 	project.DescriptionTitleValidator = projectDescDescriptionTitle.Validators[0].(func(string) error)
-	// projectDescDueDate is the schema descriptor for due_date field.
-	projectDescDueDate := projectMixinFields1[8].Descriptor()
-	// project.DefaultDueDate holds the default value on creation for the due_date field.
-	project.DefaultDueDate = projectDescDueDate.Default.(func() time.Time)
 	// projectDescCreatedAt is the schema descriptor for created_at field.
 	projectDescCreatedAt := projectMixinFields2[0].Descriptor()
 	// project.DefaultCreatedAt holds the default value on creation for the created_at field.

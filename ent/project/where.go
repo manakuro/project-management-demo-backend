@@ -1042,6 +1042,20 @@ func DueDateLTE(v time.Time) predicate.Project {
 	})
 }
 
+// DueDateIsNil applies the IsNil predicate on the "due_date" field.
+func DueDateIsNil() predicate.Project {
+	return predicate.Project(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldDueDate)))
+	})
+}
+
+// DueDateNotNil applies the NotNil predicate on the "due_date" field.
+func DueDateNotNil() predicate.Project {
+	return predicate.Project(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldDueDate)))
+	})
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Project {
 	return predicate.Project(func(s *sql.Selector) {

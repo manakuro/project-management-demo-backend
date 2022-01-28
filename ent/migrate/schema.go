@@ -99,7 +99,7 @@ var (
 		{Name: "name", Type: field.TypeString, Size: 255},
 		{Name: "description", Type: field.TypeJSON},
 		{Name: "description_title", Type: field.TypeString, Size: 255},
-		{Name: "due_date", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime"}},
+		{Name: "due_date", Type: field.TypeTime, Nullable: true, SchemaType: map[string]string{"mysql": "datetime"}},
 		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
 		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
 		{Name: "project_base_color_id", Type: field.TypeString, Nullable: true},

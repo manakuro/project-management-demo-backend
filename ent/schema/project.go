@@ -6,7 +6,6 @@ import (
 	"project-management-demo-backend/ent/schema/editor"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/pkg/const/globalid"
-	"time"
 
 	"entgo.io/ent/dialect"
 
@@ -49,7 +48,8 @@ func (ProjectMixin) Fields() []ent.Field {
 		field.String("description_title").
 			MaxLen(255),
 		field.Time("due_date").
-			Default(time.Now).
+			Nillable().
+			Optional().
 			SchemaType(map[string]string{
 				dialect.MySQL: "datetime",
 			}),

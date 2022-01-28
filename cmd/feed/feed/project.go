@@ -65,7 +65,7 @@ func Project(ctx context.Context, client *ent.Client) {
 			ProjectIconID:       feedutil.GetProjectIconByIcon(ctx, client, iconFeed.moon.Icon).ID,
 			Description:         desc,
 			DescriptionTitle:    "How we'll collaborate",
-			DueDate:             getDueDate(10),
+			DueDate:             nil,
 			CreatedBy:           createdBy.ID,
 		},
 	}
