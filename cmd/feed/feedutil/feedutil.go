@@ -10,6 +10,8 @@ import (
 	"project-management-demo-backend/ent/projectbasecolor"
 	"project-management-demo-backend/ent/projecticon"
 	"project-management-demo-backend/ent/projectlightcolor"
+	"project-management-demo-backend/ent/projecttasksection"
+	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/task"
 	"project-management-demo-backend/ent/taskcolumn"
 	"project-management-demo-backend/ent/tasklistcompletedstatus"
@@ -172,7 +174,22 @@ func GetTaskByName(ctx context.Context, client *ent.Client, val string) *ent.Tas
 func GetTeammateTaskSectionByName(ctx context.Context, client *ent.Client, val string) *ent.TeammateTaskSection {
 	res, err := client.TeammateTaskSection.Query().Where(teammatetasksection.NameEQ(val)).Only(ctx)
 	if err != nil {
-		log.Fatalf("GetTaskListSortStatusByName: failed get data: %v", err)
+		log.Fatalf("GetTeammateTaskSectionByName: failed get data: %v", err)
+	}
+
+	return res
+}
+
+// GetProjectTaskSectionByName gets teammate task section data.
+func GetProjectTaskSectionByName(ctx context.Context, client *ent.Client, projectID ulid.ID, val string) *ent.ProjectTaskSection {
+	res, err := client.
+		ProjectTaskSection.
+		Query().
+		Where(projecttasksection.NameEQ(val), projecttasksection.ProjectID(projectID)).
+		Only(ctx)
+
+	if err != nil {
+		log.Fatalf("GetProjectTaskSectionByName: failed get data: %v", err)
 	}
 
 	return res
