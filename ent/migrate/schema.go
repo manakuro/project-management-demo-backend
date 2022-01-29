@@ -363,6 +363,35 @@ var (
 			},
 		},
 	}
+	// TagsColumns holds the columns for the "tags" table.
+	TagsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+		{Name: "name", Type: field.TypeString, Size: 255},
+		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
+		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
+		{Name: "color_id", Type: field.TypeString, Nullable: true},
+		{Name: "workspace_id", Type: field.TypeString, Nullable: true},
+	}
+	// TagsTable holds the schema information for the "tags" table.
+	TagsTable = &schema.Table{
+		Name:       "tags",
+		Columns:    TagsColumns,
+		PrimaryKey: []*schema.Column{TagsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "tags_colors_tags",
+				Columns:    []*schema.Column{TagsColumns[4]},
+				RefColumns: []*schema.Column{ColorsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "tags_workspaces_tags",
+				Columns:    []*schema.Column{TagsColumns[5]},
+				RefColumns: []*schema.Column{WorkspacesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
 	// TasksColumns holds the columns for the "tasks" table.
 	TasksColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString},
@@ -824,6 +853,7 @@ var (
 		ProjectTaskListStatusTable,
 		ProjectTaskSectionsTable,
 		ProjectTeammatesTable,
+		TagsTable,
 		TasksTable,
 		TaskColumnsTable,
 		TaskLikesTable,
@@ -868,6 +898,8 @@ func init() {
 	ProjectTaskSectionsTable.ForeignKeys[0].RefTable = ProjectsTable
 	ProjectTeammatesTable.ForeignKeys[0].RefTable = ProjectsTable
 	ProjectTeammatesTable.ForeignKeys[1].RefTable = TeammatesTable
+	TagsTable.ForeignKeys[0].RefTable = ColorsTable
+	TagsTable.ForeignKeys[1].RefTable = WorkspacesTable
 	TasksTable.ForeignKeys[0].RefTable = TasksTable
 	TasksTable.ForeignKeys[1].RefTable = TaskPrioritiesTable
 	TasksTable.ForeignKeys[2].RefTable = TeammatesTable

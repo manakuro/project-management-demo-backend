@@ -40,9 +40,11 @@ type ColorEdges struct {
 	ProjectLightColors []*ProjectLightColor `json:"project_light_colors,omitempty"`
 	// TaskPriorities holds the value of the task_priorities edge.
 	TaskPriorities []*TaskPriority `json:"task_priorities,omitempty"`
+	// Tags holds the value of the tags edge.
+	Tags []*Tag `json:"tags,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [3]bool
+	loadedTypes [4]bool
 }
 
 // ProjectBaseColorsOrErr returns the ProjectBaseColors value or an error if the edge
@@ -70,6 +72,15 @@ func (e ColorEdges) TaskPrioritiesOrErr() ([]*TaskPriority, error) {
 		return e.TaskPriorities, nil
 	}
 	return nil, &NotLoadedError{edge: "task_priorities"}
+}
+
+// TagsOrErr returns the Tags value or an error if the edge
+// was not loaded in eager-loading.
+func (e ColorEdges) TagsOrErr() ([]*Tag, error) {
+	if e.loadedTypes[3] {
+		return e.Tags, nil
+	}
+	return nil, &NotLoadedError{edge: "tags"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -152,6 +163,11 @@ func (c *Color) QueryProjectLightColors() *ProjectLightColorQuery {
 // QueryTaskPriorities queries the "task_priorities" edge of the Color entity.
 func (c *Color) QueryTaskPriorities() *TaskPriorityQuery {
 	return (&ColorClient{config: c.config}).QueryTaskPriorities(c)
+}
+
+// QueryTags queries the "tags" edge of the Color entity.
+func (c *Color) QueryTags() *TagQuery {
+	return (&ColorClient{config: c.config}).QueryTags(c)
 }
 
 // Update returns a builder for updating this Color.

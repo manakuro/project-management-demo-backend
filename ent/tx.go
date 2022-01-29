@@ -38,6 +38,8 @@ type Tx struct {
 	ProjectTaskSection *ProjectTaskSectionClient
 	// ProjectTeammate is the client for interacting with the ProjectTeammate builders.
 	ProjectTeammate *ProjectTeammateClient
+	// Tag is the client for interacting with the Tag builders.
+	Tag *TagClient
 	// Task is the client for interacting with the Task builders.
 	Task *TaskClient
 	// TaskColumn is the client for interacting with the TaskColumn builders.
@@ -220,6 +222,7 @@ func (tx *Tx) init() {
 	tx.ProjectTaskListStatus = NewProjectTaskListStatusClient(tx.config)
 	tx.ProjectTaskSection = NewProjectTaskSectionClient(tx.config)
 	tx.ProjectTeammate = NewProjectTeammateClient(tx.config)
+	tx.Tag = NewTagClient(tx.config)
 	tx.Task = NewTaskClient(tx.config)
 	tx.TaskColumn = NewTaskColumnClient(tx.config)
 	tx.TaskLike = NewTaskLikeClient(tx.config)

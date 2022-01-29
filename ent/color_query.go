@@ -13,6 +13,7 @@ import (
 	"project-management-demo-backend/ent/projectbasecolor"
 	"project-management-demo-backend/ent/projectlightcolor"
 	"project-management-demo-backend/ent/schema/ulid"
+	"project-management-demo-backend/ent/tag"
 	"project-management-demo-backend/ent/taskpriority"
 
 	"entgo.io/ent/dialect/sql"
@@ -33,6 +34,7 @@ type ColorQuery struct {
 	withProjectBaseColors  *ProjectBaseColorQuery
 	withProjectLightColors *ProjectLightColorQuery
 	withTaskPriorities     *TaskPriorityQuery
+	withTags               *TagQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -128,6 +130,28 @@ func (cq *ColorQuery) QueryTaskPriorities() *TaskPriorityQuery {
 			sqlgraph.From(color.Table, color.FieldID, selector),
 			sqlgraph.To(taskpriority.Table, taskpriority.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, color.TaskPrioritiesTable, color.TaskPrioritiesColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryTags chains the current query on the "tags" edge.
+func (cq *ColorQuery) QueryTags() *TagQuery {
+	query := &TagQuery{config: cq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := cq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := cq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(color.Table, color.FieldID, selector),
+			sqlgraph.To(tag.Table, tag.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, color.TagsTable, color.TagsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(cq.driver.Dialect(), step)
 		return fromU, nil
@@ -319,6 +343,7 @@ func (cq *ColorQuery) Clone() *ColorQuery {
 		withProjectBaseColors:  cq.withProjectBaseColors.Clone(),
 		withProjectLightColors: cq.withProjectLightColors.Clone(),
 		withTaskPriorities:     cq.withTaskPriorities.Clone(),
+		withTags:               cq.withTags.Clone(),
 		// clone intermediate query.
 		sql:  cq.sql.Clone(),
 		path: cq.path,
@@ -355,6 +380,17 @@ func (cq *ColorQuery) WithTaskPriorities(opts ...func(*TaskPriorityQuery)) *Colo
 		opt(query)
 	}
 	cq.withTaskPriorities = query
+	return cq
+}
+
+// WithTags tells the query-builder to eager-load the nodes that are connected to
+// the "tags" edge. The optional arguments are used to configure the query builder of the edge.
+func (cq *ColorQuery) WithTags(opts ...func(*TagQuery)) *ColorQuery {
+	query := &TagQuery{config: cq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	cq.withTags = query
 	return cq
 }
 
@@ -423,10 +459,11 @@ func (cq *ColorQuery) sqlAll(ctx context.Context) ([]*Color, error) {
 	var (
 		nodes       = []*Color{}
 		_spec       = cq.querySpec()
-		loadedTypes = [3]bool{
+		loadedTypes = [4]bool{
 			cq.withProjectBaseColors != nil,
 			cq.withProjectLightColors != nil,
 			cq.withTaskPriorities != nil,
+			cq.withTags != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -521,6 +558,31 @@ func (cq *ColorQuery) sqlAll(ctx context.Context) ([]*Color, error) {
 				return nil, fmt.Errorf(`unexpected foreign-key "color_id" returned %v for node %v`, fk, n.ID)
 			}
 			node.Edges.TaskPriorities = append(node.Edges.TaskPriorities, n)
+		}
+	}
+
+	if query := cq.withTags; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[ulid.ID]*Color)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.Tags = []*Tag{}
+		}
+		query.Where(predicate.Tag(func(s *sql.Selector) {
+			s.Where(sql.InValues(color.TagsColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.ColorID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "color_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.Tags = append(node.Edges.Tags, n)
 		}
 	}
 

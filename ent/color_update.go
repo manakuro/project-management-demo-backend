@@ -10,6 +10,7 @@ import (
 	"project-management-demo-backend/ent/projectbasecolor"
 	"project-management-demo-backend/ent/projectlightcolor"
 	"project-management-demo-backend/ent/schema/ulid"
+	"project-management-demo-backend/ent/tag"
 	"project-management-demo-backend/ent/taskpriority"
 
 	"entgo.io/ent/dialect/sql"
@@ -93,6 +94,21 @@ func (cu *ColorUpdate) AddTaskPriorities(t ...*TaskPriority) *ColorUpdate {
 	return cu.AddTaskPriorityIDs(ids...)
 }
 
+// AddTagIDs adds the "tags" edge to the Tag entity by IDs.
+func (cu *ColorUpdate) AddTagIDs(ids ...ulid.ID) *ColorUpdate {
+	cu.mutation.AddTagIDs(ids...)
+	return cu
+}
+
+// AddTags adds the "tags" edges to the Tag entity.
+func (cu *ColorUpdate) AddTags(t ...*Tag) *ColorUpdate {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return cu.AddTagIDs(ids...)
+}
+
 // Mutation returns the ColorMutation object of the builder.
 func (cu *ColorUpdate) Mutation() *ColorMutation {
 	return cu.mutation
@@ -159,6 +175,27 @@ func (cu *ColorUpdate) RemoveTaskPriorities(t ...*TaskPriority) *ColorUpdate {
 		ids[i] = t[i].ID
 	}
 	return cu.RemoveTaskPriorityIDs(ids...)
+}
+
+// ClearTags clears all "tags" edges to the Tag entity.
+func (cu *ColorUpdate) ClearTags() *ColorUpdate {
+	cu.mutation.ClearTags()
+	return cu
+}
+
+// RemoveTagIDs removes the "tags" edge to Tag entities by IDs.
+func (cu *ColorUpdate) RemoveTagIDs(ids ...ulid.ID) *ColorUpdate {
+	cu.mutation.RemoveTagIDs(ids...)
+	return cu
+}
+
+// RemoveTags removes "tags" edges to Tag entities.
+func (cu *ColorUpdate) RemoveTags(t ...*Tag) *ColorUpdate {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return cu.RemoveTagIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -442,6 +479,60 @@ func (cu *ColorUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if cu.mutation.TagsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   color.TagsTable,
+			Columns: []string{color.TagsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: tag.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cu.mutation.RemovedTagsIDs(); len(nodes) > 0 && !cu.mutation.TagsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   color.TagsTable,
+			Columns: []string{color.TagsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: tag.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cu.mutation.TagsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   color.TagsTable,
+			Columns: []string{color.TagsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: tag.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, cu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{color.Label}
@@ -524,6 +615,21 @@ func (cuo *ColorUpdateOne) AddTaskPriorities(t ...*TaskPriority) *ColorUpdateOne
 	return cuo.AddTaskPriorityIDs(ids...)
 }
 
+// AddTagIDs adds the "tags" edge to the Tag entity by IDs.
+func (cuo *ColorUpdateOne) AddTagIDs(ids ...ulid.ID) *ColorUpdateOne {
+	cuo.mutation.AddTagIDs(ids...)
+	return cuo
+}
+
+// AddTags adds the "tags" edges to the Tag entity.
+func (cuo *ColorUpdateOne) AddTags(t ...*Tag) *ColorUpdateOne {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return cuo.AddTagIDs(ids...)
+}
+
 // Mutation returns the ColorMutation object of the builder.
 func (cuo *ColorUpdateOne) Mutation() *ColorMutation {
 	return cuo.mutation
@@ -590,6 +696,27 @@ func (cuo *ColorUpdateOne) RemoveTaskPriorities(t ...*TaskPriority) *ColorUpdate
 		ids[i] = t[i].ID
 	}
 	return cuo.RemoveTaskPriorityIDs(ids...)
+}
+
+// ClearTags clears all "tags" edges to the Tag entity.
+func (cuo *ColorUpdateOne) ClearTags() *ColorUpdateOne {
+	cuo.mutation.ClearTags()
+	return cuo
+}
+
+// RemoveTagIDs removes the "tags" edge to Tag entities by IDs.
+func (cuo *ColorUpdateOne) RemoveTagIDs(ids ...ulid.ID) *ColorUpdateOne {
+	cuo.mutation.RemoveTagIDs(ids...)
+	return cuo
+}
+
+// RemoveTags removes "tags" edges to Tag entities.
+func (cuo *ColorUpdateOne) RemoveTags(t ...*Tag) *ColorUpdateOne {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return cuo.RemoveTagIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -889,6 +1016,60 @@ func (cuo *ColorUpdateOne) sqlSave(ctx context.Context) (_node *Color, err error
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: taskpriority.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if cuo.mutation.TagsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   color.TagsTable,
+			Columns: []string{color.TagsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: tag.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cuo.mutation.RemovedTagsIDs(); len(nodes) > 0 && !cuo.mutation.TagsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   color.TagsTable,
+			Columns: []string{color.TagsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: tag.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := cuo.mutation.TagsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   color.TagsTable,
+			Columns: []string{color.TagsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: tag.FieldID,
 				},
 			},
 		}

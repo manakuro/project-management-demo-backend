@@ -25,6 +25,7 @@ type CreateColorInput struct {
 	ProjectBaseColorIDs  []ulid.ID
 	ProjectLightColorIDs []ulid.ID
 	TaskPriorityIDs      []ulid.ID
+	TagIDs               []ulid.ID
 }
 
 // Mutate applies the CreateColorInput on the ColorCreate builder.
@@ -47,6 +48,9 @@ func (i *CreateColorInput) Mutate(m *ColorCreate) {
 	if ids := i.TaskPriorityIDs; len(ids) > 0 {
 		m.AddTaskPriorityIDs(ids...)
 	}
+	if ids := i.TagIDs; len(ids) > 0 {
+		m.AddTagIDs(ids...)
+	}
 }
 
 // SetInput applies the change-set in the CreateColorInput on the create builder.
@@ -67,6 +71,8 @@ type UpdateColorInput struct {
 	RemoveProjectLightColorIDs []ulid.ID
 	AddTaskPriorityIDs         []ulid.ID
 	RemoveTaskPriorityIDs      []ulid.ID
+	AddTagIDs                  []ulid.ID
+	RemoveTagIDs               []ulid.ID
 }
 
 // Mutate applies the UpdateColorInput on the ColorMutation.
@@ -97,6 +103,12 @@ func (i *UpdateColorInput) Mutate(m *ColorMutation) {
 	}
 	if ids := i.RemoveTaskPriorityIDs; len(ids) > 0 {
 		m.RemoveTaskPriorityIDs(ids...)
+	}
+	if ids := i.AddTagIDs; len(ids) > 0 {
+		m.AddTagIDs(ids...)
+	}
+	if ids := i.RemoveTagIDs; len(ids) > 0 {
+		m.RemoveTagIDs(ids...)
 	}
 }
 
@@ -1070,6 +1082,75 @@ func (u *ProjectTeammateUpdate) SetInput(i UpdateProjectTeammateInput) *ProjectT
 
 // SetInput applies the change-set in the UpdateProjectTeammateInput on the update-one builder.
 func (u *ProjectTeammateUpdateOne) SetInput(i UpdateProjectTeammateInput) *ProjectTeammateUpdateOne {
+	i.Mutate(u.Mutation())
+	return u
+}
+
+// CreateTagInput represents a mutation input for creating tags.
+type CreateTagInput struct {
+	Name        string
+	CreatedAt   *time.Time
+	UpdatedAt   *time.Time
+	WorkspaceID ulid.ID
+	ColorID     ulid.ID
+}
+
+// Mutate applies the CreateTagInput on the TagCreate builder.
+func (i *CreateTagInput) Mutate(m *TagCreate) {
+	m.SetName(i.Name)
+	if v := i.CreatedAt; v != nil {
+		m.SetCreatedAt(*v)
+	}
+	if v := i.UpdatedAt; v != nil {
+		m.SetUpdatedAt(*v)
+	}
+	m.SetWorkspaceID(i.WorkspaceID)
+	m.SetColorID(i.ColorID)
+}
+
+// SetInput applies the change-set in the CreateTagInput on the create builder.
+func (c *TagCreate) SetInput(i CreateTagInput) *TagCreate {
+	i.Mutate(c)
+	return c
+}
+
+// UpdateTagInput represents a mutation input for updating tags.
+type UpdateTagInput struct {
+	ID             ulid.ID
+	Name           *string
+	WorkspaceID    *ulid.ID
+	ClearWorkspace bool
+	ColorID        *ulid.ID
+	ClearColor     bool
+}
+
+// Mutate applies the UpdateTagInput on the TagMutation.
+func (i *UpdateTagInput) Mutate(m *TagMutation) {
+	if v := i.Name; v != nil {
+		m.SetName(*v)
+	}
+	if i.ClearWorkspace {
+		m.ClearWorkspace()
+	}
+	if v := i.WorkspaceID; v != nil {
+		m.SetWorkspaceID(*v)
+	}
+	if i.ClearColor {
+		m.ClearColor()
+	}
+	if v := i.ColorID; v != nil {
+		m.SetColorID(*v)
+	}
+}
+
+// SetInput applies the change-set in the UpdateTagInput on the update builder.
+func (u *TagUpdate) SetInput(i UpdateTagInput) *TagUpdate {
+	i.Mutate(u.Mutation())
+	return u
+}
+
+// SetInput applies the change-set in the UpdateTagInput on the update-one builder.
+func (u *TagUpdateOne) SetInput(i UpdateTagInput) *TagUpdateOne {
 	i.Mutate(u.Mutation())
 	return u
 }
@@ -2525,6 +2606,7 @@ type CreateWorkspaceInput struct {
 	TeammateTaskListStatusIDs []ulid.ID
 	TeammateTaskSectionIDs    []ulid.ID
 	TaskLikeIDs               []ulid.ID
+	TagIDs                    []ulid.ID
 }
 
 // Mutate applies the CreateWorkspaceInput on the WorkspaceCreate builder.
@@ -2559,6 +2641,9 @@ func (i *CreateWorkspaceInput) Mutate(m *WorkspaceCreate) {
 	if ids := i.TaskLikeIDs; len(ids) > 0 {
 		m.AddTaskLikeIDs(ids...)
 	}
+	if ids := i.TagIDs; len(ids) > 0 {
+		m.AddTagIDs(ids...)
+	}
 }
 
 // SetInput applies the change-set in the CreateWorkspaceInput on the create builder.
@@ -2588,6 +2673,8 @@ type UpdateWorkspaceInput struct {
 	RemoveTeammateTaskSectionIDs    []ulid.ID
 	AddTaskLikeIDs                  []ulid.ID
 	RemoveTaskLikeIDs               []ulid.ID
+	AddTagIDs                       []ulid.ID
+	RemoveTagIDs                    []ulid.ID
 }
 
 // Mutate applies the UpdateWorkspaceInput on the WorkspaceMutation.
@@ -2645,6 +2732,12 @@ func (i *UpdateWorkspaceInput) Mutate(m *WorkspaceMutation) {
 	}
 	if ids := i.RemoveTaskLikeIDs; len(ids) > 0 {
 		m.RemoveTaskLikeIDs(ids...)
+	}
+	if ids := i.AddTagIDs; len(ids) > 0 {
+		m.AddTagIDs(ids...)
+	}
+	if ids := i.RemoveTagIDs; len(ids) > 0 {
+		m.RemoveTagIDs(ids...)
 	}
 }
 

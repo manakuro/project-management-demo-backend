@@ -28,6 +28,14 @@ func (c *Color) TaskPriorities(ctx context.Context) ([]*TaskPriority, error) {
 	return result, err
 }
 
+func (c *Color) Tags(ctx context.Context) ([]*Tag, error) {
+	result, err := c.Edges.TagsOrErr()
+	if IsNotLoaded(err) {
+		result, err = c.QueryTags().All(ctx)
+	}
+	return result, err
+}
+
 func (fp *FavoriteProject) Project(ctx context.Context) (*Project, error) {
 	result, err := fp.Edges.ProjectOrErr()
 	if IsNotLoaded(err) {
@@ -296,6 +304,22 @@ func (pt *ProjectTeammate) Teammate(ctx context.Context) (*Teammate, error) {
 	result, err := pt.Edges.TeammateOrErr()
 	if IsNotLoaded(err) {
 		result, err = pt.QueryTeammate().Only(ctx)
+	}
+	return result, err
+}
+
+func (t *Tag) Workspace(ctx context.Context) (*Workspace, error) {
+	result, err := t.Edges.WorkspaceOrErr()
+	if IsNotLoaded(err) {
+		result, err = t.QueryWorkspace().Only(ctx)
+	}
+	return result, err
+}
+
+func (t *Tag) Color(ctx context.Context) (*Color, error) {
+	result, err := t.Edges.ColorOrErr()
+	if IsNotLoaded(err) {
+		result, err = t.QueryColor().Only(ctx)
 	}
 	return result, err
 }
@@ -752,6 +776,14 @@ func (w *Workspace) TaskLikes(ctx context.Context) ([]*TaskLike, error) {
 	result, err := w.Edges.TaskLikesOrErr()
 	if IsNotLoaded(err) {
 		result, err = w.QueryTaskLikes().All(ctx)
+	}
+	return result, err
+}
+
+func (w *Workspace) Tags(ctx context.Context) ([]*Tag, error) {
+	result, err := w.Edges.TagsOrErr()
+	if IsNotLoaded(err) {
+		result, err = w.QueryTags().All(ctx)
 	}
 	return result, err
 }
