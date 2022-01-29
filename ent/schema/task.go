@@ -113,6 +113,11 @@ func (Task) Edges() []ent.Edge {
 					annotation.Edge{FieldName: "project_task_id"},
 				),
 			),
+		edge.To("task_likes", TaskLike.Type).Annotations(
+			schema.Annotation(
+				annotation.Edge{FieldName: "task_like_id"},
+			),
+		),
 	}
 }
 

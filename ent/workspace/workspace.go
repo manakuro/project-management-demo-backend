@@ -36,6 +36,8 @@ const (
 	EdgeTeammateTaskListStatuses = "teammate_task_list_statuses"
 	// EdgeTeammateTaskSections holds the string denoting the teammate_task_sections edge name in mutations.
 	EdgeTeammateTaskSections = "teammate_task_sections"
+	// EdgeTaskLikes holds the string denoting the task_likes edge name in mutations.
+	EdgeTaskLikes = "task_likes"
 	// Table holds the table name of the workspace in the database.
 	Table = "workspaces"
 	// TeammateTable is the table that holds the teammate relation/edge.
@@ -87,6 +89,13 @@ const (
 	TeammateTaskSectionsInverseTable = "teammate_task_sections"
 	// TeammateTaskSectionsColumn is the table column denoting the teammate_task_sections relation/edge.
 	TeammateTaskSectionsColumn = "workspace_id"
+	// TaskLikesTable is the table that holds the task_likes relation/edge.
+	TaskLikesTable = "task_likes"
+	// TaskLikesInverseTable is the table name for the TaskLike entity.
+	// It exists in this package in order to avoid circular dependency with the "tasklike" package.
+	TaskLikesInverseTable = "task_likes"
+	// TaskLikesColumn is the table column denoting the task_likes relation/edge.
+	TaskLikesColumn = "workspace_id"
 )
 
 // Columns holds all SQL columns for workspace fields.

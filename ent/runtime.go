@@ -20,6 +20,7 @@ import (
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/task"
 	"project-management-demo-backend/ent/taskcolumn"
+	"project-management-demo-backend/ent/tasklike"
 	"project-management-demo-backend/ent/tasklistcompletedstatus"
 	"project-management-demo-backend/ent/tasklistsortstatus"
 	"project-management-demo-backend/ent/taskpriority"
@@ -538,6 +539,25 @@ func init() {
 	taskcolumnDescID := taskcolumnMixinFields0[0].Descriptor()
 	// taskcolumn.DefaultID holds the default value on creation for the id field.
 	taskcolumn.DefaultID = taskcolumnDescID.Default.(func() ulid.ID)
+	tasklikeMixin := schema.TaskLike{}.Mixin()
+	tasklikeMixinFields0 := tasklikeMixin[0].Fields()
+	_ = tasklikeMixinFields0
+	tasklikeMixinFields2 := tasklikeMixin[2].Fields()
+	_ = tasklikeMixinFields2
+	tasklikeFields := schema.TaskLike{}.Fields()
+	_ = tasklikeFields
+	// tasklikeDescCreatedAt is the schema descriptor for created_at field.
+	tasklikeDescCreatedAt := tasklikeMixinFields2[0].Descriptor()
+	// tasklike.DefaultCreatedAt holds the default value on creation for the created_at field.
+	tasklike.DefaultCreatedAt = tasklikeDescCreatedAt.Default.(func() time.Time)
+	// tasklikeDescUpdatedAt is the schema descriptor for updated_at field.
+	tasklikeDescUpdatedAt := tasklikeMixinFields2[1].Descriptor()
+	// tasklike.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	tasklike.DefaultUpdatedAt = tasklikeDescUpdatedAt.Default.(func() time.Time)
+	// tasklikeDescID is the schema descriptor for id field.
+	tasklikeDescID := tasklikeMixinFields0[0].Descriptor()
+	// tasklike.DefaultID holds the default value on creation for the id field.
+	tasklike.DefaultID = tasklikeDescID.Default.(func() ulid.ID)
 	tasklistcompletedstatusMixin := schema.TaskListCompletedStatus{}.Mixin()
 	tasklistcompletedstatusMixinFields0 := tasklistcompletedstatusMixin[0].Fields()
 	_ = tasklistcompletedstatusMixinFields0

@@ -12,6 +12,7 @@ import (
 	"project-management-demo-backend/ent/projecttask"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/task"
+	"project-management-demo-backend/ent/tasklike"
 	"project-management-demo-backend/ent/taskpriority"
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/teammatetask"
@@ -37,6 +38,7 @@ type TaskQuery struct {
 	withSubTasks      *TaskQuery
 	withTeammateTasks *TeammateTaskQuery
 	withProjectTasks  *ProjectTaskQuery
+	withTaskLikes     *TaskLikeQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -198,6 +200,28 @@ func (tq *TaskQuery) QueryProjectTasks() *ProjectTaskQuery {
 			sqlgraph.From(task.Table, task.FieldID, selector),
 			sqlgraph.To(projecttask.Table, projecttask.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, task.ProjectTasksTable, task.ProjectTasksColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(tq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryTaskLikes chains the current query on the "task_likes" edge.
+func (tq *TaskQuery) QueryTaskLikes() *TaskLikeQuery {
+	query := &TaskLikeQuery{config: tq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := tq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := tq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(task.Table, task.FieldID, selector),
+			sqlgraph.To(tasklike.Table, tasklike.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, task.TaskLikesTable, task.TaskLikesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(tq.driver.Dialect(), step)
 		return fromU, nil
@@ -392,6 +416,7 @@ func (tq *TaskQuery) Clone() *TaskQuery {
 		withSubTasks:      tq.withSubTasks.Clone(),
 		withTeammateTasks: tq.withTeammateTasks.Clone(),
 		withProjectTasks:  tq.withProjectTasks.Clone(),
+		withTaskLikes:     tq.withTaskLikes.Clone(),
 		// clone intermediate query.
 		sql:  tq.sql.Clone(),
 		path: tq.path,
@@ -464,6 +489,17 @@ func (tq *TaskQuery) WithProjectTasks(opts ...func(*ProjectTaskQuery)) *TaskQuer
 	return tq
 }
 
+// WithTaskLikes tells the query-builder to eager-load the nodes that are connected to
+// the "task_likes" edge. The optional arguments are used to configure the query builder of the edge.
+func (tq *TaskQuery) WithTaskLikes(opts ...func(*TaskLikeQuery)) *TaskQuery {
+	query := &TaskLikeQuery{config: tq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	tq.withTaskLikes = query
+	return tq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -529,13 +565,14 @@ func (tq *TaskQuery) sqlAll(ctx context.Context) ([]*Task, error) {
 	var (
 		nodes       = []*Task{}
 		_spec       = tq.querySpec()
-		loadedTypes = [6]bool{
+		loadedTypes = [7]bool{
 			tq.withTeammate != nil,
 			tq.withTaskPriority != nil,
 			tq.withParent != nil,
 			tq.withSubTasks != nil,
 			tq.withTeammateTasks != nil,
 			tq.withProjectTasks != nil,
+			tq.withTaskLikes != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -708,6 +745,31 @@ func (tq *TaskQuery) sqlAll(ctx context.Context) ([]*Task, error) {
 				return nil, fmt.Errorf(`unexpected foreign-key "task_id" returned %v for node %v`, fk, n.ID)
 			}
 			node.Edges.ProjectTasks = append(node.Edges.ProjectTasks, n)
+		}
+	}
+
+	if query := tq.withTaskLikes; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[ulid.ID]*Task)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.TaskLikes = []*TaskLike{}
+		}
+		query.Where(predicate.TaskLike(func(s *sql.Selector) {
+			s.Where(sql.InValues(task.TaskLikesColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.TaskID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "task_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.TaskLikes = append(node.Edges.TaskLikes, n)
 		}
 	}
 

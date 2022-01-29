@@ -51,9 +51,11 @@ type WorkspaceEdges struct {
 	TeammateTaskListStatuses []*TeammateTaskListStatus `json:"teammate_task_list_statuses,omitempty"`
 	// TeammateTaskSections holds the value of the teammate_task_sections edge.
 	TeammateTaskSections []*TeammateTaskSection `json:"teammate_task_sections,omitempty"`
+	// TaskLikes holds the value of the task_likes edge.
+	TaskLikes []*TaskLike `json:"task_likes,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [7]bool
+	loadedTypes [8]bool
 }
 
 // TeammateOrErr returns the Teammate value or an error if the edge
@@ -122,6 +124,15 @@ func (e WorkspaceEdges) TeammateTaskSectionsOrErr() ([]*TeammateTaskSection, err
 		return e.TeammateTaskSections, nil
 	}
 	return nil, &NotLoadedError{edge: "teammate_task_sections"}
+}
+
+// TaskLikesOrErr returns the TaskLikes value or an error if the edge
+// was not loaded in eager-loading.
+func (e WorkspaceEdges) TaskLikesOrErr() ([]*TaskLike, error) {
+	if e.loadedTypes[7] {
+		return e.TaskLikes, nil
+	}
+	return nil, &NotLoadedError{edge: "task_likes"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -228,6 +239,11 @@ func (w *Workspace) QueryTeammateTaskListStatuses() *TeammateTaskListStatusQuery
 // QueryTeammateTaskSections queries the "teammate_task_sections" edge of the Workspace entity.
 func (w *Workspace) QueryTeammateTaskSections() *TeammateTaskSectionQuery {
 	return (&WorkspaceClient{config: w.config}).QueryTeammateTaskSections(w)
+}
+
+// QueryTaskLikes queries the "task_likes" edge of the Workspace entity.
+func (w *Workspace) QueryTaskLikes() *TaskLikeQuery {
+	return (&WorkspaceClient{config: w.config}).QueryTaskLikes(w)
 }
 
 // Update returns a builder for updating this Workspace.

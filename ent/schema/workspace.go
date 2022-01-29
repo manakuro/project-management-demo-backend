@@ -82,6 +82,11 @@ func (Workspace) Edges() []ent.Edge {
 					annotation.Edge{FieldName: "teammate_task_section_id"},
 				),
 			),
+		edge.To("task_likes", TaskLike.Type).Annotations(
+			schema.Annotation(
+				annotation.Edge{FieldName: "task_like_id"},
+			),
+		),
 	}
 }
 

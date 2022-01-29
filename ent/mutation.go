@@ -24,6 +24,7 @@ import (
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/task"
 	"project-management-demo-backend/ent/taskcolumn"
+	"project-management-demo-backend/ent/tasklike"
 	"project-management-demo-backend/ent/tasklistcompletedstatus"
 	"project-management-demo-backend/ent/tasklistsortstatus"
 	"project-management-demo-backend/ent/taskpriority"
@@ -68,6 +69,7 @@ const (
 	TypeProjectTeammate         = "ProjectTeammate"
 	TypeTask                    = "Task"
 	TypeTaskColumn              = "TaskColumn"
+	TypeTaskLike                = "TaskLike"
 	TypeTaskListCompletedStatus = "TaskListCompletedStatus"
 	TypeTaskListSortStatus      = "TaskListSortStatus"
 	TypeTaskPriority            = "TaskPriority"
@@ -9195,6 +9197,9 @@ type TaskMutation struct {
 	project_tasks         map[ulid.ID]struct{}
 	removedproject_tasks  map[ulid.ID]struct{}
 	clearedproject_tasks  bool
+	task_likes            map[ulid.ID]struct{}
+	removedtask_likes     map[ulid.ID]struct{}
+	clearedtask_likes     bool
 	done                  bool
 	oldValue              func(context.Context) (*Task, error)
 	predicates            []predicate.Task
@@ -10048,6 +10053,60 @@ func (m *TaskMutation) ResetProjectTasks() {
 	m.removedproject_tasks = nil
 }
 
+// AddTaskLikeIDs adds the "task_likes" edge to the TaskLike entity by ids.
+func (m *TaskMutation) AddTaskLikeIDs(ids ...ulid.ID) {
+	if m.task_likes == nil {
+		m.task_likes = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		m.task_likes[ids[i]] = struct{}{}
+	}
+}
+
+// ClearTaskLikes clears the "task_likes" edge to the TaskLike entity.
+func (m *TaskMutation) ClearTaskLikes() {
+	m.clearedtask_likes = true
+}
+
+// TaskLikesCleared reports if the "task_likes" edge to the TaskLike entity was cleared.
+func (m *TaskMutation) TaskLikesCleared() bool {
+	return m.clearedtask_likes
+}
+
+// RemoveTaskLikeIDs removes the "task_likes" edge to the TaskLike entity by IDs.
+func (m *TaskMutation) RemoveTaskLikeIDs(ids ...ulid.ID) {
+	if m.removedtask_likes == nil {
+		m.removedtask_likes = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		delete(m.task_likes, ids[i])
+		m.removedtask_likes[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedTaskLikes returns the removed IDs of the "task_likes" edge to the TaskLike entity.
+func (m *TaskMutation) RemovedTaskLikesIDs() (ids []ulid.ID) {
+	for id := range m.removedtask_likes {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// TaskLikesIDs returns the "task_likes" edge IDs in the mutation.
+func (m *TaskMutation) TaskLikesIDs() (ids []ulid.ID) {
+	for id := range m.task_likes {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetTaskLikes resets all changes to the "task_likes" edge.
+func (m *TaskMutation) ResetTaskLikes() {
+	m.task_likes = nil
+	m.clearedtask_likes = false
+	m.removedtask_likes = nil
+}
+
 // Where appends a list predicates to the TaskMutation builder.
 func (m *TaskMutation) Where(ps ...predicate.Task) {
 	m.predicates = append(m.predicates, ps...)
@@ -10386,7 +10445,7 @@ func (m *TaskMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *TaskMutation) AddedEdges() []string {
-	edges := make([]string, 0, 6)
+	edges := make([]string, 0, 7)
 	if m.teammate != nil {
 		edges = append(edges, task.EdgeTeammate)
 	}
@@ -10404,6 +10463,9 @@ func (m *TaskMutation) AddedEdges() []string {
 	}
 	if m.project_tasks != nil {
 		edges = append(edges, task.EdgeProjectTasks)
+	}
+	if m.task_likes != nil {
+		edges = append(edges, task.EdgeTaskLikes)
 	}
 	return edges
 }
@@ -10442,13 +10504,19 @@ func (m *TaskMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case task.EdgeTaskLikes:
+		ids := make([]ent.Value, 0, len(m.task_likes))
+		for id := range m.task_likes {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *TaskMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 6)
+	edges := make([]string, 0, 7)
 	if m.removedsub_tasks != nil {
 		edges = append(edges, task.EdgeSubTasks)
 	}
@@ -10457,6 +10525,9 @@ func (m *TaskMutation) RemovedEdges() []string {
 	}
 	if m.removedproject_tasks != nil {
 		edges = append(edges, task.EdgeProjectTasks)
+	}
+	if m.removedtask_likes != nil {
+		edges = append(edges, task.EdgeTaskLikes)
 	}
 	return edges
 }
@@ -10483,13 +10554,19 @@ func (m *TaskMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case task.EdgeTaskLikes:
+		ids := make([]ent.Value, 0, len(m.removedtask_likes))
+		for id := range m.removedtask_likes {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *TaskMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 6)
+	edges := make([]string, 0, 7)
 	if m.clearedteammate {
 		edges = append(edges, task.EdgeTeammate)
 	}
@@ -10507,6 +10584,9 @@ func (m *TaskMutation) ClearedEdges() []string {
 	}
 	if m.clearedproject_tasks {
 		edges = append(edges, task.EdgeProjectTasks)
+	}
+	if m.clearedtask_likes {
+		edges = append(edges, task.EdgeTaskLikes)
 	}
 	return edges
 }
@@ -10527,6 +10607,8 @@ func (m *TaskMutation) EdgeCleared(name string) bool {
 		return m.clearedteammate_tasks
 	case task.EdgeProjectTasks:
 		return m.clearedproject_tasks
+	case task.EdgeTaskLikes:
+		return m.clearedtask_likes
 	}
 	return false
 }
@@ -10569,6 +10651,9 @@ func (m *TaskMutation) ResetEdge(name string) error {
 		return nil
 	case task.EdgeProjectTasks:
 		m.ResetProjectTasks()
+		return nil
+	case task.EdgeTaskLikes:
+		m.ResetTaskLikes()
 		return nil
 	}
 	return fmt.Errorf("unknown Task edge %s", name)
@@ -11208,6 +11293,665 @@ func (m *TaskColumnMutation) ResetEdge(name string) error {
 		return nil
 	}
 	return fmt.Errorf("unknown TaskColumn edge %s", name)
+}
+
+// TaskLikeMutation represents an operation that mutates the TaskLike nodes in the graph.
+type TaskLikeMutation struct {
+	config
+	op               Op
+	typ              string
+	id               *ulid.ID
+	created_at       *time.Time
+	updated_at       *time.Time
+	clearedFields    map[string]struct{}
+	task             *ulid.ID
+	clearedtask      bool
+	teammate         *ulid.ID
+	clearedteammate  bool
+	workspace        *ulid.ID
+	clearedworkspace bool
+	done             bool
+	oldValue         func(context.Context) (*TaskLike, error)
+	predicates       []predicate.TaskLike
+}
+
+var _ ent.Mutation = (*TaskLikeMutation)(nil)
+
+// tasklikeOption allows management of the mutation configuration using functional options.
+type tasklikeOption func(*TaskLikeMutation)
+
+// newTaskLikeMutation creates new mutation for the TaskLike entity.
+func newTaskLikeMutation(c config, op Op, opts ...tasklikeOption) *TaskLikeMutation {
+	m := &TaskLikeMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeTaskLike,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withTaskLikeID sets the ID field of the mutation.
+func withTaskLikeID(id ulid.ID) tasklikeOption {
+	return func(m *TaskLikeMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *TaskLike
+		)
+		m.oldValue = func(ctx context.Context) (*TaskLike, error) {
+			once.Do(func() {
+				if m.done {
+					err = fmt.Errorf("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().TaskLike.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withTaskLike sets the old TaskLike of the mutation.
+func withTaskLike(node *TaskLike) tasklikeOption {
+	return func(m *TaskLikeMutation) {
+		m.oldValue = func(context.Context) (*TaskLike, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m TaskLikeMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m TaskLikeMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, fmt.Errorf("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of TaskLike entities.
+func (m *TaskLikeMutation) SetID(id ulid.ID) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *TaskLikeMutation) ID() (id ulid.ID, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// SetTaskID sets the "task_id" field.
+func (m *TaskLikeMutation) SetTaskID(u ulid.ID) {
+	m.task = &u
+}
+
+// TaskID returns the value of the "task_id" field in the mutation.
+func (m *TaskLikeMutation) TaskID() (r ulid.ID, exists bool) {
+	v := m.task
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTaskID returns the old "task_id" field's value of the TaskLike entity.
+// If the TaskLike object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TaskLikeMutation) OldTaskID(ctx context.Context) (v ulid.ID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldTaskID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldTaskID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTaskID: %w", err)
+	}
+	return oldValue.TaskID, nil
+}
+
+// ResetTaskID resets all changes to the "task_id" field.
+func (m *TaskLikeMutation) ResetTaskID() {
+	m.task = nil
+}
+
+// SetTeammateID sets the "teammate_id" field.
+func (m *TaskLikeMutation) SetTeammateID(u ulid.ID) {
+	m.teammate = &u
+}
+
+// TeammateID returns the value of the "teammate_id" field in the mutation.
+func (m *TaskLikeMutation) TeammateID() (r ulid.ID, exists bool) {
+	v := m.teammate
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTeammateID returns the old "teammate_id" field's value of the TaskLike entity.
+// If the TaskLike object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TaskLikeMutation) OldTeammateID(ctx context.Context) (v ulid.ID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldTeammateID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldTeammateID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTeammateID: %w", err)
+	}
+	return oldValue.TeammateID, nil
+}
+
+// ResetTeammateID resets all changes to the "teammate_id" field.
+func (m *TaskLikeMutation) ResetTeammateID() {
+	m.teammate = nil
+}
+
+// SetWorkspaceID sets the "workspace_id" field.
+func (m *TaskLikeMutation) SetWorkspaceID(u ulid.ID) {
+	m.workspace = &u
+}
+
+// WorkspaceID returns the value of the "workspace_id" field in the mutation.
+func (m *TaskLikeMutation) WorkspaceID() (r ulid.ID, exists bool) {
+	v := m.workspace
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldWorkspaceID returns the old "workspace_id" field's value of the TaskLike entity.
+// If the TaskLike object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TaskLikeMutation) OldWorkspaceID(ctx context.Context) (v ulid.ID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldWorkspaceID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldWorkspaceID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldWorkspaceID: %w", err)
+	}
+	return oldValue.WorkspaceID, nil
+}
+
+// ResetWorkspaceID resets all changes to the "workspace_id" field.
+func (m *TaskLikeMutation) ResetWorkspaceID() {
+	m.workspace = nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *TaskLikeMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *TaskLikeMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the TaskLike entity.
+// If the TaskLike object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TaskLikeMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *TaskLikeMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *TaskLikeMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *TaskLikeMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the TaskLike entity.
+// If the TaskLike object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TaskLikeMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *TaskLikeMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// ClearTask clears the "task" edge to the Task entity.
+func (m *TaskLikeMutation) ClearTask() {
+	m.clearedtask = true
+}
+
+// TaskCleared reports if the "task" edge to the Task entity was cleared.
+func (m *TaskLikeMutation) TaskCleared() bool {
+	return m.clearedtask
+}
+
+// TaskIDs returns the "task" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// TaskID instead. It exists only for internal usage by the builders.
+func (m *TaskLikeMutation) TaskIDs() (ids []ulid.ID) {
+	if id := m.task; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetTask resets all changes to the "task" edge.
+func (m *TaskLikeMutation) ResetTask() {
+	m.task = nil
+	m.clearedtask = false
+}
+
+// ClearTeammate clears the "teammate" edge to the Teammate entity.
+func (m *TaskLikeMutation) ClearTeammate() {
+	m.clearedteammate = true
+}
+
+// TeammateCleared reports if the "teammate" edge to the Teammate entity was cleared.
+func (m *TaskLikeMutation) TeammateCleared() bool {
+	return m.clearedteammate
+}
+
+// TeammateIDs returns the "teammate" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// TeammateID instead. It exists only for internal usage by the builders.
+func (m *TaskLikeMutation) TeammateIDs() (ids []ulid.ID) {
+	if id := m.teammate; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetTeammate resets all changes to the "teammate" edge.
+func (m *TaskLikeMutation) ResetTeammate() {
+	m.teammate = nil
+	m.clearedteammate = false
+}
+
+// ClearWorkspace clears the "workspace" edge to the Workspace entity.
+func (m *TaskLikeMutation) ClearWorkspace() {
+	m.clearedworkspace = true
+}
+
+// WorkspaceCleared reports if the "workspace" edge to the Workspace entity was cleared.
+func (m *TaskLikeMutation) WorkspaceCleared() bool {
+	return m.clearedworkspace
+}
+
+// WorkspaceIDs returns the "workspace" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// WorkspaceID instead. It exists only for internal usage by the builders.
+func (m *TaskLikeMutation) WorkspaceIDs() (ids []ulid.ID) {
+	if id := m.workspace; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetWorkspace resets all changes to the "workspace" edge.
+func (m *TaskLikeMutation) ResetWorkspace() {
+	m.workspace = nil
+	m.clearedworkspace = false
+}
+
+// Where appends a list predicates to the TaskLikeMutation builder.
+func (m *TaskLikeMutation) Where(ps ...predicate.TaskLike) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// Op returns the operation name.
+func (m *TaskLikeMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (TaskLike).
+func (m *TaskLikeMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *TaskLikeMutation) Fields() []string {
+	fields := make([]string, 0, 5)
+	if m.task != nil {
+		fields = append(fields, tasklike.FieldTaskID)
+	}
+	if m.teammate != nil {
+		fields = append(fields, tasklike.FieldTeammateID)
+	}
+	if m.workspace != nil {
+		fields = append(fields, tasklike.FieldWorkspaceID)
+	}
+	if m.created_at != nil {
+		fields = append(fields, tasklike.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, tasklike.FieldUpdatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *TaskLikeMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case tasklike.FieldTaskID:
+		return m.TaskID()
+	case tasklike.FieldTeammateID:
+		return m.TeammateID()
+	case tasklike.FieldWorkspaceID:
+		return m.WorkspaceID()
+	case tasklike.FieldCreatedAt:
+		return m.CreatedAt()
+	case tasklike.FieldUpdatedAt:
+		return m.UpdatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *TaskLikeMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case tasklike.FieldTaskID:
+		return m.OldTaskID(ctx)
+	case tasklike.FieldTeammateID:
+		return m.OldTeammateID(ctx)
+	case tasklike.FieldWorkspaceID:
+		return m.OldWorkspaceID(ctx)
+	case tasklike.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case tasklike.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown TaskLike field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *TaskLikeMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case tasklike.FieldTaskID:
+		v, ok := value.(ulid.ID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTaskID(v)
+		return nil
+	case tasklike.FieldTeammateID:
+		v, ok := value.(ulid.ID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTeammateID(v)
+		return nil
+	case tasklike.FieldWorkspaceID:
+		v, ok := value.(ulid.ID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetWorkspaceID(v)
+		return nil
+	case tasklike.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case tasklike.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown TaskLike field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *TaskLikeMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *TaskLikeMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *TaskLikeMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown TaskLike numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *TaskLikeMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *TaskLikeMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *TaskLikeMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown TaskLike nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *TaskLikeMutation) ResetField(name string) error {
+	switch name {
+	case tasklike.FieldTaskID:
+		m.ResetTaskID()
+		return nil
+	case tasklike.FieldTeammateID:
+		m.ResetTeammateID()
+		return nil
+	case tasklike.FieldWorkspaceID:
+		m.ResetWorkspaceID()
+		return nil
+	case tasklike.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case tasklike.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown TaskLike field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *TaskLikeMutation) AddedEdges() []string {
+	edges := make([]string, 0, 3)
+	if m.task != nil {
+		edges = append(edges, tasklike.EdgeTask)
+	}
+	if m.teammate != nil {
+		edges = append(edges, tasklike.EdgeTeammate)
+	}
+	if m.workspace != nil {
+		edges = append(edges, tasklike.EdgeWorkspace)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *TaskLikeMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case tasklike.EdgeTask:
+		if id := m.task; id != nil {
+			return []ent.Value{*id}
+		}
+	case tasklike.EdgeTeammate:
+		if id := m.teammate; id != nil {
+			return []ent.Value{*id}
+		}
+	case tasklike.EdgeWorkspace:
+		if id := m.workspace; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *TaskLikeMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 3)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *TaskLikeMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *TaskLikeMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 3)
+	if m.clearedtask {
+		edges = append(edges, tasklike.EdgeTask)
+	}
+	if m.clearedteammate {
+		edges = append(edges, tasklike.EdgeTeammate)
+	}
+	if m.clearedworkspace {
+		edges = append(edges, tasklike.EdgeWorkspace)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *TaskLikeMutation) EdgeCleared(name string) bool {
+	switch name {
+	case tasklike.EdgeTask:
+		return m.clearedtask
+	case tasklike.EdgeTeammate:
+		return m.clearedteammate
+	case tasklike.EdgeWorkspace:
+		return m.clearedworkspace
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *TaskLikeMutation) ClearEdge(name string) error {
+	switch name {
+	case tasklike.EdgeTask:
+		m.ClearTask()
+		return nil
+	case tasklike.EdgeTeammate:
+		m.ClearTeammate()
+		return nil
+	case tasklike.EdgeWorkspace:
+		m.ClearWorkspace()
+		return nil
+	}
+	return fmt.Errorf("unknown TaskLike unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *TaskLikeMutation) ResetEdge(name string) error {
+	switch name {
+	case tasklike.EdgeTask:
+		m.ResetTask()
+		return nil
+	case tasklike.EdgeTeammate:
+		m.ResetTeammate()
+		return nil
+	case tasklike.EdgeWorkspace:
+		m.ResetWorkspace()
+		return nil
+	}
+	return fmt.Errorf("unknown TaskLike edge %s", name)
 }
 
 // TaskListCompletedStatusMutation represents an operation that mutates the TaskListCompletedStatus nodes in the graph.
@@ -13588,6 +14332,9 @@ type TeammateMutation struct {
 	teammate_tasks                     map[ulid.ID]struct{}
 	removedteammate_tasks              map[ulid.ID]struct{}
 	clearedteammate_tasks              bool
+	task_likes                         map[ulid.ID]struct{}
+	removedtask_likes                  map[ulid.ID]struct{}
+	clearedtask_likes                  bool
 	done                               bool
 	oldValue                           func(context.Context) (*Teammate, error)
 	predicates                         []predicate.Teammate
@@ -14506,6 +15253,60 @@ func (m *TeammateMutation) ResetTeammateTasks() {
 	m.removedteammate_tasks = nil
 }
 
+// AddTaskLikeIDs adds the "task_likes" edge to the TaskLike entity by ids.
+func (m *TeammateMutation) AddTaskLikeIDs(ids ...ulid.ID) {
+	if m.task_likes == nil {
+		m.task_likes = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		m.task_likes[ids[i]] = struct{}{}
+	}
+}
+
+// ClearTaskLikes clears the "task_likes" edge to the TaskLike entity.
+func (m *TeammateMutation) ClearTaskLikes() {
+	m.clearedtask_likes = true
+}
+
+// TaskLikesCleared reports if the "task_likes" edge to the TaskLike entity was cleared.
+func (m *TeammateMutation) TaskLikesCleared() bool {
+	return m.clearedtask_likes
+}
+
+// RemoveTaskLikeIDs removes the "task_likes" edge to the TaskLike entity by IDs.
+func (m *TeammateMutation) RemoveTaskLikeIDs(ids ...ulid.ID) {
+	if m.removedtask_likes == nil {
+		m.removedtask_likes = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		delete(m.task_likes, ids[i])
+		m.removedtask_likes[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedTaskLikes returns the removed IDs of the "task_likes" edge to the TaskLike entity.
+func (m *TeammateMutation) RemovedTaskLikesIDs() (ids []ulid.ID) {
+	for id := range m.removedtask_likes {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// TaskLikesIDs returns the "task_likes" edge IDs in the mutation.
+func (m *TeammateMutation) TaskLikesIDs() (ids []ulid.ID) {
+	for id := range m.task_likes {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetTaskLikes resets all changes to the "task_likes" edge.
+func (m *TeammateMutation) ResetTaskLikes() {
+	m.task_likes = nil
+	m.clearedtask_likes = false
+	m.removedtask_likes = nil
+}
+
 // Where appends a list predicates to the TeammateMutation builder.
 func (m *TeammateMutation) Where(ps ...predicate.Teammate) {
 	m.predicates = append(m.predicates, ps...)
@@ -14692,7 +15493,7 @@ func (m *TeammateMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *TeammateMutation) AddedEdges() []string {
-	edges := make([]string, 0, 12)
+	edges := make([]string, 0, 13)
 	if m.workspaces != nil {
 		edges = append(edges, teammate.EdgeWorkspaces)
 	}
@@ -14728,6 +15529,9 @@ func (m *TeammateMutation) AddedEdges() []string {
 	}
 	if m.teammate_tasks != nil {
 		edges = append(edges, teammate.EdgeTeammateTasks)
+	}
+	if m.task_likes != nil {
+		edges = append(edges, teammate.EdgeTaskLikes)
 	}
 	return edges
 }
@@ -14808,13 +15612,19 @@ func (m *TeammateMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case teammate.EdgeTaskLikes:
+		ids := make([]ent.Value, 0, len(m.task_likes))
+		for id := range m.task_likes {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *TeammateMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 12)
+	edges := make([]string, 0, 13)
 	if m.removedworkspaces != nil {
 		edges = append(edges, teammate.EdgeWorkspaces)
 	}
@@ -14850,6 +15660,9 @@ func (m *TeammateMutation) RemovedEdges() []string {
 	}
 	if m.removedteammate_tasks != nil {
 		edges = append(edges, teammate.EdgeTeammateTasks)
+	}
+	if m.removedtask_likes != nil {
+		edges = append(edges, teammate.EdgeTaskLikes)
 	}
 	return edges
 }
@@ -14930,13 +15743,19 @@ func (m *TeammateMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case teammate.EdgeTaskLikes:
+		ids := make([]ent.Value, 0, len(m.removedtask_likes))
+		for id := range m.removedtask_likes {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *TeammateMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 12)
+	edges := make([]string, 0, 13)
 	if m.clearedworkspaces {
 		edges = append(edges, teammate.EdgeWorkspaces)
 	}
@@ -14973,6 +15792,9 @@ func (m *TeammateMutation) ClearedEdges() []string {
 	if m.clearedteammate_tasks {
 		edges = append(edges, teammate.EdgeTeammateTasks)
 	}
+	if m.clearedtask_likes {
+		edges = append(edges, teammate.EdgeTaskLikes)
+	}
 	return edges
 }
 
@@ -15004,6 +15826,8 @@ func (m *TeammateMutation) EdgeCleared(name string) bool {
 		return m.clearedtasks
 	case teammate.EdgeTeammateTasks:
 		return m.clearedteammate_tasks
+	case teammate.EdgeTaskLikes:
+		return m.clearedtask_likes
 	}
 	return false
 }
@@ -15055,6 +15879,9 @@ func (m *TeammateMutation) ResetEdge(name string) error {
 		return nil
 	case teammate.EdgeTeammateTasks:
 		m.ResetTeammateTasks()
+		return nil
+	case teammate.EdgeTaskLikes:
+		m.ResetTaskLikes()
 		return nil
 	}
 	return fmt.Errorf("unknown Teammate edge %s", name)
@@ -20350,6 +21177,9 @@ type WorkspaceMutation struct {
 	teammate_task_sections             map[ulid.ID]struct{}
 	removedteammate_task_sections      map[ulid.ID]struct{}
 	clearedteammate_task_sections      bool
+	task_likes                         map[ulid.ID]struct{}
+	removedtask_likes                  map[ulid.ID]struct{}
+	clearedtask_likes                  bool
 	done                               bool
 	oldValue                           func(context.Context) (*Workspace, error)
 	predicates                         []predicate.Workspace
@@ -20983,6 +21813,60 @@ func (m *WorkspaceMutation) ResetTeammateTaskSections() {
 	m.removedteammate_task_sections = nil
 }
 
+// AddTaskLikeIDs adds the "task_likes" edge to the TaskLike entity by ids.
+func (m *WorkspaceMutation) AddTaskLikeIDs(ids ...ulid.ID) {
+	if m.task_likes == nil {
+		m.task_likes = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		m.task_likes[ids[i]] = struct{}{}
+	}
+}
+
+// ClearTaskLikes clears the "task_likes" edge to the TaskLike entity.
+func (m *WorkspaceMutation) ClearTaskLikes() {
+	m.clearedtask_likes = true
+}
+
+// TaskLikesCleared reports if the "task_likes" edge to the TaskLike entity was cleared.
+func (m *WorkspaceMutation) TaskLikesCleared() bool {
+	return m.clearedtask_likes
+}
+
+// RemoveTaskLikeIDs removes the "task_likes" edge to the TaskLike entity by IDs.
+func (m *WorkspaceMutation) RemoveTaskLikeIDs(ids ...ulid.ID) {
+	if m.removedtask_likes == nil {
+		m.removedtask_likes = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		delete(m.task_likes, ids[i])
+		m.removedtask_likes[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedTaskLikes returns the removed IDs of the "task_likes" edge to the TaskLike entity.
+func (m *WorkspaceMutation) RemovedTaskLikesIDs() (ids []ulid.ID) {
+	for id := range m.removedtask_likes {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// TaskLikesIDs returns the "task_likes" edge IDs in the mutation.
+func (m *WorkspaceMutation) TaskLikesIDs() (ids []ulid.ID) {
+	for id := range m.task_likes {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetTaskLikes resets all changes to the "task_likes" edge.
+func (m *WorkspaceMutation) ResetTaskLikes() {
+	m.task_likes = nil
+	m.clearedtask_likes = false
+	m.removedtask_likes = nil
+}
+
 // Where appends a list predicates to the WorkspaceMutation builder.
 func (m *WorkspaceMutation) Where(ps ...predicate.Workspace) {
 	m.predicates = append(m.predicates, ps...)
@@ -21169,7 +22053,7 @@ func (m *WorkspaceMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *WorkspaceMutation) AddedEdges() []string {
-	edges := make([]string, 0, 7)
+	edges := make([]string, 0, 8)
 	if m.teammate != nil {
 		edges = append(edges, workspace.EdgeTeammate)
 	}
@@ -21190,6 +22074,9 @@ func (m *WorkspaceMutation) AddedEdges() []string {
 	}
 	if m.teammate_task_sections != nil {
 		edges = append(edges, workspace.EdgeTeammateTaskSections)
+	}
+	if m.task_likes != nil {
+		edges = append(edges, workspace.EdgeTaskLikes)
 	}
 	return edges
 }
@@ -21238,13 +22125,19 @@ func (m *WorkspaceMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case workspace.EdgeTaskLikes:
+		ids := make([]ent.Value, 0, len(m.task_likes))
+		for id := range m.task_likes {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *WorkspaceMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 7)
+	edges := make([]string, 0, 8)
 	if m.removedprojects != nil {
 		edges = append(edges, workspace.EdgeProjects)
 	}
@@ -21262,6 +22155,9 @@ func (m *WorkspaceMutation) RemovedEdges() []string {
 	}
 	if m.removedteammate_task_sections != nil {
 		edges = append(edges, workspace.EdgeTeammateTaskSections)
+	}
+	if m.removedtask_likes != nil {
+		edges = append(edges, workspace.EdgeTaskLikes)
 	}
 	return edges
 }
@@ -21306,13 +22202,19 @@ func (m *WorkspaceMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case workspace.EdgeTaskLikes:
+		ids := make([]ent.Value, 0, len(m.removedtask_likes))
+		for id := range m.removedtask_likes {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *WorkspaceMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 7)
+	edges := make([]string, 0, 8)
 	if m.clearedteammate {
 		edges = append(edges, workspace.EdgeTeammate)
 	}
@@ -21333,6 +22235,9 @@ func (m *WorkspaceMutation) ClearedEdges() []string {
 	}
 	if m.clearedteammate_task_sections {
 		edges = append(edges, workspace.EdgeTeammateTaskSections)
+	}
+	if m.clearedtask_likes {
+		edges = append(edges, workspace.EdgeTaskLikes)
 	}
 	return edges
 }
@@ -21355,6 +22260,8 @@ func (m *WorkspaceMutation) EdgeCleared(name string) bool {
 		return m.clearedteammate_task_list_statuses
 	case workspace.EdgeTeammateTaskSections:
 		return m.clearedteammate_task_sections
+	case workspace.EdgeTaskLikes:
+		return m.clearedtask_likes
 	}
 	return false
 }
@@ -21394,6 +22301,9 @@ func (m *WorkspaceMutation) ResetEdge(name string) error {
 		return nil
 	case workspace.EdgeTeammateTaskSections:
 		m.ResetTeammateTaskSections()
+		return nil
+	case workspace.EdgeTaskLikes:
+		m.ResetTaskLikes()
 		return nil
 	}
 	return fmt.Errorf("unknown Workspace edge %s", name)

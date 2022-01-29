@@ -51,6 +51,9 @@ type Task func(*sql.Selector)
 // TaskColumn is the predicate function for taskcolumn builders.
 type TaskColumn func(*sql.Selector)
 
+// TaskLike is the predicate function for tasklike builders.
+type TaskLike func(*sql.Selector)
+
 // TaskListCompletedStatus is the predicate function for tasklistcompletedstatus builders.
 type TaskListCompletedStatus func(*sql.Selector)
 
