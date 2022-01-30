@@ -16,6 +16,7 @@ import (
 	"project-management-demo-backend/ent/projecttaskliststatus"
 	"project-management-demo-backend/ent/projecttasksection"
 	"project-management-demo-backend/ent/projectteammate"
+	"project-management-demo-backend/ent/tag"
 	"project-management-demo-backend/ent/task"
 	"project-management-demo-backend/ent/taskcolumn"
 	"project-management-demo-backend/ent/tasklike"
@@ -202,7 +203,7 @@ func New() GlobalIDs {
 		},
 		Tag: field{
 			Prefix: "0BE",
-			Table:  tasklike.Table,
+			Table:  tag.Table,
 		},
 	}
 }
