@@ -59,6 +59,11 @@ func (Color) Edges() []ent.Edge {
 					annotation.Edge{FieldName: "task_priority_id"},
 				),
 			),
+		edge.To("tags", Tag.Type).Annotations(
+			schema.Annotation(
+				annotation.Edge{FieldName: "tag_id"},
+			),
+		),
 	}
 }
 

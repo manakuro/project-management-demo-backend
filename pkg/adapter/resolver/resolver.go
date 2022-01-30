@@ -45,6 +45,7 @@ func NewSchema(client *ent.Client, controller controller.Controller) graphql.Exe
 				ProjectTaskUpdated:            map[string]subscription.ProjectTaskUpdated{},
 				ProjectTeammateUpdated:        map[string]subscription.ProjectTeammateUpdated{},
 				ProjectUpdated:                map[string]subscription.ProjectUpdated{},
+				TagUpdated:                    map[string]subscription.TagUpdated{},
 				TaskColumnUpdated:             map[string]subscription.TaskColumnUpdated{},
 				TaskLikesUpdated:              map[string]subscription.TaskLikesUpdated{},
 				TaskSectionUpdated:            map[string]subscription.TaskSectionUpdated{},

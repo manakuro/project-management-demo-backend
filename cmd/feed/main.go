@@ -34,6 +34,7 @@ func main() {
 	feed.TaskListSortStatus(ctx, client)
 	feed.TaskSection(ctx, client)
 	feed.TaskPriority(ctx, client)
+	feed.Tag(ctx, client)
 
 	feed.Task(ctx, client)
 	feed.TeammateTaskSection(ctx, client)

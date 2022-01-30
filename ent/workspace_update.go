@@ -11,6 +11,7 @@ import (
 	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/schema/editor"
 	"project-management-demo-backend/ent/schema/ulid"
+	"project-management-demo-backend/ent/tag"
 	"project-management-demo-backend/ent/tasklike"
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/teammatetaskliststatus"
@@ -171,6 +172,21 @@ func (wu *WorkspaceUpdate) AddTaskLikes(t ...*TaskLike) *WorkspaceUpdate {
 	return wu.AddTaskLikeIDs(ids...)
 }
 
+// AddTagIDs adds the "tags" edge to the Tag entity by IDs.
+func (wu *WorkspaceUpdate) AddTagIDs(ids ...ulid.ID) *WorkspaceUpdate {
+	wu.mutation.AddTagIDs(ids...)
+	return wu
+}
+
+// AddTags adds the "tags" edges to the Tag entity.
+func (wu *WorkspaceUpdate) AddTags(t ...*Tag) *WorkspaceUpdate {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return wu.AddTagIDs(ids...)
+}
+
 // Mutation returns the WorkspaceMutation object of the builder.
 func (wu *WorkspaceUpdate) Mutation() *WorkspaceMutation {
 	return wu.mutation
@@ -327,6 +343,27 @@ func (wu *WorkspaceUpdate) RemoveTaskLikes(t ...*TaskLike) *WorkspaceUpdate {
 		ids[i] = t[i].ID
 	}
 	return wu.RemoveTaskLikeIDs(ids...)
+}
+
+// ClearTags clears all "tags" edges to the Tag entity.
+func (wu *WorkspaceUpdate) ClearTags() *WorkspaceUpdate {
+	wu.mutation.ClearTags()
+	return wu
+}
+
+// RemoveTagIDs removes the "tags" edge to Tag entities by IDs.
+func (wu *WorkspaceUpdate) RemoveTagIDs(ids ...ulid.ID) *WorkspaceUpdate {
+	wu.mutation.RemoveTagIDs(ids...)
+	return wu
+}
+
+// RemoveTags removes "tags" edges to Tag entities.
+func (wu *WorkspaceUpdate) RemoveTags(t ...*Tag) *WorkspaceUpdate {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return wu.RemoveTagIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -847,6 +884,60 @@ func (wu *WorkspaceUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if wu.mutation.TagsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   workspace.TagsTable,
+			Columns: []string{workspace.TagsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: tag.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := wu.mutation.RemovedTagsIDs(); len(nodes) > 0 && !wu.mutation.TagsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   workspace.TagsTable,
+			Columns: []string{workspace.TagsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: tag.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := wu.mutation.TagsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   workspace.TagsTable,
+			Columns: []string{workspace.TagsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: tag.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, wu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{workspace.Label}
@@ -998,6 +1089,21 @@ func (wuo *WorkspaceUpdateOne) AddTaskLikes(t ...*TaskLike) *WorkspaceUpdateOne 
 		ids[i] = t[i].ID
 	}
 	return wuo.AddTaskLikeIDs(ids...)
+}
+
+// AddTagIDs adds the "tags" edge to the Tag entity by IDs.
+func (wuo *WorkspaceUpdateOne) AddTagIDs(ids ...ulid.ID) *WorkspaceUpdateOne {
+	wuo.mutation.AddTagIDs(ids...)
+	return wuo
+}
+
+// AddTags adds the "tags" edges to the Tag entity.
+func (wuo *WorkspaceUpdateOne) AddTags(t ...*Tag) *WorkspaceUpdateOne {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return wuo.AddTagIDs(ids...)
 }
 
 // Mutation returns the WorkspaceMutation object of the builder.
@@ -1156,6 +1262,27 @@ func (wuo *WorkspaceUpdateOne) RemoveTaskLikes(t ...*TaskLike) *WorkspaceUpdateO
 		ids[i] = t[i].ID
 	}
 	return wuo.RemoveTaskLikeIDs(ids...)
+}
+
+// ClearTags clears all "tags" edges to the Tag entity.
+func (wuo *WorkspaceUpdateOne) ClearTags() *WorkspaceUpdateOne {
+	wuo.mutation.ClearTags()
+	return wuo
+}
+
+// RemoveTagIDs removes the "tags" edge to Tag entities by IDs.
+func (wuo *WorkspaceUpdateOne) RemoveTagIDs(ids ...ulid.ID) *WorkspaceUpdateOne {
+	wuo.mutation.RemoveTagIDs(ids...)
+	return wuo
+}
+
+// RemoveTags removes "tags" edges to Tag entities.
+func (wuo *WorkspaceUpdateOne) RemoveTags(t ...*Tag) *WorkspaceUpdateOne {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return wuo.RemoveTagIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -1692,6 +1819,60 @@ func (wuo *WorkspaceUpdateOne) sqlSave(ctx context.Context) (_node *Workspace, e
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: tasklike.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if wuo.mutation.TagsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   workspace.TagsTable,
+			Columns: []string{workspace.TagsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: tag.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := wuo.mutation.RemovedTagsIDs(); len(nodes) > 0 && !wuo.mutation.TagsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   workspace.TagsTable,
+			Columns: []string{workspace.TagsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: tag.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := wuo.mutation.TagsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   workspace.TagsTable,
+			Columns: []string{workspace.TagsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: tag.FieldID,
 				},
 			},
 		}

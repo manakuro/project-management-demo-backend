@@ -12,6 +12,7 @@ import (
 	"project-management-demo-backend/ent/projectlightcolor"
 	"project-management-demo-backend/ent/projecttasksection"
 	"project-management-demo-backend/ent/schema/ulid"
+	"project-management-demo-backend/ent/tag"
 	"project-management-demo-backend/ent/task"
 	"project-management-demo-backend/ent/taskcolumn"
 	"project-management-demo-backend/ent/tasklistcompletedstatus"
@@ -190,6 +191,21 @@ func GetProjectTaskSectionByName(ctx context.Context, client *ent.Client, projec
 
 	if err != nil {
 		log.Fatalf("GetProjectTaskSectionByName: failed get data: %v", err)
+	}
+
+	return res
+}
+
+// GetTagByName gets tag data.
+func GetTagByName(ctx context.Context, client *ent.Client, val string) *ent.Tag {
+	res, err := client.
+		Tag.
+		Query().
+		Where(tag.NameEQ(val)).
+		Only(ctx)
+
+	if err != nil {
+		log.Fatalf("GetTagByName: failed get data: %v", err)
 	}
 
 	return res

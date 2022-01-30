@@ -17,6 +17,7 @@ type Controller struct {
 	ProjectTaskListStatus   interface{ ProjectTaskListStatus }
 	ProjectTaskSection      interface{ ProjectTaskSection }
 	ProjectTeammate         interface{ ProjectTeammate }
+	Tag                     interface{ Tag }
 	Task                    interface{ Task }
 	TaskColumn              interface{ TaskColumn }
 	TaskLike                interface{ TaskLike }
