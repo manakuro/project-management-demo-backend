@@ -26,6 +26,8 @@ const (
 	EdgeWorkspace = "workspace"
 	// EdgeColor holds the string denoting the color edge name in mutations.
 	EdgeColor = "color"
+	// EdgeTaskTags holds the string denoting the task_tags edge name in mutations.
+	EdgeTaskTags = "task_tags"
 	// Table holds the table name of the tag in the database.
 	Table = "tags"
 	// WorkspaceTable is the table that holds the workspace relation/edge.
@@ -42,6 +44,13 @@ const (
 	ColorInverseTable = "colors"
 	// ColorColumn is the table column denoting the color relation/edge.
 	ColorColumn = "color_id"
+	// TaskTagsTable is the table that holds the task_tags relation/edge.
+	TaskTagsTable = "task_tags"
+	// TaskTagsInverseTable is the table name for the TaskTag entity.
+	// It exists in this package in order to avoid circular dependency with the "tasktag" package.
+	TaskTagsInverseTable = "task_tags"
+	// TaskTagsColumn is the table column denoting the task_tags relation/edge.
+	TaskTagsColumn = "tag_id"
 )
 
 // Columns holds all SQL columns for tag fields.

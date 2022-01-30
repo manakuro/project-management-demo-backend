@@ -40,9 +40,11 @@ type TagEdges struct {
 	Workspace *Workspace `json:"workspace,omitempty"`
 	// Color holds the value of the color edge.
 	Color *Color `json:"color,omitempty"`
+	// TaskTags holds the value of the task_tags edge.
+	TaskTags []*TaskTag `json:"task_tags,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [3]bool
 }
 
 // WorkspaceOrErr returns the Workspace value or an error if the edge
@@ -71,6 +73,15 @@ func (e TagEdges) ColorOrErr() (*Color, error) {
 		return e.Color, nil
 	}
 	return nil, &NotLoadedError{edge: "color"}
+}
+
+// TaskTagsOrErr returns the TaskTags value or an error if the edge
+// was not loaded in eager-loading.
+func (e TagEdges) TaskTagsOrErr() ([]*TaskTag, error) {
+	if e.loadedTypes[2] {
+		return e.TaskTags, nil
+	}
+	return nil, &NotLoadedError{edge: "task_tags"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -148,6 +159,11 @@ func (t *Tag) QueryWorkspace() *WorkspaceQuery {
 // QueryColor queries the "color" edge of the Tag entity.
 func (t *Tag) QueryColor() *ColorQuery {
 	return (&TagClient{config: t.config}).QueryColor(t)
+}
+
+// QueryTaskTags queries the "task_tags" edge of the Tag entity.
+func (t *Tag) QueryTaskTags() *TaskTagQuery {
+	return (&TagClient{config: t.config}).QueryTaskTags(t)
 }
 
 // Update returns a builder for updating this Tag.

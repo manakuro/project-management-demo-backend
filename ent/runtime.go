@@ -26,6 +26,7 @@ import (
 	"project-management-demo-backend/ent/tasklistsortstatus"
 	"project-management-demo-backend/ent/taskpriority"
 	"project-management-demo-backend/ent/tasksection"
+	"project-management-demo-backend/ent/tasktag"
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/teammatetask"
 	"project-management-demo-backend/ent/teammatetaskcolumn"
@@ -754,6 +755,25 @@ func init() {
 	tasksectionDescID := tasksectionMixinFields0[0].Descriptor()
 	// tasksection.DefaultID holds the default value on creation for the id field.
 	tasksection.DefaultID = tasksectionDescID.Default.(func() ulid.ID)
+	tasktagMixin := schema.TaskTag{}.Mixin()
+	tasktagMixinFields0 := tasktagMixin[0].Fields()
+	_ = tasktagMixinFields0
+	tasktagMixinFields2 := tasktagMixin[2].Fields()
+	_ = tasktagMixinFields2
+	tasktagFields := schema.TaskTag{}.Fields()
+	_ = tasktagFields
+	// tasktagDescCreatedAt is the schema descriptor for created_at field.
+	tasktagDescCreatedAt := tasktagMixinFields2[0].Descriptor()
+	// tasktag.DefaultCreatedAt holds the default value on creation for the created_at field.
+	tasktag.DefaultCreatedAt = tasktagDescCreatedAt.Default.(func() time.Time)
+	// tasktagDescUpdatedAt is the schema descriptor for updated_at field.
+	tasktagDescUpdatedAt := tasktagMixinFields2[1].Descriptor()
+	// tasktag.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	tasktag.DefaultUpdatedAt = tasktagDescUpdatedAt.Default.(func() time.Time)
+	// tasktagDescID is the schema descriptor for id field.
+	tasktagDescID := tasktagMixinFields0[0].Descriptor()
+	// tasktag.DefaultID holds the default value on creation for the id field.
+	tasktag.DefaultID = tasktagDescID.Default.(func() ulid.ID)
 	teammateMixin := schema.Teammate{}.Mixin()
 	teammateMixinFields0 := teammateMixin[0].Fields()
 	_ = teammateMixinFields0

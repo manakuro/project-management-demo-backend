@@ -60,6 +60,11 @@ func (Tag) Edges() []ent.Edge {
 					annotation.Edge{FieldName: "color_id"},
 				),
 			),
+		edge.To("task_tags", TaskTag.Type).Annotations(
+			schema.Annotation(
+				annotation.Edge{FieldName: "task_tag_id"},
+			),
+		),
 	}
 }
 

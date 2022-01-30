@@ -324,6 +324,14 @@ func (t *Tag) Color(ctx context.Context) (*Color, error) {
 	return result, err
 }
 
+func (t *Tag) TaskTags(ctx context.Context) ([]*TaskTag, error) {
+	result, err := t.Edges.TaskTagsOrErr()
+	if IsNotLoaded(err) {
+		result, err = t.QueryTaskTags().All(ctx)
+	}
+	return result, err
+}
+
 func (t *Task) Teammate(ctx context.Context) (*Teammate, error) {
 	result, err := t.Edges.TeammateOrErr()
 	if IsNotLoaded(err) {
@@ -376,6 +384,14 @@ func (t *Task) TaskLikes(ctx context.Context) ([]*TaskLike, error) {
 	result, err := t.Edges.TaskLikesOrErr()
 	if IsNotLoaded(err) {
 		result, err = t.QueryTaskLikes().All(ctx)
+	}
+	return result, err
+}
+
+func (t *Task) TaskTags(ctx context.Context) ([]*TaskTag, error) {
+	result, err := t.Edges.TaskTagsOrErr()
+	if IsNotLoaded(err) {
+		result, err = t.QueryTaskTags().All(ctx)
 	}
 	return result, err
 }
@@ -464,6 +480,22 @@ func (tp *TaskPriority) Tasks(ctx context.Context) ([]*Task, error) {
 	result, err := tp.Edges.TasksOrErr()
 	if IsNotLoaded(err) {
 		result, err = tp.QueryTasks().All(ctx)
+	}
+	return result, err
+}
+
+func (tt *TaskTag) Task(ctx context.Context) (*Task, error) {
+	result, err := tt.Edges.TaskOrErr()
+	if IsNotLoaded(err) {
+		result, err = tt.QueryTask().Only(ctx)
+	}
+	return result, err
+}
+
+func (tt *TaskTag) Tag(ctx context.Context) (*Tag, error) {
+	result, err := tt.Edges.TagOrErr()
+	if IsNotLoaded(err) {
+		result, err = tt.QueryTag().Only(ctx)
 	}
 	return result, err
 }
