@@ -34,55 +34,59 @@ func ProjectTaskSection(ctx context.Context, client *ent.Client) {
 		log.Fatalf("ProjectTaskSection failed to delete data: %v", err)
 	}
 
+	appDevelopmentProject := feedutil.GetProjectByName(ctx, client, projectFeed.appDevelopment.name)
+	marketingProject := feedutil.GetProjectByName(ctx, client, projectFeed.marketing.name)
+	customerSuccessProject := feedutil.GetProjectByName(ctx, client, projectFeed.customerSuccess.name)
+
 	ts := []ent.CreateProjectTaskSectionInput{
 		{
-			ProjectID: feedutil.GetProjectByName(ctx, client, projectFeed.appDevelopment.name).ID,
+			ProjectID: appDevelopmentProject.ID,
 			Name:      projectTaskSectionFeed.backlog.Name,
 		},
 		{
-			ProjectID: feedutil.GetProjectByName(ctx, client, projectFeed.appDevelopment.name).ID,
+			ProjectID: appDevelopmentProject.ID,
 			Name:      projectTaskSectionFeed.ready.Name,
 		},
 		{
-			ProjectID: feedutil.GetProjectByName(ctx, client, projectFeed.appDevelopment.name).ID,
+			ProjectID: appDevelopmentProject.ID,
 			Name:      projectTaskSectionFeed.inProgress.Name,
 		},
 		{
-			ProjectID: feedutil.GetProjectByName(ctx, client, projectFeed.appDevelopment.name).ID,
+			ProjectID: appDevelopmentProject.ID,
 			Name:      projectTaskSectionFeed.done.Name,
 		},
 
 		{
-			ProjectID: feedutil.GetProjectByName(ctx, client, projectFeed.marketing.name).ID,
+			ProjectID: marketingProject.ID,
 			Name:      projectTaskSectionFeed.backlog.Name,
 		},
 		{
-			ProjectID: feedutil.GetProjectByName(ctx, client, projectFeed.marketing.name).ID,
+			ProjectID: marketingProject.ID,
 			Name:      projectTaskSectionFeed.ready.Name,
 		},
 		{
-			ProjectID: feedutil.GetProjectByName(ctx, client, projectFeed.marketing.name).ID,
+			ProjectID: marketingProject.ID,
 			Name:      projectTaskSectionFeed.inProgress.Name,
 		},
 		{
-			ProjectID: feedutil.GetProjectByName(ctx, client, projectFeed.marketing.name).ID,
+			ProjectID: marketingProject.ID,
 			Name:      projectTaskSectionFeed.done.Name,
 		},
 
 		{
-			ProjectID: feedutil.GetProjectByName(ctx, client, projectFeed.customerSuccess.name).ID,
+			ProjectID: customerSuccessProject.ID,
 			Name:      projectTaskSectionFeed.backlog.Name,
 		},
 		{
-			ProjectID: feedutil.GetProjectByName(ctx, client, projectFeed.customerSuccess.name).ID,
+			ProjectID: customerSuccessProject.ID,
 			Name:      projectTaskSectionFeed.ready.Name,
 		},
 		{
-			ProjectID: feedutil.GetProjectByName(ctx, client, projectFeed.customerSuccess.name).ID,
+			ProjectID: customerSuccessProject.ID,
 			Name:      projectTaskSectionFeed.inProgress.Name,
 		},
 		{
-			ProjectID: feedutil.GetProjectByName(ctx, client, projectFeed.customerSuccess.name).ID,
+			ProjectID: customerSuccessProject.ID,
 			Name:      projectTaskSectionFeed.done.Name,
 		},
 	}

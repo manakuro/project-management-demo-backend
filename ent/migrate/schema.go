@@ -556,6 +556,51 @@ var (
 			},
 		},
 	}
+	// TaskFilesColumns holds the columns for the "task_files" table.
+	TaskFilesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+		{Name: "name", Type: field.TypeString, Size: 255},
+		{Name: "src", Type: field.TypeString, Size: 255},
+		{Name: "attached", Type: field.TypeBool, Default: false},
+		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
+		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
+		{Name: "file_type_id", Type: field.TypeString, Nullable: true},
+		{Name: "project_id", Type: field.TypeString, Nullable: true},
+		{Name: "task_id", Type: field.TypeString, Nullable: true},
+		{Name: "task_feed_id", Type: field.TypeString, Nullable: true},
+	}
+	// TaskFilesTable holds the schema information for the "task_files" table.
+	TaskFilesTable = &schema.Table{
+		Name:       "task_files",
+		Columns:    TaskFilesColumns,
+		PrimaryKey: []*schema.Column{TaskFilesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "task_files_file_types_task_files",
+				Columns:    []*schema.Column{TaskFilesColumns[6]},
+				RefColumns: []*schema.Column{FileTypesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "task_files_projects_task_files",
+				Columns:    []*schema.Column{TaskFilesColumns[7]},
+				RefColumns: []*schema.Column{ProjectsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "task_files_tasks_task_files",
+				Columns:    []*schema.Column{TaskFilesColumns[8]},
+				RefColumns: []*schema.Column{TasksColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "task_files_task_feeds_task_files",
+				Columns:    []*schema.Column{TaskFilesColumns[9]},
+				RefColumns: []*schema.Column{TaskFeedsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
 	// TaskLikesColumns holds the columns for the "task_likes" table.
 	TaskLikesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString},
@@ -996,6 +1041,7 @@ var (
 		TaskColumnsTable,
 		TaskFeedsTable,
 		TaskFeedLikesTable,
+		TaskFilesTable,
 		TaskLikesTable,
 		TaskListCompletedStatusTable,
 		TaskListSortStatusTable,
@@ -1051,6 +1097,10 @@ func init() {
 	TaskFeedLikesTable.ForeignKeys[0].RefTable = TasksTable
 	TaskFeedLikesTable.ForeignKeys[1].RefTable = TaskFeedsTable
 	TaskFeedLikesTable.ForeignKeys[2].RefTable = TeammatesTable
+	TaskFilesTable.ForeignKeys[0].RefTable = FileTypesTable
+	TaskFilesTable.ForeignKeys[1].RefTable = ProjectsTable
+	TaskFilesTable.ForeignKeys[2].RefTable = TasksTable
+	TaskFilesTable.ForeignKeys[3].RefTable = TaskFeedsTable
 	TaskLikesTable.ForeignKeys[0].RefTable = TasksTable
 	TaskLikesTable.ForeignKeys[1].RefTable = TeammatesTable
 	TaskLikesTable.ForeignKeys[2].RefTable = WorkspacesTable

@@ -75,9 +75,11 @@ type ProjectEdges struct {
 	ProjectTaskSections []*ProjectTaskSection `json:"project_task_sections,omitempty"`
 	// ProjectTasks holds the value of the project_tasks edge.
 	ProjectTasks []*ProjectTask `json:"project_tasks,omitempty"`
+	// TaskFiles holds the value of the task_files edge.
+	TaskFiles []*TaskFile `json:"task_files,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [11]bool
+	loadedTypes [12]bool
 }
 
 // WorkspaceOrErr returns the Workspace value or an error if the edge
@@ -202,6 +204,15 @@ func (e ProjectEdges) ProjectTasksOrErr() ([]*ProjectTask, error) {
 		return e.ProjectTasks, nil
 	}
 	return nil, &NotLoadedError{edge: "project_tasks"}
+}
+
+// TaskFilesOrErr returns the TaskFiles value or an error if the edge
+// was not loaded in eager-loading.
+func (e ProjectEdges) TaskFilesOrErr() ([]*TaskFile, error) {
+	if e.loadedTypes[11] {
+		return e.TaskFiles, nil
+	}
+	return nil, &NotLoadedError{edge: "task_files"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -365,6 +376,11 @@ func (pr *Project) QueryProjectTaskSections() *ProjectTaskSectionQuery {
 // QueryProjectTasks queries the "project_tasks" edge of the Project entity.
 func (pr *Project) QueryProjectTasks() *ProjectTaskQuery {
 	return (&ProjectClient{config: pr.config}).QueryProjectTasks(pr)
+}
+
+// QueryTaskFiles queries the "task_files" edge of the Project entity.
+func (pr *Project) QueryTaskFiles() *TaskFileQuery {
+	return (&ProjectClient{config: pr.config}).QueryTaskFiles(pr)
 }
 
 // Update returns a builder for updating this Project.

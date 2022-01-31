@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 )
 
 // ID filters vertices based on their ID field.
@@ -422,6 +423,34 @@ func UpdatedAtLT(v time.Time) predicate.FileType {
 func UpdatedAtLTE(v time.Time) predicate.FileType {
 	return predicate.FileType(func(s *sql.Selector) {
 		s.Where(sql.LTE(s.C(FieldUpdatedAt), v))
+	})
+}
+
+// HasTaskFiles applies the HasEdge predicate on the "task_files" edge.
+func HasTaskFiles() predicate.FileType {
+	return predicate.FileType(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(TaskFilesTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, TaskFilesTable, TaskFilesColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasTaskFilesWith applies the HasEdge predicate on the "task_files" edge with a given conditions (other predicates).
+func HasTaskFilesWith(preds ...predicate.TaskFile) predicate.FileType {
+	return predicate.FileType(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(TaskFilesInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, TaskFilesTable, TaskFilesColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
 	})
 }
 

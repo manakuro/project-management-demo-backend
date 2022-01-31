@@ -6,6 +6,7 @@ import (
 	"log"
 	"project-management-demo-backend/ent"
 	"project-management-demo-backend/ent/color"
+	"project-management-demo-backend/ent/filetype"
 	"project-management-demo-backend/ent/icon"
 	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/projectbasecolor"
@@ -224,6 +225,21 @@ func GetTaskFeeds(ctx context.Context, client *ent.Client, taskID ulid.ID) []*en
 
 	if err != nil {
 		log.Fatalf("GetTaskFeed: failed get data: %v", err)
+	}
+
+	return res
+}
+
+// GetFileType gets file type data.
+func GetFileType(ctx context.Context, client *ent.Client, val string) *ent.FileType {
+	res, err := client.
+		FileType.
+		Query().
+		Where(filetype.NameEQ(val)).
+		Only(ctx)
+
+	if err != nil {
+		log.Fatalf("GetFileType: failed get data: %v", err)
 	}
 
 	return res

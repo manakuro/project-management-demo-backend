@@ -1539,6 +1539,34 @@ func HasTaskFeedLikesWith(preds ...predicate.TaskFeedLike) predicate.Task {
 	})
 }
 
+// HasTaskFiles applies the HasEdge predicate on the "task_files" edge.
+func HasTaskFiles() predicate.Task {
+	return predicate.Task(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(TaskFilesTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, TaskFilesTable, TaskFilesColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasTaskFilesWith applies the HasEdge predicate on the "task_files" edge with a given conditions (other predicates).
+func HasTaskFilesWith(preds ...predicate.TaskFile) predicate.Task {
+	return predicate.Task(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(TaskFilesInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, TaskFilesTable, TaskFilesColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Task) predicate.Task {
 	return predicate.Task(func(s *sql.Selector) {

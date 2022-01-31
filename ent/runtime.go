@@ -25,6 +25,7 @@ import (
 	"project-management-demo-backend/ent/taskcolumn"
 	"project-management-demo-backend/ent/taskfeed"
 	"project-management-demo-backend/ent/taskfeedlike"
+	"project-management-demo-backend/ent/taskfile"
 	"project-management-demo-backend/ent/tasklike"
 	"project-management-demo-backend/ent/tasklistcompletedstatus"
 	"project-management-demo-backend/ent/tasklistsortstatus"
@@ -690,6 +691,67 @@ func init() {
 	taskfeedlikeDescID := taskfeedlikeMixinFields0[0].Descriptor()
 	// taskfeedlike.DefaultID holds the default value on creation for the id field.
 	taskfeedlike.DefaultID = taskfeedlikeDescID.Default.(func() ulid.ID)
+	taskfileMixin := schema.TaskFile{}.Mixin()
+	taskfileMixinFields0 := taskfileMixin[0].Fields()
+	_ = taskfileMixinFields0
+	taskfileMixinFields1 := taskfileMixin[1].Fields()
+	_ = taskfileMixinFields1
+	taskfileMixinFields2 := taskfileMixin[2].Fields()
+	_ = taskfileMixinFields2
+	taskfileFields := schema.TaskFile{}.Fields()
+	_ = taskfileFields
+	// taskfileDescName is the schema descriptor for name field.
+	taskfileDescName := taskfileMixinFields1[4].Descriptor()
+	// taskfile.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	taskfile.NameValidator = func() func(string) error {
+		validators := taskfileDescName.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(name string) error {
+			for _, fn := range fns {
+				if err := fn(name); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// taskfileDescSrc is the schema descriptor for src field.
+	taskfileDescSrc := taskfileMixinFields1[5].Descriptor()
+	// taskfile.SrcValidator is a validator for the "src" field. It is called by the builders before save.
+	taskfile.SrcValidator = func() func(string) error {
+		validators := taskfileDescSrc.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(src string) error {
+			for _, fn := range fns {
+				if err := fn(src); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// taskfileDescAttached is the schema descriptor for attached field.
+	taskfileDescAttached := taskfileMixinFields1[6].Descriptor()
+	// taskfile.DefaultAttached holds the default value on creation for the attached field.
+	taskfile.DefaultAttached = taskfileDescAttached.Default.(bool)
+	// taskfileDescCreatedAt is the schema descriptor for created_at field.
+	taskfileDescCreatedAt := taskfileMixinFields2[0].Descriptor()
+	// taskfile.DefaultCreatedAt holds the default value on creation for the created_at field.
+	taskfile.DefaultCreatedAt = taskfileDescCreatedAt.Default.(func() time.Time)
+	// taskfileDescUpdatedAt is the schema descriptor for updated_at field.
+	taskfileDescUpdatedAt := taskfileMixinFields2[1].Descriptor()
+	// taskfile.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	taskfile.DefaultUpdatedAt = taskfileDescUpdatedAt.Default.(func() time.Time)
+	// taskfileDescID is the schema descriptor for id field.
+	taskfileDescID := taskfileMixinFields0[0].Descriptor()
+	// taskfile.DefaultID holds the default value on creation for the id field.
+	taskfile.DefaultID = taskfileDescID.Default.(func() ulid.ID)
 	tasklikeMixin := schema.TaskLike{}.Mixin()
 	tasklikeMixinFields0 := tasklikeMixin[0].Fields()
 	_ = tasklikeMixinFields0

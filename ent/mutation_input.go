@@ -253,10 +253,11 @@ func (u *FavoriteWorkspaceUpdateOne) SetInput(i UpdateFavoriteWorkspaceInput) *F
 
 // CreateFileTypeInput represents a mutation input for creating filetypes.
 type CreateFileTypeInput struct {
-	Name      string
-	TypeCode  filetype.TypeCode
-	CreatedAt *time.Time
-	UpdatedAt *time.Time
+	Name        string
+	TypeCode    filetype.TypeCode
+	CreatedAt   *time.Time
+	UpdatedAt   *time.Time
+	TaskFileIDs []ulid.ID
 }
 
 // Mutate applies the CreateFileTypeInput on the FileTypeCreate builder.
@@ -269,6 +270,9 @@ func (i *CreateFileTypeInput) Mutate(m *FileTypeCreate) {
 	if v := i.UpdatedAt; v != nil {
 		m.SetUpdatedAt(*v)
 	}
+	if ids := i.TaskFileIDs; len(ids) > 0 {
+		m.AddTaskFileIDs(ids...)
+	}
 }
 
 // SetInput applies the change-set in the CreateFileTypeInput on the create builder.
@@ -279,9 +283,11 @@ func (c *FileTypeCreate) SetInput(i CreateFileTypeInput) *FileTypeCreate {
 
 // UpdateFileTypeInput represents a mutation input for updating filetypes.
 type UpdateFileTypeInput struct {
-	ID       ulid.ID
-	Name     *string
-	TypeCode *filetype.TypeCode
+	ID                ulid.ID
+	Name              *string
+	TypeCode          *filetype.TypeCode
+	AddTaskFileIDs    []ulid.ID
+	RemoveTaskFileIDs []ulid.ID
 }
 
 // Mutate applies the UpdateFileTypeInput on the FileTypeMutation.
@@ -291,6 +297,12 @@ func (i *UpdateFileTypeInput) Mutate(m *FileTypeMutation) {
 	}
 	if v := i.TypeCode; v != nil {
 		m.SetTypeCode(*v)
+	}
+	if ids := i.AddTaskFileIDs; len(ids) > 0 {
+		m.AddTaskFileIDs(ids...)
+	}
+	if ids := i.RemoveTaskFileIDs; len(ids) > 0 {
+		m.RemoveTaskFileIDs(ids...)
 	}
 }
 
@@ -392,6 +404,7 @@ type CreateProjectInput struct {
 	ProjectTaskListStatusIDs []ulid.ID
 	ProjectTaskSectionIDs    []ulid.ID
 	ProjectTaskIDs           []ulid.ID
+	TaskFileIDs              []ulid.ID
 }
 
 // Mutate applies the CreateProjectInput on the ProjectCreate builder.
@@ -431,6 +444,9 @@ func (i *CreateProjectInput) Mutate(m *ProjectCreate) {
 	if ids := i.ProjectTaskIDs; len(ids) > 0 {
 		m.AddProjectTaskIDs(ids...)
 	}
+	if ids := i.TaskFileIDs; len(ids) > 0 {
+		m.AddTaskFileIDs(ids...)
+	}
 }
 
 // SetInput applies the change-set in the CreateProjectInput on the create builder.
@@ -469,6 +485,8 @@ type UpdateProjectInput struct {
 	RemoveProjectTaskSectionIDs    []ulid.ID
 	AddProjectTaskIDs              []ulid.ID
 	RemoveProjectTaskIDs           []ulid.ID
+	AddTaskFileIDs                 []ulid.ID
+	RemoveTaskFileIDs              []ulid.ID
 }
 
 // Mutate applies the UpdateProjectInput on the ProjectMutation.
@@ -553,6 +571,12 @@ func (i *UpdateProjectInput) Mutate(m *ProjectMutation) {
 	}
 	if ids := i.RemoveProjectTaskIDs; len(ids) > 0 {
 		m.RemoveProjectTaskIDs(ids...)
+	}
+	if ids := i.AddTaskFileIDs; len(ids) > 0 {
+		m.AddTaskFileIDs(ids...)
+	}
+	if ids := i.RemoveTaskFileIDs; len(ids) > 0 {
+		m.RemoveTaskFileIDs(ids...)
 	}
 }
 
@@ -1245,6 +1269,7 @@ type CreateTaskInput struct {
 	TaskCollaboratorIDs []ulid.ID
 	TaskFeedIDs         []ulid.ID
 	TaskFeedLikeIDs     []ulid.ID
+	TaskFileIDs         []ulid.ID
 }
 
 // Mutate applies the CreateTaskInput on the TaskCreate builder.
@@ -1303,6 +1328,9 @@ func (i *CreateTaskInput) Mutate(m *TaskCreate) {
 	if ids := i.TaskFeedLikeIDs; len(ids) > 0 {
 		m.AddTaskFeedLikeIDs(ids...)
 	}
+	if ids := i.TaskFileIDs; len(ids) > 0 {
+		m.AddTaskFileIDs(ids...)
+	}
 }
 
 // SetInput applies the change-set in the CreateTaskInput on the create builder.
@@ -1346,6 +1374,8 @@ type UpdateTaskInput struct {
 	RemoveTaskFeedIDs         []ulid.ID
 	AddTaskFeedLikeIDs        []ulid.ID
 	RemoveTaskFeedLikeIDs     []ulid.ID
+	AddTaskFileIDs            []ulid.ID
+	RemoveTaskFileIDs         []ulid.ID
 }
 
 // Mutate applies the UpdateTaskInput on the TaskMutation.
@@ -1445,6 +1475,12 @@ func (i *UpdateTaskInput) Mutate(m *TaskMutation) {
 	}
 	if ids := i.RemoveTaskFeedLikeIDs; len(ids) > 0 {
 		m.RemoveTaskFeedLikeIDs(ids...)
+	}
+	if ids := i.AddTaskFileIDs; len(ids) > 0 {
+		m.AddTaskFileIDs(ids...)
+	}
+	if ids := i.RemoveTaskFileIDs; len(ids) > 0 {
+		m.RemoveTaskFileIDs(ids...)
 	}
 }
 
@@ -1612,6 +1648,7 @@ type CreateTaskFeedInput struct {
 	TaskID          ulid.ID
 	TeammateID      ulid.ID
 	TaskFeedLikeIDs []ulid.ID
+	TaskFileIDs     []ulid.ID
 }
 
 // Mutate applies the CreateTaskFeedInput on the TaskFeedCreate builder.
@@ -1634,6 +1671,9 @@ func (i *CreateTaskFeedInput) Mutate(m *TaskFeedCreate) {
 	if ids := i.TaskFeedLikeIDs; len(ids) > 0 {
 		m.AddTaskFeedLikeIDs(ids...)
 	}
+	if ids := i.TaskFileIDs; len(ids) > 0 {
+		m.AddTaskFileIDs(ids...)
+	}
 }
 
 // SetInput applies the change-set in the CreateTaskFeedInput on the create builder.
@@ -1654,6 +1694,8 @@ type UpdateTaskFeedInput struct {
 	ClearTeammate         bool
 	AddTaskFeedLikeIDs    []ulid.ID
 	RemoveTaskFeedLikeIDs []ulid.ID
+	AddTaskFileIDs        []ulid.ID
+	RemoveTaskFileIDs     []ulid.ID
 }
 
 // Mutate applies the UpdateTaskFeedInput on the TaskFeedMutation.
@@ -1684,6 +1726,12 @@ func (i *UpdateTaskFeedInput) Mutate(m *TaskFeedMutation) {
 	}
 	if ids := i.RemoveTaskFeedLikeIDs; len(ids) > 0 {
 		m.RemoveTaskFeedLikeIDs(ids...)
+	}
+	if ids := i.AddTaskFileIDs; len(ids) > 0 {
+		m.AddTaskFileIDs(ids...)
+	}
+	if ids := i.RemoveTaskFileIDs; len(ids) > 0 {
+		m.RemoveTaskFileIDs(ids...)
 	}
 }
 
@@ -1768,6 +1816,109 @@ func (u *TaskFeedLikeUpdate) SetInput(i UpdateTaskFeedLikeInput) *TaskFeedLikeUp
 
 // SetInput applies the change-set in the UpdateTaskFeedLikeInput on the update-one builder.
 func (u *TaskFeedLikeUpdateOne) SetInput(i UpdateTaskFeedLikeInput) *TaskFeedLikeUpdateOne {
+	i.Mutate(u.Mutation())
+	return u
+}
+
+// CreateTaskFileInput represents a mutation input for creating taskfiles.
+type CreateTaskFileInput struct {
+	Name       string
+	Src        string
+	Attached   *bool
+	CreatedAt  *time.Time
+	UpdatedAt  *time.Time
+	ProjectID  ulid.ID
+	TaskID     ulid.ID
+	TaskFeedID ulid.ID
+	FileTypeID ulid.ID
+}
+
+// Mutate applies the CreateTaskFileInput on the TaskFileCreate builder.
+func (i *CreateTaskFileInput) Mutate(m *TaskFileCreate) {
+	m.SetName(i.Name)
+	m.SetSrc(i.Src)
+	if v := i.Attached; v != nil {
+		m.SetAttached(*v)
+	}
+	if v := i.CreatedAt; v != nil {
+		m.SetCreatedAt(*v)
+	}
+	if v := i.UpdatedAt; v != nil {
+		m.SetUpdatedAt(*v)
+	}
+	m.SetProjectID(i.ProjectID)
+	m.SetTaskID(i.TaskID)
+	m.SetTaskFeedID(i.TaskFeedID)
+	m.SetFileTypeID(i.FileTypeID)
+}
+
+// SetInput applies the change-set in the CreateTaskFileInput on the create builder.
+func (c *TaskFileCreate) SetInput(i CreateTaskFileInput) *TaskFileCreate {
+	i.Mutate(c)
+	return c
+}
+
+// UpdateTaskFileInput represents a mutation input for updating taskfiles.
+type UpdateTaskFileInput struct {
+	ID            ulid.ID
+	Name          *string
+	Src           *string
+	Attached      *bool
+	ProjectID     *ulid.ID
+	ClearProject  bool
+	TaskID        *ulid.ID
+	ClearTask     bool
+	TaskFeedID    *ulid.ID
+	ClearTaskFeed bool
+	FileTypeID    *ulid.ID
+	ClearFileType bool
+}
+
+// Mutate applies the UpdateTaskFileInput on the TaskFileMutation.
+func (i *UpdateTaskFileInput) Mutate(m *TaskFileMutation) {
+	if v := i.Name; v != nil {
+		m.SetName(*v)
+	}
+	if v := i.Src; v != nil {
+		m.SetSrc(*v)
+	}
+	if v := i.Attached; v != nil {
+		m.SetAttached(*v)
+	}
+	if i.ClearProject {
+		m.ClearProject()
+	}
+	if v := i.ProjectID; v != nil {
+		m.SetProjectID(*v)
+	}
+	if i.ClearTask {
+		m.ClearTask()
+	}
+	if v := i.TaskID; v != nil {
+		m.SetTaskID(*v)
+	}
+	if i.ClearTaskFeed {
+		m.ClearTaskFeed()
+	}
+	if v := i.TaskFeedID; v != nil {
+		m.SetTaskFeedID(*v)
+	}
+	if i.ClearFileType {
+		m.ClearFileType()
+	}
+	if v := i.FileTypeID; v != nil {
+		m.SetFileTypeID(*v)
+	}
+}
+
+// SetInput applies the change-set in the UpdateTaskFileInput on the update builder.
+func (u *TaskFileUpdate) SetInput(i UpdateTaskFileInput) *TaskFileUpdate {
+	i.Mutate(u.Mutation())
+	return u
+}
+
+// SetInput applies the change-set in the UpdateTaskFileInput on the update-one builder.
+func (u *TaskFileUpdateOne) SetInput(i UpdateTaskFileInput) *TaskFileUpdateOne {
 	i.Mutate(u.Mutation())
 	return u
 }

@@ -66,6 +66,9 @@ type TaskFeed func(*sql.Selector)
 // TaskFeedLike is the predicate function for taskfeedlike builders.
 type TaskFeedLike func(*sql.Selector)
 
+// TaskFile is the predicate function for taskfile builders.
+type TaskFile func(*sql.Selector)
+
 // TaskLike is the predicate function for tasklike builders.
 type TaskLike func(*sql.Selector)
 

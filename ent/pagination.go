@@ -29,6 +29,7 @@ import (
 	"project-management-demo-backend/ent/taskcolumn"
 	"project-management-demo-backend/ent/taskfeed"
 	"project-management-demo-backend/ent/taskfeedlike"
+	"project-management-demo-backend/ent/taskfile"
 	"project-management-demo-backend/ent/tasklike"
 	"project-management-demo-backend/ent/tasklistcompletedstatus"
 	"project-management-demo-backend/ent/tasklistsortstatus"
@@ -4805,6 +4806,233 @@ func (tfl *TaskFeedLike) ToEdge(order *TaskFeedLikeOrder) *TaskFeedLikeEdge {
 	return &TaskFeedLikeEdge{
 		Node:   tfl,
 		Cursor: order.Field.toCursor(tfl),
+	}
+}
+
+// TaskFileEdge is the edge representation of TaskFile.
+type TaskFileEdge struct {
+	Node   *TaskFile `json:"node"`
+	Cursor Cursor    `json:"cursor"`
+}
+
+// TaskFileConnection is the connection containing edges to TaskFile.
+type TaskFileConnection struct {
+	Edges      []*TaskFileEdge `json:"edges"`
+	PageInfo   PageInfo        `json:"pageInfo"`
+	TotalCount int             `json:"totalCount"`
+}
+
+// TaskFilePaginateOption enables pagination customization.
+type TaskFilePaginateOption func(*taskFilePager) error
+
+// WithTaskFileOrder configures pagination ordering.
+func WithTaskFileOrder(order *TaskFileOrder) TaskFilePaginateOption {
+	if order == nil {
+		order = DefaultTaskFileOrder
+	}
+	o := *order
+	return func(pager *taskFilePager) error {
+		if err := o.Direction.Validate(); err != nil {
+			return err
+		}
+		if o.Field == nil {
+			o.Field = DefaultTaskFileOrder.Field
+		}
+		pager.order = &o
+		return nil
+	}
+}
+
+// WithTaskFileFilter configures pagination filter.
+func WithTaskFileFilter(filter func(*TaskFileQuery) (*TaskFileQuery, error)) TaskFilePaginateOption {
+	return func(pager *taskFilePager) error {
+		if filter == nil {
+			return errors.New("TaskFileQuery filter cannot be nil")
+		}
+		pager.filter = filter
+		return nil
+	}
+}
+
+type taskFilePager struct {
+	order  *TaskFileOrder
+	filter func(*TaskFileQuery) (*TaskFileQuery, error)
+}
+
+func newTaskFilePager(opts []TaskFilePaginateOption) (*taskFilePager, error) {
+	pager := &taskFilePager{}
+	for _, opt := range opts {
+		if err := opt(pager); err != nil {
+			return nil, err
+		}
+	}
+	if pager.order == nil {
+		pager.order = DefaultTaskFileOrder
+	}
+	return pager, nil
+}
+
+func (p *taskFilePager) applyFilter(query *TaskFileQuery) (*TaskFileQuery, error) {
+	if p.filter != nil {
+		return p.filter(query)
+	}
+	return query, nil
+}
+
+func (p *taskFilePager) toCursor(tf *TaskFile) Cursor {
+	return p.order.Field.toCursor(tf)
+}
+
+func (p *taskFilePager) applyCursors(query *TaskFileQuery, after, before *Cursor) *TaskFileQuery {
+	for _, predicate := range cursorsToPredicates(
+		p.order.Direction, after, before,
+		p.order.Field.field, DefaultTaskFileOrder.Field.field,
+	) {
+		query = query.Where(predicate)
+	}
+	return query
+}
+
+func (p *taskFilePager) applyOrder(query *TaskFileQuery, reverse bool) *TaskFileQuery {
+	direction := p.order.Direction
+	if reverse {
+		direction = direction.reverse()
+	}
+	query = query.Order(direction.orderFunc(p.order.Field.field))
+	if p.order.Field != DefaultTaskFileOrder.Field {
+		query = query.Order(direction.orderFunc(DefaultTaskFileOrder.Field.field))
+	}
+	return query
+}
+
+// Paginate executes the query and returns a relay based cursor connection to TaskFile.
+func (tf *TaskFileQuery) Paginate(
+	ctx context.Context, after *Cursor, first *int,
+	before *Cursor, last *int, opts ...TaskFilePaginateOption,
+) (*TaskFileConnection, error) {
+	if err := validateFirstLast(first, last); err != nil {
+		return nil, err
+	}
+	pager, err := newTaskFilePager(opts)
+	if err != nil {
+		return nil, err
+	}
+
+	if tf, err = pager.applyFilter(tf); err != nil {
+		return nil, err
+	}
+
+	conn := &TaskFileConnection{Edges: []*TaskFileEdge{}}
+	if !hasCollectedField(ctx, edgesField) || first != nil && *first == 0 || last != nil && *last == 0 {
+		if hasCollectedField(ctx, totalCountField) ||
+			hasCollectedField(ctx, pageInfoField) {
+			count, err := tf.Count(ctx)
+			if err != nil {
+				return nil, err
+			}
+			conn.TotalCount = count
+			conn.PageInfo.HasNextPage = first != nil && count > 0
+			conn.PageInfo.HasPreviousPage = last != nil && count > 0
+		}
+		return conn, nil
+	}
+
+	if (after != nil || first != nil || before != nil || last != nil) && hasCollectedField(ctx, totalCountField) {
+		count, err := tf.Clone().Count(ctx)
+		if err != nil {
+			return nil, err
+		}
+		conn.TotalCount = count
+	}
+
+	tf = pager.applyCursors(tf, after, before)
+	tf = pager.applyOrder(tf, last != nil)
+	var limit int
+	if first != nil {
+		limit = *first + 1
+	} else if last != nil {
+		limit = *last + 1
+	}
+	if limit > 0 {
+		tf = tf.Limit(limit)
+	}
+
+	if field := getCollectedField(ctx, edgesField, nodeField); field != nil {
+		tf = tf.collectField(graphql.GetOperationContext(ctx), *field)
+	}
+
+	nodes, err := tf.All(ctx)
+	if err != nil || len(nodes) == 0 {
+		return conn, err
+	}
+
+	if len(nodes) == limit {
+		conn.PageInfo.HasNextPage = first != nil
+		conn.PageInfo.HasPreviousPage = last != nil
+		nodes = nodes[:len(nodes)-1]
+	}
+
+	var nodeAt func(int) *TaskFile
+	if last != nil {
+		n := len(nodes) - 1
+		nodeAt = func(i int) *TaskFile {
+			return nodes[n-i]
+		}
+	} else {
+		nodeAt = func(i int) *TaskFile {
+			return nodes[i]
+		}
+	}
+
+	conn.Edges = make([]*TaskFileEdge, len(nodes))
+	for i := range nodes {
+		node := nodeAt(i)
+		conn.Edges[i] = &TaskFileEdge{
+			Node:   node,
+			Cursor: pager.toCursor(node),
+		}
+	}
+
+	conn.PageInfo.StartCursor = &conn.Edges[0].Cursor
+	conn.PageInfo.EndCursor = &conn.Edges[len(conn.Edges)-1].Cursor
+	if conn.TotalCount == 0 {
+		conn.TotalCount = len(nodes)
+	}
+
+	return conn, nil
+}
+
+// TaskFileOrderField defines the ordering field of TaskFile.
+type TaskFileOrderField struct {
+	field    string
+	toCursor func(*TaskFile) Cursor
+}
+
+// TaskFileOrder defines the ordering of TaskFile.
+type TaskFileOrder struct {
+	Direction OrderDirection      `json:"direction"`
+	Field     *TaskFileOrderField `json:"field"`
+}
+
+// DefaultTaskFileOrder is the default ordering of TaskFile.
+var DefaultTaskFileOrder = &TaskFileOrder{
+	Direction: OrderDirectionAsc,
+	Field: &TaskFileOrderField{
+		field: taskfile.FieldID,
+		toCursor: func(tf *TaskFile) Cursor {
+			return Cursor{ID: tf.ID}
+		},
+	},
+}
+
+// ToEdge converts TaskFile into TaskFileEdge.
+func (tf *TaskFile) ToEdge(order *TaskFileOrder) *TaskFileEdge {
+	if order == nil {
+		order = DefaultTaskFileOrder
+	}
+	return &TaskFileEdge{
+		Node:   tf,
+		Cursor: order.Field.toCursor(tf),
 	}
 }
 

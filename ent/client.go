@@ -30,6 +30,7 @@ import (
 	"project-management-demo-backend/ent/taskcolumn"
 	"project-management-demo-backend/ent/taskfeed"
 	"project-management-demo-backend/ent/taskfeedlike"
+	"project-management-demo-backend/ent/taskfile"
 	"project-management-demo-backend/ent/tasklike"
 	"project-management-demo-backend/ent/tasklistcompletedstatus"
 	"project-management-demo-backend/ent/tasklistsortstatus"
@@ -97,6 +98,8 @@ type Client struct {
 	TaskFeed *TaskFeedClient
 	// TaskFeedLike is the client for interacting with the TaskFeedLike builders.
 	TaskFeedLike *TaskFeedLikeClient
+	// TaskFile is the client for interacting with the TaskFile builders.
+	TaskFile *TaskFileClient
 	// TaskLike is the client for interacting with the TaskLike builders.
 	TaskLike *TaskLikeClient
 	// TaskListCompletedStatus is the client for interacting with the TaskListCompletedStatus builders.
@@ -162,6 +165,7 @@ func (c *Client) init() {
 	c.TaskColumn = NewTaskColumnClient(c.config)
 	c.TaskFeed = NewTaskFeedClient(c.config)
 	c.TaskFeedLike = NewTaskFeedLikeClient(c.config)
+	c.TaskFile = NewTaskFileClient(c.config)
 	c.TaskLike = NewTaskLikeClient(c.config)
 	c.TaskListCompletedStatus = NewTaskListCompletedStatusClient(c.config)
 	c.TaskListSortStatus = NewTaskListSortStatusClient(c.config)
@@ -231,6 +235,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		TaskColumn:              NewTaskColumnClient(cfg),
 		TaskFeed:                NewTaskFeedClient(cfg),
 		TaskFeedLike:            NewTaskFeedLikeClient(cfg),
+		TaskFile:                NewTaskFileClient(cfg),
 		TaskLike:                NewTaskLikeClient(cfg),
 		TaskListCompletedStatus: NewTaskListCompletedStatusClient(cfg),
 		TaskListSortStatus:      NewTaskListSortStatusClient(cfg),
@@ -285,6 +290,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		TaskColumn:              NewTaskColumnClient(cfg),
 		TaskFeed:                NewTaskFeedClient(cfg),
 		TaskFeedLike:            NewTaskFeedLikeClient(cfg),
+		TaskFile:                NewTaskFileClient(cfg),
 		TaskLike:                NewTaskLikeClient(cfg),
 		TaskListCompletedStatus: NewTaskListCompletedStatusClient(cfg),
 		TaskListSortStatus:      NewTaskListSortStatusClient(cfg),
@@ -350,6 +356,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.TaskColumn.Use(hooks...)
 	c.TaskFeed.Use(hooks...)
 	c.TaskFeedLike.Use(hooks...)
+	c.TaskFile.Use(hooks...)
 	c.TaskLike.Use(hooks...)
 	c.TaskListCompletedStatus.Use(hooks...)
 	c.TaskListSortStatus.Use(hooks...)
@@ -851,6 +858,22 @@ func (c *FileTypeClient) GetX(ctx context.Context, id ulid.ID) *FileType {
 	return obj
 }
 
+// QueryTaskFiles queries the task_files edge of a FileType.
+func (c *FileTypeClient) QueryTaskFiles(ft *FileType) *TaskFileQuery {
+	query := &TaskFileQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := ft.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(filetype.Table, filetype.FieldID, id),
+			sqlgraph.To(taskfile.Table, taskfile.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, filetype.TaskFilesTable, filetype.TaskFilesColumn),
+		)
+		fromV = sqlgraph.Neighbors(ft.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *FileTypeClient) Hooks() []Hook {
 	return c.hooks.FileType
@@ -1216,6 +1239,22 @@ func (c *ProjectClient) QueryProjectTasks(pr *Project) *ProjectTaskQuery {
 			sqlgraph.From(project.Table, project.FieldID, id),
 			sqlgraph.To(projecttask.Table, projecttask.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, project.ProjectTasksTable, project.ProjectTasksColumn),
+		)
+		fromV = sqlgraph.Neighbors(pr.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryTaskFiles queries the task_files edge of a Project.
+func (c *ProjectClient) QueryTaskFiles(pr *Project) *TaskFileQuery {
+	query := &TaskFileQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := pr.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(project.Table, project.FieldID, id),
+			sqlgraph.To(taskfile.Table, taskfile.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, project.TaskFilesTable, project.TaskFilesColumn),
 		)
 		fromV = sqlgraph.Neighbors(pr.driver.Dialect(), step)
 		return fromV, nil
@@ -2635,6 +2674,22 @@ func (c *TaskClient) QueryTaskFeedLikes(t *Task) *TaskFeedLikeQuery {
 	return query
 }
 
+// QueryTaskFiles queries the task_files edge of a Task.
+func (c *TaskClient) QueryTaskFiles(t *Task) *TaskFileQuery {
+	query := &TaskFileQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := t.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(task.Table, task.FieldID, id),
+			sqlgraph.To(taskfile.Table, taskfile.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, task.TaskFilesTable, task.TaskFilesColumn),
+		)
+		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *TaskClient) Hooks() []Hook {
 	return c.hooks.Task
@@ -3017,6 +3072,22 @@ func (c *TaskFeedClient) QueryTaskFeedLikes(tf *TaskFeed) *TaskFeedLikeQuery {
 	return query
 }
 
+// QueryTaskFiles queries the task_files edge of a TaskFeed.
+func (c *TaskFeedClient) QueryTaskFiles(tf *TaskFeed) *TaskFileQuery {
+	query := &TaskFileQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := tf.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(taskfeed.Table, taskfeed.FieldID, id),
+			sqlgraph.To(taskfile.Table, taskfile.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, taskfeed.TaskFilesTable, taskfeed.TaskFilesColumn),
+		)
+		fromV = sqlgraph.Neighbors(tf.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *TaskFeedClient) Hooks() []Hook {
 	return c.hooks.TaskFeed
@@ -3158,6 +3229,160 @@ func (c *TaskFeedLikeClient) QueryFeed(tfl *TaskFeedLike) *TaskFeedQuery {
 // Hooks returns the client hooks.
 func (c *TaskFeedLikeClient) Hooks() []Hook {
 	return c.hooks.TaskFeedLike
+}
+
+// TaskFileClient is a client for the TaskFile schema.
+type TaskFileClient struct {
+	config
+}
+
+// NewTaskFileClient returns a client for the TaskFile from the given config.
+func NewTaskFileClient(c config) *TaskFileClient {
+	return &TaskFileClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `taskfile.Hooks(f(g(h())))`.
+func (c *TaskFileClient) Use(hooks ...Hook) {
+	c.hooks.TaskFile = append(c.hooks.TaskFile, hooks...)
+}
+
+// Create returns a create builder for TaskFile.
+func (c *TaskFileClient) Create() *TaskFileCreate {
+	mutation := newTaskFileMutation(c.config, OpCreate)
+	return &TaskFileCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of TaskFile entities.
+func (c *TaskFileClient) CreateBulk(builders ...*TaskFileCreate) *TaskFileCreateBulk {
+	return &TaskFileCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for TaskFile.
+func (c *TaskFileClient) Update() *TaskFileUpdate {
+	mutation := newTaskFileMutation(c.config, OpUpdate)
+	return &TaskFileUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *TaskFileClient) UpdateOne(tf *TaskFile) *TaskFileUpdateOne {
+	mutation := newTaskFileMutation(c.config, OpUpdateOne, withTaskFile(tf))
+	return &TaskFileUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *TaskFileClient) UpdateOneID(id ulid.ID) *TaskFileUpdateOne {
+	mutation := newTaskFileMutation(c.config, OpUpdateOne, withTaskFileID(id))
+	return &TaskFileUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for TaskFile.
+func (c *TaskFileClient) Delete() *TaskFileDelete {
+	mutation := newTaskFileMutation(c.config, OpDelete)
+	return &TaskFileDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *TaskFileClient) DeleteOne(tf *TaskFile) *TaskFileDeleteOne {
+	return c.DeleteOneID(tf.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *TaskFileClient) DeleteOneID(id ulid.ID) *TaskFileDeleteOne {
+	builder := c.Delete().Where(taskfile.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &TaskFileDeleteOne{builder}
+}
+
+// Query returns a query builder for TaskFile.
+func (c *TaskFileClient) Query() *TaskFileQuery {
+	return &TaskFileQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a TaskFile entity by its id.
+func (c *TaskFileClient) Get(ctx context.Context, id ulid.ID) (*TaskFile, error) {
+	return c.Query().Where(taskfile.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *TaskFileClient) GetX(ctx context.Context, id ulid.ID) *TaskFile {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryProject queries the project edge of a TaskFile.
+func (c *TaskFileClient) QueryProject(tf *TaskFile) *ProjectQuery {
+	query := &ProjectQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := tf.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(taskfile.Table, taskfile.FieldID, id),
+			sqlgraph.To(project.Table, project.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, taskfile.ProjectTable, taskfile.ProjectColumn),
+		)
+		fromV = sqlgraph.Neighbors(tf.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryTask queries the task edge of a TaskFile.
+func (c *TaskFileClient) QueryTask(tf *TaskFile) *TaskQuery {
+	query := &TaskQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := tf.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(taskfile.Table, taskfile.FieldID, id),
+			sqlgraph.To(task.Table, task.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, taskfile.TaskTable, taskfile.TaskColumn),
+		)
+		fromV = sqlgraph.Neighbors(tf.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryTaskFeed queries the task_feed edge of a TaskFile.
+func (c *TaskFileClient) QueryTaskFeed(tf *TaskFile) *TaskFeedQuery {
+	query := &TaskFeedQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := tf.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(taskfile.Table, taskfile.FieldID, id),
+			sqlgraph.To(taskfeed.Table, taskfeed.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, taskfile.TaskFeedTable, taskfile.TaskFeedColumn),
+		)
+		fromV = sqlgraph.Neighbors(tf.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryFileType queries the file_type edge of a TaskFile.
+func (c *TaskFileClient) QueryFileType(tf *TaskFile) *FileTypeQuery {
+	query := &FileTypeQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := tf.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(taskfile.Table, taskfile.FieldID, id),
+			sqlgraph.To(filetype.Table, filetype.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, taskfile.FileTypeTable, taskfile.FileTypeColumn),
+		)
+		fromV = sqlgraph.Neighbors(tf.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *TaskFileClient) Hooks() []Hook {
+	return c.hooks.TaskFile
 }
 
 // TaskLikeClient is a client for the TaskLike schema.

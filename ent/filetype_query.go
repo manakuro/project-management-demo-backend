@@ -4,12 +4,14 @@ package ent
 
 import (
 	"context"
+	"database/sql/driver"
 	"errors"
 	"fmt"
 	"math"
 	"project-management-demo-backend/ent/filetype"
 	"project-management-demo-backend/ent/predicate"
 	"project-management-demo-backend/ent/schema/ulid"
+	"project-management-demo-backend/ent/taskfile"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -25,6 +27,8 @@ type FileTypeQuery struct {
 	order      []OrderFunc
 	fields     []string
 	predicates []predicate.FileType
+	// eager-loading edges.
+	withTaskFiles *TaskFileQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -59,6 +63,28 @@ func (ftq *FileTypeQuery) Unique(unique bool) *FileTypeQuery {
 func (ftq *FileTypeQuery) Order(o ...OrderFunc) *FileTypeQuery {
 	ftq.order = append(ftq.order, o...)
 	return ftq
+}
+
+// QueryTaskFiles chains the current query on the "task_files" edge.
+func (ftq *FileTypeQuery) QueryTaskFiles() *TaskFileQuery {
+	query := &TaskFileQuery{config: ftq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := ftq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := ftq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(filetype.Table, filetype.FieldID, selector),
+			sqlgraph.To(taskfile.Table, taskfile.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, filetype.TaskFilesTable, filetype.TaskFilesColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(ftq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // First returns the first FileType entity from the query.
@@ -237,15 +263,27 @@ func (ftq *FileTypeQuery) Clone() *FileTypeQuery {
 		return nil
 	}
 	return &FileTypeQuery{
-		config:     ftq.config,
-		limit:      ftq.limit,
-		offset:     ftq.offset,
-		order:      append([]OrderFunc{}, ftq.order...),
-		predicates: append([]predicate.FileType{}, ftq.predicates...),
+		config:        ftq.config,
+		limit:         ftq.limit,
+		offset:        ftq.offset,
+		order:         append([]OrderFunc{}, ftq.order...),
+		predicates:    append([]predicate.FileType{}, ftq.predicates...),
+		withTaskFiles: ftq.withTaskFiles.Clone(),
 		// clone intermediate query.
 		sql:  ftq.sql.Clone(),
 		path: ftq.path,
 	}
+}
+
+// WithTaskFiles tells the query-builder to eager-load the nodes that are connected to
+// the "task_files" edge. The optional arguments are used to configure the query builder of the edge.
+func (ftq *FileTypeQuery) WithTaskFiles(opts ...func(*TaskFileQuery)) *FileTypeQuery {
+	query := &TaskFileQuery{config: ftq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	ftq.withTaskFiles = query
+	return ftq
 }
 
 // GroupBy is used to group vertices by one or more fields/columns.
@@ -311,8 +349,11 @@ func (ftq *FileTypeQuery) prepareQuery(ctx context.Context) error {
 
 func (ftq *FileTypeQuery) sqlAll(ctx context.Context) ([]*FileType, error) {
 	var (
-		nodes = []*FileType{}
-		_spec = ftq.querySpec()
+		nodes       = []*FileType{}
+		_spec       = ftq.querySpec()
+		loadedTypes = [1]bool{
+			ftq.withTaskFiles != nil,
+		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
 		node := &FileType{config: ftq.config}
@@ -324,6 +365,7 @@ func (ftq *FileTypeQuery) sqlAll(ctx context.Context) ([]*FileType, error) {
 			return fmt.Errorf("ent: Assign called without calling ScanValues")
 		}
 		node := nodes[len(nodes)-1]
+		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
 	if err := sqlgraph.QueryNodes(ctx, ftq.driver, _spec); err != nil {
@@ -332,6 +374,32 @@ func (ftq *FileTypeQuery) sqlAll(ctx context.Context) ([]*FileType, error) {
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
+
+	if query := ftq.withTaskFiles; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[ulid.ID]*FileType)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.TaskFiles = []*TaskFile{}
+		}
+		query.Where(predicate.TaskFile(func(s *sql.Selector) {
+			s.Where(sql.InValues(filetype.TaskFilesColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.FileTypeID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "file_type_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.TaskFiles = append(node.Edges.TaskFiles, n)
+		}
+	}
+
 	return nodes, nil
 }
 

@@ -138,6 +138,12 @@ func (Task) Edges() []ent.Edge {
 				annotation.Edge{FieldName: "task_feed_like_id"},
 			),
 		),
+		edge.To("task_files", TaskFile.Type).
+			Annotations(
+				schema.Annotation(
+					annotation.Edge{FieldName: "task_file_id"},
+				),
+			),
 	}
 }
 

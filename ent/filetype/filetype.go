@@ -23,8 +23,17 @@ const (
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
 	FieldUpdatedAt = "updated_at"
+	// EdgeTaskFiles holds the string denoting the task_files edge name in mutations.
+	EdgeTaskFiles = "task_files"
 	// Table holds the table name of the filetype in the database.
 	Table = "file_types"
+	// TaskFilesTable is the table that holds the task_files relation/edge.
+	TaskFilesTable = "task_files"
+	// TaskFilesInverseTable is the table name for the TaskFile entity.
+	// It exists in this package in order to avoid circular dependency with the "taskfile" package.
+	TaskFilesInverseTable = "task_files"
+	// TaskFilesColumn is the table column denoting the task_files relation/edge.
+	TaskFilesColumn = "file_type_id"
 )
 
 // Columns holds all SQL columns for filetype fields.

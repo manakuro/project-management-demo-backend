@@ -206,6 +206,12 @@ type TaskFeedLikeUpdated struct {
 	Ch     chan []*model.TaskFeedLike
 }
 
+// TaskFileUpdated is a channel for subscription.
+type TaskFileUpdated struct {
+	ID ulid.ID
+	Ch chan *ent.TaskFile
+}
+
 // Subscriptions hold an id and a channel of subscription.
 type Subscriptions struct {
 	ColorUpdated                  map[string]ColorUpdated
@@ -228,6 +234,7 @@ type Subscriptions struct {
 	TaskColumnUpdated             map[string]TaskColumnUpdated
 	TaskFeedLikeUpdated           map[string]TaskFeedLikeUpdated
 	TaskFeedUpdated               map[string]TaskFeedUpdated
+	TaskFileUpdated               map[string]TaskFileUpdated
 	TaskLikesUpdated              map[string]TaskLikesUpdated
 	TaskSectionUpdated            map[string]TaskSectionUpdated
 	TaskTagUpdated                map[string]TaskTagUpdated

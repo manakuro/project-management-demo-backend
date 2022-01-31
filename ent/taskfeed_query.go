@@ -13,6 +13,7 @@ import (
 	"project-management-demo-backend/ent/task"
 	"project-management-demo-backend/ent/taskfeed"
 	"project-management-demo-backend/ent/taskfeedlike"
+	"project-management-demo-backend/ent/taskfile"
 	"project-management-demo-backend/ent/teammate"
 
 	"entgo.io/ent/dialect/sql"
@@ -33,6 +34,7 @@ type TaskFeedQuery struct {
 	withTask          *TaskQuery
 	withTeammate      *TeammateQuery
 	withTaskFeedLikes *TaskFeedLikeQuery
+	withTaskFiles     *TaskFileQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -128,6 +130,28 @@ func (tfq *TaskFeedQuery) QueryTaskFeedLikes() *TaskFeedLikeQuery {
 			sqlgraph.From(taskfeed.Table, taskfeed.FieldID, selector),
 			sqlgraph.To(taskfeedlike.Table, taskfeedlike.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, taskfeed.TaskFeedLikesTable, taskfeed.TaskFeedLikesColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(tfq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryTaskFiles chains the current query on the "task_files" edge.
+func (tfq *TaskFeedQuery) QueryTaskFiles() *TaskFileQuery {
+	query := &TaskFileQuery{config: tfq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := tfq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := tfq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(taskfeed.Table, taskfeed.FieldID, selector),
+			sqlgraph.To(taskfile.Table, taskfile.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, taskfeed.TaskFilesTable, taskfeed.TaskFilesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(tfq.driver.Dialect(), step)
 		return fromU, nil
@@ -319,6 +343,7 @@ func (tfq *TaskFeedQuery) Clone() *TaskFeedQuery {
 		withTask:          tfq.withTask.Clone(),
 		withTeammate:      tfq.withTeammate.Clone(),
 		withTaskFeedLikes: tfq.withTaskFeedLikes.Clone(),
+		withTaskFiles:     tfq.withTaskFiles.Clone(),
 		// clone intermediate query.
 		sql:  tfq.sql.Clone(),
 		path: tfq.path,
@@ -355,6 +380,17 @@ func (tfq *TaskFeedQuery) WithTaskFeedLikes(opts ...func(*TaskFeedLikeQuery)) *T
 		opt(query)
 	}
 	tfq.withTaskFeedLikes = query
+	return tfq
+}
+
+// WithTaskFiles tells the query-builder to eager-load the nodes that are connected to
+// the "task_files" edge. The optional arguments are used to configure the query builder of the edge.
+func (tfq *TaskFeedQuery) WithTaskFiles(opts ...func(*TaskFileQuery)) *TaskFeedQuery {
+	query := &TaskFileQuery{config: tfq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	tfq.withTaskFiles = query
 	return tfq
 }
 
@@ -423,10 +459,11 @@ func (tfq *TaskFeedQuery) sqlAll(ctx context.Context) ([]*TaskFeed, error) {
 	var (
 		nodes       = []*TaskFeed{}
 		_spec       = tfq.querySpec()
-		loadedTypes = [3]bool{
+		loadedTypes = [4]bool{
 			tfq.withTask != nil,
 			tfq.withTeammate != nil,
 			tfq.withTaskFeedLikes != nil,
+			tfq.withTaskFiles != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -523,6 +560,31 @@ func (tfq *TaskFeedQuery) sqlAll(ctx context.Context) ([]*TaskFeed, error) {
 				return nil, fmt.Errorf(`unexpected foreign-key "task_feed_id" returned %v for node %v`, fk, n.ID)
 			}
 			node.Edges.TaskFeedLikes = append(node.Edges.TaskFeedLikes, n)
+		}
+	}
+
+	if query := tfq.withTaskFiles; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[ulid.ID]*TaskFeed)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.TaskFiles = []*TaskFile{}
+		}
+		query.Where(predicate.TaskFile(func(s *sql.Selector) {
+			s.Where(sql.InValues(taskfeed.TaskFilesColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.TaskFeedID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "task_feed_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.TaskFiles = append(node.Edges.TaskFiles, n)
 		}
 	}
 

@@ -68,6 +68,14 @@ func (fw *FavoriteWorkspace) Teammate(ctx context.Context) (*Teammate, error) {
 	return result, err
 }
 
+func (ft *FileType) TaskFiles(ctx context.Context) ([]*TaskFile, error) {
+	result, err := ft.Edges.TaskFilesOrErr()
+	if IsNotLoaded(err) {
+		result, err = ft.QueryTaskFiles().All(ctx)
+	}
+	return result, err
+}
+
 func (i *Icon) ProjectIcons(ctx context.Context) ([]*ProjectIcon, error) {
 	result, err := i.Edges.ProjectIconsOrErr()
 	if IsNotLoaded(err) {
@@ -160,6 +168,14 @@ func (pr *Project) ProjectTasks(ctx context.Context) ([]*ProjectTask, error) {
 	result, err := pr.Edges.ProjectTasksOrErr()
 	if IsNotLoaded(err) {
 		result, err = pr.QueryProjectTasks().All(ctx)
+	}
+	return result, err
+}
+
+func (pr *Project) TaskFiles(ctx context.Context) ([]*TaskFile, error) {
+	result, err := pr.Edges.TaskFilesOrErr()
+	if IsNotLoaded(err) {
+		result, err = pr.QueryTaskFiles().All(ctx)
 	}
 	return result, err
 }
@@ -420,6 +436,14 @@ func (t *Task) TaskFeedLikes(ctx context.Context) ([]*TaskFeedLike, error) {
 	return result, err
 }
 
+func (t *Task) TaskFiles(ctx context.Context) ([]*TaskFile, error) {
+	result, err := t.Edges.TaskFilesOrErr()
+	if IsNotLoaded(err) {
+		result, err = t.QueryTaskFiles().All(ctx)
+	}
+	return result, err
+}
+
 func (tc *TaskCollaborator) Task(ctx context.Context) (*Task, error) {
 	result, err := tc.Edges.TaskOrErr()
 	if IsNotLoaded(err) {
@@ -476,6 +500,14 @@ func (tf *TaskFeed) TaskFeedLikes(ctx context.Context) ([]*TaskFeedLike, error) 
 	return result, err
 }
 
+func (tf *TaskFeed) TaskFiles(ctx context.Context) ([]*TaskFile, error) {
+	result, err := tf.Edges.TaskFilesOrErr()
+	if IsNotLoaded(err) {
+		result, err = tf.QueryTaskFiles().All(ctx)
+	}
+	return result, err
+}
+
 func (tfl *TaskFeedLike) Task(ctx context.Context) (*Task, error) {
 	result, err := tfl.Edges.TaskOrErr()
 	if IsNotLoaded(err) {
@@ -496,6 +528,38 @@ func (tfl *TaskFeedLike) Feed(ctx context.Context) (*TaskFeed, error) {
 	result, err := tfl.Edges.FeedOrErr()
 	if IsNotLoaded(err) {
 		result, err = tfl.QueryFeed().Only(ctx)
+	}
+	return result, err
+}
+
+func (tf *TaskFile) Project(ctx context.Context) (*Project, error) {
+	result, err := tf.Edges.ProjectOrErr()
+	if IsNotLoaded(err) {
+		result, err = tf.QueryProject().Only(ctx)
+	}
+	return result, err
+}
+
+func (tf *TaskFile) Task(ctx context.Context) (*Task, error) {
+	result, err := tf.Edges.TaskOrErr()
+	if IsNotLoaded(err) {
+		result, err = tf.QueryTask().Only(ctx)
+	}
+	return result, err
+}
+
+func (tf *TaskFile) TaskFeed(ctx context.Context) (*TaskFeed, error) {
+	result, err := tf.Edges.TaskFeedOrErr()
+	if IsNotLoaded(err) {
+		result, err = tf.QueryTaskFeed().Only(ctx)
+	}
+	return result, err
+}
+
+func (tf *TaskFile) FileType(ctx context.Context) (*FileType, error) {
+	result, err := tf.Edges.FileTypeOrErr()
+	if IsNotLoaded(err) {
+		result, err = tf.QueryFileType().Only(ctx)
 	}
 	return result, err
 }
