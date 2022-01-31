@@ -11,6 +11,7 @@ import (
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/task"
 	"project-management-demo-backend/ent/taskcollaborator"
+	"project-management-demo-backend/ent/taskfeed"
 	"project-management-demo-backend/ent/tasklike"
 	"project-management-demo-backend/ent/taskpriority"
 	"project-management-demo-backend/ent/tasktag"
@@ -315,6 +316,21 @@ func (tu *TaskUpdate) AddTaskCollaborators(t ...*TaskCollaborator) *TaskUpdate {
 	return tu.AddTaskCollaboratorIDs(ids...)
 }
 
+// AddTaskFeedIDs adds the "task_feeds" edge to the TaskFeed entity by IDs.
+func (tu *TaskUpdate) AddTaskFeedIDs(ids ...ulid.ID) *TaskUpdate {
+	tu.mutation.AddTaskFeedIDs(ids...)
+	return tu
+}
+
+// AddTaskFeeds adds the "task_feeds" edges to the TaskFeed entity.
+func (tu *TaskUpdate) AddTaskFeeds(t ...*TaskFeed) *TaskUpdate {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return tu.AddTaskFeedIDs(ids...)
+}
+
 // Mutation returns the TaskMutation object of the builder.
 func (tu *TaskUpdate) Mutation() *TaskMutation {
 	return tu.mutation
@@ -462,6 +478,27 @@ func (tu *TaskUpdate) RemoveTaskCollaborators(t ...*TaskCollaborator) *TaskUpdat
 		ids[i] = t[i].ID
 	}
 	return tu.RemoveTaskCollaboratorIDs(ids...)
+}
+
+// ClearTaskFeeds clears all "task_feeds" edges to the TaskFeed entity.
+func (tu *TaskUpdate) ClearTaskFeeds() *TaskUpdate {
+	tu.mutation.ClearTaskFeeds()
+	return tu
+}
+
+// RemoveTaskFeedIDs removes the "task_feeds" edge to TaskFeed entities by IDs.
+func (tu *TaskUpdate) RemoveTaskFeedIDs(ids ...ulid.ID) *TaskUpdate {
+	tu.mutation.RemoveTaskFeedIDs(ids...)
+	return tu
+}
+
+// RemoveTaskFeeds removes "task_feeds" edges to TaskFeed entities.
+func (tu *TaskUpdate) RemoveTaskFeeds(t ...*TaskFeed) *TaskUpdate {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return tu.RemoveTaskFeedIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -1051,6 +1088,60 @@ func (tu *TaskUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if tu.mutation.TaskFeedsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   task.TaskFeedsTable,
+			Columns: []string{task.TaskFeedsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: taskfeed.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tu.mutation.RemovedTaskFeedsIDs(); len(nodes) > 0 && !tu.mutation.TaskFeedsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   task.TaskFeedsTable,
+			Columns: []string{task.TaskFeedsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: taskfeed.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tu.mutation.TaskFeedsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   task.TaskFeedsTable,
+			Columns: []string{task.TaskFeedsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: taskfeed.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, tu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{task.Label}
@@ -1349,6 +1440,21 @@ func (tuo *TaskUpdateOne) AddTaskCollaborators(t ...*TaskCollaborator) *TaskUpda
 	return tuo.AddTaskCollaboratorIDs(ids...)
 }
 
+// AddTaskFeedIDs adds the "task_feeds" edge to the TaskFeed entity by IDs.
+func (tuo *TaskUpdateOne) AddTaskFeedIDs(ids ...ulid.ID) *TaskUpdateOne {
+	tuo.mutation.AddTaskFeedIDs(ids...)
+	return tuo
+}
+
+// AddTaskFeeds adds the "task_feeds" edges to the TaskFeed entity.
+func (tuo *TaskUpdateOne) AddTaskFeeds(t ...*TaskFeed) *TaskUpdateOne {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return tuo.AddTaskFeedIDs(ids...)
+}
+
 // Mutation returns the TaskMutation object of the builder.
 func (tuo *TaskUpdateOne) Mutation() *TaskMutation {
 	return tuo.mutation
@@ -1496,6 +1602,27 @@ func (tuo *TaskUpdateOne) RemoveTaskCollaborators(t ...*TaskCollaborator) *TaskU
 		ids[i] = t[i].ID
 	}
 	return tuo.RemoveTaskCollaboratorIDs(ids...)
+}
+
+// ClearTaskFeeds clears all "task_feeds" edges to the TaskFeed entity.
+func (tuo *TaskUpdateOne) ClearTaskFeeds() *TaskUpdateOne {
+	tuo.mutation.ClearTaskFeeds()
+	return tuo
+}
+
+// RemoveTaskFeedIDs removes the "task_feeds" edge to TaskFeed entities by IDs.
+func (tuo *TaskUpdateOne) RemoveTaskFeedIDs(ids ...ulid.ID) *TaskUpdateOne {
+	tuo.mutation.RemoveTaskFeedIDs(ids...)
+	return tuo
+}
+
+// RemoveTaskFeeds removes "task_feeds" edges to TaskFeed entities.
+func (tuo *TaskUpdateOne) RemoveTaskFeeds(t ...*TaskFeed) *TaskUpdateOne {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return tuo.RemoveTaskFeedIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -2101,6 +2228,60 @@ func (tuo *TaskUpdateOne) sqlSave(ctx context.Context) (_node *Task, err error) 
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: taskcollaborator.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if tuo.mutation.TaskFeedsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   task.TaskFeedsTable,
+			Columns: []string{task.TaskFeedsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: taskfeed.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tuo.mutation.RemovedTaskFeedsIDs(); len(nodes) > 0 && !tuo.mutation.TaskFeedsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   task.TaskFeedsTable,
+			Columns: []string{task.TaskFeedsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: taskfeed.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tuo.mutation.TaskFeedsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   task.TaskFeedsTable,
+			Columns: []string{task.TaskFeedsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: taskfeed.FieldID,
 				},
 			},
 		}

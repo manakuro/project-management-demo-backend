@@ -26,6 +26,7 @@ import (
 	"project-management-demo-backend/ent/task"
 	"project-management-demo-backend/ent/taskcollaborator"
 	"project-management-demo-backend/ent/taskcolumn"
+	"project-management-demo-backend/ent/taskfeed"
 	"project-management-demo-backend/ent/tasklike"
 	"project-management-demo-backend/ent/tasklistcompletedstatus"
 	"project-management-demo-backend/ent/tasklistsortstatus"
@@ -4121,6 +4122,233 @@ func (tc *TaskColumn) ToEdge(order *TaskColumnOrder) *TaskColumnEdge {
 	return &TaskColumnEdge{
 		Node:   tc,
 		Cursor: order.Field.toCursor(tc),
+	}
+}
+
+// TaskFeedEdge is the edge representation of TaskFeed.
+type TaskFeedEdge struct {
+	Node   *TaskFeed `json:"node"`
+	Cursor Cursor    `json:"cursor"`
+}
+
+// TaskFeedConnection is the connection containing edges to TaskFeed.
+type TaskFeedConnection struct {
+	Edges      []*TaskFeedEdge `json:"edges"`
+	PageInfo   PageInfo        `json:"pageInfo"`
+	TotalCount int             `json:"totalCount"`
+}
+
+// TaskFeedPaginateOption enables pagination customization.
+type TaskFeedPaginateOption func(*taskFeedPager) error
+
+// WithTaskFeedOrder configures pagination ordering.
+func WithTaskFeedOrder(order *TaskFeedOrder) TaskFeedPaginateOption {
+	if order == nil {
+		order = DefaultTaskFeedOrder
+	}
+	o := *order
+	return func(pager *taskFeedPager) error {
+		if err := o.Direction.Validate(); err != nil {
+			return err
+		}
+		if o.Field == nil {
+			o.Field = DefaultTaskFeedOrder.Field
+		}
+		pager.order = &o
+		return nil
+	}
+}
+
+// WithTaskFeedFilter configures pagination filter.
+func WithTaskFeedFilter(filter func(*TaskFeedQuery) (*TaskFeedQuery, error)) TaskFeedPaginateOption {
+	return func(pager *taskFeedPager) error {
+		if filter == nil {
+			return errors.New("TaskFeedQuery filter cannot be nil")
+		}
+		pager.filter = filter
+		return nil
+	}
+}
+
+type taskFeedPager struct {
+	order  *TaskFeedOrder
+	filter func(*TaskFeedQuery) (*TaskFeedQuery, error)
+}
+
+func newTaskFeedPager(opts []TaskFeedPaginateOption) (*taskFeedPager, error) {
+	pager := &taskFeedPager{}
+	for _, opt := range opts {
+		if err := opt(pager); err != nil {
+			return nil, err
+		}
+	}
+	if pager.order == nil {
+		pager.order = DefaultTaskFeedOrder
+	}
+	return pager, nil
+}
+
+func (p *taskFeedPager) applyFilter(query *TaskFeedQuery) (*TaskFeedQuery, error) {
+	if p.filter != nil {
+		return p.filter(query)
+	}
+	return query, nil
+}
+
+func (p *taskFeedPager) toCursor(tf *TaskFeed) Cursor {
+	return p.order.Field.toCursor(tf)
+}
+
+func (p *taskFeedPager) applyCursors(query *TaskFeedQuery, after, before *Cursor) *TaskFeedQuery {
+	for _, predicate := range cursorsToPredicates(
+		p.order.Direction, after, before,
+		p.order.Field.field, DefaultTaskFeedOrder.Field.field,
+	) {
+		query = query.Where(predicate)
+	}
+	return query
+}
+
+func (p *taskFeedPager) applyOrder(query *TaskFeedQuery, reverse bool) *TaskFeedQuery {
+	direction := p.order.Direction
+	if reverse {
+		direction = direction.reverse()
+	}
+	query = query.Order(direction.orderFunc(p.order.Field.field))
+	if p.order.Field != DefaultTaskFeedOrder.Field {
+		query = query.Order(direction.orderFunc(DefaultTaskFeedOrder.Field.field))
+	}
+	return query
+}
+
+// Paginate executes the query and returns a relay based cursor connection to TaskFeed.
+func (tf *TaskFeedQuery) Paginate(
+	ctx context.Context, after *Cursor, first *int,
+	before *Cursor, last *int, opts ...TaskFeedPaginateOption,
+) (*TaskFeedConnection, error) {
+	if err := validateFirstLast(first, last); err != nil {
+		return nil, err
+	}
+	pager, err := newTaskFeedPager(opts)
+	if err != nil {
+		return nil, err
+	}
+
+	if tf, err = pager.applyFilter(tf); err != nil {
+		return nil, err
+	}
+
+	conn := &TaskFeedConnection{Edges: []*TaskFeedEdge{}}
+	if !hasCollectedField(ctx, edgesField) || first != nil && *first == 0 || last != nil && *last == 0 {
+		if hasCollectedField(ctx, totalCountField) ||
+			hasCollectedField(ctx, pageInfoField) {
+			count, err := tf.Count(ctx)
+			if err != nil {
+				return nil, err
+			}
+			conn.TotalCount = count
+			conn.PageInfo.HasNextPage = first != nil && count > 0
+			conn.PageInfo.HasPreviousPage = last != nil && count > 0
+		}
+		return conn, nil
+	}
+
+	if (after != nil || first != nil || before != nil || last != nil) && hasCollectedField(ctx, totalCountField) {
+		count, err := tf.Clone().Count(ctx)
+		if err != nil {
+			return nil, err
+		}
+		conn.TotalCount = count
+	}
+
+	tf = pager.applyCursors(tf, after, before)
+	tf = pager.applyOrder(tf, last != nil)
+	var limit int
+	if first != nil {
+		limit = *first + 1
+	} else if last != nil {
+		limit = *last + 1
+	}
+	if limit > 0 {
+		tf = tf.Limit(limit)
+	}
+
+	if field := getCollectedField(ctx, edgesField, nodeField); field != nil {
+		tf = tf.collectField(graphql.GetOperationContext(ctx), *field)
+	}
+
+	nodes, err := tf.All(ctx)
+	if err != nil || len(nodes) == 0 {
+		return conn, err
+	}
+
+	if len(nodes) == limit {
+		conn.PageInfo.HasNextPage = first != nil
+		conn.PageInfo.HasPreviousPage = last != nil
+		nodes = nodes[:len(nodes)-1]
+	}
+
+	var nodeAt func(int) *TaskFeed
+	if last != nil {
+		n := len(nodes) - 1
+		nodeAt = func(i int) *TaskFeed {
+			return nodes[n-i]
+		}
+	} else {
+		nodeAt = func(i int) *TaskFeed {
+			return nodes[i]
+		}
+	}
+
+	conn.Edges = make([]*TaskFeedEdge, len(nodes))
+	for i := range nodes {
+		node := nodeAt(i)
+		conn.Edges[i] = &TaskFeedEdge{
+			Node:   node,
+			Cursor: pager.toCursor(node),
+		}
+	}
+
+	conn.PageInfo.StartCursor = &conn.Edges[0].Cursor
+	conn.PageInfo.EndCursor = &conn.Edges[len(conn.Edges)-1].Cursor
+	if conn.TotalCount == 0 {
+		conn.TotalCount = len(nodes)
+	}
+
+	return conn, nil
+}
+
+// TaskFeedOrderField defines the ordering field of TaskFeed.
+type TaskFeedOrderField struct {
+	field    string
+	toCursor func(*TaskFeed) Cursor
+}
+
+// TaskFeedOrder defines the ordering of TaskFeed.
+type TaskFeedOrder struct {
+	Direction OrderDirection      `json:"direction"`
+	Field     *TaskFeedOrderField `json:"field"`
+}
+
+// DefaultTaskFeedOrder is the default ordering of TaskFeed.
+var DefaultTaskFeedOrder = &TaskFeedOrder{
+	Direction: OrderDirectionAsc,
+	Field: &TaskFeedOrderField{
+		field: taskfeed.FieldID,
+		toCursor: func(tf *TaskFeed) Cursor {
+			return Cursor{ID: tf.ID}
+		},
+	},
+}
+
+// ToEdge converts TaskFeed into TaskFeedEdge.
+func (tf *TaskFeed) ToEdge(order *TaskFeedOrder) *TaskFeedEdge {
+	if order == nil {
+		order = DefaultTaskFeedOrder
+	}
+	return &TaskFeedEdge{
+		Node:   tf,
+		Cursor: order.Field.toCursor(tf),
 	}
 }
 

@@ -26,6 +26,7 @@ import (
 	"project-management-demo-backend/ent/task"
 	"project-management-demo-backend/ent/taskcollaborator"
 	"project-management-demo-backend/ent/taskcolumn"
+	"project-management-demo-backend/ent/taskfeed"
 	"project-management-demo-backend/ent/tasklike"
 	"project-management-demo-backend/ent/tasklistcompletedstatus"
 	"project-management-demo-backend/ent/tasklistsortstatus"
@@ -74,6 +75,7 @@ const (
 	TypeTask                    = "Task"
 	TypeTaskCollaborator        = "TaskCollaborator"
 	TypeTaskColumn              = "TaskColumn"
+	TypeTaskFeed                = "TaskFeed"
 	TypeTaskLike                = "TaskLike"
 	TypeTaskListCompletedStatus = "TaskListCompletedStatus"
 	TypeTaskListSortStatus      = "TaskListSortStatus"
@@ -9992,6 +9994,9 @@ type TaskMutation struct {
 	task_collaborators        map[ulid.ID]struct{}
 	removedtask_collaborators map[ulid.ID]struct{}
 	clearedtask_collaborators bool
+	task_feeds                map[ulid.ID]struct{}
+	removedtask_feeds         map[ulid.ID]struct{}
+	clearedtask_feeds         bool
 	done                      bool
 	oldValue                  func(context.Context) (*Task, error)
 	predicates                []predicate.Task
@@ -11007,6 +11012,60 @@ func (m *TaskMutation) ResetTaskCollaborators() {
 	m.removedtask_collaborators = nil
 }
 
+// AddTaskFeedIDs adds the "task_feeds" edge to the TaskFeed entity by ids.
+func (m *TaskMutation) AddTaskFeedIDs(ids ...ulid.ID) {
+	if m.task_feeds == nil {
+		m.task_feeds = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		m.task_feeds[ids[i]] = struct{}{}
+	}
+}
+
+// ClearTaskFeeds clears the "task_feeds" edge to the TaskFeed entity.
+func (m *TaskMutation) ClearTaskFeeds() {
+	m.clearedtask_feeds = true
+}
+
+// TaskFeedsCleared reports if the "task_feeds" edge to the TaskFeed entity was cleared.
+func (m *TaskMutation) TaskFeedsCleared() bool {
+	return m.clearedtask_feeds
+}
+
+// RemoveTaskFeedIDs removes the "task_feeds" edge to the TaskFeed entity by IDs.
+func (m *TaskMutation) RemoveTaskFeedIDs(ids ...ulid.ID) {
+	if m.removedtask_feeds == nil {
+		m.removedtask_feeds = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		delete(m.task_feeds, ids[i])
+		m.removedtask_feeds[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedTaskFeeds returns the removed IDs of the "task_feeds" edge to the TaskFeed entity.
+func (m *TaskMutation) RemovedTaskFeedsIDs() (ids []ulid.ID) {
+	for id := range m.removedtask_feeds {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// TaskFeedsIDs returns the "task_feeds" edge IDs in the mutation.
+func (m *TaskMutation) TaskFeedsIDs() (ids []ulid.ID) {
+	for id := range m.task_feeds {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetTaskFeeds resets all changes to the "task_feeds" edge.
+func (m *TaskMutation) ResetTaskFeeds() {
+	m.task_feeds = nil
+	m.clearedtask_feeds = false
+	m.removedtask_feeds = nil
+}
+
 // Where appends a list predicates to the TaskMutation builder.
 func (m *TaskMutation) Where(ps ...predicate.Task) {
 	m.predicates = append(m.predicates, ps...)
@@ -11345,7 +11404,7 @@ func (m *TaskMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *TaskMutation) AddedEdges() []string {
-	edges := make([]string, 0, 9)
+	edges := make([]string, 0, 10)
 	if m.teammate != nil {
 		edges = append(edges, task.EdgeTeammate)
 	}
@@ -11372,6 +11431,9 @@ func (m *TaskMutation) AddedEdges() []string {
 	}
 	if m.task_collaborators != nil {
 		edges = append(edges, task.EdgeTaskCollaborators)
+	}
+	if m.task_feeds != nil {
+		edges = append(edges, task.EdgeTaskFeeds)
 	}
 	return edges
 }
@@ -11428,13 +11490,19 @@ func (m *TaskMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case task.EdgeTaskFeeds:
+		ids := make([]ent.Value, 0, len(m.task_feeds))
+		for id := range m.task_feeds {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *TaskMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 9)
+	edges := make([]string, 0, 10)
 	if m.removedsub_tasks != nil {
 		edges = append(edges, task.EdgeSubTasks)
 	}
@@ -11452,6 +11520,9 @@ func (m *TaskMutation) RemovedEdges() []string {
 	}
 	if m.removedtask_collaborators != nil {
 		edges = append(edges, task.EdgeTaskCollaborators)
+	}
+	if m.removedtask_feeds != nil {
+		edges = append(edges, task.EdgeTaskFeeds)
 	}
 	return edges
 }
@@ -11496,13 +11567,19 @@ func (m *TaskMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case task.EdgeTaskFeeds:
+		ids := make([]ent.Value, 0, len(m.removedtask_feeds))
+		for id := range m.removedtask_feeds {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *TaskMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 9)
+	edges := make([]string, 0, 10)
 	if m.clearedteammate {
 		edges = append(edges, task.EdgeTeammate)
 	}
@@ -11530,6 +11607,9 @@ func (m *TaskMutation) ClearedEdges() []string {
 	if m.clearedtask_collaborators {
 		edges = append(edges, task.EdgeTaskCollaborators)
 	}
+	if m.clearedtask_feeds {
+		edges = append(edges, task.EdgeTaskFeeds)
+	}
 	return edges
 }
 
@@ -11555,6 +11635,8 @@ func (m *TaskMutation) EdgeCleared(name string) bool {
 		return m.clearedtask_tags
 	case task.EdgeTaskCollaborators:
 		return m.clearedtask_collaborators
+	case task.EdgeTaskFeeds:
+		return m.clearedtask_feeds
 	}
 	return false
 }
@@ -11606,6 +11688,9 @@ func (m *TaskMutation) ResetEdge(name string) error {
 		return nil
 	case task.EdgeTaskCollaborators:
 		m.ResetTaskCollaborators()
+		return nil
+	case task.EdgeTaskFeeds:
+		m.ResetTaskFeeds()
 		return nil
 	}
 	return fmt.Errorf("unknown Task edge %s", name)
@@ -12805,6 +12890,728 @@ func (m *TaskColumnMutation) ResetEdge(name string) error {
 		return nil
 	}
 	return fmt.Errorf("unknown TaskColumn edge %s", name)
+}
+
+// TaskFeedMutation represents an operation that mutates the TaskFeed nodes in the graph.
+type TaskFeedMutation struct {
+	config
+	op              Op
+	typ             string
+	id              *ulid.ID
+	description     *editor.Description
+	is_first        *bool
+	is_pinned       *bool
+	created_at      *time.Time
+	updated_at      *time.Time
+	clearedFields   map[string]struct{}
+	task            *ulid.ID
+	clearedtask     bool
+	teammate        *ulid.ID
+	clearedteammate bool
+	done            bool
+	oldValue        func(context.Context) (*TaskFeed, error)
+	predicates      []predicate.TaskFeed
+}
+
+var _ ent.Mutation = (*TaskFeedMutation)(nil)
+
+// taskfeedOption allows management of the mutation configuration using functional options.
+type taskfeedOption func(*TaskFeedMutation)
+
+// newTaskFeedMutation creates new mutation for the TaskFeed entity.
+func newTaskFeedMutation(c config, op Op, opts ...taskfeedOption) *TaskFeedMutation {
+	m := &TaskFeedMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeTaskFeed,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withTaskFeedID sets the ID field of the mutation.
+func withTaskFeedID(id ulid.ID) taskfeedOption {
+	return func(m *TaskFeedMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *TaskFeed
+		)
+		m.oldValue = func(ctx context.Context) (*TaskFeed, error) {
+			once.Do(func() {
+				if m.done {
+					err = fmt.Errorf("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().TaskFeed.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withTaskFeed sets the old TaskFeed of the mutation.
+func withTaskFeed(node *TaskFeed) taskfeedOption {
+	return func(m *TaskFeedMutation) {
+		m.oldValue = func(context.Context) (*TaskFeed, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m TaskFeedMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m TaskFeedMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, fmt.Errorf("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of TaskFeed entities.
+func (m *TaskFeedMutation) SetID(id ulid.ID) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *TaskFeedMutation) ID() (id ulid.ID, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// SetTaskID sets the "task_id" field.
+func (m *TaskFeedMutation) SetTaskID(u ulid.ID) {
+	m.task = &u
+}
+
+// TaskID returns the value of the "task_id" field in the mutation.
+func (m *TaskFeedMutation) TaskID() (r ulid.ID, exists bool) {
+	v := m.task
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTaskID returns the old "task_id" field's value of the TaskFeed entity.
+// If the TaskFeed object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TaskFeedMutation) OldTaskID(ctx context.Context) (v ulid.ID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldTaskID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldTaskID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTaskID: %w", err)
+	}
+	return oldValue.TaskID, nil
+}
+
+// ResetTaskID resets all changes to the "task_id" field.
+func (m *TaskFeedMutation) ResetTaskID() {
+	m.task = nil
+}
+
+// SetTeammateID sets the "teammate_id" field.
+func (m *TaskFeedMutation) SetTeammateID(u ulid.ID) {
+	m.teammate = &u
+}
+
+// TeammateID returns the value of the "teammate_id" field in the mutation.
+func (m *TaskFeedMutation) TeammateID() (r ulid.ID, exists bool) {
+	v := m.teammate
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTeammateID returns the old "teammate_id" field's value of the TaskFeed entity.
+// If the TaskFeed object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TaskFeedMutation) OldTeammateID(ctx context.Context) (v ulid.ID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldTeammateID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldTeammateID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTeammateID: %w", err)
+	}
+	return oldValue.TeammateID, nil
+}
+
+// ResetTeammateID resets all changes to the "teammate_id" field.
+func (m *TaskFeedMutation) ResetTeammateID() {
+	m.teammate = nil
+}
+
+// SetDescription sets the "description" field.
+func (m *TaskFeedMutation) SetDescription(e editor.Description) {
+	m.description = &e
+}
+
+// Description returns the value of the "description" field in the mutation.
+func (m *TaskFeedMutation) Description() (r editor.Description, exists bool) {
+	v := m.description
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDescription returns the old "description" field's value of the TaskFeed entity.
+// If the TaskFeed object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TaskFeedMutation) OldDescription(ctx context.Context) (v editor.Description, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldDescription is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldDescription requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDescription: %w", err)
+	}
+	return oldValue.Description, nil
+}
+
+// ResetDescription resets all changes to the "description" field.
+func (m *TaskFeedMutation) ResetDescription() {
+	m.description = nil
+}
+
+// SetIsFirst sets the "is_first" field.
+func (m *TaskFeedMutation) SetIsFirst(b bool) {
+	m.is_first = &b
+}
+
+// IsFirst returns the value of the "is_first" field in the mutation.
+func (m *TaskFeedMutation) IsFirst() (r bool, exists bool) {
+	v := m.is_first
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsFirst returns the old "is_first" field's value of the TaskFeed entity.
+// If the TaskFeed object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TaskFeedMutation) OldIsFirst(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldIsFirst is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldIsFirst requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsFirst: %w", err)
+	}
+	return oldValue.IsFirst, nil
+}
+
+// ResetIsFirst resets all changes to the "is_first" field.
+func (m *TaskFeedMutation) ResetIsFirst() {
+	m.is_first = nil
+}
+
+// SetIsPinned sets the "is_pinned" field.
+func (m *TaskFeedMutation) SetIsPinned(b bool) {
+	m.is_pinned = &b
+}
+
+// IsPinned returns the value of the "is_pinned" field in the mutation.
+func (m *TaskFeedMutation) IsPinned() (r bool, exists bool) {
+	v := m.is_pinned
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsPinned returns the old "is_pinned" field's value of the TaskFeed entity.
+// If the TaskFeed object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TaskFeedMutation) OldIsPinned(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldIsPinned is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldIsPinned requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsPinned: %w", err)
+	}
+	return oldValue.IsPinned, nil
+}
+
+// ResetIsPinned resets all changes to the "is_pinned" field.
+func (m *TaskFeedMutation) ResetIsPinned() {
+	m.is_pinned = nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *TaskFeedMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *TaskFeedMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the TaskFeed entity.
+// If the TaskFeed object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TaskFeedMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *TaskFeedMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *TaskFeedMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *TaskFeedMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the TaskFeed entity.
+// If the TaskFeed object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TaskFeedMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *TaskFeedMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// ClearTask clears the "task" edge to the Task entity.
+func (m *TaskFeedMutation) ClearTask() {
+	m.clearedtask = true
+}
+
+// TaskCleared reports if the "task" edge to the Task entity was cleared.
+func (m *TaskFeedMutation) TaskCleared() bool {
+	return m.clearedtask
+}
+
+// TaskIDs returns the "task" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// TaskID instead. It exists only for internal usage by the builders.
+func (m *TaskFeedMutation) TaskIDs() (ids []ulid.ID) {
+	if id := m.task; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetTask resets all changes to the "task" edge.
+func (m *TaskFeedMutation) ResetTask() {
+	m.task = nil
+	m.clearedtask = false
+}
+
+// ClearTeammate clears the "teammate" edge to the Teammate entity.
+func (m *TaskFeedMutation) ClearTeammate() {
+	m.clearedteammate = true
+}
+
+// TeammateCleared reports if the "teammate" edge to the Teammate entity was cleared.
+func (m *TaskFeedMutation) TeammateCleared() bool {
+	return m.clearedteammate
+}
+
+// TeammateIDs returns the "teammate" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// TeammateID instead. It exists only for internal usage by the builders.
+func (m *TaskFeedMutation) TeammateIDs() (ids []ulid.ID) {
+	if id := m.teammate; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetTeammate resets all changes to the "teammate" edge.
+func (m *TaskFeedMutation) ResetTeammate() {
+	m.teammate = nil
+	m.clearedteammate = false
+}
+
+// Where appends a list predicates to the TaskFeedMutation builder.
+func (m *TaskFeedMutation) Where(ps ...predicate.TaskFeed) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// Op returns the operation name.
+func (m *TaskFeedMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (TaskFeed).
+func (m *TaskFeedMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *TaskFeedMutation) Fields() []string {
+	fields := make([]string, 0, 7)
+	if m.task != nil {
+		fields = append(fields, taskfeed.FieldTaskID)
+	}
+	if m.teammate != nil {
+		fields = append(fields, taskfeed.FieldTeammateID)
+	}
+	if m.description != nil {
+		fields = append(fields, taskfeed.FieldDescription)
+	}
+	if m.is_first != nil {
+		fields = append(fields, taskfeed.FieldIsFirst)
+	}
+	if m.is_pinned != nil {
+		fields = append(fields, taskfeed.FieldIsPinned)
+	}
+	if m.created_at != nil {
+		fields = append(fields, taskfeed.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, taskfeed.FieldUpdatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *TaskFeedMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case taskfeed.FieldTaskID:
+		return m.TaskID()
+	case taskfeed.FieldTeammateID:
+		return m.TeammateID()
+	case taskfeed.FieldDescription:
+		return m.Description()
+	case taskfeed.FieldIsFirst:
+		return m.IsFirst()
+	case taskfeed.FieldIsPinned:
+		return m.IsPinned()
+	case taskfeed.FieldCreatedAt:
+		return m.CreatedAt()
+	case taskfeed.FieldUpdatedAt:
+		return m.UpdatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *TaskFeedMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case taskfeed.FieldTaskID:
+		return m.OldTaskID(ctx)
+	case taskfeed.FieldTeammateID:
+		return m.OldTeammateID(ctx)
+	case taskfeed.FieldDescription:
+		return m.OldDescription(ctx)
+	case taskfeed.FieldIsFirst:
+		return m.OldIsFirst(ctx)
+	case taskfeed.FieldIsPinned:
+		return m.OldIsPinned(ctx)
+	case taskfeed.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case taskfeed.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown TaskFeed field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *TaskFeedMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case taskfeed.FieldTaskID:
+		v, ok := value.(ulid.ID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTaskID(v)
+		return nil
+	case taskfeed.FieldTeammateID:
+		v, ok := value.(ulid.ID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTeammateID(v)
+		return nil
+	case taskfeed.FieldDescription:
+		v, ok := value.(editor.Description)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDescription(v)
+		return nil
+	case taskfeed.FieldIsFirst:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsFirst(v)
+		return nil
+	case taskfeed.FieldIsPinned:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsPinned(v)
+		return nil
+	case taskfeed.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case taskfeed.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown TaskFeed field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *TaskFeedMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *TaskFeedMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *TaskFeedMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown TaskFeed numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *TaskFeedMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *TaskFeedMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *TaskFeedMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown TaskFeed nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *TaskFeedMutation) ResetField(name string) error {
+	switch name {
+	case taskfeed.FieldTaskID:
+		m.ResetTaskID()
+		return nil
+	case taskfeed.FieldTeammateID:
+		m.ResetTeammateID()
+		return nil
+	case taskfeed.FieldDescription:
+		m.ResetDescription()
+		return nil
+	case taskfeed.FieldIsFirst:
+		m.ResetIsFirst()
+		return nil
+	case taskfeed.FieldIsPinned:
+		m.ResetIsPinned()
+		return nil
+	case taskfeed.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case taskfeed.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown TaskFeed field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *TaskFeedMutation) AddedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.task != nil {
+		edges = append(edges, taskfeed.EdgeTask)
+	}
+	if m.teammate != nil {
+		edges = append(edges, taskfeed.EdgeTeammate)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *TaskFeedMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case taskfeed.EdgeTask:
+		if id := m.task; id != nil {
+			return []ent.Value{*id}
+		}
+	case taskfeed.EdgeTeammate:
+		if id := m.teammate; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *TaskFeedMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 2)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *TaskFeedMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *TaskFeedMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.clearedtask {
+		edges = append(edges, taskfeed.EdgeTask)
+	}
+	if m.clearedteammate {
+		edges = append(edges, taskfeed.EdgeTeammate)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *TaskFeedMutation) EdgeCleared(name string) bool {
+	switch name {
+	case taskfeed.EdgeTask:
+		return m.clearedtask
+	case taskfeed.EdgeTeammate:
+		return m.clearedteammate
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *TaskFeedMutation) ClearEdge(name string) error {
+	switch name {
+	case taskfeed.EdgeTask:
+		m.ClearTask()
+		return nil
+	case taskfeed.EdgeTeammate:
+		m.ClearTeammate()
+		return nil
+	}
+	return fmt.Errorf("unknown TaskFeed unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *TaskFeedMutation) ResetEdge(name string) error {
+	switch name {
+	case taskfeed.EdgeTask:
+		m.ResetTask()
+		return nil
+	case taskfeed.EdgeTeammate:
+		m.ResetTeammate()
+		return nil
+	}
+	return fmt.Errorf("unknown TaskFeed edge %s", name)
 }
 
 // TaskLikeMutation represents an operation that mutates the TaskLike nodes in the graph.
@@ -16410,6 +17217,9 @@ type TeammateMutation struct {
 	task_collaborators                 map[ulid.ID]struct{}
 	removedtask_collaborators          map[ulid.ID]struct{}
 	clearedtask_collaborators          bool
+	task_feeds                         map[ulid.ID]struct{}
+	removedtask_feeds                  map[ulid.ID]struct{}
+	clearedtask_feeds                  bool
 	done                               bool
 	oldValue                           func(context.Context) (*Teammate, error)
 	predicates                         []predicate.Teammate
@@ -17436,6 +18246,60 @@ func (m *TeammateMutation) ResetTaskCollaborators() {
 	m.removedtask_collaborators = nil
 }
 
+// AddTaskFeedIDs adds the "task_feeds" edge to the TaskFeed entity by ids.
+func (m *TeammateMutation) AddTaskFeedIDs(ids ...ulid.ID) {
+	if m.task_feeds == nil {
+		m.task_feeds = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		m.task_feeds[ids[i]] = struct{}{}
+	}
+}
+
+// ClearTaskFeeds clears the "task_feeds" edge to the TaskFeed entity.
+func (m *TeammateMutation) ClearTaskFeeds() {
+	m.clearedtask_feeds = true
+}
+
+// TaskFeedsCleared reports if the "task_feeds" edge to the TaskFeed entity was cleared.
+func (m *TeammateMutation) TaskFeedsCleared() bool {
+	return m.clearedtask_feeds
+}
+
+// RemoveTaskFeedIDs removes the "task_feeds" edge to the TaskFeed entity by IDs.
+func (m *TeammateMutation) RemoveTaskFeedIDs(ids ...ulid.ID) {
+	if m.removedtask_feeds == nil {
+		m.removedtask_feeds = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		delete(m.task_feeds, ids[i])
+		m.removedtask_feeds[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedTaskFeeds returns the removed IDs of the "task_feeds" edge to the TaskFeed entity.
+func (m *TeammateMutation) RemovedTaskFeedsIDs() (ids []ulid.ID) {
+	for id := range m.removedtask_feeds {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// TaskFeedsIDs returns the "task_feeds" edge IDs in the mutation.
+func (m *TeammateMutation) TaskFeedsIDs() (ids []ulid.ID) {
+	for id := range m.task_feeds {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetTaskFeeds resets all changes to the "task_feeds" edge.
+func (m *TeammateMutation) ResetTaskFeeds() {
+	m.task_feeds = nil
+	m.clearedtask_feeds = false
+	m.removedtask_feeds = nil
+}
+
 // Where appends a list predicates to the TeammateMutation builder.
 func (m *TeammateMutation) Where(ps ...predicate.Teammate) {
 	m.predicates = append(m.predicates, ps...)
@@ -17622,7 +18486,7 @@ func (m *TeammateMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *TeammateMutation) AddedEdges() []string {
-	edges := make([]string, 0, 14)
+	edges := make([]string, 0, 15)
 	if m.workspaces != nil {
 		edges = append(edges, teammate.EdgeWorkspaces)
 	}
@@ -17664,6 +18528,9 @@ func (m *TeammateMutation) AddedEdges() []string {
 	}
 	if m.task_collaborators != nil {
 		edges = append(edges, teammate.EdgeTaskCollaborators)
+	}
+	if m.task_feeds != nil {
+		edges = append(edges, teammate.EdgeTaskFeeds)
 	}
 	return edges
 }
@@ -17756,13 +18623,19 @@ func (m *TeammateMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case teammate.EdgeTaskFeeds:
+		ids := make([]ent.Value, 0, len(m.task_feeds))
+		for id := range m.task_feeds {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *TeammateMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 14)
+	edges := make([]string, 0, 15)
 	if m.removedworkspaces != nil {
 		edges = append(edges, teammate.EdgeWorkspaces)
 	}
@@ -17804,6 +18677,9 @@ func (m *TeammateMutation) RemovedEdges() []string {
 	}
 	if m.removedtask_collaborators != nil {
 		edges = append(edges, teammate.EdgeTaskCollaborators)
+	}
+	if m.removedtask_feeds != nil {
+		edges = append(edges, teammate.EdgeTaskFeeds)
 	}
 	return edges
 }
@@ -17896,13 +18772,19 @@ func (m *TeammateMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case teammate.EdgeTaskFeeds:
+		ids := make([]ent.Value, 0, len(m.removedtask_feeds))
+		for id := range m.removedtask_feeds {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *TeammateMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 14)
+	edges := make([]string, 0, 15)
 	if m.clearedworkspaces {
 		edges = append(edges, teammate.EdgeWorkspaces)
 	}
@@ -17945,6 +18827,9 @@ func (m *TeammateMutation) ClearedEdges() []string {
 	if m.clearedtask_collaborators {
 		edges = append(edges, teammate.EdgeTaskCollaborators)
 	}
+	if m.clearedtask_feeds {
+		edges = append(edges, teammate.EdgeTaskFeeds)
+	}
 	return edges
 }
 
@@ -17980,6 +18865,8 @@ func (m *TeammateMutation) EdgeCleared(name string) bool {
 		return m.clearedtask_likes
 	case teammate.EdgeTaskCollaborators:
 		return m.clearedtask_collaborators
+	case teammate.EdgeTaskFeeds:
+		return m.clearedtask_feeds
 	}
 	return false
 }
@@ -18037,6 +18924,9 @@ func (m *TeammateMutation) ResetEdge(name string) error {
 		return nil
 	case teammate.EdgeTaskCollaborators:
 		m.ResetTaskCollaborators()
+		return nil
+	case teammate.EdgeTaskFeeds:
+		m.ResetTaskFeeds()
 		return nil
 	}
 	return fmt.Errorf("unknown Teammate edge %s", name)

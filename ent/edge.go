@@ -404,6 +404,14 @@ func (t *Task) TaskCollaborators(ctx context.Context) ([]*TaskCollaborator, erro
 	return result, err
 }
 
+func (t *Task) TaskFeeds(ctx context.Context) ([]*TaskFeed, error) {
+	result, err := t.Edges.TaskFeedsOrErr()
+	if IsNotLoaded(err) {
+		result, err = t.QueryTaskFeeds().All(ctx)
+	}
+	return result, err
+}
+
 func (tc *TaskCollaborator) Task(ctx context.Context) (*Task, error) {
 	result, err := tc.Edges.TaskOrErr()
 	if IsNotLoaded(err) {
@@ -432,6 +440,22 @@ func (tc *TaskColumn) ProjectTaskColumns(ctx context.Context) ([]*ProjectTaskCol
 	result, err := tc.Edges.ProjectTaskColumnsOrErr()
 	if IsNotLoaded(err) {
 		result, err = tc.QueryProjectTaskColumns().All(ctx)
+	}
+	return result, err
+}
+
+func (tf *TaskFeed) Task(ctx context.Context) (*Task, error) {
+	result, err := tf.Edges.TaskOrErr()
+	if IsNotLoaded(err) {
+		result, err = tf.QueryTask().Only(ctx)
+	}
+	return result, err
+}
+
+func (tf *TaskFeed) Teammate(ctx context.Context) (*Teammate, error) {
+	result, err := tf.Edges.TeammateOrErr()
+	if IsNotLoaded(err) {
+		result, err = tf.QueryTeammate().Only(ctx)
 	}
 	return result, err
 }
@@ -632,6 +656,14 @@ func (t *Teammate) TaskCollaborators(ctx context.Context) ([]*TaskCollaborator, 
 	result, err := t.Edges.TaskCollaboratorsOrErr()
 	if IsNotLoaded(err) {
 		result, err = t.QueryTaskCollaborators().All(ctx)
+	}
+	return result, err
+}
+
+func (t *Teammate) TaskFeeds(ctx context.Context) ([]*TaskFeed, error) {
+	result, err := t.Edges.TaskFeedsOrErr()
+	if IsNotLoaded(err) {
+		result, err = t.QueryTaskFeeds().All(ctx)
 	}
 	return result, err
 }

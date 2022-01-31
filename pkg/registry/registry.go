@@ -42,6 +42,7 @@ func (r *registry) NewController() controller.Controller {
 		Task:                    r.NewTaskController(),
 		TaskCollaborator:        r.NewTaskCollaboratorController(),
 		TaskColumn:              r.NewTaskColumnController(),
+		TaskFeed:                r.NewTaskFeedController(),
 		TaskLike:                r.NewTaskLikeController(),
 		TaskListCompletedStatus: r.NewTaskListCompletedStatusController(),
 		TaskListSortStatus:      r.NewTaskListSortStatusController(),

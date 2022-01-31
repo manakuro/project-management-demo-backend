@@ -57,6 +57,9 @@ type TaskCollaborator func(*sql.Selector)
 // TaskColumn is the predicate function for taskcolumn builders.
 type TaskColumn func(*sql.Selector)
 
+// TaskFeed is the predicate function for taskfeed builders.
+type TaskFeed func(*sql.Selector)
+
 // TaskLike is the predicate function for tasklike builders.
 type TaskLike func(*sql.Selector)
 
