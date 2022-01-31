@@ -11759,6 +11759,21 @@ type TeammateTaskColumnWhereInput struct {
 	TaskColumnIDEqualFold    *ulid.ID  `json:"taskColumnIDEqualFold,omitempty"`
 	TaskColumnIDContainsFold *ulid.ID  `json:"taskColumnIDContainsFold,omitempty"`
 
+	// "workspace_id" field predicates.
+	WorkspaceID             *ulid.ID  `json:"workspaceID,omitempty"`
+	WorkspaceIDNEQ          *ulid.ID  `json:"workspaceIDNEQ,omitempty"`
+	WorkspaceIDIn           []ulid.ID `json:"workspaceIDIn,omitempty"`
+	WorkspaceIDNotIn        []ulid.ID `json:"workspaceIDNotIn,omitempty"`
+	WorkspaceIDGT           *ulid.ID  `json:"workspaceIDGT,omitempty"`
+	WorkspaceIDGTE          *ulid.ID  `json:"workspaceIDGTE,omitempty"`
+	WorkspaceIDLT           *ulid.ID  `json:"workspaceIDLT,omitempty"`
+	WorkspaceIDLTE          *ulid.ID  `json:"workspaceIDLTE,omitempty"`
+	WorkspaceIDContains     *ulid.ID  `json:"workspaceIDContains,omitempty"`
+	WorkspaceIDHasPrefix    *ulid.ID  `json:"workspaceIDHasPrefix,omitempty"`
+	WorkspaceIDHasSuffix    *ulid.ID  `json:"workspaceIDHasSuffix,omitempty"`
+	WorkspaceIDEqualFold    *ulid.ID  `json:"workspaceIDEqualFold,omitempty"`
+	WorkspaceIDContainsFold *ulid.ID  `json:"workspaceIDContainsFold,omitempty"`
+
 	// "width" field predicates.
 	Width             *string  `json:"width,omitempty"`
 	WidthNEQ          *string  `json:"widthNEQ,omitempty"`
@@ -11815,6 +11830,10 @@ type TeammateTaskColumnWhereInput struct {
 	// "teammate" edge predicates.
 	HasTeammate     *bool                 `json:"hasTeammate,omitempty"`
 	HasTeammateWith []*TeammateWhereInput `json:"hasTeammateWith,omitempty"`
+
+	// "workspace" edge predicates.
+	HasWorkspace     *bool                  `json:"hasWorkspace,omitempty"`
+	HasWorkspaceWith []*WorkspaceWhereInput `json:"hasWorkspaceWith,omitempty"`
 
 	// "task_column" edge predicates.
 	HasTaskColumn     *bool                   `json:"hasTaskColumn,omitempty"`
@@ -11982,6 +12001,45 @@ func (i *TeammateTaskColumnWhereInput) P() (predicate.TeammateTaskColumn, error)
 	if i.TaskColumnIDContainsFold != nil {
 		predicates = append(predicates, teammatetaskcolumn.TaskColumnIDContainsFold(*i.TaskColumnIDContainsFold))
 	}
+	if i.WorkspaceID != nil {
+		predicates = append(predicates, teammatetaskcolumn.WorkspaceIDEQ(*i.WorkspaceID))
+	}
+	if i.WorkspaceIDNEQ != nil {
+		predicates = append(predicates, teammatetaskcolumn.WorkspaceIDNEQ(*i.WorkspaceIDNEQ))
+	}
+	if len(i.WorkspaceIDIn) > 0 {
+		predicates = append(predicates, teammatetaskcolumn.WorkspaceIDIn(i.WorkspaceIDIn...))
+	}
+	if len(i.WorkspaceIDNotIn) > 0 {
+		predicates = append(predicates, teammatetaskcolumn.WorkspaceIDNotIn(i.WorkspaceIDNotIn...))
+	}
+	if i.WorkspaceIDGT != nil {
+		predicates = append(predicates, teammatetaskcolumn.WorkspaceIDGT(*i.WorkspaceIDGT))
+	}
+	if i.WorkspaceIDGTE != nil {
+		predicates = append(predicates, teammatetaskcolumn.WorkspaceIDGTE(*i.WorkspaceIDGTE))
+	}
+	if i.WorkspaceIDLT != nil {
+		predicates = append(predicates, teammatetaskcolumn.WorkspaceIDLT(*i.WorkspaceIDLT))
+	}
+	if i.WorkspaceIDLTE != nil {
+		predicates = append(predicates, teammatetaskcolumn.WorkspaceIDLTE(*i.WorkspaceIDLTE))
+	}
+	if i.WorkspaceIDContains != nil {
+		predicates = append(predicates, teammatetaskcolumn.WorkspaceIDContains(*i.WorkspaceIDContains))
+	}
+	if i.WorkspaceIDHasPrefix != nil {
+		predicates = append(predicates, teammatetaskcolumn.WorkspaceIDHasPrefix(*i.WorkspaceIDHasPrefix))
+	}
+	if i.WorkspaceIDHasSuffix != nil {
+		predicates = append(predicates, teammatetaskcolumn.WorkspaceIDHasSuffix(*i.WorkspaceIDHasSuffix))
+	}
+	if i.WorkspaceIDEqualFold != nil {
+		predicates = append(predicates, teammatetaskcolumn.WorkspaceIDEqualFold(*i.WorkspaceIDEqualFold))
+	}
+	if i.WorkspaceIDContainsFold != nil {
+		predicates = append(predicates, teammatetaskcolumn.WorkspaceIDContainsFold(*i.WorkspaceIDContainsFold))
+	}
 	if i.Width != nil {
 		predicates = append(predicates, teammatetaskcolumn.WidthEQ(*i.Width))
 	}
@@ -12123,6 +12181,24 @@ func (i *TeammateTaskColumnWhereInput) P() (predicate.TeammateTaskColumn, error)
 			with = append(with, p)
 		}
 		predicates = append(predicates, teammatetaskcolumn.HasTeammateWith(with...))
+	}
+	if i.HasWorkspace != nil {
+		p := teammatetaskcolumn.HasWorkspace()
+		if !*i.HasWorkspace {
+			p = teammatetaskcolumn.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasWorkspaceWith) > 0 {
+		with := make([]predicate.Workspace, 0, len(i.HasWorkspaceWith))
+		for _, w := range i.HasWorkspaceWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, teammatetaskcolumn.HasWorkspaceWith(with...))
 	}
 	if i.HasTaskColumn != nil {
 		p := teammatetaskcolumn.HasTaskColumn()
@@ -14362,6 +14438,10 @@ type WorkspaceWhereInput struct {
 	// "tags" edge predicates.
 	HasTags     *bool            `json:"hasTags,omitempty"`
 	HasTagsWith []*TagWhereInput `json:"hasTagsWith,omitempty"`
+
+	// "teammate_task_columns" edge predicates.
+	HasTeammateTaskColumns     *bool                           `json:"hasTeammateTaskColumns,omitempty"`
+	HasTeammateTaskColumnsWith []*TeammateTaskColumnWhereInput `json:"hasTeammateTaskColumnsWith,omitempty"`
 }
 
 // Filter applies the WorkspaceWhereInput filter on the WorkspaceQuery builder.
@@ -14735,6 +14815,24 @@ func (i *WorkspaceWhereInput) P() (predicate.Workspace, error) {
 			with = append(with, p)
 		}
 		predicates = append(predicates, workspace.HasTagsWith(with...))
+	}
+	if i.HasTeammateTaskColumns != nil {
+		p := workspace.HasTeammateTaskColumns()
+		if !*i.HasTeammateTaskColumns {
+			p = workspace.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasTeammateTaskColumnsWith) > 0 {
+		with := make([]predicate.TeammateTaskColumn, 0, len(i.HasTeammateTaskColumnsWith))
+		for _, w := range i.HasTeammateTaskColumnsWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, workspace.HasTeammateTaskColumnsWith(with...))
 	}
 	switch len(predicates) {
 	case 0:

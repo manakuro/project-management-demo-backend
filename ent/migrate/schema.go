@@ -789,6 +789,7 @@ var (
 		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
 		{Name: "task_column_id", Type: field.TypeString, Nullable: true},
 		{Name: "teammate_id", Type: field.TypeString, Nullable: true},
+		{Name: "workspace_id", Type: field.TypeString, Nullable: true},
 	}
 	// TeammateTaskColumnsTable holds the schema information for the "teammate_task_columns" table.
 	TeammateTaskColumnsTable = &schema.Table{
@@ -806,6 +807,12 @@ var (
 				Symbol:     "teammate_task_columns_teammates_teammate_task_columns",
 				Columns:    []*schema.Column{TeammateTaskColumnsColumns[8]},
 				RefColumns: []*schema.Column{TeammatesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "teammate_task_columns_workspaces_teammate_task_columns",
+				Columns:    []*schema.Column{TeammateTaskColumnsColumns[9]},
+				RefColumns: []*schema.Column{WorkspacesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
@@ -1112,6 +1119,7 @@ func init() {
 	TeammateTasksTable.ForeignKeys[2].RefTable = TeammateTaskSectionsTable
 	TeammateTaskColumnsTable.ForeignKeys[0].RefTable = TaskColumnsTable
 	TeammateTaskColumnsTable.ForeignKeys[1].RefTable = TeammatesTable
+	TeammateTaskColumnsTable.ForeignKeys[2].RefTable = WorkspacesTable
 	TeammateTaskListStatusTable.ForeignKeys[0].RefTable = TaskListCompletedStatusTable
 	TeammateTaskListStatusTable.ForeignKeys[1].RefTable = TaskListSortStatusTable
 	TeammateTaskListStatusTable.ForeignKeys[2].RefTable = TeammatesTable

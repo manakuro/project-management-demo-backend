@@ -32,6 +32,8 @@ func (TeammateTaskColumnMixin) Fields() []ent.Field {
 			GoType(ulid.ID("")),
 		field.String("task_column_id").
 			GoType(ulid.ID("")),
+		field.String("workspace_id").
+			GoType(ulid.ID("")),
 		field.String("width").
 			NotEmpty().
 			MaxLen(255),
@@ -52,6 +54,16 @@ func (TeammateTaskColumn) Edges() []ent.Edge {
 			Annotations(
 				schema.Annotation(
 					annotation.Edge{FieldName: "teammate_id"},
+				),
+			),
+		edge.From("workspace", Workspace.Type).
+			Ref("teammate_task_columns").
+			Field("workspace_id").
+			Unique().
+			Required().
+			Annotations(
+				schema.Annotation(
+					annotation.Edge{FieldName: "workspace_id"},
 				),
 			),
 		edge.From("task_column", TaskColumn.Type).

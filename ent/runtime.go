@@ -1022,7 +1022,7 @@ func init() {
 	teammatetaskcolumnFields := schema.TeammateTaskColumn{}.Fields()
 	_ = teammatetaskcolumnFields
 	// teammatetaskcolumnDescWidth is the schema descriptor for width field.
-	teammatetaskcolumnDescWidth := teammatetaskcolumnMixinFields1[2].Descriptor()
+	teammatetaskcolumnDescWidth := teammatetaskcolumnMixinFields1[3].Descriptor()
 	// teammatetaskcolumn.WidthValidator is a validator for the "width" field. It is called by the builders before save.
 	teammatetaskcolumn.WidthValidator = func() func(string) error {
 		validators := teammatetaskcolumnDescWidth.Validators

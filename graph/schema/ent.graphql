@@ -464,6 +464,10 @@ input WorkspaceWhereInput {
   """tags edge predicates"""
   hasTags: Boolean
   hasTagsWith: [TagWhereInput!]
+  
+  """teammate_task_columns edge predicates"""
+  hasTeammateTaskColumns: Boolean
+  hasTeammateTaskColumnsWith: [TeammateTaskColumnWhereInput!]
 }
 
 """
@@ -1493,6 +1497,21 @@ input TeammateTaskColumnWhereInput {
   taskColumnIDEqualFold: ID
   taskColumnIDContainsFold: ID
   
+  """workspace_id field predicates"""
+  workspaceID: ID
+  workspaceIDNEQ: ID
+  workspaceIDIn: [ID!]
+  workspaceIDNotIn: [ID!]
+  workspaceIDGT: ID
+  workspaceIDGTE: ID
+  workspaceIDLT: ID
+  workspaceIDLTE: ID
+  workspaceIDContains: ID
+  workspaceIDHasPrefix: ID
+  workspaceIDHasSuffix: ID
+  workspaceIDEqualFold: ID
+  workspaceIDContainsFold: ID
+  
   """width field predicates"""
   width: String
   widthNEQ: String
@@ -1559,6 +1578,10 @@ input TeammateTaskColumnWhereInput {
   """teammate edge predicates"""
   hasTeammate: Boolean
   hasTeammateWith: [TeammateWhereInput!]
+  
+  """workspace edge predicates"""
+  hasWorkspace: Boolean
+  hasWorkspaceWith: [WorkspaceWhereInput!]
   
   """task_column edge predicates"""
   hasTaskColumn: Boolean

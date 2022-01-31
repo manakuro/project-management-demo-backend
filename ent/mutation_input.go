@@ -2678,6 +2678,7 @@ type CreateTeammateTaskColumnInput struct {
 	CreatedAt    *time.Time
 	UpdatedAt    *time.Time
 	TeammateID   ulid.ID
+	WorkspaceID  ulid.ID
 	TaskColumnID ulid.ID
 }
 
@@ -2694,6 +2695,7 @@ func (i *CreateTeammateTaskColumnInput) Mutate(m *TeammateTaskColumnCreate) {
 		m.SetUpdatedAt(*v)
 	}
 	m.SetTeammateID(i.TeammateID)
+	m.SetWorkspaceID(i.WorkspaceID)
 	m.SetTaskColumnID(i.TaskColumnID)
 }
 
@@ -2712,6 +2714,8 @@ type UpdateTeammateTaskColumnInput struct {
 	Order           *int
 	TeammateID      *ulid.ID
 	ClearTeammate   bool
+	WorkspaceID     *ulid.ID
+	ClearWorkspace  bool
 	TaskColumnID    *ulid.ID
 	ClearTaskColumn bool
 }
@@ -2735,6 +2739,12 @@ func (i *UpdateTeammateTaskColumnInput) Mutate(m *TeammateTaskColumnMutation) {
 	}
 	if v := i.TeammateID; v != nil {
 		m.SetTeammateID(*v)
+	}
+	if i.ClearWorkspace {
+		m.ClearWorkspace()
+	}
+	if v := i.WorkspaceID; v != nil {
+		m.SetWorkspaceID(*v)
 	}
 	if i.ClearTaskColumn {
 		m.ClearTaskColumn()
@@ -3206,6 +3216,7 @@ type CreateWorkspaceInput struct {
 	TeammateTaskSectionIDs    []ulid.ID
 	TaskLikeIDs               []ulid.ID
 	TagIDs                    []ulid.ID
+	TeammateTaskColumnIDs     []ulid.ID
 }
 
 // Mutate applies the CreateWorkspaceInput on the WorkspaceCreate builder.
@@ -3243,6 +3254,9 @@ func (i *CreateWorkspaceInput) Mutate(m *WorkspaceCreate) {
 	if ids := i.TagIDs; len(ids) > 0 {
 		m.AddTagIDs(ids...)
 	}
+	if ids := i.TeammateTaskColumnIDs; len(ids) > 0 {
+		m.AddTeammateTaskColumnIDs(ids...)
+	}
 }
 
 // SetInput applies the change-set in the CreateWorkspaceInput on the create builder.
@@ -3274,6 +3288,8 @@ type UpdateWorkspaceInput struct {
 	RemoveTaskLikeIDs               []ulid.ID
 	AddTagIDs                       []ulid.ID
 	RemoveTagIDs                    []ulid.ID
+	AddTeammateTaskColumnIDs        []ulid.ID
+	RemoveTeammateTaskColumnIDs     []ulid.ID
 }
 
 // Mutate applies the UpdateWorkspaceInput on the WorkspaceMutation.
@@ -3337,6 +3353,12 @@ func (i *UpdateWorkspaceInput) Mutate(m *WorkspaceMutation) {
 	}
 	if ids := i.RemoveTagIDs; len(ids) > 0 {
 		m.RemoveTagIDs(ids...)
+	}
+	if ids := i.AddTeammateTaskColumnIDs; len(ids) > 0 {
+		m.AddTeammateTaskColumnIDs(ids...)
+	}
+	if ids := i.RemoveTeammateTaskColumnIDs; len(ids) > 0 {
+		m.RemoveTeammateTaskColumnIDs(ids...)
 	}
 }
 

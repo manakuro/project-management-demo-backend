@@ -8,6 +8,7 @@ import (
 	"project-management-demo-backend/ent/taskcolumn"
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/teammatetaskcolumn"
+	"project-management-demo-backend/ent/workspace"
 	"strings"
 	"time"
 
@@ -23,6 +24,8 @@ type TeammateTaskColumn struct {
 	TeammateID ulid.ID `json:"teammate_id,omitempty"`
 	// TaskColumnID holds the value of the "task_column_id" field.
 	TaskColumnID ulid.ID `json:"task_column_id,omitempty"`
+	// WorkspaceID holds the value of the "workspace_id" field.
+	WorkspaceID ulid.ID `json:"workspace_id,omitempty"`
 	// Width holds the value of the "width" field.
 	Width string `json:"width,omitempty"`
 	// Disabled holds the value of the "disabled" field.
@@ -44,11 +47,13 @@ type TeammateTaskColumn struct {
 type TeammateTaskColumnEdges struct {
 	// Teammate holds the value of the teammate edge.
 	Teammate *Teammate `json:"teammate,omitempty"`
+	// Workspace holds the value of the workspace edge.
+	Workspace *Workspace `json:"workspace,omitempty"`
 	// TaskColumn holds the value of the task_column edge.
 	TaskColumn *TaskColumn `json:"task_column,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [3]bool
 }
 
 // TeammateOrErr returns the Teammate value or an error if the edge
@@ -65,10 +70,24 @@ func (e TeammateTaskColumnEdges) TeammateOrErr() (*Teammate, error) {
 	return nil, &NotLoadedError{edge: "teammate"}
 }
 
+// WorkspaceOrErr returns the Workspace value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e TeammateTaskColumnEdges) WorkspaceOrErr() (*Workspace, error) {
+	if e.loadedTypes[1] {
+		if e.Workspace == nil {
+			// The edge workspace was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: workspace.Label}
+		}
+		return e.Workspace, nil
+	}
+	return nil, &NotLoadedError{edge: "workspace"}
+}
+
 // TaskColumnOrErr returns the TaskColumn value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e TeammateTaskColumnEdges) TaskColumnOrErr() (*TaskColumn, error) {
-	if e.loadedTypes[1] {
+	if e.loadedTypes[2] {
 		if e.TaskColumn == nil {
 			// The edge task_column was loaded in eager-loading,
 			// but was not found.
@@ -92,7 +111,7 @@ func (*TeammateTaskColumn) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullString)
 		case teammatetaskcolumn.FieldCreatedAt, teammatetaskcolumn.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
-		case teammatetaskcolumn.FieldID, teammatetaskcolumn.FieldTeammateID, teammatetaskcolumn.FieldTaskColumnID:
+		case teammatetaskcolumn.FieldID, teammatetaskcolumn.FieldTeammateID, teammatetaskcolumn.FieldTaskColumnID, teammatetaskcolumn.FieldWorkspaceID:
 			values[i] = new(ulid.ID)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type TeammateTaskColumn", columns[i])
@@ -126,6 +145,12 @@ func (ttc *TeammateTaskColumn) assignValues(columns []string, values []interface
 				return fmt.Errorf("unexpected type %T for field task_column_id", values[i])
 			} else if value != nil {
 				ttc.TaskColumnID = *value
+			}
+		case teammatetaskcolumn.FieldWorkspaceID:
+			if value, ok := values[i].(*ulid.ID); !ok {
+				return fmt.Errorf("unexpected type %T for field workspace_id", values[i])
+			} else if value != nil {
+				ttc.WorkspaceID = *value
 			}
 		case teammatetaskcolumn.FieldWidth:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -173,6 +198,11 @@ func (ttc *TeammateTaskColumn) QueryTeammate() *TeammateQuery {
 	return (&TeammateTaskColumnClient{config: ttc.config}).QueryTeammate(ttc)
 }
 
+// QueryWorkspace queries the "workspace" edge of the TeammateTaskColumn entity.
+func (ttc *TeammateTaskColumn) QueryWorkspace() *WorkspaceQuery {
+	return (&TeammateTaskColumnClient{config: ttc.config}).QueryWorkspace(ttc)
+}
+
 // QueryTaskColumn queries the "task_column" edge of the TeammateTaskColumn entity.
 func (ttc *TeammateTaskColumn) QueryTaskColumn() *TaskColumnQuery {
 	return (&TeammateTaskColumnClient{config: ttc.config}).QueryTaskColumn(ttc)
@@ -205,6 +235,8 @@ func (ttc *TeammateTaskColumn) String() string {
 	builder.WriteString(fmt.Sprintf("%v", ttc.TeammateID))
 	builder.WriteString(", task_column_id=")
 	builder.WriteString(fmt.Sprintf("%v", ttc.TaskColumnID))
+	builder.WriteString(", workspace_id=")
+	builder.WriteString(fmt.Sprintf("%v", ttc.WorkspaceID))
 	builder.WriteString(", width=")
 	builder.WriteString(ttc.Width)
 	builder.WriteString(", disabled=")

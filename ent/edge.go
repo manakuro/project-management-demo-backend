@@ -812,6 +812,14 @@ func (ttc *TeammateTaskColumn) Teammate(ctx context.Context) (*Teammate, error) 
 	return result, err
 }
 
+func (ttc *TeammateTaskColumn) Workspace(ctx context.Context) (*Workspace, error) {
+	result, err := ttc.Edges.WorkspaceOrErr()
+	if IsNotLoaded(err) {
+		result, err = ttc.QueryWorkspace().Only(ctx)
+	}
+	return result, err
+}
+
 func (ttc *TeammateTaskColumn) TaskColumn(ctx context.Context) (*TaskColumn, error) {
 	result, err := ttc.Edges.TaskColumnOrErr()
 	if IsNotLoaded(err) {
@@ -992,6 +1000,14 @@ func (w *Workspace) Tags(ctx context.Context) ([]*Tag, error) {
 	result, err := w.Edges.TagsOrErr()
 	if IsNotLoaded(err) {
 		result, err = w.QueryTags().All(ctx)
+	}
+	return result, err
+}
+
+func (w *Workspace) TeammateTaskColumns(ctx context.Context) ([]*TeammateTaskColumn, error) {
+	result, err := w.Edges.TeammateTaskColumnsOrErr()
+	if IsNotLoaded(err) {
+		result, err = w.QueryTeammateTaskColumns().All(ctx)
 	}
 	return result, err
 }

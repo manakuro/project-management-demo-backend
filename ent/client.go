@@ -4686,6 +4686,22 @@ func (c *TeammateTaskColumnClient) QueryTeammate(ttc *TeammateTaskColumn) *Teamm
 	return query
 }
 
+// QueryWorkspace queries the workspace edge of a TeammateTaskColumn.
+func (c *TeammateTaskColumnClient) QueryWorkspace(ttc *TeammateTaskColumn) *WorkspaceQuery {
+	query := &WorkspaceQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := ttc.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(teammatetaskcolumn.Table, teammatetaskcolumn.FieldID, id),
+			sqlgraph.To(workspace.Table, workspace.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, teammatetaskcolumn.WorkspaceTable, teammatetaskcolumn.WorkspaceColumn),
+		)
+		fromV = sqlgraph.Neighbors(ttc.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryTaskColumn queries the task_column edge of a TeammateTaskColumn.
 func (c *TeammateTaskColumnClient) QueryTaskColumn(ttc *TeammateTaskColumn) *TaskColumnQuery {
 	query := &TaskColumnQuery{config: c.config}
@@ -5587,6 +5603,22 @@ func (c *WorkspaceClient) QueryTags(w *Workspace) *TagQuery {
 			sqlgraph.From(workspace.Table, workspace.FieldID, id),
 			sqlgraph.To(tag.Table, tag.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, workspace.TagsTable, workspace.TagsColumn),
+		)
+		fromV = sqlgraph.Neighbors(w.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryTeammateTaskColumns queries the teammate_task_columns edge of a Workspace.
+func (c *WorkspaceClient) QueryTeammateTaskColumns(w *Workspace) *TeammateTaskColumnQuery {
+	query := &TeammateTaskColumnQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := w.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(workspace.Table, workspace.FieldID, id),
+			sqlgraph.To(teammatetaskcolumn.Table, teammatetaskcolumn.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, workspace.TeammateTaskColumnsTable, workspace.TeammateTaskColumnsColumn),
 		)
 		fromV = sqlgraph.Neighbors(w.driver.Dialect(), step)
 		return fromV, nil

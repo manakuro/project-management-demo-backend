@@ -14,10 +14,14 @@ func TeammateTaskColumn(ctx context.Context, client *ent.Client) {
 		log.Fatalf("TeammateTaskColumn failed to delete data: %v", err)
 	}
 
+	workspace := feedutil.GetWorkspace(ctx, client)
+	manato := feedutil.GetTeammateByEmail(ctx, client, teammateFeed.manato.Email)
+
 	ts := []ent.CreateTeammateTaskColumnInput{
 		{
 			TaskColumnID: feedutil.GetTaskColumnByName(ctx, client, taskColumnFeed.taskName.Name).ID,
-			TeammateID:   feedutil.GetTeammateByEmail(ctx, client, teammateFeed.manato.Email).ID,
+			TeammateID:   manato.ID,
+			WorkspaceID:  workspace.ID,
 			Width:        "600px",
 			Disabled:     false,
 			Customizable: false,
@@ -25,7 +29,8 @@ func TeammateTaskColumn(ctx context.Context, client *ent.Client) {
 		},
 		{
 			TaskColumnID: feedutil.GetTaskColumnByName(ctx, client, taskColumnFeed.dueDate.Name).ID,
-			TeammateID:   feedutil.GetTeammateByEmail(ctx, client, teammateFeed.manato.Email).ID,
+			TeammateID:   manato.ID,
+			WorkspaceID:  workspace.ID,
 			Width:        "120px",
 			Disabled:     false,
 			Customizable: true,
@@ -33,7 +38,8 @@ func TeammateTaskColumn(ctx context.Context, client *ent.Client) {
 		},
 		{
 			TaskColumnID: feedutil.GetTaskColumnByName(ctx, client, taskColumnFeed.project.Name).ID,
-			TeammateID:   feedutil.GetTeammateByEmail(ctx, client, teammateFeed.manato.Email).ID,
+			TeammateID:   manato.ID,
+			WorkspaceID:  workspace.ID,
 			Width:        "120px",
 			Disabled:     false,
 			Customizable: true,
@@ -41,7 +47,8 @@ func TeammateTaskColumn(ctx context.Context, client *ent.Client) {
 		},
 		{
 			TaskColumnID: feedutil.GetTaskColumnByName(ctx, client, taskColumnFeed.tags.Name).ID,
-			TeammateID:   feedutil.GetTeammateByEmail(ctx, client, teammateFeed.manato.Email).ID,
+			TeammateID:   manato.ID,
+			WorkspaceID:  workspace.ID,
 			Width:        "120px",
 			Disabled:     false,
 			Customizable: true,

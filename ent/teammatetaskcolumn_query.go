@@ -12,6 +12,7 @@ import (
 	"project-management-demo-backend/ent/taskcolumn"
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/teammatetaskcolumn"
+	"project-management-demo-backend/ent/workspace"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -29,6 +30,7 @@ type TeammateTaskColumnQuery struct {
 	predicates []predicate.TeammateTaskColumn
 	// eager-loading edges.
 	withTeammate   *TeammateQuery
+	withWorkspace  *WorkspaceQuery
 	withTaskColumn *TaskColumnQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -81,6 +83,28 @@ func (ttcq *TeammateTaskColumnQuery) QueryTeammate() *TeammateQuery {
 			sqlgraph.From(teammatetaskcolumn.Table, teammatetaskcolumn.FieldID, selector),
 			sqlgraph.To(teammate.Table, teammate.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, teammatetaskcolumn.TeammateTable, teammatetaskcolumn.TeammateColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(ttcq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryWorkspace chains the current query on the "workspace" edge.
+func (ttcq *TeammateTaskColumnQuery) QueryWorkspace() *WorkspaceQuery {
+	query := &WorkspaceQuery{config: ttcq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := ttcq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := ttcq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(teammatetaskcolumn.Table, teammatetaskcolumn.FieldID, selector),
+			sqlgraph.To(workspace.Table, workspace.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, teammatetaskcolumn.WorkspaceTable, teammatetaskcolumn.WorkspaceColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(ttcq.driver.Dialect(), step)
 		return fromU, nil
@@ -292,6 +316,7 @@ func (ttcq *TeammateTaskColumnQuery) Clone() *TeammateTaskColumnQuery {
 		order:          append([]OrderFunc{}, ttcq.order...),
 		predicates:     append([]predicate.TeammateTaskColumn{}, ttcq.predicates...),
 		withTeammate:   ttcq.withTeammate.Clone(),
+		withWorkspace:  ttcq.withWorkspace.Clone(),
 		withTaskColumn: ttcq.withTaskColumn.Clone(),
 		// clone intermediate query.
 		sql:  ttcq.sql.Clone(),
@@ -307,6 +332,17 @@ func (ttcq *TeammateTaskColumnQuery) WithTeammate(opts ...func(*TeammateQuery)) 
 		opt(query)
 	}
 	ttcq.withTeammate = query
+	return ttcq
+}
+
+// WithWorkspace tells the query-builder to eager-load the nodes that are connected to
+// the "workspace" edge. The optional arguments are used to configure the query builder of the edge.
+func (ttcq *TeammateTaskColumnQuery) WithWorkspace(opts ...func(*WorkspaceQuery)) *TeammateTaskColumnQuery {
+	query := &WorkspaceQuery{config: ttcq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	ttcq.withWorkspace = query
 	return ttcq
 }
 
@@ -386,8 +422,9 @@ func (ttcq *TeammateTaskColumnQuery) sqlAll(ctx context.Context) ([]*TeammateTas
 	var (
 		nodes       = []*TeammateTaskColumn{}
 		_spec       = ttcq.querySpec()
-		loadedTypes = [2]bool{
+		loadedTypes = [3]bool{
 			ttcq.withTeammate != nil,
+			ttcq.withWorkspace != nil,
 			ttcq.withTaskColumn != nil,
 		}
 	)
@@ -433,6 +470,32 @@ func (ttcq *TeammateTaskColumnQuery) sqlAll(ctx context.Context) ([]*TeammateTas
 			}
 			for i := range nodes {
 				nodes[i].Edges.Teammate = n
+			}
+		}
+	}
+
+	if query := ttcq.withWorkspace; query != nil {
+		ids := make([]ulid.ID, 0, len(nodes))
+		nodeids := make(map[ulid.ID][]*TeammateTaskColumn)
+		for i := range nodes {
+			fk := nodes[i].WorkspaceID
+			if _, ok := nodeids[fk]; !ok {
+				ids = append(ids, fk)
+			}
+			nodeids[fk] = append(nodeids[fk], nodes[i])
+		}
+		query.Where(workspace.IDIn(ids...))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nodeids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "workspace_id" returned %v`, n.ID)
+			}
+			for i := range nodes {
+				nodes[i].Edges.Workspace = n
 			}
 		}
 	}

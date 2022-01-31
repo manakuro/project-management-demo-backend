@@ -11,6 +11,7 @@ import (
 	"project-management-demo-backend/ent/taskcolumn"
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/teammatetaskcolumn"
+	"project-management-demo-backend/ent/workspace"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -39,6 +40,12 @@ func (ttcu *TeammateTaskColumnUpdate) SetTeammateID(u ulid.ID) *TeammateTaskColu
 // SetTaskColumnID sets the "task_column_id" field.
 func (ttcu *TeammateTaskColumnUpdate) SetTaskColumnID(u ulid.ID) *TeammateTaskColumnUpdate {
 	ttcu.mutation.SetTaskColumnID(u)
+	return ttcu
+}
+
+// SetWorkspaceID sets the "workspace_id" field.
+func (ttcu *TeammateTaskColumnUpdate) SetWorkspaceID(u ulid.ID) *TeammateTaskColumnUpdate {
+	ttcu.mutation.SetWorkspaceID(u)
 	return ttcu
 }
 
@@ -78,6 +85,11 @@ func (ttcu *TeammateTaskColumnUpdate) SetTeammate(t *Teammate) *TeammateTaskColu
 	return ttcu.SetTeammateID(t.ID)
 }
 
+// SetWorkspace sets the "workspace" edge to the Workspace entity.
+func (ttcu *TeammateTaskColumnUpdate) SetWorkspace(w *Workspace) *TeammateTaskColumnUpdate {
+	return ttcu.SetWorkspaceID(w.ID)
+}
+
 // SetTaskColumn sets the "task_column" edge to the TaskColumn entity.
 func (ttcu *TeammateTaskColumnUpdate) SetTaskColumn(t *TaskColumn) *TeammateTaskColumnUpdate {
 	return ttcu.SetTaskColumnID(t.ID)
@@ -91,6 +103,12 @@ func (ttcu *TeammateTaskColumnUpdate) Mutation() *TeammateTaskColumnMutation {
 // ClearTeammate clears the "teammate" edge to the Teammate entity.
 func (ttcu *TeammateTaskColumnUpdate) ClearTeammate() *TeammateTaskColumnUpdate {
 	ttcu.mutation.ClearTeammate()
+	return ttcu
+}
+
+// ClearWorkspace clears the "workspace" edge to the Workspace entity.
+func (ttcu *TeammateTaskColumnUpdate) ClearWorkspace() *TeammateTaskColumnUpdate {
+	ttcu.mutation.ClearWorkspace()
 	return ttcu
 }
 
@@ -169,6 +187,9 @@ func (ttcu *TeammateTaskColumnUpdate) check() error {
 	}
 	if _, ok := ttcu.mutation.TeammateID(); ttcu.mutation.TeammateCleared() && !ok {
 		return errors.New("ent: clearing a required unique edge \"teammate\"")
+	}
+	if _, ok := ttcu.mutation.WorkspaceID(); ttcu.mutation.WorkspaceCleared() && !ok {
+		return errors.New("ent: clearing a required unique edge \"workspace\"")
 	}
 	if _, ok := ttcu.mutation.TaskColumnID(); ttcu.mutation.TaskColumnCleared() && !ok {
 		return errors.New("ent: clearing a required unique edge \"task_column\"")
@@ -264,6 +285,41 @@ func (ttcu *TeammateTaskColumnUpdate) sqlSave(ctx context.Context) (n int, err e
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if ttcu.mutation.WorkspaceCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   teammatetaskcolumn.WorkspaceTable,
+			Columns: []string{teammatetaskcolumn.WorkspaceColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: workspace.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ttcu.mutation.WorkspaceIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   teammatetaskcolumn.WorkspaceTable,
+			Columns: []string{teammatetaskcolumn.WorkspaceColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: workspace.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if ttcu.mutation.TaskColumnCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -330,6 +386,12 @@ func (ttcuo *TeammateTaskColumnUpdateOne) SetTaskColumnID(u ulid.ID) *TeammateTa
 	return ttcuo
 }
 
+// SetWorkspaceID sets the "workspace_id" field.
+func (ttcuo *TeammateTaskColumnUpdateOne) SetWorkspaceID(u ulid.ID) *TeammateTaskColumnUpdateOne {
+	ttcuo.mutation.SetWorkspaceID(u)
+	return ttcuo
+}
+
 // SetWidth sets the "width" field.
 func (ttcuo *TeammateTaskColumnUpdateOne) SetWidth(s string) *TeammateTaskColumnUpdateOne {
 	ttcuo.mutation.SetWidth(s)
@@ -366,6 +428,11 @@ func (ttcuo *TeammateTaskColumnUpdateOne) SetTeammate(t *Teammate) *TeammateTask
 	return ttcuo.SetTeammateID(t.ID)
 }
 
+// SetWorkspace sets the "workspace" edge to the Workspace entity.
+func (ttcuo *TeammateTaskColumnUpdateOne) SetWorkspace(w *Workspace) *TeammateTaskColumnUpdateOne {
+	return ttcuo.SetWorkspaceID(w.ID)
+}
+
 // SetTaskColumn sets the "task_column" edge to the TaskColumn entity.
 func (ttcuo *TeammateTaskColumnUpdateOne) SetTaskColumn(t *TaskColumn) *TeammateTaskColumnUpdateOne {
 	return ttcuo.SetTaskColumnID(t.ID)
@@ -379,6 +446,12 @@ func (ttcuo *TeammateTaskColumnUpdateOne) Mutation() *TeammateTaskColumnMutation
 // ClearTeammate clears the "teammate" edge to the Teammate entity.
 func (ttcuo *TeammateTaskColumnUpdateOne) ClearTeammate() *TeammateTaskColumnUpdateOne {
 	ttcuo.mutation.ClearTeammate()
+	return ttcuo
+}
+
+// ClearWorkspace clears the "workspace" edge to the Workspace entity.
+func (ttcuo *TeammateTaskColumnUpdateOne) ClearWorkspace() *TeammateTaskColumnUpdateOne {
+	ttcuo.mutation.ClearWorkspace()
 	return ttcuo
 }
 
@@ -464,6 +537,9 @@ func (ttcuo *TeammateTaskColumnUpdateOne) check() error {
 	}
 	if _, ok := ttcuo.mutation.TeammateID(); ttcuo.mutation.TeammateCleared() && !ok {
 		return errors.New("ent: clearing a required unique edge \"teammate\"")
+	}
+	if _, ok := ttcuo.mutation.WorkspaceID(); ttcuo.mutation.WorkspaceCleared() && !ok {
+		return errors.New("ent: clearing a required unique edge \"workspace\"")
 	}
 	if _, ok := ttcuo.mutation.TaskColumnID(); ttcuo.mutation.TaskColumnCleared() && !ok {
 		return errors.New("ent: clearing a required unique edge \"task_column\"")
@@ -568,6 +644,41 @@ func (ttcuo *TeammateTaskColumnUpdateOne) sqlSave(ctx context.Context) (_node *T
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: teammate.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if ttcuo.mutation.WorkspaceCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   teammatetaskcolumn.WorkspaceTable,
+			Columns: []string{teammatetaskcolumn.WorkspaceColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: workspace.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ttcuo.mutation.WorkspaceIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   teammatetaskcolumn.WorkspaceTable,
+			Columns: []string{teammatetaskcolumn.WorkspaceColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: workspace.FieldID,
 				},
 			},
 		}
