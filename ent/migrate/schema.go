@@ -547,6 +547,34 @@ var (
 		Columns:    TaskSectionsColumns,
 		PrimaryKey: []*schema.Column{TaskSectionsColumns[0]},
 	}
+	// TaskTagsColumns holds the columns for the "task_tags" table.
+	TaskTagsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
+		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
+		{Name: "tag_id", Type: field.TypeString, Nullable: true},
+		{Name: "task_id", Type: field.TypeString, Nullable: true},
+	}
+	// TaskTagsTable holds the schema information for the "task_tags" table.
+	TaskTagsTable = &schema.Table{
+		Name:       "task_tags",
+		Columns:    TaskTagsColumns,
+		PrimaryKey: []*schema.Column{TaskTagsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "task_tags_tags_task_tags",
+				Columns:    []*schema.Column{TaskTagsColumns[3]},
+				RefColumns: []*schema.Column{TagsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "task_tags_tasks_task_tags",
+				Columns:    []*schema.Column{TaskTagsColumns[4]},
+				RefColumns: []*schema.Column{TasksColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
 	// TeammatesColumns holds the columns for the "teammates" table.
 	TeammatesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString},
@@ -861,6 +889,7 @@ var (
 		TaskListSortStatusTable,
 		TaskPrioritiesTable,
 		TaskSectionsTable,
+		TaskTagsTable,
 		TeammatesTable,
 		TeammateTasksTable,
 		TeammateTaskColumnsTable,
@@ -907,6 +936,8 @@ func init() {
 	TaskLikesTable.ForeignKeys[1].RefTable = TeammatesTable
 	TaskLikesTable.ForeignKeys[2].RefTable = WorkspacesTable
 	TaskPrioritiesTable.ForeignKeys[0].RefTable = ColorsTable
+	TaskTagsTable.ForeignKeys[0].RefTable = TagsTable
+	TaskTagsTable.ForeignKeys[1].RefTable = TasksTable
 	TeammateTasksTable.ForeignKeys[0].RefTable = TasksTable
 	TeammateTasksTable.ForeignKeys[1].RefTable = TeammatesTable
 	TeammateTasksTable.ForeignKeys[2].RefTable = TeammateTaskSectionsTable

@@ -31,6 +31,7 @@ import (
 	"project-management-demo-backend/ent/tasklistsortstatus"
 	"project-management-demo-backend/ent/taskpriority"
 	"project-management-demo-backend/ent/tasksection"
+	"project-management-demo-backend/ent/tasktag"
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/teammatetask"
 	"project-management-demo-backend/ent/teammatetaskcolumn"
@@ -94,6 +95,8 @@ type Client struct {
 	TaskPriority *TaskPriorityClient
 	// TaskSection is the client for interacting with the TaskSection builders.
 	TaskSection *TaskSectionClient
+	// TaskTag is the client for interacting with the TaskTag builders.
+	TaskTag *TaskTagClient
 	// Teammate is the client for interacting with the Teammate builders.
 	Teammate *TeammateClient
 	// TeammateTask is the client for interacting with the TeammateTask builders.
@@ -148,6 +151,7 @@ func (c *Client) init() {
 	c.TaskListSortStatus = NewTaskListSortStatusClient(c.config)
 	c.TaskPriority = NewTaskPriorityClient(c.config)
 	c.TaskSection = NewTaskSectionClient(c.config)
+	c.TaskTag = NewTaskTagClient(c.config)
 	c.Teammate = NewTeammateClient(c.config)
 	c.TeammateTask = NewTeammateTaskClient(c.config)
 	c.TeammateTaskColumn = NewTeammateTaskColumnClient(c.config)
@@ -212,6 +216,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		TaskListSortStatus:      NewTaskListSortStatusClient(cfg),
 		TaskPriority:            NewTaskPriorityClient(cfg),
 		TaskSection:             NewTaskSectionClient(cfg),
+		TaskTag:                 NewTaskTagClient(cfg),
 		Teammate:                NewTeammateClient(cfg),
 		TeammateTask:            NewTeammateTaskClient(cfg),
 		TeammateTaskColumn:      NewTeammateTaskColumnClient(cfg),
@@ -261,6 +266,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		TaskListSortStatus:      NewTaskListSortStatusClient(cfg),
 		TaskPriority:            NewTaskPriorityClient(cfg),
 		TaskSection:             NewTaskSectionClient(cfg),
+		TaskTag:                 NewTaskTagClient(cfg),
 		Teammate:                NewTeammateClient(cfg),
 		TeammateTask:            NewTeammateTaskClient(cfg),
 		TeammateTaskColumn:      NewTeammateTaskColumnClient(cfg),
@@ -321,6 +327,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.TaskListSortStatus.Use(hooks...)
 	c.TaskPriority.Use(hooks...)
 	c.TaskSection.Use(hooks...)
+	c.TaskTag.Use(hooks...)
 	c.Teammate.Use(hooks...)
 	c.TeammateTask.Use(hooks...)
 	c.TeammateTaskColumn.Use(hooks...)
@@ -2228,6 +2235,22 @@ func (c *TagClient) QueryColor(t *Tag) *ColorQuery {
 	return query
 }
 
+// QueryTaskTags queries the task_tags edge of a Tag.
+func (c *TagClient) QueryTaskTags(t *Tag) *TaskTagQuery {
+	query := &TaskTagQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := t.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(tag.Table, tag.FieldID, id),
+			sqlgraph.To(tasktag.Table, tasktag.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, tag.TaskTagsTable, tag.TaskTagsColumn),
+		)
+		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *TagClient) Hooks() []Hook {
 	return c.hooks.Tag
@@ -2423,6 +2446,22 @@ func (c *TaskClient) QueryTaskLikes(t *Task) *TaskLikeQuery {
 			sqlgraph.From(task.Table, task.FieldID, id),
 			sqlgraph.To(tasklike.Table, tasklike.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, task.TaskLikesTable, task.TaskLikesColumn),
+		)
+		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryTaskTags queries the task_tags edge of a Task.
+func (c *TaskClient) QueryTaskTags(t *Task) *TaskTagQuery {
+	query := &TaskTagQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := t.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(task.Table, task.FieldID, id),
+			sqlgraph.To(tasktag.Table, tasktag.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, task.TaskTagsTable, task.TaskTagsColumn),
 		)
 		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
 		return fromV, nil
@@ -3149,6 +3188,128 @@ func (c *TaskSectionClient) GetX(ctx context.Context, id ulid.ID) *TaskSection {
 // Hooks returns the client hooks.
 func (c *TaskSectionClient) Hooks() []Hook {
 	return c.hooks.TaskSection
+}
+
+// TaskTagClient is a client for the TaskTag schema.
+type TaskTagClient struct {
+	config
+}
+
+// NewTaskTagClient returns a client for the TaskTag from the given config.
+func NewTaskTagClient(c config) *TaskTagClient {
+	return &TaskTagClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `tasktag.Hooks(f(g(h())))`.
+func (c *TaskTagClient) Use(hooks ...Hook) {
+	c.hooks.TaskTag = append(c.hooks.TaskTag, hooks...)
+}
+
+// Create returns a create builder for TaskTag.
+func (c *TaskTagClient) Create() *TaskTagCreate {
+	mutation := newTaskTagMutation(c.config, OpCreate)
+	return &TaskTagCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of TaskTag entities.
+func (c *TaskTagClient) CreateBulk(builders ...*TaskTagCreate) *TaskTagCreateBulk {
+	return &TaskTagCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for TaskTag.
+func (c *TaskTagClient) Update() *TaskTagUpdate {
+	mutation := newTaskTagMutation(c.config, OpUpdate)
+	return &TaskTagUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *TaskTagClient) UpdateOne(tt *TaskTag) *TaskTagUpdateOne {
+	mutation := newTaskTagMutation(c.config, OpUpdateOne, withTaskTag(tt))
+	return &TaskTagUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *TaskTagClient) UpdateOneID(id ulid.ID) *TaskTagUpdateOne {
+	mutation := newTaskTagMutation(c.config, OpUpdateOne, withTaskTagID(id))
+	return &TaskTagUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for TaskTag.
+func (c *TaskTagClient) Delete() *TaskTagDelete {
+	mutation := newTaskTagMutation(c.config, OpDelete)
+	return &TaskTagDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *TaskTagClient) DeleteOne(tt *TaskTag) *TaskTagDeleteOne {
+	return c.DeleteOneID(tt.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *TaskTagClient) DeleteOneID(id ulid.ID) *TaskTagDeleteOne {
+	builder := c.Delete().Where(tasktag.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &TaskTagDeleteOne{builder}
+}
+
+// Query returns a query builder for TaskTag.
+func (c *TaskTagClient) Query() *TaskTagQuery {
+	return &TaskTagQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a TaskTag entity by its id.
+func (c *TaskTagClient) Get(ctx context.Context, id ulid.ID) (*TaskTag, error) {
+	return c.Query().Where(tasktag.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *TaskTagClient) GetX(ctx context.Context, id ulid.ID) *TaskTag {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryTask queries the task edge of a TaskTag.
+func (c *TaskTagClient) QueryTask(tt *TaskTag) *TaskQuery {
+	query := &TaskQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := tt.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(tasktag.Table, tasktag.FieldID, id),
+			sqlgraph.To(task.Table, task.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, tasktag.TaskTable, tasktag.TaskColumn),
+		)
+		fromV = sqlgraph.Neighbors(tt.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryTag queries the tag edge of a TaskTag.
+func (c *TaskTagClient) QueryTag(tt *TaskTag) *TagQuery {
+	query := &TagQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := tt.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(tasktag.Table, tasktag.FieldID, id),
+			sqlgraph.To(tag.Table, tag.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, tasktag.TagTable, tasktag.TagColumn),
+		)
+		fromV = sqlgraph.Neighbors(tt.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *TaskTagClient) Hooks() []Hook {
+	return c.hooks.TaskTag
 }
 
 // TeammateClient is a client for the Teammate schema.

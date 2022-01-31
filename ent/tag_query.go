@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"database/sql/driver"
 	"errors"
 	"fmt"
 	"math"
@@ -11,6 +12,7 @@ import (
 	"project-management-demo-backend/ent/predicate"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/tag"
+	"project-management-demo-backend/ent/tasktag"
 	"project-management-demo-backend/ent/workspace"
 
 	"entgo.io/ent/dialect/sql"
@@ -30,6 +32,7 @@ type TagQuery struct {
 	// eager-loading edges.
 	withWorkspace *WorkspaceQuery
 	withColor     *ColorQuery
+	withTaskTags  *TaskTagQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -103,6 +106,28 @@ func (tq *TagQuery) QueryColor() *ColorQuery {
 			sqlgraph.From(tag.Table, tag.FieldID, selector),
 			sqlgraph.To(color.Table, color.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, tag.ColorTable, tag.ColorColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(tq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryTaskTags chains the current query on the "task_tags" edge.
+func (tq *TagQuery) QueryTaskTags() *TaskTagQuery {
+	query := &TaskTagQuery{config: tq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := tq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := tq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(tag.Table, tag.FieldID, selector),
+			sqlgraph.To(tasktag.Table, tasktag.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, tag.TaskTagsTable, tag.TaskTagsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(tq.driver.Dialect(), step)
 		return fromU, nil
@@ -293,6 +318,7 @@ func (tq *TagQuery) Clone() *TagQuery {
 		predicates:    append([]predicate.Tag{}, tq.predicates...),
 		withWorkspace: tq.withWorkspace.Clone(),
 		withColor:     tq.withColor.Clone(),
+		withTaskTags:  tq.withTaskTags.Clone(),
 		// clone intermediate query.
 		sql:  tq.sql.Clone(),
 		path: tq.path,
@@ -318,6 +344,17 @@ func (tq *TagQuery) WithColor(opts ...func(*ColorQuery)) *TagQuery {
 		opt(query)
 	}
 	tq.withColor = query
+	return tq
+}
+
+// WithTaskTags tells the query-builder to eager-load the nodes that are connected to
+// the "task_tags" edge. The optional arguments are used to configure the query builder of the edge.
+func (tq *TagQuery) WithTaskTags(opts ...func(*TaskTagQuery)) *TagQuery {
+	query := &TaskTagQuery{config: tq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	tq.withTaskTags = query
 	return tq
 }
 
@@ -386,9 +423,10 @@ func (tq *TagQuery) sqlAll(ctx context.Context) ([]*Tag, error) {
 	var (
 		nodes       = []*Tag{}
 		_spec       = tq.querySpec()
-		loadedTypes = [2]bool{
+		loadedTypes = [3]bool{
 			tq.withWorkspace != nil,
 			tq.withColor != nil,
+			tq.withTaskTags != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -460,6 +498,31 @@ func (tq *TagQuery) sqlAll(ctx context.Context) ([]*Tag, error) {
 			for i := range nodes {
 				nodes[i].Edges.Color = n
 			}
+		}
+	}
+
+	if query := tq.withTaskTags; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[ulid.ID]*Tag)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.TaskTags = []*TaskTag{}
+		}
+		query.Where(predicate.TaskTag(func(s *sql.Selector) {
+			s.Where(sql.InValues(tag.TaskTagsColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.TagID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "tag_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.TaskTags = append(node.Edges.TaskTags, n)
 		}
 	}
 

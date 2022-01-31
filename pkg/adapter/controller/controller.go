@@ -25,6 +25,7 @@ type Controller struct {
 	TaskListSortStatus      interface{ TaskListSortStatus }
 	TaskPriority            interface{ TaskPriority }
 	TaskSection             interface{ TaskSection }
+	TaskTag                 interface{ TaskTag }
 	Teammate                interface{ Teammate }
 	TeammateTask            interface{ TeammateTask }
 	TeammateTaskColumn      interface{ TeammateTaskColumn }

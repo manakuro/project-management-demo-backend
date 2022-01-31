@@ -26,6 +26,7 @@ import (
 	"project-management-demo-backend/ent/tasklistsortstatus"
 	"project-management-demo-backend/ent/taskpriority"
 	"project-management-demo-backend/ent/tasksection"
+	"project-management-demo-backend/ent/tasktag"
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/teammatetask"
 	"project-management-demo-backend/ent/teammatetaskcolumn"
@@ -80,6 +81,7 @@ func columnChecker(table string) func(string) error {
 		tasklistsortstatus.Table:      tasklistsortstatus.ValidColumn,
 		taskpriority.Table:            taskpriority.ValidColumn,
 		tasksection.Table:             tasksection.ValidColumn,
+		tasktag.Table:                 tasktag.ValidColumn,
 		teammate.Table:                teammate.ValidColumn,
 		teammatetask.Table:            teammatetask.ValidColumn,
 		teammatetaskcolumn.Table:      teammatetaskcolumn.ValidColumn,

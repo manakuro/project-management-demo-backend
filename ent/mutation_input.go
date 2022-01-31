@@ -1093,6 +1093,7 @@ type CreateTagInput struct {
 	UpdatedAt   *time.Time
 	WorkspaceID ulid.ID
 	ColorID     ulid.ID
+	TaskTagIDs  []ulid.ID
 }
 
 // Mutate applies the CreateTagInput on the TagCreate builder.
@@ -1106,6 +1107,9 @@ func (i *CreateTagInput) Mutate(m *TagCreate) {
 	}
 	m.SetWorkspaceID(i.WorkspaceID)
 	m.SetColorID(i.ColorID)
+	if ids := i.TaskTagIDs; len(ids) > 0 {
+		m.AddTaskTagIDs(ids...)
+	}
 }
 
 // SetInput applies the change-set in the CreateTagInput on the create builder.
@@ -1116,12 +1120,14 @@ func (c *TagCreate) SetInput(i CreateTagInput) *TagCreate {
 
 // UpdateTagInput represents a mutation input for updating tags.
 type UpdateTagInput struct {
-	ID             ulid.ID
-	Name           *string
-	WorkspaceID    *ulid.ID
-	ClearWorkspace bool
-	ColorID        *ulid.ID
-	ClearColor     bool
+	ID               ulid.ID
+	Name             *string
+	WorkspaceID      *ulid.ID
+	ClearWorkspace   bool
+	ColorID          *ulid.ID
+	ClearColor       bool
+	AddTaskTagIDs    []ulid.ID
+	RemoveTaskTagIDs []ulid.ID
 }
 
 // Mutate applies the UpdateTagInput on the TagMutation.
@@ -1140,6 +1146,12 @@ func (i *UpdateTagInput) Mutate(m *TagMutation) {
 	}
 	if v := i.ColorID; v != nil {
 		m.SetColorID(*v)
+	}
+	if ids := i.AddTaskTagIDs; len(ids) > 0 {
+		m.AddTaskTagIDs(ids...)
+	}
+	if ids := i.RemoveTaskTagIDs; len(ids) > 0 {
+		m.RemoveTaskTagIDs(ids...)
 	}
 }
 
@@ -1173,6 +1185,7 @@ type CreateTaskInput struct {
 	TeammateTaskIDs []ulid.ID
 	ProjectTaskIDs  []ulid.ID
 	TaskLikeIDs     []ulid.ID
+	TaskTagIDs      []ulid.ID
 }
 
 // Mutate applies the CreateTaskInput on the TaskCreate builder.
@@ -1219,6 +1232,9 @@ func (i *CreateTaskInput) Mutate(m *TaskCreate) {
 	if ids := i.TaskLikeIDs; len(ids) > 0 {
 		m.AddTaskLikeIDs(ids...)
 	}
+	if ids := i.TaskTagIDs; len(ids) > 0 {
+		m.AddTaskTagIDs(ids...)
+	}
 }
 
 // SetInput applies the change-set in the CreateTaskInput on the create builder.
@@ -1254,6 +1270,8 @@ type UpdateTaskInput struct {
 	RemoveProjectTaskIDs  []ulid.ID
 	AddTaskLikeIDs        []ulid.ID
 	RemoveTaskLikeIDs     []ulid.ID
+	AddTaskTagIDs         []ulid.ID
+	RemoveTaskTagIDs      []ulid.ID
 }
 
 // Mutate applies the UpdateTaskInput on the TaskMutation.
@@ -1329,6 +1347,12 @@ func (i *UpdateTaskInput) Mutate(m *TaskMutation) {
 	}
 	if ids := i.RemoveTaskLikeIDs; len(ids) > 0 {
 		m.RemoveTaskLikeIDs(ids...)
+	}
+	if ids := i.AddTaskTagIDs; len(ids) > 0 {
+		m.AddTaskTagIDs(ids...)
+	}
+	if ids := i.RemoveTaskTagIDs; len(ids) > 0 {
+		m.RemoveTaskTagIDs(ids...)
 	}
 }
 
@@ -1776,6 +1800,69 @@ func (u *TaskSectionUpdate) SetInput(i UpdateTaskSectionInput) *TaskSectionUpdat
 
 // SetInput applies the change-set in the UpdateTaskSectionInput on the update-one builder.
 func (u *TaskSectionUpdateOne) SetInput(i UpdateTaskSectionInput) *TaskSectionUpdateOne {
+	i.Mutate(u.Mutation())
+	return u
+}
+
+// CreateTaskTagInput represents a mutation input for creating tasktags.
+type CreateTaskTagInput struct {
+	CreatedAt *time.Time
+	UpdatedAt *time.Time
+	TaskID    ulid.ID
+	TagID     ulid.ID
+}
+
+// Mutate applies the CreateTaskTagInput on the TaskTagCreate builder.
+func (i *CreateTaskTagInput) Mutate(m *TaskTagCreate) {
+	if v := i.CreatedAt; v != nil {
+		m.SetCreatedAt(*v)
+	}
+	if v := i.UpdatedAt; v != nil {
+		m.SetUpdatedAt(*v)
+	}
+	m.SetTaskID(i.TaskID)
+	m.SetTagID(i.TagID)
+}
+
+// SetInput applies the change-set in the CreateTaskTagInput on the create builder.
+func (c *TaskTagCreate) SetInput(i CreateTaskTagInput) *TaskTagCreate {
+	i.Mutate(c)
+	return c
+}
+
+// UpdateTaskTagInput represents a mutation input for updating tasktags.
+type UpdateTaskTagInput struct {
+	ID        ulid.ID
+	TaskID    *ulid.ID
+	ClearTask bool
+	TagID     *ulid.ID
+	ClearTag  bool
+}
+
+// Mutate applies the UpdateTaskTagInput on the TaskTagMutation.
+func (i *UpdateTaskTagInput) Mutate(m *TaskTagMutation) {
+	if i.ClearTask {
+		m.ClearTask()
+	}
+	if v := i.TaskID; v != nil {
+		m.SetTaskID(*v)
+	}
+	if i.ClearTag {
+		m.ClearTag()
+	}
+	if v := i.TagID; v != nil {
+		m.SetTagID(*v)
+	}
+}
+
+// SetInput applies the change-set in the UpdateTaskTagInput on the update builder.
+func (u *TaskTagUpdate) SetInput(i UpdateTaskTagInput) *TaskTagUpdate {
+	i.Mutate(u.Mutation())
+	return u
+}
+
+// SetInput applies the change-set in the UpdateTaskTagInput on the update-one builder.
+func (u *TaskTagUpdateOne) SetInput(i UpdateTaskTagInput) *TaskTagUpdateOne {
 	i.Mutate(u.Mutation())
 	return u
 }

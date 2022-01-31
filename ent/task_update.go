@@ -12,6 +12,7 @@ import (
 	"project-management-demo-backend/ent/task"
 	"project-management-demo-backend/ent/tasklike"
 	"project-management-demo-backend/ent/taskpriority"
+	"project-management-demo-backend/ent/tasktag"
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/teammatetask"
 	"time"
@@ -283,6 +284,21 @@ func (tu *TaskUpdate) AddTaskLikes(t ...*TaskLike) *TaskUpdate {
 	return tu.AddTaskLikeIDs(ids...)
 }
 
+// AddTaskTagIDs adds the "task_tags" edge to the TaskTag entity by IDs.
+func (tu *TaskUpdate) AddTaskTagIDs(ids ...ulid.ID) *TaskUpdate {
+	tu.mutation.AddTaskTagIDs(ids...)
+	return tu
+}
+
+// AddTaskTags adds the "task_tags" edges to the TaskTag entity.
+func (tu *TaskUpdate) AddTaskTags(t ...*TaskTag) *TaskUpdate {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return tu.AddTaskTagIDs(ids...)
+}
+
 // Mutation returns the TaskMutation object of the builder.
 func (tu *TaskUpdate) Mutation() *TaskMutation {
 	return tu.mutation
@@ -388,6 +404,27 @@ func (tu *TaskUpdate) RemoveTaskLikes(t ...*TaskLike) *TaskUpdate {
 		ids[i] = t[i].ID
 	}
 	return tu.RemoveTaskLikeIDs(ids...)
+}
+
+// ClearTaskTags clears all "task_tags" edges to the TaskTag entity.
+func (tu *TaskUpdate) ClearTaskTags() *TaskUpdate {
+	tu.mutation.ClearTaskTags()
+	return tu
+}
+
+// RemoveTaskTagIDs removes the "task_tags" edge to TaskTag entities by IDs.
+func (tu *TaskUpdate) RemoveTaskTagIDs(ids ...ulid.ID) *TaskUpdate {
+	tu.mutation.RemoveTaskTagIDs(ids...)
+	return tu
+}
+
+// RemoveTaskTags removes "task_tags" edges to TaskTag entities.
+func (tu *TaskUpdate) RemoveTaskTags(t ...*TaskTag) *TaskUpdate {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return tu.RemoveTaskTagIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -869,6 +906,60 @@ func (tu *TaskUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if tu.mutation.TaskTagsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   task.TaskTagsTable,
+			Columns: []string{task.TaskTagsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: tasktag.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tu.mutation.RemovedTaskTagsIDs(); len(nodes) > 0 && !tu.mutation.TaskTagsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   task.TaskTagsTable,
+			Columns: []string{task.TaskTagsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: tasktag.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tu.mutation.TaskTagsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   task.TaskTagsTable,
+			Columns: []string{task.TaskTagsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: tasktag.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, tu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{task.Label}
@@ -1137,6 +1228,21 @@ func (tuo *TaskUpdateOne) AddTaskLikes(t ...*TaskLike) *TaskUpdateOne {
 	return tuo.AddTaskLikeIDs(ids...)
 }
 
+// AddTaskTagIDs adds the "task_tags" edge to the TaskTag entity by IDs.
+func (tuo *TaskUpdateOne) AddTaskTagIDs(ids ...ulid.ID) *TaskUpdateOne {
+	tuo.mutation.AddTaskTagIDs(ids...)
+	return tuo
+}
+
+// AddTaskTags adds the "task_tags" edges to the TaskTag entity.
+func (tuo *TaskUpdateOne) AddTaskTags(t ...*TaskTag) *TaskUpdateOne {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return tuo.AddTaskTagIDs(ids...)
+}
+
 // Mutation returns the TaskMutation object of the builder.
 func (tuo *TaskUpdateOne) Mutation() *TaskMutation {
 	return tuo.mutation
@@ -1242,6 +1348,27 @@ func (tuo *TaskUpdateOne) RemoveTaskLikes(t ...*TaskLike) *TaskUpdateOne {
 		ids[i] = t[i].ID
 	}
 	return tuo.RemoveTaskLikeIDs(ids...)
+}
+
+// ClearTaskTags clears all "task_tags" edges to the TaskTag entity.
+func (tuo *TaskUpdateOne) ClearTaskTags() *TaskUpdateOne {
+	tuo.mutation.ClearTaskTags()
+	return tuo
+}
+
+// RemoveTaskTagIDs removes the "task_tags" edge to TaskTag entities by IDs.
+func (tuo *TaskUpdateOne) RemoveTaskTagIDs(ids ...ulid.ID) *TaskUpdateOne {
+	tuo.mutation.RemoveTaskTagIDs(ids...)
+	return tuo
+}
+
+// RemoveTaskTags removes "task_tags" edges to TaskTag entities.
+func (tuo *TaskUpdateOne) RemoveTaskTags(t ...*TaskTag) *TaskUpdateOne {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return tuo.RemoveTaskTagIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -1739,6 +1866,60 @@ func (tuo *TaskUpdateOne) sqlSave(ctx context.Context) (_node *Task, err error) 
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: tasklike.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if tuo.mutation.TaskTagsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   task.TaskTagsTable,
+			Columns: []string{task.TaskTagsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: tasktag.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tuo.mutation.RemovedTaskTagsIDs(); len(nodes) > 0 && !tuo.mutation.TaskTagsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   task.TaskTagsTable,
+			Columns: []string{task.TaskTagsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: tasktag.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tuo.mutation.TaskTagsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   task.TaskTagsTable,
+			Columns: []string{task.TaskTagsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: tasktag.FieldID,
 				},
 			},
 		}

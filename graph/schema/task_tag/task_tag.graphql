@@ -1,0 +1,46 @@
+type TaskTag implements Node {
+  id: ID!
+  tagId: ID!
+  taskId: ID!
+  createdAt: String!
+  updatedAt: String!
+}
+type TaskTagConnection {
+  totalCount: Int!
+  pageInfo: PageInfo!
+  edges: [TaskTagEdge]
+}
+type TaskTagEdge {
+  node: TaskTag
+  cursor: Cursor!
+}
+
+input CreateTaskTagInput {
+  taskId: ID!
+  tagId: ID!
+}
+
+input UpdateTaskTagInput {
+  id: ID!
+  taskId: ID
+  tagId: ID
+}
+
+input DeleteTaskTagInput {
+  id: ID!
+}
+
+extend type Subscription {
+  taskTagsUpdated(taskId: ID!): [TaskTag!]!
+}
+
+extend type Query {
+  taskTag(where: TaskTagWhereInput): TaskTag
+  taskTags(after: Cursor, first: Int, before: Cursor, last: Int, where: TaskTagWhereInput): TaskTagConnection
+}
+
+extend type Mutation {
+  createTaskTag(input: CreateTaskTagInput!): TaskTag!
+  updateTaskTag(input: UpdateTaskTagInput!): TaskTag!
+  deleteTaskTag(input: DeleteTaskTagInput!): TaskTag!
+}

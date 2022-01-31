@@ -9,6 +9,7 @@ import (
 	"project-management-demo-backend/ent/color"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/tag"
+	"project-management-demo-backend/ent/tasktag"
 	"project-management-demo-backend/ent/workspace"
 	"time"
 
@@ -91,6 +92,21 @@ func (tc *TagCreate) SetWorkspace(w *Workspace) *TagCreate {
 // SetColor sets the "color" edge to the Color entity.
 func (tc *TagCreate) SetColor(c *Color) *TagCreate {
 	return tc.SetColorID(c.ID)
+}
+
+// AddTaskTagIDs adds the "task_tags" edge to the TaskTag entity by IDs.
+func (tc *TagCreate) AddTaskTagIDs(ids ...ulid.ID) *TagCreate {
+	tc.mutation.AddTaskTagIDs(ids...)
+	return tc
+}
+
+// AddTaskTags adds the "task_tags" edges to the TaskTag entity.
+func (tc *TagCreate) AddTaskTags(t ...*TaskTag) *TagCreate {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return tc.AddTaskTagIDs(ids...)
 }
 
 // Mutation returns the TagMutation object of the builder.
@@ -300,6 +316,25 @@ func (tc *TagCreate) createSpec() (*Tag, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.ColorID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := tc.mutation.TaskTagsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   tag.TaskTagsTable,
+			Columns: []string{tag.TaskTagsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: tasktag.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

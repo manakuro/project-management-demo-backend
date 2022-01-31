@@ -261,6 +261,18 @@ func (ts *TaskSectionQuery) collectField(ctx *graphql.OperationContext, field gr
 }
 
 // CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
+func (tt *TaskTagQuery) CollectFields(ctx context.Context, satisfies ...string) *TaskTagQuery {
+	if fc := graphql.GetFieldContext(ctx); fc != nil {
+		tt = tt.collectField(graphql.GetOperationContext(ctx), fc.Field, satisfies...)
+	}
+	return tt
+}
+
+func (tt *TaskTagQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *TaskTagQuery {
+	return tt
+}
+
+// CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
 func (t *TeammateQuery) CollectFields(ctx context.Context, satisfies ...string) *TeammateQuery {
 	if fc := graphql.GetFieldContext(ctx); fc != nil {
 		t = t.collectField(graphql.GetOperationContext(ctx), fc.Field, satisfies...)

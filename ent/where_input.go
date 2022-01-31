@@ -27,6 +27,7 @@ import (
 	"project-management-demo-backend/ent/tasklistsortstatus"
 	"project-management-demo-backend/ent/taskpriority"
 	"project-management-demo-backend/ent/tasksection"
+	"project-management-demo-backend/ent/tasktag"
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/teammatetask"
 	"project-management-demo-backend/ent/teammatetaskcolumn"
@@ -5179,6 +5180,10 @@ type TagWhereInput struct {
 	// "color" edge predicates.
 	HasColor     *bool              `json:"hasColor,omitempty"`
 	HasColorWith []*ColorWhereInput `json:"hasColorWith,omitempty"`
+
+	// "task_tags" edge predicates.
+	HasTaskTags     *bool                `json:"hasTaskTags,omitempty"`
+	HasTaskTagsWith []*TaskTagWhereInput `json:"hasTaskTagsWith,omitempty"`
 }
 
 // Filter applies the TagWhereInput filter on the TagQuery builder.
@@ -5466,6 +5471,24 @@ func (i *TagWhereInput) P() (predicate.Tag, error) {
 		}
 		predicates = append(predicates, tag.HasColorWith(with...))
 	}
+	if i.HasTaskTags != nil {
+		p := tag.HasTaskTags()
+		if !*i.HasTaskTags {
+			p = tag.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasTaskTagsWith) > 0 {
+		with := make([]predicate.TaskTag, 0, len(i.HasTaskTagsWith))
+		for _, w := range i.HasTaskTagsWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, tag.HasTaskTagsWith(with...))
+	}
 	switch len(predicates) {
 	case 0:
 		return nil, fmt.Errorf("project-management-demo-backend/ent: empty predicate TagWhereInput")
@@ -5662,6 +5685,10 @@ type TaskWhereInput struct {
 	// "task_likes" edge predicates.
 	HasTaskLikes     *bool                 `json:"hasTaskLikes,omitempty"`
 	HasTaskLikesWith []*TaskLikeWhereInput `json:"hasTaskLikesWith,omitempty"`
+
+	// "task_tags" edge predicates.
+	HasTaskTags     *bool                `json:"hasTaskTags,omitempty"`
+	HasTaskTagsWith []*TaskTagWhereInput `json:"hasTaskTagsWith,omitempty"`
 }
 
 // Filter applies the TaskWhereInput filter on the TaskQuery builder.
@@ -6230,6 +6257,24 @@ func (i *TaskWhereInput) P() (predicate.Task, error) {
 			with = append(with, p)
 		}
 		predicates = append(predicates, task.HasTaskLikesWith(with...))
+	}
+	if i.HasTaskTags != nil {
+		p := task.HasTaskTags()
+		if !*i.HasTaskTags {
+			p = task.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasTaskTagsWith) > 0 {
+		with := make([]predicate.TaskTag, 0, len(i.HasTaskTagsWith))
+		for _, w := range i.HasTaskTagsWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, task.HasTaskTagsWith(with...))
 	}
 	switch len(predicates) {
 	case 0:
@@ -8112,6 +8157,337 @@ func (i *TaskSectionWhereInput) P() (predicate.TaskSection, error) {
 		return predicates[0], nil
 	default:
 		return tasksection.And(predicates...), nil
+	}
+}
+
+// TaskTagWhereInput represents a where input for filtering TaskTag queries.
+type TaskTagWhereInput struct {
+	Not *TaskTagWhereInput   `json:"not,omitempty"`
+	Or  []*TaskTagWhereInput `json:"or,omitempty"`
+	And []*TaskTagWhereInput `json:"and,omitempty"`
+
+	// "id" field predicates.
+	ID      *ulid.ID  `json:"id,omitempty"`
+	IDNEQ   *ulid.ID  `json:"idNEQ,omitempty"`
+	IDIn    []ulid.ID `json:"idIn,omitempty"`
+	IDNotIn []ulid.ID `json:"idNotIn,omitempty"`
+	IDGT    *ulid.ID  `json:"idGT,omitempty"`
+	IDGTE   *ulid.ID  `json:"idGTE,omitempty"`
+	IDLT    *ulid.ID  `json:"idLT,omitempty"`
+	IDLTE   *ulid.ID  `json:"idLTE,omitempty"`
+
+	// "task_id" field predicates.
+	TaskID             *ulid.ID  `json:"taskID,omitempty"`
+	TaskIDNEQ          *ulid.ID  `json:"taskIDNEQ,omitempty"`
+	TaskIDIn           []ulid.ID `json:"taskIDIn,omitempty"`
+	TaskIDNotIn        []ulid.ID `json:"taskIDNotIn,omitempty"`
+	TaskIDGT           *ulid.ID  `json:"taskIDGT,omitempty"`
+	TaskIDGTE          *ulid.ID  `json:"taskIDGTE,omitempty"`
+	TaskIDLT           *ulid.ID  `json:"taskIDLT,omitempty"`
+	TaskIDLTE          *ulid.ID  `json:"taskIDLTE,omitempty"`
+	TaskIDContains     *ulid.ID  `json:"taskIDContains,omitempty"`
+	TaskIDHasPrefix    *ulid.ID  `json:"taskIDHasPrefix,omitempty"`
+	TaskIDHasSuffix    *ulid.ID  `json:"taskIDHasSuffix,omitempty"`
+	TaskIDEqualFold    *ulid.ID  `json:"taskIDEqualFold,omitempty"`
+	TaskIDContainsFold *ulid.ID  `json:"taskIDContainsFold,omitempty"`
+
+	// "tag_id" field predicates.
+	TagID             *ulid.ID  `json:"tagID,omitempty"`
+	TagIDNEQ          *ulid.ID  `json:"tagIDNEQ,omitempty"`
+	TagIDIn           []ulid.ID `json:"tagIDIn,omitempty"`
+	TagIDNotIn        []ulid.ID `json:"tagIDNotIn,omitempty"`
+	TagIDGT           *ulid.ID  `json:"tagIDGT,omitempty"`
+	TagIDGTE          *ulid.ID  `json:"tagIDGTE,omitempty"`
+	TagIDLT           *ulid.ID  `json:"tagIDLT,omitempty"`
+	TagIDLTE          *ulid.ID  `json:"tagIDLTE,omitempty"`
+	TagIDContains     *ulid.ID  `json:"tagIDContains,omitempty"`
+	TagIDHasPrefix    *ulid.ID  `json:"tagIDHasPrefix,omitempty"`
+	TagIDHasSuffix    *ulid.ID  `json:"tagIDHasSuffix,omitempty"`
+	TagIDEqualFold    *ulid.ID  `json:"tagIDEqualFold,omitempty"`
+	TagIDContainsFold *ulid.ID  `json:"tagIDContainsFold,omitempty"`
+
+	// "created_at" field predicates.
+	CreatedAt      *time.Time  `json:"createdAt,omitempty"`
+	CreatedAtNEQ   *time.Time  `json:"createdAtNEQ,omitempty"`
+	CreatedAtIn    []time.Time `json:"createdAtIn,omitempty"`
+	CreatedAtNotIn []time.Time `json:"createdAtNotIn,omitempty"`
+	CreatedAtGT    *time.Time  `json:"createdAtGT,omitempty"`
+	CreatedAtGTE   *time.Time  `json:"createdAtGTE,omitempty"`
+	CreatedAtLT    *time.Time  `json:"createdAtLT,omitempty"`
+	CreatedAtLTE   *time.Time  `json:"createdAtLTE,omitempty"`
+
+	// "updated_at" field predicates.
+	UpdatedAt      *time.Time  `json:"updatedAt,omitempty"`
+	UpdatedAtNEQ   *time.Time  `json:"updatedAtNEQ,omitempty"`
+	UpdatedAtIn    []time.Time `json:"updatedAtIn,omitempty"`
+	UpdatedAtNotIn []time.Time `json:"updatedAtNotIn,omitempty"`
+	UpdatedAtGT    *time.Time  `json:"updatedAtGT,omitempty"`
+	UpdatedAtGTE   *time.Time  `json:"updatedAtGTE,omitempty"`
+	UpdatedAtLT    *time.Time  `json:"updatedAtLT,omitempty"`
+	UpdatedAtLTE   *time.Time  `json:"updatedAtLTE,omitempty"`
+
+	// "task" edge predicates.
+	HasTask     *bool             `json:"hasTask,omitempty"`
+	HasTaskWith []*TaskWhereInput `json:"hasTaskWith,omitempty"`
+
+	// "tag" edge predicates.
+	HasTag     *bool            `json:"hasTag,omitempty"`
+	HasTagWith []*TagWhereInput `json:"hasTagWith,omitempty"`
+}
+
+// Filter applies the TaskTagWhereInput filter on the TaskTagQuery builder.
+func (i *TaskTagWhereInput) Filter(q *TaskTagQuery) (*TaskTagQuery, error) {
+	if i == nil {
+		return q, nil
+	}
+	p, err := i.P()
+	if err != nil {
+		return nil, err
+	}
+	return q.Where(p), nil
+}
+
+// P returns a predicate for filtering tasktags.
+// An error is returned if the input is empty or invalid.
+func (i *TaskTagWhereInput) P() (predicate.TaskTag, error) {
+	var predicates []predicate.TaskTag
+	if i.Not != nil {
+		p, err := i.Not.P()
+		if err != nil {
+			return nil, err
+		}
+		predicates = append(predicates, tasktag.Not(p))
+	}
+	switch n := len(i.Or); {
+	case n == 1:
+		p, err := i.Or[0].P()
+		if err != nil {
+			return nil, err
+		}
+		predicates = append(predicates, p)
+	case n > 1:
+		or := make([]predicate.TaskTag, 0, n)
+		for _, w := range i.Or {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			or = append(or, p)
+		}
+		predicates = append(predicates, tasktag.Or(or...))
+	}
+	switch n := len(i.And); {
+	case n == 1:
+		p, err := i.And[0].P()
+		if err != nil {
+			return nil, err
+		}
+		predicates = append(predicates, p)
+	case n > 1:
+		and := make([]predicate.TaskTag, 0, n)
+		for _, w := range i.And {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			and = append(and, p)
+		}
+		predicates = append(predicates, tasktag.And(and...))
+	}
+	if i.ID != nil {
+		predicates = append(predicates, tasktag.IDEQ(*i.ID))
+	}
+	if i.IDNEQ != nil {
+		predicates = append(predicates, tasktag.IDNEQ(*i.IDNEQ))
+	}
+	if len(i.IDIn) > 0 {
+		predicates = append(predicates, tasktag.IDIn(i.IDIn...))
+	}
+	if len(i.IDNotIn) > 0 {
+		predicates = append(predicates, tasktag.IDNotIn(i.IDNotIn...))
+	}
+	if i.IDGT != nil {
+		predicates = append(predicates, tasktag.IDGT(*i.IDGT))
+	}
+	if i.IDGTE != nil {
+		predicates = append(predicates, tasktag.IDGTE(*i.IDGTE))
+	}
+	if i.IDLT != nil {
+		predicates = append(predicates, tasktag.IDLT(*i.IDLT))
+	}
+	if i.IDLTE != nil {
+		predicates = append(predicates, tasktag.IDLTE(*i.IDLTE))
+	}
+	if i.TaskID != nil {
+		predicates = append(predicates, tasktag.TaskIDEQ(*i.TaskID))
+	}
+	if i.TaskIDNEQ != nil {
+		predicates = append(predicates, tasktag.TaskIDNEQ(*i.TaskIDNEQ))
+	}
+	if len(i.TaskIDIn) > 0 {
+		predicates = append(predicates, tasktag.TaskIDIn(i.TaskIDIn...))
+	}
+	if len(i.TaskIDNotIn) > 0 {
+		predicates = append(predicates, tasktag.TaskIDNotIn(i.TaskIDNotIn...))
+	}
+	if i.TaskIDGT != nil {
+		predicates = append(predicates, tasktag.TaskIDGT(*i.TaskIDGT))
+	}
+	if i.TaskIDGTE != nil {
+		predicates = append(predicates, tasktag.TaskIDGTE(*i.TaskIDGTE))
+	}
+	if i.TaskIDLT != nil {
+		predicates = append(predicates, tasktag.TaskIDLT(*i.TaskIDLT))
+	}
+	if i.TaskIDLTE != nil {
+		predicates = append(predicates, tasktag.TaskIDLTE(*i.TaskIDLTE))
+	}
+	if i.TaskIDContains != nil {
+		predicates = append(predicates, tasktag.TaskIDContains(*i.TaskIDContains))
+	}
+	if i.TaskIDHasPrefix != nil {
+		predicates = append(predicates, tasktag.TaskIDHasPrefix(*i.TaskIDHasPrefix))
+	}
+	if i.TaskIDHasSuffix != nil {
+		predicates = append(predicates, tasktag.TaskIDHasSuffix(*i.TaskIDHasSuffix))
+	}
+	if i.TaskIDEqualFold != nil {
+		predicates = append(predicates, tasktag.TaskIDEqualFold(*i.TaskIDEqualFold))
+	}
+	if i.TaskIDContainsFold != nil {
+		predicates = append(predicates, tasktag.TaskIDContainsFold(*i.TaskIDContainsFold))
+	}
+	if i.TagID != nil {
+		predicates = append(predicates, tasktag.TagIDEQ(*i.TagID))
+	}
+	if i.TagIDNEQ != nil {
+		predicates = append(predicates, tasktag.TagIDNEQ(*i.TagIDNEQ))
+	}
+	if len(i.TagIDIn) > 0 {
+		predicates = append(predicates, tasktag.TagIDIn(i.TagIDIn...))
+	}
+	if len(i.TagIDNotIn) > 0 {
+		predicates = append(predicates, tasktag.TagIDNotIn(i.TagIDNotIn...))
+	}
+	if i.TagIDGT != nil {
+		predicates = append(predicates, tasktag.TagIDGT(*i.TagIDGT))
+	}
+	if i.TagIDGTE != nil {
+		predicates = append(predicates, tasktag.TagIDGTE(*i.TagIDGTE))
+	}
+	if i.TagIDLT != nil {
+		predicates = append(predicates, tasktag.TagIDLT(*i.TagIDLT))
+	}
+	if i.TagIDLTE != nil {
+		predicates = append(predicates, tasktag.TagIDLTE(*i.TagIDLTE))
+	}
+	if i.TagIDContains != nil {
+		predicates = append(predicates, tasktag.TagIDContains(*i.TagIDContains))
+	}
+	if i.TagIDHasPrefix != nil {
+		predicates = append(predicates, tasktag.TagIDHasPrefix(*i.TagIDHasPrefix))
+	}
+	if i.TagIDHasSuffix != nil {
+		predicates = append(predicates, tasktag.TagIDHasSuffix(*i.TagIDHasSuffix))
+	}
+	if i.TagIDEqualFold != nil {
+		predicates = append(predicates, tasktag.TagIDEqualFold(*i.TagIDEqualFold))
+	}
+	if i.TagIDContainsFold != nil {
+		predicates = append(predicates, tasktag.TagIDContainsFold(*i.TagIDContainsFold))
+	}
+	if i.CreatedAt != nil {
+		predicates = append(predicates, tasktag.CreatedAtEQ(*i.CreatedAt))
+	}
+	if i.CreatedAtNEQ != nil {
+		predicates = append(predicates, tasktag.CreatedAtNEQ(*i.CreatedAtNEQ))
+	}
+	if len(i.CreatedAtIn) > 0 {
+		predicates = append(predicates, tasktag.CreatedAtIn(i.CreatedAtIn...))
+	}
+	if len(i.CreatedAtNotIn) > 0 {
+		predicates = append(predicates, tasktag.CreatedAtNotIn(i.CreatedAtNotIn...))
+	}
+	if i.CreatedAtGT != nil {
+		predicates = append(predicates, tasktag.CreatedAtGT(*i.CreatedAtGT))
+	}
+	if i.CreatedAtGTE != nil {
+		predicates = append(predicates, tasktag.CreatedAtGTE(*i.CreatedAtGTE))
+	}
+	if i.CreatedAtLT != nil {
+		predicates = append(predicates, tasktag.CreatedAtLT(*i.CreatedAtLT))
+	}
+	if i.CreatedAtLTE != nil {
+		predicates = append(predicates, tasktag.CreatedAtLTE(*i.CreatedAtLTE))
+	}
+	if i.UpdatedAt != nil {
+		predicates = append(predicates, tasktag.UpdatedAtEQ(*i.UpdatedAt))
+	}
+	if i.UpdatedAtNEQ != nil {
+		predicates = append(predicates, tasktag.UpdatedAtNEQ(*i.UpdatedAtNEQ))
+	}
+	if len(i.UpdatedAtIn) > 0 {
+		predicates = append(predicates, tasktag.UpdatedAtIn(i.UpdatedAtIn...))
+	}
+	if len(i.UpdatedAtNotIn) > 0 {
+		predicates = append(predicates, tasktag.UpdatedAtNotIn(i.UpdatedAtNotIn...))
+	}
+	if i.UpdatedAtGT != nil {
+		predicates = append(predicates, tasktag.UpdatedAtGT(*i.UpdatedAtGT))
+	}
+	if i.UpdatedAtGTE != nil {
+		predicates = append(predicates, tasktag.UpdatedAtGTE(*i.UpdatedAtGTE))
+	}
+	if i.UpdatedAtLT != nil {
+		predicates = append(predicates, tasktag.UpdatedAtLT(*i.UpdatedAtLT))
+	}
+	if i.UpdatedAtLTE != nil {
+		predicates = append(predicates, tasktag.UpdatedAtLTE(*i.UpdatedAtLTE))
+	}
+
+	if i.HasTask != nil {
+		p := tasktag.HasTask()
+		if !*i.HasTask {
+			p = tasktag.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasTaskWith) > 0 {
+		with := make([]predicate.Task, 0, len(i.HasTaskWith))
+		for _, w := range i.HasTaskWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, tasktag.HasTaskWith(with...))
+	}
+	if i.HasTag != nil {
+		p := tasktag.HasTag()
+		if !*i.HasTag {
+			p = tasktag.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasTagWith) > 0 {
+		with := make([]predicate.Tag, 0, len(i.HasTagWith))
+		for _, w := range i.HasTagWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, tasktag.HasTagWith(with...))
+	}
+	switch len(predicates) {
+	case 0:
+		return nil, fmt.Errorf("project-management-demo-backend/ent: empty predicate TaskTagWhereInput")
+	case 1:
+		return predicates[0], nil
+	default:
+		return tasktag.And(predicates...), nil
 	}
 }
 

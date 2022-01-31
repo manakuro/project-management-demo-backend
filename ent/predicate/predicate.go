@@ -69,6 +69,9 @@ type TaskPriority func(*sql.Selector)
 // TaskSection is the predicate function for tasksection builders.
 type TaskSection func(*sql.Selector)
 
+// TaskTag is the predicate function for tasktag builders.
+type TaskTag func(*sql.Selector)
+
 // Teammate is the predicate function for teammate builders.
 type Teammate func(*sql.Selector)
 
