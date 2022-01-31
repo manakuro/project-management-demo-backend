@@ -27,6 +27,7 @@ func (r *registry) NewController() controller.Controller {
 		Color:                   r.NewColorController(),
 		FavoriteProject:         r.NewFavoriteProjectController(),
 		FavoriteWorkspace:       r.NewFavoriteWorkspaceController(),
+		FileType:                r.NewFileTypeController(),
 		Icon:                    r.NewIconController(),
 		Me:                      r.NewMeController(),
 		Project:                 r.NewProjectController(),
