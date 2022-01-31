@@ -188,6 +188,12 @@ type TaskTagUpdated struct {
 	Ch     chan []*model.TaskTag
 }
 
+// TaskCollaboratorUpdated is a channel for subscription.
+type TaskCollaboratorUpdated struct {
+	TaskID model.ID
+	Ch     chan []*model.TaskCollaborator
+}
+
 // Subscriptions hold an id and a channel of subscription.
 type Subscriptions struct {
 	ColorUpdated                  map[string]ColorUpdated
@@ -220,6 +226,7 @@ type Subscriptions struct {
 	WorkspaceUpdated              map[string]WorkspaceUpdated
 	TagUpdated                    map[string]TagUpdated
 	TaskTagUpdated                map[string]TaskTagUpdated
+	TaskCollaboratorUpdated       map[string]TaskCollaboratorUpdated
 }
 
 // NewKey generates a random hex string with length of 16.
