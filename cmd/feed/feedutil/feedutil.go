@@ -2,6 +2,7 @@ package feedutil
 
 import (
 	"context"
+	"encoding/json"
 	"log"
 	"project-management-demo-backend/ent"
 	"project-management-demo-backend/ent/color"
@@ -11,6 +12,7 @@ import (
 	"project-management-demo-backend/ent/projecticon"
 	"project-management-demo-backend/ent/projectlightcolor"
 	"project-management-demo-backend/ent/projecttasksection"
+	"project-management-demo-backend/ent/schema/editor"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/tag"
 	"project-management-demo-backend/ent/task"
@@ -217,4 +219,14 @@ func AddDate(date int) *time.Time {
 	t.AddDate(0, 0, date)
 
 	return &t
+}
+
+// ParseDescription convert json to description object.
+func ParseDescription(b []byte) editor.Description {
+	var description editor.Description
+	if err := json.Unmarshal(b, &description); err != nil {
+		log.Fatalf("ParseDescription failed to encode json")
+	}
+
+	return description
 }
