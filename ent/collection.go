@@ -189,6 +189,18 @@ func (t *TaskQuery) collectField(ctx *graphql.OperationContext, field graphql.Co
 }
 
 // CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
+func (tc *TaskCollaboratorQuery) CollectFields(ctx context.Context, satisfies ...string) *TaskCollaboratorQuery {
+	if fc := graphql.GetFieldContext(ctx); fc != nil {
+		tc = tc.collectField(graphql.GetOperationContext(ctx), fc.Field, satisfies...)
+	}
+	return tc
+}
+
+func (tc *TaskCollaboratorQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *TaskCollaboratorQuery {
+	return tc
+}
+
+// CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
 func (tc *TaskColumnQuery) CollectFields(ctx context.Context, satisfies ...string) *TaskColumnQuery {
 	if fc := graphql.GetFieldContext(ctx); fc != nil {
 		tc = tc.collectField(graphql.GetOperationContext(ctx), fc.Field, satisfies...)

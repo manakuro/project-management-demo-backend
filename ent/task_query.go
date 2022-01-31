@@ -12,6 +12,7 @@ import (
 	"project-management-demo-backend/ent/projecttask"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/task"
+	"project-management-demo-backend/ent/taskcollaborator"
 	"project-management-demo-backend/ent/tasklike"
 	"project-management-demo-backend/ent/taskpriority"
 	"project-management-demo-backend/ent/tasktag"
@@ -33,14 +34,15 @@ type TaskQuery struct {
 	fields     []string
 	predicates []predicate.Task
 	// eager-loading edges.
-	withTeammate      *TeammateQuery
-	withTaskPriority  *TaskPriorityQuery
-	withParent        *TaskQuery
-	withSubTasks      *TaskQuery
-	withTeammateTasks *TeammateTaskQuery
-	withProjectTasks  *ProjectTaskQuery
-	withTaskLikes     *TaskLikeQuery
-	withTaskTags      *TaskTagQuery
+	withTeammate          *TeammateQuery
+	withTaskPriority      *TaskPriorityQuery
+	withParent            *TaskQuery
+	withSubTasks          *TaskQuery
+	withTeammateTasks     *TeammateTaskQuery
+	withProjectTasks      *ProjectTaskQuery
+	withTaskLikes         *TaskLikeQuery
+	withTaskTags          *TaskTagQuery
+	withTaskCollaborators *TaskCollaboratorQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -253,6 +255,28 @@ func (tq *TaskQuery) QueryTaskTags() *TaskTagQuery {
 	return query
 }
 
+// QueryTaskCollaborators chains the current query on the "task_collaborators" edge.
+func (tq *TaskQuery) QueryTaskCollaborators() *TaskCollaboratorQuery {
+	query := &TaskCollaboratorQuery{config: tq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := tq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := tq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(task.Table, task.FieldID, selector),
+			sqlgraph.To(taskcollaborator.Table, taskcollaborator.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, task.TaskCollaboratorsTable, task.TaskCollaboratorsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(tq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // First returns the first Task entity from the query.
 // Returns a *NotFoundError when no Task was found.
 func (tq *TaskQuery) First(ctx context.Context) (*Task, error) {
@@ -429,19 +453,20 @@ func (tq *TaskQuery) Clone() *TaskQuery {
 		return nil
 	}
 	return &TaskQuery{
-		config:            tq.config,
-		limit:             tq.limit,
-		offset:            tq.offset,
-		order:             append([]OrderFunc{}, tq.order...),
-		predicates:        append([]predicate.Task{}, tq.predicates...),
-		withTeammate:      tq.withTeammate.Clone(),
-		withTaskPriority:  tq.withTaskPriority.Clone(),
-		withParent:        tq.withParent.Clone(),
-		withSubTasks:      tq.withSubTasks.Clone(),
-		withTeammateTasks: tq.withTeammateTasks.Clone(),
-		withProjectTasks:  tq.withProjectTasks.Clone(),
-		withTaskLikes:     tq.withTaskLikes.Clone(),
-		withTaskTags:      tq.withTaskTags.Clone(),
+		config:                tq.config,
+		limit:                 tq.limit,
+		offset:                tq.offset,
+		order:                 append([]OrderFunc{}, tq.order...),
+		predicates:            append([]predicate.Task{}, tq.predicates...),
+		withTeammate:          tq.withTeammate.Clone(),
+		withTaskPriority:      tq.withTaskPriority.Clone(),
+		withParent:            tq.withParent.Clone(),
+		withSubTasks:          tq.withSubTasks.Clone(),
+		withTeammateTasks:     tq.withTeammateTasks.Clone(),
+		withProjectTasks:      tq.withProjectTasks.Clone(),
+		withTaskLikes:         tq.withTaskLikes.Clone(),
+		withTaskTags:          tq.withTaskTags.Clone(),
+		withTaskCollaborators: tq.withTaskCollaborators.Clone(),
 		// clone intermediate query.
 		sql:  tq.sql.Clone(),
 		path: tq.path,
@@ -536,6 +561,17 @@ func (tq *TaskQuery) WithTaskTags(opts ...func(*TaskTagQuery)) *TaskQuery {
 	return tq
 }
 
+// WithTaskCollaborators tells the query-builder to eager-load the nodes that are connected to
+// the "task_collaborators" edge. The optional arguments are used to configure the query builder of the edge.
+func (tq *TaskQuery) WithTaskCollaborators(opts ...func(*TaskCollaboratorQuery)) *TaskQuery {
+	query := &TaskCollaboratorQuery{config: tq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	tq.withTaskCollaborators = query
+	return tq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -601,7 +637,7 @@ func (tq *TaskQuery) sqlAll(ctx context.Context) ([]*Task, error) {
 	var (
 		nodes       = []*Task{}
 		_spec       = tq.querySpec()
-		loadedTypes = [8]bool{
+		loadedTypes = [9]bool{
 			tq.withTeammate != nil,
 			tq.withTaskPriority != nil,
 			tq.withParent != nil,
@@ -610,6 +646,7 @@ func (tq *TaskQuery) sqlAll(ctx context.Context) ([]*Task, error) {
 			tq.withProjectTasks != nil,
 			tq.withTaskLikes != nil,
 			tq.withTaskTags != nil,
+			tq.withTaskCollaborators != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -832,6 +869,31 @@ func (tq *TaskQuery) sqlAll(ctx context.Context) ([]*Task, error) {
 				return nil, fmt.Errorf(`unexpected foreign-key "task_id" returned %v for node %v`, fk, n.ID)
 			}
 			node.Edges.TaskTags = append(node.Edges.TaskTags, n)
+		}
+	}
+
+	if query := tq.withTaskCollaborators; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[ulid.ID]*Task)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.TaskCollaborators = []*TaskCollaborator{}
+		}
+		query.Where(predicate.TaskCollaborator(func(s *sql.Selector) {
+			s.Where(sql.InValues(task.TaskCollaboratorsColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.TaskID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "task_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.TaskCollaborators = append(node.Edges.TaskCollaborators, n)
 		}
 	}
 

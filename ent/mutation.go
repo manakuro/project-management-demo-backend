@@ -24,6 +24,7 @@ import (
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/tag"
 	"project-management-demo-backend/ent/task"
+	"project-management-demo-backend/ent/taskcollaborator"
 	"project-management-demo-backend/ent/taskcolumn"
 	"project-management-demo-backend/ent/tasklike"
 	"project-management-demo-backend/ent/tasklistcompletedstatus"
@@ -71,6 +72,7 @@ const (
 	TypeProjectTeammate         = "ProjectTeammate"
 	TypeTag                     = "Tag"
 	TypeTask                    = "Task"
+	TypeTaskCollaborator        = "TaskCollaborator"
 	TypeTaskColumn              = "TaskColumn"
 	TypeTaskLike                = "TaskLike"
 	TypeTaskListCompletedStatus = "TaskListCompletedStatus"
@@ -9953,43 +9955,46 @@ func (m *TagMutation) ResetEdge(name string) error {
 // TaskMutation represents an operation that mutates the Task nodes in the graph.
 type TaskMutation struct {
 	config
-	op                    Op
-	typ                   string
-	id                    *ulid.ID
-	created_by            *ulid.ID
-	completed             *bool
-	completed_at          *time.Time
-	is_new                *bool
-	name                  *string
-	due_date              *time.Time
-	due_time              *time.Time
-	created_at            *time.Time
-	updated_at            *time.Time
-	clearedFields         map[string]struct{}
-	teammate              *ulid.ID
-	clearedteammate       bool
-	task_priority         *ulid.ID
-	clearedtask_priority  bool
-	parent                *ulid.ID
-	clearedparent         bool
-	sub_tasks             map[ulid.ID]struct{}
-	removedsub_tasks      map[ulid.ID]struct{}
-	clearedsub_tasks      bool
-	teammate_tasks        map[ulid.ID]struct{}
-	removedteammate_tasks map[ulid.ID]struct{}
-	clearedteammate_tasks bool
-	project_tasks         map[ulid.ID]struct{}
-	removedproject_tasks  map[ulid.ID]struct{}
-	clearedproject_tasks  bool
-	task_likes            map[ulid.ID]struct{}
-	removedtask_likes     map[ulid.ID]struct{}
-	clearedtask_likes     bool
-	task_tags             map[ulid.ID]struct{}
-	removedtask_tags      map[ulid.ID]struct{}
-	clearedtask_tags      bool
-	done                  bool
-	oldValue              func(context.Context) (*Task, error)
-	predicates            []predicate.Task
+	op                        Op
+	typ                       string
+	id                        *ulid.ID
+	created_by                *ulid.ID
+	completed                 *bool
+	completed_at              *time.Time
+	is_new                    *bool
+	name                      *string
+	due_date                  *time.Time
+	due_time                  *time.Time
+	created_at                *time.Time
+	updated_at                *time.Time
+	clearedFields             map[string]struct{}
+	teammate                  *ulid.ID
+	clearedteammate           bool
+	task_priority             *ulid.ID
+	clearedtask_priority      bool
+	parent                    *ulid.ID
+	clearedparent             bool
+	sub_tasks                 map[ulid.ID]struct{}
+	removedsub_tasks          map[ulid.ID]struct{}
+	clearedsub_tasks          bool
+	teammate_tasks            map[ulid.ID]struct{}
+	removedteammate_tasks     map[ulid.ID]struct{}
+	clearedteammate_tasks     bool
+	project_tasks             map[ulid.ID]struct{}
+	removedproject_tasks      map[ulid.ID]struct{}
+	clearedproject_tasks      bool
+	task_likes                map[ulid.ID]struct{}
+	removedtask_likes         map[ulid.ID]struct{}
+	clearedtask_likes         bool
+	task_tags                 map[ulid.ID]struct{}
+	removedtask_tags          map[ulid.ID]struct{}
+	clearedtask_tags          bool
+	task_collaborators        map[ulid.ID]struct{}
+	removedtask_collaborators map[ulid.ID]struct{}
+	clearedtask_collaborators bool
+	done                      bool
+	oldValue                  func(context.Context) (*Task, error)
+	predicates                []predicate.Task
 }
 
 var _ ent.Mutation = (*TaskMutation)(nil)
@@ -10948,6 +10953,60 @@ func (m *TaskMutation) ResetTaskTags() {
 	m.removedtask_tags = nil
 }
 
+// AddTaskCollaboratorIDs adds the "task_collaborators" edge to the TaskCollaborator entity by ids.
+func (m *TaskMutation) AddTaskCollaboratorIDs(ids ...ulid.ID) {
+	if m.task_collaborators == nil {
+		m.task_collaborators = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		m.task_collaborators[ids[i]] = struct{}{}
+	}
+}
+
+// ClearTaskCollaborators clears the "task_collaborators" edge to the TaskCollaborator entity.
+func (m *TaskMutation) ClearTaskCollaborators() {
+	m.clearedtask_collaborators = true
+}
+
+// TaskCollaboratorsCleared reports if the "task_collaborators" edge to the TaskCollaborator entity was cleared.
+func (m *TaskMutation) TaskCollaboratorsCleared() bool {
+	return m.clearedtask_collaborators
+}
+
+// RemoveTaskCollaboratorIDs removes the "task_collaborators" edge to the TaskCollaborator entity by IDs.
+func (m *TaskMutation) RemoveTaskCollaboratorIDs(ids ...ulid.ID) {
+	if m.removedtask_collaborators == nil {
+		m.removedtask_collaborators = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		delete(m.task_collaborators, ids[i])
+		m.removedtask_collaborators[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedTaskCollaborators returns the removed IDs of the "task_collaborators" edge to the TaskCollaborator entity.
+func (m *TaskMutation) RemovedTaskCollaboratorsIDs() (ids []ulid.ID) {
+	for id := range m.removedtask_collaborators {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// TaskCollaboratorsIDs returns the "task_collaborators" edge IDs in the mutation.
+func (m *TaskMutation) TaskCollaboratorsIDs() (ids []ulid.ID) {
+	for id := range m.task_collaborators {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetTaskCollaborators resets all changes to the "task_collaborators" edge.
+func (m *TaskMutation) ResetTaskCollaborators() {
+	m.task_collaborators = nil
+	m.clearedtask_collaborators = false
+	m.removedtask_collaborators = nil
+}
+
 // Where appends a list predicates to the TaskMutation builder.
 func (m *TaskMutation) Where(ps ...predicate.Task) {
 	m.predicates = append(m.predicates, ps...)
@@ -11286,7 +11345,7 @@ func (m *TaskMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *TaskMutation) AddedEdges() []string {
-	edges := make([]string, 0, 8)
+	edges := make([]string, 0, 9)
 	if m.teammate != nil {
 		edges = append(edges, task.EdgeTeammate)
 	}
@@ -11310,6 +11369,9 @@ func (m *TaskMutation) AddedEdges() []string {
 	}
 	if m.task_tags != nil {
 		edges = append(edges, task.EdgeTaskTags)
+	}
+	if m.task_collaborators != nil {
+		edges = append(edges, task.EdgeTaskCollaborators)
 	}
 	return edges
 }
@@ -11360,13 +11422,19 @@ func (m *TaskMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case task.EdgeTaskCollaborators:
+		ids := make([]ent.Value, 0, len(m.task_collaborators))
+		for id := range m.task_collaborators {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *TaskMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 8)
+	edges := make([]string, 0, 9)
 	if m.removedsub_tasks != nil {
 		edges = append(edges, task.EdgeSubTasks)
 	}
@@ -11381,6 +11449,9 @@ func (m *TaskMutation) RemovedEdges() []string {
 	}
 	if m.removedtask_tags != nil {
 		edges = append(edges, task.EdgeTaskTags)
+	}
+	if m.removedtask_collaborators != nil {
+		edges = append(edges, task.EdgeTaskCollaborators)
 	}
 	return edges
 }
@@ -11419,13 +11490,19 @@ func (m *TaskMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case task.EdgeTaskCollaborators:
+		ids := make([]ent.Value, 0, len(m.removedtask_collaborators))
+		for id := range m.removedtask_collaborators {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *TaskMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 8)
+	edges := make([]string, 0, 9)
 	if m.clearedteammate {
 		edges = append(edges, task.EdgeTeammate)
 	}
@@ -11450,6 +11527,9 @@ func (m *TaskMutation) ClearedEdges() []string {
 	if m.clearedtask_tags {
 		edges = append(edges, task.EdgeTaskTags)
 	}
+	if m.clearedtask_collaborators {
+		edges = append(edges, task.EdgeTaskCollaborators)
+	}
 	return edges
 }
 
@@ -11473,6 +11553,8 @@ func (m *TaskMutation) EdgeCleared(name string) bool {
 		return m.clearedtask_likes
 	case task.EdgeTaskTags:
 		return m.clearedtask_tags
+	case task.EdgeTaskCollaborators:
+		return m.clearedtask_collaborators
 	}
 	return false
 }
@@ -11522,8 +11604,571 @@ func (m *TaskMutation) ResetEdge(name string) error {
 	case task.EdgeTaskTags:
 		m.ResetTaskTags()
 		return nil
+	case task.EdgeTaskCollaborators:
+		m.ResetTaskCollaborators()
+		return nil
 	}
 	return fmt.Errorf("unknown Task edge %s", name)
+}
+
+// TaskCollaboratorMutation represents an operation that mutates the TaskCollaborator nodes in the graph.
+type TaskCollaboratorMutation struct {
+	config
+	op              Op
+	typ             string
+	id              *ulid.ID
+	created_at      *time.Time
+	updated_at      *time.Time
+	clearedFields   map[string]struct{}
+	task            *ulid.ID
+	clearedtask     bool
+	teammate        *ulid.ID
+	clearedteammate bool
+	done            bool
+	oldValue        func(context.Context) (*TaskCollaborator, error)
+	predicates      []predicate.TaskCollaborator
+}
+
+var _ ent.Mutation = (*TaskCollaboratorMutation)(nil)
+
+// taskcollaboratorOption allows management of the mutation configuration using functional options.
+type taskcollaboratorOption func(*TaskCollaboratorMutation)
+
+// newTaskCollaboratorMutation creates new mutation for the TaskCollaborator entity.
+func newTaskCollaboratorMutation(c config, op Op, opts ...taskcollaboratorOption) *TaskCollaboratorMutation {
+	m := &TaskCollaboratorMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeTaskCollaborator,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withTaskCollaboratorID sets the ID field of the mutation.
+func withTaskCollaboratorID(id ulid.ID) taskcollaboratorOption {
+	return func(m *TaskCollaboratorMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *TaskCollaborator
+		)
+		m.oldValue = func(ctx context.Context) (*TaskCollaborator, error) {
+			once.Do(func() {
+				if m.done {
+					err = fmt.Errorf("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().TaskCollaborator.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withTaskCollaborator sets the old TaskCollaborator of the mutation.
+func withTaskCollaborator(node *TaskCollaborator) taskcollaboratorOption {
+	return func(m *TaskCollaboratorMutation) {
+		m.oldValue = func(context.Context) (*TaskCollaborator, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m TaskCollaboratorMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m TaskCollaboratorMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, fmt.Errorf("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of TaskCollaborator entities.
+func (m *TaskCollaboratorMutation) SetID(id ulid.ID) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *TaskCollaboratorMutation) ID() (id ulid.ID, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// SetTaskID sets the "task_id" field.
+func (m *TaskCollaboratorMutation) SetTaskID(u ulid.ID) {
+	m.task = &u
+}
+
+// TaskID returns the value of the "task_id" field in the mutation.
+func (m *TaskCollaboratorMutation) TaskID() (r ulid.ID, exists bool) {
+	v := m.task
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTaskID returns the old "task_id" field's value of the TaskCollaborator entity.
+// If the TaskCollaborator object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TaskCollaboratorMutation) OldTaskID(ctx context.Context) (v ulid.ID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldTaskID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldTaskID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTaskID: %w", err)
+	}
+	return oldValue.TaskID, nil
+}
+
+// ResetTaskID resets all changes to the "task_id" field.
+func (m *TaskCollaboratorMutation) ResetTaskID() {
+	m.task = nil
+}
+
+// SetTeammateID sets the "teammate_id" field.
+func (m *TaskCollaboratorMutation) SetTeammateID(u ulid.ID) {
+	m.teammate = &u
+}
+
+// TeammateID returns the value of the "teammate_id" field in the mutation.
+func (m *TaskCollaboratorMutation) TeammateID() (r ulid.ID, exists bool) {
+	v := m.teammate
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTeammateID returns the old "teammate_id" field's value of the TaskCollaborator entity.
+// If the TaskCollaborator object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TaskCollaboratorMutation) OldTeammateID(ctx context.Context) (v ulid.ID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldTeammateID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldTeammateID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTeammateID: %w", err)
+	}
+	return oldValue.TeammateID, nil
+}
+
+// ResetTeammateID resets all changes to the "teammate_id" field.
+func (m *TaskCollaboratorMutation) ResetTeammateID() {
+	m.teammate = nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *TaskCollaboratorMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *TaskCollaboratorMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the TaskCollaborator entity.
+// If the TaskCollaborator object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TaskCollaboratorMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *TaskCollaboratorMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *TaskCollaboratorMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *TaskCollaboratorMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the TaskCollaborator entity.
+// If the TaskCollaborator object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TaskCollaboratorMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *TaskCollaboratorMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// ClearTask clears the "task" edge to the Task entity.
+func (m *TaskCollaboratorMutation) ClearTask() {
+	m.clearedtask = true
+}
+
+// TaskCleared reports if the "task" edge to the Task entity was cleared.
+func (m *TaskCollaboratorMutation) TaskCleared() bool {
+	return m.clearedtask
+}
+
+// TaskIDs returns the "task" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// TaskID instead. It exists only for internal usage by the builders.
+func (m *TaskCollaboratorMutation) TaskIDs() (ids []ulid.ID) {
+	if id := m.task; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetTask resets all changes to the "task" edge.
+func (m *TaskCollaboratorMutation) ResetTask() {
+	m.task = nil
+	m.clearedtask = false
+}
+
+// ClearTeammate clears the "teammate" edge to the Teammate entity.
+func (m *TaskCollaboratorMutation) ClearTeammate() {
+	m.clearedteammate = true
+}
+
+// TeammateCleared reports if the "teammate" edge to the Teammate entity was cleared.
+func (m *TaskCollaboratorMutation) TeammateCleared() bool {
+	return m.clearedteammate
+}
+
+// TeammateIDs returns the "teammate" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// TeammateID instead. It exists only for internal usage by the builders.
+func (m *TaskCollaboratorMutation) TeammateIDs() (ids []ulid.ID) {
+	if id := m.teammate; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetTeammate resets all changes to the "teammate" edge.
+func (m *TaskCollaboratorMutation) ResetTeammate() {
+	m.teammate = nil
+	m.clearedteammate = false
+}
+
+// Where appends a list predicates to the TaskCollaboratorMutation builder.
+func (m *TaskCollaboratorMutation) Where(ps ...predicate.TaskCollaborator) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// Op returns the operation name.
+func (m *TaskCollaboratorMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (TaskCollaborator).
+func (m *TaskCollaboratorMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *TaskCollaboratorMutation) Fields() []string {
+	fields := make([]string, 0, 4)
+	if m.task != nil {
+		fields = append(fields, taskcollaborator.FieldTaskID)
+	}
+	if m.teammate != nil {
+		fields = append(fields, taskcollaborator.FieldTeammateID)
+	}
+	if m.created_at != nil {
+		fields = append(fields, taskcollaborator.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, taskcollaborator.FieldUpdatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *TaskCollaboratorMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case taskcollaborator.FieldTaskID:
+		return m.TaskID()
+	case taskcollaborator.FieldTeammateID:
+		return m.TeammateID()
+	case taskcollaborator.FieldCreatedAt:
+		return m.CreatedAt()
+	case taskcollaborator.FieldUpdatedAt:
+		return m.UpdatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *TaskCollaboratorMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case taskcollaborator.FieldTaskID:
+		return m.OldTaskID(ctx)
+	case taskcollaborator.FieldTeammateID:
+		return m.OldTeammateID(ctx)
+	case taskcollaborator.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case taskcollaborator.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown TaskCollaborator field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *TaskCollaboratorMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case taskcollaborator.FieldTaskID:
+		v, ok := value.(ulid.ID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTaskID(v)
+		return nil
+	case taskcollaborator.FieldTeammateID:
+		v, ok := value.(ulid.ID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTeammateID(v)
+		return nil
+	case taskcollaborator.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case taskcollaborator.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown TaskCollaborator field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *TaskCollaboratorMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *TaskCollaboratorMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *TaskCollaboratorMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown TaskCollaborator numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *TaskCollaboratorMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *TaskCollaboratorMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *TaskCollaboratorMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown TaskCollaborator nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *TaskCollaboratorMutation) ResetField(name string) error {
+	switch name {
+	case taskcollaborator.FieldTaskID:
+		m.ResetTaskID()
+		return nil
+	case taskcollaborator.FieldTeammateID:
+		m.ResetTeammateID()
+		return nil
+	case taskcollaborator.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case taskcollaborator.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown TaskCollaborator field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *TaskCollaboratorMutation) AddedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.task != nil {
+		edges = append(edges, taskcollaborator.EdgeTask)
+	}
+	if m.teammate != nil {
+		edges = append(edges, taskcollaborator.EdgeTeammate)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *TaskCollaboratorMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case taskcollaborator.EdgeTask:
+		if id := m.task; id != nil {
+			return []ent.Value{*id}
+		}
+	case taskcollaborator.EdgeTeammate:
+		if id := m.teammate; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *TaskCollaboratorMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 2)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *TaskCollaboratorMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *TaskCollaboratorMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.clearedtask {
+		edges = append(edges, taskcollaborator.EdgeTask)
+	}
+	if m.clearedteammate {
+		edges = append(edges, taskcollaborator.EdgeTeammate)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *TaskCollaboratorMutation) EdgeCleared(name string) bool {
+	switch name {
+	case taskcollaborator.EdgeTask:
+		return m.clearedtask
+	case taskcollaborator.EdgeTeammate:
+		return m.clearedteammate
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *TaskCollaboratorMutation) ClearEdge(name string) error {
+	switch name {
+	case taskcollaborator.EdgeTask:
+		m.ClearTask()
+		return nil
+	case taskcollaborator.EdgeTeammate:
+		m.ClearTeammate()
+		return nil
+	}
+	return fmt.Errorf("unknown TaskCollaborator unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *TaskCollaboratorMutation) ResetEdge(name string) error {
+	switch name {
+	case taskcollaborator.EdgeTask:
+		m.ResetTask()
+		return nil
+	case taskcollaborator.EdgeTeammate:
+		m.ResetTeammate()
+		return nil
+	}
+	return fmt.Errorf("unknown TaskCollaborator edge %s", name)
 }
 
 // TaskColumnMutation represents an operation that mutates the TaskColumn nodes in the graph.
@@ -15762,6 +16407,9 @@ type TeammateMutation struct {
 	task_likes                         map[ulid.ID]struct{}
 	removedtask_likes                  map[ulid.ID]struct{}
 	clearedtask_likes                  bool
+	task_collaborators                 map[ulid.ID]struct{}
+	removedtask_collaborators          map[ulid.ID]struct{}
+	clearedtask_collaborators          bool
 	done                               bool
 	oldValue                           func(context.Context) (*Teammate, error)
 	predicates                         []predicate.Teammate
@@ -16734,6 +17382,60 @@ func (m *TeammateMutation) ResetTaskLikes() {
 	m.removedtask_likes = nil
 }
 
+// AddTaskCollaboratorIDs adds the "task_collaborators" edge to the TaskCollaborator entity by ids.
+func (m *TeammateMutation) AddTaskCollaboratorIDs(ids ...ulid.ID) {
+	if m.task_collaborators == nil {
+		m.task_collaborators = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		m.task_collaborators[ids[i]] = struct{}{}
+	}
+}
+
+// ClearTaskCollaborators clears the "task_collaborators" edge to the TaskCollaborator entity.
+func (m *TeammateMutation) ClearTaskCollaborators() {
+	m.clearedtask_collaborators = true
+}
+
+// TaskCollaboratorsCleared reports if the "task_collaborators" edge to the TaskCollaborator entity was cleared.
+func (m *TeammateMutation) TaskCollaboratorsCleared() bool {
+	return m.clearedtask_collaborators
+}
+
+// RemoveTaskCollaboratorIDs removes the "task_collaborators" edge to the TaskCollaborator entity by IDs.
+func (m *TeammateMutation) RemoveTaskCollaboratorIDs(ids ...ulid.ID) {
+	if m.removedtask_collaborators == nil {
+		m.removedtask_collaborators = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		delete(m.task_collaborators, ids[i])
+		m.removedtask_collaborators[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedTaskCollaborators returns the removed IDs of the "task_collaborators" edge to the TaskCollaborator entity.
+func (m *TeammateMutation) RemovedTaskCollaboratorsIDs() (ids []ulid.ID) {
+	for id := range m.removedtask_collaborators {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// TaskCollaboratorsIDs returns the "task_collaborators" edge IDs in the mutation.
+func (m *TeammateMutation) TaskCollaboratorsIDs() (ids []ulid.ID) {
+	for id := range m.task_collaborators {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetTaskCollaborators resets all changes to the "task_collaborators" edge.
+func (m *TeammateMutation) ResetTaskCollaborators() {
+	m.task_collaborators = nil
+	m.clearedtask_collaborators = false
+	m.removedtask_collaborators = nil
+}
+
 // Where appends a list predicates to the TeammateMutation builder.
 func (m *TeammateMutation) Where(ps ...predicate.Teammate) {
 	m.predicates = append(m.predicates, ps...)
@@ -16920,7 +17622,7 @@ func (m *TeammateMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *TeammateMutation) AddedEdges() []string {
-	edges := make([]string, 0, 13)
+	edges := make([]string, 0, 14)
 	if m.workspaces != nil {
 		edges = append(edges, teammate.EdgeWorkspaces)
 	}
@@ -16959,6 +17661,9 @@ func (m *TeammateMutation) AddedEdges() []string {
 	}
 	if m.task_likes != nil {
 		edges = append(edges, teammate.EdgeTaskLikes)
+	}
+	if m.task_collaborators != nil {
+		edges = append(edges, teammate.EdgeTaskCollaborators)
 	}
 	return edges
 }
@@ -17045,13 +17750,19 @@ func (m *TeammateMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case teammate.EdgeTaskCollaborators:
+		ids := make([]ent.Value, 0, len(m.task_collaborators))
+		for id := range m.task_collaborators {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *TeammateMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 13)
+	edges := make([]string, 0, 14)
 	if m.removedworkspaces != nil {
 		edges = append(edges, teammate.EdgeWorkspaces)
 	}
@@ -17090,6 +17801,9 @@ func (m *TeammateMutation) RemovedEdges() []string {
 	}
 	if m.removedtask_likes != nil {
 		edges = append(edges, teammate.EdgeTaskLikes)
+	}
+	if m.removedtask_collaborators != nil {
+		edges = append(edges, teammate.EdgeTaskCollaborators)
 	}
 	return edges
 }
@@ -17176,13 +17890,19 @@ func (m *TeammateMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case teammate.EdgeTaskCollaborators:
+		ids := make([]ent.Value, 0, len(m.removedtask_collaborators))
+		for id := range m.removedtask_collaborators {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *TeammateMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 13)
+	edges := make([]string, 0, 14)
 	if m.clearedworkspaces {
 		edges = append(edges, teammate.EdgeWorkspaces)
 	}
@@ -17222,6 +17942,9 @@ func (m *TeammateMutation) ClearedEdges() []string {
 	if m.clearedtask_likes {
 		edges = append(edges, teammate.EdgeTaskLikes)
 	}
+	if m.clearedtask_collaborators {
+		edges = append(edges, teammate.EdgeTaskCollaborators)
+	}
 	return edges
 }
 
@@ -17255,6 +17978,8 @@ func (m *TeammateMutation) EdgeCleared(name string) bool {
 		return m.clearedteammate_tasks
 	case teammate.EdgeTaskLikes:
 		return m.clearedtask_likes
+	case teammate.EdgeTaskCollaborators:
+		return m.clearedtask_collaborators
 	}
 	return false
 }
@@ -17309,6 +18034,9 @@ func (m *TeammateMutation) ResetEdge(name string) error {
 		return nil
 	case teammate.EdgeTaskLikes:
 		m.ResetTaskLikes()
+		return nil
+	case teammate.EdgeTaskCollaborators:
+		m.ResetTaskCollaborators()
 		return nil
 	}
 	return fmt.Errorf("unknown Teammate edge %s", name)

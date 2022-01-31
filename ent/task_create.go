@@ -9,6 +9,7 @@ import (
 	"project-management-demo-backend/ent/projecttask"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/task"
+	"project-management-demo-backend/ent/taskcollaborator"
 	"project-management-demo-backend/ent/tasklike"
 	"project-management-demo-backend/ent/taskpriority"
 	"project-management-demo-backend/ent/tasktag"
@@ -301,6 +302,21 @@ func (tc *TaskCreate) AddTaskTags(t ...*TaskTag) *TaskCreate {
 		ids[i] = t[i].ID
 	}
 	return tc.AddTaskTagIDs(ids...)
+}
+
+// AddTaskCollaboratorIDs adds the "task_collaborators" edge to the TaskCollaborator entity by IDs.
+func (tc *TaskCreate) AddTaskCollaboratorIDs(ids ...ulid.ID) *TaskCreate {
+	tc.mutation.AddTaskCollaboratorIDs(ids...)
+	return tc
+}
+
+// AddTaskCollaborators adds the "task_collaborators" edges to the TaskCollaborator entity.
+func (tc *TaskCreate) AddTaskCollaborators(t ...*TaskCollaborator) *TaskCreate {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return tc.AddTaskCollaboratorIDs(ids...)
 }
 
 // Mutation returns the TaskMutation object of the builder.
@@ -678,6 +694,25 @@ func (tc *TaskCreate) createSpec() (*Task, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: tasktag.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := tc.mutation.TaskCollaboratorsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   task.TaskCollaboratorsTable,
+			Columns: []string{task.TaskCollaboratorsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: taskcollaborator.FieldID,
 				},
 			},
 		}

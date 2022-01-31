@@ -24,6 +24,7 @@ import (
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/tag"
 	"project-management-demo-backend/ent/task"
+	"project-management-demo-backend/ent/taskcollaborator"
 	"project-management-demo-backend/ent/taskcolumn"
 	"project-management-demo-backend/ent/tasklike"
 	"project-management-demo-backend/ent/tasklistcompletedstatus"
@@ -3666,6 +3667,233 @@ func (t *Task) ToEdge(order *TaskOrder) *TaskEdge {
 	return &TaskEdge{
 		Node:   t,
 		Cursor: order.Field.toCursor(t),
+	}
+}
+
+// TaskCollaboratorEdge is the edge representation of TaskCollaborator.
+type TaskCollaboratorEdge struct {
+	Node   *TaskCollaborator `json:"node"`
+	Cursor Cursor            `json:"cursor"`
+}
+
+// TaskCollaboratorConnection is the connection containing edges to TaskCollaborator.
+type TaskCollaboratorConnection struct {
+	Edges      []*TaskCollaboratorEdge `json:"edges"`
+	PageInfo   PageInfo                `json:"pageInfo"`
+	TotalCount int                     `json:"totalCount"`
+}
+
+// TaskCollaboratorPaginateOption enables pagination customization.
+type TaskCollaboratorPaginateOption func(*taskCollaboratorPager) error
+
+// WithTaskCollaboratorOrder configures pagination ordering.
+func WithTaskCollaboratorOrder(order *TaskCollaboratorOrder) TaskCollaboratorPaginateOption {
+	if order == nil {
+		order = DefaultTaskCollaboratorOrder
+	}
+	o := *order
+	return func(pager *taskCollaboratorPager) error {
+		if err := o.Direction.Validate(); err != nil {
+			return err
+		}
+		if o.Field == nil {
+			o.Field = DefaultTaskCollaboratorOrder.Field
+		}
+		pager.order = &o
+		return nil
+	}
+}
+
+// WithTaskCollaboratorFilter configures pagination filter.
+func WithTaskCollaboratorFilter(filter func(*TaskCollaboratorQuery) (*TaskCollaboratorQuery, error)) TaskCollaboratorPaginateOption {
+	return func(pager *taskCollaboratorPager) error {
+		if filter == nil {
+			return errors.New("TaskCollaboratorQuery filter cannot be nil")
+		}
+		pager.filter = filter
+		return nil
+	}
+}
+
+type taskCollaboratorPager struct {
+	order  *TaskCollaboratorOrder
+	filter func(*TaskCollaboratorQuery) (*TaskCollaboratorQuery, error)
+}
+
+func newTaskCollaboratorPager(opts []TaskCollaboratorPaginateOption) (*taskCollaboratorPager, error) {
+	pager := &taskCollaboratorPager{}
+	for _, opt := range opts {
+		if err := opt(pager); err != nil {
+			return nil, err
+		}
+	}
+	if pager.order == nil {
+		pager.order = DefaultTaskCollaboratorOrder
+	}
+	return pager, nil
+}
+
+func (p *taskCollaboratorPager) applyFilter(query *TaskCollaboratorQuery) (*TaskCollaboratorQuery, error) {
+	if p.filter != nil {
+		return p.filter(query)
+	}
+	return query, nil
+}
+
+func (p *taskCollaboratorPager) toCursor(tc *TaskCollaborator) Cursor {
+	return p.order.Field.toCursor(tc)
+}
+
+func (p *taskCollaboratorPager) applyCursors(query *TaskCollaboratorQuery, after, before *Cursor) *TaskCollaboratorQuery {
+	for _, predicate := range cursorsToPredicates(
+		p.order.Direction, after, before,
+		p.order.Field.field, DefaultTaskCollaboratorOrder.Field.field,
+	) {
+		query = query.Where(predicate)
+	}
+	return query
+}
+
+func (p *taskCollaboratorPager) applyOrder(query *TaskCollaboratorQuery, reverse bool) *TaskCollaboratorQuery {
+	direction := p.order.Direction
+	if reverse {
+		direction = direction.reverse()
+	}
+	query = query.Order(direction.orderFunc(p.order.Field.field))
+	if p.order.Field != DefaultTaskCollaboratorOrder.Field {
+		query = query.Order(direction.orderFunc(DefaultTaskCollaboratorOrder.Field.field))
+	}
+	return query
+}
+
+// Paginate executes the query and returns a relay based cursor connection to TaskCollaborator.
+func (tc *TaskCollaboratorQuery) Paginate(
+	ctx context.Context, after *Cursor, first *int,
+	before *Cursor, last *int, opts ...TaskCollaboratorPaginateOption,
+) (*TaskCollaboratorConnection, error) {
+	if err := validateFirstLast(first, last); err != nil {
+		return nil, err
+	}
+	pager, err := newTaskCollaboratorPager(opts)
+	if err != nil {
+		return nil, err
+	}
+
+	if tc, err = pager.applyFilter(tc); err != nil {
+		return nil, err
+	}
+
+	conn := &TaskCollaboratorConnection{Edges: []*TaskCollaboratorEdge{}}
+	if !hasCollectedField(ctx, edgesField) || first != nil && *first == 0 || last != nil && *last == 0 {
+		if hasCollectedField(ctx, totalCountField) ||
+			hasCollectedField(ctx, pageInfoField) {
+			count, err := tc.Count(ctx)
+			if err != nil {
+				return nil, err
+			}
+			conn.TotalCount = count
+			conn.PageInfo.HasNextPage = first != nil && count > 0
+			conn.PageInfo.HasPreviousPage = last != nil && count > 0
+		}
+		return conn, nil
+	}
+
+	if (after != nil || first != nil || before != nil || last != nil) && hasCollectedField(ctx, totalCountField) {
+		count, err := tc.Clone().Count(ctx)
+		if err != nil {
+			return nil, err
+		}
+		conn.TotalCount = count
+	}
+
+	tc = pager.applyCursors(tc, after, before)
+	tc = pager.applyOrder(tc, last != nil)
+	var limit int
+	if first != nil {
+		limit = *first + 1
+	} else if last != nil {
+		limit = *last + 1
+	}
+	if limit > 0 {
+		tc = tc.Limit(limit)
+	}
+
+	if field := getCollectedField(ctx, edgesField, nodeField); field != nil {
+		tc = tc.collectField(graphql.GetOperationContext(ctx), *field)
+	}
+
+	nodes, err := tc.All(ctx)
+	if err != nil || len(nodes) == 0 {
+		return conn, err
+	}
+
+	if len(nodes) == limit {
+		conn.PageInfo.HasNextPage = first != nil
+		conn.PageInfo.HasPreviousPage = last != nil
+		nodes = nodes[:len(nodes)-1]
+	}
+
+	var nodeAt func(int) *TaskCollaborator
+	if last != nil {
+		n := len(nodes) - 1
+		nodeAt = func(i int) *TaskCollaborator {
+			return nodes[n-i]
+		}
+	} else {
+		nodeAt = func(i int) *TaskCollaborator {
+			return nodes[i]
+		}
+	}
+
+	conn.Edges = make([]*TaskCollaboratorEdge, len(nodes))
+	for i := range nodes {
+		node := nodeAt(i)
+		conn.Edges[i] = &TaskCollaboratorEdge{
+			Node:   node,
+			Cursor: pager.toCursor(node),
+		}
+	}
+
+	conn.PageInfo.StartCursor = &conn.Edges[0].Cursor
+	conn.PageInfo.EndCursor = &conn.Edges[len(conn.Edges)-1].Cursor
+	if conn.TotalCount == 0 {
+		conn.TotalCount = len(nodes)
+	}
+
+	return conn, nil
+}
+
+// TaskCollaboratorOrderField defines the ordering field of TaskCollaborator.
+type TaskCollaboratorOrderField struct {
+	field    string
+	toCursor func(*TaskCollaborator) Cursor
+}
+
+// TaskCollaboratorOrder defines the ordering of TaskCollaborator.
+type TaskCollaboratorOrder struct {
+	Direction OrderDirection              `json:"direction"`
+	Field     *TaskCollaboratorOrderField `json:"field"`
+}
+
+// DefaultTaskCollaboratorOrder is the default ordering of TaskCollaborator.
+var DefaultTaskCollaboratorOrder = &TaskCollaboratorOrder{
+	Direction: OrderDirectionAsc,
+	Field: &TaskCollaboratorOrderField{
+		field: taskcollaborator.FieldID,
+		toCursor: func(tc *TaskCollaborator) Cursor {
+			return Cursor{ID: tc.ID}
+		},
+	},
+}
+
+// ToEdge converts TaskCollaborator into TaskCollaboratorEdge.
+func (tc *TaskCollaborator) ToEdge(order *TaskCollaboratorOrder) *TaskCollaboratorEdge {
+	if order == nil {
+		order = DefaultTaskCollaboratorOrder
+	}
+	return &TaskCollaboratorEdge{
+		Node:   tc,
+		Cursor: order.Field.toCursor(tc),
 	}
 }
 
