@@ -31,7 +31,7 @@ input DeleteTaskTagInput {
 }
 
 extend type Subscription {
-  taskTagsUpdated(id: ID!): TaskTag!
+  taskTagsUpdated(taskId: ID!): [TaskTag!]!
 }
 
 extend type Query {

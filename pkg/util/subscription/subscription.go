@@ -184,8 +184,8 @@ type TagUpdated struct {
 
 // TaskTagUpdated is a channel for subscription.
 type TaskTagUpdated struct {
-	ID model.ID
-	Ch chan *model.TaskTag
+	TaskID model.ID
+	Ch     chan []*model.TaskTag
 }
 
 // Subscriptions hold an id and a channel of subscription.

@@ -5,6 +5,7 @@ package resolver
 
 import (
 	"context"
+	"fmt"
 	"project-management-demo-backend/ent"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/graph/generated"
@@ -20,6 +21,21 @@ func (r *mutationResolver) CreateTaskTag(ctx context.Context, input ent.CreateTa
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
+
+	var ts []*ent.TaskTag
+	for _, u := range r.subscriptions.TaskTagUpdated {
+		if u.TaskID == t.TaskID {
+			if ts == nil {
+				ts, err = r.controller.TaskTag.List(ctx, &ent.TaskTagWhereInput{TaskID: &t.TaskID})
+				if err != nil {
+					// TODO: Add error handling
+					fmt.Println(err)
+				}
+			}
+			u.Ch <- ts
+		}
+	}
+
 	return t, nil
 }
 
@@ -36,6 +52,19 @@ func (r *mutationResolver) DeleteTaskTag(ctx context.Context, input model.Delete
 	t, err := r.controller.TaskTag.Delete(ctx, input)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
+	}
+
+	var ts []*ent.TaskTag
+	for _, u := range r.subscriptions.TaskTagUpdated {
+		if u.TaskID == t.TaskID {
+			if ts == nil {
+				ts, err = r.controller.TaskTag.List(ctx, &ent.TaskTagWhereInput{TaskID: &t.TaskID})
+				if err != nil {
+					fmt.Println(err)
+				}
+			}
+			u.Ch <- ts
+		}
 	}
 
 	return t, nil
@@ -60,14 +89,14 @@ func (r *queryResolver) TaskTags(ctx context.Context, after *ent.Cursor, first *
 	return ts, nil
 }
 
-func (r *subscriptionResolver) TaskTagsUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.TaskTag, error) {
+func (r *subscriptionResolver) TaskTagsUpdated(ctx context.Context, taskID ulid.ID) (<-chan []*ent.TaskTag, error) {
 	key := subscription.NewKey()
-	ch := make(chan *ent.TaskTag, 1)
+	ch := make(chan []*ent.TaskTag, 1)
 
 	r.mutex.Lock()
 	r.subscriptions.TaskTagUpdated[key] = subscription.TaskTagUpdated{
-		ID: id,
-		Ch: ch,
+		TaskID: taskID,
+		Ch:     ch,
 	}
 	r.mutex.Unlock()
 

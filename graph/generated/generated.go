@@ -568,7 +568,7 @@ type ComplexityRoot struct {
 		TagUpdated                          func(childComplexity int, id ulid.ID) int
 		TaskLikesUpdated                    func(childComplexity int, where ent.TaskLikeWhereInput) int
 		TaskSectionUpdated                  func(childComplexity int, id ulid.ID) int
-		TaskTagsUpdated                     func(childComplexity int, id ulid.ID) int
+		TaskTagsUpdated                     func(childComplexity int, taskID ulid.ID) int
 		TaskUpdated                         func(childComplexity int, id ulid.ID) int
 		TeammateTaskColumnUpdated           func(childComplexity int, id ulid.ID) int
 		TeammateTaskListStatusStatusUpdated func(childComplexity int, id ulid.ID) int
@@ -1229,7 +1229,7 @@ type SubscriptionResolver interface {
 	TaskUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.Task, error)
 	TaskLikesUpdated(ctx context.Context, where ent.TaskLikeWhereInput) (<-chan []*ent.TaskLike, error)
 	TaskSectionUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.TaskSection, error)
-	TaskTagsUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.TaskTag, error)
+	TaskTagsUpdated(ctx context.Context, taskID ulid.ID) (<-chan []*ent.TaskTag, error)
 	TeammateUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.Teammate, error)
 	TeammateTaskUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.TeammateTask, error)
 	TeammateTaskColumnUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.TeammateTaskColumn, error)
@@ -4465,7 +4465,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Subscription.TaskTagsUpdated(childComplexity, args["id"].(ulid.ID)), true
+		return e.complexity.Subscription.TaskTagsUpdated(childComplexity, args["taskId"].(ulid.ID)), true
 
 	case "Subscription.taskUpdated":
 		if e.complexity.Subscription.TaskUpdated == nil {
@@ -10575,7 +10575,7 @@ input DeleteTaskTagInput {
 }
 
 extend type Subscription {
-  taskTagsUpdated(id: ID!): TaskTag!
+  taskTagsUpdated(taskId: ID!): [TaskTag!]!
 }
 
 extend type Query {
@@ -14599,14 +14599,14 @@ func (ec *executionContext) field_Subscription_taskTagsUpdated_args(ctx context.
 	var err error
 	args := map[string]interface{}{}
 	var arg0 ulid.ID
-	if tmp, ok := rawArgs["id"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+	if tmp, ok := rawArgs["taskId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskId"))
 		arg0, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["id"] = arg0
+	args["taskId"] = arg0
 	return args, nil
 }
 
@@ -27651,7 +27651,7 @@ func (ec *executionContext) _Subscription_taskTagsUpdated(ctx context.Context, f
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Subscription().TaskTagsUpdated(rctx, args["id"].(ulid.ID))
+		return ec.resolvers.Subscription().TaskTagsUpdated(rctx, args["taskId"].(ulid.ID))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -27664,7 +27664,7 @@ func (ec *executionContext) _Subscription_taskTagsUpdated(ctx context.Context, f
 		return nil
 	}
 	return func() graphql.Marshaler {
-		res, ok := <-resTmp.(<-chan *ent.TaskTag)
+		res, ok := <-resTmp.(<-chan []*ent.TaskTag)
 		if !ok {
 			return nil
 		}
@@ -27672,7 +27672,7 @@ func (ec *executionContext) _Subscription_taskTagsUpdated(ctx context.Context, f
 			w.Write([]byte{'{'})
 			graphql.MarshalString(field.Alias).MarshalGQL(w)
 			w.Write([]byte{':'})
-			ec.marshalNTaskTag2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskTag(ctx, field.Selections, res).MarshalGQL(w)
+			ec.marshalNTaskTag2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskTagᚄ(ctx, field.Selections, res).MarshalGQL(w)
 			w.Write([]byte{'}'})
 		})
 	}
@@ -67139,6 +67139,50 @@ func (ec *executionContext) unmarshalNTaskSectionWhereInput2ᚖprojectᚑmanagem
 
 func (ec *executionContext) marshalNTaskTag2projectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskTag(ctx context.Context, sel ast.SelectionSet, v ent.TaskTag) graphql.Marshaler {
 	return ec._TaskTag(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNTaskTag2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskTagᚄ(ctx context.Context, sel ast.SelectionSet, v []*ent.TaskTag) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNTaskTag2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskTag(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
 }
 
 func (ec *executionContext) marshalNTaskTag2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskTag(ctx context.Context, sel ast.SelectionSet, v *ent.TaskTag) graphql.Marshaler {
