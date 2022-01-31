@@ -12,6 +12,7 @@ import (
 	"project-management-demo-backend/ent/task"
 	"project-management-demo-backend/ent/taskcollaborator"
 	"project-management-demo-backend/ent/taskfeed"
+	"project-management-demo-backend/ent/taskfeedlike"
 	"project-management-demo-backend/ent/tasklike"
 	"project-management-demo-backend/ent/taskpriority"
 	"project-management-demo-backend/ent/tasktag"
@@ -331,6 +332,21 @@ func (tu *TaskUpdate) AddTaskFeeds(t ...*TaskFeed) *TaskUpdate {
 	return tu.AddTaskFeedIDs(ids...)
 }
 
+// AddTaskFeedLikeIDs adds the "task_feed_likes" edge to the TaskFeedLike entity by IDs.
+func (tu *TaskUpdate) AddTaskFeedLikeIDs(ids ...ulid.ID) *TaskUpdate {
+	tu.mutation.AddTaskFeedLikeIDs(ids...)
+	return tu
+}
+
+// AddTaskFeedLikes adds the "task_feed_likes" edges to the TaskFeedLike entity.
+func (tu *TaskUpdate) AddTaskFeedLikes(t ...*TaskFeedLike) *TaskUpdate {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return tu.AddTaskFeedLikeIDs(ids...)
+}
+
 // Mutation returns the TaskMutation object of the builder.
 func (tu *TaskUpdate) Mutation() *TaskMutation {
 	return tu.mutation
@@ -499,6 +515,27 @@ func (tu *TaskUpdate) RemoveTaskFeeds(t ...*TaskFeed) *TaskUpdate {
 		ids[i] = t[i].ID
 	}
 	return tu.RemoveTaskFeedIDs(ids...)
+}
+
+// ClearTaskFeedLikes clears all "task_feed_likes" edges to the TaskFeedLike entity.
+func (tu *TaskUpdate) ClearTaskFeedLikes() *TaskUpdate {
+	tu.mutation.ClearTaskFeedLikes()
+	return tu
+}
+
+// RemoveTaskFeedLikeIDs removes the "task_feed_likes" edge to TaskFeedLike entities by IDs.
+func (tu *TaskUpdate) RemoveTaskFeedLikeIDs(ids ...ulid.ID) *TaskUpdate {
+	tu.mutation.RemoveTaskFeedLikeIDs(ids...)
+	return tu
+}
+
+// RemoveTaskFeedLikes removes "task_feed_likes" edges to TaskFeedLike entities.
+func (tu *TaskUpdate) RemoveTaskFeedLikes(t ...*TaskFeedLike) *TaskUpdate {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return tu.RemoveTaskFeedLikeIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -1142,6 +1179,60 @@ func (tu *TaskUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if tu.mutation.TaskFeedLikesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   task.TaskFeedLikesTable,
+			Columns: []string{task.TaskFeedLikesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: taskfeedlike.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tu.mutation.RemovedTaskFeedLikesIDs(); len(nodes) > 0 && !tu.mutation.TaskFeedLikesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   task.TaskFeedLikesTable,
+			Columns: []string{task.TaskFeedLikesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: taskfeedlike.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tu.mutation.TaskFeedLikesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   task.TaskFeedLikesTable,
+			Columns: []string{task.TaskFeedLikesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: taskfeedlike.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, tu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{task.Label}
@@ -1455,6 +1546,21 @@ func (tuo *TaskUpdateOne) AddTaskFeeds(t ...*TaskFeed) *TaskUpdateOne {
 	return tuo.AddTaskFeedIDs(ids...)
 }
 
+// AddTaskFeedLikeIDs adds the "task_feed_likes" edge to the TaskFeedLike entity by IDs.
+func (tuo *TaskUpdateOne) AddTaskFeedLikeIDs(ids ...ulid.ID) *TaskUpdateOne {
+	tuo.mutation.AddTaskFeedLikeIDs(ids...)
+	return tuo
+}
+
+// AddTaskFeedLikes adds the "task_feed_likes" edges to the TaskFeedLike entity.
+func (tuo *TaskUpdateOne) AddTaskFeedLikes(t ...*TaskFeedLike) *TaskUpdateOne {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return tuo.AddTaskFeedLikeIDs(ids...)
+}
+
 // Mutation returns the TaskMutation object of the builder.
 func (tuo *TaskUpdateOne) Mutation() *TaskMutation {
 	return tuo.mutation
@@ -1623,6 +1729,27 @@ func (tuo *TaskUpdateOne) RemoveTaskFeeds(t ...*TaskFeed) *TaskUpdateOne {
 		ids[i] = t[i].ID
 	}
 	return tuo.RemoveTaskFeedIDs(ids...)
+}
+
+// ClearTaskFeedLikes clears all "task_feed_likes" edges to the TaskFeedLike entity.
+func (tuo *TaskUpdateOne) ClearTaskFeedLikes() *TaskUpdateOne {
+	tuo.mutation.ClearTaskFeedLikes()
+	return tuo
+}
+
+// RemoveTaskFeedLikeIDs removes the "task_feed_likes" edge to TaskFeedLike entities by IDs.
+func (tuo *TaskUpdateOne) RemoveTaskFeedLikeIDs(ids ...ulid.ID) *TaskUpdateOne {
+	tuo.mutation.RemoveTaskFeedLikeIDs(ids...)
+	return tuo
+}
+
+// RemoveTaskFeedLikes removes "task_feed_likes" edges to TaskFeedLike entities.
+func (tuo *TaskUpdateOne) RemoveTaskFeedLikes(t ...*TaskFeedLike) *TaskUpdateOne {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return tuo.RemoveTaskFeedLikeIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -2282,6 +2409,60 @@ func (tuo *TaskUpdateOne) sqlSave(ctx context.Context) (_node *Task, err error) 
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: taskfeed.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if tuo.mutation.TaskFeedLikesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   task.TaskFeedLikesTable,
+			Columns: []string{task.TaskFeedLikesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: taskfeedlike.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tuo.mutation.RemovedTaskFeedLikesIDs(); len(nodes) > 0 && !tuo.mutation.TaskFeedLikesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   task.TaskFeedLikesTable,
+			Columns: []string{task.TaskFeedLikesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: taskfeedlike.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tuo.mutation.TaskFeedLikesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   task.TaskFeedLikesTable,
+			Columns: []string{task.TaskFeedLikesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: taskfeedlike.FieldID,
 				},
 			},
 		}

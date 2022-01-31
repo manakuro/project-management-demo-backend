@@ -24,6 +24,7 @@ import (
 	"project-management-demo-backend/ent/taskcollaborator"
 	"project-management-demo-backend/ent/taskcolumn"
 	"project-management-demo-backend/ent/taskfeed"
+	"project-management-demo-backend/ent/taskfeedlike"
 	"project-management-demo-backend/ent/tasklike"
 	"project-management-demo-backend/ent/tasklistcompletedstatus"
 	"project-management-demo-backend/ent/tasklistsortstatus"
@@ -5699,6 +5700,10 @@ type TaskWhereInput struct {
 	// "task_feeds" edge predicates.
 	HasTaskFeeds     *bool                 `json:"hasTaskFeeds,omitempty"`
 	HasTaskFeedsWith []*TaskFeedWhereInput `json:"hasTaskFeedsWith,omitempty"`
+
+	// "task_feed_likes" edge predicates.
+	HasTaskFeedLikes     *bool                     `json:"hasTaskFeedLikes,omitempty"`
+	HasTaskFeedLikesWith []*TaskFeedLikeWhereInput `json:"hasTaskFeedLikesWith,omitempty"`
 }
 
 // Filter applies the TaskWhereInput filter on the TaskQuery builder.
@@ -6321,6 +6326,24 @@ func (i *TaskWhereInput) P() (predicate.Task, error) {
 			with = append(with, p)
 		}
 		predicates = append(predicates, task.HasTaskFeedsWith(with...))
+	}
+	if i.HasTaskFeedLikes != nil {
+		p := task.HasTaskFeedLikes()
+		if !*i.HasTaskFeedLikes {
+			p = task.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasTaskFeedLikesWith) > 0 {
+		with := make([]predicate.TaskFeedLike, 0, len(i.HasTaskFeedLikesWith))
+		for _, w := range i.HasTaskFeedLikesWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, task.HasTaskFeedLikesWith(with...))
 	}
 	switch len(predicates) {
 	case 0:
@@ -7039,6 +7062,10 @@ type TaskFeedWhereInput struct {
 	// "teammate" edge predicates.
 	HasTeammate     *bool                 `json:"hasTeammate,omitempty"`
 	HasTeammateWith []*TeammateWhereInput `json:"hasTeammateWith,omitempty"`
+
+	// "task_feed_likes" edge predicates.
+	HasTaskFeedLikes     *bool                     `json:"hasTaskFeedLikes,omitempty"`
+	HasTaskFeedLikesWith []*TaskFeedLikeWhereInput `json:"hasTaskFeedLikesWith,omitempty"`
 }
 
 // Filter applies the TaskFeedWhereInput filter on the TaskFeedQuery builder.
@@ -7299,6 +7326,24 @@ func (i *TaskFeedWhereInput) P() (predicate.TaskFeed, error) {
 		}
 		predicates = append(predicates, taskfeed.HasTeammateWith(with...))
 	}
+	if i.HasTaskFeedLikes != nil {
+		p := taskfeed.HasTaskFeedLikes()
+		if !*i.HasTaskFeedLikes {
+			p = taskfeed.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasTaskFeedLikesWith) > 0 {
+		with := make([]predicate.TaskFeedLike, 0, len(i.HasTaskFeedLikesWith))
+		for _, w := range i.HasTaskFeedLikesWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, taskfeed.HasTaskFeedLikesWith(with...))
+	}
 	switch len(predicates) {
 	case 0:
 		return nil, fmt.Errorf("project-management-demo-backend/ent: empty predicate TaskFeedWhereInput")
@@ -7306,6 +7351,413 @@ func (i *TaskFeedWhereInput) P() (predicate.TaskFeed, error) {
 		return predicates[0], nil
 	default:
 		return taskfeed.And(predicates...), nil
+	}
+}
+
+// TaskFeedLikeWhereInput represents a where input for filtering TaskFeedLike queries.
+type TaskFeedLikeWhereInput struct {
+	Not *TaskFeedLikeWhereInput   `json:"not,omitempty"`
+	Or  []*TaskFeedLikeWhereInput `json:"or,omitempty"`
+	And []*TaskFeedLikeWhereInput `json:"and,omitempty"`
+
+	// "id" field predicates.
+	ID      *ulid.ID  `json:"id,omitempty"`
+	IDNEQ   *ulid.ID  `json:"idNEQ,omitempty"`
+	IDIn    []ulid.ID `json:"idIn,omitempty"`
+	IDNotIn []ulid.ID `json:"idNotIn,omitempty"`
+	IDGT    *ulid.ID  `json:"idGT,omitempty"`
+	IDGTE   *ulid.ID  `json:"idGTE,omitempty"`
+	IDLT    *ulid.ID  `json:"idLT,omitempty"`
+	IDLTE   *ulid.ID  `json:"idLTE,omitempty"`
+
+	// "task_id" field predicates.
+	TaskID             *ulid.ID  `json:"taskID,omitempty"`
+	TaskIDNEQ          *ulid.ID  `json:"taskIDNEQ,omitempty"`
+	TaskIDIn           []ulid.ID `json:"taskIDIn,omitempty"`
+	TaskIDNotIn        []ulid.ID `json:"taskIDNotIn,omitempty"`
+	TaskIDGT           *ulid.ID  `json:"taskIDGT,omitempty"`
+	TaskIDGTE          *ulid.ID  `json:"taskIDGTE,omitempty"`
+	TaskIDLT           *ulid.ID  `json:"taskIDLT,omitempty"`
+	TaskIDLTE          *ulid.ID  `json:"taskIDLTE,omitempty"`
+	TaskIDContains     *ulid.ID  `json:"taskIDContains,omitempty"`
+	TaskIDHasPrefix    *ulid.ID  `json:"taskIDHasPrefix,omitempty"`
+	TaskIDHasSuffix    *ulid.ID  `json:"taskIDHasSuffix,omitempty"`
+	TaskIDEqualFold    *ulid.ID  `json:"taskIDEqualFold,omitempty"`
+	TaskIDContainsFold *ulid.ID  `json:"taskIDContainsFold,omitempty"`
+
+	// "teammate_id" field predicates.
+	TeammateID             *ulid.ID  `json:"teammateID,omitempty"`
+	TeammateIDNEQ          *ulid.ID  `json:"teammateIDNEQ,omitempty"`
+	TeammateIDIn           []ulid.ID `json:"teammateIDIn,omitempty"`
+	TeammateIDNotIn        []ulid.ID `json:"teammateIDNotIn,omitempty"`
+	TeammateIDGT           *ulid.ID  `json:"teammateIDGT,omitempty"`
+	TeammateIDGTE          *ulid.ID  `json:"teammateIDGTE,omitempty"`
+	TeammateIDLT           *ulid.ID  `json:"teammateIDLT,omitempty"`
+	TeammateIDLTE          *ulid.ID  `json:"teammateIDLTE,omitempty"`
+	TeammateIDContains     *ulid.ID  `json:"teammateIDContains,omitempty"`
+	TeammateIDHasPrefix    *ulid.ID  `json:"teammateIDHasPrefix,omitempty"`
+	TeammateIDHasSuffix    *ulid.ID  `json:"teammateIDHasSuffix,omitempty"`
+	TeammateIDEqualFold    *ulid.ID  `json:"teammateIDEqualFold,omitempty"`
+	TeammateIDContainsFold *ulid.ID  `json:"teammateIDContainsFold,omitempty"`
+
+	// "task_feed_id" field predicates.
+	TaskFeedID             *ulid.ID  `json:"taskFeedID,omitempty"`
+	TaskFeedIDNEQ          *ulid.ID  `json:"taskFeedIDNEQ,omitempty"`
+	TaskFeedIDIn           []ulid.ID `json:"taskFeedIDIn,omitempty"`
+	TaskFeedIDNotIn        []ulid.ID `json:"taskFeedIDNotIn,omitempty"`
+	TaskFeedIDGT           *ulid.ID  `json:"taskFeedIDGT,omitempty"`
+	TaskFeedIDGTE          *ulid.ID  `json:"taskFeedIDGTE,omitempty"`
+	TaskFeedIDLT           *ulid.ID  `json:"taskFeedIDLT,omitempty"`
+	TaskFeedIDLTE          *ulid.ID  `json:"taskFeedIDLTE,omitempty"`
+	TaskFeedIDContains     *ulid.ID  `json:"taskFeedIDContains,omitempty"`
+	TaskFeedIDHasPrefix    *ulid.ID  `json:"taskFeedIDHasPrefix,omitempty"`
+	TaskFeedIDHasSuffix    *ulid.ID  `json:"taskFeedIDHasSuffix,omitempty"`
+	TaskFeedIDEqualFold    *ulid.ID  `json:"taskFeedIDEqualFold,omitempty"`
+	TaskFeedIDContainsFold *ulid.ID  `json:"taskFeedIDContainsFold,omitempty"`
+
+	// "created_at" field predicates.
+	CreatedAt      *time.Time  `json:"createdAt,omitempty"`
+	CreatedAtNEQ   *time.Time  `json:"createdAtNEQ,omitempty"`
+	CreatedAtIn    []time.Time `json:"createdAtIn,omitempty"`
+	CreatedAtNotIn []time.Time `json:"createdAtNotIn,omitempty"`
+	CreatedAtGT    *time.Time  `json:"createdAtGT,omitempty"`
+	CreatedAtGTE   *time.Time  `json:"createdAtGTE,omitempty"`
+	CreatedAtLT    *time.Time  `json:"createdAtLT,omitempty"`
+	CreatedAtLTE   *time.Time  `json:"createdAtLTE,omitempty"`
+
+	// "updated_at" field predicates.
+	UpdatedAt      *time.Time  `json:"updatedAt,omitempty"`
+	UpdatedAtNEQ   *time.Time  `json:"updatedAtNEQ,omitempty"`
+	UpdatedAtIn    []time.Time `json:"updatedAtIn,omitempty"`
+	UpdatedAtNotIn []time.Time `json:"updatedAtNotIn,omitempty"`
+	UpdatedAtGT    *time.Time  `json:"updatedAtGT,omitempty"`
+	UpdatedAtGTE   *time.Time  `json:"updatedAtGTE,omitempty"`
+	UpdatedAtLT    *time.Time  `json:"updatedAtLT,omitempty"`
+	UpdatedAtLTE   *time.Time  `json:"updatedAtLTE,omitempty"`
+
+	// "task" edge predicates.
+	HasTask     *bool             `json:"hasTask,omitempty"`
+	HasTaskWith []*TaskWhereInput `json:"hasTaskWith,omitempty"`
+
+	// "teammate" edge predicates.
+	HasTeammate     *bool                 `json:"hasTeammate,omitempty"`
+	HasTeammateWith []*TeammateWhereInput `json:"hasTeammateWith,omitempty"`
+
+	// "feed" edge predicates.
+	HasFeed     *bool                 `json:"hasFeed,omitempty"`
+	HasFeedWith []*TaskFeedWhereInput `json:"hasFeedWith,omitempty"`
+}
+
+// Filter applies the TaskFeedLikeWhereInput filter on the TaskFeedLikeQuery builder.
+func (i *TaskFeedLikeWhereInput) Filter(q *TaskFeedLikeQuery) (*TaskFeedLikeQuery, error) {
+	if i == nil {
+		return q, nil
+	}
+	p, err := i.P()
+	if err != nil {
+		return nil, err
+	}
+	return q.Where(p), nil
+}
+
+// P returns a predicate for filtering taskfeedlikes.
+// An error is returned if the input is empty or invalid.
+func (i *TaskFeedLikeWhereInput) P() (predicate.TaskFeedLike, error) {
+	var predicates []predicate.TaskFeedLike
+	if i.Not != nil {
+		p, err := i.Not.P()
+		if err != nil {
+			return nil, err
+		}
+		predicates = append(predicates, taskfeedlike.Not(p))
+	}
+	switch n := len(i.Or); {
+	case n == 1:
+		p, err := i.Or[0].P()
+		if err != nil {
+			return nil, err
+		}
+		predicates = append(predicates, p)
+	case n > 1:
+		or := make([]predicate.TaskFeedLike, 0, n)
+		for _, w := range i.Or {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			or = append(or, p)
+		}
+		predicates = append(predicates, taskfeedlike.Or(or...))
+	}
+	switch n := len(i.And); {
+	case n == 1:
+		p, err := i.And[0].P()
+		if err != nil {
+			return nil, err
+		}
+		predicates = append(predicates, p)
+	case n > 1:
+		and := make([]predicate.TaskFeedLike, 0, n)
+		for _, w := range i.And {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			and = append(and, p)
+		}
+		predicates = append(predicates, taskfeedlike.And(and...))
+	}
+	if i.ID != nil {
+		predicates = append(predicates, taskfeedlike.IDEQ(*i.ID))
+	}
+	if i.IDNEQ != nil {
+		predicates = append(predicates, taskfeedlike.IDNEQ(*i.IDNEQ))
+	}
+	if len(i.IDIn) > 0 {
+		predicates = append(predicates, taskfeedlike.IDIn(i.IDIn...))
+	}
+	if len(i.IDNotIn) > 0 {
+		predicates = append(predicates, taskfeedlike.IDNotIn(i.IDNotIn...))
+	}
+	if i.IDGT != nil {
+		predicates = append(predicates, taskfeedlike.IDGT(*i.IDGT))
+	}
+	if i.IDGTE != nil {
+		predicates = append(predicates, taskfeedlike.IDGTE(*i.IDGTE))
+	}
+	if i.IDLT != nil {
+		predicates = append(predicates, taskfeedlike.IDLT(*i.IDLT))
+	}
+	if i.IDLTE != nil {
+		predicates = append(predicates, taskfeedlike.IDLTE(*i.IDLTE))
+	}
+	if i.TaskID != nil {
+		predicates = append(predicates, taskfeedlike.TaskIDEQ(*i.TaskID))
+	}
+	if i.TaskIDNEQ != nil {
+		predicates = append(predicates, taskfeedlike.TaskIDNEQ(*i.TaskIDNEQ))
+	}
+	if len(i.TaskIDIn) > 0 {
+		predicates = append(predicates, taskfeedlike.TaskIDIn(i.TaskIDIn...))
+	}
+	if len(i.TaskIDNotIn) > 0 {
+		predicates = append(predicates, taskfeedlike.TaskIDNotIn(i.TaskIDNotIn...))
+	}
+	if i.TaskIDGT != nil {
+		predicates = append(predicates, taskfeedlike.TaskIDGT(*i.TaskIDGT))
+	}
+	if i.TaskIDGTE != nil {
+		predicates = append(predicates, taskfeedlike.TaskIDGTE(*i.TaskIDGTE))
+	}
+	if i.TaskIDLT != nil {
+		predicates = append(predicates, taskfeedlike.TaskIDLT(*i.TaskIDLT))
+	}
+	if i.TaskIDLTE != nil {
+		predicates = append(predicates, taskfeedlike.TaskIDLTE(*i.TaskIDLTE))
+	}
+	if i.TaskIDContains != nil {
+		predicates = append(predicates, taskfeedlike.TaskIDContains(*i.TaskIDContains))
+	}
+	if i.TaskIDHasPrefix != nil {
+		predicates = append(predicates, taskfeedlike.TaskIDHasPrefix(*i.TaskIDHasPrefix))
+	}
+	if i.TaskIDHasSuffix != nil {
+		predicates = append(predicates, taskfeedlike.TaskIDHasSuffix(*i.TaskIDHasSuffix))
+	}
+	if i.TaskIDEqualFold != nil {
+		predicates = append(predicates, taskfeedlike.TaskIDEqualFold(*i.TaskIDEqualFold))
+	}
+	if i.TaskIDContainsFold != nil {
+		predicates = append(predicates, taskfeedlike.TaskIDContainsFold(*i.TaskIDContainsFold))
+	}
+	if i.TeammateID != nil {
+		predicates = append(predicates, taskfeedlike.TeammateIDEQ(*i.TeammateID))
+	}
+	if i.TeammateIDNEQ != nil {
+		predicates = append(predicates, taskfeedlike.TeammateIDNEQ(*i.TeammateIDNEQ))
+	}
+	if len(i.TeammateIDIn) > 0 {
+		predicates = append(predicates, taskfeedlike.TeammateIDIn(i.TeammateIDIn...))
+	}
+	if len(i.TeammateIDNotIn) > 0 {
+		predicates = append(predicates, taskfeedlike.TeammateIDNotIn(i.TeammateIDNotIn...))
+	}
+	if i.TeammateIDGT != nil {
+		predicates = append(predicates, taskfeedlike.TeammateIDGT(*i.TeammateIDGT))
+	}
+	if i.TeammateIDGTE != nil {
+		predicates = append(predicates, taskfeedlike.TeammateIDGTE(*i.TeammateIDGTE))
+	}
+	if i.TeammateIDLT != nil {
+		predicates = append(predicates, taskfeedlike.TeammateIDLT(*i.TeammateIDLT))
+	}
+	if i.TeammateIDLTE != nil {
+		predicates = append(predicates, taskfeedlike.TeammateIDLTE(*i.TeammateIDLTE))
+	}
+	if i.TeammateIDContains != nil {
+		predicates = append(predicates, taskfeedlike.TeammateIDContains(*i.TeammateIDContains))
+	}
+	if i.TeammateIDHasPrefix != nil {
+		predicates = append(predicates, taskfeedlike.TeammateIDHasPrefix(*i.TeammateIDHasPrefix))
+	}
+	if i.TeammateIDHasSuffix != nil {
+		predicates = append(predicates, taskfeedlike.TeammateIDHasSuffix(*i.TeammateIDHasSuffix))
+	}
+	if i.TeammateIDEqualFold != nil {
+		predicates = append(predicates, taskfeedlike.TeammateIDEqualFold(*i.TeammateIDEqualFold))
+	}
+	if i.TeammateIDContainsFold != nil {
+		predicates = append(predicates, taskfeedlike.TeammateIDContainsFold(*i.TeammateIDContainsFold))
+	}
+	if i.TaskFeedID != nil {
+		predicates = append(predicates, taskfeedlike.TaskFeedIDEQ(*i.TaskFeedID))
+	}
+	if i.TaskFeedIDNEQ != nil {
+		predicates = append(predicates, taskfeedlike.TaskFeedIDNEQ(*i.TaskFeedIDNEQ))
+	}
+	if len(i.TaskFeedIDIn) > 0 {
+		predicates = append(predicates, taskfeedlike.TaskFeedIDIn(i.TaskFeedIDIn...))
+	}
+	if len(i.TaskFeedIDNotIn) > 0 {
+		predicates = append(predicates, taskfeedlike.TaskFeedIDNotIn(i.TaskFeedIDNotIn...))
+	}
+	if i.TaskFeedIDGT != nil {
+		predicates = append(predicates, taskfeedlike.TaskFeedIDGT(*i.TaskFeedIDGT))
+	}
+	if i.TaskFeedIDGTE != nil {
+		predicates = append(predicates, taskfeedlike.TaskFeedIDGTE(*i.TaskFeedIDGTE))
+	}
+	if i.TaskFeedIDLT != nil {
+		predicates = append(predicates, taskfeedlike.TaskFeedIDLT(*i.TaskFeedIDLT))
+	}
+	if i.TaskFeedIDLTE != nil {
+		predicates = append(predicates, taskfeedlike.TaskFeedIDLTE(*i.TaskFeedIDLTE))
+	}
+	if i.TaskFeedIDContains != nil {
+		predicates = append(predicates, taskfeedlike.TaskFeedIDContains(*i.TaskFeedIDContains))
+	}
+	if i.TaskFeedIDHasPrefix != nil {
+		predicates = append(predicates, taskfeedlike.TaskFeedIDHasPrefix(*i.TaskFeedIDHasPrefix))
+	}
+	if i.TaskFeedIDHasSuffix != nil {
+		predicates = append(predicates, taskfeedlike.TaskFeedIDHasSuffix(*i.TaskFeedIDHasSuffix))
+	}
+	if i.TaskFeedIDEqualFold != nil {
+		predicates = append(predicates, taskfeedlike.TaskFeedIDEqualFold(*i.TaskFeedIDEqualFold))
+	}
+	if i.TaskFeedIDContainsFold != nil {
+		predicates = append(predicates, taskfeedlike.TaskFeedIDContainsFold(*i.TaskFeedIDContainsFold))
+	}
+	if i.CreatedAt != nil {
+		predicates = append(predicates, taskfeedlike.CreatedAtEQ(*i.CreatedAt))
+	}
+	if i.CreatedAtNEQ != nil {
+		predicates = append(predicates, taskfeedlike.CreatedAtNEQ(*i.CreatedAtNEQ))
+	}
+	if len(i.CreatedAtIn) > 0 {
+		predicates = append(predicates, taskfeedlike.CreatedAtIn(i.CreatedAtIn...))
+	}
+	if len(i.CreatedAtNotIn) > 0 {
+		predicates = append(predicates, taskfeedlike.CreatedAtNotIn(i.CreatedAtNotIn...))
+	}
+	if i.CreatedAtGT != nil {
+		predicates = append(predicates, taskfeedlike.CreatedAtGT(*i.CreatedAtGT))
+	}
+	if i.CreatedAtGTE != nil {
+		predicates = append(predicates, taskfeedlike.CreatedAtGTE(*i.CreatedAtGTE))
+	}
+	if i.CreatedAtLT != nil {
+		predicates = append(predicates, taskfeedlike.CreatedAtLT(*i.CreatedAtLT))
+	}
+	if i.CreatedAtLTE != nil {
+		predicates = append(predicates, taskfeedlike.CreatedAtLTE(*i.CreatedAtLTE))
+	}
+	if i.UpdatedAt != nil {
+		predicates = append(predicates, taskfeedlike.UpdatedAtEQ(*i.UpdatedAt))
+	}
+	if i.UpdatedAtNEQ != nil {
+		predicates = append(predicates, taskfeedlike.UpdatedAtNEQ(*i.UpdatedAtNEQ))
+	}
+	if len(i.UpdatedAtIn) > 0 {
+		predicates = append(predicates, taskfeedlike.UpdatedAtIn(i.UpdatedAtIn...))
+	}
+	if len(i.UpdatedAtNotIn) > 0 {
+		predicates = append(predicates, taskfeedlike.UpdatedAtNotIn(i.UpdatedAtNotIn...))
+	}
+	if i.UpdatedAtGT != nil {
+		predicates = append(predicates, taskfeedlike.UpdatedAtGT(*i.UpdatedAtGT))
+	}
+	if i.UpdatedAtGTE != nil {
+		predicates = append(predicates, taskfeedlike.UpdatedAtGTE(*i.UpdatedAtGTE))
+	}
+	if i.UpdatedAtLT != nil {
+		predicates = append(predicates, taskfeedlike.UpdatedAtLT(*i.UpdatedAtLT))
+	}
+	if i.UpdatedAtLTE != nil {
+		predicates = append(predicates, taskfeedlike.UpdatedAtLTE(*i.UpdatedAtLTE))
+	}
+
+	if i.HasTask != nil {
+		p := taskfeedlike.HasTask()
+		if !*i.HasTask {
+			p = taskfeedlike.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasTaskWith) > 0 {
+		with := make([]predicate.Task, 0, len(i.HasTaskWith))
+		for _, w := range i.HasTaskWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, taskfeedlike.HasTaskWith(with...))
+	}
+	if i.HasTeammate != nil {
+		p := taskfeedlike.HasTeammate()
+		if !*i.HasTeammate {
+			p = taskfeedlike.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasTeammateWith) > 0 {
+		with := make([]predicate.Teammate, 0, len(i.HasTeammateWith))
+		for _, w := range i.HasTeammateWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, taskfeedlike.HasTeammateWith(with...))
+	}
+	if i.HasFeed != nil {
+		p := taskfeedlike.HasFeed()
+		if !*i.HasFeed {
+			p = taskfeedlike.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasFeedWith) > 0 {
+		with := make([]predicate.TaskFeed, 0, len(i.HasFeedWith))
+		for _, w := range i.HasFeedWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, taskfeedlike.HasFeedWith(with...))
+	}
+	switch len(predicates) {
+	case 0:
+		return nil, fmt.Errorf("project-management-demo-backend/ent: empty predicate TaskFeedLikeWhereInput")
+	case 1:
+		return predicates[0], nil
+	default:
+		return taskfeedlike.And(predicates...), nil
 	}
 }
 
@@ -9359,6 +9811,10 @@ type TeammateWhereInput struct {
 	// "task_feeds" edge predicates.
 	HasTaskFeeds     *bool                 `json:"hasTaskFeeds,omitempty"`
 	HasTaskFeedsWith []*TaskFeedWhereInput `json:"hasTaskFeedsWith,omitempty"`
+
+	// "task_feed_likes" edge predicates.
+	HasTaskFeedLikes     *bool                     `json:"hasTaskFeedLikes,omitempty"`
+	HasTaskFeedLikesWith []*TaskFeedLikeWhereInput `json:"hasTaskFeedLikesWith,omitempty"`
 }
 
 // Filter applies the TeammateWhereInput filter on the TeammateQuery builder.
@@ -9879,6 +10335,24 @@ func (i *TeammateWhereInput) P() (predicate.Teammate, error) {
 			with = append(with, p)
 		}
 		predicates = append(predicates, teammate.HasTaskFeedsWith(with...))
+	}
+	if i.HasTaskFeedLikes != nil {
+		p := teammate.HasTaskFeedLikes()
+		if !*i.HasTaskFeedLikes {
+			p = teammate.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasTaskFeedLikesWith) > 0 {
+		with := make([]predicate.TaskFeedLike, 0, len(i.HasTaskFeedLikesWith))
+		for _, w := range i.HasTaskFeedLikesWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, teammate.HasTaskFeedLikesWith(with...))
 	}
 	switch len(predicates) {
 	case 0:

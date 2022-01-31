@@ -1034,6 +1034,34 @@ func HasTaskFeedsWith(preds ...predicate.TaskFeed) predicate.Teammate {
 	})
 }
 
+// HasTaskFeedLikes applies the HasEdge predicate on the "task_feed_likes" edge.
+func HasTaskFeedLikes() predicate.Teammate {
+	return predicate.Teammate(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(TaskFeedLikesTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, TaskFeedLikesTable, TaskFeedLikesColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasTaskFeedLikesWith applies the HasEdge predicate on the "task_feed_likes" edge with a given conditions (other predicates).
+func HasTaskFeedLikesWith(preds ...predicate.TaskFeedLike) predicate.Teammate {
+	return predicate.Teammate(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(TaskFeedLikesInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, TaskFeedLikesTable, TaskFeedLikesColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Teammate) predicate.Teammate {
 	return predicate.Teammate(func(s *sql.Selector) {

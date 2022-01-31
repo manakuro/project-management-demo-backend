@@ -52,6 +52,8 @@ const (
 	EdgeTaskCollaborators = "task_collaborators"
 	// EdgeTaskFeeds holds the string denoting the task_feeds edge name in mutations.
 	EdgeTaskFeeds = "task_feeds"
+	// EdgeTaskFeedLikes holds the string denoting the task_feed_likes edge name in mutations.
+	EdgeTaskFeedLikes = "task_feed_likes"
 	// Table holds the table name of the teammate in the database.
 	Table = "teammates"
 	// WorkspacesTable is the table that holds the workspaces relation/edge.
@@ -159,6 +161,13 @@ const (
 	TaskFeedsInverseTable = "task_feeds"
 	// TaskFeedsColumn is the table column denoting the task_feeds relation/edge.
 	TaskFeedsColumn = "teammate_id"
+	// TaskFeedLikesTable is the table that holds the task_feed_likes relation/edge.
+	TaskFeedLikesTable = "task_feed_likes"
+	// TaskFeedLikesInverseTable is the table name for the TaskFeedLike entity.
+	// It exists in this package in order to avoid circular dependency with the "taskfeedlike" package.
+	TaskFeedLikesInverseTable = "task_feed_likes"
+	// TaskFeedLikesColumn is the table column denoting the task_feed_likes relation/edge.
+	TaskFeedLikesColumn = "teammate_id"
 )
 
 // Columns holds all SQL columns for teammate fields.

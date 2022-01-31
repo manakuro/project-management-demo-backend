@@ -412,6 +412,14 @@ func (t *Task) TaskFeeds(ctx context.Context) ([]*TaskFeed, error) {
 	return result, err
 }
 
+func (t *Task) TaskFeedLikes(ctx context.Context) ([]*TaskFeedLike, error) {
+	result, err := t.Edges.TaskFeedLikesOrErr()
+	if IsNotLoaded(err) {
+		result, err = t.QueryTaskFeedLikes().All(ctx)
+	}
+	return result, err
+}
+
 func (tc *TaskCollaborator) Task(ctx context.Context) (*Task, error) {
 	result, err := tc.Edges.TaskOrErr()
 	if IsNotLoaded(err) {
@@ -456,6 +464,38 @@ func (tf *TaskFeed) Teammate(ctx context.Context) (*Teammate, error) {
 	result, err := tf.Edges.TeammateOrErr()
 	if IsNotLoaded(err) {
 		result, err = tf.QueryTeammate().Only(ctx)
+	}
+	return result, err
+}
+
+func (tf *TaskFeed) TaskFeedLikes(ctx context.Context) ([]*TaskFeedLike, error) {
+	result, err := tf.Edges.TaskFeedLikesOrErr()
+	if IsNotLoaded(err) {
+		result, err = tf.QueryTaskFeedLikes().All(ctx)
+	}
+	return result, err
+}
+
+func (tfl *TaskFeedLike) Task(ctx context.Context) (*Task, error) {
+	result, err := tfl.Edges.TaskOrErr()
+	if IsNotLoaded(err) {
+		result, err = tfl.QueryTask().Only(ctx)
+	}
+	return result, err
+}
+
+func (tfl *TaskFeedLike) Teammate(ctx context.Context) (*Teammate, error) {
+	result, err := tfl.Edges.TeammateOrErr()
+	if IsNotLoaded(err) {
+		result, err = tfl.QueryTeammate().Only(ctx)
+	}
+	return result, err
+}
+
+func (tfl *TaskFeedLike) Feed(ctx context.Context) (*TaskFeed, error) {
+	result, err := tfl.Edges.FeedOrErr()
+	if IsNotLoaded(err) {
+		result, err = tfl.QueryFeed().Only(ctx)
 	}
 	return result, err
 }
@@ -664,6 +704,14 @@ func (t *Teammate) TaskFeeds(ctx context.Context) ([]*TaskFeed, error) {
 	result, err := t.Edges.TaskFeedsOrErr()
 	if IsNotLoaded(err) {
 		result, err = t.QueryTaskFeeds().All(ctx)
+	}
+	return result, err
+}
+
+func (t *Teammate) TaskFeedLikes(ctx context.Context) ([]*TaskFeedLike, error) {
+	result, err := t.Edges.TaskFeedLikesOrErr()
+	if IsNotLoaded(err) {
+		result, err = t.QueryTaskFeedLikes().All(ctx)
 	}
 	return result, err
 }

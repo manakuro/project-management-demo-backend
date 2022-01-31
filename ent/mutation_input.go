@@ -1188,6 +1188,7 @@ type CreateTaskInput struct {
 	TaskTagIDs          []ulid.ID
 	TaskCollaboratorIDs []ulid.ID
 	TaskFeedIDs         []ulid.ID
+	TaskFeedLikeIDs     []ulid.ID
 }
 
 // Mutate applies the CreateTaskInput on the TaskCreate builder.
@@ -1243,6 +1244,9 @@ func (i *CreateTaskInput) Mutate(m *TaskCreate) {
 	if ids := i.TaskFeedIDs; len(ids) > 0 {
 		m.AddTaskFeedIDs(ids...)
 	}
+	if ids := i.TaskFeedLikeIDs; len(ids) > 0 {
+		m.AddTaskFeedLikeIDs(ids...)
+	}
 }
 
 // SetInput applies the change-set in the CreateTaskInput on the create builder.
@@ -1284,6 +1288,8 @@ type UpdateTaskInput struct {
 	RemoveTaskCollaboratorIDs []ulid.ID
 	AddTaskFeedIDs            []ulid.ID
 	RemoveTaskFeedIDs         []ulid.ID
+	AddTaskFeedLikeIDs        []ulid.ID
+	RemoveTaskFeedLikeIDs     []ulid.ID
 }
 
 // Mutate applies the UpdateTaskInput on the TaskMutation.
@@ -1377,6 +1383,12 @@ func (i *UpdateTaskInput) Mutate(m *TaskMutation) {
 	}
 	if ids := i.RemoveTaskFeedIDs; len(ids) > 0 {
 		m.RemoveTaskFeedIDs(ids...)
+	}
+	if ids := i.AddTaskFeedLikeIDs; len(ids) > 0 {
+		m.AddTaskFeedLikeIDs(ids...)
+	}
+	if ids := i.RemoveTaskFeedLikeIDs; len(ids) > 0 {
+		m.RemoveTaskFeedLikeIDs(ids...)
 	}
 }
 
@@ -1536,13 +1548,14 @@ func (u *TaskColumnUpdateOne) SetInput(i UpdateTaskColumnInput) *TaskColumnUpdat
 
 // CreateTaskFeedInput represents a mutation input for creating taskfeeds.
 type CreateTaskFeedInput struct {
-	Description editor.Description
-	IsFirst     *bool
-	IsPinned    *bool
-	CreatedAt   *time.Time
-	UpdatedAt   *time.Time
-	TaskID      ulid.ID
-	TeammateID  ulid.ID
+	Description     editor.Description
+	IsFirst         *bool
+	IsPinned        *bool
+	CreatedAt       *time.Time
+	UpdatedAt       *time.Time
+	TaskID          ulid.ID
+	TeammateID      ulid.ID
+	TaskFeedLikeIDs []ulid.ID
 }
 
 // Mutate applies the CreateTaskFeedInput on the TaskFeedCreate builder.
@@ -1562,6 +1575,9 @@ func (i *CreateTaskFeedInput) Mutate(m *TaskFeedCreate) {
 	}
 	m.SetTaskID(i.TaskID)
 	m.SetTeammateID(i.TeammateID)
+	if ids := i.TaskFeedLikeIDs; len(ids) > 0 {
+		m.AddTaskFeedLikeIDs(ids...)
+	}
 }
 
 // SetInput applies the change-set in the CreateTaskFeedInput on the create builder.
@@ -1572,14 +1588,16 @@ func (c *TaskFeedCreate) SetInput(i CreateTaskFeedInput) *TaskFeedCreate {
 
 // UpdateTaskFeedInput represents a mutation input for updating taskfeeds.
 type UpdateTaskFeedInput struct {
-	ID            ulid.ID
-	Description   *editor.Description
-	IsFirst       *bool
-	IsPinned      *bool
-	TaskID        *ulid.ID
-	ClearTask     bool
-	TeammateID    *ulid.ID
-	ClearTeammate bool
+	ID                    ulid.ID
+	Description           *editor.Description
+	IsFirst               *bool
+	IsPinned              *bool
+	TaskID                *ulid.ID
+	ClearTask             bool
+	TeammateID            *ulid.ID
+	ClearTeammate         bool
+	AddTaskFeedLikeIDs    []ulid.ID
+	RemoveTaskFeedLikeIDs []ulid.ID
 }
 
 // Mutate applies the UpdateTaskFeedInput on the TaskFeedMutation.
@@ -1605,6 +1623,12 @@ func (i *UpdateTaskFeedInput) Mutate(m *TaskFeedMutation) {
 	if v := i.TeammateID; v != nil {
 		m.SetTeammateID(*v)
 	}
+	if ids := i.AddTaskFeedLikeIDs; len(ids) > 0 {
+		m.AddTaskFeedLikeIDs(ids...)
+	}
+	if ids := i.RemoveTaskFeedLikeIDs; len(ids) > 0 {
+		m.RemoveTaskFeedLikeIDs(ids...)
+	}
 }
 
 // SetInput applies the change-set in the UpdateTaskFeedInput on the update builder.
@@ -1615,6 +1639,79 @@ func (u *TaskFeedUpdate) SetInput(i UpdateTaskFeedInput) *TaskFeedUpdate {
 
 // SetInput applies the change-set in the UpdateTaskFeedInput on the update-one builder.
 func (u *TaskFeedUpdateOne) SetInput(i UpdateTaskFeedInput) *TaskFeedUpdateOne {
+	i.Mutate(u.Mutation())
+	return u
+}
+
+// CreateTaskFeedLikeInput represents a mutation input for creating taskfeedlikes.
+type CreateTaskFeedLikeInput struct {
+	CreatedAt  *time.Time
+	UpdatedAt  *time.Time
+	TaskID     ulid.ID
+	TeammateID ulid.ID
+	TaskFeedID ulid.ID
+}
+
+// Mutate applies the CreateTaskFeedLikeInput on the TaskFeedLikeCreate builder.
+func (i *CreateTaskFeedLikeInput) Mutate(m *TaskFeedLikeCreate) {
+	if v := i.CreatedAt; v != nil {
+		m.SetCreatedAt(*v)
+	}
+	if v := i.UpdatedAt; v != nil {
+		m.SetUpdatedAt(*v)
+	}
+	m.SetTaskID(i.TaskID)
+	m.SetTeammateID(i.TeammateID)
+	m.SetFeedID(i.TaskFeedID)
+}
+
+// SetInput applies the change-set in the CreateTaskFeedLikeInput on the create builder.
+func (c *TaskFeedLikeCreate) SetInput(i CreateTaskFeedLikeInput) *TaskFeedLikeCreate {
+	i.Mutate(c)
+	return c
+}
+
+// UpdateTaskFeedLikeInput represents a mutation input for updating taskfeedlikes.
+type UpdateTaskFeedLikeInput struct {
+	ID            ulid.ID
+	TaskID        *ulid.ID
+	ClearTask     bool
+	TeammateID    *ulid.ID
+	ClearTeammate bool
+	TaskFeedID    *ulid.ID
+	ClearFeed     bool
+}
+
+// Mutate applies the UpdateTaskFeedLikeInput on the TaskFeedLikeMutation.
+func (i *UpdateTaskFeedLikeInput) Mutate(m *TaskFeedLikeMutation) {
+	if i.ClearTask {
+		m.ClearTask()
+	}
+	if v := i.TaskID; v != nil {
+		m.SetTaskID(*v)
+	}
+	if i.ClearTeammate {
+		m.ClearTeammate()
+	}
+	if v := i.TeammateID; v != nil {
+		m.SetTeammateID(*v)
+	}
+	if i.ClearFeed {
+		m.ClearFeed()
+	}
+	if v := i.TaskFeedID; v != nil {
+		m.SetFeedID(*v)
+	}
+}
+
+// SetInput applies the change-set in the UpdateTaskFeedLikeInput on the update builder.
+func (u *TaskFeedLikeUpdate) SetInput(i UpdateTaskFeedLikeInput) *TaskFeedLikeUpdate {
+	i.Mutate(u.Mutation())
+	return u
+}
+
+// SetInput applies the change-set in the UpdateTaskFeedLikeInput on the update-one builder.
+func (u *TaskFeedLikeUpdateOne) SetInput(i UpdateTaskFeedLikeInput) *TaskFeedLikeUpdateOne {
 	i.Mutate(u.Mutation())
 	return u
 }
@@ -2061,6 +2158,7 @@ type CreateTeammateInput struct {
 	TaskLikeIDs               []ulid.ID
 	TaskCollaboratorIDs       []ulid.ID
 	TaskFeedIDs               []ulid.ID
+	TaskFeedLikeIDs           []ulid.ID
 }
 
 // Mutate applies the CreateTeammateInput on the TeammateCreate builder.
@@ -2119,6 +2217,9 @@ func (i *CreateTeammateInput) Mutate(m *TeammateCreate) {
 	if ids := i.TaskFeedIDs; len(ids) > 0 {
 		m.AddTaskFeedIDs(ids...)
 	}
+	if ids := i.TaskFeedLikeIDs; len(ids) > 0 {
+		m.AddTaskFeedLikeIDs(ids...)
+	}
 }
 
 // SetInput applies the change-set in the CreateTeammateInput on the create builder.
@@ -2163,6 +2264,8 @@ type UpdateTeammateInput struct {
 	RemoveTaskCollaboratorIDs       []ulid.ID
 	AddTaskFeedIDs                  []ulid.ID
 	RemoveTaskFeedIDs               []ulid.ID
+	AddTaskFeedLikeIDs              []ulid.ID
+	RemoveTaskFeedLikeIDs           []ulid.ID
 }
 
 // Mutate applies the UpdateTeammateInput on the TeammateMutation.
@@ -2265,6 +2368,12 @@ func (i *UpdateTeammateInput) Mutate(m *TeammateMutation) {
 	}
 	if ids := i.RemoveTaskFeedIDs; len(ids) > 0 {
 		m.RemoveTaskFeedIDs(ids...)
+	}
+	if ids := i.AddTaskFeedLikeIDs; len(ids) > 0 {
+		m.AddTaskFeedLikeIDs(ids...)
+	}
+	if ids := i.RemoveTaskFeedLikeIDs; len(ids) > 0 {
+		m.RemoveTaskFeedLikeIDs(ids...)
 	}
 }
 

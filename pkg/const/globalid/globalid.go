@@ -81,6 +81,7 @@ type GlobalIDs struct {
 	TaskTag                 field
 	TaskCollaborator        field
 	TaskFeed                field
+	TaskFeedLike            field
 }
 
 // New generates a map object that is intended to be used as global identification for node interface query.
@@ -221,6 +222,10 @@ func New() GlobalIDs {
 		},
 		TaskFeed: field{
 			Prefix: "0BH",
+			Table:  taskfeed.Table,
+		},
+		TaskFeedLike: field{
+			Prefix: "0BI",
 			Table:  taskfeed.Table,
 		},
 	}

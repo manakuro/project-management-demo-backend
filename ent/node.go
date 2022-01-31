@@ -25,6 +25,7 @@ import (
 	"project-management-demo-backend/ent/taskcollaborator"
 	"project-management-demo-backend/ent/taskcolumn"
 	"project-management-demo-backend/ent/taskfeed"
+	"project-management-demo-backend/ent/taskfeedlike"
 	"project-management-demo-backend/ent/tasklike"
 	"project-management-demo-backend/ent/tasklistcompletedstatus"
 	"project-management-demo-backend/ent/tasklistsortstatus"
@@ -1203,7 +1204,7 @@ func (t *Task) Node(ctx context.Context) (node *Node, err error) {
 		ID:     t.ID,
 		Type:   "Task",
 		Fields: make([]*Field, 12),
-		Edges:  make([]*Edge, 10),
+		Edges:  make([]*Edge, 11),
 	}
 	var buf []byte
 	if buf, err = json.Marshal(t.TaskParentID); err != nil {
@@ -1402,6 +1403,16 @@ func (t *Task) Node(ctx context.Context) (node *Node, err error) {
 	if err != nil {
 		return nil, err
 	}
+	node.Edges[10] = &Edge{
+		Type: "TaskFeedLike",
+		Name: "task_feed_likes",
+	}
+	err = t.QueryTaskFeedLikes().
+		Select(taskfeedlike.FieldID).
+		Scan(ctx, &node.Edges[10].IDs)
+	if err != nil {
+		return nil, err
+	}
 	return node, nil
 }
 
@@ -1536,7 +1547,7 @@ func (tf *TaskFeed) Node(ctx context.Context) (node *Node, err error) {
 		ID:     tf.ID,
 		Type:   "TaskFeed",
 		Fields: make([]*Field, 7),
-		Edges:  make([]*Edge, 2),
+		Edges:  make([]*Edge, 3),
 	}
 	var buf []byte
 	if buf, err = json.Marshal(tf.TaskID); err != nil {
@@ -1612,6 +1623,97 @@ func (tf *TaskFeed) Node(ctx context.Context) (node *Node, err error) {
 	err = tf.QueryTeammate().
 		Select(teammate.FieldID).
 		Scan(ctx, &node.Edges[1].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[2] = &Edge{
+		Type: "TaskFeedLike",
+		Name: "task_feed_likes",
+	}
+	err = tf.QueryTaskFeedLikes().
+		Select(taskfeedlike.FieldID).
+		Scan(ctx, &node.Edges[2].IDs)
+	if err != nil {
+		return nil, err
+	}
+	return node, nil
+}
+
+func (tfl *TaskFeedLike) Node(ctx context.Context) (node *Node, err error) {
+	node = &Node{
+		ID:     tfl.ID,
+		Type:   "TaskFeedLike",
+		Fields: make([]*Field, 5),
+		Edges:  make([]*Edge, 3),
+	}
+	var buf []byte
+	if buf, err = json.Marshal(tfl.TaskID); err != nil {
+		return nil, err
+	}
+	node.Fields[0] = &Field{
+		Type:  "ulid.ID",
+		Name:  "task_id",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(tfl.TeammateID); err != nil {
+		return nil, err
+	}
+	node.Fields[1] = &Field{
+		Type:  "ulid.ID",
+		Name:  "teammate_id",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(tfl.TaskFeedID); err != nil {
+		return nil, err
+	}
+	node.Fields[2] = &Field{
+		Type:  "ulid.ID",
+		Name:  "task_feed_id",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(tfl.CreatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[3] = &Field{
+		Type:  "time.Time",
+		Name:  "created_at",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(tfl.UpdatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[4] = &Field{
+		Type:  "time.Time",
+		Name:  "updated_at",
+		Value: string(buf),
+	}
+	node.Edges[0] = &Edge{
+		Type: "Task",
+		Name: "task",
+	}
+	err = tfl.QueryTask().
+		Select(task.FieldID).
+		Scan(ctx, &node.Edges[0].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[1] = &Edge{
+		Type: "Teammate",
+		Name: "teammate",
+	}
+	err = tfl.QueryTeammate().
+		Select(teammate.FieldID).
+		Scan(ctx, &node.Edges[1].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[2] = &Edge{
+		Type: "TaskFeed",
+		Name: "feed",
+	}
+	err = tfl.QueryFeed().
+		Select(taskfeed.FieldID).
+		Scan(ctx, &node.Edges[2].IDs)
 	if err != nil {
 		return nil, err
 	}
@@ -1999,7 +2101,7 @@ func (t *Teammate) Node(ctx context.Context) (node *Node, err error) {
 		ID:     t.ID,
 		Type:   "Teammate",
 		Fields: make([]*Field, 5),
-		Edges:  make([]*Edge, 15),
+		Edges:  make([]*Edge, 16),
 	}
 	var buf []byte
 	if buf, err = json.Marshal(t.Name); err != nil {
@@ -2189,6 +2291,16 @@ func (t *Teammate) Node(ctx context.Context) (node *Node, err error) {
 	err = t.QueryTaskFeeds().
 		Select(taskfeed.FieldID).
 		Scan(ctx, &node.Edges[14].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[15] = &Edge{
+		Type: "TaskFeedLike",
+		Name: "task_feed_likes",
+	}
+	err = t.QueryTaskFeedLikes().
+		Select(taskfeedlike.FieldID).
+		Scan(ctx, &node.Edges[15].IDs)
 	if err != nil {
 		return nil, err
 	}
@@ -3253,6 +3365,15 @@ func (c *Client) noder(ctx context.Context, table string, id ulid.ID) (Noder, er
 			return nil, err
 		}
 		return n, nil
+	case taskfeedlike.Table:
+		n, err := c.TaskFeedLike.Query().
+			Where(taskfeedlike.ID(id)).
+			CollectFields(ctx, "TaskFeedLike").
+			Only(ctx)
+		if err != nil {
+			return nil, err
+		}
+		return n, nil
 	case tasklike.Table:
 		n, err := c.TaskLike.Query().
 			Where(tasklike.ID(id)).
@@ -3695,6 +3816,19 @@ func (c *Client) noders(ctx context.Context, table string, ids []ulid.ID) ([]Nod
 		nodes, err := c.TaskFeed.Query().
 			Where(taskfeed.IDIn(ids...)).
 			CollectFields(ctx, "TaskFeed").
+			All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, node := range nodes {
+			for _, noder := range idmap[node.ID] {
+				*noder = node
+			}
+		}
+	case taskfeedlike.Table:
+		nodes, err := c.TaskFeedLike.Query().
+			Where(taskfeedlike.IDIn(ids...)).
+			CollectFields(ctx, "TaskFeedLike").
 			All(ctx)
 		if err != nil {
 			return nil, err

@@ -14,6 +14,7 @@ import (
 	"project-management-demo-backend/ent/task"
 	"project-management-demo-backend/ent/taskcollaborator"
 	"project-management-demo-backend/ent/taskfeed"
+	"project-management-demo-backend/ent/taskfeedlike"
 	"project-management-demo-backend/ent/tasklike"
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/teammatetask"
@@ -319,6 +320,21 @@ func (tc *TeammateCreate) AddTaskFeeds(t ...*TaskFeed) *TeammateCreate {
 		ids[i] = t[i].ID
 	}
 	return tc.AddTaskFeedIDs(ids...)
+}
+
+// AddTaskFeedLikeIDs adds the "task_feed_likes" edge to the TaskFeedLike entity by IDs.
+func (tc *TeammateCreate) AddTaskFeedLikeIDs(ids ...ulid.ID) *TeammateCreate {
+	tc.mutation.AddTaskFeedLikeIDs(ids...)
+	return tc
+}
+
+// AddTaskFeedLikes adds the "task_feed_likes" edges to the TaskFeedLike entity.
+func (tc *TeammateCreate) AddTaskFeedLikes(t ...*TaskFeedLike) *TeammateCreate {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return tc.AddTaskFeedLikeIDs(ids...)
 }
 
 // Mutation returns the TeammateMutation object of the builder.
@@ -787,6 +803,25 @@ func (tc *TeammateCreate) createSpec() (*Teammate, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: taskfeed.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := tc.mutation.TaskFeedLikesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   teammate.TaskFeedLikesTable,
+			Columns: []string{teammate.TaskFeedLikesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: taskfeedlike.FieldID,
 				},
 			},
 		}

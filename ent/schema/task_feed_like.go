@@ -3,7 +3,6 @@ package schema
 import (
 	"project-management-demo-backend/ent/annotation"
 	"project-management-demo-backend/ent/mixin"
-	"project-management-demo-backend/ent/schema/editor"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/pkg/const/globalid"
 
@@ -16,36 +15,33 @@ import (
 	entMixin "entgo.io/ent/schema/mixin"
 )
 
-// TaskFeed holds the schema definition for the Test entity.
-type TaskFeed struct {
+// TaskFeedLike holds the schema definition for the Test entity.
+type TaskFeedLike struct {
 	ent.Schema
 }
 
-// TaskFeedMixin defines Fields
-type TaskFeedMixin struct {
+// TaskFeedLikeMixin defines Fields
+type TaskFeedLikeMixin struct {
 	entMixin.Schema
 }
 
-// Fields of the TaskFeed.
-func (TaskFeedMixin) Fields() []ent.Field {
+// Fields of the TaskFeedLike.
+func (TaskFeedLikeMixin) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("task_id").
 			GoType(ulid.ID("")),
 		field.String("teammate_id").
 			GoType(ulid.ID("")),
-		field.JSON("description", editor.Description{}),
-		field.Bool("is_first").
-			Default(false),
-		field.Bool("is_pinned").
-			Default(false),
+		field.String("task_feed_id").
+			GoType(ulid.ID("")),
 	}
 }
 
-// Edges of the TaskFeed.
-func (TaskFeed) Edges() []ent.Edge {
+// Edges of the TaskFeedLike.
+func (TaskFeedLike) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("task", Task.Type).
-			Ref("task_feeds").
+			Ref("task_feed_likes").
 			Field("task_id").
 			Unique().
 			Required().
@@ -55,7 +51,7 @@ func (TaskFeed) Edges() []ent.Edge {
 				),
 			),
 		edge.From("teammate", Teammate.Type).
-			Ref("task_feeds").
+			Ref("task_feed_likes").
 			Field("teammate_id").
 			Unique().
 			Required().
@@ -64,19 +60,24 @@ func (TaskFeed) Edges() []ent.Edge {
 					annotation.Edge{FieldName: "teammate_id"},
 				),
 			),
-		edge.To("task_feed_likes", TaskFeedLike.Type).Annotations(
-			schema.Annotation(
-				annotation.Edge{FieldName: "task_feed_like_id"},
+		edge.From("feed", TaskFeed.Type).
+			Ref("task_feed_likes").
+			Field("task_feed_id").
+			Unique().
+			Required().
+			Annotations(
+				schema.Annotation(
+					annotation.Edge{FieldName: "task_feed_id"},
+				),
 			),
-		),
 	}
 }
 
-// Mixin of the TaskFeed.
-func (TaskFeed) Mixin() []ent.Mixin {
+// Mixin of the TaskFeedLike.
+func (TaskFeedLike) Mixin() []ent.Mixin {
 	return []ent.Mixin{
-		mixin.NewUlid(globalid.New().TaskFeed.Prefix),
-		TaskFeedMixin{},
+		mixin.NewUlid(globalid.New().TaskFeedLike.Prefix),
+		TaskFeedLikeMixin{},
 		mixin.NewDatetime(),
 	}
 }
