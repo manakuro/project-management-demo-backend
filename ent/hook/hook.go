@@ -229,6 +229,19 @@ func (f TaskColumnFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, 
 	return f(ctx, mv)
 }
 
+// The TaskFeedFunc type is an adapter to allow the use of ordinary
+// function as TaskFeed mutator.
+type TaskFeedFunc func(context.Context, *ent.TaskFeedMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f TaskFeedFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.TaskFeedMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.TaskFeedMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The TaskLikeFunc type is an adapter to allow the use of ordinary
 // function as TaskLike mutator.
 type TaskLikeFunc func(context.Context, *ent.TaskLikeMutation) (ent.Value, error)

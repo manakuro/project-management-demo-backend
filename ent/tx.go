@@ -46,6 +46,8 @@ type Tx struct {
 	TaskCollaborator *TaskCollaboratorClient
 	// TaskColumn is the client for interacting with the TaskColumn builders.
 	TaskColumn *TaskColumnClient
+	// TaskFeed is the client for interacting with the TaskFeed builders.
+	TaskFeed *TaskFeedClient
 	// TaskLike is the client for interacting with the TaskLike builders.
 	TaskLike *TaskLikeClient
 	// TaskListCompletedStatus is the client for interacting with the TaskListCompletedStatus builders.
@@ -230,6 +232,7 @@ func (tx *Tx) init() {
 	tx.Task = NewTaskClient(tx.config)
 	tx.TaskCollaborator = NewTaskCollaboratorClient(tx.config)
 	tx.TaskColumn = NewTaskColumnClient(tx.config)
+	tx.TaskFeed = NewTaskFeedClient(tx.config)
 	tx.TaskLike = NewTaskLikeClient(tx.config)
 	tx.TaskListCompletedStatus = NewTaskListCompletedStatusClient(tx.config)
 	tx.TaskListSortStatus = NewTaskListSortStatusClient(tx.config)

@@ -41,6 +41,7 @@ type hooks struct {
 	Task                    []ent.Hook
 	TaskCollaborator        []ent.Hook
 	TaskColumn              []ent.Hook
+	TaskFeed                []ent.Hook
 	TaskLike                []ent.Hook
 	TaskListCompletedStatus []ent.Hook
 	TaskListSortStatus      []ent.Hook

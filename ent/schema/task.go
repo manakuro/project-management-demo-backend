@@ -128,6 +128,11 @@ func (Task) Edges() []ent.Edge {
 				annotation.Edge{FieldName: "task_collaborator_id"},
 			),
 		),
+		edge.To("task_feeds", TaskFeed.Type).Annotations(
+			schema.Annotation(
+				annotation.Edge{FieldName: "task_feed_id"},
+			),
+		),
 	}
 }
 

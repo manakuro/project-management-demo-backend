@@ -476,6 +476,37 @@ var (
 		Columns:    TaskColumnsColumns,
 		PrimaryKey: []*schema.Column{TaskColumnsColumns[0]},
 	}
+	// TaskFeedsColumns holds the columns for the "task_feeds" table.
+	TaskFeedsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+		{Name: "description", Type: field.TypeJSON},
+		{Name: "is_first", Type: field.TypeBool, Default: false},
+		{Name: "is_pinned", Type: field.TypeBool, Default: false},
+		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
+		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
+		{Name: "task_id", Type: field.TypeString, Nullable: true},
+		{Name: "teammate_id", Type: field.TypeString, Nullable: true},
+	}
+	// TaskFeedsTable holds the schema information for the "task_feeds" table.
+	TaskFeedsTable = &schema.Table{
+		Name:       "task_feeds",
+		Columns:    TaskFeedsColumns,
+		PrimaryKey: []*schema.Column{TaskFeedsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "task_feeds_tasks_task_feeds",
+				Columns:    []*schema.Column{TaskFeedsColumns[6]},
+				RefColumns: []*schema.Column{TasksColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "task_feeds_teammates_task_feeds",
+				Columns:    []*schema.Column{TaskFeedsColumns[7]},
+				RefColumns: []*schema.Column{TeammatesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
 	// TaskLikesColumns holds the columns for the "task_likes" table.
 	TaskLikesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString},
@@ -913,6 +944,7 @@ var (
 		TasksTable,
 		TaskCollaboratorsTable,
 		TaskColumnsTable,
+		TaskFeedsTable,
 		TaskLikesTable,
 		TaskListCompletedStatusTable,
 		TaskListSortStatusTable,
@@ -963,6 +995,8 @@ func init() {
 	TasksTable.ForeignKeys[2].RefTable = TeammatesTable
 	TaskCollaboratorsTable.ForeignKeys[0].RefTable = TasksTable
 	TaskCollaboratorsTable.ForeignKeys[1].RefTable = TeammatesTable
+	TaskFeedsTable.ForeignKeys[0].RefTable = TasksTable
+	TaskFeedsTable.ForeignKeys[1].RefTable = TeammatesTable
 	TaskLikesTable.ForeignKeys[0].RefTable = TasksTable
 	TaskLikesTable.ForeignKeys[1].RefTable = TeammatesTable
 	TaskLikesTable.ForeignKeys[2].RefTable = WorkspacesTable
