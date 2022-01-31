@@ -3,6 +3,7 @@
 package ent
 
 import (
+	"project-management-demo-backend/ent/filetype"
 	"project-management-demo-backend/ent/schema/editor"
 	"project-management-demo-backend/ent/schema/testuserprofile"
 	"project-management-demo-backend/ent/schema/ulid"
@@ -246,6 +247,61 @@ func (u *FavoriteWorkspaceUpdate) SetInput(i UpdateFavoriteWorkspaceInput) *Favo
 
 // SetInput applies the change-set in the UpdateFavoriteWorkspaceInput on the update-one builder.
 func (u *FavoriteWorkspaceUpdateOne) SetInput(i UpdateFavoriteWorkspaceInput) *FavoriteWorkspaceUpdateOne {
+	i.Mutate(u.Mutation())
+	return u
+}
+
+// CreateFileTypeInput represents a mutation input for creating filetypes.
+type CreateFileTypeInput struct {
+	Name      string
+	TypeCode  filetype.TypeCode
+	CreatedAt *time.Time
+	UpdatedAt *time.Time
+}
+
+// Mutate applies the CreateFileTypeInput on the FileTypeCreate builder.
+func (i *CreateFileTypeInput) Mutate(m *FileTypeCreate) {
+	m.SetName(i.Name)
+	m.SetTypeCode(i.TypeCode)
+	if v := i.CreatedAt; v != nil {
+		m.SetCreatedAt(*v)
+	}
+	if v := i.UpdatedAt; v != nil {
+		m.SetUpdatedAt(*v)
+	}
+}
+
+// SetInput applies the change-set in the CreateFileTypeInput on the create builder.
+func (c *FileTypeCreate) SetInput(i CreateFileTypeInput) *FileTypeCreate {
+	i.Mutate(c)
+	return c
+}
+
+// UpdateFileTypeInput represents a mutation input for updating filetypes.
+type UpdateFileTypeInput struct {
+	ID       ulid.ID
+	Name     *string
+	TypeCode *filetype.TypeCode
+}
+
+// Mutate applies the UpdateFileTypeInput on the FileTypeMutation.
+func (i *UpdateFileTypeInput) Mutate(m *FileTypeMutation) {
+	if v := i.Name; v != nil {
+		m.SetName(*v)
+	}
+	if v := i.TypeCode; v != nil {
+		m.SetTypeCode(*v)
+	}
+}
+
+// SetInput applies the change-set in the UpdateFileTypeInput on the update builder.
+func (u *FileTypeUpdate) SetInput(i UpdateFileTypeInput) *FileTypeUpdate {
+	i.Mutate(u.Mutation())
+	return u
+}
+
+// SetInput applies the change-set in the UpdateFileTypeInput on the update-one builder.
+func (u *FileTypeUpdateOne) SetInput(i UpdateFileTypeInput) *FileTypeUpdateOne {
 	i.Mutate(u.Mutation())
 	return u
 }

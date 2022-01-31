@@ -21,6 +21,7 @@ func main() {
 
 	feed.Color(ctx, client)
 	feed.Icon(ctx, client)
+	feed.FileType(ctx, client)
 	feed.Teammate(ctx, client)
 	feed.Workspace(ctx, client)
 	feed.ProjectBaseColor(ctx, client)

@@ -79,6 +79,20 @@ var (
 			},
 		},
 	}
+	// FileTypesColumns holds the columns for the "file_types" table.
+	FileTypesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+		{Name: "name", Type: field.TypeString, Size: 255},
+		{Name: "type_code", Type: field.TypeEnum, Enums: []string{"IMAGE", "PDF", "TEXT"}},
+		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
+		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
+	}
+	// FileTypesTable holds the schema information for the "file_types" table.
+	FileTypesTable = &schema.Table{
+		Name:       "file_types",
+		Columns:    FileTypesColumns,
+		PrimaryKey: []*schema.Column{FileTypesColumns[0]},
+	}
 	// IconsColumns holds the columns for the "icons" table.
 	IconsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString},
@@ -965,6 +979,7 @@ var (
 		ColorsTable,
 		FavoriteProjectsTable,
 		FavoriteWorkspacesTable,
+		FileTypesTable,
 		IconsTable,
 		ProjectsTable,
 		ProjectBaseColorsTable,

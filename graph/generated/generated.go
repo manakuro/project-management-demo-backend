@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io"
 	"project-management-demo-backend/ent"
+	"project-management-demo-backend/ent/filetype"
 	"project-management-demo-backend/ent/schema/editor"
 	"project-management-demo-backend/ent/schema/testuserprofile"
 	"project-management-demo-backend/ent/schema/ulid"
@@ -51,6 +52,7 @@ type ResolverRoot interface {
 	Color() ColorResolver
 	FavoriteProject() FavoriteProjectResolver
 	FavoriteWorkspace() FavoriteWorkspaceResolver
+	FileType() FileTypeResolver
 	Icon() IconResolver
 	Me() MeResolver
 	Mutation() MutationResolver
@@ -176,6 +178,25 @@ type ComplexityRoot struct {
 		Node   func(childComplexity int) int
 	}
 
+	FileType struct {
+		CreatedAt func(childComplexity int) int
+		ID        func(childComplexity int) int
+		Name      func(childComplexity int) int
+		TypeCode  func(childComplexity int) int
+		UpdatedAt func(childComplexity int) int
+	}
+
+	FileTypeConnection struct {
+		Edges      func(childComplexity int) int
+		PageInfo   func(childComplexity int) int
+		TotalCount func(childComplexity int) int
+	}
+
+	FileTypeEdge struct {
+		Cursor func(childComplexity int) int
+		Node   func(childComplexity int) int
+	}
+
 	Icon struct {
 		CreatedAt func(childComplexity int) int
 		ID        func(childComplexity int) int
@@ -208,6 +229,7 @@ type ComplexityRoot struct {
 		CreateColor                   func(childComplexity int, input ent.CreateColorInput) int
 		CreateFavoriteProject         func(childComplexity int, input ent.CreateFavoriteProjectInput) int
 		CreateFavoriteWorkspace       func(childComplexity int, input ent.CreateFavoriteWorkspaceInput) int
+		CreateFileType                func(childComplexity int, input ent.CreateFileTypeInput) int
 		CreateIcon                    func(childComplexity int, input ent.CreateIconInput) int
 		CreateProject                 func(childComplexity int, input ent.CreateProjectInput) int
 		CreateProjectBaseColor        func(childComplexity int, input ent.CreateProjectBaseColorInput) int
@@ -248,6 +270,7 @@ type ComplexityRoot struct {
 		DeleteTaskFeedLike            func(childComplexity int, input model.DeleteTaskFeedLikeInput) int
 		DeleteTaskTag                 func(childComplexity int, input model.DeleteTaskTagInput) int
 		UpdateColor                   func(childComplexity int, input ent.UpdateColorInput) int
+		UpdateFileType                func(childComplexity int, input ent.UpdateFileTypeInput) int
 		UpdateIcon                    func(childComplexity int, input ent.UpdateIconInput) int
 		UpdateMe                      func(childComplexity int, input model.UpdateMeInput) int
 		UpdateProject                 func(childComplexity int, input ent.UpdateProjectInput) int
@@ -498,6 +521,8 @@ type ComplexityRoot struct {
 		FavoriteWorkspace              func(childComplexity int, where *ent.FavoriteWorkspaceWhereInput) int
 		FavoriteWorkspaceIds           func(childComplexity int, teammateID ulid.ID, workspaceID *ulid.ID) int
 		FavoriteWorkspaces             func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.FavoriteWorkspaceWhereInput) int
+		FileType                       func(childComplexity int, where *ent.FileTypeWhereInput) int
+		FileTypes                      func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.FileTypeWhereInput) int
 		Icon                           func(childComplexity int, id ulid.ID) int
 		Icons                          func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.IconWhereInput) int
 		Me                             func(childComplexity int) int
@@ -1104,6 +1129,10 @@ type FavoriteWorkspaceResolver interface {
 	CreatedAt(ctx context.Context, obj *ent.FavoriteWorkspace) (string, error)
 	UpdatedAt(ctx context.Context, obj *ent.FavoriteWorkspace) (string, error)
 }
+type FileTypeResolver interface {
+	CreatedAt(ctx context.Context, obj *ent.FileType) (string, error)
+	UpdatedAt(ctx context.Context, obj *ent.FileType) (string, error)
+}
 type IconResolver interface {
 	CreatedAt(ctx context.Context, obj *ent.Icon) (string, error)
 	UpdatedAt(ctx context.Context, obj *ent.Icon) (string, error)
@@ -1119,6 +1148,8 @@ type MutationResolver interface {
 	DeleteFavoriteProject(ctx context.Context, input model.DeleteFavoriteProjectInput) (*ent.FavoriteProject, error)
 	CreateFavoriteWorkspace(ctx context.Context, input ent.CreateFavoriteWorkspaceInput) (*ent.FavoriteWorkspace, error)
 	DeleteFavoriteWorkspace(ctx context.Context, input model.DeleteFavoriteWorkspaceInput) (*ent.FavoriteWorkspace, error)
+	CreateFileType(ctx context.Context, input ent.CreateFileTypeInput) (*ent.FileType, error)
+	UpdateFileType(ctx context.Context, input ent.UpdateFileTypeInput) (*ent.FileType, error)
 	CreateIcon(ctx context.Context, input ent.CreateIconInput) (*ent.Icon, error)
 	UpdateIcon(ctx context.Context, input ent.UpdateIconInput) (*ent.Icon, error)
 	UpdateMe(ctx context.Context, input model.UpdateMeInput) (*model.Me, error)
@@ -1240,6 +1271,8 @@ type QueryResolver interface {
 	FavoriteWorkspace(ctx context.Context, where *ent.FavoriteWorkspaceWhereInput) (*ent.FavoriteWorkspace, error)
 	FavoriteWorkspaces(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.FavoriteWorkspaceWhereInput) (*ent.FavoriteWorkspaceConnection, error)
 	FavoriteWorkspaceIds(ctx context.Context, teammateID ulid.ID, workspaceID *ulid.ID) ([]ulid.ID, error)
+	FileType(ctx context.Context, where *ent.FileTypeWhereInput) (*ent.FileType, error)
+	FileTypes(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.FileTypeWhereInput) (*ent.FileTypeConnection, error)
 	Icon(ctx context.Context, id ulid.ID) (*ent.Icon, error)
 	Icons(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.IconWhereInput) (*ent.IconConnection, error)
 	Me(ctx context.Context) (*model.Me, error)
@@ -1758,6 +1791,76 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.FavoriteWorkspaceEdge.Node(childComplexity), true
 
+	case "FileType.createdAt":
+		if e.complexity.FileType.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.FileType.CreatedAt(childComplexity), true
+
+	case "FileType.id":
+		if e.complexity.FileType.ID == nil {
+			break
+		}
+
+		return e.complexity.FileType.ID(childComplexity), true
+
+	case "FileType.name":
+		if e.complexity.FileType.Name == nil {
+			break
+		}
+
+		return e.complexity.FileType.Name(childComplexity), true
+
+	case "FileType.typeCode":
+		if e.complexity.FileType.TypeCode == nil {
+			break
+		}
+
+		return e.complexity.FileType.TypeCode(childComplexity), true
+
+	case "FileType.updatedAt":
+		if e.complexity.FileType.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.FileType.UpdatedAt(childComplexity), true
+
+	case "FileTypeConnection.edges":
+		if e.complexity.FileTypeConnection.Edges == nil {
+			break
+		}
+
+		return e.complexity.FileTypeConnection.Edges(childComplexity), true
+
+	case "FileTypeConnection.pageInfo":
+		if e.complexity.FileTypeConnection.PageInfo == nil {
+			break
+		}
+
+		return e.complexity.FileTypeConnection.PageInfo(childComplexity), true
+
+	case "FileTypeConnection.totalCount":
+		if e.complexity.FileTypeConnection.TotalCount == nil {
+			break
+		}
+
+		return e.complexity.FileTypeConnection.TotalCount(childComplexity), true
+
+	case "FileTypeEdge.cursor":
+		if e.complexity.FileTypeEdge.Cursor == nil {
+			break
+		}
+
+		return e.complexity.FileTypeEdge.Cursor(childComplexity), true
+
+	case "FileTypeEdge.node":
+		if e.complexity.FileTypeEdge.Node == nil {
+			break
+		}
+
+		return e.complexity.FileTypeEdge.Node(childComplexity), true
+
 	case "Icon.createdAt":
 		if e.complexity.Icon.CreatedAt == nil {
 			break
@@ -1905,6 +2008,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.CreateFavoriteWorkspace(childComplexity, args["input"].(ent.CreateFavoriteWorkspaceInput)), true
+
+	case "Mutation.createFileType":
+		if e.complexity.Mutation.CreateFileType == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createFileType_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateFileType(childComplexity, args["input"].(ent.CreateFileTypeInput)), true
 
 	case "Mutation.createIcon":
 		if e.complexity.Mutation.CreateIcon == nil {
@@ -2385,6 +2500,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.UpdateColor(childComplexity, args["input"].(ent.UpdateColorInput)), true
+
+	case "Mutation.updateFileType":
+		if e.complexity.Mutation.UpdateFileType == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateFileType_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateFileType(childComplexity, args["input"].(ent.UpdateFileTypeInput)), true
 
 	case "Mutation.updateIcon":
 		if e.complexity.Mutation.UpdateIcon == nil {
@@ -3731,6 +3858,30 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.FavoriteWorkspaces(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["where"].(*ent.FavoriteWorkspaceWhereInput)), true
+
+	case "Query.fileType":
+		if e.complexity.Query.FileType == nil {
+			break
+		}
+
+		args, err := ec.field_Query_fileType_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.FileType(childComplexity, args["where"].(*ent.FileTypeWhereInput)), true
+
+	case "Query.fileTypes":
+		if e.complexity.Query.FileTypes == nil {
+			break
+		}
+
+		args, err := ec.field_Query_fileTypes_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.FileTypes(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["where"].(*ent.FileTypeWhereInput)), true
 
 	case "Query.icon":
 		if e.complexity.Query.Icon == nil {
@@ -7058,7 +7209,7 @@ input TestUserWhereInput {
   not: TestUserWhereInput
   and: [TestUserWhereInput!]
   or: [TestUserWhereInput!]
-  
+
   """name field predicates"""
   name: String
   nameNEQ: String
@@ -7073,7 +7224,7 @@ input TestUserWhereInput {
   nameHasSuffix: String
   nameEqualFold: String
   nameContainsFold: String
-  
+
   """age field predicates"""
   age: Int
   ageNEQ: Int
@@ -7083,7 +7234,7 @@ input TestUserWhereInput {
   ageGTE: Int
   ageLT: Int
   ageLTE: Int
-  
+
   """created_at field predicates"""
   createdAt: Time
   createdAtNEQ: Time
@@ -7093,7 +7244,7 @@ input TestUserWhereInput {
   createdAtGTE: Time
   createdAtLT: Time
   createdAtLTE: Time
-  
+
   """updated_at field predicates"""
   updatedAt: Time
   updatedAtNEQ: Time
@@ -7103,7 +7254,7 @@ input TestUserWhereInput {
   updatedAtGTE: Time
   updatedAtLT: Time
   updatedAtLTE: Time
-  
+
   """id field predicates"""
   id: ID
   idNEQ: ID
@@ -7113,7 +7264,7 @@ input TestUserWhereInput {
   idGTE: ID
   idLT: ID
   idLTE: ID
-  
+
   """test_todos edge predicates"""
   hasTestTodos: Boolean
   hasTestTodosWith: [TestTodoWhereInput!]
@@ -7127,7 +7278,7 @@ input TestTodoWhereInput {
   not: TestTodoWhereInput
   and: [TestTodoWhereInput!]
   or: [TestTodoWhereInput!]
-  
+
   """test_user_id field predicates"""
   testUserID: ID
   testUserIDNEQ: ID
@@ -7144,7 +7295,7 @@ input TestTodoWhereInput {
   testUserIDNotNil: Boolean
   testUserIDEqualFold: ID
   testUserIDContainsFold: ID
-  
+
   """created_by field predicates"""
   createdBy: ID
   createdByNEQ: ID
@@ -7159,7 +7310,7 @@ input TestTodoWhereInput {
   createdByHasSuffix: ID
   createdByEqualFold: ID
   createdByContainsFold: ID
-  
+
   """parent_todo_id field predicates"""
   parentTodoID: ID
   parentTodoIDNEQ: ID
@@ -7176,7 +7327,7 @@ input TestTodoWhereInput {
   parentTodoIDNotNil: Boolean
   parentTodoIDEqualFold: ID
   parentTodoIDContainsFold: ID
-  
+
   """name field predicates"""
   name: String
   nameNEQ: String
@@ -7191,13 +7342,13 @@ input TestTodoWhereInput {
   nameHasSuffix: String
   nameEqualFold: String
   nameContainsFold: String
-  
+
   """status field predicates"""
   status: TestTodoStatus
   statusNEQ: TestTodoStatus
   statusIn: [TestTodoStatus!]
   statusNotIn: [TestTodoStatus!]
-  
+
   """priority field predicates"""
   priority: Int
   priorityNEQ: Int
@@ -7207,7 +7358,7 @@ input TestTodoWhereInput {
   priorityGTE: Int
   priorityLT: Int
   priorityLTE: Int
-  
+
   """due_date field predicates"""
   dueDate: Time
   dueDateNEQ: Time
@@ -7219,7 +7370,7 @@ input TestTodoWhereInput {
   dueDateLTE: Time
   dueDateIsNil: Boolean
   dueDateNotNil: Boolean
-  
+
   """created_at field predicates"""
   createdAt: Time
   createdAtNEQ: Time
@@ -7229,7 +7380,7 @@ input TestTodoWhereInput {
   createdAtGTE: Time
   createdAtLT: Time
   createdAtLTE: Time
-  
+
   """updated_at field predicates"""
   updatedAt: Time
   updatedAtNEQ: Time
@@ -7239,7 +7390,7 @@ input TestTodoWhereInput {
   updatedAtGTE: Time
   updatedAtLT: Time
   updatedAtLTE: Time
-  
+
   """id field predicates"""
   id: ID
   idNEQ: ID
@@ -7249,15 +7400,15 @@ input TestTodoWhereInput {
   idGTE: ID
   idLT: ID
   idLTE: ID
-  
+
   """test_user edge predicates"""
   hasTestUser: Boolean
   hasTestUserWith: [TestUserWhereInput!]
-  
+
   """parent edge predicates"""
   hasParent: Boolean
   hasParentWith: [TestTodoWhereInput!]
-  
+
   """children edge predicates"""
   hasChildren: Boolean
   hasChildrenWith: [TestTodoWhereInput!]
@@ -7271,7 +7422,7 @@ input TeammateWhereInput {
   not: TeammateWhereInput
   and: [TeammateWhereInput!]
   or: [TeammateWhereInput!]
-  
+
   """name field predicates"""
   name: String
   nameNEQ: String
@@ -7286,7 +7437,7 @@ input TeammateWhereInput {
   nameHasSuffix: String
   nameEqualFold: String
   nameContainsFold: String
-  
+
   """image field predicates"""
   image: String
   imageNEQ: String
@@ -7301,7 +7452,7 @@ input TeammateWhereInput {
   imageHasSuffix: String
   imageEqualFold: String
   imageContainsFold: String
-  
+
   """email field predicates"""
   email: String
   emailNEQ: String
@@ -7316,7 +7467,7 @@ input TeammateWhereInput {
   emailHasSuffix: String
   emailEqualFold: String
   emailContainsFold: String
-  
+
   """created_at field predicates"""
   createdAt: Time
   createdAtNEQ: Time
@@ -7326,7 +7477,7 @@ input TeammateWhereInput {
   createdAtGTE: Time
   createdAtLT: Time
   createdAtLTE: Time
-  
+
   """updated_at field predicates"""
   updatedAt: Time
   updatedAtNEQ: Time
@@ -7336,7 +7487,7 @@ input TeammateWhereInput {
   updatedAtGTE: Time
   updatedAtLT: Time
   updatedAtLTE: Time
-  
+
   """id field predicates"""
   id: ID
   idNEQ: ID
@@ -7346,67 +7497,67 @@ input TeammateWhereInput {
   idGTE: ID
   idLT: ID
   idLTE: ID
-  
+
   """workspaces edge predicates"""
   hasWorkspaces: Boolean
   hasWorkspacesWith: [WorkspaceWhereInput!]
-  
+
   """projects edge predicates"""
   hasProjects: Boolean
   hasProjectsWith: [ProjectWhereInput!]
-  
+
   """project_teammates edge predicates"""
   hasProjectTeammates: Boolean
   hasProjectTeammatesWith: [ProjectTeammateWhereInput!]
-  
+
   """workspace_teammates edge predicates"""
   hasWorkspaceTeammates: Boolean
   hasWorkspaceTeammatesWith: [WorkspaceTeammateWhereInput!]
-  
+
   """favorite_projects edge predicates"""
   hasFavoriteProjects: Boolean
   hasFavoriteProjectsWith: [FavoriteProjectWhereInput!]
-  
+
   """favorite_workspaces edge predicates"""
   hasFavoriteWorkspaces: Boolean
   hasFavoriteWorkspacesWith: [FavoriteWorkspaceWhereInput!]
-  
+
   """teammate_task_tab_statuses edge predicates"""
   hasTeammateTaskTabStatuses: Boolean
   hasTeammateTaskTabStatusesWith: [TeammateTaskTabStatusWhereInput!]
-  
+
   """teammate_task_columns edge predicates"""
   hasTeammateTaskColumns: Boolean
   hasTeammateTaskColumnsWith: [TeammateTaskColumnWhereInput!]
-  
+
   """teammate_task_list_statuses edge predicates"""
   hasTeammateTaskListStatuses: Boolean
   hasTeammateTaskListStatusesWith: [TeammateTaskListStatusWhereInput!]
-  
+
   """teammate_task_sections edge predicates"""
   hasTeammateTaskSections: Boolean
   hasTeammateTaskSectionsWith: [TeammateTaskSectionWhereInput!]
-  
+
   """tasks edge predicates"""
   hasTasks: Boolean
   hasTasksWith: [TaskWhereInput!]
-  
+
   """teammate_tasks edge predicates"""
   hasTeammateTasks: Boolean
   hasTeammateTasksWith: [TeammateTaskWhereInput!]
-  
+
   """task_likes edge predicates"""
   hasTaskLikes: Boolean
   hasTaskLikesWith: [TaskLikeWhereInput!]
-  
+
   """task_collaborators edge predicates"""
   hasTaskCollaborators: Boolean
   hasTaskCollaboratorsWith: [TaskCollaboratorWhereInput!]
-  
+
   """task_feeds edge predicates"""
   hasTaskFeeds: Boolean
   hasTaskFeedsWith: [TaskFeedWhereInput!]
-  
+
   """task_feed_likes edge predicates"""
   hasTaskFeedLikes: Boolean
   hasTaskFeedLikesWith: [TaskFeedLikeWhereInput!]
@@ -7420,7 +7571,7 @@ input WorkspaceWhereInput {
   not: WorkspaceWhereInput
   and: [WorkspaceWhereInput!]
   or: [WorkspaceWhereInput!]
-  
+
   """created_by field predicates"""
   createdBy: ID
   createdByNEQ: ID
@@ -7435,7 +7586,7 @@ input WorkspaceWhereInput {
   createdByHasSuffix: ID
   createdByEqualFold: ID
   createdByContainsFold: ID
-  
+
   """name field predicates"""
   name: String
   nameNEQ: String
@@ -7450,7 +7601,7 @@ input WorkspaceWhereInput {
   nameHasSuffix: String
   nameEqualFold: String
   nameContainsFold: String
-  
+
   """created_at field predicates"""
   createdAt: Time
   createdAtNEQ: Time
@@ -7460,7 +7611,7 @@ input WorkspaceWhereInput {
   createdAtGTE: Time
   createdAtLT: Time
   createdAtLTE: Time
-  
+
   """updated_at field predicates"""
   updatedAt: Time
   updatedAtNEQ: Time
@@ -7470,7 +7621,7 @@ input WorkspaceWhereInput {
   updatedAtGTE: Time
   updatedAtLT: Time
   updatedAtLTE: Time
-  
+
   """id field predicates"""
   id: ID
   idNEQ: ID
@@ -7480,39 +7631,39 @@ input WorkspaceWhereInput {
   idGTE: ID
   idLT: ID
   idLTE: ID
-  
+
   """teammate edge predicates"""
   hasTeammate: Boolean
   hasTeammateWith: [TeammateWhereInput!]
-  
+
   """projects edge predicates"""
   hasProjects: Boolean
   hasProjectsWith: [ProjectWhereInput!]
-  
+
   """workspace_teammates edge predicates"""
   hasWorkspaceTeammates: Boolean
   hasWorkspaceTeammatesWith: [WorkspaceTeammateWhereInput!]
-  
+
   """favorite_workspaces edge predicates"""
   hasFavoriteWorkspaces: Boolean
   hasFavoriteWorkspacesWith: [FavoriteWorkspaceWhereInput!]
-  
+
   """teammate_task_tab_statuses edge predicates"""
   hasTeammateTaskTabStatuses: Boolean
   hasTeammateTaskTabStatusesWith: [TeammateTaskTabStatusWhereInput!]
-  
+
   """teammate_task_list_statuses edge predicates"""
   hasTeammateTaskListStatuses: Boolean
   hasTeammateTaskListStatusesWith: [TeammateTaskListStatusWhereInput!]
-  
+
   """teammate_task_sections edge predicates"""
   hasTeammateTaskSections: Boolean
   hasTeammateTaskSectionsWith: [TeammateTaskSectionWhereInput!]
-  
+
   """task_likes edge predicates"""
   hasTaskLikes: Boolean
   hasTaskLikesWith: [TaskLikeWhereInput!]
-  
+
   """tags edge predicates"""
   hasTags: Boolean
   hasTagsWith: [TagWhereInput!]
@@ -7526,7 +7677,7 @@ input ColorWhereInput {
   not: ColorWhereInput
   and: [ColorWhereInput!]
   or: [ColorWhereInput!]
-  
+
   """name field predicates"""
   name: String
   nameNEQ: String
@@ -7541,7 +7692,7 @@ input ColorWhereInput {
   nameHasSuffix: String
   nameEqualFold: String
   nameContainsFold: String
-  
+
   """color field predicates"""
   color: String
   colorNEQ: String
@@ -7556,7 +7707,7 @@ input ColorWhereInput {
   colorHasSuffix: String
   colorEqualFold: String
   colorContainsFold: String
-  
+
   """hex field predicates"""
   hex: String
   hexNEQ: String
@@ -7571,7 +7722,7 @@ input ColorWhereInput {
   hexHasSuffix: String
   hexEqualFold: String
   hexContainsFold: String
-  
+
   """created_at field predicates"""
   createdAt: Time
   createdAtNEQ: Time
@@ -7581,7 +7732,7 @@ input ColorWhereInput {
   createdAtGTE: Time
   createdAtLT: Time
   createdAtLTE: Time
-  
+
   """updated_at field predicates"""
   updatedAt: Time
   updatedAtNEQ: Time
@@ -7591,7 +7742,7 @@ input ColorWhereInput {
   updatedAtGTE: Time
   updatedAtLT: Time
   updatedAtLTE: Time
-  
+
   """id field predicates"""
   id: ID
   idNEQ: ID
@@ -7601,19 +7752,19 @@ input ColorWhereInput {
   idGTE: ID
   idLT: ID
   idLTE: ID
-  
+
   """project_base_colors edge predicates"""
   hasProjectBaseColors: Boolean
   hasProjectBaseColorsWith: [ProjectBaseColorWhereInput!]
-  
+
   """project_light_colors edge predicates"""
   hasProjectLightColors: Boolean
   hasProjectLightColorsWith: [ProjectLightColorWhereInput!]
-  
+
   """task_priorities edge predicates"""
   hasTaskPriorities: Boolean
   hasTaskPrioritiesWith: [TaskPriorityWhereInput!]
-  
+
   """tags edge predicates"""
   hasTags: Boolean
   hasTagsWith: [TagWhereInput!]
@@ -7627,7 +7778,7 @@ input IconWhereInput {
   not: IconWhereInput
   and: [IconWhereInput!]
   or: [IconWhereInput!]
-  
+
   """name field predicates"""
   name: String
   nameNEQ: String
@@ -7642,7 +7793,7 @@ input IconWhereInput {
   nameHasSuffix: String
   nameEqualFold: String
   nameContainsFold: String
-  
+
   """icon field predicates"""
   icon: String
   iconNEQ: String
@@ -7657,7 +7808,7 @@ input IconWhereInput {
   iconHasSuffix: String
   iconEqualFold: String
   iconContainsFold: String
-  
+
   """created_at field predicates"""
   createdAt: Time
   createdAtNEQ: Time
@@ -7667,7 +7818,7 @@ input IconWhereInput {
   createdAtGTE: Time
   createdAtLT: Time
   createdAtLTE: Time
-  
+
   """updated_at field predicates"""
   updatedAt: Time
   updatedAtNEQ: Time
@@ -7677,7 +7828,7 @@ input IconWhereInput {
   updatedAtGTE: Time
   updatedAtLT: Time
   updatedAtLTE: Time
-  
+
   """id field predicates"""
   id: ID
   idNEQ: ID
@@ -7687,7 +7838,7 @@ input IconWhereInput {
   idGTE: ID
   idLT: ID
   idLTE: ID
-  
+
   """project_icons edge predicates"""
   hasProjectIcons: Boolean
   hasProjectIconsWith: [ProjectIconWhereInput!]
@@ -7701,7 +7852,7 @@ input ProjectWhereInput {
   not: ProjectWhereInput
   and: [ProjectWhereInput!]
   or: [ProjectWhereInput!]
-  
+
   """workspace_id field predicates"""
   workspaceID: ID
   workspaceIDNEQ: ID
@@ -7716,7 +7867,7 @@ input ProjectWhereInput {
   workspaceIDHasSuffix: ID
   workspaceIDEqualFold: ID
   workspaceIDContainsFold: ID
-  
+
   """project_base_color_id field predicates"""
   projectBaseColorID: ID
   projectBaseColorIDNEQ: ID
@@ -7731,7 +7882,7 @@ input ProjectWhereInput {
   projectBaseColorIDHasSuffix: ID
   projectBaseColorIDEqualFold: ID
   projectBaseColorIDContainsFold: ID
-  
+
   """project_light_color_id field predicates"""
   projectLightColorID: ID
   projectLightColorIDNEQ: ID
@@ -7746,7 +7897,7 @@ input ProjectWhereInput {
   projectLightColorIDHasSuffix: ID
   projectLightColorIDEqualFold: ID
   projectLightColorIDContainsFold: ID
-  
+
   """project_icon_id field predicates"""
   projectIconID: ID
   projectIconIDNEQ: ID
@@ -7761,7 +7912,7 @@ input ProjectWhereInput {
   projectIconIDHasSuffix: ID
   projectIconIDEqualFold: ID
   projectIconIDContainsFold: ID
-  
+
   """created_by field predicates"""
   createdBy: ID
   createdByNEQ: ID
@@ -7776,7 +7927,7 @@ input ProjectWhereInput {
   createdByHasSuffix: ID
   createdByEqualFold: ID
   createdByContainsFold: ID
-  
+
   """name field predicates"""
   name: String
   nameNEQ: String
@@ -7791,7 +7942,7 @@ input ProjectWhereInput {
   nameHasSuffix: String
   nameEqualFold: String
   nameContainsFold: String
-  
+
   """description_title field predicates"""
   descriptionTitle: String
   descriptionTitleNEQ: String
@@ -7806,7 +7957,7 @@ input ProjectWhereInput {
   descriptionTitleHasSuffix: String
   descriptionTitleEqualFold: String
   descriptionTitleContainsFold: String
-  
+
   """due_date field predicates"""
   dueDate: Time
   dueDateNEQ: Time
@@ -7818,7 +7969,7 @@ input ProjectWhereInput {
   dueDateLTE: Time
   dueDateIsNil: Boolean
   dueDateNotNil: Boolean
-  
+
   """created_at field predicates"""
   createdAt: Time
   createdAtNEQ: Time
@@ -7828,7 +7979,7 @@ input ProjectWhereInput {
   createdAtGTE: Time
   createdAtLT: Time
   createdAtLTE: Time
-  
+
   """updated_at field predicates"""
   updatedAt: Time
   updatedAtNEQ: Time
@@ -7838,7 +7989,7 @@ input ProjectWhereInput {
   updatedAtGTE: Time
   updatedAtLT: Time
   updatedAtLTE: Time
-  
+
   """id field predicates"""
   id: ID
   idNEQ: ID
@@ -7848,47 +7999,47 @@ input ProjectWhereInput {
   idGTE: ID
   idLT: ID
   idLTE: ID
-  
+
   """workspace edge predicates"""
   hasWorkspace: Boolean
   hasWorkspaceWith: [WorkspaceWhereInput!]
-  
+
   """project_base_color edge predicates"""
   hasProjectBaseColor: Boolean
   hasProjectBaseColorWith: [ProjectBaseColorWhereInput!]
-  
+
   """project_light_color edge predicates"""
   hasProjectLightColor: Boolean
   hasProjectLightColorWith: [ProjectLightColorWhereInput!]
-  
+
   """project_icon edge predicates"""
   hasProjectIcon: Boolean
   hasProjectIconWith: [ProjectIconWhereInput!]
-  
+
   """teammate edge predicates"""
   hasTeammate: Boolean
   hasTeammateWith: [TeammateWhereInput!]
-  
+
   """project_teammates edge predicates"""
   hasProjectTeammates: Boolean
   hasProjectTeammatesWith: [ProjectTeammateWhereInput!]
-  
+
   """favorite_projects edge predicates"""
   hasFavoriteProjects: Boolean
   hasFavoriteProjectsWith: [FavoriteProjectWhereInput!]
-  
+
   """project_task_columns edge predicates"""
   hasProjectTaskColumns: Boolean
   hasProjectTaskColumnsWith: [ProjectTaskColumnWhereInput!]
-  
+
   """project_task_list_statuses edge predicates"""
   hasProjectTaskListStatuses: Boolean
   hasProjectTaskListStatusesWith: [ProjectTaskListStatusWhereInput!]
-  
+
   """project_task_sections edge predicates"""
   hasProjectTaskSections: Boolean
   hasProjectTaskSectionsWith: [ProjectTaskSectionWhereInput!]
-  
+
   """project_tasks edge predicates"""
   hasProjectTasks: Boolean
   hasProjectTasksWith: [ProjectTaskWhereInput!]
@@ -7902,7 +8053,7 @@ input ProjectTeammateWhereInput {
   not: ProjectTeammateWhereInput
   and: [ProjectTeammateWhereInput!]
   or: [ProjectTeammateWhereInput!]
-  
+
   """project_id field predicates"""
   projectID: ID
   projectIDNEQ: ID
@@ -7917,7 +8068,7 @@ input ProjectTeammateWhereInput {
   projectIDHasSuffix: ID
   projectIDEqualFold: ID
   projectIDContainsFold: ID
-  
+
   """teammate_id field predicates"""
   teammateID: ID
   teammateIDNEQ: ID
@@ -7932,7 +8083,7 @@ input ProjectTeammateWhereInput {
   teammateIDHasSuffix: ID
   teammateIDEqualFold: ID
   teammateIDContainsFold: ID
-  
+
   """role field predicates"""
   role: String
   roleNEQ: String
@@ -7947,11 +8098,11 @@ input ProjectTeammateWhereInput {
   roleHasSuffix: String
   roleEqualFold: String
   roleContainsFold: String
-  
+
   """is_owner field predicates"""
   isOwner: Boolean
   isOwnerNEQ: Boolean
-  
+
   """created_at field predicates"""
   createdAt: Time
   createdAtNEQ: Time
@@ -7961,7 +8112,7 @@ input ProjectTeammateWhereInput {
   createdAtGTE: Time
   createdAtLT: Time
   createdAtLTE: Time
-  
+
   """updated_at field predicates"""
   updatedAt: Time
   updatedAtNEQ: Time
@@ -7971,7 +8122,7 @@ input ProjectTeammateWhereInput {
   updatedAtGTE: Time
   updatedAtLT: Time
   updatedAtLTE: Time
-  
+
   """id field predicates"""
   id: ID
   idNEQ: ID
@@ -7981,11 +8132,11 @@ input ProjectTeammateWhereInput {
   idGTE: ID
   idLT: ID
   idLTE: ID
-  
+
   """project edge predicates"""
   hasProject: Boolean
   hasProjectWith: [ProjectWhereInput!]
-  
+
   """teammate edge predicates"""
   hasTeammate: Boolean
   hasTeammateWith: [TeammateWhereInput!]
@@ -7999,7 +8150,7 @@ input ProjectBaseColorWhereInput {
   not: ProjectBaseColorWhereInput
   and: [ProjectBaseColorWhereInput!]
   or: [ProjectBaseColorWhereInput!]
-  
+
   """color_id field predicates"""
   colorID: ID
   colorIDNEQ: ID
@@ -8014,7 +8165,7 @@ input ProjectBaseColorWhereInput {
   colorIDHasSuffix: ID
   colorIDEqualFold: ID
   colorIDContainsFold: ID
-  
+
   """created_at field predicates"""
   createdAt: Time
   createdAtNEQ: Time
@@ -8024,7 +8175,7 @@ input ProjectBaseColorWhereInput {
   createdAtGTE: Time
   createdAtLT: Time
   createdAtLTE: Time
-  
+
   """updated_at field predicates"""
   updatedAt: Time
   updatedAtNEQ: Time
@@ -8034,7 +8185,7 @@ input ProjectBaseColorWhereInput {
   updatedAtGTE: Time
   updatedAtLT: Time
   updatedAtLTE: Time
-  
+
   """id field predicates"""
   id: ID
   idNEQ: ID
@@ -8044,11 +8195,11 @@ input ProjectBaseColorWhereInput {
   idGTE: ID
   idLT: ID
   idLTE: ID
-  
+
   """projects edge predicates"""
   hasProjects: Boolean
   hasProjectsWith: [ProjectWhereInput!]
-  
+
   """color edge predicates"""
   hasColor: Boolean
   hasColorWith: [ColorWhereInput!]
@@ -8062,7 +8213,7 @@ input ProjectLightColorWhereInput {
   not: ProjectLightColorWhereInput
   and: [ProjectLightColorWhereInput!]
   or: [ProjectLightColorWhereInput!]
-  
+
   """color_id field predicates"""
   colorID: ID
   colorIDNEQ: ID
@@ -8077,7 +8228,7 @@ input ProjectLightColorWhereInput {
   colorIDHasSuffix: ID
   colorIDEqualFold: ID
   colorIDContainsFold: ID
-  
+
   """created_at field predicates"""
   createdAt: Time
   createdAtNEQ: Time
@@ -8087,7 +8238,7 @@ input ProjectLightColorWhereInput {
   createdAtGTE: Time
   createdAtLT: Time
   createdAtLTE: Time
-  
+
   """updated_at field predicates"""
   updatedAt: Time
   updatedAtNEQ: Time
@@ -8097,7 +8248,7 @@ input ProjectLightColorWhereInput {
   updatedAtGTE: Time
   updatedAtLT: Time
   updatedAtLTE: Time
-  
+
   """id field predicates"""
   id: ID
   idNEQ: ID
@@ -8107,11 +8258,11 @@ input ProjectLightColorWhereInput {
   idGTE: ID
   idLT: ID
   idLTE: ID
-  
+
   """projects edge predicates"""
   hasProjects: Boolean
   hasProjectsWith: [ProjectWhereInput!]
-  
+
   """color edge predicates"""
   hasColor: Boolean
   hasColorWith: [ColorWhereInput!]
@@ -8125,7 +8276,7 @@ input ProjectIconWhereInput {
   not: ProjectIconWhereInput
   and: [ProjectIconWhereInput!]
   or: [ProjectIconWhereInput!]
-  
+
   """icon_id field predicates"""
   iconID: ID
   iconIDNEQ: ID
@@ -8140,7 +8291,7 @@ input ProjectIconWhereInput {
   iconIDHasSuffix: ID
   iconIDEqualFold: ID
   iconIDContainsFold: ID
-  
+
   """created_at field predicates"""
   createdAt: Time
   createdAtNEQ: Time
@@ -8150,7 +8301,7 @@ input ProjectIconWhereInput {
   createdAtGTE: Time
   createdAtLT: Time
   createdAtLTE: Time
-  
+
   """updated_at field predicates"""
   updatedAt: Time
   updatedAtNEQ: Time
@@ -8160,7 +8311,7 @@ input ProjectIconWhereInput {
   updatedAtGTE: Time
   updatedAtLT: Time
   updatedAtLTE: Time
-  
+
   """id field predicates"""
   id: ID
   idNEQ: ID
@@ -8170,11 +8321,11 @@ input ProjectIconWhereInput {
   idGTE: ID
   idLT: ID
   idLTE: ID
-  
+
   """projects edge predicates"""
   hasProjects: Boolean
   hasProjectsWith: [ProjectWhereInput!]
-  
+
   """icon edge predicates"""
   hasIcon: Boolean
   hasIconWith: [IconWhereInput!]
@@ -8188,7 +8339,7 @@ input WorkspaceTeammateWhereInput {
   not: WorkspaceTeammateWhereInput
   and: [WorkspaceTeammateWhereInput!]
   or: [WorkspaceTeammateWhereInput!]
-  
+
   """workspace_id field predicates"""
   workspaceID: ID
   workspaceIDNEQ: ID
@@ -8203,7 +8354,7 @@ input WorkspaceTeammateWhereInput {
   workspaceIDHasSuffix: ID
   workspaceIDEqualFold: ID
   workspaceIDContainsFold: ID
-  
+
   """teammate_id field predicates"""
   teammateID: ID
   teammateIDNEQ: ID
@@ -8218,7 +8369,7 @@ input WorkspaceTeammateWhereInput {
   teammateIDHasSuffix: ID
   teammateIDEqualFold: ID
   teammateIDContainsFold: ID
-  
+
   """role field predicates"""
   role: String
   roleNEQ: String
@@ -8233,11 +8384,11 @@ input WorkspaceTeammateWhereInput {
   roleHasSuffix: String
   roleEqualFold: String
   roleContainsFold: String
-  
+
   """is_owner field predicates"""
   isOwner: Boolean
   isOwnerNEQ: Boolean
-  
+
   """created_at field predicates"""
   createdAt: Time
   createdAtNEQ: Time
@@ -8247,7 +8398,7 @@ input WorkspaceTeammateWhereInput {
   createdAtGTE: Time
   createdAtLT: Time
   createdAtLTE: Time
-  
+
   """updated_at field predicates"""
   updatedAt: Time
   updatedAtNEQ: Time
@@ -8257,7 +8408,7 @@ input WorkspaceTeammateWhereInput {
   updatedAtGTE: Time
   updatedAtLT: Time
   updatedAtLTE: Time
-  
+
   """id field predicates"""
   id: ID
   idNEQ: ID
@@ -8267,11 +8418,11 @@ input WorkspaceTeammateWhereInput {
   idGTE: ID
   idLT: ID
   idLTE: ID
-  
+
   """workspace edge predicates"""
   hasWorkspace: Boolean
   hasWorkspaceWith: [WorkspaceWhereInput!]
-  
+
   """teammate edge predicates"""
   hasTeammate: Boolean
   hasTeammateWith: [TeammateWhereInput!]
@@ -8285,7 +8436,7 @@ input FavoriteProjectWhereInput {
   not: FavoriteProjectWhereInput
   and: [FavoriteProjectWhereInput!]
   or: [FavoriteProjectWhereInput!]
-  
+
   """project_id field predicates"""
   projectID: ID
   projectIDNEQ: ID
@@ -8300,7 +8451,7 @@ input FavoriteProjectWhereInput {
   projectIDHasSuffix: ID
   projectIDEqualFold: ID
   projectIDContainsFold: ID
-  
+
   """teammate_id field predicates"""
   teammateID: ID
   teammateIDNEQ: ID
@@ -8315,7 +8466,7 @@ input FavoriteProjectWhereInput {
   teammateIDHasSuffix: ID
   teammateIDEqualFold: ID
   teammateIDContainsFold: ID
-  
+
   """created_at field predicates"""
   createdAt: Time
   createdAtNEQ: Time
@@ -8325,7 +8476,7 @@ input FavoriteProjectWhereInput {
   createdAtGTE: Time
   createdAtLT: Time
   createdAtLTE: Time
-  
+
   """updated_at field predicates"""
   updatedAt: Time
   updatedAtNEQ: Time
@@ -8335,7 +8486,7 @@ input FavoriteProjectWhereInput {
   updatedAtGTE: Time
   updatedAtLT: Time
   updatedAtLTE: Time
-  
+
   """id field predicates"""
   id: ID
   idNEQ: ID
@@ -8345,11 +8496,11 @@ input FavoriteProjectWhereInput {
   idGTE: ID
   idLT: ID
   idLTE: ID
-  
+
   """project edge predicates"""
   hasProject: Boolean
   hasProjectWith: [ProjectWhereInput!]
-  
+
   """teammate edge predicates"""
   hasTeammate: Boolean
   hasTeammateWith: [TeammateWhereInput!]
@@ -8363,7 +8514,7 @@ input FavoriteWorkspaceWhereInput {
   not: FavoriteWorkspaceWhereInput
   and: [FavoriteWorkspaceWhereInput!]
   or: [FavoriteWorkspaceWhereInput!]
-  
+
   """workspace_id field predicates"""
   workspaceID: ID
   workspaceIDNEQ: ID
@@ -8378,7 +8529,7 @@ input FavoriteWorkspaceWhereInput {
   workspaceIDHasSuffix: ID
   workspaceIDEqualFold: ID
   workspaceIDContainsFold: ID
-  
+
   """teammate_id field predicates"""
   teammateID: ID
   teammateIDNEQ: ID
@@ -8393,7 +8544,7 @@ input FavoriteWorkspaceWhereInput {
   teammateIDHasSuffix: ID
   teammateIDEqualFold: ID
   teammateIDContainsFold: ID
-  
+
   """created_at field predicates"""
   createdAt: Time
   createdAtNEQ: Time
@@ -8403,7 +8554,7 @@ input FavoriteWorkspaceWhereInput {
   createdAtGTE: Time
   createdAtLT: Time
   createdAtLTE: Time
-  
+
   """updated_at field predicates"""
   updatedAt: Time
   updatedAtNEQ: Time
@@ -8413,7 +8564,7 @@ input FavoriteWorkspaceWhereInput {
   updatedAtGTE: Time
   updatedAtLT: Time
   updatedAtLTE: Time
-  
+
   """id field predicates"""
   id: ID
   idNEQ: ID
@@ -8423,11 +8574,11 @@ input FavoriteWorkspaceWhereInput {
   idGTE: ID
   idLT: ID
   idLTE: ID
-  
+
   """workspace edge predicates"""
   hasWorkspace: Boolean
   hasWorkspaceWith: [WorkspaceWhereInput!]
-  
+
   """teammate edge predicates"""
   hasTeammate: Boolean
   hasTeammateWith: [TeammateWhereInput!]
@@ -8441,7 +8592,7 @@ input TaskColumnWhereInput {
   not: TaskColumnWhereInput
   and: [TaskColumnWhereInput!]
   or: [TaskColumnWhereInput!]
-  
+
   """name field predicates"""
   name: String
   nameNEQ: String
@@ -8456,13 +8607,13 @@ input TaskColumnWhereInput {
   nameHasSuffix: String
   nameEqualFold: String
   nameContainsFold: String
-  
+
   """type field predicates"""
   type: TaskColumnType
   typeNEQ: TaskColumnType
   typeIn: [TaskColumnType!]
   typeNotIn: [TaskColumnType!]
-  
+
   """created_at field predicates"""
   createdAt: Time
   createdAtNEQ: Time
@@ -8472,7 +8623,7 @@ input TaskColumnWhereInput {
   createdAtGTE: Time
   createdAtLT: Time
   createdAtLTE: Time
-  
+
   """updated_at field predicates"""
   updatedAt: Time
   updatedAtNEQ: Time
@@ -8482,7 +8633,7 @@ input TaskColumnWhereInput {
   updatedAtGTE: Time
   updatedAtLT: Time
   updatedAtLTE: Time
-  
+
   """id field predicates"""
   id: ID
   idNEQ: ID
@@ -8492,11 +8643,11 @@ input TaskColumnWhereInput {
   idGTE: ID
   idLT: ID
   idLTE: ID
-  
+
   """teammate_task_columns edge predicates"""
   hasTeammateTaskColumns: Boolean
   hasTeammateTaskColumnsWith: [TeammateTaskColumnWhereInput!]
-  
+
   """project_task_columns edge predicates"""
   hasProjectTaskColumns: Boolean
   hasProjectTaskColumnsWith: [ProjectTaskColumnWhereInput!]
@@ -8510,7 +8661,7 @@ input TeammateTaskColumnWhereInput {
   not: TeammateTaskColumnWhereInput
   and: [TeammateTaskColumnWhereInput!]
   or: [TeammateTaskColumnWhereInput!]
-  
+
   """teammate_id field predicates"""
   teammateID: ID
   teammateIDNEQ: ID
@@ -8525,7 +8676,7 @@ input TeammateTaskColumnWhereInput {
   teammateIDHasSuffix: ID
   teammateIDEqualFold: ID
   teammateIDContainsFold: ID
-  
+
   """task_column_id field predicates"""
   taskColumnID: ID
   taskColumnIDNEQ: ID
@@ -8540,7 +8691,7 @@ input TeammateTaskColumnWhereInput {
   taskColumnIDHasSuffix: ID
   taskColumnIDEqualFold: ID
   taskColumnIDContainsFold: ID
-  
+
   """width field predicates"""
   width: String
   widthNEQ: String
@@ -8555,15 +8706,15 @@ input TeammateTaskColumnWhereInput {
   widthHasSuffix: String
   widthEqualFold: String
   widthContainsFold: String
-  
+
   """disabled field predicates"""
   disabled: Boolean
   disabledNEQ: Boolean
-  
+
   """customizable field predicates"""
   customizable: Boolean
   customizableNEQ: Boolean
-  
+
   """order field predicates"""
   order: Int
   orderNEQ: Int
@@ -8573,7 +8724,7 @@ input TeammateTaskColumnWhereInput {
   orderGTE: Int
   orderLT: Int
   orderLTE: Int
-  
+
   """created_at field predicates"""
   createdAt: Time
   createdAtNEQ: Time
@@ -8583,7 +8734,7 @@ input TeammateTaskColumnWhereInput {
   createdAtGTE: Time
   createdAtLT: Time
   createdAtLTE: Time
-  
+
   """updated_at field predicates"""
   updatedAt: Time
   updatedAtNEQ: Time
@@ -8593,7 +8744,7 @@ input TeammateTaskColumnWhereInput {
   updatedAtGTE: Time
   updatedAtLT: Time
   updatedAtLTE: Time
-  
+
   """id field predicates"""
   id: ID
   idNEQ: ID
@@ -8603,11 +8754,11 @@ input TeammateTaskColumnWhereInput {
   idGTE: ID
   idLT: ID
   idLTE: ID
-  
+
   """teammate edge predicates"""
   hasTeammate: Boolean
   hasTeammateWith: [TeammateWhereInput!]
-  
+
   """task_column edge predicates"""
   hasTaskColumn: Boolean
   hasTaskColumnWith: [TaskColumnWhereInput!]
@@ -8621,7 +8772,7 @@ input ProjectTaskColumnWhereInput {
   not: ProjectTaskColumnWhereInput
   and: [ProjectTaskColumnWhereInput!]
   or: [ProjectTaskColumnWhereInput!]
-  
+
   """project_id field predicates"""
   projectID: ID
   projectIDNEQ: ID
@@ -8636,7 +8787,7 @@ input ProjectTaskColumnWhereInput {
   projectIDHasSuffix: ID
   projectIDEqualFold: ID
   projectIDContainsFold: ID
-  
+
   """task_column_id field predicates"""
   taskColumnID: ID
   taskColumnIDNEQ: ID
@@ -8651,7 +8802,7 @@ input ProjectTaskColumnWhereInput {
   taskColumnIDHasSuffix: ID
   taskColumnIDEqualFold: ID
   taskColumnIDContainsFold: ID
-  
+
   """width field predicates"""
   width: String
   widthNEQ: String
@@ -8666,15 +8817,15 @@ input ProjectTaskColumnWhereInput {
   widthHasSuffix: String
   widthEqualFold: String
   widthContainsFold: String
-  
+
   """disabled field predicates"""
   disabled: Boolean
   disabledNEQ: Boolean
-  
+
   """customizable field predicates"""
   customizable: Boolean
   customizableNEQ: Boolean
-  
+
   """order field predicates"""
   order: Int
   orderNEQ: Int
@@ -8684,7 +8835,7 @@ input ProjectTaskColumnWhereInput {
   orderGTE: Int
   orderLT: Int
   orderLTE: Int
-  
+
   """created_at field predicates"""
   createdAt: Time
   createdAtNEQ: Time
@@ -8694,7 +8845,7 @@ input ProjectTaskColumnWhereInput {
   createdAtGTE: Time
   createdAtLT: Time
   createdAtLTE: Time
-  
+
   """updated_at field predicates"""
   updatedAt: Time
   updatedAtNEQ: Time
@@ -8704,7 +8855,7 @@ input ProjectTaskColumnWhereInput {
   updatedAtGTE: Time
   updatedAtLT: Time
   updatedAtLTE: Time
-  
+
   """id field predicates"""
   id: ID
   idNEQ: ID
@@ -8714,11 +8865,11 @@ input ProjectTaskColumnWhereInput {
   idGTE: ID
   idLT: ID
   idLTE: ID
-  
+
   """project edge predicates"""
   hasProject: Boolean
   hasProjectWith: [ProjectWhereInput!]
-  
+
   """task_column edge predicates"""
   hasTaskColumn: Boolean
   hasTaskColumnWith: [TaskColumnWhereInput!]
@@ -8732,7 +8883,7 @@ input TaskSectionWhereInput {
   not: TaskSectionWhereInput
   and: [TaskSectionWhereInput!]
   or: [TaskSectionWhereInput!]
-  
+
   """name field predicates"""
   name: String
   nameNEQ: String
@@ -8747,7 +8898,7 @@ input TaskSectionWhereInput {
   nameHasSuffix: String
   nameEqualFold: String
   nameContainsFold: String
-  
+
   """created_at field predicates"""
   createdAt: Time
   createdAtNEQ: Time
@@ -8757,7 +8908,7 @@ input TaskSectionWhereInput {
   createdAtGTE: Time
   createdAtLT: Time
   createdAtLTE: Time
-  
+
   """updated_at field predicates"""
   updatedAt: Time
   updatedAtNEQ: Time
@@ -8767,7 +8918,7 @@ input TaskSectionWhereInput {
   updatedAtGTE: Time
   updatedAtLT: Time
   updatedAtLTE: Time
-  
+
   """id field predicates"""
   id: ID
   idNEQ: ID
@@ -8787,7 +8938,7 @@ input TaskListCompletedStatusWhereInput {
   not: TaskListCompletedStatusWhereInput
   and: [TaskListCompletedStatusWhereInput!]
   or: [TaskListCompletedStatusWhereInput!]
-  
+
   """name field predicates"""
   name: String
   nameNEQ: String
@@ -8802,13 +8953,13 @@ input TaskListCompletedStatusWhereInput {
   nameHasSuffix: String
   nameEqualFold: String
   nameContainsFold: String
-  
+
   """status_code field predicates"""
   statusCode: TaskListCompletedStatusCode
   statusCodeNEQ: TaskListCompletedStatusCode
   statusCodeIn: [TaskListCompletedStatusCode!]
   statusCodeNotIn: [TaskListCompletedStatusCode!]
-  
+
   """created_at field predicates"""
   createdAt: Time
   createdAtNEQ: Time
@@ -8818,7 +8969,7 @@ input TaskListCompletedStatusWhereInput {
   createdAtGTE: Time
   createdAtLT: Time
   createdAtLTE: Time
-  
+
   """updated_at field predicates"""
   updatedAt: Time
   updatedAtNEQ: Time
@@ -8828,7 +8979,7 @@ input TaskListCompletedStatusWhereInput {
   updatedAtGTE: Time
   updatedAtLT: Time
   updatedAtLTE: Time
-  
+
   """id field predicates"""
   id: ID
   idNEQ: ID
@@ -8838,11 +8989,11 @@ input TaskListCompletedStatusWhereInput {
   idGTE: ID
   idLT: ID
   idLTE: ID
-  
+
   """teammate_task_list_statuses edge predicates"""
   hasTeammateTaskListStatuses: Boolean
   hasTeammateTaskListStatusesWith: [TeammateTaskListStatusWhereInput!]
-  
+
   """project_task_list_statuses edge predicates"""
   hasProjectTaskListStatuses: Boolean
   hasProjectTaskListStatusesWith: [ProjectTaskListStatusWhereInput!]
@@ -8856,7 +9007,7 @@ input TaskListSortStatusWhereInput {
   not: TaskListSortStatusWhereInput
   and: [TaskListSortStatusWhereInput!]
   or: [TaskListSortStatusWhereInput!]
-  
+
   """name field predicates"""
   name: String
   nameNEQ: String
@@ -8871,13 +9022,13 @@ input TaskListSortStatusWhereInput {
   nameHasSuffix: String
   nameEqualFold: String
   nameContainsFold: String
-  
+
   """status_code field predicates"""
   statusCode: TaskListSortStatusCode
   statusCodeNEQ: TaskListSortStatusCode
   statusCodeIn: [TaskListSortStatusCode!]
   statusCodeNotIn: [TaskListSortStatusCode!]
-  
+
   """created_at field predicates"""
   createdAt: Time
   createdAtNEQ: Time
@@ -8887,7 +9038,7 @@ input TaskListSortStatusWhereInput {
   createdAtGTE: Time
   createdAtLT: Time
   createdAtLTE: Time
-  
+
   """updated_at field predicates"""
   updatedAt: Time
   updatedAtNEQ: Time
@@ -8897,7 +9048,7 @@ input TaskListSortStatusWhereInput {
   updatedAtGTE: Time
   updatedAtLT: Time
   updatedAtLTE: Time
-  
+
   """id field predicates"""
   id: ID
   idNEQ: ID
@@ -8907,11 +9058,11 @@ input TaskListSortStatusWhereInput {
   idGTE: ID
   idLT: ID
   idLTE: ID
-  
+
   """teammate_task_list_statuses edge predicates"""
   hasTeammateTaskListStatuses: Boolean
   hasTeammateTaskListStatusesWith: [TeammateTaskListStatusWhereInput!]
-  
+
   """project_task_list_statuses edge predicates"""
   hasProjectTaskListStatuses: Boolean
   hasProjectTaskListStatusesWith: [ProjectTaskListStatusWhereInput!]
@@ -8925,7 +9076,7 @@ input TeammateTaskTabStatusWhereInput {
   not: TeammateTaskTabStatusWhereInput
   and: [TeammateTaskTabStatusWhereInput!]
   or: [TeammateTaskTabStatusWhereInput!]
-  
+
   """workspace_id field predicates"""
   workspaceID: ID
   workspaceIDNEQ: ID
@@ -8940,7 +9091,7 @@ input TeammateTaskTabStatusWhereInput {
   workspaceIDHasSuffix: ID
   workspaceIDEqualFold: ID
   workspaceIDContainsFold: ID
-  
+
   """teammate_id field predicates"""
   teammateID: ID
   teammateIDNEQ: ID
@@ -8955,13 +9106,13 @@ input TeammateTaskTabStatusWhereInput {
   teammateIDHasSuffix: ID
   teammateIDEqualFold: ID
   teammateIDContainsFold: ID
-  
+
   """status_code field predicates"""
   statusCode: TeammateTaskTabStatusCode
   statusCodeNEQ: TeammateTaskTabStatusCode
   statusCodeIn: [TeammateTaskTabStatusCode!]
   statusCodeNotIn: [TeammateTaskTabStatusCode!]
-  
+
   """created_at field predicates"""
   createdAt: Time
   createdAtNEQ: Time
@@ -8971,7 +9122,7 @@ input TeammateTaskTabStatusWhereInput {
   createdAtGTE: Time
   createdAtLT: Time
   createdAtLTE: Time
-  
+
   """updated_at field predicates"""
   updatedAt: Time
   updatedAtNEQ: Time
@@ -8981,7 +9132,7 @@ input TeammateTaskTabStatusWhereInput {
   updatedAtGTE: Time
   updatedAtLT: Time
   updatedAtLTE: Time
-  
+
   """id field predicates"""
   id: ID
   idNEQ: ID
@@ -8991,11 +9142,11 @@ input TeammateTaskTabStatusWhereInput {
   idGTE: ID
   idLT: ID
   idLTE: ID
-  
+
   """workspace edge predicates"""
   hasWorkspace: Boolean
   hasWorkspaceWith: [WorkspaceWhereInput!]
-  
+
   """teammate edge predicates"""
   hasTeammate: Boolean
   hasTeammateWith: [TeammateWhereInput!]
@@ -9009,7 +9160,7 @@ input TeammateTaskListStatusWhereInput {
   not: TeammateTaskListStatusWhereInput
   and: [TeammateTaskListStatusWhereInput!]
   or: [TeammateTaskListStatusWhereInput!]
-  
+
   """workspace_id field predicates"""
   workspaceID: ID
   workspaceIDNEQ: ID
@@ -9024,7 +9175,7 @@ input TeammateTaskListStatusWhereInput {
   workspaceIDHasSuffix: ID
   workspaceIDEqualFold: ID
   workspaceIDContainsFold: ID
-  
+
   """teammate_id field predicates"""
   teammateID: ID
   teammateIDNEQ: ID
@@ -9039,7 +9190,7 @@ input TeammateTaskListStatusWhereInput {
   teammateIDHasSuffix: ID
   teammateIDEqualFold: ID
   teammateIDContainsFold: ID
-  
+
   """task_list_completed_status_id field predicates"""
   taskListCompletedStatusID: ID
   taskListCompletedStatusIDNEQ: ID
@@ -9054,7 +9205,7 @@ input TeammateTaskListStatusWhereInput {
   taskListCompletedStatusIDHasSuffix: ID
   taskListCompletedStatusIDEqualFold: ID
   taskListCompletedStatusIDContainsFold: ID
-  
+
   """task_list_sort_status_id field predicates"""
   taskListSortStatusID: ID
   taskListSortStatusIDNEQ: ID
@@ -9069,7 +9220,7 @@ input TeammateTaskListStatusWhereInput {
   taskListSortStatusIDHasSuffix: ID
   taskListSortStatusIDEqualFold: ID
   taskListSortStatusIDContainsFold: ID
-  
+
   """created_at field predicates"""
   createdAt: Time
   createdAtNEQ: Time
@@ -9079,7 +9230,7 @@ input TeammateTaskListStatusWhereInput {
   createdAtGTE: Time
   createdAtLT: Time
   createdAtLTE: Time
-  
+
   """updated_at field predicates"""
   updatedAt: Time
   updatedAtNEQ: Time
@@ -9089,7 +9240,7 @@ input TeammateTaskListStatusWhereInput {
   updatedAtGTE: Time
   updatedAtLT: Time
   updatedAtLTE: Time
-  
+
   """id field predicates"""
   id: ID
   idNEQ: ID
@@ -9099,19 +9250,19 @@ input TeammateTaskListStatusWhereInput {
   idGTE: ID
   idLT: ID
   idLTE: ID
-  
+
   """workspace edge predicates"""
   hasWorkspace: Boolean
   hasWorkspaceWith: [WorkspaceWhereInput!]
-  
+
   """teammate edge predicates"""
   hasTeammate: Boolean
   hasTeammateWith: [TeammateWhereInput!]
-  
+
   """task_list_completed_status edge predicates"""
   hasTaskListCompletedStatus: Boolean
   hasTaskListCompletedStatusWith: [TaskListCompletedStatusWhereInput!]
-  
+
   """task_list_sort_status edge predicates"""
   hasTaskListSortStatus: Boolean
   hasTaskListSortStatusWith: [TaskListSortStatusWhereInput!]
@@ -9125,7 +9276,7 @@ input ProjectTaskListStatusWhereInput {
   not: ProjectTaskListStatusWhereInput
   and: [ProjectTaskListStatusWhereInput!]
   or: [ProjectTaskListStatusWhereInput!]
-  
+
   """project_id field predicates"""
   projectID: ID
   projectIDNEQ: ID
@@ -9140,7 +9291,7 @@ input ProjectTaskListStatusWhereInput {
   projectIDHasSuffix: ID
   projectIDEqualFold: ID
   projectIDContainsFold: ID
-  
+
   """task_list_completed_status_id field predicates"""
   taskListCompletedStatusID: ID
   taskListCompletedStatusIDNEQ: ID
@@ -9155,7 +9306,7 @@ input ProjectTaskListStatusWhereInput {
   taskListCompletedStatusIDHasSuffix: ID
   taskListCompletedStatusIDEqualFold: ID
   taskListCompletedStatusIDContainsFold: ID
-  
+
   """task_list_sort_status_id field predicates"""
   taskListSortStatusID: ID
   taskListSortStatusIDNEQ: ID
@@ -9170,7 +9321,7 @@ input ProjectTaskListStatusWhereInput {
   taskListSortStatusIDHasSuffix: ID
   taskListSortStatusIDEqualFold: ID
   taskListSortStatusIDContainsFold: ID
-  
+
   """created_at field predicates"""
   createdAt: Time
   createdAtNEQ: Time
@@ -9180,7 +9331,7 @@ input ProjectTaskListStatusWhereInput {
   createdAtGTE: Time
   createdAtLT: Time
   createdAtLTE: Time
-  
+
   """updated_at field predicates"""
   updatedAt: Time
   updatedAtNEQ: Time
@@ -9190,7 +9341,7 @@ input ProjectTaskListStatusWhereInput {
   updatedAtGTE: Time
   updatedAtLT: Time
   updatedAtLTE: Time
-  
+
   """id field predicates"""
   id: ID
   idNEQ: ID
@@ -9200,15 +9351,15 @@ input ProjectTaskListStatusWhereInput {
   idGTE: ID
   idLT: ID
   idLTE: ID
-  
+
   """project edge predicates"""
   hasProject: Boolean
   hasProjectWith: [ProjectWhereInput!]
-  
+
   """task_list_completed_status edge predicates"""
   hasTaskListCompletedStatus: Boolean
   hasTaskListCompletedStatusWith: [TaskListCompletedStatusWhereInput!]
-  
+
   """task_list_sort_status edge predicates"""
   hasTaskListSortStatus: Boolean
   hasTaskListSortStatusWith: [TaskListSortStatusWhereInput!]
@@ -9222,7 +9373,7 @@ input TeammateTaskSectionWhereInput {
   not: TeammateTaskSectionWhereInput
   and: [TeammateTaskSectionWhereInput!]
   or: [TeammateTaskSectionWhereInput!]
-  
+
   """teammate_id field predicates"""
   teammateID: ID
   teammateIDNEQ: ID
@@ -9237,7 +9388,7 @@ input TeammateTaskSectionWhereInput {
   teammateIDHasSuffix: ID
   teammateIDEqualFold: ID
   teammateIDContainsFold: ID
-  
+
   """workspace_id field predicates"""
   workspaceID: ID
   workspaceIDNEQ: ID
@@ -9252,7 +9403,7 @@ input TeammateTaskSectionWhereInput {
   workspaceIDHasSuffix: ID
   workspaceIDEqualFold: ID
   workspaceIDContainsFold: ID
-  
+
   """name field predicates"""
   name: String
   nameNEQ: String
@@ -9267,11 +9418,11 @@ input TeammateTaskSectionWhereInput {
   nameHasSuffix: String
   nameEqualFold: String
   nameContainsFold: String
-  
+
   """assigned field predicates"""
   assigned: Boolean
   assignedNEQ: Boolean
-  
+
   """created_at field predicates"""
   createdAt: Time
   createdAtNEQ: Time
@@ -9281,7 +9432,7 @@ input TeammateTaskSectionWhereInput {
   createdAtGTE: Time
   createdAtLT: Time
   createdAtLTE: Time
-  
+
   """updated_at field predicates"""
   updatedAt: Time
   updatedAtNEQ: Time
@@ -9291,7 +9442,7 @@ input TeammateTaskSectionWhereInput {
   updatedAtGTE: Time
   updatedAtLT: Time
   updatedAtLTE: Time
-  
+
   """id field predicates"""
   id: ID
   idNEQ: ID
@@ -9301,15 +9452,15 @@ input TeammateTaskSectionWhereInput {
   idGTE: ID
   idLT: ID
   idLTE: ID
-  
+
   """teammate edge predicates"""
   hasTeammate: Boolean
   hasTeammateWith: [TeammateWhereInput!]
-  
+
   """workspace edge predicates"""
   hasWorkspace: Boolean
   hasWorkspaceWith: [WorkspaceWhereInput!]
-  
+
   """teammate_tasks edge predicates"""
   hasTeammateTasks: Boolean
   hasTeammateTasksWith: [TeammateTaskWhereInput!]
@@ -9323,7 +9474,7 @@ input ProjectTaskSectionWhereInput {
   not: ProjectTaskSectionWhereInput
   and: [ProjectTaskSectionWhereInput!]
   or: [ProjectTaskSectionWhereInput!]
-  
+
   """project_id field predicates"""
   projectID: ID
   projectIDNEQ: ID
@@ -9338,7 +9489,7 @@ input ProjectTaskSectionWhereInput {
   projectIDHasSuffix: ID
   projectIDEqualFold: ID
   projectIDContainsFold: ID
-  
+
   """name field predicates"""
   name: String
   nameNEQ: String
@@ -9353,7 +9504,7 @@ input ProjectTaskSectionWhereInput {
   nameHasSuffix: String
   nameEqualFold: String
   nameContainsFold: String
-  
+
   """created_at field predicates"""
   createdAt: Time
   createdAtNEQ: Time
@@ -9363,7 +9514,7 @@ input ProjectTaskSectionWhereInput {
   createdAtGTE: Time
   createdAtLT: Time
   createdAtLTE: Time
-  
+
   """updated_at field predicates"""
   updatedAt: Time
   updatedAtNEQ: Time
@@ -9373,7 +9524,7 @@ input ProjectTaskSectionWhereInput {
   updatedAtGTE: Time
   updatedAtLT: Time
   updatedAtLTE: Time
-  
+
   """id field predicates"""
   id: ID
   idNEQ: ID
@@ -9383,11 +9534,11 @@ input ProjectTaskSectionWhereInput {
   idGTE: ID
   idLT: ID
   idLTE: ID
-  
+
   """project edge predicates"""
   hasProject: Boolean
   hasProjectWith: [ProjectWhereInput!]
-  
+
   """project_tasks edge predicates"""
   hasProjectTasks: Boolean
   hasProjectTasksWith: [ProjectTaskWhereInput!]
@@ -9401,7 +9552,7 @@ input TaskPriorityWhereInput {
   not: TaskPriorityWhereInput
   and: [TaskPriorityWhereInput!]
   or: [TaskPriorityWhereInput!]
-  
+
   """color_id field predicates"""
   colorID: ID
   colorIDNEQ: ID
@@ -9416,7 +9567,7 @@ input TaskPriorityWhereInput {
   colorIDHasSuffix: ID
   colorIDEqualFold: ID
   colorIDContainsFold: ID
-  
+
   """name field predicates"""
   name: String
   nameNEQ: String
@@ -9431,13 +9582,13 @@ input TaskPriorityWhereInput {
   nameHasSuffix: String
   nameEqualFold: String
   nameContainsFold: String
-  
+
   """priority_type field predicates"""
   priorityType: TaskPriorityType
   priorityTypeNEQ: TaskPriorityType
   priorityTypeIn: [TaskPriorityType!]
   priorityTypeNotIn: [TaskPriorityType!]
-  
+
   """created_at field predicates"""
   createdAt: Time
   createdAtNEQ: Time
@@ -9447,7 +9598,7 @@ input TaskPriorityWhereInput {
   createdAtGTE: Time
   createdAtLT: Time
   createdAtLTE: Time
-  
+
   """updated_at field predicates"""
   updatedAt: Time
   updatedAtNEQ: Time
@@ -9457,7 +9608,7 @@ input TaskPriorityWhereInput {
   updatedAtGTE: Time
   updatedAtLT: Time
   updatedAtLTE: Time
-  
+
   """id field predicates"""
   id: ID
   idNEQ: ID
@@ -9467,11 +9618,11 @@ input TaskPriorityWhereInput {
   idGTE: ID
   idLT: ID
   idLTE: ID
-  
+
   """color edge predicates"""
   hasColor: Boolean
   hasColorWith: [ColorWhereInput!]
-  
+
   """tasks edge predicates"""
   hasTasks: Boolean
   hasTasksWith: [TaskWhereInput!]
@@ -9485,7 +9636,7 @@ input TaskWhereInput {
   not: TaskWhereInput
   and: [TaskWhereInput!]
   or: [TaskWhereInput!]
-  
+
   """task_parent_id field predicates"""
   taskParentID: ID
   taskParentIDNEQ: ID
@@ -9502,7 +9653,7 @@ input TaskWhereInput {
   taskParentIDNotNil: Boolean
   taskParentIDEqualFold: ID
   taskParentIDContainsFold: ID
-  
+
   """task_priority_id field predicates"""
   taskPriorityID: ID
   taskPriorityIDNEQ: ID
@@ -9517,7 +9668,7 @@ input TaskWhereInput {
   taskPriorityIDHasSuffix: ID
   taskPriorityIDEqualFold: ID
   taskPriorityIDContainsFold: ID
-  
+
   """assignee_id field predicates"""
   assigneeID: ID
   assigneeIDNEQ: ID
@@ -9534,7 +9685,7 @@ input TaskWhereInput {
   assigneeIDNotNil: Boolean
   assigneeIDEqualFold: ID
   assigneeIDContainsFold: ID
-  
+
   """created_by field predicates"""
   createdBy: ID
   createdByNEQ: ID
@@ -9549,11 +9700,11 @@ input TaskWhereInput {
   createdByHasSuffix: ID
   createdByEqualFold: ID
   createdByContainsFold: ID
-  
+
   """completed field predicates"""
   completed: Boolean
   completedNEQ: Boolean
-  
+
   """completed_at field predicates"""
   completedAt: Time
   completedAtNEQ: Time
@@ -9565,11 +9716,11 @@ input TaskWhereInput {
   completedAtLTE: Time
   completedAtIsNil: Boolean
   completedAtNotNil: Boolean
-  
+
   """is_new field predicates"""
   isNew: Boolean
   isNewNEQ: Boolean
-  
+
   """name field predicates"""
   name: String
   nameNEQ: String
@@ -9584,7 +9735,7 @@ input TaskWhereInput {
   nameHasSuffix: String
   nameEqualFold: String
   nameContainsFold: String
-  
+
   """due_date field predicates"""
   dueDate: Time
   dueDateNEQ: Time
@@ -9596,7 +9747,7 @@ input TaskWhereInput {
   dueDateLTE: Time
   dueDateIsNil: Boolean
   dueDateNotNil: Boolean
-  
+
   """due_time field predicates"""
   dueTime: Time
   dueTimeNEQ: Time
@@ -9608,7 +9759,7 @@ input TaskWhereInput {
   dueTimeLTE: Time
   dueTimeIsNil: Boolean
   dueTimeNotNil: Boolean
-  
+
   """created_at field predicates"""
   createdAt: Time
   createdAtNEQ: Time
@@ -9618,7 +9769,7 @@ input TaskWhereInput {
   createdAtGTE: Time
   createdAtLT: Time
   createdAtLTE: Time
-  
+
   """updated_at field predicates"""
   updatedAt: Time
   updatedAtNEQ: Time
@@ -9628,7 +9779,7 @@ input TaskWhereInput {
   updatedAtGTE: Time
   updatedAtLT: Time
   updatedAtLTE: Time
-  
+
   """id field predicates"""
   id: ID
   idNEQ: ID
@@ -9638,47 +9789,47 @@ input TaskWhereInput {
   idGTE: ID
   idLT: ID
   idLTE: ID
-  
+
   """teammate edge predicates"""
   hasTeammate: Boolean
   hasTeammateWith: [TeammateWhereInput!]
-  
+
   """task_priority edge predicates"""
   hasTaskPriority: Boolean
   hasTaskPriorityWith: [TaskPriorityWhereInput!]
-  
+
   """parent edge predicates"""
   hasParent: Boolean
   hasParentWith: [TaskWhereInput!]
-  
+
   """sub_tasks edge predicates"""
   hasSubTasks: Boolean
   hasSubTasksWith: [TaskWhereInput!]
-  
+
   """teammate_tasks edge predicates"""
   hasTeammateTasks: Boolean
   hasTeammateTasksWith: [TeammateTaskWhereInput!]
-  
+
   """project_tasks edge predicates"""
   hasProjectTasks: Boolean
   hasProjectTasksWith: [ProjectTaskWhereInput!]
-  
+
   """task_likes edge predicates"""
   hasTaskLikes: Boolean
   hasTaskLikesWith: [TaskLikeWhereInput!]
-  
+
   """task_tags edge predicates"""
   hasTaskTags: Boolean
   hasTaskTagsWith: [TaskTagWhereInput!]
-  
+
   """task_collaborators edge predicates"""
   hasTaskCollaborators: Boolean
   hasTaskCollaboratorsWith: [TaskCollaboratorWhereInput!]
-  
+
   """task_feeds edge predicates"""
   hasTaskFeeds: Boolean
   hasTaskFeedsWith: [TaskFeedWhereInput!]
-  
+
   """task_feed_likes edge predicates"""
   hasTaskFeedLikes: Boolean
   hasTaskFeedLikesWith: [TaskFeedLikeWhereInput!]
@@ -9692,7 +9843,7 @@ input TeammateTaskWhereInput {
   not: TeammateTaskWhereInput
   and: [TeammateTaskWhereInput!]
   or: [TeammateTaskWhereInput!]
-  
+
   """teammate_id field predicates"""
   teammateID: ID
   teammateIDNEQ: ID
@@ -9707,7 +9858,7 @@ input TeammateTaskWhereInput {
   teammateIDHasSuffix: ID
   teammateIDEqualFold: ID
   teammateIDContainsFold: ID
-  
+
   """task_id field predicates"""
   taskID: ID
   taskIDNEQ: ID
@@ -9722,7 +9873,7 @@ input TeammateTaskWhereInput {
   taskIDHasSuffix: ID
   taskIDEqualFold: ID
   taskIDContainsFold: ID
-  
+
   """teammate_task_section_id field predicates"""
   teammateTaskSectionID: ID
   teammateTaskSectionIDNEQ: ID
@@ -9737,7 +9888,7 @@ input TeammateTaskWhereInput {
   teammateTaskSectionIDHasSuffix: ID
   teammateTaskSectionIDEqualFold: ID
   teammateTaskSectionIDContainsFold: ID
-  
+
   """created_at field predicates"""
   createdAt: Time
   createdAtNEQ: Time
@@ -9747,7 +9898,7 @@ input TeammateTaskWhereInput {
   createdAtGTE: Time
   createdAtLT: Time
   createdAtLTE: Time
-  
+
   """updated_at field predicates"""
   updatedAt: Time
   updatedAtNEQ: Time
@@ -9757,7 +9908,7 @@ input TeammateTaskWhereInput {
   updatedAtGTE: Time
   updatedAtLT: Time
   updatedAtLTE: Time
-  
+
   """id field predicates"""
   id: ID
   idNEQ: ID
@@ -9767,15 +9918,15 @@ input TeammateTaskWhereInput {
   idGTE: ID
   idLT: ID
   idLTE: ID
-  
+
   """teammate edge predicates"""
   hasTeammate: Boolean
   hasTeammateWith: [TeammateWhereInput!]
-  
+
   """task edge predicates"""
   hasTask: Boolean
   hasTaskWith: [TaskWhereInput!]
-  
+
   """teammate_task_section edge predicates"""
   hasTeammateTaskSection: Boolean
   hasTeammateTaskSectionWith: [TeammateTaskSectionWhereInput!]
@@ -9789,7 +9940,7 @@ input ProjectTaskWhereInput {
   not: ProjectTaskWhereInput
   and: [ProjectTaskWhereInput!]
   or: [ProjectTaskWhereInput!]
-  
+
   """project_id field predicates"""
   projectID: ID
   projectIDNEQ: ID
@@ -9804,7 +9955,7 @@ input ProjectTaskWhereInput {
   projectIDHasSuffix: ID
   projectIDEqualFold: ID
   projectIDContainsFold: ID
-  
+
   """task_id field predicates"""
   taskID: ID
   taskIDNEQ: ID
@@ -9819,7 +9970,7 @@ input ProjectTaskWhereInput {
   taskIDHasSuffix: ID
   taskIDEqualFold: ID
   taskIDContainsFold: ID
-  
+
   """project_task_section_id field predicates"""
   projectTaskSectionID: ID
   projectTaskSectionIDNEQ: ID
@@ -9834,7 +9985,7 @@ input ProjectTaskWhereInput {
   projectTaskSectionIDHasSuffix: ID
   projectTaskSectionIDEqualFold: ID
   projectTaskSectionIDContainsFold: ID
-  
+
   """created_at field predicates"""
   createdAt: Time
   createdAtNEQ: Time
@@ -9844,7 +9995,7 @@ input ProjectTaskWhereInput {
   createdAtGTE: Time
   createdAtLT: Time
   createdAtLTE: Time
-  
+
   """updated_at field predicates"""
   updatedAt: Time
   updatedAtNEQ: Time
@@ -9854,7 +10005,7 @@ input ProjectTaskWhereInput {
   updatedAtGTE: Time
   updatedAtLT: Time
   updatedAtLTE: Time
-  
+
   """id field predicates"""
   id: ID
   idNEQ: ID
@@ -9864,15 +10015,15 @@ input ProjectTaskWhereInput {
   idGTE: ID
   idLT: ID
   idLTE: ID
-  
+
   """project edge predicates"""
   hasProject: Boolean
   hasProjectWith: [ProjectWhereInput!]
-  
+
   """task edge predicates"""
   hasTask: Boolean
   hasTaskWith: [TaskWhereInput!]
-  
+
   """project_task_section edge predicates"""
   hasProjectTaskSection: Boolean
   hasProjectTaskSectionWith: [ProjectTaskSectionWhereInput!]
@@ -9886,7 +10037,7 @@ input TaskLikeWhereInput {
   not: TaskLikeWhereInput
   and: [TaskLikeWhereInput!]
   or: [TaskLikeWhereInput!]
-  
+
   """task_id field predicates"""
   taskID: ID
   taskIDNEQ: ID
@@ -9901,7 +10052,7 @@ input TaskLikeWhereInput {
   taskIDHasSuffix: ID
   taskIDEqualFold: ID
   taskIDContainsFold: ID
-  
+
   """teammate_id field predicates"""
   teammateID: ID
   teammateIDNEQ: ID
@@ -9916,7 +10067,7 @@ input TaskLikeWhereInput {
   teammateIDHasSuffix: ID
   teammateIDEqualFold: ID
   teammateIDContainsFold: ID
-  
+
   """workspace_id field predicates"""
   workspaceID: ID
   workspaceIDNEQ: ID
@@ -9931,7 +10082,7 @@ input TaskLikeWhereInput {
   workspaceIDHasSuffix: ID
   workspaceIDEqualFold: ID
   workspaceIDContainsFold: ID
-  
+
   """created_at field predicates"""
   createdAt: Time
   createdAtNEQ: Time
@@ -9941,7 +10092,7 @@ input TaskLikeWhereInput {
   createdAtGTE: Time
   createdAtLT: Time
   createdAtLTE: Time
-  
+
   """updated_at field predicates"""
   updatedAt: Time
   updatedAtNEQ: Time
@@ -9951,7 +10102,7 @@ input TaskLikeWhereInput {
   updatedAtGTE: Time
   updatedAtLT: Time
   updatedAtLTE: Time
-  
+
   """id field predicates"""
   id: ID
   idNEQ: ID
@@ -9961,15 +10112,15 @@ input TaskLikeWhereInput {
   idGTE: ID
   idLT: ID
   idLTE: ID
-  
+
   """task edge predicates"""
   hasTask: Boolean
   hasTaskWith: [TaskWhereInput!]
-  
+
   """teammate edge predicates"""
   hasTeammate: Boolean
   hasTeammateWith: [TeammateWhereInput!]
-  
+
   """workspace edge predicates"""
   hasWorkspace: Boolean
   hasWorkspaceWith: [WorkspaceWhereInput!]
@@ -9983,7 +10134,7 @@ input TagWhereInput {
   not: TagWhereInput
   and: [TagWhereInput!]
   or: [TagWhereInput!]
-  
+
   """workspace_id field predicates"""
   workspaceID: ID
   workspaceIDNEQ: ID
@@ -9998,7 +10149,7 @@ input TagWhereInput {
   workspaceIDHasSuffix: ID
   workspaceIDEqualFold: ID
   workspaceIDContainsFold: ID
-  
+
   """color_id field predicates"""
   colorID: ID
   colorIDNEQ: ID
@@ -10013,7 +10164,7 @@ input TagWhereInput {
   colorIDHasSuffix: ID
   colorIDEqualFold: ID
   colorIDContainsFold: ID
-  
+
   """name field predicates"""
   name: String
   nameNEQ: String
@@ -10028,7 +10179,7 @@ input TagWhereInput {
   nameHasSuffix: String
   nameEqualFold: String
   nameContainsFold: String
-  
+
   """created_at field predicates"""
   createdAt: Time
   createdAtNEQ: Time
@@ -10038,7 +10189,7 @@ input TagWhereInput {
   createdAtGTE: Time
   createdAtLT: Time
   createdAtLTE: Time
-  
+
   """updated_at field predicates"""
   updatedAt: Time
   updatedAtNEQ: Time
@@ -10048,7 +10199,7 @@ input TagWhereInput {
   updatedAtGTE: Time
   updatedAtLT: Time
   updatedAtLTE: Time
-  
+
   """id field predicates"""
   id: ID
   idNEQ: ID
@@ -10058,15 +10209,15 @@ input TagWhereInput {
   idGTE: ID
   idLT: ID
   idLTE: ID
-  
+
   """workspace edge predicates"""
   hasWorkspace: Boolean
   hasWorkspaceWith: [WorkspaceWhereInput!]
-  
+
   """color edge predicates"""
   hasColor: Boolean
   hasColorWith: [ColorWhereInput!]
-  
+
   """task_tags edge predicates"""
   hasTaskTags: Boolean
   hasTaskTagsWith: [TaskTagWhereInput!]
@@ -10080,7 +10231,7 @@ input TaskTagWhereInput {
   not: TaskTagWhereInput
   and: [TaskTagWhereInput!]
   or: [TaskTagWhereInput!]
-  
+
   """task_id field predicates"""
   taskID: ID
   taskIDNEQ: ID
@@ -10095,7 +10246,7 @@ input TaskTagWhereInput {
   taskIDHasSuffix: ID
   taskIDEqualFold: ID
   taskIDContainsFold: ID
-  
+
   """tag_id field predicates"""
   tagID: ID
   tagIDNEQ: ID
@@ -10110,7 +10261,7 @@ input TaskTagWhereInput {
   tagIDHasSuffix: ID
   tagIDEqualFold: ID
   tagIDContainsFold: ID
-  
+
   """created_at field predicates"""
   createdAt: Time
   createdAtNEQ: Time
@@ -10120,7 +10271,7 @@ input TaskTagWhereInput {
   createdAtGTE: Time
   createdAtLT: Time
   createdAtLTE: Time
-  
+
   """updated_at field predicates"""
   updatedAt: Time
   updatedAtNEQ: Time
@@ -10130,7 +10281,7 @@ input TaskTagWhereInput {
   updatedAtGTE: Time
   updatedAtLT: Time
   updatedAtLTE: Time
-  
+
   """id field predicates"""
   id: ID
   idNEQ: ID
@@ -10140,11 +10291,11 @@ input TaskTagWhereInput {
   idGTE: ID
   idLT: ID
   idLTE: ID
-  
+
   """task edge predicates"""
   hasTask: Boolean
   hasTaskWith: [TaskWhereInput!]
-  
+
   """tag edge predicates"""
   hasTag: Boolean
   hasTagWith: [TagWhereInput!]
@@ -10158,7 +10309,7 @@ input TaskCollaboratorWhereInput {
   not: TaskCollaboratorWhereInput
   and: [TaskCollaboratorWhereInput!]
   or: [TaskCollaboratorWhereInput!]
-  
+
   """task_id field predicates"""
   taskID: ID
   taskIDNEQ: ID
@@ -10173,7 +10324,7 @@ input TaskCollaboratorWhereInput {
   taskIDHasSuffix: ID
   taskIDEqualFold: ID
   taskIDContainsFold: ID
-  
+
   """teammate_id field predicates"""
   teammateID: ID
   teammateIDNEQ: ID
@@ -10188,7 +10339,7 @@ input TaskCollaboratorWhereInput {
   teammateIDHasSuffix: ID
   teammateIDEqualFold: ID
   teammateIDContainsFold: ID
-  
+
   """created_at field predicates"""
   createdAt: Time
   createdAtNEQ: Time
@@ -10198,7 +10349,7 @@ input TaskCollaboratorWhereInput {
   createdAtGTE: Time
   createdAtLT: Time
   createdAtLTE: Time
-  
+
   """updated_at field predicates"""
   updatedAt: Time
   updatedAtNEQ: Time
@@ -10208,7 +10359,7 @@ input TaskCollaboratorWhereInput {
   updatedAtGTE: Time
   updatedAtLT: Time
   updatedAtLTE: Time
-  
+
   """id field predicates"""
   id: ID
   idNEQ: ID
@@ -10218,11 +10369,11 @@ input TaskCollaboratorWhereInput {
   idGTE: ID
   idLT: ID
   idLTE: ID
-  
+
   """task edge predicates"""
   hasTask: Boolean
   hasTaskWith: [TaskWhereInput!]
-  
+
   """teammate edge predicates"""
   hasTeammate: Boolean
   hasTeammateWith: [TeammateWhereInput!]
@@ -10236,7 +10387,7 @@ input TaskFeedWhereInput {
   not: TaskFeedWhereInput
   and: [TaskFeedWhereInput!]
   or: [TaskFeedWhereInput!]
-  
+
   """task_id field predicates"""
   taskID: ID
   taskIDNEQ: ID
@@ -10251,7 +10402,7 @@ input TaskFeedWhereInput {
   taskIDHasSuffix: ID
   taskIDEqualFold: ID
   taskIDContainsFold: ID
-  
+
   """teammate_id field predicates"""
   teammateID: ID
   teammateIDNEQ: ID
@@ -10266,15 +10417,15 @@ input TaskFeedWhereInput {
   teammateIDHasSuffix: ID
   teammateIDEqualFold: ID
   teammateIDContainsFold: ID
-  
+
   """is_first field predicates"""
   isFirst: Boolean
   isFirstNEQ: Boolean
-  
+
   """is_pinned field predicates"""
   isPinned: Boolean
   isPinnedNEQ: Boolean
-  
+
   """created_at field predicates"""
   createdAt: Time
   createdAtNEQ: Time
@@ -10284,7 +10435,7 @@ input TaskFeedWhereInput {
   createdAtGTE: Time
   createdAtLT: Time
   createdAtLTE: Time
-  
+
   """updated_at field predicates"""
   updatedAt: Time
   updatedAtNEQ: Time
@@ -10294,7 +10445,7 @@ input TaskFeedWhereInput {
   updatedAtGTE: Time
   updatedAtLT: Time
   updatedAtLTE: Time
-  
+
   """id field predicates"""
   id: ID
   idNEQ: ID
@@ -10304,15 +10455,15 @@ input TaskFeedWhereInput {
   idGTE: ID
   idLT: ID
   idLTE: ID
-  
+
   """task edge predicates"""
   hasTask: Boolean
   hasTaskWith: [TaskWhereInput!]
-  
+
   """teammate edge predicates"""
   hasTeammate: Boolean
   hasTeammateWith: [TeammateWhereInput!]
-  
+
   """task_feed_likes edge predicates"""
   hasTaskFeedLikes: Boolean
   hasTaskFeedLikesWith: [TaskFeedLikeWhereInput!]
@@ -10326,7 +10477,7 @@ input TaskFeedLikeWhereInput {
   not: TaskFeedLikeWhereInput
   and: [TaskFeedLikeWhereInput!]
   or: [TaskFeedLikeWhereInput!]
-  
+
   """task_id field predicates"""
   taskID: ID
   taskIDNEQ: ID
@@ -10341,7 +10492,7 @@ input TaskFeedLikeWhereInput {
   taskIDHasSuffix: ID
   taskIDEqualFold: ID
   taskIDContainsFold: ID
-  
+
   """teammate_id field predicates"""
   teammateID: ID
   teammateIDNEQ: ID
@@ -10356,7 +10507,7 @@ input TaskFeedLikeWhereInput {
   teammateIDHasSuffix: ID
   teammateIDEqualFold: ID
   teammateIDContainsFold: ID
-  
+
   """task_feed_id field predicates"""
   taskFeedID: ID
   taskFeedIDNEQ: ID
@@ -10371,7 +10522,7 @@ input TaskFeedLikeWhereInput {
   taskFeedIDHasSuffix: ID
   taskFeedIDEqualFold: ID
   taskFeedIDContainsFold: ID
-  
+
   """created_at field predicates"""
   createdAt: Time
   createdAtNEQ: Time
@@ -10381,7 +10532,7 @@ input TaskFeedLikeWhereInput {
   createdAtGTE: Time
   createdAtLT: Time
   createdAtLTE: Time
-  
+
   """updated_at field predicates"""
   updatedAt: Time
   updatedAtNEQ: Time
@@ -10391,7 +10542,7 @@ input TaskFeedLikeWhereInput {
   updatedAtGTE: Time
   updatedAtLT: Time
   updatedAtLTE: Time
-  
+
   """id field predicates"""
   id: ID
   idNEQ: ID
@@ -10401,18 +10552,79 @@ input TaskFeedLikeWhereInput {
   idGTE: ID
   idLT: ID
   idLTE: ID
-  
+
   """task edge predicates"""
   hasTask: Boolean
   hasTaskWith: [TaskWhereInput!]
-  
+
   """teammate edge predicates"""
   hasTeammate: Boolean
   hasTeammateWith: [TeammateWhereInput!]
-  
+
   """feed edge predicates"""
   hasFeed: Boolean
   hasFeedWith: [TaskFeedWhereInput!]
+}
+
+"""
+FileTypeWhereInput is used for filtering FileType objects.
+Input was generated by ent.
+"""
+input FileTypeWhereInput {
+  not: FileTypeWhereInput
+  and: [FileTypeWhereInput!]
+  or: [FileTypeWhereInput!]
+
+  """name field predicates"""
+  name: String
+  nameNEQ: String
+  nameIn: [String!]
+  nameNotIn: [String!]
+  nameGT: String
+  nameGTE: String
+  nameLT: String
+  nameLTE: String
+  nameContains: String
+  nameHasPrefix: String
+  nameHasSuffix: String
+  nameEqualFold: String
+  nameContainsFold: String
+
+  """type_code field predicates"""
+  typeCode: FileTypeCode
+  typeCodeNEQ: FileTypeCode
+  typeCodeIn: [FileTypeCode!]
+  typeCodeNotIn: [FileTypeCode!]
+
+  """created_at field predicates"""
+  createdAt: Time
+  createdAtNEQ: Time
+  createdAtIn: [Time!]
+  createdAtNotIn: [Time!]
+  createdAtGT: Time
+  createdAtGTE: Time
+  createdAtLT: Time
+  createdAtLTE: Time
+
+  """updated_at field predicates"""
+  updatedAt: Time
+  updatedAtNEQ: Time
+  updatedAtIn: [Time!]
+  updatedAtNotIn: [Time!]
+  updatedAtGT: Time
+  updatedAtGTE: Time
+  updatedAtLT: Time
+  updatedAtLTE: Time
+
+  """id field predicates"""
+  id: ID
+  idNEQ: ID
+  idIn: [ID!]
+  idNotIn: [ID!]
+  idGT: ID
+  idGTE: ID
+  idLT: ID
+  idLTE: ID
 }
 `, BuiltIn: false},
 	{Name: "graph/schema/favorite_project/favorite_project.graphql", Input: `type FavoriteProject implements Node {
@@ -10502,6 +10714,49 @@ extend type Query {
 extend type Mutation {
   createFavoriteWorkspace(input: CreateFavoriteWorkspaceInput!): FavoriteWorkspace!
   deleteFavoriteWorkspace(input: DeleteFavoriteWorkspaceInput!): FavoriteWorkspace!
+}
+`, BuiltIn: false},
+	{Name: "graph/schema/file_type/file_type.graphql", Input: `enum FileTypeCode {
+  IMAGE
+  PDF
+  TEXT
+}
+
+type FileType implements Node {
+  id: ID!
+  name: String!
+  typeCode: FileTypeCode!
+  createdAt: String!
+  updatedAt: String!
+}
+type FileTypeConnection {
+  totalCount: Int!
+  pageInfo: PageInfo!
+  edges: [FileTypeEdge]
+}
+type FileTypeEdge {
+  node: FileType
+  cursor: Cursor!
+}
+
+input CreateFileTypeInput {
+  name: String!
+  typeCode: FileTypeCode!
+}
+
+input UpdateFileTypeInput {
+  id: ID!
+  typeCode: FileTypeCode
+}
+
+extend type Query {
+  fileType(where: FileTypeWhereInput): FileType
+  fileTypes(after: Cursor, first: Int, before: Cursor, last: Int, where: FileTypeWhereInput): FileTypeConnection
+}
+
+extend type Mutation {
+  createFileType(input: CreateFileTypeInput!): FileType!
+  updateFileType(input: UpdateFileTypeInput!): FileType!
 }
 `, BuiltIn: false},
 	{Name: "graph/schema/icon/icon.graphql", Input: `type Icon implements Node {
@@ -12167,6 +12422,21 @@ func (ec *executionContext) field_Mutation_createFavoriteWorkspace_args(ctx cont
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_createFileType_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 ent.CreateFileTypeInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNCreateFileTypeInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐCreateFileTypeInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_createIcon_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -12759,6 +13029,21 @@ func (ec *executionContext) field_Mutation_updateColor_args(ctx context.Context,
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNUpdateColorInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐUpdateColorInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_updateFileType_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 ent.UpdateFileTypeInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNUpdateFileTypeInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐUpdateFileTypeInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -13506,6 +13791,72 @@ func (ec *executionContext) field_Query_favoriteWorkspaces_args(ctx context.Cont
 	if tmp, ok := rawArgs["where"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
 		arg4, err = ec.unmarshalOFavoriteWorkspaceWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐFavoriteWorkspaceWhereInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["where"] = arg4
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_fileType_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *ent.FileTypeWhereInput
+	if tmp, ok := rawArgs["where"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
+		arg0, err = ec.unmarshalOFileTypeWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐFileTypeWhereInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["where"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_fileTypes_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *ent.Cursor
+	if tmp, ok := rawArgs["after"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
+		arg0, err = ec.unmarshalOCursor2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐCursor(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["after"] = arg0
+	var arg1 *int
+	if tmp, ok := rawArgs["first"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("first"))
+		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["first"] = arg1
+	var arg2 *ent.Cursor
+	if tmp, ok := rawArgs["before"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("before"))
+		arg2, err = ec.unmarshalOCursor2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐCursor(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["before"] = arg2
+	var arg3 *int
+	if tmp, ok := rawArgs["last"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("last"))
+		arg3, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["last"] = arg3
+	var arg4 *ent.FileTypeWhereInput
+	if tmp, ok := rawArgs["where"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
+		arg4, err = ec.unmarshalOFileTypeWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐFileTypeWhereInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -17681,6 +18032,350 @@ func (ec *executionContext) _FavoriteWorkspaceEdge_cursor(ctx context.Context, f
 	return ec.marshalNCursor2projectᚑmanagementᚑdemoᚑbackendᚋentᚐCursor(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _FileType_id(ctx context.Context, field graphql.CollectedField, obj *ent.FileType) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "FileType",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(ulid.ID)
+	fc.Result = res
+	return ec.marshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _FileType_name(ctx context.Context, field graphql.CollectedField, obj *ent.FileType) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "FileType",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Name, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _FileType_typeCode(ctx context.Context, field graphql.CollectedField, obj *ent.FileType) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "FileType",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TypeCode, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(filetype.TypeCode)
+	fc.Result = res
+	return ec.marshalNFileTypeCode2projectᚑmanagementᚑdemoᚑbackendᚋentᚋfiletypeᚐTypeCode(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _FileType_createdAt(ctx context.Context, field graphql.CollectedField, obj *ent.FileType) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "FileType",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.FileType().CreatedAt(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _FileType_updatedAt(ctx context.Context, field graphql.CollectedField, obj *ent.FileType) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "FileType",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.FileType().UpdatedAt(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _FileTypeConnection_totalCount(ctx context.Context, field graphql.CollectedField, obj *ent.FileTypeConnection) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "FileTypeConnection",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TotalCount, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _FileTypeConnection_pageInfo(ctx context.Context, field graphql.CollectedField, obj *ent.FileTypeConnection) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "FileTypeConnection",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PageInfo, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(ent.PageInfo)
+	fc.Result = res
+	return ec.marshalNPageInfo2projectᚑmanagementᚑdemoᚑbackendᚋentᚐPageInfo(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _FileTypeConnection_edges(ctx context.Context, field graphql.CollectedField, obj *ent.FileTypeConnection) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "FileTypeConnection",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Edges, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*ent.FileTypeEdge)
+	fc.Result = res
+	return ec.marshalOFileTypeEdge2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐFileTypeEdge(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _FileTypeEdge_node(ctx context.Context, field graphql.CollectedField, obj *ent.FileTypeEdge) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "FileTypeEdge",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Node, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*ent.FileType)
+	fc.Result = res
+	return ec.marshalOFileType2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐFileType(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _FileTypeEdge_cursor(ctx context.Context, field graphql.CollectedField, obj *ent.FileTypeEdge) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "FileTypeEdge",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Cursor, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(ent.Cursor)
+	fc.Result = res
+	return ec.marshalNCursor2projectᚑmanagementᚑdemoᚑbackendᚋentᚐCursor(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Icon_id(ctx context.Context, field graphql.CollectedField, obj *ent.Icon) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -18485,6 +19180,90 @@ func (ec *executionContext) _Mutation_deleteFavoriteWorkspace(ctx context.Contex
 	res := resTmp.(*ent.FavoriteWorkspace)
 	fc.Result = res
 	return ec.marshalNFavoriteWorkspace2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐFavoriteWorkspace(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_createFileType(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_createFileType_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreateFileType(rctx, args["input"].(ent.CreateFileTypeInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.FileType)
+	fc.Result = res
+	return ec.marshalNFileType2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐFileType(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_updateFileType(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_updateFileType_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdateFileType(rctx, args["input"].(ent.UpdateFileTypeInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.FileType)
+	fc.Result = res
+	return ec.marshalNFileType2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐFileType(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_createIcon(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -26034,6 +26813,84 @@ func (ec *executionContext) _Query_favoriteWorkspaceIds(ctx context.Context, fie
 	res := resTmp.([]ulid.ID)
 	fc.Result = res
 	return ec.marshalNID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_fileType(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_fileType_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().FileType(rctx, args["where"].(*ent.FileTypeWhereInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*ent.FileType)
+	fc.Result = res
+	return ec.marshalOFileType2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐFileType(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_fileTypes(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_fileTypes_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().FileTypes(rctx, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["where"].(*ent.FileTypeWhereInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*ent.FileTypeConnection)
+	fc.Result = res
+	return ec.marshalOFileTypeConnection2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐFileTypeConnection(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_icon(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -41825,6 +42682,37 @@ func (ec *executionContext) unmarshalInputCreateFavoriteWorkspaceInput(ctx conte
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputCreateFileTypeInput(ctx context.Context, obj interface{}) (ent.CreateFileTypeInput, error) {
+	var it ent.CreateFileTypeInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "name":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			it.Name, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "typeCode":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("typeCode"))
+			it.TypeCode, err = ec.unmarshalNFileTypeCode2projectᚑmanagementᚑdemoᚑbackendᚋentᚋfiletypeᚐTypeCode(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputCreateIconInput(ctx context.Context, obj interface{}) (ent.CreateIconInput, error) {
 	var it ent.CreateIconInput
 	asMap := map[string]interface{}{}
@@ -44257,6 +45145,373 @@ func (ec *executionContext) unmarshalInputFavoriteWorkspaceWhereInput(ctx contex
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasTeammateWith"))
 			it.HasTeammateWith, err = ec.unmarshalOTeammateWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTeammateWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputFileTypeWhereInput(ctx context.Context, obj interface{}) (ent.FileTypeWhereInput, error) {
+	var it ent.FileTypeWhereInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "not":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("not"))
+			it.Not, err = ec.unmarshalOFileTypeWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐFileTypeWhereInput(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "and":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("and"))
+			it.And, err = ec.unmarshalOFileTypeWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐFileTypeWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "or":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("or"))
+			it.Or, err = ec.unmarshalOFileTypeWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐFileTypeWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "name":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			it.Name, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameNEQ"))
+			it.NameNEQ, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameIn"))
+			it.NameIn, err = ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameNotIn"))
+			it.NameNotIn, err = ec.unmarshalOString2ᚕstringᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameGT"))
+			it.NameGT, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameGTE"))
+			it.NameGTE, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameLT"))
+			it.NameLT, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameLTE"))
+			it.NameLTE, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameContains":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameContains"))
+			it.NameContains, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameHasPrefix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameHasPrefix"))
+			it.NameHasPrefix, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameHasSuffix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameHasSuffix"))
+			it.NameHasSuffix, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameEqualFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameEqualFold"))
+			it.NameEqualFold, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "nameContainsFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("nameContainsFold"))
+			it.NameContainsFold, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "typeCode":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("typeCode"))
+			it.TypeCode, err = ec.unmarshalOFileTypeCode2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋfiletypeᚐTypeCode(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "typeCodeNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("typeCodeNEQ"))
+			it.TypeCodeNEQ, err = ec.unmarshalOFileTypeCode2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋfiletypeᚐTypeCode(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "typeCodeIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("typeCodeIn"))
+			it.TypeCodeIn, err = ec.unmarshalOFileTypeCode2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋfiletypeᚐTypeCodeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "typeCodeNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("typeCodeNotIn"))
+			it.TypeCodeNotIn, err = ec.unmarshalOFileTypeCode2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋfiletypeᚐTypeCodeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAt":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAt"))
+			it.CreatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtNEQ"))
+			it.CreatedAtNEQ, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtIn"))
+			it.CreatedAtIn, err = ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtNotIn"))
+			it.CreatedAtNotIn, err = ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtGT"))
+			it.CreatedAtGT, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtGTE"))
+			it.CreatedAtGTE, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtLT"))
+			it.CreatedAtLT, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtLTE"))
+			it.CreatedAtLTE, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAt":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAt"))
+			it.UpdatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtNEQ"))
+			it.UpdatedAtNEQ, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtIn"))
+			it.UpdatedAtIn, err = ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtNotIn"))
+			it.UpdatedAtNotIn, err = ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtGT"))
+			it.UpdatedAtGT, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtGTE"))
+			it.UpdatedAtGTE, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtLT"))
+			it.UpdatedAtLT, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtLTE"))
+			it.UpdatedAtLTE, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			it.ID, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idNEQ"))
+			it.IDNEQ, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idIn"))
+			it.IDIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idNotIn"))
+			it.IDNotIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idGT"))
+			it.IDGT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idGTE"))
+			it.IDGTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idLT"))
+			it.IDLT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idLTE"))
+			it.IDLTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -61769,6 +63024,37 @@ func (ec *executionContext) unmarshalInputUpdateColorInput(ctx context.Context, 
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputUpdateFileTypeInput(ctx context.Context, obj interface{}) (ent.UpdateFileTypeInput, error) {
+	var it ent.UpdateFileTypeInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			it.ID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "typeCode":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("typeCode"))
+			it.TypeCode, err = ec.unmarshalOFileTypeCode2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋfiletypeᚐTypeCode(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputUpdateIconInput(ctx context.Context, obj interface{}) (ent.UpdateIconInput, error) {
 	var it ent.UpdateIconInput
 	asMap := map[string]interface{}{}
@@ -64509,6 +65795,11 @@ func (ec *executionContext) _Node(ctx context.Context, sel ast.SelectionSet, obj
 			return graphql.Null
 		}
 		return ec._FavoriteWorkspace(ctx, sel, obj)
+	case *ent.FileType:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._FileType(ctx, sel, obj)
 	case *ent.Icon:
 		if obj == nil {
 			return graphql.Null
@@ -65227,6 +66518,134 @@ func (ec *executionContext) _FavoriteWorkspaceEdge(ctx context.Context, sel ast.
 	return out
 }
 
+var fileTypeImplementors = []string{"FileType", "Node"}
+
+func (ec *executionContext) _FileType(ctx context.Context, sel ast.SelectionSet, obj *ent.FileType) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, fileTypeImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("FileType")
+		case "id":
+			out.Values[i] = ec._FileType_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "name":
+			out.Values[i] = ec._FileType_name(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "typeCode":
+			out.Values[i] = ec._FileType_typeCode(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "createdAt":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._FileType_createdAt(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "updatedAt":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._FileType_updatedAt(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var fileTypeConnectionImplementors = []string{"FileTypeConnection"}
+
+func (ec *executionContext) _FileTypeConnection(ctx context.Context, sel ast.SelectionSet, obj *ent.FileTypeConnection) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, fileTypeConnectionImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("FileTypeConnection")
+		case "totalCount":
+			out.Values[i] = ec._FileTypeConnection_totalCount(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "pageInfo":
+			out.Values[i] = ec._FileTypeConnection_pageInfo(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "edges":
+			out.Values[i] = ec._FileTypeConnection_edges(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var fileTypeEdgeImplementors = []string{"FileTypeEdge"}
+
+func (ec *executionContext) _FileTypeEdge(ctx context.Context, sel ast.SelectionSet, obj *ent.FileTypeEdge) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, fileTypeEdgeImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("FileTypeEdge")
+		case "node":
+			out.Values[i] = ec._FileTypeEdge_node(ctx, field, obj)
+		case "cursor":
+			out.Values[i] = ec._FileTypeEdge_cursor(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var iconImplementors = []string{"Icon", "Node"}
 
 func (ec *executionContext) _Icon(ctx context.Context, sel ast.SelectionSet, obj *ent.Icon) graphql.Marshaler {
@@ -65467,6 +66886,16 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			}
 		case "deleteFavoriteWorkspace":
 			out.Values[i] = ec._Mutation_deleteFavoriteWorkspace(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "createFileType":
+			out.Values[i] = ec._Mutation_createFileType(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "updateFileType":
+			out.Values[i] = ec._Mutation_updateFileType(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -67471,6 +68900,28 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
+				return res
+			})
+		case "fileType":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_fileType(ctx, field)
+				return res
+			})
+		case "fileTypes":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_fileTypes(ctx, field)
 				return res
 			})
 		case "icon":
@@ -71968,6 +73419,11 @@ func (ec *executionContext) unmarshalNCreateFavoriteWorkspaceInput2projectᚑman
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
+func (ec *executionContext) unmarshalNCreateFileTypeInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐCreateFileTypeInput(ctx context.Context, v interface{}) (ent.CreateFileTypeInput, error) {
+	res, err := ec.unmarshalInputCreateFileTypeInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNCreateIconInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐCreateIconInput(ctx context.Context, v interface{}) (ent.CreateIconInput, error) {
 	res, err := ec.unmarshalInputCreateIconInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -72251,6 +73707,35 @@ func (ec *executionContext) marshalNFavoriteWorkspace2ᚖprojectᚑmanagementᚑ
 
 func (ec *executionContext) unmarshalNFavoriteWorkspaceWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐFavoriteWorkspaceWhereInput(ctx context.Context, v interface{}) (*ent.FavoriteWorkspaceWhereInput, error) {
 	res, err := ec.unmarshalInputFavoriteWorkspaceWhereInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNFileType2projectᚑmanagementᚑdemoᚑbackendᚋentᚐFileType(ctx context.Context, sel ast.SelectionSet, v ent.FileType) graphql.Marshaler {
+	return ec._FileType(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNFileType2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐFileType(ctx context.Context, sel ast.SelectionSet, v *ent.FileType) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._FileType(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNFileTypeCode2projectᚑmanagementᚑdemoᚑbackendᚋentᚋfiletypeᚐTypeCode(ctx context.Context, v interface{}) (filetype.TypeCode, error) {
+	var res filetype.TypeCode
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNFileTypeCode2projectᚑmanagementᚑdemoᚑbackendᚋentᚋfiletypeᚐTypeCode(ctx context.Context, sel ast.SelectionSet, v filetype.TypeCode) graphql.Marshaler {
+	return v
+}
+
+func (ec *executionContext) unmarshalNFileTypeWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐFileTypeWhereInput(ctx context.Context, v interface{}) (*ent.FileTypeWhereInput, error) {
+	res, err := ec.unmarshalInputFileTypeWhereInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
@@ -73497,6 +74982,11 @@ func (ec *executionContext) unmarshalNUpdateColorInput2projectᚑmanagementᚑde
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
+func (ec *executionContext) unmarshalNUpdateFileTypeInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐUpdateFileTypeInput(ctx context.Context, v interface{}) (ent.UpdateFileTypeInput, error) {
+	res, err := ec.unmarshalInputUpdateFileTypeInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNUpdateIconInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐUpdateIconInput(ctx context.Context, v interface{}) (ent.UpdateIconInput, error) {
 	res, err := ec.unmarshalInputUpdateIconInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -74451,6 +75941,187 @@ func (ec *executionContext) unmarshalOFavoriteWorkspaceWhereInput2ᚖprojectᚑm
 		return nil, nil
 	}
 	res, err := ec.unmarshalInputFavoriteWorkspaceWhereInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOFileType2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐFileType(ctx context.Context, sel ast.SelectionSet, v *ent.FileType) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._FileType(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalOFileTypeCode2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋfiletypeᚐTypeCodeᚄ(ctx context.Context, v interface{}) ([]filetype.TypeCode, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var vSlice []interface{}
+	if v != nil {
+		if tmp1, ok := v.([]interface{}); ok {
+			vSlice = tmp1
+		} else {
+			vSlice = []interface{}{v}
+		}
+	}
+	var err error
+	res := make([]filetype.TypeCode, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNFileTypeCode2projectᚑmanagementᚑdemoᚑbackendᚋentᚋfiletypeᚐTypeCode(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalOFileTypeCode2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋfiletypeᚐTypeCodeᚄ(ctx context.Context, sel ast.SelectionSet, v []filetype.TypeCode) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNFileTypeCode2projectᚑmanagementᚑdemoᚑbackendᚋentᚋfiletypeᚐTypeCode(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) unmarshalOFileTypeCode2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋfiletypeᚐTypeCode(ctx context.Context, v interface{}) (*filetype.TypeCode, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var res = new(filetype.TypeCode)
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOFileTypeCode2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋfiletypeᚐTypeCode(ctx context.Context, sel ast.SelectionSet, v *filetype.TypeCode) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return v
+}
+
+func (ec *executionContext) marshalOFileTypeConnection2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐFileTypeConnection(ctx context.Context, sel ast.SelectionSet, v *ent.FileTypeConnection) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._FileTypeConnection(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOFileTypeEdge2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐFileTypeEdge(ctx context.Context, sel ast.SelectionSet, v []*ent.FileTypeEdge) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalOFileTypeEdge2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐFileTypeEdge(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	return ret
+}
+
+func (ec *executionContext) marshalOFileTypeEdge2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐFileTypeEdge(ctx context.Context, sel ast.SelectionSet, v *ent.FileTypeEdge) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._FileTypeEdge(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalOFileTypeWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐFileTypeWhereInputᚄ(ctx context.Context, v interface{}) ([]*ent.FileTypeWhereInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var vSlice []interface{}
+	if v != nil {
+		if tmp1, ok := v.([]interface{}); ok {
+			vSlice = tmp1
+		} else {
+			vSlice = []interface{}{v}
+		}
+	}
+	var err error
+	res := make([]*ent.FileTypeWhereInput, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNFileTypeWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐFileTypeWhereInput(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) unmarshalOFileTypeWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐFileTypeWhereInput(ctx context.Context, v interface{}) (*ent.FileTypeWhereInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputFileTypeWhereInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 

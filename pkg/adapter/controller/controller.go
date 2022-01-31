@@ -6,6 +6,7 @@ type Controller struct {
 	Color                   interface{ Color }
 	FavoriteProject         interface{ FavoriteProject }
 	FavoriteWorkspace       interface{ FavoriteWorkspace }
+	FileType                interface{ FileType }
 	Icon                    interface{ Icon }
 	Me                      interface{ Me }
 	Project                 interface{ Project }

@@ -9,6 +9,7 @@ import (
 	"project-management-demo-backend/ent/color"
 	"project-management-demo-backend/ent/favoriteproject"
 	"project-management-demo-backend/ent/favoriteworkspace"
+	"project-management-demo-backend/ent/filetype"
 	"project-management-demo-backend/ent/icon"
 	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/projectbasecolor"
@@ -288,6 +289,49 @@ func (fw *FavoriteWorkspace) Node(ctx context.Context) (node *Node, err error) {
 		Scan(ctx, &node.Edges[1].IDs)
 	if err != nil {
 		return nil, err
+	}
+	return node, nil
+}
+
+func (ft *FileType) Node(ctx context.Context) (node *Node, err error) {
+	node = &Node{
+		ID:     ft.ID,
+		Type:   "FileType",
+		Fields: make([]*Field, 4),
+		Edges:  make([]*Edge, 0),
+	}
+	var buf []byte
+	if buf, err = json.Marshal(ft.Name); err != nil {
+		return nil, err
+	}
+	node.Fields[0] = &Field{
+		Type:  "string",
+		Name:  "name",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(ft.TypeCode); err != nil {
+		return nil, err
+	}
+	node.Fields[1] = &Field{
+		Type:  "filetype.TypeCode",
+		Name:  "type_code",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(ft.CreatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[2] = &Field{
+		Type:  "time.Time",
+		Name:  "created_at",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(ft.UpdatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[3] = &Field{
+		Type:  "time.Time",
+		Name:  "updated_at",
+		Value: string(buf),
 	}
 	return node, nil
 }
@@ -3230,6 +3274,15 @@ func (c *Client) noder(ctx context.Context, table string, id ulid.ID) (Noder, er
 			return nil, err
 		}
 		return n, nil
+	case filetype.Table:
+		n, err := c.FileType.Query().
+			Where(filetype.ID(id)).
+			CollectFields(ctx, "FileType").
+			Only(ctx)
+		if err != nil {
+			return nil, err
+		}
+		return n, nil
 	case icon.Table:
 		n, err := c.Icon.Query().
 			Where(icon.ID(id)).
@@ -3621,6 +3674,19 @@ func (c *Client) noders(ctx context.Context, table string, ids []ulid.ID) ([]Nod
 		nodes, err := c.FavoriteWorkspace.Query().
 			Where(favoriteworkspace.IDIn(ids...)).
 			CollectFields(ctx, "FavoriteWorkspace").
+			All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, node := range nodes {
+			for _, noder := range idmap[node.ID] {
+				*noder = node
+			}
+		}
+	case filetype.Table:
+		nodes, err := c.FileType.Query().
+			Where(filetype.IDIn(ids...)).
+			CollectFields(ctx, "FileType").
 			All(ctx)
 		if err != nil {
 			return nil, err

@@ -45,6 +45,18 @@ func (fw *FavoriteWorkspaceQuery) collectField(ctx *graphql.OperationContext, fi
 }
 
 // CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
+func (ft *FileTypeQuery) CollectFields(ctx context.Context, satisfies ...string) *FileTypeQuery {
+	if fc := graphql.GetFieldContext(ctx); fc != nil {
+		ft = ft.collectField(graphql.GetOperationContext(ctx), fc.Field, satisfies...)
+	}
+	return ft
+}
+
+func (ft *FileTypeQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *FileTypeQuery {
+	return ft
+}
+
+// CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
 func (i *IconQuery) CollectFields(ctx context.Context, satisfies ...string) *IconQuery {
 	if fc := graphql.GetFieldContext(ctx); fc != nil {
 		i = i.collectField(graphql.GetOperationContext(ctx), fc.Field, satisfies...)
