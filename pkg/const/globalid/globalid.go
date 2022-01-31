@@ -21,6 +21,7 @@ import (
 	"project-management-demo-backend/ent/taskcollaborator"
 	"project-management-demo-backend/ent/taskcolumn"
 	"project-management-demo-backend/ent/taskfeed"
+	"project-management-demo-backend/ent/taskfeedlike"
 	"project-management-demo-backend/ent/tasklike"
 	"project-management-demo-backend/ent/tasklistcompletedstatus"
 	"project-management-demo-backend/ent/tasklistsortstatus"
@@ -226,7 +227,7 @@ func New() GlobalIDs {
 		},
 		TaskFeedLike: field{
 			Prefix: "0BI",
-			Table:  taskfeed.Table,
+			Table:  taskfeedlike.Table,
 		},
 	}
 }
