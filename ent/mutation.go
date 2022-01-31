@@ -27,6 +27,7 @@ import (
 	"project-management-demo-backend/ent/taskcollaborator"
 	"project-management-demo-backend/ent/taskcolumn"
 	"project-management-demo-backend/ent/taskfeed"
+	"project-management-demo-backend/ent/taskfeedlike"
 	"project-management-demo-backend/ent/tasklike"
 	"project-management-demo-backend/ent/tasklistcompletedstatus"
 	"project-management-demo-backend/ent/tasklistsortstatus"
@@ -76,6 +77,7 @@ const (
 	TypeTaskCollaborator        = "TaskCollaborator"
 	TypeTaskColumn              = "TaskColumn"
 	TypeTaskFeed                = "TaskFeed"
+	TypeTaskFeedLike            = "TaskFeedLike"
 	TypeTaskLike                = "TaskLike"
 	TypeTaskListCompletedStatus = "TaskListCompletedStatus"
 	TypeTaskListSortStatus      = "TaskListSortStatus"
@@ -9997,6 +9999,9 @@ type TaskMutation struct {
 	task_feeds                map[ulid.ID]struct{}
 	removedtask_feeds         map[ulid.ID]struct{}
 	clearedtask_feeds         bool
+	task_feed_likes           map[ulid.ID]struct{}
+	removedtask_feed_likes    map[ulid.ID]struct{}
+	clearedtask_feed_likes    bool
 	done                      bool
 	oldValue                  func(context.Context) (*Task, error)
 	predicates                []predicate.Task
@@ -11066,6 +11071,60 @@ func (m *TaskMutation) ResetTaskFeeds() {
 	m.removedtask_feeds = nil
 }
 
+// AddTaskFeedLikeIDs adds the "task_feed_likes" edge to the TaskFeedLike entity by ids.
+func (m *TaskMutation) AddTaskFeedLikeIDs(ids ...ulid.ID) {
+	if m.task_feed_likes == nil {
+		m.task_feed_likes = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		m.task_feed_likes[ids[i]] = struct{}{}
+	}
+}
+
+// ClearTaskFeedLikes clears the "task_feed_likes" edge to the TaskFeedLike entity.
+func (m *TaskMutation) ClearTaskFeedLikes() {
+	m.clearedtask_feed_likes = true
+}
+
+// TaskFeedLikesCleared reports if the "task_feed_likes" edge to the TaskFeedLike entity was cleared.
+func (m *TaskMutation) TaskFeedLikesCleared() bool {
+	return m.clearedtask_feed_likes
+}
+
+// RemoveTaskFeedLikeIDs removes the "task_feed_likes" edge to the TaskFeedLike entity by IDs.
+func (m *TaskMutation) RemoveTaskFeedLikeIDs(ids ...ulid.ID) {
+	if m.removedtask_feed_likes == nil {
+		m.removedtask_feed_likes = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		delete(m.task_feed_likes, ids[i])
+		m.removedtask_feed_likes[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedTaskFeedLikes returns the removed IDs of the "task_feed_likes" edge to the TaskFeedLike entity.
+func (m *TaskMutation) RemovedTaskFeedLikesIDs() (ids []ulid.ID) {
+	for id := range m.removedtask_feed_likes {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// TaskFeedLikesIDs returns the "task_feed_likes" edge IDs in the mutation.
+func (m *TaskMutation) TaskFeedLikesIDs() (ids []ulid.ID) {
+	for id := range m.task_feed_likes {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetTaskFeedLikes resets all changes to the "task_feed_likes" edge.
+func (m *TaskMutation) ResetTaskFeedLikes() {
+	m.task_feed_likes = nil
+	m.clearedtask_feed_likes = false
+	m.removedtask_feed_likes = nil
+}
+
 // Where appends a list predicates to the TaskMutation builder.
 func (m *TaskMutation) Where(ps ...predicate.Task) {
 	m.predicates = append(m.predicates, ps...)
@@ -11404,7 +11463,7 @@ func (m *TaskMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *TaskMutation) AddedEdges() []string {
-	edges := make([]string, 0, 10)
+	edges := make([]string, 0, 11)
 	if m.teammate != nil {
 		edges = append(edges, task.EdgeTeammate)
 	}
@@ -11434,6 +11493,9 @@ func (m *TaskMutation) AddedEdges() []string {
 	}
 	if m.task_feeds != nil {
 		edges = append(edges, task.EdgeTaskFeeds)
+	}
+	if m.task_feed_likes != nil {
+		edges = append(edges, task.EdgeTaskFeedLikes)
 	}
 	return edges
 }
@@ -11496,13 +11558,19 @@ func (m *TaskMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case task.EdgeTaskFeedLikes:
+		ids := make([]ent.Value, 0, len(m.task_feed_likes))
+		for id := range m.task_feed_likes {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *TaskMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 10)
+	edges := make([]string, 0, 11)
 	if m.removedsub_tasks != nil {
 		edges = append(edges, task.EdgeSubTasks)
 	}
@@ -11523,6 +11591,9 @@ func (m *TaskMutation) RemovedEdges() []string {
 	}
 	if m.removedtask_feeds != nil {
 		edges = append(edges, task.EdgeTaskFeeds)
+	}
+	if m.removedtask_feed_likes != nil {
+		edges = append(edges, task.EdgeTaskFeedLikes)
 	}
 	return edges
 }
@@ -11573,13 +11644,19 @@ func (m *TaskMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case task.EdgeTaskFeedLikes:
+		ids := make([]ent.Value, 0, len(m.removedtask_feed_likes))
+		for id := range m.removedtask_feed_likes {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *TaskMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 10)
+	edges := make([]string, 0, 11)
 	if m.clearedteammate {
 		edges = append(edges, task.EdgeTeammate)
 	}
@@ -11610,6 +11687,9 @@ func (m *TaskMutation) ClearedEdges() []string {
 	if m.clearedtask_feeds {
 		edges = append(edges, task.EdgeTaskFeeds)
 	}
+	if m.clearedtask_feed_likes {
+		edges = append(edges, task.EdgeTaskFeedLikes)
+	}
 	return edges
 }
 
@@ -11637,6 +11717,8 @@ func (m *TaskMutation) EdgeCleared(name string) bool {
 		return m.clearedtask_collaborators
 	case task.EdgeTaskFeeds:
 		return m.clearedtask_feeds
+	case task.EdgeTaskFeedLikes:
+		return m.clearedtask_feed_likes
 	}
 	return false
 }
@@ -11691,6 +11773,9 @@ func (m *TaskMutation) ResetEdge(name string) error {
 		return nil
 	case task.EdgeTaskFeeds:
 		m.ResetTaskFeeds()
+		return nil
+	case task.EdgeTaskFeedLikes:
+		m.ResetTaskFeedLikes()
 		return nil
 	}
 	return fmt.Errorf("unknown Task edge %s", name)
@@ -12895,22 +12980,25 @@ func (m *TaskColumnMutation) ResetEdge(name string) error {
 // TaskFeedMutation represents an operation that mutates the TaskFeed nodes in the graph.
 type TaskFeedMutation struct {
 	config
-	op              Op
-	typ             string
-	id              *ulid.ID
-	description     *editor.Description
-	is_first        *bool
-	is_pinned       *bool
-	created_at      *time.Time
-	updated_at      *time.Time
-	clearedFields   map[string]struct{}
-	task            *ulid.ID
-	clearedtask     bool
-	teammate        *ulid.ID
-	clearedteammate bool
-	done            bool
-	oldValue        func(context.Context) (*TaskFeed, error)
-	predicates      []predicate.TaskFeed
+	op                     Op
+	typ                    string
+	id                     *ulid.ID
+	description            *editor.Description
+	is_first               *bool
+	is_pinned              *bool
+	created_at             *time.Time
+	updated_at             *time.Time
+	clearedFields          map[string]struct{}
+	task                   *ulid.ID
+	clearedtask            bool
+	teammate               *ulid.ID
+	clearedteammate        bool
+	task_feed_likes        map[ulid.ID]struct{}
+	removedtask_feed_likes map[ulid.ID]struct{}
+	clearedtask_feed_likes bool
+	done                   bool
+	oldValue               func(context.Context) (*TaskFeed, error)
+	predicates             []predicate.TaskFeed
 }
 
 var _ ent.Mutation = (*TaskFeedMutation)(nil)
@@ -13302,6 +13390,60 @@ func (m *TaskFeedMutation) ResetTeammate() {
 	m.clearedteammate = false
 }
 
+// AddTaskFeedLikeIDs adds the "task_feed_likes" edge to the TaskFeedLike entity by ids.
+func (m *TaskFeedMutation) AddTaskFeedLikeIDs(ids ...ulid.ID) {
+	if m.task_feed_likes == nil {
+		m.task_feed_likes = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		m.task_feed_likes[ids[i]] = struct{}{}
+	}
+}
+
+// ClearTaskFeedLikes clears the "task_feed_likes" edge to the TaskFeedLike entity.
+func (m *TaskFeedMutation) ClearTaskFeedLikes() {
+	m.clearedtask_feed_likes = true
+}
+
+// TaskFeedLikesCleared reports if the "task_feed_likes" edge to the TaskFeedLike entity was cleared.
+func (m *TaskFeedMutation) TaskFeedLikesCleared() bool {
+	return m.clearedtask_feed_likes
+}
+
+// RemoveTaskFeedLikeIDs removes the "task_feed_likes" edge to the TaskFeedLike entity by IDs.
+func (m *TaskFeedMutation) RemoveTaskFeedLikeIDs(ids ...ulid.ID) {
+	if m.removedtask_feed_likes == nil {
+		m.removedtask_feed_likes = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		delete(m.task_feed_likes, ids[i])
+		m.removedtask_feed_likes[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedTaskFeedLikes returns the removed IDs of the "task_feed_likes" edge to the TaskFeedLike entity.
+func (m *TaskFeedMutation) RemovedTaskFeedLikesIDs() (ids []ulid.ID) {
+	for id := range m.removedtask_feed_likes {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// TaskFeedLikesIDs returns the "task_feed_likes" edge IDs in the mutation.
+func (m *TaskFeedMutation) TaskFeedLikesIDs() (ids []ulid.ID) {
+	for id := range m.task_feed_likes {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetTaskFeedLikes resets all changes to the "task_feed_likes" edge.
+func (m *TaskFeedMutation) ResetTaskFeedLikes() {
+	m.task_feed_likes = nil
+	m.clearedtask_feed_likes = false
+	m.removedtask_feed_likes = nil
+}
+
 // Where appends a list predicates to the TaskFeedMutation builder.
 func (m *TaskFeedMutation) Where(ps ...predicate.TaskFeed) {
 	m.predicates = append(m.predicates, ps...)
@@ -13522,12 +13664,15 @@ func (m *TaskFeedMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *TaskFeedMutation) AddedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.task != nil {
 		edges = append(edges, taskfeed.EdgeTask)
 	}
 	if m.teammate != nil {
 		edges = append(edges, taskfeed.EdgeTeammate)
+	}
+	if m.task_feed_likes != nil {
+		edges = append(edges, taskfeed.EdgeTaskFeedLikes)
 	}
 	return edges
 }
@@ -13544,13 +13689,22 @@ func (m *TaskFeedMutation) AddedIDs(name string) []ent.Value {
 		if id := m.teammate; id != nil {
 			return []ent.Value{*id}
 		}
+	case taskfeed.EdgeTaskFeedLikes:
+		ids := make([]ent.Value, 0, len(m.task_feed_likes))
+		for id := range m.task_feed_likes {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *TaskFeedMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
+	if m.removedtask_feed_likes != nil {
+		edges = append(edges, taskfeed.EdgeTaskFeedLikes)
+	}
 	return edges
 }
 
@@ -13558,18 +13712,27 @@ func (m *TaskFeedMutation) RemovedEdges() []string {
 // the given name in this mutation.
 func (m *TaskFeedMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
+	case taskfeed.EdgeTaskFeedLikes:
+		ids := make([]ent.Value, 0, len(m.removedtask_feed_likes))
+		for id := range m.removedtask_feed_likes {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *TaskFeedMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 2)
+	edges := make([]string, 0, 3)
 	if m.clearedtask {
 		edges = append(edges, taskfeed.EdgeTask)
 	}
 	if m.clearedteammate {
 		edges = append(edges, taskfeed.EdgeTeammate)
+	}
+	if m.clearedtask_feed_likes {
+		edges = append(edges, taskfeed.EdgeTaskFeedLikes)
 	}
 	return edges
 }
@@ -13582,6 +13745,8 @@ func (m *TaskFeedMutation) EdgeCleared(name string) bool {
 		return m.clearedtask
 	case taskfeed.EdgeTeammate:
 		return m.clearedteammate
+	case taskfeed.EdgeTaskFeedLikes:
+		return m.clearedtask_feed_likes
 	}
 	return false
 }
@@ -13610,8 +13775,683 @@ func (m *TaskFeedMutation) ResetEdge(name string) error {
 	case taskfeed.EdgeTeammate:
 		m.ResetTeammate()
 		return nil
+	case taskfeed.EdgeTaskFeedLikes:
+		m.ResetTaskFeedLikes()
+		return nil
 	}
 	return fmt.Errorf("unknown TaskFeed edge %s", name)
+}
+
+// TaskFeedLikeMutation represents an operation that mutates the TaskFeedLike nodes in the graph.
+type TaskFeedLikeMutation struct {
+	config
+	op              Op
+	typ             string
+	id              *ulid.ID
+	created_at      *time.Time
+	updated_at      *time.Time
+	clearedFields   map[string]struct{}
+	task            *ulid.ID
+	clearedtask     bool
+	teammate        *ulid.ID
+	clearedteammate bool
+	feed            *ulid.ID
+	clearedfeed     bool
+	done            bool
+	oldValue        func(context.Context) (*TaskFeedLike, error)
+	predicates      []predicate.TaskFeedLike
+}
+
+var _ ent.Mutation = (*TaskFeedLikeMutation)(nil)
+
+// taskfeedlikeOption allows management of the mutation configuration using functional options.
+type taskfeedlikeOption func(*TaskFeedLikeMutation)
+
+// newTaskFeedLikeMutation creates new mutation for the TaskFeedLike entity.
+func newTaskFeedLikeMutation(c config, op Op, opts ...taskfeedlikeOption) *TaskFeedLikeMutation {
+	m := &TaskFeedLikeMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeTaskFeedLike,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withTaskFeedLikeID sets the ID field of the mutation.
+func withTaskFeedLikeID(id ulid.ID) taskfeedlikeOption {
+	return func(m *TaskFeedLikeMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *TaskFeedLike
+		)
+		m.oldValue = func(ctx context.Context) (*TaskFeedLike, error) {
+			once.Do(func() {
+				if m.done {
+					err = fmt.Errorf("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().TaskFeedLike.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withTaskFeedLike sets the old TaskFeedLike of the mutation.
+func withTaskFeedLike(node *TaskFeedLike) taskfeedlikeOption {
+	return func(m *TaskFeedLikeMutation) {
+		m.oldValue = func(context.Context) (*TaskFeedLike, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m TaskFeedLikeMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m TaskFeedLikeMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, fmt.Errorf("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of TaskFeedLike entities.
+func (m *TaskFeedLikeMutation) SetID(id ulid.ID) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *TaskFeedLikeMutation) ID() (id ulid.ID, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// SetTaskID sets the "task_id" field.
+func (m *TaskFeedLikeMutation) SetTaskID(u ulid.ID) {
+	m.task = &u
+}
+
+// TaskID returns the value of the "task_id" field in the mutation.
+func (m *TaskFeedLikeMutation) TaskID() (r ulid.ID, exists bool) {
+	v := m.task
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTaskID returns the old "task_id" field's value of the TaskFeedLike entity.
+// If the TaskFeedLike object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TaskFeedLikeMutation) OldTaskID(ctx context.Context) (v ulid.ID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldTaskID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldTaskID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTaskID: %w", err)
+	}
+	return oldValue.TaskID, nil
+}
+
+// ResetTaskID resets all changes to the "task_id" field.
+func (m *TaskFeedLikeMutation) ResetTaskID() {
+	m.task = nil
+}
+
+// SetTeammateID sets the "teammate_id" field.
+func (m *TaskFeedLikeMutation) SetTeammateID(u ulid.ID) {
+	m.teammate = &u
+}
+
+// TeammateID returns the value of the "teammate_id" field in the mutation.
+func (m *TaskFeedLikeMutation) TeammateID() (r ulid.ID, exists bool) {
+	v := m.teammate
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTeammateID returns the old "teammate_id" field's value of the TaskFeedLike entity.
+// If the TaskFeedLike object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TaskFeedLikeMutation) OldTeammateID(ctx context.Context) (v ulid.ID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldTeammateID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldTeammateID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTeammateID: %w", err)
+	}
+	return oldValue.TeammateID, nil
+}
+
+// ResetTeammateID resets all changes to the "teammate_id" field.
+func (m *TaskFeedLikeMutation) ResetTeammateID() {
+	m.teammate = nil
+}
+
+// SetTaskFeedID sets the "task_feed_id" field.
+func (m *TaskFeedLikeMutation) SetTaskFeedID(u ulid.ID) {
+	m.feed = &u
+}
+
+// TaskFeedID returns the value of the "task_feed_id" field in the mutation.
+func (m *TaskFeedLikeMutation) TaskFeedID() (r ulid.ID, exists bool) {
+	v := m.feed
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTaskFeedID returns the old "task_feed_id" field's value of the TaskFeedLike entity.
+// If the TaskFeedLike object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TaskFeedLikeMutation) OldTaskFeedID(ctx context.Context) (v ulid.ID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldTaskFeedID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldTaskFeedID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTaskFeedID: %w", err)
+	}
+	return oldValue.TaskFeedID, nil
+}
+
+// ResetTaskFeedID resets all changes to the "task_feed_id" field.
+func (m *TaskFeedLikeMutation) ResetTaskFeedID() {
+	m.feed = nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *TaskFeedLikeMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *TaskFeedLikeMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the TaskFeedLike entity.
+// If the TaskFeedLike object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TaskFeedLikeMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *TaskFeedLikeMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *TaskFeedLikeMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *TaskFeedLikeMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the TaskFeedLike entity.
+// If the TaskFeedLike object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TaskFeedLikeMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *TaskFeedLikeMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// ClearTask clears the "task" edge to the Task entity.
+func (m *TaskFeedLikeMutation) ClearTask() {
+	m.clearedtask = true
+}
+
+// TaskCleared reports if the "task" edge to the Task entity was cleared.
+func (m *TaskFeedLikeMutation) TaskCleared() bool {
+	return m.clearedtask
+}
+
+// TaskIDs returns the "task" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// TaskID instead. It exists only for internal usage by the builders.
+func (m *TaskFeedLikeMutation) TaskIDs() (ids []ulid.ID) {
+	if id := m.task; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetTask resets all changes to the "task" edge.
+func (m *TaskFeedLikeMutation) ResetTask() {
+	m.task = nil
+	m.clearedtask = false
+}
+
+// ClearTeammate clears the "teammate" edge to the Teammate entity.
+func (m *TaskFeedLikeMutation) ClearTeammate() {
+	m.clearedteammate = true
+}
+
+// TeammateCleared reports if the "teammate" edge to the Teammate entity was cleared.
+func (m *TaskFeedLikeMutation) TeammateCleared() bool {
+	return m.clearedteammate
+}
+
+// TeammateIDs returns the "teammate" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// TeammateID instead. It exists only for internal usage by the builders.
+func (m *TaskFeedLikeMutation) TeammateIDs() (ids []ulid.ID) {
+	if id := m.teammate; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetTeammate resets all changes to the "teammate" edge.
+func (m *TaskFeedLikeMutation) ResetTeammate() {
+	m.teammate = nil
+	m.clearedteammate = false
+}
+
+// SetFeedID sets the "feed" edge to the TaskFeed entity by id.
+func (m *TaskFeedLikeMutation) SetFeedID(id ulid.ID) {
+	m.feed = &id
+}
+
+// ClearFeed clears the "feed" edge to the TaskFeed entity.
+func (m *TaskFeedLikeMutation) ClearFeed() {
+	m.clearedfeed = true
+}
+
+// FeedCleared reports if the "feed" edge to the TaskFeed entity was cleared.
+func (m *TaskFeedLikeMutation) FeedCleared() bool {
+	return m.clearedfeed
+}
+
+// FeedID returns the "feed" edge ID in the mutation.
+func (m *TaskFeedLikeMutation) FeedID() (id ulid.ID, exists bool) {
+	if m.feed != nil {
+		return *m.feed, true
+	}
+	return
+}
+
+// FeedIDs returns the "feed" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// FeedID instead. It exists only for internal usage by the builders.
+func (m *TaskFeedLikeMutation) FeedIDs() (ids []ulid.ID) {
+	if id := m.feed; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetFeed resets all changes to the "feed" edge.
+func (m *TaskFeedLikeMutation) ResetFeed() {
+	m.feed = nil
+	m.clearedfeed = false
+}
+
+// Where appends a list predicates to the TaskFeedLikeMutation builder.
+func (m *TaskFeedLikeMutation) Where(ps ...predicate.TaskFeedLike) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// Op returns the operation name.
+func (m *TaskFeedLikeMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (TaskFeedLike).
+func (m *TaskFeedLikeMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *TaskFeedLikeMutation) Fields() []string {
+	fields := make([]string, 0, 5)
+	if m.task != nil {
+		fields = append(fields, taskfeedlike.FieldTaskID)
+	}
+	if m.teammate != nil {
+		fields = append(fields, taskfeedlike.FieldTeammateID)
+	}
+	if m.feed != nil {
+		fields = append(fields, taskfeedlike.FieldTaskFeedID)
+	}
+	if m.created_at != nil {
+		fields = append(fields, taskfeedlike.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, taskfeedlike.FieldUpdatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *TaskFeedLikeMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case taskfeedlike.FieldTaskID:
+		return m.TaskID()
+	case taskfeedlike.FieldTeammateID:
+		return m.TeammateID()
+	case taskfeedlike.FieldTaskFeedID:
+		return m.TaskFeedID()
+	case taskfeedlike.FieldCreatedAt:
+		return m.CreatedAt()
+	case taskfeedlike.FieldUpdatedAt:
+		return m.UpdatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *TaskFeedLikeMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case taskfeedlike.FieldTaskID:
+		return m.OldTaskID(ctx)
+	case taskfeedlike.FieldTeammateID:
+		return m.OldTeammateID(ctx)
+	case taskfeedlike.FieldTaskFeedID:
+		return m.OldTaskFeedID(ctx)
+	case taskfeedlike.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case taskfeedlike.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown TaskFeedLike field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *TaskFeedLikeMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case taskfeedlike.FieldTaskID:
+		v, ok := value.(ulid.ID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTaskID(v)
+		return nil
+	case taskfeedlike.FieldTeammateID:
+		v, ok := value.(ulid.ID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTeammateID(v)
+		return nil
+	case taskfeedlike.FieldTaskFeedID:
+		v, ok := value.(ulid.ID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTaskFeedID(v)
+		return nil
+	case taskfeedlike.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case taskfeedlike.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown TaskFeedLike field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *TaskFeedLikeMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *TaskFeedLikeMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *TaskFeedLikeMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown TaskFeedLike numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *TaskFeedLikeMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *TaskFeedLikeMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *TaskFeedLikeMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown TaskFeedLike nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *TaskFeedLikeMutation) ResetField(name string) error {
+	switch name {
+	case taskfeedlike.FieldTaskID:
+		m.ResetTaskID()
+		return nil
+	case taskfeedlike.FieldTeammateID:
+		m.ResetTeammateID()
+		return nil
+	case taskfeedlike.FieldTaskFeedID:
+		m.ResetTaskFeedID()
+		return nil
+	case taskfeedlike.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case taskfeedlike.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown TaskFeedLike field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *TaskFeedLikeMutation) AddedEdges() []string {
+	edges := make([]string, 0, 3)
+	if m.task != nil {
+		edges = append(edges, taskfeedlike.EdgeTask)
+	}
+	if m.teammate != nil {
+		edges = append(edges, taskfeedlike.EdgeTeammate)
+	}
+	if m.feed != nil {
+		edges = append(edges, taskfeedlike.EdgeFeed)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *TaskFeedLikeMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case taskfeedlike.EdgeTask:
+		if id := m.task; id != nil {
+			return []ent.Value{*id}
+		}
+	case taskfeedlike.EdgeTeammate:
+		if id := m.teammate; id != nil {
+			return []ent.Value{*id}
+		}
+	case taskfeedlike.EdgeFeed:
+		if id := m.feed; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *TaskFeedLikeMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 3)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *TaskFeedLikeMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *TaskFeedLikeMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 3)
+	if m.clearedtask {
+		edges = append(edges, taskfeedlike.EdgeTask)
+	}
+	if m.clearedteammate {
+		edges = append(edges, taskfeedlike.EdgeTeammate)
+	}
+	if m.clearedfeed {
+		edges = append(edges, taskfeedlike.EdgeFeed)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *TaskFeedLikeMutation) EdgeCleared(name string) bool {
+	switch name {
+	case taskfeedlike.EdgeTask:
+		return m.clearedtask
+	case taskfeedlike.EdgeTeammate:
+		return m.clearedteammate
+	case taskfeedlike.EdgeFeed:
+		return m.clearedfeed
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *TaskFeedLikeMutation) ClearEdge(name string) error {
+	switch name {
+	case taskfeedlike.EdgeTask:
+		m.ClearTask()
+		return nil
+	case taskfeedlike.EdgeTeammate:
+		m.ClearTeammate()
+		return nil
+	case taskfeedlike.EdgeFeed:
+		m.ClearFeed()
+		return nil
+	}
+	return fmt.Errorf("unknown TaskFeedLike unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *TaskFeedLikeMutation) ResetEdge(name string) error {
+	switch name {
+	case taskfeedlike.EdgeTask:
+		m.ResetTask()
+		return nil
+	case taskfeedlike.EdgeTeammate:
+		m.ResetTeammate()
+		return nil
+	case taskfeedlike.EdgeFeed:
+		m.ResetFeed()
+		return nil
+	}
+	return fmt.Errorf("unknown TaskFeedLike edge %s", name)
 }
 
 // TaskLikeMutation represents an operation that mutates the TaskLike nodes in the graph.
@@ -17220,6 +18060,9 @@ type TeammateMutation struct {
 	task_feeds                         map[ulid.ID]struct{}
 	removedtask_feeds                  map[ulid.ID]struct{}
 	clearedtask_feeds                  bool
+	task_feed_likes                    map[ulid.ID]struct{}
+	removedtask_feed_likes             map[ulid.ID]struct{}
+	clearedtask_feed_likes             bool
 	done                               bool
 	oldValue                           func(context.Context) (*Teammate, error)
 	predicates                         []predicate.Teammate
@@ -18300,6 +19143,60 @@ func (m *TeammateMutation) ResetTaskFeeds() {
 	m.removedtask_feeds = nil
 }
 
+// AddTaskFeedLikeIDs adds the "task_feed_likes" edge to the TaskFeedLike entity by ids.
+func (m *TeammateMutation) AddTaskFeedLikeIDs(ids ...ulid.ID) {
+	if m.task_feed_likes == nil {
+		m.task_feed_likes = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		m.task_feed_likes[ids[i]] = struct{}{}
+	}
+}
+
+// ClearTaskFeedLikes clears the "task_feed_likes" edge to the TaskFeedLike entity.
+func (m *TeammateMutation) ClearTaskFeedLikes() {
+	m.clearedtask_feed_likes = true
+}
+
+// TaskFeedLikesCleared reports if the "task_feed_likes" edge to the TaskFeedLike entity was cleared.
+func (m *TeammateMutation) TaskFeedLikesCleared() bool {
+	return m.clearedtask_feed_likes
+}
+
+// RemoveTaskFeedLikeIDs removes the "task_feed_likes" edge to the TaskFeedLike entity by IDs.
+func (m *TeammateMutation) RemoveTaskFeedLikeIDs(ids ...ulid.ID) {
+	if m.removedtask_feed_likes == nil {
+		m.removedtask_feed_likes = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		delete(m.task_feed_likes, ids[i])
+		m.removedtask_feed_likes[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedTaskFeedLikes returns the removed IDs of the "task_feed_likes" edge to the TaskFeedLike entity.
+func (m *TeammateMutation) RemovedTaskFeedLikesIDs() (ids []ulid.ID) {
+	for id := range m.removedtask_feed_likes {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// TaskFeedLikesIDs returns the "task_feed_likes" edge IDs in the mutation.
+func (m *TeammateMutation) TaskFeedLikesIDs() (ids []ulid.ID) {
+	for id := range m.task_feed_likes {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetTaskFeedLikes resets all changes to the "task_feed_likes" edge.
+func (m *TeammateMutation) ResetTaskFeedLikes() {
+	m.task_feed_likes = nil
+	m.clearedtask_feed_likes = false
+	m.removedtask_feed_likes = nil
+}
+
 // Where appends a list predicates to the TeammateMutation builder.
 func (m *TeammateMutation) Where(ps ...predicate.Teammate) {
 	m.predicates = append(m.predicates, ps...)
@@ -18486,7 +19383,7 @@ func (m *TeammateMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *TeammateMutation) AddedEdges() []string {
-	edges := make([]string, 0, 15)
+	edges := make([]string, 0, 16)
 	if m.workspaces != nil {
 		edges = append(edges, teammate.EdgeWorkspaces)
 	}
@@ -18531,6 +19428,9 @@ func (m *TeammateMutation) AddedEdges() []string {
 	}
 	if m.task_feeds != nil {
 		edges = append(edges, teammate.EdgeTaskFeeds)
+	}
+	if m.task_feed_likes != nil {
+		edges = append(edges, teammate.EdgeTaskFeedLikes)
 	}
 	return edges
 }
@@ -18629,13 +19529,19 @@ func (m *TeammateMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case teammate.EdgeTaskFeedLikes:
+		ids := make([]ent.Value, 0, len(m.task_feed_likes))
+		for id := range m.task_feed_likes {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *TeammateMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 15)
+	edges := make([]string, 0, 16)
 	if m.removedworkspaces != nil {
 		edges = append(edges, teammate.EdgeWorkspaces)
 	}
@@ -18680,6 +19586,9 @@ func (m *TeammateMutation) RemovedEdges() []string {
 	}
 	if m.removedtask_feeds != nil {
 		edges = append(edges, teammate.EdgeTaskFeeds)
+	}
+	if m.removedtask_feed_likes != nil {
+		edges = append(edges, teammate.EdgeTaskFeedLikes)
 	}
 	return edges
 }
@@ -18778,13 +19687,19 @@ func (m *TeammateMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case teammate.EdgeTaskFeedLikes:
+		ids := make([]ent.Value, 0, len(m.removedtask_feed_likes))
+		for id := range m.removedtask_feed_likes {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *TeammateMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 15)
+	edges := make([]string, 0, 16)
 	if m.clearedworkspaces {
 		edges = append(edges, teammate.EdgeWorkspaces)
 	}
@@ -18830,6 +19745,9 @@ func (m *TeammateMutation) ClearedEdges() []string {
 	if m.clearedtask_feeds {
 		edges = append(edges, teammate.EdgeTaskFeeds)
 	}
+	if m.clearedtask_feed_likes {
+		edges = append(edges, teammate.EdgeTaskFeedLikes)
+	}
 	return edges
 }
 
@@ -18867,6 +19785,8 @@ func (m *TeammateMutation) EdgeCleared(name string) bool {
 		return m.clearedtask_collaborators
 	case teammate.EdgeTaskFeeds:
 		return m.clearedtask_feeds
+	case teammate.EdgeTaskFeedLikes:
+		return m.clearedtask_feed_likes
 	}
 	return false
 }
@@ -18927,6 +19847,9 @@ func (m *TeammateMutation) ResetEdge(name string) error {
 		return nil
 	case teammate.EdgeTaskFeeds:
 		m.ResetTaskFeeds()
+		return nil
+	case teammate.EdgeTaskFeedLikes:
+		m.ResetTaskFeedLikes()
 		return nil
 	}
 	return fmt.Errorf("unknown Teammate edge %s", name)

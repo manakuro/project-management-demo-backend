@@ -70,6 +70,7 @@ type ResolverRoot interface {
 	TaskCollaborator() TaskCollaboratorResolver
 	TaskColumn() TaskColumnResolver
 	TaskFeed() TaskFeedResolver
+	TaskFeedLike() TaskFeedLikeResolver
 	TaskLike() TaskLikeResolver
 	TaskListCompletedStatus() TaskListCompletedStatusResolver
 	TaskListSortStatus() TaskListSortStatusResolver
@@ -222,6 +223,7 @@ type ComplexityRoot struct {
 		CreateTaskCollaborator        func(childComplexity int, input ent.CreateTaskCollaboratorInput) int
 		CreateTaskColumn              func(childComplexity int, input ent.CreateTaskColumnInput) int
 		CreateTaskFeed                func(childComplexity int, input ent.CreateTaskFeedInput) int
+		CreateTaskFeedLike            func(childComplexity int, input ent.CreateTaskFeedLikeInput) int
 		CreateTaskLike                func(childComplexity int, input ent.CreateTaskLikeInput) int
 		CreateTaskListCompletedStatus func(childComplexity int, input ent.CreateTaskListCompletedStatusInput) int
 		CreateTaskListSortStatus      func(childComplexity int, input ent.CreateTaskListSortStatusInput) int
@@ -243,6 +245,7 @@ type ComplexityRoot struct {
 		DeleteFavoriteWorkspace       func(childComplexity int, input model.DeleteFavoriteWorkspaceInput) int
 		DeleteTaskCollaborator        func(childComplexity int, input model.DeleteTaskCollaboratorInput) int
 		DeleteTaskFeed                func(childComplexity int, input model.DeleteTaskFeedInput) int
+		DeleteTaskFeedLike            func(childComplexity int, input model.DeleteTaskFeedLikeInput) int
 		DeleteTaskTag                 func(childComplexity int, input model.DeleteTaskTagInput) int
 		UpdateColor                   func(childComplexity int, input ent.UpdateColorInput) int
 		UpdateIcon                    func(childComplexity int, input ent.UpdateIconInput) int
@@ -261,6 +264,7 @@ type ComplexityRoot struct {
 		UpdateTaskCollaborator        func(childComplexity int, input ent.UpdateTaskCollaboratorInput) int
 		UpdateTaskColumn              func(childComplexity int, input ent.UpdateTaskColumnInput) int
 		UpdateTaskFeed                func(childComplexity int, input ent.UpdateTaskFeedInput) int
+		UpdateTaskFeedLike            func(childComplexity int, input ent.UpdateTaskFeedLikeInput) int
 		UpdateTaskLike                func(childComplexity int, input ent.UpdateTaskLikeInput) int
 		UpdateTaskListCompletedStatus func(childComplexity int, input ent.UpdateTaskListCompletedStatusInput) int
 		UpdateTaskListSortStatus      func(childComplexity int, input ent.UpdateTaskListSortStatusInput) int
@@ -525,6 +529,8 @@ type ComplexityRoot struct {
 		TaskColumn                     func(childComplexity int, where *ent.TaskColumnWhereInput) int
 		TaskColumns                    func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskColumnWhereInput) int
 		TaskFeed                       func(childComplexity int, where *ent.TaskFeedWhereInput) int
+		TaskFeedLike                   func(childComplexity int, where *ent.TaskFeedLikeWhereInput) int
+		TaskFeedLikes                  func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskFeedLikeWhereInput) int
 		TaskFeeds                      func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskFeedWhereInput) int
 		TaskLike                       func(childComplexity int, where *ent.TaskLikeWhereInput) int
 		TaskLikes                      func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskLikeWhereInput) int
@@ -579,6 +585,7 @@ type ComplexityRoot struct {
 		ProjectUpdated                      func(childComplexity int, id ulid.ID) int
 		TagUpdated                          func(childComplexity int, id ulid.ID) int
 		TaskCollaboratorsUpdated            func(childComplexity int, taskID ulid.ID) int
+		TaskFeedLikesUpdated                func(childComplexity int, taskID ulid.ID) int
 		TaskFeedUpdated                     func(childComplexity int, id ulid.ID) int
 		TaskLikesUpdated                    func(childComplexity int, where ent.TaskLikeWhereInput) int
 		TaskSectionUpdated                  func(childComplexity int, id ulid.ID) int
@@ -700,6 +707,26 @@ type ComplexityRoot struct {
 	}
 
 	TaskFeedEdge struct {
+		Cursor func(childComplexity int) int
+		Node   func(childComplexity int) int
+	}
+
+	TaskFeedLike struct {
+		CreatedAt  func(childComplexity int) int
+		ID         func(childComplexity int) int
+		TaskFeedID func(childComplexity int) int
+		TaskID     func(childComplexity int) int
+		TeammateID func(childComplexity int) int
+		UpdatedAt  func(childComplexity int) int
+	}
+
+	TaskFeedLikeConnection struct {
+		Edges      func(childComplexity int) int
+		PageInfo   func(childComplexity int) int
+		TotalCount func(childComplexity int) int
+	}
+
+	TaskFeedLikeEdge struct {
 		Cursor func(childComplexity int) int
 		Node   func(childComplexity int) int
 	}
@@ -1125,6 +1152,9 @@ type MutationResolver interface {
 	CreateTaskFeed(ctx context.Context, input ent.CreateTaskFeedInput) (*ent.TaskFeed, error)
 	UpdateTaskFeed(ctx context.Context, input ent.UpdateTaskFeedInput) (*ent.TaskFeed, error)
 	DeleteTaskFeed(ctx context.Context, input model.DeleteTaskFeedInput) (*ent.TaskFeed, error)
+	CreateTaskFeedLike(ctx context.Context, input ent.CreateTaskFeedLikeInput) (*ent.TaskFeedLike, error)
+	UpdateTaskFeedLike(ctx context.Context, input ent.UpdateTaskFeedLikeInput) (*ent.TaskFeedLike, error)
+	DeleteTaskFeedLike(ctx context.Context, input model.DeleteTaskFeedLikeInput) (*ent.TaskFeedLike, error)
 	CreateTaskLike(ctx context.Context, input ent.CreateTaskLikeInput) (*ent.TaskLike, error)
 	UpdateTaskLike(ctx context.Context, input ent.UpdateTaskLikeInput) (*ent.TaskLike, error)
 	CreateTaskListCompletedStatus(ctx context.Context, input ent.CreateTaskListCompletedStatusInput) (*ent.TaskListCompletedStatus, error)
@@ -1241,6 +1271,8 @@ type QueryResolver interface {
 	TaskColumns(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskColumnWhereInput) (*ent.TaskColumnConnection, error)
 	TaskFeed(ctx context.Context, where *ent.TaskFeedWhereInput) (*ent.TaskFeed, error)
 	TaskFeeds(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskFeedWhereInput) (*ent.TaskFeedConnection, error)
+	TaskFeedLike(ctx context.Context, where *ent.TaskFeedLikeWhereInput) (*ent.TaskFeedLike, error)
+	TaskFeedLikes(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskFeedLikeWhereInput) (*ent.TaskFeedLikeConnection, error)
 	TaskLike(ctx context.Context, where *ent.TaskLikeWhereInput) (*ent.TaskLike, error)
 	TaskLikes(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskLikeWhereInput) (*ent.TaskLikeConnection, error)
 	TaskListCompletedStatus(ctx context.Context, where *ent.TaskListCompletedStatusWhereInput) (*ent.TaskListCompletedStatus, error)
@@ -1294,6 +1326,7 @@ type SubscriptionResolver interface {
 	TaskUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.Task, error)
 	TaskCollaboratorsUpdated(ctx context.Context, taskID ulid.ID) (<-chan []*ent.TaskCollaborator, error)
 	TaskFeedUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.TaskFeed, error)
+	TaskFeedLikesUpdated(ctx context.Context, taskID ulid.ID) (<-chan []*ent.TaskFeedLike, error)
 	TaskLikesUpdated(ctx context.Context, where ent.TaskLikeWhereInput) (<-chan []*ent.TaskLike, error)
 	TaskSectionUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.TaskSection, error)
 	TaskTagsUpdated(ctx context.Context, taskID ulid.ID) (<-chan []*ent.TaskTag, error)
@@ -1331,6 +1364,10 @@ type TaskColumnResolver interface {
 type TaskFeedResolver interface {
 	CreatedAt(ctx context.Context, obj *ent.TaskFeed) (string, error)
 	UpdatedAt(ctx context.Context, obj *ent.TaskFeed) (string, error)
+}
+type TaskFeedLikeResolver interface {
+	CreatedAt(ctx context.Context, obj *ent.TaskFeedLike) (string, error)
+	UpdatedAt(ctx context.Context, obj *ent.TaskFeedLike) (string, error)
 }
 type TaskLikeResolver interface {
 	CreatedAt(ctx context.Context, obj *ent.TaskLike) (string, error)
@@ -2049,6 +2086,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.CreateTaskFeed(childComplexity, args["input"].(ent.CreateTaskFeedInput)), true
 
+	case "Mutation.createTaskFeedLike":
+		if e.complexity.Mutation.CreateTaskFeedLike == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createTaskFeedLike_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateTaskFeedLike(childComplexity, args["input"].(ent.CreateTaskFeedLikeInput)), true
+
 	case "Mutation.createTaskLike":
 		if e.complexity.Mutation.CreateTaskLike == nil {
 			break
@@ -2301,6 +2350,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.DeleteTaskFeed(childComplexity, args["input"].(model.DeleteTaskFeedInput)), true
 
+	case "Mutation.deleteTaskFeedLike":
+		if e.complexity.Mutation.DeleteTaskFeedLike == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deleteTaskFeedLike_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteTaskFeedLike(childComplexity, args["input"].(model.DeleteTaskFeedLikeInput)), true
+
 	case "Mutation.deleteTaskTag":
 		if e.complexity.Mutation.DeleteTaskTag == nil {
 			break
@@ -2516,6 +2577,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.UpdateTaskFeed(childComplexity, args["input"].(ent.UpdateTaskFeedInput)), true
+
+	case "Mutation.updateTaskFeedLike":
+		if e.complexity.Mutation.UpdateTaskFeedLike == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateTaskFeedLike_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateTaskFeedLike(childComplexity, args["input"].(ent.UpdateTaskFeedLikeInput)), true
 
 	case "Mutation.updateTaskLike":
 		if e.complexity.Mutation.UpdateTaskLike == nil {
@@ -4026,6 +4099,30 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.TaskFeed(childComplexity, args["where"].(*ent.TaskFeedWhereInput)), true
 
+	case "Query.taskFeedLike":
+		if e.complexity.Query.TaskFeedLike == nil {
+			break
+		}
+
+		args, err := ec.field_Query_taskFeedLike_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.TaskFeedLike(childComplexity, args["where"].(*ent.TaskFeedLikeWhereInput)), true
+
+	case "Query.taskFeedLikes":
+		if e.complexity.Query.TaskFeedLikes == nil {
+			break
+		}
+
+		args, err := ec.field_Query_taskFeedLikes_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.TaskFeedLikes(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["where"].(*ent.TaskFeedLikeWhereInput)), true
+
 	case "Query.taskFeeds":
 		if e.complexity.Query.TaskFeeds == nil {
 			break
@@ -4637,6 +4734,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Subscription.TaskCollaboratorsUpdated(childComplexity, args["taskId"].(ulid.ID)), true
+
+	case "Subscription.taskFeedLikesUpdated":
+		if e.complexity.Subscription.TaskFeedLikesUpdated == nil {
+			break
+		}
+
+		args, err := ec.field_Subscription_taskFeedLikesUpdated_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Subscription.TaskFeedLikesUpdated(childComplexity, args["taskId"].(ulid.ID)), true
 
 	case "Subscription.taskFeedUpdated":
 		if e.complexity.Subscription.TaskFeedUpdated == nil {
@@ -5253,6 +5362,83 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.TaskFeedEdge.Node(childComplexity), true
+
+	case "TaskFeedLike.createdAt":
+		if e.complexity.TaskFeedLike.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.TaskFeedLike.CreatedAt(childComplexity), true
+
+	case "TaskFeedLike.id":
+		if e.complexity.TaskFeedLike.ID == nil {
+			break
+		}
+
+		return e.complexity.TaskFeedLike.ID(childComplexity), true
+
+	case "TaskFeedLike.taskFeedId":
+		if e.complexity.TaskFeedLike.TaskFeedID == nil {
+			break
+		}
+
+		return e.complexity.TaskFeedLike.TaskFeedID(childComplexity), true
+
+	case "TaskFeedLike.taskId":
+		if e.complexity.TaskFeedLike.TaskID == nil {
+			break
+		}
+
+		return e.complexity.TaskFeedLike.TaskID(childComplexity), true
+
+	case "TaskFeedLike.teammateId":
+		if e.complexity.TaskFeedLike.TeammateID == nil {
+			break
+		}
+
+		return e.complexity.TaskFeedLike.TeammateID(childComplexity), true
+
+	case "TaskFeedLike.updatedAt":
+		if e.complexity.TaskFeedLike.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.TaskFeedLike.UpdatedAt(childComplexity), true
+
+	case "TaskFeedLikeConnection.edges":
+		if e.complexity.TaskFeedLikeConnection.Edges == nil {
+			break
+		}
+
+		return e.complexity.TaskFeedLikeConnection.Edges(childComplexity), true
+
+	case "TaskFeedLikeConnection.pageInfo":
+		if e.complexity.TaskFeedLikeConnection.PageInfo == nil {
+			break
+		}
+
+		return e.complexity.TaskFeedLikeConnection.PageInfo(childComplexity), true
+
+	case "TaskFeedLikeConnection.totalCount":
+		if e.complexity.TaskFeedLikeConnection.TotalCount == nil {
+			break
+		}
+
+		return e.complexity.TaskFeedLikeConnection.TotalCount(childComplexity), true
+
+	case "TaskFeedLikeEdge.cursor":
+		if e.complexity.TaskFeedLikeEdge.Cursor == nil {
+			break
+		}
+
+		return e.complexity.TaskFeedLikeEdge.Cursor(childComplexity), true
+
+	case "TaskFeedLikeEdge.node":
+		if e.complexity.TaskFeedLikeEdge.Node == nil {
+			break
+		}
+
+		return e.complexity.TaskFeedLikeEdge.Node(childComplexity), true
 
 	case "TaskLike.createdAt":
 		if e.complexity.TaskLike.CreatedAt == nil {
@@ -7220,6 +7406,10 @@ input TeammateWhereInput {
   """task_feeds edge predicates"""
   hasTaskFeeds: Boolean
   hasTaskFeedsWith: [TaskFeedWhereInput!]
+  
+  """task_feed_likes edge predicates"""
+  hasTaskFeedLikes: Boolean
+  hasTaskFeedLikesWith: [TaskFeedLikeWhereInput!]
 }
 
 """
@@ -9488,6 +9678,10 @@ input TaskWhereInput {
   """task_feeds edge predicates"""
   hasTaskFeeds: Boolean
   hasTaskFeedsWith: [TaskFeedWhereInput!]
+  
+  """task_feed_likes edge predicates"""
+  hasTaskFeedLikes: Boolean
+  hasTaskFeedLikesWith: [TaskFeedLikeWhereInput!]
 }
 
 """
@@ -10118,6 +10312,107 @@ input TaskFeedWhereInput {
   """teammate edge predicates"""
   hasTeammate: Boolean
   hasTeammateWith: [TeammateWhereInput!]
+  
+  """task_feed_likes edge predicates"""
+  hasTaskFeedLikes: Boolean
+  hasTaskFeedLikesWith: [TaskFeedLikeWhereInput!]
+}
+
+"""
+TaskFeedLikeWhereInput is used for filtering TaskFeedLike objects.
+Input was generated by ent.
+"""
+input TaskFeedLikeWhereInput {
+  not: TaskFeedLikeWhereInput
+  and: [TaskFeedLikeWhereInput!]
+  or: [TaskFeedLikeWhereInput!]
+  
+  """task_id field predicates"""
+  taskID: ID
+  taskIDNEQ: ID
+  taskIDIn: [ID!]
+  taskIDNotIn: [ID!]
+  taskIDGT: ID
+  taskIDGTE: ID
+  taskIDLT: ID
+  taskIDLTE: ID
+  taskIDContains: ID
+  taskIDHasPrefix: ID
+  taskIDHasSuffix: ID
+  taskIDEqualFold: ID
+  taskIDContainsFold: ID
+  
+  """teammate_id field predicates"""
+  teammateID: ID
+  teammateIDNEQ: ID
+  teammateIDIn: [ID!]
+  teammateIDNotIn: [ID!]
+  teammateIDGT: ID
+  teammateIDGTE: ID
+  teammateIDLT: ID
+  teammateIDLTE: ID
+  teammateIDContains: ID
+  teammateIDHasPrefix: ID
+  teammateIDHasSuffix: ID
+  teammateIDEqualFold: ID
+  teammateIDContainsFold: ID
+  
+  """task_feed_id field predicates"""
+  taskFeedID: ID
+  taskFeedIDNEQ: ID
+  taskFeedIDIn: [ID!]
+  taskFeedIDNotIn: [ID!]
+  taskFeedIDGT: ID
+  taskFeedIDGTE: ID
+  taskFeedIDLT: ID
+  taskFeedIDLTE: ID
+  taskFeedIDContains: ID
+  taskFeedIDHasPrefix: ID
+  taskFeedIDHasSuffix: ID
+  taskFeedIDEqualFold: ID
+  taskFeedIDContainsFold: ID
+  
+  """created_at field predicates"""
+  createdAt: Time
+  createdAtNEQ: Time
+  createdAtIn: [Time!]
+  createdAtNotIn: [Time!]
+  createdAtGT: Time
+  createdAtGTE: Time
+  createdAtLT: Time
+  createdAtLTE: Time
+  
+  """updated_at field predicates"""
+  updatedAt: Time
+  updatedAtNEQ: Time
+  updatedAtIn: [Time!]
+  updatedAtNotIn: [Time!]
+  updatedAtGT: Time
+  updatedAtGTE: Time
+  updatedAtLT: Time
+  updatedAtLTE: Time
+  
+  """id field predicates"""
+  id: ID
+  idNEQ: ID
+  idIn: [ID!]
+  idNotIn: [ID!]
+  idGT: ID
+  idGTE: ID
+  idLT: ID
+  idLTE: ID
+  
+  """task edge predicates"""
+  hasTask: Boolean
+  hasTaskWith: [TaskWhereInput!]
+  
+  """teammate edge predicates"""
+  hasTeammate: Boolean
+  hasTeammateWith: [TeammateWhereInput!]
+  
+  """feed edge predicates"""
+  hasFeed: Boolean
+  hasFeedWith: [TaskFeedWhereInput!]
 }
 `, BuiltIn: false},
 	{Name: "graph/schema/favorite_project/favorite_project.graphql", Input: `type FavoriteProject implements Node {
@@ -10977,6 +11272,56 @@ extend type Mutation {
   createTaskFeed(input: CreateTaskFeedInput!): TaskFeed!
   updateTaskFeed(input: UpdateTaskFeedInput!): TaskFeed!
   deleteTaskFeed(input: DeleteTaskFeedInput!): TaskFeed!
+}
+`, BuiltIn: false},
+	{Name: "graph/schema/task_feed_like/task_feed_like.graphql", Input: `type TaskFeedLike implements Node {
+  id: ID!
+  teammateId: ID!
+  taskId: ID!
+  taskFeedId: ID!
+  createdAt: String!
+  updatedAt: String!
+}
+type TaskFeedLikeConnection {
+  totalCount: Int!
+  pageInfo: PageInfo!
+  edges: [TaskFeedLikeEdge]
+}
+type TaskFeedLikeEdge {
+  node: TaskFeedLike
+  cursor: Cursor!
+}
+
+input CreateTaskFeedLikeInput {
+  taskId: ID!
+  teammateId: ID!
+  taskFeedId: ID!
+}
+
+input UpdateTaskFeedLikeInput {
+  id: ID!
+  taskId: ID
+  teammateId: ID
+  taskFeedId: ID
+}
+
+input DeleteTaskFeedLikeInput {
+  id: ID!
+}
+
+extend type Subscription {
+  taskFeedLikesUpdated(taskId: ID!): [TaskFeedLike!]!
+}
+
+extend type Query {
+  taskFeedLike(where: TaskFeedLikeWhereInput): TaskFeedLike
+  taskFeedLikes(after: Cursor, first: Int, before: Cursor, last: Int, where: TaskFeedLikeWhereInput): TaskFeedLikeConnection
+}
+
+extend type Mutation {
+  createTaskFeedLike(input: CreateTaskFeedLikeInput!): TaskFeedLike!
+  updateTaskFeedLike(input: UpdateTaskFeedLikeInput!): TaskFeedLike!
+  deleteTaskFeedLike(input: DeleteTaskFeedLikeInput!): TaskFeedLike!
 }
 `, BuiltIn: false},
 	{Name: "graph/schema/task_like/task_like.graphql", Input: `type TaskLike implements Node {
@@ -12017,6 +12362,21 @@ func (ec *executionContext) field_Mutation_createTaskColumn_args(ctx context.Con
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_createTaskFeedLike_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 ent.CreateTaskFeedLikeInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNCreateTaskFeedLikeInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐCreateTaskFeedLikeInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_createTaskFeed_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -12347,6 +12707,21 @@ func (ec *executionContext) field_Mutation_deleteTaskCollaborator_args(ctx conte
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_deleteTaskFeedLike_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.DeleteTaskFeedLikeInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNDeleteTaskFeedLikeInput2projectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐDeleteTaskFeedLikeInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_deleteTaskFeed_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -12594,6 +12969,21 @@ func (ec *executionContext) field_Mutation_updateTaskColumn_args(ctx context.Con
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNUpdateTaskColumnInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐUpdateTaskColumnInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_updateTaskFeedLike_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 ent.UpdateTaskFeedLikeInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNUpdateTaskFeedLikeInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐUpdateTaskFeedLikeInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -14004,6 +14394,72 @@ func (ec *executionContext) field_Query_taskColumns_args(ctx context.Context, ra
 	if tmp, ok := rawArgs["where"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
 		arg4, err = ec.unmarshalOTaskColumnWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskColumnWhereInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["where"] = arg4
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_taskFeedLike_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *ent.TaskFeedLikeWhereInput
+	if tmp, ok := rawArgs["where"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
+		arg0, err = ec.unmarshalOTaskFeedLikeWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskFeedLikeWhereInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["where"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_taskFeedLikes_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *ent.Cursor
+	if tmp, ok := rawArgs["after"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
+		arg0, err = ec.unmarshalOCursor2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐCursor(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["after"] = arg0
+	var arg1 *int
+	if tmp, ok := rawArgs["first"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("first"))
+		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["first"] = arg1
+	var arg2 *ent.Cursor
+	if tmp, ok := rawArgs["before"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("before"))
+		arg2, err = ec.unmarshalOCursor2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐCursor(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["before"] = arg2
+	var arg3 *int
+	if tmp, ok := rawArgs["last"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("last"))
+		arg3, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["last"] = arg3
+	var arg4 *ent.TaskFeedLikeWhereInput
+	if tmp, ok := rawArgs["where"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
+		arg4, err = ec.unmarshalOTaskFeedLikeWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskFeedLikeWhereInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -15450,6 +15906,21 @@ func (ec *executionContext) field_Subscription_tagUpdated_args(ctx context.Conte
 }
 
 func (ec *executionContext) field_Subscription_taskCollaboratorsUpdated_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 ulid.ID
+	if tmp, ok := rawArgs["taskId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskId"))
+		arg0, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["taskId"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Subscription_taskFeedLikesUpdated_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 ulid.ID
@@ -19400,6 +19871,132 @@ func (ec *executionContext) _Mutation_deleteTaskFeed(ctx context.Context, field 
 	res := resTmp.(*ent.TaskFeed)
 	fc.Result = res
 	return ec.marshalNTaskFeed2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskFeed(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_createTaskFeedLike(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_createTaskFeedLike_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreateTaskFeedLike(rctx, args["input"].(ent.CreateTaskFeedLikeInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.TaskFeedLike)
+	fc.Result = res
+	return ec.marshalNTaskFeedLike2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskFeedLike(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_updateTaskFeedLike(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_updateTaskFeedLike_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdateTaskFeedLike(rctx, args["input"].(ent.UpdateTaskFeedLikeInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.TaskFeedLike)
+	fc.Result = res
+	return ec.marshalNTaskFeedLike2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskFeedLike(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_deleteTaskFeedLike(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_deleteTaskFeedLike_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().DeleteTaskFeedLike(rctx, args["input"].(model.DeleteTaskFeedLikeInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.TaskFeedLike)
+	fc.Result = res
+	return ec.marshalNTaskFeedLike2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskFeedLike(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_createTaskLike(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -26641,6 +27238,84 @@ func (ec *executionContext) _Query_taskFeeds(ctx context.Context, field graphql.
 	return ec.marshalOTaskFeedConnection2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskFeedConnection(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Query_taskFeedLike(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_taskFeedLike_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().TaskFeedLike(rctx, args["where"].(*ent.TaskFeedLikeWhereInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*ent.TaskFeedLike)
+	fc.Result = res
+	return ec.marshalOTaskFeedLike2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskFeedLike(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_taskFeedLikes(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_taskFeedLikes_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().TaskFeedLikes(rctx, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["where"].(*ent.TaskFeedLikeWhereInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*ent.TaskFeedLikeConnection)
+	fc.Result = res
+	return ec.marshalOTaskFeedLikeConnection2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskFeedLikeConnection(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Query_taskLike(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -28943,6 +29618,58 @@ func (ec *executionContext) _Subscription_taskFeedUpdated(ctx context.Context, f
 			graphql.MarshalString(field.Alias).MarshalGQL(w)
 			w.Write([]byte{':'})
 			ec.marshalNTaskFeed2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskFeed(ctx, field.Selections, res).MarshalGQL(w)
+			w.Write([]byte{'}'})
+		})
+	}
+}
+
+func (ec *executionContext) _Subscription_taskFeedLikesUpdated(ctx context.Context, field graphql.CollectedField) (ret func() graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = nil
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Subscription",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Subscription_taskFeedLikesUpdated_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return nil
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Subscription().TaskFeedLikesUpdated(rctx, args["taskId"].(ulid.ID))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return nil
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return nil
+	}
+	return func() graphql.Marshaler {
+		res, ok := <-resTmp.(<-chan []*ent.TaskFeedLike)
+		if !ok {
+			return nil
+		}
+		return graphql.WriterFunc(func(w io.Writer) {
+			w.Write([]byte{'{'})
+			graphql.MarshalString(field.Alias).MarshalGQL(w)
+			w.Write([]byte{':'})
+			ec.marshalNTaskFeedLike2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskFeedLikeᚄ(ctx, field.Selections, res).MarshalGQL(w)
 			w.Write([]byte{'}'})
 		})
 	}
@@ -31753,6 +32480,385 @@ func (ec *executionContext) _TaskFeedEdge_cursor(ctx context.Context, field grap
 	}()
 	fc := &graphql.FieldContext{
 		Object:     "TaskFeedEdge",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Cursor, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(ent.Cursor)
+	fc.Result = res
+	return ec.marshalNCursor2projectᚑmanagementᚑdemoᚑbackendᚋentᚐCursor(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _TaskFeedLike_id(ctx context.Context, field graphql.CollectedField, obj *ent.TaskFeedLike) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "TaskFeedLike",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(ulid.ID)
+	fc.Result = res
+	return ec.marshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _TaskFeedLike_teammateId(ctx context.Context, field graphql.CollectedField, obj *ent.TaskFeedLike) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "TaskFeedLike",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TeammateID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(ulid.ID)
+	fc.Result = res
+	return ec.marshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _TaskFeedLike_taskId(ctx context.Context, field graphql.CollectedField, obj *ent.TaskFeedLike) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "TaskFeedLike",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TaskID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(ulid.ID)
+	fc.Result = res
+	return ec.marshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _TaskFeedLike_taskFeedId(ctx context.Context, field graphql.CollectedField, obj *ent.TaskFeedLike) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "TaskFeedLike",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TaskFeedID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(ulid.ID)
+	fc.Result = res
+	return ec.marshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _TaskFeedLike_createdAt(ctx context.Context, field graphql.CollectedField, obj *ent.TaskFeedLike) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "TaskFeedLike",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.TaskFeedLike().CreatedAt(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _TaskFeedLike_updatedAt(ctx context.Context, field graphql.CollectedField, obj *ent.TaskFeedLike) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "TaskFeedLike",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.TaskFeedLike().UpdatedAt(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _TaskFeedLikeConnection_totalCount(ctx context.Context, field graphql.CollectedField, obj *ent.TaskFeedLikeConnection) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "TaskFeedLikeConnection",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TotalCount, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _TaskFeedLikeConnection_pageInfo(ctx context.Context, field graphql.CollectedField, obj *ent.TaskFeedLikeConnection) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "TaskFeedLikeConnection",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PageInfo, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(ent.PageInfo)
+	fc.Result = res
+	return ec.marshalNPageInfo2projectᚑmanagementᚑdemoᚑbackendᚋentᚐPageInfo(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _TaskFeedLikeConnection_edges(ctx context.Context, field graphql.CollectedField, obj *ent.TaskFeedLikeConnection) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "TaskFeedLikeConnection",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Edges, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*ent.TaskFeedLikeEdge)
+	fc.Result = res
+	return ec.marshalOTaskFeedLikeEdge2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskFeedLikeEdge(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _TaskFeedLikeEdge_node(ctx context.Context, field graphql.CollectedField, obj *ent.TaskFeedLikeEdge) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "TaskFeedLikeEdge",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Node, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*ent.TaskFeedLike)
+	fc.Result = res
+	return ec.marshalOTaskFeedLike2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskFeedLike(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _TaskFeedLikeEdge_cursor(ctx context.Context, field graphql.CollectedField, obj *ent.TaskFeedLikeEdge) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "TaskFeedLikeEdge",
 		Field:      field,
 		Args:       nil,
 		IsMethod:   false,
@@ -41257,6 +42363,45 @@ func (ec *executionContext) unmarshalInputCreateTaskFeedInput(ctx context.Contex
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputCreateTaskFeedLikeInput(ctx context.Context, obj interface{}) (ent.CreateTaskFeedLikeInput, error) {
+	var it ent.CreateTaskFeedLikeInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "taskId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskId"))
+			it.TaskID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "teammateId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("teammateId"))
+			it.TeammateID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskFeedId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskFeedId"))
+			it.TaskFeedID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputCreateTaskInput(ctx context.Context, obj interface{}) (ent.CreateTaskInput, error) {
 	var it ent.CreateTaskInput
 	asMap := map[string]interface{}{}
@@ -42011,6 +43156,29 @@ func (ec *executionContext) unmarshalInputDeleteTaskCollaboratorInput(ctx contex
 
 func (ec *executionContext) unmarshalInputDeleteTaskFeedInput(ctx context.Context, obj interface{}) (model.DeleteTaskFeedInput, error) {
 	var it model.DeleteTaskFeedInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			it.ID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputDeleteTaskFeedLikeInput(ctx context.Context, obj interface{}) (model.DeleteTaskFeedLikeInput, error) {
+	var it model.DeleteTaskFeedLikeInput
 	asMap := map[string]interface{}{}
 	for k, v := range obj.(map[string]interface{}) {
 		asMap[k] = v
@@ -50245,6 +51413,597 @@ func (ec *executionContext) unmarshalInputTaskColumnWhereInput(ctx context.Conte
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputTaskFeedLikeWhereInput(ctx context.Context, obj interface{}) (ent.TaskFeedLikeWhereInput, error) {
+	var it ent.TaskFeedLikeWhereInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "not":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("not"))
+			it.Not, err = ec.unmarshalOTaskFeedLikeWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskFeedLikeWhereInput(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "and":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("and"))
+			it.And, err = ec.unmarshalOTaskFeedLikeWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskFeedLikeWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "or":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("or"))
+			it.Or, err = ec.unmarshalOTaskFeedLikeWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskFeedLikeWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskID":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskID"))
+			it.TaskID, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskIDNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskIDNEQ"))
+			it.TaskIDNEQ, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskIDIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskIDIn"))
+			it.TaskIDIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskIDNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskIDNotIn"))
+			it.TaskIDNotIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskIDGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskIDGT"))
+			it.TaskIDGT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskIDGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskIDGTE"))
+			it.TaskIDGTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskIDLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskIDLT"))
+			it.TaskIDLT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskIDLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskIDLTE"))
+			it.TaskIDLTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskIDContains":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskIDContains"))
+			it.TaskIDContains, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskIDHasPrefix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskIDHasPrefix"))
+			it.TaskIDHasPrefix, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskIDHasSuffix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskIDHasSuffix"))
+			it.TaskIDHasSuffix, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskIDEqualFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskIDEqualFold"))
+			it.TaskIDEqualFold, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskIDContainsFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskIDContainsFold"))
+			it.TaskIDContainsFold, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "teammateID":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("teammateID"))
+			it.TeammateID, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "teammateIDNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("teammateIDNEQ"))
+			it.TeammateIDNEQ, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "teammateIDIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("teammateIDIn"))
+			it.TeammateIDIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "teammateIDNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("teammateIDNotIn"))
+			it.TeammateIDNotIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "teammateIDGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("teammateIDGT"))
+			it.TeammateIDGT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "teammateIDGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("teammateIDGTE"))
+			it.TeammateIDGTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "teammateIDLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("teammateIDLT"))
+			it.TeammateIDLT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "teammateIDLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("teammateIDLTE"))
+			it.TeammateIDLTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "teammateIDContains":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("teammateIDContains"))
+			it.TeammateIDContains, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "teammateIDHasPrefix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("teammateIDHasPrefix"))
+			it.TeammateIDHasPrefix, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "teammateIDHasSuffix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("teammateIDHasSuffix"))
+			it.TeammateIDHasSuffix, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "teammateIDEqualFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("teammateIDEqualFold"))
+			it.TeammateIDEqualFold, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "teammateIDContainsFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("teammateIDContainsFold"))
+			it.TeammateIDContainsFold, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskFeedID":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskFeedID"))
+			it.TaskFeedID, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskFeedIDNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskFeedIDNEQ"))
+			it.TaskFeedIDNEQ, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskFeedIDIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskFeedIDIn"))
+			it.TaskFeedIDIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskFeedIDNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskFeedIDNotIn"))
+			it.TaskFeedIDNotIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskFeedIDGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskFeedIDGT"))
+			it.TaskFeedIDGT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskFeedIDGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskFeedIDGTE"))
+			it.TaskFeedIDGTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskFeedIDLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskFeedIDLT"))
+			it.TaskFeedIDLT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskFeedIDLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskFeedIDLTE"))
+			it.TaskFeedIDLTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskFeedIDContains":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskFeedIDContains"))
+			it.TaskFeedIDContains, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskFeedIDHasPrefix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskFeedIDHasPrefix"))
+			it.TaskFeedIDHasPrefix, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskFeedIDHasSuffix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskFeedIDHasSuffix"))
+			it.TaskFeedIDHasSuffix, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskFeedIDEqualFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskFeedIDEqualFold"))
+			it.TaskFeedIDEqualFold, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskFeedIDContainsFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskFeedIDContainsFold"))
+			it.TaskFeedIDContainsFold, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAt":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAt"))
+			it.CreatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtNEQ"))
+			it.CreatedAtNEQ, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtIn"))
+			it.CreatedAtIn, err = ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtNotIn"))
+			it.CreatedAtNotIn, err = ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtGT"))
+			it.CreatedAtGT, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtGTE"))
+			it.CreatedAtGTE, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtLT"))
+			it.CreatedAtLT, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtLTE"))
+			it.CreatedAtLTE, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAt":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAt"))
+			it.UpdatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtNEQ"))
+			it.UpdatedAtNEQ, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtIn"))
+			it.UpdatedAtIn, err = ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtNotIn"))
+			it.UpdatedAtNotIn, err = ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtGT"))
+			it.UpdatedAtGT, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtGTE"))
+			it.UpdatedAtGTE, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtLT"))
+			it.UpdatedAtLT, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtLTE"))
+			it.UpdatedAtLTE, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			it.ID, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idNEQ"))
+			it.IDNEQ, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idIn"))
+			it.IDIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idNotIn"))
+			it.IDNotIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idGT"))
+			it.IDGT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idGTE"))
+			it.IDGTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idLT"))
+			it.IDLT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idLTE"))
+			it.IDLTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasTask":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasTask"))
+			it.HasTask, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasTaskWith":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasTaskWith"))
+			it.HasTaskWith, err = ec.unmarshalOTaskWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasTeammate":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasTeammate"))
+			it.HasTeammate, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasTeammateWith":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasTeammateWith"))
+			it.HasTeammateWith, err = ec.unmarshalOTeammateWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTeammateWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasFeed":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasFeed"))
+			it.HasFeed, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasFeedWith":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasFeedWith"))
+			it.HasFeedWith, err = ec.unmarshalOTaskFeedWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskFeedWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputTaskFeedWhereInput(ctx context.Context, obj interface{}) (ent.TaskFeedWhereInput, error) {
 	var it ent.TaskFeedWhereInput
 	asMap := map[string]interface{}{}
@@ -50739,6 +52498,22 @@ func (ec *executionContext) unmarshalInputTaskFeedWhereInput(ctx context.Context
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasTeammateWith"))
 			it.HasTeammateWith, err = ec.unmarshalOTeammateWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTeammateWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasTaskFeedLikes":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasTaskFeedLikes"))
+			it.HasTaskFeedLikes, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasTaskFeedLikesWith":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasTaskFeedLikesWith"))
+			it.HasTaskFeedLikesWith, err = ec.unmarshalOTaskFeedLikeWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskFeedLikeWhereInputᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -54655,6 +56430,22 @@ func (ec *executionContext) unmarshalInputTaskWhereInput(ctx context.Context, ob
 			if err != nil {
 				return it, err
 			}
+		case "hasTaskFeedLikes":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasTaskFeedLikes"))
+			it.HasTaskFeedLikes, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasTaskFeedLikesWith":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasTaskFeedLikesWith"))
+			it.HasTaskFeedLikesWith, err = ec.unmarshalOTaskFeedLikeWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskFeedLikeWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		}
 	}
 
@@ -58521,6 +60312,22 @@ func (ec *executionContext) unmarshalInputTeammateWhereInput(ctx context.Context
 			if err != nil {
 				return it, err
 			}
+		case "hasTaskFeedLikes":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasTaskFeedLikes"))
+			it.HasTaskFeedLikes, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasTaskFeedLikesWith":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasTaskFeedLikesWith"))
+			it.HasTaskFeedLikesWith, err = ec.unmarshalOTaskFeedLikeWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskFeedLikeWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		}
 	}
 
@@ -60643,6 +62450,53 @@ func (ec *executionContext) unmarshalInputUpdateTaskFeedInput(ctx context.Contex
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputUpdateTaskFeedLikeInput(ctx context.Context, obj interface{}) (ent.UpdateTaskFeedLikeInput, error) {
+	var it ent.UpdateTaskFeedLikeInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			it.ID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskId"))
+			it.TaskID, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "teammateId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("teammateId"))
+			it.TeammateID, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskFeedId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskFeedId"))
+			it.TaskFeedID, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputUpdateTaskInput(ctx context.Context, obj interface{}) (ent.UpdateTaskInput, error) {
 	var it ent.UpdateTaskInput
 	asMap := map[string]interface{}{}
@@ -62730,6 +64584,11 @@ func (ec *executionContext) _Node(ctx context.Context, sel ast.SelectionSet, obj
 			return graphql.Null
 		}
 		return ec._TaskFeed(ctx, sel, obj)
+	case *ent.TaskFeedLike:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._TaskFeedLike(ctx, sel, obj)
 	case *ent.TaskLike:
 		if obj == nil {
 			return graphql.Null
@@ -63773,6 +65632,21 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			}
 		case "deleteTaskFeed":
 			out.Values[i] = ec._Mutation_deleteTaskFeed(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "createTaskFeedLike":
+			out.Values[i] = ec._Mutation_createTaskFeedLike(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "updateTaskFeedLike":
+			out.Values[i] = ec._Mutation_updateTaskFeedLike(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "deleteTaskFeedLike":
+			out.Values[i] = ec._Mutation_deleteTaskFeedLike(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -65940,6 +67814,28 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 				res = ec._Query_taskFeeds(ctx, field)
 				return res
 			})
+		case "taskFeedLike":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_taskFeedLike(ctx, field)
+				return res
+			})
+		case "taskFeedLikes":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_taskFeedLikes(ctx, field)
+				return res
+			})
 		case "taskLike":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
@@ -66358,6 +68254,8 @@ func (ec *executionContext) _Subscription(ctx context.Context, sel ast.Selection
 		return ec._Subscription_taskCollaboratorsUpdated(ctx, fields[0])
 	case "taskFeedUpdated":
 		return ec._Subscription_taskFeedUpdated(ctx, fields[0])
+	case "taskFeedLikesUpdated":
+		return ec._Subscription_taskFeedLikesUpdated(ctx, fields[0])
 	case "taskLikesUpdated":
 		return ec._Subscription_taskLikesUpdated(ctx, fields[0])
 	case "taskSectionUpdated":
@@ -67125,6 +69023,139 @@ func (ec *executionContext) _TaskFeedEdge(ctx context.Context, sel ast.Selection
 			out.Values[i] = ec._TaskFeedEdge_node(ctx, field, obj)
 		case "cursor":
 			out.Values[i] = ec._TaskFeedEdge_cursor(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var taskFeedLikeImplementors = []string{"TaskFeedLike", "Node"}
+
+func (ec *executionContext) _TaskFeedLike(ctx context.Context, sel ast.SelectionSet, obj *ent.TaskFeedLike) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, taskFeedLikeImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("TaskFeedLike")
+		case "id":
+			out.Values[i] = ec._TaskFeedLike_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "teammateId":
+			out.Values[i] = ec._TaskFeedLike_teammateId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "taskId":
+			out.Values[i] = ec._TaskFeedLike_taskId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "taskFeedId":
+			out.Values[i] = ec._TaskFeedLike_taskFeedId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "createdAt":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._TaskFeedLike_createdAt(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "updatedAt":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._TaskFeedLike_updatedAt(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var taskFeedLikeConnectionImplementors = []string{"TaskFeedLikeConnection"}
+
+func (ec *executionContext) _TaskFeedLikeConnection(ctx context.Context, sel ast.SelectionSet, obj *ent.TaskFeedLikeConnection) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, taskFeedLikeConnectionImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("TaskFeedLikeConnection")
+		case "totalCount":
+			out.Values[i] = ec._TaskFeedLikeConnection_totalCount(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "pageInfo":
+			out.Values[i] = ec._TaskFeedLikeConnection_pageInfo(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "edges":
+			out.Values[i] = ec._TaskFeedLikeConnection_edges(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var taskFeedLikeEdgeImplementors = []string{"TaskFeedLikeEdge"}
+
+func (ec *executionContext) _TaskFeedLikeEdge(ctx context.Context, sel ast.SelectionSet, obj *ent.TaskFeedLikeEdge) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, taskFeedLikeEdgeImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("TaskFeedLikeEdge")
+		case "node":
+			out.Values[i] = ec._TaskFeedLikeEdge_node(ctx, field, obj)
+		case "cursor":
+			out.Values[i] = ec._TaskFeedLikeEdge_cursor(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -70007,6 +72038,11 @@ func (ec *executionContext) unmarshalNCreateTaskFeedInput2projectᚑmanagement�
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
+func (ec *executionContext) unmarshalNCreateTaskFeedLikeInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐCreateTaskFeedLikeInput(ctx context.Context, v interface{}) (ent.CreateTaskFeedLikeInput, error) {
+	res, err := ec.unmarshalInputCreateTaskFeedLikeInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNCreateTaskInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐCreateTaskInput(ctx context.Context, v interface{}) (ent.CreateTaskInput, error) {
 	res, err := ec.unmarshalInputCreateTaskInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -70119,6 +72155,11 @@ func (ec *executionContext) unmarshalNDeleteTaskCollaboratorInput2projectᚑmana
 
 func (ec *executionContext) unmarshalNDeleteTaskFeedInput2projectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐDeleteTaskFeedInput(ctx context.Context, v interface{}) (model.DeleteTaskFeedInput, error) {
 	res, err := ec.unmarshalInputDeleteTaskFeedInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNDeleteTaskFeedLikeInput2projectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐDeleteTaskFeedLikeInput(ctx context.Context, v interface{}) (model.DeleteTaskFeedLikeInput, error) {
+	res, err := ec.unmarshalInputDeleteTaskFeedLikeInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
@@ -70900,6 +72941,69 @@ func (ec *executionContext) marshalNTaskFeed2ᚖprojectᚑmanagementᚑdemoᚑba
 	return ec._TaskFeed(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalNTaskFeedLike2projectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskFeedLike(ctx context.Context, sel ast.SelectionSet, v ent.TaskFeedLike) graphql.Marshaler {
+	return ec._TaskFeedLike(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNTaskFeedLike2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskFeedLikeᚄ(ctx context.Context, sel ast.SelectionSet, v []*ent.TaskFeedLike) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNTaskFeedLike2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskFeedLike(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNTaskFeedLike2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskFeedLike(ctx context.Context, sel ast.SelectionSet, v *ent.TaskFeedLike) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._TaskFeedLike(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNTaskFeedLikeWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskFeedLikeWhereInput(ctx context.Context, v interface{}) (*ent.TaskFeedLikeWhereInput, error) {
+	res, err := ec.unmarshalInputTaskFeedLikeWhereInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNTaskFeedWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskFeedWhereInput(ctx context.Context, v interface{}) (*ent.TaskFeedWhereInput, error) {
 	res, err := ec.unmarshalInputTaskFeedWhereInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
@@ -71465,6 +73569,11 @@ func (ec *executionContext) unmarshalNUpdateTaskColumnInput2projectᚑmanagement
 
 func (ec *executionContext) unmarshalNUpdateTaskFeedInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐUpdateTaskFeedInput(ctx context.Context, v interface{}) (ent.UpdateTaskFeedInput, error) {
 	res, err := ec.unmarshalInputUpdateTaskFeedInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNUpdateTaskFeedLikeInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐUpdateTaskFeedLikeInput(ctx context.Context, v interface{}) (ent.UpdateTaskFeedLikeInput, error) {
+	res, err := ec.unmarshalInputUpdateTaskFeedLikeInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
@@ -74000,6 +76109,100 @@ func (ec *executionContext) marshalOTaskFeedEdge2ᚖprojectᚑmanagementᚑdemo�
 		return graphql.Null
 	}
 	return ec._TaskFeedEdge(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOTaskFeedLike2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskFeedLike(ctx context.Context, sel ast.SelectionSet, v *ent.TaskFeedLike) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._TaskFeedLike(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOTaskFeedLikeConnection2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskFeedLikeConnection(ctx context.Context, sel ast.SelectionSet, v *ent.TaskFeedLikeConnection) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._TaskFeedLikeConnection(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOTaskFeedLikeEdge2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskFeedLikeEdge(ctx context.Context, sel ast.SelectionSet, v []*ent.TaskFeedLikeEdge) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalOTaskFeedLikeEdge2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskFeedLikeEdge(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	return ret
+}
+
+func (ec *executionContext) marshalOTaskFeedLikeEdge2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskFeedLikeEdge(ctx context.Context, sel ast.SelectionSet, v *ent.TaskFeedLikeEdge) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._TaskFeedLikeEdge(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalOTaskFeedLikeWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskFeedLikeWhereInputᚄ(ctx context.Context, v interface{}) ([]*ent.TaskFeedLikeWhereInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var vSlice []interface{}
+	if v != nil {
+		if tmp1, ok := v.([]interface{}); ok {
+			vSlice = tmp1
+		} else {
+			vSlice = []interface{}{v}
+		}
+	}
+	var err error
+	res := make([]*ent.TaskFeedLikeWhereInput, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNTaskFeedLikeWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskFeedLikeWhereInput(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) unmarshalOTaskFeedLikeWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskFeedLikeWhereInput(ctx context.Context, v interface{}) (*ent.TaskFeedLikeWhereInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputTaskFeedLikeWhereInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalOTaskFeedWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskFeedWhereInputᚄ(ctx context.Context, v interface{}) ([]*ent.TaskFeedWhereInput, error) {

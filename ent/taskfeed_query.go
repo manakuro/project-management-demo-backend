@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"database/sql/driver"
 	"errors"
 	"fmt"
 	"math"
@@ -11,6 +12,7 @@ import (
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/task"
 	"project-management-demo-backend/ent/taskfeed"
+	"project-management-demo-backend/ent/taskfeedlike"
 	"project-management-demo-backend/ent/teammate"
 
 	"entgo.io/ent/dialect/sql"
@@ -28,8 +30,9 @@ type TaskFeedQuery struct {
 	fields     []string
 	predicates []predicate.TaskFeed
 	// eager-loading edges.
-	withTask     *TaskQuery
-	withTeammate *TeammateQuery
+	withTask          *TaskQuery
+	withTeammate      *TeammateQuery
+	withTaskFeedLikes *TaskFeedLikeQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -103,6 +106,28 @@ func (tfq *TaskFeedQuery) QueryTeammate() *TeammateQuery {
 			sqlgraph.From(taskfeed.Table, taskfeed.FieldID, selector),
 			sqlgraph.To(teammate.Table, teammate.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, taskfeed.TeammateTable, taskfeed.TeammateColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(tfq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryTaskFeedLikes chains the current query on the "task_feed_likes" edge.
+func (tfq *TaskFeedQuery) QueryTaskFeedLikes() *TaskFeedLikeQuery {
+	query := &TaskFeedLikeQuery{config: tfq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := tfq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := tfq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(taskfeed.Table, taskfeed.FieldID, selector),
+			sqlgraph.To(taskfeedlike.Table, taskfeedlike.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, taskfeed.TaskFeedLikesTable, taskfeed.TaskFeedLikesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(tfq.driver.Dialect(), step)
 		return fromU, nil
@@ -286,13 +311,14 @@ func (tfq *TaskFeedQuery) Clone() *TaskFeedQuery {
 		return nil
 	}
 	return &TaskFeedQuery{
-		config:       tfq.config,
-		limit:        tfq.limit,
-		offset:       tfq.offset,
-		order:        append([]OrderFunc{}, tfq.order...),
-		predicates:   append([]predicate.TaskFeed{}, tfq.predicates...),
-		withTask:     tfq.withTask.Clone(),
-		withTeammate: tfq.withTeammate.Clone(),
+		config:            tfq.config,
+		limit:             tfq.limit,
+		offset:            tfq.offset,
+		order:             append([]OrderFunc{}, tfq.order...),
+		predicates:        append([]predicate.TaskFeed{}, tfq.predicates...),
+		withTask:          tfq.withTask.Clone(),
+		withTeammate:      tfq.withTeammate.Clone(),
+		withTaskFeedLikes: tfq.withTaskFeedLikes.Clone(),
 		// clone intermediate query.
 		sql:  tfq.sql.Clone(),
 		path: tfq.path,
@@ -318,6 +344,17 @@ func (tfq *TaskFeedQuery) WithTeammate(opts ...func(*TeammateQuery)) *TaskFeedQu
 		opt(query)
 	}
 	tfq.withTeammate = query
+	return tfq
+}
+
+// WithTaskFeedLikes tells the query-builder to eager-load the nodes that are connected to
+// the "task_feed_likes" edge. The optional arguments are used to configure the query builder of the edge.
+func (tfq *TaskFeedQuery) WithTaskFeedLikes(opts ...func(*TaskFeedLikeQuery)) *TaskFeedQuery {
+	query := &TaskFeedLikeQuery{config: tfq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	tfq.withTaskFeedLikes = query
 	return tfq
 }
 
@@ -386,9 +423,10 @@ func (tfq *TaskFeedQuery) sqlAll(ctx context.Context) ([]*TaskFeed, error) {
 	var (
 		nodes       = []*TaskFeed{}
 		_spec       = tfq.querySpec()
-		loadedTypes = [2]bool{
+		loadedTypes = [3]bool{
 			tfq.withTask != nil,
 			tfq.withTeammate != nil,
+			tfq.withTaskFeedLikes != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -460,6 +498,31 @@ func (tfq *TaskFeedQuery) sqlAll(ctx context.Context) ([]*TaskFeed, error) {
 			for i := range nodes {
 				nodes[i].Edges.Teammate = n
 			}
+		}
+	}
+
+	if query := tfq.withTaskFeedLikes; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[ulid.ID]*TaskFeed)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.TaskFeedLikes = []*TaskFeedLike{}
+		}
+		query.Where(predicate.TaskFeedLike(func(s *sql.Selector) {
+			s.Where(sql.InValues(taskfeed.TaskFeedLikesColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.TaskFeedID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "task_feed_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.TaskFeedLikes = append(node.Edges.TaskFeedLikes, n)
 		}
 	}
 

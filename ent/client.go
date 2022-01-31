@@ -28,6 +28,7 @@ import (
 	"project-management-demo-backend/ent/taskcollaborator"
 	"project-management-demo-backend/ent/taskcolumn"
 	"project-management-demo-backend/ent/taskfeed"
+	"project-management-demo-backend/ent/taskfeedlike"
 	"project-management-demo-backend/ent/tasklike"
 	"project-management-demo-backend/ent/tasklistcompletedstatus"
 	"project-management-demo-backend/ent/tasklistsortstatus"
@@ -91,6 +92,8 @@ type Client struct {
 	TaskColumn *TaskColumnClient
 	// TaskFeed is the client for interacting with the TaskFeed builders.
 	TaskFeed *TaskFeedClient
+	// TaskFeedLike is the client for interacting with the TaskFeedLike builders.
+	TaskFeedLike *TaskFeedLikeClient
 	// TaskLike is the client for interacting with the TaskLike builders.
 	TaskLike *TaskLikeClient
 	// TaskListCompletedStatus is the client for interacting with the TaskListCompletedStatus builders.
@@ -154,6 +157,7 @@ func (c *Client) init() {
 	c.TaskCollaborator = NewTaskCollaboratorClient(c.config)
 	c.TaskColumn = NewTaskColumnClient(c.config)
 	c.TaskFeed = NewTaskFeedClient(c.config)
+	c.TaskFeedLike = NewTaskFeedLikeClient(c.config)
 	c.TaskLike = NewTaskLikeClient(c.config)
 	c.TaskListCompletedStatus = NewTaskListCompletedStatusClient(c.config)
 	c.TaskListSortStatus = NewTaskListSortStatusClient(c.config)
@@ -221,6 +225,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		TaskCollaborator:        NewTaskCollaboratorClient(cfg),
 		TaskColumn:              NewTaskColumnClient(cfg),
 		TaskFeed:                NewTaskFeedClient(cfg),
+		TaskFeedLike:            NewTaskFeedLikeClient(cfg),
 		TaskLike:                NewTaskLikeClient(cfg),
 		TaskListCompletedStatus: NewTaskListCompletedStatusClient(cfg),
 		TaskListSortStatus:      NewTaskListSortStatusClient(cfg),
@@ -273,6 +278,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		TaskCollaborator:        NewTaskCollaboratorClient(cfg),
 		TaskColumn:              NewTaskColumnClient(cfg),
 		TaskFeed:                NewTaskFeedClient(cfg),
+		TaskFeedLike:            NewTaskFeedLikeClient(cfg),
 		TaskLike:                NewTaskLikeClient(cfg),
 		TaskListCompletedStatus: NewTaskListCompletedStatusClient(cfg),
 		TaskListSortStatus:      NewTaskListSortStatusClient(cfg),
@@ -336,6 +342,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.TaskCollaborator.Use(hooks...)
 	c.TaskColumn.Use(hooks...)
 	c.TaskFeed.Use(hooks...)
+	c.TaskFeedLike.Use(hooks...)
 	c.TaskLike.Use(hooks...)
 	c.TaskListCompletedStatus.Use(hooks...)
 	c.TaskListSortStatus.Use(hooks...)
@@ -2515,6 +2522,22 @@ func (c *TaskClient) QueryTaskFeeds(t *Task) *TaskFeedQuery {
 	return query
 }
 
+// QueryTaskFeedLikes queries the task_feed_likes edge of a Task.
+func (c *TaskClient) QueryTaskFeedLikes(t *Task) *TaskFeedLikeQuery {
+	query := &TaskFeedLikeQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := t.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(task.Table, task.FieldID, id),
+			sqlgraph.To(taskfeedlike.Table, taskfeedlike.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, task.TaskFeedLikesTable, task.TaskFeedLikesColumn),
+		)
+		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *TaskClient) Hooks() []Hook {
 	return c.hooks.Task
@@ -2881,9 +2904,163 @@ func (c *TaskFeedClient) QueryTeammate(tf *TaskFeed) *TeammateQuery {
 	return query
 }
 
+// QueryTaskFeedLikes queries the task_feed_likes edge of a TaskFeed.
+func (c *TaskFeedClient) QueryTaskFeedLikes(tf *TaskFeed) *TaskFeedLikeQuery {
+	query := &TaskFeedLikeQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := tf.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(taskfeed.Table, taskfeed.FieldID, id),
+			sqlgraph.To(taskfeedlike.Table, taskfeedlike.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, taskfeed.TaskFeedLikesTable, taskfeed.TaskFeedLikesColumn),
+		)
+		fromV = sqlgraph.Neighbors(tf.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *TaskFeedClient) Hooks() []Hook {
 	return c.hooks.TaskFeed
+}
+
+// TaskFeedLikeClient is a client for the TaskFeedLike schema.
+type TaskFeedLikeClient struct {
+	config
+}
+
+// NewTaskFeedLikeClient returns a client for the TaskFeedLike from the given config.
+func NewTaskFeedLikeClient(c config) *TaskFeedLikeClient {
+	return &TaskFeedLikeClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `taskfeedlike.Hooks(f(g(h())))`.
+func (c *TaskFeedLikeClient) Use(hooks ...Hook) {
+	c.hooks.TaskFeedLike = append(c.hooks.TaskFeedLike, hooks...)
+}
+
+// Create returns a create builder for TaskFeedLike.
+func (c *TaskFeedLikeClient) Create() *TaskFeedLikeCreate {
+	mutation := newTaskFeedLikeMutation(c.config, OpCreate)
+	return &TaskFeedLikeCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of TaskFeedLike entities.
+func (c *TaskFeedLikeClient) CreateBulk(builders ...*TaskFeedLikeCreate) *TaskFeedLikeCreateBulk {
+	return &TaskFeedLikeCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for TaskFeedLike.
+func (c *TaskFeedLikeClient) Update() *TaskFeedLikeUpdate {
+	mutation := newTaskFeedLikeMutation(c.config, OpUpdate)
+	return &TaskFeedLikeUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *TaskFeedLikeClient) UpdateOne(tfl *TaskFeedLike) *TaskFeedLikeUpdateOne {
+	mutation := newTaskFeedLikeMutation(c.config, OpUpdateOne, withTaskFeedLike(tfl))
+	return &TaskFeedLikeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *TaskFeedLikeClient) UpdateOneID(id ulid.ID) *TaskFeedLikeUpdateOne {
+	mutation := newTaskFeedLikeMutation(c.config, OpUpdateOne, withTaskFeedLikeID(id))
+	return &TaskFeedLikeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for TaskFeedLike.
+func (c *TaskFeedLikeClient) Delete() *TaskFeedLikeDelete {
+	mutation := newTaskFeedLikeMutation(c.config, OpDelete)
+	return &TaskFeedLikeDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *TaskFeedLikeClient) DeleteOne(tfl *TaskFeedLike) *TaskFeedLikeDeleteOne {
+	return c.DeleteOneID(tfl.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *TaskFeedLikeClient) DeleteOneID(id ulid.ID) *TaskFeedLikeDeleteOne {
+	builder := c.Delete().Where(taskfeedlike.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &TaskFeedLikeDeleteOne{builder}
+}
+
+// Query returns a query builder for TaskFeedLike.
+func (c *TaskFeedLikeClient) Query() *TaskFeedLikeQuery {
+	return &TaskFeedLikeQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a TaskFeedLike entity by its id.
+func (c *TaskFeedLikeClient) Get(ctx context.Context, id ulid.ID) (*TaskFeedLike, error) {
+	return c.Query().Where(taskfeedlike.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *TaskFeedLikeClient) GetX(ctx context.Context, id ulid.ID) *TaskFeedLike {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryTask queries the task edge of a TaskFeedLike.
+func (c *TaskFeedLikeClient) QueryTask(tfl *TaskFeedLike) *TaskQuery {
+	query := &TaskQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := tfl.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(taskfeedlike.Table, taskfeedlike.FieldID, id),
+			sqlgraph.To(task.Table, task.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, taskfeedlike.TaskTable, taskfeedlike.TaskColumn),
+		)
+		fromV = sqlgraph.Neighbors(tfl.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryTeammate queries the teammate edge of a TaskFeedLike.
+func (c *TaskFeedLikeClient) QueryTeammate(tfl *TaskFeedLike) *TeammateQuery {
+	query := &TeammateQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := tfl.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(taskfeedlike.Table, taskfeedlike.FieldID, id),
+			sqlgraph.To(teammate.Table, teammate.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, taskfeedlike.TeammateTable, taskfeedlike.TeammateColumn),
+		)
+		fromV = sqlgraph.Neighbors(tfl.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryFeed queries the feed edge of a TaskFeedLike.
+func (c *TaskFeedLikeClient) QueryFeed(tfl *TaskFeedLike) *TaskFeedQuery {
+	query := &TaskFeedQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := tfl.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(taskfeedlike.Table, taskfeedlike.FieldID, id),
+			sqlgraph.To(taskfeed.Table, taskfeed.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, taskfeedlike.FeedTable, taskfeedlike.FeedColumn),
+		)
+		fromV = sqlgraph.Neighbors(tfl.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *TaskFeedLikeClient) Hooks() []Hook {
+	return c.hooks.TaskFeedLike
 }
 
 // TaskLikeClient is a client for the TaskLike schema.
@@ -3920,6 +4097,22 @@ func (c *TeammateClient) QueryTaskFeeds(t *Teammate) *TaskFeedQuery {
 			sqlgraph.From(teammate.Table, teammate.FieldID, id),
 			sqlgraph.To(taskfeed.Table, taskfeed.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, teammate.TaskFeedsTable, teammate.TaskFeedsColumn),
+		)
+		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryTaskFeedLikes queries the task_feed_likes edge of a Teammate.
+func (c *TeammateClient) QueryTaskFeedLikes(t *Teammate) *TaskFeedLikeQuery {
+	query := &TaskFeedLikeQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := t.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(teammate.Table, teammate.FieldID, id),
+			sqlgraph.To(taskfeedlike.Table, taskfeedlike.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, teammate.TaskFeedLikesTable, teammate.TaskFeedLikesColumn),
 		)
 		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
 		return fromV, nil

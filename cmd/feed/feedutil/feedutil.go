@@ -17,6 +17,7 @@ import (
 	"project-management-demo-backend/ent/tag"
 	"project-management-demo-backend/ent/task"
 	"project-management-demo-backend/ent/taskcolumn"
+	"project-management-demo-backend/ent/taskfeed"
 	"project-management-demo-backend/ent/tasklistcompletedstatus"
 	"project-management-demo-backend/ent/tasklistsortstatus"
 	"project-management-demo-backend/ent/taskpriority"
@@ -208,6 +209,21 @@ func GetTagByName(ctx context.Context, client *ent.Client, val string) *ent.Tag 
 
 	if err != nil {
 		log.Fatalf("GetTagByName: failed get data: %v", err)
+	}
+
+	return res
+}
+
+// GetTaskFeeds gets task feed data.
+func GetTaskFeeds(ctx context.Context, client *ent.Client, taskID ulid.ID) []*ent.TaskFeed {
+	res, err := client.
+		TaskFeed.
+		Query().
+		Where(taskfeed.TaskIDEQ(taskID)).
+		All(ctx)
+
+	if err != nil {
+		log.Fatalf("GetTaskFeed: failed get data: %v", err)
 	}
 
 	return res

@@ -46,6 +46,7 @@ func main() {
 	feed.TaskTag(ctx, client)
 	feed.TaskCollaborator(ctx, client)
 	feed.TaskFeed(ctx, client)
+	feed.TaskFeedLike(ctx, client)
 
 	feed.FavoriteProject(ctx, client)
 	feed.FavoriteWorkspace(ctx, client)

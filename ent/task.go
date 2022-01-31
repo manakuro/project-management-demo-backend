@@ -70,9 +70,11 @@ type TaskEdges struct {
 	TaskCollaborators []*TaskCollaborator `json:"task_collaborators,omitempty"`
 	// TaskFeeds holds the value of the task_feeds edge.
 	TaskFeeds []*TaskFeed `json:"task_feeds,omitempty"`
+	// TaskFeedLikes holds the value of the task_feed_likes edge.
+	TaskFeedLikes []*TaskFeedLike `json:"task_feed_likes,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [10]bool
+	loadedTypes [11]bool
 }
 
 // TeammateOrErr returns the Teammate value or an error if the edge
@@ -178,6 +180,15 @@ func (e TaskEdges) TaskFeedsOrErr() ([]*TaskFeed, error) {
 		return e.TaskFeeds, nil
 	}
 	return nil, &NotLoadedError{edge: "task_feeds"}
+}
+
+// TaskFeedLikesOrErr returns the TaskFeedLikes value or an error if the edge
+// was not loaded in eager-loading.
+func (e TaskEdges) TaskFeedLikesOrErr() ([]*TaskFeedLike, error) {
+	if e.loadedTypes[10] {
+		return e.TaskFeedLikes, nil
+	}
+	return nil, &NotLoadedError{edge: "task_feed_likes"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -342,6 +353,11 @@ func (t *Task) QueryTaskCollaborators() *TaskCollaboratorQuery {
 // QueryTaskFeeds queries the "task_feeds" edge of the Task entity.
 func (t *Task) QueryTaskFeeds() *TaskFeedQuery {
 	return (&TaskClient{config: t.config}).QueryTaskFeeds(t)
+}
+
+// QueryTaskFeedLikes queries the "task_feed_likes" edge of the Task entity.
+func (t *Task) QueryTaskFeedLikes() *TaskFeedLikeQuery {
+	return (&TaskClient{config: t.config}).QueryTaskFeedLikes(t)
 }
 
 // Update returns a builder for updating this Task.
