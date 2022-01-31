@@ -1,0 +1,53 @@
+type TaskFeed implements Node {
+  id: ID!
+  teammateId: ID!
+  taskId: ID!
+  description: EditorDescription!
+  isFirst: Boolean!
+  isPinned: Boolean!
+  createdAt: String!
+  updatedAt: String!
+}
+type TaskFeedConnection {
+  totalCount: Int!
+  pageInfo: PageInfo!
+  edges: [TaskFeedEdge]
+}
+type TaskFeedEdge {
+  node: TaskFeed
+  cursor: Cursor!
+}
+
+input CreateTaskFeedInput {
+  taskId: ID!
+  teammateId: ID!
+  description: EditorDescriptionInput!
+}
+
+input UpdateTaskFeedInput {
+  id: ID!
+  taskId: ID
+  teammateId: ID
+  description: EditorDescriptionInput
+  isFirst: Boolean
+  isPinned: Boolean
+}
+
+input DeleteTaskFeedInput {
+  id: ID!
+}
+
+extend type Subscription {
+  taskFeedUpdated(id: ID!): TaskFeed!
+}
+
+extend type Query {
+  taskFeed(where: TaskFeedWhereInput): TaskFeed
+  taskFeeds(after: Cursor, first: Int, before: Cursor, last: Int, where: TaskFeedWhereInput): TaskFeedConnection
+}
+
+extend type Mutation {
+  createTaskFeed(input: CreateTaskFeedInput!): TaskFeed!
+  updateTaskFeed(input: UpdateTaskFeedInput!): TaskFeed!
+  deleteTaskFeed(input: DeleteTaskFeedInput!): TaskFeed!
+}
