@@ -5,6 +5,7 @@ type TeammateTaskSection implements Node {
   teammateId: ID!
   teammate: Teammate!
   name: String!
+  teammateTasks: [TeammateTask!]!
   assigned: Boolean!
   createdAt: String!
   updatedAt: String!

@@ -2,6 +2,7 @@ type TaskTag implements Node {
   id: ID!
   tagId: ID!
   taskId: ID!
+  tag: Tag!
   createdAt: String!
   updatedAt: String!
 }

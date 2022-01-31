@@ -11,6 +11,11 @@ type Task implements Node {
   dueDate: String!
   dueTime: String!
   subTasks: [Task!]!
+  taskFiles: [TaskFile!]!
+  taskFeeds: [TaskFeed!]!
+  taskCollaborators: [TaskCollaborator!]!
+  taskPriority: TaskPriority!
+  taskTags: [TaskTag!]!
   createdAt: String!
   updatedAt: String!
 }

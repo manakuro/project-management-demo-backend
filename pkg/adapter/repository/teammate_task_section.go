@@ -61,6 +61,29 @@ func (r *teammateTaskSectionRepository) ListWithPagination(ctx context.Context, 
 		q.WithTeammate()
 	}
 
+	if collection.Contains(requestedFields, "edges.node.teammateTasks") {
+		q.WithTeammateTasks(func(teammateTaskQuery *ent.TeammateTaskQuery) {
+			teammateTaskQuery.WithTask(func(taskQuery *ent.TaskQuery) {
+				taskQuery.WithSubTasks()
+				taskQuery.WithTaskFiles(func(taskFileQuery *ent.TaskFileQuery) {
+					taskFileQuery.WithFileType()
+				})
+				taskQuery.WithTaskPriority(func(taskPriorityQuery *ent.TaskPriorityQuery) {
+					taskPriorityQuery.WithColor()
+				})
+				taskQuery.WithTaskFeeds()
+				taskQuery.WithTaskCollaborators(func(taskCollaboratorQuery *ent.TaskCollaboratorQuery) {
+					taskCollaboratorQuery.WithTeammate()
+				})
+				taskQuery.WithTaskTags(func(taskTagQuery *ent.TaskTagQuery) {
+					taskTagQuery.WithTag(func(tagQuery *ent.TagQuery) {
+						tagQuery.WithColor()
+					})
+				})
+			})
+		})
+	}
+
 	res, err := q.Paginate(ctx, after, first, before, last, ent.WithTeammateTaskSectionFilter(where.Filter))
 	if err != nil {
 		return nil, model.NewDBError(err)

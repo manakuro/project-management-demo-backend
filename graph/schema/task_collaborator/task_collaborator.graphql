@@ -2,6 +2,7 @@ type TaskCollaborator implements Node {
   id: ID!
   teammateId: ID!
   taskId: ID!
+  teammate: Teammate!
   createdAt: String!
   updatedAt: String!
 }
