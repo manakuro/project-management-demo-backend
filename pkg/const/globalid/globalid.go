@@ -23,6 +23,7 @@ import (
 	"project-management-demo-backend/ent/taskcolumn"
 	"project-management-demo-backend/ent/taskfeed"
 	"project-management-demo-backend/ent/taskfeedlike"
+	"project-management-demo-backend/ent/taskfile"
 	"project-management-demo-backend/ent/tasklike"
 	"project-management-demo-backend/ent/tasklistcompletedstatus"
 	"project-management-demo-backend/ent/tasklistsortstatus"
@@ -238,7 +239,7 @@ func New() GlobalIDs {
 		},
 		TaskFile: field{
 			Prefix: "0BK",
-			Table:  filetype.Table,
+			Table:  taskfile.Table,
 		},
 	}
 }
