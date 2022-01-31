@@ -13,6 +13,7 @@ import (
 	"project-management-demo-backend/ent/color"
 	"project-management-demo-backend/ent/favoriteproject"
 	"project-management-demo-backend/ent/favoriteworkspace"
+	"project-management-demo-backend/ent/filetype"
 	"project-management-demo-backend/ent/icon"
 	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/projectbasecolor"
@@ -62,6 +63,8 @@ type Client struct {
 	FavoriteProject *FavoriteProjectClient
 	// FavoriteWorkspace is the client for interacting with the FavoriteWorkspace builders.
 	FavoriteWorkspace *FavoriteWorkspaceClient
+	// FileType is the client for interacting with the FileType builders.
+	FileType *FileTypeClient
 	// Icon is the client for interacting with the Icon builders.
 	Icon *IconClient
 	// Project is the client for interacting with the Project builders.
@@ -142,6 +145,7 @@ func (c *Client) init() {
 	c.Color = NewColorClient(c.config)
 	c.FavoriteProject = NewFavoriteProjectClient(c.config)
 	c.FavoriteWorkspace = NewFavoriteWorkspaceClient(c.config)
+	c.FileType = NewFileTypeClient(c.config)
 	c.Icon = NewIconClient(c.config)
 	c.Project = NewProjectClient(c.config)
 	c.ProjectBaseColor = NewProjectBaseColorClient(c.config)
@@ -210,6 +214,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Color:                   NewColorClient(cfg),
 		FavoriteProject:         NewFavoriteProjectClient(cfg),
 		FavoriteWorkspace:       NewFavoriteWorkspaceClient(cfg),
+		FileType:                NewFileTypeClient(cfg),
 		Icon:                    NewIconClient(cfg),
 		Project:                 NewProjectClient(cfg),
 		ProjectBaseColor:        NewProjectBaseColorClient(cfg),
@@ -263,6 +268,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Color:                   NewColorClient(cfg),
 		FavoriteProject:         NewFavoriteProjectClient(cfg),
 		FavoriteWorkspace:       NewFavoriteWorkspaceClient(cfg),
+		FileType:                NewFileTypeClient(cfg),
 		Icon:                    NewIconClient(cfg),
 		Project:                 NewProjectClient(cfg),
 		ProjectBaseColor:        NewProjectBaseColorClient(cfg),
@@ -327,6 +333,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.Color.Use(hooks...)
 	c.FavoriteProject.Use(hooks...)
 	c.FavoriteWorkspace.Use(hooks...)
+	c.FileType.Use(hooks...)
 	c.Icon.Use(hooks...)
 	c.Project.Use(hooks...)
 	c.ProjectBaseColor.Use(hooks...)
@@ -757,6 +764,96 @@ func (c *FavoriteWorkspaceClient) QueryTeammate(fw *FavoriteWorkspace) *Teammate
 // Hooks returns the client hooks.
 func (c *FavoriteWorkspaceClient) Hooks() []Hook {
 	return c.hooks.FavoriteWorkspace
+}
+
+// FileTypeClient is a client for the FileType schema.
+type FileTypeClient struct {
+	config
+}
+
+// NewFileTypeClient returns a client for the FileType from the given config.
+func NewFileTypeClient(c config) *FileTypeClient {
+	return &FileTypeClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `filetype.Hooks(f(g(h())))`.
+func (c *FileTypeClient) Use(hooks ...Hook) {
+	c.hooks.FileType = append(c.hooks.FileType, hooks...)
+}
+
+// Create returns a create builder for FileType.
+func (c *FileTypeClient) Create() *FileTypeCreate {
+	mutation := newFileTypeMutation(c.config, OpCreate)
+	return &FileTypeCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of FileType entities.
+func (c *FileTypeClient) CreateBulk(builders ...*FileTypeCreate) *FileTypeCreateBulk {
+	return &FileTypeCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for FileType.
+func (c *FileTypeClient) Update() *FileTypeUpdate {
+	mutation := newFileTypeMutation(c.config, OpUpdate)
+	return &FileTypeUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *FileTypeClient) UpdateOne(ft *FileType) *FileTypeUpdateOne {
+	mutation := newFileTypeMutation(c.config, OpUpdateOne, withFileType(ft))
+	return &FileTypeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *FileTypeClient) UpdateOneID(id ulid.ID) *FileTypeUpdateOne {
+	mutation := newFileTypeMutation(c.config, OpUpdateOne, withFileTypeID(id))
+	return &FileTypeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for FileType.
+func (c *FileTypeClient) Delete() *FileTypeDelete {
+	mutation := newFileTypeMutation(c.config, OpDelete)
+	return &FileTypeDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *FileTypeClient) DeleteOne(ft *FileType) *FileTypeDeleteOne {
+	return c.DeleteOneID(ft.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *FileTypeClient) DeleteOneID(id ulid.ID) *FileTypeDeleteOne {
+	builder := c.Delete().Where(filetype.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &FileTypeDeleteOne{builder}
+}
+
+// Query returns a query builder for FileType.
+func (c *FileTypeClient) Query() *FileTypeQuery {
+	return &FileTypeQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a FileType entity by its id.
+func (c *FileTypeClient) Get(ctx context.Context, id ulid.ID) (*FileType, error) {
+	return c.Query().Where(filetype.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *FileTypeClient) GetX(ctx context.Context, id ulid.ID) *FileType {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *FileTypeClient) Hooks() []Hook {
+	return c.hooks.FileType
 }
 
 // IconClient is a client for the Icon schema.

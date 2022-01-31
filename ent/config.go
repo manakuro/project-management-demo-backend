@@ -27,6 +27,7 @@ type hooks struct {
 	Color                   []ent.Hook
 	FavoriteProject         []ent.Hook
 	FavoriteWorkspace       []ent.Hook
+	FileType                []ent.Hook
 	Icon                    []ent.Hook
 	Project                 []ent.Hook
 	ProjectBaseColor        []ent.Hook

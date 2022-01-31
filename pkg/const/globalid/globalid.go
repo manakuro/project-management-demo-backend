@@ -6,6 +6,7 @@ import (
 	"project-management-demo-backend/ent/color"
 	"project-management-demo-backend/ent/favoriteproject"
 	"project-management-demo-backend/ent/favoriteworkspace"
+	"project-management-demo-backend/ent/filetype"
 	"project-management-demo-backend/ent/icon"
 	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/projectbasecolor"
@@ -83,6 +84,7 @@ type GlobalIDs struct {
 	TaskCollaborator        field
 	TaskFeed                field
 	TaskFeedLike            field
+	FileType                field
 }
 
 // New generates a map object that is intended to be used as global identification for node interface query.
@@ -228,6 +230,10 @@ func New() GlobalIDs {
 		TaskFeedLike: field{
 			Prefix: "0BI",
 			Table:  taskfeedlike.Table,
+		},
+		FileType: field{
+			Prefix: "0BJ",
+			Table:  filetype.Table,
 		},
 	}
 }

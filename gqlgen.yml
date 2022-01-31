@@ -73,4 +73,7 @@ models:
   TaskPriorityType:
     model:
       - project-management-demo-backend/ent/taskpriority.PriorityType
+  FileTypeCode:
+    model:
+      - project-management-demo-backend/ent/filetype.TypeCode
 

@@ -11,6 +11,7 @@ import (
 	"project-management-demo-backend/ent/color"
 	"project-management-demo-backend/ent/favoriteproject"
 	"project-management-demo-backend/ent/favoriteworkspace"
+	"project-management-demo-backend/ent/filetype"
 	"project-management-demo-backend/ent/icon"
 	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/projectbasecolor"
@@ -945,6 +946,233 @@ func (fw *FavoriteWorkspace) ToEdge(order *FavoriteWorkspaceOrder) *FavoriteWork
 	return &FavoriteWorkspaceEdge{
 		Node:   fw,
 		Cursor: order.Field.toCursor(fw),
+	}
+}
+
+// FileTypeEdge is the edge representation of FileType.
+type FileTypeEdge struct {
+	Node   *FileType `json:"node"`
+	Cursor Cursor    `json:"cursor"`
+}
+
+// FileTypeConnection is the connection containing edges to FileType.
+type FileTypeConnection struct {
+	Edges      []*FileTypeEdge `json:"edges"`
+	PageInfo   PageInfo        `json:"pageInfo"`
+	TotalCount int             `json:"totalCount"`
+}
+
+// FileTypePaginateOption enables pagination customization.
+type FileTypePaginateOption func(*fileTypePager) error
+
+// WithFileTypeOrder configures pagination ordering.
+func WithFileTypeOrder(order *FileTypeOrder) FileTypePaginateOption {
+	if order == nil {
+		order = DefaultFileTypeOrder
+	}
+	o := *order
+	return func(pager *fileTypePager) error {
+		if err := o.Direction.Validate(); err != nil {
+			return err
+		}
+		if o.Field == nil {
+			o.Field = DefaultFileTypeOrder.Field
+		}
+		pager.order = &o
+		return nil
+	}
+}
+
+// WithFileTypeFilter configures pagination filter.
+func WithFileTypeFilter(filter func(*FileTypeQuery) (*FileTypeQuery, error)) FileTypePaginateOption {
+	return func(pager *fileTypePager) error {
+		if filter == nil {
+			return errors.New("FileTypeQuery filter cannot be nil")
+		}
+		pager.filter = filter
+		return nil
+	}
+}
+
+type fileTypePager struct {
+	order  *FileTypeOrder
+	filter func(*FileTypeQuery) (*FileTypeQuery, error)
+}
+
+func newFileTypePager(opts []FileTypePaginateOption) (*fileTypePager, error) {
+	pager := &fileTypePager{}
+	for _, opt := range opts {
+		if err := opt(pager); err != nil {
+			return nil, err
+		}
+	}
+	if pager.order == nil {
+		pager.order = DefaultFileTypeOrder
+	}
+	return pager, nil
+}
+
+func (p *fileTypePager) applyFilter(query *FileTypeQuery) (*FileTypeQuery, error) {
+	if p.filter != nil {
+		return p.filter(query)
+	}
+	return query, nil
+}
+
+func (p *fileTypePager) toCursor(ft *FileType) Cursor {
+	return p.order.Field.toCursor(ft)
+}
+
+func (p *fileTypePager) applyCursors(query *FileTypeQuery, after, before *Cursor) *FileTypeQuery {
+	for _, predicate := range cursorsToPredicates(
+		p.order.Direction, after, before,
+		p.order.Field.field, DefaultFileTypeOrder.Field.field,
+	) {
+		query = query.Where(predicate)
+	}
+	return query
+}
+
+func (p *fileTypePager) applyOrder(query *FileTypeQuery, reverse bool) *FileTypeQuery {
+	direction := p.order.Direction
+	if reverse {
+		direction = direction.reverse()
+	}
+	query = query.Order(direction.orderFunc(p.order.Field.field))
+	if p.order.Field != DefaultFileTypeOrder.Field {
+		query = query.Order(direction.orderFunc(DefaultFileTypeOrder.Field.field))
+	}
+	return query
+}
+
+// Paginate executes the query and returns a relay based cursor connection to FileType.
+func (ft *FileTypeQuery) Paginate(
+	ctx context.Context, after *Cursor, first *int,
+	before *Cursor, last *int, opts ...FileTypePaginateOption,
+) (*FileTypeConnection, error) {
+	if err := validateFirstLast(first, last); err != nil {
+		return nil, err
+	}
+	pager, err := newFileTypePager(opts)
+	if err != nil {
+		return nil, err
+	}
+
+	if ft, err = pager.applyFilter(ft); err != nil {
+		return nil, err
+	}
+
+	conn := &FileTypeConnection{Edges: []*FileTypeEdge{}}
+	if !hasCollectedField(ctx, edgesField) || first != nil && *first == 0 || last != nil && *last == 0 {
+		if hasCollectedField(ctx, totalCountField) ||
+			hasCollectedField(ctx, pageInfoField) {
+			count, err := ft.Count(ctx)
+			if err != nil {
+				return nil, err
+			}
+			conn.TotalCount = count
+			conn.PageInfo.HasNextPage = first != nil && count > 0
+			conn.PageInfo.HasPreviousPage = last != nil && count > 0
+		}
+		return conn, nil
+	}
+
+	if (after != nil || first != nil || before != nil || last != nil) && hasCollectedField(ctx, totalCountField) {
+		count, err := ft.Clone().Count(ctx)
+		if err != nil {
+			return nil, err
+		}
+		conn.TotalCount = count
+	}
+
+	ft = pager.applyCursors(ft, after, before)
+	ft = pager.applyOrder(ft, last != nil)
+	var limit int
+	if first != nil {
+		limit = *first + 1
+	} else if last != nil {
+		limit = *last + 1
+	}
+	if limit > 0 {
+		ft = ft.Limit(limit)
+	}
+
+	if field := getCollectedField(ctx, edgesField, nodeField); field != nil {
+		ft = ft.collectField(graphql.GetOperationContext(ctx), *field)
+	}
+
+	nodes, err := ft.All(ctx)
+	if err != nil || len(nodes) == 0 {
+		return conn, err
+	}
+
+	if len(nodes) == limit {
+		conn.PageInfo.HasNextPage = first != nil
+		conn.PageInfo.HasPreviousPage = last != nil
+		nodes = nodes[:len(nodes)-1]
+	}
+
+	var nodeAt func(int) *FileType
+	if last != nil {
+		n := len(nodes) - 1
+		nodeAt = func(i int) *FileType {
+			return nodes[n-i]
+		}
+	} else {
+		nodeAt = func(i int) *FileType {
+			return nodes[i]
+		}
+	}
+
+	conn.Edges = make([]*FileTypeEdge, len(nodes))
+	for i := range nodes {
+		node := nodeAt(i)
+		conn.Edges[i] = &FileTypeEdge{
+			Node:   node,
+			Cursor: pager.toCursor(node),
+		}
+	}
+
+	conn.PageInfo.StartCursor = &conn.Edges[0].Cursor
+	conn.PageInfo.EndCursor = &conn.Edges[len(conn.Edges)-1].Cursor
+	if conn.TotalCount == 0 {
+		conn.TotalCount = len(nodes)
+	}
+
+	return conn, nil
+}
+
+// FileTypeOrderField defines the ordering field of FileType.
+type FileTypeOrderField struct {
+	field    string
+	toCursor func(*FileType) Cursor
+}
+
+// FileTypeOrder defines the ordering of FileType.
+type FileTypeOrder struct {
+	Direction OrderDirection      `json:"direction"`
+	Field     *FileTypeOrderField `json:"field"`
+}
+
+// DefaultFileTypeOrder is the default ordering of FileType.
+var DefaultFileTypeOrder = &FileTypeOrder{
+	Direction: OrderDirectionAsc,
+	Field: &FileTypeOrderField{
+		field: filetype.FieldID,
+		toCursor: func(ft *FileType) Cursor {
+			return Cursor{ID: ft.ID}
+		},
+	},
+}
+
+// ToEdge converts FileType into FileTypeEdge.
+func (ft *FileType) ToEdge(order *FileTypeOrder) *FileTypeEdge {
+	if order == nil {
+		order = DefaultFileTypeOrder
+	}
+	return &FileTypeEdge{
+		Node:   ft,
+		Cursor: order.Field.toCursor(ft),
 	}
 }
 

@@ -18,6 +18,8 @@ type Tx struct {
 	FavoriteProject *FavoriteProjectClient
 	// FavoriteWorkspace is the client for interacting with the FavoriteWorkspace builders.
 	FavoriteWorkspace *FavoriteWorkspaceClient
+	// FileType is the client for interacting with the FileType builders.
+	FileType *FileTypeClient
 	// Icon is the client for interacting with the Icon builders.
 	Icon *IconClient
 	// Project is the client for interacting with the Project builders.
@@ -220,6 +222,7 @@ func (tx *Tx) init() {
 	tx.Color = NewColorClient(tx.config)
 	tx.FavoriteProject = NewFavoriteProjectClient(tx.config)
 	tx.FavoriteWorkspace = NewFavoriteWorkspaceClient(tx.config)
+	tx.FileType = NewFileTypeClient(tx.config)
 	tx.Icon = NewIconClient(tx.config)
 	tx.Project = NewProjectClient(tx.config)
 	tx.ProjectBaseColor = NewProjectBaseColorClient(tx.config)

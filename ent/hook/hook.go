@@ -47,6 +47,19 @@ func (f FavoriteWorkspaceFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.
 	return f(ctx, mv)
 }
 
+// The FileTypeFunc type is an adapter to allow the use of ordinary
+// function as FileType mutator.
+type FileTypeFunc func(context.Context, *ent.FileTypeMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f FileTypeFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.FileTypeMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.FileTypeMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The IconFunc type is an adapter to allow the use of ordinary
 // function as Icon mutator.
 type IconFunc func(context.Context, *ent.IconMutation) (ent.Value, error)

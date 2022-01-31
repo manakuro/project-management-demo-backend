@@ -15,6 +15,9 @@ type FavoriteProject func(*sql.Selector)
 // FavoriteWorkspace is the predicate function for favoriteworkspace builders.
 type FavoriteWorkspace func(*sql.Selector)
 
+// FileType is the predicate function for filetype builders.
+type FileType func(*sql.Selector)
+
 // Icon is the predicate function for icon builders.
 type Icon func(*sql.Selector)
 

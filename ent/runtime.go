@@ -6,6 +6,7 @@ import (
 	"project-management-demo-backend/ent/color"
 	"project-management-demo-backend/ent/favoriteproject"
 	"project-management-demo-backend/ent/favoriteworkspace"
+	"project-management-demo-backend/ent/filetype"
 	"project-management-demo-backend/ent/icon"
 	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/projectbasecolor"
@@ -160,6 +161,45 @@ func init() {
 	favoriteworkspaceDescID := favoriteworkspaceMixinFields0[0].Descriptor()
 	// favoriteworkspace.DefaultID holds the default value on creation for the id field.
 	favoriteworkspace.DefaultID = favoriteworkspaceDescID.Default.(func() ulid.ID)
+	filetypeMixin := schema.FileType{}.Mixin()
+	filetypeMixinFields0 := filetypeMixin[0].Fields()
+	_ = filetypeMixinFields0
+	filetypeMixinFields1 := filetypeMixin[1].Fields()
+	_ = filetypeMixinFields1
+	filetypeMixinFields2 := filetypeMixin[2].Fields()
+	_ = filetypeMixinFields2
+	filetypeFields := schema.FileType{}.Fields()
+	_ = filetypeFields
+	// filetypeDescName is the schema descriptor for name field.
+	filetypeDescName := filetypeMixinFields1[0].Descriptor()
+	// filetype.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	filetype.NameValidator = func() func(string) error {
+		validators := filetypeDescName.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(name string) error {
+			for _, fn := range fns {
+				if err := fn(name); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// filetypeDescCreatedAt is the schema descriptor for created_at field.
+	filetypeDescCreatedAt := filetypeMixinFields2[0].Descriptor()
+	// filetype.DefaultCreatedAt holds the default value on creation for the created_at field.
+	filetype.DefaultCreatedAt = filetypeDescCreatedAt.Default.(func() time.Time)
+	// filetypeDescUpdatedAt is the schema descriptor for updated_at field.
+	filetypeDescUpdatedAt := filetypeMixinFields2[1].Descriptor()
+	// filetype.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	filetype.DefaultUpdatedAt = filetypeDescUpdatedAt.Default.(func() time.Time)
+	// filetypeDescID is the schema descriptor for id field.
+	filetypeDescID := filetypeMixinFields0[0].Descriptor()
+	// filetype.DefaultID holds the default value on creation for the id field.
+	filetype.DefaultID = filetypeDescID.Default.(func() ulid.ID)
 	iconMixin := schema.Icon{}.Mixin()
 	iconMixinFields0 := iconMixin[0].Fields()
 	_ = iconMixinFields0
