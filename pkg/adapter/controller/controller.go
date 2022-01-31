@@ -22,6 +22,7 @@ type Controller struct {
 	TaskCollaborator        interface{ TaskCollaborator }
 	TaskColumn              interface{ TaskColumn }
 	TaskFeed                interface{ TaskFeed }
+	TaskFeedLike            interface{ TaskFeedLike }
 	TaskLike                interface{ TaskLike }
 	TaskListCompletedStatus interface{ TaskListCompletedStatus }
 	TaskListSortStatus      interface{ TaskListSortStatus }
