@@ -25,6 +25,27 @@ type FileType struct {
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	// Edges holds the relations/edges for other nodes in the graph.
+	// The values are being populated by the FileTypeQuery when eager-loading is set.
+	Edges FileTypeEdges `json:"edges"`
+}
+
+// FileTypeEdges holds the relations/edges for other nodes in the graph.
+type FileTypeEdges struct {
+	// TaskFiles holds the value of the task_files edge.
+	TaskFiles []*TaskFile `json:"task_files,omitempty"`
+	// loadedTypes holds the information for reporting if a
+	// type was loaded (or requested) in eager-loading or not.
+	loadedTypes [1]bool
+}
+
+// TaskFilesOrErr returns the TaskFiles value or an error if the edge
+// was not loaded in eager-loading.
+func (e FileTypeEdges) TaskFilesOrErr() ([]*TaskFile, error) {
+	if e.loadedTypes[0] {
+		return e.TaskFiles, nil
+	}
+	return nil, &NotLoadedError{edge: "task_files"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -86,6 +107,11 @@ func (ft *FileType) assignValues(columns []string, values []interface{}) error {
 		}
 	}
 	return nil
+}
+
+// QueryTaskFiles queries the "task_files" edge of the FileType entity.
+func (ft *FileType) QueryTaskFiles() *TaskFileQuery {
+	return (&FileTypeClient{config: ft.config}).QueryTaskFiles(ft)
 }
 
 // Update returns a builder for updating this FileType.

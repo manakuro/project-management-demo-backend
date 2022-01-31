@@ -19,6 +19,7 @@ import (
 	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/ent/schema/editor"
 	"project-management-demo-backend/ent/schema/ulid"
+	"project-management-demo-backend/ent/taskfile"
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/workspace"
 	"time"
@@ -230,6 +231,21 @@ func (pu *ProjectUpdate) AddProjectTasks(p ...*ProjectTask) *ProjectUpdate {
 	return pu.AddProjectTaskIDs(ids...)
 }
 
+// AddTaskFileIDs adds the "task_files" edge to the TaskFile entity by IDs.
+func (pu *ProjectUpdate) AddTaskFileIDs(ids ...ulid.ID) *ProjectUpdate {
+	pu.mutation.AddTaskFileIDs(ids...)
+	return pu
+}
+
+// AddTaskFiles adds the "task_files" edges to the TaskFile entity.
+func (pu *ProjectUpdate) AddTaskFiles(t ...*TaskFile) *ProjectUpdate {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return pu.AddTaskFileIDs(ids...)
+}
+
 // Mutation returns the ProjectMutation object of the builder.
 func (pu *ProjectUpdate) Mutation() *ProjectMutation {
 	return pu.mutation
@@ -389,6 +405,27 @@ func (pu *ProjectUpdate) RemoveProjectTasks(p ...*ProjectTask) *ProjectUpdate {
 		ids[i] = p[i].ID
 	}
 	return pu.RemoveProjectTaskIDs(ids...)
+}
+
+// ClearTaskFiles clears all "task_files" edges to the TaskFile entity.
+func (pu *ProjectUpdate) ClearTaskFiles() *ProjectUpdate {
+	pu.mutation.ClearTaskFiles()
+	return pu
+}
+
+// RemoveTaskFileIDs removes the "task_files" edge to TaskFile entities by IDs.
+func (pu *ProjectUpdate) RemoveTaskFileIDs(ids ...ulid.ID) *ProjectUpdate {
+	pu.mutation.RemoveTaskFileIDs(ids...)
+	return pu
+}
+
+// RemoveTaskFiles removes "task_files" edges to TaskFile entities.
+func (pu *ProjectUpdate) RemoveTaskFiles(t ...*TaskFile) *ProjectUpdate {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return pu.RemoveTaskFileIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -1032,6 +1069,60 @@ func (pu *ProjectUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if pu.mutation.TaskFilesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   project.TaskFilesTable,
+			Columns: []string{project.TaskFilesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: taskfile.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.RemovedTaskFilesIDs(); len(nodes) > 0 && !pu.mutation.TaskFilesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   project.TaskFilesTable,
+			Columns: []string{project.TaskFilesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: taskfile.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.TaskFilesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   project.TaskFilesTable,
+			Columns: []string{project.TaskFilesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: taskfile.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, pu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{project.Label}
@@ -1240,6 +1331,21 @@ func (puo *ProjectUpdateOne) AddProjectTasks(p ...*ProjectTask) *ProjectUpdateOn
 	return puo.AddProjectTaskIDs(ids...)
 }
 
+// AddTaskFileIDs adds the "task_files" edge to the TaskFile entity by IDs.
+func (puo *ProjectUpdateOne) AddTaskFileIDs(ids ...ulid.ID) *ProjectUpdateOne {
+	puo.mutation.AddTaskFileIDs(ids...)
+	return puo
+}
+
+// AddTaskFiles adds the "task_files" edges to the TaskFile entity.
+func (puo *ProjectUpdateOne) AddTaskFiles(t ...*TaskFile) *ProjectUpdateOne {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return puo.AddTaskFileIDs(ids...)
+}
+
 // Mutation returns the ProjectMutation object of the builder.
 func (puo *ProjectUpdateOne) Mutation() *ProjectMutation {
 	return puo.mutation
@@ -1399,6 +1505,27 @@ func (puo *ProjectUpdateOne) RemoveProjectTasks(p ...*ProjectTask) *ProjectUpdat
 		ids[i] = p[i].ID
 	}
 	return puo.RemoveProjectTaskIDs(ids...)
+}
+
+// ClearTaskFiles clears all "task_files" edges to the TaskFile entity.
+func (puo *ProjectUpdateOne) ClearTaskFiles() *ProjectUpdateOne {
+	puo.mutation.ClearTaskFiles()
+	return puo
+}
+
+// RemoveTaskFileIDs removes the "task_files" edge to TaskFile entities by IDs.
+func (puo *ProjectUpdateOne) RemoveTaskFileIDs(ids ...ulid.ID) *ProjectUpdateOne {
+	puo.mutation.RemoveTaskFileIDs(ids...)
+	return puo
+}
+
+// RemoveTaskFiles removes "task_files" edges to TaskFile entities.
+func (puo *ProjectUpdateOne) RemoveTaskFiles(t ...*TaskFile) *ProjectUpdateOne {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return puo.RemoveTaskFileIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -2058,6 +2185,60 @@ func (puo *ProjectUpdateOne) sqlSave(ctx context.Context) (_node *Project, err e
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: projecttask.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if puo.mutation.TaskFilesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   project.TaskFilesTable,
+			Columns: []string{project.TaskFilesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: taskfile.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.RemovedTaskFilesIDs(); len(nodes) > 0 && !puo.mutation.TaskFilesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   project.TaskFilesTable,
+			Columns: []string{project.TaskFilesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: taskfile.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.TaskFilesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   project.TaskFilesTable,
+			Columns: []string{project.TaskFilesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: taskfile.FieldID,
 				},
 			},
 		}

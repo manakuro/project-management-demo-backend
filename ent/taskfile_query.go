@@ -4,75 +4,96 @@ package ent
 
 import (
 	"context"
-	"database/sql/driver"
 	"errors"
 	"fmt"
 	"math"
+	"project-management-demo-backend/ent/filetype"
 	"project-management-demo-backend/ent/predicate"
+	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/task"
 	"project-management-demo-backend/ent/taskfeed"
-	"project-management-demo-backend/ent/taskfeedlike"
 	"project-management-demo-backend/ent/taskfile"
-	"project-management-demo-backend/ent/teammate"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 )
 
-// TaskFeedQuery is the builder for querying TaskFeed entities.
-type TaskFeedQuery struct {
+// TaskFileQuery is the builder for querying TaskFile entities.
+type TaskFileQuery struct {
 	config
 	limit      *int
 	offset     *int
 	unique     *bool
 	order      []OrderFunc
 	fields     []string
-	predicates []predicate.TaskFeed
+	predicates []predicate.TaskFile
 	// eager-loading edges.
-	withTask          *TaskQuery
-	withTeammate      *TeammateQuery
-	withTaskFeedLikes *TaskFeedLikeQuery
-	withTaskFiles     *TaskFileQuery
+	withProject  *ProjectQuery
+	withTask     *TaskQuery
+	withTaskFeed *TaskFeedQuery
+	withFileType *FileTypeQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
 }
 
-// Where adds a new predicate for the TaskFeedQuery builder.
-func (tfq *TaskFeedQuery) Where(ps ...predicate.TaskFeed) *TaskFeedQuery {
+// Where adds a new predicate for the TaskFileQuery builder.
+func (tfq *TaskFileQuery) Where(ps ...predicate.TaskFile) *TaskFileQuery {
 	tfq.predicates = append(tfq.predicates, ps...)
 	return tfq
 }
 
 // Limit adds a limit step to the query.
-func (tfq *TaskFeedQuery) Limit(limit int) *TaskFeedQuery {
+func (tfq *TaskFileQuery) Limit(limit int) *TaskFileQuery {
 	tfq.limit = &limit
 	return tfq
 }
 
 // Offset adds an offset step to the query.
-func (tfq *TaskFeedQuery) Offset(offset int) *TaskFeedQuery {
+func (tfq *TaskFileQuery) Offset(offset int) *TaskFileQuery {
 	tfq.offset = &offset
 	return tfq
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
-func (tfq *TaskFeedQuery) Unique(unique bool) *TaskFeedQuery {
+func (tfq *TaskFileQuery) Unique(unique bool) *TaskFileQuery {
 	tfq.unique = &unique
 	return tfq
 }
 
 // Order adds an order step to the query.
-func (tfq *TaskFeedQuery) Order(o ...OrderFunc) *TaskFeedQuery {
+func (tfq *TaskFileQuery) Order(o ...OrderFunc) *TaskFileQuery {
 	tfq.order = append(tfq.order, o...)
 	return tfq
 }
 
+// QueryProject chains the current query on the "project" edge.
+func (tfq *TaskFileQuery) QueryProject() *ProjectQuery {
+	query := &ProjectQuery{config: tfq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := tfq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := tfq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(taskfile.Table, taskfile.FieldID, selector),
+			sqlgraph.To(project.Table, project.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, taskfile.ProjectTable, taskfile.ProjectColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(tfq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // QueryTask chains the current query on the "task" edge.
-func (tfq *TaskFeedQuery) QueryTask() *TaskQuery {
+func (tfq *TaskFileQuery) QueryTask() *TaskQuery {
 	query := &TaskQuery{config: tfq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := tfq.prepareQuery(ctx); err != nil {
@@ -83,9 +104,9 @@ func (tfq *TaskFeedQuery) QueryTask() *TaskQuery {
 			return nil, err
 		}
 		step := sqlgraph.NewStep(
-			sqlgraph.From(taskfeed.Table, taskfeed.FieldID, selector),
+			sqlgraph.From(taskfile.Table, taskfile.FieldID, selector),
 			sqlgraph.To(task.Table, task.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, taskfeed.TaskTable, taskfeed.TaskColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, taskfile.TaskTable, taskfile.TaskColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(tfq.driver.Dialect(), step)
 		return fromU, nil
@@ -93,9 +114,9 @@ func (tfq *TaskFeedQuery) QueryTask() *TaskQuery {
 	return query
 }
 
-// QueryTeammate chains the current query on the "teammate" edge.
-func (tfq *TaskFeedQuery) QueryTeammate() *TeammateQuery {
-	query := &TeammateQuery{config: tfq.config}
+// QueryTaskFeed chains the current query on the "task_feed" edge.
+func (tfq *TaskFileQuery) QueryTaskFeed() *TaskFeedQuery {
+	query := &TaskFeedQuery{config: tfq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := tfq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -105,9 +126,9 @@ func (tfq *TaskFeedQuery) QueryTeammate() *TeammateQuery {
 			return nil, err
 		}
 		step := sqlgraph.NewStep(
-			sqlgraph.From(taskfeed.Table, taskfeed.FieldID, selector),
-			sqlgraph.To(teammate.Table, teammate.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, taskfeed.TeammateTable, taskfeed.TeammateColumn),
+			sqlgraph.From(taskfile.Table, taskfile.FieldID, selector),
+			sqlgraph.To(taskfeed.Table, taskfeed.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, taskfile.TaskFeedTable, taskfile.TaskFeedColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(tfq.driver.Dialect(), step)
 		return fromU, nil
@@ -115,9 +136,9 @@ func (tfq *TaskFeedQuery) QueryTeammate() *TeammateQuery {
 	return query
 }
 
-// QueryTaskFeedLikes chains the current query on the "task_feed_likes" edge.
-func (tfq *TaskFeedQuery) QueryTaskFeedLikes() *TaskFeedLikeQuery {
-	query := &TaskFeedLikeQuery{config: tfq.config}
+// QueryFileType chains the current query on the "file_type" edge.
+func (tfq *TaskFileQuery) QueryFileType() *FileTypeQuery {
+	query := &FileTypeQuery{config: tfq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
 		if err := tfq.prepareQuery(ctx); err != nil {
 			return nil, err
@@ -127,9 +148,9 @@ func (tfq *TaskFeedQuery) QueryTaskFeedLikes() *TaskFeedLikeQuery {
 			return nil, err
 		}
 		step := sqlgraph.NewStep(
-			sqlgraph.From(taskfeed.Table, taskfeed.FieldID, selector),
-			sqlgraph.To(taskfeedlike.Table, taskfeedlike.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, taskfeed.TaskFeedLikesTable, taskfeed.TaskFeedLikesColumn),
+			sqlgraph.From(taskfile.Table, taskfile.FieldID, selector),
+			sqlgraph.To(filetype.Table, filetype.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, taskfile.FileTypeTable, taskfile.FileTypeColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(tfq.driver.Dialect(), step)
 		return fromU, nil
@@ -137,43 +158,21 @@ func (tfq *TaskFeedQuery) QueryTaskFeedLikes() *TaskFeedLikeQuery {
 	return query
 }
 
-// QueryTaskFiles chains the current query on the "task_files" edge.
-func (tfq *TaskFeedQuery) QueryTaskFiles() *TaskFileQuery {
-	query := &TaskFileQuery{config: tfq.config}
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := tfq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := tfq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(taskfeed.Table, taskfeed.FieldID, selector),
-			sqlgraph.To(taskfile.Table, taskfile.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, taskfeed.TaskFilesTable, taskfeed.TaskFilesColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(tfq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// First returns the first TaskFeed entity from the query.
-// Returns a *NotFoundError when no TaskFeed was found.
-func (tfq *TaskFeedQuery) First(ctx context.Context) (*TaskFeed, error) {
+// First returns the first TaskFile entity from the query.
+// Returns a *NotFoundError when no TaskFile was found.
+func (tfq *TaskFileQuery) First(ctx context.Context) (*TaskFile, error) {
 	nodes, err := tfq.Limit(1).All(ctx)
 	if err != nil {
 		return nil, err
 	}
 	if len(nodes) == 0 {
-		return nil, &NotFoundError{taskfeed.Label}
+		return nil, &NotFoundError{taskfile.Label}
 	}
 	return nodes[0], nil
 }
 
 // FirstX is like First, but panics if an error occurs.
-func (tfq *TaskFeedQuery) FirstX(ctx context.Context) *TaskFeed {
+func (tfq *TaskFileQuery) FirstX(ctx context.Context) *TaskFile {
 	node, err := tfq.First(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -181,22 +180,22 @@ func (tfq *TaskFeedQuery) FirstX(ctx context.Context) *TaskFeed {
 	return node
 }
 
-// FirstID returns the first TaskFeed ID from the query.
-// Returns a *NotFoundError when no TaskFeed ID was found.
-func (tfq *TaskFeedQuery) FirstID(ctx context.Context) (id ulid.ID, err error) {
+// FirstID returns the first TaskFile ID from the query.
+// Returns a *NotFoundError when no TaskFile ID was found.
+func (tfq *TaskFileQuery) FirstID(ctx context.Context) (id ulid.ID, err error) {
 	var ids []ulid.ID
 	if ids, err = tfq.Limit(1).IDs(ctx); err != nil {
 		return
 	}
 	if len(ids) == 0 {
-		err = &NotFoundError{taskfeed.Label}
+		err = &NotFoundError{taskfile.Label}
 		return
 	}
 	return ids[0], nil
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (tfq *TaskFeedQuery) FirstIDX(ctx context.Context) ulid.ID {
+func (tfq *TaskFileQuery) FirstIDX(ctx context.Context) ulid.ID {
 	id, err := tfq.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -204,10 +203,10 @@ func (tfq *TaskFeedQuery) FirstIDX(ctx context.Context) ulid.ID {
 	return id
 }
 
-// Only returns a single TaskFeed entity found by the query, ensuring it only returns one.
-// Returns a *NotSingularError when exactly one TaskFeed entity is not found.
-// Returns a *NotFoundError when no TaskFeed entities are found.
-func (tfq *TaskFeedQuery) Only(ctx context.Context) (*TaskFeed, error) {
+// Only returns a single TaskFile entity found by the query, ensuring it only returns one.
+// Returns a *NotSingularError when exactly one TaskFile entity is not found.
+// Returns a *NotFoundError when no TaskFile entities are found.
+func (tfq *TaskFileQuery) Only(ctx context.Context) (*TaskFile, error) {
 	nodes, err := tfq.Limit(2).All(ctx)
 	if err != nil {
 		return nil, err
@@ -216,14 +215,14 @@ func (tfq *TaskFeedQuery) Only(ctx context.Context) (*TaskFeed, error) {
 	case 1:
 		return nodes[0], nil
 	case 0:
-		return nil, &NotFoundError{taskfeed.Label}
+		return nil, &NotFoundError{taskfile.Label}
 	default:
-		return nil, &NotSingularError{taskfeed.Label}
+		return nil, &NotSingularError{taskfile.Label}
 	}
 }
 
 // OnlyX is like Only, but panics if an error occurs.
-func (tfq *TaskFeedQuery) OnlyX(ctx context.Context) *TaskFeed {
+func (tfq *TaskFileQuery) OnlyX(ctx context.Context) *TaskFile {
 	node, err := tfq.Only(ctx)
 	if err != nil {
 		panic(err)
@@ -231,10 +230,10 @@ func (tfq *TaskFeedQuery) OnlyX(ctx context.Context) *TaskFeed {
 	return node
 }
 
-// OnlyID is like Only, but returns the only TaskFeed ID in the query.
-// Returns a *NotSingularError when exactly one TaskFeed ID is not found.
+// OnlyID is like Only, but returns the only TaskFile ID in the query.
+// Returns a *NotSingularError when exactly one TaskFile ID is not found.
 // Returns a *NotFoundError when no entities are found.
-func (tfq *TaskFeedQuery) OnlyID(ctx context.Context) (id ulid.ID, err error) {
+func (tfq *TaskFileQuery) OnlyID(ctx context.Context) (id ulid.ID, err error) {
 	var ids []ulid.ID
 	if ids, err = tfq.Limit(2).IDs(ctx); err != nil {
 		return
@@ -243,15 +242,15 @@ func (tfq *TaskFeedQuery) OnlyID(ctx context.Context) (id ulid.ID, err error) {
 	case 1:
 		id = ids[0]
 	case 0:
-		err = &NotFoundError{taskfeed.Label}
+		err = &NotFoundError{taskfile.Label}
 	default:
-		err = &NotSingularError{taskfeed.Label}
+		err = &NotSingularError{taskfile.Label}
 	}
 	return
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (tfq *TaskFeedQuery) OnlyIDX(ctx context.Context) ulid.ID {
+func (tfq *TaskFileQuery) OnlyIDX(ctx context.Context) ulid.ID {
 	id, err := tfq.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -259,8 +258,8 @@ func (tfq *TaskFeedQuery) OnlyIDX(ctx context.Context) ulid.ID {
 	return id
 }
 
-// All executes the query and returns a list of TaskFeeds.
-func (tfq *TaskFeedQuery) All(ctx context.Context) ([]*TaskFeed, error) {
+// All executes the query and returns a list of TaskFiles.
+func (tfq *TaskFileQuery) All(ctx context.Context) ([]*TaskFile, error) {
 	if err := tfq.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
@@ -268,7 +267,7 @@ func (tfq *TaskFeedQuery) All(ctx context.Context) ([]*TaskFeed, error) {
 }
 
 // AllX is like All, but panics if an error occurs.
-func (tfq *TaskFeedQuery) AllX(ctx context.Context) []*TaskFeed {
+func (tfq *TaskFileQuery) AllX(ctx context.Context) []*TaskFile {
 	nodes, err := tfq.All(ctx)
 	if err != nil {
 		panic(err)
@@ -276,17 +275,17 @@ func (tfq *TaskFeedQuery) AllX(ctx context.Context) []*TaskFeed {
 	return nodes
 }
 
-// IDs executes the query and returns a list of TaskFeed IDs.
-func (tfq *TaskFeedQuery) IDs(ctx context.Context) ([]ulid.ID, error) {
+// IDs executes the query and returns a list of TaskFile IDs.
+func (tfq *TaskFileQuery) IDs(ctx context.Context) ([]ulid.ID, error) {
 	var ids []ulid.ID
-	if err := tfq.Select(taskfeed.FieldID).Scan(ctx, &ids); err != nil {
+	if err := tfq.Select(taskfile.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (tfq *TaskFeedQuery) IDsX(ctx context.Context) []ulid.ID {
+func (tfq *TaskFileQuery) IDsX(ctx context.Context) []ulid.ID {
 	ids, err := tfq.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -295,7 +294,7 @@ func (tfq *TaskFeedQuery) IDsX(ctx context.Context) []ulid.ID {
 }
 
 // Count returns the count of the given query.
-func (tfq *TaskFeedQuery) Count(ctx context.Context) (int, error) {
+func (tfq *TaskFileQuery) Count(ctx context.Context) (int, error) {
 	if err := tfq.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
@@ -303,7 +302,7 @@ func (tfq *TaskFeedQuery) Count(ctx context.Context) (int, error) {
 }
 
 // CountX is like Count, but panics if an error occurs.
-func (tfq *TaskFeedQuery) CountX(ctx context.Context) int {
+func (tfq *TaskFileQuery) CountX(ctx context.Context) int {
 	count, err := tfq.Count(ctx)
 	if err != nil {
 		panic(err)
@@ -312,7 +311,7 @@ func (tfq *TaskFeedQuery) CountX(ctx context.Context) int {
 }
 
 // Exist returns true if the query has elements in the graph.
-func (tfq *TaskFeedQuery) Exist(ctx context.Context) (bool, error) {
+func (tfq *TaskFileQuery) Exist(ctx context.Context) (bool, error) {
 	if err := tfq.prepareQuery(ctx); err != nil {
 		return false, err
 	}
@@ -320,7 +319,7 @@ func (tfq *TaskFeedQuery) Exist(ctx context.Context) (bool, error) {
 }
 
 // ExistX is like Exist, but panics if an error occurs.
-func (tfq *TaskFeedQuery) ExistX(ctx context.Context) bool {
+func (tfq *TaskFileQuery) ExistX(ctx context.Context) bool {
 	exist, err := tfq.Exist(ctx)
 	if err != nil {
 		panic(err)
@@ -328,31 +327,42 @@ func (tfq *TaskFeedQuery) ExistX(ctx context.Context) bool {
 	return exist
 }
 
-// Clone returns a duplicate of the TaskFeedQuery builder, including all associated steps. It can be
+// Clone returns a duplicate of the TaskFileQuery builder, including all associated steps. It can be
 // used to prepare common query builders and use them differently after the clone is made.
-func (tfq *TaskFeedQuery) Clone() *TaskFeedQuery {
+func (tfq *TaskFileQuery) Clone() *TaskFileQuery {
 	if tfq == nil {
 		return nil
 	}
-	return &TaskFeedQuery{
-		config:            tfq.config,
-		limit:             tfq.limit,
-		offset:            tfq.offset,
-		order:             append([]OrderFunc{}, tfq.order...),
-		predicates:        append([]predicate.TaskFeed{}, tfq.predicates...),
-		withTask:          tfq.withTask.Clone(),
-		withTeammate:      tfq.withTeammate.Clone(),
-		withTaskFeedLikes: tfq.withTaskFeedLikes.Clone(),
-		withTaskFiles:     tfq.withTaskFiles.Clone(),
+	return &TaskFileQuery{
+		config:       tfq.config,
+		limit:        tfq.limit,
+		offset:       tfq.offset,
+		order:        append([]OrderFunc{}, tfq.order...),
+		predicates:   append([]predicate.TaskFile{}, tfq.predicates...),
+		withProject:  tfq.withProject.Clone(),
+		withTask:     tfq.withTask.Clone(),
+		withTaskFeed: tfq.withTaskFeed.Clone(),
+		withFileType: tfq.withFileType.Clone(),
 		// clone intermediate query.
 		sql:  tfq.sql.Clone(),
 		path: tfq.path,
 	}
 }
 
+// WithProject tells the query-builder to eager-load the nodes that are connected to
+// the "project" edge. The optional arguments are used to configure the query builder of the edge.
+func (tfq *TaskFileQuery) WithProject(opts ...func(*ProjectQuery)) *TaskFileQuery {
+	query := &ProjectQuery{config: tfq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	tfq.withProject = query
+	return tfq
+}
+
 // WithTask tells the query-builder to eager-load the nodes that are connected to
 // the "task" edge. The optional arguments are used to configure the query builder of the edge.
-func (tfq *TaskFeedQuery) WithTask(opts ...func(*TaskQuery)) *TaskFeedQuery {
+func (tfq *TaskFileQuery) WithTask(opts ...func(*TaskQuery)) *TaskFileQuery {
 	query := &TaskQuery{config: tfq.config}
 	for _, opt := range opts {
 		opt(query)
@@ -361,36 +371,25 @@ func (tfq *TaskFeedQuery) WithTask(opts ...func(*TaskQuery)) *TaskFeedQuery {
 	return tfq
 }
 
-// WithTeammate tells the query-builder to eager-load the nodes that are connected to
-// the "teammate" edge. The optional arguments are used to configure the query builder of the edge.
-func (tfq *TaskFeedQuery) WithTeammate(opts ...func(*TeammateQuery)) *TaskFeedQuery {
-	query := &TeammateQuery{config: tfq.config}
+// WithTaskFeed tells the query-builder to eager-load the nodes that are connected to
+// the "task_feed" edge. The optional arguments are used to configure the query builder of the edge.
+func (tfq *TaskFileQuery) WithTaskFeed(opts ...func(*TaskFeedQuery)) *TaskFileQuery {
+	query := &TaskFeedQuery{config: tfq.config}
 	for _, opt := range opts {
 		opt(query)
 	}
-	tfq.withTeammate = query
+	tfq.withTaskFeed = query
 	return tfq
 }
 
-// WithTaskFeedLikes tells the query-builder to eager-load the nodes that are connected to
-// the "task_feed_likes" edge. The optional arguments are used to configure the query builder of the edge.
-func (tfq *TaskFeedQuery) WithTaskFeedLikes(opts ...func(*TaskFeedLikeQuery)) *TaskFeedQuery {
-	query := &TaskFeedLikeQuery{config: tfq.config}
+// WithFileType tells the query-builder to eager-load the nodes that are connected to
+// the "file_type" edge. The optional arguments are used to configure the query builder of the edge.
+func (tfq *TaskFileQuery) WithFileType(opts ...func(*FileTypeQuery)) *TaskFileQuery {
+	query := &FileTypeQuery{config: tfq.config}
 	for _, opt := range opts {
 		opt(query)
 	}
-	tfq.withTaskFeedLikes = query
-	return tfq
-}
-
-// WithTaskFiles tells the query-builder to eager-load the nodes that are connected to
-// the "task_files" edge. The optional arguments are used to configure the query builder of the edge.
-func (tfq *TaskFeedQuery) WithTaskFiles(opts ...func(*TaskFileQuery)) *TaskFeedQuery {
-	query := &TaskFileQuery{config: tfq.config}
-	for _, opt := range opts {
-		opt(query)
-	}
-	tfq.withTaskFiles = query
+	tfq.withFileType = query
 	return tfq
 }
 
@@ -400,17 +399,17 @@ func (tfq *TaskFeedQuery) WithTaskFiles(opts ...func(*TaskFileQuery)) *TaskFeedQ
 // Example:
 //
 //	var v []struct {
-//		TaskID ulid.ID `json:"task_id,omitempty"`
+//		ProjectID ulid.ID `json:"project_id,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
-//	client.TaskFeed.Query().
-//		GroupBy(taskfeed.FieldTaskID).
+//	client.TaskFile.Query().
+//		GroupBy(taskfile.FieldProjectID).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 //
-func (tfq *TaskFeedQuery) GroupBy(field string, fields ...string) *TaskFeedGroupBy {
-	group := &TaskFeedGroupBy{config: tfq.config}
+func (tfq *TaskFileQuery) GroupBy(field string, fields ...string) *TaskFileGroupBy {
+	group := &TaskFileGroupBy{config: tfq.config}
 	group.fields = append([]string{field}, fields...)
 	group.path = func(ctx context.Context) (prev *sql.Selector, err error) {
 		if err := tfq.prepareQuery(ctx); err != nil {
@@ -427,21 +426,21 @@ func (tfq *TaskFeedQuery) GroupBy(field string, fields ...string) *TaskFeedGroup
 // Example:
 //
 //	var v []struct {
-//		TaskID ulid.ID `json:"task_id,omitempty"`
+//		ProjectID ulid.ID `json:"project_id,omitempty"`
 //	}
 //
-//	client.TaskFeed.Query().
-//		Select(taskfeed.FieldTaskID).
+//	client.TaskFile.Query().
+//		Select(taskfile.FieldProjectID).
 //		Scan(ctx, &v)
 //
-func (tfq *TaskFeedQuery) Select(fields ...string) *TaskFeedSelect {
+func (tfq *TaskFileQuery) Select(fields ...string) *TaskFileSelect {
 	tfq.fields = append(tfq.fields, fields...)
-	return &TaskFeedSelect{TaskFeedQuery: tfq}
+	return &TaskFileSelect{TaskFileQuery: tfq}
 }
 
-func (tfq *TaskFeedQuery) prepareQuery(ctx context.Context) error {
+func (tfq *TaskFileQuery) prepareQuery(ctx context.Context) error {
 	for _, f := range tfq.fields {
-		if !taskfeed.ValidColumn(f) {
+		if !taskfile.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
 	}
@@ -455,19 +454,19 @@ func (tfq *TaskFeedQuery) prepareQuery(ctx context.Context) error {
 	return nil
 }
 
-func (tfq *TaskFeedQuery) sqlAll(ctx context.Context) ([]*TaskFeed, error) {
+func (tfq *TaskFileQuery) sqlAll(ctx context.Context) ([]*TaskFile, error) {
 	var (
-		nodes       = []*TaskFeed{}
+		nodes       = []*TaskFile{}
 		_spec       = tfq.querySpec()
 		loadedTypes = [4]bool{
+			tfq.withProject != nil,
 			tfq.withTask != nil,
-			tfq.withTeammate != nil,
-			tfq.withTaskFeedLikes != nil,
-			tfq.withTaskFiles != nil,
+			tfq.withTaskFeed != nil,
+			tfq.withFileType != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
-		node := &TaskFeed{config: tfq.config}
+		node := &TaskFile{config: tfq.config}
 		nodes = append(nodes, node)
 		return node.scanValues(columns)
 	}
@@ -486,9 +485,35 @@ func (tfq *TaskFeedQuery) sqlAll(ctx context.Context) ([]*TaskFeed, error) {
 		return nodes, nil
 	}
 
+	if query := tfq.withProject; query != nil {
+		ids := make([]ulid.ID, 0, len(nodes))
+		nodeids := make(map[ulid.ID][]*TaskFile)
+		for i := range nodes {
+			fk := nodes[i].ProjectID
+			if _, ok := nodeids[fk]; !ok {
+				ids = append(ids, fk)
+			}
+			nodeids[fk] = append(nodeids[fk], nodes[i])
+		}
+		query.Where(project.IDIn(ids...))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nodeids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "project_id" returned %v`, n.ID)
+			}
+			for i := range nodes {
+				nodes[i].Edges.Project = n
+			}
+		}
+	}
+
 	if query := tfq.withTask; query != nil {
 		ids := make([]ulid.ID, 0, len(nodes))
-		nodeids := make(map[ulid.ID][]*TaskFeed)
+		nodeids := make(map[ulid.ID][]*TaskFile)
 		for i := range nodes {
 			fk := nodes[i].TaskID
 			if _, ok := nodeids[fk]; !ok {
@@ -512,17 +537,17 @@ func (tfq *TaskFeedQuery) sqlAll(ctx context.Context) ([]*TaskFeed, error) {
 		}
 	}
 
-	if query := tfq.withTeammate; query != nil {
+	if query := tfq.withTaskFeed; query != nil {
 		ids := make([]ulid.ID, 0, len(nodes))
-		nodeids := make(map[ulid.ID][]*TaskFeed)
+		nodeids := make(map[ulid.ID][]*TaskFile)
 		for i := range nodes {
-			fk := nodes[i].TeammateID
+			fk := nodes[i].TaskFeedID
 			if _, ok := nodeids[fk]; !ok {
 				ids = append(ids, fk)
 			}
 			nodeids[fk] = append(nodeids[fk], nodes[i])
 		}
-		query.Where(teammate.IDIn(ids...))
+		query.Where(taskfeed.IDIn(ids...))
 		neighbors, err := query.All(ctx)
 		if err != nil {
 			return nil, err
@@ -530,73 +555,49 @@ func (tfq *TaskFeedQuery) sqlAll(ctx context.Context) ([]*TaskFeed, error) {
 		for _, n := range neighbors {
 			nodes, ok := nodeids[n.ID]
 			if !ok {
-				return nil, fmt.Errorf(`unexpected foreign-key "teammate_id" returned %v`, n.ID)
+				return nil, fmt.Errorf(`unexpected foreign-key "task_feed_id" returned %v`, n.ID)
 			}
 			for i := range nodes {
-				nodes[i].Edges.Teammate = n
+				nodes[i].Edges.TaskFeed = n
 			}
 		}
 	}
 
-	if query := tfq.withTaskFeedLikes; query != nil {
-		fks := make([]driver.Value, 0, len(nodes))
-		nodeids := make(map[ulid.ID]*TaskFeed)
+	if query := tfq.withFileType; query != nil {
+		ids := make([]ulid.ID, 0, len(nodes))
+		nodeids := make(map[ulid.ID][]*TaskFile)
 		for i := range nodes {
-			fks = append(fks, nodes[i].ID)
-			nodeids[nodes[i].ID] = nodes[i]
-			nodes[i].Edges.TaskFeedLikes = []*TaskFeedLike{}
+			fk := nodes[i].FileTypeID
+			if _, ok := nodeids[fk]; !ok {
+				ids = append(ids, fk)
+			}
+			nodeids[fk] = append(nodeids[fk], nodes[i])
 		}
-		query.Where(predicate.TaskFeedLike(func(s *sql.Selector) {
-			s.Where(sql.InValues(taskfeed.TaskFeedLikesColumn, fks...))
-		}))
+		query.Where(filetype.IDIn(ids...))
 		neighbors, err := query.All(ctx)
 		if err != nil {
 			return nil, err
 		}
 		for _, n := range neighbors {
-			fk := n.TaskFeedID
-			node, ok := nodeids[fk]
+			nodes, ok := nodeids[n.ID]
 			if !ok {
-				return nil, fmt.Errorf(`unexpected foreign-key "task_feed_id" returned %v for node %v`, fk, n.ID)
+				return nil, fmt.Errorf(`unexpected foreign-key "file_type_id" returned %v`, n.ID)
 			}
-			node.Edges.TaskFeedLikes = append(node.Edges.TaskFeedLikes, n)
-		}
-	}
-
-	if query := tfq.withTaskFiles; query != nil {
-		fks := make([]driver.Value, 0, len(nodes))
-		nodeids := make(map[ulid.ID]*TaskFeed)
-		for i := range nodes {
-			fks = append(fks, nodes[i].ID)
-			nodeids[nodes[i].ID] = nodes[i]
-			nodes[i].Edges.TaskFiles = []*TaskFile{}
-		}
-		query.Where(predicate.TaskFile(func(s *sql.Selector) {
-			s.Where(sql.InValues(taskfeed.TaskFilesColumn, fks...))
-		}))
-		neighbors, err := query.All(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, n := range neighbors {
-			fk := n.TaskFeedID
-			node, ok := nodeids[fk]
-			if !ok {
-				return nil, fmt.Errorf(`unexpected foreign-key "task_feed_id" returned %v for node %v`, fk, n.ID)
+			for i := range nodes {
+				nodes[i].Edges.FileType = n
 			}
-			node.Edges.TaskFiles = append(node.Edges.TaskFiles, n)
 		}
 	}
 
 	return nodes, nil
 }
 
-func (tfq *TaskFeedQuery) sqlCount(ctx context.Context) (int, error) {
+func (tfq *TaskFileQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := tfq.querySpec()
 	return sqlgraph.CountNodes(ctx, tfq.driver, _spec)
 }
 
-func (tfq *TaskFeedQuery) sqlExist(ctx context.Context) (bool, error) {
+func (tfq *TaskFileQuery) sqlExist(ctx context.Context) (bool, error) {
 	n, err := tfq.sqlCount(ctx)
 	if err != nil {
 		return false, fmt.Errorf("ent: check existence: %w", err)
@@ -604,14 +605,14 @@ func (tfq *TaskFeedQuery) sqlExist(ctx context.Context) (bool, error) {
 	return n > 0, nil
 }
 
-func (tfq *TaskFeedQuery) querySpec() *sqlgraph.QuerySpec {
+func (tfq *TaskFileQuery) querySpec() *sqlgraph.QuerySpec {
 	_spec := &sqlgraph.QuerySpec{
 		Node: &sqlgraph.NodeSpec{
-			Table:   taskfeed.Table,
-			Columns: taskfeed.Columns,
+			Table:   taskfile.Table,
+			Columns: taskfile.Columns,
 			ID: &sqlgraph.FieldSpec{
 				Type:   field.TypeString,
-				Column: taskfeed.FieldID,
+				Column: taskfile.FieldID,
 			},
 		},
 		From:   tfq.sql,
@@ -622,9 +623,9 @@ func (tfq *TaskFeedQuery) querySpec() *sqlgraph.QuerySpec {
 	}
 	if fields := tfq.fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
-		_spec.Node.Columns = append(_spec.Node.Columns, taskfeed.FieldID)
+		_spec.Node.Columns = append(_spec.Node.Columns, taskfile.FieldID)
 		for i := range fields {
-			if fields[i] != taskfeed.FieldID {
+			if fields[i] != taskfile.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
 		}
@@ -652,12 +653,12 @@ func (tfq *TaskFeedQuery) querySpec() *sqlgraph.QuerySpec {
 	return _spec
 }
 
-func (tfq *TaskFeedQuery) sqlQuery(ctx context.Context) *sql.Selector {
+func (tfq *TaskFileQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(tfq.driver.Dialect())
-	t1 := builder.Table(taskfeed.Table)
+	t1 := builder.Table(taskfile.Table)
 	columns := tfq.fields
 	if len(columns) == 0 {
-		columns = taskfeed.Columns
+		columns = taskfile.Columns
 	}
 	selector := builder.Select(t1.Columns(columns...)...).From(t1)
 	if tfq.sql != nil {
@@ -681,8 +682,8 @@ func (tfq *TaskFeedQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	return selector
 }
 
-// TaskFeedGroupBy is the group-by builder for TaskFeed entities.
-type TaskFeedGroupBy struct {
+// TaskFileGroupBy is the group-by builder for TaskFile entities.
+type TaskFileGroupBy struct {
 	config
 	fields []string
 	fns    []AggregateFunc
@@ -692,13 +693,13 @@ type TaskFeedGroupBy struct {
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
-func (tfgb *TaskFeedGroupBy) Aggregate(fns ...AggregateFunc) *TaskFeedGroupBy {
+func (tfgb *TaskFileGroupBy) Aggregate(fns ...AggregateFunc) *TaskFileGroupBy {
 	tfgb.fns = append(tfgb.fns, fns...)
 	return tfgb
 }
 
 // Scan applies the group-by query and scans the result into the given value.
-func (tfgb *TaskFeedGroupBy) Scan(ctx context.Context, v interface{}) error {
+func (tfgb *TaskFileGroupBy) Scan(ctx context.Context, v interface{}) error {
 	query, err := tfgb.path(ctx)
 	if err != nil {
 		return err
@@ -708,7 +709,7 @@ func (tfgb *TaskFeedGroupBy) Scan(ctx context.Context, v interface{}) error {
 }
 
 // ScanX is like Scan, but panics if an error occurs.
-func (tfgb *TaskFeedGroupBy) ScanX(ctx context.Context, v interface{}) {
+func (tfgb *TaskFileGroupBy) ScanX(ctx context.Context, v interface{}) {
 	if err := tfgb.Scan(ctx, v); err != nil {
 		panic(err)
 	}
@@ -716,9 +717,9 @@ func (tfgb *TaskFeedGroupBy) ScanX(ctx context.Context, v interface{}) {
 
 // Strings returns list of strings from group-by.
 // It is only allowed when executing a group-by query with one field.
-func (tfgb *TaskFeedGroupBy) Strings(ctx context.Context) ([]string, error) {
+func (tfgb *TaskFileGroupBy) Strings(ctx context.Context) ([]string, error) {
 	if len(tfgb.fields) > 1 {
-		return nil, errors.New("ent: TaskFeedGroupBy.Strings is not achievable when grouping more than 1 field")
+		return nil, errors.New("ent: TaskFileGroupBy.Strings is not achievable when grouping more than 1 field")
 	}
 	var v []string
 	if err := tfgb.Scan(ctx, &v); err != nil {
@@ -728,7 +729,7 @@ func (tfgb *TaskFeedGroupBy) Strings(ctx context.Context) ([]string, error) {
 }
 
 // StringsX is like Strings, but panics if an error occurs.
-func (tfgb *TaskFeedGroupBy) StringsX(ctx context.Context) []string {
+func (tfgb *TaskFileGroupBy) StringsX(ctx context.Context) []string {
 	v, err := tfgb.Strings(ctx)
 	if err != nil {
 		panic(err)
@@ -738,7 +739,7 @@ func (tfgb *TaskFeedGroupBy) StringsX(ctx context.Context) []string {
 
 // String returns a single string from a group-by query.
 // It is only allowed when executing a group-by query with one field.
-func (tfgb *TaskFeedGroupBy) String(ctx context.Context) (_ string, err error) {
+func (tfgb *TaskFileGroupBy) String(ctx context.Context) (_ string, err error) {
 	var v []string
 	if v, err = tfgb.Strings(ctx); err != nil {
 		return
@@ -747,15 +748,15 @@ func (tfgb *TaskFeedGroupBy) String(ctx context.Context) (_ string, err error) {
 	case 1:
 		return v[0], nil
 	case 0:
-		err = &NotFoundError{taskfeed.Label}
+		err = &NotFoundError{taskfile.Label}
 	default:
-		err = fmt.Errorf("ent: TaskFeedGroupBy.Strings returned %d results when one was expected", len(v))
+		err = fmt.Errorf("ent: TaskFileGroupBy.Strings returned %d results when one was expected", len(v))
 	}
 	return
 }
 
 // StringX is like String, but panics if an error occurs.
-func (tfgb *TaskFeedGroupBy) StringX(ctx context.Context) string {
+func (tfgb *TaskFileGroupBy) StringX(ctx context.Context) string {
 	v, err := tfgb.String(ctx)
 	if err != nil {
 		panic(err)
@@ -765,9 +766,9 @@ func (tfgb *TaskFeedGroupBy) StringX(ctx context.Context) string {
 
 // Ints returns list of ints from group-by.
 // It is only allowed when executing a group-by query with one field.
-func (tfgb *TaskFeedGroupBy) Ints(ctx context.Context) ([]int, error) {
+func (tfgb *TaskFileGroupBy) Ints(ctx context.Context) ([]int, error) {
 	if len(tfgb.fields) > 1 {
-		return nil, errors.New("ent: TaskFeedGroupBy.Ints is not achievable when grouping more than 1 field")
+		return nil, errors.New("ent: TaskFileGroupBy.Ints is not achievable when grouping more than 1 field")
 	}
 	var v []int
 	if err := tfgb.Scan(ctx, &v); err != nil {
@@ -777,7 +778,7 @@ func (tfgb *TaskFeedGroupBy) Ints(ctx context.Context) ([]int, error) {
 }
 
 // IntsX is like Ints, but panics if an error occurs.
-func (tfgb *TaskFeedGroupBy) IntsX(ctx context.Context) []int {
+func (tfgb *TaskFileGroupBy) IntsX(ctx context.Context) []int {
 	v, err := tfgb.Ints(ctx)
 	if err != nil {
 		panic(err)
@@ -787,7 +788,7 @@ func (tfgb *TaskFeedGroupBy) IntsX(ctx context.Context) []int {
 
 // Int returns a single int from a group-by query.
 // It is only allowed when executing a group-by query with one field.
-func (tfgb *TaskFeedGroupBy) Int(ctx context.Context) (_ int, err error) {
+func (tfgb *TaskFileGroupBy) Int(ctx context.Context) (_ int, err error) {
 	var v []int
 	if v, err = tfgb.Ints(ctx); err != nil {
 		return
@@ -796,15 +797,15 @@ func (tfgb *TaskFeedGroupBy) Int(ctx context.Context) (_ int, err error) {
 	case 1:
 		return v[0], nil
 	case 0:
-		err = &NotFoundError{taskfeed.Label}
+		err = &NotFoundError{taskfile.Label}
 	default:
-		err = fmt.Errorf("ent: TaskFeedGroupBy.Ints returned %d results when one was expected", len(v))
+		err = fmt.Errorf("ent: TaskFileGroupBy.Ints returned %d results when one was expected", len(v))
 	}
 	return
 }
 
 // IntX is like Int, but panics if an error occurs.
-func (tfgb *TaskFeedGroupBy) IntX(ctx context.Context) int {
+func (tfgb *TaskFileGroupBy) IntX(ctx context.Context) int {
 	v, err := tfgb.Int(ctx)
 	if err != nil {
 		panic(err)
@@ -814,9 +815,9 @@ func (tfgb *TaskFeedGroupBy) IntX(ctx context.Context) int {
 
 // Float64s returns list of float64s from group-by.
 // It is only allowed when executing a group-by query with one field.
-func (tfgb *TaskFeedGroupBy) Float64s(ctx context.Context) ([]float64, error) {
+func (tfgb *TaskFileGroupBy) Float64s(ctx context.Context) ([]float64, error) {
 	if len(tfgb.fields) > 1 {
-		return nil, errors.New("ent: TaskFeedGroupBy.Float64s is not achievable when grouping more than 1 field")
+		return nil, errors.New("ent: TaskFileGroupBy.Float64s is not achievable when grouping more than 1 field")
 	}
 	var v []float64
 	if err := tfgb.Scan(ctx, &v); err != nil {
@@ -826,7 +827,7 @@ func (tfgb *TaskFeedGroupBy) Float64s(ctx context.Context) ([]float64, error) {
 }
 
 // Float64sX is like Float64s, but panics if an error occurs.
-func (tfgb *TaskFeedGroupBy) Float64sX(ctx context.Context) []float64 {
+func (tfgb *TaskFileGroupBy) Float64sX(ctx context.Context) []float64 {
 	v, err := tfgb.Float64s(ctx)
 	if err != nil {
 		panic(err)
@@ -836,7 +837,7 @@ func (tfgb *TaskFeedGroupBy) Float64sX(ctx context.Context) []float64 {
 
 // Float64 returns a single float64 from a group-by query.
 // It is only allowed when executing a group-by query with one field.
-func (tfgb *TaskFeedGroupBy) Float64(ctx context.Context) (_ float64, err error) {
+func (tfgb *TaskFileGroupBy) Float64(ctx context.Context) (_ float64, err error) {
 	var v []float64
 	if v, err = tfgb.Float64s(ctx); err != nil {
 		return
@@ -845,15 +846,15 @@ func (tfgb *TaskFeedGroupBy) Float64(ctx context.Context) (_ float64, err error)
 	case 1:
 		return v[0], nil
 	case 0:
-		err = &NotFoundError{taskfeed.Label}
+		err = &NotFoundError{taskfile.Label}
 	default:
-		err = fmt.Errorf("ent: TaskFeedGroupBy.Float64s returned %d results when one was expected", len(v))
+		err = fmt.Errorf("ent: TaskFileGroupBy.Float64s returned %d results when one was expected", len(v))
 	}
 	return
 }
 
 // Float64X is like Float64, but panics if an error occurs.
-func (tfgb *TaskFeedGroupBy) Float64X(ctx context.Context) float64 {
+func (tfgb *TaskFileGroupBy) Float64X(ctx context.Context) float64 {
 	v, err := tfgb.Float64(ctx)
 	if err != nil {
 		panic(err)
@@ -863,9 +864,9 @@ func (tfgb *TaskFeedGroupBy) Float64X(ctx context.Context) float64 {
 
 // Bools returns list of bools from group-by.
 // It is only allowed when executing a group-by query with one field.
-func (tfgb *TaskFeedGroupBy) Bools(ctx context.Context) ([]bool, error) {
+func (tfgb *TaskFileGroupBy) Bools(ctx context.Context) ([]bool, error) {
 	if len(tfgb.fields) > 1 {
-		return nil, errors.New("ent: TaskFeedGroupBy.Bools is not achievable when grouping more than 1 field")
+		return nil, errors.New("ent: TaskFileGroupBy.Bools is not achievable when grouping more than 1 field")
 	}
 	var v []bool
 	if err := tfgb.Scan(ctx, &v); err != nil {
@@ -875,7 +876,7 @@ func (tfgb *TaskFeedGroupBy) Bools(ctx context.Context) ([]bool, error) {
 }
 
 // BoolsX is like Bools, but panics if an error occurs.
-func (tfgb *TaskFeedGroupBy) BoolsX(ctx context.Context) []bool {
+func (tfgb *TaskFileGroupBy) BoolsX(ctx context.Context) []bool {
 	v, err := tfgb.Bools(ctx)
 	if err != nil {
 		panic(err)
@@ -885,7 +886,7 @@ func (tfgb *TaskFeedGroupBy) BoolsX(ctx context.Context) []bool {
 
 // Bool returns a single bool from a group-by query.
 // It is only allowed when executing a group-by query with one field.
-func (tfgb *TaskFeedGroupBy) Bool(ctx context.Context) (_ bool, err error) {
+func (tfgb *TaskFileGroupBy) Bool(ctx context.Context) (_ bool, err error) {
 	var v []bool
 	if v, err = tfgb.Bools(ctx); err != nil {
 		return
@@ -894,15 +895,15 @@ func (tfgb *TaskFeedGroupBy) Bool(ctx context.Context) (_ bool, err error) {
 	case 1:
 		return v[0], nil
 	case 0:
-		err = &NotFoundError{taskfeed.Label}
+		err = &NotFoundError{taskfile.Label}
 	default:
-		err = fmt.Errorf("ent: TaskFeedGroupBy.Bools returned %d results when one was expected", len(v))
+		err = fmt.Errorf("ent: TaskFileGroupBy.Bools returned %d results when one was expected", len(v))
 	}
 	return
 }
 
 // BoolX is like Bool, but panics if an error occurs.
-func (tfgb *TaskFeedGroupBy) BoolX(ctx context.Context) bool {
+func (tfgb *TaskFileGroupBy) BoolX(ctx context.Context) bool {
 	v, err := tfgb.Bool(ctx)
 	if err != nil {
 		panic(err)
@@ -910,9 +911,9 @@ func (tfgb *TaskFeedGroupBy) BoolX(ctx context.Context) bool {
 	return v
 }
 
-func (tfgb *TaskFeedGroupBy) sqlScan(ctx context.Context, v interface{}) error {
+func (tfgb *TaskFileGroupBy) sqlScan(ctx context.Context, v interface{}) error {
 	for _, f := range tfgb.fields {
-		if !taskfeed.ValidColumn(f) {
+		if !taskfile.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("invalid field %q for group-by", f)}
 		}
 	}
@@ -929,7 +930,7 @@ func (tfgb *TaskFeedGroupBy) sqlScan(ctx context.Context, v interface{}) error {
 	return sql.ScanSlice(rows, v)
 }
 
-func (tfgb *TaskFeedGroupBy) sqlQuery() *sql.Selector {
+func (tfgb *TaskFileGroupBy) sqlQuery() *sql.Selector {
 	selector := tfgb.sql.Select()
 	aggregation := make([]string, 0, len(tfgb.fns))
 	for _, fn := range tfgb.fns {
@@ -950,33 +951,33 @@ func (tfgb *TaskFeedGroupBy) sqlQuery() *sql.Selector {
 	return selector.GroupBy(selector.Columns(tfgb.fields...)...)
 }
 
-// TaskFeedSelect is the builder for selecting fields of TaskFeed entities.
-type TaskFeedSelect struct {
-	*TaskFeedQuery
+// TaskFileSelect is the builder for selecting fields of TaskFile entities.
+type TaskFileSelect struct {
+	*TaskFileQuery
 	// intermediate query (i.e. traversal path).
 	sql *sql.Selector
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (tfs *TaskFeedSelect) Scan(ctx context.Context, v interface{}) error {
+func (tfs *TaskFileSelect) Scan(ctx context.Context, v interface{}) error {
 	if err := tfs.prepareQuery(ctx); err != nil {
 		return err
 	}
-	tfs.sql = tfs.TaskFeedQuery.sqlQuery(ctx)
+	tfs.sql = tfs.TaskFileQuery.sqlQuery(ctx)
 	return tfs.sqlScan(ctx, v)
 }
 
 // ScanX is like Scan, but panics if an error occurs.
-func (tfs *TaskFeedSelect) ScanX(ctx context.Context, v interface{}) {
+func (tfs *TaskFileSelect) ScanX(ctx context.Context, v interface{}) {
 	if err := tfs.Scan(ctx, v); err != nil {
 		panic(err)
 	}
 }
 
 // Strings returns list of strings from a selector. It is only allowed when selecting one field.
-func (tfs *TaskFeedSelect) Strings(ctx context.Context) ([]string, error) {
+func (tfs *TaskFileSelect) Strings(ctx context.Context) ([]string, error) {
 	if len(tfs.fields) > 1 {
-		return nil, errors.New("ent: TaskFeedSelect.Strings is not achievable when selecting more than 1 field")
+		return nil, errors.New("ent: TaskFileSelect.Strings is not achievable when selecting more than 1 field")
 	}
 	var v []string
 	if err := tfs.Scan(ctx, &v); err != nil {
@@ -986,7 +987,7 @@ func (tfs *TaskFeedSelect) Strings(ctx context.Context) ([]string, error) {
 }
 
 // StringsX is like Strings, but panics if an error occurs.
-func (tfs *TaskFeedSelect) StringsX(ctx context.Context) []string {
+func (tfs *TaskFileSelect) StringsX(ctx context.Context) []string {
 	v, err := tfs.Strings(ctx)
 	if err != nil {
 		panic(err)
@@ -995,7 +996,7 @@ func (tfs *TaskFeedSelect) StringsX(ctx context.Context) []string {
 }
 
 // String returns a single string from a selector. It is only allowed when selecting one field.
-func (tfs *TaskFeedSelect) String(ctx context.Context) (_ string, err error) {
+func (tfs *TaskFileSelect) String(ctx context.Context) (_ string, err error) {
 	var v []string
 	if v, err = tfs.Strings(ctx); err != nil {
 		return
@@ -1004,15 +1005,15 @@ func (tfs *TaskFeedSelect) String(ctx context.Context) (_ string, err error) {
 	case 1:
 		return v[0], nil
 	case 0:
-		err = &NotFoundError{taskfeed.Label}
+		err = &NotFoundError{taskfile.Label}
 	default:
-		err = fmt.Errorf("ent: TaskFeedSelect.Strings returned %d results when one was expected", len(v))
+		err = fmt.Errorf("ent: TaskFileSelect.Strings returned %d results when one was expected", len(v))
 	}
 	return
 }
 
 // StringX is like String, but panics if an error occurs.
-func (tfs *TaskFeedSelect) StringX(ctx context.Context) string {
+func (tfs *TaskFileSelect) StringX(ctx context.Context) string {
 	v, err := tfs.String(ctx)
 	if err != nil {
 		panic(err)
@@ -1021,9 +1022,9 @@ func (tfs *TaskFeedSelect) StringX(ctx context.Context) string {
 }
 
 // Ints returns list of ints from a selector. It is only allowed when selecting one field.
-func (tfs *TaskFeedSelect) Ints(ctx context.Context) ([]int, error) {
+func (tfs *TaskFileSelect) Ints(ctx context.Context) ([]int, error) {
 	if len(tfs.fields) > 1 {
-		return nil, errors.New("ent: TaskFeedSelect.Ints is not achievable when selecting more than 1 field")
+		return nil, errors.New("ent: TaskFileSelect.Ints is not achievable when selecting more than 1 field")
 	}
 	var v []int
 	if err := tfs.Scan(ctx, &v); err != nil {
@@ -1033,7 +1034,7 @@ func (tfs *TaskFeedSelect) Ints(ctx context.Context) ([]int, error) {
 }
 
 // IntsX is like Ints, but panics if an error occurs.
-func (tfs *TaskFeedSelect) IntsX(ctx context.Context) []int {
+func (tfs *TaskFileSelect) IntsX(ctx context.Context) []int {
 	v, err := tfs.Ints(ctx)
 	if err != nil {
 		panic(err)
@@ -1042,7 +1043,7 @@ func (tfs *TaskFeedSelect) IntsX(ctx context.Context) []int {
 }
 
 // Int returns a single int from a selector. It is only allowed when selecting one field.
-func (tfs *TaskFeedSelect) Int(ctx context.Context) (_ int, err error) {
+func (tfs *TaskFileSelect) Int(ctx context.Context) (_ int, err error) {
 	var v []int
 	if v, err = tfs.Ints(ctx); err != nil {
 		return
@@ -1051,15 +1052,15 @@ func (tfs *TaskFeedSelect) Int(ctx context.Context) (_ int, err error) {
 	case 1:
 		return v[0], nil
 	case 0:
-		err = &NotFoundError{taskfeed.Label}
+		err = &NotFoundError{taskfile.Label}
 	default:
-		err = fmt.Errorf("ent: TaskFeedSelect.Ints returned %d results when one was expected", len(v))
+		err = fmt.Errorf("ent: TaskFileSelect.Ints returned %d results when one was expected", len(v))
 	}
 	return
 }
 
 // IntX is like Int, but panics if an error occurs.
-func (tfs *TaskFeedSelect) IntX(ctx context.Context) int {
+func (tfs *TaskFileSelect) IntX(ctx context.Context) int {
 	v, err := tfs.Int(ctx)
 	if err != nil {
 		panic(err)
@@ -1068,9 +1069,9 @@ func (tfs *TaskFeedSelect) IntX(ctx context.Context) int {
 }
 
 // Float64s returns list of float64s from a selector. It is only allowed when selecting one field.
-func (tfs *TaskFeedSelect) Float64s(ctx context.Context) ([]float64, error) {
+func (tfs *TaskFileSelect) Float64s(ctx context.Context) ([]float64, error) {
 	if len(tfs.fields) > 1 {
-		return nil, errors.New("ent: TaskFeedSelect.Float64s is not achievable when selecting more than 1 field")
+		return nil, errors.New("ent: TaskFileSelect.Float64s is not achievable when selecting more than 1 field")
 	}
 	var v []float64
 	if err := tfs.Scan(ctx, &v); err != nil {
@@ -1080,7 +1081,7 @@ func (tfs *TaskFeedSelect) Float64s(ctx context.Context) ([]float64, error) {
 }
 
 // Float64sX is like Float64s, but panics if an error occurs.
-func (tfs *TaskFeedSelect) Float64sX(ctx context.Context) []float64 {
+func (tfs *TaskFileSelect) Float64sX(ctx context.Context) []float64 {
 	v, err := tfs.Float64s(ctx)
 	if err != nil {
 		panic(err)
@@ -1089,7 +1090,7 @@ func (tfs *TaskFeedSelect) Float64sX(ctx context.Context) []float64 {
 }
 
 // Float64 returns a single float64 from a selector. It is only allowed when selecting one field.
-func (tfs *TaskFeedSelect) Float64(ctx context.Context) (_ float64, err error) {
+func (tfs *TaskFileSelect) Float64(ctx context.Context) (_ float64, err error) {
 	var v []float64
 	if v, err = tfs.Float64s(ctx); err != nil {
 		return
@@ -1098,15 +1099,15 @@ func (tfs *TaskFeedSelect) Float64(ctx context.Context) (_ float64, err error) {
 	case 1:
 		return v[0], nil
 	case 0:
-		err = &NotFoundError{taskfeed.Label}
+		err = &NotFoundError{taskfile.Label}
 	default:
-		err = fmt.Errorf("ent: TaskFeedSelect.Float64s returned %d results when one was expected", len(v))
+		err = fmt.Errorf("ent: TaskFileSelect.Float64s returned %d results when one was expected", len(v))
 	}
 	return
 }
 
 // Float64X is like Float64, but panics if an error occurs.
-func (tfs *TaskFeedSelect) Float64X(ctx context.Context) float64 {
+func (tfs *TaskFileSelect) Float64X(ctx context.Context) float64 {
 	v, err := tfs.Float64(ctx)
 	if err != nil {
 		panic(err)
@@ -1115,9 +1116,9 @@ func (tfs *TaskFeedSelect) Float64X(ctx context.Context) float64 {
 }
 
 // Bools returns list of bools from a selector. It is only allowed when selecting one field.
-func (tfs *TaskFeedSelect) Bools(ctx context.Context) ([]bool, error) {
+func (tfs *TaskFileSelect) Bools(ctx context.Context) ([]bool, error) {
 	if len(tfs.fields) > 1 {
-		return nil, errors.New("ent: TaskFeedSelect.Bools is not achievable when selecting more than 1 field")
+		return nil, errors.New("ent: TaskFileSelect.Bools is not achievable when selecting more than 1 field")
 	}
 	var v []bool
 	if err := tfs.Scan(ctx, &v); err != nil {
@@ -1127,7 +1128,7 @@ func (tfs *TaskFeedSelect) Bools(ctx context.Context) ([]bool, error) {
 }
 
 // BoolsX is like Bools, but panics if an error occurs.
-func (tfs *TaskFeedSelect) BoolsX(ctx context.Context) []bool {
+func (tfs *TaskFileSelect) BoolsX(ctx context.Context) []bool {
 	v, err := tfs.Bools(ctx)
 	if err != nil {
 		panic(err)
@@ -1136,7 +1137,7 @@ func (tfs *TaskFeedSelect) BoolsX(ctx context.Context) []bool {
 }
 
 // Bool returns a single bool from a selector. It is only allowed when selecting one field.
-func (tfs *TaskFeedSelect) Bool(ctx context.Context) (_ bool, err error) {
+func (tfs *TaskFileSelect) Bool(ctx context.Context) (_ bool, err error) {
 	var v []bool
 	if v, err = tfs.Bools(ctx); err != nil {
 		return
@@ -1145,15 +1146,15 @@ func (tfs *TaskFeedSelect) Bool(ctx context.Context) (_ bool, err error) {
 	case 1:
 		return v[0], nil
 	case 0:
-		err = &NotFoundError{taskfeed.Label}
+		err = &NotFoundError{taskfile.Label}
 	default:
-		err = fmt.Errorf("ent: TaskFeedSelect.Bools returned %d results when one was expected", len(v))
+		err = fmt.Errorf("ent: TaskFileSelect.Bools returned %d results when one was expected", len(v))
 	}
 	return
 }
 
 // BoolX is like Bool, but panics if an error occurs.
-func (tfs *TaskFeedSelect) BoolX(ctx context.Context) bool {
+func (tfs *TaskFileSelect) BoolX(ctx context.Context) bool {
 	v, err := tfs.Bool(ctx)
 	if err != nil {
 		panic(err)
@@ -1161,7 +1162,7 @@ func (tfs *TaskFeedSelect) BoolX(ctx context.Context) bool {
 	return v
 }
 
-func (tfs *TaskFeedSelect) sqlScan(ctx context.Context, v interface{}) error {
+func (tfs *TaskFileSelect) sqlScan(ctx context.Context, v interface{}) error {
 	rows := &sql.Rows{}
 	query, args := tfs.sql.Query()
 	if err := tfs.driver.Query(ctx, query, args, rows); err != nil {

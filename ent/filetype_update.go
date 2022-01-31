@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"project-management-demo-backend/ent/filetype"
 	"project-management-demo-backend/ent/predicate"
+	"project-management-demo-backend/ent/schema/ulid"
+	"project-management-demo-backend/ent/taskfile"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -38,9 +40,45 @@ func (ftu *FileTypeUpdate) SetTypeCode(fc filetype.TypeCode) *FileTypeUpdate {
 	return ftu
 }
 
+// AddTaskFileIDs adds the "task_files" edge to the TaskFile entity by IDs.
+func (ftu *FileTypeUpdate) AddTaskFileIDs(ids ...ulid.ID) *FileTypeUpdate {
+	ftu.mutation.AddTaskFileIDs(ids...)
+	return ftu
+}
+
+// AddTaskFiles adds the "task_files" edges to the TaskFile entity.
+func (ftu *FileTypeUpdate) AddTaskFiles(t ...*TaskFile) *FileTypeUpdate {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return ftu.AddTaskFileIDs(ids...)
+}
+
 // Mutation returns the FileTypeMutation object of the builder.
 func (ftu *FileTypeUpdate) Mutation() *FileTypeMutation {
 	return ftu.mutation
+}
+
+// ClearTaskFiles clears all "task_files" edges to the TaskFile entity.
+func (ftu *FileTypeUpdate) ClearTaskFiles() *FileTypeUpdate {
+	ftu.mutation.ClearTaskFiles()
+	return ftu
+}
+
+// RemoveTaskFileIDs removes the "task_files" edge to TaskFile entities by IDs.
+func (ftu *FileTypeUpdate) RemoveTaskFileIDs(ids ...ulid.ID) *FileTypeUpdate {
+	ftu.mutation.RemoveTaskFileIDs(ids...)
+	return ftu
+}
+
+// RemoveTaskFiles removes "task_files" edges to TaskFile entities.
+func (ftu *FileTypeUpdate) RemoveTaskFiles(t ...*TaskFile) *FileTypeUpdate {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return ftu.RemoveTaskFileIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -150,6 +188,60 @@ func (ftu *FileTypeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: filetype.FieldTypeCode,
 		})
 	}
+	if ftu.mutation.TaskFilesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   filetype.TaskFilesTable,
+			Columns: []string{filetype.TaskFilesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: taskfile.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ftu.mutation.RemovedTaskFilesIDs(); len(nodes) > 0 && !ftu.mutation.TaskFilesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   filetype.TaskFilesTable,
+			Columns: []string{filetype.TaskFilesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: taskfile.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ftu.mutation.TaskFilesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   filetype.TaskFilesTable,
+			Columns: []string{filetype.TaskFilesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: taskfile.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, ftu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{filetype.Label}
@@ -181,9 +273,45 @@ func (ftuo *FileTypeUpdateOne) SetTypeCode(fc filetype.TypeCode) *FileTypeUpdate
 	return ftuo
 }
 
+// AddTaskFileIDs adds the "task_files" edge to the TaskFile entity by IDs.
+func (ftuo *FileTypeUpdateOne) AddTaskFileIDs(ids ...ulid.ID) *FileTypeUpdateOne {
+	ftuo.mutation.AddTaskFileIDs(ids...)
+	return ftuo
+}
+
+// AddTaskFiles adds the "task_files" edges to the TaskFile entity.
+func (ftuo *FileTypeUpdateOne) AddTaskFiles(t ...*TaskFile) *FileTypeUpdateOne {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return ftuo.AddTaskFileIDs(ids...)
+}
+
 // Mutation returns the FileTypeMutation object of the builder.
 func (ftuo *FileTypeUpdateOne) Mutation() *FileTypeMutation {
 	return ftuo.mutation
+}
+
+// ClearTaskFiles clears all "task_files" edges to the TaskFile entity.
+func (ftuo *FileTypeUpdateOne) ClearTaskFiles() *FileTypeUpdateOne {
+	ftuo.mutation.ClearTaskFiles()
+	return ftuo
+}
+
+// RemoveTaskFileIDs removes the "task_files" edge to TaskFile entities by IDs.
+func (ftuo *FileTypeUpdateOne) RemoveTaskFileIDs(ids ...ulid.ID) *FileTypeUpdateOne {
+	ftuo.mutation.RemoveTaskFileIDs(ids...)
+	return ftuo
+}
+
+// RemoveTaskFiles removes "task_files" edges to TaskFile entities.
+func (ftuo *FileTypeUpdateOne) RemoveTaskFiles(t ...*TaskFile) *FileTypeUpdateOne {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return ftuo.RemoveTaskFileIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -316,6 +444,60 @@ func (ftuo *FileTypeUpdateOne) sqlSave(ctx context.Context) (_node *FileType, er
 			Value:  value,
 			Column: filetype.FieldTypeCode,
 		})
+	}
+	if ftuo.mutation.TaskFilesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   filetype.TaskFilesTable,
+			Columns: []string{filetype.TaskFilesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: taskfile.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ftuo.mutation.RemovedTaskFilesIDs(); len(nodes) > 0 && !ftuo.mutation.TaskFilesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   filetype.TaskFilesTable,
+			Columns: []string{filetype.TaskFilesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: taskfile.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := ftuo.mutation.TaskFilesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   filetype.TaskFilesTable,
+			Columns: []string{filetype.TaskFilesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: taskfile.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_node = &FileType{config: ftuo.config}
 	_spec.Assign = _node.assignValues

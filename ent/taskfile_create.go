@@ -6,80 +6,83 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"project-management-demo-backend/ent/schema/editor"
+	"project-management-demo-backend/ent/filetype"
+	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/task"
 	"project-management-demo-backend/ent/taskfeed"
-	"project-management-demo-backend/ent/taskfeedlike"
 	"project-management-demo-backend/ent/taskfile"
-	"project-management-demo-backend/ent/teammate"
 	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 )
 
-// TaskFeedCreate is the builder for creating a TaskFeed entity.
-type TaskFeedCreate struct {
+// TaskFileCreate is the builder for creating a TaskFile entity.
+type TaskFileCreate struct {
 	config
-	mutation *TaskFeedMutation
+	mutation *TaskFileMutation
 	hooks    []Hook
 }
 
+// SetProjectID sets the "project_id" field.
+func (tfc *TaskFileCreate) SetProjectID(u ulid.ID) *TaskFileCreate {
+	tfc.mutation.SetProjectID(u)
+	return tfc
+}
+
 // SetTaskID sets the "task_id" field.
-func (tfc *TaskFeedCreate) SetTaskID(u ulid.ID) *TaskFeedCreate {
+func (tfc *TaskFileCreate) SetTaskID(u ulid.ID) *TaskFileCreate {
 	tfc.mutation.SetTaskID(u)
 	return tfc
 }
 
-// SetTeammateID sets the "teammate_id" field.
-func (tfc *TaskFeedCreate) SetTeammateID(u ulid.ID) *TaskFeedCreate {
-	tfc.mutation.SetTeammateID(u)
+// SetTaskFeedID sets the "task_feed_id" field.
+func (tfc *TaskFileCreate) SetTaskFeedID(u ulid.ID) *TaskFileCreate {
+	tfc.mutation.SetTaskFeedID(u)
 	return tfc
 }
 
-// SetDescription sets the "description" field.
-func (tfc *TaskFeedCreate) SetDescription(e editor.Description) *TaskFeedCreate {
-	tfc.mutation.SetDescription(e)
+// SetFileTypeID sets the "file_type_id" field.
+func (tfc *TaskFileCreate) SetFileTypeID(u ulid.ID) *TaskFileCreate {
+	tfc.mutation.SetFileTypeID(u)
 	return tfc
 }
 
-// SetIsFirst sets the "is_first" field.
-func (tfc *TaskFeedCreate) SetIsFirst(b bool) *TaskFeedCreate {
-	tfc.mutation.SetIsFirst(b)
+// SetName sets the "name" field.
+func (tfc *TaskFileCreate) SetName(s string) *TaskFileCreate {
+	tfc.mutation.SetName(s)
 	return tfc
 }
 
-// SetNillableIsFirst sets the "is_first" field if the given value is not nil.
-func (tfc *TaskFeedCreate) SetNillableIsFirst(b *bool) *TaskFeedCreate {
+// SetSrc sets the "src" field.
+func (tfc *TaskFileCreate) SetSrc(s string) *TaskFileCreate {
+	tfc.mutation.SetSrc(s)
+	return tfc
+}
+
+// SetAttached sets the "attached" field.
+func (tfc *TaskFileCreate) SetAttached(b bool) *TaskFileCreate {
+	tfc.mutation.SetAttached(b)
+	return tfc
+}
+
+// SetNillableAttached sets the "attached" field if the given value is not nil.
+func (tfc *TaskFileCreate) SetNillableAttached(b *bool) *TaskFileCreate {
 	if b != nil {
-		tfc.SetIsFirst(*b)
-	}
-	return tfc
-}
-
-// SetIsPinned sets the "is_pinned" field.
-func (tfc *TaskFeedCreate) SetIsPinned(b bool) *TaskFeedCreate {
-	tfc.mutation.SetIsPinned(b)
-	return tfc
-}
-
-// SetNillableIsPinned sets the "is_pinned" field if the given value is not nil.
-func (tfc *TaskFeedCreate) SetNillableIsPinned(b *bool) *TaskFeedCreate {
-	if b != nil {
-		tfc.SetIsPinned(*b)
+		tfc.SetAttached(*b)
 	}
 	return tfc
 }
 
 // SetCreatedAt sets the "created_at" field.
-func (tfc *TaskFeedCreate) SetCreatedAt(t time.Time) *TaskFeedCreate {
+func (tfc *TaskFileCreate) SetCreatedAt(t time.Time) *TaskFileCreate {
 	tfc.mutation.SetCreatedAt(t)
 	return tfc
 }
 
 // SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (tfc *TaskFeedCreate) SetNillableCreatedAt(t *time.Time) *TaskFeedCreate {
+func (tfc *TaskFileCreate) SetNillableCreatedAt(t *time.Time) *TaskFileCreate {
 	if t != nil {
 		tfc.SetCreatedAt(*t)
 	}
@@ -87,13 +90,13 @@ func (tfc *TaskFeedCreate) SetNillableCreatedAt(t *time.Time) *TaskFeedCreate {
 }
 
 // SetUpdatedAt sets the "updated_at" field.
-func (tfc *TaskFeedCreate) SetUpdatedAt(t time.Time) *TaskFeedCreate {
+func (tfc *TaskFileCreate) SetUpdatedAt(t time.Time) *TaskFileCreate {
 	tfc.mutation.SetUpdatedAt(t)
 	return tfc
 }
 
 // SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
-func (tfc *TaskFeedCreate) SetNillableUpdatedAt(t *time.Time) *TaskFeedCreate {
+func (tfc *TaskFileCreate) SetNillableUpdatedAt(t *time.Time) *TaskFileCreate {
 	if t != nil {
 		tfc.SetUpdatedAt(*t)
 	}
@@ -101,69 +104,49 @@ func (tfc *TaskFeedCreate) SetNillableUpdatedAt(t *time.Time) *TaskFeedCreate {
 }
 
 // SetID sets the "id" field.
-func (tfc *TaskFeedCreate) SetID(u ulid.ID) *TaskFeedCreate {
+func (tfc *TaskFileCreate) SetID(u ulid.ID) *TaskFileCreate {
 	tfc.mutation.SetID(u)
 	return tfc
 }
 
 // SetNillableID sets the "id" field if the given value is not nil.
-func (tfc *TaskFeedCreate) SetNillableID(u *ulid.ID) *TaskFeedCreate {
+func (tfc *TaskFileCreate) SetNillableID(u *ulid.ID) *TaskFileCreate {
 	if u != nil {
 		tfc.SetID(*u)
 	}
 	return tfc
 }
 
+// SetProject sets the "project" edge to the Project entity.
+func (tfc *TaskFileCreate) SetProject(p *Project) *TaskFileCreate {
+	return tfc.SetProjectID(p.ID)
+}
+
 // SetTask sets the "task" edge to the Task entity.
-func (tfc *TaskFeedCreate) SetTask(t *Task) *TaskFeedCreate {
+func (tfc *TaskFileCreate) SetTask(t *Task) *TaskFileCreate {
 	return tfc.SetTaskID(t.ID)
 }
 
-// SetTeammate sets the "teammate" edge to the Teammate entity.
-func (tfc *TaskFeedCreate) SetTeammate(t *Teammate) *TaskFeedCreate {
-	return tfc.SetTeammateID(t.ID)
+// SetTaskFeed sets the "task_feed" edge to the TaskFeed entity.
+func (tfc *TaskFileCreate) SetTaskFeed(t *TaskFeed) *TaskFileCreate {
+	return tfc.SetTaskFeedID(t.ID)
 }
 
-// AddTaskFeedLikeIDs adds the "task_feed_likes" edge to the TaskFeedLike entity by IDs.
-func (tfc *TaskFeedCreate) AddTaskFeedLikeIDs(ids ...ulid.ID) *TaskFeedCreate {
-	tfc.mutation.AddTaskFeedLikeIDs(ids...)
-	return tfc
+// SetFileType sets the "file_type" edge to the FileType entity.
+func (tfc *TaskFileCreate) SetFileType(f *FileType) *TaskFileCreate {
+	return tfc.SetFileTypeID(f.ID)
 }
 
-// AddTaskFeedLikes adds the "task_feed_likes" edges to the TaskFeedLike entity.
-func (tfc *TaskFeedCreate) AddTaskFeedLikes(t ...*TaskFeedLike) *TaskFeedCreate {
-	ids := make([]ulid.ID, len(t))
-	for i := range t {
-		ids[i] = t[i].ID
-	}
-	return tfc.AddTaskFeedLikeIDs(ids...)
-}
-
-// AddTaskFileIDs adds the "task_files" edge to the TaskFile entity by IDs.
-func (tfc *TaskFeedCreate) AddTaskFileIDs(ids ...ulid.ID) *TaskFeedCreate {
-	tfc.mutation.AddTaskFileIDs(ids...)
-	return tfc
-}
-
-// AddTaskFiles adds the "task_files" edges to the TaskFile entity.
-func (tfc *TaskFeedCreate) AddTaskFiles(t ...*TaskFile) *TaskFeedCreate {
-	ids := make([]ulid.ID, len(t))
-	for i := range t {
-		ids[i] = t[i].ID
-	}
-	return tfc.AddTaskFileIDs(ids...)
-}
-
-// Mutation returns the TaskFeedMutation object of the builder.
-func (tfc *TaskFeedCreate) Mutation() *TaskFeedMutation {
+// Mutation returns the TaskFileMutation object of the builder.
+func (tfc *TaskFileCreate) Mutation() *TaskFileMutation {
 	return tfc.mutation
 }
 
-// Save creates the TaskFeed in the database.
-func (tfc *TaskFeedCreate) Save(ctx context.Context) (*TaskFeed, error) {
+// Save creates the TaskFile in the database.
+func (tfc *TaskFileCreate) Save(ctx context.Context) (*TaskFile, error) {
 	var (
 		err  error
-		node *TaskFeed
+		node *TaskFile
 	)
 	tfc.defaults()
 	if len(tfc.hooks) == 0 {
@@ -173,7 +156,7 @@ func (tfc *TaskFeedCreate) Save(ctx context.Context) (*TaskFeed, error) {
 		node, err = tfc.sqlSave(ctx)
 	} else {
 		var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-			mutation, ok := m.(*TaskFeedMutation)
+			mutation, ok := m.(*TaskFileMutation)
 			if !ok {
 				return nil, fmt.Errorf("unexpected mutation type %T", m)
 			}
@@ -202,7 +185,7 @@ func (tfc *TaskFeedCreate) Save(ctx context.Context) (*TaskFeed, error) {
 }
 
 // SaveX calls Save and panics if Save returns an error.
-func (tfc *TaskFeedCreate) SaveX(ctx context.Context) *TaskFeed {
+func (tfc *TaskFileCreate) SaveX(ctx context.Context) *TaskFile {
 	v, err := tfc.Save(ctx)
 	if err != nil {
 		panic(err)
@@ -211,58 +194,70 @@ func (tfc *TaskFeedCreate) SaveX(ctx context.Context) *TaskFeed {
 }
 
 // Exec executes the query.
-func (tfc *TaskFeedCreate) Exec(ctx context.Context) error {
+func (tfc *TaskFileCreate) Exec(ctx context.Context) error {
 	_, err := tfc.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (tfc *TaskFeedCreate) ExecX(ctx context.Context) {
+func (tfc *TaskFileCreate) ExecX(ctx context.Context) {
 	if err := tfc.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (tfc *TaskFeedCreate) defaults() {
-	if _, ok := tfc.mutation.IsFirst(); !ok {
-		v := taskfeed.DefaultIsFirst
-		tfc.mutation.SetIsFirst(v)
-	}
-	if _, ok := tfc.mutation.IsPinned(); !ok {
-		v := taskfeed.DefaultIsPinned
-		tfc.mutation.SetIsPinned(v)
+func (tfc *TaskFileCreate) defaults() {
+	if _, ok := tfc.mutation.Attached(); !ok {
+		v := taskfile.DefaultAttached
+		tfc.mutation.SetAttached(v)
 	}
 	if _, ok := tfc.mutation.CreatedAt(); !ok {
-		v := taskfeed.DefaultCreatedAt()
+		v := taskfile.DefaultCreatedAt()
 		tfc.mutation.SetCreatedAt(v)
 	}
 	if _, ok := tfc.mutation.UpdatedAt(); !ok {
-		v := taskfeed.DefaultUpdatedAt()
+		v := taskfile.DefaultUpdatedAt()
 		tfc.mutation.SetUpdatedAt(v)
 	}
 	if _, ok := tfc.mutation.ID(); !ok {
-		v := taskfeed.DefaultID()
+		v := taskfile.DefaultID()
 		tfc.mutation.SetID(v)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (tfc *TaskFeedCreate) check() error {
+func (tfc *TaskFileCreate) check() error {
+	if _, ok := tfc.mutation.ProjectID(); !ok {
+		return &ValidationError{Name: "project_id", err: errors.New(`ent: missing required field "project_id"`)}
+	}
 	if _, ok := tfc.mutation.TaskID(); !ok {
 		return &ValidationError{Name: "task_id", err: errors.New(`ent: missing required field "task_id"`)}
 	}
-	if _, ok := tfc.mutation.TeammateID(); !ok {
-		return &ValidationError{Name: "teammate_id", err: errors.New(`ent: missing required field "teammate_id"`)}
+	if _, ok := tfc.mutation.TaskFeedID(); !ok {
+		return &ValidationError{Name: "task_feed_id", err: errors.New(`ent: missing required field "task_feed_id"`)}
 	}
-	if _, ok := tfc.mutation.Description(); !ok {
-		return &ValidationError{Name: "description", err: errors.New(`ent: missing required field "description"`)}
+	if _, ok := tfc.mutation.FileTypeID(); !ok {
+		return &ValidationError{Name: "file_type_id", err: errors.New(`ent: missing required field "file_type_id"`)}
 	}
-	if _, ok := tfc.mutation.IsFirst(); !ok {
-		return &ValidationError{Name: "is_first", err: errors.New(`ent: missing required field "is_first"`)}
+	if _, ok := tfc.mutation.Name(); !ok {
+		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "name"`)}
 	}
-	if _, ok := tfc.mutation.IsPinned(); !ok {
-		return &ValidationError{Name: "is_pinned", err: errors.New(`ent: missing required field "is_pinned"`)}
+	if v, ok := tfc.mutation.Name(); ok {
+		if err := taskfile.NameValidator(v); err != nil {
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "name": %w`, err)}
+		}
+	}
+	if _, ok := tfc.mutation.Src(); !ok {
+		return &ValidationError{Name: "src", err: errors.New(`ent: missing required field "src"`)}
+	}
+	if v, ok := tfc.mutation.Src(); ok {
+		if err := taskfile.SrcValidator(v); err != nil {
+			return &ValidationError{Name: "src", err: fmt.Errorf(`ent: validator failed for field "src": %w`, err)}
+		}
+	}
+	if _, ok := tfc.mutation.Attached(); !ok {
+		return &ValidationError{Name: "attached", err: errors.New(`ent: missing required field "attached"`)}
 	}
 	if _, ok := tfc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
@@ -270,16 +265,22 @@ func (tfc *TaskFeedCreate) check() error {
 	if _, ok := tfc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
 	}
+	if _, ok := tfc.mutation.ProjectID(); !ok {
+		return &ValidationError{Name: "project", err: errors.New("ent: missing required edge \"project\"")}
+	}
 	if _, ok := tfc.mutation.TaskID(); !ok {
 		return &ValidationError{Name: "task", err: errors.New("ent: missing required edge \"task\"")}
 	}
-	if _, ok := tfc.mutation.TeammateID(); !ok {
-		return &ValidationError{Name: "teammate", err: errors.New("ent: missing required edge \"teammate\"")}
+	if _, ok := tfc.mutation.TaskFeedID(); !ok {
+		return &ValidationError{Name: "task_feed", err: errors.New("ent: missing required edge \"task_feed\"")}
+	}
+	if _, ok := tfc.mutation.FileTypeID(); !ok {
+		return &ValidationError{Name: "file_type", err: errors.New("ent: missing required edge \"file_type\"")}
 	}
 	return nil
 }
 
-func (tfc *TaskFeedCreate) sqlSave(ctx context.Context) (*TaskFeed, error) {
+func (tfc *TaskFileCreate) sqlSave(ctx context.Context) (*TaskFile, error) {
 	_node, _spec := tfc.createSpec()
 	if err := sqlgraph.CreateNode(ctx, tfc.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
@@ -293,14 +294,14 @@ func (tfc *TaskFeedCreate) sqlSave(ctx context.Context) (*TaskFeed, error) {
 	return _node, nil
 }
 
-func (tfc *TaskFeedCreate) createSpec() (*TaskFeed, *sqlgraph.CreateSpec) {
+func (tfc *TaskFileCreate) createSpec() (*TaskFile, *sqlgraph.CreateSpec) {
 	var (
-		_node = &TaskFeed{config: tfc.config}
+		_node = &TaskFile{config: tfc.config}
 		_spec = &sqlgraph.CreateSpec{
-			Table: taskfeed.Table,
+			Table: taskfile.Table,
 			ID: &sqlgraph.FieldSpec{
 				Type:   field.TypeString,
-				Column: taskfeed.FieldID,
+				Column: taskfile.FieldID,
 			},
 		}
 	)
@@ -308,35 +309,35 @@ func (tfc *TaskFeedCreate) createSpec() (*TaskFeed, *sqlgraph.CreateSpec) {
 		_node.ID = id
 		_spec.ID.Value = id
 	}
-	if value, ok := tfc.mutation.Description(); ok {
+	if value, ok := tfc.mutation.Name(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeJSON,
+			Type:   field.TypeString,
 			Value:  value,
-			Column: taskfeed.FieldDescription,
+			Column: taskfile.FieldName,
 		})
-		_node.Description = value
+		_node.Name = value
 	}
-	if value, ok := tfc.mutation.IsFirst(); ok {
+	if value, ok := tfc.mutation.Src(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: taskfile.FieldSrc,
+		})
+		_node.Src = value
+	}
+	if value, ok := tfc.mutation.Attached(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeBool,
 			Value:  value,
-			Column: taskfeed.FieldIsFirst,
+			Column: taskfile.FieldAttached,
 		})
-		_node.IsFirst = value
-	}
-	if value, ok := tfc.mutation.IsPinned(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeBool,
-			Value:  value,
-			Column: taskfeed.FieldIsPinned,
-		})
-		_node.IsPinned = value
+		_node.Attached = value
 	}
 	if value, ok := tfc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
-			Column: taskfeed.FieldCreatedAt,
+			Column: taskfile.FieldCreatedAt,
 		})
 		_node.CreatedAt = value
 	}
@@ -344,16 +345,36 @@ func (tfc *TaskFeedCreate) createSpec() (*TaskFeed, *sqlgraph.CreateSpec) {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Value:  value,
-			Column: taskfeed.FieldUpdatedAt,
+			Column: taskfile.FieldUpdatedAt,
 		})
 		_node.UpdatedAt = value
+	}
+	if nodes := tfc.mutation.ProjectIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   taskfile.ProjectTable,
+			Columns: []string{taskfile.ProjectColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: project.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.ProjectID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := tfc.mutation.TaskIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   taskfeed.TaskTable,
-			Columns: []string{taskfeed.TaskColumn},
+			Table:   taskfile.TaskTable,
+			Columns: []string{taskfile.TaskColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -368,84 +389,66 @@ func (tfc *TaskFeedCreate) createSpec() (*TaskFeed, *sqlgraph.CreateSpec) {
 		_node.TaskID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := tfc.mutation.TeammateIDs(); len(nodes) > 0 {
+	if nodes := tfc.mutation.TaskFeedIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   taskfeed.TeammateTable,
-			Columns: []string{taskfeed.TeammateColumn},
+			Table:   taskfile.TaskFeedTable,
+			Columns: []string{taskfile.TaskFeedColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
-					Column: teammate.FieldID,
+					Column: taskfeed.FieldID,
 				},
 			},
 		}
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.TeammateID = nodes[0]
+		_node.TaskFeedID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := tfc.mutation.TaskFeedLikesIDs(); len(nodes) > 0 {
+	if nodes := tfc.mutation.FileTypeIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   taskfeed.TaskFeedLikesTable,
-			Columns: []string{taskfeed.TaskFeedLikesColumn},
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   taskfile.FileTypeTable,
+			Columns: []string{taskfile.FileTypeColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
-					Column: taskfeedlike.FieldID,
+					Column: filetype.FieldID,
 				},
 			},
 		}
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := tfc.mutation.TaskFilesIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   taskfeed.TaskFilesTable,
-			Columns: []string{taskfeed.TaskFilesColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: taskfile.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
+		_node.FileTypeID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }
 
-// TaskFeedCreateBulk is the builder for creating many TaskFeed entities in bulk.
-type TaskFeedCreateBulk struct {
+// TaskFileCreateBulk is the builder for creating many TaskFile entities in bulk.
+type TaskFileCreateBulk struct {
 	config
-	builders []*TaskFeedCreate
+	builders []*TaskFileCreate
 }
 
-// Save creates the TaskFeed entities in the database.
-func (tfcb *TaskFeedCreateBulk) Save(ctx context.Context) ([]*TaskFeed, error) {
+// Save creates the TaskFile entities in the database.
+func (tfcb *TaskFileCreateBulk) Save(ctx context.Context) ([]*TaskFile, error) {
 	specs := make([]*sqlgraph.CreateSpec, len(tfcb.builders))
-	nodes := make([]*TaskFeed, len(tfcb.builders))
+	nodes := make([]*TaskFile, len(tfcb.builders))
 	mutators := make([]Mutator, len(tfcb.builders))
 	for i := range tfcb.builders {
 		func(i int, root context.Context) {
 			builder := tfcb.builders[i]
 			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
-				mutation, ok := m.(*TaskFeedMutation)
+				mutation, ok := m.(*TaskFileMutation)
 				if !ok {
 					return nil, fmt.Errorf("unexpected mutation type %T", m)
 				}
@@ -488,7 +491,7 @@ func (tfcb *TaskFeedCreateBulk) Save(ctx context.Context) ([]*TaskFeed, error) {
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (tfcb *TaskFeedCreateBulk) SaveX(ctx context.Context) []*TaskFeed {
+func (tfcb *TaskFileCreateBulk) SaveX(ctx context.Context) []*TaskFile {
 	v, err := tfcb.Save(ctx)
 	if err != nil {
 		panic(err)
@@ -497,13 +500,13 @@ func (tfcb *TaskFeedCreateBulk) SaveX(ctx context.Context) []*TaskFeed {
 }
 
 // Exec executes the query.
-func (tfcb *TaskFeedCreateBulk) Exec(ctx context.Context) error {
+func (tfcb *TaskFileCreateBulk) Exec(ctx context.Context) error {
 	_, err := tfcb.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (tfcb *TaskFeedCreateBulk) ExecX(ctx context.Context) {
+func (tfcb *TaskFileCreateBulk) ExecX(ctx context.Context) {
 	if err := tfcb.Exec(ctx); err != nil {
 		panic(err)
 	}

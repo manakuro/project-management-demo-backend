@@ -29,6 +29,7 @@ import (
 	"project-management-demo-backend/ent/taskcolumn"
 	"project-management-demo-backend/ent/taskfeed"
 	"project-management-demo-backend/ent/taskfeedlike"
+	"project-management-demo-backend/ent/taskfile"
 	"project-management-demo-backend/ent/tasklike"
 	"project-management-demo-backend/ent/tasklistcompletedstatus"
 	"project-management-demo-backend/ent/tasklistsortstatus"
@@ -80,6 +81,7 @@ const (
 	TypeTaskColumn              = "TaskColumn"
 	TypeTaskFeed                = "TaskFeed"
 	TypeTaskFeedLike            = "TaskFeedLike"
+	TypeTaskFile                = "TaskFile"
 	TypeTaskLike                = "TaskLike"
 	TypeTaskListCompletedStatus = "TaskListCompletedStatus"
 	TypeTaskListSortStatus      = "TaskListSortStatus"
@@ -2077,17 +2079,20 @@ func (m *FavoriteWorkspaceMutation) ResetEdge(name string) error {
 // FileTypeMutation represents an operation that mutates the FileType nodes in the graph.
 type FileTypeMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *ulid.ID
-	name          *string
-	type_code     *filetype.TypeCode
-	created_at    *time.Time
-	updated_at    *time.Time
-	clearedFields map[string]struct{}
-	done          bool
-	oldValue      func(context.Context) (*FileType, error)
-	predicates    []predicate.FileType
+	op                Op
+	typ               string
+	id                *ulid.ID
+	name              *string
+	type_code         *filetype.TypeCode
+	created_at        *time.Time
+	updated_at        *time.Time
+	clearedFields     map[string]struct{}
+	task_files        map[ulid.ID]struct{}
+	removedtask_files map[ulid.ID]struct{}
+	clearedtask_files bool
+	done              bool
+	oldValue          func(context.Context) (*FileType, error)
+	predicates        []predicate.FileType
 }
 
 var _ ent.Mutation = (*FileTypeMutation)(nil)
@@ -2319,6 +2324,60 @@ func (m *FileTypeMutation) ResetUpdatedAt() {
 	m.updated_at = nil
 }
 
+// AddTaskFileIDs adds the "task_files" edge to the TaskFile entity by ids.
+func (m *FileTypeMutation) AddTaskFileIDs(ids ...ulid.ID) {
+	if m.task_files == nil {
+		m.task_files = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		m.task_files[ids[i]] = struct{}{}
+	}
+}
+
+// ClearTaskFiles clears the "task_files" edge to the TaskFile entity.
+func (m *FileTypeMutation) ClearTaskFiles() {
+	m.clearedtask_files = true
+}
+
+// TaskFilesCleared reports if the "task_files" edge to the TaskFile entity was cleared.
+func (m *FileTypeMutation) TaskFilesCleared() bool {
+	return m.clearedtask_files
+}
+
+// RemoveTaskFileIDs removes the "task_files" edge to the TaskFile entity by IDs.
+func (m *FileTypeMutation) RemoveTaskFileIDs(ids ...ulid.ID) {
+	if m.removedtask_files == nil {
+		m.removedtask_files = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		delete(m.task_files, ids[i])
+		m.removedtask_files[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedTaskFiles returns the removed IDs of the "task_files" edge to the TaskFile entity.
+func (m *FileTypeMutation) RemovedTaskFilesIDs() (ids []ulid.ID) {
+	for id := range m.removedtask_files {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// TaskFilesIDs returns the "task_files" edge IDs in the mutation.
+func (m *FileTypeMutation) TaskFilesIDs() (ids []ulid.ID) {
+	for id := range m.task_files {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetTaskFiles resets all changes to the "task_files" edge.
+func (m *FileTypeMutation) ResetTaskFiles() {
+	m.task_files = nil
+	m.clearedtask_files = false
+	m.removedtask_files = nil
+}
+
 // Where appends a list predicates to the FileTypeMutation builder.
 func (m *FileTypeMutation) Where(ps ...predicate.FileType) {
 	m.predicates = append(m.predicates, ps...)
@@ -2488,49 +2547,85 @@ func (m *FileTypeMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *FileTypeMutation) AddedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.task_files != nil {
+		edges = append(edges, filetype.EdgeTaskFiles)
+	}
 	return edges
 }
 
 // AddedIDs returns all IDs (to other nodes) that were added for the given edge
 // name in this mutation.
 func (m *FileTypeMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case filetype.EdgeTaskFiles:
+		ids := make([]ent.Value, 0, len(m.task_files))
+		for id := range m.task_files {
+			ids = append(ids, id)
+		}
+		return ids
+	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *FileTypeMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.removedtask_files != nil {
+		edges = append(edges, filetype.EdgeTaskFiles)
+	}
 	return edges
 }
 
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
 func (m *FileTypeMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case filetype.EdgeTaskFiles:
+		ids := make([]ent.Value, 0, len(m.removedtask_files))
+		for id := range m.removedtask_files {
+			ids = append(ids, id)
+		}
+		return ids
+	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *FileTypeMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.clearedtask_files {
+		edges = append(edges, filetype.EdgeTaskFiles)
+	}
 	return edges
 }
 
 // EdgeCleared returns a boolean which indicates if the edge with the given name
 // was cleared in this mutation.
 func (m *FileTypeMutation) EdgeCleared(name string) bool {
+	switch name {
+	case filetype.EdgeTaskFiles:
+		return m.clearedtask_files
+	}
 	return false
 }
 
 // ClearEdge clears the value of the edge with the given name. It returns an error
 // if that edge is not defined in the schema.
 func (m *FileTypeMutation) ClearEdge(name string) error {
+	switch name {
+	}
 	return fmt.Errorf("unknown FileType unique edge %s", name)
 }
 
 // ResetEdge resets all changes to the edge with the given name in this mutation.
 // It returns an error if the edge is not defined in the schema.
 func (m *FileTypeMutation) ResetEdge(name string) error {
+	switch name {
+	case filetype.EdgeTaskFiles:
+		m.ResetTaskFiles()
+		return nil
+	}
 	return fmt.Errorf("unknown FileType edge %s", name)
 }
 
@@ -3128,6 +3223,9 @@ type ProjectMutation struct {
 	project_tasks                     map[ulid.ID]struct{}
 	removedproject_tasks              map[ulid.ID]struct{}
 	clearedproject_tasks              bool
+	task_files                        map[ulid.ID]struct{}
+	removedtask_files                 map[ulid.ID]struct{}
+	clearedtask_files                 bool
 	done                              bool
 	oldValue                          func(context.Context) (*Project, error)
 	predicates                        []predicate.Project
@@ -4094,6 +4192,60 @@ func (m *ProjectMutation) ResetProjectTasks() {
 	m.removedproject_tasks = nil
 }
 
+// AddTaskFileIDs adds the "task_files" edge to the TaskFile entity by ids.
+func (m *ProjectMutation) AddTaskFileIDs(ids ...ulid.ID) {
+	if m.task_files == nil {
+		m.task_files = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		m.task_files[ids[i]] = struct{}{}
+	}
+}
+
+// ClearTaskFiles clears the "task_files" edge to the TaskFile entity.
+func (m *ProjectMutation) ClearTaskFiles() {
+	m.clearedtask_files = true
+}
+
+// TaskFilesCleared reports if the "task_files" edge to the TaskFile entity was cleared.
+func (m *ProjectMutation) TaskFilesCleared() bool {
+	return m.clearedtask_files
+}
+
+// RemoveTaskFileIDs removes the "task_files" edge to the TaskFile entity by IDs.
+func (m *ProjectMutation) RemoveTaskFileIDs(ids ...ulid.ID) {
+	if m.removedtask_files == nil {
+		m.removedtask_files = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		delete(m.task_files, ids[i])
+		m.removedtask_files[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedTaskFiles returns the removed IDs of the "task_files" edge to the TaskFile entity.
+func (m *ProjectMutation) RemovedTaskFilesIDs() (ids []ulid.ID) {
+	for id := range m.removedtask_files {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// TaskFilesIDs returns the "task_files" edge IDs in the mutation.
+func (m *ProjectMutation) TaskFilesIDs() (ids []ulid.ID) {
+	for id := range m.task_files {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetTaskFiles resets all changes to the "task_files" edge.
+func (m *ProjectMutation) ResetTaskFiles() {
+	m.task_files = nil
+	m.clearedtask_files = false
+	m.removedtask_files = nil
+}
+
 // Where appends a list predicates to the ProjectMutation builder.
 func (m *ProjectMutation) Where(ps ...predicate.Project) {
 	m.predicates = append(m.predicates, ps...)
@@ -4391,7 +4543,7 @@ func (m *ProjectMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *ProjectMutation) AddedEdges() []string {
-	edges := make([]string, 0, 11)
+	edges := make([]string, 0, 12)
 	if m.workspace != nil {
 		edges = append(edges, project.EdgeWorkspace)
 	}
@@ -4424,6 +4576,9 @@ func (m *ProjectMutation) AddedEdges() []string {
 	}
 	if m.project_tasks != nil {
 		edges = append(edges, project.EdgeProjectTasks)
+	}
+	if m.task_files != nil {
+		edges = append(edges, project.EdgeTaskFiles)
 	}
 	return edges
 }
@@ -4488,13 +4643,19 @@ func (m *ProjectMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case project.EdgeTaskFiles:
+		ids := make([]ent.Value, 0, len(m.task_files))
+		for id := range m.task_files {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *ProjectMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 11)
+	edges := make([]string, 0, 12)
 	if m.removedproject_teammates != nil {
 		edges = append(edges, project.EdgeProjectTeammates)
 	}
@@ -4512,6 +4673,9 @@ func (m *ProjectMutation) RemovedEdges() []string {
 	}
 	if m.removedproject_tasks != nil {
 		edges = append(edges, project.EdgeProjectTasks)
+	}
+	if m.removedtask_files != nil {
+		edges = append(edges, project.EdgeTaskFiles)
 	}
 	return edges
 }
@@ -4556,13 +4720,19 @@ func (m *ProjectMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case project.EdgeTaskFiles:
+		ids := make([]ent.Value, 0, len(m.removedtask_files))
+		for id := range m.removedtask_files {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *ProjectMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 11)
+	edges := make([]string, 0, 12)
 	if m.clearedworkspace {
 		edges = append(edges, project.EdgeWorkspace)
 	}
@@ -4596,6 +4766,9 @@ func (m *ProjectMutation) ClearedEdges() []string {
 	if m.clearedproject_tasks {
 		edges = append(edges, project.EdgeProjectTasks)
 	}
+	if m.clearedtask_files {
+		edges = append(edges, project.EdgeTaskFiles)
+	}
 	return edges
 }
 
@@ -4625,6 +4798,8 @@ func (m *ProjectMutation) EdgeCleared(name string) bool {
 		return m.clearedproject_task_sections
 	case project.EdgeProjectTasks:
 		return m.clearedproject_tasks
+	case project.EdgeTaskFiles:
+		return m.clearedtask_files
 	}
 	return false
 }
@@ -4688,6 +4863,9 @@ func (m *ProjectMutation) ResetEdge(name string) error {
 		return nil
 	case project.EdgeProjectTasks:
 		m.ResetProjectTasks()
+		return nil
+	case project.EdgeTaskFiles:
+		m.ResetTaskFiles()
 		return nil
 	}
 	return fmt.Errorf("unknown Project edge %s", name)
@@ -10464,6 +10642,9 @@ type TaskMutation struct {
 	task_feed_likes           map[ulid.ID]struct{}
 	removedtask_feed_likes    map[ulid.ID]struct{}
 	clearedtask_feed_likes    bool
+	task_files                map[ulid.ID]struct{}
+	removedtask_files         map[ulid.ID]struct{}
+	clearedtask_files         bool
 	done                      bool
 	oldValue                  func(context.Context) (*Task, error)
 	predicates                []predicate.Task
@@ -11587,6 +11768,60 @@ func (m *TaskMutation) ResetTaskFeedLikes() {
 	m.removedtask_feed_likes = nil
 }
 
+// AddTaskFileIDs adds the "task_files" edge to the TaskFile entity by ids.
+func (m *TaskMutation) AddTaskFileIDs(ids ...ulid.ID) {
+	if m.task_files == nil {
+		m.task_files = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		m.task_files[ids[i]] = struct{}{}
+	}
+}
+
+// ClearTaskFiles clears the "task_files" edge to the TaskFile entity.
+func (m *TaskMutation) ClearTaskFiles() {
+	m.clearedtask_files = true
+}
+
+// TaskFilesCleared reports if the "task_files" edge to the TaskFile entity was cleared.
+func (m *TaskMutation) TaskFilesCleared() bool {
+	return m.clearedtask_files
+}
+
+// RemoveTaskFileIDs removes the "task_files" edge to the TaskFile entity by IDs.
+func (m *TaskMutation) RemoveTaskFileIDs(ids ...ulid.ID) {
+	if m.removedtask_files == nil {
+		m.removedtask_files = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		delete(m.task_files, ids[i])
+		m.removedtask_files[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedTaskFiles returns the removed IDs of the "task_files" edge to the TaskFile entity.
+func (m *TaskMutation) RemovedTaskFilesIDs() (ids []ulid.ID) {
+	for id := range m.removedtask_files {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// TaskFilesIDs returns the "task_files" edge IDs in the mutation.
+func (m *TaskMutation) TaskFilesIDs() (ids []ulid.ID) {
+	for id := range m.task_files {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetTaskFiles resets all changes to the "task_files" edge.
+func (m *TaskMutation) ResetTaskFiles() {
+	m.task_files = nil
+	m.clearedtask_files = false
+	m.removedtask_files = nil
+}
+
 // Where appends a list predicates to the TaskMutation builder.
 func (m *TaskMutation) Where(ps ...predicate.Task) {
 	m.predicates = append(m.predicates, ps...)
@@ -11925,7 +12160,7 @@ func (m *TaskMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *TaskMutation) AddedEdges() []string {
-	edges := make([]string, 0, 11)
+	edges := make([]string, 0, 12)
 	if m.teammate != nil {
 		edges = append(edges, task.EdgeTeammate)
 	}
@@ -11958,6 +12193,9 @@ func (m *TaskMutation) AddedEdges() []string {
 	}
 	if m.task_feed_likes != nil {
 		edges = append(edges, task.EdgeTaskFeedLikes)
+	}
+	if m.task_files != nil {
+		edges = append(edges, task.EdgeTaskFiles)
 	}
 	return edges
 }
@@ -12026,13 +12264,19 @@ func (m *TaskMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case task.EdgeTaskFiles:
+		ids := make([]ent.Value, 0, len(m.task_files))
+		for id := range m.task_files {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *TaskMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 11)
+	edges := make([]string, 0, 12)
 	if m.removedsub_tasks != nil {
 		edges = append(edges, task.EdgeSubTasks)
 	}
@@ -12056,6 +12300,9 @@ func (m *TaskMutation) RemovedEdges() []string {
 	}
 	if m.removedtask_feed_likes != nil {
 		edges = append(edges, task.EdgeTaskFeedLikes)
+	}
+	if m.removedtask_files != nil {
+		edges = append(edges, task.EdgeTaskFiles)
 	}
 	return edges
 }
@@ -12112,13 +12359,19 @@ func (m *TaskMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case task.EdgeTaskFiles:
+		ids := make([]ent.Value, 0, len(m.removedtask_files))
+		for id := range m.removedtask_files {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *TaskMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 11)
+	edges := make([]string, 0, 12)
 	if m.clearedteammate {
 		edges = append(edges, task.EdgeTeammate)
 	}
@@ -12152,6 +12405,9 @@ func (m *TaskMutation) ClearedEdges() []string {
 	if m.clearedtask_feed_likes {
 		edges = append(edges, task.EdgeTaskFeedLikes)
 	}
+	if m.clearedtask_files {
+		edges = append(edges, task.EdgeTaskFiles)
+	}
 	return edges
 }
 
@@ -12181,6 +12437,8 @@ func (m *TaskMutation) EdgeCleared(name string) bool {
 		return m.clearedtask_feeds
 	case task.EdgeTaskFeedLikes:
 		return m.clearedtask_feed_likes
+	case task.EdgeTaskFiles:
+		return m.clearedtask_files
 	}
 	return false
 }
@@ -12238,6 +12496,9 @@ func (m *TaskMutation) ResetEdge(name string) error {
 		return nil
 	case task.EdgeTaskFeedLikes:
 		m.ResetTaskFeedLikes()
+		return nil
+	case task.EdgeTaskFiles:
+		m.ResetTaskFiles()
 		return nil
 	}
 	return fmt.Errorf("unknown Task edge %s", name)
@@ -13458,6 +13719,9 @@ type TaskFeedMutation struct {
 	task_feed_likes        map[ulid.ID]struct{}
 	removedtask_feed_likes map[ulid.ID]struct{}
 	clearedtask_feed_likes bool
+	task_files             map[ulid.ID]struct{}
+	removedtask_files      map[ulid.ID]struct{}
+	clearedtask_files      bool
 	done                   bool
 	oldValue               func(context.Context) (*TaskFeed, error)
 	predicates             []predicate.TaskFeed
@@ -13906,6 +14170,60 @@ func (m *TaskFeedMutation) ResetTaskFeedLikes() {
 	m.removedtask_feed_likes = nil
 }
 
+// AddTaskFileIDs adds the "task_files" edge to the TaskFile entity by ids.
+func (m *TaskFeedMutation) AddTaskFileIDs(ids ...ulid.ID) {
+	if m.task_files == nil {
+		m.task_files = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		m.task_files[ids[i]] = struct{}{}
+	}
+}
+
+// ClearTaskFiles clears the "task_files" edge to the TaskFile entity.
+func (m *TaskFeedMutation) ClearTaskFiles() {
+	m.clearedtask_files = true
+}
+
+// TaskFilesCleared reports if the "task_files" edge to the TaskFile entity was cleared.
+func (m *TaskFeedMutation) TaskFilesCleared() bool {
+	return m.clearedtask_files
+}
+
+// RemoveTaskFileIDs removes the "task_files" edge to the TaskFile entity by IDs.
+func (m *TaskFeedMutation) RemoveTaskFileIDs(ids ...ulid.ID) {
+	if m.removedtask_files == nil {
+		m.removedtask_files = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		delete(m.task_files, ids[i])
+		m.removedtask_files[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedTaskFiles returns the removed IDs of the "task_files" edge to the TaskFile entity.
+func (m *TaskFeedMutation) RemovedTaskFilesIDs() (ids []ulid.ID) {
+	for id := range m.removedtask_files {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// TaskFilesIDs returns the "task_files" edge IDs in the mutation.
+func (m *TaskFeedMutation) TaskFilesIDs() (ids []ulid.ID) {
+	for id := range m.task_files {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetTaskFiles resets all changes to the "task_files" edge.
+func (m *TaskFeedMutation) ResetTaskFiles() {
+	m.task_files = nil
+	m.clearedtask_files = false
+	m.removedtask_files = nil
+}
+
 // Where appends a list predicates to the TaskFeedMutation builder.
 func (m *TaskFeedMutation) Where(ps ...predicate.TaskFeed) {
 	m.predicates = append(m.predicates, ps...)
@@ -14126,7 +14444,7 @@ func (m *TaskFeedMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *TaskFeedMutation) AddedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.task != nil {
 		edges = append(edges, taskfeed.EdgeTask)
 	}
@@ -14135,6 +14453,9 @@ func (m *TaskFeedMutation) AddedEdges() []string {
 	}
 	if m.task_feed_likes != nil {
 		edges = append(edges, taskfeed.EdgeTaskFeedLikes)
+	}
+	if m.task_files != nil {
+		edges = append(edges, taskfeed.EdgeTaskFiles)
 	}
 	return edges
 }
@@ -14157,15 +14478,24 @@ func (m *TaskFeedMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case taskfeed.EdgeTaskFiles:
+		ids := make([]ent.Value, 0, len(m.task_files))
+		for id := range m.task_files {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *TaskFeedMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.removedtask_feed_likes != nil {
 		edges = append(edges, taskfeed.EdgeTaskFeedLikes)
+	}
+	if m.removedtask_files != nil {
+		edges = append(edges, taskfeed.EdgeTaskFiles)
 	}
 	return edges
 }
@@ -14180,13 +14510,19 @@ func (m *TaskFeedMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case taskfeed.EdgeTaskFiles:
+		ids := make([]ent.Value, 0, len(m.removedtask_files))
+		for id := range m.removedtask_files {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *TaskFeedMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.clearedtask {
 		edges = append(edges, taskfeed.EdgeTask)
 	}
@@ -14195,6 +14531,9 @@ func (m *TaskFeedMutation) ClearedEdges() []string {
 	}
 	if m.clearedtask_feed_likes {
 		edges = append(edges, taskfeed.EdgeTaskFeedLikes)
+	}
+	if m.clearedtask_files {
+		edges = append(edges, taskfeed.EdgeTaskFiles)
 	}
 	return edges
 }
@@ -14209,6 +14548,8 @@ func (m *TaskFeedMutation) EdgeCleared(name string) bool {
 		return m.clearedteammate
 	case taskfeed.EdgeTaskFeedLikes:
 		return m.clearedtask_feed_likes
+	case taskfeed.EdgeTaskFiles:
+		return m.clearedtask_files
 	}
 	return false
 }
@@ -14239,6 +14580,9 @@ func (m *TaskFeedMutation) ResetEdge(name string) error {
 		return nil
 	case taskfeed.EdgeTaskFeedLikes:
 		m.ResetTaskFeedLikes()
+		return nil
+	case taskfeed.EdgeTaskFiles:
+		m.ResetTaskFiles()
 		return nil
 	}
 	return fmt.Errorf("unknown TaskFeed edge %s", name)
@@ -14914,6 +15258,926 @@ func (m *TaskFeedLikeMutation) ResetEdge(name string) error {
 		return nil
 	}
 	return fmt.Errorf("unknown TaskFeedLike edge %s", name)
+}
+
+// TaskFileMutation represents an operation that mutates the TaskFile nodes in the graph.
+type TaskFileMutation struct {
+	config
+	op               Op
+	typ              string
+	id               *ulid.ID
+	name             *string
+	src              *string
+	attached         *bool
+	created_at       *time.Time
+	updated_at       *time.Time
+	clearedFields    map[string]struct{}
+	project          *ulid.ID
+	clearedproject   bool
+	task             *ulid.ID
+	clearedtask      bool
+	task_feed        *ulid.ID
+	clearedtask_feed bool
+	file_type        *ulid.ID
+	clearedfile_type bool
+	done             bool
+	oldValue         func(context.Context) (*TaskFile, error)
+	predicates       []predicate.TaskFile
+}
+
+var _ ent.Mutation = (*TaskFileMutation)(nil)
+
+// taskfileOption allows management of the mutation configuration using functional options.
+type taskfileOption func(*TaskFileMutation)
+
+// newTaskFileMutation creates new mutation for the TaskFile entity.
+func newTaskFileMutation(c config, op Op, opts ...taskfileOption) *TaskFileMutation {
+	m := &TaskFileMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeTaskFile,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withTaskFileID sets the ID field of the mutation.
+func withTaskFileID(id ulid.ID) taskfileOption {
+	return func(m *TaskFileMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *TaskFile
+		)
+		m.oldValue = func(ctx context.Context) (*TaskFile, error) {
+			once.Do(func() {
+				if m.done {
+					err = fmt.Errorf("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().TaskFile.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withTaskFile sets the old TaskFile of the mutation.
+func withTaskFile(node *TaskFile) taskfileOption {
+	return func(m *TaskFileMutation) {
+		m.oldValue = func(context.Context) (*TaskFile, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m TaskFileMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m TaskFileMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, fmt.Errorf("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of TaskFile entities.
+func (m *TaskFileMutation) SetID(id ulid.ID) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *TaskFileMutation) ID() (id ulid.ID, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// SetProjectID sets the "project_id" field.
+func (m *TaskFileMutation) SetProjectID(u ulid.ID) {
+	m.project = &u
+}
+
+// ProjectID returns the value of the "project_id" field in the mutation.
+func (m *TaskFileMutation) ProjectID() (r ulid.ID, exists bool) {
+	v := m.project
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldProjectID returns the old "project_id" field's value of the TaskFile entity.
+// If the TaskFile object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TaskFileMutation) OldProjectID(ctx context.Context) (v ulid.ID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldProjectID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldProjectID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldProjectID: %w", err)
+	}
+	return oldValue.ProjectID, nil
+}
+
+// ResetProjectID resets all changes to the "project_id" field.
+func (m *TaskFileMutation) ResetProjectID() {
+	m.project = nil
+}
+
+// SetTaskID sets the "task_id" field.
+func (m *TaskFileMutation) SetTaskID(u ulid.ID) {
+	m.task = &u
+}
+
+// TaskID returns the value of the "task_id" field in the mutation.
+func (m *TaskFileMutation) TaskID() (r ulid.ID, exists bool) {
+	v := m.task
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTaskID returns the old "task_id" field's value of the TaskFile entity.
+// If the TaskFile object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TaskFileMutation) OldTaskID(ctx context.Context) (v ulid.ID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldTaskID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldTaskID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTaskID: %w", err)
+	}
+	return oldValue.TaskID, nil
+}
+
+// ResetTaskID resets all changes to the "task_id" field.
+func (m *TaskFileMutation) ResetTaskID() {
+	m.task = nil
+}
+
+// SetTaskFeedID sets the "task_feed_id" field.
+func (m *TaskFileMutation) SetTaskFeedID(u ulid.ID) {
+	m.task_feed = &u
+}
+
+// TaskFeedID returns the value of the "task_feed_id" field in the mutation.
+func (m *TaskFileMutation) TaskFeedID() (r ulid.ID, exists bool) {
+	v := m.task_feed
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTaskFeedID returns the old "task_feed_id" field's value of the TaskFile entity.
+// If the TaskFile object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TaskFileMutation) OldTaskFeedID(ctx context.Context) (v ulid.ID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldTaskFeedID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldTaskFeedID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTaskFeedID: %w", err)
+	}
+	return oldValue.TaskFeedID, nil
+}
+
+// ResetTaskFeedID resets all changes to the "task_feed_id" field.
+func (m *TaskFileMutation) ResetTaskFeedID() {
+	m.task_feed = nil
+}
+
+// SetFileTypeID sets the "file_type_id" field.
+func (m *TaskFileMutation) SetFileTypeID(u ulid.ID) {
+	m.file_type = &u
+}
+
+// FileTypeID returns the value of the "file_type_id" field in the mutation.
+func (m *TaskFileMutation) FileTypeID() (r ulid.ID, exists bool) {
+	v := m.file_type
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldFileTypeID returns the old "file_type_id" field's value of the TaskFile entity.
+// If the TaskFile object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TaskFileMutation) OldFileTypeID(ctx context.Context) (v ulid.ID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldFileTypeID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldFileTypeID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldFileTypeID: %w", err)
+	}
+	return oldValue.FileTypeID, nil
+}
+
+// ResetFileTypeID resets all changes to the "file_type_id" field.
+func (m *TaskFileMutation) ResetFileTypeID() {
+	m.file_type = nil
+}
+
+// SetName sets the "name" field.
+func (m *TaskFileMutation) SetName(s string) {
+	m.name = &s
+}
+
+// Name returns the value of the "name" field in the mutation.
+func (m *TaskFileMutation) Name() (r string, exists bool) {
+	v := m.name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldName returns the old "name" field's value of the TaskFile entity.
+// If the TaskFile object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TaskFileMutation) OldName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldName: %w", err)
+	}
+	return oldValue.Name, nil
+}
+
+// ResetName resets all changes to the "name" field.
+func (m *TaskFileMutation) ResetName() {
+	m.name = nil
+}
+
+// SetSrc sets the "src" field.
+func (m *TaskFileMutation) SetSrc(s string) {
+	m.src = &s
+}
+
+// Src returns the value of the "src" field in the mutation.
+func (m *TaskFileMutation) Src() (r string, exists bool) {
+	v := m.src
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSrc returns the old "src" field's value of the TaskFile entity.
+// If the TaskFile object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TaskFileMutation) OldSrc(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldSrc is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldSrc requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSrc: %w", err)
+	}
+	return oldValue.Src, nil
+}
+
+// ResetSrc resets all changes to the "src" field.
+func (m *TaskFileMutation) ResetSrc() {
+	m.src = nil
+}
+
+// SetAttached sets the "attached" field.
+func (m *TaskFileMutation) SetAttached(b bool) {
+	m.attached = &b
+}
+
+// Attached returns the value of the "attached" field in the mutation.
+func (m *TaskFileMutation) Attached() (r bool, exists bool) {
+	v := m.attached
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAttached returns the old "attached" field's value of the TaskFile entity.
+// If the TaskFile object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TaskFileMutation) OldAttached(ctx context.Context) (v bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldAttached is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldAttached requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAttached: %w", err)
+	}
+	return oldValue.Attached, nil
+}
+
+// ResetAttached resets all changes to the "attached" field.
+func (m *TaskFileMutation) ResetAttached() {
+	m.attached = nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *TaskFileMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *TaskFileMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the TaskFile entity.
+// If the TaskFile object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TaskFileMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *TaskFileMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *TaskFileMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *TaskFileMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the TaskFile entity.
+// If the TaskFile object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TaskFileMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *TaskFileMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// ClearProject clears the "project" edge to the Project entity.
+func (m *TaskFileMutation) ClearProject() {
+	m.clearedproject = true
+}
+
+// ProjectCleared reports if the "project" edge to the Project entity was cleared.
+func (m *TaskFileMutation) ProjectCleared() bool {
+	return m.clearedproject
+}
+
+// ProjectIDs returns the "project" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// ProjectID instead. It exists only for internal usage by the builders.
+func (m *TaskFileMutation) ProjectIDs() (ids []ulid.ID) {
+	if id := m.project; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetProject resets all changes to the "project" edge.
+func (m *TaskFileMutation) ResetProject() {
+	m.project = nil
+	m.clearedproject = false
+}
+
+// ClearTask clears the "task" edge to the Task entity.
+func (m *TaskFileMutation) ClearTask() {
+	m.clearedtask = true
+}
+
+// TaskCleared reports if the "task" edge to the Task entity was cleared.
+func (m *TaskFileMutation) TaskCleared() bool {
+	return m.clearedtask
+}
+
+// TaskIDs returns the "task" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// TaskID instead. It exists only for internal usage by the builders.
+func (m *TaskFileMutation) TaskIDs() (ids []ulid.ID) {
+	if id := m.task; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetTask resets all changes to the "task" edge.
+func (m *TaskFileMutation) ResetTask() {
+	m.task = nil
+	m.clearedtask = false
+}
+
+// ClearTaskFeed clears the "task_feed" edge to the TaskFeed entity.
+func (m *TaskFileMutation) ClearTaskFeed() {
+	m.clearedtask_feed = true
+}
+
+// TaskFeedCleared reports if the "task_feed" edge to the TaskFeed entity was cleared.
+func (m *TaskFileMutation) TaskFeedCleared() bool {
+	return m.clearedtask_feed
+}
+
+// TaskFeedIDs returns the "task_feed" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// TaskFeedID instead. It exists only for internal usage by the builders.
+func (m *TaskFileMutation) TaskFeedIDs() (ids []ulid.ID) {
+	if id := m.task_feed; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetTaskFeed resets all changes to the "task_feed" edge.
+func (m *TaskFileMutation) ResetTaskFeed() {
+	m.task_feed = nil
+	m.clearedtask_feed = false
+}
+
+// ClearFileType clears the "file_type" edge to the FileType entity.
+func (m *TaskFileMutation) ClearFileType() {
+	m.clearedfile_type = true
+}
+
+// FileTypeCleared reports if the "file_type" edge to the FileType entity was cleared.
+func (m *TaskFileMutation) FileTypeCleared() bool {
+	return m.clearedfile_type
+}
+
+// FileTypeIDs returns the "file_type" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// FileTypeID instead. It exists only for internal usage by the builders.
+func (m *TaskFileMutation) FileTypeIDs() (ids []ulid.ID) {
+	if id := m.file_type; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetFileType resets all changes to the "file_type" edge.
+func (m *TaskFileMutation) ResetFileType() {
+	m.file_type = nil
+	m.clearedfile_type = false
+}
+
+// Where appends a list predicates to the TaskFileMutation builder.
+func (m *TaskFileMutation) Where(ps ...predicate.TaskFile) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// Op returns the operation name.
+func (m *TaskFileMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (TaskFile).
+func (m *TaskFileMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *TaskFileMutation) Fields() []string {
+	fields := make([]string, 0, 9)
+	if m.project != nil {
+		fields = append(fields, taskfile.FieldProjectID)
+	}
+	if m.task != nil {
+		fields = append(fields, taskfile.FieldTaskID)
+	}
+	if m.task_feed != nil {
+		fields = append(fields, taskfile.FieldTaskFeedID)
+	}
+	if m.file_type != nil {
+		fields = append(fields, taskfile.FieldFileTypeID)
+	}
+	if m.name != nil {
+		fields = append(fields, taskfile.FieldName)
+	}
+	if m.src != nil {
+		fields = append(fields, taskfile.FieldSrc)
+	}
+	if m.attached != nil {
+		fields = append(fields, taskfile.FieldAttached)
+	}
+	if m.created_at != nil {
+		fields = append(fields, taskfile.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, taskfile.FieldUpdatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *TaskFileMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case taskfile.FieldProjectID:
+		return m.ProjectID()
+	case taskfile.FieldTaskID:
+		return m.TaskID()
+	case taskfile.FieldTaskFeedID:
+		return m.TaskFeedID()
+	case taskfile.FieldFileTypeID:
+		return m.FileTypeID()
+	case taskfile.FieldName:
+		return m.Name()
+	case taskfile.FieldSrc:
+		return m.Src()
+	case taskfile.FieldAttached:
+		return m.Attached()
+	case taskfile.FieldCreatedAt:
+		return m.CreatedAt()
+	case taskfile.FieldUpdatedAt:
+		return m.UpdatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *TaskFileMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case taskfile.FieldProjectID:
+		return m.OldProjectID(ctx)
+	case taskfile.FieldTaskID:
+		return m.OldTaskID(ctx)
+	case taskfile.FieldTaskFeedID:
+		return m.OldTaskFeedID(ctx)
+	case taskfile.FieldFileTypeID:
+		return m.OldFileTypeID(ctx)
+	case taskfile.FieldName:
+		return m.OldName(ctx)
+	case taskfile.FieldSrc:
+		return m.OldSrc(ctx)
+	case taskfile.FieldAttached:
+		return m.OldAttached(ctx)
+	case taskfile.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case taskfile.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown TaskFile field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *TaskFileMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case taskfile.FieldProjectID:
+		v, ok := value.(ulid.ID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetProjectID(v)
+		return nil
+	case taskfile.FieldTaskID:
+		v, ok := value.(ulid.ID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTaskID(v)
+		return nil
+	case taskfile.FieldTaskFeedID:
+		v, ok := value.(ulid.ID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTaskFeedID(v)
+		return nil
+	case taskfile.FieldFileTypeID:
+		v, ok := value.(ulid.ID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetFileTypeID(v)
+		return nil
+	case taskfile.FieldName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetName(v)
+		return nil
+	case taskfile.FieldSrc:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSrc(v)
+		return nil
+	case taskfile.FieldAttached:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAttached(v)
+		return nil
+	case taskfile.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case taskfile.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown TaskFile field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *TaskFileMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *TaskFileMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *TaskFileMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown TaskFile numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *TaskFileMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *TaskFileMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *TaskFileMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown TaskFile nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *TaskFileMutation) ResetField(name string) error {
+	switch name {
+	case taskfile.FieldProjectID:
+		m.ResetProjectID()
+		return nil
+	case taskfile.FieldTaskID:
+		m.ResetTaskID()
+		return nil
+	case taskfile.FieldTaskFeedID:
+		m.ResetTaskFeedID()
+		return nil
+	case taskfile.FieldFileTypeID:
+		m.ResetFileTypeID()
+		return nil
+	case taskfile.FieldName:
+		m.ResetName()
+		return nil
+	case taskfile.FieldSrc:
+		m.ResetSrc()
+		return nil
+	case taskfile.FieldAttached:
+		m.ResetAttached()
+		return nil
+	case taskfile.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case taskfile.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown TaskFile field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *TaskFileMutation) AddedEdges() []string {
+	edges := make([]string, 0, 4)
+	if m.project != nil {
+		edges = append(edges, taskfile.EdgeProject)
+	}
+	if m.task != nil {
+		edges = append(edges, taskfile.EdgeTask)
+	}
+	if m.task_feed != nil {
+		edges = append(edges, taskfile.EdgeTaskFeed)
+	}
+	if m.file_type != nil {
+		edges = append(edges, taskfile.EdgeFileType)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *TaskFileMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case taskfile.EdgeProject:
+		if id := m.project; id != nil {
+			return []ent.Value{*id}
+		}
+	case taskfile.EdgeTask:
+		if id := m.task; id != nil {
+			return []ent.Value{*id}
+		}
+	case taskfile.EdgeTaskFeed:
+		if id := m.task_feed; id != nil {
+			return []ent.Value{*id}
+		}
+	case taskfile.EdgeFileType:
+		if id := m.file_type; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *TaskFileMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 4)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *TaskFileMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *TaskFileMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 4)
+	if m.clearedproject {
+		edges = append(edges, taskfile.EdgeProject)
+	}
+	if m.clearedtask {
+		edges = append(edges, taskfile.EdgeTask)
+	}
+	if m.clearedtask_feed {
+		edges = append(edges, taskfile.EdgeTaskFeed)
+	}
+	if m.clearedfile_type {
+		edges = append(edges, taskfile.EdgeFileType)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *TaskFileMutation) EdgeCleared(name string) bool {
+	switch name {
+	case taskfile.EdgeProject:
+		return m.clearedproject
+	case taskfile.EdgeTask:
+		return m.clearedtask
+	case taskfile.EdgeTaskFeed:
+		return m.clearedtask_feed
+	case taskfile.EdgeFileType:
+		return m.clearedfile_type
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *TaskFileMutation) ClearEdge(name string) error {
+	switch name {
+	case taskfile.EdgeProject:
+		m.ClearProject()
+		return nil
+	case taskfile.EdgeTask:
+		m.ClearTask()
+		return nil
+	case taskfile.EdgeTaskFeed:
+		m.ClearTaskFeed()
+		return nil
+	case taskfile.EdgeFileType:
+		m.ClearFileType()
+		return nil
+	}
+	return fmt.Errorf("unknown TaskFile unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *TaskFileMutation) ResetEdge(name string) error {
+	switch name {
+	case taskfile.EdgeProject:
+		m.ResetProject()
+		return nil
+	case taskfile.EdgeTask:
+		m.ResetTask()
+		return nil
+	case taskfile.EdgeTaskFeed:
+		m.ResetTaskFeed()
+		return nil
+	case taskfile.EdgeFileType:
+		m.ResetFileType()
+		return nil
+	}
+	return fmt.Errorf("unknown TaskFile edge %s", name)
 }
 
 // TaskLikeMutation represents an operation that mutates the TaskLike nodes in the graph.

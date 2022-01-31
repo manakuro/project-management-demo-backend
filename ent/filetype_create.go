@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"project-management-demo-backend/ent/filetype"
 	"project-management-demo-backend/ent/schema/ulid"
+	"project-management-demo-backend/ent/taskfile"
 	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -73,6 +74,21 @@ func (ftc *FileTypeCreate) SetNillableID(u *ulid.ID) *FileTypeCreate {
 		ftc.SetID(*u)
 	}
 	return ftc
+}
+
+// AddTaskFileIDs adds the "task_files" edge to the TaskFile entity by IDs.
+func (ftc *FileTypeCreate) AddTaskFileIDs(ids ...ulid.ID) *FileTypeCreate {
+	ftc.mutation.AddTaskFileIDs(ids...)
+	return ftc
+}
+
+// AddTaskFiles adds the "task_files" edges to the TaskFile entity.
+func (ftc *FileTypeCreate) AddTaskFiles(t ...*TaskFile) *FileTypeCreate {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return ftc.AddTaskFileIDs(ids...)
 }
 
 // Mutation returns the FileTypeMutation object of the builder.
@@ -247,6 +263,25 @@ func (ftc *FileTypeCreate) createSpec() (*FileType, *sqlgraph.CreateSpec) {
 			Column: filetype.FieldUpdatedAt,
 		})
 		_node.UpdatedAt = value
+	}
+	if nodes := ftc.mutation.TaskFilesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   filetype.TaskFilesTable,
+			Columns: []string{filetype.TaskFilesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: taskfile.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }

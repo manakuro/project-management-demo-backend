@@ -12,6 +12,7 @@ import (
 	"project-management-demo-backend/ent/taskcollaborator"
 	"project-management-demo-backend/ent/taskfeed"
 	"project-management-demo-backend/ent/taskfeedlike"
+	"project-management-demo-backend/ent/taskfile"
 	"project-management-demo-backend/ent/tasklike"
 	"project-management-demo-backend/ent/taskpriority"
 	"project-management-demo-backend/ent/tasktag"
@@ -349,6 +350,21 @@ func (tc *TaskCreate) AddTaskFeedLikes(t ...*TaskFeedLike) *TaskCreate {
 		ids[i] = t[i].ID
 	}
 	return tc.AddTaskFeedLikeIDs(ids...)
+}
+
+// AddTaskFileIDs adds the "task_files" edge to the TaskFile entity by IDs.
+func (tc *TaskCreate) AddTaskFileIDs(ids ...ulid.ID) *TaskCreate {
+	tc.mutation.AddTaskFileIDs(ids...)
+	return tc
+}
+
+// AddTaskFiles adds the "task_files" edges to the TaskFile entity.
+func (tc *TaskCreate) AddTaskFiles(t ...*TaskFile) *TaskCreate {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return tc.AddTaskFileIDs(ids...)
 }
 
 // Mutation returns the TaskMutation object of the builder.
@@ -783,6 +799,25 @@ func (tc *TaskCreate) createSpec() (*Task, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: taskfeedlike.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := tc.mutation.TaskFilesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   task.TaskFilesTable,
+			Columns: []string{task.TaskFilesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: taskfile.FieldID,
 				},
 			},
 		}

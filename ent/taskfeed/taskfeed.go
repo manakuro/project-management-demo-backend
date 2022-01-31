@@ -32,6 +32,8 @@ const (
 	EdgeTeammate = "teammate"
 	// EdgeTaskFeedLikes holds the string denoting the task_feed_likes edge name in mutations.
 	EdgeTaskFeedLikes = "task_feed_likes"
+	// EdgeTaskFiles holds the string denoting the task_files edge name in mutations.
+	EdgeTaskFiles = "task_files"
 	// Table holds the table name of the taskfeed in the database.
 	Table = "task_feeds"
 	// TaskTable is the table that holds the task relation/edge.
@@ -55,6 +57,13 @@ const (
 	TaskFeedLikesInverseTable = "task_feed_likes"
 	// TaskFeedLikesColumn is the table column denoting the task_feed_likes relation/edge.
 	TaskFeedLikesColumn = "task_feed_id"
+	// TaskFilesTable is the table that holds the task_files relation/edge.
+	TaskFilesTable = "task_files"
+	// TaskFilesInverseTable is the table name for the TaskFile entity.
+	// It exists in this package in order to avoid circular dependency with the "taskfile" package.
+	TaskFilesInverseTable = "task_files"
+	// TaskFilesColumn is the table column denoting the task_files relation/edge.
+	TaskFilesColumn = "task_feed_id"
 )
 
 // Columns holds all SQL columns for taskfeed fields.

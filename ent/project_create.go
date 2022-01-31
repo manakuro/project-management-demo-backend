@@ -18,6 +18,7 @@ import (
 	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/ent/schema/editor"
 	"project-management-demo-backend/ent/schema/ulid"
+	"project-management-demo-backend/ent/taskfile"
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/workspace"
 	"time"
@@ -256,6 +257,21 @@ func (pc *ProjectCreate) AddProjectTasks(p ...*ProjectTask) *ProjectCreate {
 		ids[i] = p[i].ID
 	}
 	return pc.AddProjectTaskIDs(ids...)
+}
+
+// AddTaskFileIDs adds the "task_files" edge to the TaskFile entity by IDs.
+func (pc *ProjectCreate) AddTaskFileIDs(ids ...ulid.ID) *ProjectCreate {
+	pc.mutation.AddTaskFileIDs(ids...)
+	return pc
+}
+
+// AddTaskFiles adds the "task_files" edges to the TaskFile entity.
+func (pc *ProjectCreate) AddTaskFiles(t ...*TaskFile) *ProjectCreate {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return pc.AddTaskFileIDs(ids...)
 }
 
 // Mutation returns the ProjectMutation object of the builder.
@@ -686,6 +702,25 @@ func (pc *ProjectCreate) createSpec() (*Project, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: projecttask.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := pc.mutation.TaskFilesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   project.TaskFilesTable,
+			Columns: []string{project.TaskFilesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: taskfile.FieldID,
 				},
 			},
 		}

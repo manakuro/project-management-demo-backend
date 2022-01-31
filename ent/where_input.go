@@ -26,6 +26,7 @@ import (
 	"project-management-demo-backend/ent/taskcolumn"
 	"project-management-demo-backend/ent/taskfeed"
 	"project-management-demo-backend/ent/taskfeedlike"
+	"project-management-demo-backend/ent/taskfile"
 	"project-management-demo-backend/ent/tasklike"
 	"project-management-demo-backend/ent/tasklistcompletedstatus"
 	"project-management-demo-backend/ent/tasklistsortstatus"
@@ -1192,6 +1193,10 @@ type FileTypeWhereInput struct {
 	UpdatedAtGTE   *time.Time  `json:"updatedAtGTE,omitempty"`
 	UpdatedAtLT    *time.Time  `json:"updatedAtLT,omitempty"`
 	UpdatedAtLTE   *time.Time  `json:"updatedAtLTE,omitempty"`
+
+	// "task_files" edge predicates.
+	HasTaskFiles     *bool                 `json:"hasTaskFiles,omitempty"`
+	HasTaskFilesWith []*TaskFileWhereInput `json:"hasTaskFilesWith,omitempty"`
 }
 
 // Filter applies the FileTypeWhereInput filter on the FileTypeQuery builder.
@@ -1377,6 +1382,24 @@ func (i *FileTypeWhereInput) P() (predicate.FileType, error) {
 		predicates = append(predicates, filetype.UpdatedAtLTE(*i.UpdatedAtLTE))
 	}
 
+	if i.HasTaskFiles != nil {
+		p := filetype.HasTaskFiles()
+		if !*i.HasTaskFiles {
+			p = filetype.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasTaskFilesWith) > 0 {
+		with := make([]predicate.TaskFile, 0, len(i.HasTaskFilesWith))
+		for _, w := range i.HasTaskFilesWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, filetype.HasTaskFilesWith(with...))
+	}
 	switch len(predicates) {
 	case 0:
 		return nil, fmt.Errorf("project-management-demo-backend/ent: empty predicate FileTypeWhereInput")
@@ -1892,6 +1915,10 @@ type ProjectWhereInput struct {
 	// "project_tasks" edge predicates.
 	HasProjectTasks     *bool                    `json:"hasProjectTasks,omitempty"`
 	HasProjectTasksWith []*ProjectTaskWhereInput `json:"hasProjectTasksWith,omitempty"`
+
+	// "task_files" edge predicates.
+	HasTaskFiles     *bool                 `json:"hasTaskFiles,omitempty"`
+	HasTaskFilesWith []*TaskFileWhereInput `json:"hasTaskFilesWith,omitempty"`
 }
 
 // Filter applies the ProjectWhereInput filter on the ProjectQuery builder.
@@ -2526,6 +2553,24 @@ func (i *ProjectWhereInput) P() (predicate.Project, error) {
 			with = append(with, p)
 		}
 		predicates = append(predicates, project.HasProjectTasksWith(with...))
+	}
+	if i.HasTaskFiles != nil {
+		p := project.HasTaskFiles()
+		if !*i.HasTaskFiles {
+			p = project.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasTaskFilesWith) > 0 {
+		with := make([]predicate.TaskFile, 0, len(i.HasTaskFilesWith))
+		for _, w := range i.HasTaskFilesWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, project.HasTaskFilesWith(with...))
 	}
 	switch len(predicates) {
 	case 0:
@@ -5956,6 +6001,10 @@ type TaskWhereInput struct {
 	// "task_feed_likes" edge predicates.
 	HasTaskFeedLikes     *bool                     `json:"hasTaskFeedLikes,omitempty"`
 	HasTaskFeedLikesWith []*TaskFeedLikeWhereInput `json:"hasTaskFeedLikesWith,omitempty"`
+
+	// "task_files" edge predicates.
+	HasTaskFiles     *bool                 `json:"hasTaskFiles,omitempty"`
+	HasTaskFilesWith []*TaskFileWhereInput `json:"hasTaskFilesWith,omitempty"`
 }
 
 // Filter applies the TaskWhereInput filter on the TaskQuery builder.
@@ -6596,6 +6645,24 @@ func (i *TaskWhereInput) P() (predicate.Task, error) {
 			with = append(with, p)
 		}
 		predicates = append(predicates, task.HasTaskFeedLikesWith(with...))
+	}
+	if i.HasTaskFiles != nil {
+		p := task.HasTaskFiles()
+		if !*i.HasTaskFiles {
+			p = task.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasTaskFilesWith) > 0 {
+		with := make([]predicate.TaskFile, 0, len(i.HasTaskFilesWith))
+		for _, w := range i.HasTaskFilesWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, task.HasTaskFilesWith(with...))
 	}
 	switch len(predicates) {
 	case 0:
@@ -7318,6 +7385,10 @@ type TaskFeedWhereInput struct {
 	// "task_feed_likes" edge predicates.
 	HasTaskFeedLikes     *bool                     `json:"hasTaskFeedLikes,omitempty"`
 	HasTaskFeedLikesWith []*TaskFeedLikeWhereInput `json:"hasTaskFeedLikesWith,omitempty"`
+
+	// "task_files" edge predicates.
+	HasTaskFiles     *bool                 `json:"hasTaskFiles,omitempty"`
+	HasTaskFilesWith []*TaskFileWhereInput `json:"hasTaskFilesWith,omitempty"`
 }
 
 // Filter applies the TaskFeedWhereInput filter on the TaskFeedQuery builder.
@@ -7595,6 +7666,24 @@ func (i *TaskFeedWhereInput) P() (predicate.TaskFeed, error) {
 			with = append(with, p)
 		}
 		predicates = append(predicates, taskfeed.HasTaskFeedLikesWith(with...))
+	}
+	if i.HasTaskFiles != nil {
+		p := taskfeed.HasTaskFiles()
+		if !*i.HasTaskFiles {
+			p = taskfeed.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasTaskFilesWith) > 0 {
+		with := make([]predicate.TaskFile, 0, len(i.HasTaskFilesWith))
+		for _, w := range i.HasTaskFilesWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, taskfeed.HasTaskFilesWith(with...))
 	}
 	switch len(predicates) {
 	case 0:
@@ -8010,6 +8099,607 @@ func (i *TaskFeedLikeWhereInput) P() (predicate.TaskFeedLike, error) {
 		return predicates[0], nil
 	default:
 		return taskfeedlike.And(predicates...), nil
+	}
+}
+
+// TaskFileWhereInput represents a where input for filtering TaskFile queries.
+type TaskFileWhereInput struct {
+	Not *TaskFileWhereInput   `json:"not,omitempty"`
+	Or  []*TaskFileWhereInput `json:"or,omitempty"`
+	And []*TaskFileWhereInput `json:"and,omitempty"`
+
+	// "id" field predicates.
+	ID      *ulid.ID  `json:"id,omitempty"`
+	IDNEQ   *ulid.ID  `json:"idNEQ,omitempty"`
+	IDIn    []ulid.ID `json:"idIn,omitempty"`
+	IDNotIn []ulid.ID `json:"idNotIn,omitempty"`
+	IDGT    *ulid.ID  `json:"idGT,omitempty"`
+	IDGTE   *ulid.ID  `json:"idGTE,omitempty"`
+	IDLT    *ulid.ID  `json:"idLT,omitempty"`
+	IDLTE   *ulid.ID  `json:"idLTE,omitempty"`
+
+	// "project_id" field predicates.
+	ProjectID             *ulid.ID  `json:"projectID,omitempty"`
+	ProjectIDNEQ          *ulid.ID  `json:"projectIDNEQ,omitempty"`
+	ProjectIDIn           []ulid.ID `json:"projectIDIn,omitempty"`
+	ProjectIDNotIn        []ulid.ID `json:"projectIDNotIn,omitempty"`
+	ProjectIDGT           *ulid.ID  `json:"projectIDGT,omitempty"`
+	ProjectIDGTE          *ulid.ID  `json:"projectIDGTE,omitempty"`
+	ProjectIDLT           *ulid.ID  `json:"projectIDLT,omitempty"`
+	ProjectIDLTE          *ulid.ID  `json:"projectIDLTE,omitempty"`
+	ProjectIDContains     *ulid.ID  `json:"projectIDContains,omitempty"`
+	ProjectIDHasPrefix    *ulid.ID  `json:"projectIDHasPrefix,omitempty"`
+	ProjectIDHasSuffix    *ulid.ID  `json:"projectIDHasSuffix,omitempty"`
+	ProjectIDEqualFold    *ulid.ID  `json:"projectIDEqualFold,omitempty"`
+	ProjectIDContainsFold *ulid.ID  `json:"projectIDContainsFold,omitempty"`
+
+	// "task_id" field predicates.
+	TaskID             *ulid.ID  `json:"taskID,omitempty"`
+	TaskIDNEQ          *ulid.ID  `json:"taskIDNEQ,omitempty"`
+	TaskIDIn           []ulid.ID `json:"taskIDIn,omitempty"`
+	TaskIDNotIn        []ulid.ID `json:"taskIDNotIn,omitempty"`
+	TaskIDGT           *ulid.ID  `json:"taskIDGT,omitempty"`
+	TaskIDGTE          *ulid.ID  `json:"taskIDGTE,omitempty"`
+	TaskIDLT           *ulid.ID  `json:"taskIDLT,omitempty"`
+	TaskIDLTE          *ulid.ID  `json:"taskIDLTE,omitempty"`
+	TaskIDContains     *ulid.ID  `json:"taskIDContains,omitempty"`
+	TaskIDHasPrefix    *ulid.ID  `json:"taskIDHasPrefix,omitempty"`
+	TaskIDHasSuffix    *ulid.ID  `json:"taskIDHasSuffix,omitempty"`
+	TaskIDEqualFold    *ulid.ID  `json:"taskIDEqualFold,omitempty"`
+	TaskIDContainsFold *ulid.ID  `json:"taskIDContainsFold,omitempty"`
+
+	// "task_feed_id" field predicates.
+	TaskFeedID             *ulid.ID  `json:"taskFeedID,omitempty"`
+	TaskFeedIDNEQ          *ulid.ID  `json:"taskFeedIDNEQ,omitempty"`
+	TaskFeedIDIn           []ulid.ID `json:"taskFeedIDIn,omitempty"`
+	TaskFeedIDNotIn        []ulid.ID `json:"taskFeedIDNotIn,omitempty"`
+	TaskFeedIDGT           *ulid.ID  `json:"taskFeedIDGT,omitempty"`
+	TaskFeedIDGTE          *ulid.ID  `json:"taskFeedIDGTE,omitempty"`
+	TaskFeedIDLT           *ulid.ID  `json:"taskFeedIDLT,omitempty"`
+	TaskFeedIDLTE          *ulid.ID  `json:"taskFeedIDLTE,omitempty"`
+	TaskFeedIDContains     *ulid.ID  `json:"taskFeedIDContains,omitempty"`
+	TaskFeedIDHasPrefix    *ulid.ID  `json:"taskFeedIDHasPrefix,omitempty"`
+	TaskFeedIDHasSuffix    *ulid.ID  `json:"taskFeedIDHasSuffix,omitempty"`
+	TaskFeedIDEqualFold    *ulid.ID  `json:"taskFeedIDEqualFold,omitempty"`
+	TaskFeedIDContainsFold *ulid.ID  `json:"taskFeedIDContainsFold,omitempty"`
+
+	// "file_type_id" field predicates.
+	FileTypeID             *ulid.ID  `json:"fileTypeID,omitempty"`
+	FileTypeIDNEQ          *ulid.ID  `json:"fileTypeIDNEQ,omitempty"`
+	FileTypeIDIn           []ulid.ID `json:"fileTypeIDIn,omitempty"`
+	FileTypeIDNotIn        []ulid.ID `json:"fileTypeIDNotIn,omitempty"`
+	FileTypeIDGT           *ulid.ID  `json:"fileTypeIDGT,omitempty"`
+	FileTypeIDGTE          *ulid.ID  `json:"fileTypeIDGTE,omitempty"`
+	FileTypeIDLT           *ulid.ID  `json:"fileTypeIDLT,omitempty"`
+	FileTypeIDLTE          *ulid.ID  `json:"fileTypeIDLTE,omitempty"`
+	FileTypeIDContains     *ulid.ID  `json:"fileTypeIDContains,omitempty"`
+	FileTypeIDHasPrefix    *ulid.ID  `json:"fileTypeIDHasPrefix,omitempty"`
+	FileTypeIDHasSuffix    *ulid.ID  `json:"fileTypeIDHasSuffix,omitempty"`
+	FileTypeIDEqualFold    *ulid.ID  `json:"fileTypeIDEqualFold,omitempty"`
+	FileTypeIDContainsFold *ulid.ID  `json:"fileTypeIDContainsFold,omitempty"`
+
+	// "name" field predicates.
+	Name             *string  `json:"name,omitempty"`
+	NameNEQ          *string  `json:"nameNEQ,omitempty"`
+	NameIn           []string `json:"nameIn,omitempty"`
+	NameNotIn        []string `json:"nameNotIn,omitempty"`
+	NameGT           *string  `json:"nameGT,omitempty"`
+	NameGTE          *string  `json:"nameGTE,omitempty"`
+	NameLT           *string  `json:"nameLT,omitempty"`
+	NameLTE          *string  `json:"nameLTE,omitempty"`
+	NameContains     *string  `json:"nameContains,omitempty"`
+	NameHasPrefix    *string  `json:"nameHasPrefix,omitempty"`
+	NameHasSuffix    *string  `json:"nameHasSuffix,omitempty"`
+	NameEqualFold    *string  `json:"nameEqualFold,omitempty"`
+	NameContainsFold *string  `json:"nameContainsFold,omitempty"`
+
+	// "src" field predicates.
+	Src             *string  `json:"src,omitempty"`
+	SrcNEQ          *string  `json:"srcNEQ,omitempty"`
+	SrcIn           []string `json:"srcIn,omitempty"`
+	SrcNotIn        []string `json:"srcNotIn,omitempty"`
+	SrcGT           *string  `json:"srcGT,omitempty"`
+	SrcGTE          *string  `json:"srcGTE,omitempty"`
+	SrcLT           *string  `json:"srcLT,omitempty"`
+	SrcLTE          *string  `json:"srcLTE,omitempty"`
+	SrcContains     *string  `json:"srcContains,omitempty"`
+	SrcHasPrefix    *string  `json:"srcHasPrefix,omitempty"`
+	SrcHasSuffix    *string  `json:"srcHasSuffix,omitempty"`
+	SrcEqualFold    *string  `json:"srcEqualFold,omitempty"`
+	SrcContainsFold *string  `json:"srcContainsFold,omitempty"`
+
+	// "attached" field predicates.
+	Attached    *bool `json:"attached,omitempty"`
+	AttachedNEQ *bool `json:"attachedNEQ,omitempty"`
+
+	// "created_at" field predicates.
+	CreatedAt      *time.Time  `json:"createdAt,omitempty"`
+	CreatedAtNEQ   *time.Time  `json:"createdAtNEQ,omitempty"`
+	CreatedAtIn    []time.Time `json:"createdAtIn,omitempty"`
+	CreatedAtNotIn []time.Time `json:"createdAtNotIn,omitempty"`
+	CreatedAtGT    *time.Time  `json:"createdAtGT,omitempty"`
+	CreatedAtGTE   *time.Time  `json:"createdAtGTE,omitempty"`
+	CreatedAtLT    *time.Time  `json:"createdAtLT,omitempty"`
+	CreatedAtLTE   *time.Time  `json:"createdAtLTE,omitempty"`
+
+	// "updated_at" field predicates.
+	UpdatedAt      *time.Time  `json:"updatedAt,omitempty"`
+	UpdatedAtNEQ   *time.Time  `json:"updatedAtNEQ,omitempty"`
+	UpdatedAtIn    []time.Time `json:"updatedAtIn,omitempty"`
+	UpdatedAtNotIn []time.Time `json:"updatedAtNotIn,omitempty"`
+	UpdatedAtGT    *time.Time  `json:"updatedAtGT,omitempty"`
+	UpdatedAtGTE   *time.Time  `json:"updatedAtGTE,omitempty"`
+	UpdatedAtLT    *time.Time  `json:"updatedAtLT,omitempty"`
+	UpdatedAtLTE   *time.Time  `json:"updatedAtLTE,omitempty"`
+
+	// "project" edge predicates.
+	HasProject     *bool                `json:"hasProject,omitempty"`
+	HasProjectWith []*ProjectWhereInput `json:"hasProjectWith,omitempty"`
+
+	// "task" edge predicates.
+	HasTask     *bool             `json:"hasTask,omitempty"`
+	HasTaskWith []*TaskWhereInput `json:"hasTaskWith,omitempty"`
+
+	// "task_feed" edge predicates.
+	HasTaskFeed     *bool                 `json:"hasTaskFeed,omitempty"`
+	HasTaskFeedWith []*TaskFeedWhereInput `json:"hasTaskFeedWith,omitempty"`
+
+	// "file_type" edge predicates.
+	HasFileType     *bool                 `json:"hasFileType,omitempty"`
+	HasFileTypeWith []*FileTypeWhereInput `json:"hasFileTypeWith,omitempty"`
+}
+
+// Filter applies the TaskFileWhereInput filter on the TaskFileQuery builder.
+func (i *TaskFileWhereInput) Filter(q *TaskFileQuery) (*TaskFileQuery, error) {
+	if i == nil {
+		return q, nil
+	}
+	p, err := i.P()
+	if err != nil {
+		return nil, err
+	}
+	return q.Where(p), nil
+}
+
+// P returns a predicate for filtering taskfiles.
+// An error is returned if the input is empty or invalid.
+func (i *TaskFileWhereInput) P() (predicate.TaskFile, error) {
+	var predicates []predicate.TaskFile
+	if i.Not != nil {
+		p, err := i.Not.P()
+		if err != nil {
+			return nil, err
+		}
+		predicates = append(predicates, taskfile.Not(p))
+	}
+	switch n := len(i.Or); {
+	case n == 1:
+		p, err := i.Or[0].P()
+		if err != nil {
+			return nil, err
+		}
+		predicates = append(predicates, p)
+	case n > 1:
+		or := make([]predicate.TaskFile, 0, n)
+		for _, w := range i.Or {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			or = append(or, p)
+		}
+		predicates = append(predicates, taskfile.Or(or...))
+	}
+	switch n := len(i.And); {
+	case n == 1:
+		p, err := i.And[0].P()
+		if err != nil {
+			return nil, err
+		}
+		predicates = append(predicates, p)
+	case n > 1:
+		and := make([]predicate.TaskFile, 0, n)
+		for _, w := range i.And {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			and = append(and, p)
+		}
+		predicates = append(predicates, taskfile.And(and...))
+	}
+	if i.ID != nil {
+		predicates = append(predicates, taskfile.IDEQ(*i.ID))
+	}
+	if i.IDNEQ != nil {
+		predicates = append(predicates, taskfile.IDNEQ(*i.IDNEQ))
+	}
+	if len(i.IDIn) > 0 {
+		predicates = append(predicates, taskfile.IDIn(i.IDIn...))
+	}
+	if len(i.IDNotIn) > 0 {
+		predicates = append(predicates, taskfile.IDNotIn(i.IDNotIn...))
+	}
+	if i.IDGT != nil {
+		predicates = append(predicates, taskfile.IDGT(*i.IDGT))
+	}
+	if i.IDGTE != nil {
+		predicates = append(predicates, taskfile.IDGTE(*i.IDGTE))
+	}
+	if i.IDLT != nil {
+		predicates = append(predicates, taskfile.IDLT(*i.IDLT))
+	}
+	if i.IDLTE != nil {
+		predicates = append(predicates, taskfile.IDLTE(*i.IDLTE))
+	}
+	if i.ProjectID != nil {
+		predicates = append(predicates, taskfile.ProjectIDEQ(*i.ProjectID))
+	}
+	if i.ProjectIDNEQ != nil {
+		predicates = append(predicates, taskfile.ProjectIDNEQ(*i.ProjectIDNEQ))
+	}
+	if len(i.ProjectIDIn) > 0 {
+		predicates = append(predicates, taskfile.ProjectIDIn(i.ProjectIDIn...))
+	}
+	if len(i.ProjectIDNotIn) > 0 {
+		predicates = append(predicates, taskfile.ProjectIDNotIn(i.ProjectIDNotIn...))
+	}
+	if i.ProjectIDGT != nil {
+		predicates = append(predicates, taskfile.ProjectIDGT(*i.ProjectIDGT))
+	}
+	if i.ProjectIDGTE != nil {
+		predicates = append(predicates, taskfile.ProjectIDGTE(*i.ProjectIDGTE))
+	}
+	if i.ProjectIDLT != nil {
+		predicates = append(predicates, taskfile.ProjectIDLT(*i.ProjectIDLT))
+	}
+	if i.ProjectIDLTE != nil {
+		predicates = append(predicates, taskfile.ProjectIDLTE(*i.ProjectIDLTE))
+	}
+	if i.ProjectIDContains != nil {
+		predicates = append(predicates, taskfile.ProjectIDContains(*i.ProjectIDContains))
+	}
+	if i.ProjectIDHasPrefix != nil {
+		predicates = append(predicates, taskfile.ProjectIDHasPrefix(*i.ProjectIDHasPrefix))
+	}
+	if i.ProjectIDHasSuffix != nil {
+		predicates = append(predicates, taskfile.ProjectIDHasSuffix(*i.ProjectIDHasSuffix))
+	}
+	if i.ProjectIDEqualFold != nil {
+		predicates = append(predicates, taskfile.ProjectIDEqualFold(*i.ProjectIDEqualFold))
+	}
+	if i.ProjectIDContainsFold != nil {
+		predicates = append(predicates, taskfile.ProjectIDContainsFold(*i.ProjectIDContainsFold))
+	}
+	if i.TaskID != nil {
+		predicates = append(predicates, taskfile.TaskIDEQ(*i.TaskID))
+	}
+	if i.TaskIDNEQ != nil {
+		predicates = append(predicates, taskfile.TaskIDNEQ(*i.TaskIDNEQ))
+	}
+	if len(i.TaskIDIn) > 0 {
+		predicates = append(predicates, taskfile.TaskIDIn(i.TaskIDIn...))
+	}
+	if len(i.TaskIDNotIn) > 0 {
+		predicates = append(predicates, taskfile.TaskIDNotIn(i.TaskIDNotIn...))
+	}
+	if i.TaskIDGT != nil {
+		predicates = append(predicates, taskfile.TaskIDGT(*i.TaskIDGT))
+	}
+	if i.TaskIDGTE != nil {
+		predicates = append(predicates, taskfile.TaskIDGTE(*i.TaskIDGTE))
+	}
+	if i.TaskIDLT != nil {
+		predicates = append(predicates, taskfile.TaskIDLT(*i.TaskIDLT))
+	}
+	if i.TaskIDLTE != nil {
+		predicates = append(predicates, taskfile.TaskIDLTE(*i.TaskIDLTE))
+	}
+	if i.TaskIDContains != nil {
+		predicates = append(predicates, taskfile.TaskIDContains(*i.TaskIDContains))
+	}
+	if i.TaskIDHasPrefix != nil {
+		predicates = append(predicates, taskfile.TaskIDHasPrefix(*i.TaskIDHasPrefix))
+	}
+	if i.TaskIDHasSuffix != nil {
+		predicates = append(predicates, taskfile.TaskIDHasSuffix(*i.TaskIDHasSuffix))
+	}
+	if i.TaskIDEqualFold != nil {
+		predicates = append(predicates, taskfile.TaskIDEqualFold(*i.TaskIDEqualFold))
+	}
+	if i.TaskIDContainsFold != nil {
+		predicates = append(predicates, taskfile.TaskIDContainsFold(*i.TaskIDContainsFold))
+	}
+	if i.TaskFeedID != nil {
+		predicates = append(predicates, taskfile.TaskFeedIDEQ(*i.TaskFeedID))
+	}
+	if i.TaskFeedIDNEQ != nil {
+		predicates = append(predicates, taskfile.TaskFeedIDNEQ(*i.TaskFeedIDNEQ))
+	}
+	if len(i.TaskFeedIDIn) > 0 {
+		predicates = append(predicates, taskfile.TaskFeedIDIn(i.TaskFeedIDIn...))
+	}
+	if len(i.TaskFeedIDNotIn) > 0 {
+		predicates = append(predicates, taskfile.TaskFeedIDNotIn(i.TaskFeedIDNotIn...))
+	}
+	if i.TaskFeedIDGT != nil {
+		predicates = append(predicates, taskfile.TaskFeedIDGT(*i.TaskFeedIDGT))
+	}
+	if i.TaskFeedIDGTE != nil {
+		predicates = append(predicates, taskfile.TaskFeedIDGTE(*i.TaskFeedIDGTE))
+	}
+	if i.TaskFeedIDLT != nil {
+		predicates = append(predicates, taskfile.TaskFeedIDLT(*i.TaskFeedIDLT))
+	}
+	if i.TaskFeedIDLTE != nil {
+		predicates = append(predicates, taskfile.TaskFeedIDLTE(*i.TaskFeedIDLTE))
+	}
+	if i.TaskFeedIDContains != nil {
+		predicates = append(predicates, taskfile.TaskFeedIDContains(*i.TaskFeedIDContains))
+	}
+	if i.TaskFeedIDHasPrefix != nil {
+		predicates = append(predicates, taskfile.TaskFeedIDHasPrefix(*i.TaskFeedIDHasPrefix))
+	}
+	if i.TaskFeedIDHasSuffix != nil {
+		predicates = append(predicates, taskfile.TaskFeedIDHasSuffix(*i.TaskFeedIDHasSuffix))
+	}
+	if i.TaskFeedIDEqualFold != nil {
+		predicates = append(predicates, taskfile.TaskFeedIDEqualFold(*i.TaskFeedIDEqualFold))
+	}
+	if i.TaskFeedIDContainsFold != nil {
+		predicates = append(predicates, taskfile.TaskFeedIDContainsFold(*i.TaskFeedIDContainsFold))
+	}
+	if i.FileTypeID != nil {
+		predicates = append(predicates, taskfile.FileTypeIDEQ(*i.FileTypeID))
+	}
+	if i.FileTypeIDNEQ != nil {
+		predicates = append(predicates, taskfile.FileTypeIDNEQ(*i.FileTypeIDNEQ))
+	}
+	if len(i.FileTypeIDIn) > 0 {
+		predicates = append(predicates, taskfile.FileTypeIDIn(i.FileTypeIDIn...))
+	}
+	if len(i.FileTypeIDNotIn) > 0 {
+		predicates = append(predicates, taskfile.FileTypeIDNotIn(i.FileTypeIDNotIn...))
+	}
+	if i.FileTypeIDGT != nil {
+		predicates = append(predicates, taskfile.FileTypeIDGT(*i.FileTypeIDGT))
+	}
+	if i.FileTypeIDGTE != nil {
+		predicates = append(predicates, taskfile.FileTypeIDGTE(*i.FileTypeIDGTE))
+	}
+	if i.FileTypeIDLT != nil {
+		predicates = append(predicates, taskfile.FileTypeIDLT(*i.FileTypeIDLT))
+	}
+	if i.FileTypeIDLTE != nil {
+		predicates = append(predicates, taskfile.FileTypeIDLTE(*i.FileTypeIDLTE))
+	}
+	if i.FileTypeIDContains != nil {
+		predicates = append(predicates, taskfile.FileTypeIDContains(*i.FileTypeIDContains))
+	}
+	if i.FileTypeIDHasPrefix != nil {
+		predicates = append(predicates, taskfile.FileTypeIDHasPrefix(*i.FileTypeIDHasPrefix))
+	}
+	if i.FileTypeIDHasSuffix != nil {
+		predicates = append(predicates, taskfile.FileTypeIDHasSuffix(*i.FileTypeIDHasSuffix))
+	}
+	if i.FileTypeIDEqualFold != nil {
+		predicates = append(predicates, taskfile.FileTypeIDEqualFold(*i.FileTypeIDEqualFold))
+	}
+	if i.FileTypeIDContainsFold != nil {
+		predicates = append(predicates, taskfile.FileTypeIDContainsFold(*i.FileTypeIDContainsFold))
+	}
+	if i.Name != nil {
+		predicates = append(predicates, taskfile.NameEQ(*i.Name))
+	}
+	if i.NameNEQ != nil {
+		predicates = append(predicates, taskfile.NameNEQ(*i.NameNEQ))
+	}
+	if len(i.NameIn) > 0 {
+		predicates = append(predicates, taskfile.NameIn(i.NameIn...))
+	}
+	if len(i.NameNotIn) > 0 {
+		predicates = append(predicates, taskfile.NameNotIn(i.NameNotIn...))
+	}
+	if i.NameGT != nil {
+		predicates = append(predicates, taskfile.NameGT(*i.NameGT))
+	}
+	if i.NameGTE != nil {
+		predicates = append(predicates, taskfile.NameGTE(*i.NameGTE))
+	}
+	if i.NameLT != nil {
+		predicates = append(predicates, taskfile.NameLT(*i.NameLT))
+	}
+	if i.NameLTE != nil {
+		predicates = append(predicates, taskfile.NameLTE(*i.NameLTE))
+	}
+	if i.NameContains != nil {
+		predicates = append(predicates, taskfile.NameContains(*i.NameContains))
+	}
+	if i.NameHasPrefix != nil {
+		predicates = append(predicates, taskfile.NameHasPrefix(*i.NameHasPrefix))
+	}
+	if i.NameHasSuffix != nil {
+		predicates = append(predicates, taskfile.NameHasSuffix(*i.NameHasSuffix))
+	}
+	if i.NameEqualFold != nil {
+		predicates = append(predicates, taskfile.NameEqualFold(*i.NameEqualFold))
+	}
+	if i.NameContainsFold != nil {
+		predicates = append(predicates, taskfile.NameContainsFold(*i.NameContainsFold))
+	}
+	if i.Src != nil {
+		predicates = append(predicates, taskfile.SrcEQ(*i.Src))
+	}
+	if i.SrcNEQ != nil {
+		predicates = append(predicates, taskfile.SrcNEQ(*i.SrcNEQ))
+	}
+	if len(i.SrcIn) > 0 {
+		predicates = append(predicates, taskfile.SrcIn(i.SrcIn...))
+	}
+	if len(i.SrcNotIn) > 0 {
+		predicates = append(predicates, taskfile.SrcNotIn(i.SrcNotIn...))
+	}
+	if i.SrcGT != nil {
+		predicates = append(predicates, taskfile.SrcGT(*i.SrcGT))
+	}
+	if i.SrcGTE != nil {
+		predicates = append(predicates, taskfile.SrcGTE(*i.SrcGTE))
+	}
+	if i.SrcLT != nil {
+		predicates = append(predicates, taskfile.SrcLT(*i.SrcLT))
+	}
+	if i.SrcLTE != nil {
+		predicates = append(predicates, taskfile.SrcLTE(*i.SrcLTE))
+	}
+	if i.SrcContains != nil {
+		predicates = append(predicates, taskfile.SrcContains(*i.SrcContains))
+	}
+	if i.SrcHasPrefix != nil {
+		predicates = append(predicates, taskfile.SrcHasPrefix(*i.SrcHasPrefix))
+	}
+	if i.SrcHasSuffix != nil {
+		predicates = append(predicates, taskfile.SrcHasSuffix(*i.SrcHasSuffix))
+	}
+	if i.SrcEqualFold != nil {
+		predicates = append(predicates, taskfile.SrcEqualFold(*i.SrcEqualFold))
+	}
+	if i.SrcContainsFold != nil {
+		predicates = append(predicates, taskfile.SrcContainsFold(*i.SrcContainsFold))
+	}
+	if i.Attached != nil {
+		predicates = append(predicates, taskfile.AttachedEQ(*i.Attached))
+	}
+	if i.AttachedNEQ != nil {
+		predicates = append(predicates, taskfile.AttachedNEQ(*i.AttachedNEQ))
+	}
+	if i.CreatedAt != nil {
+		predicates = append(predicates, taskfile.CreatedAtEQ(*i.CreatedAt))
+	}
+	if i.CreatedAtNEQ != nil {
+		predicates = append(predicates, taskfile.CreatedAtNEQ(*i.CreatedAtNEQ))
+	}
+	if len(i.CreatedAtIn) > 0 {
+		predicates = append(predicates, taskfile.CreatedAtIn(i.CreatedAtIn...))
+	}
+	if len(i.CreatedAtNotIn) > 0 {
+		predicates = append(predicates, taskfile.CreatedAtNotIn(i.CreatedAtNotIn...))
+	}
+	if i.CreatedAtGT != nil {
+		predicates = append(predicates, taskfile.CreatedAtGT(*i.CreatedAtGT))
+	}
+	if i.CreatedAtGTE != nil {
+		predicates = append(predicates, taskfile.CreatedAtGTE(*i.CreatedAtGTE))
+	}
+	if i.CreatedAtLT != nil {
+		predicates = append(predicates, taskfile.CreatedAtLT(*i.CreatedAtLT))
+	}
+	if i.CreatedAtLTE != nil {
+		predicates = append(predicates, taskfile.CreatedAtLTE(*i.CreatedAtLTE))
+	}
+	if i.UpdatedAt != nil {
+		predicates = append(predicates, taskfile.UpdatedAtEQ(*i.UpdatedAt))
+	}
+	if i.UpdatedAtNEQ != nil {
+		predicates = append(predicates, taskfile.UpdatedAtNEQ(*i.UpdatedAtNEQ))
+	}
+	if len(i.UpdatedAtIn) > 0 {
+		predicates = append(predicates, taskfile.UpdatedAtIn(i.UpdatedAtIn...))
+	}
+	if len(i.UpdatedAtNotIn) > 0 {
+		predicates = append(predicates, taskfile.UpdatedAtNotIn(i.UpdatedAtNotIn...))
+	}
+	if i.UpdatedAtGT != nil {
+		predicates = append(predicates, taskfile.UpdatedAtGT(*i.UpdatedAtGT))
+	}
+	if i.UpdatedAtGTE != nil {
+		predicates = append(predicates, taskfile.UpdatedAtGTE(*i.UpdatedAtGTE))
+	}
+	if i.UpdatedAtLT != nil {
+		predicates = append(predicates, taskfile.UpdatedAtLT(*i.UpdatedAtLT))
+	}
+	if i.UpdatedAtLTE != nil {
+		predicates = append(predicates, taskfile.UpdatedAtLTE(*i.UpdatedAtLTE))
+	}
+
+	if i.HasProject != nil {
+		p := taskfile.HasProject()
+		if !*i.HasProject {
+			p = taskfile.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasProjectWith) > 0 {
+		with := make([]predicate.Project, 0, len(i.HasProjectWith))
+		for _, w := range i.HasProjectWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, taskfile.HasProjectWith(with...))
+	}
+	if i.HasTask != nil {
+		p := taskfile.HasTask()
+		if !*i.HasTask {
+			p = taskfile.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasTaskWith) > 0 {
+		with := make([]predicate.Task, 0, len(i.HasTaskWith))
+		for _, w := range i.HasTaskWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, taskfile.HasTaskWith(with...))
+	}
+	if i.HasTaskFeed != nil {
+		p := taskfile.HasTaskFeed()
+		if !*i.HasTaskFeed {
+			p = taskfile.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasTaskFeedWith) > 0 {
+		with := make([]predicate.TaskFeed, 0, len(i.HasTaskFeedWith))
+		for _, w := range i.HasTaskFeedWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, taskfile.HasTaskFeedWith(with...))
+	}
+	if i.HasFileType != nil {
+		p := taskfile.HasFileType()
+		if !*i.HasFileType {
+			p = taskfile.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasFileTypeWith) > 0 {
+		with := make([]predicate.FileType, 0, len(i.HasFileTypeWith))
+		for _, w := range i.HasFileTypeWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, taskfile.HasFileTypeWith(with...))
+	}
+	switch len(predicates) {
+	case 0:
+		return nil, fmt.Errorf("project-management-demo-backend/ent: empty predicate TaskFileWhereInput")
+	case 1:
+		return predicates[0], nil
+	default:
+		return taskfile.And(predicates...), nil
 	}
 }
 
