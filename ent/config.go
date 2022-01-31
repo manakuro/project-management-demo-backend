@@ -39,6 +39,7 @@ type hooks struct {
 	ProjectTeammate         []ent.Hook
 	Tag                     []ent.Hook
 	Task                    []ent.Hook
+	TaskCollaborator        []ent.Hook
 	TaskColumn              []ent.Hook
 	TaskLike                []ent.Hook
 	TaskListCompletedStatus []ent.Hook

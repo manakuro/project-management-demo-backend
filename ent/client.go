@@ -25,6 +25,7 @@ import (
 	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/ent/tag"
 	"project-management-demo-backend/ent/task"
+	"project-management-demo-backend/ent/taskcollaborator"
 	"project-management-demo-backend/ent/taskcolumn"
 	"project-management-demo-backend/ent/tasklike"
 	"project-management-demo-backend/ent/tasklistcompletedstatus"
@@ -83,6 +84,8 @@ type Client struct {
 	Tag *TagClient
 	// Task is the client for interacting with the Task builders.
 	Task *TaskClient
+	// TaskCollaborator is the client for interacting with the TaskCollaborator builders.
+	TaskCollaborator *TaskCollaboratorClient
 	// TaskColumn is the client for interacting with the TaskColumn builders.
 	TaskColumn *TaskColumnClient
 	// TaskLike is the client for interacting with the TaskLike builders.
@@ -145,6 +148,7 @@ func (c *Client) init() {
 	c.ProjectTeammate = NewProjectTeammateClient(c.config)
 	c.Tag = NewTagClient(c.config)
 	c.Task = NewTaskClient(c.config)
+	c.TaskCollaborator = NewTaskCollaboratorClient(c.config)
 	c.TaskColumn = NewTaskColumnClient(c.config)
 	c.TaskLike = NewTaskLikeClient(c.config)
 	c.TaskListCompletedStatus = NewTaskListCompletedStatusClient(c.config)
@@ -210,6 +214,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		ProjectTeammate:         NewProjectTeammateClient(cfg),
 		Tag:                     NewTagClient(cfg),
 		Task:                    NewTaskClient(cfg),
+		TaskCollaborator:        NewTaskCollaboratorClient(cfg),
 		TaskColumn:              NewTaskColumnClient(cfg),
 		TaskLike:                NewTaskLikeClient(cfg),
 		TaskListCompletedStatus: NewTaskListCompletedStatusClient(cfg),
@@ -260,6 +265,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		ProjectTeammate:         NewProjectTeammateClient(cfg),
 		Tag:                     NewTagClient(cfg),
 		Task:                    NewTaskClient(cfg),
+		TaskCollaborator:        NewTaskCollaboratorClient(cfg),
 		TaskColumn:              NewTaskColumnClient(cfg),
 		TaskLike:                NewTaskLikeClient(cfg),
 		TaskListCompletedStatus: NewTaskListCompletedStatusClient(cfg),
@@ -321,6 +327,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.ProjectTeammate.Use(hooks...)
 	c.Tag.Use(hooks...)
 	c.Task.Use(hooks...)
+	c.TaskCollaborator.Use(hooks...)
 	c.TaskColumn.Use(hooks...)
 	c.TaskLike.Use(hooks...)
 	c.TaskListCompletedStatus.Use(hooks...)
@@ -2469,9 +2476,147 @@ func (c *TaskClient) QueryTaskTags(t *Task) *TaskTagQuery {
 	return query
 }
 
+// QueryTaskCollaborators queries the task_collaborators edge of a Task.
+func (c *TaskClient) QueryTaskCollaborators(t *Task) *TaskCollaboratorQuery {
+	query := &TaskCollaboratorQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := t.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(task.Table, task.FieldID, id),
+			sqlgraph.To(taskcollaborator.Table, taskcollaborator.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, task.TaskCollaboratorsTable, task.TaskCollaboratorsColumn),
+		)
+		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *TaskClient) Hooks() []Hook {
 	return c.hooks.Task
+}
+
+// TaskCollaboratorClient is a client for the TaskCollaborator schema.
+type TaskCollaboratorClient struct {
+	config
+}
+
+// NewTaskCollaboratorClient returns a client for the TaskCollaborator from the given config.
+func NewTaskCollaboratorClient(c config) *TaskCollaboratorClient {
+	return &TaskCollaboratorClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `taskcollaborator.Hooks(f(g(h())))`.
+func (c *TaskCollaboratorClient) Use(hooks ...Hook) {
+	c.hooks.TaskCollaborator = append(c.hooks.TaskCollaborator, hooks...)
+}
+
+// Create returns a create builder for TaskCollaborator.
+func (c *TaskCollaboratorClient) Create() *TaskCollaboratorCreate {
+	mutation := newTaskCollaboratorMutation(c.config, OpCreate)
+	return &TaskCollaboratorCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of TaskCollaborator entities.
+func (c *TaskCollaboratorClient) CreateBulk(builders ...*TaskCollaboratorCreate) *TaskCollaboratorCreateBulk {
+	return &TaskCollaboratorCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for TaskCollaborator.
+func (c *TaskCollaboratorClient) Update() *TaskCollaboratorUpdate {
+	mutation := newTaskCollaboratorMutation(c.config, OpUpdate)
+	return &TaskCollaboratorUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *TaskCollaboratorClient) UpdateOne(tc *TaskCollaborator) *TaskCollaboratorUpdateOne {
+	mutation := newTaskCollaboratorMutation(c.config, OpUpdateOne, withTaskCollaborator(tc))
+	return &TaskCollaboratorUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *TaskCollaboratorClient) UpdateOneID(id ulid.ID) *TaskCollaboratorUpdateOne {
+	mutation := newTaskCollaboratorMutation(c.config, OpUpdateOne, withTaskCollaboratorID(id))
+	return &TaskCollaboratorUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for TaskCollaborator.
+func (c *TaskCollaboratorClient) Delete() *TaskCollaboratorDelete {
+	mutation := newTaskCollaboratorMutation(c.config, OpDelete)
+	return &TaskCollaboratorDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *TaskCollaboratorClient) DeleteOne(tc *TaskCollaborator) *TaskCollaboratorDeleteOne {
+	return c.DeleteOneID(tc.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *TaskCollaboratorClient) DeleteOneID(id ulid.ID) *TaskCollaboratorDeleteOne {
+	builder := c.Delete().Where(taskcollaborator.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &TaskCollaboratorDeleteOne{builder}
+}
+
+// Query returns a query builder for TaskCollaborator.
+func (c *TaskCollaboratorClient) Query() *TaskCollaboratorQuery {
+	return &TaskCollaboratorQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a TaskCollaborator entity by its id.
+func (c *TaskCollaboratorClient) Get(ctx context.Context, id ulid.ID) (*TaskCollaborator, error) {
+	return c.Query().Where(taskcollaborator.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *TaskCollaboratorClient) GetX(ctx context.Context, id ulid.ID) *TaskCollaborator {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryTask queries the task edge of a TaskCollaborator.
+func (c *TaskCollaboratorClient) QueryTask(tc *TaskCollaborator) *TaskQuery {
+	query := &TaskQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := tc.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(taskcollaborator.Table, taskcollaborator.FieldID, id),
+			sqlgraph.To(task.Table, task.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, taskcollaborator.TaskTable, taskcollaborator.TaskColumn),
+		)
+		fromV = sqlgraph.Neighbors(tc.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryTeammate queries the teammate edge of a TaskCollaborator.
+func (c *TaskCollaboratorClient) QueryTeammate(tc *TaskCollaborator) *TeammateQuery {
+	query := &TeammateQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := tc.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(taskcollaborator.Table, taskcollaborator.FieldID, id),
+			sqlgraph.To(teammate.Table, teammate.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, taskcollaborator.TeammateTable, taskcollaborator.TeammateColumn),
+		)
+		fromV = sqlgraph.Neighbors(tc.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *TaskCollaboratorClient) Hooks() []Hook {
+	return c.hooks.TaskCollaborator
 }
 
 // TaskColumnClient is a client for the TaskColumn schema.
@@ -3598,6 +3743,22 @@ func (c *TeammateClient) QueryTaskLikes(t *Teammate) *TaskLikeQuery {
 			sqlgraph.From(teammate.Table, teammate.FieldID, id),
 			sqlgraph.To(tasklike.Table, tasklike.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, teammate.TaskLikesTable, teammate.TaskLikesColumn),
+		)
+		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryTaskCollaborators queries the task_collaborators edge of a Teammate.
+func (c *TeammateClient) QueryTaskCollaborators(t *Teammate) *TaskCollaboratorQuery {
+	query := &TaskCollaboratorQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := t.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(teammate.Table, teammate.FieldID, id),
+			sqlgraph.To(taskcollaborator.Table, taskcollaborator.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, teammate.TaskCollaboratorsTable, teammate.TaskCollaboratorsColumn),
 		)
 		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
 		return fromV, nil

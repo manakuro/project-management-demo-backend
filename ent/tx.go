@@ -42,6 +42,8 @@ type Tx struct {
 	Tag *TagClient
 	// Task is the client for interacting with the Task builders.
 	Task *TaskClient
+	// TaskCollaborator is the client for interacting with the TaskCollaborator builders.
+	TaskCollaborator *TaskCollaboratorClient
 	// TaskColumn is the client for interacting with the TaskColumn builders.
 	TaskColumn *TaskColumnClient
 	// TaskLike is the client for interacting with the TaskLike builders.
@@ -226,6 +228,7 @@ func (tx *Tx) init() {
 	tx.ProjectTeammate = NewProjectTeammateClient(tx.config)
 	tx.Tag = NewTagClient(tx.config)
 	tx.Task = NewTaskClient(tx.config)
+	tx.TaskCollaborator = NewTaskCollaboratorClient(tx.config)
 	tx.TaskColumn = NewTaskColumnClient(tx.config)
 	tx.TaskLike = NewTaskLikeClient(tx.config)
 	tx.TaskListCompletedStatus = NewTaskListCompletedStatusClient(tx.config)

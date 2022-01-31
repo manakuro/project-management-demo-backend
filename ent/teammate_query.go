@@ -15,6 +15,7 @@ import (
 	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/task"
+	"project-management-demo-backend/ent/taskcollaborator"
 	"project-management-demo-backend/ent/tasklike"
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/teammatetask"
@@ -53,6 +54,7 @@ type TeammateQuery struct {
 	withTasks                    *TaskQuery
 	withTeammateTasks            *TeammateTaskQuery
 	withTaskLikes                *TaskLikeQuery
+	withTaskCollaborators        *TaskCollaboratorQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -375,6 +377,28 @@ func (tq *TeammateQuery) QueryTaskLikes() *TaskLikeQuery {
 	return query
 }
 
+// QueryTaskCollaborators chains the current query on the "task_collaborators" edge.
+func (tq *TeammateQuery) QueryTaskCollaborators() *TaskCollaboratorQuery {
+	query := &TaskCollaboratorQuery{config: tq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := tq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := tq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(teammate.Table, teammate.FieldID, selector),
+			sqlgraph.To(taskcollaborator.Table, taskcollaborator.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, teammate.TaskCollaboratorsTable, teammate.TaskCollaboratorsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(tq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // First returns the first Teammate entity from the query.
 // Returns a *NotFoundError when no Teammate was found.
 func (tq *TeammateQuery) First(ctx context.Context) (*Teammate, error) {
@@ -569,6 +593,7 @@ func (tq *TeammateQuery) Clone() *TeammateQuery {
 		withTasks:                    tq.withTasks.Clone(),
 		withTeammateTasks:            tq.withTeammateTasks.Clone(),
 		withTaskLikes:                tq.withTaskLikes.Clone(),
+		withTaskCollaborators:        tq.withTaskCollaborators.Clone(),
 		// clone intermediate query.
 		sql:  tq.sql.Clone(),
 		path: tq.path,
@@ -718,6 +743,17 @@ func (tq *TeammateQuery) WithTaskLikes(opts ...func(*TaskLikeQuery)) *TeammateQu
 	return tq
 }
 
+// WithTaskCollaborators tells the query-builder to eager-load the nodes that are connected to
+// the "task_collaborators" edge. The optional arguments are used to configure the query builder of the edge.
+func (tq *TeammateQuery) WithTaskCollaborators(opts ...func(*TaskCollaboratorQuery)) *TeammateQuery {
+	query := &TaskCollaboratorQuery{config: tq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	tq.withTaskCollaborators = query
+	return tq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -783,7 +819,7 @@ func (tq *TeammateQuery) sqlAll(ctx context.Context) ([]*Teammate, error) {
 	var (
 		nodes       = []*Teammate{}
 		_spec       = tq.querySpec()
-		loadedTypes = [13]bool{
+		loadedTypes = [14]bool{
 			tq.withWorkspaces != nil,
 			tq.withProjects != nil,
 			tq.withProjectTeammates != nil,
@@ -797,6 +833,7 @@ func (tq *TeammateQuery) sqlAll(ctx context.Context) ([]*Teammate, error) {
 			tq.withTasks != nil,
 			tq.withTeammateTasks != nil,
 			tq.withTaskLikes != nil,
+			tq.withTaskCollaborators != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -1141,6 +1178,31 @@ func (tq *TeammateQuery) sqlAll(ctx context.Context) ([]*Teammate, error) {
 				return nil, fmt.Errorf(`unexpected foreign-key "teammate_id" returned %v for node %v`, fk, n.ID)
 			}
 			node.Edges.TaskLikes = append(node.Edges.TaskLikes, n)
+		}
+	}
+
+	if query := tq.withTaskCollaborators; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[ulid.ID]*Teammate)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.TaskCollaborators = []*TaskCollaborator{}
+		}
+		query.Where(predicate.TaskCollaborator(func(s *sql.Selector) {
+			s.Where(sql.InValues(teammate.TaskCollaboratorsColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.TeammateID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "teammate_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.TaskCollaborators = append(node.Edges.TaskCollaborators, n)
 		}
 	}
 

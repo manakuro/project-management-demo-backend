@@ -22,6 +22,7 @@ import (
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/tag"
 	"project-management-demo-backend/ent/task"
+	"project-management-demo-backend/ent/taskcollaborator"
 	"project-management-demo-backend/ent/taskcolumn"
 	"project-management-demo-backend/ent/tasklike"
 	"project-management-demo-backend/ent/tasklistcompletedstatus"
@@ -1201,7 +1202,7 @@ func (t *Task) Node(ctx context.Context) (node *Node, err error) {
 		ID:     t.ID,
 		Type:   "Task",
 		Fields: make([]*Field, 12),
-		Edges:  make([]*Edge, 8),
+		Edges:  make([]*Edge, 9),
 	}
 	var buf []byte
 	if buf, err = json.Marshal(t.TaskParentID); err != nil {
@@ -1377,6 +1378,79 @@ func (t *Task) Node(ctx context.Context) (node *Node, err error) {
 	err = t.QueryTaskTags().
 		Select(tasktag.FieldID).
 		Scan(ctx, &node.Edges[7].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[8] = &Edge{
+		Type: "TaskCollaborator",
+		Name: "task_collaborators",
+	}
+	err = t.QueryTaskCollaborators().
+		Select(taskcollaborator.FieldID).
+		Scan(ctx, &node.Edges[8].IDs)
+	if err != nil {
+		return nil, err
+	}
+	return node, nil
+}
+
+func (tc *TaskCollaborator) Node(ctx context.Context) (node *Node, err error) {
+	node = &Node{
+		ID:     tc.ID,
+		Type:   "TaskCollaborator",
+		Fields: make([]*Field, 4),
+		Edges:  make([]*Edge, 2),
+	}
+	var buf []byte
+	if buf, err = json.Marshal(tc.TaskID); err != nil {
+		return nil, err
+	}
+	node.Fields[0] = &Field{
+		Type:  "ulid.ID",
+		Name:  "task_id",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(tc.TeammateID); err != nil {
+		return nil, err
+	}
+	node.Fields[1] = &Field{
+		Type:  "ulid.ID",
+		Name:  "teammate_id",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(tc.CreatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[2] = &Field{
+		Type:  "time.Time",
+		Name:  "created_at",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(tc.UpdatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[3] = &Field{
+		Type:  "time.Time",
+		Name:  "updated_at",
+		Value: string(buf),
+	}
+	node.Edges[0] = &Edge{
+		Type: "Task",
+		Name: "task",
+	}
+	err = tc.QueryTask().
+		Select(task.FieldID).
+		Scan(ctx, &node.Edges[0].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[1] = &Edge{
+		Type: "Teammate",
+		Name: "teammate",
+	}
+	err = tc.QueryTeammate().
+		Select(teammate.FieldID).
+		Scan(ctx, &node.Edges[1].IDs)
 	if err != nil {
 		return nil, err
 	}
@@ -1827,7 +1901,7 @@ func (t *Teammate) Node(ctx context.Context) (node *Node, err error) {
 		ID:     t.ID,
 		Type:   "Teammate",
 		Fields: make([]*Field, 5),
-		Edges:  make([]*Edge, 13),
+		Edges:  make([]*Edge, 14),
 	}
 	var buf []byte
 	if buf, err = json.Marshal(t.Name); err != nil {
@@ -1997,6 +2071,16 @@ func (t *Teammate) Node(ctx context.Context) (node *Node, err error) {
 	err = t.QueryTaskLikes().
 		Select(tasklike.FieldID).
 		Scan(ctx, &node.Edges[12].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[13] = &Edge{
+		Type: "TaskCollaborator",
+		Name: "task_collaborators",
+	}
+	err = t.QueryTaskCollaborators().
+		Select(taskcollaborator.FieldID).
+		Scan(ctx, &node.Edges[13].IDs)
 	if err != nil {
 		return nil, err
 	}
@@ -3034,6 +3118,15 @@ func (c *Client) noder(ctx context.Context, table string, id ulid.ID) (Noder, er
 			return nil, err
 		}
 		return n, nil
+	case taskcollaborator.Table:
+		n, err := c.TaskCollaborator.Query().
+			Where(taskcollaborator.ID(id)).
+			CollectFields(ctx, "TaskCollaborator").
+			Only(ctx)
+		if err != nil {
+			return nil, err
+		}
+		return n, nil
 	case taskcolumn.Table:
 		n, err := c.TaskColumn.Query().
 			Where(taskcolumn.ID(id)).
@@ -3446,6 +3539,19 @@ func (c *Client) noders(ctx context.Context, table string, ids []ulid.ID) ([]Nod
 		nodes, err := c.Task.Query().
 			Where(task.IDIn(ids...)).
 			CollectFields(ctx, "Task").
+			All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, node := range nodes {
+			for _, noder := range idmap[node.ID] {
+				*noder = node
+			}
+		}
+	case taskcollaborator.Table:
+		nodes, err := c.TaskCollaborator.Query().
+			Where(taskcollaborator.IDIn(ids...)).
+			CollectFields(ctx, "TaskCollaborator").
 			All(ctx)
 		if err != nil {
 			return nil, err
