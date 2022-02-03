@@ -33,12 +33,12 @@ input UpdateProjectTaskListStatusInput {
 }
 
 extend type Subscription {
-  projectTaskListStatusStatusUpdated(id: ID!): ProjectTaskListStatus!
+  projectTaskListStatusUpdated(id: ID!): ProjectTaskListStatus!
 }
 
 extend type Query {
-  projectTaskListStatusStatus(where: ProjectTaskListStatusWhereInput): ProjectTaskListStatus
-  projectTaskListStatusStatuses(after: Cursor, first: Int, before: Cursor, last: Int, where: ProjectTaskListStatusWhereInput): ProjectTaskListStatusConnection
+  projectTaskListStatus(where: ProjectTaskListStatusWhereInput): ProjectTaskListStatus
+  projectTaskListStatuses(after: Cursor, first: Int, before: Cursor, last: Int, where: ProjectTaskListStatusWhereInput): ProjectTaskListStatusConnection
 }
 
 extend type Mutation {

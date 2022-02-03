@@ -46,7 +46,7 @@ func (r *projectTaskListStatusResolver) UpdatedAt(ctx context.Context, obj *ent.
 	return datetime.FormatDate(obj.UpdatedAt), nil
 }
 
-func (r *queryResolver) ProjectTaskListStatusStatus(ctx context.Context, where *ent.ProjectTaskListStatusWhereInput) (*ent.ProjectTaskListStatus, error) {
+func (r *queryResolver) ProjectTaskListStatus(ctx context.Context, where *ent.ProjectTaskListStatusWhereInput) (*ent.ProjectTaskListStatus, error) {
 	p, err := r.controller.ProjectTaskListStatus.Get(ctx, where)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
@@ -54,7 +54,7 @@ func (r *queryResolver) ProjectTaskListStatusStatus(ctx context.Context, where *
 	return p, nil
 }
 
-func (r *queryResolver) ProjectTaskListStatusStatuses(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectTaskListStatusWhereInput) (*ent.ProjectTaskListStatusConnection, error) {
+func (r *queryResolver) ProjectTaskListStatuses(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectTaskListStatusWhereInput) (*ent.ProjectTaskListStatusConnection, error) {
 	requestedFields := graphqlutil.GetRequestedFields(ctx)
 
 	ps, err := r.controller.ProjectTaskListStatus.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
@@ -65,7 +65,7 @@ func (r *queryResolver) ProjectTaskListStatusStatuses(ctx context.Context, after
 	return ps, nil
 }
 
-func (r *subscriptionResolver) ProjectTaskListStatusStatusUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.ProjectTaskListStatus, error) {
+func (r *subscriptionResolver) ProjectTaskListStatusUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.ProjectTaskListStatus, error) {
 	key := subscription.NewKey()
 	ch := make(chan *ent.ProjectTaskListStatus, 1)
 
