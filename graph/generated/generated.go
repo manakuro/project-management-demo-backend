@@ -665,6 +665,7 @@ type ComplexityRoot struct {
 		ID                func(childComplexity int) int
 		IsNew             func(childComplexity int) int
 		Name              func(childComplexity int) int
+		ProjectTasks      func(childComplexity int) int
 		SubTasks          func(childComplexity int) int
 		TaskCollaborators func(childComplexity int) int
 		TaskFeeds         func(childComplexity int) int
@@ -5328,6 +5329,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Task.Name(childComplexity), true
+
+	case "Task.projectTasks":
+		if e.complexity.Task.ProjectTasks == nil {
+			break
+		}
+
+		return e.complexity.Task.ProjectTasks(childComplexity), true
 
 	case "Task.subTasks":
 		if e.complexity.Task.SubTasks == nil {
@@ -11808,6 +11816,7 @@ extend type Mutation {
   taskCollaborators: [TaskCollaborator!]!
   taskPriority: TaskPriority!
   taskTags: [TaskTag!]!
+  projectTasks: [ProjectTask!]!
   createdAt: String!
   updatedAt: String!
 }
@@ -33028,6 +33037,41 @@ func (ec *executionContext) _Task_taskTags(ctx context.Context, field graphql.Co
 	res := resTmp.([]*ent.TaskTag)
 	fc.Result = res
 	return ec.marshalNTaskTag2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskTagᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Task_projectTasks(ctx context.Context, field graphql.CollectedField, obj *ent.Task) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Task",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ProjectTasks(ctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*ent.ProjectTask)
+	fc.Result = res
+	return ec.marshalNProjectTask2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTaskᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Task_createdAt(ctx context.Context, field graphql.CollectedField, obj *ent.Task) (ret graphql.Marshaler) {
@@ -73118,6 +73162,20 @@ func (ec *executionContext) _Task(ctx context.Context, sel ast.SelectionSet, obj
 				}
 				return res
 			})
+		case "projectTasks":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Task_projectTasks(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
 		case "createdAt":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
@@ -77406,6 +77464,50 @@ func (ec *executionContext) unmarshalNProjectLightColorWhereInput2ᚖprojectᚑm
 
 func (ec *executionContext) marshalNProjectTask2projectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTask(ctx context.Context, sel ast.SelectionSet, v ent.ProjectTask) graphql.Marshaler {
 	return ec._ProjectTask(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNProjectTask2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTaskᚄ(ctx context.Context, sel ast.SelectionSet, v []*ent.ProjectTask) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNProjectTask2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTask(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
 }
 
 func (ec *executionContext) marshalNProjectTask2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTask(ctx context.Context, sel ast.SelectionSet, v *ent.ProjectTask) graphql.Marshaler {

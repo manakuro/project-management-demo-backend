@@ -80,6 +80,9 @@ func (r *teammateTaskSectionRepository) ListWithPagination(ctx context.Context, 
 						tagQuery.WithColor()
 					})
 				})
+				taskQuery.WithProjectTasks(func(projectTaskQuery *ent.ProjectTaskQuery) {
+					projectTaskQuery.WithProject()
+				})
 			})
 		})
 	}
