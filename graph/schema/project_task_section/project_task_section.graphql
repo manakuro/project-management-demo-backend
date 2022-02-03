@@ -3,6 +3,7 @@ type ProjectTaskSection implements Node {
   projectId: ID!
   project: Project!
   name: String!
+  projectTasks: [ProjectTask!]!
   createdAt: String!
   updatedAt: String!
 }
