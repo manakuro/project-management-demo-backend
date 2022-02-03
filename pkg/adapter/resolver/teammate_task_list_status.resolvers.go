@@ -38,7 +38,7 @@ func (r *mutationResolver) UpdateTeammateTaskListStatus(ctx context.Context, inp
 	return t, nil
 }
 
-func (r *queryResolver) TeammateTaskListStatusStatus(ctx context.Context, where *ent.TeammateTaskListStatusWhereInput) (*ent.TeammateTaskListStatus, error) {
+func (r *queryResolver) TeammateTaskListStatus(ctx context.Context, where *ent.TeammateTaskListStatusWhereInput) (*ent.TeammateTaskListStatus, error) {
 	t, err := r.controller.TeammateTaskListStatus.Get(ctx, where)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
@@ -46,7 +46,7 @@ func (r *queryResolver) TeammateTaskListStatusStatus(ctx context.Context, where 
 	return t, nil
 }
 
-func (r *queryResolver) TeammateTaskListStatusStatuses(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TeammateTaskListStatusWhereInput) (*ent.TeammateTaskListStatusConnection, error) {
+func (r *queryResolver) TeammateTaskListStatuses(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TeammateTaskListStatusWhereInput) (*ent.TeammateTaskListStatusConnection, error) {
 	requestedFields := graphqlutil.GetRequestedFields(ctx)
 
 	ts, err := r.controller.TeammateTaskListStatus.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
@@ -57,7 +57,7 @@ func (r *queryResolver) TeammateTaskListStatusStatuses(ctx context.Context, afte
 	return ts, nil
 }
 
-func (r *subscriptionResolver) TeammateTaskListStatusStatusUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.TeammateTaskListStatus, error) {
+func (r *subscriptionResolver) TeammateTaskListStatusUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.TeammateTaskListStatus, error) {
 	key := subscription.NewKey()
 	ch := make(chan *ent.TeammateTaskListStatus, 1)
 

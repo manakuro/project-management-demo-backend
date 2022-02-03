@@ -37,12 +37,12 @@ input UpdateTeammateTaskListStatusInput {
 }
 
 extend type Subscription {
-  teammateTaskListStatusStatusUpdated(id: ID!): TeammateTaskListStatus!
+  teammateTaskListStatusUpdated(id: ID!): TeammateTaskListStatus!
 }
 
 extend type Query {
-  teammateTaskListStatusStatus(where: TeammateTaskListStatusWhereInput): TeammateTaskListStatus
-  teammateTaskListStatusStatuses(after: Cursor, first: Int, before: Cursor, last: Int, where: TeammateTaskListStatusWhereInput): TeammateTaskListStatusConnection
+  teammateTaskListStatus(where: TeammateTaskListStatusWhereInput): TeammateTaskListStatus
+  teammateTaskListStatuses(after: Cursor, first: Int, before: Cursor, last: Int, where: TeammateTaskListStatusWhereInput): TeammateTaskListStatusConnection
 }
 
 extend type Mutation {
