@@ -9,12 +9,12 @@ import (
 
 type authController struct{}
 
-// Auth is an interface of controller
+// Auth is an interface of controller.
 type Auth interface {
 	RevokeRefreshTokens(ctx Context) error
 }
 
-// NewAuthController generates test authController controller
+// NewAuthController generates test authController controller.
 func NewAuthController() Auth {
 	return &authController{}
 }

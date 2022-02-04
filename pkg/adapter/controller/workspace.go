@@ -6,7 +6,7 @@ import (
 	"project-management-demo-backend/pkg/usecase/usecase"
 )
 
-// Workspace is an interface of controller
+// Workspace is an interface of controller.
 type Workspace interface {
 	Get(ctx context.Context, where *model.WorkspaceWhereInput, requestFields []string) (*model.Workspace, error)
 	List(ctx context.Context) ([]*model.Workspace, error)
@@ -19,7 +19,7 @@ type workspaceController struct {
 	workspaceUsecase usecase.Workspace
 }
 
-// NewWorkspaceController generates workspace controller
+// NewWorkspaceController generates workspace controller.
 func NewWorkspaceController(tu usecase.Workspace) Workspace {
 	return &workspaceController{
 		workspaceUsecase: tu,

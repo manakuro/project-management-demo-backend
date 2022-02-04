@@ -6,7 +6,7 @@ import (
 	"project-management-demo-backend/pkg/usecase/usecase"
 )
 
-// TaskListCompletedStatus is an interface of controller
+// TaskListCompletedStatus is an interface of controller.
 type TaskListCompletedStatus interface {
 	Get(ctx context.Context, where *model.TaskListCompletedStatusWhereInput) (*model.TaskListCompletedStatus, error)
 	List(ctx context.Context) ([]*model.TaskListCompletedStatus, error)
@@ -19,7 +19,7 @@ type taskListCompletedStatusController struct {
 	taskListCompletedStatusUsecase usecase.TaskListCompletedStatus
 }
 
-// NewTaskListCompletedStatusController generates taskListCompletedStatus controller
+// NewTaskListCompletedStatusController generates taskListCompletedStatus controller.
 func NewTaskListCompletedStatusController(u usecase.TaskListCompletedStatus) TaskListCompletedStatus {
 	return &taskListCompletedStatusController{
 		taskListCompletedStatusUsecase: u,

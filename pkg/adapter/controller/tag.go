@@ -6,7 +6,7 @@ import (
 	"project-management-demo-backend/pkg/usecase/usecase"
 )
 
-// Tag is an interface of controller
+// Tag is an interface of controller.
 type Tag interface {
 	Get(ctx context.Context, where *model.TagWhereInput) (*model.Tag, error)
 	List(ctx context.Context) ([]*model.Tag, error)
@@ -19,7 +19,7 @@ type tagController struct {
 	tagUsecase usecase.Tag
 }
 
-// NewTagController generates tag controller
+// NewTagController generates tag controller.
 func NewTagController(pt usecase.Tag) Tag {
 	return &tagController{
 		tagUsecase: pt,

@@ -6,7 +6,7 @@ import (
 	"project-management-demo-backend/pkg/usecase/usecase"
 )
 
-// Teammate is an interface of controller
+// Teammate is an interface of controller.
 type Teammate interface {
 	Get(ctx context.Context, id model.ID) (*model.Teammate, error)
 	List(ctx context.Context) ([]*model.Teammate, error)
@@ -19,7 +19,7 @@ type teammateController struct {
 	teammateUsecase usecase.Teammate
 }
 
-// NewTeammateController generates teammateController controller
+// NewTeammateController generates teammateController controller.
 func NewTeammateController(tu usecase.Teammate) Teammate {
 	return &teammateController{
 		teammateUsecase: tu,

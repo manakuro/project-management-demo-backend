@@ -6,7 +6,7 @@ import (
 	"project-management-demo-backend/pkg/usecase/usecase"
 )
 
-// TaskFile is an interface of controller
+// TaskFile is an interface of controller.
 type TaskFile interface {
 	Get(ctx context.Context, where *model.TaskFileWhereInput) (*model.TaskFile, error)
 	List(ctx context.Context) ([]*model.TaskFile, error)
@@ -19,7 +19,7 @@ type taskFileController struct {
 	taskFileUsecase usecase.TaskFile
 }
 
-// NewTaskFileController generates taskFile controller
+// NewTaskFileController generates taskFile controller.
 func NewTaskFileController(pt usecase.TaskFile) TaskFile {
 	return &taskFileController{
 		taskFileUsecase: pt,

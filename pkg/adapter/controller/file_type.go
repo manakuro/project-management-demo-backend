@@ -6,7 +6,7 @@ import (
 	"project-management-demo-backend/pkg/usecase/usecase"
 )
 
-// FileType is an interface of controller
+// FileType is an interface of controller.
 type FileType interface {
 	Get(ctx context.Context, where *model.FileTypeWhereInput) (*model.FileType, error)
 	List(ctx context.Context) ([]*model.FileType, error)
@@ -19,7 +19,7 @@ type fileTypeController struct {
 	fileTypeUsecase usecase.FileType
 }
 
-// NewFileTypeController generates fileType controller
+// NewFileTypeController generates fileType controller.
 func NewFileTypeController(pt usecase.FileType) FileType {
 	return &fileTypeController{
 		fileTypeUsecase: pt,

@@ -6,7 +6,7 @@ import (
 	"project-management-demo-backend/pkg/usecase/usecase"
 )
 
-// Icon is an interface of controller
+// Icon is an interface of controller.
 type Icon interface {
 	Get(ctx context.Context, id model.ID) (*model.Icon, error)
 	List(ctx context.Context) ([]*model.Icon, error)
@@ -19,7 +19,7 @@ type iconController struct {
 	iconUsecase usecase.Icon
 }
 
-// NewIconController generates icon controller
+// NewIconController generates icon controller.
 func NewIconController(tu usecase.Icon) Icon {
 	return &iconController{
 		iconUsecase: tu,

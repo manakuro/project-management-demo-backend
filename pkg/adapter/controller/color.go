@@ -6,7 +6,7 @@ import (
 	"project-management-demo-backend/pkg/usecase/usecase"
 )
 
-// Color is an interface of controller
+// Color is an interface of controller.
 type Color interface {
 	Get(ctx context.Context, id model.ID) (*model.Color, error)
 	List(ctx context.Context) ([]*model.Color, error)
@@ -19,7 +19,7 @@ type colorController struct {
 	colorUsecase usecase.Color
 }
 
-// NewColorController generates color controller
+// NewColorController generates color controller.
 func NewColorController(tu usecase.Color) Color {
 	return &colorController{
 		colorUsecase: tu,

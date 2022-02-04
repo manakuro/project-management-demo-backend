@@ -6,7 +6,7 @@ import (
 	"project-management-demo-backend/pkg/usecase/usecase"
 )
 
-// TeammateTaskColumn is an interface of controller
+// TeammateTaskColumn is an interface of controller.
 type TeammateTaskColumn interface {
 	Get(ctx context.Context, where *model.TeammateTaskColumnWhereInput) (*model.TeammateTaskColumn, error)
 	List(ctx context.Context) ([]*model.TeammateTaskColumn, error)
@@ -19,7 +19,7 @@ type teammateTaskColumnController struct {
 	teammateTaskColumnUsecase usecase.TeammateTaskColumn
 }
 
-// NewTeammateTaskColumnController generates teammateTaskColumnController controller
+// NewTeammateTaskColumnController generates teammateTaskColumnController controller.
 func NewTeammateTaskColumnController(pt usecase.TeammateTaskColumn) TeammateTaskColumn {
 	return &teammateTaskColumnController{
 		teammateTaskColumnUsecase: pt,

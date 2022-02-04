@@ -1,6 +1,6 @@
 package controller
 
-// Controller holds the controllers for the entire across application
+// Controller holds the controllers for the entire across application.
 type Controller struct {
 	Auth                    interface{ Auth }
 	Color                   interface{ Color }

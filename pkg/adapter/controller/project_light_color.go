@@ -6,7 +6,7 @@ import (
 	"project-management-demo-backend/pkg/usecase/usecase"
 )
 
-// ProjectLightColor is an interface of controller
+// ProjectLightColor is an interface of controller.
 type ProjectLightColor interface {
 	Get(ctx context.Context, where *model.ProjectLightColorWhereInput) (*model.ProjectLightColor, error)
 	List(ctx context.Context) ([]*model.ProjectLightColor, error)
@@ -19,7 +19,7 @@ type projectLightColorController struct {
 	projectLightColorUsecase usecase.ProjectLightColor
 }
 
-// NewProjectLightColorController generates projectLightColor controller
+// NewProjectLightColorController generates projectLightColor controller.
 func NewProjectLightColorController(p usecase.ProjectLightColor) ProjectLightColor {
 	return &projectLightColorController{
 		projectLightColorUsecase: p,

@@ -6,7 +6,7 @@ import (
 	"project-management-demo-backend/pkg/usecase/usecase"
 )
 
-// FavoriteWorkspace is an interface of controller
+// FavoriteWorkspace is an interface of controller.
 type FavoriteWorkspace interface {
 	Get(ctx context.Context, where *model.FavoriteWorkspaceWhereInput) (*model.FavoriteWorkspace, error)
 	List(ctx context.Context) ([]*model.FavoriteWorkspace, error)
@@ -21,7 +21,7 @@ type favoriteWorkspaceController struct {
 	favoriteWorkspaceUsecase usecase.FavoriteWorkspace
 }
 
-// NewFavoriteWorkspaceController generates favoriteWorkspace controller
+// NewFavoriteWorkspaceController generates favoriteWorkspace controller.
 func NewFavoriteWorkspaceController(pt usecase.FavoriteWorkspace) FavoriteWorkspace {
 	return &favoriteWorkspaceController{
 		favoriteWorkspaceUsecase: pt,

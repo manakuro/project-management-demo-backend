@@ -6,7 +6,7 @@ import (
 	"project-management-demo-backend/pkg/usecase/usecase"
 )
 
-// TestUser is an interface of controller
+// TestUser is an interface of controller.
 type TestUser interface {
 	Get(ctx context.Context, id model.ID, age *int) (*model.TestUser, error)
 	List(ctx context.Context) ([]*model.TestUser, error)
@@ -20,7 +20,7 @@ type testUserController struct {
 	testUserUsecase usecase.TestUser
 }
 
-// NewTestUserController generates test user controller
+// NewTestUserController generates test user controller.
 func NewTestUserController(tu usecase.TestUser) TestUser {
 	return &testUserController{
 		testUserUsecase: tu,

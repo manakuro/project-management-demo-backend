@@ -6,7 +6,7 @@ import (
 	"project-management-demo-backend/pkg/usecase/usecase"
 )
 
-// Task is an interface of controller
+// Task is an interface of controller.
 type Task interface {
 	Get(ctx context.Context, where *model.TaskWhereInput) (*model.Task, error)
 	List(ctx context.Context) ([]*model.Task, error)
@@ -19,7 +19,7 @@ type taskController struct {
 	taskUsecase usecase.Task
 }
 
-// NewTaskController generates task controller
+// NewTaskController generates task controller.
 func NewTaskController(pt usecase.Task) Task {
 	return &taskController{
 		taskUsecase: pt,

@@ -6,7 +6,7 @@ import (
 	"project-management-demo-backend/pkg/usecase/usecase"
 )
 
-// Project is an interface of controller
+// Project is an interface of controller.
 type Project interface {
 	Get(ctx context.Context, where *model.ProjectWhereInput) (*model.Project, error)
 	List(ctx context.Context) ([]*model.Project, error)
@@ -19,7 +19,7 @@ type projectController struct {
 	projectUsecase usecase.Project
 }
 
-// NewProjectController generates project controller
+// NewProjectController generates project controller.
 func NewProjectController(tu usecase.Project) Project {
 	return &projectController{
 		projectUsecase: tu,

@@ -6,7 +6,7 @@ import (
 	"project-management-demo-backend/pkg/usecase/usecase"
 )
 
-// TaskListSortStatus is an interface of controller
+// TaskListSortStatus is an interface of controller.
 type TaskListSortStatus interface {
 	Get(ctx context.Context, where *model.TaskListSortStatusWhereInput) (*model.TaskListSortStatus, error)
 	List(ctx context.Context) ([]*model.TaskListSortStatus, error)
@@ -19,7 +19,7 @@ type taskListSortStatusController struct {
 	taskListSortStatusUsecase usecase.TaskListSortStatus
 }
 
-// NewTaskListSortStatusController generates taskListSortStatus controller
+// NewTaskListSortStatusController generates taskListSortStatus controller.
 func NewTaskListSortStatusController(u usecase.TaskListSortStatus) TaskListSortStatus {
 	return &taskListSortStatusController{
 		taskListSortStatusUsecase: u,

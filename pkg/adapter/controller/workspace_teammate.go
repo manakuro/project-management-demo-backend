@@ -6,7 +6,7 @@ import (
 	"project-management-demo-backend/pkg/usecase/usecase"
 )
 
-// WorkspaceTeammate is an interface of controller
+// WorkspaceTeammate is an interface of controller.
 type WorkspaceTeammate interface {
 	Get(ctx context.Context, where *model.WorkspaceTeammateWhereInput) (*model.WorkspaceTeammate, error)
 	List(ctx context.Context) ([]*model.WorkspaceTeammate, error)
@@ -19,7 +19,7 @@ type workspaceTeammateController struct {
 	workspaceTeammateUsecase usecase.WorkspaceTeammate
 }
 
-// NewWorkspaceTeammateController generates workspaceTeammate controller
+// NewWorkspaceTeammateController generates workspaceTeammate controller.
 func NewWorkspaceTeammateController(wt usecase.WorkspaceTeammate) WorkspaceTeammate {
 	return &workspaceTeammateController{
 		workspaceTeammateUsecase: wt,

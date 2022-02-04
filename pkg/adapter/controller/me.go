@@ -6,7 +6,7 @@ import (
 	"project-management-demo-backend/pkg/usecase/usecase"
 )
 
-// Me is an interface of controller
+// Me is an interface of controller.
 type Me interface {
 	Get(ctx context.Context, id model.ID) (*model.Me, error)
 	Update(ctx context.Context, input model.UpdateMeInput) (*model.Me, error)
@@ -16,7 +16,7 @@ type meController struct {
 	meUsecase usecase.Me
 }
 
-// NewMeController generates me controller
+// NewMeController generates me controller.
 func NewMeController(tu usecase.Me) Me {
 	return &meController{
 		meUsecase: tu,

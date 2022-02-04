@@ -6,7 +6,7 @@ import (
 	"project-management-demo-backend/pkg/usecase/usecase"
 )
 
-// ProjectTaskColumn is an interface of controller
+// ProjectTaskColumn is an interface of controller.
 type ProjectTaskColumn interface {
 	Get(ctx context.Context, where *model.ProjectTaskColumnWhereInput) (*model.ProjectTaskColumn, error)
 	List(ctx context.Context) ([]*model.ProjectTaskColumn, error)
@@ -19,7 +19,7 @@ type projectTaskColumnController struct {
 	projectTaskColumnUsecase usecase.ProjectTaskColumn
 }
 
-// NewProjectTaskColumnController generates projectTaskColumn controller
+// NewProjectTaskColumnController generates projectTaskColumn controller.
 func NewProjectTaskColumnController(pt usecase.ProjectTaskColumn) ProjectTaskColumn {
 	return &projectTaskColumnController{
 		projectTaskColumnUsecase: pt,

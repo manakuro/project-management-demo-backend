@@ -6,7 +6,7 @@ import (
 	"project-management-demo-backend/pkg/usecase/usecase"
 )
 
-// TaskPriority is an interface of controller
+// TaskPriority is an interface of controller.
 type TaskPriority interface {
 	Get(ctx context.Context, where *model.TaskPriorityWhereInput) (*model.TaskPriority, error)
 	List(ctx context.Context) ([]*model.TaskPriority, error)
@@ -19,7 +19,7 @@ type taskPriorityController struct {
 	taskPriorityUsecase usecase.TaskPriority
 }
 
-// NewTaskPriorityController generates taskPriority controller
+// NewTaskPriorityController generates taskPriority controller.
 func NewTaskPriorityController(pt usecase.TaskPriority) TaskPriority {
 	return &taskPriorityController{
 		taskPriorityUsecase: pt,

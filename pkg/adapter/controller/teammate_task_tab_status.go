@@ -6,7 +6,7 @@ import (
 	"project-management-demo-backend/pkg/usecase/usecase"
 )
 
-// TeammateTaskTabStatus is an interface of controller
+// TeammateTaskTabStatus is an interface of controller.
 type TeammateTaskTabStatus interface {
 	Get(ctx context.Context, where *model.TeammateTaskTabStatusWhereInput) (*model.TeammateTaskTabStatus, error)
 	List(ctx context.Context) ([]*model.TeammateTaskTabStatus, error)
@@ -19,7 +19,7 @@ type teammateTaskTabStatusController struct {
 	teammateTaskTabStatusUsecase usecase.TeammateTaskTabStatus
 }
 
-// NewTeammateTaskTabStatusController generates teammateTaskTabStatus controller
+// NewTeammateTaskTabStatusController generates teammateTaskTabStatus controller.
 func NewTeammateTaskTabStatusController(pt usecase.TeammateTaskTabStatus) TeammateTaskTabStatus {
 	return &teammateTaskTabStatusController{
 		teammateTaskTabStatusUsecase: pt,
