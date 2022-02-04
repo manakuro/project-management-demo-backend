@@ -248,7 +248,7 @@ func GetFileType(ctx context.Context, client *ent.Client, val string) *ent.FileT
 // AddDate adds time.
 func AddDate(date int) *time.Time {
 	t := time.Now()
-	t.AddDate(0, 0, date)
+	t = t.AddDate(0, 0, date)
 
 	return &t
 }
