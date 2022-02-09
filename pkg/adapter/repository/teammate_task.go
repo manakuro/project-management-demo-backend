@@ -3,10 +3,14 @@ package repository
 import (
 	"context"
 	"project-management-demo-backend/ent"
+	"project-management-demo-backend/ent/task"
 	"project-management-demo-backend/ent/teammatetask"
+	"project-management-demo-backend/ent/teammatetasksection"
 	"project-management-demo-backend/pkg/entity/model"
 	ur "project-management-demo-backend/pkg/usecase/repository"
 	"project-management-demo-backend/pkg/util/collection"
+	"project-management-demo-backend/pkg/util/datetime"
+	"time"
 )
 
 type teammateTaskRepository struct {
@@ -48,6 +52,41 @@ func (r *teammateTaskRepository) List(ctx context.Context) ([]*model.TeammateTas
 	}
 
 	return res, nil
+}
+
+func (r *teammateTaskRepository) TasksDueSoon(ctx context.Context, workspaceID model.ID, teammateID model.ID, requestedFields []string) ([]*model.TeammateTask, error) {
+	q := r.client.TeammateTask.Query()
+
+	q.WithTask(func(taskQuery *ent.TaskQuery) {
+		WithTask(taskQuery, WithTaskOptions{
+			SubTasks:          true,
+			TaskFiles:         true,
+			TaskFeeds:         true,
+			TaskCollaborators: true,
+			TaskTags:          true,
+			ProjectTasks:      true,
+			TaskPriority:      true,
+		})
+	})
+
+	q.Where(teammatetask.TeammateIDEQ(teammateID))
+	q.Where(teammatetask.HasTaskWith(
+		task.DueDateGTE(datetime.StartOfDay(time.Now())),
+		task.DueDateLTE(datetime.EndOfDay(datetime.AddDate(5))),
+	))
+	q.Where(teammatetask.HasTeammateTaskSectionWith(
+		teammatetasksection.WorkspaceIDEQ(workspaceID),
+	))
+
+	res, err := q.All(ctx)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return nil, nil
+		}
+		return nil, model.NewDBError(err)
+	}
+
+	return res, err
 }
 
 func (r *teammateTaskRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TeammateTaskWhereInput, requestedFields []string) (*model.TeammateTaskConnection, error) {

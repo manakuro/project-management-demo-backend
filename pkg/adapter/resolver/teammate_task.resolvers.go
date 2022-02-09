@@ -55,6 +55,17 @@ func (r *queryResolver) TeammateTasks(ctx context.Context, after *ent.Cursor, fi
 	return ts, nil
 }
 
+func (r *queryResolver) TasksDueSoon(ctx context.Context, workspaceID ulid.ID, teammateID ulid.ID) ([]*ent.TeammateTask, error) {
+	requestedFields := graphqlutil.GetRequestedFields(ctx)
+
+	ts, err := r.controller.TeammateTask.TasksDueSoon(ctx, workspaceID, teammateID, requestedFields)
+	if err != nil {
+		return nil, handler.HandleGraphQLError(ctx, err)
+	}
+
+	return ts, nil
+}
+
 func (r *subscriptionResolver) TeammateTaskUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.TeammateTask, error) {
 	key := subscription.NewKey()
 	ch := make(chan *ent.TeammateTask, 1)

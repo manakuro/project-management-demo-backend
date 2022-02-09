@@ -64,24 +64,14 @@ func (r *teammateTaskSectionRepository) ListWithPagination(ctx context.Context, 
 	if collection.Contains(requestedFields, "edges.node.teammateTasks") {
 		q.WithTeammateTasks(func(teammateTaskQuery *ent.TeammateTaskQuery) {
 			teammateTaskQuery.WithTask(func(taskQuery *ent.TaskQuery) {
-				taskQuery.WithSubTasks()
-				taskQuery.WithTaskFiles(func(taskFileQuery *ent.TaskFileQuery) {
-					taskFileQuery.WithFileType()
-				})
-				taskQuery.WithTaskPriority(func(taskPriorityQuery *ent.TaskPriorityQuery) {
-					taskPriorityQuery.WithColor()
-				})
-				taskQuery.WithTaskFeeds()
-				taskQuery.WithTaskCollaborators(func(taskCollaboratorQuery *ent.TaskCollaboratorQuery) {
-					taskCollaboratorQuery.WithTeammate()
-				})
-				taskQuery.WithTaskTags(func(taskTagQuery *ent.TaskTagQuery) {
-					taskTagQuery.WithTag(func(tagQuery *ent.TagQuery) {
-						tagQuery.WithColor()
-					})
-				})
-				taskQuery.WithProjectTasks(func(projectTaskQuery *ent.ProjectTaskQuery) {
-					projectTaskQuery.WithProject()
+				WithTask(taskQuery, WithTaskOptions{
+					SubTasks:          true,
+					TaskFiles:         true,
+					TaskFeeds:         true,
+					TaskCollaborators: true,
+					TaskTags:          true,
+					ProjectTasks:      true,
+					TaskPriority:      true,
 				})
 			})
 		})

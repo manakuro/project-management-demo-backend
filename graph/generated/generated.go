@@ -576,6 +576,7 @@ type ComplexityRoot struct {
 		TaskTag                   func(childComplexity int, where *ent.TaskTagWhereInput) int
 		TaskTags                  func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskTagWhereInput) int
 		Tasks                     func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskWhereInput) int
+		TasksDueSoon              func(childComplexity int, workspaceID ulid.ID, teammateID ulid.ID) int
 		Teammate                  func(childComplexity int, id ulid.ID) int
 		TeammateTask              func(childComplexity int, where *ent.TeammateTaskWhereInput) int
 		TeammateTaskColumn        func(childComplexity int, where *ent.TeammateTaskColumnWhereInput) int
@@ -1368,6 +1369,7 @@ type QueryResolver interface {
 	Teammates(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TeammateWhereInput) (*ent.TeammateConnection, error)
 	TeammateTask(ctx context.Context, where *ent.TeammateTaskWhereInput) (*ent.TeammateTask, error)
 	TeammateTasks(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TeammateTaskWhereInput) (*ent.TeammateTaskConnection, error)
+	TasksDueSoon(ctx context.Context, workspaceID ulid.ID, teammateID ulid.ID) ([]*ent.TeammateTask, error)
 	TeammateTaskColumn(ctx context.Context, where *ent.TeammateTaskColumnWhereInput) (*ent.TeammateTaskColumn, error)
 	TeammateTaskColumns(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TeammateTaskColumnWhereInput) (*ent.TeammateTaskColumnConnection, error)
 	TeammateTaskListStatus(ctx context.Context, where *ent.TeammateTaskListStatusWhereInput) (*ent.TeammateTaskListStatus, error)
@@ -4547,6 +4549,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.Tasks(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["where"].(*ent.TaskWhereInput)), true
+
+	case "Query.tasksDueSoon":
+		if e.complexity.Query.TasksDueSoon == nil {
+			break
+		}
+
+		args, err := ec.field_Query_tasksDueSoon_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.TasksDueSoon(childComplexity, args["workspaceId"].(ulid.ID), args["teammateId"].(ulid.ID)), true
 
 	case "Query.teammate":
 		if e.complexity.Query.Teammate == nil {
@@ -12493,6 +12507,7 @@ extend type Subscription {
 extend type Query {
   teammateTask(where: TeammateTaskWhereInput): TeammateTask
   teammateTasks(after: Cursor, first: Int, before: Cursor, last: Int, where: TeammateTaskWhereInput): TeammateTaskConnection
+  tasksDueSoon(workspaceId: ID!, teammateId: ID!): [TeammateTask!]!
 }
 
 extend type Mutation {
@@ -15947,6 +15962,30 @@ func (ec *executionContext) field_Query_task_args(ctx context.Context, rawArgs m
 		}
 	}
 	args["where"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_tasksDueSoon_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 ulid.ID
+	if tmp, ok := rawArgs["workspaceId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceId"))
+		arg0, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["workspaceId"] = arg0
+	var arg1 ulid.ID
+	if tmp, ok := rawArgs["teammateId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("teammateId"))
+		arg1, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["teammateId"] = arg1
 	return args, nil
 }
 
@@ -29661,6 +29700,48 @@ func (ec *executionContext) _Query_teammateTasks(ctx context.Context, field grap
 	res := resTmp.(*ent.TeammateTaskConnection)
 	fc.Result = res
 	return ec.marshalOTeammateTaskConnection2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTeammateTaskConnection(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_tasksDueSoon(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_tasksDueSoon_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().TasksDueSoon(rctx, args["workspaceId"].(ulid.ID), args["teammateId"].(ulid.ID))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*ent.TeammateTask)
+	fc.Result = res
+	return ec.marshalNTeammateTask2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTeammateTaskᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_teammateTaskColumn(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -72619,6 +72700,20 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_teammateTasks(ctx, field)
+				return res
+			})
+		case "tasksDueSoon":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_tasksDueSoon(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
 				return res
 			})
 		case "teammateTaskColumn":

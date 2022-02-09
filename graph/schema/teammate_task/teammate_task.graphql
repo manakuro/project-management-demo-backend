@@ -39,6 +39,7 @@ extend type Subscription {
 extend type Query {
   teammateTask(where: TeammateTaskWhereInput): TeammateTask
   teammateTasks(after: Cursor, first: Int, before: Cursor, last: Int, where: TeammateTaskWhereInput): TeammateTaskConnection
+  tasksDueSoon(workspaceId: ID!, teammateId: ID!): [TeammateTask!]!
 }
 
 extend type Mutation {
