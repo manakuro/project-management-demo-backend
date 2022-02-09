@@ -52,28 +52,28 @@ type Task struct {
 type TaskEdges struct {
 	// Teammate holds the value of the teammate edge.
 	Teammate *Teammate `json:"teammate,omitempty"`
-	// TaskPriority holds the value of the task_priority edge.
-	TaskPriority *TaskPriority `json:"task_priority,omitempty"`
+	// TaskPriority holds the value of the taskPriority edge.
+	TaskPriority *TaskPriority `json:"taskPriority,omitempty"`
 	// Parent holds the value of the parent edge.
 	Parent *Task `json:"parent,omitempty"`
-	// SubTasks holds the value of the sub_tasks edge.
-	SubTasks []*Task `json:"sub_tasks,omitempty"`
-	// TeammateTasks holds the value of the teammate_tasks edge.
-	TeammateTasks []*TeammateTask `json:"teammate_tasks,omitempty"`
-	// ProjectTasks holds the value of the project_tasks edge.
-	ProjectTasks []*ProjectTask `json:"project_tasks,omitempty"`
-	// TaskLikes holds the value of the task_likes edge.
-	TaskLikes []*TaskLike `json:"task_likes,omitempty"`
-	// TaskTags holds the value of the task_tags edge.
-	TaskTags []*TaskTag `json:"task_tags,omitempty"`
-	// TaskCollaborators holds the value of the task_collaborators edge.
-	TaskCollaborators []*TaskCollaborator `json:"task_collaborators,omitempty"`
-	// TaskFeeds holds the value of the task_feeds edge.
-	TaskFeeds []*TaskFeed `json:"task_feeds,omitempty"`
-	// TaskFeedLikes holds the value of the task_feed_likes edge.
-	TaskFeedLikes []*TaskFeedLike `json:"task_feed_likes,omitempty"`
-	// TaskFiles holds the value of the task_files edge.
-	TaskFiles []*TaskFile `json:"task_files,omitempty"`
+	// SubTasks holds the value of the subTasks edge.
+	SubTasks []*Task `json:"subTasks,omitempty"`
+	// TeammateTasks holds the value of the teammateTasks edge.
+	TeammateTasks []*TeammateTask `json:"teammateTasks,omitempty"`
+	// ProjectTasks holds the value of the projectTasks edge.
+	ProjectTasks []*ProjectTask `json:"projectTasks,omitempty"`
+	// TaskLikes holds the value of the taskLikes edge.
+	TaskLikes []*TaskLike `json:"taskLikes,omitempty"`
+	// TaskTags holds the value of the taskTags edge.
+	TaskTags []*TaskTag `json:"taskTags,omitempty"`
+	// TaskCollaborators holds the value of the taskCollaborators edge.
+	TaskCollaborators []*TaskCollaborator `json:"taskCollaborators,omitempty"`
+	// TaskFeeds holds the value of the taskFeeds edge.
+	TaskFeeds []*TaskFeed `json:"taskFeeds,omitempty"`
+	// TaskFeedLikes holds the value of the taskFeedLikes edge.
+	TaskFeedLikes []*TaskFeedLike `json:"taskFeedLikes,omitempty"`
+	// TaskFiles holds the value of the taskFiles edge.
+	TaskFiles []*TaskFile `json:"taskFiles,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [12]bool
@@ -98,13 +98,13 @@ func (e TaskEdges) TeammateOrErr() (*Teammate, error) {
 func (e TaskEdges) TaskPriorityOrErr() (*TaskPriority, error) {
 	if e.loadedTypes[1] {
 		if e.TaskPriority == nil {
-			// The edge task_priority was loaded in eager-loading,
+			// The edge taskPriority was loaded in eager-loading,
 			// but was not found.
 			return nil, &NotFoundError{label: taskpriority.Label}
 		}
 		return e.TaskPriority, nil
 	}
-	return nil, &NotLoadedError{edge: "task_priority"}
+	return nil, &NotLoadedError{edge: "taskPriority"}
 }
 
 // ParentOrErr returns the Parent value or an error if the edge
@@ -127,7 +127,7 @@ func (e TaskEdges) SubTasksOrErr() ([]*Task, error) {
 	if e.loadedTypes[3] {
 		return e.SubTasks, nil
 	}
-	return nil, &NotLoadedError{edge: "sub_tasks"}
+	return nil, &NotLoadedError{edge: "subTasks"}
 }
 
 // TeammateTasksOrErr returns the TeammateTasks value or an error if the edge
@@ -136,7 +136,7 @@ func (e TaskEdges) TeammateTasksOrErr() ([]*TeammateTask, error) {
 	if e.loadedTypes[4] {
 		return e.TeammateTasks, nil
 	}
-	return nil, &NotLoadedError{edge: "teammate_tasks"}
+	return nil, &NotLoadedError{edge: "teammateTasks"}
 }
 
 // ProjectTasksOrErr returns the ProjectTasks value or an error if the edge
@@ -145,7 +145,7 @@ func (e TaskEdges) ProjectTasksOrErr() ([]*ProjectTask, error) {
 	if e.loadedTypes[5] {
 		return e.ProjectTasks, nil
 	}
-	return nil, &NotLoadedError{edge: "project_tasks"}
+	return nil, &NotLoadedError{edge: "projectTasks"}
 }
 
 // TaskLikesOrErr returns the TaskLikes value or an error if the edge
@@ -154,7 +154,7 @@ func (e TaskEdges) TaskLikesOrErr() ([]*TaskLike, error) {
 	if e.loadedTypes[6] {
 		return e.TaskLikes, nil
 	}
-	return nil, &NotLoadedError{edge: "task_likes"}
+	return nil, &NotLoadedError{edge: "taskLikes"}
 }
 
 // TaskTagsOrErr returns the TaskTags value or an error if the edge
@@ -163,7 +163,7 @@ func (e TaskEdges) TaskTagsOrErr() ([]*TaskTag, error) {
 	if e.loadedTypes[7] {
 		return e.TaskTags, nil
 	}
-	return nil, &NotLoadedError{edge: "task_tags"}
+	return nil, &NotLoadedError{edge: "taskTags"}
 }
 
 // TaskCollaboratorsOrErr returns the TaskCollaborators value or an error if the edge
@@ -172,7 +172,7 @@ func (e TaskEdges) TaskCollaboratorsOrErr() ([]*TaskCollaborator, error) {
 	if e.loadedTypes[8] {
 		return e.TaskCollaborators, nil
 	}
-	return nil, &NotLoadedError{edge: "task_collaborators"}
+	return nil, &NotLoadedError{edge: "taskCollaborators"}
 }
 
 // TaskFeedsOrErr returns the TaskFeeds value or an error if the edge
@@ -181,7 +181,7 @@ func (e TaskEdges) TaskFeedsOrErr() ([]*TaskFeed, error) {
 	if e.loadedTypes[9] {
 		return e.TaskFeeds, nil
 	}
-	return nil, &NotLoadedError{edge: "task_feeds"}
+	return nil, &NotLoadedError{edge: "taskFeeds"}
 }
 
 // TaskFeedLikesOrErr returns the TaskFeedLikes value or an error if the edge
@@ -190,7 +190,7 @@ func (e TaskEdges) TaskFeedLikesOrErr() ([]*TaskFeedLike, error) {
 	if e.loadedTypes[10] {
 		return e.TaskFeedLikes, nil
 	}
-	return nil, &NotLoadedError{edge: "task_feed_likes"}
+	return nil, &NotLoadedError{edge: "taskFeedLikes"}
 }
 
 // TaskFilesOrErr returns the TaskFiles value or an error if the edge
@@ -199,7 +199,7 @@ func (e TaskEdges) TaskFilesOrErr() ([]*TaskFile, error) {
 	if e.loadedTypes[11] {
 		return e.TaskFiles, nil
 	}
-	return nil, &NotLoadedError{edge: "task_files"}
+	return nil, &NotLoadedError{edge: "taskFiles"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -321,7 +321,7 @@ func (t *Task) QueryTeammate() *TeammateQuery {
 	return (&TaskClient{config: t.config}).QueryTeammate(t)
 }
 
-// QueryTaskPriority queries the "task_priority" edge of the Task entity.
+// QueryTaskPriority queries the "taskPriority" edge of the Task entity.
 func (t *Task) QueryTaskPriority() *TaskPriorityQuery {
 	return (&TaskClient{config: t.config}).QueryTaskPriority(t)
 }
@@ -331,47 +331,47 @@ func (t *Task) QueryParent() *TaskQuery {
 	return (&TaskClient{config: t.config}).QueryParent(t)
 }
 
-// QuerySubTasks queries the "sub_tasks" edge of the Task entity.
+// QuerySubTasks queries the "subTasks" edge of the Task entity.
 func (t *Task) QuerySubTasks() *TaskQuery {
 	return (&TaskClient{config: t.config}).QuerySubTasks(t)
 }
 
-// QueryTeammateTasks queries the "teammate_tasks" edge of the Task entity.
+// QueryTeammateTasks queries the "teammateTasks" edge of the Task entity.
 func (t *Task) QueryTeammateTasks() *TeammateTaskQuery {
 	return (&TaskClient{config: t.config}).QueryTeammateTasks(t)
 }
 
-// QueryProjectTasks queries the "project_tasks" edge of the Task entity.
+// QueryProjectTasks queries the "projectTasks" edge of the Task entity.
 func (t *Task) QueryProjectTasks() *ProjectTaskQuery {
 	return (&TaskClient{config: t.config}).QueryProjectTasks(t)
 }
 
-// QueryTaskLikes queries the "task_likes" edge of the Task entity.
+// QueryTaskLikes queries the "taskLikes" edge of the Task entity.
 func (t *Task) QueryTaskLikes() *TaskLikeQuery {
 	return (&TaskClient{config: t.config}).QueryTaskLikes(t)
 }
 
-// QueryTaskTags queries the "task_tags" edge of the Task entity.
+// QueryTaskTags queries the "taskTags" edge of the Task entity.
 func (t *Task) QueryTaskTags() *TaskTagQuery {
 	return (&TaskClient{config: t.config}).QueryTaskTags(t)
 }
 
-// QueryTaskCollaborators queries the "task_collaborators" edge of the Task entity.
+// QueryTaskCollaborators queries the "taskCollaborators" edge of the Task entity.
 func (t *Task) QueryTaskCollaborators() *TaskCollaboratorQuery {
 	return (&TaskClient{config: t.config}).QueryTaskCollaborators(t)
 }
 
-// QueryTaskFeeds queries the "task_feeds" edge of the Task entity.
+// QueryTaskFeeds queries the "taskFeeds" edge of the Task entity.
 func (t *Task) QueryTaskFeeds() *TaskFeedQuery {
 	return (&TaskClient{config: t.config}).QueryTaskFeeds(t)
 }
 
-// QueryTaskFeedLikes queries the "task_feed_likes" edge of the Task entity.
+// QueryTaskFeedLikes queries the "taskFeedLikes" edge of the Task entity.
 func (t *Task) QueryTaskFeedLikes() *TaskFeedLikeQuery {
 	return (&TaskClient{config: t.config}).QueryTaskFeedLikes(t)
 }
 
-// QueryTaskFiles queries the "task_files" edge of the Task entity.
+// QueryTaskFiles queries the "taskFiles" edge of the Task entity.
 func (t *Task) QueryTaskFiles() *TaskFileQuery {
 	return (&TaskClient{config: t.config}).QueryTaskFiles(t)
 }

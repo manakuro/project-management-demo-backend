@@ -6,6 +6,8 @@ import (
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/pkg/const/globalid"
 
+	"entgo.io/contrib/entgql"
+
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
 
@@ -13,6 +15,8 @@ import (
 	"entgo.io/ent/schema/field"
 	entMixin "entgo.io/ent/schema/mixin"
 )
+
+const taskPrioritiesRef string = "taskPriorities"
 
 // TaskPriority holds the schema definition for the Test entity.
 type TaskPriority struct {
@@ -45,20 +49,23 @@ func (TaskPriorityMixin) Fields() []ent.Field {
 func (TaskPriority) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("color", Color.Type).
-			Ref("task_priorities").
+			Ref(taskPrioritiesRef).
 			Field("color_id").
 			Unique().
 			Required().
 			Annotations(
+				entgql.Bind(),
 				schema.Annotation(
 					annotation.Edge{FieldName: "color_id"},
 				),
 			),
-		edge.To("tasks", Task.Type).Annotations(
-			schema.Annotation(
-				annotation.Edge{FieldName: "task_id"},
+		edge.To(tasksRef, Task.Type).
+			Annotations(
+				entgql.Bind(),
+				schema.Annotation(
+					annotation.Edge{FieldName: "task_id"},
+				),
 			),
-		),
 	}
 }
 

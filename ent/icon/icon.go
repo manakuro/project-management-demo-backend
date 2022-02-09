@@ -20,16 +20,16 @@ const (
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
 	FieldUpdatedAt = "updated_at"
-	// EdgeProjectIcons holds the string denoting the project_icons edge name in mutations.
-	EdgeProjectIcons = "project_icons"
+	// EdgeProjectIcons holds the string denoting the projecticons edge name in mutations.
+	EdgeProjectIcons = "projectIcons"
 	// Table holds the table name of the icon in the database.
 	Table = "icons"
-	// ProjectIconsTable is the table that holds the project_icons relation/edge.
+	// ProjectIconsTable is the table that holds the projectIcons relation/edge.
 	ProjectIconsTable = "project_icons"
 	// ProjectIconsInverseTable is the table name for the ProjectIcon entity.
 	// It exists in this package in order to avoid circular dependency with the "projecticon" package.
 	ProjectIconsInverseTable = "project_icons"
-	// ProjectIconsColumn is the table column denoting the project_icons relation/edge.
+	// ProjectIconsColumn is the table column denoting the projectIcons relation/edge.
 	ProjectIconsColumn = "icon_id"
 )
 

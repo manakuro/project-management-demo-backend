@@ -5,6 +5,8 @@ import (
 	"project-management-demo-backend/ent/mixin"
 	"project-management-demo-backend/pkg/const/globalid"
 
+	"entgo.io/contrib/entgql"
+
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
 
@@ -41,8 +43,9 @@ func (FileTypeMixin) Fields() []ent.Field {
 // Edges of the FileType.
 func (FileType) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("task_files", TaskFile.Type).
+		edge.To(taskFilesRef, TaskFile.Type).
 			Annotations(
+				entgql.Bind(),
 				schema.Annotation(
 					annotation.Edge{FieldName: "task_file_id"},
 				),

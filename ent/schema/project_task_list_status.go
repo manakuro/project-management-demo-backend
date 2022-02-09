@@ -6,6 +6,8 @@ import (
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/pkg/const/globalid"
 
+	"entgo.io/contrib/entgql"
+
 	"entgo.io/ent/schema"
 
 	"entgo.io/ent/schema/edge"
@@ -14,6 +16,8 @@ import (
 	"entgo.io/ent/schema/field"
 	entMixin "entgo.io/ent/schema/mixin"
 )
+
+const projectTaskListStatusesRef string = "projectTaskListStatuses"
 
 // ProjectTaskListStatus holds the schema definition for the Test entity.
 type ProjectTaskListStatus struct {
@@ -41,31 +45,34 @@ func (ProjectTaskListStatusMixin) Fields() []ent.Field {
 func (ProjectTaskListStatus) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("project", Project.Type).
-			Ref("project_task_list_statuses").
+			Ref(projectTaskListStatusesRef).
 			Field("project_id").
 			Unique().
 			Required().
 			Annotations(
+				entgql.Bind(),
 				schema.Annotation(
 					annotation.Edge{FieldName: "project_id"},
 				),
 			),
-		edge.From("task_list_completed_status", TaskListCompletedStatus.Type).
-			Ref("project_task_list_statuses").
+		edge.From("taskListCompletedStatus", TaskListCompletedStatus.Type).
+			Ref(projectTaskListStatusesRef).
 			Field("task_list_completed_status_id").
 			Unique().
 			Required().
 			Annotations(
+				entgql.Bind(),
 				schema.Annotation(
 					annotation.Edge{FieldName: "task_list_completed_status_id"},
 				),
 			),
-		edge.From("task_list_sort_status", TaskListSortStatus.Type).
-			Ref("project_task_list_statuses").
+		edge.From("taskListSortStatus", TaskListSortStatus.Type).
+			Ref(projectTaskListStatusesRef).
 			Field("task_list_sort_status_id").
 			Unique().
 			Required().
 			Annotations(
+				entgql.Bind(),
 				schema.Annotation(
 					annotation.Edge{FieldName: "task_list_sort_status_id"},
 				),

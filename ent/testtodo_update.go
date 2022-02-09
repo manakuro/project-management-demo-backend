@@ -144,7 +144,7 @@ func (ttu *TestTodoUpdate) ClearDueDate() *TestTodoUpdate {
 	return ttu
 }
 
-// SetTestUser sets the "test_user" edge to the TestUser entity.
+// SetTestUser sets the "testUser" edge to the TestUser entity.
 func (ttu *TestTodoUpdate) SetTestUser(t *TestUser) *TestTodoUpdate {
 	return ttu.SetTestUserID(t.ID)
 }
@@ -188,7 +188,7 @@ func (ttu *TestTodoUpdate) Mutation() *TestTodoMutation {
 	return ttu.mutation
 }
 
-// ClearTestUser clears the "test_user" edge to the TestUser entity.
+// ClearTestUser clears the "testUser" edge to the TestUser entity.
 func (ttu *TestTodoUpdate) ClearTestUser() *TestTodoUpdate {
 	ttu.mutation.ClearTestUser()
 	return ttu
@@ -615,7 +615,7 @@ func (ttuo *TestTodoUpdateOne) ClearDueDate() *TestTodoUpdateOne {
 	return ttuo
 }
 
-// SetTestUser sets the "test_user" edge to the TestUser entity.
+// SetTestUser sets the "testUser" edge to the TestUser entity.
 func (ttuo *TestTodoUpdateOne) SetTestUser(t *TestUser) *TestTodoUpdateOne {
 	return ttuo.SetTestUserID(t.ID)
 }
@@ -659,7 +659,7 @@ func (ttuo *TestTodoUpdateOne) Mutation() *TestTodoMutation {
 	return ttuo.mutation
 }
 
-// ClearTestUser clears the "test_user" edge to the TestUser entity.
+// ClearTestUser clears the "testUser" edge to the TestUser entity.
 func (ttuo *TestTodoUpdateOne) ClearTestUser() *TestTodoUpdateOne {
 	ttuo.mutation.ClearTestUser()
 	return ttuo

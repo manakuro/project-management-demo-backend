@@ -118,13 +118,13 @@ func (wc *WorkspaceCreate) AddProjects(p ...*Project) *WorkspaceCreate {
 	return wc.AddProjectIDs(ids...)
 }
 
-// AddWorkspaceTeammateIDs adds the "workspace_teammates" edge to the WorkspaceTeammate entity by IDs.
+// AddWorkspaceTeammateIDs adds the "workspaceTeammates" edge to the WorkspaceTeammate entity by IDs.
 func (wc *WorkspaceCreate) AddWorkspaceTeammateIDs(ids ...ulid.ID) *WorkspaceCreate {
 	wc.mutation.AddWorkspaceTeammateIDs(ids...)
 	return wc
 }
 
-// AddWorkspaceTeammates adds the "workspace_teammates" edges to the WorkspaceTeammate entity.
+// AddWorkspaceTeammates adds the "workspaceTeammates" edges to the WorkspaceTeammate entity.
 func (wc *WorkspaceCreate) AddWorkspaceTeammates(w ...*WorkspaceTeammate) *WorkspaceCreate {
 	ids := make([]ulid.ID, len(w))
 	for i := range w {
@@ -133,13 +133,13 @@ func (wc *WorkspaceCreate) AddWorkspaceTeammates(w ...*WorkspaceTeammate) *Works
 	return wc.AddWorkspaceTeammateIDs(ids...)
 }
 
-// AddFavoriteWorkspaceIDs adds the "favorite_workspaces" edge to the FavoriteWorkspace entity by IDs.
+// AddFavoriteWorkspaceIDs adds the "favoriteWorkspaces" edge to the FavoriteWorkspace entity by IDs.
 func (wc *WorkspaceCreate) AddFavoriteWorkspaceIDs(ids ...ulid.ID) *WorkspaceCreate {
 	wc.mutation.AddFavoriteWorkspaceIDs(ids...)
 	return wc
 }
 
-// AddFavoriteWorkspaces adds the "favorite_workspaces" edges to the FavoriteWorkspace entity.
+// AddFavoriteWorkspaces adds the "favoriteWorkspaces" edges to the FavoriteWorkspace entity.
 func (wc *WorkspaceCreate) AddFavoriteWorkspaces(f ...*FavoriteWorkspace) *WorkspaceCreate {
 	ids := make([]ulid.ID, len(f))
 	for i := range f {
@@ -148,43 +148,43 @@ func (wc *WorkspaceCreate) AddFavoriteWorkspaces(f ...*FavoriteWorkspace) *Works
 	return wc.AddFavoriteWorkspaceIDs(ids...)
 }
 
-// AddTeammateTaskTabStatusIDs adds the "teammate_task_tab_statuses" edge to the TeammateTaskTabStatus entity by IDs.
-func (wc *WorkspaceCreate) AddTeammateTaskTabStatusIDs(ids ...ulid.ID) *WorkspaceCreate {
-	wc.mutation.AddTeammateTaskTabStatusIDs(ids...)
+// AddTeammateTaskTabStatuseIDs adds the "teammateTaskTabStatuses" edge to the TeammateTaskTabStatus entity by IDs.
+func (wc *WorkspaceCreate) AddTeammateTaskTabStatuseIDs(ids ...ulid.ID) *WorkspaceCreate {
+	wc.mutation.AddTeammateTaskTabStatuseIDs(ids...)
 	return wc
 }
 
-// AddTeammateTaskTabStatuses adds the "teammate_task_tab_statuses" edges to the TeammateTaskTabStatus entity.
+// AddTeammateTaskTabStatuses adds the "teammateTaskTabStatuses" edges to the TeammateTaskTabStatus entity.
 func (wc *WorkspaceCreate) AddTeammateTaskTabStatuses(t ...*TeammateTaskTabStatus) *WorkspaceCreate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
 		ids[i] = t[i].ID
 	}
-	return wc.AddTeammateTaskTabStatusIDs(ids...)
+	return wc.AddTeammateTaskTabStatuseIDs(ids...)
 }
 
-// AddTeammateTaskListStatusIDs adds the "teammate_task_list_statuses" edge to the TeammateTaskListStatus entity by IDs.
-func (wc *WorkspaceCreate) AddTeammateTaskListStatusIDs(ids ...ulid.ID) *WorkspaceCreate {
-	wc.mutation.AddTeammateTaskListStatusIDs(ids...)
+// AddTeammateTaskListStatuseIDs adds the "teammateTaskListStatuses" edge to the TeammateTaskListStatus entity by IDs.
+func (wc *WorkspaceCreate) AddTeammateTaskListStatuseIDs(ids ...ulid.ID) *WorkspaceCreate {
+	wc.mutation.AddTeammateTaskListStatuseIDs(ids...)
 	return wc
 }
 
-// AddTeammateTaskListStatuses adds the "teammate_task_list_statuses" edges to the TeammateTaskListStatus entity.
+// AddTeammateTaskListStatuses adds the "teammateTaskListStatuses" edges to the TeammateTaskListStatus entity.
 func (wc *WorkspaceCreate) AddTeammateTaskListStatuses(t ...*TeammateTaskListStatus) *WorkspaceCreate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
 		ids[i] = t[i].ID
 	}
-	return wc.AddTeammateTaskListStatusIDs(ids...)
+	return wc.AddTeammateTaskListStatuseIDs(ids...)
 }
 
-// AddTeammateTaskSectionIDs adds the "teammate_task_sections" edge to the TeammateTaskSection entity by IDs.
+// AddTeammateTaskSectionIDs adds the "teammateTaskSections" edge to the TeammateTaskSection entity by IDs.
 func (wc *WorkspaceCreate) AddTeammateTaskSectionIDs(ids ...ulid.ID) *WorkspaceCreate {
 	wc.mutation.AddTeammateTaskSectionIDs(ids...)
 	return wc
 }
 
-// AddTeammateTaskSections adds the "teammate_task_sections" edges to the TeammateTaskSection entity.
+// AddTeammateTaskSections adds the "teammateTaskSections" edges to the TeammateTaskSection entity.
 func (wc *WorkspaceCreate) AddTeammateTaskSections(t ...*TeammateTaskSection) *WorkspaceCreate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -193,13 +193,13 @@ func (wc *WorkspaceCreate) AddTeammateTaskSections(t ...*TeammateTaskSection) *W
 	return wc.AddTeammateTaskSectionIDs(ids...)
 }
 
-// AddTaskLikeIDs adds the "task_likes" edge to the TaskLike entity by IDs.
+// AddTaskLikeIDs adds the "taskLikes" edge to the TaskLike entity by IDs.
 func (wc *WorkspaceCreate) AddTaskLikeIDs(ids ...ulid.ID) *WorkspaceCreate {
 	wc.mutation.AddTaskLikeIDs(ids...)
 	return wc
 }
 
-// AddTaskLikes adds the "task_likes" edges to the TaskLike entity.
+// AddTaskLikes adds the "taskLikes" edges to the TaskLike entity.
 func (wc *WorkspaceCreate) AddTaskLikes(t ...*TaskLike) *WorkspaceCreate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -223,13 +223,13 @@ func (wc *WorkspaceCreate) AddTags(t ...*Tag) *WorkspaceCreate {
 	return wc.AddTagIDs(ids...)
 }
 
-// AddTeammateTaskColumnIDs adds the "teammate_task_columns" edge to the TeammateTaskColumn entity by IDs.
+// AddTeammateTaskColumnIDs adds the "teammateTaskColumns" edge to the TeammateTaskColumn entity by IDs.
 func (wc *WorkspaceCreate) AddTeammateTaskColumnIDs(ids ...ulid.ID) *WorkspaceCreate {
 	wc.mutation.AddTeammateTaskColumnIDs(ids...)
 	return wc
 }
 
-// AddTeammateTaskColumns adds the "teammate_task_columns" edges to the TeammateTaskColumn entity.
+// AddTeammateTaskColumns adds the "teammateTaskColumns" edges to the TeammateTaskColumn entity.
 func (wc *WorkspaceCreate) AddTeammateTaskColumns(t ...*TeammateTaskColumn) *WorkspaceCreate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {

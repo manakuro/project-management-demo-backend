@@ -1065,7 +1065,7 @@ func HasTaskWith(preds ...predicate.Task) predicate.TaskFile {
 	})
 }
 
-// HasTaskFeed applies the HasEdge predicate on the "task_feed" edge.
+// HasTaskFeed applies the HasEdge predicate on the "taskFeed" edge.
 func HasTaskFeed() predicate.TaskFile {
 	return predicate.TaskFile(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
@@ -1077,7 +1077,7 @@ func HasTaskFeed() predicate.TaskFile {
 	})
 }
 
-// HasTaskFeedWith applies the HasEdge predicate on the "task_feed" edge with a given conditions (other predicates).
+// HasTaskFeedWith applies the HasEdge predicate on the "taskFeed" edge with a given conditions (other predicates).
 func HasTaskFeedWith(preds ...predicate.TaskFeed) predicate.TaskFile {
 	return predicate.TaskFile(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
@@ -1093,7 +1093,7 @@ func HasTaskFeedWith(preds ...predicate.TaskFeed) predicate.TaskFile {
 	})
 }
 
-// HasFileType applies the HasEdge predicate on the "file_type" edge.
+// HasFileType applies the HasEdge predicate on the "fileType" edge.
 func HasFileType() predicate.TaskFile {
 	return predicate.TaskFile(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
@@ -1105,7 +1105,7 @@ func HasFileType() predicate.TaskFile {
 	})
 }
 
-// HasFileTypeWith applies the HasEdge predicate on the "file_type" edge with a given conditions (other predicates).
+// HasFileTypeWith applies the HasEdge predicate on the "fileType" edge with a given conditions (other predicates).
 func HasFileTypeWith(preds ...predicate.FileType) predicate.TaskFile {
 	return predicate.TaskFile(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(

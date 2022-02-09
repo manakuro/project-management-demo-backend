@@ -14,7 +14,7 @@ type taskLikeUsecase struct {
 type TaskLike interface {
 	Get(ctx context.Context, where *model.TaskLikeWhereInput) (*model.TaskLike, error)
 	List(ctx context.Context, where *model.TaskLikeWhereInput) ([]*model.TaskLike, error)
-	ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TaskLikeWhereInput, requestedFields []string) (*model.TaskLikeConnection, error)
+	ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TaskLikeWhereInput) (*model.TaskLikeConnection, error)
 	Create(ctx context.Context, input model.CreateTaskLikeInput) (*model.TaskLike, error)
 	Update(ctx context.Context, input model.UpdateTaskLikeInput) (*model.TaskLike, error)
 	Delete(ctx context.Context, input model.DeleteTaskLikeInput) (*model.TaskLike, error)
@@ -33,8 +33,8 @@ func (u *taskLikeUsecase) List(ctx context.Context, where *model.TaskLikeWhereIn
 	return u.taskLikeRepository.List(ctx, where)
 }
 
-func (u *taskLikeUsecase) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TaskLikeWhereInput, requestedFields []string) (*model.TaskLikeConnection, error) {
-	return u.taskLikeRepository.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
+func (u *taskLikeUsecase) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TaskLikeWhereInput) (*model.TaskLikeConnection, error) {
+	return u.taskLikeRepository.ListWithPagination(ctx, after, first, before, last, where)
 }
 
 func (u *taskLikeUsecase) Create(ctx context.Context, input model.CreateTaskLikeInput) (*model.TaskLike, error) {

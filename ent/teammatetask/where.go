@@ -685,7 +685,7 @@ func HasTaskWith(preds ...predicate.Task) predicate.TeammateTask {
 	})
 }
 
-// HasTeammateTaskSection applies the HasEdge predicate on the "teammate_task_section" edge.
+// HasTeammateTaskSection applies the HasEdge predicate on the "teammateTaskSection" edge.
 func HasTeammateTaskSection() predicate.TeammateTask {
 	return predicate.TeammateTask(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
@@ -697,7 +697,7 @@ func HasTeammateTaskSection() predicate.TeammateTask {
 	})
 }
 
-// HasTeammateTaskSectionWith applies the HasEdge predicate on the "teammate_task_section" edge with a given conditions (other predicates).
+// HasTeammateTaskSectionWith applies the HasEdge predicate on the "teammateTaskSection" edge with a given conditions (other predicates).
 func HasTeammateTaskSectionWith(preds ...predicate.TeammateTaskSection) predicate.TeammateTask {
 	return predicate.TeammateTask(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(

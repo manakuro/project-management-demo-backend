@@ -46,10 +46,10 @@ type TaskFeedEdges struct {
 	Task *Task `json:"task,omitempty"`
 	// Teammate holds the value of the teammate edge.
 	Teammate *Teammate `json:"teammate,omitempty"`
-	// TaskFeedLikes holds the value of the task_feed_likes edge.
-	TaskFeedLikes []*TaskFeedLike `json:"task_feed_likes,omitempty"`
-	// TaskFiles holds the value of the task_files edge.
-	TaskFiles []*TaskFile `json:"task_files,omitempty"`
+	// TaskFeedLikes holds the value of the taskFeedLikes edge.
+	TaskFeedLikes []*TaskFeedLike `json:"taskFeedLikes,omitempty"`
+	// TaskFiles holds the value of the taskFiles edge.
+	TaskFiles []*TaskFile `json:"taskFiles,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [4]bool
@@ -89,7 +89,7 @@ func (e TaskFeedEdges) TaskFeedLikesOrErr() ([]*TaskFeedLike, error) {
 	if e.loadedTypes[2] {
 		return e.TaskFeedLikes, nil
 	}
-	return nil, &NotLoadedError{edge: "task_feed_likes"}
+	return nil, &NotLoadedError{edge: "taskFeedLikes"}
 }
 
 // TaskFilesOrErr returns the TaskFiles value or an error if the edge
@@ -98,7 +98,7 @@ func (e TaskFeedEdges) TaskFilesOrErr() ([]*TaskFile, error) {
 	if e.loadedTypes[3] {
 		return e.TaskFiles, nil
 	}
-	return nil, &NotLoadedError{edge: "task_files"}
+	return nil, &NotLoadedError{edge: "taskFiles"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -194,12 +194,12 @@ func (tf *TaskFeed) QueryTeammate() *TeammateQuery {
 	return (&TaskFeedClient{config: tf.config}).QueryTeammate(tf)
 }
 
-// QueryTaskFeedLikes queries the "task_feed_likes" edge of the TaskFeed entity.
+// QueryTaskFeedLikes queries the "taskFeedLikes" edge of the TaskFeed entity.
 func (tf *TaskFeed) QueryTaskFeedLikes() *TaskFeedLikeQuery {
 	return (&TaskFeedClient{config: tf.config}).QueryTaskFeedLikes(tf)
 }
 
-// QueryTaskFiles queries the "task_files" edge of the TaskFeed entity.
+// QueryTaskFiles queries the "taskFiles" edge of the TaskFeed entity.
 func (tf *TaskFeed) QueryTaskFiles() *TaskFileQuery {
 	return (&TaskFeedClient{config: tf.config}).QueryTaskFiles(tf)
 }

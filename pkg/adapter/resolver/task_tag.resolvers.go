@@ -12,7 +12,6 @@ import (
 	"project-management-demo-backend/pkg/adapter/handler"
 	"project-management-demo-backend/pkg/entity/model"
 	"project-management-demo-backend/pkg/util/datetime"
-	"project-management-demo-backend/pkg/util/graphqlutil"
 	"project-management-demo-backend/pkg/util/subscription"
 )
 
@@ -80,8 +79,8 @@ func (r *queryResolver) TaskTag(ctx context.Context, where *ent.TaskTagWhereInpu
 }
 
 func (r *queryResolver) TaskTags(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskTagWhereInput) (*ent.TaskTagConnection, error) {
-	requestedFields := graphqlutil.GetRequestedFields(ctx)
-	ts, err := r.controller.TaskTag.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
+
+	ts, err := r.controller.TaskTag.ListWithPagination(ctx, after, first, before, last, where)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}

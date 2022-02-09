@@ -7,6 +7,8 @@ import (
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/pkg/const/globalid"
 
+	"entgo.io/contrib/entgql"
+
 	"entgo.io/ent/schema"
 
 	"entgo.io/ent/schema/edge"
@@ -15,6 +17,8 @@ import (
 	"entgo.io/ent/schema/field"
 	entMixin "entgo.io/ent/schema/mixin"
 )
+
+const taskFeedsRef string = "taskFeeds"
 
 // TaskFeed holds the schema definition for the Test entity.
 type TaskFeed struct {
@@ -45,32 +49,37 @@ func (TaskFeedMixin) Fields() []ent.Field {
 func (TaskFeed) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("task", Task.Type).
-			Ref("task_feeds").
+			Ref(taskFeedsRef).
 			Field("task_id").
 			Unique().
 			Required().
 			Annotations(
+				entgql.Bind(),
 				schema.Annotation(
 					annotation.Edge{FieldName: "task_id"},
 				),
 			),
 		edge.From("teammate", Teammate.Type).
-			Ref("task_feeds").
+			Ref(taskFeedsRef).
 			Field("teammate_id").
 			Unique().
 			Required().
 			Annotations(
+				entgql.Bind(),
 				schema.Annotation(
 					annotation.Edge{FieldName: "teammate_id"},
 				),
 			),
-		edge.To("task_feed_likes", TaskFeedLike.Type).Annotations(
-			schema.Annotation(
-				annotation.Edge{FieldName: "task_feed_like_id"},
-			),
-		),
-		edge.To("task_files", TaskFile.Type).
+		edge.To(taskFeedLikesRef, TaskFeedLike.Type).
 			Annotations(
+				entgql.Bind(),
+				schema.Annotation(
+					annotation.Edge{FieldName: "task_feed_like_id"},
+				),
+			),
+		edge.To(taskFilesRef, TaskFile.Type).
+			Annotations(
+				entgql.Bind(),
 				schema.Annotation(
 					annotation.Edge{FieldName: "task_file_id"},
 				),

@@ -154,7 +154,7 @@ func (ttc *TestTodoCreate) SetNillableID(u *ulid.ID) *TestTodoCreate {
 	return ttc
 }
 
-// SetTestUser sets the "test_user" edge to the TestUser entity.
+// SetTestUser sets the "testUser" edge to the TestUser entity.
 func (ttc *TestTodoCreate) SetTestUser(t *TestUser) *TestTodoCreate {
 	return ttc.SetTestUserID(t.ID)
 }

@@ -90,7 +90,7 @@ func (ptlsq *ProjectTaskListStatusQuery) QueryProject() *ProjectQuery {
 	return query
 }
 
-// QueryTaskListCompletedStatus chains the current query on the "task_list_completed_status" edge.
+// QueryTaskListCompletedStatus chains the current query on the "taskListCompletedStatus" edge.
 func (ptlsq *ProjectTaskListStatusQuery) QueryTaskListCompletedStatus() *TaskListCompletedStatusQuery {
 	query := &TaskListCompletedStatusQuery{config: ptlsq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
@@ -112,7 +112,7 @@ func (ptlsq *ProjectTaskListStatusQuery) QueryTaskListCompletedStatus() *TaskLis
 	return query
 }
 
-// QueryTaskListSortStatus chains the current query on the "task_list_sort_status" edge.
+// QueryTaskListSortStatus chains the current query on the "taskListSortStatus" edge.
 func (ptlsq *ProjectTaskListStatusQuery) QueryTaskListSortStatus() *TaskListSortStatusQuery {
 	query := &TaskListSortStatusQuery{config: ptlsq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
@@ -336,7 +336,7 @@ func (ptlsq *ProjectTaskListStatusQuery) WithProject(opts ...func(*ProjectQuery)
 }
 
 // WithTaskListCompletedStatus tells the query-builder to eager-load the nodes that are connected to
-// the "task_list_completed_status" edge. The optional arguments are used to configure the query builder of the edge.
+// the "taskListCompletedStatus" edge. The optional arguments are used to configure the query builder of the edge.
 func (ptlsq *ProjectTaskListStatusQuery) WithTaskListCompletedStatus(opts ...func(*TaskListCompletedStatusQuery)) *ProjectTaskListStatusQuery {
 	query := &TaskListCompletedStatusQuery{config: ptlsq.config}
 	for _, opt := range opts {
@@ -347,7 +347,7 @@ func (ptlsq *ProjectTaskListStatusQuery) WithTaskListCompletedStatus(opts ...fun
 }
 
 // WithTaskListSortStatus tells the query-builder to eager-load the nodes that are connected to
-// the "task_list_sort_status" edge. The optional arguments are used to configure the query builder of the edge.
+// the "taskListSortStatus" edge. The optional arguments are used to configure the query builder of the edge.
 func (ptlsq *ProjectTaskListStatusQuery) WithTaskListSortStatus(opts ...func(*TaskListSortStatusQuery)) *ProjectTaskListStatusQuery {
 	query := &TaskListSortStatusQuery{config: ptlsq.config}
 	for _, opt := range opts {

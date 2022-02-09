@@ -38,28 +38,28 @@ const (
 	FieldUpdatedAt = "updated_at"
 	// EdgeTeammate holds the string denoting the teammate edge name in mutations.
 	EdgeTeammate = "teammate"
-	// EdgeTaskPriority holds the string denoting the task_priority edge name in mutations.
-	EdgeTaskPriority = "task_priority"
+	// EdgeTaskPriority holds the string denoting the taskpriority edge name in mutations.
+	EdgeTaskPriority = "taskPriority"
 	// EdgeParent holds the string denoting the parent edge name in mutations.
 	EdgeParent = "parent"
-	// EdgeSubTasks holds the string denoting the sub_tasks edge name in mutations.
-	EdgeSubTasks = "sub_tasks"
-	// EdgeTeammateTasks holds the string denoting the teammate_tasks edge name in mutations.
-	EdgeTeammateTasks = "teammate_tasks"
-	// EdgeProjectTasks holds the string denoting the project_tasks edge name in mutations.
-	EdgeProjectTasks = "project_tasks"
-	// EdgeTaskLikes holds the string denoting the task_likes edge name in mutations.
-	EdgeTaskLikes = "task_likes"
-	// EdgeTaskTags holds the string denoting the task_tags edge name in mutations.
-	EdgeTaskTags = "task_tags"
-	// EdgeTaskCollaborators holds the string denoting the task_collaborators edge name in mutations.
-	EdgeTaskCollaborators = "task_collaborators"
-	// EdgeTaskFeeds holds the string denoting the task_feeds edge name in mutations.
-	EdgeTaskFeeds = "task_feeds"
-	// EdgeTaskFeedLikes holds the string denoting the task_feed_likes edge name in mutations.
-	EdgeTaskFeedLikes = "task_feed_likes"
-	// EdgeTaskFiles holds the string denoting the task_files edge name in mutations.
-	EdgeTaskFiles = "task_files"
+	// EdgeSubTasks holds the string denoting the subtasks edge name in mutations.
+	EdgeSubTasks = "subTasks"
+	// EdgeTeammateTasks holds the string denoting the teammatetasks edge name in mutations.
+	EdgeTeammateTasks = "teammateTasks"
+	// EdgeProjectTasks holds the string denoting the projecttasks edge name in mutations.
+	EdgeProjectTasks = "projectTasks"
+	// EdgeTaskLikes holds the string denoting the tasklikes edge name in mutations.
+	EdgeTaskLikes = "taskLikes"
+	// EdgeTaskTags holds the string denoting the tasktags edge name in mutations.
+	EdgeTaskTags = "taskTags"
+	// EdgeTaskCollaborators holds the string denoting the taskcollaborators edge name in mutations.
+	EdgeTaskCollaborators = "taskCollaborators"
+	// EdgeTaskFeeds holds the string denoting the taskfeeds edge name in mutations.
+	EdgeTaskFeeds = "taskFeeds"
+	// EdgeTaskFeedLikes holds the string denoting the taskfeedlikes edge name in mutations.
+	EdgeTaskFeedLikes = "taskFeedLikes"
+	// EdgeTaskFiles holds the string denoting the taskfiles edge name in mutations.
+	EdgeTaskFiles = "taskFiles"
 	// Table holds the table name of the task in the database.
 	Table = "tasks"
 	// TeammateTable is the table that holds the teammate relation/edge.
@@ -69,76 +69,76 @@ const (
 	TeammateInverseTable = "teammates"
 	// TeammateColumn is the table column denoting the teammate relation/edge.
 	TeammateColumn = "assignee_id"
-	// TaskPriorityTable is the table that holds the task_priority relation/edge.
+	// TaskPriorityTable is the table that holds the taskPriority relation/edge.
 	TaskPriorityTable = "tasks"
 	// TaskPriorityInverseTable is the table name for the TaskPriority entity.
 	// It exists in this package in order to avoid circular dependency with the "taskpriority" package.
 	TaskPriorityInverseTable = "task_priorities"
-	// TaskPriorityColumn is the table column denoting the task_priority relation/edge.
+	// TaskPriorityColumn is the table column denoting the taskPriority relation/edge.
 	TaskPriorityColumn = "task_priority_id"
 	// ParentTable is the table that holds the parent relation/edge.
 	ParentTable = "tasks"
 	// ParentColumn is the table column denoting the parent relation/edge.
 	ParentColumn = "task_parent_id"
-	// SubTasksTable is the table that holds the sub_tasks relation/edge.
+	// SubTasksTable is the table that holds the subTasks relation/edge.
 	SubTasksTable = "tasks"
-	// SubTasksColumn is the table column denoting the sub_tasks relation/edge.
+	// SubTasksColumn is the table column denoting the subTasks relation/edge.
 	SubTasksColumn = "task_parent_id"
-	// TeammateTasksTable is the table that holds the teammate_tasks relation/edge.
+	// TeammateTasksTable is the table that holds the teammateTasks relation/edge.
 	TeammateTasksTable = "teammate_tasks"
 	// TeammateTasksInverseTable is the table name for the TeammateTask entity.
 	// It exists in this package in order to avoid circular dependency with the "teammatetask" package.
 	TeammateTasksInverseTable = "teammate_tasks"
-	// TeammateTasksColumn is the table column denoting the teammate_tasks relation/edge.
+	// TeammateTasksColumn is the table column denoting the teammateTasks relation/edge.
 	TeammateTasksColumn = "task_id"
-	// ProjectTasksTable is the table that holds the project_tasks relation/edge.
+	// ProjectTasksTable is the table that holds the projectTasks relation/edge.
 	ProjectTasksTable = "project_tasks"
 	// ProjectTasksInverseTable is the table name for the ProjectTask entity.
 	// It exists in this package in order to avoid circular dependency with the "projecttask" package.
 	ProjectTasksInverseTable = "project_tasks"
-	// ProjectTasksColumn is the table column denoting the project_tasks relation/edge.
+	// ProjectTasksColumn is the table column denoting the projectTasks relation/edge.
 	ProjectTasksColumn = "task_id"
-	// TaskLikesTable is the table that holds the task_likes relation/edge.
+	// TaskLikesTable is the table that holds the taskLikes relation/edge.
 	TaskLikesTable = "task_likes"
 	// TaskLikesInverseTable is the table name for the TaskLike entity.
 	// It exists in this package in order to avoid circular dependency with the "tasklike" package.
 	TaskLikesInverseTable = "task_likes"
-	// TaskLikesColumn is the table column denoting the task_likes relation/edge.
+	// TaskLikesColumn is the table column denoting the taskLikes relation/edge.
 	TaskLikesColumn = "task_id"
-	// TaskTagsTable is the table that holds the task_tags relation/edge.
+	// TaskTagsTable is the table that holds the taskTags relation/edge.
 	TaskTagsTable = "task_tags"
 	// TaskTagsInverseTable is the table name for the TaskTag entity.
 	// It exists in this package in order to avoid circular dependency with the "tasktag" package.
 	TaskTagsInverseTable = "task_tags"
-	// TaskTagsColumn is the table column denoting the task_tags relation/edge.
+	// TaskTagsColumn is the table column denoting the taskTags relation/edge.
 	TaskTagsColumn = "task_id"
-	// TaskCollaboratorsTable is the table that holds the task_collaborators relation/edge.
+	// TaskCollaboratorsTable is the table that holds the taskCollaborators relation/edge.
 	TaskCollaboratorsTable = "task_collaborators"
 	// TaskCollaboratorsInverseTable is the table name for the TaskCollaborator entity.
 	// It exists in this package in order to avoid circular dependency with the "taskcollaborator" package.
 	TaskCollaboratorsInverseTable = "task_collaborators"
-	// TaskCollaboratorsColumn is the table column denoting the task_collaborators relation/edge.
+	// TaskCollaboratorsColumn is the table column denoting the taskCollaborators relation/edge.
 	TaskCollaboratorsColumn = "task_id"
-	// TaskFeedsTable is the table that holds the task_feeds relation/edge.
+	// TaskFeedsTable is the table that holds the taskFeeds relation/edge.
 	TaskFeedsTable = "task_feeds"
 	// TaskFeedsInverseTable is the table name for the TaskFeed entity.
 	// It exists in this package in order to avoid circular dependency with the "taskfeed" package.
 	TaskFeedsInverseTable = "task_feeds"
-	// TaskFeedsColumn is the table column denoting the task_feeds relation/edge.
+	// TaskFeedsColumn is the table column denoting the taskFeeds relation/edge.
 	TaskFeedsColumn = "task_id"
-	// TaskFeedLikesTable is the table that holds the task_feed_likes relation/edge.
+	// TaskFeedLikesTable is the table that holds the taskFeedLikes relation/edge.
 	TaskFeedLikesTable = "task_feed_likes"
 	// TaskFeedLikesInverseTable is the table name for the TaskFeedLike entity.
 	// It exists in this package in order to avoid circular dependency with the "taskfeedlike" package.
 	TaskFeedLikesInverseTable = "task_feed_likes"
-	// TaskFeedLikesColumn is the table column denoting the task_feed_likes relation/edge.
+	// TaskFeedLikesColumn is the table column denoting the taskFeedLikes relation/edge.
 	TaskFeedLikesColumn = "task_id"
-	// TaskFilesTable is the table that holds the task_files relation/edge.
+	// TaskFilesTable is the table that holds the taskFiles relation/edge.
 	TaskFilesTable = "task_files"
 	// TaskFilesInverseTable is the table name for the TaskFile entity.
 	// It exists in this package in order to avoid circular dependency with the "taskfile" package.
 	TaskFilesInverseTable = "task_files"
-	// TaskFilesColumn is the table column denoting the task_files relation/edge.
+	// TaskFilesColumn is the table column denoting the taskFiles relation/edge.
 	TaskFilesColumn = "task_id"
 )
 

@@ -114,7 +114,7 @@ func (tfq *TaskFileQuery) QueryTask() *TaskQuery {
 	return query
 }
 
-// QueryTaskFeed chains the current query on the "task_feed" edge.
+// QueryTaskFeed chains the current query on the "taskFeed" edge.
 func (tfq *TaskFileQuery) QueryTaskFeed() *TaskFeedQuery {
 	query := &TaskFeedQuery{config: tfq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
@@ -136,7 +136,7 @@ func (tfq *TaskFileQuery) QueryTaskFeed() *TaskFeedQuery {
 	return query
 }
 
-// QueryFileType chains the current query on the "file_type" edge.
+// QueryFileType chains the current query on the "fileType" edge.
 func (tfq *TaskFileQuery) QueryFileType() *FileTypeQuery {
 	query := &FileTypeQuery{config: tfq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
@@ -372,7 +372,7 @@ func (tfq *TaskFileQuery) WithTask(opts ...func(*TaskQuery)) *TaskFileQuery {
 }
 
 // WithTaskFeed tells the query-builder to eager-load the nodes that are connected to
-// the "task_feed" edge. The optional arguments are used to configure the query builder of the edge.
+// the "taskFeed" edge. The optional arguments are used to configure the query builder of the edge.
 func (tfq *TaskFileQuery) WithTaskFeed(opts ...func(*TaskFeedQuery)) *TaskFileQuery {
 	query := &TaskFeedQuery{config: tfq.config}
 	for _, opt := range opts {
@@ -383,7 +383,7 @@ func (tfq *TaskFileQuery) WithTaskFeed(opts ...func(*TaskFeedQuery)) *TaskFileQu
 }
 
 // WithFileType tells the query-builder to eager-load the nodes that are connected to
-// the "file_type" edge. The optional arguments are used to configure the query builder of the edge.
+// the "fileType" edge. The optional arguments are used to configure the query builder of the edge.
 func (tfq *TaskFileQuery) WithFileType(opts ...func(*FileTypeQuery)) *TaskFileQuery {
 	query := &FileTypeQuery{config: tfq.config}
 	for _, opt := range opts {

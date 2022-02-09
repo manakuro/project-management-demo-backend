@@ -6,6 +6,8 @@ import (
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/pkg/const/globalid"
 
+	"entgo.io/contrib/entgql"
+
 	"entgo.io/ent/schema"
 
 	"entgo.io/ent/schema/edge"
@@ -14,6 +16,8 @@ import (
 	"entgo.io/ent/schema/field"
 	entMixin "entgo.io/ent/schema/mixin"
 )
+
+const taskFilesRef string = "taskFiles"
 
 // TaskFile holds the schema definition for the Test entity.
 type TaskFile struct {
@@ -51,41 +55,45 @@ func (TaskFileMixin) Fields() []ent.Field {
 func (TaskFile) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("project", Project.Type).
-			Ref("task_files").
+			Ref(taskFilesRef).
 			Field("project_id").
 			Unique().
 			Required().
 			Annotations(
+				entgql.Bind(),
 				schema.Annotation(
 					annotation.Edge{FieldName: "project_id"},
 				),
 			),
 		edge.From("task", Task.Type).
-			Ref("task_files").
+			Ref(taskFilesRef).
 			Field("task_id").
 			Unique().
 			Required().
 			Annotations(
+				entgql.Bind(),
 				schema.Annotation(
 					annotation.Edge{FieldName: "task_id"},
 				),
 			),
-		edge.From("task_feed", TaskFeed.Type).
-			Ref("task_files").
+		edge.From("taskFeed", TaskFeed.Type).
+			Ref(taskFilesRef).
 			Field("task_feed_id").
 			Unique().
 			Required().
 			Annotations(
+				entgql.Bind(),
 				schema.Annotation(
 					annotation.Edge{FieldName: "task_feed_id"},
 				),
 			),
-		edge.From("file_type", FileType.Type).
-			Ref("task_files").
+		edge.From("fileType", FileType.Type).
+			Ref(taskFilesRef).
 			Field("file_type_id").
 			Unique().
 			Required().
 			Annotations(
+				entgql.Bind(),
 				schema.Annotation(
 					annotation.Edge{FieldName: "file_type_id"},
 				),

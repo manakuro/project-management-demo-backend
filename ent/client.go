@@ -460,7 +460,7 @@ func (c *ColorClient) GetX(ctx context.Context, id ulid.ID) *Color {
 	return obj
 }
 
-// QueryProjectBaseColors queries the project_base_colors edge of a Color.
+// QueryProjectBaseColors queries the projectBaseColors edge of a Color.
 func (c *ColorClient) QueryProjectBaseColors(co *Color) *ProjectBaseColorQuery {
 	query := &ProjectBaseColorQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
@@ -476,7 +476,7 @@ func (c *ColorClient) QueryProjectBaseColors(co *Color) *ProjectBaseColorQuery {
 	return query
 }
 
-// QueryProjectLightColors queries the project_light_colors edge of a Color.
+// QueryProjectLightColors queries the projectLightColors edge of a Color.
 func (c *ColorClient) QueryProjectLightColors(co *Color) *ProjectLightColorQuery {
 	query := &ProjectLightColorQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
@@ -492,7 +492,7 @@ func (c *ColorClient) QueryProjectLightColors(co *Color) *ProjectLightColorQuery
 	return query
 }
 
-// QueryTaskPriorities queries the task_priorities edge of a Color.
+// QueryTaskPriorities queries the taskPriorities edge of a Color.
 func (c *ColorClient) QueryTaskPriorities(co *Color) *TaskPriorityQuery {
 	query := &TaskPriorityQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
@@ -858,7 +858,7 @@ func (c *FileTypeClient) GetX(ctx context.Context, id ulid.ID) *FileType {
 	return obj
 }
 
-// QueryTaskFiles queries the task_files edge of a FileType.
+// QueryTaskFiles queries the taskFiles edge of a FileType.
 func (c *FileTypeClient) QueryTaskFiles(ft *FileType) *TaskFileQuery {
 	query := &TaskFileQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
@@ -964,7 +964,7 @@ func (c *IconClient) GetX(ctx context.Context, id ulid.ID) *Icon {
 	return obj
 }
 
-// QueryProjectIcons queries the project_icons edge of a Icon.
+// QueryProjectIcons queries the projectIcons edge of a Icon.
 func (c *IconClient) QueryProjectIcons(i *Icon) *ProjectIconQuery {
 	query := &ProjectIconQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
@@ -1086,7 +1086,7 @@ func (c *ProjectClient) QueryWorkspace(pr *Project) *WorkspaceQuery {
 	return query
 }
 
-// QueryProjectBaseColor queries the project_base_color edge of a Project.
+// QueryProjectBaseColor queries the projectBaseColor edge of a Project.
 func (c *ProjectClient) QueryProjectBaseColor(pr *Project) *ProjectBaseColorQuery {
 	query := &ProjectBaseColorQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
@@ -1102,7 +1102,7 @@ func (c *ProjectClient) QueryProjectBaseColor(pr *Project) *ProjectBaseColorQuer
 	return query
 }
 
-// QueryProjectLightColor queries the project_light_color edge of a Project.
+// QueryProjectLightColor queries the projectLightColor edge of a Project.
 func (c *ProjectClient) QueryProjectLightColor(pr *Project) *ProjectLightColorQuery {
 	query := &ProjectLightColorQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
@@ -1118,7 +1118,7 @@ func (c *ProjectClient) QueryProjectLightColor(pr *Project) *ProjectLightColorQu
 	return query
 }
 
-// QueryProjectIcon queries the project_icon edge of a Project.
+// QueryProjectIcon queries the projectIcon edge of a Project.
 func (c *ProjectClient) QueryProjectIcon(pr *Project) *ProjectIconQuery {
 	query := &ProjectIconQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
@@ -1150,7 +1150,7 @@ func (c *ProjectClient) QueryTeammate(pr *Project) *TeammateQuery {
 	return query
 }
 
-// QueryProjectTeammates queries the project_teammates edge of a Project.
+// QueryProjectTeammates queries the projectTeammates edge of a Project.
 func (c *ProjectClient) QueryProjectTeammates(pr *Project) *ProjectTeammateQuery {
 	query := &ProjectTeammateQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
@@ -1166,7 +1166,7 @@ func (c *ProjectClient) QueryProjectTeammates(pr *Project) *ProjectTeammateQuery
 	return query
 }
 
-// QueryFavoriteProjects queries the favorite_projects edge of a Project.
+// QueryFavoriteProjects queries the favoriteProjects edge of a Project.
 func (c *ProjectClient) QueryFavoriteProjects(pr *Project) *FavoriteProjectQuery {
 	query := &FavoriteProjectQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
@@ -1182,7 +1182,7 @@ func (c *ProjectClient) QueryFavoriteProjects(pr *Project) *FavoriteProjectQuery
 	return query
 }
 
-// QueryProjectTaskColumns queries the project_task_columns edge of a Project.
+// QueryProjectTaskColumns queries the projectTaskColumns edge of a Project.
 func (c *ProjectClient) QueryProjectTaskColumns(pr *Project) *ProjectTaskColumnQuery {
 	query := &ProjectTaskColumnQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
@@ -1198,7 +1198,7 @@ func (c *ProjectClient) QueryProjectTaskColumns(pr *Project) *ProjectTaskColumnQ
 	return query
 }
 
-// QueryProjectTaskListStatuses queries the project_task_list_statuses edge of a Project.
+// QueryProjectTaskListStatuses queries the projectTaskListStatuses edge of a Project.
 func (c *ProjectClient) QueryProjectTaskListStatuses(pr *Project) *ProjectTaskListStatusQuery {
 	query := &ProjectTaskListStatusQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
@@ -1214,7 +1214,7 @@ func (c *ProjectClient) QueryProjectTaskListStatuses(pr *Project) *ProjectTaskLi
 	return query
 }
 
-// QueryProjectTaskSections queries the project_task_sections edge of a Project.
+// QueryProjectTaskSections queries the projectTaskSections edge of a Project.
 func (c *ProjectClient) QueryProjectTaskSections(pr *Project) *ProjectTaskSectionQuery {
 	query := &ProjectTaskSectionQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
@@ -1230,7 +1230,7 @@ func (c *ProjectClient) QueryProjectTaskSections(pr *Project) *ProjectTaskSectio
 	return query
 }
 
-// QueryProjectTasks queries the project_tasks edge of a Project.
+// QueryProjectTasks queries the projectTasks edge of a Project.
 func (c *ProjectClient) QueryProjectTasks(pr *Project) *ProjectTaskQuery {
 	query := &ProjectTaskQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
@@ -1246,7 +1246,7 @@ func (c *ProjectClient) QueryProjectTasks(pr *Project) *ProjectTaskQuery {
 	return query
 }
 
-// QueryTaskFiles queries the task_files edge of a Project.
+// QueryTaskFiles queries the taskFiles edge of a Project.
 func (c *ProjectClient) QueryTaskFiles(pr *Project) *TaskFileQuery {
 	query := &TaskFileQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
@@ -1750,7 +1750,7 @@ func (c *ProjectTaskClient) QueryTask(pt *ProjectTask) *TaskQuery {
 	return query
 }
 
-// QueryProjectTaskSection queries the project_task_section edge of a ProjectTask.
+// QueryProjectTaskSection queries the projectTaskSection edge of a ProjectTask.
 func (c *ProjectTaskClient) QueryProjectTaskSection(pt *ProjectTask) *ProjectTaskSectionQuery {
 	query := &ProjectTaskSectionQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
@@ -1872,7 +1872,7 @@ func (c *ProjectTaskColumnClient) QueryProject(ptc *ProjectTaskColumn) *ProjectQ
 	return query
 }
 
-// QueryTaskColumn queries the task_column edge of a ProjectTaskColumn.
+// QueryTaskColumn queries the taskColumn edge of a ProjectTaskColumn.
 func (c *ProjectTaskColumnClient) QueryTaskColumn(ptc *ProjectTaskColumn) *TaskColumnQuery {
 	query := &TaskColumnQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
@@ -1994,7 +1994,7 @@ func (c *ProjectTaskListStatusClient) QueryProject(ptls *ProjectTaskListStatus) 
 	return query
 }
 
-// QueryTaskListCompletedStatus queries the task_list_completed_status edge of a ProjectTaskListStatus.
+// QueryTaskListCompletedStatus queries the taskListCompletedStatus edge of a ProjectTaskListStatus.
 func (c *ProjectTaskListStatusClient) QueryTaskListCompletedStatus(ptls *ProjectTaskListStatus) *TaskListCompletedStatusQuery {
 	query := &TaskListCompletedStatusQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
@@ -2010,7 +2010,7 @@ func (c *ProjectTaskListStatusClient) QueryTaskListCompletedStatus(ptls *Project
 	return query
 }
 
-// QueryTaskListSortStatus queries the task_list_sort_status edge of a ProjectTaskListStatus.
+// QueryTaskListSortStatus queries the taskListSortStatus edge of a ProjectTaskListStatus.
 func (c *ProjectTaskListStatusClient) QueryTaskListSortStatus(ptls *ProjectTaskListStatus) *TaskListSortStatusQuery {
 	query := &TaskListSortStatusQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
@@ -2132,7 +2132,7 @@ func (c *ProjectTaskSectionClient) QueryProject(pts *ProjectTaskSection) *Projec
 	return query
 }
 
-// QueryProjectTasks queries the project_tasks edge of a ProjectTaskSection.
+// QueryProjectTasks queries the projectTasks edge of a ProjectTaskSection.
 func (c *ProjectTaskSectionClient) QueryProjectTasks(pts *ProjectTaskSection) *ProjectTaskQuery {
 	query := &ProjectTaskQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
@@ -2392,7 +2392,7 @@ func (c *TagClient) QueryColor(t *Tag) *ColorQuery {
 	return query
 }
 
-// QueryTaskTags queries the task_tags edge of a Tag.
+// QueryTaskTags queries the taskTags edge of a Tag.
 func (c *TagClient) QueryTaskTags(t *Tag) *TaskTagQuery {
 	query := &TaskTagQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
@@ -2514,7 +2514,7 @@ func (c *TaskClient) QueryTeammate(t *Task) *TeammateQuery {
 	return query
 }
 
-// QueryTaskPriority queries the task_priority edge of a Task.
+// QueryTaskPriority queries the taskPriority edge of a Task.
 func (c *TaskClient) QueryTaskPriority(t *Task) *TaskPriorityQuery {
 	query := &TaskPriorityQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
@@ -2546,7 +2546,7 @@ func (c *TaskClient) QueryParent(t *Task) *TaskQuery {
 	return query
 }
 
-// QuerySubTasks queries the sub_tasks edge of a Task.
+// QuerySubTasks queries the subTasks edge of a Task.
 func (c *TaskClient) QuerySubTasks(t *Task) *TaskQuery {
 	query := &TaskQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
@@ -2562,7 +2562,7 @@ func (c *TaskClient) QuerySubTasks(t *Task) *TaskQuery {
 	return query
 }
 
-// QueryTeammateTasks queries the teammate_tasks edge of a Task.
+// QueryTeammateTasks queries the teammateTasks edge of a Task.
 func (c *TaskClient) QueryTeammateTasks(t *Task) *TeammateTaskQuery {
 	query := &TeammateTaskQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
@@ -2578,7 +2578,7 @@ func (c *TaskClient) QueryTeammateTasks(t *Task) *TeammateTaskQuery {
 	return query
 }
 
-// QueryProjectTasks queries the project_tasks edge of a Task.
+// QueryProjectTasks queries the projectTasks edge of a Task.
 func (c *TaskClient) QueryProjectTasks(t *Task) *ProjectTaskQuery {
 	query := &ProjectTaskQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
@@ -2594,7 +2594,7 @@ func (c *TaskClient) QueryProjectTasks(t *Task) *ProjectTaskQuery {
 	return query
 }
 
-// QueryTaskLikes queries the task_likes edge of a Task.
+// QueryTaskLikes queries the taskLikes edge of a Task.
 func (c *TaskClient) QueryTaskLikes(t *Task) *TaskLikeQuery {
 	query := &TaskLikeQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
@@ -2610,7 +2610,7 @@ func (c *TaskClient) QueryTaskLikes(t *Task) *TaskLikeQuery {
 	return query
 }
 
-// QueryTaskTags queries the task_tags edge of a Task.
+// QueryTaskTags queries the taskTags edge of a Task.
 func (c *TaskClient) QueryTaskTags(t *Task) *TaskTagQuery {
 	query := &TaskTagQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
@@ -2626,7 +2626,7 @@ func (c *TaskClient) QueryTaskTags(t *Task) *TaskTagQuery {
 	return query
 }
 
-// QueryTaskCollaborators queries the task_collaborators edge of a Task.
+// QueryTaskCollaborators queries the taskCollaborators edge of a Task.
 func (c *TaskClient) QueryTaskCollaborators(t *Task) *TaskCollaboratorQuery {
 	query := &TaskCollaboratorQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
@@ -2642,7 +2642,7 @@ func (c *TaskClient) QueryTaskCollaborators(t *Task) *TaskCollaboratorQuery {
 	return query
 }
 
-// QueryTaskFeeds queries the task_feeds edge of a Task.
+// QueryTaskFeeds queries the taskFeeds edge of a Task.
 func (c *TaskClient) QueryTaskFeeds(t *Task) *TaskFeedQuery {
 	query := &TaskFeedQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
@@ -2658,7 +2658,7 @@ func (c *TaskClient) QueryTaskFeeds(t *Task) *TaskFeedQuery {
 	return query
 }
 
-// QueryTaskFeedLikes queries the task_feed_likes edge of a Task.
+// QueryTaskFeedLikes queries the taskFeedLikes edge of a Task.
 func (c *TaskClient) QueryTaskFeedLikes(t *Task) *TaskFeedLikeQuery {
 	query := &TaskFeedLikeQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
@@ -2674,7 +2674,7 @@ func (c *TaskClient) QueryTaskFeedLikes(t *Task) *TaskFeedLikeQuery {
 	return query
 }
 
-// QueryTaskFiles queries the task_files edge of a Task.
+// QueryTaskFiles queries the taskFiles edge of a Task.
 func (c *TaskClient) QueryTaskFiles(t *Task) *TaskFileQuery {
 	query := &TaskFileQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
@@ -2902,7 +2902,7 @@ func (c *TaskColumnClient) GetX(ctx context.Context, id ulid.ID) *TaskColumn {
 	return obj
 }
 
-// QueryTeammateTaskColumns queries the teammate_task_columns edge of a TaskColumn.
+// QueryTeammateTaskColumns queries the teammateTaskColumns edge of a TaskColumn.
 func (c *TaskColumnClient) QueryTeammateTaskColumns(tc *TaskColumn) *TeammateTaskColumnQuery {
 	query := &TeammateTaskColumnQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
@@ -2918,7 +2918,7 @@ func (c *TaskColumnClient) QueryTeammateTaskColumns(tc *TaskColumn) *TeammateTas
 	return query
 }
 
-// QueryProjectTaskColumns queries the project_task_columns edge of a TaskColumn.
+// QueryProjectTaskColumns queries the projectTaskColumns edge of a TaskColumn.
 func (c *TaskColumnClient) QueryProjectTaskColumns(tc *TaskColumn) *ProjectTaskColumnQuery {
 	query := &ProjectTaskColumnQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
@@ -3056,7 +3056,7 @@ func (c *TaskFeedClient) QueryTeammate(tf *TaskFeed) *TeammateQuery {
 	return query
 }
 
-// QueryTaskFeedLikes queries the task_feed_likes edge of a TaskFeed.
+// QueryTaskFeedLikes queries the taskFeedLikes edge of a TaskFeed.
 func (c *TaskFeedClient) QueryTaskFeedLikes(tf *TaskFeed) *TaskFeedLikeQuery {
 	query := &TaskFeedLikeQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
@@ -3072,7 +3072,7 @@ func (c *TaskFeedClient) QueryTaskFeedLikes(tf *TaskFeed) *TaskFeedLikeQuery {
 	return query
 }
 
-// QueryTaskFiles queries the task_files edge of a TaskFeed.
+// QueryTaskFiles queries the taskFiles edge of a TaskFeed.
 func (c *TaskFeedClient) QueryTaskFiles(tf *TaskFeed) *TaskFileQuery {
 	query := &TaskFileQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
@@ -3348,7 +3348,7 @@ func (c *TaskFileClient) QueryTask(tf *TaskFile) *TaskQuery {
 	return query
 }
 
-// QueryTaskFeed queries the task_feed edge of a TaskFile.
+// QueryTaskFeed queries the taskFeed edge of a TaskFile.
 func (c *TaskFileClient) QueryTaskFeed(tf *TaskFile) *TaskFeedQuery {
 	query := &TaskFeedQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
@@ -3364,7 +3364,7 @@ func (c *TaskFileClient) QueryTaskFeed(tf *TaskFile) *TaskFeedQuery {
 	return query
 }
 
-// QueryFileType queries the file_type edge of a TaskFile.
+// QueryFileType queries the fileType edge of a TaskFile.
 func (c *TaskFileClient) QueryFileType(tf *TaskFile) *FileTypeQuery {
 	query := &FileTypeQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
@@ -3608,7 +3608,7 @@ func (c *TaskListCompletedStatusClient) GetX(ctx context.Context, id ulid.ID) *T
 	return obj
 }
 
-// QueryTeammateTaskListStatuses queries the teammate_task_list_statuses edge of a TaskListCompletedStatus.
+// QueryTeammateTaskListStatuses queries the teammateTaskListStatuses edge of a TaskListCompletedStatus.
 func (c *TaskListCompletedStatusClient) QueryTeammateTaskListStatuses(tlcs *TaskListCompletedStatus) *TeammateTaskListStatusQuery {
 	query := &TeammateTaskListStatusQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
@@ -3624,7 +3624,7 @@ func (c *TaskListCompletedStatusClient) QueryTeammateTaskListStatuses(tlcs *Task
 	return query
 }
 
-// QueryProjectTaskListStatuses queries the project_task_list_statuses edge of a TaskListCompletedStatus.
+// QueryProjectTaskListStatuses queries the projectTaskListStatuses edge of a TaskListCompletedStatus.
 func (c *TaskListCompletedStatusClient) QueryProjectTaskListStatuses(tlcs *TaskListCompletedStatus) *ProjectTaskListStatusQuery {
 	query := &ProjectTaskListStatusQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
@@ -3730,7 +3730,7 @@ func (c *TaskListSortStatusClient) GetX(ctx context.Context, id ulid.ID) *TaskLi
 	return obj
 }
 
-// QueryTeammateTaskListStatuses queries the teammate_task_list_statuses edge of a TaskListSortStatus.
+// QueryTeammateTaskListStatuses queries the teammateTaskListStatuses edge of a TaskListSortStatus.
 func (c *TaskListSortStatusClient) QueryTeammateTaskListStatuses(tlss *TaskListSortStatus) *TeammateTaskListStatusQuery {
 	query := &TeammateTaskListStatusQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
@@ -3746,7 +3746,7 @@ func (c *TaskListSortStatusClient) QueryTeammateTaskListStatuses(tlss *TaskListS
 	return query
 }
 
-// QueryProjectTaskListStatuses queries the project_task_list_statuses edge of a TaskListSortStatus.
+// QueryProjectTaskListStatuses queries the projectTaskListStatuses edge of a TaskListSortStatus.
 func (c *TaskListSortStatusClient) QueryProjectTaskListStatuses(tlss *TaskListSortStatus) *ProjectTaskListStatusQuery {
 	query := &ProjectTaskListStatusQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
@@ -4218,7 +4218,7 @@ func (c *TeammateClient) QueryProjects(t *Teammate) *ProjectQuery {
 	return query
 }
 
-// QueryProjectTeammates queries the project_teammates edge of a Teammate.
+// QueryProjectTeammates queries the projectTeammates edge of a Teammate.
 func (c *TeammateClient) QueryProjectTeammates(t *Teammate) *ProjectTeammateQuery {
 	query := &ProjectTeammateQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
@@ -4234,7 +4234,7 @@ func (c *TeammateClient) QueryProjectTeammates(t *Teammate) *ProjectTeammateQuer
 	return query
 }
 
-// QueryWorkspaceTeammates queries the workspace_teammates edge of a Teammate.
+// QueryWorkspaceTeammates queries the workspaceTeammates edge of a Teammate.
 func (c *TeammateClient) QueryWorkspaceTeammates(t *Teammate) *WorkspaceTeammateQuery {
 	query := &WorkspaceTeammateQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
@@ -4250,7 +4250,7 @@ func (c *TeammateClient) QueryWorkspaceTeammates(t *Teammate) *WorkspaceTeammate
 	return query
 }
 
-// QueryFavoriteProjects queries the favorite_projects edge of a Teammate.
+// QueryFavoriteProjects queries the favoriteProjects edge of a Teammate.
 func (c *TeammateClient) QueryFavoriteProjects(t *Teammate) *FavoriteProjectQuery {
 	query := &FavoriteProjectQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
@@ -4266,7 +4266,7 @@ func (c *TeammateClient) QueryFavoriteProjects(t *Teammate) *FavoriteProjectQuer
 	return query
 }
 
-// QueryFavoriteWorkspaces queries the favorite_workspaces edge of a Teammate.
+// QueryFavoriteWorkspaces queries the favoriteWorkspaces edge of a Teammate.
 func (c *TeammateClient) QueryFavoriteWorkspaces(t *Teammate) *FavoriteWorkspaceQuery {
 	query := &FavoriteWorkspaceQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
@@ -4282,7 +4282,7 @@ func (c *TeammateClient) QueryFavoriteWorkspaces(t *Teammate) *FavoriteWorkspace
 	return query
 }
 
-// QueryTeammateTaskTabStatuses queries the teammate_task_tab_statuses edge of a Teammate.
+// QueryTeammateTaskTabStatuses queries the teammateTaskTabStatuses edge of a Teammate.
 func (c *TeammateClient) QueryTeammateTaskTabStatuses(t *Teammate) *TeammateTaskTabStatusQuery {
 	query := &TeammateTaskTabStatusQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
@@ -4298,7 +4298,7 @@ func (c *TeammateClient) QueryTeammateTaskTabStatuses(t *Teammate) *TeammateTask
 	return query
 }
 
-// QueryTeammateTaskColumns queries the teammate_task_columns edge of a Teammate.
+// QueryTeammateTaskColumns queries the teammateTaskColumns edge of a Teammate.
 func (c *TeammateClient) QueryTeammateTaskColumns(t *Teammate) *TeammateTaskColumnQuery {
 	query := &TeammateTaskColumnQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
@@ -4314,7 +4314,7 @@ func (c *TeammateClient) QueryTeammateTaskColumns(t *Teammate) *TeammateTaskColu
 	return query
 }
 
-// QueryTeammateTaskListStatuses queries the teammate_task_list_statuses edge of a Teammate.
+// QueryTeammateTaskListStatuses queries the teammateTaskListStatuses edge of a Teammate.
 func (c *TeammateClient) QueryTeammateTaskListStatuses(t *Teammate) *TeammateTaskListStatusQuery {
 	query := &TeammateTaskListStatusQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
@@ -4330,7 +4330,7 @@ func (c *TeammateClient) QueryTeammateTaskListStatuses(t *Teammate) *TeammateTas
 	return query
 }
 
-// QueryTeammateTaskSections queries the teammate_task_sections edge of a Teammate.
+// QueryTeammateTaskSections queries the teammateTaskSections edge of a Teammate.
 func (c *TeammateClient) QueryTeammateTaskSections(t *Teammate) *TeammateTaskSectionQuery {
 	query := &TeammateTaskSectionQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
@@ -4362,7 +4362,7 @@ func (c *TeammateClient) QueryTasks(t *Teammate) *TaskQuery {
 	return query
 }
 
-// QueryTeammateTasks queries the teammate_tasks edge of a Teammate.
+// QueryTeammateTasks queries the teammateTasks edge of a Teammate.
 func (c *TeammateClient) QueryTeammateTasks(t *Teammate) *TeammateTaskQuery {
 	query := &TeammateTaskQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
@@ -4378,7 +4378,7 @@ func (c *TeammateClient) QueryTeammateTasks(t *Teammate) *TeammateTaskQuery {
 	return query
 }
 
-// QueryTaskLikes queries the task_likes edge of a Teammate.
+// QueryTaskLikes queries the taskLikes edge of a Teammate.
 func (c *TeammateClient) QueryTaskLikes(t *Teammate) *TaskLikeQuery {
 	query := &TaskLikeQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
@@ -4394,7 +4394,7 @@ func (c *TeammateClient) QueryTaskLikes(t *Teammate) *TaskLikeQuery {
 	return query
 }
 
-// QueryTaskCollaborators queries the task_collaborators edge of a Teammate.
+// QueryTaskCollaborators queries the taskCollaborators edge of a Teammate.
 func (c *TeammateClient) QueryTaskCollaborators(t *Teammate) *TaskCollaboratorQuery {
 	query := &TaskCollaboratorQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
@@ -4410,7 +4410,7 @@ func (c *TeammateClient) QueryTaskCollaborators(t *Teammate) *TaskCollaboratorQu
 	return query
 }
 
-// QueryTaskFeeds queries the task_feeds edge of a Teammate.
+// QueryTaskFeeds queries the taskFeeds edge of a Teammate.
 func (c *TeammateClient) QueryTaskFeeds(t *Teammate) *TaskFeedQuery {
 	query := &TaskFeedQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
@@ -4426,7 +4426,7 @@ func (c *TeammateClient) QueryTaskFeeds(t *Teammate) *TaskFeedQuery {
 	return query
 }
 
-// QueryTaskFeedLikes queries the task_feed_likes edge of a Teammate.
+// QueryTaskFeedLikes queries the taskFeedLikes edge of a Teammate.
 func (c *TeammateClient) QueryTaskFeedLikes(t *Teammate) *TaskFeedLikeQuery {
 	query := &TaskFeedLikeQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
@@ -4564,7 +4564,7 @@ func (c *TeammateTaskClient) QueryTask(tt *TeammateTask) *TaskQuery {
 	return query
 }
 
-// QueryTeammateTaskSection queries the teammate_task_section edge of a TeammateTask.
+// QueryTeammateTaskSection queries the teammateTaskSection edge of a TeammateTask.
 func (c *TeammateTaskClient) QueryTeammateTaskSection(tt *TeammateTask) *TeammateTaskSectionQuery {
 	query := &TeammateTaskSectionQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
@@ -4702,7 +4702,7 @@ func (c *TeammateTaskColumnClient) QueryWorkspace(ttc *TeammateTaskColumn) *Work
 	return query
 }
 
-// QueryTaskColumn queries the task_column edge of a TeammateTaskColumn.
+// QueryTaskColumn queries the taskColumn edge of a TeammateTaskColumn.
 func (c *TeammateTaskColumnClient) QueryTaskColumn(ttc *TeammateTaskColumn) *TaskColumnQuery {
 	query := &TaskColumnQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
@@ -4840,7 +4840,7 @@ func (c *TeammateTaskListStatusClient) QueryTeammate(ttls *TeammateTaskListStatu
 	return query
 }
 
-// QueryTaskListCompletedStatus queries the task_list_completed_status edge of a TeammateTaskListStatus.
+// QueryTaskListCompletedStatus queries the taskListCompletedStatus edge of a TeammateTaskListStatus.
 func (c *TeammateTaskListStatusClient) QueryTaskListCompletedStatus(ttls *TeammateTaskListStatus) *TaskListCompletedStatusQuery {
 	query := &TaskListCompletedStatusQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
@@ -4856,7 +4856,7 @@ func (c *TeammateTaskListStatusClient) QueryTaskListCompletedStatus(ttls *Teamma
 	return query
 }
 
-// QueryTaskListSortStatus queries the task_list_sort_status edge of a TeammateTaskListStatus.
+// QueryTaskListSortStatus queries the taskListSortStatus edge of a TeammateTaskListStatus.
 func (c *TeammateTaskListStatusClient) QueryTaskListSortStatus(ttls *TeammateTaskListStatus) *TaskListSortStatusQuery {
 	query := &TaskListSortStatusQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
@@ -4994,7 +4994,7 @@ func (c *TeammateTaskSectionClient) QueryWorkspace(tts *TeammateTaskSection) *Wo
 	return query
 }
 
-// QueryTeammateTasks queries the teammate_tasks edge of a TeammateTaskSection.
+// QueryTeammateTasks queries the teammateTasks edge of a TeammateTaskSection.
 func (c *TeammateTaskSectionClient) QueryTeammateTasks(tts *TeammateTaskSection) *TeammateTaskQuery {
 	query := &TeammateTaskQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
@@ -5222,7 +5222,7 @@ func (c *TestTodoClient) GetX(ctx context.Context, id ulid.ID) *TestTodo {
 	return obj
 }
 
-// QueryTestUser queries the test_user edge of a TestTodo.
+// QueryTestUser queries the testUser edge of a TestTodo.
 func (c *TestTodoClient) QueryTestUser(tt *TestTodo) *TestUserQuery {
 	query := &TestUserQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
@@ -5498,7 +5498,7 @@ func (c *WorkspaceClient) QueryProjects(w *Workspace) *ProjectQuery {
 	return query
 }
 
-// QueryWorkspaceTeammates queries the workspace_teammates edge of a Workspace.
+// QueryWorkspaceTeammates queries the workspaceTeammates edge of a Workspace.
 func (c *WorkspaceClient) QueryWorkspaceTeammates(w *Workspace) *WorkspaceTeammateQuery {
 	query := &WorkspaceTeammateQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
@@ -5514,7 +5514,7 @@ func (c *WorkspaceClient) QueryWorkspaceTeammates(w *Workspace) *WorkspaceTeamma
 	return query
 }
 
-// QueryFavoriteWorkspaces queries the favorite_workspaces edge of a Workspace.
+// QueryFavoriteWorkspaces queries the favoriteWorkspaces edge of a Workspace.
 func (c *WorkspaceClient) QueryFavoriteWorkspaces(w *Workspace) *FavoriteWorkspaceQuery {
 	query := &FavoriteWorkspaceQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
@@ -5530,7 +5530,7 @@ func (c *WorkspaceClient) QueryFavoriteWorkspaces(w *Workspace) *FavoriteWorkspa
 	return query
 }
 
-// QueryTeammateTaskTabStatuses queries the teammate_task_tab_statuses edge of a Workspace.
+// QueryTeammateTaskTabStatuses queries the teammateTaskTabStatuses edge of a Workspace.
 func (c *WorkspaceClient) QueryTeammateTaskTabStatuses(w *Workspace) *TeammateTaskTabStatusQuery {
 	query := &TeammateTaskTabStatusQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
@@ -5546,7 +5546,7 @@ func (c *WorkspaceClient) QueryTeammateTaskTabStatuses(w *Workspace) *TeammateTa
 	return query
 }
 
-// QueryTeammateTaskListStatuses queries the teammate_task_list_statuses edge of a Workspace.
+// QueryTeammateTaskListStatuses queries the teammateTaskListStatuses edge of a Workspace.
 func (c *WorkspaceClient) QueryTeammateTaskListStatuses(w *Workspace) *TeammateTaskListStatusQuery {
 	query := &TeammateTaskListStatusQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
@@ -5562,7 +5562,7 @@ func (c *WorkspaceClient) QueryTeammateTaskListStatuses(w *Workspace) *TeammateT
 	return query
 }
 
-// QueryTeammateTaskSections queries the teammate_task_sections edge of a Workspace.
+// QueryTeammateTaskSections queries the teammateTaskSections edge of a Workspace.
 func (c *WorkspaceClient) QueryTeammateTaskSections(w *Workspace) *TeammateTaskSectionQuery {
 	query := &TeammateTaskSectionQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
@@ -5578,7 +5578,7 @@ func (c *WorkspaceClient) QueryTeammateTaskSections(w *Workspace) *TeammateTaskS
 	return query
 }
 
-// QueryTaskLikes queries the task_likes edge of a Workspace.
+// QueryTaskLikes queries the taskLikes edge of a Workspace.
 func (c *WorkspaceClient) QueryTaskLikes(w *Workspace) *TaskLikeQuery {
 	query := &TaskLikeQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
@@ -5610,7 +5610,7 @@ func (c *WorkspaceClient) QueryTags(w *Workspace) *TagQuery {
 	return query
 }
 
-// QueryTeammateTaskColumns queries the teammate_task_columns edge of a Workspace.
+// QueryTeammateTaskColumns queries the teammateTaskColumns edge of a Workspace.
 func (c *WorkspaceClient) QueryTeammateTaskColumns(w *Workspace) *TeammateTaskColumnQuery {
 	query := &TeammateTaskColumnQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {

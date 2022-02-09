@@ -94,7 +94,7 @@ func (ptc *ProjectTaskCreate) SetTask(t *Task) *ProjectTaskCreate {
 	return ptc.SetTaskID(t.ID)
 }
 
-// SetProjectTaskSection sets the "project_task_section" edge to the ProjectTaskSection entity.
+// SetProjectTaskSection sets the "projectTaskSection" edge to the ProjectTaskSection entity.
 func (ptc *ProjectTaskCreate) SetProjectTaskSection(p *ProjectTaskSection) *ProjectTaskCreate {
 	return ptc.SetProjectTaskSectionID(p.ID)
 }
@@ -208,7 +208,7 @@ func (ptc *ProjectTaskCreate) check() error {
 		return &ValidationError{Name: "task", err: errors.New("ent: missing required edge \"task\"")}
 	}
 	if _, ok := ptc.mutation.ProjectTaskSectionID(); !ok {
-		return &ValidationError{Name: "project_task_section", err: errors.New("ent: missing required edge \"project_task_section\"")}
+		return &ValidationError{Name: "projectTaskSection", err: errors.New("ent: missing required edge \"projectTaskSection\"")}
 	}
 	return nil
 }

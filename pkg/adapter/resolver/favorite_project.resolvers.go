@@ -11,7 +11,6 @@ import (
 	"project-management-demo-backend/pkg/adapter/handler"
 	"project-management-demo-backend/pkg/entity/model"
 	"project-management-demo-backend/pkg/util/datetime"
-	"project-management-demo-backend/pkg/util/graphqlutil"
 	"project-management-demo-backend/pkg/util/subscription"
 )
 
@@ -68,9 +67,7 @@ func (r *queryResolver) FavoriteProject(ctx context.Context, where *ent.Favorite
 }
 
 func (r *queryResolver) FavoriteProjects(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.FavoriteProjectWhereInput) (*ent.FavoriteProjectConnection, error) {
-	requestedFields := graphqlutil.GetRequestedFields(ctx)
-
-	fs, err := r.controller.FavoriteProject.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
+	fs, err := r.controller.FavoriteProject.ListWithPagination(ctx, after, first, before, last, where)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}

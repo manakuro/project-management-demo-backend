@@ -38,13 +38,13 @@ var (
 		PrimaryKey: []*schema.Column{FavoriteProjectsColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "favorite_projects_projects_favorite_projects",
+				Symbol:     "favorite_projects_projects_favoriteProjects",
 				Columns:    []*schema.Column{FavoriteProjectsColumns[3]},
 				RefColumns: []*schema.Column{ProjectsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "favorite_projects_teammates_favorite_projects",
+				Symbol:     "favorite_projects_teammates_favoriteProjects",
 				Columns:    []*schema.Column{FavoriteProjectsColumns[4]},
 				RefColumns: []*schema.Column{TeammatesColumns[0]},
 				OnDelete:   schema.SetNull,
@@ -66,13 +66,13 @@ var (
 		PrimaryKey: []*schema.Column{FavoriteWorkspacesColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "favorite_workspaces_teammates_favorite_workspaces",
+				Symbol:     "favorite_workspaces_teammates_favoriteWorkspaces",
 				Columns:    []*schema.Column{FavoriteWorkspacesColumns[3]},
 				RefColumns: []*schema.Column{TeammatesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "favorite_workspaces_workspaces_favorite_workspaces",
+				Symbol:     "favorite_workspaces_workspaces_favoriteWorkspaces",
 				Columns:    []*schema.Column{FavoriteWorkspacesColumns[4]},
 				RefColumns: []*schema.Column{WorkspacesColumns[0]},
 				OnDelete:   schema.SetNull,
@@ -174,7 +174,7 @@ var (
 		PrimaryKey: []*schema.Column{ProjectBaseColorsColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "project_base_colors_colors_project_base_colors",
+				Symbol:     "project_base_colors_colors_projectBaseColors",
 				Columns:    []*schema.Column{ProjectBaseColorsColumns[3]},
 				RefColumns: []*schema.Column{ColorsColumns[0]},
 				OnDelete:   schema.SetNull,
@@ -195,7 +195,7 @@ var (
 		PrimaryKey: []*schema.Column{ProjectIconsColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "project_icons_icons_project_icons",
+				Symbol:     "project_icons_icons_projectIcons",
 				Columns:    []*schema.Column{ProjectIconsColumns[3]},
 				RefColumns: []*schema.Column{IconsColumns[0]},
 				OnDelete:   schema.SetNull,
@@ -216,7 +216,7 @@ var (
 		PrimaryKey: []*schema.Column{ProjectLightColorsColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "project_light_colors_colors_project_light_colors",
+				Symbol:     "project_light_colors_colors_projectLightColors",
 				Columns:    []*schema.Column{ProjectLightColorsColumns[3]},
 				RefColumns: []*schema.Column{ColorsColumns[0]},
 				OnDelete:   schema.SetNull,
@@ -239,19 +239,19 @@ var (
 		PrimaryKey: []*schema.Column{ProjectTasksColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "project_tasks_projects_project_tasks",
+				Symbol:     "project_tasks_projects_projectTasks",
 				Columns:    []*schema.Column{ProjectTasksColumns[3]},
 				RefColumns: []*schema.Column{ProjectsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "project_tasks_project_task_sections_project_tasks",
+				Symbol:     "project_tasks_project_task_sections_projectTasks",
 				Columns:    []*schema.Column{ProjectTasksColumns[4]},
 				RefColumns: []*schema.Column{ProjectTaskSectionsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "project_tasks_tasks_project_tasks",
+				Symbol:     "project_tasks_tasks_projectTasks",
 				Columns:    []*schema.Column{ProjectTasksColumns[5]},
 				RefColumns: []*schema.Column{TasksColumns[0]},
 				OnDelete:   schema.SetNull,
@@ -277,13 +277,13 @@ var (
 		PrimaryKey: []*schema.Column{ProjectTaskColumnsColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "project_task_columns_projects_project_task_columns",
+				Symbol:     "project_task_columns_projects_projectTaskColumns",
 				Columns:    []*schema.Column{ProjectTaskColumnsColumns[7]},
 				RefColumns: []*schema.Column{ProjectsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "project_task_columns_task_columns_project_task_columns",
+				Symbol:     "project_task_columns_task_columns_projectTaskColumns",
 				Columns:    []*schema.Column{ProjectTaskColumnsColumns[8]},
 				RefColumns: []*schema.Column{TaskColumnsColumns[0]},
 				OnDelete:   schema.SetNull,
@@ -306,19 +306,19 @@ var (
 		PrimaryKey: []*schema.Column{ProjectTaskListStatusColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "project_task_list_status_projects_project_task_list_statuses",
+				Symbol:     "project_task_list_status_projects_projectTaskListStatuses",
 				Columns:    []*schema.Column{ProjectTaskListStatusColumns[3]},
 				RefColumns: []*schema.Column{ProjectsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "project_task_list_status_task_list_completed_status_project_task_list_statuses",
+				Symbol:     "project_task_list_status_task_list_completed_status_projectTaskListStatuses",
 				Columns:    []*schema.Column{ProjectTaskListStatusColumns[4]},
 				RefColumns: []*schema.Column{TaskListCompletedStatusColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "project_task_list_status_task_list_sort_status_project_task_list_statuses",
+				Symbol:     "project_task_list_status_task_list_sort_status_projectTaskListStatuses",
 				Columns:    []*schema.Column{ProjectTaskListStatusColumns[5]},
 				RefColumns: []*schema.Column{TaskListSortStatusColumns[0]},
 				OnDelete:   schema.SetNull,
@@ -340,7 +340,7 @@ var (
 		PrimaryKey: []*schema.Column{ProjectTaskSectionsColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "project_task_sections_projects_project_task_sections",
+				Symbol:     "project_task_sections_projects_projectTaskSections",
 				Columns:    []*schema.Column{ProjectTaskSectionsColumns[4]},
 				RefColumns: []*schema.Column{ProjectsColumns[0]},
 				OnDelete:   schema.SetNull,
@@ -364,13 +364,13 @@ var (
 		PrimaryKey: []*schema.Column{ProjectTeammatesColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "project_teammates_projects_project_teammates",
+				Symbol:     "project_teammates_projects_projectTeammates",
 				Columns:    []*schema.Column{ProjectTeammatesColumns[5]},
 				RefColumns: []*schema.Column{ProjectsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "project_teammates_teammates_project_teammates",
+				Symbol:     "project_teammates_teammates_projectTeammates",
 				Columns:    []*schema.Column{ProjectTeammatesColumns[6]},
 				RefColumns: []*schema.Column{TeammatesColumns[0]},
 				OnDelete:   schema.SetNull,
@@ -429,7 +429,7 @@ var (
 		PrimaryKey: []*schema.Column{TasksColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "tasks_tasks_sub_tasks",
+				Symbol:     "tasks_tasks_subTasks",
 				Columns:    []*schema.Column{TasksColumns[10]},
 				RefColumns: []*schema.Column{TasksColumns[0]},
 				OnDelete:   schema.SetNull,
@@ -463,13 +463,13 @@ var (
 		PrimaryKey: []*schema.Column{TaskCollaboratorsColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "task_collaborators_tasks_task_collaborators",
+				Symbol:     "task_collaborators_tasks_taskCollaborators",
 				Columns:    []*schema.Column{TaskCollaboratorsColumns[3]},
 				RefColumns: []*schema.Column{TasksColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "task_collaborators_teammates_task_collaborators",
+				Symbol:     "task_collaborators_teammates_taskCollaborators",
 				Columns:    []*schema.Column{TaskCollaboratorsColumns[4]},
 				RefColumns: []*schema.Column{TeammatesColumns[0]},
 				OnDelete:   schema.SetNull,
@@ -508,13 +508,13 @@ var (
 		PrimaryKey: []*schema.Column{TaskFeedsColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "task_feeds_tasks_task_feeds",
+				Symbol:     "task_feeds_tasks_taskFeeds",
 				Columns:    []*schema.Column{TaskFeedsColumns[6]},
 				RefColumns: []*schema.Column{TasksColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "task_feeds_teammates_task_feeds",
+				Symbol:     "task_feeds_teammates_taskFeeds",
 				Columns:    []*schema.Column{TaskFeedsColumns[7]},
 				RefColumns: []*schema.Column{TeammatesColumns[0]},
 				OnDelete:   schema.SetNull,
@@ -537,19 +537,19 @@ var (
 		PrimaryKey: []*schema.Column{TaskFeedLikesColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "task_feed_likes_tasks_task_feed_likes",
+				Symbol:     "task_feed_likes_tasks_taskFeedLikes",
 				Columns:    []*schema.Column{TaskFeedLikesColumns[3]},
 				RefColumns: []*schema.Column{TasksColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "task_feed_likes_task_feeds_task_feed_likes",
+				Symbol:     "task_feed_likes_task_feeds_taskFeedLikes",
 				Columns:    []*schema.Column{TaskFeedLikesColumns[4]},
 				RefColumns: []*schema.Column{TaskFeedsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "task_feed_likes_teammates_task_feed_likes",
+				Symbol:     "task_feed_likes_teammates_taskFeedLikes",
 				Columns:    []*schema.Column{TaskFeedLikesColumns[5]},
 				RefColumns: []*schema.Column{TeammatesColumns[0]},
 				OnDelete:   schema.SetNull,
@@ -576,25 +576,25 @@ var (
 		PrimaryKey: []*schema.Column{TaskFilesColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "task_files_file_types_task_files",
+				Symbol:     "task_files_file_types_taskFiles",
 				Columns:    []*schema.Column{TaskFilesColumns[6]},
 				RefColumns: []*schema.Column{FileTypesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "task_files_projects_task_files",
+				Symbol:     "task_files_projects_taskFiles",
 				Columns:    []*schema.Column{TaskFilesColumns[7]},
 				RefColumns: []*schema.Column{ProjectsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "task_files_tasks_task_files",
+				Symbol:     "task_files_tasks_taskFiles",
 				Columns:    []*schema.Column{TaskFilesColumns[8]},
 				RefColumns: []*schema.Column{TasksColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "task_files_task_feeds_task_files",
+				Symbol:     "task_files_task_feeds_taskFiles",
 				Columns:    []*schema.Column{TaskFilesColumns[9]},
 				RefColumns: []*schema.Column{TaskFeedsColumns[0]},
 				OnDelete:   schema.SetNull,
@@ -617,19 +617,19 @@ var (
 		PrimaryKey: []*schema.Column{TaskLikesColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "task_likes_tasks_task_likes",
+				Symbol:     "task_likes_tasks_taskLikes",
 				Columns:    []*schema.Column{TaskLikesColumns[3]},
 				RefColumns: []*schema.Column{TasksColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "task_likes_teammates_task_likes",
+				Symbol:     "task_likes_teammates_taskLikes",
 				Columns:    []*schema.Column{TaskLikesColumns[4]},
 				RefColumns: []*schema.Column{TeammatesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "task_likes_workspaces_task_likes",
+				Symbol:     "task_likes_workspaces_taskLikes",
 				Columns:    []*schema.Column{TaskLikesColumns[5]},
 				RefColumns: []*schema.Column{WorkspacesColumns[0]},
 				OnDelete:   schema.SetNull,
@@ -680,7 +680,7 @@ var (
 		PrimaryKey: []*schema.Column{TaskPrioritiesColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "task_priorities_colors_task_priorities",
+				Symbol:     "task_priorities_colors_taskPriorities",
 				Columns:    []*schema.Column{TaskPrioritiesColumns[5]},
 				RefColumns: []*schema.Column{ColorsColumns[0]},
 				OnDelete:   schema.SetNull,
@@ -715,13 +715,13 @@ var (
 		PrimaryKey: []*schema.Column{TaskTagsColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "task_tags_tags_task_tags",
+				Symbol:     "task_tags_tags_taskTags",
 				Columns:    []*schema.Column{TaskTagsColumns[3]},
 				RefColumns: []*schema.Column{TagsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "task_tags_tasks_task_tags",
+				Symbol:     "task_tags_tasks_taskTags",
 				Columns:    []*schema.Column{TaskTagsColumns[4]},
 				RefColumns: []*schema.Column{TasksColumns[0]},
 				OnDelete:   schema.SetNull,
@@ -759,19 +759,19 @@ var (
 		PrimaryKey: []*schema.Column{TeammateTasksColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "teammate_tasks_tasks_teammate_tasks",
+				Symbol:     "teammate_tasks_tasks_teammateTasks",
 				Columns:    []*schema.Column{TeammateTasksColumns[3]},
 				RefColumns: []*schema.Column{TasksColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "teammate_tasks_teammates_teammate_tasks",
+				Symbol:     "teammate_tasks_teammates_teammateTasks",
 				Columns:    []*schema.Column{TeammateTasksColumns[4]},
 				RefColumns: []*schema.Column{TeammatesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "teammate_tasks_teammate_task_sections_teammate_tasks",
+				Symbol:     "teammate_tasks_teammate_task_sections_teammateTasks",
 				Columns:    []*schema.Column{TeammateTasksColumns[5]},
 				RefColumns: []*schema.Column{TeammateTaskSectionsColumns[0]},
 				OnDelete:   schema.SetNull,
@@ -798,19 +798,19 @@ var (
 		PrimaryKey: []*schema.Column{TeammateTaskColumnsColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "teammate_task_columns_task_columns_teammate_task_columns",
+				Symbol:     "teammate_task_columns_task_columns_teammateTaskColumns",
 				Columns:    []*schema.Column{TeammateTaskColumnsColumns[7]},
 				RefColumns: []*schema.Column{TaskColumnsColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "teammate_task_columns_teammates_teammate_task_columns",
+				Symbol:     "teammate_task_columns_teammates_teammateTaskColumns",
 				Columns:    []*schema.Column{TeammateTaskColumnsColumns[8]},
 				RefColumns: []*schema.Column{TeammatesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "teammate_task_columns_workspaces_teammate_task_columns",
+				Symbol:     "teammate_task_columns_workspaces_teammateTaskColumns",
 				Columns:    []*schema.Column{TeammateTaskColumnsColumns[9]},
 				RefColumns: []*schema.Column{WorkspacesColumns[0]},
 				OnDelete:   schema.SetNull,
@@ -834,25 +834,25 @@ var (
 		PrimaryKey: []*schema.Column{TeammateTaskListStatusColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "teammate_task_list_status_task_list_completed_status_teammate_task_list_statuses",
+				Symbol:     "teammate_task_list_status_task_list_completed_status_teammateTaskListStatuses",
 				Columns:    []*schema.Column{TeammateTaskListStatusColumns[3]},
 				RefColumns: []*schema.Column{TaskListCompletedStatusColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "teammate_task_list_status_task_list_sort_status_teammate_task_list_statuses",
+				Symbol:     "teammate_task_list_status_task_list_sort_status_teammateTaskListStatuses",
 				Columns:    []*schema.Column{TeammateTaskListStatusColumns[4]},
 				RefColumns: []*schema.Column{TaskListSortStatusColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "teammate_task_list_status_teammates_teammate_task_list_statuses",
+				Symbol:     "teammate_task_list_status_teammates_teammateTaskListStatuses",
 				Columns:    []*schema.Column{TeammateTaskListStatusColumns[5]},
 				RefColumns: []*schema.Column{TeammatesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "teammate_task_list_status_workspaces_teammate_task_list_statuses",
+				Symbol:     "teammate_task_list_status_workspaces_teammateTaskListStatuses",
 				Columns:    []*schema.Column{TeammateTaskListStatusColumns[6]},
 				RefColumns: []*schema.Column{WorkspacesColumns[0]},
 				OnDelete:   schema.SetNull,
@@ -876,13 +876,13 @@ var (
 		PrimaryKey: []*schema.Column{TeammateTaskSectionsColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "teammate_task_sections_teammates_teammate_task_sections",
+				Symbol:     "teammate_task_sections_teammates_teammateTaskSections",
 				Columns:    []*schema.Column{TeammateTaskSectionsColumns[5]},
 				RefColumns: []*schema.Column{TeammatesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "teammate_task_sections_workspaces_teammate_task_sections",
+				Symbol:     "teammate_task_sections_workspaces_teammateTaskSections",
 				Columns:    []*schema.Column{TeammateTaskSectionsColumns[6]},
 				RefColumns: []*schema.Column{WorkspacesColumns[0]},
 				OnDelete:   schema.SetNull,
@@ -905,13 +905,13 @@ var (
 		PrimaryKey: []*schema.Column{TeammateTaskTabStatusColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "teammate_task_tab_status_teammates_teammate_task_tab_statuses",
+				Symbol:     "teammate_task_tab_status_teammates_teammateTaskTabStatuses",
 				Columns:    []*schema.Column{TeammateTaskTabStatusColumns[4]},
 				RefColumns: []*schema.Column{TeammatesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "teammate_task_tab_status_workspaces_teammate_task_tab_statuses",
+				Symbol:     "teammate_task_tab_status_workspaces_teammateTaskTabStatuses",
 				Columns:    []*schema.Column{TeammateTaskTabStatusColumns[5]},
 				RefColumns: []*schema.Column{WorkspacesColumns[0]},
 				OnDelete:   schema.SetNull,
@@ -1013,13 +1013,13 @@ var (
 		PrimaryKey: []*schema.Column{WorkspaceTeammatesColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "workspace_teammates_teammates_workspace_teammates",
+				Symbol:     "workspace_teammates_teammates_workspaceTeammates",
 				Columns:    []*schema.Column{WorkspaceTeammatesColumns[5]},
 				RefColumns: []*schema.Column{TeammatesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "workspace_teammates_workspaces_workspace_teammates",
+				Symbol:     "workspace_teammates_workspaces_workspaceTeammates",
 				Columns:    []*schema.Column{WorkspaceTeammatesColumns[6]},
 				RefColumns: []*schema.Column{WorkspacesColumns[0]},
 				OnDelete:   schema.SetNull,

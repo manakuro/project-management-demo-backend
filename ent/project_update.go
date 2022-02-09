@@ -115,17 +115,17 @@ func (pu *ProjectUpdate) SetWorkspace(w *Workspace) *ProjectUpdate {
 	return pu.SetWorkspaceID(w.ID)
 }
 
-// SetProjectBaseColor sets the "project_base_color" edge to the ProjectBaseColor entity.
+// SetProjectBaseColor sets the "projectBaseColor" edge to the ProjectBaseColor entity.
 func (pu *ProjectUpdate) SetProjectBaseColor(p *ProjectBaseColor) *ProjectUpdate {
 	return pu.SetProjectBaseColorID(p.ID)
 }
 
-// SetProjectLightColor sets the "project_light_color" edge to the ProjectLightColor entity.
+// SetProjectLightColor sets the "projectLightColor" edge to the ProjectLightColor entity.
 func (pu *ProjectUpdate) SetProjectLightColor(p *ProjectLightColor) *ProjectUpdate {
 	return pu.SetProjectLightColorID(p.ID)
 }
 
-// SetProjectIcon sets the "project_icon" edge to the ProjectIcon entity.
+// SetProjectIcon sets the "projectIcon" edge to the ProjectIcon entity.
 func (pu *ProjectUpdate) SetProjectIcon(p *ProjectIcon) *ProjectUpdate {
 	return pu.SetProjectIconID(p.ID)
 }
@@ -141,13 +141,13 @@ func (pu *ProjectUpdate) SetTeammate(t *Teammate) *ProjectUpdate {
 	return pu.SetTeammateID(t.ID)
 }
 
-// AddProjectTeammateIDs adds the "project_teammates" edge to the ProjectTeammate entity by IDs.
+// AddProjectTeammateIDs adds the "projectTeammates" edge to the ProjectTeammate entity by IDs.
 func (pu *ProjectUpdate) AddProjectTeammateIDs(ids ...ulid.ID) *ProjectUpdate {
 	pu.mutation.AddProjectTeammateIDs(ids...)
 	return pu
 }
 
-// AddProjectTeammates adds the "project_teammates" edges to the ProjectTeammate entity.
+// AddProjectTeammates adds the "projectTeammates" edges to the ProjectTeammate entity.
 func (pu *ProjectUpdate) AddProjectTeammates(p ...*ProjectTeammate) *ProjectUpdate {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {
@@ -156,13 +156,13 @@ func (pu *ProjectUpdate) AddProjectTeammates(p ...*ProjectTeammate) *ProjectUpda
 	return pu.AddProjectTeammateIDs(ids...)
 }
 
-// AddFavoriteProjectIDs adds the "favorite_projects" edge to the FavoriteProject entity by IDs.
+// AddFavoriteProjectIDs adds the "favoriteProjects" edge to the FavoriteProject entity by IDs.
 func (pu *ProjectUpdate) AddFavoriteProjectIDs(ids ...ulid.ID) *ProjectUpdate {
 	pu.mutation.AddFavoriteProjectIDs(ids...)
 	return pu
 }
 
-// AddFavoriteProjects adds the "favorite_projects" edges to the FavoriteProject entity.
+// AddFavoriteProjects adds the "favoriteProjects" edges to the FavoriteProject entity.
 func (pu *ProjectUpdate) AddFavoriteProjects(f ...*FavoriteProject) *ProjectUpdate {
 	ids := make([]ulid.ID, len(f))
 	for i := range f {
@@ -171,13 +171,13 @@ func (pu *ProjectUpdate) AddFavoriteProjects(f ...*FavoriteProject) *ProjectUpda
 	return pu.AddFavoriteProjectIDs(ids...)
 }
 
-// AddProjectTaskColumnIDs adds the "project_task_columns" edge to the ProjectTaskColumn entity by IDs.
+// AddProjectTaskColumnIDs adds the "projectTaskColumns" edge to the ProjectTaskColumn entity by IDs.
 func (pu *ProjectUpdate) AddProjectTaskColumnIDs(ids ...ulid.ID) *ProjectUpdate {
 	pu.mutation.AddProjectTaskColumnIDs(ids...)
 	return pu
 }
 
-// AddProjectTaskColumns adds the "project_task_columns" edges to the ProjectTaskColumn entity.
+// AddProjectTaskColumns adds the "projectTaskColumns" edges to the ProjectTaskColumn entity.
 func (pu *ProjectUpdate) AddProjectTaskColumns(p ...*ProjectTaskColumn) *ProjectUpdate {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {
@@ -186,28 +186,28 @@ func (pu *ProjectUpdate) AddProjectTaskColumns(p ...*ProjectTaskColumn) *Project
 	return pu.AddProjectTaskColumnIDs(ids...)
 }
 
-// AddProjectTaskListStatusIDs adds the "project_task_list_statuses" edge to the ProjectTaskListStatus entity by IDs.
-func (pu *ProjectUpdate) AddProjectTaskListStatusIDs(ids ...ulid.ID) *ProjectUpdate {
-	pu.mutation.AddProjectTaskListStatusIDs(ids...)
+// AddProjectTaskListStatuseIDs adds the "projectTaskListStatuses" edge to the ProjectTaskListStatus entity by IDs.
+func (pu *ProjectUpdate) AddProjectTaskListStatuseIDs(ids ...ulid.ID) *ProjectUpdate {
+	pu.mutation.AddProjectTaskListStatuseIDs(ids...)
 	return pu
 }
 
-// AddProjectTaskListStatuses adds the "project_task_list_statuses" edges to the ProjectTaskListStatus entity.
+// AddProjectTaskListStatuses adds the "projectTaskListStatuses" edges to the ProjectTaskListStatus entity.
 func (pu *ProjectUpdate) AddProjectTaskListStatuses(p ...*ProjectTaskListStatus) *ProjectUpdate {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
-	return pu.AddProjectTaskListStatusIDs(ids...)
+	return pu.AddProjectTaskListStatuseIDs(ids...)
 }
 
-// AddProjectTaskSectionIDs adds the "project_task_sections" edge to the ProjectTaskSection entity by IDs.
+// AddProjectTaskSectionIDs adds the "projectTaskSections" edge to the ProjectTaskSection entity by IDs.
 func (pu *ProjectUpdate) AddProjectTaskSectionIDs(ids ...ulid.ID) *ProjectUpdate {
 	pu.mutation.AddProjectTaskSectionIDs(ids...)
 	return pu
 }
 
-// AddProjectTaskSections adds the "project_task_sections" edges to the ProjectTaskSection entity.
+// AddProjectTaskSections adds the "projectTaskSections" edges to the ProjectTaskSection entity.
 func (pu *ProjectUpdate) AddProjectTaskSections(p ...*ProjectTaskSection) *ProjectUpdate {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {
@@ -216,13 +216,13 @@ func (pu *ProjectUpdate) AddProjectTaskSections(p ...*ProjectTaskSection) *Proje
 	return pu.AddProjectTaskSectionIDs(ids...)
 }
 
-// AddProjectTaskIDs adds the "project_tasks" edge to the ProjectTask entity by IDs.
+// AddProjectTaskIDs adds the "projectTasks" edge to the ProjectTask entity by IDs.
 func (pu *ProjectUpdate) AddProjectTaskIDs(ids ...ulid.ID) *ProjectUpdate {
 	pu.mutation.AddProjectTaskIDs(ids...)
 	return pu
 }
 
-// AddProjectTasks adds the "project_tasks" edges to the ProjectTask entity.
+// AddProjectTasks adds the "projectTasks" edges to the ProjectTask entity.
 func (pu *ProjectUpdate) AddProjectTasks(p ...*ProjectTask) *ProjectUpdate {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {
@@ -231,13 +231,13 @@ func (pu *ProjectUpdate) AddProjectTasks(p ...*ProjectTask) *ProjectUpdate {
 	return pu.AddProjectTaskIDs(ids...)
 }
 
-// AddTaskFileIDs adds the "task_files" edge to the TaskFile entity by IDs.
+// AddTaskFileIDs adds the "taskFiles" edge to the TaskFile entity by IDs.
 func (pu *ProjectUpdate) AddTaskFileIDs(ids ...ulid.ID) *ProjectUpdate {
 	pu.mutation.AddTaskFileIDs(ids...)
 	return pu
 }
 
-// AddTaskFiles adds the "task_files" edges to the TaskFile entity.
+// AddTaskFiles adds the "taskFiles" edges to the TaskFile entity.
 func (pu *ProjectUpdate) AddTaskFiles(t ...*TaskFile) *ProjectUpdate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -257,19 +257,19 @@ func (pu *ProjectUpdate) ClearWorkspace() *ProjectUpdate {
 	return pu
 }
 
-// ClearProjectBaseColor clears the "project_base_color" edge to the ProjectBaseColor entity.
+// ClearProjectBaseColor clears the "projectBaseColor" edge to the ProjectBaseColor entity.
 func (pu *ProjectUpdate) ClearProjectBaseColor() *ProjectUpdate {
 	pu.mutation.ClearProjectBaseColor()
 	return pu
 }
 
-// ClearProjectLightColor clears the "project_light_color" edge to the ProjectLightColor entity.
+// ClearProjectLightColor clears the "projectLightColor" edge to the ProjectLightColor entity.
 func (pu *ProjectUpdate) ClearProjectLightColor() *ProjectUpdate {
 	pu.mutation.ClearProjectLightColor()
 	return pu
 }
 
-// ClearProjectIcon clears the "project_icon" edge to the ProjectIcon entity.
+// ClearProjectIcon clears the "projectIcon" edge to the ProjectIcon entity.
 func (pu *ProjectUpdate) ClearProjectIcon() *ProjectUpdate {
 	pu.mutation.ClearProjectIcon()
 	return pu
@@ -281,19 +281,19 @@ func (pu *ProjectUpdate) ClearTeammate() *ProjectUpdate {
 	return pu
 }
 
-// ClearProjectTeammates clears all "project_teammates" edges to the ProjectTeammate entity.
+// ClearProjectTeammates clears all "projectTeammates" edges to the ProjectTeammate entity.
 func (pu *ProjectUpdate) ClearProjectTeammates() *ProjectUpdate {
 	pu.mutation.ClearProjectTeammates()
 	return pu
 }
 
-// RemoveProjectTeammateIDs removes the "project_teammates" edge to ProjectTeammate entities by IDs.
+// RemoveProjectTeammateIDs removes the "projectTeammates" edge to ProjectTeammate entities by IDs.
 func (pu *ProjectUpdate) RemoveProjectTeammateIDs(ids ...ulid.ID) *ProjectUpdate {
 	pu.mutation.RemoveProjectTeammateIDs(ids...)
 	return pu
 }
 
-// RemoveProjectTeammates removes "project_teammates" edges to ProjectTeammate entities.
+// RemoveProjectTeammates removes "projectTeammates" edges to ProjectTeammate entities.
 func (pu *ProjectUpdate) RemoveProjectTeammates(p ...*ProjectTeammate) *ProjectUpdate {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {
@@ -302,19 +302,19 @@ func (pu *ProjectUpdate) RemoveProjectTeammates(p ...*ProjectTeammate) *ProjectU
 	return pu.RemoveProjectTeammateIDs(ids...)
 }
 
-// ClearFavoriteProjects clears all "favorite_projects" edges to the FavoriteProject entity.
+// ClearFavoriteProjects clears all "favoriteProjects" edges to the FavoriteProject entity.
 func (pu *ProjectUpdate) ClearFavoriteProjects() *ProjectUpdate {
 	pu.mutation.ClearFavoriteProjects()
 	return pu
 }
 
-// RemoveFavoriteProjectIDs removes the "favorite_projects" edge to FavoriteProject entities by IDs.
+// RemoveFavoriteProjectIDs removes the "favoriteProjects" edge to FavoriteProject entities by IDs.
 func (pu *ProjectUpdate) RemoveFavoriteProjectIDs(ids ...ulid.ID) *ProjectUpdate {
 	pu.mutation.RemoveFavoriteProjectIDs(ids...)
 	return pu
 }
 
-// RemoveFavoriteProjects removes "favorite_projects" edges to FavoriteProject entities.
+// RemoveFavoriteProjects removes "favoriteProjects" edges to FavoriteProject entities.
 func (pu *ProjectUpdate) RemoveFavoriteProjects(f ...*FavoriteProject) *ProjectUpdate {
 	ids := make([]ulid.ID, len(f))
 	for i := range f {
@@ -323,19 +323,19 @@ func (pu *ProjectUpdate) RemoveFavoriteProjects(f ...*FavoriteProject) *ProjectU
 	return pu.RemoveFavoriteProjectIDs(ids...)
 }
 
-// ClearProjectTaskColumns clears all "project_task_columns" edges to the ProjectTaskColumn entity.
+// ClearProjectTaskColumns clears all "projectTaskColumns" edges to the ProjectTaskColumn entity.
 func (pu *ProjectUpdate) ClearProjectTaskColumns() *ProjectUpdate {
 	pu.mutation.ClearProjectTaskColumns()
 	return pu
 }
 
-// RemoveProjectTaskColumnIDs removes the "project_task_columns" edge to ProjectTaskColumn entities by IDs.
+// RemoveProjectTaskColumnIDs removes the "projectTaskColumns" edge to ProjectTaskColumn entities by IDs.
 func (pu *ProjectUpdate) RemoveProjectTaskColumnIDs(ids ...ulid.ID) *ProjectUpdate {
 	pu.mutation.RemoveProjectTaskColumnIDs(ids...)
 	return pu
 }
 
-// RemoveProjectTaskColumns removes "project_task_columns" edges to ProjectTaskColumn entities.
+// RemoveProjectTaskColumns removes "projectTaskColumns" edges to ProjectTaskColumn entities.
 func (pu *ProjectUpdate) RemoveProjectTaskColumns(p ...*ProjectTaskColumn) *ProjectUpdate {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {
@@ -344,40 +344,40 @@ func (pu *ProjectUpdate) RemoveProjectTaskColumns(p ...*ProjectTaskColumn) *Proj
 	return pu.RemoveProjectTaskColumnIDs(ids...)
 }
 
-// ClearProjectTaskListStatuses clears all "project_task_list_statuses" edges to the ProjectTaskListStatus entity.
+// ClearProjectTaskListStatuses clears all "projectTaskListStatuses" edges to the ProjectTaskListStatus entity.
 func (pu *ProjectUpdate) ClearProjectTaskListStatuses() *ProjectUpdate {
 	pu.mutation.ClearProjectTaskListStatuses()
 	return pu
 }
 
-// RemoveProjectTaskListStatusIDs removes the "project_task_list_statuses" edge to ProjectTaskListStatus entities by IDs.
-func (pu *ProjectUpdate) RemoveProjectTaskListStatusIDs(ids ...ulid.ID) *ProjectUpdate {
-	pu.mutation.RemoveProjectTaskListStatusIDs(ids...)
+// RemoveProjectTaskListStatuseIDs removes the "projectTaskListStatuses" edge to ProjectTaskListStatus entities by IDs.
+func (pu *ProjectUpdate) RemoveProjectTaskListStatuseIDs(ids ...ulid.ID) *ProjectUpdate {
+	pu.mutation.RemoveProjectTaskListStatuseIDs(ids...)
 	return pu
 }
 
-// RemoveProjectTaskListStatuses removes "project_task_list_statuses" edges to ProjectTaskListStatus entities.
+// RemoveProjectTaskListStatuses removes "projectTaskListStatuses" edges to ProjectTaskListStatus entities.
 func (pu *ProjectUpdate) RemoveProjectTaskListStatuses(p ...*ProjectTaskListStatus) *ProjectUpdate {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
-	return pu.RemoveProjectTaskListStatusIDs(ids...)
+	return pu.RemoveProjectTaskListStatuseIDs(ids...)
 }
 
-// ClearProjectTaskSections clears all "project_task_sections" edges to the ProjectTaskSection entity.
+// ClearProjectTaskSections clears all "projectTaskSections" edges to the ProjectTaskSection entity.
 func (pu *ProjectUpdate) ClearProjectTaskSections() *ProjectUpdate {
 	pu.mutation.ClearProjectTaskSections()
 	return pu
 }
 
-// RemoveProjectTaskSectionIDs removes the "project_task_sections" edge to ProjectTaskSection entities by IDs.
+// RemoveProjectTaskSectionIDs removes the "projectTaskSections" edge to ProjectTaskSection entities by IDs.
 func (pu *ProjectUpdate) RemoveProjectTaskSectionIDs(ids ...ulid.ID) *ProjectUpdate {
 	pu.mutation.RemoveProjectTaskSectionIDs(ids...)
 	return pu
 }
 
-// RemoveProjectTaskSections removes "project_task_sections" edges to ProjectTaskSection entities.
+// RemoveProjectTaskSections removes "projectTaskSections" edges to ProjectTaskSection entities.
 func (pu *ProjectUpdate) RemoveProjectTaskSections(p ...*ProjectTaskSection) *ProjectUpdate {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {
@@ -386,19 +386,19 @@ func (pu *ProjectUpdate) RemoveProjectTaskSections(p ...*ProjectTaskSection) *Pr
 	return pu.RemoveProjectTaskSectionIDs(ids...)
 }
 
-// ClearProjectTasks clears all "project_tasks" edges to the ProjectTask entity.
+// ClearProjectTasks clears all "projectTasks" edges to the ProjectTask entity.
 func (pu *ProjectUpdate) ClearProjectTasks() *ProjectUpdate {
 	pu.mutation.ClearProjectTasks()
 	return pu
 }
 
-// RemoveProjectTaskIDs removes the "project_tasks" edge to ProjectTask entities by IDs.
+// RemoveProjectTaskIDs removes the "projectTasks" edge to ProjectTask entities by IDs.
 func (pu *ProjectUpdate) RemoveProjectTaskIDs(ids ...ulid.ID) *ProjectUpdate {
 	pu.mutation.RemoveProjectTaskIDs(ids...)
 	return pu
 }
 
-// RemoveProjectTasks removes "project_tasks" edges to ProjectTask entities.
+// RemoveProjectTasks removes "projectTasks" edges to ProjectTask entities.
 func (pu *ProjectUpdate) RemoveProjectTasks(p ...*ProjectTask) *ProjectUpdate {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {
@@ -407,19 +407,19 @@ func (pu *ProjectUpdate) RemoveProjectTasks(p ...*ProjectTask) *ProjectUpdate {
 	return pu.RemoveProjectTaskIDs(ids...)
 }
 
-// ClearTaskFiles clears all "task_files" edges to the TaskFile entity.
+// ClearTaskFiles clears all "taskFiles" edges to the TaskFile entity.
 func (pu *ProjectUpdate) ClearTaskFiles() *ProjectUpdate {
 	pu.mutation.ClearTaskFiles()
 	return pu
 }
 
-// RemoveTaskFileIDs removes the "task_files" edge to TaskFile entities by IDs.
+// RemoveTaskFileIDs removes the "taskFiles" edge to TaskFile entities by IDs.
 func (pu *ProjectUpdate) RemoveTaskFileIDs(ids ...ulid.ID) *ProjectUpdate {
 	pu.mutation.RemoveTaskFileIDs(ids...)
 	return pu
 }
 
-// RemoveTaskFiles removes "task_files" edges to TaskFile entities.
+// RemoveTaskFiles removes "taskFiles" edges to TaskFile entities.
 func (pu *ProjectUpdate) RemoveTaskFiles(t ...*TaskFile) *ProjectUpdate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -504,13 +504,13 @@ func (pu *ProjectUpdate) check() error {
 		return errors.New("ent: clearing a required unique edge \"workspace\"")
 	}
 	if _, ok := pu.mutation.ProjectBaseColorID(); pu.mutation.ProjectBaseColorCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"project_base_color\"")
+		return errors.New("ent: clearing a required unique edge \"projectBaseColor\"")
 	}
 	if _, ok := pu.mutation.ProjectLightColorID(); pu.mutation.ProjectLightColorCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"project_light_color\"")
+		return errors.New("ent: clearing a required unique edge \"projectLightColor\"")
 	}
 	if _, ok := pu.mutation.ProjectIconID(); pu.mutation.ProjectIconCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"project_icon\"")
+		return errors.New("ent: clearing a required unique edge \"projectIcon\"")
 	}
 	if _, ok := pu.mutation.TeammateID(); pu.mutation.TeammateCleared() && !ok {
 		return errors.New("ent: clearing a required unique edge \"teammate\"")
@@ -1215,17 +1215,17 @@ func (puo *ProjectUpdateOne) SetWorkspace(w *Workspace) *ProjectUpdateOne {
 	return puo.SetWorkspaceID(w.ID)
 }
 
-// SetProjectBaseColor sets the "project_base_color" edge to the ProjectBaseColor entity.
+// SetProjectBaseColor sets the "projectBaseColor" edge to the ProjectBaseColor entity.
 func (puo *ProjectUpdateOne) SetProjectBaseColor(p *ProjectBaseColor) *ProjectUpdateOne {
 	return puo.SetProjectBaseColorID(p.ID)
 }
 
-// SetProjectLightColor sets the "project_light_color" edge to the ProjectLightColor entity.
+// SetProjectLightColor sets the "projectLightColor" edge to the ProjectLightColor entity.
 func (puo *ProjectUpdateOne) SetProjectLightColor(p *ProjectLightColor) *ProjectUpdateOne {
 	return puo.SetProjectLightColorID(p.ID)
 }
 
-// SetProjectIcon sets the "project_icon" edge to the ProjectIcon entity.
+// SetProjectIcon sets the "projectIcon" edge to the ProjectIcon entity.
 func (puo *ProjectUpdateOne) SetProjectIcon(p *ProjectIcon) *ProjectUpdateOne {
 	return puo.SetProjectIconID(p.ID)
 }
@@ -1241,13 +1241,13 @@ func (puo *ProjectUpdateOne) SetTeammate(t *Teammate) *ProjectUpdateOne {
 	return puo.SetTeammateID(t.ID)
 }
 
-// AddProjectTeammateIDs adds the "project_teammates" edge to the ProjectTeammate entity by IDs.
+// AddProjectTeammateIDs adds the "projectTeammates" edge to the ProjectTeammate entity by IDs.
 func (puo *ProjectUpdateOne) AddProjectTeammateIDs(ids ...ulid.ID) *ProjectUpdateOne {
 	puo.mutation.AddProjectTeammateIDs(ids...)
 	return puo
 }
 
-// AddProjectTeammates adds the "project_teammates" edges to the ProjectTeammate entity.
+// AddProjectTeammates adds the "projectTeammates" edges to the ProjectTeammate entity.
 func (puo *ProjectUpdateOne) AddProjectTeammates(p ...*ProjectTeammate) *ProjectUpdateOne {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {
@@ -1256,13 +1256,13 @@ func (puo *ProjectUpdateOne) AddProjectTeammates(p ...*ProjectTeammate) *Project
 	return puo.AddProjectTeammateIDs(ids...)
 }
 
-// AddFavoriteProjectIDs adds the "favorite_projects" edge to the FavoriteProject entity by IDs.
+// AddFavoriteProjectIDs adds the "favoriteProjects" edge to the FavoriteProject entity by IDs.
 func (puo *ProjectUpdateOne) AddFavoriteProjectIDs(ids ...ulid.ID) *ProjectUpdateOne {
 	puo.mutation.AddFavoriteProjectIDs(ids...)
 	return puo
 }
 
-// AddFavoriteProjects adds the "favorite_projects" edges to the FavoriteProject entity.
+// AddFavoriteProjects adds the "favoriteProjects" edges to the FavoriteProject entity.
 func (puo *ProjectUpdateOne) AddFavoriteProjects(f ...*FavoriteProject) *ProjectUpdateOne {
 	ids := make([]ulid.ID, len(f))
 	for i := range f {
@@ -1271,13 +1271,13 @@ func (puo *ProjectUpdateOne) AddFavoriteProjects(f ...*FavoriteProject) *Project
 	return puo.AddFavoriteProjectIDs(ids...)
 }
 
-// AddProjectTaskColumnIDs adds the "project_task_columns" edge to the ProjectTaskColumn entity by IDs.
+// AddProjectTaskColumnIDs adds the "projectTaskColumns" edge to the ProjectTaskColumn entity by IDs.
 func (puo *ProjectUpdateOne) AddProjectTaskColumnIDs(ids ...ulid.ID) *ProjectUpdateOne {
 	puo.mutation.AddProjectTaskColumnIDs(ids...)
 	return puo
 }
 
-// AddProjectTaskColumns adds the "project_task_columns" edges to the ProjectTaskColumn entity.
+// AddProjectTaskColumns adds the "projectTaskColumns" edges to the ProjectTaskColumn entity.
 func (puo *ProjectUpdateOne) AddProjectTaskColumns(p ...*ProjectTaskColumn) *ProjectUpdateOne {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {
@@ -1286,28 +1286,28 @@ func (puo *ProjectUpdateOne) AddProjectTaskColumns(p ...*ProjectTaskColumn) *Pro
 	return puo.AddProjectTaskColumnIDs(ids...)
 }
 
-// AddProjectTaskListStatusIDs adds the "project_task_list_statuses" edge to the ProjectTaskListStatus entity by IDs.
-func (puo *ProjectUpdateOne) AddProjectTaskListStatusIDs(ids ...ulid.ID) *ProjectUpdateOne {
-	puo.mutation.AddProjectTaskListStatusIDs(ids...)
+// AddProjectTaskListStatuseIDs adds the "projectTaskListStatuses" edge to the ProjectTaskListStatus entity by IDs.
+func (puo *ProjectUpdateOne) AddProjectTaskListStatuseIDs(ids ...ulid.ID) *ProjectUpdateOne {
+	puo.mutation.AddProjectTaskListStatuseIDs(ids...)
 	return puo
 }
 
-// AddProjectTaskListStatuses adds the "project_task_list_statuses" edges to the ProjectTaskListStatus entity.
+// AddProjectTaskListStatuses adds the "projectTaskListStatuses" edges to the ProjectTaskListStatus entity.
 func (puo *ProjectUpdateOne) AddProjectTaskListStatuses(p ...*ProjectTaskListStatus) *ProjectUpdateOne {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
-	return puo.AddProjectTaskListStatusIDs(ids...)
+	return puo.AddProjectTaskListStatuseIDs(ids...)
 }
 
-// AddProjectTaskSectionIDs adds the "project_task_sections" edge to the ProjectTaskSection entity by IDs.
+// AddProjectTaskSectionIDs adds the "projectTaskSections" edge to the ProjectTaskSection entity by IDs.
 func (puo *ProjectUpdateOne) AddProjectTaskSectionIDs(ids ...ulid.ID) *ProjectUpdateOne {
 	puo.mutation.AddProjectTaskSectionIDs(ids...)
 	return puo
 }
 
-// AddProjectTaskSections adds the "project_task_sections" edges to the ProjectTaskSection entity.
+// AddProjectTaskSections adds the "projectTaskSections" edges to the ProjectTaskSection entity.
 func (puo *ProjectUpdateOne) AddProjectTaskSections(p ...*ProjectTaskSection) *ProjectUpdateOne {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {
@@ -1316,13 +1316,13 @@ func (puo *ProjectUpdateOne) AddProjectTaskSections(p ...*ProjectTaskSection) *P
 	return puo.AddProjectTaskSectionIDs(ids...)
 }
 
-// AddProjectTaskIDs adds the "project_tasks" edge to the ProjectTask entity by IDs.
+// AddProjectTaskIDs adds the "projectTasks" edge to the ProjectTask entity by IDs.
 func (puo *ProjectUpdateOne) AddProjectTaskIDs(ids ...ulid.ID) *ProjectUpdateOne {
 	puo.mutation.AddProjectTaskIDs(ids...)
 	return puo
 }
 
-// AddProjectTasks adds the "project_tasks" edges to the ProjectTask entity.
+// AddProjectTasks adds the "projectTasks" edges to the ProjectTask entity.
 func (puo *ProjectUpdateOne) AddProjectTasks(p ...*ProjectTask) *ProjectUpdateOne {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {
@@ -1331,13 +1331,13 @@ func (puo *ProjectUpdateOne) AddProjectTasks(p ...*ProjectTask) *ProjectUpdateOn
 	return puo.AddProjectTaskIDs(ids...)
 }
 
-// AddTaskFileIDs adds the "task_files" edge to the TaskFile entity by IDs.
+// AddTaskFileIDs adds the "taskFiles" edge to the TaskFile entity by IDs.
 func (puo *ProjectUpdateOne) AddTaskFileIDs(ids ...ulid.ID) *ProjectUpdateOne {
 	puo.mutation.AddTaskFileIDs(ids...)
 	return puo
 }
 
-// AddTaskFiles adds the "task_files" edges to the TaskFile entity.
+// AddTaskFiles adds the "taskFiles" edges to the TaskFile entity.
 func (puo *ProjectUpdateOne) AddTaskFiles(t ...*TaskFile) *ProjectUpdateOne {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -1357,19 +1357,19 @@ func (puo *ProjectUpdateOne) ClearWorkspace() *ProjectUpdateOne {
 	return puo
 }
 
-// ClearProjectBaseColor clears the "project_base_color" edge to the ProjectBaseColor entity.
+// ClearProjectBaseColor clears the "projectBaseColor" edge to the ProjectBaseColor entity.
 func (puo *ProjectUpdateOne) ClearProjectBaseColor() *ProjectUpdateOne {
 	puo.mutation.ClearProjectBaseColor()
 	return puo
 }
 
-// ClearProjectLightColor clears the "project_light_color" edge to the ProjectLightColor entity.
+// ClearProjectLightColor clears the "projectLightColor" edge to the ProjectLightColor entity.
 func (puo *ProjectUpdateOne) ClearProjectLightColor() *ProjectUpdateOne {
 	puo.mutation.ClearProjectLightColor()
 	return puo
 }
 
-// ClearProjectIcon clears the "project_icon" edge to the ProjectIcon entity.
+// ClearProjectIcon clears the "projectIcon" edge to the ProjectIcon entity.
 func (puo *ProjectUpdateOne) ClearProjectIcon() *ProjectUpdateOne {
 	puo.mutation.ClearProjectIcon()
 	return puo
@@ -1381,19 +1381,19 @@ func (puo *ProjectUpdateOne) ClearTeammate() *ProjectUpdateOne {
 	return puo
 }
 
-// ClearProjectTeammates clears all "project_teammates" edges to the ProjectTeammate entity.
+// ClearProjectTeammates clears all "projectTeammates" edges to the ProjectTeammate entity.
 func (puo *ProjectUpdateOne) ClearProjectTeammates() *ProjectUpdateOne {
 	puo.mutation.ClearProjectTeammates()
 	return puo
 }
 
-// RemoveProjectTeammateIDs removes the "project_teammates" edge to ProjectTeammate entities by IDs.
+// RemoveProjectTeammateIDs removes the "projectTeammates" edge to ProjectTeammate entities by IDs.
 func (puo *ProjectUpdateOne) RemoveProjectTeammateIDs(ids ...ulid.ID) *ProjectUpdateOne {
 	puo.mutation.RemoveProjectTeammateIDs(ids...)
 	return puo
 }
 
-// RemoveProjectTeammates removes "project_teammates" edges to ProjectTeammate entities.
+// RemoveProjectTeammates removes "projectTeammates" edges to ProjectTeammate entities.
 func (puo *ProjectUpdateOne) RemoveProjectTeammates(p ...*ProjectTeammate) *ProjectUpdateOne {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {
@@ -1402,19 +1402,19 @@ func (puo *ProjectUpdateOne) RemoveProjectTeammates(p ...*ProjectTeammate) *Proj
 	return puo.RemoveProjectTeammateIDs(ids...)
 }
 
-// ClearFavoriteProjects clears all "favorite_projects" edges to the FavoriteProject entity.
+// ClearFavoriteProjects clears all "favoriteProjects" edges to the FavoriteProject entity.
 func (puo *ProjectUpdateOne) ClearFavoriteProjects() *ProjectUpdateOne {
 	puo.mutation.ClearFavoriteProjects()
 	return puo
 }
 
-// RemoveFavoriteProjectIDs removes the "favorite_projects" edge to FavoriteProject entities by IDs.
+// RemoveFavoriteProjectIDs removes the "favoriteProjects" edge to FavoriteProject entities by IDs.
 func (puo *ProjectUpdateOne) RemoveFavoriteProjectIDs(ids ...ulid.ID) *ProjectUpdateOne {
 	puo.mutation.RemoveFavoriteProjectIDs(ids...)
 	return puo
 }
 
-// RemoveFavoriteProjects removes "favorite_projects" edges to FavoriteProject entities.
+// RemoveFavoriteProjects removes "favoriteProjects" edges to FavoriteProject entities.
 func (puo *ProjectUpdateOne) RemoveFavoriteProjects(f ...*FavoriteProject) *ProjectUpdateOne {
 	ids := make([]ulid.ID, len(f))
 	for i := range f {
@@ -1423,19 +1423,19 @@ func (puo *ProjectUpdateOne) RemoveFavoriteProjects(f ...*FavoriteProject) *Proj
 	return puo.RemoveFavoriteProjectIDs(ids...)
 }
 
-// ClearProjectTaskColumns clears all "project_task_columns" edges to the ProjectTaskColumn entity.
+// ClearProjectTaskColumns clears all "projectTaskColumns" edges to the ProjectTaskColumn entity.
 func (puo *ProjectUpdateOne) ClearProjectTaskColumns() *ProjectUpdateOne {
 	puo.mutation.ClearProjectTaskColumns()
 	return puo
 }
 
-// RemoveProjectTaskColumnIDs removes the "project_task_columns" edge to ProjectTaskColumn entities by IDs.
+// RemoveProjectTaskColumnIDs removes the "projectTaskColumns" edge to ProjectTaskColumn entities by IDs.
 func (puo *ProjectUpdateOne) RemoveProjectTaskColumnIDs(ids ...ulid.ID) *ProjectUpdateOne {
 	puo.mutation.RemoveProjectTaskColumnIDs(ids...)
 	return puo
 }
 
-// RemoveProjectTaskColumns removes "project_task_columns" edges to ProjectTaskColumn entities.
+// RemoveProjectTaskColumns removes "projectTaskColumns" edges to ProjectTaskColumn entities.
 func (puo *ProjectUpdateOne) RemoveProjectTaskColumns(p ...*ProjectTaskColumn) *ProjectUpdateOne {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {
@@ -1444,40 +1444,40 @@ func (puo *ProjectUpdateOne) RemoveProjectTaskColumns(p ...*ProjectTaskColumn) *
 	return puo.RemoveProjectTaskColumnIDs(ids...)
 }
 
-// ClearProjectTaskListStatuses clears all "project_task_list_statuses" edges to the ProjectTaskListStatus entity.
+// ClearProjectTaskListStatuses clears all "projectTaskListStatuses" edges to the ProjectTaskListStatus entity.
 func (puo *ProjectUpdateOne) ClearProjectTaskListStatuses() *ProjectUpdateOne {
 	puo.mutation.ClearProjectTaskListStatuses()
 	return puo
 }
 
-// RemoveProjectTaskListStatusIDs removes the "project_task_list_statuses" edge to ProjectTaskListStatus entities by IDs.
-func (puo *ProjectUpdateOne) RemoveProjectTaskListStatusIDs(ids ...ulid.ID) *ProjectUpdateOne {
-	puo.mutation.RemoveProjectTaskListStatusIDs(ids...)
+// RemoveProjectTaskListStatuseIDs removes the "projectTaskListStatuses" edge to ProjectTaskListStatus entities by IDs.
+func (puo *ProjectUpdateOne) RemoveProjectTaskListStatuseIDs(ids ...ulid.ID) *ProjectUpdateOne {
+	puo.mutation.RemoveProjectTaskListStatuseIDs(ids...)
 	return puo
 }
 
-// RemoveProjectTaskListStatuses removes "project_task_list_statuses" edges to ProjectTaskListStatus entities.
+// RemoveProjectTaskListStatuses removes "projectTaskListStatuses" edges to ProjectTaskListStatus entities.
 func (puo *ProjectUpdateOne) RemoveProjectTaskListStatuses(p ...*ProjectTaskListStatus) *ProjectUpdateOne {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
-	return puo.RemoveProjectTaskListStatusIDs(ids...)
+	return puo.RemoveProjectTaskListStatuseIDs(ids...)
 }
 
-// ClearProjectTaskSections clears all "project_task_sections" edges to the ProjectTaskSection entity.
+// ClearProjectTaskSections clears all "projectTaskSections" edges to the ProjectTaskSection entity.
 func (puo *ProjectUpdateOne) ClearProjectTaskSections() *ProjectUpdateOne {
 	puo.mutation.ClearProjectTaskSections()
 	return puo
 }
 
-// RemoveProjectTaskSectionIDs removes the "project_task_sections" edge to ProjectTaskSection entities by IDs.
+// RemoveProjectTaskSectionIDs removes the "projectTaskSections" edge to ProjectTaskSection entities by IDs.
 func (puo *ProjectUpdateOne) RemoveProjectTaskSectionIDs(ids ...ulid.ID) *ProjectUpdateOne {
 	puo.mutation.RemoveProjectTaskSectionIDs(ids...)
 	return puo
 }
 
-// RemoveProjectTaskSections removes "project_task_sections" edges to ProjectTaskSection entities.
+// RemoveProjectTaskSections removes "projectTaskSections" edges to ProjectTaskSection entities.
 func (puo *ProjectUpdateOne) RemoveProjectTaskSections(p ...*ProjectTaskSection) *ProjectUpdateOne {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {
@@ -1486,19 +1486,19 @@ func (puo *ProjectUpdateOne) RemoveProjectTaskSections(p ...*ProjectTaskSection)
 	return puo.RemoveProjectTaskSectionIDs(ids...)
 }
 
-// ClearProjectTasks clears all "project_tasks" edges to the ProjectTask entity.
+// ClearProjectTasks clears all "projectTasks" edges to the ProjectTask entity.
 func (puo *ProjectUpdateOne) ClearProjectTasks() *ProjectUpdateOne {
 	puo.mutation.ClearProjectTasks()
 	return puo
 }
 
-// RemoveProjectTaskIDs removes the "project_tasks" edge to ProjectTask entities by IDs.
+// RemoveProjectTaskIDs removes the "projectTasks" edge to ProjectTask entities by IDs.
 func (puo *ProjectUpdateOne) RemoveProjectTaskIDs(ids ...ulid.ID) *ProjectUpdateOne {
 	puo.mutation.RemoveProjectTaskIDs(ids...)
 	return puo
 }
 
-// RemoveProjectTasks removes "project_tasks" edges to ProjectTask entities.
+// RemoveProjectTasks removes "projectTasks" edges to ProjectTask entities.
 func (puo *ProjectUpdateOne) RemoveProjectTasks(p ...*ProjectTask) *ProjectUpdateOne {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {
@@ -1507,19 +1507,19 @@ func (puo *ProjectUpdateOne) RemoveProjectTasks(p ...*ProjectTask) *ProjectUpdat
 	return puo.RemoveProjectTaskIDs(ids...)
 }
 
-// ClearTaskFiles clears all "task_files" edges to the TaskFile entity.
+// ClearTaskFiles clears all "taskFiles" edges to the TaskFile entity.
 func (puo *ProjectUpdateOne) ClearTaskFiles() *ProjectUpdateOne {
 	puo.mutation.ClearTaskFiles()
 	return puo
 }
 
-// RemoveTaskFileIDs removes the "task_files" edge to TaskFile entities by IDs.
+// RemoveTaskFileIDs removes the "taskFiles" edge to TaskFile entities by IDs.
 func (puo *ProjectUpdateOne) RemoveTaskFileIDs(ids ...ulid.ID) *ProjectUpdateOne {
 	puo.mutation.RemoveTaskFileIDs(ids...)
 	return puo
 }
 
-// RemoveTaskFiles removes "task_files" edges to TaskFile entities.
+// RemoveTaskFiles removes "taskFiles" edges to TaskFile entities.
 func (puo *ProjectUpdateOne) RemoveTaskFiles(t ...*TaskFile) *ProjectUpdateOne {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -1611,13 +1611,13 @@ func (puo *ProjectUpdateOne) check() error {
 		return errors.New("ent: clearing a required unique edge \"workspace\"")
 	}
 	if _, ok := puo.mutation.ProjectBaseColorID(); puo.mutation.ProjectBaseColorCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"project_base_color\"")
+		return errors.New("ent: clearing a required unique edge \"projectBaseColor\"")
 	}
 	if _, ok := puo.mutation.ProjectLightColorID(); puo.mutation.ProjectLightColorCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"project_light_color\"")
+		return errors.New("ent: clearing a required unique edge \"projectLightColor\"")
 	}
 	if _, ok := puo.mutation.ProjectIconID(); puo.mutation.ProjectIconCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"project_icon\"")
+		return errors.New("ent: clearing a required unique edge \"projectIcon\"")
 	}
 	if _, ok := puo.mutation.TeammateID(); puo.mutation.TeammateCleared() && !ok {
 		return errors.New("ent: clearing a required unique edge \"teammate\"")

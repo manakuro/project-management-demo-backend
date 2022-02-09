@@ -10,7 +10,6 @@ import (
 	"project-management-demo-backend/graph/generated"
 	"project-management-demo-backend/pkg/adapter/handler"
 	"project-management-demo-backend/pkg/util/datetime"
-	"project-management-demo-backend/pkg/util/graphqlutil"
 	"project-management-demo-backend/pkg/util/subscription"
 )
 
@@ -54,9 +53,8 @@ func (r *queryResolver) ProjectTeammate(ctx context.Context, where *ent.ProjectT
 }
 
 func (r *queryResolver) ProjectTeammates(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectTeammateWhereInput) (*ent.ProjectTeammateConnection, error) {
-	requestedFields := graphqlutil.GetRequestedFields(ctx)
 
-	ps, err := r.controller.ProjectTeammate.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
+	ps, err := r.controller.ProjectTeammate.ListWithPagination(ctx, after, first, before, last, where)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}

@@ -6,6 +6,8 @@ import (
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/pkg/const/globalid"
 
+	"entgo.io/contrib/entgql"
+
 	"entgo.io/ent/schema"
 
 	"entgo.io/ent/schema/edge"
@@ -14,6 +16,8 @@ import (
 	"entgo.io/ent/schema/field"
 	entMixin "entgo.io/ent/schema/mixin"
 )
+
+const projectTeammatesRef string = "projectTeammates"
 
 // ProjectTeammate holds the schema definition for the Test entity.
 type ProjectTeammate struct {
@@ -42,21 +46,23 @@ func (ProjectTeammateMixin) Fields() []ent.Field {
 func (ProjectTeammate) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("project", Project.Type).
-			Ref("project_teammates").
+			Ref(projectTeammatesRef).
 			Field("project_id").
 			Unique().
 			Required().
 			Annotations(
+				entgql.Bind(),
 				schema.Annotation(
 					annotation.Edge{FieldName: "project_id"},
 				),
 			),
 		edge.From("teammate", Teammate.Type).
-			Ref("project_teammates").
+			Ref(projectTeammatesRef).
 			Field("teammate_id").
 			Unique().
 			Required().
 			Annotations(
+				entgql.Bind(),
 				schema.Annotation(
 					annotation.Edge{FieldName: "teammate_id"},
 				),

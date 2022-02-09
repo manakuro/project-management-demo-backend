@@ -40,13 +40,13 @@ func (ftu *FileTypeUpdate) SetTypeCode(fc filetype.TypeCode) *FileTypeUpdate {
 	return ftu
 }
 
-// AddTaskFileIDs adds the "task_files" edge to the TaskFile entity by IDs.
+// AddTaskFileIDs adds the "taskFiles" edge to the TaskFile entity by IDs.
 func (ftu *FileTypeUpdate) AddTaskFileIDs(ids ...ulid.ID) *FileTypeUpdate {
 	ftu.mutation.AddTaskFileIDs(ids...)
 	return ftu
 }
 
-// AddTaskFiles adds the "task_files" edges to the TaskFile entity.
+// AddTaskFiles adds the "taskFiles" edges to the TaskFile entity.
 func (ftu *FileTypeUpdate) AddTaskFiles(t ...*TaskFile) *FileTypeUpdate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -60,19 +60,19 @@ func (ftu *FileTypeUpdate) Mutation() *FileTypeMutation {
 	return ftu.mutation
 }
 
-// ClearTaskFiles clears all "task_files" edges to the TaskFile entity.
+// ClearTaskFiles clears all "taskFiles" edges to the TaskFile entity.
 func (ftu *FileTypeUpdate) ClearTaskFiles() *FileTypeUpdate {
 	ftu.mutation.ClearTaskFiles()
 	return ftu
 }
 
-// RemoveTaskFileIDs removes the "task_files" edge to TaskFile entities by IDs.
+// RemoveTaskFileIDs removes the "taskFiles" edge to TaskFile entities by IDs.
 func (ftu *FileTypeUpdate) RemoveTaskFileIDs(ids ...ulid.ID) *FileTypeUpdate {
 	ftu.mutation.RemoveTaskFileIDs(ids...)
 	return ftu
 }
 
-// RemoveTaskFiles removes "task_files" edges to TaskFile entities.
+// RemoveTaskFiles removes "taskFiles" edges to TaskFile entities.
 func (ftu *FileTypeUpdate) RemoveTaskFiles(t ...*TaskFile) *FileTypeUpdate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -273,13 +273,13 @@ func (ftuo *FileTypeUpdateOne) SetTypeCode(fc filetype.TypeCode) *FileTypeUpdate
 	return ftuo
 }
 
-// AddTaskFileIDs adds the "task_files" edge to the TaskFile entity by IDs.
+// AddTaskFileIDs adds the "taskFiles" edge to the TaskFile entity by IDs.
 func (ftuo *FileTypeUpdateOne) AddTaskFileIDs(ids ...ulid.ID) *FileTypeUpdateOne {
 	ftuo.mutation.AddTaskFileIDs(ids...)
 	return ftuo
 }
 
-// AddTaskFiles adds the "task_files" edges to the TaskFile entity.
+// AddTaskFiles adds the "taskFiles" edges to the TaskFile entity.
 func (ftuo *FileTypeUpdateOne) AddTaskFiles(t ...*TaskFile) *FileTypeUpdateOne {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -293,19 +293,19 @@ func (ftuo *FileTypeUpdateOne) Mutation() *FileTypeMutation {
 	return ftuo.mutation
 }
 
-// ClearTaskFiles clears all "task_files" edges to the TaskFile entity.
+// ClearTaskFiles clears all "taskFiles" edges to the TaskFile entity.
 func (ftuo *FileTypeUpdateOne) ClearTaskFiles() *FileTypeUpdateOne {
 	ftuo.mutation.ClearTaskFiles()
 	return ftuo
 }
 
-// RemoveTaskFileIDs removes the "task_files" edge to TaskFile entities by IDs.
+// RemoveTaskFileIDs removes the "taskFiles" edge to TaskFile entities by IDs.
 func (ftuo *FileTypeUpdateOne) RemoveTaskFileIDs(ids ...ulid.ID) *FileTypeUpdateOne {
 	ftuo.mutation.RemoveTaskFileIDs(ids...)
 	return ftuo
 }
 
-// RemoveTaskFiles removes "task_files" edges to TaskFile entities.
+// RemoveTaskFiles removes "taskFiles" edges to TaskFile entities.
 func (ftuo *FileTypeUpdateOne) RemoveTaskFiles(t ...*TaskFile) *FileTypeUpdateOne {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {

@@ -34,10 +34,10 @@ const (
 	EdgeProject = "project"
 	// EdgeTask holds the string denoting the task edge name in mutations.
 	EdgeTask = "task"
-	// EdgeTaskFeed holds the string denoting the task_feed edge name in mutations.
-	EdgeTaskFeed = "task_feed"
-	// EdgeFileType holds the string denoting the file_type edge name in mutations.
-	EdgeFileType = "file_type"
+	// EdgeTaskFeed holds the string denoting the taskfeed edge name in mutations.
+	EdgeTaskFeed = "taskFeed"
+	// EdgeFileType holds the string denoting the filetype edge name in mutations.
+	EdgeFileType = "fileType"
 	// Table holds the table name of the taskfile in the database.
 	Table = "task_files"
 	// ProjectTable is the table that holds the project relation/edge.
@@ -54,19 +54,19 @@ const (
 	TaskInverseTable = "tasks"
 	// TaskColumn is the table column denoting the task relation/edge.
 	TaskColumn = "task_id"
-	// TaskFeedTable is the table that holds the task_feed relation/edge.
+	// TaskFeedTable is the table that holds the taskFeed relation/edge.
 	TaskFeedTable = "task_files"
 	// TaskFeedInverseTable is the table name for the TaskFeed entity.
 	// It exists in this package in order to avoid circular dependency with the "taskfeed" package.
 	TaskFeedInverseTable = "task_feeds"
-	// TaskFeedColumn is the table column denoting the task_feed relation/edge.
+	// TaskFeedColumn is the table column denoting the taskFeed relation/edge.
 	TaskFeedColumn = "task_feed_id"
-	// FileTypeTable is the table that holds the file_type relation/edge.
+	// FileTypeTable is the table that holds the fileType relation/edge.
 	FileTypeTable = "task_files"
 	// FileTypeInverseTable is the table name for the FileType entity.
 	// It exists in this package in order to avoid circular dependency with the "filetype" package.
 	FileTypeInverseTable = "file_types"
-	// FileTypeColumn is the table column denoting the file_type relation/edge.
+	// FileTypeColumn is the table column denoting the fileType relation/edge.
 	FileTypeColumn = "file_type_id"
 )
 

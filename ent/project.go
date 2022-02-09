@@ -55,28 +55,28 @@ type Project struct {
 type ProjectEdges struct {
 	// Workspace holds the value of the workspace edge.
 	Workspace *Workspace `json:"workspace,omitempty"`
-	// ProjectBaseColor holds the value of the project_base_color edge.
-	ProjectBaseColor *ProjectBaseColor `json:"project_base_color,omitempty"`
-	// ProjectLightColor holds the value of the project_light_color edge.
-	ProjectLightColor *ProjectLightColor `json:"project_light_color,omitempty"`
-	// ProjectIcon holds the value of the project_icon edge.
-	ProjectIcon *ProjectIcon `json:"project_icon,omitempty"`
+	// ProjectBaseColor holds the value of the projectBaseColor edge.
+	ProjectBaseColor *ProjectBaseColor `json:"projectBaseColor,omitempty"`
+	// ProjectLightColor holds the value of the projectLightColor edge.
+	ProjectLightColor *ProjectLightColor `json:"projectLightColor,omitempty"`
+	// ProjectIcon holds the value of the projectIcon edge.
+	ProjectIcon *ProjectIcon `json:"projectIcon,omitempty"`
 	// Teammate holds the value of the teammate edge.
 	Teammate *Teammate `json:"teammate,omitempty"`
-	// ProjectTeammates holds the value of the project_teammates edge.
-	ProjectTeammates []*ProjectTeammate `json:"project_teammates,omitempty"`
-	// FavoriteProjects holds the value of the favorite_projects edge.
-	FavoriteProjects []*FavoriteProject `json:"favorite_projects,omitempty"`
-	// ProjectTaskColumns holds the value of the project_task_columns edge.
-	ProjectTaskColumns []*ProjectTaskColumn `json:"project_task_columns,omitempty"`
-	// ProjectTaskListStatuses holds the value of the project_task_list_statuses edge.
-	ProjectTaskListStatuses []*ProjectTaskListStatus `json:"project_task_list_statuses,omitempty"`
-	// ProjectTaskSections holds the value of the project_task_sections edge.
-	ProjectTaskSections []*ProjectTaskSection `json:"project_task_sections,omitempty"`
-	// ProjectTasks holds the value of the project_tasks edge.
-	ProjectTasks []*ProjectTask `json:"project_tasks,omitempty"`
-	// TaskFiles holds the value of the task_files edge.
-	TaskFiles []*TaskFile `json:"task_files,omitempty"`
+	// ProjectTeammates holds the value of the projectTeammates edge.
+	ProjectTeammates []*ProjectTeammate `json:"projectTeammates,omitempty"`
+	// FavoriteProjects holds the value of the favoriteProjects edge.
+	FavoriteProjects []*FavoriteProject `json:"favoriteProjects,omitempty"`
+	// ProjectTaskColumns holds the value of the projectTaskColumns edge.
+	ProjectTaskColumns []*ProjectTaskColumn `json:"projectTaskColumns,omitempty"`
+	// ProjectTaskListStatuses holds the value of the projectTaskListStatuses edge.
+	ProjectTaskListStatuses []*ProjectTaskListStatus `json:"projectTaskListStatuses,omitempty"`
+	// ProjectTaskSections holds the value of the projectTaskSections edge.
+	ProjectTaskSections []*ProjectTaskSection `json:"projectTaskSections,omitempty"`
+	// ProjectTasks holds the value of the projectTasks edge.
+	ProjectTasks []*ProjectTask `json:"projectTasks,omitempty"`
+	// TaskFiles holds the value of the taskFiles edge.
+	TaskFiles []*TaskFile `json:"taskFiles,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [12]bool
@@ -101,13 +101,13 @@ func (e ProjectEdges) WorkspaceOrErr() (*Workspace, error) {
 func (e ProjectEdges) ProjectBaseColorOrErr() (*ProjectBaseColor, error) {
 	if e.loadedTypes[1] {
 		if e.ProjectBaseColor == nil {
-			// The edge project_base_color was loaded in eager-loading,
+			// The edge projectBaseColor was loaded in eager-loading,
 			// but was not found.
 			return nil, &NotFoundError{label: projectbasecolor.Label}
 		}
 		return e.ProjectBaseColor, nil
 	}
-	return nil, &NotLoadedError{edge: "project_base_color"}
+	return nil, &NotLoadedError{edge: "projectBaseColor"}
 }
 
 // ProjectLightColorOrErr returns the ProjectLightColor value or an error if the edge
@@ -115,13 +115,13 @@ func (e ProjectEdges) ProjectBaseColorOrErr() (*ProjectBaseColor, error) {
 func (e ProjectEdges) ProjectLightColorOrErr() (*ProjectLightColor, error) {
 	if e.loadedTypes[2] {
 		if e.ProjectLightColor == nil {
-			// The edge project_light_color was loaded in eager-loading,
+			// The edge projectLightColor was loaded in eager-loading,
 			// but was not found.
 			return nil, &NotFoundError{label: projectlightcolor.Label}
 		}
 		return e.ProjectLightColor, nil
 	}
-	return nil, &NotLoadedError{edge: "project_light_color"}
+	return nil, &NotLoadedError{edge: "projectLightColor"}
 }
 
 // ProjectIconOrErr returns the ProjectIcon value or an error if the edge
@@ -129,13 +129,13 @@ func (e ProjectEdges) ProjectLightColorOrErr() (*ProjectLightColor, error) {
 func (e ProjectEdges) ProjectIconOrErr() (*ProjectIcon, error) {
 	if e.loadedTypes[3] {
 		if e.ProjectIcon == nil {
-			// The edge project_icon was loaded in eager-loading,
+			// The edge projectIcon was loaded in eager-loading,
 			// but was not found.
 			return nil, &NotFoundError{label: projecticon.Label}
 		}
 		return e.ProjectIcon, nil
 	}
-	return nil, &NotLoadedError{edge: "project_icon"}
+	return nil, &NotLoadedError{edge: "projectIcon"}
 }
 
 // TeammateOrErr returns the Teammate value or an error if the edge
@@ -158,7 +158,7 @@ func (e ProjectEdges) ProjectTeammatesOrErr() ([]*ProjectTeammate, error) {
 	if e.loadedTypes[5] {
 		return e.ProjectTeammates, nil
 	}
-	return nil, &NotLoadedError{edge: "project_teammates"}
+	return nil, &NotLoadedError{edge: "projectTeammates"}
 }
 
 // FavoriteProjectsOrErr returns the FavoriteProjects value or an error if the edge
@@ -167,7 +167,7 @@ func (e ProjectEdges) FavoriteProjectsOrErr() ([]*FavoriteProject, error) {
 	if e.loadedTypes[6] {
 		return e.FavoriteProjects, nil
 	}
-	return nil, &NotLoadedError{edge: "favorite_projects"}
+	return nil, &NotLoadedError{edge: "favoriteProjects"}
 }
 
 // ProjectTaskColumnsOrErr returns the ProjectTaskColumns value or an error if the edge
@@ -176,7 +176,7 @@ func (e ProjectEdges) ProjectTaskColumnsOrErr() ([]*ProjectTaskColumn, error) {
 	if e.loadedTypes[7] {
 		return e.ProjectTaskColumns, nil
 	}
-	return nil, &NotLoadedError{edge: "project_task_columns"}
+	return nil, &NotLoadedError{edge: "projectTaskColumns"}
 }
 
 // ProjectTaskListStatusesOrErr returns the ProjectTaskListStatuses value or an error if the edge
@@ -185,7 +185,7 @@ func (e ProjectEdges) ProjectTaskListStatusesOrErr() ([]*ProjectTaskListStatus, 
 	if e.loadedTypes[8] {
 		return e.ProjectTaskListStatuses, nil
 	}
-	return nil, &NotLoadedError{edge: "project_task_list_statuses"}
+	return nil, &NotLoadedError{edge: "projectTaskListStatuses"}
 }
 
 // ProjectTaskSectionsOrErr returns the ProjectTaskSections value or an error if the edge
@@ -194,7 +194,7 @@ func (e ProjectEdges) ProjectTaskSectionsOrErr() ([]*ProjectTaskSection, error) 
 	if e.loadedTypes[9] {
 		return e.ProjectTaskSections, nil
 	}
-	return nil, &NotLoadedError{edge: "project_task_sections"}
+	return nil, &NotLoadedError{edge: "projectTaskSections"}
 }
 
 // ProjectTasksOrErr returns the ProjectTasks value or an error if the edge
@@ -203,7 +203,7 @@ func (e ProjectEdges) ProjectTasksOrErr() ([]*ProjectTask, error) {
 	if e.loadedTypes[10] {
 		return e.ProjectTasks, nil
 	}
-	return nil, &NotLoadedError{edge: "project_tasks"}
+	return nil, &NotLoadedError{edge: "projectTasks"}
 }
 
 // TaskFilesOrErr returns the TaskFiles value or an error if the edge
@@ -212,7 +212,7 @@ func (e ProjectEdges) TaskFilesOrErr() ([]*TaskFile, error) {
 	if e.loadedTypes[11] {
 		return e.TaskFiles, nil
 	}
-	return nil, &NotLoadedError{edge: "task_files"}
+	return nil, &NotLoadedError{edge: "taskFiles"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -328,17 +328,17 @@ func (pr *Project) QueryWorkspace() *WorkspaceQuery {
 	return (&ProjectClient{config: pr.config}).QueryWorkspace(pr)
 }
 
-// QueryProjectBaseColor queries the "project_base_color" edge of the Project entity.
+// QueryProjectBaseColor queries the "projectBaseColor" edge of the Project entity.
 func (pr *Project) QueryProjectBaseColor() *ProjectBaseColorQuery {
 	return (&ProjectClient{config: pr.config}).QueryProjectBaseColor(pr)
 }
 
-// QueryProjectLightColor queries the "project_light_color" edge of the Project entity.
+// QueryProjectLightColor queries the "projectLightColor" edge of the Project entity.
 func (pr *Project) QueryProjectLightColor() *ProjectLightColorQuery {
 	return (&ProjectClient{config: pr.config}).QueryProjectLightColor(pr)
 }
 
-// QueryProjectIcon queries the "project_icon" edge of the Project entity.
+// QueryProjectIcon queries the "projectIcon" edge of the Project entity.
 func (pr *Project) QueryProjectIcon() *ProjectIconQuery {
 	return (&ProjectClient{config: pr.config}).QueryProjectIcon(pr)
 }
@@ -348,37 +348,37 @@ func (pr *Project) QueryTeammate() *TeammateQuery {
 	return (&ProjectClient{config: pr.config}).QueryTeammate(pr)
 }
 
-// QueryProjectTeammates queries the "project_teammates" edge of the Project entity.
+// QueryProjectTeammates queries the "projectTeammates" edge of the Project entity.
 func (pr *Project) QueryProjectTeammates() *ProjectTeammateQuery {
 	return (&ProjectClient{config: pr.config}).QueryProjectTeammates(pr)
 }
 
-// QueryFavoriteProjects queries the "favorite_projects" edge of the Project entity.
+// QueryFavoriteProjects queries the "favoriteProjects" edge of the Project entity.
 func (pr *Project) QueryFavoriteProjects() *FavoriteProjectQuery {
 	return (&ProjectClient{config: pr.config}).QueryFavoriteProjects(pr)
 }
 
-// QueryProjectTaskColumns queries the "project_task_columns" edge of the Project entity.
+// QueryProjectTaskColumns queries the "projectTaskColumns" edge of the Project entity.
 func (pr *Project) QueryProjectTaskColumns() *ProjectTaskColumnQuery {
 	return (&ProjectClient{config: pr.config}).QueryProjectTaskColumns(pr)
 }
 
-// QueryProjectTaskListStatuses queries the "project_task_list_statuses" edge of the Project entity.
+// QueryProjectTaskListStatuses queries the "projectTaskListStatuses" edge of the Project entity.
 func (pr *Project) QueryProjectTaskListStatuses() *ProjectTaskListStatusQuery {
 	return (&ProjectClient{config: pr.config}).QueryProjectTaskListStatuses(pr)
 }
 
-// QueryProjectTaskSections queries the "project_task_sections" edge of the Project entity.
+// QueryProjectTaskSections queries the "projectTaskSections" edge of the Project entity.
 func (pr *Project) QueryProjectTaskSections() *ProjectTaskSectionQuery {
 	return (&ProjectClient{config: pr.config}).QueryProjectTaskSections(pr)
 }
 
-// QueryProjectTasks queries the "project_tasks" edge of the Project entity.
+// QueryProjectTasks queries the "projectTasks" edge of the Project entity.
 func (pr *Project) QueryProjectTasks() *ProjectTaskQuery {
 	return (&ProjectClient{config: pr.config}).QueryProjectTasks(pr)
 }
 
-// QueryTaskFiles queries the "task_files" edge of the Project entity.
+// QueryTaskFiles queries the "taskFiles" edge of the Project entity.
 func (pr *Project) QueryTaskFiles() *TaskFileQuery {
 	return (&ProjectClient{config: pr.config}).QueryTaskFiles(pr)
 }

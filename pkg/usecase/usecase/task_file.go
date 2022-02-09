@@ -14,7 +14,7 @@ type taskFileUsecase struct {
 type TaskFile interface {
 	Get(ctx context.Context, where *model.TaskFileWhereInput) (*model.TaskFile, error)
 	List(ctx context.Context) ([]*model.TaskFile, error)
-	ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TaskFileWhereInput, requestedFields []string) (*model.TaskFileConnection, error)
+	ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TaskFileWhereInput) (*model.TaskFileConnection, error)
 	Create(ctx context.Context, input model.CreateTaskFileInput) (*model.TaskFile, error)
 	Update(ctx context.Context, input model.UpdateTaskFileInput) (*model.TaskFile, error)
 }
@@ -32,8 +32,8 @@ func (u *taskFileUsecase) List(ctx context.Context) ([]*model.TaskFile, error) {
 	return u.taskFileRepository.List(ctx)
 }
 
-func (u *taskFileUsecase) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TaskFileWhereInput, requestedFields []string) (*model.TaskFileConnection, error) {
-	return u.taskFileRepository.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
+func (u *taskFileUsecase) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TaskFileWhereInput) (*model.TaskFileConnection, error) {
+	return u.taskFileRepository.ListWithPagination(ctx, after, first, before, last, where)
 }
 
 func (u *taskFileUsecase) Create(ctx context.Context, input model.CreateTaskFileInput) (*model.TaskFile, error) {

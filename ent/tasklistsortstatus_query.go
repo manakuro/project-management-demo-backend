@@ -67,7 +67,7 @@ func (tlssq *TaskListSortStatusQuery) Order(o ...OrderFunc) *TaskListSortStatusQ
 	return tlssq
 }
 
-// QueryTeammateTaskListStatuses chains the current query on the "teammate_task_list_statuses" edge.
+// QueryTeammateTaskListStatuses chains the current query on the "teammateTaskListStatuses" edge.
 func (tlssq *TaskListSortStatusQuery) QueryTeammateTaskListStatuses() *TeammateTaskListStatusQuery {
 	query := &TeammateTaskListStatusQuery{config: tlssq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
@@ -89,7 +89,7 @@ func (tlssq *TaskListSortStatusQuery) QueryTeammateTaskListStatuses() *TeammateT
 	return query
 }
 
-// QueryProjectTaskListStatuses chains the current query on the "project_task_list_statuses" edge.
+// QueryProjectTaskListStatuses chains the current query on the "projectTaskListStatuses" edge.
 func (tlssq *TaskListSortStatusQuery) QueryProjectTaskListStatuses() *ProjectTaskListStatusQuery {
 	query := &ProjectTaskListStatusQuery{config: tlssq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
@@ -301,7 +301,7 @@ func (tlssq *TaskListSortStatusQuery) Clone() *TaskListSortStatusQuery {
 }
 
 // WithTeammateTaskListStatuses tells the query-builder to eager-load the nodes that are connected to
-// the "teammate_task_list_statuses" edge. The optional arguments are used to configure the query builder of the edge.
+// the "teammateTaskListStatuses" edge. The optional arguments are used to configure the query builder of the edge.
 func (tlssq *TaskListSortStatusQuery) WithTeammateTaskListStatuses(opts ...func(*TeammateTaskListStatusQuery)) *TaskListSortStatusQuery {
 	query := &TeammateTaskListStatusQuery{config: tlssq.config}
 	for _, opt := range opts {
@@ -312,7 +312,7 @@ func (tlssq *TaskListSortStatusQuery) WithTeammateTaskListStatuses(opts ...func(
 }
 
 // WithProjectTaskListStatuses tells the query-builder to eager-load the nodes that are connected to
-// the "project_task_list_statuses" edge. The optional arguments are used to configure the query builder of the edge.
+// the "projectTaskListStatuses" edge. The optional arguments are used to configure the query builder of the edge.
 func (tlssq *TaskListSortStatusQuery) WithProjectTaskListStatuses(opts ...func(*ProjectTaskListStatusQuery)) *TaskListSortStatusQuery {
 	query := &ProjectTaskListStatusQuery{config: tlssq.config}
 	for _, opt := range opts {

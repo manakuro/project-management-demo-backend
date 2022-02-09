@@ -6,6 +6,8 @@ import (
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/pkg/const/globalid"
 
+	"entgo.io/contrib/entgql"
+
 	"entgo.io/ent/schema"
 
 	"entgo.io/ent/schema/edge"
@@ -14,6 +16,8 @@ import (
 	"entgo.io/ent/schema/field"
 	entMixin "entgo.io/ent/schema/mixin"
 )
+
+const projectTaskSectionsRef string = "projectTaskSections"
 
 // ProjectTaskSection holds the schema definition for the Test entity.
 type ProjectTaskSection struct {
@@ -40,17 +44,19 @@ func (ProjectTaskSectionMixin) Fields() []ent.Field {
 func (ProjectTaskSection) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("project", Project.Type).
-			Ref("project_task_sections").
+			Ref(projectTaskSectionsRef).
 			Field("project_id").
 			Unique().
 			Required().
 			Annotations(
+				entgql.Bind(),
 				schema.Annotation(
 					annotation.Edge{FieldName: "project_id"},
 				),
 			),
-		edge.To("project_tasks", ProjectTask.Type).
+		edge.To(projectTasksRef, ProjectTask.Type).
 			Annotations(
+				entgql.Bind(),
 				schema.Annotation(
 					annotation.Edge{FieldName: "project_task_id"},
 				),

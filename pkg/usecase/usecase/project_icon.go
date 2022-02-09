@@ -14,7 +14,7 @@ type projectIconUsecase struct {
 type ProjectIcon interface {
 	Get(ctx context.Context, where *model.ProjectIconWhereInput) (*model.ProjectIcon, error)
 	List(ctx context.Context) ([]*model.ProjectIcon, error)
-	ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ProjectIconWhereInput, requestedFields []string) (*model.ProjectIconConnection, error)
+	ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ProjectIconWhereInput) (*model.ProjectIconConnection, error)
 	Create(ctx context.Context, input model.CreateProjectIconInput) (*model.ProjectIcon, error)
 	Update(ctx context.Context, input model.UpdateProjectIconInput) (*model.ProjectIcon, error)
 }
@@ -32,8 +32,8 @@ func (u *projectIconUsecase) List(ctx context.Context) ([]*model.ProjectIcon, er
 	return u.projectIconRepository.List(ctx)
 }
 
-func (u *projectIconUsecase) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ProjectIconWhereInput, requestedFields []string) (*model.ProjectIconConnection, error) {
-	return u.projectIconRepository.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
+func (u *projectIconUsecase) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ProjectIconWhereInput) (*model.ProjectIconConnection, error) {
+	return u.projectIconRepository.ListWithPagination(ctx, after, first, before, last, where)
 }
 
 func (u *projectIconUsecase) Create(ctx context.Context, input model.CreateProjectIconInput) (*model.ProjectIcon, error) {

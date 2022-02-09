@@ -5,7 +5,6 @@ import (
 	"project-management-demo-backend/ent"
 	"project-management-demo-backend/pkg/entity/model"
 	ur "project-management-demo-backend/pkg/usecase/repository"
-	"project-management-demo-backend/pkg/util/collection"
 )
 
 type taskPriorityRepository struct {
@@ -49,12 +48,8 @@ func (r *taskPriorityRepository) List(ctx context.Context) ([]*model.TaskPriorit
 	return res, nil
 }
 
-func (r *taskPriorityRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TaskPriorityWhereInput, requestedFields []string) (*model.TaskPriorityConnection, error) {
+func (r *taskPriorityRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TaskPriorityWhereInput) (*model.TaskPriorityConnection, error) {
 	q := r.client.TaskPriority.Query()
-
-	if collection.Contains(requestedFields, "edges.node.color") {
-		q.WithColor()
-	}
 
 	res, err := q.Paginate(ctx, after, first, before, last, ent.WithTaskPriorityFilter(where.Filter))
 	if err != nil {

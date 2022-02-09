@@ -10,7 +10,7 @@ import (
 type FavoriteWorkspace interface {
 	Get(ctx context.Context, where *model.FavoriteWorkspaceWhereInput) (*model.FavoriteWorkspace, error)
 	List(ctx context.Context) ([]*model.FavoriteWorkspace, error)
-	ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.FavoriteWorkspaceWhereInput, requestedFields []string) (*model.FavoriteWorkspaceConnection, error)
+	ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.FavoriteWorkspaceWhereInput) (*model.FavoriteWorkspaceConnection, error)
 	Create(ctx context.Context, input model.CreateFavoriteWorkspaceInput) (*model.FavoriteWorkspace, error)
 	Update(ctx context.Context, input model.UpdateFavoriteWorkspaceInput) (*model.FavoriteWorkspace, error)
 	Delete(ctx context.Context, input model.DeleteFavoriteWorkspaceInput) (*model.FavoriteWorkspace, error)
@@ -36,8 +36,8 @@ func (c *favoriteWorkspaceController) List(ctx context.Context) ([]*model.Favori
 	return c.favoriteWorkspaceUsecase.List(ctx)
 }
 
-func (c *favoriteWorkspaceController) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.FavoriteWorkspaceWhereInput, requestedFields []string) (*model.FavoriteWorkspaceConnection, error) {
-	return c.favoriteWorkspaceUsecase.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
+func (c *favoriteWorkspaceController) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.FavoriteWorkspaceWhereInput) (*model.FavoriteWorkspaceConnection, error) {
+	return c.favoriteWorkspaceUsecase.ListWithPagination(ctx, after, first, before, last, where)
 }
 
 func (c *favoriteWorkspaceController) Create(ctx context.Context, input model.CreateFavoriteWorkspaceInput) (*model.FavoriteWorkspace, error) {

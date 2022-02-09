@@ -14,7 +14,7 @@ type projectTeammateUsecase struct {
 type ProjectTeammate interface {
 	Get(ctx context.Context, where *model.ProjectTeammateWhereInput) (*model.ProjectTeammate, error)
 	List(ctx context.Context) ([]*model.ProjectTeammate, error)
-	ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ProjectTeammateWhereInput, requestedFields []string) (*model.ProjectTeammateConnection, error)
+	ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ProjectTeammateWhereInput) (*model.ProjectTeammateConnection, error)
 	Create(ctx context.Context, input model.CreateProjectTeammateInput) (*model.ProjectTeammate, error)
 	Update(ctx context.Context, input model.UpdateProjectTeammateInput) (*model.ProjectTeammate, error)
 }
@@ -32,8 +32,8 @@ func (u *projectTeammateUsecase) List(ctx context.Context) ([]*model.ProjectTeam
 	return u.projectTeammateRepository.List(ctx)
 }
 
-func (u *projectTeammateUsecase) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ProjectTeammateWhereInput, requestedFields []string) (*model.ProjectTeammateConnection, error) {
-	return u.projectTeammateRepository.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
+func (u *projectTeammateUsecase) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ProjectTeammateWhereInput) (*model.ProjectTeammateConnection, error) {
+	return u.projectTeammateRepository.ListWithPagination(ctx, after, first, before, last, where)
 }
 
 func (u *projectTeammateUsecase) Create(ctx context.Context, input model.CreateProjectTeammateInput) (*model.ProjectTeammate, error) {

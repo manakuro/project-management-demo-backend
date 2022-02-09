@@ -10,7 +10,7 @@ import (
 type Tag interface {
 	Get(ctx context.Context, where *model.TagWhereInput) (*model.Tag, error)
 	List(ctx context.Context) ([]*model.Tag, error)
-	ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TagWhereInput, requestedFields []string) (*model.TagConnection, error)
+	ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TagWhereInput) (*model.TagConnection, error)
 	Create(ctx context.Context, input model.CreateTagInput) (*model.Tag, error)
 	Update(ctx context.Context, input model.UpdateTagInput) (*model.Tag, error)
 }
@@ -34,8 +34,8 @@ func (c *tagController) List(ctx context.Context) ([]*model.Tag, error) {
 	return c.tagUsecase.List(ctx)
 }
 
-func (c *tagController) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TagWhereInput, requestedFields []string) (*model.TagConnection, error) {
-	return c.tagUsecase.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
+func (c *tagController) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TagWhereInput) (*model.TagConnection, error) {
+	return c.tagUsecase.ListWithPagination(ctx, after, first, before, last, where)
 }
 
 func (c *tagController) Create(ctx context.Context, input model.CreateTagInput) (*model.Tag, error) {

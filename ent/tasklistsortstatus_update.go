@@ -41,34 +41,34 @@ func (tlssu *TaskListSortStatusUpdate) SetStatusCode(tc tasklistsortstatus.Statu
 	return tlssu
 }
 
-// AddTeammateTaskListStatusIDs adds the "teammate_task_list_statuses" edge to the TeammateTaskListStatus entity by IDs.
-func (tlssu *TaskListSortStatusUpdate) AddTeammateTaskListStatusIDs(ids ...ulid.ID) *TaskListSortStatusUpdate {
-	tlssu.mutation.AddTeammateTaskListStatusIDs(ids...)
+// AddTeammateTaskListStatuseIDs adds the "teammateTaskListStatuses" edge to the TeammateTaskListStatus entity by IDs.
+func (tlssu *TaskListSortStatusUpdate) AddTeammateTaskListStatuseIDs(ids ...ulid.ID) *TaskListSortStatusUpdate {
+	tlssu.mutation.AddTeammateTaskListStatuseIDs(ids...)
 	return tlssu
 }
 
-// AddTeammateTaskListStatuses adds the "teammate_task_list_statuses" edges to the TeammateTaskListStatus entity.
+// AddTeammateTaskListStatuses adds the "teammateTaskListStatuses" edges to the TeammateTaskListStatus entity.
 func (tlssu *TaskListSortStatusUpdate) AddTeammateTaskListStatuses(t ...*TeammateTaskListStatus) *TaskListSortStatusUpdate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
 		ids[i] = t[i].ID
 	}
-	return tlssu.AddTeammateTaskListStatusIDs(ids...)
+	return tlssu.AddTeammateTaskListStatuseIDs(ids...)
 }
 
-// AddProjectTaskListStatusIDs adds the "project_task_list_statuses" edge to the ProjectTaskListStatus entity by IDs.
-func (tlssu *TaskListSortStatusUpdate) AddProjectTaskListStatusIDs(ids ...ulid.ID) *TaskListSortStatusUpdate {
-	tlssu.mutation.AddProjectTaskListStatusIDs(ids...)
+// AddProjectTaskListStatuseIDs adds the "projectTaskListStatuses" edge to the ProjectTaskListStatus entity by IDs.
+func (tlssu *TaskListSortStatusUpdate) AddProjectTaskListStatuseIDs(ids ...ulid.ID) *TaskListSortStatusUpdate {
+	tlssu.mutation.AddProjectTaskListStatuseIDs(ids...)
 	return tlssu
 }
 
-// AddProjectTaskListStatuses adds the "project_task_list_statuses" edges to the ProjectTaskListStatus entity.
+// AddProjectTaskListStatuses adds the "projectTaskListStatuses" edges to the ProjectTaskListStatus entity.
 func (tlssu *TaskListSortStatusUpdate) AddProjectTaskListStatuses(p ...*ProjectTaskListStatus) *TaskListSortStatusUpdate {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
-	return tlssu.AddProjectTaskListStatusIDs(ids...)
+	return tlssu.AddProjectTaskListStatuseIDs(ids...)
 }
 
 // Mutation returns the TaskListSortStatusMutation object of the builder.
@@ -76,46 +76,46 @@ func (tlssu *TaskListSortStatusUpdate) Mutation() *TaskListSortStatusMutation {
 	return tlssu.mutation
 }
 
-// ClearTeammateTaskListStatuses clears all "teammate_task_list_statuses" edges to the TeammateTaskListStatus entity.
+// ClearTeammateTaskListStatuses clears all "teammateTaskListStatuses" edges to the TeammateTaskListStatus entity.
 func (tlssu *TaskListSortStatusUpdate) ClearTeammateTaskListStatuses() *TaskListSortStatusUpdate {
 	tlssu.mutation.ClearTeammateTaskListStatuses()
 	return tlssu
 }
 
-// RemoveTeammateTaskListStatusIDs removes the "teammate_task_list_statuses" edge to TeammateTaskListStatus entities by IDs.
-func (tlssu *TaskListSortStatusUpdate) RemoveTeammateTaskListStatusIDs(ids ...ulid.ID) *TaskListSortStatusUpdate {
-	tlssu.mutation.RemoveTeammateTaskListStatusIDs(ids...)
+// RemoveTeammateTaskListStatuseIDs removes the "teammateTaskListStatuses" edge to TeammateTaskListStatus entities by IDs.
+func (tlssu *TaskListSortStatusUpdate) RemoveTeammateTaskListStatuseIDs(ids ...ulid.ID) *TaskListSortStatusUpdate {
+	tlssu.mutation.RemoveTeammateTaskListStatuseIDs(ids...)
 	return tlssu
 }
 
-// RemoveTeammateTaskListStatuses removes "teammate_task_list_statuses" edges to TeammateTaskListStatus entities.
+// RemoveTeammateTaskListStatuses removes "teammateTaskListStatuses" edges to TeammateTaskListStatus entities.
 func (tlssu *TaskListSortStatusUpdate) RemoveTeammateTaskListStatuses(t ...*TeammateTaskListStatus) *TaskListSortStatusUpdate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
 		ids[i] = t[i].ID
 	}
-	return tlssu.RemoveTeammateTaskListStatusIDs(ids...)
+	return tlssu.RemoveTeammateTaskListStatuseIDs(ids...)
 }
 
-// ClearProjectTaskListStatuses clears all "project_task_list_statuses" edges to the ProjectTaskListStatus entity.
+// ClearProjectTaskListStatuses clears all "projectTaskListStatuses" edges to the ProjectTaskListStatus entity.
 func (tlssu *TaskListSortStatusUpdate) ClearProjectTaskListStatuses() *TaskListSortStatusUpdate {
 	tlssu.mutation.ClearProjectTaskListStatuses()
 	return tlssu
 }
 
-// RemoveProjectTaskListStatusIDs removes the "project_task_list_statuses" edge to ProjectTaskListStatus entities by IDs.
-func (tlssu *TaskListSortStatusUpdate) RemoveProjectTaskListStatusIDs(ids ...ulid.ID) *TaskListSortStatusUpdate {
-	tlssu.mutation.RemoveProjectTaskListStatusIDs(ids...)
+// RemoveProjectTaskListStatuseIDs removes the "projectTaskListStatuses" edge to ProjectTaskListStatus entities by IDs.
+func (tlssu *TaskListSortStatusUpdate) RemoveProjectTaskListStatuseIDs(ids ...ulid.ID) *TaskListSortStatusUpdate {
+	tlssu.mutation.RemoveProjectTaskListStatuseIDs(ids...)
 	return tlssu
 }
 
-// RemoveProjectTaskListStatuses removes "project_task_list_statuses" edges to ProjectTaskListStatus entities.
+// RemoveProjectTaskListStatuses removes "projectTaskListStatuses" edges to ProjectTaskListStatus entities.
 func (tlssu *TaskListSortStatusUpdate) RemoveProjectTaskListStatuses(p ...*ProjectTaskListStatus) *TaskListSortStatusUpdate {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
-	return tlssu.RemoveProjectTaskListStatusIDs(ids...)
+	return tlssu.RemoveProjectTaskListStatuseIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -364,34 +364,34 @@ func (tlssuo *TaskListSortStatusUpdateOne) SetStatusCode(tc tasklistsortstatus.S
 	return tlssuo
 }
 
-// AddTeammateTaskListStatusIDs adds the "teammate_task_list_statuses" edge to the TeammateTaskListStatus entity by IDs.
-func (tlssuo *TaskListSortStatusUpdateOne) AddTeammateTaskListStatusIDs(ids ...ulid.ID) *TaskListSortStatusUpdateOne {
-	tlssuo.mutation.AddTeammateTaskListStatusIDs(ids...)
+// AddTeammateTaskListStatuseIDs adds the "teammateTaskListStatuses" edge to the TeammateTaskListStatus entity by IDs.
+func (tlssuo *TaskListSortStatusUpdateOne) AddTeammateTaskListStatuseIDs(ids ...ulid.ID) *TaskListSortStatusUpdateOne {
+	tlssuo.mutation.AddTeammateTaskListStatuseIDs(ids...)
 	return tlssuo
 }
 
-// AddTeammateTaskListStatuses adds the "teammate_task_list_statuses" edges to the TeammateTaskListStatus entity.
+// AddTeammateTaskListStatuses adds the "teammateTaskListStatuses" edges to the TeammateTaskListStatus entity.
 func (tlssuo *TaskListSortStatusUpdateOne) AddTeammateTaskListStatuses(t ...*TeammateTaskListStatus) *TaskListSortStatusUpdateOne {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
 		ids[i] = t[i].ID
 	}
-	return tlssuo.AddTeammateTaskListStatusIDs(ids...)
+	return tlssuo.AddTeammateTaskListStatuseIDs(ids...)
 }
 
-// AddProjectTaskListStatusIDs adds the "project_task_list_statuses" edge to the ProjectTaskListStatus entity by IDs.
-func (tlssuo *TaskListSortStatusUpdateOne) AddProjectTaskListStatusIDs(ids ...ulid.ID) *TaskListSortStatusUpdateOne {
-	tlssuo.mutation.AddProjectTaskListStatusIDs(ids...)
+// AddProjectTaskListStatuseIDs adds the "projectTaskListStatuses" edge to the ProjectTaskListStatus entity by IDs.
+func (tlssuo *TaskListSortStatusUpdateOne) AddProjectTaskListStatuseIDs(ids ...ulid.ID) *TaskListSortStatusUpdateOne {
+	tlssuo.mutation.AddProjectTaskListStatuseIDs(ids...)
 	return tlssuo
 }
 
-// AddProjectTaskListStatuses adds the "project_task_list_statuses" edges to the ProjectTaskListStatus entity.
+// AddProjectTaskListStatuses adds the "projectTaskListStatuses" edges to the ProjectTaskListStatus entity.
 func (tlssuo *TaskListSortStatusUpdateOne) AddProjectTaskListStatuses(p ...*ProjectTaskListStatus) *TaskListSortStatusUpdateOne {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
-	return tlssuo.AddProjectTaskListStatusIDs(ids...)
+	return tlssuo.AddProjectTaskListStatuseIDs(ids...)
 }
 
 // Mutation returns the TaskListSortStatusMutation object of the builder.
@@ -399,46 +399,46 @@ func (tlssuo *TaskListSortStatusUpdateOne) Mutation() *TaskListSortStatusMutatio
 	return tlssuo.mutation
 }
 
-// ClearTeammateTaskListStatuses clears all "teammate_task_list_statuses" edges to the TeammateTaskListStatus entity.
+// ClearTeammateTaskListStatuses clears all "teammateTaskListStatuses" edges to the TeammateTaskListStatus entity.
 func (tlssuo *TaskListSortStatusUpdateOne) ClearTeammateTaskListStatuses() *TaskListSortStatusUpdateOne {
 	tlssuo.mutation.ClearTeammateTaskListStatuses()
 	return tlssuo
 }
 
-// RemoveTeammateTaskListStatusIDs removes the "teammate_task_list_statuses" edge to TeammateTaskListStatus entities by IDs.
-func (tlssuo *TaskListSortStatusUpdateOne) RemoveTeammateTaskListStatusIDs(ids ...ulid.ID) *TaskListSortStatusUpdateOne {
-	tlssuo.mutation.RemoveTeammateTaskListStatusIDs(ids...)
+// RemoveTeammateTaskListStatuseIDs removes the "teammateTaskListStatuses" edge to TeammateTaskListStatus entities by IDs.
+func (tlssuo *TaskListSortStatusUpdateOne) RemoveTeammateTaskListStatuseIDs(ids ...ulid.ID) *TaskListSortStatusUpdateOne {
+	tlssuo.mutation.RemoveTeammateTaskListStatuseIDs(ids...)
 	return tlssuo
 }
 
-// RemoveTeammateTaskListStatuses removes "teammate_task_list_statuses" edges to TeammateTaskListStatus entities.
+// RemoveTeammateTaskListStatuses removes "teammateTaskListStatuses" edges to TeammateTaskListStatus entities.
 func (tlssuo *TaskListSortStatusUpdateOne) RemoveTeammateTaskListStatuses(t ...*TeammateTaskListStatus) *TaskListSortStatusUpdateOne {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
 		ids[i] = t[i].ID
 	}
-	return tlssuo.RemoveTeammateTaskListStatusIDs(ids...)
+	return tlssuo.RemoveTeammateTaskListStatuseIDs(ids...)
 }
 
-// ClearProjectTaskListStatuses clears all "project_task_list_statuses" edges to the ProjectTaskListStatus entity.
+// ClearProjectTaskListStatuses clears all "projectTaskListStatuses" edges to the ProjectTaskListStatus entity.
 func (tlssuo *TaskListSortStatusUpdateOne) ClearProjectTaskListStatuses() *TaskListSortStatusUpdateOne {
 	tlssuo.mutation.ClearProjectTaskListStatuses()
 	return tlssuo
 }
 
-// RemoveProjectTaskListStatusIDs removes the "project_task_list_statuses" edge to ProjectTaskListStatus entities by IDs.
-func (tlssuo *TaskListSortStatusUpdateOne) RemoveProjectTaskListStatusIDs(ids ...ulid.ID) *TaskListSortStatusUpdateOne {
-	tlssuo.mutation.RemoveProjectTaskListStatusIDs(ids...)
+// RemoveProjectTaskListStatuseIDs removes the "projectTaskListStatuses" edge to ProjectTaskListStatus entities by IDs.
+func (tlssuo *TaskListSortStatusUpdateOne) RemoveProjectTaskListStatuseIDs(ids ...ulid.ID) *TaskListSortStatusUpdateOne {
+	tlssuo.mutation.RemoveProjectTaskListStatuseIDs(ids...)
 	return tlssuo
 }
 
-// RemoveProjectTaskListStatuses removes "project_task_list_statuses" edges to ProjectTaskListStatus entities.
+// RemoveProjectTaskListStatuses removes "projectTaskListStatuses" edges to ProjectTaskListStatus entities.
 func (tlssuo *TaskListSortStatusUpdateOne) RemoveProjectTaskListStatuses(p ...*ProjectTaskListStatus) *TaskListSortStatusUpdateOne {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
-	return tlssuo.RemoveProjectTaskListStatusIDs(ids...)
+	return tlssuo.RemoveProjectTaskListStatuseIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.

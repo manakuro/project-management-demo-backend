@@ -426,7 +426,7 @@ func UpdatedAtLTE(v time.Time) predicate.TaskColumn {
 	})
 }
 
-// HasTeammateTaskColumns applies the HasEdge predicate on the "teammate_task_columns" edge.
+// HasTeammateTaskColumns applies the HasEdge predicate on the "teammateTaskColumns" edge.
 func HasTeammateTaskColumns() predicate.TaskColumn {
 	return predicate.TaskColumn(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
@@ -438,7 +438,7 @@ func HasTeammateTaskColumns() predicate.TaskColumn {
 	})
 }
 
-// HasTeammateTaskColumnsWith applies the HasEdge predicate on the "teammate_task_columns" edge with a given conditions (other predicates).
+// HasTeammateTaskColumnsWith applies the HasEdge predicate on the "teammateTaskColumns" edge with a given conditions (other predicates).
 func HasTeammateTaskColumnsWith(preds ...predicate.TeammateTaskColumn) predicate.TaskColumn {
 	return predicate.TaskColumn(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
@@ -454,7 +454,7 @@ func HasTeammateTaskColumnsWith(preds ...predicate.TeammateTaskColumn) predicate
 	})
 }
 
-// HasProjectTaskColumns applies the HasEdge predicate on the "project_task_columns" edge.
+// HasProjectTaskColumns applies the HasEdge predicate on the "projectTaskColumns" edge.
 func HasProjectTaskColumns() predicate.TaskColumn {
 	return predicate.TaskColumn(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
@@ -466,7 +466,7 @@ func HasProjectTaskColumns() predicate.TaskColumn {
 	})
 }
 
-// HasProjectTaskColumnsWith applies the HasEdge predicate on the "project_task_columns" edge with a given conditions (other predicates).
+// HasProjectTaskColumnsWith applies the HasEdge predicate on the "projectTaskColumns" edge with a given conditions (other predicates).
 func HasProjectTaskColumnsWith(preds ...predicate.ProjectTaskColumn) predicate.TaskColumn {
 	return predicate.TaskColumn(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(

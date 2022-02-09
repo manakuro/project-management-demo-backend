@@ -5,7 +5,6 @@ import (
 	"project-management-demo-backend/ent"
 	"project-management-demo-backend/pkg/entity/model"
 	ur "project-management-demo-backend/pkg/usecase/repository"
-	"project-management-demo-backend/pkg/util/collection"
 )
 
 type workspaceRepository struct {
@@ -17,25 +16,12 @@ func NewWorkspaceRepository(client *ent.Client) ur.Workspace {
 	return &workspaceRepository{client: client}
 }
 
-func (r *workspaceRepository) Get(ctx context.Context, where *model.WorkspaceWhereInput, requestFields []string) (*model.Workspace, error) {
+func (r *workspaceRepository) Get(ctx context.Context, where *model.WorkspaceWhereInput) (*model.Workspace, error) {
 	q := r.client.Workspace.Query()
 
 	q, err := where.Filter(q)
 	if err != nil {
 		return nil, model.NewInvalidParamError(nil)
-	}
-
-	if collection.Contains(requestFields, "projects") {
-		q.WithProjects(func(pq *ent.ProjectQuery) {
-			pq.WithProjectTeammates(func(ptq *ent.ProjectTeammateQuery) {
-				ptq.WithTeammate()
-			})
-		})
-	}
-	if collection.Contains(requestFields, "workspaceTeammates") {
-		q.WithWorkspaceTeammates(func(wtq *ent.WorkspaceTeammateQuery) {
-			wtq.WithTeammate()
-		})
 	}
 
 	res, err := q.Only(ctx)
@@ -63,16 +49,8 @@ func (r *workspaceRepository) List(ctx context.Context) ([]*model.Workspace, err
 	return res, nil
 }
 
-func (r *workspaceRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.WorkspaceWhereInput, requestFields []string) (*model.WorkspaceConnection, error) {
+func (r *workspaceRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.WorkspaceWhereInput) (*model.WorkspaceConnection, error) {
 	q := r.client.Workspace.Query()
-
-	if collection.Contains(requestFields, "edges.node.projects") {
-		q.WithProjects(func(qp *ent.ProjectQuery) {
-			qp.WithProjectTeammates(func(ptq *ent.ProjectTeammateQuery) {
-				ptq.WithProject()
-			})
-		})
-	}
 
 	res, err := q.Paginate(ctx, after, first, before, last, ent.WithWorkspaceFilter(where.Filter))
 	if err != nil {

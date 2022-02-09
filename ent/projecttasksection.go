@@ -35,8 +35,8 @@ type ProjectTaskSection struct {
 type ProjectTaskSectionEdges struct {
 	// Project holds the value of the project edge.
 	Project *Project `json:"project,omitempty"`
-	// ProjectTasks holds the value of the project_tasks edge.
-	ProjectTasks []*ProjectTask `json:"project_tasks,omitempty"`
+	// ProjectTasks holds the value of the projectTasks edge.
+	ProjectTasks []*ProjectTask `json:"projectTasks,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [2]bool
@@ -62,7 +62,7 @@ func (e ProjectTaskSectionEdges) ProjectTasksOrErr() ([]*ProjectTask, error) {
 	if e.loadedTypes[1] {
 		return e.ProjectTasks, nil
 	}
-	return nil, &NotLoadedError{edge: "project_tasks"}
+	return nil, &NotLoadedError{edge: "projectTasks"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -131,7 +131,7 @@ func (pts *ProjectTaskSection) QueryProject() *ProjectQuery {
 	return (&ProjectTaskSectionClient{config: pts.config}).QueryProject(pts)
 }
 
-// QueryProjectTasks queries the "project_tasks" edge of the ProjectTaskSection entity.
+// QueryProjectTasks queries the "projectTasks" edge of the ProjectTaskSection entity.
 func (pts *ProjectTaskSection) QueryProjectTasks() *ProjectTaskQuery {
 	return (&ProjectTaskSectionClient{config: pts.config}).QueryProjectTasks(pts)
 }

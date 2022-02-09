@@ -10,7 +10,6 @@ import (
 	"project-management-demo-backend/graph/generated"
 	"project-management-demo-backend/pkg/adapter/handler"
 	"project-management-demo-backend/pkg/util/datetime"
-	"project-management-demo-backend/pkg/util/graphqlutil"
 	"project-management-demo-backend/pkg/util/subscription"
 )
 
@@ -54,9 +53,8 @@ func (r *queryResolver) ProjectBaseColor(ctx context.Context, where *ent.Project
 }
 
 func (r *queryResolver) ProjectBaseColors(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectBaseColorWhereInput) (*ent.ProjectBaseColorConnection, error) {
-	requestedFields := graphqlutil.GetRequestedFields(ctx)
 
-	ps, err := r.controller.ProjectBaseColor.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
+	ps, err := r.controller.ProjectBaseColor.ListWithPagination(ctx, after, first, before, last, where)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}

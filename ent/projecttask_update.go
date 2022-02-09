@@ -59,7 +59,7 @@ func (ptu *ProjectTaskUpdate) SetTask(t *Task) *ProjectTaskUpdate {
 	return ptu.SetTaskID(t.ID)
 }
 
-// SetProjectTaskSection sets the "project_task_section" edge to the ProjectTaskSection entity.
+// SetProjectTaskSection sets the "projectTaskSection" edge to the ProjectTaskSection entity.
 func (ptu *ProjectTaskUpdate) SetProjectTaskSection(p *ProjectTaskSection) *ProjectTaskUpdate {
 	return ptu.SetProjectTaskSectionID(p.ID)
 }
@@ -81,7 +81,7 @@ func (ptu *ProjectTaskUpdate) ClearTask() *ProjectTaskUpdate {
 	return ptu
 }
 
-// ClearProjectTaskSection clears the "project_task_section" edge to the ProjectTaskSection entity.
+// ClearProjectTaskSection clears the "projectTaskSection" edge to the ProjectTaskSection entity.
 func (ptu *ProjectTaskUpdate) ClearProjectTaskSection() *ProjectTaskUpdate {
 	ptu.mutation.ClearProjectTaskSection()
 	return ptu
@@ -156,7 +156,7 @@ func (ptu *ProjectTaskUpdate) check() error {
 		return errors.New("ent: clearing a required unique edge \"task\"")
 	}
 	if _, ok := ptu.mutation.ProjectTaskSectionID(); ptu.mutation.ProjectTaskSectionCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"project_task_section\"")
+		return errors.New("ent: clearing a required unique edge \"projectTaskSection\"")
 	}
 	return nil
 }
@@ -331,7 +331,7 @@ func (ptuo *ProjectTaskUpdateOne) SetTask(t *Task) *ProjectTaskUpdateOne {
 	return ptuo.SetTaskID(t.ID)
 }
 
-// SetProjectTaskSection sets the "project_task_section" edge to the ProjectTaskSection entity.
+// SetProjectTaskSection sets the "projectTaskSection" edge to the ProjectTaskSection entity.
 func (ptuo *ProjectTaskUpdateOne) SetProjectTaskSection(p *ProjectTaskSection) *ProjectTaskUpdateOne {
 	return ptuo.SetProjectTaskSectionID(p.ID)
 }
@@ -353,7 +353,7 @@ func (ptuo *ProjectTaskUpdateOne) ClearTask() *ProjectTaskUpdateOne {
 	return ptuo
 }
 
-// ClearProjectTaskSection clears the "project_task_section" edge to the ProjectTaskSection entity.
+// ClearProjectTaskSection clears the "projectTaskSection" edge to the ProjectTaskSection entity.
 func (ptuo *ProjectTaskUpdateOne) ClearProjectTaskSection() *ProjectTaskUpdateOne {
 	ptuo.mutation.ClearProjectTaskSection()
 	return ptuo
@@ -435,7 +435,7 @@ func (ptuo *ProjectTaskUpdateOne) check() error {
 		return errors.New("ent: clearing a required unique edge \"task\"")
 	}
 	if _, ok := ptuo.mutation.ProjectTaskSectionID(); ptuo.mutation.ProjectTaskSectionCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"project_task_section\"")
+		return errors.New("ent: clearing a required unique edge \"projectTaskSection\"")
 	}
 	return nil
 }

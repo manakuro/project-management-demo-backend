@@ -66,12 +66,12 @@ func (ttlsu *TeammateTaskListStatusUpdate) SetTeammate(t *Teammate) *TeammateTas
 	return ttlsu.SetTeammateID(t.ID)
 }
 
-// SetTaskListCompletedStatus sets the "task_list_completed_status" edge to the TaskListCompletedStatus entity.
+// SetTaskListCompletedStatus sets the "taskListCompletedStatus" edge to the TaskListCompletedStatus entity.
 func (ttlsu *TeammateTaskListStatusUpdate) SetTaskListCompletedStatus(t *TaskListCompletedStatus) *TeammateTaskListStatusUpdate {
 	return ttlsu.SetTaskListCompletedStatusID(t.ID)
 }
 
-// SetTaskListSortStatus sets the "task_list_sort_status" edge to the TaskListSortStatus entity.
+// SetTaskListSortStatus sets the "taskListSortStatus" edge to the TaskListSortStatus entity.
 func (ttlsu *TeammateTaskListStatusUpdate) SetTaskListSortStatus(t *TaskListSortStatus) *TeammateTaskListStatusUpdate {
 	return ttlsu.SetTaskListSortStatusID(t.ID)
 }
@@ -93,13 +93,13 @@ func (ttlsu *TeammateTaskListStatusUpdate) ClearTeammate() *TeammateTaskListStat
 	return ttlsu
 }
 
-// ClearTaskListCompletedStatus clears the "task_list_completed_status" edge to the TaskListCompletedStatus entity.
+// ClearTaskListCompletedStatus clears the "taskListCompletedStatus" edge to the TaskListCompletedStatus entity.
 func (ttlsu *TeammateTaskListStatusUpdate) ClearTaskListCompletedStatus() *TeammateTaskListStatusUpdate {
 	ttlsu.mutation.ClearTaskListCompletedStatus()
 	return ttlsu
 }
 
-// ClearTaskListSortStatus clears the "task_list_sort_status" edge to the TaskListSortStatus entity.
+// ClearTaskListSortStatus clears the "taskListSortStatus" edge to the TaskListSortStatus entity.
 func (ttlsu *TeammateTaskListStatusUpdate) ClearTaskListSortStatus() *TeammateTaskListStatusUpdate {
 	ttlsu.mutation.ClearTaskListSortStatus()
 	return ttlsu
@@ -174,10 +174,10 @@ func (ttlsu *TeammateTaskListStatusUpdate) check() error {
 		return errors.New("ent: clearing a required unique edge \"teammate\"")
 	}
 	if _, ok := ttlsu.mutation.TaskListCompletedStatusID(); ttlsu.mutation.TaskListCompletedStatusCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"task_list_completed_status\"")
+		return errors.New("ent: clearing a required unique edge \"taskListCompletedStatus\"")
 	}
 	if _, ok := ttlsu.mutation.TaskListSortStatusID(); ttlsu.mutation.TaskListSortStatusCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"task_list_sort_status\"")
+		return errors.New("ent: clearing a required unique edge \"taskListSortStatus\"")
 	}
 	return nil
 }
@@ -393,12 +393,12 @@ func (ttlsuo *TeammateTaskListStatusUpdateOne) SetTeammate(t *Teammate) *Teammat
 	return ttlsuo.SetTeammateID(t.ID)
 }
 
-// SetTaskListCompletedStatus sets the "task_list_completed_status" edge to the TaskListCompletedStatus entity.
+// SetTaskListCompletedStatus sets the "taskListCompletedStatus" edge to the TaskListCompletedStatus entity.
 func (ttlsuo *TeammateTaskListStatusUpdateOne) SetTaskListCompletedStatus(t *TaskListCompletedStatus) *TeammateTaskListStatusUpdateOne {
 	return ttlsuo.SetTaskListCompletedStatusID(t.ID)
 }
 
-// SetTaskListSortStatus sets the "task_list_sort_status" edge to the TaskListSortStatus entity.
+// SetTaskListSortStatus sets the "taskListSortStatus" edge to the TaskListSortStatus entity.
 func (ttlsuo *TeammateTaskListStatusUpdateOne) SetTaskListSortStatus(t *TaskListSortStatus) *TeammateTaskListStatusUpdateOne {
 	return ttlsuo.SetTaskListSortStatusID(t.ID)
 }
@@ -420,13 +420,13 @@ func (ttlsuo *TeammateTaskListStatusUpdateOne) ClearTeammate() *TeammateTaskList
 	return ttlsuo
 }
 
-// ClearTaskListCompletedStatus clears the "task_list_completed_status" edge to the TaskListCompletedStatus entity.
+// ClearTaskListCompletedStatus clears the "taskListCompletedStatus" edge to the TaskListCompletedStatus entity.
 func (ttlsuo *TeammateTaskListStatusUpdateOne) ClearTaskListCompletedStatus() *TeammateTaskListStatusUpdateOne {
 	ttlsuo.mutation.ClearTaskListCompletedStatus()
 	return ttlsuo
 }
 
-// ClearTaskListSortStatus clears the "task_list_sort_status" edge to the TaskListSortStatus entity.
+// ClearTaskListSortStatus clears the "taskListSortStatus" edge to the TaskListSortStatus entity.
 func (ttlsuo *TeammateTaskListStatusUpdateOne) ClearTaskListSortStatus() *TeammateTaskListStatusUpdateOne {
 	ttlsuo.mutation.ClearTaskListSortStatus()
 	return ttlsuo
@@ -508,10 +508,10 @@ func (ttlsuo *TeammateTaskListStatusUpdateOne) check() error {
 		return errors.New("ent: clearing a required unique edge \"teammate\"")
 	}
 	if _, ok := ttlsuo.mutation.TaskListCompletedStatusID(); ttlsuo.mutation.TaskListCompletedStatusCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"task_list_completed_status\"")
+		return errors.New("ent: clearing a required unique edge \"taskListCompletedStatus\"")
 	}
 	if _, ok := ttlsuo.mutation.TaskListSortStatusID(); ttlsuo.mutation.TaskListSortStatusCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"task_list_sort_status\"")
+		return errors.New("ent: clearing a required unique edge \"taskListSortStatus\"")
 	}
 	return nil
 }

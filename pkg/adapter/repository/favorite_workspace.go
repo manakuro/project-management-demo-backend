@@ -6,7 +6,6 @@ import (
 	"project-management-demo-backend/ent/favoriteworkspace"
 	"project-management-demo-backend/pkg/entity/model"
 	ur "project-management-demo-backend/pkg/usecase/repository"
-	"project-management-demo-backend/pkg/util/collection"
 )
 
 type favoriteWorkspaceRepository struct {
@@ -51,16 +50,8 @@ func (r *favoriteWorkspaceRepository) List(ctx context.Context) ([]*model.Favori
 	return res, nil
 }
 
-func (r *favoriteWorkspaceRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.FavoriteWorkspaceWhereInput, requestedFields []string) (*model.FavoriteWorkspaceConnection, error) {
+func (r *favoriteWorkspaceRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.FavoriteWorkspaceWhereInput) (*model.FavoriteWorkspaceConnection, error) {
 	q := r.client.FavoriteWorkspace.Query()
-
-	if collection.Contains(requestedFields, "edges.node.project") {
-		q.WithWorkspace()
-	}
-
-	if collection.Contains(requestedFields, "edges.node.teammate") {
-		q.WithTeammate()
-	}
 
 	res, err := q.Paginate(ctx, after, first, before, last, ent.WithFavoriteWorkspaceFilter(where.Filter))
 	if err != nil {

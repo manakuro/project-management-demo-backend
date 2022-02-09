@@ -103,30 +103,30 @@ const (
 // ColorMutation represents an operation that mutates the Color nodes in the graph.
 type ColorMutation struct {
 	config
-	op                          Op
-	typ                         string
-	id                          *ulid.ID
-	name                        *string
-	color                       *string
-	hex                         *string
-	created_at                  *time.Time
-	updated_at                  *time.Time
-	clearedFields               map[string]struct{}
-	project_base_colors         map[ulid.ID]struct{}
-	removedproject_base_colors  map[ulid.ID]struct{}
-	clearedproject_base_colors  bool
-	project_light_colors        map[ulid.ID]struct{}
-	removedproject_light_colors map[ulid.ID]struct{}
-	clearedproject_light_colors bool
-	task_priorities             map[ulid.ID]struct{}
-	removedtask_priorities      map[ulid.ID]struct{}
-	clearedtask_priorities      bool
-	tags                        map[ulid.ID]struct{}
-	removedtags                 map[ulid.ID]struct{}
-	clearedtags                 bool
-	done                        bool
-	oldValue                    func(context.Context) (*Color, error)
-	predicates                  []predicate.Color
+	op                        Op
+	typ                       string
+	id                        *ulid.ID
+	name                      *string
+	color                     *string
+	hex                       *string
+	created_at                *time.Time
+	updated_at                *time.Time
+	clearedFields             map[string]struct{}
+	projectBaseColors         map[ulid.ID]struct{}
+	removedprojectBaseColors  map[ulid.ID]struct{}
+	clearedprojectBaseColors  bool
+	projectLightColors        map[ulid.ID]struct{}
+	removedprojectLightColors map[ulid.ID]struct{}
+	clearedprojectLightColors bool
+	taskPriorities            map[ulid.ID]struct{}
+	removedtaskPriorities     map[ulid.ID]struct{}
+	clearedtaskPriorities     bool
+	tags                      map[ulid.ID]struct{}
+	removedtags               map[ulid.ID]struct{}
+	clearedtags               bool
+	done                      bool
+	oldValue                  func(context.Context) (*Color, error)
+	predicates                []predicate.Color
 }
 
 var _ ent.Mutation = (*ColorMutation)(nil)
@@ -394,166 +394,166 @@ func (m *ColorMutation) ResetUpdatedAt() {
 	m.updated_at = nil
 }
 
-// AddProjectBaseColorIDs adds the "project_base_colors" edge to the ProjectBaseColor entity by ids.
+// AddProjectBaseColorIDs adds the "projectBaseColors" edge to the ProjectBaseColor entity by ids.
 func (m *ColorMutation) AddProjectBaseColorIDs(ids ...ulid.ID) {
-	if m.project_base_colors == nil {
-		m.project_base_colors = make(map[ulid.ID]struct{})
+	if m.projectBaseColors == nil {
+		m.projectBaseColors = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		m.project_base_colors[ids[i]] = struct{}{}
+		m.projectBaseColors[ids[i]] = struct{}{}
 	}
 }
 
-// ClearProjectBaseColors clears the "project_base_colors" edge to the ProjectBaseColor entity.
+// ClearProjectBaseColors clears the "projectBaseColors" edge to the ProjectBaseColor entity.
 func (m *ColorMutation) ClearProjectBaseColors() {
-	m.clearedproject_base_colors = true
+	m.clearedprojectBaseColors = true
 }
 
-// ProjectBaseColorsCleared reports if the "project_base_colors" edge to the ProjectBaseColor entity was cleared.
+// ProjectBaseColorsCleared reports if the "projectBaseColors" edge to the ProjectBaseColor entity was cleared.
 func (m *ColorMutation) ProjectBaseColorsCleared() bool {
-	return m.clearedproject_base_colors
+	return m.clearedprojectBaseColors
 }
 
-// RemoveProjectBaseColorIDs removes the "project_base_colors" edge to the ProjectBaseColor entity by IDs.
+// RemoveProjectBaseColorIDs removes the "projectBaseColors" edge to the ProjectBaseColor entity by IDs.
 func (m *ColorMutation) RemoveProjectBaseColorIDs(ids ...ulid.ID) {
-	if m.removedproject_base_colors == nil {
-		m.removedproject_base_colors = make(map[ulid.ID]struct{})
+	if m.removedprojectBaseColors == nil {
+		m.removedprojectBaseColors = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		delete(m.project_base_colors, ids[i])
-		m.removedproject_base_colors[ids[i]] = struct{}{}
+		delete(m.projectBaseColors, ids[i])
+		m.removedprojectBaseColors[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedProjectBaseColors returns the removed IDs of the "project_base_colors" edge to the ProjectBaseColor entity.
+// RemovedProjectBaseColors returns the removed IDs of the "projectBaseColors" edge to the ProjectBaseColor entity.
 func (m *ColorMutation) RemovedProjectBaseColorsIDs() (ids []ulid.ID) {
-	for id := range m.removedproject_base_colors {
+	for id := range m.removedprojectBaseColors {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ProjectBaseColorsIDs returns the "project_base_colors" edge IDs in the mutation.
+// ProjectBaseColorsIDs returns the "projectBaseColors" edge IDs in the mutation.
 func (m *ColorMutation) ProjectBaseColorsIDs() (ids []ulid.ID) {
-	for id := range m.project_base_colors {
+	for id := range m.projectBaseColors {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetProjectBaseColors resets all changes to the "project_base_colors" edge.
+// ResetProjectBaseColors resets all changes to the "projectBaseColors" edge.
 func (m *ColorMutation) ResetProjectBaseColors() {
-	m.project_base_colors = nil
-	m.clearedproject_base_colors = false
-	m.removedproject_base_colors = nil
+	m.projectBaseColors = nil
+	m.clearedprojectBaseColors = false
+	m.removedprojectBaseColors = nil
 }
 
-// AddProjectLightColorIDs adds the "project_light_colors" edge to the ProjectLightColor entity by ids.
+// AddProjectLightColorIDs adds the "projectLightColors" edge to the ProjectLightColor entity by ids.
 func (m *ColorMutation) AddProjectLightColorIDs(ids ...ulid.ID) {
-	if m.project_light_colors == nil {
-		m.project_light_colors = make(map[ulid.ID]struct{})
+	if m.projectLightColors == nil {
+		m.projectLightColors = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		m.project_light_colors[ids[i]] = struct{}{}
+		m.projectLightColors[ids[i]] = struct{}{}
 	}
 }
 
-// ClearProjectLightColors clears the "project_light_colors" edge to the ProjectLightColor entity.
+// ClearProjectLightColors clears the "projectLightColors" edge to the ProjectLightColor entity.
 func (m *ColorMutation) ClearProjectLightColors() {
-	m.clearedproject_light_colors = true
+	m.clearedprojectLightColors = true
 }
 
-// ProjectLightColorsCleared reports if the "project_light_colors" edge to the ProjectLightColor entity was cleared.
+// ProjectLightColorsCleared reports if the "projectLightColors" edge to the ProjectLightColor entity was cleared.
 func (m *ColorMutation) ProjectLightColorsCleared() bool {
-	return m.clearedproject_light_colors
+	return m.clearedprojectLightColors
 }
 
-// RemoveProjectLightColorIDs removes the "project_light_colors" edge to the ProjectLightColor entity by IDs.
+// RemoveProjectLightColorIDs removes the "projectLightColors" edge to the ProjectLightColor entity by IDs.
 func (m *ColorMutation) RemoveProjectLightColorIDs(ids ...ulid.ID) {
-	if m.removedproject_light_colors == nil {
-		m.removedproject_light_colors = make(map[ulid.ID]struct{})
+	if m.removedprojectLightColors == nil {
+		m.removedprojectLightColors = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		delete(m.project_light_colors, ids[i])
-		m.removedproject_light_colors[ids[i]] = struct{}{}
+		delete(m.projectLightColors, ids[i])
+		m.removedprojectLightColors[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedProjectLightColors returns the removed IDs of the "project_light_colors" edge to the ProjectLightColor entity.
+// RemovedProjectLightColors returns the removed IDs of the "projectLightColors" edge to the ProjectLightColor entity.
 func (m *ColorMutation) RemovedProjectLightColorsIDs() (ids []ulid.ID) {
-	for id := range m.removedproject_light_colors {
+	for id := range m.removedprojectLightColors {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ProjectLightColorsIDs returns the "project_light_colors" edge IDs in the mutation.
+// ProjectLightColorsIDs returns the "projectLightColors" edge IDs in the mutation.
 func (m *ColorMutation) ProjectLightColorsIDs() (ids []ulid.ID) {
-	for id := range m.project_light_colors {
+	for id := range m.projectLightColors {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetProjectLightColors resets all changes to the "project_light_colors" edge.
+// ResetProjectLightColors resets all changes to the "projectLightColors" edge.
 func (m *ColorMutation) ResetProjectLightColors() {
-	m.project_light_colors = nil
-	m.clearedproject_light_colors = false
-	m.removedproject_light_colors = nil
+	m.projectLightColors = nil
+	m.clearedprojectLightColors = false
+	m.removedprojectLightColors = nil
 }
 
-// AddTaskPriorityIDs adds the "task_priorities" edge to the TaskPriority entity by ids.
+// AddTaskPriorityIDs adds the "taskPriorities" edge to the TaskPriority entity by ids.
 func (m *ColorMutation) AddTaskPriorityIDs(ids ...ulid.ID) {
-	if m.task_priorities == nil {
-		m.task_priorities = make(map[ulid.ID]struct{})
+	if m.taskPriorities == nil {
+		m.taskPriorities = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		m.task_priorities[ids[i]] = struct{}{}
+		m.taskPriorities[ids[i]] = struct{}{}
 	}
 }
 
-// ClearTaskPriorities clears the "task_priorities" edge to the TaskPriority entity.
+// ClearTaskPriorities clears the "taskPriorities" edge to the TaskPriority entity.
 func (m *ColorMutation) ClearTaskPriorities() {
-	m.clearedtask_priorities = true
+	m.clearedtaskPriorities = true
 }
 
-// TaskPrioritiesCleared reports if the "task_priorities" edge to the TaskPriority entity was cleared.
+// TaskPrioritiesCleared reports if the "taskPriorities" edge to the TaskPriority entity was cleared.
 func (m *ColorMutation) TaskPrioritiesCleared() bool {
-	return m.clearedtask_priorities
+	return m.clearedtaskPriorities
 }
 
-// RemoveTaskPriorityIDs removes the "task_priorities" edge to the TaskPriority entity by IDs.
+// RemoveTaskPriorityIDs removes the "taskPriorities" edge to the TaskPriority entity by IDs.
 func (m *ColorMutation) RemoveTaskPriorityIDs(ids ...ulid.ID) {
-	if m.removedtask_priorities == nil {
-		m.removedtask_priorities = make(map[ulid.ID]struct{})
+	if m.removedtaskPriorities == nil {
+		m.removedtaskPriorities = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		delete(m.task_priorities, ids[i])
-		m.removedtask_priorities[ids[i]] = struct{}{}
+		delete(m.taskPriorities, ids[i])
+		m.removedtaskPriorities[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedTaskPriorities returns the removed IDs of the "task_priorities" edge to the TaskPriority entity.
+// RemovedTaskPriorities returns the removed IDs of the "taskPriorities" edge to the TaskPriority entity.
 func (m *ColorMutation) RemovedTaskPrioritiesIDs() (ids []ulid.ID) {
-	for id := range m.removedtask_priorities {
+	for id := range m.removedtaskPriorities {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// TaskPrioritiesIDs returns the "task_priorities" edge IDs in the mutation.
+// TaskPrioritiesIDs returns the "taskPriorities" edge IDs in the mutation.
 func (m *ColorMutation) TaskPrioritiesIDs() (ids []ulid.ID) {
-	for id := range m.task_priorities {
+	for id := range m.taskPriorities {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetTaskPriorities resets all changes to the "task_priorities" edge.
+// ResetTaskPriorities resets all changes to the "taskPriorities" edge.
 func (m *ColorMutation) ResetTaskPriorities() {
-	m.task_priorities = nil
-	m.clearedtask_priorities = false
-	m.removedtask_priorities = nil
+	m.taskPriorities = nil
+	m.clearedtaskPriorities = false
+	m.removedtaskPriorities = nil
 }
 
 // AddTagIDs adds the "tags" edge to the Tag entity by ids.
@@ -797,13 +797,13 @@ func (m *ColorMutation) ResetField(name string) error {
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *ColorMutation) AddedEdges() []string {
 	edges := make([]string, 0, 4)
-	if m.project_base_colors != nil {
+	if m.projectBaseColors != nil {
 		edges = append(edges, color.EdgeProjectBaseColors)
 	}
-	if m.project_light_colors != nil {
+	if m.projectLightColors != nil {
 		edges = append(edges, color.EdgeProjectLightColors)
 	}
-	if m.task_priorities != nil {
+	if m.taskPriorities != nil {
 		edges = append(edges, color.EdgeTaskPriorities)
 	}
 	if m.tags != nil {
@@ -817,20 +817,20 @@ func (m *ColorMutation) AddedEdges() []string {
 func (m *ColorMutation) AddedIDs(name string) []ent.Value {
 	switch name {
 	case color.EdgeProjectBaseColors:
-		ids := make([]ent.Value, 0, len(m.project_base_colors))
-		for id := range m.project_base_colors {
+		ids := make([]ent.Value, 0, len(m.projectBaseColors))
+		for id := range m.projectBaseColors {
 			ids = append(ids, id)
 		}
 		return ids
 	case color.EdgeProjectLightColors:
-		ids := make([]ent.Value, 0, len(m.project_light_colors))
-		for id := range m.project_light_colors {
+		ids := make([]ent.Value, 0, len(m.projectLightColors))
+		for id := range m.projectLightColors {
 			ids = append(ids, id)
 		}
 		return ids
 	case color.EdgeTaskPriorities:
-		ids := make([]ent.Value, 0, len(m.task_priorities))
-		for id := range m.task_priorities {
+		ids := make([]ent.Value, 0, len(m.taskPriorities))
+		for id := range m.taskPriorities {
 			ids = append(ids, id)
 		}
 		return ids
@@ -847,13 +847,13 @@ func (m *ColorMutation) AddedIDs(name string) []ent.Value {
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *ColorMutation) RemovedEdges() []string {
 	edges := make([]string, 0, 4)
-	if m.removedproject_base_colors != nil {
+	if m.removedprojectBaseColors != nil {
 		edges = append(edges, color.EdgeProjectBaseColors)
 	}
-	if m.removedproject_light_colors != nil {
+	if m.removedprojectLightColors != nil {
 		edges = append(edges, color.EdgeProjectLightColors)
 	}
-	if m.removedtask_priorities != nil {
+	if m.removedtaskPriorities != nil {
 		edges = append(edges, color.EdgeTaskPriorities)
 	}
 	if m.removedtags != nil {
@@ -867,20 +867,20 @@ func (m *ColorMutation) RemovedEdges() []string {
 func (m *ColorMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
 	case color.EdgeProjectBaseColors:
-		ids := make([]ent.Value, 0, len(m.removedproject_base_colors))
-		for id := range m.removedproject_base_colors {
+		ids := make([]ent.Value, 0, len(m.removedprojectBaseColors))
+		for id := range m.removedprojectBaseColors {
 			ids = append(ids, id)
 		}
 		return ids
 	case color.EdgeProjectLightColors:
-		ids := make([]ent.Value, 0, len(m.removedproject_light_colors))
-		for id := range m.removedproject_light_colors {
+		ids := make([]ent.Value, 0, len(m.removedprojectLightColors))
+		for id := range m.removedprojectLightColors {
 			ids = append(ids, id)
 		}
 		return ids
 	case color.EdgeTaskPriorities:
-		ids := make([]ent.Value, 0, len(m.removedtask_priorities))
-		for id := range m.removedtask_priorities {
+		ids := make([]ent.Value, 0, len(m.removedtaskPriorities))
+		for id := range m.removedtaskPriorities {
 			ids = append(ids, id)
 		}
 		return ids
@@ -897,13 +897,13 @@ func (m *ColorMutation) RemovedIDs(name string) []ent.Value {
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *ColorMutation) ClearedEdges() []string {
 	edges := make([]string, 0, 4)
-	if m.clearedproject_base_colors {
+	if m.clearedprojectBaseColors {
 		edges = append(edges, color.EdgeProjectBaseColors)
 	}
-	if m.clearedproject_light_colors {
+	if m.clearedprojectLightColors {
 		edges = append(edges, color.EdgeProjectLightColors)
 	}
-	if m.clearedtask_priorities {
+	if m.clearedtaskPriorities {
 		edges = append(edges, color.EdgeTaskPriorities)
 	}
 	if m.clearedtags {
@@ -917,11 +917,11 @@ func (m *ColorMutation) ClearedEdges() []string {
 func (m *ColorMutation) EdgeCleared(name string) bool {
 	switch name {
 	case color.EdgeProjectBaseColors:
-		return m.clearedproject_base_colors
+		return m.clearedprojectBaseColors
 	case color.EdgeProjectLightColors:
-		return m.clearedproject_light_colors
+		return m.clearedprojectLightColors
 	case color.EdgeTaskPriorities:
-		return m.clearedtask_priorities
+		return m.clearedtaskPriorities
 	case color.EdgeTags:
 		return m.clearedtags
 	}
@@ -2079,20 +2079,20 @@ func (m *FavoriteWorkspaceMutation) ResetEdge(name string) error {
 // FileTypeMutation represents an operation that mutates the FileType nodes in the graph.
 type FileTypeMutation struct {
 	config
-	op                Op
-	typ               string
-	id                *ulid.ID
-	name              *string
-	type_code         *filetype.TypeCode
-	created_at        *time.Time
-	updated_at        *time.Time
-	clearedFields     map[string]struct{}
-	task_files        map[ulid.ID]struct{}
-	removedtask_files map[ulid.ID]struct{}
-	clearedtask_files bool
-	done              bool
-	oldValue          func(context.Context) (*FileType, error)
-	predicates        []predicate.FileType
+	op               Op
+	typ              string
+	id               *ulid.ID
+	name             *string
+	type_code        *filetype.TypeCode
+	created_at       *time.Time
+	updated_at       *time.Time
+	clearedFields    map[string]struct{}
+	taskFiles        map[ulid.ID]struct{}
+	removedtaskFiles map[ulid.ID]struct{}
+	clearedtaskFiles bool
+	done             bool
+	oldValue         func(context.Context) (*FileType, error)
+	predicates       []predicate.FileType
 }
 
 var _ ent.Mutation = (*FileTypeMutation)(nil)
@@ -2324,58 +2324,58 @@ func (m *FileTypeMutation) ResetUpdatedAt() {
 	m.updated_at = nil
 }
 
-// AddTaskFileIDs adds the "task_files" edge to the TaskFile entity by ids.
+// AddTaskFileIDs adds the "taskFiles" edge to the TaskFile entity by ids.
 func (m *FileTypeMutation) AddTaskFileIDs(ids ...ulid.ID) {
-	if m.task_files == nil {
-		m.task_files = make(map[ulid.ID]struct{})
+	if m.taskFiles == nil {
+		m.taskFiles = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		m.task_files[ids[i]] = struct{}{}
+		m.taskFiles[ids[i]] = struct{}{}
 	}
 }
 
-// ClearTaskFiles clears the "task_files" edge to the TaskFile entity.
+// ClearTaskFiles clears the "taskFiles" edge to the TaskFile entity.
 func (m *FileTypeMutation) ClearTaskFiles() {
-	m.clearedtask_files = true
+	m.clearedtaskFiles = true
 }
 
-// TaskFilesCleared reports if the "task_files" edge to the TaskFile entity was cleared.
+// TaskFilesCleared reports if the "taskFiles" edge to the TaskFile entity was cleared.
 func (m *FileTypeMutation) TaskFilesCleared() bool {
-	return m.clearedtask_files
+	return m.clearedtaskFiles
 }
 
-// RemoveTaskFileIDs removes the "task_files" edge to the TaskFile entity by IDs.
+// RemoveTaskFileIDs removes the "taskFiles" edge to the TaskFile entity by IDs.
 func (m *FileTypeMutation) RemoveTaskFileIDs(ids ...ulid.ID) {
-	if m.removedtask_files == nil {
-		m.removedtask_files = make(map[ulid.ID]struct{})
+	if m.removedtaskFiles == nil {
+		m.removedtaskFiles = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		delete(m.task_files, ids[i])
-		m.removedtask_files[ids[i]] = struct{}{}
+		delete(m.taskFiles, ids[i])
+		m.removedtaskFiles[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedTaskFiles returns the removed IDs of the "task_files" edge to the TaskFile entity.
+// RemovedTaskFiles returns the removed IDs of the "taskFiles" edge to the TaskFile entity.
 func (m *FileTypeMutation) RemovedTaskFilesIDs() (ids []ulid.ID) {
-	for id := range m.removedtask_files {
+	for id := range m.removedtaskFiles {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// TaskFilesIDs returns the "task_files" edge IDs in the mutation.
+// TaskFilesIDs returns the "taskFiles" edge IDs in the mutation.
 func (m *FileTypeMutation) TaskFilesIDs() (ids []ulid.ID) {
-	for id := range m.task_files {
+	for id := range m.taskFiles {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetTaskFiles resets all changes to the "task_files" edge.
+// ResetTaskFiles resets all changes to the "taskFiles" edge.
 func (m *FileTypeMutation) ResetTaskFiles() {
-	m.task_files = nil
-	m.clearedtask_files = false
-	m.removedtask_files = nil
+	m.taskFiles = nil
+	m.clearedtaskFiles = false
+	m.removedtaskFiles = nil
 }
 
 // Where appends a list predicates to the FileTypeMutation builder.
@@ -2548,7 +2548,7 @@ func (m *FileTypeMutation) ResetField(name string) error {
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *FileTypeMutation) AddedEdges() []string {
 	edges := make([]string, 0, 1)
-	if m.task_files != nil {
+	if m.taskFiles != nil {
 		edges = append(edges, filetype.EdgeTaskFiles)
 	}
 	return edges
@@ -2559,8 +2559,8 @@ func (m *FileTypeMutation) AddedEdges() []string {
 func (m *FileTypeMutation) AddedIDs(name string) []ent.Value {
 	switch name {
 	case filetype.EdgeTaskFiles:
-		ids := make([]ent.Value, 0, len(m.task_files))
-		for id := range m.task_files {
+		ids := make([]ent.Value, 0, len(m.taskFiles))
+		for id := range m.taskFiles {
 			ids = append(ids, id)
 		}
 		return ids
@@ -2571,7 +2571,7 @@ func (m *FileTypeMutation) AddedIDs(name string) []ent.Value {
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *FileTypeMutation) RemovedEdges() []string {
 	edges := make([]string, 0, 1)
-	if m.removedtask_files != nil {
+	if m.removedtaskFiles != nil {
 		edges = append(edges, filetype.EdgeTaskFiles)
 	}
 	return edges
@@ -2582,8 +2582,8 @@ func (m *FileTypeMutation) RemovedEdges() []string {
 func (m *FileTypeMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
 	case filetype.EdgeTaskFiles:
-		ids := make([]ent.Value, 0, len(m.removedtask_files))
-		for id := range m.removedtask_files {
+		ids := make([]ent.Value, 0, len(m.removedtaskFiles))
+		for id := range m.removedtaskFiles {
 			ids = append(ids, id)
 		}
 		return ids
@@ -2594,7 +2594,7 @@ func (m *FileTypeMutation) RemovedIDs(name string) []ent.Value {
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *FileTypeMutation) ClearedEdges() []string {
 	edges := make([]string, 0, 1)
-	if m.clearedtask_files {
+	if m.clearedtaskFiles {
 		edges = append(edges, filetype.EdgeTaskFiles)
 	}
 	return edges
@@ -2605,7 +2605,7 @@ func (m *FileTypeMutation) ClearedEdges() []string {
 func (m *FileTypeMutation) EdgeCleared(name string) bool {
 	switch name {
 	case filetype.EdgeTaskFiles:
-		return m.clearedtask_files
+		return m.clearedtaskFiles
 	}
 	return false
 }
@@ -2632,20 +2632,20 @@ func (m *FileTypeMutation) ResetEdge(name string) error {
 // IconMutation represents an operation that mutates the Icon nodes in the graph.
 type IconMutation struct {
 	config
-	op                   Op
-	typ                  string
-	id                   *ulid.ID
-	name                 *string
-	icon                 *string
-	created_at           *time.Time
-	updated_at           *time.Time
-	clearedFields        map[string]struct{}
-	project_icons        map[ulid.ID]struct{}
-	removedproject_icons map[ulid.ID]struct{}
-	clearedproject_icons bool
-	done                 bool
-	oldValue             func(context.Context) (*Icon, error)
-	predicates           []predicate.Icon
+	op                  Op
+	typ                 string
+	id                  *ulid.ID
+	name                *string
+	icon                *string
+	created_at          *time.Time
+	updated_at          *time.Time
+	clearedFields       map[string]struct{}
+	projectIcons        map[ulid.ID]struct{}
+	removedprojectIcons map[ulid.ID]struct{}
+	clearedprojectIcons bool
+	done                bool
+	oldValue            func(context.Context) (*Icon, error)
+	predicates          []predicate.Icon
 }
 
 var _ ent.Mutation = (*IconMutation)(nil)
@@ -2877,58 +2877,58 @@ func (m *IconMutation) ResetUpdatedAt() {
 	m.updated_at = nil
 }
 
-// AddProjectIconIDs adds the "project_icons" edge to the ProjectIcon entity by ids.
+// AddProjectIconIDs adds the "projectIcons" edge to the ProjectIcon entity by ids.
 func (m *IconMutation) AddProjectIconIDs(ids ...ulid.ID) {
-	if m.project_icons == nil {
-		m.project_icons = make(map[ulid.ID]struct{})
+	if m.projectIcons == nil {
+		m.projectIcons = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		m.project_icons[ids[i]] = struct{}{}
+		m.projectIcons[ids[i]] = struct{}{}
 	}
 }
 
-// ClearProjectIcons clears the "project_icons" edge to the ProjectIcon entity.
+// ClearProjectIcons clears the "projectIcons" edge to the ProjectIcon entity.
 func (m *IconMutation) ClearProjectIcons() {
-	m.clearedproject_icons = true
+	m.clearedprojectIcons = true
 }
 
-// ProjectIconsCleared reports if the "project_icons" edge to the ProjectIcon entity was cleared.
+// ProjectIconsCleared reports if the "projectIcons" edge to the ProjectIcon entity was cleared.
 func (m *IconMutation) ProjectIconsCleared() bool {
-	return m.clearedproject_icons
+	return m.clearedprojectIcons
 }
 
-// RemoveProjectIconIDs removes the "project_icons" edge to the ProjectIcon entity by IDs.
+// RemoveProjectIconIDs removes the "projectIcons" edge to the ProjectIcon entity by IDs.
 func (m *IconMutation) RemoveProjectIconIDs(ids ...ulid.ID) {
-	if m.removedproject_icons == nil {
-		m.removedproject_icons = make(map[ulid.ID]struct{})
+	if m.removedprojectIcons == nil {
+		m.removedprojectIcons = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		delete(m.project_icons, ids[i])
-		m.removedproject_icons[ids[i]] = struct{}{}
+		delete(m.projectIcons, ids[i])
+		m.removedprojectIcons[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedProjectIcons returns the removed IDs of the "project_icons" edge to the ProjectIcon entity.
+// RemovedProjectIcons returns the removed IDs of the "projectIcons" edge to the ProjectIcon entity.
 func (m *IconMutation) RemovedProjectIconsIDs() (ids []ulid.ID) {
-	for id := range m.removedproject_icons {
+	for id := range m.removedprojectIcons {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ProjectIconsIDs returns the "project_icons" edge IDs in the mutation.
+// ProjectIconsIDs returns the "projectIcons" edge IDs in the mutation.
 func (m *IconMutation) ProjectIconsIDs() (ids []ulid.ID) {
-	for id := range m.project_icons {
+	for id := range m.projectIcons {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetProjectIcons resets all changes to the "project_icons" edge.
+// ResetProjectIcons resets all changes to the "projectIcons" edge.
 func (m *IconMutation) ResetProjectIcons() {
-	m.project_icons = nil
-	m.clearedproject_icons = false
-	m.removedproject_icons = nil
+	m.projectIcons = nil
+	m.clearedprojectIcons = false
+	m.removedprojectIcons = nil
 }
 
 // Where appends a list predicates to the IconMutation builder.
@@ -3101,7 +3101,7 @@ func (m *IconMutation) ResetField(name string) error {
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *IconMutation) AddedEdges() []string {
 	edges := make([]string, 0, 1)
-	if m.project_icons != nil {
+	if m.projectIcons != nil {
 		edges = append(edges, icon.EdgeProjectIcons)
 	}
 	return edges
@@ -3112,8 +3112,8 @@ func (m *IconMutation) AddedEdges() []string {
 func (m *IconMutation) AddedIDs(name string) []ent.Value {
 	switch name {
 	case icon.EdgeProjectIcons:
-		ids := make([]ent.Value, 0, len(m.project_icons))
-		for id := range m.project_icons {
+		ids := make([]ent.Value, 0, len(m.projectIcons))
+		for id := range m.projectIcons {
 			ids = append(ids, id)
 		}
 		return ids
@@ -3124,7 +3124,7 @@ func (m *IconMutation) AddedIDs(name string) []ent.Value {
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *IconMutation) RemovedEdges() []string {
 	edges := make([]string, 0, 1)
-	if m.removedproject_icons != nil {
+	if m.removedprojectIcons != nil {
 		edges = append(edges, icon.EdgeProjectIcons)
 	}
 	return edges
@@ -3135,8 +3135,8 @@ func (m *IconMutation) RemovedEdges() []string {
 func (m *IconMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
 	case icon.EdgeProjectIcons:
-		ids := make([]ent.Value, 0, len(m.removedproject_icons))
-		for id := range m.removedproject_icons {
+		ids := make([]ent.Value, 0, len(m.removedprojectIcons))
+		for id := range m.removedprojectIcons {
 			ids = append(ids, id)
 		}
 		return ids
@@ -3147,7 +3147,7 @@ func (m *IconMutation) RemovedIDs(name string) []ent.Value {
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *IconMutation) ClearedEdges() []string {
 	edges := make([]string, 0, 1)
-	if m.clearedproject_icons {
+	if m.clearedprojectIcons {
 		edges = append(edges, icon.EdgeProjectIcons)
 	}
 	return edges
@@ -3158,7 +3158,7 @@ func (m *IconMutation) ClearedEdges() []string {
 func (m *IconMutation) EdgeCleared(name string) bool {
 	switch name {
 	case icon.EdgeProjectIcons:
-		return m.clearedproject_icons
+		return m.clearedprojectIcons
 	}
 	return false
 }
@@ -3185,50 +3185,50 @@ func (m *IconMutation) ResetEdge(name string) error {
 // ProjectMutation represents an operation that mutates the Project nodes in the graph.
 type ProjectMutation struct {
 	config
-	op                                Op
-	typ                               string
-	id                                *ulid.ID
-	name                              *string
-	description                       *editor.Description
-	description_title                 *string
-	due_date                          *time.Time
-	created_at                        *time.Time
-	updated_at                        *time.Time
-	clearedFields                     map[string]struct{}
-	workspace                         *ulid.ID
-	clearedworkspace                  bool
-	project_base_color                *ulid.ID
-	clearedproject_base_color         bool
-	project_light_color               *ulid.ID
-	clearedproject_light_color        bool
-	project_icon                      *ulid.ID
-	clearedproject_icon               bool
-	teammate                          *ulid.ID
-	clearedteammate                   bool
-	project_teammates                 map[ulid.ID]struct{}
-	removedproject_teammates          map[ulid.ID]struct{}
-	clearedproject_teammates          bool
-	favorite_projects                 map[ulid.ID]struct{}
-	removedfavorite_projects          map[ulid.ID]struct{}
-	clearedfavorite_projects          bool
-	project_task_columns              map[ulid.ID]struct{}
-	removedproject_task_columns       map[ulid.ID]struct{}
-	clearedproject_task_columns       bool
-	project_task_list_statuses        map[ulid.ID]struct{}
-	removedproject_task_list_statuses map[ulid.ID]struct{}
-	clearedproject_task_list_statuses bool
-	project_task_sections             map[ulid.ID]struct{}
-	removedproject_task_sections      map[ulid.ID]struct{}
-	clearedproject_task_sections      bool
-	project_tasks                     map[ulid.ID]struct{}
-	removedproject_tasks              map[ulid.ID]struct{}
-	clearedproject_tasks              bool
-	task_files                        map[ulid.ID]struct{}
-	removedtask_files                 map[ulid.ID]struct{}
-	clearedtask_files                 bool
-	done                              bool
-	oldValue                          func(context.Context) (*Project, error)
-	predicates                        []predicate.Project
+	op                             Op
+	typ                            string
+	id                             *ulid.ID
+	name                           *string
+	description                    *editor.Description
+	description_title              *string
+	due_date                       *time.Time
+	created_at                     *time.Time
+	updated_at                     *time.Time
+	clearedFields                  map[string]struct{}
+	workspace                      *ulid.ID
+	clearedworkspace               bool
+	projectBaseColor               *ulid.ID
+	clearedprojectBaseColor        bool
+	projectLightColor              *ulid.ID
+	clearedprojectLightColor       bool
+	projectIcon                    *ulid.ID
+	clearedprojectIcon             bool
+	teammate                       *ulid.ID
+	clearedteammate                bool
+	projectTeammates               map[ulid.ID]struct{}
+	removedprojectTeammates        map[ulid.ID]struct{}
+	clearedprojectTeammates        bool
+	favoriteProjects               map[ulid.ID]struct{}
+	removedfavoriteProjects        map[ulid.ID]struct{}
+	clearedfavoriteProjects        bool
+	projectTaskColumns             map[ulid.ID]struct{}
+	removedprojectTaskColumns      map[ulid.ID]struct{}
+	clearedprojectTaskColumns      bool
+	projectTaskListStatuses        map[ulid.ID]struct{}
+	removedprojectTaskListStatuses map[ulid.ID]struct{}
+	clearedprojectTaskListStatuses bool
+	projectTaskSections            map[ulid.ID]struct{}
+	removedprojectTaskSections     map[ulid.ID]struct{}
+	clearedprojectTaskSections     bool
+	projectTasks                   map[ulid.ID]struct{}
+	removedprojectTasks            map[ulid.ID]struct{}
+	clearedprojectTasks            bool
+	taskFiles                      map[ulid.ID]struct{}
+	removedtaskFiles               map[ulid.ID]struct{}
+	clearedtaskFiles               bool
+	done                           bool
+	oldValue                       func(context.Context) (*Project, error)
+	predicates                     []predicate.Project
 }
 
 var _ ent.Mutation = (*ProjectMutation)(nil)
@@ -3354,12 +3354,12 @@ func (m *ProjectMutation) ResetWorkspaceID() {
 
 // SetProjectBaseColorID sets the "project_base_color_id" field.
 func (m *ProjectMutation) SetProjectBaseColorID(u ulid.ID) {
-	m.project_base_color = &u
+	m.projectBaseColor = &u
 }
 
 // ProjectBaseColorID returns the value of the "project_base_color_id" field in the mutation.
 func (m *ProjectMutation) ProjectBaseColorID() (r ulid.ID, exists bool) {
-	v := m.project_base_color
+	v := m.projectBaseColor
 	if v == nil {
 		return
 	}
@@ -3385,17 +3385,17 @@ func (m *ProjectMutation) OldProjectBaseColorID(ctx context.Context) (v ulid.ID,
 
 // ResetProjectBaseColorID resets all changes to the "project_base_color_id" field.
 func (m *ProjectMutation) ResetProjectBaseColorID() {
-	m.project_base_color = nil
+	m.projectBaseColor = nil
 }
 
 // SetProjectLightColorID sets the "project_light_color_id" field.
 func (m *ProjectMutation) SetProjectLightColorID(u ulid.ID) {
-	m.project_light_color = &u
+	m.projectLightColor = &u
 }
 
 // ProjectLightColorID returns the value of the "project_light_color_id" field in the mutation.
 func (m *ProjectMutation) ProjectLightColorID() (r ulid.ID, exists bool) {
-	v := m.project_light_color
+	v := m.projectLightColor
 	if v == nil {
 		return
 	}
@@ -3421,17 +3421,17 @@ func (m *ProjectMutation) OldProjectLightColorID(ctx context.Context) (v ulid.ID
 
 // ResetProjectLightColorID resets all changes to the "project_light_color_id" field.
 func (m *ProjectMutation) ResetProjectLightColorID() {
-	m.project_light_color = nil
+	m.projectLightColor = nil
 }
 
 // SetProjectIconID sets the "project_icon_id" field.
 func (m *ProjectMutation) SetProjectIconID(u ulid.ID) {
-	m.project_icon = &u
+	m.projectIcon = &u
 }
 
 // ProjectIconID returns the value of the "project_icon_id" field in the mutation.
 func (m *ProjectMutation) ProjectIconID() (r ulid.ID, exists bool) {
-	v := m.project_icon
+	v := m.projectIcon
 	if v == nil {
 		return
 	}
@@ -3457,7 +3457,7 @@ func (m *ProjectMutation) OldProjectIconID(ctx context.Context) (v ulid.ID, err 
 
 // ResetProjectIconID resets all changes to the "project_icon_id" field.
 func (m *ProjectMutation) ResetProjectIconID() {
-	m.project_icon = nil
+	m.projectIcon = nil
 }
 
 // SetCreatedBy sets the "created_by" field.
@@ -3751,82 +3751,82 @@ func (m *ProjectMutation) ResetWorkspace() {
 	m.clearedworkspace = false
 }
 
-// ClearProjectBaseColor clears the "project_base_color" edge to the ProjectBaseColor entity.
+// ClearProjectBaseColor clears the "projectBaseColor" edge to the ProjectBaseColor entity.
 func (m *ProjectMutation) ClearProjectBaseColor() {
-	m.clearedproject_base_color = true
+	m.clearedprojectBaseColor = true
 }
 
-// ProjectBaseColorCleared reports if the "project_base_color" edge to the ProjectBaseColor entity was cleared.
+// ProjectBaseColorCleared reports if the "projectBaseColor" edge to the ProjectBaseColor entity was cleared.
 func (m *ProjectMutation) ProjectBaseColorCleared() bool {
-	return m.clearedproject_base_color
+	return m.clearedprojectBaseColor
 }
 
-// ProjectBaseColorIDs returns the "project_base_color" edge IDs in the mutation.
+// ProjectBaseColorIDs returns the "projectBaseColor" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // ProjectBaseColorID instead. It exists only for internal usage by the builders.
 func (m *ProjectMutation) ProjectBaseColorIDs() (ids []ulid.ID) {
-	if id := m.project_base_color; id != nil {
+	if id := m.projectBaseColor; id != nil {
 		ids = append(ids, *id)
 	}
 	return
 }
 
-// ResetProjectBaseColor resets all changes to the "project_base_color" edge.
+// ResetProjectBaseColor resets all changes to the "projectBaseColor" edge.
 func (m *ProjectMutation) ResetProjectBaseColor() {
-	m.project_base_color = nil
-	m.clearedproject_base_color = false
+	m.projectBaseColor = nil
+	m.clearedprojectBaseColor = false
 }
 
-// ClearProjectLightColor clears the "project_light_color" edge to the ProjectLightColor entity.
+// ClearProjectLightColor clears the "projectLightColor" edge to the ProjectLightColor entity.
 func (m *ProjectMutation) ClearProjectLightColor() {
-	m.clearedproject_light_color = true
+	m.clearedprojectLightColor = true
 }
 
-// ProjectLightColorCleared reports if the "project_light_color" edge to the ProjectLightColor entity was cleared.
+// ProjectLightColorCleared reports if the "projectLightColor" edge to the ProjectLightColor entity was cleared.
 func (m *ProjectMutation) ProjectLightColorCleared() bool {
-	return m.clearedproject_light_color
+	return m.clearedprojectLightColor
 }
 
-// ProjectLightColorIDs returns the "project_light_color" edge IDs in the mutation.
+// ProjectLightColorIDs returns the "projectLightColor" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // ProjectLightColorID instead. It exists only for internal usage by the builders.
 func (m *ProjectMutation) ProjectLightColorIDs() (ids []ulid.ID) {
-	if id := m.project_light_color; id != nil {
+	if id := m.projectLightColor; id != nil {
 		ids = append(ids, *id)
 	}
 	return
 }
 
-// ResetProjectLightColor resets all changes to the "project_light_color" edge.
+// ResetProjectLightColor resets all changes to the "projectLightColor" edge.
 func (m *ProjectMutation) ResetProjectLightColor() {
-	m.project_light_color = nil
-	m.clearedproject_light_color = false
+	m.projectLightColor = nil
+	m.clearedprojectLightColor = false
 }
 
-// ClearProjectIcon clears the "project_icon" edge to the ProjectIcon entity.
+// ClearProjectIcon clears the "projectIcon" edge to the ProjectIcon entity.
 func (m *ProjectMutation) ClearProjectIcon() {
-	m.clearedproject_icon = true
+	m.clearedprojectIcon = true
 }
 
-// ProjectIconCleared reports if the "project_icon" edge to the ProjectIcon entity was cleared.
+// ProjectIconCleared reports if the "projectIcon" edge to the ProjectIcon entity was cleared.
 func (m *ProjectMutation) ProjectIconCleared() bool {
-	return m.clearedproject_icon
+	return m.clearedprojectIcon
 }
 
-// ProjectIconIDs returns the "project_icon" edge IDs in the mutation.
+// ProjectIconIDs returns the "projectIcon" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // ProjectIconID instead. It exists only for internal usage by the builders.
 func (m *ProjectMutation) ProjectIconIDs() (ids []ulid.ID) {
-	if id := m.project_icon; id != nil {
+	if id := m.projectIcon; id != nil {
 		ids = append(ids, *id)
 	}
 	return
 }
 
-// ResetProjectIcon resets all changes to the "project_icon" edge.
+// ResetProjectIcon resets all changes to the "projectIcon" edge.
 func (m *ProjectMutation) ResetProjectIcon() {
-	m.project_icon = nil
-	m.clearedproject_icon = false
+	m.projectIcon = nil
+	m.clearedprojectIcon = false
 }
 
 // SetTeammateID sets the "teammate" edge to the Teammate entity by id.
@@ -3868,382 +3868,382 @@ func (m *ProjectMutation) ResetTeammate() {
 	m.clearedteammate = false
 }
 
-// AddProjectTeammateIDs adds the "project_teammates" edge to the ProjectTeammate entity by ids.
+// AddProjectTeammateIDs adds the "projectTeammates" edge to the ProjectTeammate entity by ids.
 func (m *ProjectMutation) AddProjectTeammateIDs(ids ...ulid.ID) {
-	if m.project_teammates == nil {
-		m.project_teammates = make(map[ulid.ID]struct{})
+	if m.projectTeammates == nil {
+		m.projectTeammates = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		m.project_teammates[ids[i]] = struct{}{}
+		m.projectTeammates[ids[i]] = struct{}{}
 	}
 }
 
-// ClearProjectTeammates clears the "project_teammates" edge to the ProjectTeammate entity.
+// ClearProjectTeammates clears the "projectTeammates" edge to the ProjectTeammate entity.
 func (m *ProjectMutation) ClearProjectTeammates() {
-	m.clearedproject_teammates = true
+	m.clearedprojectTeammates = true
 }
 
-// ProjectTeammatesCleared reports if the "project_teammates" edge to the ProjectTeammate entity was cleared.
+// ProjectTeammatesCleared reports if the "projectTeammates" edge to the ProjectTeammate entity was cleared.
 func (m *ProjectMutation) ProjectTeammatesCleared() bool {
-	return m.clearedproject_teammates
+	return m.clearedprojectTeammates
 }
 
-// RemoveProjectTeammateIDs removes the "project_teammates" edge to the ProjectTeammate entity by IDs.
+// RemoveProjectTeammateIDs removes the "projectTeammates" edge to the ProjectTeammate entity by IDs.
 func (m *ProjectMutation) RemoveProjectTeammateIDs(ids ...ulid.ID) {
-	if m.removedproject_teammates == nil {
-		m.removedproject_teammates = make(map[ulid.ID]struct{})
+	if m.removedprojectTeammates == nil {
+		m.removedprojectTeammates = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		delete(m.project_teammates, ids[i])
-		m.removedproject_teammates[ids[i]] = struct{}{}
+		delete(m.projectTeammates, ids[i])
+		m.removedprojectTeammates[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedProjectTeammates returns the removed IDs of the "project_teammates" edge to the ProjectTeammate entity.
+// RemovedProjectTeammates returns the removed IDs of the "projectTeammates" edge to the ProjectTeammate entity.
 func (m *ProjectMutation) RemovedProjectTeammatesIDs() (ids []ulid.ID) {
-	for id := range m.removedproject_teammates {
+	for id := range m.removedprojectTeammates {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ProjectTeammatesIDs returns the "project_teammates" edge IDs in the mutation.
+// ProjectTeammatesIDs returns the "projectTeammates" edge IDs in the mutation.
 func (m *ProjectMutation) ProjectTeammatesIDs() (ids []ulid.ID) {
-	for id := range m.project_teammates {
+	for id := range m.projectTeammates {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetProjectTeammates resets all changes to the "project_teammates" edge.
+// ResetProjectTeammates resets all changes to the "projectTeammates" edge.
 func (m *ProjectMutation) ResetProjectTeammates() {
-	m.project_teammates = nil
-	m.clearedproject_teammates = false
-	m.removedproject_teammates = nil
+	m.projectTeammates = nil
+	m.clearedprojectTeammates = false
+	m.removedprojectTeammates = nil
 }
 
-// AddFavoriteProjectIDs adds the "favorite_projects" edge to the FavoriteProject entity by ids.
+// AddFavoriteProjectIDs adds the "favoriteProjects" edge to the FavoriteProject entity by ids.
 func (m *ProjectMutation) AddFavoriteProjectIDs(ids ...ulid.ID) {
-	if m.favorite_projects == nil {
-		m.favorite_projects = make(map[ulid.ID]struct{})
+	if m.favoriteProjects == nil {
+		m.favoriteProjects = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		m.favorite_projects[ids[i]] = struct{}{}
+		m.favoriteProjects[ids[i]] = struct{}{}
 	}
 }
 
-// ClearFavoriteProjects clears the "favorite_projects" edge to the FavoriteProject entity.
+// ClearFavoriteProjects clears the "favoriteProjects" edge to the FavoriteProject entity.
 func (m *ProjectMutation) ClearFavoriteProjects() {
-	m.clearedfavorite_projects = true
+	m.clearedfavoriteProjects = true
 }
 
-// FavoriteProjectsCleared reports if the "favorite_projects" edge to the FavoriteProject entity was cleared.
+// FavoriteProjectsCleared reports if the "favoriteProjects" edge to the FavoriteProject entity was cleared.
 func (m *ProjectMutation) FavoriteProjectsCleared() bool {
-	return m.clearedfavorite_projects
+	return m.clearedfavoriteProjects
 }
 
-// RemoveFavoriteProjectIDs removes the "favorite_projects" edge to the FavoriteProject entity by IDs.
+// RemoveFavoriteProjectIDs removes the "favoriteProjects" edge to the FavoriteProject entity by IDs.
 func (m *ProjectMutation) RemoveFavoriteProjectIDs(ids ...ulid.ID) {
-	if m.removedfavorite_projects == nil {
-		m.removedfavorite_projects = make(map[ulid.ID]struct{})
+	if m.removedfavoriteProjects == nil {
+		m.removedfavoriteProjects = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		delete(m.favorite_projects, ids[i])
-		m.removedfavorite_projects[ids[i]] = struct{}{}
+		delete(m.favoriteProjects, ids[i])
+		m.removedfavoriteProjects[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedFavoriteProjects returns the removed IDs of the "favorite_projects" edge to the FavoriteProject entity.
+// RemovedFavoriteProjects returns the removed IDs of the "favoriteProjects" edge to the FavoriteProject entity.
 func (m *ProjectMutation) RemovedFavoriteProjectsIDs() (ids []ulid.ID) {
-	for id := range m.removedfavorite_projects {
+	for id := range m.removedfavoriteProjects {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// FavoriteProjectsIDs returns the "favorite_projects" edge IDs in the mutation.
+// FavoriteProjectsIDs returns the "favoriteProjects" edge IDs in the mutation.
 func (m *ProjectMutation) FavoriteProjectsIDs() (ids []ulid.ID) {
-	for id := range m.favorite_projects {
+	for id := range m.favoriteProjects {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetFavoriteProjects resets all changes to the "favorite_projects" edge.
+// ResetFavoriteProjects resets all changes to the "favoriteProjects" edge.
 func (m *ProjectMutation) ResetFavoriteProjects() {
-	m.favorite_projects = nil
-	m.clearedfavorite_projects = false
-	m.removedfavorite_projects = nil
+	m.favoriteProjects = nil
+	m.clearedfavoriteProjects = false
+	m.removedfavoriteProjects = nil
 }
 
-// AddProjectTaskColumnIDs adds the "project_task_columns" edge to the ProjectTaskColumn entity by ids.
+// AddProjectTaskColumnIDs adds the "projectTaskColumns" edge to the ProjectTaskColumn entity by ids.
 func (m *ProjectMutation) AddProjectTaskColumnIDs(ids ...ulid.ID) {
-	if m.project_task_columns == nil {
-		m.project_task_columns = make(map[ulid.ID]struct{})
+	if m.projectTaskColumns == nil {
+		m.projectTaskColumns = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		m.project_task_columns[ids[i]] = struct{}{}
+		m.projectTaskColumns[ids[i]] = struct{}{}
 	}
 }
 
-// ClearProjectTaskColumns clears the "project_task_columns" edge to the ProjectTaskColumn entity.
+// ClearProjectTaskColumns clears the "projectTaskColumns" edge to the ProjectTaskColumn entity.
 func (m *ProjectMutation) ClearProjectTaskColumns() {
-	m.clearedproject_task_columns = true
+	m.clearedprojectTaskColumns = true
 }
 
-// ProjectTaskColumnsCleared reports if the "project_task_columns" edge to the ProjectTaskColumn entity was cleared.
+// ProjectTaskColumnsCleared reports if the "projectTaskColumns" edge to the ProjectTaskColumn entity was cleared.
 func (m *ProjectMutation) ProjectTaskColumnsCleared() bool {
-	return m.clearedproject_task_columns
+	return m.clearedprojectTaskColumns
 }
 
-// RemoveProjectTaskColumnIDs removes the "project_task_columns" edge to the ProjectTaskColumn entity by IDs.
+// RemoveProjectTaskColumnIDs removes the "projectTaskColumns" edge to the ProjectTaskColumn entity by IDs.
 func (m *ProjectMutation) RemoveProjectTaskColumnIDs(ids ...ulid.ID) {
-	if m.removedproject_task_columns == nil {
-		m.removedproject_task_columns = make(map[ulid.ID]struct{})
+	if m.removedprojectTaskColumns == nil {
+		m.removedprojectTaskColumns = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		delete(m.project_task_columns, ids[i])
-		m.removedproject_task_columns[ids[i]] = struct{}{}
+		delete(m.projectTaskColumns, ids[i])
+		m.removedprojectTaskColumns[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedProjectTaskColumns returns the removed IDs of the "project_task_columns" edge to the ProjectTaskColumn entity.
+// RemovedProjectTaskColumns returns the removed IDs of the "projectTaskColumns" edge to the ProjectTaskColumn entity.
 func (m *ProjectMutation) RemovedProjectTaskColumnsIDs() (ids []ulid.ID) {
-	for id := range m.removedproject_task_columns {
+	for id := range m.removedprojectTaskColumns {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ProjectTaskColumnsIDs returns the "project_task_columns" edge IDs in the mutation.
+// ProjectTaskColumnsIDs returns the "projectTaskColumns" edge IDs in the mutation.
 func (m *ProjectMutation) ProjectTaskColumnsIDs() (ids []ulid.ID) {
-	for id := range m.project_task_columns {
+	for id := range m.projectTaskColumns {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetProjectTaskColumns resets all changes to the "project_task_columns" edge.
+// ResetProjectTaskColumns resets all changes to the "projectTaskColumns" edge.
 func (m *ProjectMutation) ResetProjectTaskColumns() {
-	m.project_task_columns = nil
-	m.clearedproject_task_columns = false
-	m.removedproject_task_columns = nil
+	m.projectTaskColumns = nil
+	m.clearedprojectTaskColumns = false
+	m.removedprojectTaskColumns = nil
 }
 
-// AddProjectTaskListStatusIDs adds the "project_task_list_statuses" edge to the ProjectTaskListStatus entity by ids.
-func (m *ProjectMutation) AddProjectTaskListStatusIDs(ids ...ulid.ID) {
-	if m.project_task_list_statuses == nil {
-		m.project_task_list_statuses = make(map[ulid.ID]struct{})
+// AddProjectTaskListStatuseIDs adds the "projectTaskListStatuses" edge to the ProjectTaskListStatus entity by ids.
+func (m *ProjectMutation) AddProjectTaskListStatuseIDs(ids ...ulid.ID) {
+	if m.projectTaskListStatuses == nil {
+		m.projectTaskListStatuses = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		m.project_task_list_statuses[ids[i]] = struct{}{}
+		m.projectTaskListStatuses[ids[i]] = struct{}{}
 	}
 }
 
-// ClearProjectTaskListStatuses clears the "project_task_list_statuses" edge to the ProjectTaskListStatus entity.
+// ClearProjectTaskListStatuses clears the "projectTaskListStatuses" edge to the ProjectTaskListStatus entity.
 func (m *ProjectMutation) ClearProjectTaskListStatuses() {
-	m.clearedproject_task_list_statuses = true
+	m.clearedprojectTaskListStatuses = true
 }
 
-// ProjectTaskListStatusesCleared reports if the "project_task_list_statuses" edge to the ProjectTaskListStatus entity was cleared.
+// ProjectTaskListStatusesCleared reports if the "projectTaskListStatuses" edge to the ProjectTaskListStatus entity was cleared.
 func (m *ProjectMutation) ProjectTaskListStatusesCleared() bool {
-	return m.clearedproject_task_list_statuses
+	return m.clearedprojectTaskListStatuses
 }
 
-// RemoveProjectTaskListStatusIDs removes the "project_task_list_statuses" edge to the ProjectTaskListStatus entity by IDs.
-func (m *ProjectMutation) RemoveProjectTaskListStatusIDs(ids ...ulid.ID) {
-	if m.removedproject_task_list_statuses == nil {
-		m.removedproject_task_list_statuses = make(map[ulid.ID]struct{})
+// RemoveProjectTaskListStatuseIDs removes the "projectTaskListStatuses" edge to the ProjectTaskListStatus entity by IDs.
+func (m *ProjectMutation) RemoveProjectTaskListStatuseIDs(ids ...ulid.ID) {
+	if m.removedprojectTaskListStatuses == nil {
+		m.removedprojectTaskListStatuses = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		delete(m.project_task_list_statuses, ids[i])
-		m.removedproject_task_list_statuses[ids[i]] = struct{}{}
+		delete(m.projectTaskListStatuses, ids[i])
+		m.removedprojectTaskListStatuses[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedProjectTaskListStatuses returns the removed IDs of the "project_task_list_statuses" edge to the ProjectTaskListStatus entity.
+// RemovedProjectTaskListStatuses returns the removed IDs of the "projectTaskListStatuses" edge to the ProjectTaskListStatus entity.
 func (m *ProjectMutation) RemovedProjectTaskListStatusesIDs() (ids []ulid.ID) {
-	for id := range m.removedproject_task_list_statuses {
+	for id := range m.removedprojectTaskListStatuses {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ProjectTaskListStatusesIDs returns the "project_task_list_statuses" edge IDs in the mutation.
+// ProjectTaskListStatusesIDs returns the "projectTaskListStatuses" edge IDs in the mutation.
 func (m *ProjectMutation) ProjectTaskListStatusesIDs() (ids []ulid.ID) {
-	for id := range m.project_task_list_statuses {
+	for id := range m.projectTaskListStatuses {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetProjectTaskListStatuses resets all changes to the "project_task_list_statuses" edge.
+// ResetProjectTaskListStatuses resets all changes to the "projectTaskListStatuses" edge.
 func (m *ProjectMutation) ResetProjectTaskListStatuses() {
-	m.project_task_list_statuses = nil
-	m.clearedproject_task_list_statuses = false
-	m.removedproject_task_list_statuses = nil
+	m.projectTaskListStatuses = nil
+	m.clearedprojectTaskListStatuses = false
+	m.removedprojectTaskListStatuses = nil
 }
 
-// AddProjectTaskSectionIDs adds the "project_task_sections" edge to the ProjectTaskSection entity by ids.
+// AddProjectTaskSectionIDs adds the "projectTaskSections" edge to the ProjectTaskSection entity by ids.
 func (m *ProjectMutation) AddProjectTaskSectionIDs(ids ...ulid.ID) {
-	if m.project_task_sections == nil {
-		m.project_task_sections = make(map[ulid.ID]struct{})
+	if m.projectTaskSections == nil {
+		m.projectTaskSections = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		m.project_task_sections[ids[i]] = struct{}{}
+		m.projectTaskSections[ids[i]] = struct{}{}
 	}
 }
 
-// ClearProjectTaskSections clears the "project_task_sections" edge to the ProjectTaskSection entity.
+// ClearProjectTaskSections clears the "projectTaskSections" edge to the ProjectTaskSection entity.
 func (m *ProjectMutation) ClearProjectTaskSections() {
-	m.clearedproject_task_sections = true
+	m.clearedprojectTaskSections = true
 }
 
-// ProjectTaskSectionsCleared reports if the "project_task_sections" edge to the ProjectTaskSection entity was cleared.
+// ProjectTaskSectionsCleared reports if the "projectTaskSections" edge to the ProjectTaskSection entity was cleared.
 func (m *ProjectMutation) ProjectTaskSectionsCleared() bool {
-	return m.clearedproject_task_sections
+	return m.clearedprojectTaskSections
 }
 
-// RemoveProjectTaskSectionIDs removes the "project_task_sections" edge to the ProjectTaskSection entity by IDs.
+// RemoveProjectTaskSectionIDs removes the "projectTaskSections" edge to the ProjectTaskSection entity by IDs.
 func (m *ProjectMutation) RemoveProjectTaskSectionIDs(ids ...ulid.ID) {
-	if m.removedproject_task_sections == nil {
-		m.removedproject_task_sections = make(map[ulid.ID]struct{})
+	if m.removedprojectTaskSections == nil {
+		m.removedprojectTaskSections = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		delete(m.project_task_sections, ids[i])
-		m.removedproject_task_sections[ids[i]] = struct{}{}
+		delete(m.projectTaskSections, ids[i])
+		m.removedprojectTaskSections[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedProjectTaskSections returns the removed IDs of the "project_task_sections" edge to the ProjectTaskSection entity.
+// RemovedProjectTaskSections returns the removed IDs of the "projectTaskSections" edge to the ProjectTaskSection entity.
 func (m *ProjectMutation) RemovedProjectTaskSectionsIDs() (ids []ulid.ID) {
-	for id := range m.removedproject_task_sections {
+	for id := range m.removedprojectTaskSections {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ProjectTaskSectionsIDs returns the "project_task_sections" edge IDs in the mutation.
+// ProjectTaskSectionsIDs returns the "projectTaskSections" edge IDs in the mutation.
 func (m *ProjectMutation) ProjectTaskSectionsIDs() (ids []ulid.ID) {
-	for id := range m.project_task_sections {
+	for id := range m.projectTaskSections {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetProjectTaskSections resets all changes to the "project_task_sections" edge.
+// ResetProjectTaskSections resets all changes to the "projectTaskSections" edge.
 func (m *ProjectMutation) ResetProjectTaskSections() {
-	m.project_task_sections = nil
-	m.clearedproject_task_sections = false
-	m.removedproject_task_sections = nil
+	m.projectTaskSections = nil
+	m.clearedprojectTaskSections = false
+	m.removedprojectTaskSections = nil
 }
 
-// AddProjectTaskIDs adds the "project_tasks" edge to the ProjectTask entity by ids.
+// AddProjectTaskIDs adds the "projectTasks" edge to the ProjectTask entity by ids.
 func (m *ProjectMutation) AddProjectTaskIDs(ids ...ulid.ID) {
-	if m.project_tasks == nil {
-		m.project_tasks = make(map[ulid.ID]struct{})
+	if m.projectTasks == nil {
+		m.projectTasks = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		m.project_tasks[ids[i]] = struct{}{}
+		m.projectTasks[ids[i]] = struct{}{}
 	}
 }
 
-// ClearProjectTasks clears the "project_tasks" edge to the ProjectTask entity.
+// ClearProjectTasks clears the "projectTasks" edge to the ProjectTask entity.
 func (m *ProjectMutation) ClearProjectTasks() {
-	m.clearedproject_tasks = true
+	m.clearedprojectTasks = true
 }
 
-// ProjectTasksCleared reports if the "project_tasks" edge to the ProjectTask entity was cleared.
+// ProjectTasksCleared reports if the "projectTasks" edge to the ProjectTask entity was cleared.
 func (m *ProjectMutation) ProjectTasksCleared() bool {
-	return m.clearedproject_tasks
+	return m.clearedprojectTasks
 }
 
-// RemoveProjectTaskIDs removes the "project_tasks" edge to the ProjectTask entity by IDs.
+// RemoveProjectTaskIDs removes the "projectTasks" edge to the ProjectTask entity by IDs.
 func (m *ProjectMutation) RemoveProjectTaskIDs(ids ...ulid.ID) {
-	if m.removedproject_tasks == nil {
-		m.removedproject_tasks = make(map[ulid.ID]struct{})
+	if m.removedprojectTasks == nil {
+		m.removedprojectTasks = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		delete(m.project_tasks, ids[i])
-		m.removedproject_tasks[ids[i]] = struct{}{}
+		delete(m.projectTasks, ids[i])
+		m.removedprojectTasks[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedProjectTasks returns the removed IDs of the "project_tasks" edge to the ProjectTask entity.
+// RemovedProjectTasks returns the removed IDs of the "projectTasks" edge to the ProjectTask entity.
 func (m *ProjectMutation) RemovedProjectTasksIDs() (ids []ulid.ID) {
-	for id := range m.removedproject_tasks {
+	for id := range m.removedprojectTasks {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ProjectTasksIDs returns the "project_tasks" edge IDs in the mutation.
+// ProjectTasksIDs returns the "projectTasks" edge IDs in the mutation.
 func (m *ProjectMutation) ProjectTasksIDs() (ids []ulid.ID) {
-	for id := range m.project_tasks {
+	for id := range m.projectTasks {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetProjectTasks resets all changes to the "project_tasks" edge.
+// ResetProjectTasks resets all changes to the "projectTasks" edge.
 func (m *ProjectMutation) ResetProjectTasks() {
-	m.project_tasks = nil
-	m.clearedproject_tasks = false
-	m.removedproject_tasks = nil
+	m.projectTasks = nil
+	m.clearedprojectTasks = false
+	m.removedprojectTasks = nil
 }
 
-// AddTaskFileIDs adds the "task_files" edge to the TaskFile entity by ids.
+// AddTaskFileIDs adds the "taskFiles" edge to the TaskFile entity by ids.
 func (m *ProjectMutation) AddTaskFileIDs(ids ...ulid.ID) {
-	if m.task_files == nil {
-		m.task_files = make(map[ulid.ID]struct{})
+	if m.taskFiles == nil {
+		m.taskFiles = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		m.task_files[ids[i]] = struct{}{}
+		m.taskFiles[ids[i]] = struct{}{}
 	}
 }
 
-// ClearTaskFiles clears the "task_files" edge to the TaskFile entity.
+// ClearTaskFiles clears the "taskFiles" edge to the TaskFile entity.
 func (m *ProjectMutation) ClearTaskFiles() {
-	m.clearedtask_files = true
+	m.clearedtaskFiles = true
 }
 
-// TaskFilesCleared reports if the "task_files" edge to the TaskFile entity was cleared.
+// TaskFilesCleared reports if the "taskFiles" edge to the TaskFile entity was cleared.
 func (m *ProjectMutation) TaskFilesCleared() bool {
-	return m.clearedtask_files
+	return m.clearedtaskFiles
 }
 
-// RemoveTaskFileIDs removes the "task_files" edge to the TaskFile entity by IDs.
+// RemoveTaskFileIDs removes the "taskFiles" edge to the TaskFile entity by IDs.
 func (m *ProjectMutation) RemoveTaskFileIDs(ids ...ulid.ID) {
-	if m.removedtask_files == nil {
-		m.removedtask_files = make(map[ulid.ID]struct{})
+	if m.removedtaskFiles == nil {
+		m.removedtaskFiles = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		delete(m.task_files, ids[i])
-		m.removedtask_files[ids[i]] = struct{}{}
+		delete(m.taskFiles, ids[i])
+		m.removedtaskFiles[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedTaskFiles returns the removed IDs of the "task_files" edge to the TaskFile entity.
+// RemovedTaskFiles returns the removed IDs of the "taskFiles" edge to the TaskFile entity.
 func (m *ProjectMutation) RemovedTaskFilesIDs() (ids []ulid.ID) {
-	for id := range m.removedtask_files {
+	for id := range m.removedtaskFiles {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// TaskFilesIDs returns the "task_files" edge IDs in the mutation.
+// TaskFilesIDs returns the "taskFiles" edge IDs in the mutation.
 func (m *ProjectMutation) TaskFilesIDs() (ids []ulid.ID) {
-	for id := range m.task_files {
+	for id := range m.taskFiles {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetTaskFiles resets all changes to the "task_files" edge.
+// ResetTaskFiles resets all changes to the "taskFiles" edge.
 func (m *ProjectMutation) ResetTaskFiles() {
-	m.task_files = nil
-	m.clearedtask_files = false
-	m.removedtask_files = nil
+	m.taskFiles = nil
+	m.clearedtaskFiles = false
+	m.removedtaskFiles = nil
 }
 
 // Where appends a list predicates to the ProjectMutation builder.
@@ -4269,13 +4269,13 @@ func (m *ProjectMutation) Fields() []string {
 	if m.workspace != nil {
 		fields = append(fields, project.FieldWorkspaceID)
 	}
-	if m.project_base_color != nil {
+	if m.projectBaseColor != nil {
 		fields = append(fields, project.FieldProjectBaseColorID)
 	}
-	if m.project_light_color != nil {
+	if m.projectLightColor != nil {
 		fields = append(fields, project.FieldProjectLightColorID)
 	}
-	if m.project_icon != nil {
+	if m.projectIcon != nil {
 		fields = append(fields, project.FieldProjectIconID)
 	}
 	if m.teammate != nil {
@@ -4547,37 +4547,37 @@ func (m *ProjectMutation) AddedEdges() []string {
 	if m.workspace != nil {
 		edges = append(edges, project.EdgeWorkspace)
 	}
-	if m.project_base_color != nil {
+	if m.projectBaseColor != nil {
 		edges = append(edges, project.EdgeProjectBaseColor)
 	}
-	if m.project_light_color != nil {
+	if m.projectLightColor != nil {
 		edges = append(edges, project.EdgeProjectLightColor)
 	}
-	if m.project_icon != nil {
+	if m.projectIcon != nil {
 		edges = append(edges, project.EdgeProjectIcon)
 	}
 	if m.teammate != nil {
 		edges = append(edges, project.EdgeTeammate)
 	}
-	if m.project_teammates != nil {
+	if m.projectTeammates != nil {
 		edges = append(edges, project.EdgeProjectTeammates)
 	}
-	if m.favorite_projects != nil {
+	if m.favoriteProjects != nil {
 		edges = append(edges, project.EdgeFavoriteProjects)
 	}
-	if m.project_task_columns != nil {
+	if m.projectTaskColumns != nil {
 		edges = append(edges, project.EdgeProjectTaskColumns)
 	}
-	if m.project_task_list_statuses != nil {
+	if m.projectTaskListStatuses != nil {
 		edges = append(edges, project.EdgeProjectTaskListStatuses)
 	}
-	if m.project_task_sections != nil {
+	if m.projectTaskSections != nil {
 		edges = append(edges, project.EdgeProjectTaskSections)
 	}
-	if m.project_tasks != nil {
+	if m.projectTasks != nil {
 		edges = append(edges, project.EdgeProjectTasks)
 	}
-	if m.task_files != nil {
+	if m.taskFiles != nil {
 		edges = append(edges, project.EdgeTaskFiles)
 	}
 	return edges
@@ -4592,15 +4592,15 @@ func (m *ProjectMutation) AddedIDs(name string) []ent.Value {
 			return []ent.Value{*id}
 		}
 	case project.EdgeProjectBaseColor:
-		if id := m.project_base_color; id != nil {
+		if id := m.projectBaseColor; id != nil {
 			return []ent.Value{*id}
 		}
 	case project.EdgeProjectLightColor:
-		if id := m.project_light_color; id != nil {
+		if id := m.projectLightColor; id != nil {
 			return []ent.Value{*id}
 		}
 	case project.EdgeProjectIcon:
-		if id := m.project_icon; id != nil {
+		if id := m.projectIcon; id != nil {
 			return []ent.Value{*id}
 		}
 	case project.EdgeTeammate:
@@ -4608,44 +4608,44 @@ func (m *ProjectMutation) AddedIDs(name string) []ent.Value {
 			return []ent.Value{*id}
 		}
 	case project.EdgeProjectTeammates:
-		ids := make([]ent.Value, 0, len(m.project_teammates))
-		for id := range m.project_teammates {
+		ids := make([]ent.Value, 0, len(m.projectTeammates))
+		for id := range m.projectTeammates {
 			ids = append(ids, id)
 		}
 		return ids
 	case project.EdgeFavoriteProjects:
-		ids := make([]ent.Value, 0, len(m.favorite_projects))
-		for id := range m.favorite_projects {
+		ids := make([]ent.Value, 0, len(m.favoriteProjects))
+		for id := range m.favoriteProjects {
 			ids = append(ids, id)
 		}
 		return ids
 	case project.EdgeProjectTaskColumns:
-		ids := make([]ent.Value, 0, len(m.project_task_columns))
-		for id := range m.project_task_columns {
+		ids := make([]ent.Value, 0, len(m.projectTaskColumns))
+		for id := range m.projectTaskColumns {
 			ids = append(ids, id)
 		}
 		return ids
 	case project.EdgeProjectTaskListStatuses:
-		ids := make([]ent.Value, 0, len(m.project_task_list_statuses))
-		for id := range m.project_task_list_statuses {
+		ids := make([]ent.Value, 0, len(m.projectTaskListStatuses))
+		for id := range m.projectTaskListStatuses {
 			ids = append(ids, id)
 		}
 		return ids
 	case project.EdgeProjectTaskSections:
-		ids := make([]ent.Value, 0, len(m.project_task_sections))
-		for id := range m.project_task_sections {
+		ids := make([]ent.Value, 0, len(m.projectTaskSections))
+		for id := range m.projectTaskSections {
 			ids = append(ids, id)
 		}
 		return ids
 	case project.EdgeProjectTasks:
-		ids := make([]ent.Value, 0, len(m.project_tasks))
-		for id := range m.project_tasks {
+		ids := make([]ent.Value, 0, len(m.projectTasks))
+		for id := range m.projectTasks {
 			ids = append(ids, id)
 		}
 		return ids
 	case project.EdgeTaskFiles:
-		ids := make([]ent.Value, 0, len(m.task_files))
-		for id := range m.task_files {
+		ids := make([]ent.Value, 0, len(m.taskFiles))
+		for id := range m.taskFiles {
 			ids = append(ids, id)
 		}
 		return ids
@@ -4656,25 +4656,25 @@ func (m *ProjectMutation) AddedIDs(name string) []ent.Value {
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *ProjectMutation) RemovedEdges() []string {
 	edges := make([]string, 0, 12)
-	if m.removedproject_teammates != nil {
+	if m.removedprojectTeammates != nil {
 		edges = append(edges, project.EdgeProjectTeammates)
 	}
-	if m.removedfavorite_projects != nil {
+	if m.removedfavoriteProjects != nil {
 		edges = append(edges, project.EdgeFavoriteProjects)
 	}
-	if m.removedproject_task_columns != nil {
+	if m.removedprojectTaskColumns != nil {
 		edges = append(edges, project.EdgeProjectTaskColumns)
 	}
-	if m.removedproject_task_list_statuses != nil {
+	if m.removedprojectTaskListStatuses != nil {
 		edges = append(edges, project.EdgeProjectTaskListStatuses)
 	}
-	if m.removedproject_task_sections != nil {
+	if m.removedprojectTaskSections != nil {
 		edges = append(edges, project.EdgeProjectTaskSections)
 	}
-	if m.removedproject_tasks != nil {
+	if m.removedprojectTasks != nil {
 		edges = append(edges, project.EdgeProjectTasks)
 	}
-	if m.removedtask_files != nil {
+	if m.removedtaskFiles != nil {
 		edges = append(edges, project.EdgeTaskFiles)
 	}
 	return edges
@@ -4685,44 +4685,44 @@ func (m *ProjectMutation) RemovedEdges() []string {
 func (m *ProjectMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
 	case project.EdgeProjectTeammates:
-		ids := make([]ent.Value, 0, len(m.removedproject_teammates))
-		for id := range m.removedproject_teammates {
+		ids := make([]ent.Value, 0, len(m.removedprojectTeammates))
+		for id := range m.removedprojectTeammates {
 			ids = append(ids, id)
 		}
 		return ids
 	case project.EdgeFavoriteProjects:
-		ids := make([]ent.Value, 0, len(m.removedfavorite_projects))
-		for id := range m.removedfavorite_projects {
+		ids := make([]ent.Value, 0, len(m.removedfavoriteProjects))
+		for id := range m.removedfavoriteProjects {
 			ids = append(ids, id)
 		}
 		return ids
 	case project.EdgeProjectTaskColumns:
-		ids := make([]ent.Value, 0, len(m.removedproject_task_columns))
-		for id := range m.removedproject_task_columns {
+		ids := make([]ent.Value, 0, len(m.removedprojectTaskColumns))
+		for id := range m.removedprojectTaskColumns {
 			ids = append(ids, id)
 		}
 		return ids
 	case project.EdgeProjectTaskListStatuses:
-		ids := make([]ent.Value, 0, len(m.removedproject_task_list_statuses))
-		for id := range m.removedproject_task_list_statuses {
+		ids := make([]ent.Value, 0, len(m.removedprojectTaskListStatuses))
+		for id := range m.removedprojectTaskListStatuses {
 			ids = append(ids, id)
 		}
 		return ids
 	case project.EdgeProjectTaskSections:
-		ids := make([]ent.Value, 0, len(m.removedproject_task_sections))
-		for id := range m.removedproject_task_sections {
+		ids := make([]ent.Value, 0, len(m.removedprojectTaskSections))
+		for id := range m.removedprojectTaskSections {
 			ids = append(ids, id)
 		}
 		return ids
 	case project.EdgeProjectTasks:
-		ids := make([]ent.Value, 0, len(m.removedproject_tasks))
-		for id := range m.removedproject_tasks {
+		ids := make([]ent.Value, 0, len(m.removedprojectTasks))
+		for id := range m.removedprojectTasks {
 			ids = append(ids, id)
 		}
 		return ids
 	case project.EdgeTaskFiles:
-		ids := make([]ent.Value, 0, len(m.removedtask_files))
-		for id := range m.removedtask_files {
+		ids := make([]ent.Value, 0, len(m.removedtaskFiles))
+		for id := range m.removedtaskFiles {
 			ids = append(ids, id)
 		}
 		return ids
@@ -4736,37 +4736,37 @@ func (m *ProjectMutation) ClearedEdges() []string {
 	if m.clearedworkspace {
 		edges = append(edges, project.EdgeWorkspace)
 	}
-	if m.clearedproject_base_color {
+	if m.clearedprojectBaseColor {
 		edges = append(edges, project.EdgeProjectBaseColor)
 	}
-	if m.clearedproject_light_color {
+	if m.clearedprojectLightColor {
 		edges = append(edges, project.EdgeProjectLightColor)
 	}
-	if m.clearedproject_icon {
+	if m.clearedprojectIcon {
 		edges = append(edges, project.EdgeProjectIcon)
 	}
 	if m.clearedteammate {
 		edges = append(edges, project.EdgeTeammate)
 	}
-	if m.clearedproject_teammates {
+	if m.clearedprojectTeammates {
 		edges = append(edges, project.EdgeProjectTeammates)
 	}
-	if m.clearedfavorite_projects {
+	if m.clearedfavoriteProjects {
 		edges = append(edges, project.EdgeFavoriteProjects)
 	}
-	if m.clearedproject_task_columns {
+	if m.clearedprojectTaskColumns {
 		edges = append(edges, project.EdgeProjectTaskColumns)
 	}
-	if m.clearedproject_task_list_statuses {
+	if m.clearedprojectTaskListStatuses {
 		edges = append(edges, project.EdgeProjectTaskListStatuses)
 	}
-	if m.clearedproject_task_sections {
+	if m.clearedprojectTaskSections {
 		edges = append(edges, project.EdgeProjectTaskSections)
 	}
-	if m.clearedproject_tasks {
+	if m.clearedprojectTasks {
 		edges = append(edges, project.EdgeProjectTasks)
 	}
-	if m.clearedtask_files {
+	if m.clearedtaskFiles {
 		edges = append(edges, project.EdgeTaskFiles)
 	}
 	return edges
@@ -4779,27 +4779,27 @@ func (m *ProjectMutation) EdgeCleared(name string) bool {
 	case project.EdgeWorkspace:
 		return m.clearedworkspace
 	case project.EdgeProjectBaseColor:
-		return m.clearedproject_base_color
+		return m.clearedprojectBaseColor
 	case project.EdgeProjectLightColor:
-		return m.clearedproject_light_color
+		return m.clearedprojectLightColor
 	case project.EdgeProjectIcon:
-		return m.clearedproject_icon
+		return m.clearedprojectIcon
 	case project.EdgeTeammate:
 		return m.clearedteammate
 	case project.EdgeProjectTeammates:
-		return m.clearedproject_teammates
+		return m.clearedprojectTeammates
 	case project.EdgeFavoriteProjects:
-		return m.clearedfavorite_projects
+		return m.clearedfavoriteProjects
 	case project.EdgeProjectTaskColumns:
-		return m.clearedproject_task_columns
+		return m.clearedprojectTaskColumns
 	case project.EdgeProjectTaskListStatuses:
-		return m.clearedproject_task_list_statuses
+		return m.clearedprojectTaskListStatuses
 	case project.EdgeProjectTaskSections:
-		return m.clearedproject_task_sections
+		return m.clearedprojectTaskSections
 	case project.EdgeProjectTasks:
-		return m.clearedproject_tasks
+		return m.clearedprojectTasks
 	case project.EdgeTaskFiles:
-		return m.clearedtask_files
+		return m.clearedtaskFiles
 	}
 	return false
 }
@@ -6506,21 +6506,21 @@ func (m *ProjectLightColorMutation) ResetEdge(name string) error {
 // ProjectTaskMutation represents an operation that mutates the ProjectTask nodes in the graph.
 type ProjectTaskMutation struct {
 	config
-	op                          Op
-	typ                         string
-	id                          *ulid.ID
-	created_at                  *time.Time
-	updated_at                  *time.Time
-	clearedFields               map[string]struct{}
-	project                     *ulid.ID
-	clearedproject              bool
-	task                        *ulid.ID
-	clearedtask                 bool
-	project_task_section        *ulid.ID
-	clearedproject_task_section bool
-	done                        bool
-	oldValue                    func(context.Context) (*ProjectTask, error)
-	predicates                  []predicate.ProjectTask
+	op                        Op
+	typ                       string
+	id                        *ulid.ID
+	created_at                *time.Time
+	updated_at                *time.Time
+	clearedFields             map[string]struct{}
+	project                   *ulid.ID
+	clearedproject            bool
+	task                      *ulid.ID
+	clearedtask               bool
+	projectTaskSection        *ulid.ID
+	clearedprojectTaskSection bool
+	done                      bool
+	oldValue                  func(context.Context) (*ProjectTask, error)
+	predicates                []predicate.ProjectTask
 }
 
 var _ ent.Mutation = (*ProjectTaskMutation)(nil)
@@ -6682,12 +6682,12 @@ func (m *ProjectTaskMutation) ResetTaskID() {
 
 // SetProjectTaskSectionID sets the "project_task_section_id" field.
 func (m *ProjectTaskMutation) SetProjectTaskSectionID(u ulid.ID) {
-	m.project_task_section = &u
+	m.projectTaskSection = &u
 }
 
 // ProjectTaskSectionID returns the value of the "project_task_section_id" field in the mutation.
 func (m *ProjectTaskMutation) ProjectTaskSectionID() (r ulid.ID, exists bool) {
-	v := m.project_task_section
+	v := m.projectTaskSection
 	if v == nil {
 		return
 	}
@@ -6713,7 +6713,7 @@ func (m *ProjectTaskMutation) OldProjectTaskSectionID(ctx context.Context) (v ul
 
 // ResetProjectTaskSectionID resets all changes to the "project_task_section_id" field.
 func (m *ProjectTaskMutation) ResetProjectTaskSectionID() {
-	m.project_task_section = nil
+	m.projectTaskSection = nil
 }
 
 // SetCreatedAt sets the "created_at" field.
@@ -6840,30 +6840,30 @@ func (m *ProjectTaskMutation) ResetTask() {
 	m.clearedtask = false
 }
 
-// ClearProjectTaskSection clears the "project_task_section" edge to the ProjectTaskSection entity.
+// ClearProjectTaskSection clears the "projectTaskSection" edge to the ProjectTaskSection entity.
 func (m *ProjectTaskMutation) ClearProjectTaskSection() {
-	m.clearedproject_task_section = true
+	m.clearedprojectTaskSection = true
 }
 
-// ProjectTaskSectionCleared reports if the "project_task_section" edge to the ProjectTaskSection entity was cleared.
+// ProjectTaskSectionCleared reports if the "projectTaskSection" edge to the ProjectTaskSection entity was cleared.
 func (m *ProjectTaskMutation) ProjectTaskSectionCleared() bool {
-	return m.clearedproject_task_section
+	return m.clearedprojectTaskSection
 }
 
-// ProjectTaskSectionIDs returns the "project_task_section" edge IDs in the mutation.
+// ProjectTaskSectionIDs returns the "projectTaskSection" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // ProjectTaskSectionID instead. It exists only for internal usage by the builders.
 func (m *ProjectTaskMutation) ProjectTaskSectionIDs() (ids []ulid.ID) {
-	if id := m.project_task_section; id != nil {
+	if id := m.projectTaskSection; id != nil {
 		ids = append(ids, *id)
 	}
 	return
 }
 
-// ResetProjectTaskSection resets all changes to the "project_task_section" edge.
+// ResetProjectTaskSection resets all changes to the "projectTaskSection" edge.
 func (m *ProjectTaskMutation) ResetProjectTaskSection() {
-	m.project_task_section = nil
-	m.clearedproject_task_section = false
+	m.projectTaskSection = nil
+	m.clearedprojectTaskSection = false
 }
 
 // Where appends a list predicates to the ProjectTaskMutation builder.
@@ -6892,7 +6892,7 @@ func (m *ProjectTaskMutation) Fields() []string {
 	if m.task != nil {
 		fields = append(fields, projecttask.FieldTaskID)
 	}
-	if m.project_task_section != nil {
+	if m.projectTaskSection != nil {
 		fields = append(fields, projecttask.FieldProjectTaskSectionID)
 	}
 	if m.created_at != nil {
@@ -7059,7 +7059,7 @@ func (m *ProjectTaskMutation) AddedEdges() []string {
 	if m.task != nil {
 		edges = append(edges, projecttask.EdgeTask)
 	}
-	if m.project_task_section != nil {
+	if m.projectTaskSection != nil {
 		edges = append(edges, projecttask.EdgeProjectTaskSection)
 	}
 	return edges
@@ -7078,7 +7078,7 @@ func (m *ProjectTaskMutation) AddedIDs(name string) []ent.Value {
 			return []ent.Value{*id}
 		}
 	case projecttask.EdgeProjectTaskSection:
-		if id := m.project_task_section; id != nil {
+		if id := m.projectTaskSection; id != nil {
 			return []ent.Value{*id}
 		}
 	}
@@ -7108,7 +7108,7 @@ func (m *ProjectTaskMutation) ClearedEdges() []string {
 	if m.clearedtask {
 		edges = append(edges, projecttask.EdgeTask)
 	}
-	if m.clearedproject_task_section {
+	if m.clearedprojectTaskSection {
 		edges = append(edges, projecttask.EdgeProjectTaskSection)
 	}
 	return edges
@@ -7123,7 +7123,7 @@ func (m *ProjectTaskMutation) EdgeCleared(name string) bool {
 	case projecttask.EdgeTask:
 		return m.clearedtask
 	case projecttask.EdgeProjectTaskSection:
-		return m.clearedproject_task_section
+		return m.clearedprojectTaskSection
 	}
 	return false
 }
@@ -7165,24 +7165,24 @@ func (m *ProjectTaskMutation) ResetEdge(name string) error {
 // ProjectTaskColumnMutation represents an operation that mutates the ProjectTaskColumn nodes in the graph.
 type ProjectTaskColumnMutation struct {
 	config
-	op                 Op
-	typ                string
-	id                 *ulid.ID
-	width              *string
-	disabled           *bool
-	customizable       *bool
-	_order             *int
-	add_order          *int
-	created_at         *time.Time
-	updated_at         *time.Time
-	clearedFields      map[string]struct{}
-	project            *ulid.ID
-	clearedproject     bool
-	task_column        *ulid.ID
-	clearedtask_column bool
-	done               bool
-	oldValue           func(context.Context) (*ProjectTaskColumn, error)
-	predicates         []predicate.ProjectTaskColumn
+	op                Op
+	typ               string
+	id                *ulid.ID
+	width             *string
+	disabled          *bool
+	customizable      *bool
+	_order            *int
+	add_order         *int
+	created_at        *time.Time
+	updated_at        *time.Time
+	clearedFields     map[string]struct{}
+	project           *ulid.ID
+	clearedproject    bool
+	taskColumn        *ulid.ID
+	clearedtaskColumn bool
+	done              bool
+	oldValue          func(context.Context) (*ProjectTaskColumn, error)
+	predicates        []predicate.ProjectTaskColumn
 }
 
 var _ ent.Mutation = (*ProjectTaskColumnMutation)(nil)
@@ -7308,12 +7308,12 @@ func (m *ProjectTaskColumnMutation) ResetProjectID() {
 
 // SetTaskColumnID sets the "task_column_id" field.
 func (m *ProjectTaskColumnMutation) SetTaskColumnID(u ulid.ID) {
-	m.task_column = &u
+	m.taskColumn = &u
 }
 
 // TaskColumnID returns the value of the "task_column_id" field in the mutation.
 func (m *ProjectTaskColumnMutation) TaskColumnID() (r ulid.ID, exists bool) {
-	v := m.task_column
+	v := m.taskColumn
 	if v == nil {
 		return
 	}
@@ -7339,7 +7339,7 @@ func (m *ProjectTaskColumnMutation) OldTaskColumnID(ctx context.Context) (v ulid
 
 // ResetTaskColumnID resets all changes to the "task_column_id" field.
 func (m *ProjectTaskColumnMutation) ResetTaskColumnID() {
-	m.task_column = nil
+	m.taskColumn = nil
 }
 
 // SetWidth sets the "width" field.
@@ -7604,30 +7604,30 @@ func (m *ProjectTaskColumnMutation) ResetProject() {
 	m.clearedproject = false
 }
 
-// ClearTaskColumn clears the "task_column" edge to the TaskColumn entity.
+// ClearTaskColumn clears the "taskColumn" edge to the TaskColumn entity.
 func (m *ProjectTaskColumnMutation) ClearTaskColumn() {
-	m.clearedtask_column = true
+	m.clearedtaskColumn = true
 }
 
-// TaskColumnCleared reports if the "task_column" edge to the TaskColumn entity was cleared.
+// TaskColumnCleared reports if the "taskColumn" edge to the TaskColumn entity was cleared.
 func (m *ProjectTaskColumnMutation) TaskColumnCleared() bool {
-	return m.clearedtask_column
+	return m.clearedtaskColumn
 }
 
-// TaskColumnIDs returns the "task_column" edge IDs in the mutation.
+// TaskColumnIDs returns the "taskColumn" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // TaskColumnID instead. It exists only for internal usage by the builders.
 func (m *ProjectTaskColumnMutation) TaskColumnIDs() (ids []ulid.ID) {
-	if id := m.task_column; id != nil {
+	if id := m.taskColumn; id != nil {
 		ids = append(ids, *id)
 	}
 	return
 }
 
-// ResetTaskColumn resets all changes to the "task_column" edge.
+// ResetTaskColumn resets all changes to the "taskColumn" edge.
 func (m *ProjectTaskColumnMutation) ResetTaskColumn() {
-	m.task_column = nil
-	m.clearedtask_column = false
+	m.taskColumn = nil
+	m.clearedtaskColumn = false
 }
 
 // Where appends a list predicates to the ProjectTaskColumnMutation builder.
@@ -7653,7 +7653,7 @@ func (m *ProjectTaskColumnMutation) Fields() []string {
 	if m.project != nil {
 		fields = append(fields, projecttaskcolumn.FieldProjectID)
 	}
-	if m.task_column != nil {
+	if m.taskColumn != nil {
 		fields = append(fields, projecttaskcolumn.FieldTaskColumnID)
 	}
 	if m.width != nil {
@@ -7886,7 +7886,7 @@ func (m *ProjectTaskColumnMutation) AddedEdges() []string {
 	if m.project != nil {
 		edges = append(edges, projecttaskcolumn.EdgeProject)
 	}
-	if m.task_column != nil {
+	if m.taskColumn != nil {
 		edges = append(edges, projecttaskcolumn.EdgeTaskColumn)
 	}
 	return edges
@@ -7901,7 +7901,7 @@ func (m *ProjectTaskColumnMutation) AddedIDs(name string) []ent.Value {
 			return []ent.Value{*id}
 		}
 	case projecttaskcolumn.EdgeTaskColumn:
-		if id := m.task_column; id != nil {
+		if id := m.taskColumn; id != nil {
 			return []ent.Value{*id}
 		}
 	}
@@ -7928,7 +7928,7 @@ func (m *ProjectTaskColumnMutation) ClearedEdges() []string {
 	if m.clearedproject {
 		edges = append(edges, projecttaskcolumn.EdgeProject)
 	}
-	if m.clearedtask_column {
+	if m.clearedtaskColumn {
 		edges = append(edges, projecttaskcolumn.EdgeTaskColumn)
 	}
 	return edges
@@ -7941,7 +7941,7 @@ func (m *ProjectTaskColumnMutation) EdgeCleared(name string) bool {
 	case projecttaskcolumn.EdgeProject:
 		return m.clearedproject
 	case projecttaskcolumn.EdgeTaskColumn:
-		return m.clearedtask_column
+		return m.clearedtaskColumn
 	}
 	return false
 }
@@ -7977,21 +7977,21 @@ func (m *ProjectTaskColumnMutation) ResetEdge(name string) error {
 // ProjectTaskListStatusMutation represents an operation that mutates the ProjectTaskListStatus nodes in the graph.
 type ProjectTaskListStatusMutation struct {
 	config
-	op                                Op
-	typ                               string
-	id                                *ulid.ID
-	created_at                        *time.Time
-	updated_at                        *time.Time
-	clearedFields                     map[string]struct{}
-	project                           *ulid.ID
-	clearedproject                    bool
-	task_list_completed_status        *ulid.ID
-	clearedtask_list_completed_status bool
-	task_list_sort_status             *ulid.ID
-	clearedtask_list_sort_status      bool
-	done                              bool
-	oldValue                          func(context.Context) (*ProjectTaskListStatus, error)
-	predicates                        []predicate.ProjectTaskListStatus
+	op                             Op
+	typ                            string
+	id                             *ulid.ID
+	created_at                     *time.Time
+	updated_at                     *time.Time
+	clearedFields                  map[string]struct{}
+	project                        *ulid.ID
+	clearedproject                 bool
+	taskListCompletedStatus        *ulid.ID
+	clearedtaskListCompletedStatus bool
+	taskListSortStatus             *ulid.ID
+	clearedtaskListSortStatus      bool
+	done                           bool
+	oldValue                       func(context.Context) (*ProjectTaskListStatus, error)
+	predicates                     []predicate.ProjectTaskListStatus
 }
 
 var _ ent.Mutation = (*ProjectTaskListStatusMutation)(nil)
@@ -8117,12 +8117,12 @@ func (m *ProjectTaskListStatusMutation) ResetProjectID() {
 
 // SetTaskListCompletedStatusID sets the "task_list_completed_status_id" field.
 func (m *ProjectTaskListStatusMutation) SetTaskListCompletedStatusID(u ulid.ID) {
-	m.task_list_completed_status = &u
+	m.taskListCompletedStatus = &u
 }
 
 // TaskListCompletedStatusID returns the value of the "task_list_completed_status_id" field in the mutation.
 func (m *ProjectTaskListStatusMutation) TaskListCompletedStatusID() (r ulid.ID, exists bool) {
-	v := m.task_list_completed_status
+	v := m.taskListCompletedStatus
 	if v == nil {
 		return
 	}
@@ -8148,17 +8148,17 @@ func (m *ProjectTaskListStatusMutation) OldTaskListCompletedStatusID(ctx context
 
 // ResetTaskListCompletedStatusID resets all changes to the "task_list_completed_status_id" field.
 func (m *ProjectTaskListStatusMutation) ResetTaskListCompletedStatusID() {
-	m.task_list_completed_status = nil
+	m.taskListCompletedStatus = nil
 }
 
 // SetTaskListSortStatusID sets the "task_list_sort_status_id" field.
 func (m *ProjectTaskListStatusMutation) SetTaskListSortStatusID(u ulid.ID) {
-	m.task_list_sort_status = &u
+	m.taskListSortStatus = &u
 }
 
 // TaskListSortStatusID returns the value of the "task_list_sort_status_id" field in the mutation.
 func (m *ProjectTaskListStatusMutation) TaskListSortStatusID() (r ulid.ID, exists bool) {
-	v := m.task_list_sort_status
+	v := m.taskListSortStatus
 	if v == nil {
 		return
 	}
@@ -8184,7 +8184,7 @@ func (m *ProjectTaskListStatusMutation) OldTaskListSortStatusID(ctx context.Cont
 
 // ResetTaskListSortStatusID resets all changes to the "task_list_sort_status_id" field.
 func (m *ProjectTaskListStatusMutation) ResetTaskListSortStatusID() {
-	m.task_list_sort_status = nil
+	m.taskListSortStatus = nil
 }
 
 // SetCreatedAt sets the "created_at" field.
@@ -8285,56 +8285,56 @@ func (m *ProjectTaskListStatusMutation) ResetProject() {
 	m.clearedproject = false
 }
 
-// ClearTaskListCompletedStatus clears the "task_list_completed_status" edge to the TaskListCompletedStatus entity.
+// ClearTaskListCompletedStatus clears the "taskListCompletedStatus" edge to the TaskListCompletedStatus entity.
 func (m *ProjectTaskListStatusMutation) ClearTaskListCompletedStatus() {
-	m.clearedtask_list_completed_status = true
+	m.clearedtaskListCompletedStatus = true
 }
 
-// TaskListCompletedStatusCleared reports if the "task_list_completed_status" edge to the TaskListCompletedStatus entity was cleared.
+// TaskListCompletedStatusCleared reports if the "taskListCompletedStatus" edge to the TaskListCompletedStatus entity was cleared.
 func (m *ProjectTaskListStatusMutation) TaskListCompletedStatusCleared() bool {
-	return m.clearedtask_list_completed_status
+	return m.clearedtaskListCompletedStatus
 }
 
-// TaskListCompletedStatusIDs returns the "task_list_completed_status" edge IDs in the mutation.
+// TaskListCompletedStatusIDs returns the "taskListCompletedStatus" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // TaskListCompletedStatusID instead. It exists only for internal usage by the builders.
 func (m *ProjectTaskListStatusMutation) TaskListCompletedStatusIDs() (ids []ulid.ID) {
-	if id := m.task_list_completed_status; id != nil {
+	if id := m.taskListCompletedStatus; id != nil {
 		ids = append(ids, *id)
 	}
 	return
 }
 
-// ResetTaskListCompletedStatus resets all changes to the "task_list_completed_status" edge.
+// ResetTaskListCompletedStatus resets all changes to the "taskListCompletedStatus" edge.
 func (m *ProjectTaskListStatusMutation) ResetTaskListCompletedStatus() {
-	m.task_list_completed_status = nil
-	m.clearedtask_list_completed_status = false
+	m.taskListCompletedStatus = nil
+	m.clearedtaskListCompletedStatus = false
 }
 
-// ClearTaskListSortStatus clears the "task_list_sort_status" edge to the TaskListSortStatus entity.
+// ClearTaskListSortStatus clears the "taskListSortStatus" edge to the TaskListSortStatus entity.
 func (m *ProjectTaskListStatusMutation) ClearTaskListSortStatus() {
-	m.clearedtask_list_sort_status = true
+	m.clearedtaskListSortStatus = true
 }
 
-// TaskListSortStatusCleared reports if the "task_list_sort_status" edge to the TaskListSortStatus entity was cleared.
+// TaskListSortStatusCleared reports if the "taskListSortStatus" edge to the TaskListSortStatus entity was cleared.
 func (m *ProjectTaskListStatusMutation) TaskListSortStatusCleared() bool {
-	return m.clearedtask_list_sort_status
+	return m.clearedtaskListSortStatus
 }
 
-// TaskListSortStatusIDs returns the "task_list_sort_status" edge IDs in the mutation.
+// TaskListSortStatusIDs returns the "taskListSortStatus" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // TaskListSortStatusID instead. It exists only for internal usage by the builders.
 func (m *ProjectTaskListStatusMutation) TaskListSortStatusIDs() (ids []ulid.ID) {
-	if id := m.task_list_sort_status; id != nil {
+	if id := m.taskListSortStatus; id != nil {
 		ids = append(ids, *id)
 	}
 	return
 }
 
-// ResetTaskListSortStatus resets all changes to the "task_list_sort_status" edge.
+// ResetTaskListSortStatus resets all changes to the "taskListSortStatus" edge.
 func (m *ProjectTaskListStatusMutation) ResetTaskListSortStatus() {
-	m.task_list_sort_status = nil
-	m.clearedtask_list_sort_status = false
+	m.taskListSortStatus = nil
+	m.clearedtaskListSortStatus = false
 }
 
 // Where appends a list predicates to the ProjectTaskListStatusMutation builder.
@@ -8360,10 +8360,10 @@ func (m *ProjectTaskListStatusMutation) Fields() []string {
 	if m.project != nil {
 		fields = append(fields, projecttaskliststatus.FieldProjectID)
 	}
-	if m.task_list_completed_status != nil {
+	if m.taskListCompletedStatus != nil {
 		fields = append(fields, projecttaskliststatus.FieldTaskListCompletedStatusID)
 	}
-	if m.task_list_sort_status != nil {
+	if m.taskListSortStatus != nil {
 		fields = append(fields, projecttaskliststatus.FieldTaskListSortStatusID)
 	}
 	if m.created_at != nil {
@@ -8527,10 +8527,10 @@ func (m *ProjectTaskListStatusMutation) AddedEdges() []string {
 	if m.project != nil {
 		edges = append(edges, projecttaskliststatus.EdgeProject)
 	}
-	if m.task_list_completed_status != nil {
+	if m.taskListCompletedStatus != nil {
 		edges = append(edges, projecttaskliststatus.EdgeTaskListCompletedStatus)
 	}
-	if m.task_list_sort_status != nil {
+	if m.taskListSortStatus != nil {
 		edges = append(edges, projecttaskliststatus.EdgeTaskListSortStatus)
 	}
 	return edges
@@ -8545,11 +8545,11 @@ func (m *ProjectTaskListStatusMutation) AddedIDs(name string) []ent.Value {
 			return []ent.Value{*id}
 		}
 	case projecttaskliststatus.EdgeTaskListCompletedStatus:
-		if id := m.task_list_completed_status; id != nil {
+		if id := m.taskListCompletedStatus; id != nil {
 			return []ent.Value{*id}
 		}
 	case projecttaskliststatus.EdgeTaskListSortStatus:
-		if id := m.task_list_sort_status; id != nil {
+		if id := m.taskListSortStatus; id != nil {
 			return []ent.Value{*id}
 		}
 	}
@@ -8576,10 +8576,10 @@ func (m *ProjectTaskListStatusMutation) ClearedEdges() []string {
 	if m.clearedproject {
 		edges = append(edges, projecttaskliststatus.EdgeProject)
 	}
-	if m.clearedtask_list_completed_status {
+	if m.clearedtaskListCompletedStatus {
 		edges = append(edges, projecttaskliststatus.EdgeTaskListCompletedStatus)
 	}
-	if m.clearedtask_list_sort_status {
+	if m.clearedtaskListSortStatus {
 		edges = append(edges, projecttaskliststatus.EdgeTaskListSortStatus)
 	}
 	return edges
@@ -8592,9 +8592,9 @@ func (m *ProjectTaskListStatusMutation) EdgeCleared(name string) bool {
 	case projecttaskliststatus.EdgeProject:
 		return m.clearedproject
 	case projecttaskliststatus.EdgeTaskListCompletedStatus:
-		return m.clearedtask_list_completed_status
+		return m.clearedtaskListCompletedStatus
 	case projecttaskliststatus.EdgeTaskListSortStatus:
-		return m.clearedtask_list_sort_status
+		return m.clearedtaskListSortStatus
 	}
 	return false
 }
@@ -8636,21 +8636,21 @@ func (m *ProjectTaskListStatusMutation) ResetEdge(name string) error {
 // ProjectTaskSectionMutation represents an operation that mutates the ProjectTaskSection nodes in the graph.
 type ProjectTaskSectionMutation struct {
 	config
-	op                   Op
-	typ                  string
-	id                   *ulid.ID
-	name                 *string
-	created_at           *time.Time
-	updated_at           *time.Time
-	clearedFields        map[string]struct{}
-	project              *ulid.ID
-	clearedproject       bool
-	project_tasks        map[ulid.ID]struct{}
-	removedproject_tasks map[ulid.ID]struct{}
-	clearedproject_tasks bool
-	done                 bool
-	oldValue             func(context.Context) (*ProjectTaskSection, error)
-	predicates           []predicate.ProjectTaskSection
+	op                  Op
+	typ                 string
+	id                  *ulid.ID
+	name                *string
+	created_at          *time.Time
+	updated_at          *time.Time
+	clearedFields       map[string]struct{}
+	project             *ulid.ID
+	clearedproject      bool
+	projectTasks        map[ulid.ID]struct{}
+	removedprojectTasks map[ulid.ID]struct{}
+	clearedprojectTasks bool
+	done                bool
+	oldValue            func(context.Context) (*ProjectTaskSection, error)
+	predicates          []predicate.ProjectTaskSection
 }
 
 var _ ent.Mutation = (*ProjectTaskSectionMutation)(nil)
@@ -8908,58 +8908,58 @@ func (m *ProjectTaskSectionMutation) ResetProject() {
 	m.clearedproject = false
 }
 
-// AddProjectTaskIDs adds the "project_tasks" edge to the ProjectTask entity by ids.
+// AddProjectTaskIDs adds the "projectTasks" edge to the ProjectTask entity by ids.
 func (m *ProjectTaskSectionMutation) AddProjectTaskIDs(ids ...ulid.ID) {
-	if m.project_tasks == nil {
-		m.project_tasks = make(map[ulid.ID]struct{})
+	if m.projectTasks == nil {
+		m.projectTasks = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		m.project_tasks[ids[i]] = struct{}{}
+		m.projectTasks[ids[i]] = struct{}{}
 	}
 }
 
-// ClearProjectTasks clears the "project_tasks" edge to the ProjectTask entity.
+// ClearProjectTasks clears the "projectTasks" edge to the ProjectTask entity.
 func (m *ProjectTaskSectionMutation) ClearProjectTasks() {
-	m.clearedproject_tasks = true
+	m.clearedprojectTasks = true
 }
 
-// ProjectTasksCleared reports if the "project_tasks" edge to the ProjectTask entity was cleared.
+// ProjectTasksCleared reports if the "projectTasks" edge to the ProjectTask entity was cleared.
 func (m *ProjectTaskSectionMutation) ProjectTasksCleared() bool {
-	return m.clearedproject_tasks
+	return m.clearedprojectTasks
 }
 
-// RemoveProjectTaskIDs removes the "project_tasks" edge to the ProjectTask entity by IDs.
+// RemoveProjectTaskIDs removes the "projectTasks" edge to the ProjectTask entity by IDs.
 func (m *ProjectTaskSectionMutation) RemoveProjectTaskIDs(ids ...ulid.ID) {
-	if m.removedproject_tasks == nil {
-		m.removedproject_tasks = make(map[ulid.ID]struct{})
+	if m.removedprojectTasks == nil {
+		m.removedprojectTasks = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		delete(m.project_tasks, ids[i])
-		m.removedproject_tasks[ids[i]] = struct{}{}
+		delete(m.projectTasks, ids[i])
+		m.removedprojectTasks[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedProjectTasks returns the removed IDs of the "project_tasks" edge to the ProjectTask entity.
+// RemovedProjectTasks returns the removed IDs of the "projectTasks" edge to the ProjectTask entity.
 func (m *ProjectTaskSectionMutation) RemovedProjectTasksIDs() (ids []ulid.ID) {
-	for id := range m.removedproject_tasks {
+	for id := range m.removedprojectTasks {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ProjectTasksIDs returns the "project_tasks" edge IDs in the mutation.
+// ProjectTasksIDs returns the "projectTasks" edge IDs in the mutation.
 func (m *ProjectTaskSectionMutation) ProjectTasksIDs() (ids []ulid.ID) {
-	for id := range m.project_tasks {
+	for id := range m.projectTasks {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetProjectTasks resets all changes to the "project_tasks" edge.
+// ResetProjectTasks resets all changes to the "projectTasks" edge.
 func (m *ProjectTaskSectionMutation) ResetProjectTasks() {
-	m.project_tasks = nil
-	m.clearedproject_tasks = false
-	m.removedproject_tasks = nil
+	m.projectTasks = nil
+	m.clearedprojectTasks = false
+	m.removedprojectTasks = nil
 }
 
 // Where appends a list predicates to the ProjectTaskSectionMutation builder.
@@ -9135,7 +9135,7 @@ func (m *ProjectTaskSectionMutation) AddedEdges() []string {
 	if m.project != nil {
 		edges = append(edges, projecttasksection.EdgeProject)
 	}
-	if m.project_tasks != nil {
+	if m.projectTasks != nil {
 		edges = append(edges, projecttasksection.EdgeProjectTasks)
 	}
 	return edges
@@ -9150,8 +9150,8 @@ func (m *ProjectTaskSectionMutation) AddedIDs(name string) []ent.Value {
 			return []ent.Value{*id}
 		}
 	case projecttasksection.EdgeProjectTasks:
-		ids := make([]ent.Value, 0, len(m.project_tasks))
-		for id := range m.project_tasks {
+		ids := make([]ent.Value, 0, len(m.projectTasks))
+		for id := range m.projectTasks {
 			ids = append(ids, id)
 		}
 		return ids
@@ -9162,7 +9162,7 @@ func (m *ProjectTaskSectionMutation) AddedIDs(name string) []ent.Value {
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *ProjectTaskSectionMutation) RemovedEdges() []string {
 	edges := make([]string, 0, 2)
-	if m.removedproject_tasks != nil {
+	if m.removedprojectTasks != nil {
 		edges = append(edges, projecttasksection.EdgeProjectTasks)
 	}
 	return edges
@@ -9173,8 +9173,8 @@ func (m *ProjectTaskSectionMutation) RemovedEdges() []string {
 func (m *ProjectTaskSectionMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
 	case projecttasksection.EdgeProjectTasks:
-		ids := make([]ent.Value, 0, len(m.removedproject_tasks))
-		for id := range m.removedproject_tasks {
+		ids := make([]ent.Value, 0, len(m.removedprojectTasks))
+		for id := range m.removedprojectTasks {
 			ids = append(ids, id)
 		}
 		return ids
@@ -9188,7 +9188,7 @@ func (m *ProjectTaskSectionMutation) ClearedEdges() []string {
 	if m.clearedproject {
 		edges = append(edges, projecttasksection.EdgeProject)
 	}
-	if m.clearedproject_tasks {
+	if m.clearedprojectTasks {
 		edges = append(edges, projecttasksection.EdgeProjectTasks)
 	}
 	return edges
@@ -9201,7 +9201,7 @@ func (m *ProjectTaskSectionMutation) EdgeCleared(name string) bool {
 	case projecttasksection.EdgeProject:
 		return m.clearedproject
 	case projecttasksection.EdgeProjectTasks:
-		return m.clearedproject_tasks
+		return m.clearedprojectTasks
 	}
 	return false
 }
@@ -9913,9 +9913,9 @@ type TagMutation struct {
 	clearedworkspace bool
 	color            *ulid.ID
 	clearedcolor     bool
-	task_tags        map[ulid.ID]struct{}
-	removedtask_tags map[ulid.ID]struct{}
-	clearedtask_tags bool
+	taskTags         map[ulid.ID]struct{}
+	removedtaskTags  map[ulid.ID]struct{}
+	clearedtaskTags  bool
 	done             bool
 	oldValue         func(context.Context) (*Tag, error)
 	predicates       []predicate.Tag
@@ -10238,58 +10238,58 @@ func (m *TagMutation) ResetColor() {
 	m.clearedcolor = false
 }
 
-// AddTaskTagIDs adds the "task_tags" edge to the TaskTag entity by ids.
+// AddTaskTagIDs adds the "taskTags" edge to the TaskTag entity by ids.
 func (m *TagMutation) AddTaskTagIDs(ids ...ulid.ID) {
-	if m.task_tags == nil {
-		m.task_tags = make(map[ulid.ID]struct{})
+	if m.taskTags == nil {
+		m.taskTags = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		m.task_tags[ids[i]] = struct{}{}
+		m.taskTags[ids[i]] = struct{}{}
 	}
 }
 
-// ClearTaskTags clears the "task_tags" edge to the TaskTag entity.
+// ClearTaskTags clears the "taskTags" edge to the TaskTag entity.
 func (m *TagMutation) ClearTaskTags() {
-	m.clearedtask_tags = true
+	m.clearedtaskTags = true
 }
 
-// TaskTagsCleared reports if the "task_tags" edge to the TaskTag entity was cleared.
+// TaskTagsCleared reports if the "taskTags" edge to the TaskTag entity was cleared.
 func (m *TagMutation) TaskTagsCleared() bool {
-	return m.clearedtask_tags
+	return m.clearedtaskTags
 }
 
-// RemoveTaskTagIDs removes the "task_tags" edge to the TaskTag entity by IDs.
+// RemoveTaskTagIDs removes the "taskTags" edge to the TaskTag entity by IDs.
 func (m *TagMutation) RemoveTaskTagIDs(ids ...ulid.ID) {
-	if m.removedtask_tags == nil {
-		m.removedtask_tags = make(map[ulid.ID]struct{})
+	if m.removedtaskTags == nil {
+		m.removedtaskTags = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		delete(m.task_tags, ids[i])
-		m.removedtask_tags[ids[i]] = struct{}{}
+		delete(m.taskTags, ids[i])
+		m.removedtaskTags[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedTaskTags returns the removed IDs of the "task_tags" edge to the TaskTag entity.
+// RemovedTaskTags returns the removed IDs of the "taskTags" edge to the TaskTag entity.
 func (m *TagMutation) RemovedTaskTagsIDs() (ids []ulid.ID) {
-	for id := range m.removedtask_tags {
+	for id := range m.removedtaskTags {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// TaskTagsIDs returns the "task_tags" edge IDs in the mutation.
+// TaskTagsIDs returns the "taskTags" edge IDs in the mutation.
 func (m *TagMutation) TaskTagsIDs() (ids []ulid.ID) {
-	for id := range m.task_tags {
+	for id := range m.taskTags {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetTaskTags resets all changes to the "task_tags" edge.
+// ResetTaskTags resets all changes to the "taskTags" edge.
 func (m *TagMutation) ResetTaskTags() {
-	m.task_tags = nil
-	m.clearedtask_tags = false
-	m.removedtask_tags = nil
+	m.taskTags = nil
+	m.clearedtaskTags = false
+	m.removedtaskTags = nil
 }
 
 // Where appends a list predicates to the TagMutation builder.
@@ -10485,7 +10485,7 @@ func (m *TagMutation) AddedEdges() []string {
 	if m.color != nil {
 		edges = append(edges, tag.EdgeColor)
 	}
-	if m.task_tags != nil {
+	if m.taskTags != nil {
 		edges = append(edges, tag.EdgeTaskTags)
 	}
 	return edges
@@ -10504,8 +10504,8 @@ func (m *TagMutation) AddedIDs(name string) []ent.Value {
 			return []ent.Value{*id}
 		}
 	case tag.EdgeTaskTags:
-		ids := make([]ent.Value, 0, len(m.task_tags))
-		for id := range m.task_tags {
+		ids := make([]ent.Value, 0, len(m.taskTags))
+		for id := range m.taskTags {
 			ids = append(ids, id)
 		}
 		return ids
@@ -10516,7 +10516,7 @@ func (m *TagMutation) AddedIDs(name string) []ent.Value {
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *TagMutation) RemovedEdges() []string {
 	edges := make([]string, 0, 3)
-	if m.removedtask_tags != nil {
+	if m.removedtaskTags != nil {
 		edges = append(edges, tag.EdgeTaskTags)
 	}
 	return edges
@@ -10527,8 +10527,8 @@ func (m *TagMutation) RemovedEdges() []string {
 func (m *TagMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
 	case tag.EdgeTaskTags:
-		ids := make([]ent.Value, 0, len(m.removedtask_tags))
-		for id := range m.removedtask_tags {
+		ids := make([]ent.Value, 0, len(m.removedtaskTags))
+		for id := range m.removedtaskTags {
 			ids = append(ids, id)
 		}
 		return ids
@@ -10545,7 +10545,7 @@ func (m *TagMutation) ClearedEdges() []string {
 	if m.clearedcolor {
 		edges = append(edges, tag.EdgeColor)
 	}
-	if m.clearedtask_tags {
+	if m.clearedtaskTags {
 		edges = append(edges, tag.EdgeTaskTags)
 	}
 	return edges
@@ -10560,7 +10560,7 @@ func (m *TagMutation) EdgeCleared(name string) bool {
 	case tag.EdgeColor:
 		return m.clearedcolor
 	case tag.EdgeTaskTags:
-		return m.clearedtask_tags
+		return m.clearedtaskTags
 	}
 	return false
 }
@@ -10599,55 +10599,55 @@ func (m *TagMutation) ResetEdge(name string) error {
 // TaskMutation represents an operation that mutates the Task nodes in the graph.
 type TaskMutation struct {
 	config
-	op                        Op
-	typ                       string
-	id                        *ulid.ID
-	created_by                *ulid.ID
-	completed                 *bool
-	completed_at              *time.Time
-	is_new                    *bool
-	name                      *string
-	due_date                  *time.Time
-	due_time                  *time.Time
-	created_at                *time.Time
-	updated_at                *time.Time
-	clearedFields             map[string]struct{}
-	teammate                  *ulid.ID
-	clearedteammate           bool
-	task_priority             *ulid.ID
-	clearedtask_priority      bool
-	parent                    *ulid.ID
-	clearedparent             bool
-	sub_tasks                 map[ulid.ID]struct{}
-	removedsub_tasks          map[ulid.ID]struct{}
-	clearedsub_tasks          bool
-	teammate_tasks            map[ulid.ID]struct{}
-	removedteammate_tasks     map[ulid.ID]struct{}
-	clearedteammate_tasks     bool
-	project_tasks             map[ulid.ID]struct{}
-	removedproject_tasks      map[ulid.ID]struct{}
-	clearedproject_tasks      bool
-	task_likes                map[ulid.ID]struct{}
-	removedtask_likes         map[ulid.ID]struct{}
-	clearedtask_likes         bool
-	task_tags                 map[ulid.ID]struct{}
-	removedtask_tags          map[ulid.ID]struct{}
-	clearedtask_tags          bool
-	task_collaborators        map[ulid.ID]struct{}
-	removedtask_collaborators map[ulid.ID]struct{}
-	clearedtask_collaborators bool
-	task_feeds                map[ulid.ID]struct{}
-	removedtask_feeds         map[ulid.ID]struct{}
-	clearedtask_feeds         bool
-	task_feed_likes           map[ulid.ID]struct{}
-	removedtask_feed_likes    map[ulid.ID]struct{}
-	clearedtask_feed_likes    bool
-	task_files                map[ulid.ID]struct{}
-	removedtask_files         map[ulid.ID]struct{}
-	clearedtask_files         bool
-	done                      bool
-	oldValue                  func(context.Context) (*Task, error)
-	predicates                []predicate.Task
+	op                       Op
+	typ                      string
+	id                       *ulid.ID
+	created_by               *ulid.ID
+	completed                *bool
+	completed_at             *time.Time
+	is_new                   *bool
+	name                     *string
+	due_date                 *time.Time
+	due_time                 *time.Time
+	created_at               *time.Time
+	updated_at               *time.Time
+	clearedFields            map[string]struct{}
+	teammate                 *ulid.ID
+	clearedteammate          bool
+	taskPriority             *ulid.ID
+	clearedtaskPriority      bool
+	parent                   *ulid.ID
+	clearedparent            bool
+	subTasks                 map[ulid.ID]struct{}
+	removedsubTasks          map[ulid.ID]struct{}
+	clearedsubTasks          bool
+	teammateTasks            map[ulid.ID]struct{}
+	removedteammateTasks     map[ulid.ID]struct{}
+	clearedteammateTasks     bool
+	projectTasks             map[ulid.ID]struct{}
+	removedprojectTasks      map[ulid.ID]struct{}
+	clearedprojectTasks      bool
+	taskLikes                map[ulid.ID]struct{}
+	removedtaskLikes         map[ulid.ID]struct{}
+	clearedtaskLikes         bool
+	taskTags                 map[ulid.ID]struct{}
+	removedtaskTags          map[ulid.ID]struct{}
+	clearedtaskTags          bool
+	taskCollaborators        map[ulid.ID]struct{}
+	removedtaskCollaborators map[ulid.ID]struct{}
+	clearedtaskCollaborators bool
+	taskFeeds                map[ulid.ID]struct{}
+	removedtaskFeeds         map[ulid.ID]struct{}
+	clearedtaskFeeds         bool
+	taskFeedLikes            map[ulid.ID]struct{}
+	removedtaskFeedLikes     map[ulid.ID]struct{}
+	clearedtaskFeedLikes     bool
+	taskFiles                map[ulid.ID]struct{}
+	removedtaskFiles         map[ulid.ID]struct{}
+	clearedtaskFiles         bool
+	done                     bool
+	oldValue                 func(context.Context) (*Task, error)
+	predicates               []predicate.Task
 }
 
 var _ ent.Mutation = (*TaskMutation)(nil)
@@ -10786,12 +10786,12 @@ func (m *TaskMutation) ResetTaskParentID() {
 
 // SetTaskPriorityID sets the "task_priority_id" field.
 func (m *TaskMutation) SetTaskPriorityID(u ulid.ID) {
-	m.task_priority = &u
+	m.taskPriority = &u
 }
 
 // TaskPriorityID returns the value of the "task_priority_id" field in the mutation.
 func (m *TaskMutation) TaskPriorityID() (r ulid.ID, exists bool) {
-	v := m.task_priority
+	v := m.taskPriority
 	if v == nil {
 		return
 	}
@@ -10817,7 +10817,7 @@ func (m *TaskMutation) OldTaskPriorityID(ctx context.Context) (v ulid.ID, err er
 
 // ResetTaskPriorityID resets all changes to the "task_priority_id" field.
 func (m *TaskMutation) ResetTaskPriorityID() {
-	m.task_priority = nil
+	m.taskPriority = nil
 }
 
 // SetAssigneeID sets the "assignee_id" field.
@@ -11271,30 +11271,30 @@ func (m *TaskMutation) ResetTeammate() {
 	m.clearedteammate = false
 }
 
-// ClearTaskPriority clears the "task_priority" edge to the TaskPriority entity.
+// ClearTaskPriority clears the "taskPriority" edge to the TaskPriority entity.
 func (m *TaskMutation) ClearTaskPriority() {
-	m.clearedtask_priority = true
+	m.clearedtaskPriority = true
 }
 
-// TaskPriorityCleared reports if the "task_priority" edge to the TaskPriority entity was cleared.
+// TaskPriorityCleared reports if the "taskPriority" edge to the TaskPriority entity was cleared.
 func (m *TaskMutation) TaskPriorityCleared() bool {
-	return m.clearedtask_priority
+	return m.clearedtaskPriority
 }
 
-// TaskPriorityIDs returns the "task_priority" edge IDs in the mutation.
+// TaskPriorityIDs returns the "taskPriority" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // TaskPriorityID instead. It exists only for internal usage by the builders.
 func (m *TaskMutation) TaskPriorityIDs() (ids []ulid.ID) {
-	if id := m.task_priority; id != nil {
+	if id := m.taskPriority; id != nil {
 		ids = append(ids, *id)
 	}
 	return
 }
 
-// ResetTaskPriority resets all changes to the "task_priority" edge.
+// ResetTaskPriority resets all changes to the "taskPriority" edge.
 func (m *TaskMutation) ResetTaskPriority() {
-	m.task_priority = nil
-	m.clearedtask_priority = false
+	m.taskPriority = nil
+	m.clearedtaskPriority = false
 }
 
 // SetParentID sets the "parent" edge to the Task entity by id.
@@ -11336,490 +11336,490 @@ func (m *TaskMutation) ResetParent() {
 	m.clearedparent = false
 }
 
-// AddSubTaskIDs adds the "sub_tasks" edge to the Task entity by ids.
+// AddSubTaskIDs adds the "subTasks" edge to the Task entity by ids.
 func (m *TaskMutation) AddSubTaskIDs(ids ...ulid.ID) {
-	if m.sub_tasks == nil {
-		m.sub_tasks = make(map[ulid.ID]struct{})
+	if m.subTasks == nil {
+		m.subTasks = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		m.sub_tasks[ids[i]] = struct{}{}
+		m.subTasks[ids[i]] = struct{}{}
 	}
 }
 
-// ClearSubTasks clears the "sub_tasks" edge to the Task entity.
+// ClearSubTasks clears the "subTasks" edge to the Task entity.
 func (m *TaskMutation) ClearSubTasks() {
-	m.clearedsub_tasks = true
+	m.clearedsubTasks = true
 }
 
-// SubTasksCleared reports if the "sub_tasks" edge to the Task entity was cleared.
+// SubTasksCleared reports if the "subTasks" edge to the Task entity was cleared.
 func (m *TaskMutation) SubTasksCleared() bool {
-	return m.clearedsub_tasks
+	return m.clearedsubTasks
 }
 
-// RemoveSubTaskIDs removes the "sub_tasks" edge to the Task entity by IDs.
+// RemoveSubTaskIDs removes the "subTasks" edge to the Task entity by IDs.
 func (m *TaskMutation) RemoveSubTaskIDs(ids ...ulid.ID) {
-	if m.removedsub_tasks == nil {
-		m.removedsub_tasks = make(map[ulid.ID]struct{})
+	if m.removedsubTasks == nil {
+		m.removedsubTasks = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		delete(m.sub_tasks, ids[i])
-		m.removedsub_tasks[ids[i]] = struct{}{}
+		delete(m.subTasks, ids[i])
+		m.removedsubTasks[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedSubTasks returns the removed IDs of the "sub_tasks" edge to the Task entity.
+// RemovedSubTasks returns the removed IDs of the "subTasks" edge to the Task entity.
 func (m *TaskMutation) RemovedSubTasksIDs() (ids []ulid.ID) {
-	for id := range m.removedsub_tasks {
+	for id := range m.removedsubTasks {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// SubTasksIDs returns the "sub_tasks" edge IDs in the mutation.
+// SubTasksIDs returns the "subTasks" edge IDs in the mutation.
 func (m *TaskMutation) SubTasksIDs() (ids []ulid.ID) {
-	for id := range m.sub_tasks {
+	for id := range m.subTasks {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetSubTasks resets all changes to the "sub_tasks" edge.
+// ResetSubTasks resets all changes to the "subTasks" edge.
 func (m *TaskMutation) ResetSubTasks() {
-	m.sub_tasks = nil
-	m.clearedsub_tasks = false
-	m.removedsub_tasks = nil
+	m.subTasks = nil
+	m.clearedsubTasks = false
+	m.removedsubTasks = nil
 }
 
-// AddTeammateTaskIDs adds the "teammate_tasks" edge to the TeammateTask entity by ids.
+// AddTeammateTaskIDs adds the "teammateTasks" edge to the TeammateTask entity by ids.
 func (m *TaskMutation) AddTeammateTaskIDs(ids ...ulid.ID) {
-	if m.teammate_tasks == nil {
-		m.teammate_tasks = make(map[ulid.ID]struct{})
+	if m.teammateTasks == nil {
+		m.teammateTasks = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		m.teammate_tasks[ids[i]] = struct{}{}
+		m.teammateTasks[ids[i]] = struct{}{}
 	}
 }
 
-// ClearTeammateTasks clears the "teammate_tasks" edge to the TeammateTask entity.
+// ClearTeammateTasks clears the "teammateTasks" edge to the TeammateTask entity.
 func (m *TaskMutation) ClearTeammateTasks() {
-	m.clearedteammate_tasks = true
+	m.clearedteammateTasks = true
 }
 
-// TeammateTasksCleared reports if the "teammate_tasks" edge to the TeammateTask entity was cleared.
+// TeammateTasksCleared reports if the "teammateTasks" edge to the TeammateTask entity was cleared.
 func (m *TaskMutation) TeammateTasksCleared() bool {
-	return m.clearedteammate_tasks
+	return m.clearedteammateTasks
 }
 
-// RemoveTeammateTaskIDs removes the "teammate_tasks" edge to the TeammateTask entity by IDs.
+// RemoveTeammateTaskIDs removes the "teammateTasks" edge to the TeammateTask entity by IDs.
 func (m *TaskMutation) RemoveTeammateTaskIDs(ids ...ulid.ID) {
-	if m.removedteammate_tasks == nil {
-		m.removedteammate_tasks = make(map[ulid.ID]struct{})
+	if m.removedteammateTasks == nil {
+		m.removedteammateTasks = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		delete(m.teammate_tasks, ids[i])
-		m.removedteammate_tasks[ids[i]] = struct{}{}
+		delete(m.teammateTasks, ids[i])
+		m.removedteammateTasks[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedTeammateTasks returns the removed IDs of the "teammate_tasks" edge to the TeammateTask entity.
+// RemovedTeammateTasks returns the removed IDs of the "teammateTasks" edge to the TeammateTask entity.
 func (m *TaskMutation) RemovedTeammateTasksIDs() (ids []ulid.ID) {
-	for id := range m.removedteammate_tasks {
+	for id := range m.removedteammateTasks {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// TeammateTasksIDs returns the "teammate_tasks" edge IDs in the mutation.
+// TeammateTasksIDs returns the "teammateTasks" edge IDs in the mutation.
 func (m *TaskMutation) TeammateTasksIDs() (ids []ulid.ID) {
-	for id := range m.teammate_tasks {
+	for id := range m.teammateTasks {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetTeammateTasks resets all changes to the "teammate_tasks" edge.
+// ResetTeammateTasks resets all changes to the "teammateTasks" edge.
 func (m *TaskMutation) ResetTeammateTasks() {
-	m.teammate_tasks = nil
-	m.clearedteammate_tasks = false
-	m.removedteammate_tasks = nil
+	m.teammateTasks = nil
+	m.clearedteammateTasks = false
+	m.removedteammateTasks = nil
 }
 
-// AddProjectTaskIDs adds the "project_tasks" edge to the ProjectTask entity by ids.
+// AddProjectTaskIDs adds the "projectTasks" edge to the ProjectTask entity by ids.
 func (m *TaskMutation) AddProjectTaskIDs(ids ...ulid.ID) {
-	if m.project_tasks == nil {
-		m.project_tasks = make(map[ulid.ID]struct{})
+	if m.projectTasks == nil {
+		m.projectTasks = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		m.project_tasks[ids[i]] = struct{}{}
+		m.projectTasks[ids[i]] = struct{}{}
 	}
 }
 
-// ClearProjectTasks clears the "project_tasks" edge to the ProjectTask entity.
+// ClearProjectTasks clears the "projectTasks" edge to the ProjectTask entity.
 func (m *TaskMutation) ClearProjectTasks() {
-	m.clearedproject_tasks = true
+	m.clearedprojectTasks = true
 }
 
-// ProjectTasksCleared reports if the "project_tasks" edge to the ProjectTask entity was cleared.
+// ProjectTasksCleared reports if the "projectTasks" edge to the ProjectTask entity was cleared.
 func (m *TaskMutation) ProjectTasksCleared() bool {
-	return m.clearedproject_tasks
+	return m.clearedprojectTasks
 }
 
-// RemoveProjectTaskIDs removes the "project_tasks" edge to the ProjectTask entity by IDs.
+// RemoveProjectTaskIDs removes the "projectTasks" edge to the ProjectTask entity by IDs.
 func (m *TaskMutation) RemoveProjectTaskIDs(ids ...ulid.ID) {
-	if m.removedproject_tasks == nil {
-		m.removedproject_tasks = make(map[ulid.ID]struct{})
+	if m.removedprojectTasks == nil {
+		m.removedprojectTasks = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		delete(m.project_tasks, ids[i])
-		m.removedproject_tasks[ids[i]] = struct{}{}
+		delete(m.projectTasks, ids[i])
+		m.removedprojectTasks[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedProjectTasks returns the removed IDs of the "project_tasks" edge to the ProjectTask entity.
+// RemovedProjectTasks returns the removed IDs of the "projectTasks" edge to the ProjectTask entity.
 func (m *TaskMutation) RemovedProjectTasksIDs() (ids []ulid.ID) {
-	for id := range m.removedproject_tasks {
+	for id := range m.removedprojectTasks {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ProjectTasksIDs returns the "project_tasks" edge IDs in the mutation.
+// ProjectTasksIDs returns the "projectTasks" edge IDs in the mutation.
 func (m *TaskMutation) ProjectTasksIDs() (ids []ulid.ID) {
-	for id := range m.project_tasks {
+	for id := range m.projectTasks {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetProjectTasks resets all changes to the "project_tasks" edge.
+// ResetProjectTasks resets all changes to the "projectTasks" edge.
 func (m *TaskMutation) ResetProjectTasks() {
-	m.project_tasks = nil
-	m.clearedproject_tasks = false
-	m.removedproject_tasks = nil
+	m.projectTasks = nil
+	m.clearedprojectTasks = false
+	m.removedprojectTasks = nil
 }
 
-// AddTaskLikeIDs adds the "task_likes" edge to the TaskLike entity by ids.
+// AddTaskLikeIDs adds the "taskLikes" edge to the TaskLike entity by ids.
 func (m *TaskMutation) AddTaskLikeIDs(ids ...ulid.ID) {
-	if m.task_likes == nil {
-		m.task_likes = make(map[ulid.ID]struct{})
+	if m.taskLikes == nil {
+		m.taskLikes = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		m.task_likes[ids[i]] = struct{}{}
+		m.taskLikes[ids[i]] = struct{}{}
 	}
 }
 
-// ClearTaskLikes clears the "task_likes" edge to the TaskLike entity.
+// ClearTaskLikes clears the "taskLikes" edge to the TaskLike entity.
 func (m *TaskMutation) ClearTaskLikes() {
-	m.clearedtask_likes = true
+	m.clearedtaskLikes = true
 }
 
-// TaskLikesCleared reports if the "task_likes" edge to the TaskLike entity was cleared.
+// TaskLikesCleared reports if the "taskLikes" edge to the TaskLike entity was cleared.
 func (m *TaskMutation) TaskLikesCleared() bool {
-	return m.clearedtask_likes
+	return m.clearedtaskLikes
 }
 
-// RemoveTaskLikeIDs removes the "task_likes" edge to the TaskLike entity by IDs.
+// RemoveTaskLikeIDs removes the "taskLikes" edge to the TaskLike entity by IDs.
 func (m *TaskMutation) RemoveTaskLikeIDs(ids ...ulid.ID) {
-	if m.removedtask_likes == nil {
-		m.removedtask_likes = make(map[ulid.ID]struct{})
+	if m.removedtaskLikes == nil {
+		m.removedtaskLikes = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		delete(m.task_likes, ids[i])
-		m.removedtask_likes[ids[i]] = struct{}{}
+		delete(m.taskLikes, ids[i])
+		m.removedtaskLikes[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedTaskLikes returns the removed IDs of the "task_likes" edge to the TaskLike entity.
+// RemovedTaskLikes returns the removed IDs of the "taskLikes" edge to the TaskLike entity.
 func (m *TaskMutation) RemovedTaskLikesIDs() (ids []ulid.ID) {
-	for id := range m.removedtask_likes {
+	for id := range m.removedtaskLikes {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// TaskLikesIDs returns the "task_likes" edge IDs in the mutation.
+// TaskLikesIDs returns the "taskLikes" edge IDs in the mutation.
 func (m *TaskMutation) TaskLikesIDs() (ids []ulid.ID) {
-	for id := range m.task_likes {
+	for id := range m.taskLikes {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetTaskLikes resets all changes to the "task_likes" edge.
+// ResetTaskLikes resets all changes to the "taskLikes" edge.
 func (m *TaskMutation) ResetTaskLikes() {
-	m.task_likes = nil
-	m.clearedtask_likes = false
-	m.removedtask_likes = nil
+	m.taskLikes = nil
+	m.clearedtaskLikes = false
+	m.removedtaskLikes = nil
 }
 
-// AddTaskTagIDs adds the "task_tags" edge to the TaskTag entity by ids.
+// AddTaskTagIDs adds the "taskTags" edge to the TaskTag entity by ids.
 func (m *TaskMutation) AddTaskTagIDs(ids ...ulid.ID) {
-	if m.task_tags == nil {
-		m.task_tags = make(map[ulid.ID]struct{})
+	if m.taskTags == nil {
+		m.taskTags = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		m.task_tags[ids[i]] = struct{}{}
+		m.taskTags[ids[i]] = struct{}{}
 	}
 }
 
-// ClearTaskTags clears the "task_tags" edge to the TaskTag entity.
+// ClearTaskTags clears the "taskTags" edge to the TaskTag entity.
 func (m *TaskMutation) ClearTaskTags() {
-	m.clearedtask_tags = true
+	m.clearedtaskTags = true
 }
 
-// TaskTagsCleared reports if the "task_tags" edge to the TaskTag entity was cleared.
+// TaskTagsCleared reports if the "taskTags" edge to the TaskTag entity was cleared.
 func (m *TaskMutation) TaskTagsCleared() bool {
-	return m.clearedtask_tags
+	return m.clearedtaskTags
 }
 
-// RemoveTaskTagIDs removes the "task_tags" edge to the TaskTag entity by IDs.
+// RemoveTaskTagIDs removes the "taskTags" edge to the TaskTag entity by IDs.
 func (m *TaskMutation) RemoveTaskTagIDs(ids ...ulid.ID) {
-	if m.removedtask_tags == nil {
-		m.removedtask_tags = make(map[ulid.ID]struct{})
+	if m.removedtaskTags == nil {
+		m.removedtaskTags = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		delete(m.task_tags, ids[i])
-		m.removedtask_tags[ids[i]] = struct{}{}
+		delete(m.taskTags, ids[i])
+		m.removedtaskTags[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedTaskTags returns the removed IDs of the "task_tags" edge to the TaskTag entity.
+// RemovedTaskTags returns the removed IDs of the "taskTags" edge to the TaskTag entity.
 func (m *TaskMutation) RemovedTaskTagsIDs() (ids []ulid.ID) {
-	for id := range m.removedtask_tags {
+	for id := range m.removedtaskTags {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// TaskTagsIDs returns the "task_tags" edge IDs in the mutation.
+// TaskTagsIDs returns the "taskTags" edge IDs in the mutation.
 func (m *TaskMutation) TaskTagsIDs() (ids []ulid.ID) {
-	for id := range m.task_tags {
+	for id := range m.taskTags {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetTaskTags resets all changes to the "task_tags" edge.
+// ResetTaskTags resets all changes to the "taskTags" edge.
 func (m *TaskMutation) ResetTaskTags() {
-	m.task_tags = nil
-	m.clearedtask_tags = false
-	m.removedtask_tags = nil
+	m.taskTags = nil
+	m.clearedtaskTags = false
+	m.removedtaskTags = nil
 }
 
-// AddTaskCollaboratorIDs adds the "task_collaborators" edge to the TaskCollaborator entity by ids.
+// AddTaskCollaboratorIDs adds the "taskCollaborators" edge to the TaskCollaborator entity by ids.
 func (m *TaskMutation) AddTaskCollaboratorIDs(ids ...ulid.ID) {
-	if m.task_collaborators == nil {
-		m.task_collaborators = make(map[ulid.ID]struct{})
+	if m.taskCollaborators == nil {
+		m.taskCollaborators = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		m.task_collaborators[ids[i]] = struct{}{}
+		m.taskCollaborators[ids[i]] = struct{}{}
 	}
 }
 
-// ClearTaskCollaborators clears the "task_collaborators" edge to the TaskCollaborator entity.
+// ClearTaskCollaborators clears the "taskCollaborators" edge to the TaskCollaborator entity.
 func (m *TaskMutation) ClearTaskCollaborators() {
-	m.clearedtask_collaborators = true
+	m.clearedtaskCollaborators = true
 }
 
-// TaskCollaboratorsCleared reports if the "task_collaborators" edge to the TaskCollaborator entity was cleared.
+// TaskCollaboratorsCleared reports if the "taskCollaborators" edge to the TaskCollaborator entity was cleared.
 func (m *TaskMutation) TaskCollaboratorsCleared() bool {
-	return m.clearedtask_collaborators
+	return m.clearedtaskCollaborators
 }
 
-// RemoveTaskCollaboratorIDs removes the "task_collaborators" edge to the TaskCollaborator entity by IDs.
+// RemoveTaskCollaboratorIDs removes the "taskCollaborators" edge to the TaskCollaborator entity by IDs.
 func (m *TaskMutation) RemoveTaskCollaboratorIDs(ids ...ulid.ID) {
-	if m.removedtask_collaborators == nil {
-		m.removedtask_collaborators = make(map[ulid.ID]struct{})
+	if m.removedtaskCollaborators == nil {
+		m.removedtaskCollaborators = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		delete(m.task_collaborators, ids[i])
-		m.removedtask_collaborators[ids[i]] = struct{}{}
+		delete(m.taskCollaborators, ids[i])
+		m.removedtaskCollaborators[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedTaskCollaborators returns the removed IDs of the "task_collaborators" edge to the TaskCollaborator entity.
+// RemovedTaskCollaborators returns the removed IDs of the "taskCollaborators" edge to the TaskCollaborator entity.
 func (m *TaskMutation) RemovedTaskCollaboratorsIDs() (ids []ulid.ID) {
-	for id := range m.removedtask_collaborators {
+	for id := range m.removedtaskCollaborators {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// TaskCollaboratorsIDs returns the "task_collaborators" edge IDs in the mutation.
+// TaskCollaboratorsIDs returns the "taskCollaborators" edge IDs in the mutation.
 func (m *TaskMutation) TaskCollaboratorsIDs() (ids []ulid.ID) {
-	for id := range m.task_collaborators {
+	for id := range m.taskCollaborators {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetTaskCollaborators resets all changes to the "task_collaborators" edge.
+// ResetTaskCollaborators resets all changes to the "taskCollaborators" edge.
 func (m *TaskMutation) ResetTaskCollaborators() {
-	m.task_collaborators = nil
-	m.clearedtask_collaborators = false
-	m.removedtask_collaborators = nil
+	m.taskCollaborators = nil
+	m.clearedtaskCollaborators = false
+	m.removedtaskCollaborators = nil
 }
 
-// AddTaskFeedIDs adds the "task_feeds" edge to the TaskFeed entity by ids.
+// AddTaskFeedIDs adds the "taskFeeds" edge to the TaskFeed entity by ids.
 func (m *TaskMutation) AddTaskFeedIDs(ids ...ulid.ID) {
-	if m.task_feeds == nil {
-		m.task_feeds = make(map[ulid.ID]struct{})
+	if m.taskFeeds == nil {
+		m.taskFeeds = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		m.task_feeds[ids[i]] = struct{}{}
+		m.taskFeeds[ids[i]] = struct{}{}
 	}
 }
 
-// ClearTaskFeeds clears the "task_feeds" edge to the TaskFeed entity.
+// ClearTaskFeeds clears the "taskFeeds" edge to the TaskFeed entity.
 func (m *TaskMutation) ClearTaskFeeds() {
-	m.clearedtask_feeds = true
+	m.clearedtaskFeeds = true
 }
 
-// TaskFeedsCleared reports if the "task_feeds" edge to the TaskFeed entity was cleared.
+// TaskFeedsCleared reports if the "taskFeeds" edge to the TaskFeed entity was cleared.
 func (m *TaskMutation) TaskFeedsCleared() bool {
-	return m.clearedtask_feeds
+	return m.clearedtaskFeeds
 }
 
-// RemoveTaskFeedIDs removes the "task_feeds" edge to the TaskFeed entity by IDs.
+// RemoveTaskFeedIDs removes the "taskFeeds" edge to the TaskFeed entity by IDs.
 func (m *TaskMutation) RemoveTaskFeedIDs(ids ...ulid.ID) {
-	if m.removedtask_feeds == nil {
-		m.removedtask_feeds = make(map[ulid.ID]struct{})
+	if m.removedtaskFeeds == nil {
+		m.removedtaskFeeds = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		delete(m.task_feeds, ids[i])
-		m.removedtask_feeds[ids[i]] = struct{}{}
+		delete(m.taskFeeds, ids[i])
+		m.removedtaskFeeds[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedTaskFeeds returns the removed IDs of the "task_feeds" edge to the TaskFeed entity.
+// RemovedTaskFeeds returns the removed IDs of the "taskFeeds" edge to the TaskFeed entity.
 func (m *TaskMutation) RemovedTaskFeedsIDs() (ids []ulid.ID) {
-	for id := range m.removedtask_feeds {
+	for id := range m.removedtaskFeeds {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// TaskFeedsIDs returns the "task_feeds" edge IDs in the mutation.
+// TaskFeedsIDs returns the "taskFeeds" edge IDs in the mutation.
 func (m *TaskMutation) TaskFeedsIDs() (ids []ulid.ID) {
-	for id := range m.task_feeds {
+	for id := range m.taskFeeds {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetTaskFeeds resets all changes to the "task_feeds" edge.
+// ResetTaskFeeds resets all changes to the "taskFeeds" edge.
 func (m *TaskMutation) ResetTaskFeeds() {
-	m.task_feeds = nil
-	m.clearedtask_feeds = false
-	m.removedtask_feeds = nil
+	m.taskFeeds = nil
+	m.clearedtaskFeeds = false
+	m.removedtaskFeeds = nil
 }
 
-// AddTaskFeedLikeIDs adds the "task_feed_likes" edge to the TaskFeedLike entity by ids.
+// AddTaskFeedLikeIDs adds the "taskFeedLikes" edge to the TaskFeedLike entity by ids.
 func (m *TaskMutation) AddTaskFeedLikeIDs(ids ...ulid.ID) {
-	if m.task_feed_likes == nil {
-		m.task_feed_likes = make(map[ulid.ID]struct{})
+	if m.taskFeedLikes == nil {
+		m.taskFeedLikes = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		m.task_feed_likes[ids[i]] = struct{}{}
+		m.taskFeedLikes[ids[i]] = struct{}{}
 	}
 }
 
-// ClearTaskFeedLikes clears the "task_feed_likes" edge to the TaskFeedLike entity.
+// ClearTaskFeedLikes clears the "taskFeedLikes" edge to the TaskFeedLike entity.
 func (m *TaskMutation) ClearTaskFeedLikes() {
-	m.clearedtask_feed_likes = true
+	m.clearedtaskFeedLikes = true
 }
 
-// TaskFeedLikesCleared reports if the "task_feed_likes" edge to the TaskFeedLike entity was cleared.
+// TaskFeedLikesCleared reports if the "taskFeedLikes" edge to the TaskFeedLike entity was cleared.
 func (m *TaskMutation) TaskFeedLikesCleared() bool {
-	return m.clearedtask_feed_likes
+	return m.clearedtaskFeedLikes
 }
 
-// RemoveTaskFeedLikeIDs removes the "task_feed_likes" edge to the TaskFeedLike entity by IDs.
+// RemoveTaskFeedLikeIDs removes the "taskFeedLikes" edge to the TaskFeedLike entity by IDs.
 func (m *TaskMutation) RemoveTaskFeedLikeIDs(ids ...ulid.ID) {
-	if m.removedtask_feed_likes == nil {
-		m.removedtask_feed_likes = make(map[ulid.ID]struct{})
+	if m.removedtaskFeedLikes == nil {
+		m.removedtaskFeedLikes = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		delete(m.task_feed_likes, ids[i])
-		m.removedtask_feed_likes[ids[i]] = struct{}{}
+		delete(m.taskFeedLikes, ids[i])
+		m.removedtaskFeedLikes[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedTaskFeedLikes returns the removed IDs of the "task_feed_likes" edge to the TaskFeedLike entity.
+// RemovedTaskFeedLikes returns the removed IDs of the "taskFeedLikes" edge to the TaskFeedLike entity.
 func (m *TaskMutation) RemovedTaskFeedLikesIDs() (ids []ulid.ID) {
-	for id := range m.removedtask_feed_likes {
+	for id := range m.removedtaskFeedLikes {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// TaskFeedLikesIDs returns the "task_feed_likes" edge IDs in the mutation.
+// TaskFeedLikesIDs returns the "taskFeedLikes" edge IDs in the mutation.
 func (m *TaskMutation) TaskFeedLikesIDs() (ids []ulid.ID) {
-	for id := range m.task_feed_likes {
+	for id := range m.taskFeedLikes {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetTaskFeedLikes resets all changes to the "task_feed_likes" edge.
+// ResetTaskFeedLikes resets all changes to the "taskFeedLikes" edge.
 func (m *TaskMutation) ResetTaskFeedLikes() {
-	m.task_feed_likes = nil
-	m.clearedtask_feed_likes = false
-	m.removedtask_feed_likes = nil
+	m.taskFeedLikes = nil
+	m.clearedtaskFeedLikes = false
+	m.removedtaskFeedLikes = nil
 }
 
-// AddTaskFileIDs adds the "task_files" edge to the TaskFile entity by ids.
+// AddTaskFileIDs adds the "taskFiles" edge to the TaskFile entity by ids.
 func (m *TaskMutation) AddTaskFileIDs(ids ...ulid.ID) {
-	if m.task_files == nil {
-		m.task_files = make(map[ulid.ID]struct{})
+	if m.taskFiles == nil {
+		m.taskFiles = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		m.task_files[ids[i]] = struct{}{}
+		m.taskFiles[ids[i]] = struct{}{}
 	}
 }
 
-// ClearTaskFiles clears the "task_files" edge to the TaskFile entity.
+// ClearTaskFiles clears the "taskFiles" edge to the TaskFile entity.
 func (m *TaskMutation) ClearTaskFiles() {
-	m.clearedtask_files = true
+	m.clearedtaskFiles = true
 }
 
-// TaskFilesCleared reports if the "task_files" edge to the TaskFile entity was cleared.
+// TaskFilesCleared reports if the "taskFiles" edge to the TaskFile entity was cleared.
 func (m *TaskMutation) TaskFilesCleared() bool {
-	return m.clearedtask_files
+	return m.clearedtaskFiles
 }
 
-// RemoveTaskFileIDs removes the "task_files" edge to the TaskFile entity by IDs.
+// RemoveTaskFileIDs removes the "taskFiles" edge to the TaskFile entity by IDs.
 func (m *TaskMutation) RemoveTaskFileIDs(ids ...ulid.ID) {
-	if m.removedtask_files == nil {
-		m.removedtask_files = make(map[ulid.ID]struct{})
+	if m.removedtaskFiles == nil {
+		m.removedtaskFiles = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		delete(m.task_files, ids[i])
-		m.removedtask_files[ids[i]] = struct{}{}
+		delete(m.taskFiles, ids[i])
+		m.removedtaskFiles[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedTaskFiles returns the removed IDs of the "task_files" edge to the TaskFile entity.
+// RemovedTaskFiles returns the removed IDs of the "taskFiles" edge to the TaskFile entity.
 func (m *TaskMutation) RemovedTaskFilesIDs() (ids []ulid.ID) {
-	for id := range m.removedtask_files {
+	for id := range m.removedtaskFiles {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// TaskFilesIDs returns the "task_files" edge IDs in the mutation.
+// TaskFilesIDs returns the "taskFiles" edge IDs in the mutation.
 func (m *TaskMutation) TaskFilesIDs() (ids []ulid.ID) {
-	for id := range m.task_files {
+	for id := range m.taskFiles {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetTaskFiles resets all changes to the "task_files" edge.
+// ResetTaskFiles resets all changes to the "taskFiles" edge.
 func (m *TaskMutation) ResetTaskFiles() {
-	m.task_files = nil
-	m.clearedtask_files = false
-	m.removedtask_files = nil
+	m.taskFiles = nil
+	m.clearedtaskFiles = false
+	m.removedtaskFiles = nil
 }
 
 // Where appends a list predicates to the TaskMutation builder.
@@ -11845,7 +11845,7 @@ func (m *TaskMutation) Fields() []string {
 	if m.parent != nil {
 		fields = append(fields, task.FieldTaskParentID)
 	}
-	if m.task_priority != nil {
+	if m.taskPriority != nil {
 		fields = append(fields, task.FieldTaskPriorityID)
 	}
 	if m.teammate != nil {
@@ -12164,37 +12164,37 @@ func (m *TaskMutation) AddedEdges() []string {
 	if m.teammate != nil {
 		edges = append(edges, task.EdgeTeammate)
 	}
-	if m.task_priority != nil {
+	if m.taskPriority != nil {
 		edges = append(edges, task.EdgeTaskPriority)
 	}
 	if m.parent != nil {
 		edges = append(edges, task.EdgeParent)
 	}
-	if m.sub_tasks != nil {
+	if m.subTasks != nil {
 		edges = append(edges, task.EdgeSubTasks)
 	}
-	if m.teammate_tasks != nil {
+	if m.teammateTasks != nil {
 		edges = append(edges, task.EdgeTeammateTasks)
 	}
-	if m.project_tasks != nil {
+	if m.projectTasks != nil {
 		edges = append(edges, task.EdgeProjectTasks)
 	}
-	if m.task_likes != nil {
+	if m.taskLikes != nil {
 		edges = append(edges, task.EdgeTaskLikes)
 	}
-	if m.task_tags != nil {
+	if m.taskTags != nil {
 		edges = append(edges, task.EdgeTaskTags)
 	}
-	if m.task_collaborators != nil {
+	if m.taskCollaborators != nil {
 		edges = append(edges, task.EdgeTaskCollaborators)
 	}
-	if m.task_feeds != nil {
+	if m.taskFeeds != nil {
 		edges = append(edges, task.EdgeTaskFeeds)
 	}
-	if m.task_feed_likes != nil {
+	if m.taskFeedLikes != nil {
 		edges = append(edges, task.EdgeTaskFeedLikes)
 	}
-	if m.task_files != nil {
+	if m.taskFiles != nil {
 		edges = append(edges, task.EdgeTaskFiles)
 	}
 	return edges
@@ -12209,7 +12209,7 @@ func (m *TaskMutation) AddedIDs(name string) []ent.Value {
 			return []ent.Value{*id}
 		}
 	case task.EdgeTaskPriority:
-		if id := m.task_priority; id != nil {
+		if id := m.taskPriority; id != nil {
 			return []ent.Value{*id}
 		}
 	case task.EdgeParent:
@@ -12217,56 +12217,56 @@ func (m *TaskMutation) AddedIDs(name string) []ent.Value {
 			return []ent.Value{*id}
 		}
 	case task.EdgeSubTasks:
-		ids := make([]ent.Value, 0, len(m.sub_tasks))
-		for id := range m.sub_tasks {
+		ids := make([]ent.Value, 0, len(m.subTasks))
+		for id := range m.subTasks {
 			ids = append(ids, id)
 		}
 		return ids
 	case task.EdgeTeammateTasks:
-		ids := make([]ent.Value, 0, len(m.teammate_tasks))
-		for id := range m.teammate_tasks {
+		ids := make([]ent.Value, 0, len(m.teammateTasks))
+		for id := range m.teammateTasks {
 			ids = append(ids, id)
 		}
 		return ids
 	case task.EdgeProjectTasks:
-		ids := make([]ent.Value, 0, len(m.project_tasks))
-		for id := range m.project_tasks {
+		ids := make([]ent.Value, 0, len(m.projectTasks))
+		for id := range m.projectTasks {
 			ids = append(ids, id)
 		}
 		return ids
 	case task.EdgeTaskLikes:
-		ids := make([]ent.Value, 0, len(m.task_likes))
-		for id := range m.task_likes {
+		ids := make([]ent.Value, 0, len(m.taskLikes))
+		for id := range m.taskLikes {
 			ids = append(ids, id)
 		}
 		return ids
 	case task.EdgeTaskTags:
-		ids := make([]ent.Value, 0, len(m.task_tags))
-		for id := range m.task_tags {
+		ids := make([]ent.Value, 0, len(m.taskTags))
+		for id := range m.taskTags {
 			ids = append(ids, id)
 		}
 		return ids
 	case task.EdgeTaskCollaborators:
-		ids := make([]ent.Value, 0, len(m.task_collaborators))
-		for id := range m.task_collaborators {
+		ids := make([]ent.Value, 0, len(m.taskCollaborators))
+		for id := range m.taskCollaborators {
 			ids = append(ids, id)
 		}
 		return ids
 	case task.EdgeTaskFeeds:
-		ids := make([]ent.Value, 0, len(m.task_feeds))
-		for id := range m.task_feeds {
+		ids := make([]ent.Value, 0, len(m.taskFeeds))
+		for id := range m.taskFeeds {
 			ids = append(ids, id)
 		}
 		return ids
 	case task.EdgeTaskFeedLikes:
-		ids := make([]ent.Value, 0, len(m.task_feed_likes))
-		for id := range m.task_feed_likes {
+		ids := make([]ent.Value, 0, len(m.taskFeedLikes))
+		for id := range m.taskFeedLikes {
 			ids = append(ids, id)
 		}
 		return ids
 	case task.EdgeTaskFiles:
-		ids := make([]ent.Value, 0, len(m.task_files))
-		for id := range m.task_files {
+		ids := make([]ent.Value, 0, len(m.taskFiles))
+		for id := range m.taskFiles {
 			ids = append(ids, id)
 		}
 		return ids
@@ -12277,31 +12277,31 @@ func (m *TaskMutation) AddedIDs(name string) []ent.Value {
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *TaskMutation) RemovedEdges() []string {
 	edges := make([]string, 0, 12)
-	if m.removedsub_tasks != nil {
+	if m.removedsubTasks != nil {
 		edges = append(edges, task.EdgeSubTasks)
 	}
-	if m.removedteammate_tasks != nil {
+	if m.removedteammateTasks != nil {
 		edges = append(edges, task.EdgeTeammateTasks)
 	}
-	if m.removedproject_tasks != nil {
+	if m.removedprojectTasks != nil {
 		edges = append(edges, task.EdgeProjectTasks)
 	}
-	if m.removedtask_likes != nil {
+	if m.removedtaskLikes != nil {
 		edges = append(edges, task.EdgeTaskLikes)
 	}
-	if m.removedtask_tags != nil {
+	if m.removedtaskTags != nil {
 		edges = append(edges, task.EdgeTaskTags)
 	}
-	if m.removedtask_collaborators != nil {
+	if m.removedtaskCollaborators != nil {
 		edges = append(edges, task.EdgeTaskCollaborators)
 	}
-	if m.removedtask_feeds != nil {
+	if m.removedtaskFeeds != nil {
 		edges = append(edges, task.EdgeTaskFeeds)
 	}
-	if m.removedtask_feed_likes != nil {
+	if m.removedtaskFeedLikes != nil {
 		edges = append(edges, task.EdgeTaskFeedLikes)
 	}
-	if m.removedtask_files != nil {
+	if m.removedtaskFiles != nil {
 		edges = append(edges, task.EdgeTaskFiles)
 	}
 	return edges
@@ -12312,56 +12312,56 @@ func (m *TaskMutation) RemovedEdges() []string {
 func (m *TaskMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
 	case task.EdgeSubTasks:
-		ids := make([]ent.Value, 0, len(m.removedsub_tasks))
-		for id := range m.removedsub_tasks {
+		ids := make([]ent.Value, 0, len(m.removedsubTasks))
+		for id := range m.removedsubTasks {
 			ids = append(ids, id)
 		}
 		return ids
 	case task.EdgeTeammateTasks:
-		ids := make([]ent.Value, 0, len(m.removedteammate_tasks))
-		for id := range m.removedteammate_tasks {
+		ids := make([]ent.Value, 0, len(m.removedteammateTasks))
+		for id := range m.removedteammateTasks {
 			ids = append(ids, id)
 		}
 		return ids
 	case task.EdgeProjectTasks:
-		ids := make([]ent.Value, 0, len(m.removedproject_tasks))
-		for id := range m.removedproject_tasks {
+		ids := make([]ent.Value, 0, len(m.removedprojectTasks))
+		for id := range m.removedprojectTasks {
 			ids = append(ids, id)
 		}
 		return ids
 	case task.EdgeTaskLikes:
-		ids := make([]ent.Value, 0, len(m.removedtask_likes))
-		for id := range m.removedtask_likes {
+		ids := make([]ent.Value, 0, len(m.removedtaskLikes))
+		for id := range m.removedtaskLikes {
 			ids = append(ids, id)
 		}
 		return ids
 	case task.EdgeTaskTags:
-		ids := make([]ent.Value, 0, len(m.removedtask_tags))
-		for id := range m.removedtask_tags {
+		ids := make([]ent.Value, 0, len(m.removedtaskTags))
+		for id := range m.removedtaskTags {
 			ids = append(ids, id)
 		}
 		return ids
 	case task.EdgeTaskCollaborators:
-		ids := make([]ent.Value, 0, len(m.removedtask_collaborators))
-		for id := range m.removedtask_collaborators {
+		ids := make([]ent.Value, 0, len(m.removedtaskCollaborators))
+		for id := range m.removedtaskCollaborators {
 			ids = append(ids, id)
 		}
 		return ids
 	case task.EdgeTaskFeeds:
-		ids := make([]ent.Value, 0, len(m.removedtask_feeds))
-		for id := range m.removedtask_feeds {
+		ids := make([]ent.Value, 0, len(m.removedtaskFeeds))
+		for id := range m.removedtaskFeeds {
 			ids = append(ids, id)
 		}
 		return ids
 	case task.EdgeTaskFeedLikes:
-		ids := make([]ent.Value, 0, len(m.removedtask_feed_likes))
-		for id := range m.removedtask_feed_likes {
+		ids := make([]ent.Value, 0, len(m.removedtaskFeedLikes))
+		for id := range m.removedtaskFeedLikes {
 			ids = append(ids, id)
 		}
 		return ids
 	case task.EdgeTaskFiles:
-		ids := make([]ent.Value, 0, len(m.removedtask_files))
-		for id := range m.removedtask_files {
+		ids := make([]ent.Value, 0, len(m.removedtaskFiles))
+		for id := range m.removedtaskFiles {
 			ids = append(ids, id)
 		}
 		return ids
@@ -12375,37 +12375,37 @@ func (m *TaskMutation) ClearedEdges() []string {
 	if m.clearedteammate {
 		edges = append(edges, task.EdgeTeammate)
 	}
-	if m.clearedtask_priority {
+	if m.clearedtaskPriority {
 		edges = append(edges, task.EdgeTaskPriority)
 	}
 	if m.clearedparent {
 		edges = append(edges, task.EdgeParent)
 	}
-	if m.clearedsub_tasks {
+	if m.clearedsubTasks {
 		edges = append(edges, task.EdgeSubTasks)
 	}
-	if m.clearedteammate_tasks {
+	if m.clearedteammateTasks {
 		edges = append(edges, task.EdgeTeammateTasks)
 	}
-	if m.clearedproject_tasks {
+	if m.clearedprojectTasks {
 		edges = append(edges, task.EdgeProjectTasks)
 	}
-	if m.clearedtask_likes {
+	if m.clearedtaskLikes {
 		edges = append(edges, task.EdgeTaskLikes)
 	}
-	if m.clearedtask_tags {
+	if m.clearedtaskTags {
 		edges = append(edges, task.EdgeTaskTags)
 	}
-	if m.clearedtask_collaborators {
+	if m.clearedtaskCollaborators {
 		edges = append(edges, task.EdgeTaskCollaborators)
 	}
-	if m.clearedtask_feeds {
+	if m.clearedtaskFeeds {
 		edges = append(edges, task.EdgeTaskFeeds)
 	}
-	if m.clearedtask_feed_likes {
+	if m.clearedtaskFeedLikes {
 		edges = append(edges, task.EdgeTaskFeedLikes)
 	}
-	if m.clearedtask_files {
+	if m.clearedtaskFiles {
 		edges = append(edges, task.EdgeTaskFiles)
 	}
 	return edges
@@ -12418,27 +12418,27 @@ func (m *TaskMutation) EdgeCleared(name string) bool {
 	case task.EdgeTeammate:
 		return m.clearedteammate
 	case task.EdgeTaskPriority:
-		return m.clearedtask_priority
+		return m.clearedtaskPriority
 	case task.EdgeParent:
 		return m.clearedparent
 	case task.EdgeSubTasks:
-		return m.clearedsub_tasks
+		return m.clearedsubTasks
 	case task.EdgeTeammateTasks:
-		return m.clearedteammate_tasks
+		return m.clearedteammateTasks
 	case task.EdgeProjectTasks:
-		return m.clearedproject_tasks
+		return m.clearedprojectTasks
 	case task.EdgeTaskLikes:
-		return m.clearedtask_likes
+		return m.clearedtaskLikes
 	case task.EdgeTaskTags:
-		return m.clearedtask_tags
+		return m.clearedtaskTags
 	case task.EdgeTaskCollaborators:
-		return m.clearedtask_collaborators
+		return m.clearedtaskCollaborators
 	case task.EdgeTaskFeeds:
-		return m.clearedtask_feeds
+		return m.clearedtaskFeeds
 	case task.EdgeTaskFeedLikes:
-		return m.clearedtask_feed_likes
+		return m.clearedtaskFeedLikes
 	case task.EdgeTaskFiles:
-		return m.clearedtask_files
+		return m.clearedtaskFiles
 	}
 	return false
 }
@@ -13067,23 +13067,23 @@ func (m *TaskCollaboratorMutation) ResetEdge(name string) error {
 // TaskColumnMutation represents an operation that mutates the TaskColumn nodes in the graph.
 type TaskColumnMutation struct {
 	config
-	op                           Op
-	typ                          string
-	id                           *ulid.ID
-	name                         *string
-	_type                        *taskcolumn.Type
-	created_at                   *time.Time
-	updated_at                   *time.Time
-	clearedFields                map[string]struct{}
-	teammate_task_columns        map[ulid.ID]struct{}
-	removedteammate_task_columns map[ulid.ID]struct{}
-	clearedteammate_task_columns bool
-	project_task_columns         map[ulid.ID]struct{}
-	removedproject_task_columns  map[ulid.ID]struct{}
-	clearedproject_task_columns  bool
-	done                         bool
-	oldValue                     func(context.Context) (*TaskColumn, error)
-	predicates                   []predicate.TaskColumn
+	op                         Op
+	typ                        string
+	id                         *ulid.ID
+	name                       *string
+	_type                      *taskcolumn.Type
+	created_at                 *time.Time
+	updated_at                 *time.Time
+	clearedFields              map[string]struct{}
+	teammateTaskColumns        map[ulid.ID]struct{}
+	removedteammateTaskColumns map[ulid.ID]struct{}
+	clearedteammateTaskColumns bool
+	projectTaskColumns         map[ulid.ID]struct{}
+	removedprojectTaskColumns  map[ulid.ID]struct{}
+	clearedprojectTaskColumns  bool
+	done                       bool
+	oldValue                   func(context.Context) (*TaskColumn, error)
+	predicates                 []predicate.TaskColumn
 }
 
 var _ ent.Mutation = (*TaskColumnMutation)(nil)
@@ -13315,112 +13315,112 @@ func (m *TaskColumnMutation) ResetUpdatedAt() {
 	m.updated_at = nil
 }
 
-// AddTeammateTaskColumnIDs adds the "teammate_task_columns" edge to the TeammateTaskColumn entity by ids.
+// AddTeammateTaskColumnIDs adds the "teammateTaskColumns" edge to the TeammateTaskColumn entity by ids.
 func (m *TaskColumnMutation) AddTeammateTaskColumnIDs(ids ...ulid.ID) {
-	if m.teammate_task_columns == nil {
-		m.teammate_task_columns = make(map[ulid.ID]struct{})
+	if m.teammateTaskColumns == nil {
+		m.teammateTaskColumns = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		m.teammate_task_columns[ids[i]] = struct{}{}
+		m.teammateTaskColumns[ids[i]] = struct{}{}
 	}
 }
 
-// ClearTeammateTaskColumns clears the "teammate_task_columns" edge to the TeammateTaskColumn entity.
+// ClearTeammateTaskColumns clears the "teammateTaskColumns" edge to the TeammateTaskColumn entity.
 func (m *TaskColumnMutation) ClearTeammateTaskColumns() {
-	m.clearedteammate_task_columns = true
+	m.clearedteammateTaskColumns = true
 }
 
-// TeammateTaskColumnsCleared reports if the "teammate_task_columns" edge to the TeammateTaskColumn entity was cleared.
+// TeammateTaskColumnsCleared reports if the "teammateTaskColumns" edge to the TeammateTaskColumn entity was cleared.
 func (m *TaskColumnMutation) TeammateTaskColumnsCleared() bool {
-	return m.clearedteammate_task_columns
+	return m.clearedteammateTaskColumns
 }
 
-// RemoveTeammateTaskColumnIDs removes the "teammate_task_columns" edge to the TeammateTaskColumn entity by IDs.
+// RemoveTeammateTaskColumnIDs removes the "teammateTaskColumns" edge to the TeammateTaskColumn entity by IDs.
 func (m *TaskColumnMutation) RemoveTeammateTaskColumnIDs(ids ...ulid.ID) {
-	if m.removedteammate_task_columns == nil {
-		m.removedteammate_task_columns = make(map[ulid.ID]struct{})
+	if m.removedteammateTaskColumns == nil {
+		m.removedteammateTaskColumns = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		delete(m.teammate_task_columns, ids[i])
-		m.removedteammate_task_columns[ids[i]] = struct{}{}
+		delete(m.teammateTaskColumns, ids[i])
+		m.removedteammateTaskColumns[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedTeammateTaskColumns returns the removed IDs of the "teammate_task_columns" edge to the TeammateTaskColumn entity.
+// RemovedTeammateTaskColumns returns the removed IDs of the "teammateTaskColumns" edge to the TeammateTaskColumn entity.
 func (m *TaskColumnMutation) RemovedTeammateTaskColumnsIDs() (ids []ulid.ID) {
-	for id := range m.removedteammate_task_columns {
+	for id := range m.removedteammateTaskColumns {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// TeammateTaskColumnsIDs returns the "teammate_task_columns" edge IDs in the mutation.
+// TeammateTaskColumnsIDs returns the "teammateTaskColumns" edge IDs in the mutation.
 func (m *TaskColumnMutation) TeammateTaskColumnsIDs() (ids []ulid.ID) {
-	for id := range m.teammate_task_columns {
+	for id := range m.teammateTaskColumns {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetTeammateTaskColumns resets all changes to the "teammate_task_columns" edge.
+// ResetTeammateTaskColumns resets all changes to the "teammateTaskColumns" edge.
 func (m *TaskColumnMutation) ResetTeammateTaskColumns() {
-	m.teammate_task_columns = nil
-	m.clearedteammate_task_columns = false
-	m.removedteammate_task_columns = nil
+	m.teammateTaskColumns = nil
+	m.clearedteammateTaskColumns = false
+	m.removedteammateTaskColumns = nil
 }
 
-// AddProjectTaskColumnIDs adds the "project_task_columns" edge to the ProjectTaskColumn entity by ids.
+// AddProjectTaskColumnIDs adds the "projectTaskColumns" edge to the ProjectTaskColumn entity by ids.
 func (m *TaskColumnMutation) AddProjectTaskColumnIDs(ids ...ulid.ID) {
-	if m.project_task_columns == nil {
-		m.project_task_columns = make(map[ulid.ID]struct{})
+	if m.projectTaskColumns == nil {
+		m.projectTaskColumns = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		m.project_task_columns[ids[i]] = struct{}{}
+		m.projectTaskColumns[ids[i]] = struct{}{}
 	}
 }
 
-// ClearProjectTaskColumns clears the "project_task_columns" edge to the ProjectTaskColumn entity.
+// ClearProjectTaskColumns clears the "projectTaskColumns" edge to the ProjectTaskColumn entity.
 func (m *TaskColumnMutation) ClearProjectTaskColumns() {
-	m.clearedproject_task_columns = true
+	m.clearedprojectTaskColumns = true
 }
 
-// ProjectTaskColumnsCleared reports if the "project_task_columns" edge to the ProjectTaskColumn entity was cleared.
+// ProjectTaskColumnsCleared reports if the "projectTaskColumns" edge to the ProjectTaskColumn entity was cleared.
 func (m *TaskColumnMutation) ProjectTaskColumnsCleared() bool {
-	return m.clearedproject_task_columns
+	return m.clearedprojectTaskColumns
 }
 
-// RemoveProjectTaskColumnIDs removes the "project_task_columns" edge to the ProjectTaskColumn entity by IDs.
+// RemoveProjectTaskColumnIDs removes the "projectTaskColumns" edge to the ProjectTaskColumn entity by IDs.
 func (m *TaskColumnMutation) RemoveProjectTaskColumnIDs(ids ...ulid.ID) {
-	if m.removedproject_task_columns == nil {
-		m.removedproject_task_columns = make(map[ulid.ID]struct{})
+	if m.removedprojectTaskColumns == nil {
+		m.removedprojectTaskColumns = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		delete(m.project_task_columns, ids[i])
-		m.removedproject_task_columns[ids[i]] = struct{}{}
+		delete(m.projectTaskColumns, ids[i])
+		m.removedprojectTaskColumns[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedProjectTaskColumns returns the removed IDs of the "project_task_columns" edge to the ProjectTaskColumn entity.
+// RemovedProjectTaskColumns returns the removed IDs of the "projectTaskColumns" edge to the ProjectTaskColumn entity.
 func (m *TaskColumnMutation) RemovedProjectTaskColumnsIDs() (ids []ulid.ID) {
-	for id := range m.removedproject_task_columns {
+	for id := range m.removedprojectTaskColumns {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ProjectTaskColumnsIDs returns the "project_task_columns" edge IDs in the mutation.
+// ProjectTaskColumnsIDs returns the "projectTaskColumns" edge IDs in the mutation.
 func (m *TaskColumnMutation) ProjectTaskColumnsIDs() (ids []ulid.ID) {
-	for id := range m.project_task_columns {
+	for id := range m.projectTaskColumns {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetProjectTaskColumns resets all changes to the "project_task_columns" edge.
+// ResetProjectTaskColumns resets all changes to the "projectTaskColumns" edge.
 func (m *TaskColumnMutation) ResetProjectTaskColumns() {
-	m.project_task_columns = nil
-	m.clearedproject_task_columns = false
-	m.removedproject_task_columns = nil
+	m.projectTaskColumns = nil
+	m.clearedprojectTaskColumns = false
+	m.removedprojectTaskColumns = nil
 }
 
 // Where appends a list predicates to the TaskColumnMutation builder.
@@ -13593,10 +13593,10 @@ func (m *TaskColumnMutation) ResetField(name string) error {
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *TaskColumnMutation) AddedEdges() []string {
 	edges := make([]string, 0, 2)
-	if m.teammate_task_columns != nil {
+	if m.teammateTaskColumns != nil {
 		edges = append(edges, taskcolumn.EdgeTeammateTaskColumns)
 	}
-	if m.project_task_columns != nil {
+	if m.projectTaskColumns != nil {
 		edges = append(edges, taskcolumn.EdgeProjectTaskColumns)
 	}
 	return edges
@@ -13607,14 +13607,14 @@ func (m *TaskColumnMutation) AddedEdges() []string {
 func (m *TaskColumnMutation) AddedIDs(name string) []ent.Value {
 	switch name {
 	case taskcolumn.EdgeTeammateTaskColumns:
-		ids := make([]ent.Value, 0, len(m.teammate_task_columns))
-		for id := range m.teammate_task_columns {
+		ids := make([]ent.Value, 0, len(m.teammateTaskColumns))
+		for id := range m.teammateTaskColumns {
 			ids = append(ids, id)
 		}
 		return ids
 	case taskcolumn.EdgeProjectTaskColumns:
-		ids := make([]ent.Value, 0, len(m.project_task_columns))
-		for id := range m.project_task_columns {
+		ids := make([]ent.Value, 0, len(m.projectTaskColumns))
+		for id := range m.projectTaskColumns {
 			ids = append(ids, id)
 		}
 		return ids
@@ -13625,10 +13625,10 @@ func (m *TaskColumnMutation) AddedIDs(name string) []ent.Value {
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *TaskColumnMutation) RemovedEdges() []string {
 	edges := make([]string, 0, 2)
-	if m.removedteammate_task_columns != nil {
+	if m.removedteammateTaskColumns != nil {
 		edges = append(edges, taskcolumn.EdgeTeammateTaskColumns)
 	}
-	if m.removedproject_task_columns != nil {
+	if m.removedprojectTaskColumns != nil {
 		edges = append(edges, taskcolumn.EdgeProjectTaskColumns)
 	}
 	return edges
@@ -13639,14 +13639,14 @@ func (m *TaskColumnMutation) RemovedEdges() []string {
 func (m *TaskColumnMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
 	case taskcolumn.EdgeTeammateTaskColumns:
-		ids := make([]ent.Value, 0, len(m.removedteammate_task_columns))
-		for id := range m.removedteammate_task_columns {
+		ids := make([]ent.Value, 0, len(m.removedteammateTaskColumns))
+		for id := range m.removedteammateTaskColumns {
 			ids = append(ids, id)
 		}
 		return ids
 	case taskcolumn.EdgeProjectTaskColumns:
-		ids := make([]ent.Value, 0, len(m.removedproject_task_columns))
-		for id := range m.removedproject_task_columns {
+		ids := make([]ent.Value, 0, len(m.removedprojectTaskColumns))
+		for id := range m.removedprojectTaskColumns {
 			ids = append(ids, id)
 		}
 		return ids
@@ -13657,10 +13657,10 @@ func (m *TaskColumnMutation) RemovedIDs(name string) []ent.Value {
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *TaskColumnMutation) ClearedEdges() []string {
 	edges := make([]string, 0, 2)
-	if m.clearedteammate_task_columns {
+	if m.clearedteammateTaskColumns {
 		edges = append(edges, taskcolumn.EdgeTeammateTaskColumns)
 	}
-	if m.clearedproject_task_columns {
+	if m.clearedprojectTaskColumns {
 		edges = append(edges, taskcolumn.EdgeProjectTaskColumns)
 	}
 	return edges
@@ -13671,9 +13671,9 @@ func (m *TaskColumnMutation) ClearedEdges() []string {
 func (m *TaskColumnMutation) EdgeCleared(name string) bool {
 	switch name {
 	case taskcolumn.EdgeTeammateTaskColumns:
-		return m.clearedteammate_task_columns
+		return m.clearedteammateTaskColumns
 	case taskcolumn.EdgeProjectTaskColumns:
-		return m.clearedproject_task_columns
+		return m.clearedprojectTaskColumns
 	}
 	return false
 }
@@ -13703,28 +13703,28 @@ func (m *TaskColumnMutation) ResetEdge(name string) error {
 // TaskFeedMutation represents an operation that mutates the TaskFeed nodes in the graph.
 type TaskFeedMutation struct {
 	config
-	op                     Op
-	typ                    string
-	id                     *ulid.ID
-	description            *editor.Description
-	is_first               *bool
-	is_pinned              *bool
-	created_at             *time.Time
-	updated_at             *time.Time
-	clearedFields          map[string]struct{}
-	task                   *ulid.ID
-	clearedtask            bool
-	teammate               *ulid.ID
-	clearedteammate        bool
-	task_feed_likes        map[ulid.ID]struct{}
-	removedtask_feed_likes map[ulid.ID]struct{}
-	clearedtask_feed_likes bool
-	task_files             map[ulid.ID]struct{}
-	removedtask_files      map[ulid.ID]struct{}
-	clearedtask_files      bool
-	done                   bool
-	oldValue               func(context.Context) (*TaskFeed, error)
-	predicates             []predicate.TaskFeed
+	op                   Op
+	typ                  string
+	id                   *ulid.ID
+	description          *editor.Description
+	is_first             *bool
+	is_pinned            *bool
+	created_at           *time.Time
+	updated_at           *time.Time
+	clearedFields        map[string]struct{}
+	task                 *ulid.ID
+	clearedtask          bool
+	teammate             *ulid.ID
+	clearedteammate      bool
+	taskFeedLikes        map[ulid.ID]struct{}
+	removedtaskFeedLikes map[ulid.ID]struct{}
+	clearedtaskFeedLikes bool
+	taskFiles            map[ulid.ID]struct{}
+	removedtaskFiles     map[ulid.ID]struct{}
+	clearedtaskFiles     bool
+	done                 bool
+	oldValue             func(context.Context) (*TaskFeed, error)
+	predicates           []predicate.TaskFeed
 }
 
 var _ ent.Mutation = (*TaskFeedMutation)(nil)
@@ -14116,112 +14116,112 @@ func (m *TaskFeedMutation) ResetTeammate() {
 	m.clearedteammate = false
 }
 
-// AddTaskFeedLikeIDs adds the "task_feed_likes" edge to the TaskFeedLike entity by ids.
+// AddTaskFeedLikeIDs adds the "taskFeedLikes" edge to the TaskFeedLike entity by ids.
 func (m *TaskFeedMutation) AddTaskFeedLikeIDs(ids ...ulid.ID) {
-	if m.task_feed_likes == nil {
-		m.task_feed_likes = make(map[ulid.ID]struct{})
+	if m.taskFeedLikes == nil {
+		m.taskFeedLikes = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		m.task_feed_likes[ids[i]] = struct{}{}
+		m.taskFeedLikes[ids[i]] = struct{}{}
 	}
 }
 
-// ClearTaskFeedLikes clears the "task_feed_likes" edge to the TaskFeedLike entity.
+// ClearTaskFeedLikes clears the "taskFeedLikes" edge to the TaskFeedLike entity.
 func (m *TaskFeedMutation) ClearTaskFeedLikes() {
-	m.clearedtask_feed_likes = true
+	m.clearedtaskFeedLikes = true
 }
 
-// TaskFeedLikesCleared reports if the "task_feed_likes" edge to the TaskFeedLike entity was cleared.
+// TaskFeedLikesCleared reports if the "taskFeedLikes" edge to the TaskFeedLike entity was cleared.
 func (m *TaskFeedMutation) TaskFeedLikesCleared() bool {
-	return m.clearedtask_feed_likes
+	return m.clearedtaskFeedLikes
 }
 
-// RemoveTaskFeedLikeIDs removes the "task_feed_likes" edge to the TaskFeedLike entity by IDs.
+// RemoveTaskFeedLikeIDs removes the "taskFeedLikes" edge to the TaskFeedLike entity by IDs.
 func (m *TaskFeedMutation) RemoveTaskFeedLikeIDs(ids ...ulid.ID) {
-	if m.removedtask_feed_likes == nil {
-		m.removedtask_feed_likes = make(map[ulid.ID]struct{})
+	if m.removedtaskFeedLikes == nil {
+		m.removedtaskFeedLikes = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		delete(m.task_feed_likes, ids[i])
-		m.removedtask_feed_likes[ids[i]] = struct{}{}
+		delete(m.taskFeedLikes, ids[i])
+		m.removedtaskFeedLikes[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedTaskFeedLikes returns the removed IDs of the "task_feed_likes" edge to the TaskFeedLike entity.
+// RemovedTaskFeedLikes returns the removed IDs of the "taskFeedLikes" edge to the TaskFeedLike entity.
 func (m *TaskFeedMutation) RemovedTaskFeedLikesIDs() (ids []ulid.ID) {
-	for id := range m.removedtask_feed_likes {
+	for id := range m.removedtaskFeedLikes {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// TaskFeedLikesIDs returns the "task_feed_likes" edge IDs in the mutation.
+// TaskFeedLikesIDs returns the "taskFeedLikes" edge IDs in the mutation.
 func (m *TaskFeedMutation) TaskFeedLikesIDs() (ids []ulid.ID) {
-	for id := range m.task_feed_likes {
+	for id := range m.taskFeedLikes {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetTaskFeedLikes resets all changes to the "task_feed_likes" edge.
+// ResetTaskFeedLikes resets all changes to the "taskFeedLikes" edge.
 func (m *TaskFeedMutation) ResetTaskFeedLikes() {
-	m.task_feed_likes = nil
-	m.clearedtask_feed_likes = false
-	m.removedtask_feed_likes = nil
+	m.taskFeedLikes = nil
+	m.clearedtaskFeedLikes = false
+	m.removedtaskFeedLikes = nil
 }
 
-// AddTaskFileIDs adds the "task_files" edge to the TaskFile entity by ids.
+// AddTaskFileIDs adds the "taskFiles" edge to the TaskFile entity by ids.
 func (m *TaskFeedMutation) AddTaskFileIDs(ids ...ulid.ID) {
-	if m.task_files == nil {
-		m.task_files = make(map[ulid.ID]struct{})
+	if m.taskFiles == nil {
+		m.taskFiles = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		m.task_files[ids[i]] = struct{}{}
+		m.taskFiles[ids[i]] = struct{}{}
 	}
 }
 
-// ClearTaskFiles clears the "task_files" edge to the TaskFile entity.
+// ClearTaskFiles clears the "taskFiles" edge to the TaskFile entity.
 func (m *TaskFeedMutation) ClearTaskFiles() {
-	m.clearedtask_files = true
+	m.clearedtaskFiles = true
 }
 
-// TaskFilesCleared reports if the "task_files" edge to the TaskFile entity was cleared.
+// TaskFilesCleared reports if the "taskFiles" edge to the TaskFile entity was cleared.
 func (m *TaskFeedMutation) TaskFilesCleared() bool {
-	return m.clearedtask_files
+	return m.clearedtaskFiles
 }
 
-// RemoveTaskFileIDs removes the "task_files" edge to the TaskFile entity by IDs.
+// RemoveTaskFileIDs removes the "taskFiles" edge to the TaskFile entity by IDs.
 func (m *TaskFeedMutation) RemoveTaskFileIDs(ids ...ulid.ID) {
-	if m.removedtask_files == nil {
-		m.removedtask_files = make(map[ulid.ID]struct{})
+	if m.removedtaskFiles == nil {
+		m.removedtaskFiles = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		delete(m.task_files, ids[i])
-		m.removedtask_files[ids[i]] = struct{}{}
+		delete(m.taskFiles, ids[i])
+		m.removedtaskFiles[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedTaskFiles returns the removed IDs of the "task_files" edge to the TaskFile entity.
+// RemovedTaskFiles returns the removed IDs of the "taskFiles" edge to the TaskFile entity.
 func (m *TaskFeedMutation) RemovedTaskFilesIDs() (ids []ulid.ID) {
-	for id := range m.removedtask_files {
+	for id := range m.removedtaskFiles {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// TaskFilesIDs returns the "task_files" edge IDs in the mutation.
+// TaskFilesIDs returns the "taskFiles" edge IDs in the mutation.
 func (m *TaskFeedMutation) TaskFilesIDs() (ids []ulid.ID) {
-	for id := range m.task_files {
+	for id := range m.taskFiles {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetTaskFiles resets all changes to the "task_files" edge.
+// ResetTaskFiles resets all changes to the "taskFiles" edge.
 func (m *TaskFeedMutation) ResetTaskFiles() {
-	m.task_files = nil
-	m.clearedtask_files = false
-	m.removedtask_files = nil
+	m.taskFiles = nil
+	m.clearedtaskFiles = false
+	m.removedtaskFiles = nil
 }
 
 // Where appends a list predicates to the TaskFeedMutation builder.
@@ -14451,10 +14451,10 @@ func (m *TaskFeedMutation) AddedEdges() []string {
 	if m.teammate != nil {
 		edges = append(edges, taskfeed.EdgeTeammate)
 	}
-	if m.task_feed_likes != nil {
+	if m.taskFeedLikes != nil {
 		edges = append(edges, taskfeed.EdgeTaskFeedLikes)
 	}
-	if m.task_files != nil {
+	if m.taskFiles != nil {
 		edges = append(edges, taskfeed.EdgeTaskFiles)
 	}
 	return edges
@@ -14473,14 +14473,14 @@ func (m *TaskFeedMutation) AddedIDs(name string) []ent.Value {
 			return []ent.Value{*id}
 		}
 	case taskfeed.EdgeTaskFeedLikes:
-		ids := make([]ent.Value, 0, len(m.task_feed_likes))
-		for id := range m.task_feed_likes {
+		ids := make([]ent.Value, 0, len(m.taskFeedLikes))
+		for id := range m.taskFeedLikes {
 			ids = append(ids, id)
 		}
 		return ids
 	case taskfeed.EdgeTaskFiles:
-		ids := make([]ent.Value, 0, len(m.task_files))
-		for id := range m.task_files {
+		ids := make([]ent.Value, 0, len(m.taskFiles))
+		for id := range m.taskFiles {
 			ids = append(ids, id)
 		}
 		return ids
@@ -14491,10 +14491,10 @@ func (m *TaskFeedMutation) AddedIDs(name string) []ent.Value {
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *TaskFeedMutation) RemovedEdges() []string {
 	edges := make([]string, 0, 4)
-	if m.removedtask_feed_likes != nil {
+	if m.removedtaskFeedLikes != nil {
 		edges = append(edges, taskfeed.EdgeTaskFeedLikes)
 	}
-	if m.removedtask_files != nil {
+	if m.removedtaskFiles != nil {
 		edges = append(edges, taskfeed.EdgeTaskFiles)
 	}
 	return edges
@@ -14505,14 +14505,14 @@ func (m *TaskFeedMutation) RemovedEdges() []string {
 func (m *TaskFeedMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
 	case taskfeed.EdgeTaskFeedLikes:
-		ids := make([]ent.Value, 0, len(m.removedtask_feed_likes))
-		for id := range m.removedtask_feed_likes {
+		ids := make([]ent.Value, 0, len(m.removedtaskFeedLikes))
+		for id := range m.removedtaskFeedLikes {
 			ids = append(ids, id)
 		}
 		return ids
 	case taskfeed.EdgeTaskFiles:
-		ids := make([]ent.Value, 0, len(m.removedtask_files))
-		for id := range m.removedtask_files {
+		ids := make([]ent.Value, 0, len(m.removedtaskFiles))
+		for id := range m.removedtaskFiles {
 			ids = append(ids, id)
 		}
 		return ids
@@ -14529,10 +14529,10 @@ func (m *TaskFeedMutation) ClearedEdges() []string {
 	if m.clearedteammate {
 		edges = append(edges, taskfeed.EdgeTeammate)
 	}
-	if m.clearedtask_feed_likes {
+	if m.clearedtaskFeedLikes {
 		edges = append(edges, taskfeed.EdgeTaskFeedLikes)
 	}
-	if m.clearedtask_files {
+	if m.clearedtaskFiles {
 		edges = append(edges, taskfeed.EdgeTaskFiles)
 	}
 	return edges
@@ -14547,9 +14547,9 @@ func (m *TaskFeedMutation) EdgeCleared(name string) bool {
 	case taskfeed.EdgeTeammate:
 		return m.clearedteammate
 	case taskfeed.EdgeTaskFeedLikes:
-		return m.clearedtask_feed_likes
+		return m.clearedtaskFeedLikes
 	case taskfeed.EdgeTaskFiles:
-		return m.clearedtask_files
+		return m.clearedtaskFiles
 	}
 	return false
 }
@@ -15263,26 +15263,26 @@ func (m *TaskFeedLikeMutation) ResetEdge(name string) error {
 // TaskFileMutation represents an operation that mutates the TaskFile nodes in the graph.
 type TaskFileMutation struct {
 	config
-	op               Op
-	typ              string
-	id               *ulid.ID
-	name             *string
-	src              *string
-	attached         *bool
-	created_at       *time.Time
-	updated_at       *time.Time
-	clearedFields    map[string]struct{}
-	project          *ulid.ID
-	clearedproject   bool
-	task             *ulid.ID
-	clearedtask      bool
-	task_feed        *ulid.ID
-	clearedtask_feed bool
-	file_type        *ulid.ID
-	clearedfile_type bool
-	done             bool
-	oldValue         func(context.Context) (*TaskFile, error)
-	predicates       []predicate.TaskFile
+	op              Op
+	typ             string
+	id              *ulid.ID
+	name            *string
+	src             *string
+	attached        *bool
+	created_at      *time.Time
+	updated_at      *time.Time
+	clearedFields   map[string]struct{}
+	project         *ulid.ID
+	clearedproject  bool
+	task            *ulid.ID
+	clearedtask     bool
+	taskFeed        *ulid.ID
+	clearedtaskFeed bool
+	fileType        *ulid.ID
+	clearedfileType bool
+	done            bool
+	oldValue        func(context.Context) (*TaskFile, error)
+	predicates      []predicate.TaskFile
 }
 
 var _ ent.Mutation = (*TaskFileMutation)(nil)
@@ -15444,12 +15444,12 @@ func (m *TaskFileMutation) ResetTaskID() {
 
 // SetTaskFeedID sets the "task_feed_id" field.
 func (m *TaskFileMutation) SetTaskFeedID(u ulid.ID) {
-	m.task_feed = &u
+	m.taskFeed = &u
 }
 
 // TaskFeedID returns the value of the "task_feed_id" field in the mutation.
 func (m *TaskFileMutation) TaskFeedID() (r ulid.ID, exists bool) {
-	v := m.task_feed
+	v := m.taskFeed
 	if v == nil {
 		return
 	}
@@ -15475,17 +15475,17 @@ func (m *TaskFileMutation) OldTaskFeedID(ctx context.Context) (v ulid.ID, err er
 
 // ResetTaskFeedID resets all changes to the "task_feed_id" field.
 func (m *TaskFileMutation) ResetTaskFeedID() {
-	m.task_feed = nil
+	m.taskFeed = nil
 }
 
 // SetFileTypeID sets the "file_type_id" field.
 func (m *TaskFileMutation) SetFileTypeID(u ulid.ID) {
-	m.file_type = &u
+	m.fileType = &u
 }
 
 // FileTypeID returns the value of the "file_type_id" field in the mutation.
 func (m *TaskFileMutation) FileTypeID() (r ulid.ID, exists bool) {
-	v := m.file_type
+	v := m.fileType
 	if v == nil {
 		return
 	}
@@ -15511,7 +15511,7 @@ func (m *TaskFileMutation) OldFileTypeID(ctx context.Context) (v ulid.ID, err er
 
 // ResetFileTypeID resets all changes to the "file_type_id" field.
 func (m *TaskFileMutation) ResetFileTypeID() {
-	m.file_type = nil
+	m.fileType = nil
 }
 
 // SetName sets the "name" field.
@@ -15746,56 +15746,56 @@ func (m *TaskFileMutation) ResetTask() {
 	m.clearedtask = false
 }
 
-// ClearTaskFeed clears the "task_feed" edge to the TaskFeed entity.
+// ClearTaskFeed clears the "taskFeed" edge to the TaskFeed entity.
 func (m *TaskFileMutation) ClearTaskFeed() {
-	m.clearedtask_feed = true
+	m.clearedtaskFeed = true
 }
 
-// TaskFeedCleared reports if the "task_feed" edge to the TaskFeed entity was cleared.
+// TaskFeedCleared reports if the "taskFeed" edge to the TaskFeed entity was cleared.
 func (m *TaskFileMutation) TaskFeedCleared() bool {
-	return m.clearedtask_feed
+	return m.clearedtaskFeed
 }
 
-// TaskFeedIDs returns the "task_feed" edge IDs in the mutation.
+// TaskFeedIDs returns the "taskFeed" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // TaskFeedID instead. It exists only for internal usage by the builders.
 func (m *TaskFileMutation) TaskFeedIDs() (ids []ulid.ID) {
-	if id := m.task_feed; id != nil {
+	if id := m.taskFeed; id != nil {
 		ids = append(ids, *id)
 	}
 	return
 }
 
-// ResetTaskFeed resets all changes to the "task_feed" edge.
+// ResetTaskFeed resets all changes to the "taskFeed" edge.
 func (m *TaskFileMutation) ResetTaskFeed() {
-	m.task_feed = nil
-	m.clearedtask_feed = false
+	m.taskFeed = nil
+	m.clearedtaskFeed = false
 }
 
-// ClearFileType clears the "file_type" edge to the FileType entity.
+// ClearFileType clears the "fileType" edge to the FileType entity.
 func (m *TaskFileMutation) ClearFileType() {
-	m.clearedfile_type = true
+	m.clearedfileType = true
 }
 
-// FileTypeCleared reports if the "file_type" edge to the FileType entity was cleared.
+// FileTypeCleared reports if the "fileType" edge to the FileType entity was cleared.
 func (m *TaskFileMutation) FileTypeCleared() bool {
-	return m.clearedfile_type
+	return m.clearedfileType
 }
 
-// FileTypeIDs returns the "file_type" edge IDs in the mutation.
+// FileTypeIDs returns the "fileType" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // FileTypeID instead. It exists only for internal usage by the builders.
 func (m *TaskFileMutation) FileTypeIDs() (ids []ulid.ID) {
-	if id := m.file_type; id != nil {
+	if id := m.fileType; id != nil {
 		ids = append(ids, *id)
 	}
 	return
 }
 
-// ResetFileType resets all changes to the "file_type" edge.
+// ResetFileType resets all changes to the "fileType" edge.
 func (m *TaskFileMutation) ResetFileType() {
-	m.file_type = nil
-	m.clearedfile_type = false
+	m.fileType = nil
+	m.clearedfileType = false
 }
 
 // Where appends a list predicates to the TaskFileMutation builder.
@@ -15824,10 +15824,10 @@ func (m *TaskFileMutation) Fields() []string {
 	if m.task != nil {
 		fields = append(fields, taskfile.FieldTaskID)
 	}
-	if m.task_feed != nil {
+	if m.taskFeed != nil {
 		fields = append(fields, taskfile.FieldTaskFeedID)
 	}
-	if m.file_type != nil {
+	if m.fileType != nil {
 		fields = append(fields, taskfile.FieldFileTypeID)
 	}
 	if m.name != nil {
@@ -16059,10 +16059,10 @@ func (m *TaskFileMutation) AddedEdges() []string {
 	if m.task != nil {
 		edges = append(edges, taskfile.EdgeTask)
 	}
-	if m.task_feed != nil {
+	if m.taskFeed != nil {
 		edges = append(edges, taskfile.EdgeTaskFeed)
 	}
-	if m.file_type != nil {
+	if m.fileType != nil {
 		edges = append(edges, taskfile.EdgeFileType)
 	}
 	return edges
@@ -16081,11 +16081,11 @@ func (m *TaskFileMutation) AddedIDs(name string) []ent.Value {
 			return []ent.Value{*id}
 		}
 	case taskfile.EdgeTaskFeed:
-		if id := m.task_feed; id != nil {
+		if id := m.taskFeed; id != nil {
 			return []ent.Value{*id}
 		}
 	case taskfile.EdgeFileType:
-		if id := m.file_type; id != nil {
+		if id := m.fileType; id != nil {
 			return []ent.Value{*id}
 		}
 	}
@@ -16115,10 +16115,10 @@ func (m *TaskFileMutation) ClearedEdges() []string {
 	if m.clearedtask {
 		edges = append(edges, taskfile.EdgeTask)
 	}
-	if m.clearedtask_feed {
+	if m.clearedtaskFeed {
 		edges = append(edges, taskfile.EdgeTaskFeed)
 	}
-	if m.clearedfile_type {
+	if m.clearedfileType {
 		edges = append(edges, taskfile.EdgeFileType)
 	}
 	return edges
@@ -16133,9 +16133,9 @@ func (m *TaskFileMutation) EdgeCleared(name string) bool {
 	case taskfile.EdgeTask:
 		return m.clearedtask
 	case taskfile.EdgeTaskFeed:
-		return m.clearedtask_feed
+		return m.clearedtaskFeed
 	case taskfile.EdgeFileType:
-		return m.clearedfile_type
+		return m.clearedfileType
 	}
 	return false
 }
@@ -16842,23 +16842,23 @@ func (m *TaskLikeMutation) ResetEdge(name string) error {
 // TaskListCompletedStatusMutation represents an operation that mutates the TaskListCompletedStatus nodes in the graph.
 type TaskListCompletedStatusMutation struct {
 	config
-	op                                 Op
-	typ                                string
-	id                                 *ulid.ID
-	name                               *string
-	status_code                        *tasklistcompletedstatus.StatusCode
-	created_at                         *time.Time
-	updated_at                         *time.Time
-	clearedFields                      map[string]struct{}
-	teammate_task_list_statuses        map[ulid.ID]struct{}
-	removedteammate_task_list_statuses map[ulid.ID]struct{}
-	clearedteammate_task_list_statuses bool
-	project_task_list_statuses         map[ulid.ID]struct{}
-	removedproject_task_list_statuses  map[ulid.ID]struct{}
-	clearedproject_task_list_statuses  bool
-	done                               bool
-	oldValue                           func(context.Context) (*TaskListCompletedStatus, error)
-	predicates                         []predicate.TaskListCompletedStatus
+	op                              Op
+	typ                             string
+	id                              *ulid.ID
+	name                            *string
+	status_code                     *tasklistcompletedstatus.StatusCode
+	created_at                      *time.Time
+	updated_at                      *time.Time
+	clearedFields                   map[string]struct{}
+	teammateTaskListStatuses        map[ulid.ID]struct{}
+	removedteammateTaskListStatuses map[ulid.ID]struct{}
+	clearedteammateTaskListStatuses bool
+	projectTaskListStatuses         map[ulid.ID]struct{}
+	removedprojectTaskListStatuses  map[ulid.ID]struct{}
+	clearedprojectTaskListStatuses  bool
+	done                            bool
+	oldValue                        func(context.Context) (*TaskListCompletedStatus, error)
+	predicates                      []predicate.TaskListCompletedStatus
 }
 
 var _ ent.Mutation = (*TaskListCompletedStatusMutation)(nil)
@@ -17090,112 +17090,112 @@ func (m *TaskListCompletedStatusMutation) ResetUpdatedAt() {
 	m.updated_at = nil
 }
 
-// AddTeammateTaskListStatusIDs adds the "teammate_task_list_statuses" edge to the TeammateTaskListStatus entity by ids.
-func (m *TaskListCompletedStatusMutation) AddTeammateTaskListStatusIDs(ids ...ulid.ID) {
-	if m.teammate_task_list_statuses == nil {
-		m.teammate_task_list_statuses = make(map[ulid.ID]struct{})
+// AddTeammateTaskListStatuseIDs adds the "teammateTaskListStatuses" edge to the TeammateTaskListStatus entity by ids.
+func (m *TaskListCompletedStatusMutation) AddTeammateTaskListStatuseIDs(ids ...ulid.ID) {
+	if m.teammateTaskListStatuses == nil {
+		m.teammateTaskListStatuses = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		m.teammate_task_list_statuses[ids[i]] = struct{}{}
+		m.teammateTaskListStatuses[ids[i]] = struct{}{}
 	}
 }
 
-// ClearTeammateTaskListStatuses clears the "teammate_task_list_statuses" edge to the TeammateTaskListStatus entity.
+// ClearTeammateTaskListStatuses clears the "teammateTaskListStatuses" edge to the TeammateTaskListStatus entity.
 func (m *TaskListCompletedStatusMutation) ClearTeammateTaskListStatuses() {
-	m.clearedteammate_task_list_statuses = true
+	m.clearedteammateTaskListStatuses = true
 }
 
-// TeammateTaskListStatusesCleared reports if the "teammate_task_list_statuses" edge to the TeammateTaskListStatus entity was cleared.
+// TeammateTaskListStatusesCleared reports if the "teammateTaskListStatuses" edge to the TeammateTaskListStatus entity was cleared.
 func (m *TaskListCompletedStatusMutation) TeammateTaskListStatusesCleared() bool {
-	return m.clearedteammate_task_list_statuses
+	return m.clearedteammateTaskListStatuses
 }
 
-// RemoveTeammateTaskListStatusIDs removes the "teammate_task_list_statuses" edge to the TeammateTaskListStatus entity by IDs.
-func (m *TaskListCompletedStatusMutation) RemoveTeammateTaskListStatusIDs(ids ...ulid.ID) {
-	if m.removedteammate_task_list_statuses == nil {
-		m.removedteammate_task_list_statuses = make(map[ulid.ID]struct{})
+// RemoveTeammateTaskListStatuseIDs removes the "teammateTaskListStatuses" edge to the TeammateTaskListStatus entity by IDs.
+func (m *TaskListCompletedStatusMutation) RemoveTeammateTaskListStatuseIDs(ids ...ulid.ID) {
+	if m.removedteammateTaskListStatuses == nil {
+		m.removedteammateTaskListStatuses = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		delete(m.teammate_task_list_statuses, ids[i])
-		m.removedteammate_task_list_statuses[ids[i]] = struct{}{}
+		delete(m.teammateTaskListStatuses, ids[i])
+		m.removedteammateTaskListStatuses[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedTeammateTaskListStatuses returns the removed IDs of the "teammate_task_list_statuses" edge to the TeammateTaskListStatus entity.
+// RemovedTeammateTaskListStatuses returns the removed IDs of the "teammateTaskListStatuses" edge to the TeammateTaskListStatus entity.
 func (m *TaskListCompletedStatusMutation) RemovedTeammateTaskListStatusesIDs() (ids []ulid.ID) {
-	for id := range m.removedteammate_task_list_statuses {
+	for id := range m.removedteammateTaskListStatuses {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// TeammateTaskListStatusesIDs returns the "teammate_task_list_statuses" edge IDs in the mutation.
+// TeammateTaskListStatusesIDs returns the "teammateTaskListStatuses" edge IDs in the mutation.
 func (m *TaskListCompletedStatusMutation) TeammateTaskListStatusesIDs() (ids []ulid.ID) {
-	for id := range m.teammate_task_list_statuses {
+	for id := range m.teammateTaskListStatuses {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetTeammateTaskListStatuses resets all changes to the "teammate_task_list_statuses" edge.
+// ResetTeammateTaskListStatuses resets all changes to the "teammateTaskListStatuses" edge.
 func (m *TaskListCompletedStatusMutation) ResetTeammateTaskListStatuses() {
-	m.teammate_task_list_statuses = nil
-	m.clearedteammate_task_list_statuses = false
-	m.removedteammate_task_list_statuses = nil
+	m.teammateTaskListStatuses = nil
+	m.clearedteammateTaskListStatuses = false
+	m.removedteammateTaskListStatuses = nil
 }
 
-// AddProjectTaskListStatusIDs adds the "project_task_list_statuses" edge to the ProjectTaskListStatus entity by ids.
-func (m *TaskListCompletedStatusMutation) AddProjectTaskListStatusIDs(ids ...ulid.ID) {
-	if m.project_task_list_statuses == nil {
-		m.project_task_list_statuses = make(map[ulid.ID]struct{})
+// AddProjectTaskListStatuseIDs adds the "projectTaskListStatuses" edge to the ProjectTaskListStatus entity by ids.
+func (m *TaskListCompletedStatusMutation) AddProjectTaskListStatuseIDs(ids ...ulid.ID) {
+	if m.projectTaskListStatuses == nil {
+		m.projectTaskListStatuses = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		m.project_task_list_statuses[ids[i]] = struct{}{}
+		m.projectTaskListStatuses[ids[i]] = struct{}{}
 	}
 }
 
-// ClearProjectTaskListStatuses clears the "project_task_list_statuses" edge to the ProjectTaskListStatus entity.
+// ClearProjectTaskListStatuses clears the "projectTaskListStatuses" edge to the ProjectTaskListStatus entity.
 func (m *TaskListCompletedStatusMutation) ClearProjectTaskListStatuses() {
-	m.clearedproject_task_list_statuses = true
+	m.clearedprojectTaskListStatuses = true
 }
 
-// ProjectTaskListStatusesCleared reports if the "project_task_list_statuses" edge to the ProjectTaskListStatus entity was cleared.
+// ProjectTaskListStatusesCleared reports if the "projectTaskListStatuses" edge to the ProjectTaskListStatus entity was cleared.
 func (m *TaskListCompletedStatusMutation) ProjectTaskListStatusesCleared() bool {
-	return m.clearedproject_task_list_statuses
+	return m.clearedprojectTaskListStatuses
 }
 
-// RemoveProjectTaskListStatusIDs removes the "project_task_list_statuses" edge to the ProjectTaskListStatus entity by IDs.
-func (m *TaskListCompletedStatusMutation) RemoveProjectTaskListStatusIDs(ids ...ulid.ID) {
-	if m.removedproject_task_list_statuses == nil {
-		m.removedproject_task_list_statuses = make(map[ulid.ID]struct{})
+// RemoveProjectTaskListStatuseIDs removes the "projectTaskListStatuses" edge to the ProjectTaskListStatus entity by IDs.
+func (m *TaskListCompletedStatusMutation) RemoveProjectTaskListStatuseIDs(ids ...ulid.ID) {
+	if m.removedprojectTaskListStatuses == nil {
+		m.removedprojectTaskListStatuses = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		delete(m.project_task_list_statuses, ids[i])
-		m.removedproject_task_list_statuses[ids[i]] = struct{}{}
+		delete(m.projectTaskListStatuses, ids[i])
+		m.removedprojectTaskListStatuses[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedProjectTaskListStatuses returns the removed IDs of the "project_task_list_statuses" edge to the ProjectTaskListStatus entity.
+// RemovedProjectTaskListStatuses returns the removed IDs of the "projectTaskListStatuses" edge to the ProjectTaskListStatus entity.
 func (m *TaskListCompletedStatusMutation) RemovedProjectTaskListStatusesIDs() (ids []ulid.ID) {
-	for id := range m.removedproject_task_list_statuses {
+	for id := range m.removedprojectTaskListStatuses {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ProjectTaskListStatusesIDs returns the "project_task_list_statuses" edge IDs in the mutation.
+// ProjectTaskListStatusesIDs returns the "projectTaskListStatuses" edge IDs in the mutation.
 func (m *TaskListCompletedStatusMutation) ProjectTaskListStatusesIDs() (ids []ulid.ID) {
-	for id := range m.project_task_list_statuses {
+	for id := range m.projectTaskListStatuses {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetProjectTaskListStatuses resets all changes to the "project_task_list_statuses" edge.
+// ResetProjectTaskListStatuses resets all changes to the "projectTaskListStatuses" edge.
 func (m *TaskListCompletedStatusMutation) ResetProjectTaskListStatuses() {
-	m.project_task_list_statuses = nil
-	m.clearedproject_task_list_statuses = false
-	m.removedproject_task_list_statuses = nil
+	m.projectTaskListStatuses = nil
+	m.clearedprojectTaskListStatuses = false
+	m.removedprojectTaskListStatuses = nil
 }
 
 // Where appends a list predicates to the TaskListCompletedStatusMutation builder.
@@ -17368,10 +17368,10 @@ func (m *TaskListCompletedStatusMutation) ResetField(name string) error {
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *TaskListCompletedStatusMutation) AddedEdges() []string {
 	edges := make([]string, 0, 2)
-	if m.teammate_task_list_statuses != nil {
+	if m.teammateTaskListStatuses != nil {
 		edges = append(edges, tasklistcompletedstatus.EdgeTeammateTaskListStatuses)
 	}
-	if m.project_task_list_statuses != nil {
+	if m.projectTaskListStatuses != nil {
 		edges = append(edges, tasklistcompletedstatus.EdgeProjectTaskListStatuses)
 	}
 	return edges
@@ -17382,14 +17382,14 @@ func (m *TaskListCompletedStatusMutation) AddedEdges() []string {
 func (m *TaskListCompletedStatusMutation) AddedIDs(name string) []ent.Value {
 	switch name {
 	case tasklistcompletedstatus.EdgeTeammateTaskListStatuses:
-		ids := make([]ent.Value, 0, len(m.teammate_task_list_statuses))
-		for id := range m.teammate_task_list_statuses {
+		ids := make([]ent.Value, 0, len(m.teammateTaskListStatuses))
+		for id := range m.teammateTaskListStatuses {
 			ids = append(ids, id)
 		}
 		return ids
 	case tasklistcompletedstatus.EdgeProjectTaskListStatuses:
-		ids := make([]ent.Value, 0, len(m.project_task_list_statuses))
-		for id := range m.project_task_list_statuses {
+		ids := make([]ent.Value, 0, len(m.projectTaskListStatuses))
+		for id := range m.projectTaskListStatuses {
 			ids = append(ids, id)
 		}
 		return ids
@@ -17400,10 +17400,10 @@ func (m *TaskListCompletedStatusMutation) AddedIDs(name string) []ent.Value {
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *TaskListCompletedStatusMutation) RemovedEdges() []string {
 	edges := make([]string, 0, 2)
-	if m.removedteammate_task_list_statuses != nil {
+	if m.removedteammateTaskListStatuses != nil {
 		edges = append(edges, tasklistcompletedstatus.EdgeTeammateTaskListStatuses)
 	}
-	if m.removedproject_task_list_statuses != nil {
+	if m.removedprojectTaskListStatuses != nil {
 		edges = append(edges, tasklistcompletedstatus.EdgeProjectTaskListStatuses)
 	}
 	return edges
@@ -17414,14 +17414,14 @@ func (m *TaskListCompletedStatusMutation) RemovedEdges() []string {
 func (m *TaskListCompletedStatusMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
 	case tasklistcompletedstatus.EdgeTeammateTaskListStatuses:
-		ids := make([]ent.Value, 0, len(m.removedteammate_task_list_statuses))
-		for id := range m.removedteammate_task_list_statuses {
+		ids := make([]ent.Value, 0, len(m.removedteammateTaskListStatuses))
+		for id := range m.removedteammateTaskListStatuses {
 			ids = append(ids, id)
 		}
 		return ids
 	case tasklistcompletedstatus.EdgeProjectTaskListStatuses:
-		ids := make([]ent.Value, 0, len(m.removedproject_task_list_statuses))
-		for id := range m.removedproject_task_list_statuses {
+		ids := make([]ent.Value, 0, len(m.removedprojectTaskListStatuses))
+		for id := range m.removedprojectTaskListStatuses {
 			ids = append(ids, id)
 		}
 		return ids
@@ -17432,10 +17432,10 @@ func (m *TaskListCompletedStatusMutation) RemovedIDs(name string) []ent.Value {
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *TaskListCompletedStatusMutation) ClearedEdges() []string {
 	edges := make([]string, 0, 2)
-	if m.clearedteammate_task_list_statuses {
+	if m.clearedteammateTaskListStatuses {
 		edges = append(edges, tasklistcompletedstatus.EdgeTeammateTaskListStatuses)
 	}
-	if m.clearedproject_task_list_statuses {
+	if m.clearedprojectTaskListStatuses {
 		edges = append(edges, tasklistcompletedstatus.EdgeProjectTaskListStatuses)
 	}
 	return edges
@@ -17446,9 +17446,9 @@ func (m *TaskListCompletedStatusMutation) ClearedEdges() []string {
 func (m *TaskListCompletedStatusMutation) EdgeCleared(name string) bool {
 	switch name {
 	case tasklistcompletedstatus.EdgeTeammateTaskListStatuses:
-		return m.clearedteammate_task_list_statuses
+		return m.clearedteammateTaskListStatuses
 	case tasklistcompletedstatus.EdgeProjectTaskListStatuses:
-		return m.clearedproject_task_list_statuses
+		return m.clearedprojectTaskListStatuses
 	}
 	return false
 }
@@ -17478,23 +17478,23 @@ func (m *TaskListCompletedStatusMutation) ResetEdge(name string) error {
 // TaskListSortStatusMutation represents an operation that mutates the TaskListSortStatus nodes in the graph.
 type TaskListSortStatusMutation struct {
 	config
-	op                                 Op
-	typ                                string
-	id                                 *ulid.ID
-	name                               *string
-	status_code                        *tasklistsortstatus.StatusCode
-	created_at                         *time.Time
-	updated_at                         *time.Time
-	clearedFields                      map[string]struct{}
-	teammate_task_list_statuses        map[ulid.ID]struct{}
-	removedteammate_task_list_statuses map[ulid.ID]struct{}
-	clearedteammate_task_list_statuses bool
-	project_task_list_statuses         map[ulid.ID]struct{}
-	removedproject_task_list_statuses  map[ulid.ID]struct{}
-	clearedproject_task_list_statuses  bool
-	done                               bool
-	oldValue                           func(context.Context) (*TaskListSortStatus, error)
-	predicates                         []predicate.TaskListSortStatus
+	op                              Op
+	typ                             string
+	id                              *ulid.ID
+	name                            *string
+	status_code                     *tasklistsortstatus.StatusCode
+	created_at                      *time.Time
+	updated_at                      *time.Time
+	clearedFields                   map[string]struct{}
+	teammateTaskListStatuses        map[ulid.ID]struct{}
+	removedteammateTaskListStatuses map[ulid.ID]struct{}
+	clearedteammateTaskListStatuses bool
+	projectTaskListStatuses         map[ulid.ID]struct{}
+	removedprojectTaskListStatuses  map[ulid.ID]struct{}
+	clearedprojectTaskListStatuses  bool
+	done                            bool
+	oldValue                        func(context.Context) (*TaskListSortStatus, error)
+	predicates                      []predicate.TaskListSortStatus
 }
 
 var _ ent.Mutation = (*TaskListSortStatusMutation)(nil)
@@ -17726,112 +17726,112 @@ func (m *TaskListSortStatusMutation) ResetUpdatedAt() {
 	m.updated_at = nil
 }
 
-// AddTeammateTaskListStatusIDs adds the "teammate_task_list_statuses" edge to the TeammateTaskListStatus entity by ids.
-func (m *TaskListSortStatusMutation) AddTeammateTaskListStatusIDs(ids ...ulid.ID) {
-	if m.teammate_task_list_statuses == nil {
-		m.teammate_task_list_statuses = make(map[ulid.ID]struct{})
+// AddTeammateTaskListStatuseIDs adds the "teammateTaskListStatuses" edge to the TeammateTaskListStatus entity by ids.
+func (m *TaskListSortStatusMutation) AddTeammateTaskListStatuseIDs(ids ...ulid.ID) {
+	if m.teammateTaskListStatuses == nil {
+		m.teammateTaskListStatuses = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		m.teammate_task_list_statuses[ids[i]] = struct{}{}
+		m.teammateTaskListStatuses[ids[i]] = struct{}{}
 	}
 }
 
-// ClearTeammateTaskListStatuses clears the "teammate_task_list_statuses" edge to the TeammateTaskListStatus entity.
+// ClearTeammateTaskListStatuses clears the "teammateTaskListStatuses" edge to the TeammateTaskListStatus entity.
 func (m *TaskListSortStatusMutation) ClearTeammateTaskListStatuses() {
-	m.clearedteammate_task_list_statuses = true
+	m.clearedteammateTaskListStatuses = true
 }
 
-// TeammateTaskListStatusesCleared reports if the "teammate_task_list_statuses" edge to the TeammateTaskListStatus entity was cleared.
+// TeammateTaskListStatusesCleared reports if the "teammateTaskListStatuses" edge to the TeammateTaskListStatus entity was cleared.
 func (m *TaskListSortStatusMutation) TeammateTaskListStatusesCleared() bool {
-	return m.clearedteammate_task_list_statuses
+	return m.clearedteammateTaskListStatuses
 }
 
-// RemoveTeammateTaskListStatusIDs removes the "teammate_task_list_statuses" edge to the TeammateTaskListStatus entity by IDs.
-func (m *TaskListSortStatusMutation) RemoveTeammateTaskListStatusIDs(ids ...ulid.ID) {
-	if m.removedteammate_task_list_statuses == nil {
-		m.removedteammate_task_list_statuses = make(map[ulid.ID]struct{})
+// RemoveTeammateTaskListStatuseIDs removes the "teammateTaskListStatuses" edge to the TeammateTaskListStatus entity by IDs.
+func (m *TaskListSortStatusMutation) RemoveTeammateTaskListStatuseIDs(ids ...ulid.ID) {
+	if m.removedteammateTaskListStatuses == nil {
+		m.removedteammateTaskListStatuses = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		delete(m.teammate_task_list_statuses, ids[i])
-		m.removedteammate_task_list_statuses[ids[i]] = struct{}{}
+		delete(m.teammateTaskListStatuses, ids[i])
+		m.removedteammateTaskListStatuses[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedTeammateTaskListStatuses returns the removed IDs of the "teammate_task_list_statuses" edge to the TeammateTaskListStatus entity.
+// RemovedTeammateTaskListStatuses returns the removed IDs of the "teammateTaskListStatuses" edge to the TeammateTaskListStatus entity.
 func (m *TaskListSortStatusMutation) RemovedTeammateTaskListStatusesIDs() (ids []ulid.ID) {
-	for id := range m.removedteammate_task_list_statuses {
+	for id := range m.removedteammateTaskListStatuses {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// TeammateTaskListStatusesIDs returns the "teammate_task_list_statuses" edge IDs in the mutation.
+// TeammateTaskListStatusesIDs returns the "teammateTaskListStatuses" edge IDs in the mutation.
 func (m *TaskListSortStatusMutation) TeammateTaskListStatusesIDs() (ids []ulid.ID) {
-	for id := range m.teammate_task_list_statuses {
+	for id := range m.teammateTaskListStatuses {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetTeammateTaskListStatuses resets all changes to the "teammate_task_list_statuses" edge.
+// ResetTeammateTaskListStatuses resets all changes to the "teammateTaskListStatuses" edge.
 func (m *TaskListSortStatusMutation) ResetTeammateTaskListStatuses() {
-	m.teammate_task_list_statuses = nil
-	m.clearedteammate_task_list_statuses = false
-	m.removedteammate_task_list_statuses = nil
+	m.teammateTaskListStatuses = nil
+	m.clearedteammateTaskListStatuses = false
+	m.removedteammateTaskListStatuses = nil
 }
 
-// AddProjectTaskListStatusIDs adds the "project_task_list_statuses" edge to the ProjectTaskListStatus entity by ids.
-func (m *TaskListSortStatusMutation) AddProjectTaskListStatusIDs(ids ...ulid.ID) {
-	if m.project_task_list_statuses == nil {
-		m.project_task_list_statuses = make(map[ulid.ID]struct{})
+// AddProjectTaskListStatuseIDs adds the "projectTaskListStatuses" edge to the ProjectTaskListStatus entity by ids.
+func (m *TaskListSortStatusMutation) AddProjectTaskListStatuseIDs(ids ...ulid.ID) {
+	if m.projectTaskListStatuses == nil {
+		m.projectTaskListStatuses = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		m.project_task_list_statuses[ids[i]] = struct{}{}
+		m.projectTaskListStatuses[ids[i]] = struct{}{}
 	}
 }
 
-// ClearProjectTaskListStatuses clears the "project_task_list_statuses" edge to the ProjectTaskListStatus entity.
+// ClearProjectTaskListStatuses clears the "projectTaskListStatuses" edge to the ProjectTaskListStatus entity.
 func (m *TaskListSortStatusMutation) ClearProjectTaskListStatuses() {
-	m.clearedproject_task_list_statuses = true
+	m.clearedprojectTaskListStatuses = true
 }
 
-// ProjectTaskListStatusesCleared reports if the "project_task_list_statuses" edge to the ProjectTaskListStatus entity was cleared.
+// ProjectTaskListStatusesCleared reports if the "projectTaskListStatuses" edge to the ProjectTaskListStatus entity was cleared.
 func (m *TaskListSortStatusMutation) ProjectTaskListStatusesCleared() bool {
-	return m.clearedproject_task_list_statuses
+	return m.clearedprojectTaskListStatuses
 }
 
-// RemoveProjectTaskListStatusIDs removes the "project_task_list_statuses" edge to the ProjectTaskListStatus entity by IDs.
-func (m *TaskListSortStatusMutation) RemoveProjectTaskListStatusIDs(ids ...ulid.ID) {
-	if m.removedproject_task_list_statuses == nil {
-		m.removedproject_task_list_statuses = make(map[ulid.ID]struct{})
+// RemoveProjectTaskListStatuseIDs removes the "projectTaskListStatuses" edge to the ProjectTaskListStatus entity by IDs.
+func (m *TaskListSortStatusMutation) RemoveProjectTaskListStatuseIDs(ids ...ulid.ID) {
+	if m.removedprojectTaskListStatuses == nil {
+		m.removedprojectTaskListStatuses = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		delete(m.project_task_list_statuses, ids[i])
-		m.removedproject_task_list_statuses[ids[i]] = struct{}{}
+		delete(m.projectTaskListStatuses, ids[i])
+		m.removedprojectTaskListStatuses[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedProjectTaskListStatuses returns the removed IDs of the "project_task_list_statuses" edge to the ProjectTaskListStatus entity.
+// RemovedProjectTaskListStatuses returns the removed IDs of the "projectTaskListStatuses" edge to the ProjectTaskListStatus entity.
 func (m *TaskListSortStatusMutation) RemovedProjectTaskListStatusesIDs() (ids []ulid.ID) {
-	for id := range m.removedproject_task_list_statuses {
+	for id := range m.removedprojectTaskListStatuses {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ProjectTaskListStatusesIDs returns the "project_task_list_statuses" edge IDs in the mutation.
+// ProjectTaskListStatusesIDs returns the "projectTaskListStatuses" edge IDs in the mutation.
 func (m *TaskListSortStatusMutation) ProjectTaskListStatusesIDs() (ids []ulid.ID) {
-	for id := range m.project_task_list_statuses {
+	for id := range m.projectTaskListStatuses {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetProjectTaskListStatuses resets all changes to the "project_task_list_statuses" edge.
+// ResetProjectTaskListStatuses resets all changes to the "projectTaskListStatuses" edge.
 func (m *TaskListSortStatusMutation) ResetProjectTaskListStatuses() {
-	m.project_task_list_statuses = nil
-	m.clearedproject_task_list_statuses = false
-	m.removedproject_task_list_statuses = nil
+	m.projectTaskListStatuses = nil
+	m.clearedprojectTaskListStatuses = false
+	m.removedprojectTaskListStatuses = nil
 }
 
 // Where appends a list predicates to the TaskListSortStatusMutation builder.
@@ -18004,10 +18004,10 @@ func (m *TaskListSortStatusMutation) ResetField(name string) error {
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *TaskListSortStatusMutation) AddedEdges() []string {
 	edges := make([]string, 0, 2)
-	if m.teammate_task_list_statuses != nil {
+	if m.teammateTaskListStatuses != nil {
 		edges = append(edges, tasklistsortstatus.EdgeTeammateTaskListStatuses)
 	}
-	if m.project_task_list_statuses != nil {
+	if m.projectTaskListStatuses != nil {
 		edges = append(edges, tasklistsortstatus.EdgeProjectTaskListStatuses)
 	}
 	return edges
@@ -18018,14 +18018,14 @@ func (m *TaskListSortStatusMutation) AddedEdges() []string {
 func (m *TaskListSortStatusMutation) AddedIDs(name string) []ent.Value {
 	switch name {
 	case tasklistsortstatus.EdgeTeammateTaskListStatuses:
-		ids := make([]ent.Value, 0, len(m.teammate_task_list_statuses))
-		for id := range m.teammate_task_list_statuses {
+		ids := make([]ent.Value, 0, len(m.teammateTaskListStatuses))
+		for id := range m.teammateTaskListStatuses {
 			ids = append(ids, id)
 		}
 		return ids
 	case tasklistsortstatus.EdgeProjectTaskListStatuses:
-		ids := make([]ent.Value, 0, len(m.project_task_list_statuses))
-		for id := range m.project_task_list_statuses {
+		ids := make([]ent.Value, 0, len(m.projectTaskListStatuses))
+		for id := range m.projectTaskListStatuses {
 			ids = append(ids, id)
 		}
 		return ids
@@ -18036,10 +18036,10 @@ func (m *TaskListSortStatusMutation) AddedIDs(name string) []ent.Value {
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *TaskListSortStatusMutation) RemovedEdges() []string {
 	edges := make([]string, 0, 2)
-	if m.removedteammate_task_list_statuses != nil {
+	if m.removedteammateTaskListStatuses != nil {
 		edges = append(edges, tasklistsortstatus.EdgeTeammateTaskListStatuses)
 	}
-	if m.removedproject_task_list_statuses != nil {
+	if m.removedprojectTaskListStatuses != nil {
 		edges = append(edges, tasklistsortstatus.EdgeProjectTaskListStatuses)
 	}
 	return edges
@@ -18050,14 +18050,14 @@ func (m *TaskListSortStatusMutation) RemovedEdges() []string {
 func (m *TaskListSortStatusMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
 	case tasklistsortstatus.EdgeTeammateTaskListStatuses:
-		ids := make([]ent.Value, 0, len(m.removedteammate_task_list_statuses))
-		for id := range m.removedteammate_task_list_statuses {
+		ids := make([]ent.Value, 0, len(m.removedteammateTaskListStatuses))
+		for id := range m.removedteammateTaskListStatuses {
 			ids = append(ids, id)
 		}
 		return ids
 	case tasklistsortstatus.EdgeProjectTaskListStatuses:
-		ids := make([]ent.Value, 0, len(m.removedproject_task_list_statuses))
-		for id := range m.removedproject_task_list_statuses {
+		ids := make([]ent.Value, 0, len(m.removedprojectTaskListStatuses))
+		for id := range m.removedprojectTaskListStatuses {
 			ids = append(ids, id)
 		}
 		return ids
@@ -18068,10 +18068,10 @@ func (m *TaskListSortStatusMutation) RemovedIDs(name string) []ent.Value {
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *TaskListSortStatusMutation) ClearedEdges() []string {
 	edges := make([]string, 0, 2)
-	if m.clearedteammate_task_list_statuses {
+	if m.clearedteammateTaskListStatuses {
 		edges = append(edges, tasklistsortstatus.EdgeTeammateTaskListStatuses)
 	}
-	if m.clearedproject_task_list_statuses {
+	if m.clearedprojectTaskListStatuses {
 		edges = append(edges, tasklistsortstatus.EdgeProjectTaskListStatuses)
 	}
 	return edges
@@ -18082,9 +18082,9 @@ func (m *TaskListSortStatusMutation) ClearedEdges() []string {
 func (m *TaskListSortStatusMutation) EdgeCleared(name string) bool {
 	switch name {
 	case tasklistsortstatus.EdgeTeammateTaskListStatuses:
-		return m.clearedteammate_task_list_statuses
+		return m.clearedteammateTaskListStatuses
 	case tasklistsortstatus.EdgeProjectTaskListStatuses:
-		return m.clearedproject_task_list_statuses
+		return m.clearedprojectTaskListStatuses
 	}
 	return false
 }
@@ -19732,66 +19732,66 @@ func (m *TaskTagMutation) ResetEdge(name string) error {
 // TeammateMutation represents an operation that mutates the Teammate nodes in the graph.
 type TeammateMutation struct {
 	config
-	op                                 Op
-	typ                                string
-	id                                 *ulid.ID
-	name                               *string
-	image                              *string
-	email                              *string
-	created_at                         *time.Time
-	updated_at                         *time.Time
-	clearedFields                      map[string]struct{}
-	workspaces                         map[ulid.ID]struct{}
-	removedworkspaces                  map[ulid.ID]struct{}
-	clearedworkspaces                  bool
-	projects                           map[ulid.ID]struct{}
-	removedprojects                    map[ulid.ID]struct{}
-	clearedprojects                    bool
-	project_teammates                  map[ulid.ID]struct{}
-	removedproject_teammates           map[ulid.ID]struct{}
-	clearedproject_teammates           bool
-	workspace_teammates                map[ulid.ID]struct{}
-	removedworkspace_teammates         map[ulid.ID]struct{}
-	clearedworkspace_teammates         bool
-	favorite_projects                  map[ulid.ID]struct{}
-	removedfavorite_projects           map[ulid.ID]struct{}
-	clearedfavorite_projects           bool
-	favorite_workspaces                map[ulid.ID]struct{}
-	removedfavorite_workspaces         map[ulid.ID]struct{}
-	clearedfavorite_workspaces         bool
-	teammate_task_tab_statuses         map[ulid.ID]struct{}
-	removedteammate_task_tab_statuses  map[ulid.ID]struct{}
-	clearedteammate_task_tab_statuses  bool
-	teammate_task_columns              map[ulid.ID]struct{}
-	removedteammate_task_columns       map[ulid.ID]struct{}
-	clearedteammate_task_columns       bool
-	teammate_task_list_statuses        map[ulid.ID]struct{}
-	removedteammate_task_list_statuses map[ulid.ID]struct{}
-	clearedteammate_task_list_statuses bool
-	teammate_task_sections             map[ulid.ID]struct{}
-	removedteammate_task_sections      map[ulid.ID]struct{}
-	clearedteammate_task_sections      bool
-	tasks                              map[ulid.ID]struct{}
-	removedtasks                       map[ulid.ID]struct{}
-	clearedtasks                       bool
-	teammate_tasks                     map[ulid.ID]struct{}
-	removedteammate_tasks              map[ulid.ID]struct{}
-	clearedteammate_tasks              bool
-	task_likes                         map[ulid.ID]struct{}
-	removedtask_likes                  map[ulid.ID]struct{}
-	clearedtask_likes                  bool
-	task_collaborators                 map[ulid.ID]struct{}
-	removedtask_collaborators          map[ulid.ID]struct{}
-	clearedtask_collaborators          bool
-	task_feeds                         map[ulid.ID]struct{}
-	removedtask_feeds                  map[ulid.ID]struct{}
-	clearedtask_feeds                  bool
-	task_feed_likes                    map[ulid.ID]struct{}
-	removedtask_feed_likes             map[ulid.ID]struct{}
-	clearedtask_feed_likes             bool
-	done                               bool
-	oldValue                           func(context.Context) (*Teammate, error)
-	predicates                         []predicate.Teammate
+	op                              Op
+	typ                             string
+	id                              *ulid.ID
+	name                            *string
+	image                           *string
+	email                           *string
+	created_at                      *time.Time
+	updated_at                      *time.Time
+	clearedFields                   map[string]struct{}
+	workspaces                      map[ulid.ID]struct{}
+	removedworkspaces               map[ulid.ID]struct{}
+	clearedworkspaces               bool
+	projects                        map[ulid.ID]struct{}
+	removedprojects                 map[ulid.ID]struct{}
+	clearedprojects                 bool
+	projectTeammates                map[ulid.ID]struct{}
+	removedprojectTeammates         map[ulid.ID]struct{}
+	clearedprojectTeammates         bool
+	workspaceTeammates              map[ulid.ID]struct{}
+	removedworkspaceTeammates       map[ulid.ID]struct{}
+	clearedworkspaceTeammates       bool
+	favoriteProjects                map[ulid.ID]struct{}
+	removedfavoriteProjects         map[ulid.ID]struct{}
+	clearedfavoriteProjects         bool
+	favoriteWorkspaces              map[ulid.ID]struct{}
+	removedfavoriteWorkspaces       map[ulid.ID]struct{}
+	clearedfavoriteWorkspaces       bool
+	teammateTaskTabStatuses         map[ulid.ID]struct{}
+	removedteammateTaskTabStatuses  map[ulid.ID]struct{}
+	clearedteammateTaskTabStatuses  bool
+	teammateTaskColumns             map[ulid.ID]struct{}
+	removedteammateTaskColumns      map[ulid.ID]struct{}
+	clearedteammateTaskColumns      bool
+	teammateTaskListStatuses        map[ulid.ID]struct{}
+	removedteammateTaskListStatuses map[ulid.ID]struct{}
+	clearedteammateTaskListStatuses bool
+	teammateTaskSections            map[ulid.ID]struct{}
+	removedteammateTaskSections     map[ulid.ID]struct{}
+	clearedteammateTaskSections     bool
+	tasks                           map[ulid.ID]struct{}
+	removedtasks                    map[ulid.ID]struct{}
+	clearedtasks                    bool
+	teammateTasks                   map[ulid.ID]struct{}
+	removedteammateTasks            map[ulid.ID]struct{}
+	clearedteammateTasks            bool
+	taskLikes                       map[ulid.ID]struct{}
+	removedtaskLikes                map[ulid.ID]struct{}
+	clearedtaskLikes                bool
+	taskCollaborators               map[ulid.ID]struct{}
+	removedtaskCollaborators        map[ulid.ID]struct{}
+	clearedtaskCollaborators        bool
+	taskFeeds                       map[ulid.ID]struct{}
+	removedtaskFeeds                map[ulid.ID]struct{}
+	clearedtaskFeeds                bool
+	taskFeedLikes                   map[ulid.ID]struct{}
+	removedtaskFeedLikes            map[ulid.ID]struct{}
+	clearedtaskFeedLikes            bool
+	done                            bool
+	oldValue                        func(context.Context) (*Teammate, error)
+	predicates                      []predicate.Teammate
 }
 
 var _ ent.Mutation = (*TeammateMutation)(nil)
@@ -20167,436 +20167,436 @@ func (m *TeammateMutation) ResetProjects() {
 	m.removedprojects = nil
 }
 
-// AddProjectTeammateIDs adds the "project_teammates" edge to the ProjectTeammate entity by ids.
+// AddProjectTeammateIDs adds the "projectTeammates" edge to the ProjectTeammate entity by ids.
 func (m *TeammateMutation) AddProjectTeammateIDs(ids ...ulid.ID) {
-	if m.project_teammates == nil {
-		m.project_teammates = make(map[ulid.ID]struct{})
+	if m.projectTeammates == nil {
+		m.projectTeammates = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		m.project_teammates[ids[i]] = struct{}{}
+		m.projectTeammates[ids[i]] = struct{}{}
 	}
 }
 
-// ClearProjectTeammates clears the "project_teammates" edge to the ProjectTeammate entity.
+// ClearProjectTeammates clears the "projectTeammates" edge to the ProjectTeammate entity.
 func (m *TeammateMutation) ClearProjectTeammates() {
-	m.clearedproject_teammates = true
+	m.clearedprojectTeammates = true
 }
 
-// ProjectTeammatesCleared reports if the "project_teammates" edge to the ProjectTeammate entity was cleared.
+// ProjectTeammatesCleared reports if the "projectTeammates" edge to the ProjectTeammate entity was cleared.
 func (m *TeammateMutation) ProjectTeammatesCleared() bool {
-	return m.clearedproject_teammates
+	return m.clearedprojectTeammates
 }
 
-// RemoveProjectTeammateIDs removes the "project_teammates" edge to the ProjectTeammate entity by IDs.
+// RemoveProjectTeammateIDs removes the "projectTeammates" edge to the ProjectTeammate entity by IDs.
 func (m *TeammateMutation) RemoveProjectTeammateIDs(ids ...ulid.ID) {
-	if m.removedproject_teammates == nil {
-		m.removedproject_teammates = make(map[ulid.ID]struct{})
+	if m.removedprojectTeammates == nil {
+		m.removedprojectTeammates = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		delete(m.project_teammates, ids[i])
-		m.removedproject_teammates[ids[i]] = struct{}{}
+		delete(m.projectTeammates, ids[i])
+		m.removedprojectTeammates[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedProjectTeammates returns the removed IDs of the "project_teammates" edge to the ProjectTeammate entity.
+// RemovedProjectTeammates returns the removed IDs of the "projectTeammates" edge to the ProjectTeammate entity.
 func (m *TeammateMutation) RemovedProjectTeammatesIDs() (ids []ulid.ID) {
-	for id := range m.removedproject_teammates {
+	for id := range m.removedprojectTeammates {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ProjectTeammatesIDs returns the "project_teammates" edge IDs in the mutation.
+// ProjectTeammatesIDs returns the "projectTeammates" edge IDs in the mutation.
 func (m *TeammateMutation) ProjectTeammatesIDs() (ids []ulid.ID) {
-	for id := range m.project_teammates {
+	for id := range m.projectTeammates {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetProjectTeammates resets all changes to the "project_teammates" edge.
+// ResetProjectTeammates resets all changes to the "projectTeammates" edge.
 func (m *TeammateMutation) ResetProjectTeammates() {
-	m.project_teammates = nil
-	m.clearedproject_teammates = false
-	m.removedproject_teammates = nil
+	m.projectTeammates = nil
+	m.clearedprojectTeammates = false
+	m.removedprojectTeammates = nil
 }
 
-// AddWorkspaceTeammateIDs adds the "workspace_teammates" edge to the WorkspaceTeammate entity by ids.
+// AddWorkspaceTeammateIDs adds the "workspaceTeammates" edge to the WorkspaceTeammate entity by ids.
 func (m *TeammateMutation) AddWorkspaceTeammateIDs(ids ...ulid.ID) {
-	if m.workspace_teammates == nil {
-		m.workspace_teammates = make(map[ulid.ID]struct{})
+	if m.workspaceTeammates == nil {
+		m.workspaceTeammates = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		m.workspace_teammates[ids[i]] = struct{}{}
+		m.workspaceTeammates[ids[i]] = struct{}{}
 	}
 }
 
-// ClearWorkspaceTeammates clears the "workspace_teammates" edge to the WorkspaceTeammate entity.
+// ClearWorkspaceTeammates clears the "workspaceTeammates" edge to the WorkspaceTeammate entity.
 func (m *TeammateMutation) ClearWorkspaceTeammates() {
-	m.clearedworkspace_teammates = true
+	m.clearedworkspaceTeammates = true
 }
 
-// WorkspaceTeammatesCleared reports if the "workspace_teammates" edge to the WorkspaceTeammate entity was cleared.
+// WorkspaceTeammatesCleared reports if the "workspaceTeammates" edge to the WorkspaceTeammate entity was cleared.
 func (m *TeammateMutation) WorkspaceTeammatesCleared() bool {
-	return m.clearedworkspace_teammates
+	return m.clearedworkspaceTeammates
 }
 
-// RemoveWorkspaceTeammateIDs removes the "workspace_teammates" edge to the WorkspaceTeammate entity by IDs.
+// RemoveWorkspaceTeammateIDs removes the "workspaceTeammates" edge to the WorkspaceTeammate entity by IDs.
 func (m *TeammateMutation) RemoveWorkspaceTeammateIDs(ids ...ulid.ID) {
-	if m.removedworkspace_teammates == nil {
-		m.removedworkspace_teammates = make(map[ulid.ID]struct{})
+	if m.removedworkspaceTeammates == nil {
+		m.removedworkspaceTeammates = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		delete(m.workspace_teammates, ids[i])
-		m.removedworkspace_teammates[ids[i]] = struct{}{}
+		delete(m.workspaceTeammates, ids[i])
+		m.removedworkspaceTeammates[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedWorkspaceTeammates returns the removed IDs of the "workspace_teammates" edge to the WorkspaceTeammate entity.
+// RemovedWorkspaceTeammates returns the removed IDs of the "workspaceTeammates" edge to the WorkspaceTeammate entity.
 func (m *TeammateMutation) RemovedWorkspaceTeammatesIDs() (ids []ulid.ID) {
-	for id := range m.removedworkspace_teammates {
+	for id := range m.removedworkspaceTeammates {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// WorkspaceTeammatesIDs returns the "workspace_teammates" edge IDs in the mutation.
+// WorkspaceTeammatesIDs returns the "workspaceTeammates" edge IDs in the mutation.
 func (m *TeammateMutation) WorkspaceTeammatesIDs() (ids []ulid.ID) {
-	for id := range m.workspace_teammates {
+	for id := range m.workspaceTeammates {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetWorkspaceTeammates resets all changes to the "workspace_teammates" edge.
+// ResetWorkspaceTeammates resets all changes to the "workspaceTeammates" edge.
 func (m *TeammateMutation) ResetWorkspaceTeammates() {
-	m.workspace_teammates = nil
-	m.clearedworkspace_teammates = false
-	m.removedworkspace_teammates = nil
+	m.workspaceTeammates = nil
+	m.clearedworkspaceTeammates = false
+	m.removedworkspaceTeammates = nil
 }
 
-// AddFavoriteProjectIDs adds the "favorite_projects" edge to the FavoriteProject entity by ids.
+// AddFavoriteProjectIDs adds the "favoriteProjects" edge to the FavoriteProject entity by ids.
 func (m *TeammateMutation) AddFavoriteProjectIDs(ids ...ulid.ID) {
-	if m.favorite_projects == nil {
-		m.favorite_projects = make(map[ulid.ID]struct{})
+	if m.favoriteProjects == nil {
+		m.favoriteProjects = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		m.favorite_projects[ids[i]] = struct{}{}
+		m.favoriteProjects[ids[i]] = struct{}{}
 	}
 }
 
-// ClearFavoriteProjects clears the "favorite_projects" edge to the FavoriteProject entity.
+// ClearFavoriteProjects clears the "favoriteProjects" edge to the FavoriteProject entity.
 func (m *TeammateMutation) ClearFavoriteProjects() {
-	m.clearedfavorite_projects = true
+	m.clearedfavoriteProjects = true
 }
 
-// FavoriteProjectsCleared reports if the "favorite_projects" edge to the FavoriteProject entity was cleared.
+// FavoriteProjectsCleared reports if the "favoriteProjects" edge to the FavoriteProject entity was cleared.
 func (m *TeammateMutation) FavoriteProjectsCleared() bool {
-	return m.clearedfavorite_projects
+	return m.clearedfavoriteProjects
 }
 
-// RemoveFavoriteProjectIDs removes the "favorite_projects" edge to the FavoriteProject entity by IDs.
+// RemoveFavoriteProjectIDs removes the "favoriteProjects" edge to the FavoriteProject entity by IDs.
 func (m *TeammateMutation) RemoveFavoriteProjectIDs(ids ...ulid.ID) {
-	if m.removedfavorite_projects == nil {
-		m.removedfavorite_projects = make(map[ulid.ID]struct{})
+	if m.removedfavoriteProjects == nil {
+		m.removedfavoriteProjects = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		delete(m.favorite_projects, ids[i])
-		m.removedfavorite_projects[ids[i]] = struct{}{}
+		delete(m.favoriteProjects, ids[i])
+		m.removedfavoriteProjects[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedFavoriteProjects returns the removed IDs of the "favorite_projects" edge to the FavoriteProject entity.
+// RemovedFavoriteProjects returns the removed IDs of the "favoriteProjects" edge to the FavoriteProject entity.
 func (m *TeammateMutation) RemovedFavoriteProjectsIDs() (ids []ulid.ID) {
-	for id := range m.removedfavorite_projects {
+	for id := range m.removedfavoriteProjects {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// FavoriteProjectsIDs returns the "favorite_projects" edge IDs in the mutation.
+// FavoriteProjectsIDs returns the "favoriteProjects" edge IDs in the mutation.
 func (m *TeammateMutation) FavoriteProjectsIDs() (ids []ulid.ID) {
-	for id := range m.favorite_projects {
+	for id := range m.favoriteProjects {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetFavoriteProjects resets all changes to the "favorite_projects" edge.
+// ResetFavoriteProjects resets all changes to the "favoriteProjects" edge.
 func (m *TeammateMutation) ResetFavoriteProjects() {
-	m.favorite_projects = nil
-	m.clearedfavorite_projects = false
-	m.removedfavorite_projects = nil
+	m.favoriteProjects = nil
+	m.clearedfavoriteProjects = false
+	m.removedfavoriteProjects = nil
 }
 
-// AddFavoriteWorkspaceIDs adds the "favorite_workspaces" edge to the FavoriteWorkspace entity by ids.
+// AddFavoriteWorkspaceIDs adds the "favoriteWorkspaces" edge to the FavoriteWorkspace entity by ids.
 func (m *TeammateMutation) AddFavoriteWorkspaceIDs(ids ...ulid.ID) {
-	if m.favorite_workspaces == nil {
-		m.favorite_workspaces = make(map[ulid.ID]struct{})
+	if m.favoriteWorkspaces == nil {
+		m.favoriteWorkspaces = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		m.favorite_workspaces[ids[i]] = struct{}{}
+		m.favoriteWorkspaces[ids[i]] = struct{}{}
 	}
 }
 
-// ClearFavoriteWorkspaces clears the "favorite_workspaces" edge to the FavoriteWorkspace entity.
+// ClearFavoriteWorkspaces clears the "favoriteWorkspaces" edge to the FavoriteWorkspace entity.
 func (m *TeammateMutation) ClearFavoriteWorkspaces() {
-	m.clearedfavorite_workspaces = true
+	m.clearedfavoriteWorkspaces = true
 }
 
-// FavoriteWorkspacesCleared reports if the "favorite_workspaces" edge to the FavoriteWorkspace entity was cleared.
+// FavoriteWorkspacesCleared reports if the "favoriteWorkspaces" edge to the FavoriteWorkspace entity was cleared.
 func (m *TeammateMutation) FavoriteWorkspacesCleared() bool {
-	return m.clearedfavorite_workspaces
+	return m.clearedfavoriteWorkspaces
 }
 
-// RemoveFavoriteWorkspaceIDs removes the "favorite_workspaces" edge to the FavoriteWorkspace entity by IDs.
+// RemoveFavoriteWorkspaceIDs removes the "favoriteWorkspaces" edge to the FavoriteWorkspace entity by IDs.
 func (m *TeammateMutation) RemoveFavoriteWorkspaceIDs(ids ...ulid.ID) {
-	if m.removedfavorite_workspaces == nil {
-		m.removedfavorite_workspaces = make(map[ulid.ID]struct{})
+	if m.removedfavoriteWorkspaces == nil {
+		m.removedfavoriteWorkspaces = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		delete(m.favorite_workspaces, ids[i])
-		m.removedfavorite_workspaces[ids[i]] = struct{}{}
+		delete(m.favoriteWorkspaces, ids[i])
+		m.removedfavoriteWorkspaces[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedFavoriteWorkspaces returns the removed IDs of the "favorite_workspaces" edge to the FavoriteWorkspace entity.
+// RemovedFavoriteWorkspaces returns the removed IDs of the "favoriteWorkspaces" edge to the FavoriteWorkspace entity.
 func (m *TeammateMutation) RemovedFavoriteWorkspacesIDs() (ids []ulid.ID) {
-	for id := range m.removedfavorite_workspaces {
+	for id := range m.removedfavoriteWorkspaces {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// FavoriteWorkspacesIDs returns the "favorite_workspaces" edge IDs in the mutation.
+// FavoriteWorkspacesIDs returns the "favoriteWorkspaces" edge IDs in the mutation.
 func (m *TeammateMutation) FavoriteWorkspacesIDs() (ids []ulid.ID) {
-	for id := range m.favorite_workspaces {
+	for id := range m.favoriteWorkspaces {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetFavoriteWorkspaces resets all changes to the "favorite_workspaces" edge.
+// ResetFavoriteWorkspaces resets all changes to the "favoriteWorkspaces" edge.
 func (m *TeammateMutation) ResetFavoriteWorkspaces() {
-	m.favorite_workspaces = nil
-	m.clearedfavorite_workspaces = false
-	m.removedfavorite_workspaces = nil
+	m.favoriteWorkspaces = nil
+	m.clearedfavoriteWorkspaces = false
+	m.removedfavoriteWorkspaces = nil
 }
 
-// AddTeammateTaskTabStatusIDs adds the "teammate_task_tab_statuses" edge to the TeammateTaskTabStatus entity by ids.
-func (m *TeammateMutation) AddTeammateTaskTabStatusIDs(ids ...ulid.ID) {
-	if m.teammate_task_tab_statuses == nil {
-		m.teammate_task_tab_statuses = make(map[ulid.ID]struct{})
+// AddTeammateTaskTabStatuseIDs adds the "teammateTaskTabStatuses" edge to the TeammateTaskTabStatus entity by ids.
+func (m *TeammateMutation) AddTeammateTaskTabStatuseIDs(ids ...ulid.ID) {
+	if m.teammateTaskTabStatuses == nil {
+		m.teammateTaskTabStatuses = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		m.teammate_task_tab_statuses[ids[i]] = struct{}{}
+		m.teammateTaskTabStatuses[ids[i]] = struct{}{}
 	}
 }
 
-// ClearTeammateTaskTabStatuses clears the "teammate_task_tab_statuses" edge to the TeammateTaskTabStatus entity.
+// ClearTeammateTaskTabStatuses clears the "teammateTaskTabStatuses" edge to the TeammateTaskTabStatus entity.
 func (m *TeammateMutation) ClearTeammateTaskTabStatuses() {
-	m.clearedteammate_task_tab_statuses = true
+	m.clearedteammateTaskTabStatuses = true
 }
 
-// TeammateTaskTabStatusesCleared reports if the "teammate_task_tab_statuses" edge to the TeammateTaskTabStatus entity was cleared.
+// TeammateTaskTabStatusesCleared reports if the "teammateTaskTabStatuses" edge to the TeammateTaskTabStatus entity was cleared.
 func (m *TeammateMutation) TeammateTaskTabStatusesCleared() bool {
-	return m.clearedteammate_task_tab_statuses
+	return m.clearedteammateTaskTabStatuses
 }
 
-// RemoveTeammateTaskTabStatusIDs removes the "teammate_task_tab_statuses" edge to the TeammateTaskTabStatus entity by IDs.
-func (m *TeammateMutation) RemoveTeammateTaskTabStatusIDs(ids ...ulid.ID) {
-	if m.removedteammate_task_tab_statuses == nil {
-		m.removedteammate_task_tab_statuses = make(map[ulid.ID]struct{})
+// RemoveTeammateTaskTabStatuseIDs removes the "teammateTaskTabStatuses" edge to the TeammateTaskTabStatus entity by IDs.
+func (m *TeammateMutation) RemoveTeammateTaskTabStatuseIDs(ids ...ulid.ID) {
+	if m.removedteammateTaskTabStatuses == nil {
+		m.removedteammateTaskTabStatuses = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		delete(m.teammate_task_tab_statuses, ids[i])
-		m.removedteammate_task_tab_statuses[ids[i]] = struct{}{}
+		delete(m.teammateTaskTabStatuses, ids[i])
+		m.removedteammateTaskTabStatuses[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedTeammateTaskTabStatuses returns the removed IDs of the "teammate_task_tab_statuses" edge to the TeammateTaskTabStatus entity.
+// RemovedTeammateTaskTabStatuses returns the removed IDs of the "teammateTaskTabStatuses" edge to the TeammateTaskTabStatus entity.
 func (m *TeammateMutation) RemovedTeammateTaskTabStatusesIDs() (ids []ulid.ID) {
-	for id := range m.removedteammate_task_tab_statuses {
+	for id := range m.removedteammateTaskTabStatuses {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// TeammateTaskTabStatusesIDs returns the "teammate_task_tab_statuses" edge IDs in the mutation.
+// TeammateTaskTabStatusesIDs returns the "teammateTaskTabStatuses" edge IDs in the mutation.
 func (m *TeammateMutation) TeammateTaskTabStatusesIDs() (ids []ulid.ID) {
-	for id := range m.teammate_task_tab_statuses {
+	for id := range m.teammateTaskTabStatuses {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetTeammateTaskTabStatuses resets all changes to the "teammate_task_tab_statuses" edge.
+// ResetTeammateTaskTabStatuses resets all changes to the "teammateTaskTabStatuses" edge.
 func (m *TeammateMutation) ResetTeammateTaskTabStatuses() {
-	m.teammate_task_tab_statuses = nil
-	m.clearedteammate_task_tab_statuses = false
-	m.removedteammate_task_tab_statuses = nil
+	m.teammateTaskTabStatuses = nil
+	m.clearedteammateTaskTabStatuses = false
+	m.removedteammateTaskTabStatuses = nil
 }
 
-// AddTeammateTaskColumnIDs adds the "teammate_task_columns" edge to the TeammateTaskColumn entity by ids.
+// AddTeammateTaskColumnIDs adds the "teammateTaskColumns" edge to the TeammateTaskColumn entity by ids.
 func (m *TeammateMutation) AddTeammateTaskColumnIDs(ids ...ulid.ID) {
-	if m.teammate_task_columns == nil {
-		m.teammate_task_columns = make(map[ulid.ID]struct{})
+	if m.teammateTaskColumns == nil {
+		m.teammateTaskColumns = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		m.teammate_task_columns[ids[i]] = struct{}{}
+		m.teammateTaskColumns[ids[i]] = struct{}{}
 	}
 }
 
-// ClearTeammateTaskColumns clears the "teammate_task_columns" edge to the TeammateTaskColumn entity.
+// ClearTeammateTaskColumns clears the "teammateTaskColumns" edge to the TeammateTaskColumn entity.
 func (m *TeammateMutation) ClearTeammateTaskColumns() {
-	m.clearedteammate_task_columns = true
+	m.clearedteammateTaskColumns = true
 }
 
-// TeammateTaskColumnsCleared reports if the "teammate_task_columns" edge to the TeammateTaskColumn entity was cleared.
+// TeammateTaskColumnsCleared reports if the "teammateTaskColumns" edge to the TeammateTaskColumn entity was cleared.
 func (m *TeammateMutation) TeammateTaskColumnsCleared() bool {
-	return m.clearedteammate_task_columns
+	return m.clearedteammateTaskColumns
 }
 
-// RemoveTeammateTaskColumnIDs removes the "teammate_task_columns" edge to the TeammateTaskColumn entity by IDs.
+// RemoveTeammateTaskColumnIDs removes the "teammateTaskColumns" edge to the TeammateTaskColumn entity by IDs.
 func (m *TeammateMutation) RemoveTeammateTaskColumnIDs(ids ...ulid.ID) {
-	if m.removedteammate_task_columns == nil {
-		m.removedteammate_task_columns = make(map[ulid.ID]struct{})
+	if m.removedteammateTaskColumns == nil {
+		m.removedteammateTaskColumns = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		delete(m.teammate_task_columns, ids[i])
-		m.removedteammate_task_columns[ids[i]] = struct{}{}
+		delete(m.teammateTaskColumns, ids[i])
+		m.removedteammateTaskColumns[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedTeammateTaskColumns returns the removed IDs of the "teammate_task_columns" edge to the TeammateTaskColumn entity.
+// RemovedTeammateTaskColumns returns the removed IDs of the "teammateTaskColumns" edge to the TeammateTaskColumn entity.
 func (m *TeammateMutation) RemovedTeammateTaskColumnsIDs() (ids []ulid.ID) {
-	for id := range m.removedteammate_task_columns {
+	for id := range m.removedteammateTaskColumns {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// TeammateTaskColumnsIDs returns the "teammate_task_columns" edge IDs in the mutation.
+// TeammateTaskColumnsIDs returns the "teammateTaskColumns" edge IDs in the mutation.
 func (m *TeammateMutation) TeammateTaskColumnsIDs() (ids []ulid.ID) {
-	for id := range m.teammate_task_columns {
+	for id := range m.teammateTaskColumns {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetTeammateTaskColumns resets all changes to the "teammate_task_columns" edge.
+// ResetTeammateTaskColumns resets all changes to the "teammateTaskColumns" edge.
 func (m *TeammateMutation) ResetTeammateTaskColumns() {
-	m.teammate_task_columns = nil
-	m.clearedteammate_task_columns = false
-	m.removedteammate_task_columns = nil
+	m.teammateTaskColumns = nil
+	m.clearedteammateTaskColumns = false
+	m.removedteammateTaskColumns = nil
 }
 
-// AddTeammateTaskListStatusIDs adds the "teammate_task_list_statuses" edge to the TeammateTaskListStatus entity by ids.
-func (m *TeammateMutation) AddTeammateTaskListStatusIDs(ids ...ulid.ID) {
-	if m.teammate_task_list_statuses == nil {
-		m.teammate_task_list_statuses = make(map[ulid.ID]struct{})
+// AddTeammateTaskListStatuseIDs adds the "teammateTaskListStatuses" edge to the TeammateTaskListStatus entity by ids.
+func (m *TeammateMutation) AddTeammateTaskListStatuseIDs(ids ...ulid.ID) {
+	if m.teammateTaskListStatuses == nil {
+		m.teammateTaskListStatuses = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		m.teammate_task_list_statuses[ids[i]] = struct{}{}
+		m.teammateTaskListStatuses[ids[i]] = struct{}{}
 	}
 }
 
-// ClearTeammateTaskListStatuses clears the "teammate_task_list_statuses" edge to the TeammateTaskListStatus entity.
+// ClearTeammateTaskListStatuses clears the "teammateTaskListStatuses" edge to the TeammateTaskListStatus entity.
 func (m *TeammateMutation) ClearTeammateTaskListStatuses() {
-	m.clearedteammate_task_list_statuses = true
+	m.clearedteammateTaskListStatuses = true
 }
 
-// TeammateTaskListStatusesCleared reports if the "teammate_task_list_statuses" edge to the TeammateTaskListStatus entity was cleared.
+// TeammateTaskListStatusesCleared reports if the "teammateTaskListStatuses" edge to the TeammateTaskListStatus entity was cleared.
 func (m *TeammateMutation) TeammateTaskListStatusesCleared() bool {
-	return m.clearedteammate_task_list_statuses
+	return m.clearedteammateTaskListStatuses
 }
 
-// RemoveTeammateTaskListStatusIDs removes the "teammate_task_list_statuses" edge to the TeammateTaskListStatus entity by IDs.
-func (m *TeammateMutation) RemoveTeammateTaskListStatusIDs(ids ...ulid.ID) {
-	if m.removedteammate_task_list_statuses == nil {
-		m.removedteammate_task_list_statuses = make(map[ulid.ID]struct{})
+// RemoveTeammateTaskListStatuseIDs removes the "teammateTaskListStatuses" edge to the TeammateTaskListStatus entity by IDs.
+func (m *TeammateMutation) RemoveTeammateTaskListStatuseIDs(ids ...ulid.ID) {
+	if m.removedteammateTaskListStatuses == nil {
+		m.removedteammateTaskListStatuses = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		delete(m.teammate_task_list_statuses, ids[i])
-		m.removedteammate_task_list_statuses[ids[i]] = struct{}{}
+		delete(m.teammateTaskListStatuses, ids[i])
+		m.removedteammateTaskListStatuses[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedTeammateTaskListStatuses returns the removed IDs of the "teammate_task_list_statuses" edge to the TeammateTaskListStatus entity.
+// RemovedTeammateTaskListStatuses returns the removed IDs of the "teammateTaskListStatuses" edge to the TeammateTaskListStatus entity.
 func (m *TeammateMutation) RemovedTeammateTaskListStatusesIDs() (ids []ulid.ID) {
-	for id := range m.removedteammate_task_list_statuses {
+	for id := range m.removedteammateTaskListStatuses {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// TeammateTaskListStatusesIDs returns the "teammate_task_list_statuses" edge IDs in the mutation.
+// TeammateTaskListStatusesIDs returns the "teammateTaskListStatuses" edge IDs in the mutation.
 func (m *TeammateMutation) TeammateTaskListStatusesIDs() (ids []ulid.ID) {
-	for id := range m.teammate_task_list_statuses {
+	for id := range m.teammateTaskListStatuses {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetTeammateTaskListStatuses resets all changes to the "teammate_task_list_statuses" edge.
+// ResetTeammateTaskListStatuses resets all changes to the "teammateTaskListStatuses" edge.
 func (m *TeammateMutation) ResetTeammateTaskListStatuses() {
-	m.teammate_task_list_statuses = nil
-	m.clearedteammate_task_list_statuses = false
-	m.removedteammate_task_list_statuses = nil
+	m.teammateTaskListStatuses = nil
+	m.clearedteammateTaskListStatuses = false
+	m.removedteammateTaskListStatuses = nil
 }
 
-// AddTeammateTaskSectionIDs adds the "teammate_task_sections" edge to the TeammateTaskSection entity by ids.
+// AddTeammateTaskSectionIDs adds the "teammateTaskSections" edge to the TeammateTaskSection entity by ids.
 func (m *TeammateMutation) AddTeammateTaskSectionIDs(ids ...ulid.ID) {
-	if m.teammate_task_sections == nil {
-		m.teammate_task_sections = make(map[ulid.ID]struct{})
+	if m.teammateTaskSections == nil {
+		m.teammateTaskSections = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		m.teammate_task_sections[ids[i]] = struct{}{}
+		m.teammateTaskSections[ids[i]] = struct{}{}
 	}
 }
 
-// ClearTeammateTaskSections clears the "teammate_task_sections" edge to the TeammateTaskSection entity.
+// ClearTeammateTaskSections clears the "teammateTaskSections" edge to the TeammateTaskSection entity.
 func (m *TeammateMutation) ClearTeammateTaskSections() {
-	m.clearedteammate_task_sections = true
+	m.clearedteammateTaskSections = true
 }
 
-// TeammateTaskSectionsCleared reports if the "teammate_task_sections" edge to the TeammateTaskSection entity was cleared.
+// TeammateTaskSectionsCleared reports if the "teammateTaskSections" edge to the TeammateTaskSection entity was cleared.
 func (m *TeammateMutation) TeammateTaskSectionsCleared() bool {
-	return m.clearedteammate_task_sections
+	return m.clearedteammateTaskSections
 }
 
-// RemoveTeammateTaskSectionIDs removes the "teammate_task_sections" edge to the TeammateTaskSection entity by IDs.
+// RemoveTeammateTaskSectionIDs removes the "teammateTaskSections" edge to the TeammateTaskSection entity by IDs.
 func (m *TeammateMutation) RemoveTeammateTaskSectionIDs(ids ...ulid.ID) {
-	if m.removedteammate_task_sections == nil {
-		m.removedteammate_task_sections = make(map[ulid.ID]struct{})
+	if m.removedteammateTaskSections == nil {
+		m.removedteammateTaskSections = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		delete(m.teammate_task_sections, ids[i])
-		m.removedteammate_task_sections[ids[i]] = struct{}{}
+		delete(m.teammateTaskSections, ids[i])
+		m.removedteammateTaskSections[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedTeammateTaskSections returns the removed IDs of the "teammate_task_sections" edge to the TeammateTaskSection entity.
+// RemovedTeammateTaskSections returns the removed IDs of the "teammateTaskSections" edge to the TeammateTaskSection entity.
 func (m *TeammateMutation) RemovedTeammateTaskSectionsIDs() (ids []ulid.ID) {
-	for id := range m.removedteammate_task_sections {
+	for id := range m.removedteammateTaskSections {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// TeammateTaskSectionsIDs returns the "teammate_task_sections" edge IDs in the mutation.
+// TeammateTaskSectionsIDs returns the "teammateTaskSections" edge IDs in the mutation.
 func (m *TeammateMutation) TeammateTaskSectionsIDs() (ids []ulid.ID) {
-	for id := range m.teammate_task_sections {
+	for id := range m.teammateTaskSections {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetTeammateTaskSections resets all changes to the "teammate_task_sections" edge.
+// ResetTeammateTaskSections resets all changes to the "teammateTaskSections" edge.
 func (m *TeammateMutation) ResetTeammateTaskSections() {
-	m.teammate_task_sections = nil
-	m.clearedteammate_task_sections = false
-	m.removedteammate_task_sections = nil
+	m.teammateTaskSections = nil
+	m.clearedteammateTaskSections = false
+	m.removedteammateTaskSections = nil
 }
 
 // AddTaskIDs adds the "tasks" edge to the Task entity by ids.
@@ -20653,274 +20653,274 @@ func (m *TeammateMutation) ResetTasks() {
 	m.removedtasks = nil
 }
 
-// AddTeammateTaskIDs adds the "teammate_tasks" edge to the TeammateTask entity by ids.
+// AddTeammateTaskIDs adds the "teammateTasks" edge to the TeammateTask entity by ids.
 func (m *TeammateMutation) AddTeammateTaskIDs(ids ...ulid.ID) {
-	if m.teammate_tasks == nil {
-		m.teammate_tasks = make(map[ulid.ID]struct{})
+	if m.teammateTasks == nil {
+		m.teammateTasks = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		m.teammate_tasks[ids[i]] = struct{}{}
+		m.teammateTasks[ids[i]] = struct{}{}
 	}
 }
 
-// ClearTeammateTasks clears the "teammate_tasks" edge to the TeammateTask entity.
+// ClearTeammateTasks clears the "teammateTasks" edge to the TeammateTask entity.
 func (m *TeammateMutation) ClearTeammateTasks() {
-	m.clearedteammate_tasks = true
+	m.clearedteammateTasks = true
 }
 
-// TeammateTasksCleared reports if the "teammate_tasks" edge to the TeammateTask entity was cleared.
+// TeammateTasksCleared reports if the "teammateTasks" edge to the TeammateTask entity was cleared.
 func (m *TeammateMutation) TeammateTasksCleared() bool {
-	return m.clearedteammate_tasks
+	return m.clearedteammateTasks
 }
 
-// RemoveTeammateTaskIDs removes the "teammate_tasks" edge to the TeammateTask entity by IDs.
+// RemoveTeammateTaskIDs removes the "teammateTasks" edge to the TeammateTask entity by IDs.
 func (m *TeammateMutation) RemoveTeammateTaskIDs(ids ...ulid.ID) {
-	if m.removedteammate_tasks == nil {
-		m.removedteammate_tasks = make(map[ulid.ID]struct{})
+	if m.removedteammateTasks == nil {
+		m.removedteammateTasks = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		delete(m.teammate_tasks, ids[i])
-		m.removedteammate_tasks[ids[i]] = struct{}{}
+		delete(m.teammateTasks, ids[i])
+		m.removedteammateTasks[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedTeammateTasks returns the removed IDs of the "teammate_tasks" edge to the TeammateTask entity.
+// RemovedTeammateTasks returns the removed IDs of the "teammateTasks" edge to the TeammateTask entity.
 func (m *TeammateMutation) RemovedTeammateTasksIDs() (ids []ulid.ID) {
-	for id := range m.removedteammate_tasks {
+	for id := range m.removedteammateTasks {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// TeammateTasksIDs returns the "teammate_tasks" edge IDs in the mutation.
+// TeammateTasksIDs returns the "teammateTasks" edge IDs in the mutation.
 func (m *TeammateMutation) TeammateTasksIDs() (ids []ulid.ID) {
-	for id := range m.teammate_tasks {
+	for id := range m.teammateTasks {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetTeammateTasks resets all changes to the "teammate_tasks" edge.
+// ResetTeammateTasks resets all changes to the "teammateTasks" edge.
 func (m *TeammateMutation) ResetTeammateTasks() {
-	m.teammate_tasks = nil
-	m.clearedteammate_tasks = false
-	m.removedteammate_tasks = nil
+	m.teammateTasks = nil
+	m.clearedteammateTasks = false
+	m.removedteammateTasks = nil
 }
 
-// AddTaskLikeIDs adds the "task_likes" edge to the TaskLike entity by ids.
+// AddTaskLikeIDs adds the "taskLikes" edge to the TaskLike entity by ids.
 func (m *TeammateMutation) AddTaskLikeIDs(ids ...ulid.ID) {
-	if m.task_likes == nil {
-		m.task_likes = make(map[ulid.ID]struct{})
+	if m.taskLikes == nil {
+		m.taskLikes = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		m.task_likes[ids[i]] = struct{}{}
+		m.taskLikes[ids[i]] = struct{}{}
 	}
 }
 
-// ClearTaskLikes clears the "task_likes" edge to the TaskLike entity.
+// ClearTaskLikes clears the "taskLikes" edge to the TaskLike entity.
 func (m *TeammateMutation) ClearTaskLikes() {
-	m.clearedtask_likes = true
+	m.clearedtaskLikes = true
 }
 
-// TaskLikesCleared reports if the "task_likes" edge to the TaskLike entity was cleared.
+// TaskLikesCleared reports if the "taskLikes" edge to the TaskLike entity was cleared.
 func (m *TeammateMutation) TaskLikesCleared() bool {
-	return m.clearedtask_likes
+	return m.clearedtaskLikes
 }
 
-// RemoveTaskLikeIDs removes the "task_likes" edge to the TaskLike entity by IDs.
+// RemoveTaskLikeIDs removes the "taskLikes" edge to the TaskLike entity by IDs.
 func (m *TeammateMutation) RemoveTaskLikeIDs(ids ...ulid.ID) {
-	if m.removedtask_likes == nil {
-		m.removedtask_likes = make(map[ulid.ID]struct{})
+	if m.removedtaskLikes == nil {
+		m.removedtaskLikes = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		delete(m.task_likes, ids[i])
-		m.removedtask_likes[ids[i]] = struct{}{}
+		delete(m.taskLikes, ids[i])
+		m.removedtaskLikes[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedTaskLikes returns the removed IDs of the "task_likes" edge to the TaskLike entity.
+// RemovedTaskLikes returns the removed IDs of the "taskLikes" edge to the TaskLike entity.
 func (m *TeammateMutation) RemovedTaskLikesIDs() (ids []ulid.ID) {
-	for id := range m.removedtask_likes {
+	for id := range m.removedtaskLikes {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// TaskLikesIDs returns the "task_likes" edge IDs in the mutation.
+// TaskLikesIDs returns the "taskLikes" edge IDs in the mutation.
 func (m *TeammateMutation) TaskLikesIDs() (ids []ulid.ID) {
-	for id := range m.task_likes {
+	for id := range m.taskLikes {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetTaskLikes resets all changes to the "task_likes" edge.
+// ResetTaskLikes resets all changes to the "taskLikes" edge.
 func (m *TeammateMutation) ResetTaskLikes() {
-	m.task_likes = nil
-	m.clearedtask_likes = false
-	m.removedtask_likes = nil
+	m.taskLikes = nil
+	m.clearedtaskLikes = false
+	m.removedtaskLikes = nil
 }
 
-// AddTaskCollaboratorIDs adds the "task_collaborators" edge to the TaskCollaborator entity by ids.
+// AddTaskCollaboratorIDs adds the "taskCollaborators" edge to the TaskCollaborator entity by ids.
 func (m *TeammateMutation) AddTaskCollaboratorIDs(ids ...ulid.ID) {
-	if m.task_collaborators == nil {
-		m.task_collaborators = make(map[ulid.ID]struct{})
+	if m.taskCollaborators == nil {
+		m.taskCollaborators = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		m.task_collaborators[ids[i]] = struct{}{}
+		m.taskCollaborators[ids[i]] = struct{}{}
 	}
 }
 
-// ClearTaskCollaborators clears the "task_collaborators" edge to the TaskCollaborator entity.
+// ClearTaskCollaborators clears the "taskCollaborators" edge to the TaskCollaborator entity.
 func (m *TeammateMutation) ClearTaskCollaborators() {
-	m.clearedtask_collaborators = true
+	m.clearedtaskCollaborators = true
 }
 
-// TaskCollaboratorsCleared reports if the "task_collaborators" edge to the TaskCollaborator entity was cleared.
+// TaskCollaboratorsCleared reports if the "taskCollaborators" edge to the TaskCollaborator entity was cleared.
 func (m *TeammateMutation) TaskCollaboratorsCleared() bool {
-	return m.clearedtask_collaborators
+	return m.clearedtaskCollaborators
 }
 
-// RemoveTaskCollaboratorIDs removes the "task_collaborators" edge to the TaskCollaborator entity by IDs.
+// RemoveTaskCollaboratorIDs removes the "taskCollaborators" edge to the TaskCollaborator entity by IDs.
 func (m *TeammateMutation) RemoveTaskCollaboratorIDs(ids ...ulid.ID) {
-	if m.removedtask_collaborators == nil {
-		m.removedtask_collaborators = make(map[ulid.ID]struct{})
+	if m.removedtaskCollaborators == nil {
+		m.removedtaskCollaborators = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		delete(m.task_collaborators, ids[i])
-		m.removedtask_collaborators[ids[i]] = struct{}{}
+		delete(m.taskCollaborators, ids[i])
+		m.removedtaskCollaborators[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedTaskCollaborators returns the removed IDs of the "task_collaborators" edge to the TaskCollaborator entity.
+// RemovedTaskCollaborators returns the removed IDs of the "taskCollaborators" edge to the TaskCollaborator entity.
 func (m *TeammateMutation) RemovedTaskCollaboratorsIDs() (ids []ulid.ID) {
-	for id := range m.removedtask_collaborators {
+	for id := range m.removedtaskCollaborators {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// TaskCollaboratorsIDs returns the "task_collaborators" edge IDs in the mutation.
+// TaskCollaboratorsIDs returns the "taskCollaborators" edge IDs in the mutation.
 func (m *TeammateMutation) TaskCollaboratorsIDs() (ids []ulid.ID) {
-	for id := range m.task_collaborators {
+	for id := range m.taskCollaborators {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetTaskCollaborators resets all changes to the "task_collaborators" edge.
+// ResetTaskCollaborators resets all changes to the "taskCollaborators" edge.
 func (m *TeammateMutation) ResetTaskCollaborators() {
-	m.task_collaborators = nil
-	m.clearedtask_collaborators = false
-	m.removedtask_collaborators = nil
+	m.taskCollaborators = nil
+	m.clearedtaskCollaborators = false
+	m.removedtaskCollaborators = nil
 }
 
-// AddTaskFeedIDs adds the "task_feeds" edge to the TaskFeed entity by ids.
+// AddTaskFeedIDs adds the "taskFeeds" edge to the TaskFeed entity by ids.
 func (m *TeammateMutation) AddTaskFeedIDs(ids ...ulid.ID) {
-	if m.task_feeds == nil {
-		m.task_feeds = make(map[ulid.ID]struct{})
+	if m.taskFeeds == nil {
+		m.taskFeeds = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		m.task_feeds[ids[i]] = struct{}{}
+		m.taskFeeds[ids[i]] = struct{}{}
 	}
 }
 
-// ClearTaskFeeds clears the "task_feeds" edge to the TaskFeed entity.
+// ClearTaskFeeds clears the "taskFeeds" edge to the TaskFeed entity.
 func (m *TeammateMutation) ClearTaskFeeds() {
-	m.clearedtask_feeds = true
+	m.clearedtaskFeeds = true
 }
 
-// TaskFeedsCleared reports if the "task_feeds" edge to the TaskFeed entity was cleared.
+// TaskFeedsCleared reports if the "taskFeeds" edge to the TaskFeed entity was cleared.
 func (m *TeammateMutation) TaskFeedsCleared() bool {
-	return m.clearedtask_feeds
+	return m.clearedtaskFeeds
 }
 
-// RemoveTaskFeedIDs removes the "task_feeds" edge to the TaskFeed entity by IDs.
+// RemoveTaskFeedIDs removes the "taskFeeds" edge to the TaskFeed entity by IDs.
 func (m *TeammateMutation) RemoveTaskFeedIDs(ids ...ulid.ID) {
-	if m.removedtask_feeds == nil {
-		m.removedtask_feeds = make(map[ulid.ID]struct{})
+	if m.removedtaskFeeds == nil {
+		m.removedtaskFeeds = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		delete(m.task_feeds, ids[i])
-		m.removedtask_feeds[ids[i]] = struct{}{}
+		delete(m.taskFeeds, ids[i])
+		m.removedtaskFeeds[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedTaskFeeds returns the removed IDs of the "task_feeds" edge to the TaskFeed entity.
+// RemovedTaskFeeds returns the removed IDs of the "taskFeeds" edge to the TaskFeed entity.
 func (m *TeammateMutation) RemovedTaskFeedsIDs() (ids []ulid.ID) {
-	for id := range m.removedtask_feeds {
+	for id := range m.removedtaskFeeds {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// TaskFeedsIDs returns the "task_feeds" edge IDs in the mutation.
+// TaskFeedsIDs returns the "taskFeeds" edge IDs in the mutation.
 func (m *TeammateMutation) TaskFeedsIDs() (ids []ulid.ID) {
-	for id := range m.task_feeds {
+	for id := range m.taskFeeds {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetTaskFeeds resets all changes to the "task_feeds" edge.
+// ResetTaskFeeds resets all changes to the "taskFeeds" edge.
 func (m *TeammateMutation) ResetTaskFeeds() {
-	m.task_feeds = nil
-	m.clearedtask_feeds = false
-	m.removedtask_feeds = nil
+	m.taskFeeds = nil
+	m.clearedtaskFeeds = false
+	m.removedtaskFeeds = nil
 }
 
-// AddTaskFeedLikeIDs adds the "task_feed_likes" edge to the TaskFeedLike entity by ids.
+// AddTaskFeedLikeIDs adds the "taskFeedLikes" edge to the TaskFeedLike entity by ids.
 func (m *TeammateMutation) AddTaskFeedLikeIDs(ids ...ulid.ID) {
-	if m.task_feed_likes == nil {
-		m.task_feed_likes = make(map[ulid.ID]struct{})
+	if m.taskFeedLikes == nil {
+		m.taskFeedLikes = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		m.task_feed_likes[ids[i]] = struct{}{}
+		m.taskFeedLikes[ids[i]] = struct{}{}
 	}
 }
 
-// ClearTaskFeedLikes clears the "task_feed_likes" edge to the TaskFeedLike entity.
+// ClearTaskFeedLikes clears the "taskFeedLikes" edge to the TaskFeedLike entity.
 func (m *TeammateMutation) ClearTaskFeedLikes() {
-	m.clearedtask_feed_likes = true
+	m.clearedtaskFeedLikes = true
 }
 
-// TaskFeedLikesCleared reports if the "task_feed_likes" edge to the TaskFeedLike entity was cleared.
+// TaskFeedLikesCleared reports if the "taskFeedLikes" edge to the TaskFeedLike entity was cleared.
 func (m *TeammateMutation) TaskFeedLikesCleared() bool {
-	return m.clearedtask_feed_likes
+	return m.clearedtaskFeedLikes
 }
 
-// RemoveTaskFeedLikeIDs removes the "task_feed_likes" edge to the TaskFeedLike entity by IDs.
+// RemoveTaskFeedLikeIDs removes the "taskFeedLikes" edge to the TaskFeedLike entity by IDs.
 func (m *TeammateMutation) RemoveTaskFeedLikeIDs(ids ...ulid.ID) {
-	if m.removedtask_feed_likes == nil {
-		m.removedtask_feed_likes = make(map[ulid.ID]struct{})
+	if m.removedtaskFeedLikes == nil {
+		m.removedtaskFeedLikes = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		delete(m.task_feed_likes, ids[i])
-		m.removedtask_feed_likes[ids[i]] = struct{}{}
+		delete(m.taskFeedLikes, ids[i])
+		m.removedtaskFeedLikes[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedTaskFeedLikes returns the removed IDs of the "task_feed_likes" edge to the TaskFeedLike entity.
+// RemovedTaskFeedLikes returns the removed IDs of the "taskFeedLikes" edge to the TaskFeedLike entity.
 func (m *TeammateMutation) RemovedTaskFeedLikesIDs() (ids []ulid.ID) {
-	for id := range m.removedtask_feed_likes {
+	for id := range m.removedtaskFeedLikes {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// TaskFeedLikesIDs returns the "task_feed_likes" edge IDs in the mutation.
+// TaskFeedLikesIDs returns the "taskFeedLikes" edge IDs in the mutation.
 func (m *TeammateMutation) TaskFeedLikesIDs() (ids []ulid.ID) {
-	for id := range m.task_feed_likes {
+	for id := range m.taskFeedLikes {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetTaskFeedLikes resets all changes to the "task_feed_likes" edge.
+// ResetTaskFeedLikes resets all changes to the "taskFeedLikes" edge.
 func (m *TeammateMutation) ResetTaskFeedLikes() {
-	m.task_feed_likes = nil
-	m.clearedtask_feed_likes = false
-	m.removedtask_feed_likes = nil
+	m.taskFeedLikes = nil
+	m.clearedtaskFeedLikes = false
+	m.removedtaskFeedLikes = nil
 }
 
 // Where appends a list predicates to the TeammateMutation builder.
@@ -21116,46 +21116,46 @@ func (m *TeammateMutation) AddedEdges() []string {
 	if m.projects != nil {
 		edges = append(edges, teammate.EdgeProjects)
 	}
-	if m.project_teammates != nil {
+	if m.projectTeammates != nil {
 		edges = append(edges, teammate.EdgeProjectTeammates)
 	}
-	if m.workspace_teammates != nil {
+	if m.workspaceTeammates != nil {
 		edges = append(edges, teammate.EdgeWorkspaceTeammates)
 	}
-	if m.favorite_projects != nil {
+	if m.favoriteProjects != nil {
 		edges = append(edges, teammate.EdgeFavoriteProjects)
 	}
-	if m.favorite_workspaces != nil {
+	if m.favoriteWorkspaces != nil {
 		edges = append(edges, teammate.EdgeFavoriteWorkspaces)
 	}
-	if m.teammate_task_tab_statuses != nil {
+	if m.teammateTaskTabStatuses != nil {
 		edges = append(edges, teammate.EdgeTeammateTaskTabStatuses)
 	}
-	if m.teammate_task_columns != nil {
+	if m.teammateTaskColumns != nil {
 		edges = append(edges, teammate.EdgeTeammateTaskColumns)
 	}
-	if m.teammate_task_list_statuses != nil {
+	if m.teammateTaskListStatuses != nil {
 		edges = append(edges, teammate.EdgeTeammateTaskListStatuses)
 	}
-	if m.teammate_task_sections != nil {
+	if m.teammateTaskSections != nil {
 		edges = append(edges, teammate.EdgeTeammateTaskSections)
 	}
 	if m.tasks != nil {
 		edges = append(edges, teammate.EdgeTasks)
 	}
-	if m.teammate_tasks != nil {
+	if m.teammateTasks != nil {
 		edges = append(edges, teammate.EdgeTeammateTasks)
 	}
-	if m.task_likes != nil {
+	if m.taskLikes != nil {
 		edges = append(edges, teammate.EdgeTaskLikes)
 	}
-	if m.task_collaborators != nil {
+	if m.taskCollaborators != nil {
 		edges = append(edges, teammate.EdgeTaskCollaborators)
 	}
-	if m.task_feeds != nil {
+	if m.taskFeeds != nil {
 		edges = append(edges, teammate.EdgeTaskFeeds)
 	}
-	if m.task_feed_likes != nil {
+	if m.taskFeedLikes != nil {
 		edges = append(edges, teammate.EdgeTaskFeedLikes)
 	}
 	return edges
@@ -21178,50 +21178,50 @@ func (m *TeammateMutation) AddedIDs(name string) []ent.Value {
 		}
 		return ids
 	case teammate.EdgeProjectTeammates:
-		ids := make([]ent.Value, 0, len(m.project_teammates))
-		for id := range m.project_teammates {
+		ids := make([]ent.Value, 0, len(m.projectTeammates))
+		for id := range m.projectTeammates {
 			ids = append(ids, id)
 		}
 		return ids
 	case teammate.EdgeWorkspaceTeammates:
-		ids := make([]ent.Value, 0, len(m.workspace_teammates))
-		for id := range m.workspace_teammates {
+		ids := make([]ent.Value, 0, len(m.workspaceTeammates))
+		for id := range m.workspaceTeammates {
 			ids = append(ids, id)
 		}
 		return ids
 	case teammate.EdgeFavoriteProjects:
-		ids := make([]ent.Value, 0, len(m.favorite_projects))
-		for id := range m.favorite_projects {
+		ids := make([]ent.Value, 0, len(m.favoriteProjects))
+		for id := range m.favoriteProjects {
 			ids = append(ids, id)
 		}
 		return ids
 	case teammate.EdgeFavoriteWorkspaces:
-		ids := make([]ent.Value, 0, len(m.favorite_workspaces))
-		for id := range m.favorite_workspaces {
+		ids := make([]ent.Value, 0, len(m.favoriteWorkspaces))
+		for id := range m.favoriteWorkspaces {
 			ids = append(ids, id)
 		}
 		return ids
 	case teammate.EdgeTeammateTaskTabStatuses:
-		ids := make([]ent.Value, 0, len(m.teammate_task_tab_statuses))
-		for id := range m.teammate_task_tab_statuses {
+		ids := make([]ent.Value, 0, len(m.teammateTaskTabStatuses))
+		for id := range m.teammateTaskTabStatuses {
 			ids = append(ids, id)
 		}
 		return ids
 	case teammate.EdgeTeammateTaskColumns:
-		ids := make([]ent.Value, 0, len(m.teammate_task_columns))
-		for id := range m.teammate_task_columns {
+		ids := make([]ent.Value, 0, len(m.teammateTaskColumns))
+		for id := range m.teammateTaskColumns {
 			ids = append(ids, id)
 		}
 		return ids
 	case teammate.EdgeTeammateTaskListStatuses:
-		ids := make([]ent.Value, 0, len(m.teammate_task_list_statuses))
-		for id := range m.teammate_task_list_statuses {
+		ids := make([]ent.Value, 0, len(m.teammateTaskListStatuses))
+		for id := range m.teammateTaskListStatuses {
 			ids = append(ids, id)
 		}
 		return ids
 	case teammate.EdgeTeammateTaskSections:
-		ids := make([]ent.Value, 0, len(m.teammate_task_sections))
-		for id := range m.teammate_task_sections {
+		ids := make([]ent.Value, 0, len(m.teammateTaskSections))
+		for id := range m.teammateTaskSections {
 			ids = append(ids, id)
 		}
 		return ids
@@ -21232,32 +21232,32 @@ func (m *TeammateMutation) AddedIDs(name string) []ent.Value {
 		}
 		return ids
 	case teammate.EdgeTeammateTasks:
-		ids := make([]ent.Value, 0, len(m.teammate_tasks))
-		for id := range m.teammate_tasks {
+		ids := make([]ent.Value, 0, len(m.teammateTasks))
+		for id := range m.teammateTasks {
 			ids = append(ids, id)
 		}
 		return ids
 	case teammate.EdgeTaskLikes:
-		ids := make([]ent.Value, 0, len(m.task_likes))
-		for id := range m.task_likes {
+		ids := make([]ent.Value, 0, len(m.taskLikes))
+		for id := range m.taskLikes {
 			ids = append(ids, id)
 		}
 		return ids
 	case teammate.EdgeTaskCollaborators:
-		ids := make([]ent.Value, 0, len(m.task_collaborators))
-		for id := range m.task_collaborators {
+		ids := make([]ent.Value, 0, len(m.taskCollaborators))
+		for id := range m.taskCollaborators {
 			ids = append(ids, id)
 		}
 		return ids
 	case teammate.EdgeTaskFeeds:
-		ids := make([]ent.Value, 0, len(m.task_feeds))
-		for id := range m.task_feeds {
+		ids := make([]ent.Value, 0, len(m.taskFeeds))
+		for id := range m.taskFeeds {
 			ids = append(ids, id)
 		}
 		return ids
 	case teammate.EdgeTaskFeedLikes:
-		ids := make([]ent.Value, 0, len(m.task_feed_likes))
-		for id := range m.task_feed_likes {
+		ids := make([]ent.Value, 0, len(m.taskFeedLikes))
+		for id := range m.taskFeedLikes {
 			ids = append(ids, id)
 		}
 		return ids
@@ -21274,46 +21274,46 @@ func (m *TeammateMutation) RemovedEdges() []string {
 	if m.removedprojects != nil {
 		edges = append(edges, teammate.EdgeProjects)
 	}
-	if m.removedproject_teammates != nil {
+	if m.removedprojectTeammates != nil {
 		edges = append(edges, teammate.EdgeProjectTeammates)
 	}
-	if m.removedworkspace_teammates != nil {
+	if m.removedworkspaceTeammates != nil {
 		edges = append(edges, teammate.EdgeWorkspaceTeammates)
 	}
-	if m.removedfavorite_projects != nil {
+	if m.removedfavoriteProjects != nil {
 		edges = append(edges, teammate.EdgeFavoriteProjects)
 	}
-	if m.removedfavorite_workspaces != nil {
+	if m.removedfavoriteWorkspaces != nil {
 		edges = append(edges, teammate.EdgeFavoriteWorkspaces)
 	}
-	if m.removedteammate_task_tab_statuses != nil {
+	if m.removedteammateTaskTabStatuses != nil {
 		edges = append(edges, teammate.EdgeTeammateTaskTabStatuses)
 	}
-	if m.removedteammate_task_columns != nil {
+	if m.removedteammateTaskColumns != nil {
 		edges = append(edges, teammate.EdgeTeammateTaskColumns)
 	}
-	if m.removedteammate_task_list_statuses != nil {
+	if m.removedteammateTaskListStatuses != nil {
 		edges = append(edges, teammate.EdgeTeammateTaskListStatuses)
 	}
-	if m.removedteammate_task_sections != nil {
+	if m.removedteammateTaskSections != nil {
 		edges = append(edges, teammate.EdgeTeammateTaskSections)
 	}
 	if m.removedtasks != nil {
 		edges = append(edges, teammate.EdgeTasks)
 	}
-	if m.removedteammate_tasks != nil {
+	if m.removedteammateTasks != nil {
 		edges = append(edges, teammate.EdgeTeammateTasks)
 	}
-	if m.removedtask_likes != nil {
+	if m.removedtaskLikes != nil {
 		edges = append(edges, teammate.EdgeTaskLikes)
 	}
-	if m.removedtask_collaborators != nil {
+	if m.removedtaskCollaborators != nil {
 		edges = append(edges, teammate.EdgeTaskCollaborators)
 	}
-	if m.removedtask_feeds != nil {
+	if m.removedtaskFeeds != nil {
 		edges = append(edges, teammate.EdgeTaskFeeds)
 	}
-	if m.removedtask_feed_likes != nil {
+	if m.removedtaskFeedLikes != nil {
 		edges = append(edges, teammate.EdgeTaskFeedLikes)
 	}
 	return edges
@@ -21336,50 +21336,50 @@ func (m *TeammateMutation) RemovedIDs(name string) []ent.Value {
 		}
 		return ids
 	case teammate.EdgeProjectTeammates:
-		ids := make([]ent.Value, 0, len(m.removedproject_teammates))
-		for id := range m.removedproject_teammates {
+		ids := make([]ent.Value, 0, len(m.removedprojectTeammates))
+		for id := range m.removedprojectTeammates {
 			ids = append(ids, id)
 		}
 		return ids
 	case teammate.EdgeWorkspaceTeammates:
-		ids := make([]ent.Value, 0, len(m.removedworkspace_teammates))
-		for id := range m.removedworkspace_teammates {
+		ids := make([]ent.Value, 0, len(m.removedworkspaceTeammates))
+		for id := range m.removedworkspaceTeammates {
 			ids = append(ids, id)
 		}
 		return ids
 	case teammate.EdgeFavoriteProjects:
-		ids := make([]ent.Value, 0, len(m.removedfavorite_projects))
-		for id := range m.removedfavorite_projects {
+		ids := make([]ent.Value, 0, len(m.removedfavoriteProjects))
+		for id := range m.removedfavoriteProjects {
 			ids = append(ids, id)
 		}
 		return ids
 	case teammate.EdgeFavoriteWorkspaces:
-		ids := make([]ent.Value, 0, len(m.removedfavorite_workspaces))
-		for id := range m.removedfavorite_workspaces {
+		ids := make([]ent.Value, 0, len(m.removedfavoriteWorkspaces))
+		for id := range m.removedfavoriteWorkspaces {
 			ids = append(ids, id)
 		}
 		return ids
 	case teammate.EdgeTeammateTaskTabStatuses:
-		ids := make([]ent.Value, 0, len(m.removedteammate_task_tab_statuses))
-		for id := range m.removedteammate_task_tab_statuses {
+		ids := make([]ent.Value, 0, len(m.removedteammateTaskTabStatuses))
+		for id := range m.removedteammateTaskTabStatuses {
 			ids = append(ids, id)
 		}
 		return ids
 	case teammate.EdgeTeammateTaskColumns:
-		ids := make([]ent.Value, 0, len(m.removedteammate_task_columns))
-		for id := range m.removedteammate_task_columns {
+		ids := make([]ent.Value, 0, len(m.removedteammateTaskColumns))
+		for id := range m.removedteammateTaskColumns {
 			ids = append(ids, id)
 		}
 		return ids
 	case teammate.EdgeTeammateTaskListStatuses:
-		ids := make([]ent.Value, 0, len(m.removedteammate_task_list_statuses))
-		for id := range m.removedteammate_task_list_statuses {
+		ids := make([]ent.Value, 0, len(m.removedteammateTaskListStatuses))
+		for id := range m.removedteammateTaskListStatuses {
 			ids = append(ids, id)
 		}
 		return ids
 	case teammate.EdgeTeammateTaskSections:
-		ids := make([]ent.Value, 0, len(m.removedteammate_task_sections))
-		for id := range m.removedteammate_task_sections {
+		ids := make([]ent.Value, 0, len(m.removedteammateTaskSections))
+		for id := range m.removedteammateTaskSections {
 			ids = append(ids, id)
 		}
 		return ids
@@ -21390,32 +21390,32 @@ func (m *TeammateMutation) RemovedIDs(name string) []ent.Value {
 		}
 		return ids
 	case teammate.EdgeTeammateTasks:
-		ids := make([]ent.Value, 0, len(m.removedteammate_tasks))
-		for id := range m.removedteammate_tasks {
+		ids := make([]ent.Value, 0, len(m.removedteammateTasks))
+		for id := range m.removedteammateTasks {
 			ids = append(ids, id)
 		}
 		return ids
 	case teammate.EdgeTaskLikes:
-		ids := make([]ent.Value, 0, len(m.removedtask_likes))
-		for id := range m.removedtask_likes {
+		ids := make([]ent.Value, 0, len(m.removedtaskLikes))
+		for id := range m.removedtaskLikes {
 			ids = append(ids, id)
 		}
 		return ids
 	case teammate.EdgeTaskCollaborators:
-		ids := make([]ent.Value, 0, len(m.removedtask_collaborators))
-		for id := range m.removedtask_collaborators {
+		ids := make([]ent.Value, 0, len(m.removedtaskCollaborators))
+		for id := range m.removedtaskCollaborators {
 			ids = append(ids, id)
 		}
 		return ids
 	case teammate.EdgeTaskFeeds:
-		ids := make([]ent.Value, 0, len(m.removedtask_feeds))
-		for id := range m.removedtask_feeds {
+		ids := make([]ent.Value, 0, len(m.removedtaskFeeds))
+		for id := range m.removedtaskFeeds {
 			ids = append(ids, id)
 		}
 		return ids
 	case teammate.EdgeTaskFeedLikes:
-		ids := make([]ent.Value, 0, len(m.removedtask_feed_likes))
-		for id := range m.removedtask_feed_likes {
+		ids := make([]ent.Value, 0, len(m.removedtaskFeedLikes))
+		for id := range m.removedtaskFeedLikes {
 			ids = append(ids, id)
 		}
 		return ids
@@ -21432,46 +21432,46 @@ func (m *TeammateMutation) ClearedEdges() []string {
 	if m.clearedprojects {
 		edges = append(edges, teammate.EdgeProjects)
 	}
-	if m.clearedproject_teammates {
+	if m.clearedprojectTeammates {
 		edges = append(edges, teammate.EdgeProjectTeammates)
 	}
-	if m.clearedworkspace_teammates {
+	if m.clearedworkspaceTeammates {
 		edges = append(edges, teammate.EdgeWorkspaceTeammates)
 	}
-	if m.clearedfavorite_projects {
+	if m.clearedfavoriteProjects {
 		edges = append(edges, teammate.EdgeFavoriteProjects)
 	}
-	if m.clearedfavorite_workspaces {
+	if m.clearedfavoriteWorkspaces {
 		edges = append(edges, teammate.EdgeFavoriteWorkspaces)
 	}
-	if m.clearedteammate_task_tab_statuses {
+	if m.clearedteammateTaskTabStatuses {
 		edges = append(edges, teammate.EdgeTeammateTaskTabStatuses)
 	}
-	if m.clearedteammate_task_columns {
+	if m.clearedteammateTaskColumns {
 		edges = append(edges, teammate.EdgeTeammateTaskColumns)
 	}
-	if m.clearedteammate_task_list_statuses {
+	if m.clearedteammateTaskListStatuses {
 		edges = append(edges, teammate.EdgeTeammateTaskListStatuses)
 	}
-	if m.clearedteammate_task_sections {
+	if m.clearedteammateTaskSections {
 		edges = append(edges, teammate.EdgeTeammateTaskSections)
 	}
 	if m.clearedtasks {
 		edges = append(edges, teammate.EdgeTasks)
 	}
-	if m.clearedteammate_tasks {
+	if m.clearedteammateTasks {
 		edges = append(edges, teammate.EdgeTeammateTasks)
 	}
-	if m.clearedtask_likes {
+	if m.clearedtaskLikes {
 		edges = append(edges, teammate.EdgeTaskLikes)
 	}
-	if m.clearedtask_collaborators {
+	if m.clearedtaskCollaborators {
 		edges = append(edges, teammate.EdgeTaskCollaborators)
 	}
-	if m.clearedtask_feeds {
+	if m.clearedtaskFeeds {
 		edges = append(edges, teammate.EdgeTaskFeeds)
 	}
-	if m.clearedtask_feed_likes {
+	if m.clearedtaskFeedLikes {
 		edges = append(edges, teammate.EdgeTaskFeedLikes)
 	}
 	return edges
@@ -21486,33 +21486,33 @@ func (m *TeammateMutation) EdgeCleared(name string) bool {
 	case teammate.EdgeProjects:
 		return m.clearedprojects
 	case teammate.EdgeProjectTeammates:
-		return m.clearedproject_teammates
+		return m.clearedprojectTeammates
 	case teammate.EdgeWorkspaceTeammates:
-		return m.clearedworkspace_teammates
+		return m.clearedworkspaceTeammates
 	case teammate.EdgeFavoriteProjects:
-		return m.clearedfavorite_projects
+		return m.clearedfavoriteProjects
 	case teammate.EdgeFavoriteWorkspaces:
-		return m.clearedfavorite_workspaces
+		return m.clearedfavoriteWorkspaces
 	case teammate.EdgeTeammateTaskTabStatuses:
-		return m.clearedteammate_task_tab_statuses
+		return m.clearedteammateTaskTabStatuses
 	case teammate.EdgeTeammateTaskColumns:
-		return m.clearedteammate_task_columns
+		return m.clearedteammateTaskColumns
 	case teammate.EdgeTeammateTaskListStatuses:
-		return m.clearedteammate_task_list_statuses
+		return m.clearedteammateTaskListStatuses
 	case teammate.EdgeTeammateTaskSections:
-		return m.clearedteammate_task_sections
+		return m.clearedteammateTaskSections
 	case teammate.EdgeTasks:
 		return m.clearedtasks
 	case teammate.EdgeTeammateTasks:
-		return m.clearedteammate_tasks
+		return m.clearedteammateTasks
 	case teammate.EdgeTaskLikes:
-		return m.clearedtask_likes
+		return m.clearedtaskLikes
 	case teammate.EdgeTaskCollaborators:
-		return m.clearedtask_collaborators
+		return m.clearedtaskCollaborators
 	case teammate.EdgeTaskFeeds:
-		return m.clearedtask_feeds
+		return m.clearedtaskFeeds
 	case teammate.EdgeTaskFeedLikes:
-		return m.clearedtask_feed_likes
+		return m.clearedtaskFeedLikes
 	}
 	return false
 }
@@ -21584,21 +21584,21 @@ func (m *TeammateMutation) ResetEdge(name string) error {
 // TeammateTaskMutation represents an operation that mutates the TeammateTask nodes in the graph.
 type TeammateTaskMutation struct {
 	config
-	op                           Op
-	typ                          string
-	id                           *ulid.ID
-	created_at                   *time.Time
-	updated_at                   *time.Time
-	clearedFields                map[string]struct{}
-	teammate                     *ulid.ID
-	clearedteammate              bool
-	task                         *ulid.ID
-	clearedtask                  bool
-	teammate_task_section        *ulid.ID
-	clearedteammate_task_section bool
-	done                         bool
-	oldValue                     func(context.Context) (*TeammateTask, error)
-	predicates                   []predicate.TeammateTask
+	op                         Op
+	typ                        string
+	id                         *ulid.ID
+	created_at                 *time.Time
+	updated_at                 *time.Time
+	clearedFields              map[string]struct{}
+	teammate                   *ulid.ID
+	clearedteammate            bool
+	task                       *ulid.ID
+	clearedtask                bool
+	teammateTaskSection        *ulid.ID
+	clearedteammateTaskSection bool
+	done                       bool
+	oldValue                   func(context.Context) (*TeammateTask, error)
+	predicates                 []predicate.TeammateTask
 }
 
 var _ ent.Mutation = (*TeammateTaskMutation)(nil)
@@ -21760,12 +21760,12 @@ func (m *TeammateTaskMutation) ResetTaskID() {
 
 // SetTeammateTaskSectionID sets the "teammate_task_section_id" field.
 func (m *TeammateTaskMutation) SetTeammateTaskSectionID(u ulid.ID) {
-	m.teammate_task_section = &u
+	m.teammateTaskSection = &u
 }
 
 // TeammateTaskSectionID returns the value of the "teammate_task_section_id" field in the mutation.
 func (m *TeammateTaskMutation) TeammateTaskSectionID() (r ulid.ID, exists bool) {
-	v := m.teammate_task_section
+	v := m.teammateTaskSection
 	if v == nil {
 		return
 	}
@@ -21791,7 +21791,7 @@ func (m *TeammateTaskMutation) OldTeammateTaskSectionID(ctx context.Context) (v 
 
 // ResetTeammateTaskSectionID resets all changes to the "teammate_task_section_id" field.
 func (m *TeammateTaskMutation) ResetTeammateTaskSectionID() {
-	m.teammate_task_section = nil
+	m.teammateTaskSection = nil
 }
 
 // SetCreatedAt sets the "created_at" field.
@@ -21918,30 +21918,30 @@ func (m *TeammateTaskMutation) ResetTask() {
 	m.clearedtask = false
 }
 
-// ClearTeammateTaskSection clears the "teammate_task_section" edge to the TeammateTaskSection entity.
+// ClearTeammateTaskSection clears the "teammateTaskSection" edge to the TeammateTaskSection entity.
 func (m *TeammateTaskMutation) ClearTeammateTaskSection() {
-	m.clearedteammate_task_section = true
+	m.clearedteammateTaskSection = true
 }
 
-// TeammateTaskSectionCleared reports if the "teammate_task_section" edge to the TeammateTaskSection entity was cleared.
+// TeammateTaskSectionCleared reports if the "teammateTaskSection" edge to the TeammateTaskSection entity was cleared.
 func (m *TeammateTaskMutation) TeammateTaskSectionCleared() bool {
-	return m.clearedteammate_task_section
+	return m.clearedteammateTaskSection
 }
 
-// TeammateTaskSectionIDs returns the "teammate_task_section" edge IDs in the mutation.
+// TeammateTaskSectionIDs returns the "teammateTaskSection" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // TeammateTaskSectionID instead. It exists only for internal usage by the builders.
 func (m *TeammateTaskMutation) TeammateTaskSectionIDs() (ids []ulid.ID) {
-	if id := m.teammate_task_section; id != nil {
+	if id := m.teammateTaskSection; id != nil {
 		ids = append(ids, *id)
 	}
 	return
 }
 
-// ResetTeammateTaskSection resets all changes to the "teammate_task_section" edge.
+// ResetTeammateTaskSection resets all changes to the "teammateTaskSection" edge.
 func (m *TeammateTaskMutation) ResetTeammateTaskSection() {
-	m.teammate_task_section = nil
-	m.clearedteammate_task_section = false
+	m.teammateTaskSection = nil
+	m.clearedteammateTaskSection = false
 }
 
 // Where appends a list predicates to the TeammateTaskMutation builder.
@@ -21970,7 +21970,7 @@ func (m *TeammateTaskMutation) Fields() []string {
 	if m.task != nil {
 		fields = append(fields, teammatetask.FieldTaskID)
 	}
-	if m.teammate_task_section != nil {
+	if m.teammateTaskSection != nil {
 		fields = append(fields, teammatetask.FieldTeammateTaskSectionID)
 	}
 	if m.created_at != nil {
@@ -22137,7 +22137,7 @@ func (m *TeammateTaskMutation) AddedEdges() []string {
 	if m.task != nil {
 		edges = append(edges, teammatetask.EdgeTask)
 	}
-	if m.teammate_task_section != nil {
+	if m.teammateTaskSection != nil {
 		edges = append(edges, teammatetask.EdgeTeammateTaskSection)
 	}
 	return edges
@@ -22156,7 +22156,7 @@ func (m *TeammateTaskMutation) AddedIDs(name string) []ent.Value {
 			return []ent.Value{*id}
 		}
 	case teammatetask.EdgeTeammateTaskSection:
-		if id := m.teammate_task_section; id != nil {
+		if id := m.teammateTaskSection; id != nil {
 			return []ent.Value{*id}
 		}
 	}
@@ -22186,7 +22186,7 @@ func (m *TeammateTaskMutation) ClearedEdges() []string {
 	if m.clearedtask {
 		edges = append(edges, teammatetask.EdgeTask)
 	}
-	if m.clearedteammate_task_section {
+	if m.clearedteammateTaskSection {
 		edges = append(edges, teammatetask.EdgeTeammateTaskSection)
 	}
 	return edges
@@ -22201,7 +22201,7 @@ func (m *TeammateTaskMutation) EdgeCleared(name string) bool {
 	case teammatetask.EdgeTask:
 		return m.clearedtask
 	case teammatetask.EdgeTeammateTaskSection:
-		return m.clearedteammate_task_section
+		return m.clearedteammateTaskSection
 	}
 	return false
 }
@@ -22243,26 +22243,26 @@ func (m *TeammateTaskMutation) ResetEdge(name string) error {
 // TeammateTaskColumnMutation represents an operation that mutates the TeammateTaskColumn nodes in the graph.
 type TeammateTaskColumnMutation struct {
 	config
-	op                 Op
-	typ                string
-	id                 *ulid.ID
-	width              *string
-	disabled           *bool
-	customizable       *bool
-	_order             *int
-	add_order          *int
-	created_at         *time.Time
-	updated_at         *time.Time
-	clearedFields      map[string]struct{}
-	teammate           *ulid.ID
-	clearedteammate    bool
-	workspace          *ulid.ID
-	clearedworkspace   bool
-	task_column        *ulid.ID
-	clearedtask_column bool
-	done               bool
-	oldValue           func(context.Context) (*TeammateTaskColumn, error)
-	predicates         []predicate.TeammateTaskColumn
+	op                Op
+	typ               string
+	id                *ulid.ID
+	width             *string
+	disabled          *bool
+	customizable      *bool
+	_order            *int
+	add_order         *int
+	created_at        *time.Time
+	updated_at        *time.Time
+	clearedFields     map[string]struct{}
+	teammate          *ulid.ID
+	clearedteammate   bool
+	workspace         *ulid.ID
+	clearedworkspace  bool
+	taskColumn        *ulid.ID
+	clearedtaskColumn bool
+	done              bool
+	oldValue          func(context.Context) (*TeammateTaskColumn, error)
+	predicates        []predicate.TeammateTaskColumn
 }
 
 var _ ent.Mutation = (*TeammateTaskColumnMutation)(nil)
@@ -22388,12 +22388,12 @@ func (m *TeammateTaskColumnMutation) ResetTeammateID() {
 
 // SetTaskColumnID sets the "task_column_id" field.
 func (m *TeammateTaskColumnMutation) SetTaskColumnID(u ulid.ID) {
-	m.task_column = &u
+	m.taskColumn = &u
 }
 
 // TaskColumnID returns the value of the "task_column_id" field in the mutation.
 func (m *TeammateTaskColumnMutation) TaskColumnID() (r ulid.ID, exists bool) {
-	v := m.task_column
+	v := m.taskColumn
 	if v == nil {
 		return
 	}
@@ -22419,7 +22419,7 @@ func (m *TeammateTaskColumnMutation) OldTaskColumnID(ctx context.Context) (v uli
 
 // ResetTaskColumnID resets all changes to the "task_column_id" field.
 func (m *TeammateTaskColumnMutation) ResetTaskColumnID() {
-	m.task_column = nil
+	m.taskColumn = nil
 }
 
 // SetWorkspaceID sets the "workspace_id" field.
@@ -22746,30 +22746,30 @@ func (m *TeammateTaskColumnMutation) ResetWorkspace() {
 	m.clearedworkspace = false
 }
 
-// ClearTaskColumn clears the "task_column" edge to the TaskColumn entity.
+// ClearTaskColumn clears the "taskColumn" edge to the TaskColumn entity.
 func (m *TeammateTaskColumnMutation) ClearTaskColumn() {
-	m.clearedtask_column = true
+	m.clearedtaskColumn = true
 }
 
-// TaskColumnCleared reports if the "task_column" edge to the TaskColumn entity was cleared.
+// TaskColumnCleared reports if the "taskColumn" edge to the TaskColumn entity was cleared.
 func (m *TeammateTaskColumnMutation) TaskColumnCleared() bool {
-	return m.clearedtask_column
+	return m.clearedtaskColumn
 }
 
-// TaskColumnIDs returns the "task_column" edge IDs in the mutation.
+// TaskColumnIDs returns the "taskColumn" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // TaskColumnID instead. It exists only for internal usage by the builders.
 func (m *TeammateTaskColumnMutation) TaskColumnIDs() (ids []ulid.ID) {
-	if id := m.task_column; id != nil {
+	if id := m.taskColumn; id != nil {
 		ids = append(ids, *id)
 	}
 	return
 }
 
-// ResetTaskColumn resets all changes to the "task_column" edge.
+// ResetTaskColumn resets all changes to the "taskColumn" edge.
 func (m *TeammateTaskColumnMutation) ResetTaskColumn() {
-	m.task_column = nil
-	m.clearedtask_column = false
+	m.taskColumn = nil
+	m.clearedtaskColumn = false
 }
 
 // Where appends a list predicates to the TeammateTaskColumnMutation builder.
@@ -22795,7 +22795,7 @@ func (m *TeammateTaskColumnMutation) Fields() []string {
 	if m.teammate != nil {
 		fields = append(fields, teammatetaskcolumn.FieldTeammateID)
 	}
-	if m.task_column != nil {
+	if m.taskColumn != nil {
 		fields = append(fields, teammatetaskcolumn.FieldTaskColumnID)
 	}
 	if m.workspace != nil {
@@ -23048,7 +23048,7 @@ func (m *TeammateTaskColumnMutation) AddedEdges() []string {
 	if m.workspace != nil {
 		edges = append(edges, teammatetaskcolumn.EdgeWorkspace)
 	}
-	if m.task_column != nil {
+	if m.taskColumn != nil {
 		edges = append(edges, teammatetaskcolumn.EdgeTaskColumn)
 	}
 	return edges
@@ -23067,7 +23067,7 @@ func (m *TeammateTaskColumnMutation) AddedIDs(name string) []ent.Value {
 			return []ent.Value{*id}
 		}
 	case teammatetaskcolumn.EdgeTaskColumn:
-		if id := m.task_column; id != nil {
+		if id := m.taskColumn; id != nil {
 			return []ent.Value{*id}
 		}
 	}
@@ -23097,7 +23097,7 @@ func (m *TeammateTaskColumnMutation) ClearedEdges() []string {
 	if m.clearedworkspace {
 		edges = append(edges, teammatetaskcolumn.EdgeWorkspace)
 	}
-	if m.clearedtask_column {
+	if m.clearedtaskColumn {
 		edges = append(edges, teammatetaskcolumn.EdgeTaskColumn)
 	}
 	return edges
@@ -23112,7 +23112,7 @@ func (m *TeammateTaskColumnMutation) EdgeCleared(name string) bool {
 	case teammatetaskcolumn.EdgeWorkspace:
 		return m.clearedworkspace
 	case teammatetaskcolumn.EdgeTaskColumn:
-		return m.clearedtask_column
+		return m.clearedtaskColumn
 	}
 	return false
 }
@@ -23154,23 +23154,23 @@ func (m *TeammateTaskColumnMutation) ResetEdge(name string) error {
 // TeammateTaskListStatusMutation represents an operation that mutates the TeammateTaskListStatus nodes in the graph.
 type TeammateTaskListStatusMutation struct {
 	config
-	op                                Op
-	typ                               string
-	id                                *ulid.ID
-	created_at                        *time.Time
-	updated_at                        *time.Time
-	clearedFields                     map[string]struct{}
-	workspace                         *ulid.ID
-	clearedworkspace                  bool
-	teammate                          *ulid.ID
-	clearedteammate                   bool
-	task_list_completed_status        *ulid.ID
-	clearedtask_list_completed_status bool
-	task_list_sort_status             *ulid.ID
-	clearedtask_list_sort_status      bool
-	done                              bool
-	oldValue                          func(context.Context) (*TeammateTaskListStatus, error)
-	predicates                        []predicate.TeammateTaskListStatus
+	op                             Op
+	typ                            string
+	id                             *ulid.ID
+	created_at                     *time.Time
+	updated_at                     *time.Time
+	clearedFields                  map[string]struct{}
+	workspace                      *ulid.ID
+	clearedworkspace               bool
+	teammate                       *ulid.ID
+	clearedteammate                bool
+	taskListCompletedStatus        *ulid.ID
+	clearedtaskListCompletedStatus bool
+	taskListSortStatus             *ulid.ID
+	clearedtaskListSortStatus      bool
+	done                           bool
+	oldValue                       func(context.Context) (*TeammateTaskListStatus, error)
+	predicates                     []predicate.TeammateTaskListStatus
 }
 
 var _ ent.Mutation = (*TeammateTaskListStatusMutation)(nil)
@@ -23332,12 +23332,12 @@ func (m *TeammateTaskListStatusMutation) ResetTeammateID() {
 
 // SetTaskListCompletedStatusID sets the "task_list_completed_status_id" field.
 func (m *TeammateTaskListStatusMutation) SetTaskListCompletedStatusID(u ulid.ID) {
-	m.task_list_completed_status = &u
+	m.taskListCompletedStatus = &u
 }
 
 // TaskListCompletedStatusID returns the value of the "task_list_completed_status_id" field in the mutation.
 func (m *TeammateTaskListStatusMutation) TaskListCompletedStatusID() (r ulid.ID, exists bool) {
-	v := m.task_list_completed_status
+	v := m.taskListCompletedStatus
 	if v == nil {
 		return
 	}
@@ -23363,17 +23363,17 @@ func (m *TeammateTaskListStatusMutation) OldTaskListCompletedStatusID(ctx contex
 
 // ResetTaskListCompletedStatusID resets all changes to the "task_list_completed_status_id" field.
 func (m *TeammateTaskListStatusMutation) ResetTaskListCompletedStatusID() {
-	m.task_list_completed_status = nil
+	m.taskListCompletedStatus = nil
 }
 
 // SetTaskListSortStatusID sets the "task_list_sort_status_id" field.
 func (m *TeammateTaskListStatusMutation) SetTaskListSortStatusID(u ulid.ID) {
-	m.task_list_sort_status = &u
+	m.taskListSortStatus = &u
 }
 
 // TaskListSortStatusID returns the value of the "task_list_sort_status_id" field in the mutation.
 func (m *TeammateTaskListStatusMutation) TaskListSortStatusID() (r ulid.ID, exists bool) {
-	v := m.task_list_sort_status
+	v := m.taskListSortStatus
 	if v == nil {
 		return
 	}
@@ -23399,7 +23399,7 @@ func (m *TeammateTaskListStatusMutation) OldTaskListSortStatusID(ctx context.Con
 
 // ResetTaskListSortStatusID resets all changes to the "task_list_sort_status_id" field.
 func (m *TeammateTaskListStatusMutation) ResetTaskListSortStatusID() {
-	m.task_list_sort_status = nil
+	m.taskListSortStatus = nil
 }
 
 // SetCreatedAt sets the "created_at" field.
@@ -23526,56 +23526,56 @@ func (m *TeammateTaskListStatusMutation) ResetTeammate() {
 	m.clearedteammate = false
 }
 
-// ClearTaskListCompletedStatus clears the "task_list_completed_status" edge to the TaskListCompletedStatus entity.
+// ClearTaskListCompletedStatus clears the "taskListCompletedStatus" edge to the TaskListCompletedStatus entity.
 func (m *TeammateTaskListStatusMutation) ClearTaskListCompletedStatus() {
-	m.clearedtask_list_completed_status = true
+	m.clearedtaskListCompletedStatus = true
 }
 
-// TaskListCompletedStatusCleared reports if the "task_list_completed_status" edge to the TaskListCompletedStatus entity was cleared.
+// TaskListCompletedStatusCleared reports if the "taskListCompletedStatus" edge to the TaskListCompletedStatus entity was cleared.
 func (m *TeammateTaskListStatusMutation) TaskListCompletedStatusCleared() bool {
-	return m.clearedtask_list_completed_status
+	return m.clearedtaskListCompletedStatus
 }
 
-// TaskListCompletedStatusIDs returns the "task_list_completed_status" edge IDs in the mutation.
+// TaskListCompletedStatusIDs returns the "taskListCompletedStatus" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // TaskListCompletedStatusID instead. It exists only for internal usage by the builders.
 func (m *TeammateTaskListStatusMutation) TaskListCompletedStatusIDs() (ids []ulid.ID) {
-	if id := m.task_list_completed_status; id != nil {
+	if id := m.taskListCompletedStatus; id != nil {
 		ids = append(ids, *id)
 	}
 	return
 }
 
-// ResetTaskListCompletedStatus resets all changes to the "task_list_completed_status" edge.
+// ResetTaskListCompletedStatus resets all changes to the "taskListCompletedStatus" edge.
 func (m *TeammateTaskListStatusMutation) ResetTaskListCompletedStatus() {
-	m.task_list_completed_status = nil
-	m.clearedtask_list_completed_status = false
+	m.taskListCompletedStatus = nil
+	m.clearedtaskListCompletedStatus = false
 }
 
-// ClearTaskListSortStatus clears the "task_list_sort_status" edge to the TaskListSortStatus entity.
+// ClearTaskListSortStatus clears the "taskListSortStatus" edge to the TaskListSortStatus entity.
 func (m *TeammateTaskListStatusMutation) ClearTaskListSortStatus() {
-	m.clearedtask_list_sort_status = true
+	m.clearedtaskListSortStatus = true
 }
 
-// TaskListSortStatusCleared reports if the "task_list_sort_status" edge to the TaskListSortStatus entity was cleared.
+// TaskListSortStatusCleared reports if the "taskListSortStatus" edge to the TaskListSortStatus entity was cleared.
 func (m *TeammateTaskListStatusMutation) TaskListSortStatusCleared() bool {
-	return m.clearedtask_list_sort_status
+	return m.clearedtaskListSortStatus
 }
 
-// TaskListSortStatusIDs returns the "task_list_sort_status" edge IDs in the mutation.
+// TaskListSortStatusIDs returns the "taskListSortStatus" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // TaskListSortStatusID instead. It exists only for internal usage by the builders.
 func (m *TeammateTaskListStatusMutation) TaskListSortStatusIDs() (ids []ulid.ID) {
-	if id := m.task_list_sort_status; id != nil {
+	if id := m.taskListSortStatus; id != nil {
 		ids = append(ids, *id)
 	}
 	return
 }
 
-// ResetTaskListSortStatus resets all changes to the "task_list_sort_status" edge.
+// ResetTaskListSortStatus resets all changes to the "taskListSortStatus" edge.
 func (m *TeammateTaskListStatusMutation) ResetTaskListSortStatus() {
-	m.task_list_sort_status = nil
-	m.clearedtask_list_sort_status = false
+	m.taskListSortStatus = nil
+	m.clearedtaskListSortStatus = false
 }
 
 // Where appends a list predicates to the TeammateTaskListStatusMutation builder.
@@ -23604,10 +23604,10 @@ func (m *TeammateTaskListStatusMutation) Fields() []string {
 	if m.teammate != nil {
 		fields = append(fields, teammatetaskliststatus.FieldTeammateID)
 	}
-	if m.task_list_completed_status != nil {
+	if m.taskListCompletedStatus != nil {
 		fields = append(fields, teammatetaskliststatus.FieldTaskListCompletedStatusID)
 	}
-	if m.task_list_sort_status != nil {
+	if m.taskListSortStatus != nil {
 		fields = append(fields, teammatetaskliststatus.FieldTaskListSortStatusID)
 	}
 	if m.created_at != nil {
@@ -23788,10 +23788,10 @@ func (m *TeammateTaskListStatusMutation) AddedEdges() []string {
 	if m.teammate != nil {
 		edges = append(edges, teammatetaskliststatus.EdgeTeammate)
 	}
-	if m.task_list_completed_status != nil {
+	if m.taskListCompletedStatus != nil {
 		edges = append(edges, teammatetaskliststatus.EdgeTaskListCompletedStatus)
 	}
-	if m.task_list_sort_status != nil {
+	if m.taskListSortStatus != nil {
 		edges = append(edges, teammatetaskliststatus.EdgeTaskListSortStatus)
 	}
 	return edges
@@ -23810,11 +23810,11 @@ func (m *TeammateTaskListStatusMutation) AddedIDs(name string) []ent.Value {
 			return []ent.Value{*id}
 		}
 	case teammatetaskliststatus.EdgeTaskListCompletedStatus:
-		if id := m.task_list_completed_status; id != nil {
+		if id := m.taskListCompletedStatus; id != nil {
 			return []ent.Value{*id}
 		}
 	case teammatetaskliststatus.EdgeTaskListSortStatus:
-		if id := m.task_list_sort_status; id != nil {
+		if id := m.taskListSortStatus; id != nil {
 			return []ent.Value{*id}
 		}
 	}
@@ -23844,10 +23844,10 @@ func (m *TeammateTaskListStatusMutation) ClearedEdges() []string {
 	if m.clearedteammate {
 		edges = append(edges, teammatetaskliststatus.EdgeTeammate)
 	}
-	if m.clearedtask_list_completed_status {
+	if m.clearedtaskListCompletedStatus {
 		edges = append(edges, teammatetaskliststatus.EdgeTaskListCompletedStatus)
 	}
-	if m.clearedtask_list_sort_status {
+	if m.clearedtaskListSortStatus {
 		edges = append(edges, teammatetaskliststatus.EdgeTaskListSortStatus)
 	}
 	return edges
@@ -23862,9 +23862,9 @@ func (m *TeammateTaskListStatusMutation) EdgeCleared(name string) bool {
 	case teammatetaskliststatus.EdgeTeammate:
 		return m.clearedteammate
 	case teammatetaskliststatus.EdgeTaskListCompletedStatus:
-		return m.clearedtask_list_completed_status
+		return m.clearedtaskListCompletedStatus
 	case teammatetaskliststatus.EdgeTaskListSortStatus:
-		return m.clearedtask_list_sort_status
+		return m.clearedtaskListSortStatus
 	}
 	return false
 }
@@ -23912,24 +23912,24 @@ func (m *TeammateTaskListStatusMutation) ResetEdge(name string) error {
 // TeammateTaskSectionMutation represents an operation that mutates the TeammateTaskSection nodes in the graph.
 type TeammateTaskSectionMutation struct {
 	config
-	op                    Op
-	typ                   string
-	id                    *ulid.ID
-	name                  *string
-	assigned              *bool
-	created_at            *time.Time
-	updated_at            *time.Time
-	clearedFields         map[string]struct{}
-	teammate              *ulid.ID
-	clearedteammate       bool
-	workspace             *ulid.ID
-	clearedworkspace      bool
-	teammate_tasks        map[ulid.ID]struct{}
-	removedteammate_tasks map[ulid.ID]struct{}
-	clearedteammate_tasks bool
-	done                  bool
-	oldValue              func(context.Context) (*TeammateTaskSection, error)
-	predicates            []predicate.TeammateTaskSection
+	op                   Op
+	typ                  string
+	id                   *ulid.ID
+	name                 *string
+	assigned             *bool
+	created_at           *time.Time
+	updated_at           *time.Time
+	clearedFields        map[string]struct{}
+	teammate             *ulid.ID
+	clearedteammate      bool
+	workspace            *ulid.ID
+	clearedworkspace     bool
+	teammateTasks        map[ulid.ID]struct{}
+	removedteammateTasks map[ulid.ID]struct{}
+	clearedteammateTasks bool
+	done                 bool
+	oldValue             func(context.Context) (*TeammateTaskSection, error)
+	predicates           []predicate.TeammateTaskSection
 }
 
 var _ ent.Mutation = (*TeammateTaskSectionMutation)(nil)
@@ -24285,58 +24285,58 @@ func (m *TeammateTaskSectionMutation) ResetWorkspace() {
 	m.clearedworkspace = false
 }
 
-// AddTeammateTaskIDs adds the "teammate_tasks" edge to the TeammateTask entity by ids.
+// AddTeammateTaskIDs adds the "teammateTasks" edge to the TeammateTask entity by ids.
 func (m *TeammateTaskSectionMutation) AddTeammateTaskIDs(ids ...ulid.ID) {
-	if m.teammate_tasks == nil {
-		m.teammate_tasks = make(map[ulid.ID]struct{})
+	if m.teammateTasks == nil {
+		m.teammateTasks = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		m.teammate_tasks[ids[i]] = struct{}{}
+		m.teammateTasks[ids[i]] = struct{}{}
 	}
 }
 
-// ClearTeammateTasks clears the "teammate_tasks" edge to the TeammateTask entity.
+// ClearTeammateTasks clears the "teammateTasks" edge to the TeammateTask entity.
 func (m *TeammateTaskSectionMutation) ClearTeammateTasks() {
-	m.clearedteammate_tasks = true
+	m.clearedteammateTasks = true
 }
 
-// TeammateTasksCleared reports if the "teammate_tasks" edge to the TeammateTask entity was cleared.
+// TeammateTasksCleared reports if the "teammateTasks" edge to the TeammateTask entity was cleared.
 func (m *TeammateTaskSectionMutation) TeammateTasksCleared() bool {
-	return m.clearedteammate_tasks
+	return m.clearedteammateTasks
 }
 
-// RemoveTeammateTaskIDs removes the "teammate_tasks" edge to the TeammateTask entity by IDs.
+// RemoveTeammateTaskIDs removes the "teammateTasks" edge to the TeammateTask entity by IDs.
 func (m *TeammateTaskSectionMutation) RemoveTeammateTaskIDs(ids ...ulid.ID) {
-	if m.removedteammate_tasks == nil {
-		m.removedteammate_tasks = make(map[ulid.ID]struct{})
+	if m.removedteammateTasks == nil {
+		m.removedteammateTasks = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		delete(m.teammate_tasks, ids[i])
-		m.removedteammate_tasks[ids[i]] = struct{}{}
+		delete(m.teammateTasks, ids[i])
+		m.removedteammateTasks[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedTeammateTasks returns the removed IDs of the "teammate_tasks" edge to the TeammateTask entity.
+// RemovedTeammateTasks returns the removed IDs of the "teammateTasks" edge to the TeammateTask entity.
 func (m *TeammateTaskSectionMutation) RemovedTeammateTasksIDs() (ids []ulid.ID) {
-	for id := range m.removedteammate_tasks {
+	for id := range m.removedteammateTasks {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// TeammateTasksIDs returns the "teammate_tasks" edge IDs in the mutation.
+// TeammateTasksIDs returns the "teammateTasks" edge IDs in the mutation.
 func (m *TeammateTaskSectionMutation) TeammateTasksIDs() (ids []ulid.ID) {
-	for id := range m.teammate_tasks {
+	for id := range m.teammateTasks {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetTeammateTasks resets all changes to the "teammate_tasks" edge.
+// ResetTeammateTasks resets all changes to the "teammateTasks" edge.
 func (m *TeammateTaskSectionMutation) ResetTeammateTasks() {
-	m.teammate_tasks = nil
-	m.clearedteammate_tasks = false
-	m.removedteammate_tasks = nil
+	m.teammateTasks = nil
+	m.clearedteammateTasks = false
+	m.removedteammateTasks = nil
 }
 
 // Where appends a list predicates to the TeammateTaskSectionMutation builder.
@@ -24549,7 +24549,7 @@ func (m *TeammateTaskSectionMutation) AddedEdges() []string {
 	if m.workspace != nil {
 		edges = append(edges, teammatetasksection.EdgeWorkspace)
 	}
-	if m.teammate_tasks != nil {
+	if m.teammateTasks != nil {
 		edges = append(edges, teammatetasksection.EdgeTeammateTasks)
 	}
 	return edges
@@ -24568,8 +24568,8 @@ func (m *TeammateTaskSectionMutation) AddedIDs(name string) []ent.Value {
 			return []ent.Value{*id}
 		}
 	case teammatetasksection.EdgeTeammateTasks:
-		ids := make([]ent.Value, 0, len(m.teammate_tasks))
-		for id := range m.teammate_tasks {
+		ids := make([]ent.Value, 0, len(m.teammateTasks))
+		for id := range m.teammateTasks {
 			ids = append(ids, id)
 		}
 		return ids
@@ -24580,7 +24580,7 @@ func (m *TeammateTaskSectionMutation) AddedIDs(name string) []ent.Value {
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *TeammateTaskSectionMutation) RemovedEdges() []string {
 	edges := make([]string, 0, 3)
-	if m.removedteammate_tasks != nil {
+	if m.removedteammateTasks != nil {
 		edges = append(edges, teammatetasksection.EdgeTeammateTasks)
 	}
 	return edges
@@ -24591,8 +24591,8 @@ func (m *TeammateTaskSectionMutation) RemovedEdges() []string {
 func (m *TeammateTaskSectionMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
 	case teammatetasksection.EdgeTeammateTasks:
-		ids := make([]ent.Value, 0, len(m.removedteammate_tasks))
-		for id := range m.removedteammate_tasks {
+		ids := make([]ent.Value, 0, len(m.removedteammateTasks))
+		for id := range m.removedteammateTasks {
 			ids = append(ids, id)
 		}
 		return ids
@@ -24609,7 +24609,7 @@ func (m *TeammateTaskSectionMutation) ClearedEdges() []string {
 	if m.clearedworkspace {
 		edges = append(edges, teammatetasksection.EdgeWorkspace)
 	}
-	if m.clearedteammate_tasks {
+	if m.clearedteammateTasks {
 		edges = append(edges, teammatetasksection.EdgeTeammateTasks)
 	}
 	return edges
@@ -24624,7 +24624,7 @@ func (m *TeammateTaskSectionMutation) EdgeCleared(name string) bool {
 	case teammatetasksection.EdgeWorkspace:
 		return m.clearedworkspace
 	case teammatetasksection.EdgeTeammateTasks:
-		return m.clearedteammate_tasks
+		return m.clearedteammateTasks
 	}
 	return false
 }
@@ -25277,28 +25277,28 @@ func (m *TeammateTaskTabStatusMutation) ResetEdge(name string) error {
 // TestTodoMutation represents an operation that mutates the TestTodo nodes in the graph.
 type TestTodoMutation struct {
 	config
-	op               Op
-	typ              string
-	id               *ulid.ID
-	created_by       *ulid.ID
-	name             *string
-	status           *testtodo.Status
-	priority         *int
-	addpriority      *int
-	due_date         *time.Time
-	created_at       *time.Time
-	updated_at       *time.Time
-	clearedFields    map[string]struct{}
-	test_user        *ulid.ID
-	clearedtest_user bool
-	parent           *ulid.ID
-	clearedparent    bool
-	children         map[ulid.ID]struct{}
-	removedchildren  map[ulid.ID]struct{}
-	clearedchildren  bool
-	done             bool
-	oldValue         func(context.Context) (*TestTodo, error)
-	predicates       []predicate.TestTodo
+	op              Op
+	typ             string
+	id              *ulid.ID
+	created_by      *ulid.ID
+	name            *string
+	status          *testtodo.Status
+	priority        *int
+	addpriority     *int
+	due_date        *time.Time
+	created_at      *time.Time
+	updated_at      *time.Time
+	clearedFields   map[string]struct{}
+	testUser        *ulid.ID
+	clearedtestUser bool
+	parent          *ulid.ID
+	clearedparent   bool
+	children        map[ulid.ID]struct{}
+	removedchildren map[ulid.ID]struct{}
+	clearedchildren bool
+	done            bool
+	oldValue        func(context.Context) (*TestTodo, error)
+	predicates      []predicate.TestTodo
 }
 
 var _ ent.Mutation = (*TestTodoMutation)(nil)
@@ -25388,12 +25388,12 @@ func (m *TestTodoMutation) ID() (id ulid.ID, exists bool) {
 
 // SetTestUserID sets the "test_user_id" field.
 func (m *TestTodoMutation) SetTestUserID(u ulid.ID) {
-	m.test_user = &u
+	m.testUser = &u
 }
 
 // TestUserID returns the value of the "test_user_id" field in the mutation.
 func (m *TestTodoMutation) TestUserID() (r ulid.ID, exists bool) {
-	v := m.test_user
+	v := m.testUser
 	if v == nil {
 		return
 	}
@@ -25419,7 +25419,7 @@ func (m *TestTodoMutation) OldTestUserID(ctx context.Context) (v ulid.ID, err er
 
 // ClearTestUserID clears the value of the "test_user_id" field.
 func (m *TestTodoMutation) ClearTestUserID() {
-	m.test_user = nil
+	m.testUser = nil
 	m.clearedFields[testtodo.FieldTestUserID] = struct{}{}
 }
 
@@ -25431,7 +25431,7 @@ func (m *TestTodoMutation) TestUserIDCleared() bool {
 
 // ResetTestUserID resets all changes to the "test_user_id" field.
 func (m *TestTodoMutation) ResetTestUserID() {
-	m.test_user = nil
+	m.testUser = nil
 	delete(m.clearedFields, testtodo.FieldTestUserID)
 }
 
@@ -25769,30 +25769,30 @@ func (m *TestTodoMutation) ResetUpdatedAt() {
 	m.updated_at = nil
 }
 
-// ClearTestUser clears the "test_user" edge to the TestUser entity.
+// ClearTestUser clears the "testUser" edge to the TestUser entity.
 func (m *TestTodoMutation) ClearTestUser() {
-	m.clearedtest_user = true
+	m.clearedtestUser = true
 }
 
-// TestUserCleared reports if the "test_user" edge to the TestUser entity was cleared.
+// TestUserCleared reports if the "testUser" edge to the TestUser entity was cleared.
 func (m *TestTodoMutation) TestUserCleared() bool {
-	return m.TestUserIDCleared() || m.clearedtest_user
+	return m.TestUserIDCleared() || m.clearedtestUser
 }
 
-// TestUserIDs returns the "test_user" edge IDs in the mutation.
+// TestUserIDs returns the "testUser" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // TestUserID instead. It exists only for internal usage by the builders.
 func (m *TestTodoMutation) TestUserIDs() (ids []ulid.ID) {
-	if id := m.test_user; id != nil {
+	if id := m.testUser; id != nil {
 		ids = append(ids, *id)
 	}
 	return
 }
 
-// ResetTestUser resets all changes to the "test_user" edge.
+// ResetTestUser resets all changes to the "testUser" edge.
 func (m *TestTodoMutation) ResetTestUser() {
-	m.test_user = nil
-	m.clearedtest_user = false
+	m.testUser = nil
+	m.clearedtestUser = false
 }
 
 // SetParentID sets the "parent" edge to the TestTodo entity by id.
@@ -25908,7 +25908,7 @@ func (m *TestTodoMutation) Type() string {
 // AddedFields().
 func (m *TestTodoMutation) Fields() []string {
 	fields := make([]string, 0, 9)
-	if m.test_user != nil {
+	if m.testUser != nil {
 		fields = append(fields, testtodo.FieldTestUserID)
 	}
 	if m.created_by != nil {
@@ -26179,7 +26179,7 @@ func (m *TestTodoMutation) ResetField(name string) error {
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *TestTodoMutation) AddedEdges() []string {
 	edges := make([]string, 0, 3)
-	if m.test_user != nil {
+	if m.testUser != nil {
 		edges = append(edges, testtodo.EdgeTestUser)
 	}
 	if m.parent != nil {
@@ -26196,7 +26196,7 @@ func (m *TestTodoMutation) AddedEdges() []string {
 func (m *TestTodoMutation) AddedIDs(name string) []ent.Value {
 	switch name {
 	case testtodo.EdgeTestUser:
-		if id := m.test_user; id != nil {
+		if id := m.testUser; id != nil {
 			return []ent.Value{*id}
 		}
 	case testtodo.EdgeParent:
@@ -26239,7 +26239,7 @@ func (m *TestTodoMutation) RemovedIDs(name string) []ent.Value {
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *TestTodoMutation) ClearedEdges() []string {
 	edges := make([]string, 0, 3)
-	if m.clearedtest_user {
+	if m.clearedtestUser {
 		edges = append(edges, testtodo.EdgeTestUser)
 	}
 	if m.clearedparent {
@@ -26256,7 +26256,7 @@ func (m *TestTodoMutation) ClearedEdges() []string {
 func (m *TestTodoMutation) EdgeCleared(name string) bool {
 	switch name {
 	case testtodo.EdgeTestUser:
-		return m.clearedtest_user
+		return m.clearedtestUser
 	case testtodo.EdgeParent:
 		return m.clearedparent
 	case testtodo.EdgeChildren:
@@ -26942,46 +26942,46 @@ func (m *TestUserMutation) ResetEdge(name string) error {
 // WorkspaceMutation represents an operation that mutates the Workspace nodes in the graph.
 type WorkspaceMutation struct {
 	config
-	op                                 Op
-	typ                                string
-	id                                 *ulid.ID
-	name                               *string
-	description                        *editor.Description
-	created_at                         *time.Time
-	updated_at                         *time.Time
-	clearedFields                      map[string]struct{}
-	teammate                           *ulid.ID
-	clearedteammate                    bool
-	projects                           map[ulid.ID]struct{}
-	removedprojects                    map[ulid.ID]struct{}
-	clearedprojects                    bool
-	workspace_teammates                map[ulid.ID]struct{}
-	removedworkspace_teammates         map[ulid.ID]struct{}
-	clearedworkspace_teammates         bool
-	favorite_workspaces                map[ulid.ID]struct{}
-	removedfavorite_workspaces         map[ulid.ID]struct{}
-	clearedfavorite_workspaces         bool
-	teammate_task_tab_statuses         map[ulid.ID]struct{}
-	removedteammate_task_tab_statuses  map[ulid.ID]struct{}
-	clearedteammate_task_tab_statuses  bool
-	teammate_task_list_statuses        map[ulid.ID]struct{}
-	removedteammate_task_list_statuses map[ulid.ID]struct{}
-	clearedteammate_task_list_statuses bool
-	teammate_task_sections             map[ulid.ID]struct{}
-	removedteammate_task_sections      map[ulid.ID]struct{}
-	clearedteammate_task_sections      bool
-	task_likes                         map[ulid.ID]struct{}
-	removedtask_likes                  map[ulid.ID]struct{}
-	clearedtask_likes                  bool
-	tags                               map[ulid.ID]struct{}
-	removedtags                        map[ulid.ID]struct{}
-	clearedtags                        bool
-	teammate_task_columns              map[ulid.ID]struct{}
-	removedteammate_task_columns       map[ulid.ID]struct{}
-	clearedteammate_task_columns       bool
-	done                               bool
-	oldValue                           func(context.Context) (*Workspace, error)
-	predicates                         []predicate.Workspace
+	op                              Op
+	typ                             string
+	id                              *ulid.ID
+	name                            *string
+	description                     *editor.Description
+	created_at                      *time.Time
+	updated_at                      *time.Time
+	clearedFields                   map[string]struct{}
+	teammate                        *ulid.ID
+	clearedteammate                 bool
+	projects                        map[ulid.ID]struct{}
+	removedprojects                 map[ulid.ID]struct{}
+	clearedprojects                 bool
+	workspaceTeammates              map[ulid.ID]struct{}
+	removedworkspaceTeammates       map[ulid.ID]struct{}
+	clearedworkspaceTeammates       bool
+	favoriteWorkspaces              map[ulid.ID]struct{}
+	removedfavoriteWorkspaces       map[ulid.ID]struct{}
+	clearedfavoriteWorkspaces       bool
+	teammateTaskTabStatuses         map[ulid.ID]struct{}
+	removedteammateTaskTabStatuses  map[ulid.ID]struct{}
+	clearedteammateTaskTabStatuses  bool
+	teammateTaskListStatuses        map[ulid.ID]struct{}
+	removedteammateTaskListStatuses map[ulid.ID]struct{}
+	clearedteammateTaskListStatuses bool
+	teammateTaskSections            map[ulid.ID]struct{}
+	removedteammateTaskSections     map[ulid.ID]struct{}
+	clearedteammateTaskSections     bool
+	taskLikes                       map[ulid.ID]struct{}
+	removedtaskLikes                map[ulid.ID]struct{}
+	clearedtaskLikes                bool
+	tags                            map[ulid.ID]struct{}
+	removedtags                     map[ulid.ID]struct{}
+	clearedtags                     bool
+	teammateTaskColumns             map[ulid.ID]struct{}
+	removedteammateTaskColumns      map[ulid.ID]struct{}
+	clearedteammateTaskColumns      bool
+	done                            bool
+	oldValue                        func(context.Context) (*Workspace, error)
+	predicates                      []predicate.Workspace
 }
 
 var _ ent.Mutation = (*WorkspaceMutation)(nil)
@@ -27342,328 +27342,328 @@ func (m *WorkspaceMutation) ResetProjects() {
 	m.removedprojects = nil
 }
 
-// AddWorkspaceTeammateIDs adds the "workspace_teammates" edge to the WorkspaceTeammate entity by ids.
+// AddWorkspaceTeammateIDs adds the "workspaceTeammates" edge to the WorkspaceTeammate entity by ids.
 func (m *WorkspaceMutation) AddWorkspaceTeammateIDs(ids ...ulid.ID) {
-	if m.workspace_teammates == nil {
-		m.workspace_teammates = make(map[ulid.ID]struct{})
+	if m.workspaceTeammates == nil {
+		m.workspaceTeammates = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		m.workspace_teammates[ids[i]] = struct{}{}
+		m.workspaceTeammates[ids[i]] = struct{}{}
 	}
 }
 
-// ClearWorkspaceTeammates clears the "workspace_teammates" edge to the WorkspaceTeammate entity.
+// ClearWorkspaceTeammates clears the "workspaceTeammates" edge to the WorkspaceTeammate entity.
 func (m *WorkspaceMutation) ClearWorkspaceTeammates() {
-	m.clearedworkspace_teammates = true
+	m.clearedworkspaceTeammates = true
 }
 
-// WorkspaceTeammatesCleared reports if the "workspace_teammates" edge to the WorkspaceTeammate entity was cleared.
+// WorkspaceTeammatesCleared reports if the "workspaceTeammates" edge to the WorkspaceTeammate entity was cleared.
 func (m *WorkspaceMutation) WorkspaceTeammatesCleared() bool {
-	return m.clearedworkspace_teammates
+	return m.clearedworkspaceTeammates
 }
 
-// RemoveWorkspaceTeammateIDs removes the "workspace_teammates" edge to the WorkspaceTeammate entity by IDs.
+// RemoveWorkspaceTeammateIDs removes the "workspaceTeammates" edge to the WorkspaceTeammate entity by IDs.
 func (m *WorkspaceMutation) RemoveWorkspaceTeammateIDs(ids ...ulid.ID) {
-	if m.removedworkspace_teammates == nil {
-		m.removedworkspace_teammates = make(map[ulid.ID]struct{})
+	if m.removedworkspaceTeammates == nil {
+		m.removedworkspaceTeammates = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		delete(m.workspace_teammates, ids[i])
-		m.removedworkspace_teammates[ids[i]] = struct{}{}
+		delete(m.workspaceTeammates, ids[i])
+		m.removedworkspaceTeammates[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedWorkspaceTeammates returns the removed IDs of the "workspace_teammates" edge to the WorkspaceTeammate entity.
+// RemovedWorkspaceTeammates returns the removed IDs of the "workspaceTeammates" edge to the WorkspaceTeammate entity.
 func (m *WorkspaceMutation) RemovedWorkspaceTeammatesIDs() (ids []ulid.ID) {
-	for id := range m.removedworkspace_teammates {
+	for id := range m.removedworkspaceTeammates {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// WorkspaceTeammatesIDs returns the "workspace_teammates" edge IDs in the mutation.
+// WorkspaceTeammatesIDs returns the "workspaceTeammates" edge IDs in the mutation.
 func (m *WorkspaceMutation) WorkspaceTeammatesIDs() (ids []ulid.ID) {
-	for id := range m.workspace_teammates {
+	for id := range m.workspaceTeammates {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetWorkspaceTeammates resets all changes to the "workspace_teammates" edge.
+// ResetWorkspaceTeammates resets all changes to the "workspaceTeammates" edge.
 func (m *WorkspaceMutation) ResetWorkspaceTeammates() {
-	m.workspace_teammates = nil
-	m.clearedworkspace_teammates = false
-	m.removedworkspace_teammates = nil
+	m.workspaceTeammates = nil
+	m.clearedworkspaceTeammates = false
+	m.removedworkspaceTeammates = nil
 }
 
-// AddFavoriteWorkspaceIDs adds the "favorite_workspaces" edge to the FavoriteWorkspace entity by ids.
+// AddFavoriteWorkspaceIDs adds the "favoriteWorkspaces" edge to the FavoriteWorkspace entity by ids.
 func (m *WorkspaceMutation) AddFavoriteWorkspaceIDs(ids ...ulid.ID) {
-	if m.favorite_workspaces == nil {
-		m.favorite_workspaces = make(map[ulid.ID]struct{})
+	if m.favoriteWorkspaces == nil {
+		m.favoriteWorkspaces = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		m.favorite_workspaces[ids[i]] = struct{}{}
+		m.favoriteWorkspaces[ids[i]] = struct{}{}
 	}
 }
 
-// ClearFavoriteWorkspaces clears the "favorite_workspaces" edge to the FavoriteWorkspace entity.
+// ClearFavoriteWorkspaces clears the "favoriteWorkspaces" edge to the FavoriteWorkspace entity.
 func (m *WorkspaceMutation) ClearFavoriteWorkspaces() {
-	m.clearedfavorite_workspaces = true
+	m.clearedfavoriteWorkspaces = true
 }
 
-// FavoriteWorkspacesCleared reports if the "favorite_workspaces" edge to the FavoriteWorkspace entity was cleared.
+// FavoriteWorkspacesCleared reports if the "favoriteWorkspaces" edge to the FavoriteWorkspace entity was cleared.
 func (m *WorkspaceMutation) FavoriteWorkspacesCleared() bool {
-	return m.clearedfavorite_workspaces
+	return m.clearedfavoriteWorkspaces
 }
 
-// RemoveFavoriteWorkspaceIDs removes the "favorite_workspaces" edge to the FavoriteWorkspace entity by IDs.
+// RemoveFavoriteWorkspaceIDs removes the "favoriteWorkspaces" edge to the FavoriteWorkspace entity by IDs.
 func (m *WorkspaceMutation) RemoveFavoriteWorkspaceIDs(ids ...ulid.ID) {
-	if m.removedfavorite_workspaces == nil {
-		m.removedfavorite_workspaces = make(map[ulid.ID]struct{})
+	if m.removedfavoriteWorkspaces == nil {
+		m.removedfavoriteWorkspaces = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		delete(m.favorite_workspaces, ids[i])
-		m.removedfavorite_workspaces[ids[i]] = struct{}{}
+		delete(m.favoriteWorkspaces, ids[i])
+		m.removedfavoriteWorkspaces[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedFavoriteWorkspaces returns the removed IDs of the "favorite_workspaces" edge to the FavoriteWorkspace entity.
+// RemovedFavoriteWorkspaces returns the removed IDs of the "favoriteWorkspaces" edge to the FavoriteWorkspace entity.
 func (m *WorkspaceMutation) RemovedFavoriteWorkspacesIDs() (ids []ulid.ID) {
-	for id := range m.removedfavorite_workspaces {
+	for id := range m.removedfavoriteWorkspaces {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// FavoriteWorkspacesIDs returns the "favorite_workspaces" edge IDs in the mutation.
+// FavoriteWorkspacesIDs returns the "favoriteWorkspaces" edge IDs in the mutation.
 func (m *WorkspaceMutation) FavoriteWorkspacesIDs() (ids []ulid.ID) {
-	for id := range m.favorite_workspaces {
+	for id := range m.favoriteWorkspaces {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetFavoriteWorkspaces resets all changes to the "favorite_workspaces" edge.
+// ResetFavoriteWorkspaces resets all changes to the "favoriteWorkspaces" edge.
 func (m *WorkspaceMutation) ResetFavoriteWorkspaces() {
-	m.favorite_workspaces = nil
-	m.clearedfavorite_workspaces = false
-	m.removedfavorite_workspaces = nil
+	m.favoriteWorkspaces = nil
+	m.clearedfavoriteWorkspaces = false
+	m.removedfavoriteWorkspaces = nil
 }
 
-// AddTeammateTaskTabStatusIDs adds the "teammate_task_tab_statuses" edge to the TeammateTaskTabStatus entity by ids.
-func (m *WorkspaceMutation) AddTeammateTaskTabStatusIDs(ids ...ulid.ID) {
-	if m.teammate_task_tab_statuses == nil {
-		m.teammate_task_tab_statuses = make(map[ulid.ID]struct{})
+// AddTeammateTaskTabStatuseIDs adds the "teammateTaskTabStatuses" edge to the TeammateTaskTabStatus entity by ids.
+func (m *WorkspaceMutation) AddTeammateTaskTabStatuseIDs(ids ...ulid.ID) {
+	if m.teammateTaskTabStatuses == nil {
+		m.teammateTaskTabStatuses = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		m.teammate_task_tab_statuses[ids[i]] = struct{}{}
+		m.teammateTaskTabStatuses[ids[i]] = struct{}{}
 	}
 }
 
-// ClearTeammateTaskTabStatuses clears the "teammate_task_tab_statuses" edge to the TeammateTaskTabStatus entity.
+// ClearTeammateTaskTabStatuses clears the "teammateTaskTabStatuses" edge to the TeammateTaskTabStatus entity.
 func (m *WorkspaceMutation) ClearTeammateTaskTabStatuses() {
-	m.clearedteammate_task_tab_statuses = true
+	m.clearedteammateTaskTabStatuses = true
 }
 
-// TeammateTaskTabStatusesCleared reports if the "teammate_task_tab_statuses" edge to the TeammateTaskTabStatus entity was cleared.
+// TeammateTaskTabStatusesCleared reports if the "teammateTaskTabStatuses" edge to the TeammateTaskTabStatus entity was cleared.
 func (m *WorkspaceMutation) TeammateTaskTabStatusesCleared() bool {
-	return m.clearedteammate_task_tab_statuses
+	return m.clearedteammateTaskTabStatuses
 }
 
-// RemoveTeammateTaskTabStatusIDs removes the "teammate_task_tab_statuses" edge to the TeammateTaskTabStatus entity by IDs.
-func (m *WorkspaceMutation) RemoveTeammateTaskTabStatusIDs(ids ...ulid.ID) {
-	if m.removedteammate_task_tab_statuses == nil {
-		m.removedteammate_task_tab_statuses = make(map[ulid.ID]struct{})
+// RemoveTeammateTaskTabStatuseIDs removes the "teammateTaskTabStatuses" edge to the TeammateTaskTabStatus entity by IDs.
+func (m *WorkspaceMutation) RemoveTeammateTaskTabStatuseIDs(ids ...ulid.ID) {
+	if m.removedteammateTaskTabStatuses == nil {
+		m.removedteammateTaskTabStatuses = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		delete(m.teammate_task_tab_statuses, ids[i])
-		m.removedteammate_task_tab_statuses[ids[i]] = struct{}{}
+		delete(m.teammateTaskTabStatuses, ids[i])
+		m.removedteammateTaskTabStatuses[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedTeammateTaskTabStatuses returns the removed IDs of the "teammate_task_tab_statuses" edge to the TeammateTaskTabStatus entity.
+// RemovedTeammateTaskTabStatuses returns the removed IDs of the "teammateTaskTabStatuses" edge to the TeammateTaskTabStatus entity.
 func (m *WorkspaceMutation) RemovedTeammateTaskTabStatusesIDs() (ids []ulid.ID) {
-	for id := range m.removedteammate_task_tab_statuses {
+	for id := range m.removedteammateTaskTabStatuses {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// TeammateTaskTabStatusesIDs returns the "teammate_task_tab_statuses" edge IDs in the mutation.
+// TeammateTaskTabStatusesIDs returns the "teammateTaskTabStatuses" edge IDs in the mutation.
 func (m *WorkspaceMutation) TeammateTaskTabStatusesIDs() (ids []ulid.ID) {
-	for id := range m.teammate_task_tab_statuses {
+	for id := range m.teammateTaskTabStatuses {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetTeammateTaskTabStatuses resets all changes to the "teammate_task_tab_statuses" edge.
+// ResetTeammateTaskTabStatuses resets all changes to the "teammateTaskTabStatuses" edge.
 func (m *WorkspaceMutation) ResetTeammateTaskTabStatuses() {
-	m.teammate_task_tab_statuses = nil
-	m.clearedteammate_task_tab_statuses = false
-	m.removedteammate_task_tab_statuses = nil
+	m.teammateTaskTabStatuses = nil
+	m.clearedteammateTaskTabStatuses = false
+	m.removedteammateTaskTabStatuses = nil
 }
 
-// AddTeammateTaskListStatusIDs adds the "teammate_task_list_statuses" edge to the TeammateTaskListStatus entity by ids.
-func (m *WorkspaceMutation) AddTeammateTaskListStatusIDs(ids ...ulid.ID) {
-	if m.teammate_task_list_statuses == nil {
-		m.teammate_task_list_statuses = make(map[ulid.ID]struct{})
+// AddTeammateTaskListStatuseIDs adds the "teammateTaskListStatuses" edge to the TeammateTaskListStatus entity by ids.
+func (m *WorkspaceMutation) AddTeammateTaskListStatuseIDs(ids ...ulid.ID) {
+	if m.teammateTaskListStatuses == nil {
+		m.teammateTaskListStatuses = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		m.teammate_task_list_statuses[ids[i]] = struct{}{}
+		m.teammateTaskListStatuses[ids[i]] = struct{}{}
 	}
 }
 
-// ClearTeammateTaskListStatuses clears the "teammate_task_list_statuses" edge to the TeammateTaskListStatus entity.
+// ClearTeammateTaskListStatuses clears the "teammateTaskListStatuses" edge to the TeammateTaskListStatus entity.
 func (m *WorkspaceMutation) ClearTeammateTaskListStatuses() {
-	m.clearedteammate_task_list_statuses = true
+	m.clearedteammateTaskListStatuses = true
 }
 
-// TeammateTaskListStatusesCleared reports if the "teammate_task_list_statuses" edge to the TeammateTaskListStatus entity was cleared.
+// TeammateTaskListStatusesCleared reports if the "teammateTaskListStatuses" edge to the TeammateTaskListStatus entity was cleared.
 func (m *WorkspaceMutation) TeammateTaskListStatusesCleared() bool {
-	return m.clearedteammate_task_list_statuses
+	return m.clearedteammateTaskListStatuses
 }
 
-// RemoveTeammateTaskListStatusIDs removes the "teammate_task_list_statuses" edge to the TeammateTaskListStatus entity by IDs.
-func (m *WorkspaceMutation) RemoveTeammateTaskListStatusIDs(ids ...ulid.ID) {
-	if m.removedteammate_task_list_statuses == nil {
-		m.removedteammate_task_list_statuses = make(map[ulid.ID]struct{})
+// RemoveTeammateTaskListStatuseIDs removes the "teammateTaskListStatuses" edge to the TeammateTaskListStatus entity by IDs.
+func (m *WorkspaceMutation) RemoveTeammateTaskListStatuseIDs(ids ...ulid.ID) {
+	if m.removedteammateTaskListStatuses == nil {
+		m.removedteammateTaskListStatuses = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		delete(m.teammate_task_list_statuses, ids[i])
-		m.removedteammate_task_list_statuses[ids[i]] = struct{}{}
+		delete(m.teammateTaskListStatuses, ids[i])
+		m.removedteammateTaskListStatuses[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedTeammateTaskListStatuses returns the removed IDs of the "teammate_task_list_statuses" edge to the TeammateTaskListStatus entity.
+// RemovedTeammateTaskListStatuses returns the removed IDs of the "teammateTaskListStatuses" edge to the TeammateTaskListStatus entity.
 func (m *WorkspaceMutation) RemovedTeammateTaskListStatusesIDs() (ids []ulid.ID) {
-	for id := range m.removedteammate_task_list_statuses {
+	for id := range m.removedteammateTaskListStatuses {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// TeammateTaskListStatusesIDs returns the "teammate_task_list_statuses" edge IDs in the mutation.
+// TeammateTaskListStatusesIDs returns the "teammateTaskListStatuses" edge IDs in the mutation.
 func (m *WorkspaceMutation) TeammateTaskListStatusesIDs() (ids []ulid.ID) {
-	for id := range m.teammate_task_list_statuses {
+	for id := range m.teammateTaskListStatuses {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetTeammateTaskListStatuses resets all changes to the "teammate_task_list_statuses" edge.
+// ResetTeammateTaskListStatuses resets all changes to the "teammateTaskListStatuses" edge.
 func (m *WorkspaceMutation) ResetTeammateTaskListStatuses() {
-	m.teammate_task_list_statuses = nil
-	m.clearedteammate_task_list_statuses = false
-	m.removedteammate_task_list_statuses = nil
+	m.teammateTaskListStatuses = nil
+	m.clearedteammateTaskListStatuses = false
+	m.removedteammateTaskListStatuses = nil
 }
 
-// AddTeammateTaskSectionIDs adds the "teammate_task_sections" edge to the TeammateTaskSection entity by ids.
+// AddTeammateTaskSectionIDs adds the "teammateTaskSections" edge to the TeammateTaskSection entity by ids.
 func (m *WorkspaceMutation) AddTeammateTaskSectionIDs(ids ...ulid.ID) {
-	if m.teammate_task_sections == nil {
-		m.teammate_task_sections = make(map[ulid.ID]struct{})
+	if m.teammateTaskSections == nil {
+		m.teammateTaskSections = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		m.teammate_task_sections[ids[i]] = struct{}{}
+		m.teammateTaskSections[ids[i]] = struct{}{}
 	}
 }
 
-// ClearTeammateTaskSections clears the "teammate_task_sections" edge to the TeammateTaskSection entity.
+// ClearTeammateTaskSections clears the "teammateTaskSections" edge to the TeammateTaskSection entity.
 func (m *WorkspaceMutation) ClearTeammateTaskSections() {
-	m.clearedteammate_task_sections = true
+	m.clearedteammateTaskSections = true
 }
 
-// TeammateTaskSectionsCleared reports if the "teammate_task_sections" edge to the TeammateTaskSection entity was cleared.
+// TeammateTaskSectionsCleared reports if the "teammateTaskSections" edge to the TeammateTaskSection entity was cleared.
 func (m *WorkspaceMutation) TeammateTaskSectionsCleared() bool {
-	return m.clearedteammate_task_sections
+	return m.clearedteammateTaskSections
 }
 
-// RemoveTeammateTaskSectionIDs removes the "teammate_task_sections" edge to the TeammateTaskSection entity by IDs.
+// RemoveTeammateTaskSectionIDs removes the "teammateTaskSections" edge to the TeammateTaskSection entity by IDs.
 func (m *WorkspaceMutation) RemoveTeammateTaskSectionIDs(ids ...ulid.ID) {
-	if m.removedteammate_task_sections == nil {
-		m.removedteammate_task_sections = make(map[ulid.ID]struct{})
+	if m.removedteammateTaskSections == nil {
+		m.removedteammateTaskSections = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		delete(m.teammate_task_sections, ids[i])
-		m.removedteammate_task_sections[ids[i]] = struct{}{}
+		delete(m.teammateTaskSections, ids[i])
+		m.removedteammateTaskSections[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedTeammateTaskSections returns the removed IDs of the "teammate_task_sections" edge to the TeammateTaskSection entity.
+// RemovedTeammateTaskSections returns the removed IDs of the "teammateTaskSections" edge to the TeammateTaskSection entity.
 func (m *WorkspaceMutation) RemovedTeammateTaskSectionsIDs() (ids []ulid.ID) {
-	for id := range m.removedteammate_task_sections {
+	for id := range m.removedteammateTaskSections {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// TeammateTaskSectionsIDs returns the "teammate_task_sections" edge IDs in the mutation.
+// TeammateTaskSectionsIDs returns the "teammateTaskSections" edge IDs in the mutation.
 func (m *WorkspaceMutation) TeammateTaskSectionsIDs() (ids []ulid.ID) {
-	for id := range m.teammate_task_sections {
+	for id := range m.teammateTaskSections {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetTeammateTaskSections resets all changes to the "teammate_task_sections" edge.
+// ResetTeammateTaskSections resets all changes to the "teammateTaskSections" edge.
 func (m *WorkspaceMutation) ResetTeammateTaskSections() {
-	m.teammate_task_sections = nil
-	m.clearedteammate_task_sections = false
-	m.removedteammate_task_sections = nil
+	m.teammateTaskSections = nil
+	m.clearedteammateTaskSections = false
+	m.removedteammateTaskSections = nil
 }
 
-// AddTaskLikeIDs adds the "task_likes" edge to the TaskLike entity by ids.
+// AddTaskLikeIDs adds the "taskLikes" edge to the TaskLike entity by ids.
 func (m *WorkspaceMutation) AddTaskLikeIDs(ids ...ulid.ID) {
-	if m.task_likes == nil {
-		m.task_likes = make(map[ulid.ID]struct{})
+	if m.taskLikes == nil {
+		m.taskLikes = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		m.task_likes[ids[i]] = struct{}{}
+		m.taskLikes[ids[i]] = struct{}{}
 	}
 }
 
-// ClearTaskLikes clears the "task_likes" edge to the TaskLike entity.
+// ClearTaskLikes clears the "taskLikes" edge to the TaskLike entity.
 func (m *WorkspaceMutation) ClearTaskLikes() {
-	m.clearedtask_likes = true
+	m.clearedtaskLikes = true
 }
 
-// TaskLikesCleared reports if the "task_likes" edge to the TaskLike entity was cleared.
+// TaskLikesCleared reports if the "taskLikes" edge to the TaskLike entity was cleared.
 func (m *WorkspaceMutation) TaskLikesCleared() bool {
-	return m.clearedtask_likes
+	return m.clearedtaskLikes
 }
 
-// RemoveTaskLikeIDs removes the "task_likes" edge to the TaskLike entity by IDs.
+// RemoveTaskLikeIDs removes the "taskLikes" edge to the TaskLike entity by IDs.
 func (m *WorkspaceMutation) RemoveTaskLikeIDs(ids ...ulid.ID) {
-	if m.removedtask_likes == nil {
-		m.removedtask_likes = make(map[ulid.ID]struct{})
+	if m.removedtaskLikes == nil {
+		m.removedtaskLikes = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		delete(m.task_likes, ids[i])
-		m.removedtask_likes[ids[i]] = struct{}{}
+		delete(m.taskLikes, ids[i])
+		m.removedtaskLikes[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedTaskLikes returns the removed IDs of the "task_likes" edge to the TaskLike entity.
+// RemovedTaskLikes returns the removed IDs of the "taskLikes" edge to the TaskLike entity.
 func (m *WorkspaceMutation) RemovedTaskLikesIDs() (ids []ulid.ID) {
-	for id := range m.removedtask_likes {
+	for id := range m.removedtaskLikes {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// TaskLikesIDs returns the "task_likes" edge IDs in the mutation.
+// TaskLikesIDs returns the "taskLikes" edge IDs in the mutation.
 func (m *WorkspaceMutation) TaskLikesIDs() (ids []ulid.ID) {
-	for id := range m.task_likes {
+	for id := range m.taskLikes {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetTaskLikes resets all changes to the "task_likes" edge.
+// ResetTaskLikes resets all changes to the "taskLikes" edge.
 func (m *WorkspaceMutation) ResetTaskLikes() {
-	m.task_likes = nil
-	m.clearedtask_likes = false
-	m.removedtask_likes = nil
+	m.taskLikes = nil
+	m.clearedtaskLikes = false
+	m.removedtaskLikes = nil
 }
 
 // AddTagIDs adds the "tags" edge to the Tag entity by ids.
@@ -27720,58 +27720,58 @@ func (m *WorkspaceMutation) ResetTags() {
 	m.removedtags = nil
 }
 
-// AddTeammateTaskColumnIDs adds the "teammate_task_columns" edge to the TeammateTaskColumn entity by ids.
+// AddTeammateTaskColumnIDs adds the "teammateTaskColumns" edge to the TeammateTaskColumn entity by ids.
 func (m *WorkspaceMutation) AddTeammateTaskColumnIDs(ids ...ulid.ID) {
-	if m.teammate_task_columns == nil {
-		m.teammate_task_columns = make(map[ulid.ID]struct{})
+	if m.teammateTaskColumns == nil {
+		m.teammateTaskColumns = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		m.teammate_task_columns[ids[i]] = struct{}{}
+		m.teammateTaskColumns[ids[i]] = struct{}{}
 	}
 }
 
-// ClearTeammateTaskColumns clears the "teammate_task_columns" edge to the TeammateTaskColumn entity.
+// ClearTeammateTaskColumns clears the "teammateTaskColumns" edge to the TeammateTaskColumn entity.
 func (m *WorkspaceMutation) ClearTeammateTaskColumns() {
-	m.clearedteammate_task_columns = true
+	m.clearedteammateTaskColumns = true
 }
 
-// TeammateTaskColumnsCleared reports if the "teammate_task_columns" edge to the TeammateTaskColumn entity was cleared.
+// TeammateTaskColumnsCleared reports if the "teammateTaskColumns" edge to the TeammateTaskColumn entity was cleared.
 func (m *WorkspaceMutation) TeammateTaskColumnsCleared() bool {
-	return m.clearedteammate_task_columns
+	return m.clearedteammateTaskColumns
 }
 
-// RemoveTeammateTaskColumnIDs removes the "teammate_task_columns" edge to the TeammateTaskColumn entity by IDs.
+// RemoveTeammateTaskColumnIDs removes the "teammateTaskColumns" edge to the TeammateTaskColumn entity by IDs.
 func (m *WorkspaceMutation) RemoveTeammateTaskColumnIDs(ids ...ulid.ID) {
-	if m.removedteammate_task_columns == nil {
-		m.removedteammate_task_columns = make(map[ulid.ID]struct{})
+	if m.removedteammateTaskColumns == nil {
+		m.removedteammateTaskColumns = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		delete(m.teammate_task_columns, ids[i])
-		m.removedteammate_task_columns[ids[i]] = struct{}{}
+		delete(m.teammateTaskColumns, ids[i])
+		m.removedteammateTaskColumns[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedTeammateTaskColumns returns the removed IDs of the "teammate_task_columns" edge to the TeammateTaskColumn entity.
+// RemovedTeammateTaskColumns returns the removed IDs of the "teammateTaskColumns" edge to the TeammateTaskColumn entity.
 func (m *WorkspaceMutation) RemovedTeammateTaskColumnsIDs() (ids []ulid.ID) {
-	for id := range m.removedteammate_task_columns {
+	for id := range m.removedteammateTaskColumns {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// TeammateTaskColumnsIDs returns the "teammate_task_columns" edge IDs in the mutation.
+// TeammateTaskColumnsIDs returns the "teammateTaskColumns" edge IDs in the mutation.
 func (m *WorkspaceMutation) TeammateTaskColumnsIDs() (ids []ulid.ID) {
-	for id := range m.teammate_task_columns {
+	for id := range m.teammateTaskColumns {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetTeammateTaskColumns resets all changes to the "teammate_task_columns" edge.
+// ResetTeammateTaskColumns resets all changes to the "teammateTaskColumns" edge.
 func (m *WorkspaceMutation) ResetTeammateTaskColumns() {
-	m.teammate_task_columns = nil
-	m.clearedteammate_task_columns = false
-	m.removedteammate_task_columns = nil
+	m.teammateTaskColumns = nil
+	m.clearedteammateTaskColumns = false
+	m.removedteammateTaskColumns = nil
 }
 
 // Where appends a list predicates to the WorkspaceMutation builder.
@@ -27967,28 +27967,28 @@ func (m *WorkspaceMutation) AddedEdges() []string {
 	if m.projects != nil {
 		edges = append(edges, workspace.EdgeProjects)
 	}
-	if m.workspace_teammates != nil {
+	if m.workspaceTeammates != nil {
 		edges = append(edges, workspace.EdgeWorkspaceTeammates)
 	}
-	if m.favorite_workspaces != nil {
+	if m.favoriteWorkspaces != nil {
 		edges = append(edges, workspace.EdgeFavoriteWorkspaces)
 	}
-	if m.teammate_task_tab_statuses != nil {
+	if m.teammateTaskTabStatuses != nil {
 		edges = append(edges, workspace.EdgeTeammateTaskTabStatuses)
 	}
-	if m.teammate_task_list_statuses != nil {
+	if m.teammateTaskListStatuses != nil {
 		edges = append(edges, workspace.EdgeTeammateTaskListStatuses)
 	}
-	if m.teammate_task_sections != nil {
+	if m.teammateTaskSections != nil {
 		edges = append(edges, workspace.EdgeTeammateTaskSections)
 	}
-	if m.task_likes != nil {
+	if m.taskLikes != nil {
 		edges = append(edges, workspace.EdgeTaskLikes)
 	}
 	if m.tags != nil {
 		edges = append(edges, workspace.EdgeTags)
 	}
-	if m.teammate_task_columns != nil {
+	if m.teammateTaskColumns != nil {
 		edges = append(edges, workspace.EdgeTeammateTaskColumns)
 	}
 	return edges
@@ -28009,38 +28009,38 @@ func (m *WorkspaceMutation) AddedIDs(name string) []ent.Value {
 		}
 		return ids
 	case workspace.EdgeWorkspaceTeammates:
-		ids := make([]ent.Value, 0, len(m.workspace_teammates))
-		for id := range m.workspace_teammates {
+		ids := make([]ent.Value, 0, len(m.workspaceTeammates))
+		for id := range m.workspaceTeammates {
 			ids = append(ids, id)
 		}
 		return ids
 	case workspace.EdgeFavoriteWorkspaces:
-		ids := make([]ent.Value, 0, len(m.favorite_workspaces))
-		for id := range m.favorite_workspaces {
+		ids := make([]ent.Value, 0, len(m.favoriteWorkspaces))
+		for id := range m.favoriteWorkspaces {
 			ids = append(ids, id)
 		}
 		return ids
 	case workspace.EdgeTeammateTaskTabStatuses:
-		ids := make([]ent.Value, 0, len(m.teammate_task_tab_statuses))
-		for id := range m.teammate_task_tab_statuses {
+		ids := make([]ent.Value, 0, len(m.teammateTaskTabStatuses))
+		for id := range m.teammateTaskTabStatuses {
 			ids = append(ids, id)
 		}
 		return ids
 	case workspace.EdgeTeammateTaskListStatuses:
-		ids := make([]ent.Value, 0, len(m.teammate_task_list_statuses))
-		for id := range m.teammate_task_list_statuses {
+		ids := make([]ent.Value, 0, len(m.teammateTaskListStatuses))
+		for id := range m.teammateTaskListStatuses {
 			ids = append(ids, id)
 		}
 		return ids
 	case workspace.EdgeTeammateTaskSections:
-		ids := make([]ent.Value, 0, len(m.teammate_task_sections))
-		for id := range m.teammate_task_sections {
+		ids := make([]ent.Value, 0, len(m.teammateTaskSections))
+		for id := range m.teammateTaskSections {
 			ids = append(ids, id)
 		}
 		return ids
 	case workspace.EdgeTaskLikes:
-		ids := make([]ent.Value, 0, len(m.task_likes))
-		for id := range m.task_likes {
+		ids := make([]ent.Value, 0, len(m.taskLikes))
+		for id := range m.taskLikes {
 			ids = append(ids, id)
 		}
 		return ids
@@ -28051,8 +28051,8 @@ func (m *WorkspaceMutation) AddedIDs(name string) []ent.Value {
 		}
 		return ids
 	case workspace.EdgeTeammateTaskColumns:
-		ids := make([]ent.Value, 0, len(m.teammate_task_columns))
-		for id := range m.teammate_task_columns {
+		ids := make([]ent.Value, 0, len(m.teammateTaskColumns))
+		for id := range m.teammateTaskColumns {
 			ids = append(ids, id)
 		}
 		return ids
@@ -28066,28 +28066,28 @@ func (m *WorkspaceMutation) RemovedEdges() []string {
 	if m.removedprojects != nil {
 		edges = append(edges, workspace.EdgeProjects)
 	}
-	if m.removedworkspace_teammates != nil {
+	if m.removedworkspaceTeammates != nil {
 		edges = append(edges, workspace.EdgeWorkspaceTeammates)
 	}
-	if m.removedfavorite_workspaces != nil {
+	if m.removedfavoriteWorkspaces != nil {
 		edges = append(edges, workspace.EdgeFavoriteWorkspaces)
 	}
-	if m.removedteammate_task_tab_statuses != nil {
+	if m.removedteammateTaskTabStatuses != nil {
 		edges = append(edges, workspace.EdgeTeammateTaskTabStatuses)
 	}
-	if m.removedteammate_task_list_statuses != nil {
+	if m.removedteammateTaskListStatuses != nil {
 		edges = append(edges, workspace.EdgeTeammateTaskListStatuses)
 	}
-	if m.removedteammate_task_sections != nil {
+	if m.removedteammateTaskSections != nil {
 		edges = append(edges, workspace.EdgeTeammateTaskSections)
 	}
-	if m.removedtask_likes != nil {
+	if m.removedtaskLikes != nil {
 		edges = append(edges, workspace.EdgeTaskLikes)
 	}
 	if m.removedtags != nil {
 		edges = append(edges, workspace.EdgeTags)
 	}
-	if m.removedteammate_task_columns != nil {
+	if m.removedteammateTaskColumns != nil {
 		edges = append(edges, workspace.EdgeTeammateTaskColumns)
 	}
 	return edges
@@ -28104,38 +28104,38 @@ func (m *WorkspaceMutation) RemovedIDs(name string) []ent.Value {
 		}
 		return ids
 	case workspace.EdgeWorkspaceTeammates:
-		ids := make([]ent.Value, 0, len(m.removedworkspace_teammates))
-		for id := range m.removedworkspace_teammates {
+		ids := make([]ent.Value, 0, len(m.removedworkspaceTeammates))
+		for id := range m.removedworkspaceTeammates {
 			ids = append(ids, id)
 		}
 		return ids
 	case workspace.EdgeFavoriteWorkspaces:
-		ids := make([]ent.Value, 0, len(m.removedfavorite_workspaces))
-		for id := range m.removedfavorite_workspaces {
+		ids := make([]ent.Value, 0, len(m.removedfavoriteWorkspaces))
+		for id := range m.removedfavoriteWorkspaces {
 			ids = append(ids, id)
 		}
 		return ids
 	case workspace.EdgeTeammateTaskTabStatuses:
-		ids := make([]ent.Value, 0, len(m.removedteammate_task_tab_statuses))
-		for id := range m.removedteammate_task_tab_statuses {
+		ids := make([]ent.Value, 0, len(m.removedteammateTaskTabStatuses))
+		for id := range m.removedteammateTaskTabStatuses {
 			ids = append(ids, id)
 		}
 		return ids
 	case workspace.EdgeTeammateTaskListStatuses:
-		ids := make([]ent.Value, 0, len(m.removedteammate_task_list_statuses))
-		for id := range m.removedteammate_task_list_statuses {
+		ids := make([]ent.Value, 0, len(m.removedteammateTaskListStatuses))
+		for id := range m.removedteammateTaskListStatuses {
 			ids = append(ids, id)
 		}
 		return ids
 	case workspace.EdgeTeammateTaskSections:
-		ids := make([]ent.Value, 0, len(m.removedteammate_task_sections))
-		for id := range m.removedteammate_task_sections {
+		ids := make([]ent.Value, 0, len(m.removedteammateTaskSections))
+		for id := range m.removedteammateTaskSections {
 			ids = append(ids, id)
 		}
 		return ids
 	case workspace.EdgeTaskLikes:
-		ids := make([]ent.Value, 0, len(m.removedtask_likes))
-		for id := range m.removedtask_likes {
+		ids := make([]ent.Value, 0, len(m.removedtaskLikes))
+		for id := range m.removedtaskLikes {
 			ids = append(ids, id)
 		}
 		return ids
@@ -28146,8 +28146,8 @@ func (m *WorkspaceMutation) RemovedIDs(name string) []ent.Value {
 		}
 		return ids
 	case workspace.EdgeTeammateTaskColumns:
-		ids := make([]ent.Value, 0, len(m.removedteammate_task_columns))
-		for id := range m.removedteammate_task_columns {
+		ids := make([]ent.Value, 0, len(m.removedteammateTaskColumns))
+		for id := range m.removedteammateTaskColumns {
 			ids = append(ids, id)
 		}
 		return ids
@@ -28164,28 +28164,28 @@ func (m *WorkspaceMutation) ClearedEdges() []string {
 	if m.clearedprojects {
 		edges = append(edges, workspace.EdgeProjects)
 	}
-	if m.clearedworkspace_teammates {
+	if m.clearedworkspaceTeammates {
 		edges = append(edges, workspace.EdgeWorkspaceTeammates)
 	}
-	if m.clearedfavorite_workspaces {
+	if m.clearedfavoriteWorkspaces {
 		edges = append(edges, workspace.EdgeFavoriteWorkspaces)
 	}
-	if m.clearedteammate_task_tab_statuses {
+	if m.clearedteammateTaskTabStatuses {
 		edges = append(edges, workspace.EdgeTeammateTaskTabStatuses)
 	}
-	if m.clearedteammate_task_list_statuses {
+	if m.clearedteammateTaskListStatuses {
 		edges = append(edges, workspace.EdgeTeammateTaskListStatuses)
 	}
-	if m.clearedteammate_task_sections {
+	if m.clearedteammateTaskSections {
 		edges = append(edges, workspace.EdgeTeammateTaskSections)
 	}
-	if m.clearedtask_likes {
+	if m.clearedtaskLikes {
 		edges = append(edges, workspace.EdgeTaskLikes)
 	}
 	if m.clearedtags {
 		edges = append(edges, workspace.EdgeTags)
 	}
-	if m.clearedteammate_task_columns {
+	if m.clearedteammateTaskColumns {
 		edges = append(edges, workspace.EdgeTeammateTaskColumns)
 	}
 	return edges
@@ -28200,21 +28200,21 @@ func (m *WorkspaceMutation) EdgeCleared(name string) bool {
 	case workspace.EdgeProjects:
 		return m.clearedprojects
 	case workspace.EdgeWorkspaceTeammates:
-		return m.clearedworkspace_teammates
+		return m.clearedworkspaceTeammates
 	case workspace.EdgeFavoriteWorkspaces:
-		return m.clearedfavorite_workspaces
+		return m.clearedfavoriteWorkspaces
 	case workspace.EdgeTeammateTaskTabStatuses:
-		return m.clearedteammate_task_tab_statuses
+		return m.clearedteammateTaskTabStatuses
 	case workspace.EdgeTeammateTaskListStatuses:
-		return m.clearedteammate_task_list_statuses
+		return m.clearedteammateTaskListStatuses
 	case workspace.EdgeTeammateTaskSections:
-		return m.clearedteammate_task_sections
+		return m.clearedteammateTaskSections
 	case workspace.EdgeTaskLikes:
-		return m.clearedtask_likes
+		return m.clearedtaskLikes
 	case workspace.EdgeTags:
 		return m.clearedtags
 	case workspace.EdgeTeammateTaskColumns:
-		return m.clearedteammate_task_columns
+		return m.clearedteammateTaskColumns
 	}
 	return false
 }

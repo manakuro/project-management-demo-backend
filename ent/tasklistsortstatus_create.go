@@ -77,34 +77,34 @@ func (tlssc *TaskListSortStatusCreate) SetNillableID(u *ulid.ID) *TaskListSortSt
 	return tlssc
 }
 
-// AddTeammateTaskListStatusIDs adds the "teammate_task_list_statuses" edge to the TeammateTaskListStatus entity by IDs.
-func (tlssc *TaskListSortStatusCreate) AddTeammateTaskListStatusIDs(ids ...ulid.ID) *TaskListSortStatusCreate {
-	tlssc.mutation.AddTeammateTaskListStatusIDs(ids...)
+// AddTeammateTaskListStatuseIDs adds the "teammateTaskListStatuses" edge to the TeammateTaskListStatus entity by IDs.
+func (tlssc *TaskListSortStatusCreate) AddTeammateTaskListStatuseIDs(ids ...ulid.ID) *TaskListSortStatusCreate {
+	tlssc.mutation.AddTeammateTaskListStatuseIDs(ids...)
 	return tlssc
 }
 
-// AddTeammateTaskListStatuses adds the "teammate_task_list_statuses" edges to the TeammateTaskListStatus entity.
+// AddTeammateTaskListStatuses adds the "teammateTaskListStatuses" edges to the TeammateTaskListStatus entity.
 func (tlssc *TaskListSortStatusCreate) AddTeammateTaskListStatuses(t ...*TeammateTaskListStatus) *TaskListSortStatusCreate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
 		ids[i] = t[i].ID
 	}
-	return tlssc.AddTeammateTaskListStatusIDs(ids...)
+	return tlssc.AddTeammateTaskListStatuseIDs(ids...)
 }
 
-// AddProjectTaskListStatusIDs adds the "project_task_list_statuses" edge to the ProjectTaskListStatus entity by IDs.
-func (tlssc *TaskListSortStatusCreate) AddProjectTaskListStatusIDs(ids ...ulid.ID) *TaskListSortStatusCreate {
-	tlssc.mutation.AddProjectTaskListStatusIDs(ids...)
+// AddProjectTaskListStatuseIDs adds the "projectTaskListStatuses" edge to the ProjectTaskListStatus entity by IDs.
+func (tlssc *TaskListSortStatusCreate) AddProjectTaskListStatuseIDs(ids ...ulid.ID) *TaskListSortStatusCreate {
+	tlssc.mutation.AddProjectTaskListStatuseIDs(ids...)
 	return tlssc
 }
 
-// AddProjectTaskListStatuses adds the "project_task_list_statuses" edges to the ProjectTaskListStatus entity.
+// AddProjectTaskListStatuses adds the "projectTaskListStatuses" edges to the ProjectTaskListStatus entity.
 func (tlssc *TaskListSortStatusCreate) AddProjectTaskListStatuses(p ...*ProjectTaskListStatus) *TaskListSortStatusCreate {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
-	return tlssc.AddProjectTaskListStatusIDs(ids...)
+	return tlssc.AddProjectTaskListStatuseIDs(ids...)
 }
 
 // Mutation returns the TaskListSortStatusMutation object of the builder.

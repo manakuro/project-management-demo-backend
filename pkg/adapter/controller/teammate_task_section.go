@@ -10,7 +10,7 @@ import (
 type TeammateTaskSection interface {
 	Get(ctx context.Context, where *model.TeammateTaskSectionWhereInput) (*model.TeammateTaskSection, error)
 	List(ctx context.Context) ([]*model.TeammateTaskSection, error)
-	ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TeammateTaskSectionWhereInput, requestedFields []string) (*model.TeammateTaskSectionConnection, error)
+	ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TeammateTaskSectionWhereInput) (*model.TeammateTaskSectionConnection, error)
 	Create(ctx context.Context, input model.CreateTeammateTaskSectionInput) (*model.TeammateTaskSection, error)
 	Update(ctx context.Context, input model.UpdateTeammateTaskSectionInput) (*model.TeammateTaskSection, error)
 	Delete(ctx context.Context, input model.DeleteTeammateTaskSectionInput) (*model.TeammateTaskSection, error)
@@ -35,8 +35,8 @@ func (c *teammateTaskSectionController) List(ctx context.Context) ([]*model.Team
 	return c.teammateTaskSectionUsecase.List(ctx)
 }
 
-func (c *teammateTaskSectionController) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TeammateTaskSectionWhereInput, requestedFields []string) (*model.TeammateTaskSectionConnection, error) {
-	return c.teammateTaskSectionUsecase.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
+func (c *teammateTaskSectionController) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TeammateTaskSectionWhereInput) (*model.TeammateTaskSectionConnection, error) {
+	return c.teammateTaskSectionUsecase.ListWithPagination(ctx, after, first, before, last, where)
 }
 
 func (c *teammateTaskSectionController) Create(ctx context.Context, input model.CreateTeammateTaskSectionInput) (*model.TeammateTaskSection, error) {

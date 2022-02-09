@@ -5,7 +5,6 @@ import (
 	"project-management-demo-backend/ent"
 	"project-management-demo-backend/pkg/entity/model"
 	ur "project-management-demo-backend/pkg/usecase/repository"
-	"project-management-demo-backend/pkg/util/collection"
 )
 
 type teammateTaskColumnRepository struct {
@@ -49,16 +48,8 @@ func (r *teammateTaskColumnRepository) List(ctx context.Context) ([]*model.Teamm
 	return res, nil
 }
 
-func (r *teammateTaskColumnRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TeammateTaskColumnWhereInput, requestedFields []string) (*model.TeammateTaskColumnConnection, error) {
+func (r *teammateTaskColumnRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TeammateTaskColumnWhereInput) (*model.TeammateTaskColumnConnection, error) {
 	q := r.client.TeammateTaskColumn.Query()
-
-	if collection.Contains(requestedFields, "edges.node.taskColumn") {
-		q.WithTaskColumn()
-	}
-
-	if collection.Contains(requestedFields, "edges.node.teammate") {
-		q.WithTeammate()
-	}
 
 	res, err := q.Paginate(ctx, after, first, before, last, ent.WithTeammateTaskColumnFilter(where.Filter))
 	if err != nil {

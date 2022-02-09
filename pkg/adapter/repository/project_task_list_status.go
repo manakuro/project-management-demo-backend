@@ -5,7 +5,6 @@ import (
 	"project-management-demo-backend/ent"
 	"project-management-demo-backend/pkg/entity/model"
 	ur "project-management-demo-backend/pkg/usecase/repository"
-	"project-management-demo-backend/pkg/util/collection"
 )
 
 type projectTaskListStatusRepository struct {
@@ -49,20 +48,8 @@ func (r *projectTaskListStatusRepository) List(ctx context.Context) ([]*model.Pr
 	return res, nil
 }
 
-func (r *projectTaskListStatusRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ProjectTaskListStatusWhereInput, requestedFields []string) (*model.ProjectTaskListStatusConnection, error) {
+func (r *projectTaskListStatusRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ProjectTaskListStatusWhereInput) (*model.ProjectTaskListStatusConnection, error) {
 	q := r.client.ProjectTaskListStatus.Query()
-
-	if collection.Contains(requestedFields, "edges.node.project") {
-		q.WithProject()
-	}
-
-	if collection.Contains(requestedFields, "edges.node.taskListCompletedStatus") {
-		q.WithTaskListCompletedStatus()
-	}
-
-	if collection.Contains(requestedFields, "edges.node.taskListSortStatus") {
-		q.WithTaskListSortStatus()
-	}
 
 	res, err := q.Paginate(ctx, after, first, before, last, ent.WithProjectTaskListStatusFilter(where.Filter))
 	if err != nil {

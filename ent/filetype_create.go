@@ -76,13 +76,13 @@ func (ftc *FileTypeCreate) SetNillableID(u *ulid.ID) *FileTypeCreate {
 	return ftc
 }
 
-// AddTaskFileIDs adds the "task_files" edge to the TaskFile entity by IDs.
+// AddTaskFileIDs adds the "taskFiles" edge to the TaskFile entity by IDs.
 func (ftc *FileTypeCreate) AddTaskFileIDs(ids ...ulid.ID) *FileTypeCreate {
 	ftc.mutation.AddTaskFileIDs(ids...)
 	return ftc
 }
 
-// AddTaskFiles adds the "task_files" edges to the TaskFile entity.
+// AddTaskFiles adds the "taskFiles" edges to the TaskFile entity.
 func (ftc *FileTypeCreate) AddTaskFiles(t ...*TaskFile) *FileTypeCreate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {

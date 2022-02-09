@@ -777,7 +777,7 @@ func HasProjectWith(preds ...predicate.Project) predicate.ProjectTaskColumn {
 	})
 }
 
-// HasTaskColumn applies the HasEdge predicate on the "task_column" edge.
+// HasTaskColumn applies the HasEdge predicate on the "taskColumn" edge.
 func HasTaskColumn() predicate.ProjectTaskColumn {
 	return predicate.ProjectTaskColumn(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
@@ -789,7 +789,7 @@ func HasTaskColumn() predicate.ProjectTaskColumn {
 	})
 }
 
-// HasTaskColumnWith applies the HasEdge predicate on the "task_column" edge with a given conditions (other predicates).
+// HasTaskColumnWith applies the HasEdge predicate on the "taskColumn" edge with a given conditions (other predicates).
 func HasTaskColumnWith(preds ...predicate.TaskColumn) predicate.ProjectTaskColumn {
 	return predicate.ProjectTaskColumn(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(

@@ -59,7 +59,7 @@ func (ttu *TeammateTaskUpdate) SetTask(t *Task) *TeammateTaskUpdate {
 	return ttu.SetTaskID(t.ID)
 }
 
-// SetTeammateTaskSection sets the "teammate_task_section" edge to the TeammateTaskSection entity.
+// SetTeammateTaskSection sets the "teammateTaskSection" edge to the TeammateTaskSection entity.
 func (ttu *TeammateTaskUpdate) SetTeammateTaskSection(t *TeammateTaskSection) *TeammateTaskUpdate {
 	return ttu.SetTeammateTaskSectionID(t.ID)
 }
@@ -81,7 +81,7 @@ func (ttu *TeammateTaskUpdate) ClearTask() *TeammateTaskUpdate {
 	return ttu
 }
 
-// ClearTeammateTaskSection clears the "teammate_task_section" edge to the TeammateTaskSection entity.
+// ClearTeammateTaskSection clears the "teammateTaskSection" edge to the TeammateTaskSection entity.
 func (ttu *TeammateTaskUpdate) ClearTeammateTaskSection() *TeammateTaskUpdate {
 	ttu.mutation.ClearTeammateTaskSection()
 	return ttu
@@ -156,7 +156,7 @@ func (ttu *TeammateTaskUpdate) check() error {
 		return errors.New("ent: clearing a required unique edge \"task\"")
 	}
 	if _, ok := ttu.mutation.TeammateTaskSectionID(); ttu.mutation.TeammateTaskSectionCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"teammate_task_section\"")
+		return errors.New("ent: clearing a required unique edge \"teammateTaskSection\"")
 	}
 	return nil
 }
@@ -331,7 +331,7 @@ func (ttuo *TeammateTaskUpdateOne) SetTask(t *Task) *TeammateTaskUpdateOne {
 	return ttuo.SetTaskID(t.ID)
 }
 
-// SetTeammateTaskSection sets the "teammate_task_section" edge to the TeammateTaskSection entity.
+// SetTeammateTaskSection sets the "teammateTaskSection" edge to the TeammateTaskSection entity.
 func (ttuo *TeammateTaskUpdateOne) SetTeammateTaskSection(t *TeammateTaskSection) *TeammateTaskUpdateOne {
 	return ttuo.SetTeammateTaskSectionID(t.ID)
 }
@@ -353,7 +353,7 @@ func (ttuo *TeammateTaskUpdateOne) ClearTask() *TeammateTaskUpdateOne {
 	return ttuo
 }
 
-// ClearTeammateTaskSection clears the "teammate_task_section" edge to the TeammateTaskSection entity.
+// ClearTeammateTaskSection clears the "teammateTaskSection" edge to the TeammateTaskSection entity.
 func (ttuo *TeammateTaskUpdateOne) ClearTeammateTaskSection() *TeammateTaskUpdateOne {
 	ttuo.mutation.ClearTeammateTaskSection()
 	return ttuo
@@ -435,7 +435,7 @@ func (ttuo *TeammateTaskUpdateOne) check() error {
 		return errors.New("ent: clearing a required unique edge \"task\"")
 	}
 	if _, ok := ttuo.mutation.TeammateTaskSectionID(); ttuo.mutation.TeammateTaskSectionCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"teammate_task_section\"")
+		return errors.New("ent: clearing a required unique edge \"teammateTaskSection\"")
 	}
 	return nil
 }

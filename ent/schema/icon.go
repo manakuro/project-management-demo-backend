@@ -5,6 +5,8 @@ import (
 	"project-management-demo-backend/ent/mixin"
 	"project-management-demo-backend/pkg/const/globalid"
 
+	"entgo.io/contrib/entgql"
+
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
 
@@ -38,8 +40,9 @@ func (IconMixin) Fields() []ent.Field {
 // Edges of the Icon.
 func (Icon) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("project_icons", ProjectIcon.Type).
+		edge.To(projectIconsRef, ProjectIcon.Type).
 			Annotations(
+				entgql.Bind(),
 				schema.Annotation(
 					annotation.Edge{FieldName: "project_icon_id"},
 				),

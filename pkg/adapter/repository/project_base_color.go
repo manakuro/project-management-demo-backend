@@ -5,7 +5,6 @@ import (
 	"project-management-demo-backend/ent"
 	"project-management-demo-backend/pkg/entity/model"
 	ur "project-management-demo-backend/pkg/usecase/repository"
-	"project-management-demo-backend/pkg/util/collection"
 )
 
 type projectBaseColorRepository struct {
@@ -50,12 +49,8 @@ func (r *projectBaseColorRepository) List(ctx context.Context) ([]*model.Project
 	return res, nil
 }
 
-func (r *projectBaseColorRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ProjectBaseColorWhereInput, requestedFields []string) (*model.ProjectBaseColorConnection, error) {
+func (r *projectBaseColorRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ProjectBaseColorWhereInput) (*model.ProjectBaseColorConnection, error) {
 	q := r.client.ProjectBaseColor.Query()
-
-	if collection.Contains(requestedFields, "edges.node.color") {
-		q.WithColor()
-	}
 
 	res, err := q.Paginate(ctx, after, first, before, last, ent.WithProjectBaseColorFilter(where.Filter))
 	if err != nil {

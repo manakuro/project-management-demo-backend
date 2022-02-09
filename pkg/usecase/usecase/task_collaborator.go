@@ -14,7 +14,7 @@ type taskCollaboratorUsecase struct {
 type TaskCollaborator interface {
 	Get(ctx context.Context, where *model.TaskCollaboratorWhereInput) (*model.TaskCollaborator, error)
 	List(ctx context.Context, where *model.TaskCollaboratorWhereInput) ([]*model.TaskCollaborator, error)
-	ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TaskCollaboratorWhereInput, requestedFields []string) (*model.TaskCollaboratorConnection, error)
+	ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TaskCollaboratorWhereInput) (*model.TaskCollaboratorConnection, error)
 	Create(ctx context.Context, input model.CreateTaskCollaboratorInput) (*model.TaskCollaborator, error)
 	Update(ctx context.Context, input model.UpdateTaskCollaboratorInput) (*model.TaskCollaborator, error)
 	Delete(ctx context.Context, input model.DeleteTaskCollaboratorInput) (*model.TaskCollaborator, error)
@@ -33,8 +33,8 @@ func (u *taskCollaboratorUsecase) List(ctx context.Context, where *model.TaskCol
 	return u.taskCollaboratorRepository.List(ctx, where)
 }
 
-func (u *taskCollaboratorUsecase) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TaskCollaboratorWhereInput, requestedFields []string) (*model.TaskCollaboratorConnection, error) {
-	return u.taskCollaboratorRepository.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
+func (u *taskCollaboratorUsecase) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TaskCollaboratorWhereInput) (*model.TaskCollaboratorConnection, error) {
+	return u.taskCollaboratorRepository.ListWithPagination(ctx, after, first, before, last, where)
 }
 
 func (u *taskCollaboratorUsecase) Create(ctx context.Context, input model.CreateTaskCollaboratorInput) (*model.TaskCollaborator, error) {

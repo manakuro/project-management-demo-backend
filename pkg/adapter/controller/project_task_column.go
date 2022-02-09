@@ -10,7 +10,7 @@ import (
 type ProjectTaskColumn interface {
 	Get(ctx context.Context, where *model.ProjectTaskColumnWhereInput) (*model.ProjectTaskColumn, error)
 	List(ctx context.Context) ([]*model.ProjectTaskColumn, error)
-	ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ProjectTaskColumnWhereInput, requestedFields []string) (*model.ProjectTaskColumnConnection, error)
+	ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ProjectTaskColumnWhereInput) (*model.ProjectTaskColumnConnection, error)
 	Create(ctx context.Context, input model.CreateProjectTaskColumnInput) (*model.ProjectTaskColumn, error)
 	Update(ctx context.Context, input model.UpdateProjectTaskColumnInput) (*model.ProjectTaskColumn, error)
 }
@@ -34,8 +34,8 @@ func (c *projectTaskColumnController) List(ctx context.Context) ([]*model.Projec
 	return c.projectTaskColumnUsecase.List(ctx)
 }
 
-func (c *projectTaskColumnController) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ProjectTaskColumnWhereInput, requestedFields []string) (*model.ProjectTaskColumnConnection, error) {
-	return c.projectTaskColumnUsecase.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
+func (c *projectTaskColumnController) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ProjectTaskColumnWhereInput) (*model.ProjectTaskColumnConnection, error) {
+	return c.projectTaskColumnUsecase.ListWithPagination(ctx, after, first, before, last, where)
 }
 
 func (c *projectTaskColumnController) Create(ctx context.Context, input model.CreateProjectTaskColumnInput) (*model.ProjectTaskColumn, error) {

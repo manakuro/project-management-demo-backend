@@ -48,7 +48,7 @@ func (r *taskListCompletedStatusRepository) List(ctx context.Context) ([]*model.
 	return res, nil
 }
 
-func (r *taskListCompletedStatusRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TaskListCompletedStatusWhereInput, requestedFields []string) (*model.TaskListCompletedStatusConnection, error) {
+func (r *taskListCompletedStatusRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TaskListCompletedStatusWhereInput) (*model.TaskListCompletedStatusConnection, error) {
 	q := r.client.TaskListCompletedStatus.Query()
 
 	res, err := q.Paginate(ctx, after, first, before, last, ent.WithTaskListCompletedStatusFilter(where.Filter))

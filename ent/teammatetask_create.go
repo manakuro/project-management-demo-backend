@@ -94,7 +94,7 @@ func (ttc *TeammateTaskCreate) SetTask(t *Task) *TeammateTaskCreate {
 	return ttc.SetTaskID(t.ID)
 }
 
-// SetTeammateTaskSection sets the "teammate_task_section" edge to the TeammateTaskSection entity.
+// SetTeammateTaskSection sets the "teammateTaskSection" edge to the TeammateTaskSection entity.
 func (ttc *TeammateTaskCreate) SetTeammateTaskSection(t *TeammateTaskSection) *TeammateTaskCreate {
 	return ttc.SetTeammateTaskSectionID(t.ID)
 }
@@ -208,7 +208,7 @@ func (ttc *TeammateTaskCreate) check() error {
 		return &ValidationError{Name: "task", err: errors.New("ent: missing required edge \"task\"")}
 	}
 	if _, ok := ttc.mutation.TeammateTaskSectionID(); !ok {
-		return &ValidationError{Name: "teammate_task_section", err: errors.New("ent: missing required edge \"teammate_task_section\"")}
+		return &ValidationError{Name: "teammateTaskSection", err: errors.New("ent: missing required edge \"teammateTaskSection\"")}
 	}
 	return nil
 }

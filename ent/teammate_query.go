@@ -139,7 +139,7 @@ func (tq *TeammateQuery) QueryProjects() *ProjectQuery {
 	return query
 }
 
-// QueryProjectTeammates chains the current query on the "project_teammates" edge.
+// QueryProjectTeammates chains the current query on the "projectTeammates" edge.
 func (tq *TeammateQuery) QueryProjectTeammates() *ProjectTeammateQuery {
 	query := &ProjectTeammateQuery{config: tq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
@@ -161,7 +161,7 @@ func (tq *TeammateQuery) QueryProjectTeammates() *ProjectTeammateQuery {
 	return query
 }
 
-// QueryWorkspaceTeammates chains the current query on the "workspace_teammates" edge.
+// QueryWorkspaceTeammates chains the current query on the "workspaceTeammates" edge.
 func (tq *TeammateQuery) QueryWorkspaceTeammates() *WorkspaceTeammateQuery {
 	query := &WorkspaceTeammateQuery{config: tq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
@@ -183,7 +183,7 @@ func (tq *TeammateQuery) QueryWorkspaceTeammates() *WorkspaceTeammateQuery {
 	return query
 }
 
-// QueryFavoriteProjects chains the current query on the "favorite_projects" edge.
+// QueryFavoriteProjects chains the current query on the "favoriteProjects" edge.
 func (tq *TeammateQuery) QueryFavoriteProjects() *FavoriteProjectQuery {
 	query := &FavoriteProjectQuery{config: tq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
@@ -205,7 +205,7 @@ func (tq *TeammateQuery) QueryFavoriteProjects() *FavoriteProjectQuery {
 	return query
 }
 
-// QueryFavoriteWorkspaces chains the current query on the "favorite_workspaces" edge.
+// QueryFavoriteWorkspaces chains the current query on the "favoriteWorkspaces" edge.
 func (tq *TeammateQuery) QueryFavoriteWorkspaces() *FavoriteWorkspaceQuery {
 	query := &FavoriteWorkspaceQuery{config: tq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
@@ -227,7 +227,7 @@ func (tq *TeammateQuery) QueryFavoriteWorkspaces() *FavoriteWorkspaceQuery {
 	return query
 }
 
-// QueryTeammateTaskTabStatuses chains the current query on the "teammate_task_tab_statuses" edge.
+// QueryTeammateTaskTabStatuses chains the current query on the "teammateTaskTabStatuses" edge.
 func (tq *TeammateQuery) QueryTeammateTaskTabStatuses() *TeammateTaskTabStatusQuery {
 	query := &TeammateTaskTabStatusQuery{config: tq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
@@ -249,7 +249,7 @@ func (tq *TeammateQuery) QueryTeammateTaskTabStatuses() *TeammateTaskTabStatusQu
 	return query
 }
 
-// QueryTeammateTaskColumns chains the current query on the "teammate_task_columns" edge.
+// QueryTeammateTaskColumns chains the current query on the "teammateTaskColumns" edge.
 func (tq *TeammateQuery) QueryTeammateTaskColumns() *TeammateTaskColumnQuery {
 	query := &TeammateTaskColumnQuery{config: tq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
@@ -271,7 +271,7 @@ func (tq *TeammateQuery) QueryTeammateTaskColumns() *TeammateTaskColumnQuery {
 	return query
 }
 
-// QueryTeammateTaskListStatuses chains the current query on the "teammate_task_list_statuses" edge.
+// QueryTeammateTaskListStatuses chains the current query on the "teammateTaskListStatuses" edge.
 func (tq *TeammateQuery) QueryTeammateTaskListStatuses() *TeammateTaskListStatusQuery {
 	query := &TeammateTaskListStatusQuery{config: tq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
@@ -293,7 +293,7 @@ func (tq *TeammateQuery) QueryTeammateTaskListStatuses() *TeammateTaskListStatus
 	return query
 }
 
-// QueryTeammateTaskSections chains the current query on the "teammate_task_sections" edge.
+// QueryTeammateTaskSections chains the current query on the "teammateTaskSections" edge.
 func (tq *TeammateQuery) QueryTeammateTaskSections() *TeammateTaskSectionQuery {
 	query := &TeammateTaskSectionQuery{config: tq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
@@ -337,7 +337,7 @@ func (tq *TeammateQuery) QueryTasks() *TaskQuery {
 	return query
 }
 
-// QueryTeammateTasks chains the current query on the "teammate_tasks" edge.
+// QueryTeammateTasks chains the current query on the "teammateTasks" edge.
 func (tq *TeammateQuery) QueryTeammateTasks() *TeammateTaskQuery {
 	query := &TeammateTaskQuery{config: tq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
@@ -359,7 +359,7 @@ func (tq *TeammateQuery) QueryTeammateTasks() *TeammateTaskQuery {
 	return query
 }
 
-// QueryTaskLikes chains the current query on the "task_likes" edge.
+// QueryTaskLikes chains the current query on the "taskLikes" edge.
 func (tq *TeammateQuery) QueryTaskLikes() *TaskLikeQuery {
 	query := &TaskLikeQuery{config: tq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
@@ -381,7 +381,7 @@ func (tq *TeammateQuery) QueryTaskLikes() *TaskLikeQuery {
 	return query
 }
 
-// QueryTaskCollaborators chains the current query on the "task_collaborators" edge.
+// QueryTaskCollaborators chains the current query on the "taskCollaborators" edge.
 func (tq *TeammateQuery) QueryTaskCollaborators() *TaskCollaboratorQuery {
 	query := &TaskCollaboratorQuery{config: tq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
@@ -403,7 +403,7 @@ func (tq *TeammateQuery) QueryTaskCollaborators() *TaskCollaboratorQuery {
 	return query
 }
 
-// QueryTaskFeeds chains the current query on the "task_feeds" edge.
+// QueryTaskFeeds chains the current query on the "taskFeeds" edge.
 func (tq *TeammateQuery) QueryTaskFeeds() *TaskFeedQuery {
 	query := &TaskFeedQuery{config: tq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
@@ -425,7 +425,7 @@ func (tq *TeammateQuery) QueryTaskFeeds() *TaskFeedQuery {
 	return query
 }
 
-// QueryTaskFeedLikes chains the current query on the "task_feed_likes" edge.
+// QueryTaskFeedLikes chains the current query on the "taskFeedLikes" edge.
 func (tq *TeammateQuery) QueryTaskFeedLikes() *TaskFeedLikeQuery {
 	query := &TaskFeedLikeQuery{config: tq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
@@ -673,7 +673,7 @@ func (tq *TeammateQuery) WithProjects(opts ...func(*ProjectQuery)) *TeammateQuer
 }
 
 // WithProjectTeammates tells the query-builder to eager-load the nodes that are connected to
-// the "project_teammates" edge. The optional arguments are used to configure the query builder of the edge.
+// the "projectTeammates" edge. The optional arguments are used to configure the query builder of the edge.
 func (tq *TeammateQuery) WithProjectTeammates(opts ...func(*ProjectTeammateQuery)) *TeammateQuery {
 	query := &ProjectTeammateQuery{config: tq.config}
 	for _, opt := range opts {
@@ -684,7 +684,7 @@ func (tq *TeammateQuery) WithProjectTeammates(opts ...func(*ProjectTeammateQuery
 }
 
 // WithWorkspaceTeammates tells the query-builder to eager-load the nodes that are connected to
-// the "workspace_teammates" edge. The optional arguments are used to configure the query builder of the edge.
+// the "workspaceTeammates" edge. The optional arguments are used to configure the query builder of the edge.
 func (tq *TeammateQuery) WithWorkspaceTeammates(opts ...func(*WorkspaceTeammateQuery)) *TeammateQuery {
 	query := &WorkspaceTeammateQuery{config: tq.config}
 	for _, opt := range opts {
@@ -695,7 +695,7 @@ func (tq *TeammateQuery) WithWorkspaceTeammates(opts ...func(*WorkspaceTeammateQ
 }
 
 // WithFavoriteProjects tells the query-builder to eager-load the nodes that are connected to
-// the "favorite_projects" edge. The optional arguments are used to configure the query builder of the edge.
+// the "favoriteProjects" edge. The optional arguments are used to configure the query builder of the edge.
 func (tq *TeammateQuery) WithFavoriteProjects(opts ...func(*FavoriteProjectQuery)) *TeammateQuery {
 	query := &FavoriteProjectQuery{config: tq.config}
 	for _, opt := range opts {
@@ -706,7 +706,7 @@ func (tq *TeammateQuery) WithFavoriteProjects(opts ...func(*FavoriteProjectQuery
 }
 
 // WithFavoriteWorkspaces tells the query-builder to eager-load the nodes that are connected to
-// the "favorite_workspaces" edge. The optional arguments are used to configure the query builder of the edge.
+// the "favoriteWorkspaces" edge. The optional arguments are used to configure the query builder of the edge.
 func (tq *TeammateQuery) WithFavoriteWorkspaces(opts ...func(*FavoriteWorkspaceQuery)) *TeammateQuery {
 	query := &FavoriteWorkspaceQuery{config: tq.config}
 	for _, opt := range opts {
@@ -717,7 +717,7 @@ func (tq *TeammateQuery) WithFavoriteWorkspaces(opts ...func(*FavoriteWorkspaceQ
 }
 
 // WithTeammateTaskTabStatuses tells the query-builder to eager-load the nodes that are connected to
-// the "teammate_task_tab_statuses" edge. The optional arguments are used to configure the query builder of the edge.
+// the "teammateTaskTabStatuses" edge. The optional arguments are used to configure the query builder of the edge.
 func (tq *TeammateQuery) WithTeammateTaskTabStatuses(opts ...func(*TeammateTaskTabStatusQuery)) *TeammateQuery {
 	query := &TeammateTaskTabStatusQuery{config: tq.config}
 	for _, opt := range opts {
@@ -728,7 +728,7 @@ func (tq *TeammateQuery) WithTeammateTaskTabStatuses(opts ...func(*TeammateTaskT
 }
 
 // WithTeammateTaskColumns tells the query-builder to eager-load the nodes that are connected to
-// the "teammate_task_columns" edge. The optional arguments are used to configure the query builder of the edge.
+// the "teammateTaskColumns" edge. The optional arguments are used to configure the query builder of the edge.
 func (tq *TeammateQuery) WithTeammateTaskColumns(opts ...func(*TeammateTaskColumnQuery)) *TeammateQuery {
 	query := &TeammateTaskColumnQuery{config: tq.config}
 	for _, opt := range opts {
@@ -739,7 +739,7 @@ func (tq *TeammateQuery) WithTeammateTaskColumns(opts ...func(*TeammateTaskColum
 }
 
 // WithTeammateTaskListStatuses tells the query-builder to eager-load the nodes that are connected to
-// the "teammate_task_list_statuses" edge. The optional arguments are used to configure the query builder of the edge.
+// the "teammateTaskListStatuses" edge. The optional arguments are used to configure the query builder of the edge.
 func (tq *TeammateQuery) WithTeammateTaskListStatuses(opts ...func(*TeammateTaskListStatusQuery)) *TeammateQuery {
 	query := &TeammateTaskListStatusQuery{config: tq.config}
 	for _, opt := range opts {
@@ -750,7 +750,7 @@ func (tq *TeammateQuery) WithTeammateTaskListStatuses(opts ...func(*TeammateTask
 }
 
 // WithTeammateTaskSections tells the query-builder to eager-load the nodes that are connected to
-// the "teammate_task_sections" edge. The optional arguments are used to configure the query builder of the edge.
+// the "teammateTaskSections" edge. The optional arguments are used to configure the query builder of the edge.
 func (tq *TeammateQuery) WithTeammateTaskSections(opts ...func(*TeammateTaskSectionQuery)) *TeammateQuery {
 	query := &TeammateTaskSectionQuery{config: tq.config}
 	for _, opt := range opts {
@@ -772,7 +772,7 @@ func (tq *TeammateQuery) WithTasks(opts ...func(*TaskQuery)) *TeammateQuery {
 }
 
 // WithTeammateTasks tells the query-builder to eager-load the nodes that are connected to
-// the "teammate_tasks" edge. The optional arguments are used to configure the query builder of the edge.
+// the "teammateTasks" edge. The optional arguments are used to configure the query builder of the edge.
 func (tq *TeammateQuery) WithTeammateTasks(opts ...func(*TeammateTaskQuery)) *TeammateQuery {
 	query := &TeammateTaskQuery{config: tq.config}
 	for _, opt := range opts {
@@ -783,7 +783,7 @@ func (tq *TeammateQuery) WithTeammateTasks(opts ...func(*TeammateTaskQuery)) *Te
 }
 
 // WithTaskLikes tells the query-builder to eager-load the nodes that are connected to
-// the "task_likes" edge. The optional arguments are used to configure the query builder of the edge.
+// the "taskLikes" edge. The optional arguments are used to configure the query builder of the edge.
 func (tq *TeammateQuery) WithTaskLikes(opts ...func(*TaskLikeQuery)) *TeammateQuery {
 	query := &TaskLikeQuery{config: tq.config}
 	for _, opt := range opts {
@@ -794,7 +794,7 @@ func (tq *TeammateQuery) WithTaskLikes(opts ...func(*TaskLikeQuery)) *TeammateQu
 }
 
 // WithTaskCollaborators tells the query-builder to eager-load the nodes that are connected to
-// the "task_collaborators" edge. The optional arguments are used to configure the query builder of the edge.
+// the "taskCollaborators" edge. The optional arguments are used to configure the query builder of the edge.
 func (tq *TeammateQuery) WithTaskCollaborators(opts ...func(*TaskCollaboratorQuery)) *TeammateQuery {
 	query := &TaskCollaboratorQuery{config: tq.config}
 	for _, opt := range opts {
@@ -805,7 +805,7 @@ func (tq *TeammateQuery) WithTaskCollaborators(opts ...func(*TaskCollaboratorQue
 }
 
 // WithTaskFeeds tells the query-builder to eager-load the nodes that are connected to
-// the "task_feeds" edge. The optional arguments are used to configure the query builder of the edge.
+// the "taskFeeds" edge. The optional arguments are used to configure the query builder of the edge.
 func (tq *TeammateQuery) WithTaskFeeds(opts ...func(*TaskFeedQuery)) *TeammateQuery {
 	query := &TaskFeedQuery{config: tq.config}
 	for _, opt := range opts {
@@ -816,7 +816,7 @@ func (tq *TeammateQuery) WithTaskFeeds(opts ...func(*TaskFeedQuery)) *TeammateQu
 }
 
 // WithTaskFeedLikes tells the query-builder to eager-load the nodes that are connected to
-// the "task_feed_likes" edge. The optional arguments are used to configure the query builder of the edge.
+// the "taskFeedLikes" edge. The optional arguments are used to configure the query builder of the edge.
 func (tq *TeammateQuery) WithTaskFeedLikes(opts ...func(*TaskFeedLikeQuery)) *TeammateQuery {
 	query := &TaskFeedLikeQuery{config: tq.config}
 	for _, opt := range opts {

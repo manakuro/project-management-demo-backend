@@ -10,7 +10,7 @@ import (
 type TaskColumn interface {
 	Get(ctx context.Context, where *model.TaskColumnWhereInput) (*model.TaskColumn, error)
 	List(ctx context.Context) ([]*model.TaskColumn, error)
-	ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TaskColumnWhereInput, requestedFields []string) (*model.TaskColumnConnection, error)
+	ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TaskColumnWhereInput) (*model.TaskColumnConnection, error)
 	Create(ctx context.Context, input model.CreateTaskColumnInput) (*model.TaskColumn, error)
 	Update(ctx context.Context, input model.UpdateTaskColumnInput) (*model.TaskColumn, error)
 }
@@ -34,8 +34,8 @@ func (c *taskColumnController) List(ctx context.Context) ([]*model.TaskColumn, e
 	return c.taskColumnUsecase.List(ctx)
 }
 
-func (c *taskColumnController) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TaskColumnWhereInput, requestedFields []string) (*model.TaskColumnConnection, error) {
-	return c.taskColumnUsecase.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
+func (c *taskColumnController) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TaskColumnWhereInput) (*model.TaskColumnConnection, error) {
+	return c.taskColumnUsecase.ListWithPagination(ctx, after, first, before, last, where)
 }
 
 func (c *taskColumnController) Create(ctx context.Context, input model.CreateTaskColumnInput) (*model.TaskColumn, error) {

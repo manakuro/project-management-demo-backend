@@ -100,13 +100,13 @@ func (ttsc *TeammateTaskSectionCreate) SetWorkspace(w *Workspace) *TeammateTaskS
 	return ttsc.SetWorkspaceID(w.ID)
 }
 
-// AddTeammateTaskIDs adds the "teammate_tasks" edge to the TeammateTask entity by IDs.
+// AddTeammateTaskIDs adds the "teammateTasks" edge to the TeammateTask entity by IDs.
 func (ttsc *TeammateTaskSectionCreate) AddTeammateTaskIDs(ids ...ulid.ID) *TeammateTaskSectionCreate {
 	ttsc.mutation.AddTeammateTaskIDs(ids...)
 	return ttsc
 }
 
-// AddTeammateTasks adds the "teammate_tasks" edges to the TeammateTask entity.
+// AddTeammateTasks adds the "teammateTasks" edges to the TeammateTask entity.
 func (ttsc *TeammateTaskSectionCreate) AddTeammateTasks(t ...*TeammateTask) *TeammateTaskSectionCreate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {

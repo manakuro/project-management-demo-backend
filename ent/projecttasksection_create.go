@@ -82,13 +82,13 @@ func (ptsc *ProjectTaskSectionCreate) SetProject(p *Project) *ProjectTaskSection
 	return ptsc.SetProjectID(p.ID)
 }
 
-// AddProjectTaskIDs adds the "project_tasks" edge to the ProjectTask entity by IDs.
+// AddProjectTaskIDs adds the "projectTasks" edge to the ProjectTask entity by IDs.
 func (ptsc *ProjectTaskSectionCreate) AddProjectTaskIDs(ids ...ulid.ID) *ProjectTaskSectionCreate {
 	ptsc.mutation.AddProjectTaskIDs(ids...)
 	return ptsc
 }
 
-// AddProjectTasks adds the "project_tasks" edges to the ProjectTask entity.
+// AddProjectTasks adds the "projectTasks" edges to the ProjectTask entity.
 func (ptsc *ProjectTaskSectionCreate) AddProjectTasks(p ...*ProjectTask) *ProjectTaskSectionCreate {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {

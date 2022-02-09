@@ -9,7 +9,6 @@ import (
 	"project-management-demo-backend/graph/generated"
 	"project-management-demo-backend/pkg/adapter/handler"
 	"project-management-demo-backend/pkg/util/datetime"
-	"project-management-demo-backend/pkg/util/graphqlutil"
 )
 
 func (r *mutationResolver) CreateTaskPriority(ctx context.Context, input ent.CreateTaskPriorityInput) (*ent.TaskPriority, error) {
@@ -37,8 +36,8 @@ func (r *queryResolver) TaskPriority(ctx context.Context, where *ent.TaskPriorit
 }
 
 func (r *queryResolver) TaskPriorities(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskPriorityWhereInput) (*ent.TaskPriorityConnection, error) {
-	requestedFields := graphqlutil.GetRequestedFields(ctx)
-	ts, err := r.controller.TaskPriority.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
+
+	ts, err := r.controller.TaskPriority.ListWithPagination(ctx, after, first, before, last, where)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}

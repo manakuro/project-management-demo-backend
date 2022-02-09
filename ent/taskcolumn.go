@@ -32,10 +32,10 @@ type TaskColumn struct {
 
 // TaskColumnEdges holds the relations/edges for other nodes in the graph.
 type TaskColumnEdges struct {
-	// TeammateTaskColumns holds the value of the teammate_task_columns edge.
-	TeammateTaskColumns []*TeammateTaskColumn `json:"teammate_task_columns,omitempty"`
-	// ProjectTaskColumns holds the value of the project_task_columns edge.
-	ProjectTaskColumns []*ProjectTaskColumn `json:"project_task_columns,omitempty"`
+	// TeammateTaskColumns holds the value of the teammateTaskColumns edge.
+	TeammateTaskColumns []*TeammateTaskColumn `json:"teammateTaskColumns,omitempty"`
+	// ProjectTaskColumns holds the value of the projectTaskColumns edge.
+	ProjectTaskColumns []*ProjectTaskColumn `json:"projectTaskColumns,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [2]bool
@@ -47,7 +47,7 @@ func (e TaskColumnEdges) TeammateTaskColumnsOrErr() ([]*TeammateTaskColumn, erro
 	if e.loadedTypes[0] {
 		return e.TeammateTaskColumns, nil
 	}
-	return nil, &NotLoadedError{edge: "teammate_task_columns"}
+	return nil, &NotLoadedError{edge: "teammateTaskColumns"}
 }
 
 // ProjectTaskColumnsOrErr returns the ProjectTaskColumns value or an error if the edge
@@ -56,7 +56,7 @@ func (e TaskColumnEdges) ProjectTaskColumnsOrErr() ([]*ProjectTaskColumn, error)
 	if e.loadedTypes[1] {
 		return e.ProjectTaskColumns, nil
 	}
-	return nil, &NotLoadedError{edge: "project_task_columns"}
+	return nil, &NotLoadedError{edge: "projectTaskColumns"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -120,12 +120,12 @@ func (tc *TaskColumn) assignValues(columns []string, values []interface{}) error
 	return nil
 }
 
-// QueryTeammateTaskColumns queries the "teammate_task_columns" edge of the TaskColumn entity.
+// QueryTeammateTaskColumns queries the "teammateTaskColumns" edge of the TaskColumn entity.
 func (tc *TaskColumn) QueryTeammateTaskColumns() *TeammateTaskColumnQuery {
 	return (&TaskColumnClient{config: tc.config}).QueryTeammateTaskColumns(tc)
 }
 
-// QueryProjectTaskColumns queries the "project_task_columns" edge of the TaskColumn entity.
+// QueryProjectTaskColumns queries the "projectTaskColumns" edge of the TaskColumn entity.
 func (tc *TaskColumn) QueryProjectTaskColumns() *ProjectTaskColumnQuery {
 	return (&TaskColumnClient{config: tc.config}).QueryProjectTaskColumns(tc)
 }

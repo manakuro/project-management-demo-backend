@@ -14,7 +14,7 @@ type teammateTaskTabStatusUsecase struct {
 type TeammateTaskTabStatus interface {
 	Get(ctx context.Context, where *model.TeammateTaskTabStatusWhereInput) (*model.TeammateTaskTabStatus, error)
 	List(ctx context.Context) ([]*model.TeammateTaskTabStatus, error)
-	ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TeammateTaskTabStatusWhereInput, requestedFields []string) (*model.TeammateTaskTabStatusConnection, error)
+	ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TeammateTaskTabStatusWhereInput) (*model.TeammateTaskTabStatusConnection, error)
 	Create(ctx context.Context, input model.CreateTeammateTaskTabStatusInput) (*model.TeammateTaskTabStatus, error)
 	Update(ctx context.Context, input model.UpdateTeammateTaskTabStatusInput) (*model.TeammateTaskTabStatus, error)
 }
@@ -32,8 +32,8 @@ func (u *teammateTaskTabStatusUsecase) List(ctx context.Context) ([]*model.Teamm
 	return u.teammateTaskTabStatusRepository.List(ctx)
 }
 
-func (u *teammateTaskTabStatusUsecase) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TeammateTaskTabStatusWhereInput, requestedFields []string) (*model.TeammateTaskTabStatusConnection, error) {
-	return u.teammateTaskTabStatusRepository.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
+func (u *teammateTaskTabStatusUsecase) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TeammateTaskTabStatusWhereInput) (*model.TeammateTaskTabStatusConnection, error) {
+	return u.teammateTaskTabStatusRepository.ListWithPagination(ctx, after, first, before, last, where)
 }
 
 func (u *teammateTaskTabStatusUsecase) Create(ctx context.Context, input model.CreateTeammateTaskTabStatusInput) (*model.TeammateTaskTabStatus, error) {

@@ -113,7 +113,7 @@ func (tq *TagQuery) QueryColor() *ColorQuery {
 	return query
 }
 
-// QueryTaskTags chains the current query on the "task_tags" edge.
+// QueryTaskTags chains the current query on the "taskTags" edge.
 func (tq *TagQuery) QueryTaskTags() *TaskTagQuery {
 	query := &TaskTagQuery{config: tq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
@@ -348,7 +348,7 @@ func (tq *TagQuery) WithColor(opts ...func(*ColorQuery)) *TagQuery {
 }
 
 // WithTaskTags tells the query-builder to eager-load the nodes that are connected to
-// the "task_tags" edge. The optional arguments are used to configure the query builder of the edge.
+// the "taskTags" edge. The optional arguments are used to configure the query builder of the edge.
 func (tq *TagQuery) WithTaskTags(opts ...func(*TaskTagQuery)) *TagQuery {
 	query := &TaskTagQuery{config: tq.config}
 	for _, opt := range opts {

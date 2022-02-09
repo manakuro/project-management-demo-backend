@@ -71,7 +71,7 @@ func (cq *ColorQuery) Order(o ...OrderFunc) *ColorQuery {
 	return cq
 }
 
-// QueryProjectBaseColors chains the current query on the "project_base_colors" edge.
+// QueryProjectBaseColors chains the current query on the "projectBaseColors" edge.
 func (cq *ColorQuery) QueryProjectBaseColors() *ProjectBaseColorQuery {
 	query := &ProjectBaseColorQuery{config: cq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
@@ -93,7 +93,7 @@ func (cq *ColorQuery) QueryProjectBaseColors() *ProjectBaseColorQuery {
 	return query
 }
 
-// QueryProjectLightColors chains the current query on the "project_light_colors" edge.
+// QueryProjectLightColors chains the current query on the "projectLightColors" edge.
 func (cq *ColorQuery) QueryProjectLightColors() *ProjectLightColorQuery {
 	query := &ProjectLightColorQuery{config: cq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
@@ -115,7 +115,7 @@ func (cq *ColorQuery) QueryProjectLightColors() *ProjectLightColorQuery {
 	return query
 }
 
-// QueryTaskPriorities chains the current query on the "task_priorities" edge.
+// QueryTaskPriorities chains the current query on the "taskPriorities" edge.
 func (cq *ColorQuery) QueryTaskPriorities() *TaskPriorityQuery {
 	query := &TaskPriorityQuery{config: cq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
@@ -351,7 +351,7 @@ func (cq *ColorQuery) Clone() *ColorQuery {
 }
 
 // WithProjectBaseColors tells the query-builder to eager-load the nodes that are connected to
-// the "project_base_colors" edge. The optional arguments are used to configure the query builder of the edge.
+// the "projectBaseColors" edge. The optional arguments are used to configure the query builder of the edge.
 func (cq *ColorQuery) WithProjectBaseColors(opts ...func(*ProjectBaseColorQuery)) *ColorQuery {
 	query := &ProjectBaseColorQuery{config: cq.config}
 	for _, opt := range opts {
@@ -362,7 +362,7 @@ func (cq *ColorQuery) WithProjectBaseColors(opts ...func(*ProjectBaseColorQuery)
 }
 
 // WithProjectLightColors tells the query-builder to eager-load the nodes that are connected to
-// the "project_light_colors" edge. The optional arguments are used to configure the query builder of the edge.
+// the "projectLightColors" edge. The optional arguments are used to configure the query builder of the edge.
 func (cq *ColorQuery) WithProjectLightColors(opts ...func(*ProjectLightColorQuery)) *ColorQuery {
 	query := &ProjectLightColorQuery{config: cq.config}
 	for _, opt := range opts {
@@ -373,7 +373,7 @@ func (cq *ColorQuery) WithProjectLightColors(opts ...func(*ProjectLightColorQuer
 }
 
 // WithTaskPriorities tells the query-builder to eager-load the nodes that are connected to
-// the "task_priorities" edge. The optional arguments are used to configure the query builder of the edge.
+// the "taskPriorities" edge. The optional arguments are used to configure the query builder of the edge.
 func (cq *ColorQuery) WithTaskPriorities(opts ...func(*TaskPriorityQuery)) *ColorQuery {
 	query := &TaskPriorityQuery{config: cq.config}
 	for _, opt := range opts {

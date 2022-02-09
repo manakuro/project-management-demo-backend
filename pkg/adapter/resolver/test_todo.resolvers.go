@@ -9,7 +9,6 @@ import (
 	"project-management-demo-backend/graph/generated"
 	"project-management-demo-backend/pkg/adapter/handler"
 	"project-management-demo-backend/pkg/util/datetime"
-	"project-management-demo-backend/pkg/util/graphqlutil"
 )
 
 func (r *mutationResolver) CreateTestTodo(ctx context.Context, input ent.CreateTestTodoInput) (*ent.TestTodo, error) {
@@ -37,9 +36,8 @@ func (r *queryResolver) TestTodo(ctx context.Context, where *ent.TestTodoWhereIn
 }
 
 func (r *queryResolver) TestTodos(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TestTodoWhereInput) (*ent.TestTodoConnection, error) {
-	requestFields := graphqlutil.GetRequestedFields(ctx)
 
-	ts, err := r.controller.TestTodo.ListWithPagination(ctx, after, first, before, last, where, requestFields)
+	ts, err := r.controller.TestTodo.ListWithPagination(ctx, after, first, before, last, where)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}

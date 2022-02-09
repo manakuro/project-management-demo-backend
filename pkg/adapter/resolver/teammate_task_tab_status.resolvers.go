@@ -10,7 +10,6 @@ import (
 	"project-management-demo-backend/graph/generated"
 	"project-management-demo-backend/pkg/adapter/handler"
 	"project-management-demo-backend/pkg/util/datetime"
-	"project-management-demo-backend/pkg/util/graphqlutil"
 	"project-management-demo-backend/pkg/util/subscription"
 )
 
@@ -47,9 +46,8 @@ func (r *queryResolver) TeammateTaskTabStatus(ctx context.Context, where *ent.Te
 }
 
 func (r *queryResolver) TeammateTaskTabStatuses(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TeammateTaskTabStatusWhereInput) (*ent.TeammateTaskTabStatusConnection, error) {
-	requestedFields := graphqlutil.GetRequestedFields(ctx)
 
-	ts, err := r.controller.TeammateTaskTabStatus.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
+	ts, err := r.controller.TeammateTaskTabStatus.ListWithPagination(ctx, after, first, before, last, where)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}

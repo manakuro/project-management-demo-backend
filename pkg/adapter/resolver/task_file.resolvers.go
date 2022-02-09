@@ -10,7 +10,6 @@ import (
 	"project-management-demo-backend/graph/generated"
 	"project-management-demo-backend/pkg/adapter/handler"
 	"project-management-demo-backend/pkg/util/datetime"
-	"project-management-demo-backend/pkg/util/graphqlutil"
 	"project-management-demo-backend/pkg/util/subscription"
 )
 
@@ -47,9 +46,8 @@ func (r *queryResolver) TaskFile(ctx context.Context, where *ent.TaskFileWhereIn
 }
 
 func (r *queryResolver) TaskFiles(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskFileWhereInput) (*ent.TaskFileConnection, error) {
-	requestedFields := graphqlutil.GetRequestedFields(ctx)
 
-	ts, err := r.controller.TaskFile.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
+	ts, err := r.controller.TaskFile.ListWithPagination(ctx, after, first, before, last, where)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}

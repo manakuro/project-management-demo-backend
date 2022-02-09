@@ -33,20 +33,20 @@ const (
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
 	FieldUpdatedAt = "updated_at"
-	// EdgeTestUser holds the string denoting the test_user edge name in mutations.
-	EdgeTestUser = "test_user"
+	// EdgeTestUser holds the string denoting the testuser edge name in mutations.
+	EdgeTestUser = "testUser"
 	// EdgeParent holds the string denoting the parent edge name in mutations.
 	EdgeParent = "parent"
 	// EdgeChildren holds the string denoting the children edge name in mutations.
 	EdgeChildren = "children"
 	// Table holds the table name of the testtodo in the database.
 	Table = "test_todos"
-	// TestUserTable is the table that holds the test_user relation/edge.
+	// TestUserTable is the table that holds the testUser relation/edge.
 	TestUserTable = "test_todos"
 	// TestUserInverseTable is the table name for the TestUser entity.
 	// It exists in this package in order to avoid circular dependency with the "testuser" package.
 	TestUserInverseTable = "test_users"
-	// TestUserColumn is the table column denoting the test_user relation/edge.
+	// TestUserColumn is the table column denoting the testUser relation/edge.
 	TestUserColumn = "test_user_id"
 	// ParentTable is the table that holds the parent relation/edge.
 	ParentTable = "test_todos"

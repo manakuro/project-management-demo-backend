@@ -208,7 +208,7 @@ func (tc *TaskCreate) SetTeammate(t *Teammate) *TaskCreate {
 	return tc.SetTeammateID(t.ID)
 }
 
-// SetTaskPriority sets the "task_priority" edge to the TaskPriority entity.
+// SetTaskPriority sets the "taskPriority" edge to the TaskPriority entity.
 func (tc *TaskCreate) SetTaskPriority(t *TaskPriority) *TaskCreate {
 	return tc.SetTaskPriorityID(t.ID)
 }
@@ -232,13 +232,13 @@ func (tc *TaskCreate) SetParent(t *Task) *TaskCreate {
 	return tc.SetParentID(t.ID)
 }
 
-// AddSubTaskIDs adds the "sub_tasks" edge to the Task entity by IDs.
+// AddSubTaskIDs adds the "subTasks" edge to the Task entity by IDs.
 func (tc *TaskCreate) AddSubTaskIDs(ids ...ulid.ID) *TaskCreate {
 	tc.mutation.AddSubTaskIDs(ids...)
 	return tc
 }
 
-// AddSubTasks adds the "sub_tasks" edges to the Task entity.
+// AddSubTasks adds the "subTasks" edges to the Task entity.
 func (tc *TaskCreate) AddSubTasks(t ...*Task) *TaskCreate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -247,13 +247,13 @@ func (tc *TaskCreate) AddSubTasks(t ...*Task) *TaskCreate {
 	return tc.AddSubTaskIDs(ids...)
 }
 
-// AddTeammateTaskIDs adds the "teammate_tasks" edge to the TeammateTask entity by IDs.
+// AddTeammateTaskIDs adds the "teammateTasks" edge to the TeammateTask entity by IDs.
 func (tc *TaskCreate) AddTeammateTaskIDs(ids ...ulid.ID) *TaskCreate {
 	tc.mutation.AddTeammateTaskIDs(ids...)
 	return tc
 }
 
-// AddTeammateTasks adds the "teammate_tasks" edges to the TeammateTask entity.
+// AddTeammateTasks adds the "teammateTasks" edges to the TeammateTask entity.
 func (tc *TaskCreate) AddTeammateTasks(t ...*TeammateTask) *TaskCreate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -262,13 +262,13 @@ func (tc *TaskCreate) AddTeammateTasks(t ...*TeammateTask) *TaskCreate {
 	return tc.AddTeammateTaskIDs(ids...)
 }
 
-// AddProjectTaskIDs adds the "project_tasks" edge to the ProjectTask entity by IDs.
+// AddProjectTaskIDs adds the "projectTasks" edge to the ProjectTask entity by IDs.
 func (tc *TaskCreate) AddProjectTaskIDs(ids ...ulid.ID) *TaskCreate {
 	tc.mutation.AddProjectTaskIDs(ids...)
 	return tc
 }
 
-// AddProjectTasks adds the "project_tasks" edges to the ProjectTask entity.
+// AddProjectTasks adds the "projectTasks" edges to the ProjectTask entity.
 func (tc *TaskCreate) AddProjectTasks(p ...*ProjectTask) *TaskCreate {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {
@@ -277,13 +277,13 @@ func (tc *TaskCreate) AddProjectTasks(p ...*ProjectTask) *TaskCreate {
 	return tc.AddProjectTaskIDs(ids...)
 }
 
-// AddTaskLikeIDs adds the "task_likes" edge to the TaskLike entity by IDs.
+// AddTaskLikeIDs adds the "taskLikes" edge to the TaskLike entity by IDs.
 func (tc *TaskCreate) AddTaskLikeIDs(ids ...ulid.ID) *TaskCreate {
 	tc.mutation.AddTaskLikeIDs(ids...)
 	return tc
 }
 
-// AddTaskLikes adds the "task_likes" edges to the TaskLike entity.
+// AddTaskLikes adds the "taskLikes" edges to the TaskLike entity.
 func (tc *TaskCreate) AddTaskLikes(t ...*TaskLike) *TaskCreate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -292,13 +292,13 @@ func (tc *TaskCreate) AddTaskLikes(t ...*TaskLike) *TaskCreate {
 	return tc.AddTaskLikeIDs(ids...)
 }
 
-// AddTaskTagIDs adds the "task_tags" edge to the TaskTag entity by IDs.
+// AddTaskTagIDs adds the "taskTags" edge to the TaskTag entity by IDs.
 func (tc *TaskCreate) AddTaskTagIDs(ids ...ulid.ID) *TaskCreate {
 	tc.mutation.AddTaskTagIDs(ids...)
 	return tc
 }
 
-// AddTaskTags adds the "task_tags" edges to the TaskTag entity.
+// AddTaskTags adds the "taskTags" edges to the TaskTag entity.
 func (tc *TaskCreate) AddTaskTags(t ...*TaskTag) *TaskCreate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -307,13 +307,13 @@ func (tc *TaskCreate) AddTaskTags(t ...*TaskTag) *TaskCreate {
 	return tc.AddTaskTagIDs(ids...)
 }
 
-// AddTaskCollaboratorIDs adds the "task_collaborators" edge to the TaskCollaborator entity by IDs.
+// AddTaskCollaboratorIDs adds the "taskCollaborators" edge to the TaskCollaborator entity by IDs.
 func (tc *TaskCreate) AddTaskCollaboratorIDs(ids ...ulid.ID) *TaskCreate {
 	tc.mutation.AddTaskCollaboratorIDs(ids...)
 	return tc
 }
 
-// AddTaskCollaborators adds the "task_collaborators" edges to the TaskCollaborator entity.
+// AddTaskCollaborators adds the "taskCollaborators" edges to the TaskCollaborator entity.
 func (tc *TaskCreate) AddTaskCollaborators(t ...*TaskCollaborator) *TaskCreate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -322,13 +322,13 @@ func (tc *TaskCreate) AddTaskCollaborators(t ...*TaskCollaborator) *TaskCreate {
 	return tc.AddTaskCollaboratorIDs(ids...)
 }
 
-// AddTaskFeedIDs adds the "task_feeds" edge to the TaskFeed entity by IDs.
+// AddTaskFeedIDs adds the "taskFeeds" edge to the TaskFeed entity by IDs.
 func (tc *TaskCreate) AddTaskFeedIDs(ids ...ulid.ID) *TaskCreate {
 	tc.mutation.AddTaskFeedIDs(ids...)
 	return tc
 }
 
-// AddTaskFeeds adds the "task_feeds" edges to the TaskFeed entity.
+// AddTaskFeeds adds the "taskFeeds" edges to the TaskFeed entity.
 func (tc *TaskCreate) AddTaskFeeds(t ...*TaskFeed) *TaskCreate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -337,13 +337,13 @@ func (tc *TaskCreate) AddTaskFeeds(t ...*TaskFeed) *TaskCreate {
 	return tc.AddTaskFeedIDs(ids...)
 }
 
-// AddTaskFeedLikeIDs adds the "task_feed_likes" edge to the TaskFeedLike entity by IDs.
+// AddTaskFeedLikeIDs adds the "taskFeedLikes" edge to the TaskFeedLike entity by IDs.
 func (tc *TaskCreate) AddTaskFeedLikeIDs(ids ...ulid.ID) *TaskCreate {
 	tc.mutation.AddTaskFeedLikeIDs(ids...)
 	return tc
 }
 
-// AddTaskFeedLikes adds the "task_feed_likes" edges to the TaskFeedLike entity.
+// AddTaskFeedLikes adds the "taskFeedLikes" edges to the TaskFeedLike entity.
 func (tc *TaskCreate) AddTaskFeedLikes(t ...*TaskFeedLike) *TaskCreate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -352,13 +352,13 @@ func (tc *TaskCreate) AddTaskFeedLikes(t ...*TaskFeedLike) *TaskCreate {
 	return tc.AddTaskFeedLikeIDs(ids...)
 }
 
-// AddTaskFileIDs adds the "task_files" edge to the TaskFile entity by IDs.
+// AddTaskFileIDs adds the "taskFiles" edge to the TaskFile entity by IDs.
 func (tc *TaskCreate) AddTaskFileIDs(ids ...ulid.ID) *TaskCreate {
 	tc.mutation.AddTaskFileIDs(ids...)
 	return tc
 }
 
-// AddTaskFiles adds the "task_files" edges to the TaskFile entity.
+// AddTaskFiles adds the "taskFiles" edges to the TaskFile entity.
 func (tc *TaskCreate) AddTaskFiles(t ...*TaskFile) *TaskCreate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -489,7 +489,7 @@ func (tc *TaskCreate) check() error {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
 	}
 	if _, ok := tc.mutation.TaskPriorityID(); !ok {
-		return &ValidationError{Name: "task_priority", err: errors.New("ent: missing required edge \"task_priority\"")}
+		return &ValidationError{Name: "taskPriority", err: errors.New("ent: missing required edge \"taskPriority\"")}
 	}
 	return nil
 }

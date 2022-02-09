@@ -14,7 +14,7 @@ type taskUsecase struct {
 type Task interface {
 	Get(ctx context.Context, where *model.TaskWhereInput) (*model.Task, error)
 	List(ctx context.Context) ([]*model.Task, error)
-	ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TaskWhereInput, requestedFields []string) (*model.TaskConnection, error)
+	ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TaskWhereInput) (*model.TaskConnection, error)
 	Create(ctx context.Context, input model.CreateTaskInput) (*model.Task, error)
 	Update(ctx context.Context, input model.UpdateTaskInput) (*model.Task, error)
 }
@@ -32,8 +32,8 @@ func (u *taskUsecase) List(ctx context.Context) ([]*model.Task, error) {
 	return u.taskRepository.List(ctx)
 }
 
-func (u *taskUsecase) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TaskWhereInput, requestedFields []string) (*model.TaskConnection, error) {
-	return u.taskRepository.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
+func (u *taskUsecase) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TaskWhereInput) (*model.TaskConnection, error) {
+	return u.taskRepository.ListWithPagination(ctx, after, first, before, last, where)
 }
 
 func (u *taskUsecase) Create(ctx context.Context, input model.CreateTaskInput) (*model.Task, error) {

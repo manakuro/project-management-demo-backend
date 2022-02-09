@@ -685,7 +685,7 @@ func HasTaskWith(preds ...predicate.Task) predicate.ProjectTask {
 	})
 }
 
-// HasProjectTaskSection applies the HasEdge predicate on the "project_task_section" edge.
+// HasProjectTaskSection applies the HasEdge predicate on the "projectTaskSection" edge.
 func HasProjectTaskSection() predicate.ProjectTask {
 	return predicate.ProjectTask(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
@@ -697,7 +697,7 @@ func HasProjectTaskSection() predicate.ProjectTask {
 	})
 }
 
-// HasProjectTaskSectionWith applies the HasEdge predicate on the "project_task_section" edge with a given conditions (other predicates).
+// HasProjectTaskSectionWith applies the HasEdge predicate on the "projectTaskSection" edge with a given conditions (other predicates).
 func HasProjectTaskSectionWith(preds ...predicate.ProjectTaskSection) predicate.ProjectTask {
 	return predicate.ProjectTask(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(

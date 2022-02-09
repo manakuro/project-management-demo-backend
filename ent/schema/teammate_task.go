@@ -6,6 +6,8 @@ import (
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/pkg/const/globalid"
 
+	"entgo.io/contrib/entgql"
+
 	"entgo.io/ent/schema"
 
 	"entgo.io/ent/schema/edge"
@@ -14,6 +16,8 @@ import (
 	"entgo.io/ent/schema/field"
 	entMixin "entgo.io/ent/schema/mixin"
 )
+
+const teammateTasksRef string = "teammateTasks"
 
 // TeammateTask holds the schema definition for the Test entity.
 type TeammateTask struct {
@@ -41,31 +45,34 @@ func (TeammateTaskMixin) Fields() []ent.Field {
 func (TeammateTask) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("teammate", Teammate.Type).
-			Ref("teammate_tasks").
+			Ref(teammateTasksRef).
 			Field("teammate_id").
 			Unique().
 			Required().
 			Annotations(
+				entgql.Bind(),
 				schema.Annotation(
 					annotation.Edge{FieldName: "teammate_id"},
 				),
 			),
 		edge.From("task", Task.Type).
-			Ref("teammate_tasks").
+			Ref(teammateTasksRef).
 			Field("task_id").
 			Unique().
 			Required().
 			Annotations(
+				entgql.Bind(),
 				schema.Annotation(
 					annotation.Edge{FieldName: "task_id"},
 				),
 			),
-		edge.From("teammate_task_section", TeammateTaskSection.Type).
-			Ref("teammate_tasks").
+		edge.From("teammateTaskSection", TeammateTaskSection.Type).
+			Ref(teammateTasksRef).
 			Field("teammate_task_section_id").
 			Unique().
 			Required().
 			Annotations(
+				entgql.Bind(),
 				schema.Annotation(
 					annotation.Edge{FieldName: "teammate_task_section_id"},
 				),

@@ -10,7 +10,7 @@ import (
 type ProjectIcon interface {
 	Get(ctx context.Context, where *model.ProjectIconWhereInput) (*model.ProjectIcon, error)
 	List(ctx context.Context) ([]*model.ProjectIcon, error)
-	ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ProjectIconWhereInput, requestedFields []string) (*model.ProjectIconConnection, error)
+	ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ProjectIconWhereInput) (*model.ProjectIconConnection, error)
 	Create(ctx context.Context, input model.CreateProjectIconInput) (*model.ProjectIcon, error)
 	Update(ctx context.Context, input model.UpdateProjectIconInput) (*model.ProjectIcon, error)
 }
@@ -34,8 +34,8 @@ func (c *projectIconController) List(ctx context.Context) ([]*model.ProjectIcon,
 	return c.projectIconUsecase.List(ctx)
 }
 
-func (c *projectIconController) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ProjectIconWhereInput, requestedFields []string) (*model.ProjectIconConnection, error) {
-	return c.projectIconUsecase.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
+func (c *projectIconController) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ProjectIconWhereInput) (*model.ProjectIconConnection, error) {
+	return c.projectIconUsecase.ListWithPagination(ctx, after, first, before, last, where)
 }
 
 func (c *projectIconController) Create(ctx context.Context, input model.CreateProjectIconInput) (*model.ProjectIcon, error) {

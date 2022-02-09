@@ -17,6 +17,26 @@ func (c *ColorQuery) CollectFields(ctx context.Context, satisfies ...string) *Co
 }
 
 func (c *ColorQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *ColorQuery {
+	for _, field := range graphql.CollectFields(ctx, field.Selections, satisfies) {
+		switch field.Name {
+		case "projectBaseColors":
+			c = c.WithProjectBaseColors(func(query *ProjectBaseColorQuery) {
+				query.collectField(ctx, field)
+			})
+		case "projectLightColors":
+			c = c.WithProjectLightColors(func(query *ProjectLightColorQuery) {
+				query.collectField(ctx, field)
+			})
+		case "tags":
+			c = c.WithTags(func(query *TagQuery) {
+				query.collectField(ctx, field)
+			})
+		case "taskPriorities":
+			c = c.WithTaskPriorities(func(query *TaskPriorityQuery) {
+				query.collectField(ctx, field)
+			})
+		}
+	}
 	return c
 }
 
@@ -29,6 +49,18 @@ func (fp *FavoriteProjectQuery) CollectFields(ctx context.Context, satisfies ...
 }
 
 func (fp *FavoriteProjectQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *FavoriteProjectQuery {
+	for _, field := range graphql.CollectFields(ctx, field.Selections, satisfies) {
+		switch field.Name {
+		case "project":
+			fp = fp.WithProject(func(query *ProjectQuery) {
+				query.collectField(ctx, field)
+			})
+		case "teammate":
+			fp = fp.WithTeammate(func(query *TeammateQuery) {
+				query.collectField(ctx, field)
+			})
+		}
+	}
 	return fp
 }
 
@@ -41,6 +73,18 @@ func (fw *FavoriteWorkspaceQuery) CollectFields(ctx context.Context, satisfies .
 }
 
 func (fw *FavoriteWorkspaceQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *FavoriteWorkspaceQuery {
+	for _, field := range graphql.CollectFields(ctx, field.Selections, satisfies) {
+		switch field.Name {
+		case "teammate":
+			fw = fw.WithTeammate(func(query *TeammateQuery) {
+				query.collectField(ctx, field)
+			})
+		case "workspace":
+			fw = fw.WithWorkspace(func(query *WorkspaceQuery) {
+				query.collectField(ctx, field)
+			})
+		}
+	}
 	return fw
 }
 
@@ -53,6 +97,14 @@ func (ft *FileTypeQuery) CollectFields(ctx context.Context, satisfies ...string)
 }
 
 func (ft *FileTypeQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *FileTypeQuery {
+	for _, field := range graphql.CollectFields(ctx, field.Selections, satisfies) {
+		switch field.Name {
+		case "taskFiles":
+			ft = ft.WithTaskFiles(func(query *TaskFileQuery) {
+				query.collectField(ctx, field)
+			})
+		}
+	}
 	return ft
 }
 
@@ -65,6 +117,14 @@ func (i *IconQuery) CollectFields(ctx context.Context, satisfies ...string) *Ico
 }
 
 func (i *IconQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *IconQuery {
+	for _, field := range graphql.CollectFields(ctx, field.Selections, satisfies) {
+		switch field.Name {
+		case "projectIcons":
+			i = i.WithProjectIcons(func(query *ProjectIconQuery) {
+				query.collectField(ctx, field)
+			})
+		}
+	}
 	return i
 }
 
@@ -77,6 +137,58 @@ func (pr *ProjectQuery) CollectFields(ctx context.Context, satisfies ...string) 
 }
 
 func (pr *ProjectQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *ProjectQuery {
+	for _, field := range graphql.CollectFields(ctx, field.Selections, satisfies) {
+		switch field.Name {
+		case "favoriteProjects":
+			pr = pr.WithFavoriteProjects(func(query *FavoriteProjectQuery) {
+				query.collectField(ctx, field)
+			})
+		case "projectBaseColor":
+			pr = pr.WithProjectBaseColor(func(query *ProjectBaseColorQuery) {
+				query.collectField(ctx, field)
+			})
+		case "projectIcon":
+			pr = pr.WithProjectIcon(func(query *ProjectIconQuery) {
+				query.collectField(ctx, field)
+			})
+		case "projectLightColor":
+			pr = pr.WithProjectLightColor(func(query *ProjectLightColorQuery) {
+				query.collectField(ctx, field)
+			})
+		case "projectTaskColumns":
+			pr = pr.WithProjectTaskColumns(func(query *ProjectTaskColumnQuery) {
+				query.collectField(ctx, field)
+			})
+		case "projectTaskListStatuses":
+			pr = pr.WithProjectTaskListStatuses(func(query *ProjectTaskListStatusQuery) {
+				query.collectField(ctx, field)
+			})
+		case "projectTaskSections":
+			pr = pr.WithProjectTaskSections(func(query *ProjectTaskSectionQuery) {
+				query.collectField(ctx, field)
+			})
+		case "projectTasks":
+			pr = pr.WithProjectTasks(func(query *ProjectTaskQuery) {
+				query.collectField(ctx, field)
+			})
+		case "projectTeammates":
+			pr = pr.WithProjectTeammates(func(query *ProjectTeammateQuery) {
+				query.collectField(ctx, field)
+			})
+		case "taskFiles":
+			pr = pr.WithTaskFiles(func(query *TaskFileQuery) {
+				query.collectField(ctx, field)
+			})
+		case "teammate":
+			pr = pr.WithTeammate(func(query *TeammateQuery) {
+				query.collectField(ctx, field)
+			})
+		case "workspace":
+			pr = pr.WithWorkspace(func(query *WorkspaceQuery) {
+				query.collectField(ctx, field)
+			})
+		}
+	}
 	return pr
 }
 
@@ -89,6 +201,18 @@ func (pbc *ProjectBaseColorQuery) CollectFields(ctx context.Context, satisfies .
 }
 
 func (pbc *ProjectBaseColorQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *ProjectBaseColorQuery {
+	for _, field := range graphql.CollectFields(ctx, field.Selections, satisfies) {
+		switch field.Name {
+		case "color":
+			pbc = pbc.WithColor(func(query *ColorQuery) {
+				query.collectField(ctx, field)
+			})
+		case "projects":
+			pbc = pbc.WithProjects(func(query *ProjectQuery) {
+				query.collectField(ctx, field)
+			})
+		}
+	}
 	return pbc
 }
 
@@ -101,6 +225,18 @@ func (pi *ProjectIconQuery) CollectFields(ctx context.Context, satisfies ...stri
 }
 
 func (pi *ProjectIconQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *ProjectIconQuery {
+	for _, field := range graphql.CollectFields(ctx, field.Selections, satisfies) {
+		switch field.Name {
+		case "icon":
+			pi = pi.WithIcon(func(query *IconQuery) {
+				query.collectField(ctx, field)
+			})
+		case "projects":
+			pi = pi.WithProjects(func(query *ProjectQuery) {
+				query.collectField(ctx, field)
+			})
+		}
+	}
 	return pi
 }
 
@@ -113,6 +249,18 @@ func (plc *ProjectLightColorQuery) CollectFields(ctx context.Context, satisfies 
 }
 
 func (plc *ProjectLightColorQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *ProjectLightColorQuery {
+	for _, field := range graphql.CollectFields(ctx, field.Selections, satisfies) {
+		switch field.Name {
+		case "color":
+			plc = plc.WithColor(func(query *ColorQuery) {
+				query.collectField(ctx, field)
+			})
+		case "projects":
+			plc = plc.WithProjects(func(query *ProjectQuery) {
+				query.collectField(ctx, field)
+			})
+		}
+	}
 	return plc
 }
 
@@ -125,6 +273,22 @@ func (pt *ProjectTaskQuery) CollectFields(ctx context.Context, satisfies ...stri
 }
 
 func (pt *ProjectTaskQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *ProjectTaskQuery {
+	for _, field := range graphql.CollectFields(ctx, field.Selections, satisfies) {
+		switch field.Name {
+		case "project":
+			pt = pt.WithProject(func(query *ProjectQuery) {
+				query.collectField(ctx, field)
+			})
+		case "projectTaskSection":
+			pt = pt.WithProjectTaskSection(func(query *ProjectTaskSectionQuery) {
+				query.collectField(ctx, field)
+			})
+		case "task":
+			pt = pt.WithTask(func(query *TaskQuery) {
+				query.collectField(ctx, field)
+			})
+		}
+	}
 	return pt
 }
 
@@ -137,6 +301,18 @@ func (ptc *ProjectTaskColumnQuery) CollectFields(ctx context.Context, satisfies 
 }
 
 func (ptc *ProjectTaskColumnQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *ProjectTaskColumnQuery {
+	for _, field := range graphql.CollectFields(ctx, field.Selections, satisfies) {
+		switch field.Name {
+		case "project":
+			ptc = ptc.WithProject(func(query *ProjectQuery) {
+				query.collectField(ctx, field)
+			})
+		case "taskColumn":
+			ptc = ptc.WithTaskColumn(func(query *TaskColumnQuery) {
+				query.collectField(ctx, field)
+			})
+		}
+	}
 	return ptc
 }
 
@@ -149,6 +325,22 @@ func (ptls *ProjectTaskListStatusQuery) CollectFields(ctx context.Context, satis
 }
 
 func (ptls *ProjectTaskListStatusQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *ProjectTaskListStatusQuery {
+	for _, field := range graphql.CollectFields(ctx, field.Selections, satisfies) {
+		switch field.Name {
+		case "project":
+			ptls = ptls.WithProject(func(query *ProjectQuery) {
+				query.collectField(ctx, field)
+			})
+		case "taskListCompletedStatus":
+			ptls = ptls.WithTaskListCompletedStatus(func(query *TaskListCompletedStatusQuery) {
+				query.collectField(ctx, field)
+			})
+		case "taskListSortStatus":
+			ptls = ptls.WithTaskListSortStatus(func(query *TaskListSortStatusQuery) {
+				query.collectField(ctx, field)
+			})
+		}
+	}
 	return ptls
 }
 
@@ -161,6 +353,18 @@ func (pts *ProjectTaskSectionQuery) CollectFields(ctx context.Context, satisfies
 }
 
 func (pts *ProjectTaskSectionQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *ProjectTaskSectionQuery {
+	for _, field := range graphql.CollectFields(ctx, field.Selections, satisfies) {
+		switch field.Name {
+		case "project":
+			pts = pts.WithProject(func(query *ProjectQuery) {
+				query.collectField(ctx, field)
+			})
+		case "projectTasks":
+			pts = pts.WithProjectTasks(func(query *ProjectTaskQuery) {
+				query.collectField(ctx, field)
+			})
+		}
+	}
 	return pts
 }
 
@@ -173,6 +377,18 @@ func (pt *ProjectTeammateQuery) CollectFields(ctx context.Context, satisfies ...
 }
 
 func (pt *ProjectTeammateQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *ProjectTeammateQuery {
+	for _, field := range graphql.CollectFields(ctx, field.Selections, satisfies) {
+		switch field.Name {
+		case "project":
+			pt = pt.WithProject(func(query *ProjectQuery) {
+				query.collectField(ctx, field)
+			})
+		case "teammate":
+			pt = pt.WithTeammate(func(query *TeammateQuery) {
+				query.collectField(ctx, field)
+			})
+		}
+	}
 	return pt
 }
 
@@ -185,6 +401,22 @@ func (t *TagQuery) CollectFields(ctx context.Context, satisfies ...string) *TagQ
 }
 
 func (t *TagQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *TagQuery {
+	for _, field := range graphql.CollectFields(ctx, field.Selections, satisfies) {
+		switch field.Name {
+		case "color":
+			t = t.WithColor(func(query *ColorQuery) {
+				query.collectField(ctx, field)
+			})
+		case "taskTags":
+			t = t.WithTaskTags(func(query *TaskTagQuery) {
+				query.collectField(ctx, field)
+			})
+		case "workspace":
+			t = t.WithWorkspace(func(query *WorkspaceQuery) {
+				query.collectField(ctx, field)
+			})
+		}
+	}
 	return t
 }
 
@@ -197,6 +429,58 @@ func (t *TaskQuery) CollectFields(ctx context.Context, satisfies ...string) *Tas
 }
 
 func (t *TaskQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *TaskQuery {
+	for _, field := range graphql.CollectFields(ctx, field.Selections, satisfies) {
+		switch field.Name {
+		case "parent":
+			t = t.WithParent(func(query *TaskQuery) {
+				query.collectField(ctx, field)
+			})
+		case "projectTasks":
+			t = t.WithProjectTasks(func(query *ProjectTaskQuery) {
+				query.collectField(ctx, field)
+			})
+		case "subTasks":
+			t = t.WithSubTasks(func(query *TaskQuery) {
+				query.collectField(ctx, field)
+			})
+		case "taskCollaborators":
+			t = t.WithTaskCollaborators(func(query *TaskCollaboratorQuery) {
+				query.collectField(ctx, field)
+			})
+		case "taskFeedLikes":
+			t = t.WithTaskFeedLikes(func(query *TaskFeedLikeQuery) {
+				query.collectField(ctx, field)
+			})
+		case "taskFeeds":
+			t = t.WithTaskFeeds(func(query *TaskFeedQuery) {
+				query.collectField(ctx, field)
+			})
+		case "taskFiles":
+			t = t.WithTaskFiles(func(query *TaskFileQuery) {
+				query.collectField(ctx, field)
+			})
+		case "taskLikes":
+			t = t.WithTaskLikes(func(query *TaskLikeQuery) {
+				query.collectField(ctx, field)
+			})
+		case "taskPriority":
+			t = t.WithTaskPriority(func(query *TaskPriorityQuery) {
+				query.collectField(ctx, field)
+			})
+		case "taskTags":
+			t = t.WithTaskTags(func(query *TaskTagQuery) {
+				query.collectField(ctx, field)
+			})
+		case "teammate":
+			t = t.WithTeammate(func(query *TeammateQuery) {
+				query.collectField(ctx, field)
+			})
+		case "teammateTasks":
+			t = t.WithTeammateTasks(func(query *TeammateTaskQuery) {
+				query.collectField(ctx, field)
+			})
+		}
+	}
 	return t
 }
 
@@ -209,6 +493,18 @@ func (tc *TaskCollaboratorQuery) CollectFields(ctx context.Context, satisfies ..
 }
 
 func (tc *TaskCollaboratorQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *TaskCollaboratorQuery {
+	for _, field := range graphql.CollectFields(ctx, field.Selections, satisfies) {
+		switch field.Name {
+		case "task":
+			tc = tc.WithTask(func(query *TaskQuery) {
+				query.collectField(ctx, field)
+			})
+		case "teammate":
+			tc = tc.WithTeammate(func(query *TeammateQuery) {
+				query.collectField(ctx, field)
+			})
+		}
+	}
 	return tc
 }
 
@@ -221,6 +517,18 @@ func (tc *TaskColumnQuery) CollectFields(ctx context.Context, satisfies ...strin
 }
 
 func (tc *TaskColumnQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *TaskColumnQuery {
+	for _, field := range graphql.CollectFields(ctx, field.Selections, satisfies) {
+		switch field.Name {
+		case "projectTaskColumns":
+			tc = tc.WithProjectTaskColumns(func(query *ProjectTaskColumnQuery) {
+				query.collectField(ctx, field)
+			})
+		case "teammateTaskColumns":
+			tc = tc.WithTeammateTaskColumns(func(query *TeammateTaskColumnQuery) {
+				query.collectField(ctx, field)
+			})
+		}
+	}
 	return tc
 }
 
@@ -233,6 +541,26 @@ func (tf *TaskFeedQuery) CollectFields(ctx context.Context, satisfies ...string)
 }
 
 func (tf *TaskFeedQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *TaskFeedQuery {
+	for _, field := range graphql.CollectFields(ctx, field.Selections, satisfies) {
+		switch field.Name {
+		case "task":
+			tf = tf.WithTask(func(query *TaskQuery) {
+				query.collectField(ctx, field)
+			})
+		case "taskFeedLikes":
+			tf = tf.WithTaskFeedLikes(func(query *TaskFeedLikeQuery) {
+				query.collectField(ctx, field)
+			})
+		case "taskFiles":
+			tf = tf.WithTaskFiles(func(query *TaskFileQuery) {
+				query.collectField(ctx, field)
+			})
+		case "teammate":
+			tf = tf.WithTeammate(func(query *TeammateQuery) {
+				query.collectField(ctx, field)
+			})
+		}
+	}
 	return tf
 }
 
@@ -245,6 +573,22 @@ func (tfl *TaskFeedLikeQuery) CollectFields(ctx context.Context, satisfies ...st
 }
 
 func (tfl *TaskFeedLikeQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *TaskFeedLikeQuery {
+	for _, field := range graphql.CollectFields(ctx, field.Selections, satisfies) {
+		switch field.Name {
+		case "feed":
+			tfl = tfl.WithFeed(func(query *TaskFeedQuery) {
+				query.collectField(ctx, field)
+			})
+		case "task":
+			tfl = tfl.WithTask(func(query *TaskQuery) {
+				query.collectField(ctx, field)
+			})
+		case "teammate":
+			tfl = tfl.WithTeammate(func(query *TeammateQuery) {
+				query.collectField(ctx, field)
+			})
+		}
+	}
 	return tfl
 }
 
@@ -257,6 +601,26 @@ func (tf *TaskFileQuery) CollectFields(ctx context.Context, satisfies ...string)
 }
 
 func (tf *TaskFileQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *TaskFileQuery {
+	for _, field := range graphql.CollectFields(ctx, field.Selections, satisfies) {
+		switch field.Name {
+		case "fileType":
+			tf = tf.WithFileType(func(query *FileTypeQuery) {
+				query.collectField(ctx, field)
+			})
+		case "project":
+			tf = tf.WithProject(func(query *ProjectQuery) {
+				query.collectField(ctx, field)
+			})
+		case "task":
+			tf = tf.WithTask(func(query *TaskQuery) {
+				query.collectField(ctx, field)
+			})
+		case "taskFeed":
+			tf = tf.WithTaskFeed(func(query *TaskFeedQuery) {
+				query.collectField(ctx, field)
+			})
+		}
+	}
 	return tf
 }
 
@@ -269,6 +633,22 @@ func (tl *TaskLikeQuery) CollectFields(ctx context.Context, satisfies ...string)
 }
 
 func (tl *TaskLikeQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *TaskLikeQuery {
+	for _, field := range graphql.CollectFields(ctx, field.Selections, satisfies) {
+		switch field.Name {
+		case "task":
+			tl = tl.WithTask(func(query *TaskQuery) {
+				query.collectField(ctx, field)
+			})
+		case "teammate":
+			tl = tl.WithTeammate(func(query *TeammateQuery) {
+				query.collectField(ctx, field)
+			})
+		case "workspace":
+			tl = tl.WithWorkspace(func(query *WorkspaceQuery) {
+				query.collectField(ctx, field)
+			})
+		}
+	}
 	return tl
 }
 
@@ -281,6 +661,18 @@ func (tlcs *TaskListCompletedStatusQuery) CollectFields(ctx context.Context, sat
 }
 
 func (tlcs *TaskListCompletedStatusQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *TaskListCompletedStatusQuery {
+	for _, field := range graphql.CollectFields(ctx, field.Selections, satisfies) {
+		switch field.Name {
+		case "projectTaskListStatuses":
+			tlcs = tlcs.WithProjectTaskListStatuses(func(query *ProjectTaskListStatusQuery) {
+				query.collectField(ctx, field)
+			})
+		case "teammateTaskListStatuses":
+			tlcs = tlcs.WithTeammateTaskListStatuses(func(query *TeammateTaskListStatusQuery) {
+				query.collectField(ctx, field)
+			})
+		}
+	}
 	return tlcs
 }
 
@@ -293,6 +685,18 @@ func (tlss *TaskListSortStatusQuery) CollectFields(ctx context.Context, satisfie
 }
 
 func (tlss *TaskListSortStatusQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *TaskListSortStatusQuery {
+	for _, field := range graphql.CollectFields(ctx, field.Selections, satisfies) {
+		switch field.Name {
+		case "projectTaskListStatuses":
+			tlss = tlss.WithProjectTaskListStatuses(func(query *ProjectTaskListStatusQuery) {
+				query.collectField(ctx, field)
+			})
+		case "teammateTaskListStatuses":
+			tlss = tlss.WithTeammateTaskListStatuses(func(query *TeammateTaskListStatusQuery) {
+				query.collectField(ctx, field)
+			})
+		}
+	}
 	return tlss
 }
 
@@ -305,6 +709,18 @@ func (tp *TaskPriorityQuery) CollectFields(ctx context.Context, satisfies ...str
 }
 
 func (tp *TaskPriorityQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *TaskPriorityQuery {
+	for _, field := range graphql.CollectFields(ctx, field.Selections, satisfies) {
+		switch field.Name {
+		case "color":
+			tp = tp.WithColor(func(query *ColorQuery) {
+				query.collectField(ctx, field)
+			})
+		case "tasks":
+			tp = tp.WithTasks(func(query *TaskQuery) {
+				query.collectField(ctx, field)
+			})
+		}
+	}
 	return tp
 }
 
@@ -329,6 +745,18 @@ func (tt *TaskTagQuery) CollectFields(ctx context.Context, satisfies ...string) 
 }
 
 func (tt *TaskTagQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *TaskTagQuery {
+	for _, field := range graphql.CollectFields(ctx, field.Selections, satisfies) {
+		switch field.Name {
+		case "tag":
+			tt = tt.WithTag(func(query *TagQuery) {
+				query.collectField(ctx, field)
+			})
+		case "task":
+			tt = tt.WithTask(func(query *TaskQuery) {
+				query.collectField(ctx, field)
+			})
+		}
+	}
 	return tt
 }
 
@@ -341,6 +769,74 @@ func (t *TeammateQuery) CollectFields(ctx context.Context, satisfies ...string) 
 }
 
 func (t *TeammateQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *TeammateQuery {
+	for _, field := range graphql.CollectFields(ctx, field.Selections, satisfies) {
+		switch field.Name {
+		case "favoriteProjects":
+			t = t.WithFavoriteProjects(func(query *FavoriteProjectQuery) {
+				query.collectField(ctx, field)
+			})
+		case "favoriteWorkspaces":
+			t = t.WithFavoriteWorkspaces(func(query *FavoriteWorkspaceQuery) {
+				query.collectField(ctx, field)
+			})
+		case "projectTeammates":
+			t = t.WithProjectTeammates(func(query *ProjectTeammateQuery) {
+				query.collectField(ctx, field)
+			})
+		case "projects":
+			t = t.WithProjects(func(query *ProjectQuery) {
+				query.collectField(ctx, field)
+			})
+		case "taskCollaborators":
+			t = t.WithTaskCollaborators(func(query *TaskCollaboratorQuery) {
+				query.collectField(ctx, field)
+			})
+		case "taskFeedLikes":
+			t = t.WithTaskFeedLikes(func(query *TaskFeedLikeQuery) {
+				query.collectField(ctx, field)
+			})
+		case "taskFeeds":
+			t = t.WithTaskFeeds(func(query *TaskFeedQuery) {
+				query.collectField(ctx, field)
+			})
+		case "taskLikes":
+			t = t.WithTaskLikes(func(query *TaskLikeQuery) {
+				query.collectField(ctx, field)
+			})
+		case "tasks":
+			t = t.WithTasks(func(query *TaskQuery) {
+				query.collectField(ctx, field)
+			})
+		case "teammateTaskColumns":
+			t = t.WithTeammateTaskColumns(func(query *TeammateTaskColumnQuery) {
+				query.collectField(ctx, field)
+			})
+		case "teammateTaskListStatuses":
+			t = t.WithTeammateTaskListStatuses(func(query *TeammateTaskListStatusQuery) {
+				query.collectField(ctx, field)
+			})
+		case "teammateTaskSections":
+			t = t.WithTeammateTaskSections(func(query *TeammateTaskSectionQuery) {
+				query.collectField(ctx, field)
+			})
+		case "teammateTaskTabStatuses":
+			t = t.WithTeammateTaskTabStatuses(func(query *TeammateTaskTabStatusQuery) {
+				query.collectField(ctx, field)
+			})
+		case "teammateTasks":
+			t = t.WithTeammateTasks(func(query *TeammateTaskQuery) {
+				query.collectField(ctx, field)
+			})
+		case "workspaceTeammates":
+			t = t.WithWorkspaceTeammates(func(query *WorkspaceTeammateQuery) {
+				query.collectField(ctx, field)
+			})
+		case "workspaces":
+			t = t.WithWorkspaces(func(query *WorkspaceQuery) {
+				query.collectField(ctx, field)
+			})
+		}
+	}
 	return t
 }
 
@@ -353,6 +849,22 @@ func (tt *TeammateTaskQuery) CollectFields(ctx context.Context, satisfies ...str
 }
 
 func (tt *TeammateTaskQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *TeammateTaskQuery {
+	for _, field := range graphql.CollectFields(ctx, field.Selections, satisfies) {
+		switch field.Name {
+		case "task":
+			tt = tt.WithTask(func(query *TaskQuery) {
+				query.collectField(ctx, field)
+			})
+		case "teammate":
+			tt = tt.WithTeammate(func(query *TeammateQuery) {
+				query.collectField(ctx, field)
+			})
+		case "teammateTaskSection":
+			tt = tt.WithTeammateTaskSection(func(query *TeammateTaskSectionQuery) {
+				query.collectField(ctx, field)
+			})
+		}
+	}
 	return tt
 }
 
@@ -365,6 +877,22 @@ func (ttc *TeammateTaskColumnQuery) CollectFields(ctx context.Context, satisfies
 }
 
 func (ttc *TeammateTaskColumnQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *TeammateTaskColumnQuery {
+	for _, field := range graphql.CollectFields(ctx, field.Selections, satisfies) {
+		switch field.Name {
+		case "taskColumn":
+			ttc = ttc.WithTaskColumn(func(query *TaskColumnQuery) {
+				query.collectField(ctx, field)
+			})
+		case "teammate":
+			ttc = ttc.WithTeammate(func(query *TeammateQuery) {
+				query.collectField(ctx, field)
+			})
+		case "workspace":
+			ttc = ttc.WithWorkspace(func(query *WorkspaceQuery) {
+				query.collectField(ctx, field)
+			})
+		}
+	}
 	return ttc
 }
 
@@ -377,6 +905,26 @@ func (ttls *TeammateTaskListStatusQuery) CollectFields(ctx context.Context, sati
 }
 
 func (ttls *TeammateTaskListStatusQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *TeammateTaskListStatusQuery {
+	for _, field := range graphql.CollectFields(ctx, field.Selections, satisfies) {
+		switch field.Name {
+		case "taskListCompletedStatus":
+			ttls = ttls.WithTaskListCompletedStatus(func(query *TaskListCompletedStatusQuery) {
+				query.collectField(ctx, field)
+			})
+		case "taskListSortStatus":
+			ttls = ttls.WithTaskListSortStatus(func(query *TaskListSortStatusQuery) {
+				query.collectField(ctx, field)
+			})
+		case "teammate":
+			ttls = ttls.WithTeammate(func(query *TeammateQuery) {
+				query.collectField(ctx, field)
+			})
+		case "workspace":
+			ttls = ttls.WithWorkspace(func(query *WorkspaceQuery) {
+				query.collectField(ctx, field)
+			})
+		}
+	}
 	return ttls
 }
 
@@ -389,6 +937,22 @@ func (tts *TeammateTaskSectionQuery) CollectFields(ctx context.Context, satisfie
 }
 
 func (tts *TeammateTaskSectionQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *TeammateTaskSectionQuery {
+	for _, field := range graphql.CollectFields(ctx, field.Selections, satisfies) {
+		switch field.Name {
+		case "teammate":
+			tts = tts.WithTeammate(func(query *TeammateQuery) {
+				query.collectField(ctx, field)
+			})
+		case "teammateTasks":
+			tts = tts.WithTeammateTasks(func(query *TeammateTaskQuery) {
+				query.collectField(ctx, field)
+			})
+		case "workspace":
+			tts = tts.WithWorkspace(func(query *WorkspaceQuery) {
+				query.collectField(ctx, field)
+			})
+		}
+	}
 	return tts
 }
 
@@ -401,6 +965,18 @@ func (ttts *TeammateTaskTabStatusQuery) CollectFields(ctx context.Context, satis
 }
 
 func (ttts *TeammateTaskTabStatusQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *TeammateTaskTabStatusQuery {
+	for _, field := range graphql.CollectFields(ctx, field.Selections, satisfies) {
+		switch field.Name {
+		case "teammate":
+			ttts = ttts.WithTeammate(func(query *TeammateQuery) {
+				query.collectField(ctx, field)
+			})
+		case "workspace":
+			ttts = ttts.WithWorkspace(func(query *WorkspaceQuery) {
+				query.collectField(ctx, field)
+			})
+		}
+	}
 	return ttts
 }
 
@@ -413,6 +989,18 @@ func (tt *TestTodoQuery) CollectFields(ctx context.Context, satisfies ...string)
 }
 
 func (tt *TestTodoQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *TestTodoQuery {
+	for _, field := range graphql.CollectFields(ctx, field.Selections, satisfies) {
+		switch field.Name {
+		case "parent":
+			tt = tt.WithParent(func(query *TestTodoQuery) {
+				query.collectField(ctx, field)
+			})
+		case "testUser":
+			tt = tt.WithTestUser(func(query *TestUserQuery) {
+				query.collectField(ctx, field)
+			})
+		}
+	}
 	return tt
 }
 
@@ -445,6 +1033,46 @@ func (w *WorkspaceQuery) CollectFields(ctx context.Context, satisfies ...string)
 }
 
 func (w *WorkspaceQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *WorkspaceQuery {
+	for _, field := range graphql.CollectFields(ctx, field.Selections, satisfies) {
+		switch field.Name {
+		case "favoriteWorkspaces":
+			w = w.WithFavoriteWorkspaces(func(query *FavoriteWorkspaceQuery) {
+				query.collectField(ctx, field)
+			})
+		case "tags":
+			w = w.WithTags(func(query *TagQuery) {
+				query.collectField(ctx, field)
+			})
+		case "taskLikes":
+			w = w.WithTaskLikes(func(query *TaskLikeQuery) {
+				query.collectField(ctx, field)
+			})
+		case "teammate":
+			w = w.WithTeammate(func(query *TeammateQuery) {
+				query.collectField(ctx, field)
+			})
+		case "teammateTaskColumns":
+			w = w.WithTeammateTaskColumns(func(query *TeammateTaskColumnQuery) {
+				query.collectField(ctx, field)
+			})
+		case "teammateTaskListStatuses":
+			w = w.WithTeammateTaskListStatuses(func(query *TeammateTaskListStatusQuery) {
+				query.collectField(ctx, field)
+			})
+		case "teammateTaskSections":
+			w = w.WithTeammateTaskSections(func(query *TeammateTaskSectionQuery) {
+				query.collectField(ctx, field)
+			})
+		case "teammateTaskTabStatuses":
+			w = w.WithTeammateTaskTabStatuses(func(query *TeammateTaskTabStatusQuery) {
+				query.collectField(ctx, field)
+			})
+		case "workspaceTeammates":
+			w = w.WithWorkspaceTeammates(func(query *WorkspaceTeammateQuery) {
+				query.collectField(ctx, field)
+			})
+		}
+	}
 	return w
 }
 
@@ -457,5 +1085,17 @@ func (wt *WorkspaceTeammateQuery) CollectFields(ctx context.Context, satisfies .
 }
 
 func (wt *WorkspaceTeammateQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *WorkspaceTeammateQuery {
+	for _, field := range graphql.CollectFields(ctx, field.Selections, satisfies) {
+		switch field.Name {
+		case "teammate":
+			wt = wt.WithTeammate(func(query *TeammateQuery) {
+				query.collectField(ctx, field)
+			})
+		case "workspace":
+			wt = wt.WithWorkspace(func(query *WorkspaceQuery) {
+				query.collectField(ctx, field)
+			})
+		}
+	}
 	return wt
 }

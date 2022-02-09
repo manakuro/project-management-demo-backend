@@ -54,12 +54,12 @@ func (ptlsu *ProjectTaskListStatusUpdate) SetProject(p *Project) *ProjectTaskLis
 	return ptlsu.SetProjectID(p.ID)
 }
 
-// SetTaskListCompletedStatus sets the "task_list_completed_status" edge to the TaskListCompletedStatus entity.
+// SetTaskListCompletedStatus sets the "taskListCompletedStatus" edge to the TaskListCompletedStatus entity.
 func (ptlsu *ProjectTaskListStatusUpdate) SetTaskListCompletedStatus(t *TaskListCompletedStatus) *ProjectTaskListStatusUpdate {
 	return ptlsu.SetTaskListCompletedStatusID(t.ID)
 }
 
-// SetTaskListSortStatus sets the "task_list_sort_status" edge to the TaskListSortStatus entity.
+// SetTaskListSortStatus sets the "taskListSortStatus" edge to the TaskListSortStatus entity.
 func (ptlsu *ProjectTaskListStatusUpdate) SetTaskListSortStatus(t *TaskListSortStatus) *ProjectTaskListStatusUpdate {
 	return ptlsu.SetTaskListSortStatusID(t.ID)
 }
@@ -75,13 +75,13 @@ func (ptlsu *ProjectTaskListStatusUpdate) ClearProject() *ProjectTaskListStatusU
 	return ptlsu
 }
 
-// ClearTaskListCompletedStatus clears the "task_list_completed_status" edge to the TaskListCompletedStatus entity.
+// ClearTaskListCompletedStatus clears the "taskListCompletedStatus" edge to the TaskListCompletedStatus entity.
 func (ptlsu *ProjectTaskListStatusUpdate) ClearTaskListCompletedStatus() *ProjectTaskListStatusUpdate {
 	ptlsu.mutation.ClearTaskListCompletedStatus()
 	return ptlsu
 }
 
-// ClearTaskListSortStatus clears the "task_list_sort_status" edge to the TaskListSortStatus entity.
+// ClearTaskListSortStatus clears the "taskListSortStatus" edge to the TaskListSortStatus entity.
 func (ptlsu *ProjectTaskListStatusUpdate) ClearTaskListSortStatus() *ProjectTaskListStatusUpdate {
 	ptlsu.mutation.ClearTaskListSortStatus()
 	return ptlsu
@@ -153,10 +153,10 @@ func (ptlsu *ProjectTaskListStatusUpdate) check() error {
 		return errors.New("ent: clearing a required unique edge \"project\"")
 	}
 	if _, ok := ptlsu.mutation.TaskListCompletedStatusID(); ptlsu.mutation.TaskListCompletedStatusCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"task_list_completed_status\"")
+		return errors.New("ent: clearing a required unique edge \"taskListCompletedStatus\"")
 	}
 	if _, ok := ptlsu.mutation.TaskListSortStatusID(); ptlsu.mutation.TaskListSortStatusCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"task_list_sort_status\"")
+		return errors.New("ent: clearing a required unique edge \"taskListSortStatus\"")
 	}
 	return nil
 }
@@ -326,12 +326,12 @@ func (ptlsuo *ProjectTaskListStatusUpdateOne) SetProject(p *Project) *ProjectTas
 	return ptlsuo.SetProjectID(p.ID)
 }
 
-// SetTaskListCompletedStatus sets the "task_list_completed_status" edge to the TaskListCompletedStatus entity.
+// SetTaskListCompletedStatus sets the "taskListCompletedStatus" edge to the TaskListCompletedStatus entity.
 func (ptlsuo *ProjectTaskListStatusUpdateOne) SetTaskListCompletedStatus(t *TaskListCompletedStatus) *ProjectTaskListStatusUpdateOne {
 	return ptlsuo.SetTaskListCompletedStatusID(t.ID)
 }
 
-// SetTaskListSortStatus sets the "task_list_sort_status" edge to the TaskListSortStatus entity.
+// SetTaskListSortStatus sets the "taskListSortStatus" edge to the TaskListSortStatus entity.
 func (ptlsuo *ProjectTaskListStatusUpdateOne) SetTaskListSortStatus(t *TaskListSortStatus) *ProjectTaskListStatusUpdateOne {
 	return ptlsuo.SetTaskListSortStatusID(t.ID)
 }
@@ -347,13 +347,13 @@ func (ptlsuo *ProjectTaskListStatusUpdateOne) ClearProject() *ProjectTaskListSta
 	return ptlsuo
 }
 
-// ClearTaskListCompletedStatus clears the "task_list_completed_status" edge to the TaskListCompletedStatus entity.
+// ClearTaskListCompletedStatus clears the "taskListCompletedStatus" edge to the TaskListCompletedStatus entity.
 func (ptlsuo *ProjectTaskListStatusUpdateOne) ClearTaskListCompletedStatus() *ProjectTaskListStatusUpdateOne {
 	ptlsuo.mutation.ClearTaskListCompletedStatus()
 	return ptlsuo
 }
 
-// ClearTaskListSortStatus clears the "task_list_sort_status" edge to the TaskListSortStatus entity.
+// ClearTaskListSortStatus clears the "taskListSortStatus" edge to the TaskListSortStatus entity.
 func (ptlsuo *ProjectTaskListStatusUpdateOne) ClearTaskListSortStatus() *ProjectTaskListStatusUpdateOne {
 	ptlsuo.mutation.ClearTaskListSortStatus()
 	return ptlsuo
@@ -432,10 +432,10 @@ func (ptlsuo *ProjectTaskListStatusUpdateOne) check() error {
 		return errors.New("ent: clearing a required unique edge \"project\"")
 	}
 	if _, ok := ptlsuo.mutation.TaskListCompletedStatusID(); ptlsuo.mutation.TaskListCompletedStatusCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"task_list_completed_status\"")
+		return errors.New("ent: clearing a required unique edge \"taskListCompletedStatus\"")
 	}
 	if _, ok := ptlsuo.mutation.TaskListSortStatusID(); ptlsuo.mutation.TaskListSortStatusCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"task_list_sort_status\"")
+		return errors.New("ent: clearing a required unique edge \"taskListSortStatus\"")
 	}
 	return nil
 }

@@ -109,7 +109,7 @@ func (pq *ProjectQuery) QueryWorkspace() *WorkspaceQuery {
 	return query
 }
 
-// QueryProjectBaseColor chains the current query on the "project_base_color" edge.
+// QueryProjectBaseColor chains the current query on the "projectBaseColor" edge.
 func (pq *ProjectQuery) QueryProjectBaseColor() *ProjectBaseColorQuery {
 	query := &ProjectBaseColorQuery{config: pq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
@@ -131,7 +131,7 @@ func (pq *ProjectQuery) QueryProjectBaseColor() *ProjectBaseColorQuery {
 	return query
 }
 
-// QueryProjectLightColor chains the current query on the "project_light_color" edge.
+// QueryProjectLightColor chains the current query on the "projectLightColor" edge.
 func (pq *ProjectQuery) QueryProjectLightColor() *ProjectLightColorQuery {
 	query := &ProjectLightColorQuery{config: pq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
@@ -153,7 +153,7 @@ func (pq *ProjectQuery) QueryProjectLightColor() *ProjectLightColorQuery {
 	return query
 }
 
-// QueryProjectIcon chains the current query on the "project_icon" edge.
+// QueryProjectIcon chains the current query on the "projectIcon" edge.
 func (pq *ProjectQuery) QueryProjectIcon() *ProjectIconQuery {
 	query := &ProjectIconQuery{config: pq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
@@ -197,7 +197,7 @@ func (pq *ProjectQuery) QueryTeammate() *TeammateQuery {
 	return query
 }
 
-// QueryProjectTeammates chains the current query on the "project_teammates" edge.
+// QueryProjectTeammates chains the current query on the "projectTeammates" edge.
 func (pq *ProjectQuery) QueryProjectTeammates() *ProjectTeammateQuery {
 	query := &ProjectTeammateQuery{config: pq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
@@ -219,7 +219,7 @@ func (pq *ProjectQuery) QueryProjectTeammates() *ProjectTeammateQuery {
 	return query
 }
 
-// QueryFavoriteProjects chains the current query on the "favorite_projects" edge.
+// QueryFavoriteProjects chains the current query on the "favoriteProjects" edge.
 func (pq *ProjectQuery) QueryFavoriteProjects() *FavoriteProjectQuery {
 	query := &FavoriteProjectQuery{config: pq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
@@ -241,7 +241,7 @@ func (pq *ProjectQuery) QueryFavoriteProjects() *FavoriteProjectQuery {
 	return query
 }
 
-// QueryProjectTaskColumns chains the current query on the "project_task_columns" edge.
+// QueryProjectTaskColumns chains the current query on the "projectTaskColumns" edge.
 func (pq *ProjectQuery) QueryProjectTaskColumns() *ProjectTaskColumnQuery {
 	query := &ProjectTaskColumnQuery{config: pq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
@@ -263,7 +263,7 @@ func (pq *ProjectQuery) QueryProjectTaskColumns() *ProjectTaskColumnQuery {
 	return query
 }
 
-// QueryProjectTaskListStatuses chains the current query on the "project_task_list_statuses" edge.
+// QueryProjectTaskListStatuses chains the current query on the "projectTaskListStatuses" edge.
 func (pq *ProjectQuery) QueryProjectTaskListStatuses() *ProjectTaskListStatusQuery {
 	query := &ProjectTaskListStatusQuery{config: pq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
@@ -285,7 +285,7 @@ func (pq *ProjectQuery) QueryProjectTaskListStatuses() *ProjectTaskListStatusQue
 	return query
 }
 
-// QueryProjectTaskSections chains the current query on the "project_task_sections" edge.
+// QueryProjectTaskSections chains the current query on the "projectTaskSections" edge.
 func (pq *ProjectQuery) QueryProjectTaskSections() *ProjectTaskSectionQuery {
 	query := &ProjectTaskSectionQuery{config: pq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
@@ -307,7 +307,7 @@ func (pq *ProjectQuery) QueryProjectTaskSections() *ProjectTaskSectionQuery {
 	return query
 }
 
-// QueryProjectTasks chains the current query on the "project_tasks" edge.
+// QueryProjectTasks chains the current query on the "projectTasks" edge.
 func (pq *ProjectQuery) QueryProjectTasks() *ProjectTaskQuery {
 	query := &ProjectTaskQuery{config: pq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
@@ -329,7 +329,7 @@ func (pq *ProjectQuery) QueryProjectTasks() *ProjectTaskQuery {
 	return query
 }
 
-// QueryTaskFiles chains the current query on the "task_files" edge.
+// QueryTaskFiles chains the current query on the "taskFiles" edge.
 func (pq *ProjectQuery) QueryTaskFiles() *TaskFileQuery {
 	query := &TaskFileQuery{config: pq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
@@ -562,7 +562,7 @@ func (pq *ProjectQuery) WithWorkspace(opts ...func(*WorkspaceQuery)) *ProjectQue
 }
 
 // WithProjectBaseColor tells the query-builder to eager-load the nodes that are connected to
-// the "project_base_color" edge. The optional arguments are used to configure the query builder of the edge.
+// the "projectBaseColor" edge. The optional arguments are used to configure the query builder of the edge.
 func (pq *ProjectQuery) WithProjectBaseColor(opts ...func(*ProjectBaseColorQuery)) *ProjectQuery {
 	query := &ProjectBaseColorQuery{config: pq.config}
 	for _, opt := range opts {
@@ -573,7 +573,7 @@ func (pq *ProjectQuery) WithProjectBaseColor(opts ...func(*ProjectBaseColorQuery
 }
 
 // WithProjectLightColor tells the query-builder to eager-load the nodes that are connected to
-// the "project_light_color" edge. The optional arguments are used to configure the query builder of the edge.
+// the "projectLightColor" edge. The optional arguments are used to configure the query builder of the edge.
 func (pq *ProjectQuery) WithProjectLightColor(opts ...func(*ProjectLightColorQuery)) *ProjectQuery {
 	query := &ProjectLightColorQuery{config: pq.config}
 	for _, opt := range opts {
@@ -584,7 +584,7 @@ func (pq *ProjectQuery) WithProjectLightColor(opts ...func(*ProjectLightColorQue
 }
 
 // WithProjectIcon tells the query-builder to eager-load the nodes that are connected to
-// the "project_icon" edge. The optional arguments are used to configure the query builder of the edge.
+// the "projectIcon" edge. The optional arguments are used to configure the query builder of the edge.
 func (pq *ProjectQuery) WithProjectIcon(opts ...func(*ProjectIconQuery)) *ProjectQuery {
 	query := &ProjectIconQuery{config: pq.config}
 	for _, opt := range opts {
@@ -606,7 +606,7 @@ func (pq *ProjectQuery) WithTeammate(opts ...func(*TeammateQuery)) *ProjectQuery
 }
 
 // WithProjectTeammates tells the query-builder to eager-load the nodes that are connected to
-// the "project_teammates" edge. The optional arguments are used to configure the query builder of the edge.
+// the "projectTeammates" edge. The optional arguments are used to configure the query builder of the edge.
 func (pq *ProjectQuery) WithProjectTeammates(opts ...func(*ProjectTeammateQuery)) *ProjectQuery {
 	query := &ProjectTeammateQuery{config: pq.config}
 	for _, opt := range opts {
@@ -617,7 +617,7 @@ func (pq *ProjectQuery) WithProjectTeammates(opts ...func(*ProjectTeammateQuery)
 }
 
 // WithFavoriteProjects tells the query-builder to eager-load the nodes that are connected to
-// the "favorite_projects" edge. The optional arguments are used to configure the query builder of the edge.
+// the "favoriteProjects" edge. The optional arguments are used to configure the query builder of the edge.
 func (pq *ProjectQuery) WithFavoriteProjects(opts ...func(*FavoriteProjectQuery)) *ProjectQuery {
 	query := &FavoriteProjectQuery{config: pq.config}
 	for _, opt := range opts {
@@ -628,7 +628,7 @@ func (pq *ProjectQuery) WithFavoriteProjects(opts ...func(*FavoriteProjectQuery)
 }
 
 // WithProjectTaskColumns tells the query-builder to eager-load the nodes that are connected to
-// the "project_task_columns" edge. The optional arguments are used to configure the query builder of the edge.
+// the "projectTaskColumns" edge. The optional arguments are used to configure the query builder of the edge.
 func (pq *ProjectQuery) WithProjectTaskColumns(opts ...func(*ProjectTaskColumnQuery)) *ProjectQuery {
 	query := &ProjectTaskColumnQuery{config: pq.config}
 	for _, opt := range opts {
@@ -639,7 +639,7 @@ func (pq *ProjectQuery) WithProjectTaskColumns(opts ...func(*ProjectTaskColumnQu
 }
 
 // WithProjectTaskListStatuses tells the query-builder to eager-load the nodes that are connected to
-// the "project_task_list_statuses" edge. The optional arguments are used to configure the query builder of the edge.
+// the "projectTaskListStatuses" edge. The optional arguments are used to configure the query builder of the edge.
 func (pq *ProjectQuery) WithProjectTaskListStatuses(opts ...func(*ProjectTaskListStatusQuery)) *ProjectQuery {
 	query := &ProjectTaskListStatusQuery{config: pq.config}
 	for _, opt := range opts {
@@ -650,7 +650,7 @@ func (pq *ProjectQuery) WithProjectTaskListStatuses(opts ...func(*ProjectTaskLis
 }
 
 // WithProjectTaskSections tells the query-builder to eager-load the nodes that are connected to
-// the "project_task_sections" edge. The optional arguments are used to configure the query builder of the edge.
+// the "projectTaskSections" edge. The optional arguments are used to configure the query builder of the edge.
 func (pq *ProjectQuery) WithProjectTaskSections(opts ...func(*ProjectTaskSectionQuery)) *ProjectQuery {
 	query := &ProjectTaskSectionQuery{config: pq.config}
 	for _, opt := range opts {
@@ -661,7 +661,7 @@ func (pq *ProjectQuery) WithProjectTaskSections(opts ...func(*ProjectTaskSection
 }
 
 // WithProjectTasks tells the query-builder to eager-load the nodes that are connected to
-// the "project_tasks" edge. The optional arguments are used to configure the query builder of the edge.
+// the "projectTasks" edge. The optional arguments are used to configure the query builder of the edge.
 func (pq *ProjectQuery) WithProjectTasks(opts ...func(*ProjectTaskQuery)) *ProjectQuery {
 	query := &ProjectTaskQuery{config: pq.config}
 	for _, opt := range opts {
@@ -672,7 +672,7 @@ func (pq *ProjectQuery) WithProjectTasks(opts ...func(*ProjectTaskQuery)) *Proje
 }
 
 // WithTaskFiles tells the query-builder to eager-load the nodes that are connected to
-// the "task_files" edge. The optional arguments are used to configure the query builder of the edge.
+// the "taskFiles" edge. The optional arguments are used to configure the query builder of the edge.
 func (pq *ProjectQuery) WithTaskFiles(opts ...func(*TaskFileQuery)) *ProjectQuery {
 	query := &TaskFileQuery{config: pq.config}
 	for _, opt := range opts {

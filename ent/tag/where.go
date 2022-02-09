@@ -680,7 +680,7 @@ func HasColorWith(preds ...predicate.Color) predicate.Tag {
 	})
 }
 
-// HasTaskTags applies the HasEdge predicate on the "task_tags" edge.
+// HasTaskTags applies the HasEdge predicate on the "taskTags" edge.
 func HasTaskTags() predicate.Tag {
 	return predicate.Tag(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
@@ -692,7 +692,7 @@ func HasTaskTags() predicate.Tag {
 	})
 }
 
-// HasTaskTagsWith applies the HasEdge predicate on the "task_tags" edge with a given conditions (other predicates).
+// HasTaskTagsWith applies the HasEdge predicate on the "taskTags" edge with a given conditions (other predicates).
 func HasTaskTagsWith(preds ...predicate.TaskTag) predicate.Tag {
 	return predicate.Tag(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(

@@ -65,7 +65,7 @@ func (ftq *FileTypeQuery) Order(o ...OrderFunc) *FileTypeQuery {
 	return ftq
 }
 
-// QueryTaskFiles chains the current query on the "task_files" edge.
+// QueryTaskFiles chains the current query on the "taskFiles" edge.
 func (ftq *FileTypeQuery) QueryTaskFiles() *TaskFileQuery {
 	query := &TaskFileQuery{config: ftq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
@@ -276,7 +276,7 @@ func (ftq *FileTypeQuery) Clone() *FileTypeQuery {
 }
 
 // WithTaskFiles tells the query-builder to eager-load the nodes that are connected to
-// the "task_files" edge. The optional arguments are used to configure the query builder of the edge.
+// the "taskFiles" edge. The optional arguments are used to configure the query builder of the edge.
 func (ftq *FileTypeQuery) WithTaskFiles(opts ...func(*TaskFileQuery)) *FileTypeQuery {
 	query := &TaskFileQuery{config: ftq.config}
 	for _, opt := range opts {

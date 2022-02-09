@@ -89,13 +89,13 @@ func (tfu *TaskFeedUpdate) SetTeammate(t *Teammate) *TaskFeedUpdate {
 	return tfu.SetTeammateID(t.ID)
 }
 
-// AddTaskFeedLikeIDs adds the "task_feed_likes" edge to the TaskFeedLike entity by IDs.
+// AddTaskFeedLikeIDs adds the "taskFeedLikes" edge to the TaskFeedLike entity by IDs.
 func (tfu *TaskFeedUpdate) AddTaskFeedLikeIDs(ids ...ulid.ID) *TaskFeedUpdate {
 	tfu.mutation.AddTaskFeedLikeIDs(ids...)
 	return tfu
 }
 
-// AddTaskFeedLikes adds the "task_feed_likes" edges to the TaskFeedLike entity.
+// AddTaskFeedLikes adds the "taskFeedLikes" edges to the TaskFeedLike entity.
 func (tfu *TaskFeedUpdate) AddTaskFeedLikes(t ...*TaskFeedLike) *TaskFeedUpdate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -104,13 +104,13 @@ func (tfu *TaskFeedUpdate) AddTaskFeedLikes(t ...*TaskFeedLike) *TaskFeedUpdate 
 	return tfu.AddTaskFeedLikeIDs(ids...)
 }
 
-// AddTaskFileIDs adds the "task_files" edge to the TaskFile entity by IDs.
+// AddTaskFileIDs adds the "taskFiles" edge to the TaskFile entity by IDs.
 func (tfu *TaskFeedUpdate) AddTaskFileIDs(ids ...ulid.ID) *TaskFeedUpdate {
 	tfu.mutation.AddTaskFileIDs(ids...)
 	return tfu
 }
 
-// AddTaskFiles adds the "task_files" edges to the TaskFile entity.
+// AddTaskFiles adds the "taskFiles" edges to the TaskFile entity.
 func (tfu *TaskFeedUpdate) AddTaskFiles(t ...*TaskFile) *TaskFeedUpdate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -136,19 +136,19 @@ func (tfu *TaskFeedUpdate) ClearTeammate() *TaskFeedUpdate {
 	return tfu
 }
 
-// ClearTaskFeedLikes clears all "task_feed_likes" edges to the TaskFeedLike entity.
+// ClearTaskFeedLikes clears all "taskFeedLikes" edges to the TaskFeedLike entity.
 func (tfu *TaskFeedUpdate) ClearTaskFeedLikes() *TaskFeedUpdate {
 	tfu.mutation.ClearTaskFeedLikes()
 	return tfu
 }
 
-// RemoveTaskFeedLikeIDs removes the "task_feed_likes" edge to TaskFeedLike entities by IDs.
+// RemoveTaskFeedLikeIDs removes the "taskFeedLikes" edge to TaskFeedLike entities by IDs.
 func (tfu *TaskFeedUpdate) RemoveTaskFeedLikeIDs(ids ...ulid.ID) *TaskFeedUpdate {
 	tfu.mutation.RemoveTaskFeedLikeIDs(ids...)
 	return tfu
 }
 
-// RemoveTaskFeedLikes removes "task_feed_likes" edges to TaskFeedLike entities.
+// RemoveTaskFeedLikes removes "taskFeedLikes" edges to TaskFeedLike entities.
 func (tfu *TaskFeedUpdate) RemoveTaskFeedLikes(t ...*TaskFeedLike) *TaskFeedUpdate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -157,19 +157,19 @@ func (tfu *TaskFeedUpdate) RemoveTaskFeedLikes(t ...*TaskFeedLike) *TaskFeedUpda
 	return tfu.RemoveTaskFeedLikeIDs(ids...)
 }
 
-// ClearTaskFiles clears all "task_files" edges to the TaskFile entity.
+// ClearTaskFiles clears all "taskFiles" edges to the TaskFile entity.
 func (tfu *TaskFeedUpdate) ClearTaskFiles() *TaskFeedUpdate {
 	tfu.mutation.ClearTaskFiles()
 	return tfu
 }
 
-// RemoveTaskFileIDs removes the "task_files" edge to TaskFile entities by IDs.
+// RemoveTaskFileIDs removes the "taskFiles" edge to TaskFile entities by IDs.
 func (tfu *TaskFeedUpdate) RemoveTaskFileIDs(ids ...ulid.ID) *TaskFeedUpdate {
 	tfu.mutation.RemoveTaskFileIDs(ids...)
 	return tfu
 }
 
-// RemoveTaskFiles removes "task_files" edges to TaskFile entities.
+// RemoveTaskFiles removes "taskFiles" edges to TaskFile entities.
 func (tfu *TaskFeedUpdate) RemoveTaskFiles(t ...*TaskFile) *TaskFeedUpdate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -541,13 +541,13 @@ func (tfuo *TaskFeedUpdateOne) SetTeammate(t *Teammate) *TaskFeedUpdateOne {
 	return tfuo.SetTeammateID(t.ID)
 }
 
-// AddTaskFeedLikeIDs adds the "task_feed_likes" edge to the TaskFeedLike entity by IDs.
+// AddTaskFeedLikeIDs adds the "taskFeedLikes" edge to the TaskFeedLike entity by IDs.
 func (tfuo *TaskFeedUpdateOne) AddTaskFeedLikeIDs(ids ...ulid.ID) *TaskFeedUpdateOne {
 	tfuo.mutation.AddTaskFeedLikeIDs(ids...)
 	return tfuo
 }
 
-// AddTaskFeedLikes adds the "task_feed_likes" edges to the TaskFeedLike entity.
+// AddTaskFeedLikes adds the "taskFeedLikes" edges to the TaskFeedLike entity.
 func (tfuo *TaskFeedUpdateOne) AddTaskFeedLikes(t ...*TaskFeedLike) *TaskFeedUpdateOne {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -556,13 +556,13 @@ func (tfuo *TaskFeedUpdateOne) AddTaskFeedLikes(t ...*TaskFeedLike) *TaskFeedUpd
 	return tfuo.AddTaskFeedLikeIDs(ids...)
 }
 
-// AddTaskFileIDs adds the "task_files" edge to the TaskFile entity by IDs.
+// AddTaskFileIDs adds the "taskFiles" edge to the TaskFile entity by IDs.
 func (tfuo *TaskFeedUpdateOne) AddTaskFileIDs(ids ...ulid.ID) *TaskFeedUpdateOne {
 	tfuo.mutation.AddTaskFileIDs(ids...)
 	return tfuo
 }
 
-// AddTaskFiles adds the "task_files" edges to the TaskFile entity.
+// AddTaskFiles adds the "taskFiles" edges to the TaskFile entity.
 func (tfuo *TaskFeedUpdateOne) AddTaskFiles(t ...*TaskFile) *TaskFeedUpdateOne {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -588,19 +588,19 @@ func (tfuo *TaskFeedUpdateOne) ClearTeammate() *TaskFeedUpdateOne {
 	return tfuo
 }
 
-// ClearTaskFeedLikes clears all "task_feed_likes" edges to the TaskFeedLike entity.
+// ClearTaskFeedLikes clears all "taskFeedLikes" edges to the TaskFeedLike entity.
 func (tfuo *TaskFeedUpdateOne) ClearTaskFeedLikes() *TaskFeedUpdateOne {
 	tfuo.mutation.ClearTaskFeedLikes()
 	return tfuo
 }
 
-// RemoveTaskFeedLikeIDs removes the "task_feed_likes" edge to TaskFeedLike entities by IDs.
+// RemoveTaskFeedLikeIDs removes the "taskFeedLikes" edge to TaskFeedLike entities by IDs.
 func (tfuo *TaskFeedUpdateOne) RemoveTaskFeedLikeIDs(ids ...ulid.ID) *TaskFeedUpdateOne {
 	tfuo.mutation.RemoveTaskFeedLikeIDs(ids...)
 	return tfuo
 }
 
-// RemoveTaskFeedLikes removes "task_feed_likes" edges to TaskFeedLike entities.
+// RemoveTaskFeedLikes removes "taskFeedLikes" edges to TaskFeedLike entities.
 func (tfuo *TaskFeedUpdateOne) RemoveTaskFeedLikes(t ...*TaskFeedLike) *TaskFeedUpdateOne {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -609,19 +609,19 @@ func (tfuo *TaskFeedUpdateOne) RemoveTaskFeedLikes(t ...*TaskFeedLike) *TaskFeed
 	return tfuo.RemoveTaskFeedLikeIDs(ids...)
 }
 
-// ClearTaskFiles clears all "task_files" edges to the TaskFile entity.
+// ClearTaskFiles clears all "taskFiles" edges to the TaskFile entity.
 func (tfuo *TaskFeedUpdateOne) ClearTaskFiles() *TaskFeedUpdateOne {
 	tfuo.mutation.ClearTaskFiles()
 	return tfuo
 }
 
-// RemoveTaskFileIDs removes the "task_files" edge to TaskFile entities by IDs.
+// RemoveTaskFileIDs removes the "taskFiles" edge to TaskFile entities by IDs.
 func (tfuo *TaskFeedUpdateOne) RemoveTaskFileIDs(ids ...ulid.ID) *TaskFeedUpdateOne {
 	tfuo.mutation.RemoveTaskFileIDs(ids...)
 	return tfuo
 }
 
-// RemoveTaskFiles removes "task_files" edges to TaskFile entities.
+// RemoveTaskFiles removes "taskFiles" edges to TaskFile entities.
 func (tfuo *TaskFeedUpdateOne) RemoveTaskFiles(t ...*TaskFile) *TaskFeedUpdateOne {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {

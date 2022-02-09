@@ -56,7 +56,7 @@ func (r *taskFeedRepository) List(ctx context.Context, where *model.TaskFeedWher
 	return res, nil
 }
 
-func (r *taskFeedRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TaskFeedWhereInput, requestedFields []string) (*model.TaskFeedConnection, error) {
+func (r *taskFeedRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TaskFeedWhereInput) (*model.TaskFeedConnection, error) {
 	q := r.client.TaskFeed.Query()
 
 	res, err := q.Paginate(ctx, after, first, before, last, ent.WithTaskFeedFilter(where.Filter))

@@ -5,7 +5,6 @@ import (
 	"project-management-demo-backend/ent"
 	"project-management-demo-backend/pkg/entity/model"
 	ur "project-management-demo-backend/pkg/usecase/repository"
-	"project-management-demo-backend/pkg/util/collection"
 )
 
 type tagRepository struct {
@@ -49,12 +48,8 @@ func (r *tagRepository) List(ctx context.Context) ([]*model.Tag, error) {
 	return res, nil
 }
 
-func (r *tagRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TagWhereInput, requestedFields []string) (*model.TagConnection, error) {
+func (r *tagRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TagWhereInput) (*model.TagConnection, error) {
 	q := r.client.Tag.Query()
-
-	if collection.Contains(requestedFields, "edges.node.color") {
-		q.WithColor()
-	}
 
 	res, err := q.Paginate(ctx, after, first, before, last, ent.WithTagFilter(where.Filter))
 	if err != nil {

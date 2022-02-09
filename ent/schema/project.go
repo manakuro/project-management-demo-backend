@@ -7,6 +7,8 @@ import (
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/pkg/const/globalid"
 
+	"entgo.io/contrib/entgql"
+
 	"entgo.io/ent/dialect"
 
 	"entgo.io/ent/schema"
@@ -17,6 +19,8 @@ import (
 	"entgo.io/ent/schema/field"
 	entMixin "entgo.io/ent/schema/mixin"
 )
+
+const projectsRef string = "projects"
 
 // Project holds the schema definition for the Test entity.
 type Project struct {
@@ -60,93 +64,105 @@ func (ProjectMixin) Fields() []ent.Field {
 func (Project) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("workspace", Workspace.Type).
-			Ref("projects").
+			Ref(projectsRef).
 			Unique().
 			Field("workspace_id").
 			Required().
 			Annotations(
+				entgql.Bind(),
 				schema.Annotation(
 					annotation.Edge{FieldName: "workspace_id"},
 				),
 			),
-		edge.From("project_base_color", ProjectBaseColor.Type).
-			Ref("projects").
+		edge.From("projectBaseColor", ProjectBaseColor.Type).
+			Ref(projectsRef).
 			Unique().
 			Field("project_base_color_id").
 			Required().
 			Annotations(
+				entgql.Bind(),
 				schema.Annotation(
 					annotation.Edge{FieldName: "project_base_color_id"},
 				),
 			),
-		edge.From("project_light_color", ProjectLightColor.Type).
-			Ref("projects").
+		edge.From("projectLightColor", ProjectLightColor.Type).
+			Ref(projectsRef).
 			Unique().
 			Field("project_light_color_id").
 			Required().
 			Annotations(
+				entgql.Bind(),
 				schema.Annotation(
 					annotation.Edge{FieldName: "project_light_color_id"},
 				),
 			),
-		edge.From("project_icon", ProjectIcon.Type).
-			Ref("projects").
+		edge.From("projectIcon", ProjectIcon.Type).
+			Ref(projectsRef).
 			Unique().
 			Field("project_icon_id").
 			Required().
 			Annotations(
+				entgql.Bind(),
 				schema.Annotation(
 					annotation.Edge{FieldName: "project_icon_id"},
 				),
 			),
 		edge.From("teammate", Teammate.Type).
-			Ref("projects").
+			Ref(projectsRef).
 			Unique().
 			Field("created_by").
 			Required().
 			Annotations(
+				entgql.Bind(),
 				schema.Annotation(
 					annotation.Edge{FieldName: "created_by"},
 				),
 			),
-		edge.To("project_teammates", ProjectTeammate.Edges).
+		edge.To(projectTeammatesRef, ProjectTeammate.Edges).
 			Annotations(
+				entgql.Bind(),
 				schema.Annotation(
 					annotation.Edge{FieldName: "project_teammate_id"},
 				),
 			),
-		edge.To("favorite_projects", FavoriteProject.Type).
+		edge.To(favoriteProjectsRef, FavoriteProject.Type).
 			Annotations(
+				entgql.Bind(),
 				schema.Annotation(
 					annotation.Edge{FieldName: "favorite_project_id"},
 				),
 			),
-		edge.To("project_task_columns", ProjectTaskColumn.Type).
+		edge.To(projectTaskColumnsRef, ProjectTaskColumn.Type).
 			Annotations(
+				entgql.Bind(),
 				schema.Annotation(
 					annotation.Edge{FieldName: "project_task_column_id"},
 				),
 			),
-		edge.To("project_task_list_statuses", ProjectTaskListStatus.Type).
+		edge.To(projectTaskListStatusesRef, ProjectTaskListStatus.Type).
 			Annotations(
+				entgql.Bind(),
 				schema.Annotation(
 					annotation.Edge{FieldName: "project_task_list_status_id"},
 				),
 			),
-		edge.To("project_task_sections", ProjectTaskSection.Type).
+		edge.To(projectTaskSectionsRef, ProjectTaskSection.Type).
 			Annotations(
+				entgql.Bind(),
 				schema.Annotation(
 					annotation.Edge{FieldName: "project_task_section_id"},
 				),
 			),
-		edge.To("project_tasks", ProjectTask.Type).
+		edge.To(projectTasksRef, ProjectTask.Type).
 			Annotations(
+				entgql.Bind(),
 				schema.Annotation(
 					annotation.Edge{FieldName: "project_task_id"},
 				),
 			),
-		edge.To("task_files", TaskFile.Type).
+		edge.To(taskFilesRef, TaskFile.Type).
 			Annotations(
+				entgql.Bind(),
 				schema.Annotation(
 					annotation.Edge{FieldName: "task_file_id"},
 				),

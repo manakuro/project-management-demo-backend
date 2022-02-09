@@ -32,8 +32,8 @@ type Icon struct {
 
 // IconEdges holds the relations/edges for other nodes in the graph.
 type IconEdges struct {
-	// ProjectIcons holds the value of the project_icons edge.
-	ProjectIcons []*ProjectIcon `json:"project_icons,omitempty"`
+	// ProjectIcons holds the value of the projectIcons edge.
+	ProjectIcons []*ProjectIcon `json:"projectIcons,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [1]bool
@@ -45,7 +45,7 @@ func (e IconEdges) ProjectIconsOrErr() ([]*ProjectIcon, error) {
 	if e.loadedTypes[0] {
 		return e.ProjectIcons, nil
 	}
-	return nil, &NotLoadedError{edge: "project_icons"}
+	return nil, &NotLoadedError{edge: "projectIcons"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -109,7 +109,7 @@ func (i *Icon) assignValues(columns []string, values []interface{}) error {
 	return nil
 }
 
-// QueryProjectIcons queries the "project_icons" edge of the Icon entity.
+// QueryProjectIcons queries the "projectIcons" edge of the Icon entity.
 func (i *Icon) QueryProjectIcons() *ProjectIconQuery {
 	return (&IconClient{config: i.config}).QueryProjectIcons(i)
 }

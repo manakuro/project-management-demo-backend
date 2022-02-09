@@ -47,13 +47,13 @@ func (ptsu *ProjectTaskSectionUpdate) SetProject(p *Project) *ProjectTaskSection
 	return ptsu.SetProjectID(p.ID)
 }
 
-// AddProjectTaskIDs adds the "project_tasks" edge to the ProjectTask entity by IDs.
+// AddProjectTaskIDs adds the "projectTasks" edge to the ProjectTask entity by IDs.
 func (ptsu *ProjectTaskSectionUpdate) AddProjectTaskIDs(ids ...ulid.ID) *ProjectTaskSectionUpdate {
 	ptsu.mutation.AddProjectTaskIDs(ids...)
 	return ptsu
 }
 
-// AddProjectTasks adds the "project_tasks" edges to the ProjectTask entity.
+// AddProjectTasks adds the "projectTasks" edges to the ProjectTask entity.
 func (ptsu *ProjectTaskSectionUpdate) AddProjectTasks(p ...*ProjectTask) *ProjectTaskSectionUpdate {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {
@@ -73,19 +73,19 @@ func (ptsu *ProjectTaskSectionUpdate) ClearProject() *ProjectTaskSectionUpdate {
 	return ptsu
 }
 
-// ClearProjectTasks clears all "project_tasks" edges to the ProjectTask entity.
+// ClearProjectTasks clears all "projectTasks" edges to the ProjectTask entity.
 func (ptsu *ProjectTaskSectionUpdate) ClearProjectTasks() *ProjectTaskSectionUpdate {
 	ptsu.mutation.ClearProjectTasks()
 	return ptsu
 }
 
-// RemoveProjectTaskIDs removes the "project_tasks" edge to ProjectTask entities by IDs.
+// RemoveProjectTaskIDs removes the "projectTasks" edge to ProjectTask entities by IDs.
 func (ptsu *ProjectTaskSectionUpdate) RemoveProjectTaskIDs(ids ...ulid.ID) *ProjectTaskSectionUpdate {
 	ptsu.mutation.RemoveProjectTaskIDs(ids...)
 	return ptsu
 }
 
-// RemoveProjectTasks removes "project_tasks" edges to ProjectTask entities.
+// RemoveProjectTasks removes "projectTasks" edges to ProjectTask entities.
 func (ptsu *ProjectTaskSectionUpdate) RemoveProjectTasks(p ...*ProjectTask) *ProjectTaskSectionUpdate {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {
@@ -317,13 +317,13 @@ func (ptsuo *ProjectTaskSectionUpdateOne) SetProject(p *Project) *ProjectTaskSec
 	return ptsuo.SetProjectID(p.ID)
 }
 
-// AddProjectTaskIDs adds the "project_tasks" edge to the ProjectTask entity by IDs.
+// AddProjectTaskIDs adds the "projectTasks" edge to the ProjectTask entity by IDs.
 func (ptsuo *ProjectTaskSectionUpdateOne) AddProjectTaskIDs(ids ...ulid.ID) *ProjectTaskSectionUpdateOne {
 	ptsuo.mutation.AddProjectTaskIDs(ids...)
 	return ptsuo
 }
 
-// AddProjectTasks adds the "project_tasks" edges to the ProjectTask entity.
+// AddProjectTasks adds the "projectTasks" edges to the ProjectTask entity.
 func (ptsuo *ProjectTaskSectionUpdateOne) AddProjectTasks(p ...*ProjectTask) *ProjectTaskSectionUpdateOne {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {
@@ -343,19 +343,19 @@ func (ptsuo *ProjectTaskSectionUpdateOne) ClearProject() *ProjectTaskSectionUpda
 	return ptsuo
 }
 
-// ClearProjectTasks clears all "project_tasks" edges to the ProjectTask entity.
+// ClearProjectTasks clears all "projectTasks" edges to the ProjectTask entity.
 func (ptsuo *ProjectTaskSectionUpdateOne) ClearProjectTasks() *ProjectTaskSectionUpdateOne {
 	ptsuo.mutation.ClearProjectTasks()
 	return ptsuo
 }
 
-// RemoveProjectTaskIDs removes the "project_tasks" edge to ProjectTask entities by IDs.
+// RemoveProjectTaskIDs removes the "projectTasks" edge to ProjectTask entities by IDs.
 func (ptsuo *ProjectTaskSectionUpdateOne) RemoveProjectTaskIDs(ids ...ulid.ID) *ProjectTaskSectionUpdateOne {
 	ptsuo.mutation.RemoveProjectTaskIDs(ids...)
 	return ptsuo
 }
 
-// RemoveProjectTasks removes "project_tasks" edges to ProjectTask entities.
+// RemoveProjectTasks removes "projectTasks" edges to ProjectTask entities.
 func (ptsuo *ProjectTaskSectionUpdateOne) RemoveProjectTasks(p ...*ProjectTask) *ProjectTaskSectionUpdateOne {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {
