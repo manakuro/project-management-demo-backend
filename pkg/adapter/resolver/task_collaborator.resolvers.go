@@ -12,7 +12,6 @@ import (
 	"project-management-demo-backend/pkg/adapter/handler"
 	"project-management-demo-backend/pkg/entity/model"
 	"project-management-demo-backend/pkg/util/datetime"
-	"project-management-demo-backend/pkg/util/graphqlutil"
 	"project-management-demo-backend/pkg/util/subscription"
 )
 
@@ -80,8 +79,8 @@ func (r *queryResolver) TaskCollaborator(ctx context.Context, where *ent.TaskCol
 }
 
 func (r *queryResolver) TaskCollaborators(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskCollaboratorWhereInput) (*ent.TaskCollaboratorConnection, error) {
-	requestedFields := graphqlutil.GetRequestedFields(ctx)
-	ts, err := r.controller.TaskCollaborator.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
+
+	ts, err := r.controller.TaskCollaborator.ListWithPagination(ctx, after, first, before, last, where)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}

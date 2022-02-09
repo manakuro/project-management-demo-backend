@@ -56,7 +56,7 @@ func (r *taskLikeRepository) List(ctx context.Context, where *model.TaskLikeWher
 	return res, nil
 }
 
-func (r *taskLikeRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TaskLikeWhereInput, requestedFields []string) (*model.TaskLikeConnection, error) {
+func (r *taskLikeRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TaskLikeWhereInput) (*model.TaskLikeConnection, error) {
 	q := r.client.TaskLike.Query()
 
 	res, err := q.Paginate(ctx, after, first, before, last, ent.WithTaskLikeFilter(where.Filter))

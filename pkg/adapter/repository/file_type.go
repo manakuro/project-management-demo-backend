@@ -48,7 +48,7 @@ func (r *fileTypeRepository) List(ctx context.Context) ([]*model.FileType, error
 	return res, nil
 }
 
-func (r *fileTypeRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.FileTypeWhereInput, requestedFields []string) (*model.FileTypeConnection, error) {
+func (r *fileTypeRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.FileTypeWhereInput) (*model.FileTypeConnection, error) {
 	q := r.client.FileType.Query()
 
 	res, err := q.Paginate(ctx, after, first, before, last, ent.WithFileTypeFilter(where.Filter))

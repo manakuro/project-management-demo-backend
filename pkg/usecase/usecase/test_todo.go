@@ -14,7 +14,7 @@ type testTodoUsecase struct {
 type TestTodo interface {
 	Get(ctx context.Context, where *model.TestTodoWhereInput) (*model.TestTodo, error)
 	List(ctx context.Context) ([]*model.TestTodo, error)
-	ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TestTodoWhereInput, requestedFields []string) (*model.TestTodoConnection, error)
+	ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TestTodoWhereInput) (*model.TestTodoConnection, error)
 	Create(ctx context.Context, input model.CreateTestTodoInput) (*model.TestTodo, error)
 	Update(ctx context.Context, input model.UpdateTestTodoInput) (*model.TestTodo, error)
 }
@@ -32,8 +32,8 @@ func (u *testTodoUsecase) List(ctx context.Context) ([]*model.TestTodo, error) {
 	return u.testTodoRepository.List(ctx)
 }
 
-func (u *testTodoUsecase) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TestTodoWhereInput, requestedFields []string) (*model.TestTodoConnection, error) {
-	return u.testTodoRepository.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
+func (u *testTodoUsecase) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TestTodoWhereInput) (*model.TestTodoConnection, error) {
+	return u.testTodoRepository.ListWithPagination(ctx, after, first, before, last, where)
 }
 
 func (u *testTodoUsecase) Create(ctx context.Context, input model.CreateTestTodoInput) (*model.TestTodo, error) {

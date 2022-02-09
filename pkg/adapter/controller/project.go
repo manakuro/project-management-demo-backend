@@ -10,7 +10,7 @@ import (
 type Project interface {
 	Get(ctx context.Context, where *model.ProjectWhereInput) (*model.Project, error)
 	List(ctx context.Context) ([]*model.Project, error)
-	ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ProjectWhereInput, requestedFields []string) (*model.ProjectConnection, error)
+	ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ProjectWhereInput) (*model.ProjectConnection, error)
 	Create(ctx context.Context, input model.CreateProjectInput) (*model.Project, error)
 	Update(ctx context.Context, input model.UpdateProjectInput) (*model.Project, error)
 }
@@ -34,8 +34,8 @@ func (c *projectController) List(ctx context.Context) ([]*model.Project, error) 
 	return c.projectUsecase.List(ctx)
 }
 
-func (c *projectController) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ProjectWhereInput, requestedFields []string) (*model.ProjectConnection, error) {
-	return c.projectUsecase.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
+func (c *projectController) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ProjectWhereInput) (*model.ProjectConnection, error) {
+	return c.projectUsecase.ListWithPagination(ctx, after, first, before, last, where)
 }
 
 func (c *projectController) Create(ctx context.Context, input model.CreateProjectInput) (*model.Project, error) {

@@ -10,7 +10,7 @@ import (
 type TaskCollaborator interface {
 	Get(ctx context.Context, where *model.TaskCollaboratorWhereInput) (*model.TaskCollaborator, error)
 	List(ctx context.Context, where *model.TaskCollaboratorWhereInput) ([]*model.TaskCollaborator, error)
-	ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TaskCollaboratorWhereInput, requestedFields []string) (*model.TaskCollaboratorConnection, error)
+	ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TaskCollaboratorWhereInput) (*model.TaskCollaboratorConnection, error)
 	Create(ctx context.Context, input model.CreateTaskCollaboratorInput) (*model.TaskCollaborator, error)
 	Update(ctx context.Context, input model.UpdateTaskCollaboratorInput) (*model.TaskCollaborator, error)
 	Delete(ctx context.Context, input model.DeleteTaskCollaboratorInput) (*model.TaskCollaborator, error)
@@ -35,8 +35,8 @@ func (c *taskCollaboratorController) List(ctx context.Context, where *model.Task
 	return c.taskCollaboratorUsecase.List(ctx, where)
 }
 
-func (c *taskCollaboratorController) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TaskCollaboratorWhereInput, requestedFields []string) (*model.TaskCollaboratorConnection, error) {
-	return c.taskCollaboratorUsecase.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
+func (c *taskCollaboratorController) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TaskCollaboratorWhereInput) (*model.TaskCollaboratorConnection, error) {
+	return c.taskCollaboratorUsecase.ListWithPagination(ctx, after, first, before, last, where)
 }
 
 func (c *taskCollaboratorController) Create(ctx context.Context, input model.CreateTaskCollaboratorInput) (*model.TaskCollaborator, error) {

@@ -9,7 +9,6 @@ import (
 	"project-management-demo-backend/graph/generated"
 	"project-management-demo-backend/pkg/adapter/handler"
 	"project-management-demo-backend/pkg/util/datetime"
-	"project-management-demo-backend/pkg/util/graphqlutil"
 )
 
 func (r *mutationResolver) CreateTaskListCompletedStatus(ctx context.Context, input ent.CreateTaskListCompletedStatusInput) (*ent.TaskListCompletedStatus, error) {
@@ -37,8 +36,7 @@ func (r *queryResolver) TaskListCompletedStatus(ctx context.Context, where *ent.
 }
 
 func (r *queryResolver) TaskListCompletedStatuses(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskListCompletedStatusWhereInput) (*ent.TaskListCompletedStatusConnection, error) {
-	requestFields := graphqlutil.GetRequestedFields(ctx)
-	ts, err := r.controller.TaskListCompletedStatus.ListWithPagination(ctx, after, first, before, last, where, requestFields)
+	ts, err := r.controller.TaskListCompletedStatus.ListWithPagination(ctx, after, first, before, last, where)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}

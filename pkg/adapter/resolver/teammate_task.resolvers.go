@@ -10,7 +10,6 @@ import (
 	"project-management-demo-backend/graph/generated"
 	"project-management-demo-backend/pkg/adapter/handler"
 	"project-management-demo-backend/pkg/util/datetime"
-	"project-management-demo-backend/pkg/util/graphqlutil"
 	"project-management-demo-backend/pkg/util/subscription"
 )
 
@@ -46,8 +45,8 @@ func (r *queryResolver) TeammateTask(ctx context.Context, where *ent.TeammateTas
 }
 
 func (r *queryResolver) TeammateTasks(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TeammateTaskWhereInput) (*ent.TeammateTaskConnection, error) {
-	requestedFields := graphqlutil.GetRequestedFields(ctx)
-	ts, err := r.controller.TeammateTask.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
+
+	ts, err := r.controller.TeammateTask.ListWithPagination(ctx, after, first, before, last, where)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
@@ -56,9 +55,8 @@ func (r *queryResolver) TeammateTasks(ctx context.Context, after *ent.Cursor, fi
 }
 
 func (r *queryResolver) TasksDueSoon(ctx context.Context, workspaceID ulid.ID, teammateID ulid.ID) ([]*ent.TeammateTask, error) {
-	requestedFields := graphqlutil.GetRequestedFields(ctx)
 
-	ts, err := r.controller.TeammateTask.TasksDueSoon(ctx, workspaceID, teammateID, requestedFields)
+	ts, err := r.controller.TeammateTask.TasksDueSoon(ctx, workspaceID, teammateID)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}

@@ -10,7 +10,7 @@ import (
 type FavoriteProject interface {
 	Get(ctx context.Context, where *model.FavoriteProjectWhereInput) (*model.FavoriteProject, error)
 	List(ctx context.Context) ([]*model.FavoriteProject, error)
-	ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.FavoriteProjectWhereInput, requestedFields []string) (*model.FavoriteProjectConnection, error)
+	ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.FavoriteProjectWhereInput) (*model.FavoriteProjectConnection, error)
 	Create(ctx context.Context, input model.CreateFavoriteProjectInput) (*model.FavoriteProject, error)
 	Update(ctx context.Context, input model.UpdateFavoriteProjectInput) (*model.FavoriteProject, error)
 	Delete(ctx context.Context, input model.DeleteFavoriteProjectInput) (*model.FavoriteProject, error)
@@ -36,8 +36,8 @@ func (c *favoriteProjectController) List(ctx context.Context) ([]*model.Favorite
 	return c.favoriteProjectUsecase.List(ctx)
 }
 
-func (c *favoriteProjectController) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.FavoriteProjectWhereInput, requestedFields []string) (*model.FavoriteProjectConnection, error) {
-	return c.favoriteProjectUsecase.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
+func (c *favoriteProjectController) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.FavoriteProjectWhereInput) (*model.FavoriteProjectConnection, error) {
+	return c.favoriteProjectUsecase.ListWithPagination(ctx, after, first, before, last, where)
 }
 
 func (c *favoriteProjectController) Create(ctx context.Context, input model.CreateFavoriteProjectInput) (*model.FavoriteProject, error) {

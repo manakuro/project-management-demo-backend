@@ -53,20 +53,8 @@ func (r *teammateTaskRepository) List(ctx context.Context) ([]*model.TeammateTas
 	return res, nil
 }
 
-func (r *teammateTaskRepository) TasksDueSoon(ctx context.Context, workspaceID model.ID, teammateID model.ID, requestedFields []string) ([]*model.TeammateTask, error) {
+func (r *teammateTaskRepository) TasksDueSoon(ctx context.Context, workspaceID model.ID, teammateID model.ID) ([]*model.TeammateTask, error) {
 	q := r.client.TeammateTask.Query()
-
-	q.WithTask(func(taskQuery *ent.TaskQuery) {
-		WithTask(taskQuery, WithTaskOptions{
-			SubTasks:          true,
-			TaskFiles:         true,
-			TaskFeeds:         true,
-			TaskCollaborators: true,
-			TaskTags:          true,
-			ProjectTasks:      true,
-			TaskPriority:      true,
-		})
-	})
 
 	q.Where(teammatetask.TeammateIDEQ(teammateID))
 	q.Where(teammatetask.HasTaskWith(
@@ -88,7 +76,7 @@ func (r *teammateTaskRepository) TasksDueSoon(ctx context.Context, workspaceID m
 	return res, err
 }
 
-func (r *teammateTaskRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TeammateTaskWhereInput, requestedFields []string) (*model.TeammateTaskConnection, error) {
+func (r *teammateTaskRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TeammateTaskWhereInput) (*model.TeammateTaskConnection, error) {
 	q := r.client.TeammateTask.Query()
 
 	res, err := q.Paginate(ctx, after, first, before, last, ent.WithTeammateTaskFilter(where.Filter))

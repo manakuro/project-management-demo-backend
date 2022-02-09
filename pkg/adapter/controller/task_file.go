@@ -10,7 +10,7 @@ import (
 type TaskFile interface {
 	Get(ctx context.Context, where *model.TaskFileWhereInput) (*model.TaskFile, error)
 	List(ctx context.Context) ([]*model.TaskFile, error)
-	ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TaskFileWhereInput, requestedFields []string) (*model.TaskFileConnection, error)
+	ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TaskFileWhereInput) (*model.TaskFileConnection, error)
 	Create(ctx context.Context, input model.CreateTaskFileInput) (*model.TaskFile, error)
 	Update(ctx context.Context, input model.UpdateTaskFileInput) (*model.TaskFile, error)
 }
@@ -34,8 +34,8 @@ func (c *taskFileController) List(ctx context.Context) ([]*model.TaskFile, error
 	return c.taskFileUsecase.List(ctx)
 }
 
-func (c *taskFileController) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TaskFileWhereInput, requestedFields []string) (*model.TaskFileConnection, error) {
-	return c.taskFileUsecase.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
+func (c *taskFileController) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TaskFileWhereInput) (*model.TaskFileConnection, error) {
+	return c.taskFileUsecase.ListWithPagination(ctx, after, first, before, last, where)
 }
 
 func (c *taskFileController) Create(ctx context.Context, input model.CreateTaskFileInput) (*model.TaskFile, error) {

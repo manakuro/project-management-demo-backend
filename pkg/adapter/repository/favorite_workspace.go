@@ -50,7 +50,7 @@ func (r *favoriteWorkspaceRepository) List(ctx context.Context) ([]*model.Favori
 	return res, nil
 }
 
-func (r *favoriteWorkspaceRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.FavoriteWorkspaceWhereInput, requestedFields []string) (*model.FavoriteWorkspaceConnection, error) {
+func (r *favoriteWorkspaceRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.FavoriteWorkspaceWhereInput) (*model.FavoriteWorkspaceConnection, error) {
 	q := r.client.FavoriteWorkspace.Query()
 
 	res, err := q.Paginate(ctx, after, first, before, last, ent.WithFavoriteWorkspaceFilter(where.Filter))

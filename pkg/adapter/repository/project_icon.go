@@ -48,7 +48,7 @@ func (r *projectIconRepository) List(ctx context.Context) ([]*model.ProjectIcon,
 	return res, nil
 }
 
-func (r *projectIconRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ProjectIconWhereInput, requestedFields []string) (*model.ProjectIconConnection, error) {
+func (r *projectIconRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ProjectIconWhereInput) (*model.ProjectIconConnection, error) {
 	q := r.client.ProjectIcon.Query()
 
 	res, err := q.Paginate(ctx, after, first, before, last, ent.WithProjectIconFilter(where.Filter))

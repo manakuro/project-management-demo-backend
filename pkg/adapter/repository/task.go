@@ -48,7 +48,7 @@ func (r *taskRepository) List(ctx context.Context) ([]*model.Task, error) {
 	return res, nil
 }
 
-func (r *taskRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TaskWhereInput, requestedFields []string) (*model.TaskConnection, error) {
+func (r *taskRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TaskWhereInput) (*model.TaskConnection, error) {
 	q := r.client.Task.Query()
 
 	res, err := q.Paginate(ctx, after, first, before, last, ent.WithTaskFilter(where.Filter))
@@ -87,60 +87,4 @@ func (r *taskRepository) Update(ctx context.Context, input model.UpdateTaskInput
 	}
 
 	return res, nil
-}
-
-// WithTaskOptions is an option for WithTask.
-type WithTaskOptions struct {
-	SubTasks          bool
-	TaskFiles         bool
-	TaskFeeds         bool
-	TaskCollaborators bool
-	TaskTags          bool
-	ProjectTasks      bool
-	TaskPriority      bool
-}
-
-// WithTask loads all related edges.
-func WithTask(taskQuery *ent.TaskQuery, with WithTaskOptions) *ent.TaskQuery {
-	if with.SubTasks {
-		taskQuery.WithSubTasks()
-	}
-
-	if with.TaskFiles {
-		taskQuery.WithTaskFiles(func(taskFileQuery *ent.TaskFileQuery) {
-			taskFileQuery.WithFileType()
-		})
-	}
-
-	if with.TaskFeeds {
-		taskQuery.WithTaskFeeds()
-	}
-
-	if with.TaskCollaborators {
-		taskQuery.WithTaskCollaborators(func(taskCollaboratorQuery *ent.TaskCollaboratorQuery) {
-			taskCollaboratorQuery.WithTeammate()
-		})
-	}
-
-	if with.TaskTags {
-		taskQuery.WithTaskTags(func(taskTagQuery *ent.TaskTagQuery) {
-			taskTagQuery.WithTag(func(tagQuery *ent.TagQuery) {
-				tagQuery.WithColor()
-			})
-		})
-	}
-
-	if with.ProjectTasks {
-		taskQuery.WithProjectTasks(func(projectTaskQuery *ent.ProjectTaskQuery) {
-			projectTaskQuery.WithProject()
-		})
-	}
-
-	if with.TaskPriority {
-		taskQuery.WithTaskPriority(func(taskPriorityQuery *ent.TaskPriorityQuery) {
-			taskPriorityQuery.WithColor()
-		})
-	}
-
-	return taskQuery
 }

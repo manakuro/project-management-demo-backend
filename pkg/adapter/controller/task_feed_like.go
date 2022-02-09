@@ -10,7 +10,7 @@ import (
 type TaskFeedLike interface {
 	Get(ctx context.Context, where *model.TaskFeedLikeWhereInput) (*model.TaskFeedLike, error)
 	List(ctx context.Context, where *model.TaskFeedLikeWhereInput) ([]*model.TaskFeedLike, error)
-	ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TaskFeedLikeWhereInput, requestedFields []string) (*model.TaskFeedLikeConnection, error)
+	ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TaskFeedLikeWhereInput) (*model.TaskFeedLikeConnection, error)
 	Create(ctx context.Context, input model.CreateTaskFeedLikeInput) (*model.TaskFeedLike, error)
 	Update(ctx context.Context, input model.UpdateTaskFeedLikeInput) (*model.TaskFeedLike, error)
 	Delete(ctx context.Context, input model.DeleteTaskFeedLikeInput) (*model.TaskFeedLike, error)
@@ -35,8 +35,8 @@ func (c *taskFeedLikeController) List(ctx context.Context, where *model.TaskFeed
 	return c.taskFeedLikeUsecase.List(ctx, where)
 }
 
-func (c *taskFeedLikeController) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TaskFeedLikeWhereInput, requestedFields []string) (*model.TaskFeedLikeConnection, error) {
-	return c.taskFeedLikeUsecase.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
+func (c *taskFeedLikeController) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TaskFeedLikeWhereInput) (*model.TaskFeedLikeConnection, error) {
+	return c.taskFeedLikeUsecase.ListWithPagination(ctx, after, first, before, last, where)
 }
 
 func (c *taskFeedLikeController) Create(ctx context.Context, input model.CreateTaskFeedLikeInput) (*model.TaskFeedLike, error) {

@@ -48,7 +48,7 @@ func (r *tagRepository) List(ctx context.Context) ([]*model.Tag, error) {
 	return res, nil
 }
 
-func (r *tagRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TagWhereInput, requestedFields []string) (*model.TagConnection, error) {
+func (r *tagRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TagWhereInput) (*model.TagConnection, error) {
 	q := r.client.Tag.Query()
 
 	res, err := q.Paginate(ctx, after, first, before, last, ent.WithTagFilter(where.Filter))

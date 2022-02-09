@@ -10,7 +10,6 @@ import (
 	"project-management-demo-backend/graph/generated"
 	"project-management-demo-backend/pkg/adapter/handler"
 	"project-management-demo-backend/pkg/util/datetime"
-	"project-management-demo-backend/pkg/util/graphqlutil"
 	"project-management-demo-backend/pkg/util/subscription"
 )
 
@@ -38,9 +37,8 @@ func (r *mutationResolver) UpdateWorkspace(ctx context.Context, input ent.Update
 }
 
 func (r *queryResolver) Workspace(ctx context.Context, where *ent.WorkspaceWhereInput) (*ent.Workspace, error) {
-	requestFields := graphqlutil.GetRequestedFields(ctx)
 
-	ws, err := r.controller.Workspace.Get(ctx, where, requestFields)
+	ws, err := r.controller.Workspace.Get(ctx, where)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
@@ -48,9 +46,8 @@ func (r *queryResolver) Workspace(ctx context.Context, where *ent.WorkspaceWhere
 }
 
 func (r *queryResolver) Workspaces(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.WorkspaceWhereInput) (*ent.WorkspaceConnection, error) {
-	requestFields := graphqlutil.GetRequestedFields(ctx)
 
-	ws, err := r.controller.Workspace.ListWithPagination(ctx, after, first, before, last, where, requestFields)
+	ws, err := r.controller.Workspace.ListWithPagination(ctx, after, first, before, last, where)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}

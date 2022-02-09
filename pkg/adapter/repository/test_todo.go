@@ -48,7 +48,7 @@ func (r *testTodoRepository) List(ctx context.Context) ([]*model.TestTodo, error
 	return res, nil
 }
 
-func (r *testTodoRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TestTodoWhereInput, requestedFields []string) (*model.TestTodoConnection, error) {
+func (r *testTodoRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TestTodoWhereInput) (*model.TestTodoConnection, error) {
 	q := r.client.TestTodo.Query()
 
 	res, err := q.Paginate(ctx, after, first, before, last, ent.WithTestTodoFilter(where.Filter))

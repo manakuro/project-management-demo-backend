@@ -10,7 +10,7 @@ import (
 type ProjectLightColor interface {
 	Get(ctx context.Context, where *model.ProjectLightColorWhereInput) (*model.ProjectLightColor, error)
 	List(ctx context.Context) ([]*model.ProjectLightColor, error)
-	ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ProjectLightColorWhereInput, requestedFields []string) (*model.ProjectLightColorConnection, error)
+	ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ProjectLightColorWhereInput) (*model.ProjectLightColorConnection, error)
 	Create(ctx context.Context, input model.CreateProjectLightColorInput) (*model.ProjectLightColor, error)
 	Update(ctx context.Context, input model.UpdateProjectLightColorInput) (*model.ProjectLightColor, error)
 }
@@ -34,8 +34,8 @@ func (c *projectLightColorController) List(ctx context.Context) ([]*model.Projec
 	return c.projectLightColorUsecase.List(ctx)
 }
 
-func (c *projectLightColorController) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ProjectLightColorWhereInput, requestedFields []string) (*model.ProjectLightColorConnection, error) {
-	return c.projectLightColorUsecase.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
+func (c *projectLightColorController) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ProjectLightColorWhereInput) (*model.ProjectLightColorConnection, error) {
+	return c.projectLightColorUsecase.ListWithPagination(ctx, after, first, before, last, where)
 }
 
 func (c *projectLightColorController) Create(ctx context.Context, input model.CreateProjectLightColorInput) (*model.ProjectLightColor, error) {

@@ -48,7 +48,7 @@ func (r *teammateTaskTabStatusRepository) List(ctx context.Context) ([]*model.Te
 	return res, nil
 }
 
-func (r *teammateTaskTabStatusRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TeammateTaskTabStatusWhereInput, requestedFields []string) (*model.TeammateTaskTabStatusConnection, error) {
+func (r *teammateTaskTabStatusRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TeammateTaskTabStatusWhereInput) (*model.TeammateTaskTabStatusConnection, error) {
 	q := r.client.TeammateTaskTabStatus.Query()
 
 	res, err := q.Paginate(ctx, after, first, before, last, ent.WithTeammateTaskTabStatusFilter(where.Filter))

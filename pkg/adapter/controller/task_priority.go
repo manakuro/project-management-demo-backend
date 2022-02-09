@@ -10,7 +10,7 @@ import (
 type TaskPriority interface {
 	Get(ctx context.Context, where *model.TaskPriorityWhereInput) (*model.TaskPriority, error)
 	List(ctx context.Context) ([]*model.TaskPriority, error)
-	ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TaskPriorityWhereInput, requestedFields []string) (*model.TaskPriorityConnection, error)
+	ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TaskPriorityWhereInput) (*model.TaskPriorityConnection, error)
 	Create(ctx context.Context, input model.CreateTaskPriorityInput) (*model.TaskPriority, error)
 	Update(ctx context.Context, input model.UpdateTaskPriorityInput) (*model.TaskPriority, error)
 }
@@ -34,8 +34,8 @@ func (c *taskPriorityController) List(ctx context.Context) ([]*model.TaskPriorit
 	return c.taskPriorityUsecase.List(ctx)
 }
 
-func (c *taskPriorityController) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TaskPriorityWhereInput, requestedFields []string) (*model.TaskPriorityConnection, error) {
-	return c.taskPriorityUsecase.ListWithPagination(ctx, after, first, before, last, where, requestedFields)
+func (c *taskPriorityController) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TaskPriorityWhereInput) (*model.TaskPriorityConnection, error) {
+	return c.taskPriorityUsecase.ListWithPagination(ctx, after, first, before, last, where)
 }
 
 func (c *taskPriorityController) Create(ctx context.Context, input model.CreateTaskPriorityInput) (*model.TaskPriority, error) {

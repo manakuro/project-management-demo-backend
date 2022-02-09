@@ -48,7 +48,7 @@ func (r *taskPriorityRepository) List(ctx context.Context) ([]*model.TaskPriorit
 	return res, nil
 }
 
-func (r *taskPriorityRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TaskPriorityWhereInput, requestedFields []string) (*model.TaskPriorityConnection, error) {
+func (r *taskPriorityRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TaskPriorityWhereInput) (*model.TaskPriorityConnection, error) {
 	q := r.client.TaskPriority.Query()
 
 	res, err := q.Paginate(ctx, after, first, before, last, ent.WithTaskPriorityFilter(where.Filter))

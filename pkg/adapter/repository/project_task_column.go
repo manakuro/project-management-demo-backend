@@ -48,7 +48,7 @@ func (r *projectTaskColumnRepository) List(ctx context.Context) ([]*model.Projec
 	return res, nil
 }
 
-func (r *projectTaskColumnRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ProjectTaskColumnWhereInput, requestedFields []string) (*model.ProjectTaskColumnConnection, error) {
+func (r *projectTaskColumnRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ProjectTaskColumnWhereInput) (*model.ProjectTaskColumnConnection, error) {
 	q := r.client.ProjectTaskColumn.Query()
 
 	res, err := q.Paginate(ctx, after, first, before, last, ent.WithProjectTaskColumnFilter(where.Filter))

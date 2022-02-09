@@ -48,7 +48,7 @@ func (r *projectLightColorRepository) List(ctx context.Context) ([]*model.Projec
 	return res, nil
 }
 
-func (r *projectLightColorRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ProjectLightColorWhereInput, requestedFields []string) (*model.ProjectLightColorConnection, error) {
+func (r *projectLightColorRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ProjectLightColorWhereInput) (*model.ProjectLightColorConnection, error) {
 	q := r.client.ProjectLightColor.Query()
 
 	res, err := q.Paginate(ctx, after, first, before, last, ent.WithProjectLightColorFilter(where.Filter))

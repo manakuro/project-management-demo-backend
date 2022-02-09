@@ -56,7 +56,7 @@ func (r *taskTagRepository) List(ctx context.Context, where *model.TaskTagWhereI
 	return res, nil
 }
 
-func (r *taskTagRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TaskTagWhereInput, requestedFields []string) (*model.TaskTagConnection, error) {
+func (r *taskTagRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TaskTagWhereInput) (*model.TaskTagConnection, error) {
 	q := r.client.TaskTag.Query()
 
 	res, err := q.Paginate(ctx, after, first, before, last, ent.WithTaskTagFilter(where.Filter))
