@@ -54,13 +54,13 @@ func (tuu *TestUserUpdate) SetProfile(tup testuserprofile.TestUserProfile) *Test
 	return tuu
 }
 
-// AddTestTodoIDs adds the "test_todos" edge to the TestTodo entity by IDs.
+// AddTestTodoIDs adds the "testTodos" edge to the TestTodo entity by IDs.
 func (tuu *TestUserUpdate) AddTestTodoIDs(ids ...ulid.ID) *TestUserUpdate {
 	tuu.mutation.AddTestTodoIDs(ids...)
 	return tuu
 }
 
-// AddTestTodos adds the "test_todos" edges to the TestTodo entity.
+// AddTestTodos adds the "testTodos" edges to the TestTodo entity.
 func (tuu *TestUserUpdate) AddTestTodos(t ...*TestTodo) *TestUserUpdate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -74,19 +74,19 @@ func (tuu *TestUserUpdate) Mutation() *TestUserMutation {
 	return tuu.mutation
 }
 
-// ClearTestTodos clears all "test_todos" edges to the TestTodo entity.
+// ClearTestTodos clears all "testTodos" edges to the TestTodo entity.
 func (tuu *TestUserUpdate) ClearTestTodos() *TestUserUpdate {
 	tuu.mutation.ClearTestTodos()
 	return tuu
 }
 
-// RemoveTestTodoIDs removes the "test_todos" edge to TestTodo entities by IDs.
+// RemoveTestTodoIDs removes the "testTodos" edge to TestTodo entities by IDs.
 func (tuu *TestUserUpdate) RemoveTestTodoIDs(ids ...ulid.ID) *TestUserUpdate {
 	tuu.mutation.RemoveTestTodoIDs(ids...)
 	return tuu
 }
 
-// RemoveTestTodos removes "test_todos" edges to TestTodo entities.
+// RemoveTestTodos removes "testTodos" edges to TestTodo entities.
 func (tuu *TestUserUpdate) RemoveTestTodos(t ...*TestTodo) *TestUserUpdate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -309,13 +309,13 @@ func (tuuo *TestUserUpdateOne) SetProfile(tup testuserprofile.TestUserProfile) *
 	return tuuo
 }
 
-// AddTestTodoIDs adds the "test_todos" edge to the TestTodo entity by IDs.
+// AddTestTodoIDs adds the "testTodos" edge to the TestTodo entity by IDs.
 func (tuuo *TestUserUpdateOne) AddTestTodoIDs(ids ...ulid.ID) *TestUserUpdateOne {
 	tuuo.mutation.AddTestTodoIDs(ids...)
 	return tuuo
 }
 
-// AddTestTodos adds the "test_todos" edges to the TestTodo entity.
+// AddTestTodos adds the "testTodos" edges to the TestTodo entity.
 func (tuuo *TestUserUpdateOne) AddTestTodos(t ...*TestTodo) *TestUserUpdateOne {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -329,19 +329,19 @@ func (tuuo *TestUserUpdateOne) Mutation() *TestUserMutation {
 	return tuuo.mutation
 }
 
-// ClearTestTodos clears all "test_todos" edges to the TestTodo entity.
+// ClearTestTodos clears all "testTodos" edges to the TestTodo entity.
 func (tuuo *TestUserUpdateOne) ClearTestTodos() *TestUserUpdateOne {
 	tuuo.mutation.ClearTestTodos()
 	return tuuo
 }
 
-// RemoveTestTodoIDs removes the "test_todos" edge to TestTodo entities by IDs.
+// RemoveTestTodoIDs removes the "testTodos" edge to TestTodo entities by IDs.
 func (tuuo *TestUserUpdateOne) RemoveTestTodoIDs(ids ...ulid.ID) *TestUserUpdateOne {
 	tuuo.mutation.RemoveTestTodoIDs(ids...)
 	return tuuo
 }
 
-// RemoveTestTodos removes "test_todos" edges to TestTodo entities.
+// RemoveTestTodos removes "testTodos" edges to TestTodo entities.
 func (tuuo *TestUserUpdateOne) RemoveTestTodos(t ...*TestTodo) *TestUserUpdateOne {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {

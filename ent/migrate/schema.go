@@ -944,7 +944,7 @@ var (
 				OnDelete:   schema.SetNull,
 			},
 			{
-				Symbol:     "test_todos_test_users_test_todos",
+				Symbol:     "test_todos_test_users_testTodos",
 				Columns:    []*schema.Column{TestTodosColumns[9]},
 				RefColumns: []*schema.Column{TestUsersColumns[0]},
 				OnDelete:   schema.SetNull,

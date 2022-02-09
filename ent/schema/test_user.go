@@ -5,6 +5,8 @@ import (
 	"project-management-demo-backend/ent/schema/testuserprofile"
 	"project-management-demo-backend/pkg/const/globalid"
 
+	"entgo.io/contrib/entgql"
+
 	"entgo.io/ent/schema/edge"
 
 	"entgo.io/ent"
@@ -36,7 +38,8 @@ func (TestUserMixin) Fields() []ent.Field {
 // Edges of the TestUser.
 func (TestUser) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("test_todos", TestTodo.Type),
+		edge.To("testTodos", TestTodo.Type).
+			Annotations(entgql.Bind()),
 	}
 }
 

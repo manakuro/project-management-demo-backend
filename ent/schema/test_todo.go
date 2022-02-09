@@ -71,7 +71,7 @@ func (TestTodo) Indexes() []ent.Index {
 func (TestTodo) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("test_user", TestUser.Type).
-			Ref("test_todos").
+			Ref("testTodos").
 			Unique().
 			Field("test_user_id").
 			Annotations(

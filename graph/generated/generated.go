@@ -7579,7 +7579,7 @@ input TestUserWhereInput {
   idLT: ID
   idLTE: ID
   
-  """test_todos edge predicates"""
+  """testTodos edge predicates"""
   hasTestTodos: Boolean
   hasTestTodosWith: [TestTodoWhereInput!]
 }

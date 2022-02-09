@@ -425,6 +425,14 @@ func (tu *TestUserQuery) CollectFields(ctx context.Context, satisfies ...string)
 }
 
 func (tu *TestUserQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *TestUserQuery {
+	for _, field := range graphql.CollectFields(ctx, field.Selections, satisfies) {
+		switch field.Name {
+		case "testTodos":
+			tu = tu.WithTestTodos(func(query *TestTodoQuery) {
+				query.collectField(ctx, field)
+			})
+		}
+	}
 	return tu
 }
 

@@ -83,13 +83,13 @@ func (tuc *TestUserCreate) SetNillableID(u *ulid.ID) *TestUserCreate {
 	return tuc
 }
 
-// AddTestTodoIDs adds the "test_todos" edge to the TestTodo entity by IDs.
+// AddTestTodoIDs adds the "testTodos" edge to the TestTodo entity by IDs.
 func (tuc *TestUserCreate) AddTestTodoIDs(ids ...ulid.ID) *TestUserCreate {
 	tuc.mutation.AddTestTodoIDs(ids...)
 	return tuc
 }
 
-// AddTestTodos adds the "test_todos" edges to the TestTodo entity.
+// AddTestTodos adds the "testTodos" edges to the TestTodo entity.
 func (tuc *TestUserCreate) AddTestTodos(t ...*TestTodo) *TestUserCreate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {

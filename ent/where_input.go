@@ -14109,7 +14109,7 @@ type TestUserWhereInput struct {
 	UpdatedAtLT    *time.Time  `json:"updatedAtLT,omitempty"`
 	UpdatedAtLTE   *time.Time  `json:"updatedAtLTE,omitempty"`
 
-	// "test_todos" edge predicates.
+	// "testTodos" edge predicates.
 	HasTestTodos     *bool                 `json:"hasTestTodos,omitempty"`
 	HasTestTodosWith []*TestTodoWhereInput `json:"hasTestTodosWith,omitempty"`
 }

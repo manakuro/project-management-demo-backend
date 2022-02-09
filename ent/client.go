@@ -5360,7 +5360,7 @@ func (c *TestUserClient) GetX(ctx context.Context, id ulid.ID) *TestUser {
 	return obj
 }
 
-// QueryTestTodos queries the test_todos edge of a TestUser.
+// QueryTestTodos queries the testTodos edge of a TestUser.
 func (c *TestUserClient) QueryTestTodos(tu *TestUser) *TestTodoQuery {
 	query := &TestTodoQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {

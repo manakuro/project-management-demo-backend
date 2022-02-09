@@ -461,7 +461,7 @@ func UpdatedAtLTE(v time.Time) predicate.TestUser {
 	})
 }
 
-// HasTestTodos applies the HasEdge predicate on the "test_todos" edge.
+// HasTestTodos applies the HasEdge predicate on the "testTodos" edge.
 func HasTestTodos() predicate.TestUser {
 	return predicate.TestUser(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
@@ -473,7 +473,7 @@ func HasTestTodos() predicate.TestUser {
 	})
 }
 
-// HasTestTodosWith applies the HasEdge predicate on the "test_todos" edge with a given conditions (other predicates).
+// HasTestTodosWith applies the HasEdge predicate on the "testTodos" edge with a given conditions (other predicates).
 func HasTestTodosWith(preds ...predicate.TestTodo) predicate.TestUser {
 	return predicate.TestUser(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(

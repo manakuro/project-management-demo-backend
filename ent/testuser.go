@@ -36,8 +36,8 @@ type TestUser struct {
 
 // TestUserEdges holds the relations/edges for other nodes in the graph.
 type TestUserEdges struct {
-	// TestTodos holds the value of the test_todos edge.
-	TestTodos []*TestTodo `json:"test_todos,omitempty"`
+	// TestTodos holds the value of the testTodos edge.
+	TestTodos []*TestTodo `json:"testTodos,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [1]bool
@@ -49,7 +49,7 @@ func (e TestUserEdges) TestTodosOrErr() ([]*TestTodo, error) {
 	if e.loadedTypes[0] {
 		return e.TestTodos, nil
 	}
-	return nil, &NotLoadedError{edge: "test_todos"}
+	return nil, &NotLoadedError{edge: "testTodos"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -125,7 +125,7 @@ func (tu *TestUser) assignValues(columns []string, values []interface{}) error {
 	return nil
 }
 
-// QueryTestTodos queries the "test_todos" edge of the TestUser entity.
+// QueryTestTodos queries the "testTodos" edge of the TestUser entity.
 func (tu *TestUser) QueryTestTodos() *TestTodoQuery {
 	return (&TestUserClient{config: tu.config}).QueryTestTodos(tu)
 }

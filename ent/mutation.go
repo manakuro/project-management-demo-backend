@@ -26299,22 +26299,22 @@ func (m *TestTodoMutation) ResetEdge(name string) error {
 // TestUserMutation represents an operation that mutates the TestUser nodes in the graph.
 type TestUserMutation struct {
 	config
-	op                Op
-	typ               string
-	id                *ulid.ID
-	name              *string
-	age               *int
-	addage            *int
-	profile           *testuserprofile.TestUserProfile
-	created_at        *time.Time
-	updated_at        *time.Time
-	clearedFields     map[string]struct{}
-	test_todos        map[ulid.ID]struct{}
-	removedtest_todos map[ulid.ID]struct{}
-	clearedtest_todos bool
-	done              bool
-	oldValue          func(context.Context) (*TestUser, error)
-	predicates        []predicate.TestUser
+	op               Op
+	typ              string
+	id               *ulid.ID
+	name             *string
+	age              *int
+	addage           *int
+	profile          *testuserprofile.TestUserProfile
+	created_at       *time.Time
+	updated_at       *time.Time
+	clearedFields    map[string]struct{}
+	testTodos        map[ulid.ID]struct{}
+	removedtestTodos map[ulid.ID]struct{}
+	clearedtestTodos bool
+	done             bool
+	oldValue         func(context.Context) (*TestUser, error)
+	predicates       []predicate.TestUser
 }
 
 var _ ent.Mutation = (*TestUserMutation)(nil)
@@ -26602,58 +26602,58 @@ func (m *TestUserMutation) ResetUpdatedAt() {
 	m.updated_at = nil
 }
 
-// AddTestTodoIDs adds the "test_todos" edge to the TestTodo entity by ids.
+// AddTestTodoIDs adds the "testTodos" edge to the TestTodo entity by ids.
 func (m *TestUserMutation) AddTestTodoIDs(ids ...ulid.ID) {
-	if m.test_todos == nil {
-		m.test_todos = make(map[ulid.ID]struct{})
+	if m.testTodos == nil {
+		m.testTodos = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		m.test_todos[ids[i]] = struct{}{}
+		m.testTodos[ids[i]] = struct{}{}
 	}
 }
 
-// ClearTestTodos clears the "test_todos" edge to the TestTodo entity.
+// ClearTestTodos clears the "testTodos" edge to the TestTodo entity.
 func (m *TestUserMutation) ClearTestTodos() {
-	m.clearedtest_todos = true
+	m.clearedtestTodos = true
 }
 
-// TestTodosCleared reports if the "test_todos" edge to the TestTodo entity was cleared.
+// TestTodosCleared reports if the "testTodos" edge to the TestTodo entity was cleared.
 func (m *TestUserMutation) TestTodosCleared() bool {
-	return m.clearedtest_todos
+	return m.clearedtestTodos
 }
 
-// RemoveTestTodoIDs removes the "test_todos" edge to the TestTodo entity by IDs.
+// RemoveTestTodoIDs removes the "testTodos" edge to the TestTodo entity by IDs.
 func (m *TestUserMutation) RemoveTestTodoIDs(ids ...ulid.ID) {
-	if m.removedtest_todos == nil {
-		m.removedtest_todos = make(map[ulid.ID]struct{})
+	if m.removedtestTodos == nil {
+		m.removedtestTodos = make(map[ulid.ID]struct{})
 	}
 	for i := range ids {
-		delete(m.test_todos, ids[i])
-		m.removedtest_todos[ids[i]] = struct{}{}
+		delete(m.testTodos, ids[i])
+		m.removedtestTodos[ids[i]] = struct{}{}
 	}
 }
 
-// RemovedTestTodos returns the removed IDs of the "test_todos" edge to the TestTodo entity.
+// RemovedTestTodos returns the removed IDs of the "testTodos" edge to the TestTodo entity.
 func (m *TestUserMutation) RemovedTestTodosIDs() (ids []ulid.ID) {
-	for id := range m.removedtest_todos {
+	for id := range m.removedtestTodos {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// TestTodosIDs returns the "test_todos" edge IDs in the mutation.
+// TestTodosIDs returns the "testTodos" edge IDs in the mutation.
 func (m *TestUserMutation) TestTodosIDs() (ids []ulid.ID) {
-	for id := range m.test_todos {
+	for id := range m.testTodos {
 		ids = append(ids, id)
 	}
 	return
 }
 
-// ResetTestTodos resets all changes to the "test_todos" edge.
+// ResetTestTodos resets all changes to the "testTodos" edge.
 func (m *TestUserMutation) ResetTestTodos() {
-	m.test_todos = nil
-	m.clearedtest_todos = false
-	m.removedtest_todos = nil
+	m.testTodos = nil
+	m.clearedtestTodos = false
+	m.removedtestTodos = nil
 }
 
 // Where appends a list predicates to the TestUserMutation builder.
@@ -26858,7 +26858,7 @@ func (m *TestUserMutation) ResetField(name string) error {
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *TestUserMutation) AddedEdges() []string {
 	edges := make([]string, 0, 1)
-	if m.test_todos != nil {
+	if m.testTodos != nil {
 		edges = append(edges, testuser.EdgeTestTodos)
 	}
 	return edges
@@ -26869,8 +26869,8 @@ func (m *TestUserMutation) AddedEdges() []string {
 func (m *TestUserMutation) AddedIDs(name string) []ent.Value {
 	switch name {
 	case testuser.EdgeTestTodos:
-		ids := make([]ent.Value, 0, len(m.test_todos))
-		for id := range m.test_todos {
+		ids := make([]ent.Value, 0, len(m.testTodos))
+		for id := range m.testTodos {
 			ids = append(ids, id)
 		}
 		return ids
@@ -26881,7 +26881,7 @@ func (m *TestUserMutation) AddedIDs(name string) []ent.Value {
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *TestUserMutation) RemovedEdges() []string {
 	edges := make([]string, 0, 1)
-	if m.removedtest_todos != nil {
+	if m.removedtestTodos != nil {
 		edges = append(edges, testuser.EdgeTestTodos)
 	}
 	return edges
@@ -26892,8 +26892,8 @@ func (m *TestUserMutation) RemovedEdges() []string {
 func (m *TestUserMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
 	case testuser.EdgeTestTodos:
-		ids := make([]ent.Value, 0, len(m.removedtest_todos))
-		for id := range m.removedtest_todos {
+		ids := make([]ent.Value, 0, len(m.removedtestTodos))
+		for id := range m.removedtestTodos {
 			ids = append(ids, id)
 		}
 		return ids
@@ -26904,7 +26904,7 @@ func (m *TestUserMutation) RemovedIDs(name string) []ent.Value {
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *TestUserMutation) ClearedEdges() []string {
 	edges := make([]string, 0, 1)
-	if m.clearedtest_todos {
+	if m.clearedtestTodos {
 		edges = append(edges, testuser.EdgeTestTodos)
 	}
 	return edges
@@ -26915,7 +26915,7 @@ func (m *TestUserMutation) ClearedEdges() []string {
 func (m *TestUserMutation) EdgeCleared(name string) bool {
 	switch name {
 	case testuser.EdgeTestTodos:
-		return m.clearedtest_todos
+		return m.clearedtestTodos
 	}
 	return false
 }

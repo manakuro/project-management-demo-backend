@@ -12,7 +12,7 @@ type taskRepository struct {
 	client *ent.Client
 }
 
-// NewTaskRepository generates task repository
+// NewTaskRepository generates task repository.
 func NewTaskRepository(client *ent.Client) ur.Task {
 	return &taskRepository{client: client}
 }
@@ -98,7 +98,7 @@ func (r *taskRepository) Update(ctx context.Context, input model.UpdateTaskInput
 	return res, nil
 }
 
-// WithTaskOptions is an option for WithTask
+// WithTaskOptions is an option for WithTask.
 type WithTaskOptions struct {
 	SubTasks          bool
 	TaskFiles         bool
@@ -109,7 +109,7 @@ type WithTaskOptions struct {
 	TaskPriority      bool
 }
 
-// WithTask loads all related edges
+// WithTask loads all related edges.
 func WithTask(taskQuery *ent.TaskQuery, with WithTaskOptions) *ent.TaskQuery {
 	if with.SubTasks {
 		taskQuery.WithSubTasks()

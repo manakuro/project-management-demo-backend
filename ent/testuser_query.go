@@ -65,7 +65,7 @@ func (tuq *TestUserQuery) Order(o ...OrderFunc) *TestUserQuery {
 	return tuq
 }
 
-// QueryTestTodos chains the current query on the "test_todos" edge.
+// QueryTestTodos chains the current query on the "testTodos" edge.
 func (tuq *TestUserQuery) QueryTestTodos() *TestTodoQuery {
 	query := &TestTodoQuery{config: tuq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
@@ -276,7 +276,7 @@ func (tuq *TestUserQuery) Clone() *TestUserQuery {
 }
 
 // WithTestTodos tells the query-builder to eager-load the nodes that are connected to
-// the "test_todos" edge. The optional arguments are used to configure the query builder of the edge.
+// the "testTodos" edge. The optional arguments are used to configure the query builder of the edge.
 func (tuq *TestUserQuery) WithTestTodos(opts ...func(*TestTodoQuery)) *TestUserQuery {
 	query := &TestTodoQuery{config: tuq.config}
 	for _, opt := range opts {

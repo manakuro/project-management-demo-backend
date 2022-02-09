@@ -22,16 +22,16 @@ const (
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
 	FieldUpdatedAt = "updated_at"
-	// EdgeTestTodos holds the string denoting the test_todos edge name in mutations.
-	EdgeTestTodos = "test_todos"
+	// EdgeTestTodos holds the string denoting the testtodos edge name in mutations.
+	EdgeTestTodos = "testTodos"
 	// Table holds the table name of the testuser in the database.
 	Table = "test_users"
-	// TestTodosTable is the table that holds the test_todos relation/edge.
+	// TestTodosTable is the table that holds the testTodos relation/edge.
 	TestTodosTable = "test_todos"
 	// TestTodosInverseTable is the table name for the TestTodo entity.
 	// It exists in this package in order to avoid circular dependency with the "testtodo" package.
 	TestTodosInverseTable = "test_todos"
-	// TestTodosColumn is the table column denoting the test_todos relation/edge.
+	// TestTodosColumn is the table column denoting the testTodos relation/edge.
 	TestTodosColumn = "test_user_id"
 )
 

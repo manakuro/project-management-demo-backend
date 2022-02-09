@@ -3131,7 +3131,7 @@ func (tu *TestUser) Node(ctx context.Context) (node *Node, err error) {
 	}
 	node.Edges[0] = &Edge{
 		Type: "TestTodo",
-		Name: "test_todos",
+		Name: "testTodos",
 	}
 	err = tu.QueryTestTodos().
 		Select(testtodo.FieldID).
