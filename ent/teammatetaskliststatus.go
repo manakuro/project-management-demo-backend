@@ -44,10 +44,10 @@ type TeammateTaskListStatusEdges struct {
 	Workspace *Workspace `json:"workspace,omitempty"`
 	// Teammate holds the value of the teammate edge.
 	Teammate *Teammate `json:"teammate,omitempty"`
-	// TaskListCompletedStatus holds the value of the task_list_completed_status edge.
-	TaskListCompletedStatus *TaskListCompletedStatus `json:"task_list_completed_status,omitempty"`
-	// TaskListSortStatus holds the value of the task_list_sort_status edge.
-	TaskListSortStatus *TaskListSortStatus `json:"task_list_sort_status,omitempty"`
+	// TaskListCompletedStatus holds the value of the taskListCompletedStatus edge.
+	TaskListCompletedStatus *TaskListCompletedStatus `json:"taskListCompletedStatus,omitempty"`
+	// TaskListSortStatus holds the value of the taskListSortStatus edge.
+	TaskListSortStatus *TaskListSortStatus `json:"taskListSortStatus,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [4]bool
@@ -86,13 +86,13 @@ func (e TeammateTaskListStatusEdges) TeammateOrErr() (*Teammate, error) {
 func (e TeammateTaskListStatusEdges) TaskListCompletedStatusOrErr() (*TaskListCompletedStatus, error) {
 	if e.loadedTypes[2] {
 		if e.TaskListCompletedStatus == nil {
-			// The edge task_list_completed_status was loaded in eager-loading,
+			// The edge taskListCompletedStatus was loaded in eager-loading,
 			// but was not found.
 			return nil, &NotFoundError{label: tasklistcompletedstatus.Label}
 		}
 		return e.TaskListCompletedStatus, nil
 	}
-	return nil, &NotLoadedError{edge: "task_list_completed_status"}
+	return nil, &NotLoadedError{edge: "taskListCompletedStatus"}
 }
 
 // TaskListSortStatusOrErr returns the TaskListSortStatus value or an error if the edge
@@ -100,13 +100,13 @@ func (e TeammateTaskListStatusEdges) TaskListCompletedStatusOrErr() (*TaskListCo
 func (e TeammateTaskListStatusEdges) TaskListSortStatusOrErr() (*TaskListSortStatus, error) {
 	if e.loadedTypes[3] {
 		if e.TaskListSortStatus == nil {
-			// The edge task_list_sort_status was loaded in eager-loading,
+			// The edge taskListSortStatus was loaded in eager-loading,
 			// but was not found.
 			return nil, &NotFoundError{label: tasklistsortstatus.Label}
 		}
 		return e.TaskListSortStatus, nil
 	}
-	return nil, &NotLoadedError{edge: "task_list_sort_status"}
+	return nil, &NotLoadedError{edge: "taskListSortStatus"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -190,12 +190,12 @@ func (ttls *TeammateTaskListStatus) QueryTeammate() *TeammateQuery {
 	return (&TeammateTaskListStatusClient{config: ttls.config}).QueryTeammate(ttls)
 }
 
-// QueryTaskListCompletedStatus queries the "task_list_completed_status" edge of the TeammateTaskListStatus entity.
+// QueryTaskListCompletedStatus queries the "taskListCompletedStatus" edge of the TeammateTaskListStatus entity.
 func (ttls *TeammateTaskListStatus) QueryTaskListCompletedStatus() *TaskListCompletedStatusQuery {
 	return (&TeammateTaskListStatusClient{config: ttls.config}).QueryTaskListCompletedStatus(ttls)
 }
 
-// QueryTaskListSortStatus queries the "task_list_sort_status" edge of the TeammateTaskListStatus entity.
+// QueryTaskListSortStatus queries the "taskListSortStatus" edge of the TeammateTaskListStatus entity.
 func (ttls *TeammateTaskListStatus) QueryTaskListSortStatus() *TaskListSortStatusQuery {
 	return (&TeammateTaskListStatusClient{config: ttls.config}).QueryTaskListSortStatus(ttls)
 }

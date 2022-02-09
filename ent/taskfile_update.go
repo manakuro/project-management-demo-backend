@@ -92,12 +92,12 @@ func (tfu *TaskFileUpdate) SetTask(t *Task) *TaskFileUpdate {
 	return tfu.SetTaskID(t.ID)
 }
 
-// SetTaskFeed sets the "task_feed" edge to the TaskFeed entity.
+// SetTaskFeed sets the "taskFeed" edge to the TaskFeed entity.
 func (tfu *TaskFileUpdate) SetTaskFeed(t *TaskFeed) *TaskFileUpdate {
 	return tfu.SetTaskFeedID(t.ID)
 }
 
-// SetFileType sets the "file_type" edge to the FileType entity.
+// SetFileType sets the "fileType" edge to the FileType entity.
 func (tfu *TaskFileUpdate) SetFileType(f *FileType) *TaskFileUpdate {
 	return tfu.SetFileTypeID(f.ID)
 }
@@ -119,13 +119,13 @@ func (tfu *TaskFileUpdate) ClearTask() *TaskFileUpdate {
 	return tfu
 }
 
-// ClearTaskFeed clears the "task_feed" edge to the TaskFeed entity.
+// ClearTaskFeed clears the "taskFeed" edge to the TaskFeed entity.
 func (tfu *TaskFileUpdate) ClearTaskFeed() *TaskFileUpdate {
 	tfu.mutation.ClearTaskFeed()
 	return tfu
 }
 
-// ClearFileType clears the "file_type" edge to the FileType entity.
+// ClearFileType clears the "fileType" edge to the FileType entity.
 func (tfu *TaskFileUpdate) ClearFileType() *TaskFileUpdate {
 	tfu.mutation.ClearFileType()
 	return tfu
@@ -210,10 +210,10 @@ func (tfu *TaskFileUpdate) check() error {
 		return errors.New("ent: clearing a required unique edge \"task\"")
 	}
 	if _, ok := tfu.mutation.TaskFeedID(); tfu.mutation.TaskFeedCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"task_feed\"")
+		return errors.New("ent: clearing a required unique edge \"taskFeed\"")
 	}
 	if _, ok := tfu.mutation.FileTypeID(); tfu.mutation.FileTypeCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"file_type\"")
+		return errors.New("ent: clearing a required unique edge \"fileType\"")
 	}
 	return nil
 }
@@ -476,12 +476,12 @@ func (tfuo *TaskFileUpdateOne) SetTask(t *Task) *TaskFileUpdateOne {
 	return tfuo.SetTaskID(t.ID)
 }
 
-// SetTaskFeed sets the "task_feed" edge to the TaskFeed entity.
+// SetTaskFeed sets the "taskFeed" edge to the TaskFeed entity.
 func (tfuo *TaskFileUpdateOne) SetTaskFeed(t *TaskFeed) *TaskFileUpdateOne {
 	return tfuo.SetTaskFeedID(t.ID)
 }
 
-// SetFileType sets the "file_type" edge to the FileType entity.
+// SetFileType sets the "fileType" edge to the FileType entity.
 func (tfuo *TaskFileUpdateOne) SetFileType(f *FileType) *TaskFileUpdateOne {
 	return tfuo.SetFileTypeID(f.ID)
 }
@@ -503,13 +503,13 @@ func (tfuo *TaskFileUpdateOne) ClearTask() *TaskFileUpdateOne {
 	return tfuo
 }
 
-// ClearTaskFeed clears the "task_feed" edge to the TaskFeed entity.
+// ClearTaskFeed clears the "taskFeed" edge to the TaskFeed entity.
 func (tfuo *TaskFileUpdateOne) ClearTaskFeed() *TaskFileUpdateOne {
 	tfuo.mutation.ClearTaskFeed()
 	return tfuo
 }
 
-// ClearFileType clears the "file_type" edge to the FileType entity.
+// ClearFileType clears the "fileType" edge to the FileType entity.
 func (tfuo *TaskFileUpdateOne) ClearFileType() *TaskFileUpdateOne {
 	tfuo.mutation.ClearFileType()
 	return tfuo
@@ -601,10 +601,10 @@ func (tfuo *TaskFileUpdateOne) check() error {
 		return errors.New("ent: clearing a required unique edge \"task\"")
 	}
 	if _, ok := tfuo.mutation.TaskFeedID(); tfuo.mutation.TaskFeedCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"task_feed\"")
+		return errors.New("ent: clearing a required unique edge \"taskFeed\"")
 	}
 	if _, ok := tfuo.mutation.FileTypeID(); tfuo.mutation.FileTypeCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"file_type\"")
+		return errors.New("ent: clearing a required unique edge \"fileType\"")
 	}
 	return nil
 }

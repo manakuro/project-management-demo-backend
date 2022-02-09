@@ -115,17 +115,17 @@ func (pu *ProjectUpdate) SetWorkspace(w *Workspace) *ProjectUpdate {
 	return pu.SetWorkspaceID(w.ID)
 }
 
-// SetProjectBaseColor sets the "project_base_color" edge to the ProjectBaseColor entity.
+// SetProjectBaseColor sets the "projectBaseColor" edge to the ProjectBaseColor entity.
 func (pu *ProjectUpdate) SetProjectBaseColor(p *ProjectBaseColor) *ProjectUpdate {
 	return pu.SetProjectBaseColorID(p.ID)
 }
 
-// SetProjectLightColor sets the "project_light_color" edge to the ProjectLightColor entity.
+// SetProjectLightColor sets the "projectLightColor" edge to the ProjectLightColor entity.
 func (pu *ProjectUpdate) SetProjectLightColor(p *ProjectLightColor) *ProjectUpdate {
 	return pu.SetProjectLightColorID(p.ID)
 }
 
-// SetProjectIcon sets the "project_icon" edge to the ProjectIcon entity.
+// SetProjectIcon sets the "projectIcon" edge to the ProjectIcon entity.
 func (pu *ProjectUpdate) SetProjectIcon(p *ProjectIcon) *ProjectUpdate {
 	return pu.SetProjectIconID(p.ID)
 }
@@ -257,19 +257,19 @@ func (pu *ProjectUpdate) ClearWorkspace() *ProjectUpdate {
 	return pu
 }
 
-// ClearProjectBaseColor clears the "project_base_color" edge to the ProjectBaseColor entity.
+// ClearProjectBaseColor clears the "projectBaseColor" edge to the ProjectBaseColor entity.
 func (pu *ProjectUpdate) ClearProjectBaseColor() *ProjectUpdate {
 	pu.mutation.ClearProjectBaseColor()
 	return pu
 }
 
-// ClearProjectLightColor clears the "project_light_color" edge to the ProjectLightColor entity.
+// ClearProjectLightColor clears the "projectLightColor" edge to the ProjectLightColor entity.
 func (pu *ProjectUpdate) ClearProjectLightColor() *ProjectUpdate {
 	pu.mutation.ClearProjectLightColor()
 	return pu
 }
 
-// ClearProjectIcon clears the "project_icon" edge to the ProjectIcon entity.
+// ClearProjectIcon clears the "projectIcon" edge to the ProjectIcon entity.
 func (pu *ProjectUpdate) ClearProjectIcon() *ProjectUpdate {
 	pu.mutation.ClearProjectIcon()
 	return pu
@@ -504,13 +504,13 @@ func (pu *ProjectUpdate) check() error {
 		return errors.New("ent: clearing a required unique edge \"workspace\"")
 	}
 	if _, ok := pu.mutation.ProjectBaseColorID(); pu.mutation.ProjectBaseColorCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"project_base_color\"")
+		return errors.New("ent: clearing a required unique edge \"projectBaseColor\"")
 	}
 	if _, ok := pu.mutation.ProjectLightColorID(); pu.mutation.ProjectLightColorCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"project_light_color\"")
+		return errors.New("ent: clearing a required unique edge \"projectLightColor\"")
 	}
 	if _, ok := pu.mutation.ProjectIconID(); pu.mutation.ProjectIconCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"project_icon\"")
+		return errors.New("ent: clearing a required unique edge \"projectIcon\"")
 	}
 	if _, ok := pu.mutation.TeammateID(); pu.mutation.TeammateCleared() && !ok {
 		return errors.New("ent: clearing a required unique edge \"teammate\"")
@@ -1215,17 +1215,17 @@ func (puo *ProjectUpdateOne) SetWorkspace(w *Workspace) *ProjectUpdateOne {
 	return puo.SetWorkspaceID(w.ID)
 }
 
-// SetProjectBaseColor sets the "project_base_color" edge to the ProjectBaseColor entity.
+// SetProjectBaseColor sets the "projectBaseColor" edge to the ProjectBaseColor entity.
 func (puo *ProjectUpdateOne) SetProjectBaseColor(p *ProjectBaseColor) *ProjectUpdateOne {
 	return puo.SetProjectBaseColorID(p.ID)
 }
 
-// SetProjectLightColor sets the "project_light_color" edge to the ProjectLightColor entity.
+// SetProjectLightColor sets the "projectLightColor" edge to the ProjectLightColor entity.
 func (puo *ProjectUpdateOne) SetProjectLightColor(p *ProjectLightColor) *ProjectUpdateOne {
 	return puo.SetProjectLightColorID(p.ID)
 }
 
-// SetProjectIcon sets the "project_icon" edge to the ProjectIcon entity.
+// SetProjectIcon sets the "projectIcon" edge to the ProjectIcon entity.
 func (puo *ProjectUpdateOne) SetProjectIcon(p *ProjectIcon) *ProjectUpdateOne {
 	return puo.SetProjectIconID(p.ID)
 }
@@ -1357,19 +1357,19 @@ func (puo *ProjectUpdateOne) ClearWorkspace() *ProjectUpdateOne {
 	return puo
 }
 
-// ClearProjectBaseColor clears the "project_base_color" edge to the ProjectBaseColor entity.
+// ClearProjectBaseColor clears the "projectBaseColor" edge to the ProjectBaseColor entity.
 func (puo *ProjectUpdateOne) ClearProjectBaseColor() *ProjectUpdateOne {
 	puo.mutation.ClearProjectBaseColor()
 	return puo
 }
 
-// ClearProjectLightColor clears the "project_light_color" edge to the ProjectLightColor entity.
+// ClearProjectLightColor clears the "projectLightColor" edge to the ProjectLightColor entity.
 func (puo *ProjectUpdateOne) ClearProjectLightColor() *ProjectUpdateOne {
 	puo.mutation.ClearProjectLightColor()
 	return puo
 }
 
-// ClearProjectIcon clears the "project_icon" edge to the ProjectIcon entity.
+// ClearProjectIcon clears the "projectIcon" edge to the ProjectIcon entity.
 func (puo *ProjectUpdateOne) ClearProjectIcon() *ProjectUpdateOne {
 	puo.mutation.ClearProjectIcon()
 	return puo
@@ -1611,13 +1611,13 @@ func (puo *ProjectUpdateOne) check() error {
 		return errors.New("ent: clearing a required unique edge \"workspace\"")
 	}
 	if _, ok := puo.mutation.ProjectBaseColorID(); puo.mutation.ProjectBaseColorCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"project_base_color\"")
+		return errors.New("ent: clearing a required unique edge \"projectBaseColor\"")
 	}
 	if _, ok := puo.mutation.ProjectLightColorID(); puo.mutation.ProjectLightColorCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"project_light_color\"")
+		return errors.New("ent: clearing a required unique edge \"projectLightColor\"")
 	}
 	if _, ok := puo.mutation.ProjectIconID(); puo.mutation.ProjectIconCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"project_icon\"")
+		return errors.New("ent: clearing a required unique edge \"projectIcon\"")
 	}
 	if _, ok := puo.mutation.TeammateID(); puo.mutation.TeammateCleared() && !ok {
 		return errors.New("ent: clearing a required unique edge \"teammate\"")

@@ -39,10 +39,10 @@ type ProjectTaskListStatus struct {
 type ProjectTaskListStatusEdges struct {
 	// Project holds the value of the project edge.
 	Project *Project `json:"project,omitempty"`
-	// TaskListCompletedStatus holds the value of the task_list_completed_status edge.
-	TaskListCompletedStatus *TaskListCompletedStatus `json:"task_list_completed_status,omitempty"`
-	// TaskListSortStatus holds the value of the task_list_sort_status edge.
-	TaskListSortStatus *TaskListSortStatus `json:"task_list_sort_status,omitempty"`
+	// TaskListCompletedStatus holds the value of the taskListCompletedStatus edge.
+	TaskListCompletedStatus *TaskListCompletedStatus `json:"taskListCompletedStatus,omitempty"`
+	// TaskListSortStatus holds the value of the taskListSortStatus edge.
+	TaskListSortStatus *TaskListSortStatus `json:"taskListSortStatus,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [3]bool
@@ -67,13 +67,13 @@ func (e ProjectTaskListStatusEdges) ProjectOrErr() (*Project, error) {
 func (e ProjectTaskListStatusEdges) TaskListCompletedStatusOrErr() (*TaskListCompletedStatus, error) {
 	if e.loadedTypes[1] {
 		if e.TaskListCompletedStatus == nil {
-			// The edge task_list_completed_status was loaded in eager-loading,
+			// The edge taskListCompletedStatus was loaded in eager-loading,
 			// but was not found.
 			return nil, &NotFoundError{label: tasklistcompletedstatus.Label}
 		}
 		return e.TaskListCompletedStatus, nil
 	}
-	return nil, &NotLoadedError{edge: "task_list_completed_status"}
+	return nil, &NotLoadedError{edge: "taskListCompletedStatus"}
 }
 
 // TaskListSortStatusOrErr returns the TaskListSortStatus value or an error if the edge
@@ -81,13 +81,13 @@ func (e ProjectTaskListStatusEdges) TaskListCompletedStatusOrErr() (*TaskListCom
 func (e ProjectTaskListStatusEdges) TaskListSortStatusOrErr() (*TaskListSortStatus, error) {
 	if e.loadedTypes[2] {
 		if e.TaskListSortStatus == nil {
-			// The edge task_list_sort_status was loaded in eager-loading,
+			// The edge taskListSortStatus was loaded in eager-loading,
 			// but was not found.
 			return nil, &NotFoundError{label: tasklistsortstatus.Label}
 		}
 		return e.TaskListSortStatus, nil
 	}
-	return nil, &NotLoadedError{edge: "task_list_sort_status"}
+	return nil, &NotLoadedError{edge: "taskListSortStatus"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -160,12 +160,12 @@ func (ptls *ProjectTaskListStatus) QueryProject() *ProjectQuery {
 	return (&ProjectTaskListStatusClient{config: ptls.config}).QueryProject(ptls)
 }
 
-// QueryTaskListCompletedStatus queries the "task_list_completed_status" edge of the ProjectTaskListStatus entity.
+// QueryTaskListCompletedStatus queries the "taskListCompletedStatus" edge of the ProjectTaskListStatus entity.
 func (ptls *ProjectTaskListStatus) QueryTaskListCompletedStatus() *TaskListCompletedStatusQuery {
 	return (&ProjectTaskListStatusClient{config: ptls.config}).QueryTaskListCompletedStatus(ptls)
 }
 
-// QueryTaskListSortStatus queries the "task_list_sort_status" edge of the ProjectTaskListStatus entity.
+// QueryTaskListSortStatus queries the "taskListSortStatus" edge of the ProjectTaskListStatus entity.
 func (ptls *ProjectTaskListStatus) QueryTaskListSortStatus() *TaskListSortStatusQuery {
 	return (&ProjectTaskListStatusClient{config: ptls.config}).QueryTaskListSortStatus(ptls)
 }

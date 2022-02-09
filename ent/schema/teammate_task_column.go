@@ -72,7 +72,7 @@ func (TeammateTaskColumn) Edges() []ent.Edge {
 					annotation.Edge{FieldName: "workspace_id"},
 				),
 			),
-		edge.From("task_column", TaskColumn.Type).
+		edge.From("taskColumn", TaskColumn.Type).
 			Ref(teammateTaskColumnsRef).
 			Field("task_column_id").
 			Unique().

@@ -24,10 +24,10 @@ const (
 	FieldUpdatedAt = "updated_at"
 	// EdgeProject holds the string denoting the project edge name in mutations.
 	EdgeProject = "project"
-	// EdgeTaskListCompletedStatus holds the string denoting the task_list_completed_status edge name in mutations.
-	EdgeTaskListCompletedStatus = "task_list_completed_status"
-	// EdgeTaskListSortStatus holds the string denoting the task_list_sort_status edge name in mutations.
-	EdgeTaskListSortStatus = "task_list_sort_status"
+	// EdgeTaskListCompletedStatus holds the string denoting the tasklistcompletedstatus edge name in mutations.
+	EdgeTaskListCompletedStatus = "taskListCompletedStatus"
+	// EdgeTaskListSortStatus holds the string denoting the tasklistsortstatus edge name in mutations.
+	EdgeTaskListSortStatus = "taskListSortStatus"
 	// Table holds the table name of the projecttaskliststatus in the database.
 	Table = "project_task_list_status"
 	// ProjectTable is the table that holds the project relation/edge.
@@ -37,19 +37,19 @@ const (
 	ProjectInverseTable = "projects"
 	// ProjectColumn is the table column denoting the project relation/edge.
 	ProjectColumn = "project_id"
-	// TaskListCompletedStatusTable is the table that holds the task_list_completed_status relation/edge.
+	// TaskListCompletedStatusTable is the table that holds the taskListCompletedStatus relation/edge.
 	TaskListCompletedStatusTable = "project_task_list_status"
 	// TaskListCompletedStatusInverseTable is the table name for the TaskListCompletedStatus entity.
 	// It exists in this package in order to avoid circular dependency with the "tasklistcompletedstatus" package.
 	TaskListCompletedStatusInverseTable = "task_list_completed_status"
-	// TaskListCompletedStatusColumn is the table column denoting the task_list_completed_status relation/edge.
+	// TaskListCompletedStatusColumn is the table column denoting the taskListCompletedStatus relation/edge.
 	TaskListCompletedStatusColumn = "task_list_completed_status_id"
-	// TaskListSortStatusTable is the table that holds the task_list_sort_status relation/edge.
+	// TaskListSortStatusTable is the table that holds the taskListSortStatus relation/edge.
 	TaskListSortStatusTable = "project_task_list_status"
 	// TaskListSortStatusInverseTable is the table name for the TaskListSortStatus entity.
 	// It exists in this package in order to avoid circular dependency with the "tasklistsortstatus" package.
 	TaskListSortStatusInverseTable = "task_list_sort_status"
-	// TaskListSortStatusColumn is the table column denoting the task_list_sort_status relation/edge.
+	// TaskListSortStatusColumn is the table column denoting the taskListSortStatus relation/edge.
 	TaskListSortStatusColumn = "task_list_sort_status_id"
 )
 

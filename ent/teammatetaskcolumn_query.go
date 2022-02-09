@@ -112,7 +112,7 @@ func (ttcq *TeammateTaskColumnQuery) QueryWorkspace() *WorkspaceQuery {
 	return query
 }
 
-// QueryTaskColumn chains the current query on the "task_column" edge.
+// QueryTaskColumn chains the current query on the "taskColumn" edge.
 func (ttcq *TeammateTaskColumnQuery) QueryTaskColumn() *TaskColumnQuery {
 	query := &TaskColumnQuery{config: ttcq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
@@ -347,7 +347,7 @@ func (ttcq *TeammateTaskColumnQuery) WithWorkspace(opts ...func(*WorkspaceQuery)
 }
 
 // WithTaskColumn tells the query-builder to eager-load the nodes that are connected to
-// the "task_column" edge. The optional arguments are used to configure the query builder of the edge.
+// the "taskColumn" edge. The optional arguments are used to configure the query builder of the edge.
 func (ttcq *TeammateTaskColumnQuery) WithTaskColumn(opts ...func(*TaskColumnQuery)) *TeammateTaskColumnQuery {
 	query := &TaskColumnQuery{config: ttcq.config}
 	for _, opt := range opts {

@@ -1876,15 +1876,15 @@ type ProjectWhereInput struct {
 	HasWorkspace     *bool                  `json:"hasWorkspace,omitempty"`
 	HasWorkspaceWith []*WorkspaceWhereInput `json:"hasWorkspaceWith,omitempty"`
 
-	// "project_base_color" edge predicates.
+	// "projectBaseColor" edge predicates.
 	HasProjectBaseColor     *bool                         `json:"hasProjectBaseColor,omitempty"`
 	HasProjectBaseColorWith []*ProjectBaseColorWhereInput `json:"hasProjectBaseColorWith,omitempty"`
 
-	// "project_light_color" edge predicates.
+	// "projectLightColor" edge predicates.
 	HasProjectLightColor     *bool                          `json:"hasProjectLightColor,omitempty"`
 	HasProjectLightColorWith []*ProjectLightColorWhereInput `json:"hasProjectLightColorWith,omitempty"`
 
-	// "project_icon" edge predicates.
+	// "projectIcon" edge predicates.
 	HasProjectIcon     *bool                    `json:"hasProjectIcon,omitempty"`
 	HasProjectIconWith []*ProjectIconWhereInput `json:"hasProjectIconWith,omitempty"`
 
@@ -3502,7 +3502,7 @@ type ProjectTaskWhereInput struct {
 	HasTask     *bool             `json:"hasTask,omitempty"`
 	HasTaskWith []*TaskWhereInput `json:"hasTaskWith,omitempty"`
 
-	// "project_task_section" edge predicates.
+	// "projectTaskSection" edge predicates.
 	HasProjectTaskSection     *bool                           `json:"hasProjectTaskSection,omitempty"`
 	HasProjectTaskSectionWith []*ProjectTaskSectionWhereInput `json:"hasProjectTaskSectionWith,omitempty"`
 }
@@ -3923,7 +3923,7 @@ type ProjectTaskColumnWhereInput struct {
 	HasProject     *bool                `json:"hasProject,omitempty"`
 	HasProjectWith []*ProjectWhereInput `json:"hasProjectWith,omitempty"`
 
-	// "task_column" edge predicates.
+	// "taskColumn" edge predicates.
 	HasTaskColumn     *bool                   `json:"hasTaskColumn,omitempty"`
 	HasTaskColumnWith []*TaskColumnWhereInput `json:"hasTaskColumnWith,omitempty"`
 }
@@ -4344,11 +4344,11 @@ type ProjectTaskListStatusWhereInput struct {
 	HasProject     *bool                `json:"hasProject,omitempty"`
 	HasProjectWith []*ProjectWhereInput `json:"hasProjectWith,omitempty"`
 
-	// "task_list_completed_status" edge predicates.
+	// "taskListCompletedStatus" edge predicates.
 	HasTaskListCompletedStatus     *bool                                `json:"hasTaskListCompletedStatus,omitempty"`
 	HasTaskListCompletedStatusWith []*TaskListCompletedStatusWhereInput `json:"hasTaskListCompletedStatusWith,omitempty"`
 
-	// "task_list_sort_status" edge predicates.
+	// "taskListSortStatus" edge predicates.
 	HasTaskListSortStatus     *bool                           `json:"hasTaskListSortStatus,omitempty"`
 	HasTaskListSortStatusWith []*TaskListSortStatusWhereInput `json:"hasTaskListSortStatusWith,omitempty"`
 }
@@ -5962,7 +5962,7 @@ type TaskWhereInput struct {
 	HasTeammate     *bool                 `json:"hasTeammate,omitempty"`
 	HasTeammateWith []*TeammateWhereInput `json:"hasTeammateWith,omitempty"`
 
-	// "task_priority" edge predicates.
+	// "taskPriority" edge predicates.
 	HasTaskPriority     *bool                     `json:"hasTaskPriority,omitempty"`
 	HasTaskPriorityWith []*TaskPriorityWhereInput `json:"hasTaskPriorityWith,omitempty"`
 
@@ -8240,11 +8240,11 @@ type TaskFileWhereInput struct {
 	HasTask     *bool             `json:"hasTask,omitempty"`
 	HasTaskWith []*TaskWhereInput `json:"hasTaskWith,omitempty"`
 
-	// "task_feed" edge predicates.
+	// "taskFeed" edge predicates.
 	HasTaskFeed     *bool                 `json:"hasTaskFeed,omitempty"`
 	HasTaskFeedWith []*TaskFeedWhereInput `json:"hasTaskFeedWith,omitempty"`
 
-	// "file_type" edge predicates.
+	// "fileType" edge predicates.
 	HasFileType     *bool                 `json:"hasFileType,omitempty"`
 	HasFileTypeWith []*FileTypeWhereInput `json:"hasFileTypeWith,omitempty"`
 }
@@ -11395,7 +11395,7 @@ type TeammateTaskWhereInput struct {
 	HasTask     *bool             `json:"hasTask,omitempty"`
 	HasTaskWith []*TaskWhereInput `json:"hasTaskWith,omitempty"`
 
-	// "teammate_task_section" edge predicates.
+	// "teammateTaskSection" edge predicates.
 	HasTeammateTaskSection     *bool                            `json:"hasTeammateTaskSection,omitempty"`
 	HasTeammateTaskSectionWith []*TeammateTaskSectionWhereInput `json:"hasTeammateTaskSectionWith,omitempty"`
 }
@@ -11835,7 +11835,7 @@ type TeammateTaskColumnWhereInput struct {
 	HasWorkspace     *bool                  `json:"hasWorkspace,omitempty"`
 	HasWorkspaceWith []*WorkspaceWhereInput `json:"hasWorkspaceWith,omitempty"`
 
-	// "task_column" edge predicates.
+	// "taskColumn" edge predicates.
 	HasTaskColumn     *bool                   `json:"hasTaskColumn,omitempty"`
 	HasTaskColumnWith []*TaskColumnWhereInput `json:"hasTaskColumnWith,omitempty"`
 }
@@ -12332,11 +12332,11 @@ type TeammateTaskListStatusWhereInput struct {
 	HasTeammate     *bool                 `json:"hasTeammate,omitempty"`
 	HasTeammateWith []*TeammateWhereInput `json:"hasTeammateWith,omitempty"`
 
-	// "task_list_completed_status" edge predicates.
+	// "taskListCompletedStatus" edge predicates.
 	HasTaskListCompletedStatus     *bool                                `json:"hasTaskListCompletedStatus,omitempty"`
 	HasTaskListCompletedStatusWith []*TaskListCompletedStatusWhereInput `json:"hasTaskListCompletedStatusWith,omitempty"`
 
-	// "task_list_sort_status" edge predicates.
+	// "taskListSortStatus" edge predicates.
 	HasTaskListSortStatus     *bool                           `json:"hasTaskListSortStatus,omitempty"`
 	HasTaskListSortStatusWith []*TaskListSortStatusWhereInput `json:"hasTaskListSortStatusWith,omitempty"`
 }
@@ -13605,7 +13605,7 @@ type TestTodoWhereInput struct {
 	UpdatedAtLT    *time.Time  `json:"updatedAtLT,omitempty"`
 	UpdatedAtLTE   *time.Time  `json:"updatedAtLTE,omitempty"`
 
-	// "test_user" edge predicates.
+	// "testUser" edge predicates.
 	HasTestUser     *bool                 `json:"hasTestUser,omitempty"`
 	HasTestUserWith []*TestUserWhereInput `json:"hasTestUserWith,omitempty"`
 

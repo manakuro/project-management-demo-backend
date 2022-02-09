@@ -74,7 +74,7 @@ func (Project) Edges() []ent.Edge {
 					annotation.Edge{FieldName: "workspace_id"},
 				),
 			),
-		edge.From("project_base_color", ProjectBaseColor.Type).
+		edge.From("projectBaseColor", ProjectBaseColor.Type).
 			Ref(projectsRef).
 			Unique().
 			Field("project_base_color_id").
@@ -85,7 +85,7 @@ func (Project) Edges() []ent.Edge {
 					annotation.Edge{FieldName: "project_base_color_id"},
 				),
 			),
-		edge.From("project_light_color", ProjectLightColor.Type).
+		edge.From("projectLightColor", ProjectLightColor.Type).
 			Ref(projectsRef).
 			Unique().
 			Field("project_light_color_id").
@@ -96,7 +96,7 @@ func (Project) Edges() []ent.Edge {
 					annotation.Edge{FieldName: "project_light_color_id"},
 				),
 			),
-		edge.From("project_icon", ProjectIcon.Type).
+		edge.From("projectIcon", ProjectIcon.Type).
 			Ref(projectsRef).
 			Unique().
 			Field("project_icon_id").

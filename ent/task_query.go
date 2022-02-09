@@ -107,7 +107,7 @@ func (tq *TaskQuery) QueryTeammate() *TeammateQuery {
 	return query
 }
 
-// QueryTaskPriority chains the current query on the "task_priority" edge.
+// QueryTaskPriority chains the current query on the "taskPriority" edge.
 func (tq *TaskQuery) QueryTaskPriority() *TaskPriorityQuery {
 	query := &TaskPriorityQuery{config: tq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
@@ -560,7 +560,7 @@ func (tq *TaskQuery) WithTeammate(opts ...func(*TeammateQuery)) *TaskQuery {
 }
 
 // WithTaskPriority tells the query-builder to eager-load the nodes that are connected to
-// the "task_priority" edge. The optional arguments are used to configure the query builder of the edge.
+// the "taskPriority" edge. The optional arguments are used to configure the query builder of the edge.
 func (tq *TaskQuery) WithTaskPriority(opts ...func(*TaskPriorityQuery)) *TaskQuery {
 	query := &TaskPriorityQuery{config: tq.config}
 	for _, opt := range opts {

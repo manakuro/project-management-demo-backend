@@ -112,7 +112,7 @@ func (ttq *TeammateTaskQuery) QueryTask() *TaskQuery {
 	return query
 }
 
-// QueryTeammateTaskSection chains the current query on the "teammate_task_section" edge.
+// QueryTeammateTaskSection chains the current query on the "teammateTaskSection" edge.
 func (ttq *TeammateTaskQuery) QueryTeammateTaskSection() *TeammateTaskSectionQuery {
 	query := &TeammateTaskSectionQuery{config: ttq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
@@ -347,7 +347,7 @@ func (ttq *TeammateTaskQuery) WithTask(opts ...func(*TaskQuery)) *TeammateTaskQu
 }
 
 // WithTeammateTaskSection tells the query-builder to eager-load the nodes that are connected to
-// the "teammate_task_section" edge. The optional arguments are used to configure the query builder of the edge.
+// the "teammateTaskSection" edge. The optional arguments are used to configure the query builder of the edge.
 func (ttq *TeammateTaskQuery) WithTeammateTaskSection(opts ...func(*TeammateTaskSectionQuery)) *TeammateTaskQuery {
 	query := &TeammateTaskSectionQuery{config: ttq.config}
 	for _, opt := range opts {

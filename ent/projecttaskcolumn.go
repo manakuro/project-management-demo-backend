@@ -44,8 +44,8 @@ type ProjectTaskColumn struct {
 type ProjectTaskColumnEdges struct {
 	// Project holds the value of the project edge.
 	Project *Project `json:"project,omitempty"`
-	// TaskColumn holds the value of the task_column edge.
-	TaskColumn *TaskColumn `json:"task_column,omitempty"`
+	// TaskColumn holds the value of the taskColumn edge.
+	TaskColumn *TaskColumn `json:"taskColumn,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [2]bool
@@ -70,13 +70,13 @@ func (e ProjectTaskColumnEdges) ProjectOrErr() (*Project, error) {
 func (e ProjectTaskColumnEdges) TaskColumnOrErr() (*TaskColumn, error) {
 	if e.loadedTypes[1] {
 		if e.TaskColumn == nil {
-			// The edge task_column was loaded in eager-loading,
+			// The edge taskColumn was loaded in eager-loading,
 			// but was not found.
 			return nil, &NotFoundError{label: taskcolumn.Label}
 		}
 		return e.TaskColumn, nil
 	}
-	return nil, &NotLoadedError{edge: "task_column"}
+	return nil, &NotLoadedError{edge: "taskColumn"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -173,7 +173,7 @@ func (ptc *ProjectTaskColumn) QueryProject() *ProjectQuery {
 	return (&ProjectTaskColumnClient{config: ptc.config}).QueryProject(ptc)
 }
 
-// QueryTaskColumn queries the "task_column" edge of the ProjectTaskColumn entity.
+// QueryTaskColumn queries the "taskColumn" edge of the ProjectTaskColumn entity.
 func (ptc *ProjectTaskColumn) QueryTaskColumn() *TaskColumnQuery {
 	return (&ProjectTaskColumnClient{config: ptc.config}).QueryTaskColumn(ptc)
 }

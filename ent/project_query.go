@@ -109,7 +109,7 @@ func (pq *ProjectQuery) QueryWorkspace() *WorkspaceQuery {
 	return query
 }
 
-// QueryProjectBaseColor chains the current query on the "project_base_color" edge.
+// QueryProjectBaseColor chains the current query on the "projectBaseColor" edge.
 func (pq *ProjectQuery) QueryProjectBaseColor() *ProjectBaseColorQuery {
 	query := &ProjectBaseColorQuery{config: pq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
@@ -131,7 +131,7 @@ func (pq *ProjectQuery) QueryProjectBaseColor() *ProjectBaseColorQuery {
 	return query
 }
 
-// QueryProjectLightColor chains the current query on the "project_light_color" edge.
+// QueryProjectLightColor chains the current query on the "projectLightColor" edge.
 func (pq *ProjectQuery) QueryProjectLightColor() *ProjectLightColorQuery {
 	query := &ProjectLightColorQuery{config: pq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
@@ -153,7 +153,7 @@ func (pq *ProjectQuery) QueryProjectLightColor() *ProjectLightColorQuery {
 	return query
 }
 
-// QueryProjectIcon chains the current query on the "project_icon" edge.
+// QueryProjectIcon chains the current query on the "projectIcon" edge.
 func (pq *ProjectQuery) QueryProjectIcon() *ProjectIconQuery {
 	query := &ProjectIconQuery{config: pq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
@@ -562,7 +562,7 @@ func (pq *ProjectQuery) WithWorkspace(opts ...func(*WorkspaceQuery)) *ProjectQue
 }
 
 // WithProjectBaseColor tells the query-builder to eager-load the nodes that are connected to
-// the "project_base_color" edge. The optional arguments are used to configure the query builder of the edge.
+// the "projectBaseColor" edge. The optional arguments are used to configure the query builder of the edge.
 func (pq *ProjectQuery) WithProjectBaseColor(opts ...func(*ProjectBaseColorQuery)) *ProjectQuery {
 	query := &ProjectBaseColorQuery{config: pq.config}
 	for _, opt := range opts {
@@ -573,7 +573,7 @@ func (pq *ProjectQuery) WithProjectBaseColor(opts ...func(*ProjectBaseColorQuery
 }
 
 // WithProjectLightColor tells the query-builder to eager-load the nodes that are connected to
-// the "project_light_color" edge. The optional arguments are used to configure the query builder of the edge.
+// the "projectLightColor" edge. The optional arguments are used to configure the query builder of the edge.
 func (pq *ProjectQuery) WithProjectLightColor(opts ...func(*ProjectLightColorQuery)) *ProjectQuery {
 	query := &ProjectLightColorQuery{config: pq.config}
 	for _, opt := range opts {
@@ -584,7 +584,7 @@ func (pq *ProjectQuery) WithProjectLightColor(opts ...func(*ProjectLightColorQue
 }
 
 // WithProjectIcon tells the query-builder to eager-load the nodes that are connected to
-// the "project_icon" edge. The optional arguments are used to configure the query builder of the edge.
+// the "projectIcon" edge. The optional arguments are used to configure the query builder of the edge.
 func (pq *ProjectQuery) WithProjectIcon(opts ...func(*ProjectIconQuery)) *ProjectQuery {
 	query := &ProjectIconQuery{config: pq.config}
 	for _, opt := range opts {

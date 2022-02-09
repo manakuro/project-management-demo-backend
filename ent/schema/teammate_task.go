@@ -66,7 +66,7 @@ func (TeammateTask) Edges() []ent.Edge {
 					annotation.Edge{FieldName: "task_id"},
 				),
 			),
-		edge.From("teammate_task_section", TeammateTaskSection.Type).
+		edge.From("teammateTaskSection", TeammateTaskSection.Type).
 			Ref(teammateTasksRef).
 			Field("teammate_task_section_id").
 			Unique().

@@ -204,7 +204,7 @@ func (tu *TaskUpdate) SetTeammate(t *Teammate) *TaskUpdate {
 	return tu.SetTeammateID(t.ID)
 }
 
-// SetTaskPriority sets the "task_priority" edge to the TaskPriority entity.
+// SetTaskPriority sets the "taskPriority" edge to the TaskPriority entity.
 func (tu *TaskUpdate) SetTaskPriority(t *TaskPriority) *TaskUpdate {
 	return tu.SetTaskPriorityID(t.ID)
 }
@@ -374,7 +374,7 @@ func (tu *TaskUpdate) ClearTeammate() *TaskUpdate {
 	return tu
 }
 
-// ClearTaskPriority clears the "task_priority" edge to the TaskPriority entity.
+// ClearTaskPriority clears the "taskPriority" edge to the TaskPriority entity.
 func (tu *TaskUpdate) ClearTaskPriority() *TaskUpdate {
 	tu.mutation.ClearTaskPriority()
 	return tu
@@ -643,7 +643,7 @@ func (tu *TaskUpdate) check() error {
 		}
 	}
 	if _, ok := tu.mutation.TaskPriorityID(); tu.mutation.TaskPriorityCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"task_priority\"")
+		return errors.New("ent: clearing a required unique edge \"taskPriority\"")
 	}
 	return nil
 }
@@ -1508,7 +1508,7 @@ func (tuo *TaskUpdateOne) SetTeammate(t *Teammate) *TaskUpdateOne {
 	return tuo.SetTeammateID(t.ID)
 }
 
-// SetTaskPriority sets the "task_priority" edge to the TaskPriority entity.
+// SetTaskPriority sets the "taskPriority" edge to the TaskPriority entity.
 func (tuo *TaskUpdateOne) SetTaskPriority(t *TaskPriority) *TaskUpdateOne {
 	return tuo.SetTaskPriorityID(t.ID)
 }
@@ -1678,7 +1678,7 @@ func (tuo *TaskUpdateOne) ClearTeammate() *TaskUpdateOne {
 	return tuo
 }
 
-// ClearTaskPriority clears the "task_priority" edge to the TaskPriority entity.
+// ClearTaskPriority clears the "taskPriority" edge to the TaskPriority entity.
 func (tuo *TaskUpdateOne) ClearTaskPriority() *TaskUpdateOne {
 	tuo.mutation.ClearTaskPriority()
 	return tuo
@@ -1954,7 +1954,7 @@ func (tuo *TaskUpdateOne) check() error {
 		}
 	}
 	if _, ok := tuo.mutation.TaskPriorityID(); tuo.mutation.TaskPriorityCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"task_priority\"")
+		return errors.New("ent: clearing a required unique edge \"taskPriority\"")
 	}
 	return nil
 }

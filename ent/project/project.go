@@ -36,12 +36,12 @@ const (
 	FieldUpdatedAt = "updated_at"
 	// EdgeWorkspace holds the string denoting the workspace edge name in mutations.
 	EdgeWorkspace = "workspace"
-	// EdgeProjectBaseColor holds the string denoting the project_base_color edge name in mutations.
-	EdgeProjectBaseColor = "project_base_color"
-	// EdgeProjectLightColor holds the string denoting the project_light_color edge name in mutations.
-	EdgeProjectLightColor = "project_light_color"
-	// EdgeProjectIcon holds the string denoting the project_icon edge name in mutations.
-	EdgeProjectIcon = "project_icon"
+	// EdgeProjectBaseColor holds the string denoting the projectbasecolor edge name in mutations.
+	EdgeProjectBaseColor = "projectBaseColor"
+	// EdgeProjectLightColor holds the string denoting the projectlightcolor edge name in mutations.
+	EdgeProjectLightColor = "projectLightColor"
+	// EdgeProjectIcon holds the string denoting the projecticon edge name in mutations.
+	EdgeProjectIcon = "projectIcon"
 	// EdgeTeammate holds the string denoting the teammate edge name in mutations.
 	EdgeTeammate = "teammate"
 	// EdgeProjectTeammates holds the string denoting the projectteammates edge name in mutations.
@@ -67,26 +67,26 @@ const (
 	WorkspaceInverseTable = "workspaces"
 	// WorkspaceColumn is the table column denoting the workspace relation/edge.
 	WorkspaceColumn = "workspace_id"
-	// ProjectBaseColorTable is the table that holds the project_base_color relation/edge.
+	// ProjectBaseColorTable is the table that holds the projectBaseColor relation/edge.
 	ProjectBaseColorTable = "projects"
 	// ProjectBaseColorInverseTable is the table name for the ProjectBaseColor entity.
 	// It exists in this package in order to avoid circular dependency with the "projectbasecolor" package.
 	ProjectBaseColorInverseTable = "project_base_colors"
-	// ProjectBaseColorColumn is the table column denoting the project_base_color relation/edge.
+	// ProjectBaseColorColumn is the table column denoting the projectBaseColor relation/edge.
 	ProjectBaseColorColumn = "project_base_color_id"
-	// ProjectLightColorTable is the table that holds the project_light_color relation/edge.
+	// ProjectLightColorTable is the table that holds the projectLightColor relation/edge.
 	ProjectLightColorTable = "projects"
 	// ProjectLightColorInverseTable is the table name for the ProjectLightColor entity.
 	// It exists in this package in order to avoid circular dependency with the "projectlightcolor" package.
 	ProjectLightColorInverseTable = "project_light_colors"
-	// ProjectLightColorColumn is the table column denoting the project_light_color relation/edge.
+	// ProjectLightColorColumn is the table column denoting the projectLightColor relation/edge.
 	ProjectLightColorColumn = "project_light_color_id"
-	// ProjectIconTable is the table that holds the project_icon relation/edge.
+	// ProjectIconTable is the table that holds the projectIcon relation/edge.
 	ProjectIconTable = "projects"
 	// ProjectIconInverseTable is the table name for the ProjectIcon entity.
 	// It exists in this package in order to avoid circular dependency with the "projecticon" package.
 	ProjectIconInverseTable = "project_icons"
-	// ProjectIconColumn is the table column denoting the project_icon relation/edge.
+	// ProjectIconColumn is the table column denoting the projectIcon relation/edge.
 	ProjectIconColumn = "project_icon_id"
 	// TeammateTable is the table that holds the teammate relation/edge.
 	TeammateTable = "projects"

@@ -101,12 +101,12 @@ func (ttlsc *TeammateTaskListStatusCreate) SetTeammate(t *Teammate) *TeammateTas
 	return ttlsc.SetTeammateID(t.ID)
 }
 
-// SetTaskListCompletedStatus sets the "task_list_completed_status" edge to the TaskListCompletedStatus entity.
+// SetTaskListCompletedStatus sets the "taskListCompletedStatus" edge to the TaskListCompletedStatus entity.
 func (ttlsc *TeammateTaskListStatusCreate) SetTaskListCompletedStatus(t *TaskListCompletedStatus) *TeammateTaskListStatusCreate {
 	return ttlsc.SetTaskListCompletedStatusID(t.ID)
 }
 
-// SetTaskListSortStatus sets the "task_list_sort_status" edge to the TaskListSortStatus entity.
+// SetTaskListSortStatus sets the "taskListSortStatus" edge to the TaskListSortStatus entity.
 func (ttlsc *TeammateTaskListStatusCreate) SetTaskListSortStatus(t *TaskListSortStatus) *TeammateTaskListStatusCreate {
 	return ttlsc.SetTaskListSortStatusID(t.ID)
 }
@@ -223,10 +223,10 @@ func (ttlsc *TeammateTaskListStatusCreate) check() error {
 		return &ValidationError{Name: "teammate", err: errors.New("ent: missing required edge \"teammate\"")}
 	}
 	if _, ok := ttlsc.mutation.TaskListCompletedStatusID(); !ok {
-		return &ValidationError{Name: "task_list_completed_status", err: errors.New("ent: missing required edge \"task_list_completed_status\"")}
+		return &ValidationError{Name: "taskListCompletedStatus", err: errors.New("ent: missing required edge \"taskListCompletedStatus\"")}
 	}
 	if _, ok := ttlsc.mutation.TaskListSortStatusID(); !ok {
-		return &ValidationError{Name: "task_list_sort_status", err: errors.New("ent: missing required edge \"task_list_sort_status\"")}
+		return &ValidationError{Name: "taskListSortStatus", err: errors.New("ent: missing required edge \"taskListSortStatus\"")}
 	}
 	return nil
 }

@@ -76,7 +76,7 @@ func (TaskFile) Edges() []ent.Edge {
 					annotation.Edge{FieldName: "task_id"},
 				),
 			),
-		edge.From("task_feed", TaskFeed.Type).
+		edge.From("taskFeed", TaskFeed.Type).
 			Ref(taskFilesRef).
 			Field("task_feed_id").
 			Unique().
@@ -87,7 +87,7 @@ func (TaskFile) Edges() []ent.Edge {
 					annotation.Edge{FieldName: "task_feed_id"},
 				),
 			),
-		edge.From("file_type", FileType.Type).
+		edge.From("fileType", FileType.Type).
 			Ref(taskFilesRef).
 			Field("file_type_id").
 			Unique().

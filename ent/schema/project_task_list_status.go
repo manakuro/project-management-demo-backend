@@ -55,7 +55,7 @@ func (ProjectTaskListStatus) Edges() []ent.Edge {
 					annotation.Edge{FieldName: "project_id"},
 				),
 			),
-		edge.From("task_list_completed_status", TaskListCompletedStatus.Type).
+		edge.From("taskListCompletedStatus", TaskListCompletedStatus.Type).
 			Ref(projectTaskListStatusesRef).
 			Field("task_list_completed_status_id").
 			Unique().
@@ -66,7 +66,7 @@ func (ProjectTaskListStatus) Edges() []ent.Edge {
 					annotation.Edge{FieldName: "task_list_completed_status_id"},
 				),
 			),
-		edge.From("task_list_sort_status", TaskListSortStatus.Type).
+		edge.From("taskListSortStatus", TaskListSortStatus.Type).
 			Ref(projectTaskListStatusesRef).
 			Field("task_list_sort_status_id").
 			Unique().

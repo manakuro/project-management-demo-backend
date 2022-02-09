@@ -90,7 +90,7 @@ func (ttcu *TeammateTaskColumnUpdate) SetWorkspace(w *Workspace) *TeammateTaskCo
 	return ttcu.SetWorkspaceID(w.ID)
 }
 
-// SetTaskColumn sets the "task_column" edge to the TaskColumn entity.
+// SetTaskColumn sets the "taskColumn" edge to the TaskColumn entity.
 func (ttcu *TeammateTaskColumnUpdate) SetTaskColumn(t *TaskColumn) *TeammateTaskColumnUpdate {
 	return ttcu.SetTaskColumnID(t.ID)
 }
@@ -112,7 +112,7 @@ func (ttcu *TeammateTaskColumnUpdate) ClearWorkspace() *TeammateTaskColumnUpdate
 	return ttcu
 }
 
-// ClearTaskColumn clears the "task_column" edge to the TaskColumn entity.
+// ClearTaskColumn clears the "taskColumn" edge to the TaskColumn entity.
 func (ttcu *TeammateTaskColumnUpdate) ClearTaskColumn() *TeammateTaskColumnUpdate {
 	ttcu.mutation.ClearTaskColumn()
 	return ttcu
@@ -192,7 +192,7 @@ func (ttcu *TeammateTaskColumnUpdate) check() error {
 		return errors.New("ent: clearing a required unique edge \"workspace\"")
 	}
 	if _, ok := ttcu.mutation.TaskColumnID(); ttcu.mutation.TaskColumnCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"task_column\"")
+		return errors.New("ent: clearing a required unique edge \"taskColumn\"")
 	}
 	return nil
 }
@@ -433,7 +433,7 @@ func (ttcuo *TeammateTaskColumnUpdateOne) SetWorkspace(w *Workspace) *TeammateTa
 	return ttcuo.SetWorkspaceID(w.ID)
 }
 
-// SetTaskColumn sets the "task_column" edge to the TaskColumn entity.
+// SetTaskColumn sets the "taskColumn" edge to the TaskColumn entity.
 func (ttcuo *TeammateTaskColumnUpdateOne) SetTaskColumn(t *TaskColumn) *TeammateTaskColumnUpdateOne {
 	return ttcuo.SetTaskColumnID(t.ID)
 }
@@ -455,7 +455,7 @@ func (ttcuo *TeammateTaskColumnUpdateOne) ClearWorkspace() *TeammateTaskColumnUp
 	return ttcuo
 }
 
-// ClearTaskColumn clears the "task_column" edge to the TaskColumn entity.
+// ClearTaskColumn clears the "taskColumn" edge to the TaskColumn entity.
 func (ttcuo *TeammateTaskColumnUpdateOne) ClearTaskColumn() *TeammateTaskColumnUpdateOne {
 	ttcuo.mutation.ClearTaskColumn()
 	return ttcuo
@@ -542,7 +542,7 @@ func (ttcuo *TeammateTaskColumnUpdateOne) check() error {
 		return errors.New("ent: clearing a required unique edge \"workspace\"")
 	}
 	if _, ok := ttcuo.mutation.TaskColumnID(); ttcuo.mutation.TaskColumnCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"task_column\"")
+		return errors.New("ent: clearing a required unique edge \"taskColumn\"")
 	}
 	return nil
 }

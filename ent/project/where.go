@@ -1236,7 +1236,7 @@ func HasWorkspaceWith(preds ...predicate.Workspace) predicate.Project {
 	})
 }
 
-// HasProjectBaseColor applies the HasEdge predicate on the "project_base_color" edge.
+// HasProjectBaseColor applies the HasEdge predicate on the "projectBaseColor" edge.
 func HasProjectBaseColor() predicate.Project {
 	return predicate.Project(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
@@ -1248,7 +1248,7 @@ func HasProjectBaseColor() predicate.Project {
 	})
 }
 
-// HasProjectBaseColorWith applies the HasEdge predicate on the "project_base_color" edge with a given conditions (other predicates).
+// HasProjectBaseColorWith applies the HasEdge predicate on the "projectBaseColor" edge with a given conditions (other predicates).
 func HasProjectBaseColorWith(preds ...predicate.ProjectBaseColor) predicate.Project {
 	return predicate.Project(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
@@ -1264,7 +1264,7 @@ func HasProjectBaseColorWith(preds ...predicate.ProjectBaseColor) predicate.Proj
 	})
 }
 
-// HasProjectLightColor applies the HasEdge predicate on the "project_light_color" edge.
+// HasProjectLightColor applies the HasEdge predicate on the "projectLightColor" edge.
 func HasProjectLightColor() predicate.Project {
 	return predicate.Project(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
@@ -1276,7 +1276,7 @@ func HasProjectLightColor() predicate.Project {
 	})
 }
 
-// HasProjectLightColorWith applies the HasEdge predicate on the "project_light_color" edge with a given conditions (other predicates).
+// HasProjectLightColorWith applies the HasEdge predicate on the "projectLightColor" edge with a given conditions (other predicates).
 func HasProjectLightColorWith(preds ...predicate.ProjectLightColor) predicate.Project {
 	return predicate.Project(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
@@ -1292,7 +1292,7 @@ func HasProjectLightColorWith(preds ...predicate.ProjectLightColor) predicate.Pr
 	})
 }
 
-// HasProjectIcon applies the HasEdge predicate on the "project_icon" edge.
+// HasProjectIcon applies the HasEdge predicate on the "projectIcon" edge.
 func HasProjectIcon() predicate.Project {
 	return predicate.Project(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
@@ -1304,7 +1304,7 @@ func HasProjectIcon() predicate.Project {
 	})
 }
 
-// HasProjectIconWith applies the HasEdge predicate on the "project_icon" edge with a given conditions (other predicates).
+// HasProjectIconWith applies the HasEdge predicate on the "projectIcon" edge with a given conditions (other predicates).
 func HasProjectIconWith(preds ...predicate.ProjectIcon) predicate.Project {
 	return predicate.Project(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(

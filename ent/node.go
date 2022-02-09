@@ -508,7 +508,7 @@ func (pr *Project) Node(ctx context.Context) (node *Node, err error) {
 	}
 	node.Edges[1] = &Edge{
 		Type: "ProjectBaseColor",
-		Name: "project_base_color",
+		Name: "projectBaseColor",
 	}
 	err = pr.QueryProjectBaseColor().
 		Select(projectbasecolor.FieldID).
@@ -518,7 +518,7 @@ func (pr *Project) Node(ctx context.Context) (node *Node, err error) {
 	}
 	node.Edges[2] = &Edge{
 		Type: "ProjectLightColor",
-		Name: "project_light_color",
+		Name: "projectLightColor",
 	}
 	err = pr.QueryProjectLightColor().
 		Select(projectlightcolor.FieldID).
@@ -528,7 +528,7 @@ func (pr *Project) Node(ctx context.Context) (node *Node, err error) {
 	}
 	node.Edges[3] = &Edge{
 		Type: "ProjectIcon",
-		Name: "project_icon",
+		Name: "projectIcon",
 	}
 	err = pr.QueryProjectIcon().
 		Select(projecticon.FieldID).
@@ -854,7 +854,7 @@ func (pt *ProjectTask) Node(ctx context.Context) (node *Node, err error) {
 	}
 	node.Edges[2] = &Edge{
 		Type: "ProjectTaskSection",
-		Name: "project_task_section",
+		Name: "projectTaskSection",
 	}
 	err = pt.QueryProjectTaskSection().
 		Select(projecttasksection.FieldID).
@@ -949,7 +949,7 @@ func (ptc *ProjectTaskColumn) Node(ctx context.Context) (node *Node, err error) 
 	}
 	node.Edges[1] = &Edge{
 		Type: "TaskColumn",
-		Name: "task_column",
+		Name: "taskColumn",
 	}
 	err = ptc.QueryTaskColumn().
 		Select(taskcolumn.FieldID).
@@ -1020,7 +1020,7 @@ func (ptls *ProjectTaskListStatus) Node(ctx context.Context) (node *Node, err er
 	}
 	node.Edges[1] = &Edge{
 		Type: "TaskListCompletedStatus",
-		Name: "task_list_completed_status",
+		Name: "taskListCompletedStatus",
 	}
 	err = ptls.QueryTaskListCompletedStatus().
 		Select(tasklistcompletedstatus.FieldID).
@@ -1030,7 +1030,7 @@ func (ptls *ProjectTaskListStatus) Node(ctx context.Context) (node *Node, err er
 	}
 	node.Edges[2] = &Edge{
 		Type: "TaskListSortStatus",
-		Name: "task_list_sort_status",
+		Name: "taskListSortStatus",
 	}
 	err = ptls.QueryTaskListSortStatus().
 		Select(tasklistsortstatus.FieldID).
@@ -1380,7 +1380,7 @@ func (t *Task) Node(ctx context.Context) (node *Node, err error) {
 	}
 	node.Edges[1] = &Edge{
 		Type: "TaskPriority",
-		Name: "task_priority",
+		Name: "taskPriority",
 	}
 	err = t.QueryTaskPriority().
 		Select(taskpriority.FieldID).
@@ -1907,7 +1907,7 @@ func (tf *TaskFile) Node(ctx context.Context) (node *Node, err error) {
 	}
 	node.Edges[2] = &Edge{
 		Type: "TaskFeed",
-		Name: "task_feed",
+		Name: "taskFeed",
 	}
 	err = tf.QueryTaskFeed().
 		Select(taskfeed.FieldID).
@@ -1917,7 +1917,7 @@ func (tf *TaskFile) Node(ctx context.Context) (node *Node, err error) {
 	}
 	node.Edges[3] = &Edge{
 		Type: "FileType",
-		Name: "file_type",
+		Name: "fileType",
 	}
 	err = tf.QueryFileType().
 		Select(filetype.FieldID).
@@ -2585,7 +2585,7 @@ func (tt *TeammateTask) Node(ctx context.Context) (node *Node, err error) {
 	}
 	node.Edges[2] = &Edge{
 		Type: "TeammateTaskSection",
-		Name: "teammate_task_section",
+		Name: "teammateTaskSection",
 	}
 	err = tt.QueryTeammateTaskSection().
 		Select(teammatetasksection.FieldID).
@@ -2698,7 +2698,7 @@ func (ttc *TeammateTaskColumn) Node(ctx context.Context) (node *Node, err error)
 	}
 	node.Edges[2] = &Edge{
 		Type: "TaskColumn",
-		Name: "task_column",
+		Name: "taskColumn",
 	}
 	err = ttc.QueryTaskColumn().
 		Select(taskcolumn.FieldID).
@@ -2787,7 +2787,7 @@ func (ttls *TeammateTaskListStatus) Node(ctx context.Context) (node *Node, err e
 	}
 	node.Edges[2] = &Edge{
 		Type: "TaskListCompletedStatus",
-		Name: "task_list_completed_status",
+		Name: "taskListCompletedStatus",
 	}
 	err = ttls.QueryTaskListCompletedStatus().
 		Select(tasklistcompletedstatus.FieldID).
@@ -2797,7 +2797,7 @@ func (ttls *TeammateTaskListStatus) Node(ctx context.Context) (node *Node, err e
 	}
 	node.Edges[3] = &Edge{
 		Type: "TaskListSortStatus",
-		Name: "task_list_sort_status",
+		Name: "taskListSortStatus",
 	}
 	err = ttls.QueryTaskListSortStatus().
 		Select(tasklistsortstatus.FieldID).
@@ -3050,7 +3050,7 @@ func (tt *TestTodo) Node(ctx context.Context) (node *Node, err error) {
 	}
 	node.Edges[0] = &Edge{
 		Type: "TestUser",
-		Name: "test_user",
+		Name: "testUser",
 	}
 	err = tt.QueryTestUser().
 		Select(testuser.FieldID).

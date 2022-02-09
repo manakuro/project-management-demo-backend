@@ -55,12 +55,12 @@ type Project struct {
 type ProjectEdges struct {
 	// Workspace holds the value of the workspace edge.
 	Workspace *Workspace `json:"workspace,omitempty"`
-	// ProjectBaseColor holds the value of the project_base_color edge.
-	ProjectBaseColor *ProjectBaseColor `json:"project_base_color,omitempty"`
-	// ProjectLightColor holds the value of the project_light_color edge.
-	ProjectLightColor *ProjectLightColor `json:"project_light_color,omitempty"`
-	// ProjectIcon holds the value of the project_icon edge.
-	ProjectIcon *ProjectIcon `json:"project_icon,omitempty"`
+	// ProjectBaseColor holds the value of the projectBaseColor edge.
+	ProjectBaseColor *ProjectBaseColor `json:"projectBaseColor,omitempty"`
+	// ProjectLightColor holds the value of the projectLightColor edge.
+	ProjectLightColor *ProjectLightColor `json:"projectLightColor,omitempty"`
+	// ProjectIcon holds the value of the projectIcon edge.
+	ProjectIcon *ProjectIcon `json:"projectIcon,omitempty"`
 	// Teammate holds the value of the teammate edge.
 	Teammate *Teammate `json:"teammate,omitempty"`
 	// ProjectTeammates holds the value of the projectTeammates edge.
@@ -101,13 +101,13 @@ func (e ProjectEdges) WorkspaceOrErr() (*Workspace, error) {
 func (e ProjectEdges) ProjectBaseColorOrErr() (*ProjectBaseColor, error) {
 	if e.loadedTypes[1] {
 		if e.ProjectBaseColor == nil {
-			// The edge project_base_color was loaded in eager-loading,
+			// The edge projectBaseColor was loaded in eager-loading,
 			// but was not found.
 			return nil, &NotFoundError{label: projectbasecolor.Label}
 		}
 		return e.ProjectBaseColor, nil
 	}
-	return nil, &NotLoadedError{edge: "project_base_color"}
+	return nil, &NotLoadedError{edge: "projectBaseColor"}
 }
 
 // ProjectLightColorOrErr returns the ProjectLightColor value or an error if the edge
@@ -115,13 +115,13 @@ func (e ProjectEdges) ProjectBaseColorOrErr() (*ProjectBaseColor, error) {
 func (e ProjectEdges) ProjectLightColorOrErr() (*ProjectLightColor, error) {
 	if e.loadedTypes[2] {
 		if e.ProjectLightColor == nil {
-			// The edge project_light_color was loaded in eager-loading,
+			// The edge projectLightColor was loaded in eager-loading,
 			// but was not found.
 			return nil, &NotFoundError{label: projectlightcolor.Label}
 		}
 		return e.ProjectLightColor, nil
 	}
-	return nil, &NotLoadedError{edge: "project_light_color"}
+	return nil, &NotLoadedError{edge: "projectLightColor"}
 }
 
 // ProjectIconOrErr returns the ProjectIcon value or an error if the edge
@@ -129,13 +129,13 @@ func (e ProjectEdges) ProjectLightColorOrErr() (*ProjectLightColor, error) {
 func (e ProjectEdges) ProjectIconOrErr() (*ProjectIcon, error) {
 	if e.loadedTypes[3] {
 		if e.ProjectIcon == nil {
-			// The edge project_icon was loaded in eager-loading,
+			// The edge projectIcon was loaded in eager-loading,
 			// but was not found.
 			return nil, &NotFoundError{label: projecticon.Label}
 		}
 		return e.ProjectIcon, nil
 	}
-	return nil, &NotLoadedError{edge: "project_icon"}
+	return nil, &NotLoadedError{edge: "projectIcon"}
 }
 
 // TeammateOrErr returns the Teammate value or an error if the edge
@@ -328,17 +328,17 @@ func (pr *Project) QueryWorkspace() *WorkspaceQuery {
 	return (&ProjectClient{config: pr.config}).QueryWorkspace(pr)
 }
 
-// QueryProjectBaseColor queries the "project_base_color" edge of the Project entity.
+// QueryProjectBaseColor queries the "projectBaseColor" edge of the Project entity.
 func (pr *Project) QueryProjectBaseColor() *ProjectBaseColorQuery {
 	return (&ProjectClient{config: pr.config}).QueryProjectBaseColor(pr)
 }
 
-// QueryProjectLightColor queries the "project_light_color" edge of the Project entity.
+// QueryProjectLightColor queries the "projectLightColor" edge of the Project entity.
 func (pr *Project) QueryProjectLightColor() *ProjectLightColorQuery {
 	return (&ProjectClient{config: pr.config}).QueryProjectLightColor(pr)
 }
 
-// QueryProjectIcon queries the "project_icon" edge of the Project entity.
+// QueryProjectIcon queries the "projectIcon" edge of the Project entity.
 func (pr *Project) QueryProjectIcon() *ProjectIconQuery {
 	return (&ProjectClient{config: pr.config}).QueryProjectIcon(pr)
 }

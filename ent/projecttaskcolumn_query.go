@@ -88,7 +88,7 @@ func (ptcq *ProjectTaskColumnQuery) QueryProject() *ProjectQuery {
 	return query
 }
 
-// QueryTaskColumn chains the current query on the "task_column" edge.
+// QueryTaskColumn chains the current query on the "taskColumn" edge.
 func (ptcq *ProjectTaskColumnQuery) QueryTaskColumn() *TaskColumnQuery {
 	query := &TaskColumnQuery{config: ptcq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
@@ -311,7 +311,7 @@ func (ptcq *ProjectTaskColumnQuery) WithProject(opts ...func(*ProjectQuery)) *Pr
 }
 
 // WithTaskColumn tells the query-builder to eager-load the nodes that are connected to
-// the "task_column" edge. The optional arguments are used to configure the query builder of the edge.
+// the "taskColumn" edge. The optional arguments are used to configure the query builder of the edge.
 func (ptcq *ProjectTaskColumnQuery) WithTaskColumn(opts ...func(*TaskColumnQuery)) *ProjectTaskColumnQuery {
 	query := &TaskColumnQuery{config: ptcq.config}
 	for _, opt := range opts {

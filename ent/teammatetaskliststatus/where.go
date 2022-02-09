@@ -808,7 +808,7 @@ func HasTeammateWith(preds ...predicate.Teammate) predicate.TeammateTaskListStat
 	})
 }
 
-// HasTaskListCompletedStatus applies the HasEdge predicate on the "task_list_completed_status" edge.
+// HasTaskListCompletedStatus applies the HasEdge predicate on the "taskListCompletedStatus" edge.
 func HasTaskListCompletedStatus() predicate.TeammateTaskListStatus {
 	return predicate.TeammateTaskListStatus(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
@@ -820,7 +820,7 @@ func HasTaskListCompletedStatus() predicate.TeammateTaskListStatus {
 	})
 }
 
-// HasTaskListCompletedStatusWith applies the HasEdge predicate on the "task_list_completed_status" edge with a given conditions (other predicates).
+// HasTaskListCompletedStatusWith applies the HasEdge predicate on the "taskListCompletedStatus" edge with a given conditions (other predicates).
 func HasTaskListCompletedStatusWith(preds ...predicate.TaskListCompletedStatus) predicate.TeammateTaskListStatus {
 	return predicate.TeammateTaskListStatus(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
@@ -836,7 +836,7 @@ func HasTaskListCompletedStatusWith(preds ...predicate.TaskListCompletedStatus) 
 	})
 }
 
-// HasTaskListSortStatus applies the HasEdge predicate on the "task_list_sort_status" edge.
+// HasTaskListSortStatus applies the HasEdge predicate on the "taskListSortStatus" edge.
 func HasTaskListSortStatus() predicate.TeammateTaskListStatus {
 	return predicate.TeammateTaskListStatus(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
@@ -848,7 +848,7 @@ func HasTaskListSortStatus() predicate.TeammateTaskListStatus {
 	})
 }
 
-// HasTaskListSortStatusWith applies the HasEdge predicate on the "task_list_sort_status" edge with a given conditions (other predicates).
+// HasTaskListSortStatusWith applies the HasEdge predicate on the "taskListSortStatus" edge with a given conditions (other predicates).
 func HasTaskListSortStatusWith(preds ...predicate.TaskListSortStatus) predicate.TeammateTaskListStatus {
 	return predicate.TeammateTaskListStatus(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(

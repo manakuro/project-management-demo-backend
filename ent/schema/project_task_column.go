@@ -59,7 +59,7 @@ func (ProjectTaskColumn) Edges() []ent.Edge {
 					annotation.Edge{FieldName: "project_id"},
 				),
 			),
-		edge.From("task_column", TaskColumn.Type).
+		edge.From("taskColumn", TaskColumn.Type).
 			Ref(projectTaskColumnsRef).
 			Field("task_column_id").
 			Unique().

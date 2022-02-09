@@ -78,7 +78,7 @@ func (ptcu *ProjectTaskColumnUpdate) SetProject(p *Project) *ProjectTaskColumnUp
 	return ptcu.SetProjectID(p.ID)
 }
 
-// SetTaskColumn sets the "task_column" edge to the TaskColumn entity.
+// SetTaskColumn sets the "taskColumn" edge to the TaskColumn entity.
 func (ptcu *ProjectTaskColumnUpdate) SetTaskColumn(t *TaskColumn) *ProjectTaskColumnUpdate {
 	return ptcu.SetTaskColumnID(t.ID)
 }
@@ -94,7 +94,7 @@ func (ptcu *ProjectTaskColumnUpdate) ClearProject() *ProjectTaskColumnUpdate {
 	return ptcu
 }
 
-// ClearTaskColumn clears the "task_column" edge to the TaskColumn entity.
+// ClearTaskColumn clears the "taskColumn" edge to the TaskColumn entity.
 func (ptcu *ProjectTaskColumnUpdate) ClearTaskColumn() *ProjectTaskColumnUpdate {
 	ptcu.mutation.ClearTaskColumn()
 	return ptcu
@@ -171,7 +171,7 @@ func (ptcu *ProjectTaskColumnUpdate) check() error {
 		return errors.New("ent: clearing a required unique edge \"project\"")
 	}
 	if _, ok := ptcu.mutation.TaskColumnID(); ptcu.mutation.TaskColumnCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"task_column\"")
+		return errors.New("ent: clearing a required unique edge \"taskColumn\"")
 	}
 	return nil
 }
@@ -366,7 +366,7 @@ func (ptcuo *ProjectTaskColumnUpdateOne) SetProject(p *Project) *ProjectTaskColu
 	return ptcuo.SetProjectID(p.ID)
 }
 
-// SetTaskColumn sets the "task_column" edge to the TaskColumn entity.
+// SetTaskColumn sets the "taskColumn" edge to the TaskColumn entity.
 func (ptcuo *ProjectTaskColumnUpdateOne) SetTaskColumn(t *TaskColumn) *ProjectTaskColumnUpdateOne {
 	return ptcuo.SetTaskColumnID(t.ID)
 }
@@ -382,7 +382,7 @@ func (ptcuo *ProjectTaskColumnUpdateOne) ClearProject() *ProjectTaskColumnUpdate
 	return ptcuo
 }
 
-// ClearTaskColumn clears the "task_column" edge to the TaskColumn entity.
+// ClearTaskColumn clears the "taskColumn" edge to the TaskColumn entity.
 func (ptcuo *ProjectTaskColumnUpdateOne) ClearTaskColumn() *ProjectTaskColumnUpdateOne {
 	ptcuo.mutation.ClearTaskColumn()
 	return ptcuo
@@ -466,7 +466,7 @@ func (ptcuo *ProjectTaskColumnUpdateOne) check() error {
 		return errors.New("ent: clearing a required unique edge \"project\"")
 	}
 	if _, ok := ptcuo.mutation.TaskColumnID(); ptcuo.mutation.TaskColumnCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"task_column\"")
+		return errors.New("ent: clearing a required unique edge \"taskColumn\"")
 	}
 	return nil
 }

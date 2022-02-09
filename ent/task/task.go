@@ -38,8 +38,8 @@ const (
 	FieldUpdatedAt = "updated_at"
 	// EdgeTeammate holds the string denoting the teammate edge name in mutations.
 	EdgeTeammate = "teammate"
-	// EdgeTaskPriority holds the string denoting the task_priority edge name in mutations.
-	EdgeTaskPriority = "task_priority"
+	// EdgeTaskPriority holds the string denoting the taskpriority edge name in mutations.
+	EdgeTaskPriority = "taskPriority"
 	// EdgeParent holds the string denoting the parent edge name in mutations.
 	EdgeParent = "parent"
 	// EdgeSubTasks holds the string denoting the subtasks edge name in mutations.
@@ -69,12 +69,12 @@ const (
 	TeammateInverseTable = "teammates"
 	// TeammateColumn is the table column denoting the teammate relation/edge.
 	TeammateColumn = "assignee_id"
-	// TaskPriorityTable is the table that holds the task_priority relation/edge.
+	// TaskPriorityTable is the table that holds the taskPriority relation/edge.
 	TaskPriorityTable = "tasks"
 	// TaskPriorityInverseTable is the table name for the TaskPriority entity.
 	// It exists in this package in order to avoid circular dependency with the "taskpriority" package.
 	TaskPriorityInverseTable = "task_priorities"
-	// TaskPriorityColumn is the table column denoting the task_priority relation/edge.
+	// TaskPriorityColumn is the table column denoting the taskPriority relation/edge.
 	TaskPriorityColumn = "task_priority_id"
 	// ParentTable is the table that holds the parent relation/edge.
 	ParentTable = "tasks"

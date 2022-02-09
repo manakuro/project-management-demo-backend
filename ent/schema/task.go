@@ -88,7 +88,7 @@ func (Task) Edges() []ent.Edge {
 					annotation.Edge{FieldName: "assignee_id"},
 				),
 			),
-		edge.From("task_priority", TaskPriority.Type).
+		edge.From("taskPriority", TaskPriority.Type).
 			Ref(tasksRef).
 			Unique().
 			Field("task_priority_id").

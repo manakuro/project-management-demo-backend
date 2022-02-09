@@ -89,12 +89,12 @@ func (ptlsc *ProjectTaskListStatusCreate) SetProject(p *Project) *ProjectTaskLis
 	return ptlsc.SetProjectID(p.ID)
 }
 
-// SetTaskListCompletedStatus sets the "task_list_completed_status" edge to the TaskListCompletedStatus entity.
+// SetTaskListCompletedStatus sets the "taskListCompletedStatus" edge to the TaskListCompletedStatus entity.
 func (ptlsc *ProjectTaskListStatusCreate) SetTaskListCompletedStatus(t *TaskListCompletedStatus) *ProjectTaskListStatusCreate {
 	return ptlsc.SetTaskListCompletedStatusID(t.ID)
 }
 
-// SetTaskListSortStatus sets the "task_list_sort_status" edge to the TaskListSortStatus entity.
+// SetTaskListSortStatus sets the "taskListSortStatus" edge to the TaskListSortStatus entity.
 func (ptlsc *ProjectTaskListStatusCreate) SetTaskListSortStatus(t *TaskListSortStatus) *ProjectTaskListStatusCreate {
 	return ptlsc.SetTaskListSortStatusID(t.ID)
 }
@@ -205,10 +205,10 @@ func (ptlsc *ProjectTaskListStatusCreate) check() error {
 		return &ValidationError{Name: "project", err: errors.New("ent: missing required edge \"project\"")}
 	}
 	if _, ok := ptlsc.mutation.TaskListCompletedStatusID(); !ok {
-		return &ValidationError{Name: "task_list_completed_status", err: errors.New("ent: missing required edge \"task_list_completed_status\"")}
+		return &ValidationError{Name: "taskListCompletedStatus", err: errors.New("ent: missing required edge \"taskListCompletedStatus\"")}
 	}
 	if _, ok := ptlsc.mutation.TaskListSortStatusID(); !ok {
-		return &ValidationError{Name: "task_list_sort_status", err: errors.New("ent: missing required edge \"task_list_sort_status\"")}
+		return &ValidationError{Name: "taskListSortStatus", err: errors.New("ent: missing required edge \"taskListSortStatus\"")}
 	}
 	return nil
 }

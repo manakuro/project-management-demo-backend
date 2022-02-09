@@ -3197,12 +3197,12 @@ type ProjectMutation struct {
 	clearedFields                  map[string]struct{}
 	workspace                      *ulid.ID
 	clearedworkspace               bool
-	project_base_color             *ulid.ID
-	clearedproject_base_color      bool
-	project_light_color            *ulid.ID
-	clearedproject_light_color     bool
-	project_icon                   *ulid.ID
-	clearedproject_icon            bool
+	projectBaseColor               *ulid.ID
+	clearedprojectBaseColor        bool
+	projectLightColor              *ulid.ID
+	clearedprojectLightColor       bool
+	projectIcon                    *ulid.ID
+	clearedprojectIcon             bool
 	teammate                       *ulid.ID
 	clearedteammate                bool
 	projectTeammates               map[ulid.ID]struct{}
@@ -3354,12 +3354,12 @@ func (m *ProjectMutation) ResetWorkspaceID() {
 
 // SetProjectBaseColorID sets the "project_base_color_id" field.
 func (m *ProjectMutation) SetProjectBaseColorID(u ulid.ID) {
-	m.project_base_color = &u
+	m.projectBaseColor = &u
 }
 
 // ProjectBaseColorID returns the value of the "project_base_color_id" field in the mutation.
 func (m *ProjectMutation) ProjectBaseColorID() (r ulid.ID, exists bool) {
-	v := m.project_base_color
+	v := m.projectBaseColor
 	if v == nil {
 		return
 	}
@@ -3385,17 +3385,17 @@ func (m *ProjectMutation) OldProjectBaseColorID(ctx context.Context) (v ulid.ID,
 
 // ResetProjectBaseColorID resets all changes to the "project_base_color_id" field.
 func (m *ProjectMutation) ResetProjectBaseColorID() {
-	m.project_base_color = nil
+	m.projectBaseColor = nil
 }
 
 // SetProjectLightColorID sets the "project_light_color_id" field.
 func (m *ProjectMutation) SetProjectLightColorID(u ulid.ID) {
-	m.project_light_color = &u
+	m.projectLightColor = &u
 }
 
 // ProjectLightColorID returns the value of the "project_light_color_id" field in the mutation.
 func (m *ProjectMutation) ProjectLightColorID() (r ulid.ID, exists bool) {
-	v := m.project_light_color
+	v := m.projectLightColor
 	if v == nil {
 		return
 	}
@@ -3421,17 +3421,17 @@ func (m *ProjectMutation) OldProjectLightColorID(ctx context.Context) (v ulid.ID
 
 // ResetProjectLightColorID resets all changes to the "project_light_color_id" field.
 func (m *ProjectMutation) ResetProjectLightColorID() {
-	m.project_light_color = nil
+	m.projectLightColor = nil
 }
 
 // SetProjectIconID sets the "project_icon_id" field.
 func (m *ProjectMutation) SetProjectIconID(u ulid.ID) {
-	m.project_icon = &u
+	m.projectIcon = &u
 }
 
 // ProjectIconID returns the value of the "project_icon_id" field in the mutation.
 func (m *ProjectMutation) ProjectIconID() (r ulid.ID, exists bool) {
-	v := m.project_icon
+	v := m.projectIcon
 	if v == nil {
 		return
 	}
@@ -3457,7 +3457,7 @@ func (m *ProjectMutation) OldProjectIconID(ctx context.Context) (v ulid.ID, err 
 
 // ResetProjectIconID resets all changes to the "project_icon_id" field.
 func (m *ProjectMutation) ResetProjectIconID() {
-	m.project_icon = nil
+	m.projectIcon = nil
 }
 
 // SetCreatedBy sets the "created_by" field.
@@ -3751,82 +3751,82 @@ func (m *ProjectMutation) ResetWorkspace() {
 	m.clearedworkspace = false
 }
 
-// ClearProjectBaseColor clears the "project_base_color" edge to the ProjectBaseColor entity.
+// ClearProjectBaseColor clears the "projectBaseColor" edge to the ProjectBaseColor entity.
 func (m *ProjectMutation) ClearProjectBaseColor() {
-	m.clearedproject_base_color = true
+	m.clearedprojectBaseColor = true
 }
 
-// ProjectBaseColorCleared reports if the "project_base_color" edge to the ProjectBaseColor entity was cleared.
+// ProjectBaseColorCleared reports if the "projectBaseColor" edge to the ProjectBaseColor entity was cleared.
 func (m *ProjectMutation) ProjectBaseColorCleared() bool {
-	return m.clearedproject_base_color
+	return m.clearedprojectBaseColor
 }
 
-// ProjectBaseColorIDs returns the "project_base_color" edge IDs in the mutation.
+// ProjectBaseColorIDs returns the "projectBaseColor" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // ProjectBaseColorID instead. It exists only for internal usage by the builders.
 func (m *ProjectMutation) ProjectBaseColorIDs() (ids []ulid.ID) {
-	if id := m.project_base_color; id != nil {
+	if id := m.projectBaseColor; id != nil {
 		ids = append(ids, *id)
 	}
 	return
 }
 
-// ResetProjectBaseColor resets all changes to the "project_base_color" edge.
+// ResetProjectBaseColor resets all changes to the "projectBaseColor" edge.
 func (m *ProjectMutation) ResetProjectBaseColor() {
-	m.project_base_color = nil
-	m.clearedproject_base_color = false
+	m.projectBaseColor = nil
+	m.clearedprojectBaseColor = false
 }
 
-// ClearProjectLightColor clears the "project_light_color" edge to the ProjectLightColor entity.
+// ClearProjectLightColor clears the "projectLightColor" edge to the ProjectLightColor entity.
 func (m *ProjectMutation) ClearProjectLightColor() {
-	m.clearedproject_light_color = true
+	m.clearedprojectLightColor = true
 }
 
-// ProjectLightColorCleared reports if the "project_light_color" edge to the ProjectLightColor entity was cleared.
+// ProjectLightColorCleared reports if the "projectLightColor" edge to the ProjectLightColor entity was cleared.
 func (m *ProjectMutation) ProjectLightColorCleared() bool {
-	return m.clearedproject_light_color
+	return m.clearedprojectLightColor
 }
 
-// ProjectLightColorIDs returns the "project_light_color" edge IDs in the mutation.
+// ProjectLightColorIDs returns the "projectLightColor" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // ProjectLightColorID instead. It exists only for internal usage by the builders.
 func (m *ProjectMutation) ProjectLightColorIDs() (ids []ulid.ID) {
-	if id := m.project_light_color; id != nil {
+	if id := m.projectLightColor; id != nil {
 		ids = append(ids, *id)
 	}
 	return
 }
 
-// ResetProjectLightColor resets all changes to the "project_light_color" edge.
+// ResetProjectLightColor resets all changes to the "projectLightColor" edge.
 func (m *ProjectMutation) ResetProjectLightColor() {
-	m.project_light_color = nil
-	m.clearedproject_light_color = false
+	m.projectLightColor = nil
+	m.clearedprojectLightColor = false
 }
 
-// ClearProjectIcon clears the "project_icon" edge to the ProjectIcon entity.
+// ClearProjectIcon clears the "projectIcon" edge to the ProjectIcon entity.
 func (m *ProjectMutation) ClearProjectIcon() {
-	m.clearedproject_icon = true
+	m.clearedprojectIcon = true
 }
 
-// ProjectIconCleared reports if the "project_icon" edge to the ProjectIcon entity was cleared.
+// ProjectIconCleared reports if the "projectIcon" edge to the ProjectIcon entity was cleared.
 func (m *ProjectMutation) ProjectIconCleared() bool {
-	return m.clearedproject_icon
+	return m.clearedprojectIcon
 }
 
-// ProjectIconIDs returns the "project_icon" edge IDs in the mutation.
+// ProjectIconIDs returns the "projectIcon" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // ProjectIconID instead. It exists only for internal usage by the builders.
 func (m *ProjectMutation) ProjectIconIDs() (ids []ulid.ID) {
-	if id := m.project_icon; id != nil {
+	if id := m.projectIcon; id != nil {
 		ids = append(ids, *id)
 	}
 	return
 }
 
-// ResetProjectIcon resets all changes to the "project_icon" edge.
+// ResetProjectIcon resets all changes to the "projectIcon" edge.
 func (m *ProjectMutation) ResetProjectIcon() {
-	m.project_icon = nil
-	m.clearedproject_icon = false
+	m.projectIcon = nil
+	m.clearedprojectIcon = false
 }
 
 // SetTeammateID sets the "teammate" edge to the Teammate entity by id.
@@ -4269,13 +4269,13 @@ func (m *ProjectMutation) Fields() []string {
 	if m.workspace != nil {
 		fields = append(fields, project.FieldWorkspaceID)
 	}
-	if m.project_base_color != nil {
+	if m.projectBaseColor != nil {
 		fields = append(fields, project.FieldProjectBaseColorID)
 	}
-	if m.project_light_color != nil {
+	if m.projectLightColor != nil {
 		fields = append(fields, project.FieldProjectLightColorID)
 	}
-	if m.project_icon != nil {
+	if m.projectIcon != nil {
 		fields = append(fields, project.FieldProjectIconID)
 	}
 	if m.teammate != nil {
@@ -4547,13 +4547,13 @@ func (m *ProjectMutation) AddedEdges() []string {
 	if m.workspace != nil {
 		edges = append(edges, project.EdgeWorkspace)
 	}
-	if m.project_base_color != nil {
+	if m.projectBaseColor != nil {
 		edges = append(edges, project.EdgeProjectBaseColor)
 	}
-	if m.project_light_color != nil {
+	if m.projectLightColor != nil {
 		edges = append(edges, project.EdgeProjectLightColor)
 	}
-	if m.project_icon != nil {
+	if m.projectIcon != nil {
 		edges = append(edges, project.EdgeProjectIcon)
 	}
 	if m.teammate != nil {
@@ -4592,15 +4592,15 @@ func (m *ProjectMutation) AddedIDs(name string) []ent.Value {
 			return []ent.Value{*id}
 		}
 	case project.EdgeProjectBaseColor:
-		if id := m.project_base_color; id != nil {
+		if id := m.projectBaseColor; id != nil {
 			return []ent.Value{*id}
 		}
 	case project.EdgeProjectLightColor:
-		if id := m.project_light_color; id != nil {
+		if id := m.projectLightColor; id != nil {
 			return []ent.Value{*id}
 		}
 	case project.EdgeProjectIcon:
-		if id := m.project_icon; id != nil {
+		if id := m.projectIcon; id != nil {
 			return []ent.Value{*id}
 		}
 	case project.EdgeTeammate:
@@ -4736,13 +4736,13 @@ func (m *ProjectMutation) ClearedEdges() []string {
 	if m.clearedworkspace {
 		edges = append(edges, project.EdgeWorkspace)
 	}
-	if m.clearedproject_base_color {
+	if m.clearedprojectBaseColor {
 		edges = append(edges, project.EdgeProjectBaseColor)
 	}
-	if m.clearedproject_light_color {
+	if m.clearedprojectLightColor {
 		edges = append(edges, project.EdgeProjectLightColor)
 	}
-	if m.clearedproject_icon {
+	if m.clearedprojectIcon {
 		edges = append(edges, project.EdgeProjectIcon)
 	}
 	if m.clearedteammate {
@@ -4779,11 +4779,11 @@ func (m *ProjectMutation) EdgeCleared(name string) bool {
 	case project.EdgeWorkspace:
 		return m.clearedworkspace
 	case project.EdgeProjectBaseColor:
-		return m.clearedproject_base_color
+		return m.clearedprojectBaseColor
 	case project.EdgeProjectLightColor:
-		return m.clearedproject_light_color
+		return m.clearedprojectLightColor
 	case project.EdgeProjectIcon:
-		return m.clearedproject_icon
+		return m.clearedprojectIcon
 	case project.EdgeTeammate:
 		return m.clearedteammate
 	case project.EdgeProjectTeammates:
@@ -6506,21 +6506,21 @@ func (m *ProjectLightColorMutation) ResetEdge(name string) error {
 // ProjectTaskMutation represents an operation that mutates the ProjectTask nodes in the graph.
 type ProjectTaskMutation struct {
 	config
-	op                          Op
-	typ                         string
-	id                          *ulid.ID
-	created_at                  *time.Time
-	updated_at                  *time.Time
-	clearedFields               map[string]struct{}
-	project                     *ulid.ID
-	clearedproject              bool
-	task                        *ulid.ID
-	clearedtask                 bool
-	project_task_section        *ulid.ID
-	clearedproject_task_section bool
-	done                        bool
-	oldValue                    func(context.Context) (*ProjectTask, error)
-	predicates                  []predicate.ProjectTask
+	op                        Op
+	typ                       string
+	id                        *ulid.ID
+	created_at                *time.Time
+	updated_at                *time.Time
+	clearedFields             map[string]struct{}
+	project                   *ulid.ID
+	clearedproject            bool
+	task                      *ulid.ID
+	clearedtask               bool
+	projectTaskSection        *ulid.ID
+	clearedprojectTaskSection bool
+	done                      bool
+	oldValue                  func(context.Context) (*ProjectTask, error)
+	predicates                []predicate.ProjectTask
 }
 
 var _ ent.Mutation = (*ProjectTaskMutation)(nil)
@@ -6682,12 +6682,12 @@ func (m *ProjectTaskMutation) ResetTaskID() {
 
 // SetProjectTaskSectionID sets the "project_task_section_id" field.
 func (m *ProjectTaskMutation) SetProjectTaskSectionID(u ulid.ID) {
-	m.project_task_section = &u
+	m.projectTaskSection = &u
 }
 
 // ProjectTaskSectionID returns the value of the "project_task_section_id" field in the mutation.
 func (m *ProjectTaskMutation) ProjectTaskSectionID() (r ulid.ID, exists bool) {
-	v := m.project_task_section
+	v := m.projectTaskSection
 	if v == nil {
 		return
 	}
@@ -6713,7 +6713,7 @@ func (m *ProjectTaskMutation) OldProjectTaskSectionID(ctx context.Context) (v ul
 
 // ResetProjectTaskSectionID resets all changes to the "project_task_section_id" field.
 func (m *ProjectTaskMutation) ResetProjectTaskSectionID() {
-	m.project_task_section = nil
+	m.projectTaskSection = nil
 }
 
 // SetCreatedAt sets the "created_at" field.
@@ -6840,30 +6840,30 @@ func (m *ProjectTaskMutation) ResetTask() {
 	m.clearedtask = false
 }
 
-// ClearProjectTaskSection clears the "project_task_section" edge to the ProjectTaskSection entity.
+// ClearProjectTaskSection clears the "projectTaskSection" edge to the ProjectTaskSection entity.
 func (m *ProjectTaskMutation) ClearProjectTaskSection() {
-	m.clearedproject_task_section = true
+	m.clearedprojectTaskSection = true
 }
 
-// ProjectTaskSectionCleared reports if the "project_task_section" edge to the ProjectTaskSection entity was cleared.
+// ProjectTaskSectionCleared reports if the "projectTaskSection" edge to the ProjectTaskSection entity was cleared.
 func (m *ProjectTaskMutation) ProjectTaskSectionCleared() bool {
-	return m.clearedproject_task_section
+	return m.clearedprojectTaskSection
 }
 
-// ProjectTaskSectionIDs returns the "project_task_section" edge IDs in the mutation.
+// ProjectTaskSectionIDs returns the "projectTaskSection" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // ProjectTaskSectionID instead. It exists only for internal usage by the builders.
 func (m *ProjectTaskMutation) ProjectTaskSectionIDs() (ids []ulid.ID) {
-	if id := m.project_task_section; id != nil {
+	if id := m.projectTaskSection; id != nil {
 		ids = append(ids, *id)
 	}
 	return
 }
 
-// ResetProjectTaskSection resets all changes to the "project_task_section" edge.
+// ResetProjectTaskSection resets all changes to the "projectTaskSection" edge.
 func (m *ProjectTaskMutation) ResetProjectTaskSection() {
-	m.project_task_section = nil
-	m.clearedproject_task_section = false
+	m.projectTaskSection = nil
+	m.clearedprojectTaskSection = false
 }
 
 // Where appends a list predicates to the ProjectTaskMutation builder.
@@ -6892,7 +6892,7 @@ func (m *ProjectTaskMutation) Fields() []string {
 	if m.task != nil {
 		fields = append(fields, projecttask.FieldTaskID)
 	}
-	if m.project_task_section != nil {
+	if m.projectTaskSection != nil {
 		fields = append(fields, projecttask.FieldProjectTaskSectionID)
 	}
 	if m.created_at != nil {
@@ -7059,7 +7059,7 @@ func (m *ProjectTaskMutation) AddedEdges() []string {
 	if m.task != nil {
 		edges = append(edges, projecttask.EdgeTask)
 	}
-	if m.project_task_section != nil {
+	if m.projectTaskSection != nil {
 		edges = append(edges, projecttask.EdgeProjectTaskSection)
 	}
 	return edges
@@ -7078,7 +7078,7 @@ func (m *ProjectTaskMutation) AddedIDs(name string) []ent.Value {
 			return []ent.Value{*id}
 		}
 	case projecttask.EdgeProjectTaskSection:
-		if id := m.project_task_section; id != nil {
+		if id := m.projectTaskSection; id != nil {
 			return []ent.Value{*id}
 		}
 	}
@@ -7108,7 +7108,7 @@ func (m *ProjectTaskMutation) ClearedEdges() []string {
 	if m.clearedtask {
 		edges = append(edges, projecttask.EdgeTask)
 	}
-	if m.clearedproject_task_section {
+	if m.clearedprojectTaskSection {
 		edges = append(edges, projecttask.EdgeProjectTaskSection)
 	}
 	return edges
@@ -7123,7 +7123,7 @@ func (m *ProjectTaskMutation) EdgeCleared(name string) bool {
 	case projecttask.EdgeTask:
 		return m.clearedtask
 	case projecttask.EdgeProjectTaskSection:
-		return m.clearedproject_task_section
+		return m.clearedprojectTaskSection
 	}
 	return false
 }
@@ -7165,24 +7165,24 @@ func (m *ProjectTaskMutation) ResetEdge(name string) error {
 // ProjectTaskColumnMutation represents an operation that mutates the ProjectTaskColumn nodes in the graph.
 type ProjectTaskColumnMutation struct {
 	config
-	op                 Op
-	typ                string
-	id                 *ulid.ID
-	width              *string
-	disabled           *bool
-	customizable       *bool
-	_order             *int
-	add_order          *int
-	created_at         *time.Time
-	updated_at         *time.Time
-	clearedFields      map[string]struct{}
-	project            *ulid.ID
-	clearedproject     bool
-	task_column        *ulid.ID
-	clearedtask_column bool
-	done               bool
-	oldValue           func(context.Context) (*ProjectTaskColumn, error)
-	predicates         []predicate.ProjectTaskColumn
+	op                Op
+	typ               string
+	id                *ulid.ID
+	width             *string
+	disabled          *bool
+	customizable      *bool
+	_order            *int
+	add_order         *int
+	created_at        *time.Time
+	updated_at        *time.Time
+	clearedFields     map[string]struct{}
+	project           *ulid.ID
+	clearedproject    bool
+	taskColumn        *ulid.ID
+	clearedtaskColumn bool
+	done              bool
+	oldValue          func(context.Context) (*ProjectTaskColumn, error)
+	predicates        []predicate.ProjectTaskColumn
 }
 
 var _ ent.Mutation = (*ProjectTaskColumnMutation)(nil)
@@ -7308,12 +7308,12 @@ func (m *ProjectTaskColumnMutation) ResetProjectID() {
 
 // SetTaskColumnID sets the "task_column_id" field.
 func (m *ProjectTaskColumnMutation) SetTaskColumnID(u ulid.ID) {
-	m.task_column = &u
+	m.taskColumn = &u
 }
 
 // TaskColumnID returns the value of the "task_column_id" field in the mutation.
 func (m *ProjectTaskColumnMutation) TaskColumnID() (r ulid.ID, exists bool) {
-	v := m.task_column
+	v := m.taskColumn
 	if v == nil {
 		return
 	}
@@ -7339,7 +7339,7 @@ func (m *ProjectTaskColumnMutation) OldTaskColumnID(ctx context.Context) (v ulid
 
 // ResetTaskColumnID resets all changes to the "task_column_id" field.
 func (m *ProjectTaskColumnMutation) ResetTaskColumnID() {
-	m.task_column = nil
+	m.taskColumn = nil
 }
 
 // SetWidth sets the "width" field.
@@ -7604,30 +7604,30 @@ func (m *ProjectTaskColumnMutation) ResetProject() {
 	m.clearedproject = false
 }
 
-// ClearTaskColumn clears the "task_column" edge to the TaskColumn entity.
+// ClearTaskColumn clears the "taskColumn" edge to the TaskColumn entity.
 func (m *ProjectTaskColumnMutation) ClearTaskColumn() {
-	m.clearedtask_column = true
+	m.clearedtaskColumn = true
 }
 
-// TaskColumnCleared reports if the "task_column" edge to the TaskColumn entity was cleared.
+// TaskColumnCleared reports if the "taskColumn" edge to the TaskColumn entity was cleared.
 func (m *ProjectTaskColumnMutation) TaskColumnCleared() bool {
-	return m.clearedtask_column
+	return m.clearedtaskColumn
 }
 
-// TaskColumnIDs returns the "task_column" edge IDs in the mutation.
+// TaskColumnIDs returns the "taskColumn" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // TaskColumnID instead. It exists only for internal usage by the builders.
 func (m *ProjectTaskColumnMutation) TaskColumnIDs() (ids []ulid.ID) {
-	if id := m.task_column; id != nil {
+	if id := m.taskColumn; id != nil {
 		ids = append(ids, *id)
 	}
 	return
 }
 
-// ResetTaskColumn resets all changes to the "task_column" edge.
+// ResetTaskColumn resets all changes to the "taskColumn" edge.
 func (m *ProjectTaskColumnMutation) ResetTaskColumn() {
-	m.task_column = nil
-	m.clearedtask_column = false
+	m.taskColumn = nil
+	m.clearedtaskColumn = false
 }
 
 // Where appends a list predicates to the ProjectTaskColumnMutation builder.
@@ -7653,7 +7653,7 @@ func (m *ProjectTaskColumnMutation) Fields() []string {
 	if m.project != nil {
 		fields = append(fields, projecttaskcolumn.FieldProjectID)
 	}
-	if m.task_column != nil {
+	if m.taskColumn != nil {
 		fields = append(fields, projecttaskcolumn.FieldTaskColumnID)
 	}
 	if m.width != nil {
@@ -7886,7 +7886,7 @@ func (m *ProjectTaskColumnMutation) AddedEdges() []string {
 	if m.project != nil {
 		edges = append(edges, projecttaskcolumn.EdgeProject)
 	}
-	if m.task_column != nil {
+	if m.taskColumn != nil {
 		edges = append(edges, projecttaskcolumn.EdgeTaskColumn)
 	}
 	return edges
@@ -7901,7 +7901,7 @@ func (m *ProjectTaskColumnMutation) AddedIDs(name string) []ent.Value {
 			return []ent.Value{*id}
 		}
 	case projecttaskcolumn.EdgeTaskColumn:
-		if id := m.task_column; id != nil {
+		if id := m.taskColumn; id != nil {
 			return []ent.Value{*id}
 		}
 	}
@@ -7928,7 +7928,7 @@ func (m *ProjectTaskColumnMutation) ClearedEdges() []string {
 	if m.clearedproject {
 		edges = append(edges, projecttaskcolumn.EdgeProject)
 	}
-	if m.clearedtask_column {
+	if m.clearedtaskColumn {
 		edges = append(edges, projecttaskcolumn.EdgeTaskColumn)
 	}
 	return edges
@@ -7941,7 +7941,7 @@ func (m *ProjectTaskColumnMutation) EdgeCleared(name string) bool {
 	case projecttaskcolumn.EdgeProject:
 		return m.clearedproject
 	case projecttaskcolumn.EdgeTaskColumn:
-		return m.clearedtask_column
+		return m.clearedtaskColumn
 	}
 	return false
 }
@@ -7977,21 +7977,21 @@ func (m *ProjectTaskColumnMutation) ResetEdge(name string) error {
 // ProjectTaskListStatusMutation represents an operation that mutates the ProjectTaskListStatus nodes in the graph.
 type ProjectTaskListStatusMutation struct {
 	config
-	op                                Op
-	typ                               string
-	id                                *ulid.ID
-	created_at                        *time.Time
-	updated_at                        *time.Time
-	clearedFields                     map[string]struct{}
-	project                           *ulid.ID
-	clearedproject                    bool
-	task_list_completed_status        *ulid.ID
-	clearedtask_list_completed_status bool
-	task_list_sort_status             *ulid.ID
-	clearedtask_list_sort_status      bool
-	done                              bool
-	oldValue                          func(context.Context) (*ProjectTaskListStatus, error)
-	predicates                        []predicate.ProjectTaskListStatus
+	op                             Op
+	typ                            string
+	id                             *ulid.ID
+	created_at                     *time.Time
+	updated_at                     *time.Time
+	clearedFields                  map[string]struct{}
+	project                        *ulid.ID
+	clearedproject                 bool
+	taskListCompletedStatus        *ulid.ID
+	clearedtaskListCompletedStatus bool
+	taskListSortStatus             *ulid.ID
+	clearedtaskListSortStatus      bool
+	done                           bool
+	oldValue                       func(context.Context) (*ProjectTaskListStatus, error)
+	predicates                     []predicate.ProjectTaskListStatus
 }
 
 var _ ent.Mutation = (*ProjectTaskListStatusMutation)(nil)
@@ -8117,12 +8117,12 @@ func (m *ProjectTaskListStatusMutation) ResetProjectID() {
 
 // SetTaskListCompletedStatusID sets the "task_list_completed_status_id" field.
 func (m *ProjectTaskListStatusMutation) SetTaskListCompletedStatusID(u ulid.ID) {
-	m.task_list_completed_status = &u
+	m.taskListCompletedStatus = &u
 }
 
 // TaskListCompletedStatusID returns the value of the "task_list_completed_status_id" field in the mutation.
 func (m *ProjectTaskListStatusMutation) TaskListCompletedStatusID() (r ulid.ID, exists bool) {
-	v := m.task_list_completed_status
+	v := m.taskListCompletedStatus
 	if v == nil {
 		return
 	}
@@ -8148,17 +8148,17 @@ func (m *ProjectTaskListStatusMutation) OldTaskListCompletedStatusID(ctx context
 
 // ResetTaskListCompletedStatusID resets all changes to the "task_list_completed_status_id" field.
 func (m *ProjectTaskListStatusMutation) ResetTaskListCompletedStatusID() {
-	m.task_list_completed_status = nil
+	m.taskListCompletedStatus = nil
 }
 
 // SetTaskListSortStatusID sets the "task_list_sort_status_id" field.
 func (m *ProjectTaskListStatusMutation) SetTaskListSortStatusID(u ulid.ID) {
-	m.task_list_sort_status = &u
+	m.taskListSortStatus = &u
 }
 
 // TaskListSortStatusID returns the value of the "task_list_sort_status_id" field in the mutation.
 func (m *ProjectTaskListStatusMutation) TaskListSortStatusID() (r ulid.ID, exists bool) {
-	v := m.task_list_sort_status
+	v := m.taskListSortStatus
 	if v == nil {
 		return
 	}
@@ -8184,7 +8184,7 @@ func (m *ProjectTaskListStatusMutation) OldTaskListSortStatusID(ctx context.Cont
 
 // ResetTaskListSortStatusID resets all changes to the "task_list_sort_status_id" field.
 func (m *ProjectTaskListStatusMutation) ResetTaskListSortStatusID() {
-	m.task_list_sort_status = nil
+	m.taskListSortStatus = nil
 }
 
 // SetCreatedAt sets the "created_at" field.
@@ -8285,56 +8285,56 @@ func (m *ProjectTaskListStatusMutation) ResetProject() {
 	m.clearedproject = false
 }
 
-// ClearTaskListCompletedStatus clears the "task_list_completed_status" edge to the TaskListCompletedStatus entity.
+// ClearTaskListCompletedStatus clears the "taskListCompletedStatus" edge to the TaskListCompletedStatus entity.
 func (m *ProjectTaskListStatusMutation) ClearTaskListCompletedStatus() {
-	m.clearedtask_list_completed_status = true
+	m.clearedtaskListCompletedStatus = true
 }
 
-// TaskListCompletedStatusCleared reports if the "task_list_completed_status" edge to the TaskListCompletedStatus entity was cleared.
+// TaskListCompletedStatusCleared reports if the "taskListCompletedStatus" edge to the TaskListCompletedStatus entity was cleared.
 func (m *ProjectTaskListStatusMutation) TaskListCompletedStatusCleared() bool {
-	return m.clearedtask_list_completed_status
+	return m.clearedtaskListCompletedStatus
 }
 
-// TaskListCompletedStatusIDs returns the "task_list_completed_status" edge IDs in the mutation.
+// TaskListCompletedStatusIDs returns the "taskListCompletedStatus" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // TaskListCompletedStatusID instead. It exists only for internal usage by the builders.
 func (m *ProjectTaskListStatusMutation) TaskListCompletedStatusIDs() (ids []ulid.ID) {
-	if id := m.task_list_completed_status; id != nil {
+	if id := m.taskListCompletedStatus; id != nil {
 		ids = append(ids, *id)
 	}
 	return
 }
 
-// ResetTaskListCompletedStatus resets all changes to the "task_list_completed_status" edge.
+// ResetTaskListCompletedStatus resets all changes to the "taskListCompletedStatus" edge.
 func (m *ProjectTaskListStatusMutation) ResetTaskListCompletedStatus() {
-	m.task_list_completed_status = nil
-	m.clearedtask_list_completed_status = false
+	m.taskListCompletedStatus = nil
+	m.clearedtaskListCompletedStatus = false
 }
 
-// ClearTaskListSortStatus clears the "task_list_sort_status" edge to the TaskListSortStatus entity.
+// ClearTaskListSortStatus clears the "taskListSortStatus" edge to the TaskListSortStatus entity.
 func (m *ProjectTaskListStatusMutation) ClearTaskListSortStatus() {
-	m.clearedtask_list_sort_status = true
+	m.clearedtaskListSortStatus = true
 }
 
-// TaskListSortStatusCleared reports if the "task_list_sort_status" edge to the TaskListSortStatus entity was cleared.
+// TaskListSortStatusCleared reports if the "taskListSortStatus" edge to the TaskListSortStatus entity was cleared.
 func (m *ProjectTaskListStatusMutation) TaskListSortStatusCleared() bool {
-	return m.clearedtask_list_sort_status
+	return m.clearedtaskListSortStatus
 }
 
-// TaskListSortStatusIDs returns the "task_list_sort_status" edge IDs in the mutation.
+// TaskListSortStatusIDs returns the "taskListSortStatus" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // TaskListSortStatusID instead. It exists only for internal usage by the builders.
 func (m *ProjectTaskListStatusMutation) TaskListSortStatusIDs() (ids []ulid.ID) {
-	if id := m.task_list_sort_status; id != nil {
+	if id := m.taskListSortStatus; id != nil {
 		ids = append(ids, *id)
 	}
 	return
 }
 
-// ResetTaskListSortStatus resets all changes to the "task_list_sort_status" edge.
+// ResetTaskListSortStatus resets all changes to the "taskListSortStatus" edge.
 func (m *ProjectTaskListStatusMutation) ResetTaskListSortStatus() {
-	m.task_list_sort_status = nil
-	m.clearedtask_list_sort_status = false
+	m.taskListSortStatus = nil
+	m.clearedtaskListSortStatus = false
 }
 
 // Where appends a list predicates to the ProjectTaskListStatusMutation builder.
@@ -8360,10 +8360,10 @@ func (m *ProjectTaskListStatusMutation) Fields() []string {
 	if m.project != nil {
 		fields = append(fields, projecttaskliststatus.FieldProjectID)
 	}
-	if m.task_list_completed_status != nil {
+	if m.taskListCompletedStatus != nil {
 		fields = append(fields, projecttaskliststatus.FieldTaskListCompletedStatusID)
 	}
-	if m.task_list_sort_status != nil {
+	if m.taskListSortStatus != nil {
 		fields = append(fields, projecttaskliststatus.FieldTaskListSortStatusID)
 	}
 	if m.created_at != nil {
@@ -8527,10 +8527,10 @@ func (m *ProjectTaskListStatusMutation) AddedEdges() []string {
 	if m.project != nil {
 		edges = append(edges, projecttaskliststatus.EdgeProject)
 	}
-	if m.task_list_completed_status != nil {
+	if m.taskListCompletedStatus != nil {
 		edges = append(edges, projecttaskliststatus.EdgeTaskListCompletedStatus)
 	}
-	if m.task_list_sort_status != nil {
+	if m.taskListSortStatus != nil {
 		edges = append(edges, projecttaskliststatus.EdgeTaskListSortStatus)
 	}
 	return edges
@@ -8545,11 +8545,11 @@ func (m *ProjectTaskListStatusMutation) AddedIDs(name string) []ent.Value {
 			return []ent.Value{*id}
 		}
 	case projecttaskliststatus.EdgeTaskListCompletedStatus:
-		if id := m.task_list_completed_status; id != nil {
+		if id := m.taskListCompletedStatus; id != nil {
 			return []ent.Value{*id}
 		}
 	case projecttaskliststatus.EdgeTaskListSortStatus:
-		if id := m.task_list_sort_status; id != nil {
+		if id := m.taskListSortStatus; id != nil {
 			return []ent.Value{*id}
 		}
 	}
@@ -8576,10 +8576,10 @@ func (m *ProjectTaskListStatusMutation) ClearedEdges() []string {
 	if m.clearedproject {
 		edges = append(edges, projecttaskliststatus.EdgeProject)
 	}
-	if m.clearedtask_list_completed_status {
+	if m.clearedtaskListCompletedStatus {
 		edges = append(edges, projecttaskliststatus.EdgeTaskListCompletedStatus)
 	}
-	if m.clearedtask_list_sort_status {
+	if m.clearedtaskListSortStatus {
 		edges = append(edges, projecttaskliststatus.EdgeTaskListSortStatus)
 	}
 	return edges
@@ -8592,9 +8592,9 @@ func (m *ProjectTaskListStatusMutation) EdgeCleared(name string) bool {
 	case projecttaskliststatus.EdgeProject:
 		return m.clearedproject
 	case projecttaskliststatus.EdgeTaskListCompletedStatus:
-		return m.clearedtask_list_completed_status
+		return m.clearedtaskListCompletedStatus
 	case projecttaskliststatus.EdgeTaskListSortStatus:
-		return m.clearedtask_list_sort_status
+		return m.clearedtaskListSortStatus
 	}
 	return false
 }
@@ -10614,8 +10614,8 @@ type TaskMutation struct {
 	clearedFields            map[string]struct{}
 	teammate                 *ulid.ID
 	clearedteammate          bool
-	task_priority            *ulid.ID
-	clearedtask_priority     bool
+	taskPriority             *ulid.ID
+	clearedtaskPriority      bool
 	parent                   *ulid.ID
 	clearedparent            bool
 	subTasks                 map[ulid.ID]struct{}
@@ -10786,12 +10786,12 @@ func (m *TaskMutation) ResetTaskParentID() {
 
 // SetTaskPriorityID sets the "task_priority_id" field.
 func (m *TaskMutation) SetTaskPriorityID(u ulid.ID) {
-	m.task_priority = &u
+	m.taskPriority = &u
 }
 
 // TaskPriorityID returns the value of the "task_priority_id" field in the mutation.
 func (m *TaskMutation) TaskPriorityID() (r ulid.ID, exists bool) {
-	v := m.task_priority
+	v := m.taskPriority
 	if v == nil {
 		return
 	}
@@ -10817,7 +10817,7 @@ func (m *TaskMutation) OldTaskPriorityID(ctx context.Context) (v ulid.ID, err er
 
 // ResetTaskPriorityID resets all changes to the "task_priority_id" field.
 func (m *TaskMutation) ResetTaskPriorityID() {
-	m.task_priority = nil
+	m.taskPriority = nil
 }
 
 // SetAssigneeID sets the "assignee_id" field.
@@ -11271,30 +11271,30 @@ func (m *TaskMutation) ResetTeammate() {
 	m.clearedteammate = false
 }
 
-// ClearTaskPriority clears the "task_priority" edge to the TaskPriority entity.
+// ClearTaskPriority clears the "taskPriority" edge to the TaskPriority entity.
 func (m *TaskMutation) ClearTaskPriority() {
-	m.clearedtask_priority = true
+	m.clearedtaskPriority = true
 }
 
-// TaskPriorityCleared reports if the "task_priority" edge to the TaskPriority entity was cleared.
+// TaskPriorityCleared reports if the "taskPriority" edge to the TaskPriority entity was cleared.
 func (m *TaskMutation) TaskPriorityCleared() bool {
-	return m.clearedtask_priority
+	return m.clearedtaskPriority
 }
 
-// TaskPriorityIDs returns the "task_priority" edge IDs in the mutation.
+// TaskPriorityIDs returns the "taskPriority" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // TaskPriorityID instead. It exists only for internal usage by the builders.
 func (m *TaskMutation) TaskPriorityIDs() (ids []ulid.ID) {
-	if id := m.task_priority; id != nil {
+	if id := m.taskPriority; id != nil {
 		ids = append(ids, *id)
 	}
 	return
 }
 
-// ResetTaskPriority resets all changes to the "task_priority" edge.
+// ResetTaskPriority resets all changes to the "taskPriority" edge.
 func (m *TaskMutation) ResetTaskPriority() {
-	m.task_priority = nil
-	m.clearedtask_priority = false
+	m.taskPriority = nil
+	m.clearedtaskPriority = false
 }
 
 // SetParentID sets the "parent" edge to the Task entity by id.
@@ -11845,7 +11845,7 @@ func (m *TaskMutation) Fields() []string {
 	if m.parent != nil {
 		fields = append(fields, task.FieldTaskParentID)
 	}
-	if m.task_priority != nil {
+	if m.taskPriority != nil {
 		fields = append(fields, task.FieldTaskPriorityID)
 	}
 	if m.teammate != nil {
@@ -12164,7 +12164,7 @@ func (m *TaskMutation) AddedEdges() []string {
 	if m.teammate != nil {
 		edges = append(edges, task.EdgeTeammate)
 	}
-	if m.task_priority != nil {
+	if m.taskPriority != nil {
 		edges = append(edges, task.EdgeTaskPriority)
 	}
 	if m.parent != nil {
@@ -12209,7 +12209,7 @@ func (m *TaskMutation) AddedIDs(name string) []ent.Value {
 			return []ent.Value{*id}
 		}
 	case task.EdgeTaskPriority:
-		if id := m.task_priority; id != nil {
+		if id := m.taskPriority; id != nil {
 			return []ent.Value{*id}
 		}
 	case task.EdgeParent:
@@ -12375,7 +12375,7 @@ func (m *TaskMutation) ClearedEdges() []string {
 	if m.clearedteammate {
 		edges = append(edges, task.EdgeTeammate)
 	}
-	if m.clearedtask_priority {
+	if m.clearedtaskPriority {
 		edges = append(edges, task.EdgeTaskPriority)
 	}
 	if m.clearedparent {
@@ -12418,7 +12418,7 @@ func (m *TaskMutation) EdgeCleared(name string) bool {
 	case task.EdgeTeammate:
 		return m.clearedteammate
 	case task.EdgeTaskPriority:
-		return m.clearedtask_priority
+		return m.clearedtaskPriority
 	case task.EdgeParent:
 		return m.clearedparent
 	case task.EdgeSubTasks:
@@ -15263,26 +15263,26 @@ func (m *TaskFeedLikeMutation) ResetEdge(name string) error {
 // TaskFileMutation represents an operation that mutates the TaskFile nodes in the graph.
 type TaskFileMutation struct {
 	config
-	op               Op
-	typ              string
-	id               *ulid.ID
-	name             *string
-	src              *string
-	attached         *bool
-	created_at       *time.Time
-	updated_at       *time.Time
-	clearedFields    map[string]struct{}
-	project          *ulid.ID
-	clearedproject   bool
-	task             *ulid.ID
-	clearedtask      bool
-	task_feed        *ulid.ID
-	clearedtask_feed bool
-	file_type        *ulid.ID
-	clearedfile_type bool
-	done             bool
-	oldValue         func(context.Context) (*TaskFile, error)
-	predicates       []predicate.TaskFile
+	op              Op
+	typ             string
+	id              *ulid.ID
+	name            *string
+	src             *string
+	attached        *bool
+	created_at      *time.Time
+	updated_at      *time.Time
+	clearedFields   map[string]struct{}
+	project         *ulid.ID
+	clearedproject  bool
+	task            *ulid.ID
+	clearedtask     bool
+	taskFeed        *ulid.ID
+	clearedtaskFeed bool
+	fileType        *ulid.ID
+	clearedfileType bool
+	done            bool
+	oldValue        func(context.Context) (*TaskFile, error)
+	predicates      []predicate.TaskFile
 }
 
 var _ ent.Mutation = (*TaskFileMutation)(nil)
@@ -15444,12 +15444,12 @@ func (m *TaskFileMutation) ResetTaskID() {
 
 // SetTaskFeedID sets the "task_feed_id" field.
 func (m *TaskFileMutation) SetTaskFeedID(u ulid.ID) {
-	m.task_feed = &u
+	m.taskFeed = &u
 }
 
 // TaskFeedID returns the value of the "task_feed_id" field in the mutation.
 func (m *TaskFileMutation) TaskFeedID() (r ulid.ID, exists bool) {
-	v := m.task_feed
+	v := m.taskFeed
 	if v == nil {
 		return
 	}
@@ -15475,17 +15475,17 @@ func (m *TaskFileMutation) OldTaskFeedID(ctx context.Context) (v ulid.ID, err er
 
 // ResetTaskFeedID resets all changes to the "task_feed_id" field.
 func (m *TaskFileMutation) ResetTaskFeedID() {
-	m.task_feed = nil
+	m.taskFeed = nil
 }
 
 // SetFileTypeID sets the "file_type_id" field.
 func (m *TaskFileMutation) SetFileTypeID(u ulid.ID) {
-	m.file_type = &u
+	m.fileType = &u
 }
 
 // FileTypeID returns the value of the "file_type_id" field in the mutation.
 func (m *TaskFileMutation) FileTypeID() (r ulid.ID, exists bool) {
-	v := m.file_type
+	v := m.fileType
 	if v == nil {
 		return
 	}
@@ -15511,7 +15511,7 @@ func (m *TaskFileMutation) OldFileTypeID(ctx context.Context) (v ulid.ID, err er
 
 // ResetFileTypeID resets all changes to the "file_type_id" field.
 func (m *TaskFileMutation) ResetFileTypeID() {
-	m.file_type = nil
+	m.fileType = nil
 }
 
 // SetName sets the "name" field.
@@ -15746,56 +15746,56 @@ func (m *TaskFileMutation) ResetTask() {
 	m.clearedtask = false
 }
 
-// ClearTaskFeed clears the "task_feed" edge to the TaskFeed entity.
+// ClearTaskFeed clears the "taskFeed" edge to the TaskFeed entity.
 func (m *TaskFileMutation) ClearTaskFeed() {
-	m.clearedtask_feed = true
+	m.clearedtaskFeed = true
 }
 
-// TaskFeedCleared reports if the "task_feed" edge to the TaskFeed entity was cleared.
+// TaskFeedCleared reports if the "taskFeed" edge to the TaskFeed entity was cleared.
 func (m *TaskFileMutation) TaskFeedCleared() bool {
-	return m.clearedtask_feed
+	return m.clearedtaskFeed
 }
 
-// TaskFeedIDs returns the "task_feed" edge IDs in the mutation.
+// TaskFeedIDs returns the "taskFeed" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // TaskFeedID instead. It exists only for internal usage by the builders.
 func (m *TaskFileMutation) TaskFeedIDs() (ids []ulid.ID) {
-	if id := m.task_feed; id != nil {
+	if id := m.taskFeed; id != nil {
 		ids = append(ids, *id)
 	}
 	return
 }
 
-// ResetTaskFeed resets all changes to the "task_feed" edge.
+// ResetTaskFeed resets all changes to the "taskFeed" edge.
 func (m *TaskFileMutation) ResetTaskFeed() {
-	m.task_feed = nil
-	m.clearedtask_feed = false
+	m.taskFeed = nil
+	m.clearedtaskFeed = false
 }
 
-// ClearFileType clears the "file_type" edge to the FileType entity.
+// ClearFileType clears the "fileType" edge to the FileType entity.
 func (m *TaskFileMutation) ClearFileType() {
-	m.clearedfile_type = true
+	m.clearedfileType = true
 }
 
-// FileTypeCleared reports if the "file_type" edge to the FileType entity was cleared.
+// FileTypeCleared reports if the "fileType" edge to the FileType entity was cleared.
 func (m *TaskFileMutation) FileTypeCleared() bool {
-	return m.clearedfile_type
+	return m.clearedfileType
 }
 
-// FileTypeIDs returns the "file_type" edge IDs in the mutation.
+// FileTypeIDs returns the "fileType" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // FileTypeID instead. It exists only for internal usage by the builders.
 func (m *TaskFileMutation) FileTypeIDs() (ids []ulid.ID) {
-	if id := m.file_type; id != nil {
+	if id := m.fileType; id != nil {
 		ids = append(ids, *id)
 	}
 	return
 }
 
-// ResetFileType resets all changes to the "file_type" edge.
+// ResetFileType resets all changes to the "fileType" edge.
 func (m *TaskFileMutation) ResetFileType() {
-	m.file_type = nil
-	m.clearedfile_type = false
+	m.fileType = nil
+	m.clearedfileType = false
 }
 
 // Where appends a list predicates to the TaskFileMutation builder.
@@ -15824,10 +15824,10 @@ func (m *TaskFileMutation) Fields() []string {
 	if m.task != nil {
 		fields = append(fields, taskfile.FieldTaskID)
 	}
-	if m.task_feed != nil {
+	if m.taskFeed != nil {
 		fields = append(fields, taskfile.FieldTaskFeedID)
 	}
-	if m.file_type != nil {
+	if m.fileType != nil {
 		fields = append(fields, taskfile.FieldFileTypeID)
 	}
 	if m.name != nil {
@@ -16059,10 +16059,10 @@ func (m *TaskFileMutation) AddedEdges() []string {
 	if m.task != nil {
 		edges = append(edges, taskfile.EdgeTask)
 	}
-	if m.task_feed != nil {
+	if m.taskFeed != nil {
 		edges = append(edges, taskfile.EdgeTaskFeed)
 	}
-	if m.file_type != nil {
+	if m.fileType != nil {
 		edges = append(edges, taskfile.EdgeFileType)
 	}
 	return edges
@@ -16081,11 +16081,11 @@ func (m *TaskFileMutation) AddedIDs(name string) []ent.Value {
 			return []ent.Value{*id}
 		}
 	case taskfile.EdgeTaskFeed:
-		if id := m.task_feed; id != nil {
+		if id := m.taskFeed; id != nil {
 			return []ent.Value{*id}
 		}
 	case taskfile.EdgeFileType:
-		if id := m.file_type; id != nil {
+		if id := m.fileType; id != nil {
 			return []ent.Value{*id}
 		}
 	}
@@ -16115,10 +16115,10 @@ func (m *TaskFileMutation) ClearedEdges() []string {
 	if m.clearedtask {
 		edges = append(edges, taskfile.EdgeTask)
 	}
-	if m.clearedtask_feed {
+	if m.clearedtaskFeed {
 		edges = append(edges, taskfile.EdgeTaskFeed)
 	}
-	if m.clearedfile_type {
+	if m.clearedfileType {
 		edges = append(edges, taskfile.EdgeFileType)
 	}
 	return edges
@@ -16133,9 +16133,9 @@ func (m *TaskFileMutation) EdgeCleared(name string) bool {
 	case taskfile.EdgeTask:
 		return m.clearedtask
 	case taskfile.EdgeTaskFeed:
-		return m.clearedtask_feed
+		return m.clearedtaskFeed
 	case taskfile.EdgeFileType:
-		return m.clearedfile_type
+		return m.clearedfileType
 	}
 	return false
 }
@@ -21584,21 +21584,21 @@ func (m *TeammateMutation) ResetEdge(name string) error {
 // TeammateTaskMutation represents an operation that mutates the TeammateTask nodes in the graph.
 type TeammateTaskMutation struct {
 	config
-	op                           Op
-	typ                          string
-	id                           *ulid.ID
-	created_at                   *time.Time
-	updated_at                   *time.Time
-	clearedFields                map[string]struct{}
-	teammate                     *ulid.ID
-	clearedteammate              bool
-	task                         *ulid.ID
-	clearedtask                  bool
-	teammate_task_section        *ulid.ID
-	clearedteammate_task_section bool
-	done                         bool
-	oldValue                     func(context.Context) (*TeammateTask, error)
-	predicates                   []predicate.TeammateTask
+	op                         Op
+	typ                        string
+	id                         *ulid.ID
+	created_at                 *time.Time
+	updated_at                 *time.Time
+	clearedFields              map[string]struct{}
+	teammate                   *ulid.ID
+	clearedteammate            bool
+	task                       *ulid.ID
+	clearedtask                bool
+	teammateTaskSection        *ulid.ID
+	clearedteammateTaskSection bool
+	done                       bool
+	oldValue                   func(context.Context) (*TeammateTask, error)
+	predicates                 []predicate.TeammateTask
 }
 
 var _ ent.Mutation = (*TeammateTaskMutation)(nil)
@@ -21760,12 +21760,12 @@ func (m *TeammateTaskMutation) ResetTaskID() {
 
 // SetTeammateTaskSectionID sets the "teammate_task_section_id" field.
 func (m *TeammateTaskMutation) SetTeammateTaskSectionID(u ulid.ID) {
-	m.teammate_task_section = &u
+	m.teammateTaskSection = &u
 }
 
 // TeammateTaskSectionID returns the value of the "teammate_task_section_id" field in the mutation.
 func (m *TeammateTaskMutation) TeammateTaskSectionID() (r ulid.ID, exists bool) {
-	v := m.teammate_task_section
+	v := m.teammateTaskSection
 	if v == nil {
 		return
 	}
@@ -21791,7 +21791,7 @@ func (m *TeammateTaskMutation) OldTeammateTaskSectionID(ctx context.Context) (v 
 
 // ResetTeammateTaskSectionID resets all changes to the "teammate_task_section_id" field.
 func (m *TeammateTaskMutation) ResetTeammateTaskSectionID() {
-	m.teammate_task_section = nil
+	m.teammateTaskSection = nil
 }
 
 // SetCreatedAt sets the "created_at" field.
@@ -21918,30 +21918,30 @@ func (m *TeammateTaskMutation) ResetTask() {
 	m.clearedtask = false
 }
 
-// ClearTeammateTaskSection clears the "teammate_task_section" edge to the TeammateTaskSection entity.
+// ClearTeammateTaskSection clears the "teammateTaskSection" edge to the TeammateTaskSection entity.
 func (m *TeammateTaskMutation) ClearTeammateTaskSection() {
-	m.clearedteammate_task_section = true
+	m.clearedteammateTaskSection = true
 }
 
-// TeammateTaskSectionCleared reports if the "teammate_task_section" edge to the TeammateTaskSection entity was cleared.
+// TeammateTaskSectionCleared reports if the "teammateTaskSection" edge to the TeammateTaskSection entity was cleared.
 func (m *TeammateTaskMutation) TeammateTaskSectionCleared() bool {
-	return m.clearedteammate_task_section
+	return m.clearedteammateTaskSection
 }
 
-// TeammateTaskSectionIDs returns the "teammate_task_section" edge IDs in the mutation.
+// TeammateTaskSectionIDs returns the "teammateTaskSection" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // TeammateTaskSectionID instead. It exists only for internal usage by the builders.
 func (m *TeammateTaskMutation) TeammateTaskSectionIDs() (ids []ulid.ID) {
-	if id := m.teammate_task_section; id != nil {
+	if id := m.teammateTaskSection; id != nil {
 		ids = append(ids, *id)
 	}
 	return
 }
 
-// ResetTeammateTaskSection resets all changes to the "teammate_task_section" edge.
+// ResetTeammateTaskSection resets all changes to the "teammateTaskSection" edge.
 func (m *TeammateTaskMutation) ResetTeammateTaskSection() {
-	m.teammate_task_section = nil
-	m.clearedteammate_task_section = false
+	m.teammateTaskSection = nil
+	m.clearedteammateTaskSection = false
 }
 
 // Where appends a list predicates to the TeammateTaskMutation builder.
@@ -21970,7 +21970,7 @@ func (m *TeammateTaskMutation) Fields() []string {
 	if m.task != nil {
 		fields = append(fields, teammatetask.FieldTaskID)
 	}
-	if m.teammate_task_section != nil {
+	if m.teammateTaskSection != nil {
 		fields = append(fields, teammatetask.FieldTeammateTaskSectionID)
 	}
 	if m.created_at != nil {
@@ -22137,7 +22137,7 @@ func (m *TeammateTaskMutation) AddedEdges() []string {
 	if m.task != nil {
 		edges = append(edges, teammatetask.EdgeTask)
 	}
-	if m.teammate_task_section != nil {
+	if m.teammateTaskSection != nil {
 		edges = append(edges, teammatetask.EdgeTeammateTaskSection)
 	}
 	return edges
@@ -22156,7 +22156,7 @@ func (m *TeammateTaskMutation) AddedIDs(name string) []ent.Value {
 			return []ent.Value{*id}
 		}
 	case teammatetask.EdgeTeammateTaskSection:
-		if id := m.teammate_task_section; id != nil {
+		if id := m.teammateTaskSection; id != nil {
 			return []ent.Value{*id}
 		}
 	}
@@ -22186,7 +22186,7 @@ func (m *TeammateTaskMutation) ClearedEdges() []string {
 	if m.clearedtask {
 		edges = append(edges, teammatetask.EdgeTask)
 	}
-	if m.clearedteammate_task_section {
+	if m.clearedteammateTaskSection {
 		edges = append(edges, teammatetask.EdgeTeammateTaskSection)
 	}
 	return edges
@@ -22201,7 +22201,7 @@ func (m *TeammateTaskMutation) EdgeCleared(name string) bool {
 	case teammatetask.EdgeTask:
 		return m.clearedtask
 	case teammatetask.EdgeTeammateTaskSection:
-		return m.clearedteammate_task_section
+		return m.clearedteammateTaskSection
 	}
 	return false
 }
@@ -22243,26 +22243,26 @@ func (m *TeammateTaskMutation) ResetEdge(name string) error {
 // TeammateTaskColumnMutation represents an operation that mutates the TeammateTaskColumn nodes in the graph.
 type TeammateTaskColumnMutation struct {
 	config
-	op                 Op
-	typ                string
-	id                 *ulid.ID
-	width              *string
-	disabled           *bool
-	customizable       *bool
-	_order             *int
-	add_order          *int
-	created_at         *time.Time
-	updated_at         *time.Time
-	clearedFields      map[string]struct{}
-	teammate           *ulid.ID
-	clearedteammate    bool
-	workspace          *ulid.ID
-	clearedworkspace   bool
-	task_column        *ulid.ID
-	clearedtask_column bool
-	done               bool
-	oldValue           func(context.Context) (*TeammateTaskColumn, error)
-	predicates         []predicate.TeammateTaskColumn
+	op                Op
+	typ               string
+	id                *ulid.ID
+	width             *string
+	disabled          *bool
+	customizable      *bool
+	_order            *int
+	add_order         *int
+	created_at        *time.Time
+	updated_at        *time.Time
+	clearedFields     map[string]struct{}
+	teammate          *ulid.ID
+	clearedteammate   bool
+	workspace         *ulid.ID
+	clearedworkspace  bool
+	taskColumn        *ulid.ID
+	clearedtaskColumn bool
+	done              bool
+	oldValue          func(context.Context) (*TeammateTaskColumn, error)
+	predicates        []predicate.TeammateTaskColumn
 }
 
 var _ ent.Mutation = (*TeammateTaskColumnMutation)(nil)
@@ -22388,12 +22388,12 @@ func (m *TeammateTaskColumnMutation) ResetTeammateID() {
 
 // SetTaskColumnID sets the "task_column_id" field.
 func (m *TeammateTaskColumnMutation) SetTaskColumnID(u ulid.ID) {
-	m.task_column = &u
+	m.taskColumn = &u
 }
 
 // TaskColumnID returns the value of the "task_column_id" field in the mutation.
 func (m *TeammateTaskColumnMutation) TaskColumnID() (r ulid.ID, exists bool) {
-	v := m.task_column
+	v := m.taskColumn
 	if v == nil {
 		return
 	}
@@ -22419,7 +22419,7 @@ func (m *TeammateTaskColumnMutation) OldTaskColumnID(ctx context.Context) (v uli
 
 // ResetTaskColumnID resets all changes to the "task_column_id" field.
 func (m *TeammateTaskColumnMutation) ResetTaskColumnID() {
-	m.task_column = nil
+	m.taskColumn = nil
 }
 
 // SetWorkspaceID sets the "workspace_id" field.
@@ -22746,30 +22746,30 @@ func (m *TeammateTaskColumnMutation) ResetWorkspace() {
 	m.clearedworkspace = false
 }
 
-// ClearTaskColumn clears the "task_column" edge to the TaskColumn entity.
+// ClearTaskColumn clears the "taskColumn" edge to the TaskColumn entity.
 func (m *TeammateTaskColumnMutation) ClearTaskColumn() {
-	m.clearedtask_column = true
+	m.clearedtaskColumn = true
 }
 
-// TaskColumnCleared reports if the "task_column" edge to the TaskColumn entity was cleared.
+// TaskColumnCleared reports if the "taskColumn" edge to the TaskColumn entity was cleared.
 func (m *TeammateTaskColumnMutation) TaskColumnCleared() bool {
-	return m.clearedtask_column
+	return m.clearedtaskColumn
 }
 
-// TaskColumnIDs returns the "task_column" edge IDs in the mutation.
+// TaskColumnIDs returns the "taskColumn" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // TaskColumnID instead. It exists only for internal usage by the builders.
 func (m *TeammateTaskColumnMutation) TaskColumnIDs() (ids []ulid.ID) {
-	if id := m.task_column; id != nil {
+	if id := m.taskColumn; id != nil {
 		ids = append(ids, *id)
 	}
 	return
 }
 
-// ResetTaskColumn resets all changes to the "task_column" edge.
+// ResetTaskColumn resets all changes to the "taskColumn" edge.
 func (m *TeammateTaskColumnMutation) ResetTaskColumn() {
-	m.task_column = nil
-	m.clearedtask_column = false
+	m.taskColumn = nil
+	m.clearedtaskColumn = false
 }
 
 // Where appends a list predicates to the TeammateTaskColumnMutation builder.
@@ -22795,7 +22795,7 @@ func (m *TeammateTaskColumnMutation) Fields() []string {
 	if m.teammate != nil {
 		fields = append(fields, teammatetaskcolumn.FieldTeammateID)
 	}
-	if m.task_column != nil {
+	if m.taskColumn != nil {
 		fields = append(fields, teammatetaskcolumn.FieldTaskColumnID)
 	}
 	if m.workspace != nil {
@@ -23048,7 +23048,7 @@ func (m *TeammateTaskColumnMutation) AddedEdges() []string {
 	if m.workspace != nil {
 		edges = append(edges, teammatetaskcolumn.EdgeWorkspace)
 	}
-	if m.task_column != nil {
+	if m.taskColumn != nil {
 		edges = append(edges, teammatetaskcolumn.EdgeTaskColumn)
 	}
 	return edges
@@ -23067,7 +23067,7 @@ func (m *TeammateTaskColumnMutation) AddedIDs(name string) []ent.Value {
 			return []ent.Value{*id}
 		}
 	case teammatetaskcolumn.EdgeTaskColumn:
-		if id := m.task_column; id != nil {
+		if id := m.taskColumn; id != nil {
 			return []ent.Value{*id}
 		}
 	}
@@ -23097,7 +23097,7 @@ func (m *TeammateTaskColumnMutation) ClearedEdges() []string {
 	if m.clearedworkspace {
 		edges = append(edges, teammatetaskcolumn.EdgeWorkspace)
 	}
-	if m.clearedtask_column {
+	if m.clearedtaskColumn {
 		edges = append(edges, teammatetaskcolumn.EdgeTaskColumn)
 	}
 	return edges
@@ -23112,7 +23112,7 @@ func (m *TeammateTaskColumnMutation) EdgeCleared(name string) bool {
 	case teammatetaskcolumn.EdgeWorkspace:
 		return m.clearedworkspace
 	case teammatetaskcolumn.EdgeTaskColumn:
-		return m.clearedtask_column
+		return m.clearedtaskColumn
 	}
 	return false
 }
@@ -23154,23 +23154,23 @@ func (m *TeammateTaskColumnMutation) ResetEdge(name string) error {
 // TeammateTaskListStatusMutation represents an operation that mutates the TeammateTaskListStatus nodes in the graph.
 type TeammateTaskListStatusMutation struct {
 	config
-	op                                Op
-	typ                               string
-	id                                *ulid.ID
-	created_at                        *time.Time
-	updated_at                        *time.Time
-	clearedFields                     map[string]struct{}
-	workspace                         *ulid.ID
-	clearedworkspace                  bool
-	teammate                          *ulid.ID
-	clearedteammate                   bool
-	task_list_completed_status        *ulid.ID
-	clearedtask_list_completed_status bool
-	task_list_sort_status             *ulid.ID
-	clearedtask_list_sort_status      bool
-	done                              bool
-	oldValue                          func(context.Context) (*TeammateTaskListStatus, error)
-	predicates                        []predicate.TeammateTaskListStatus
+	op                             Op
+	typ                            string
+	id                             *ulid.ID
+	created_at                     *time.Time
+	updated_at                     *time.Time
+	clearedFields                  map[string]struct{}
+	workspace                      *ulid.ID
+	clearedworkspace               bool
+	teammate                       *ulid.ID
+	clearedteammate                bool
+	taskListCompletedStatus        *ulid.ID
+	clearedtaskListCompletedStatus bool
+	taskListSortStatus             *ulid.ID
+	clearedtaskListSortStatus      bool
+	done                           bool
+	oldValue                       func(context.Context) (*TeammateTaskListStatus, error)
+	predicates                     []predicate.TeammateTaskListStatus
 }
 
 var _ ent.Mutation = (*TeammateTaskListStatusMutation)(nil)
@@ -23332,12 +23332,12 @@ func (m *TeammateTaskListStatusMutation) ResetTeammateID() {
 
 // SetTaskListCompletedStatusID sets the "task_list_completed_status_id" field.
 func (m *TeammateTaskListStatusMutation) SetTaskListCompletedStatusID(u ulid.ID) {
-	m.task_list_completed_status = &u
+	m.taskListCompletedStatus = &u
 }
 
 // TaskListCompletedStatusID returns the value of the "task_list_completed_status_id" field in the mutation.
 func (m *TeammateTaskListStatusMutation) TaskListCompletedStatusID() (r ulid.ID, exists bool) {
-	v := m.task_list_completed_status
+	v := m.taskListCompletedStatus
 	if v == nil {
 		return
 	}
@@ -23363,17 +23363,17 @@ func (m *TeammateTaskListStatusMutation) OldTaskListCompletedStatusID(ctx contex
 
 // ResetTaskListCompletedStatusID resets all changes to the "task_list_completed_status_id" field.
 func (m *TeammateTaskListStatusMutation) ResetTaskListCompletedStatusID() {
-	m.task_list_completed_status = nil
+	m.taskListCompletedStatus = nil
 }
 
 // SetTaskListSortStatusID sets the "task_list_sort_status_id" field.
 func (m *TeammateTaskListStatusMutation) SetTaskListSortStatusID(u ulid.ID) {
-	m.task_list_sort_status = &u
+	m.taskListSortStatus = &u
 }
 
 // TaskListSortStatusID returns the value of the "task_list_sort_status_id" field in the mutation.
 func (m *TeammateTaskListStatusMutation) TaskListSortStatusID() (r ulid.ID, exists bool) {
-	v := m.task_list_sort_status
+	v := m.taskListSortStatus
 	if v == nil {
 		return
 	}
@@ -23399,7 +23399,7 @@ func (m *TeammateTaskListStatusMutation) OldTaskListSortStatusID(ctx context.Con
 
 // ResetTaskListSortStatusID resets all changes to the "task_list_sort_status_id" field.
 func (m *TeammateTaskListStatusMutation) ResetTaskListSortStatusID() {
-	m.task_list_sort_status = nil
+	m.taskListSortStatus = nil
 }
 
 // SetCreatedAt sets the "created_at" field.
@@ -23526,56 +23526,56 @@ func (m *TeammateTaskListStatusMutation) ResetTeammate() {
 	m.clearedteammate = false
 }
 
-// ClearTaskListCompletedStatus clears the "task_list_completed_status" edge to the TaskListCompletedStatus entity.
+// ClearTaskListCompletedStatus clears the "taskListCompletedStatus" edge to the TaskListCompletedStatus entity.
 func (m *TeammateTaskListStatusMutation) ClearTaskListCompletedStatus() {
-	m.clearedtask_list_completed_status = true
+	m.clearedtaskListCompletedStatus = true
 }
 
-// TaskListCompletedStatusCleared reports if the "task_list_completed_status" edge to the TaskListCompletedStatus entity was cleared.
+// TaskListCompletedStatusCleared reports if the "taskListCompletedStatus" edge to the TaskListCompletedStatus entity was cleared.
 func (m *TeammateTaskListStatusMutation) TaskListCompletedStatusCleared() bool {
-	return m.clearedtask_list_completed_status
+	return m.clearedtaskListCompletedStatus
 }
 
-// TaskListCompletedStatusIDs returns the "task_list_completed_status" edge IDs in the mutation.
+// TaskListCompletedStatusIDs returns the "taskListCompletedStatus" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // TaskListCompletedStatusID instead. It exists only for internal usage by the builders.
 func (m *TeammateTaskListStatusMutation) TaskListCompletedStatusIDs() (ids []ulid.ID) {
-	if id := m.task_list_completed_status; id != nil {
+	if id := m.taskListCompletedStatus; id != nil {
 		ids = append(ids, *id)
 	}
 	return
 }
 
-// ResetTaskListCompletedStatus resets all changes to the "task_list_completed_status" edge.
+// ResetTaskListCompletedStatus resets all changes to the "taskListCompletedStatus" edge.
 func (m *TeammateTaskListStatusMutation) ResetTaskListCompletedStatus() {
-	m.task_list_completed_status = nil
-	m.clearedtask_list_completed_status = false
+	m.taskListCompletedStatus = nil
+	m.clearedtaskListCompletedStatus = false
 }
 
-// ClearTaskListSortStatus clears the "task_list_sort_status" edge to the TaskListSortStatus entity.
+// ClearTaskListSortStatus clears the "taskListSortStatus" edge to the TaskListSortStatus entity.
 func (m *TeammateTaskListStatusMutation) ClearTaskListSortStatus() {
-	m.clearedtask_list_sort_status = true
+	m.clearedtaskListSortStatus = true
 }
 
-// TaskListSortStatusCleared reports if the "task_list_sort_status" edge to the TaskListSortStatus entity was cleared.
+// TaskListSortStatusCleared reports if the "taskListSortStatus" edge to the TaskListSortStatus entity was cleared.
 func (m *TeammateTaskListStatusMutation) TaskListSortStatusCleared() bool {
-	return m.clearedtask_list_sort_status
+	return m.clearedtaskListSortStatus
 }
 
-// TaskListSortStatusIDs returns the "task_list_sort_status" edge IDs in the mutation.
+// TaskListSortStatusIDs returns the "taskListSortStatus" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // TaskListSortStatusID instead. It exists only for internal usage by the builders.
 func (m *TeammateTaskListStatusMutation) TaskListSortStatusIDs() (ids []ulid.ID) {
-	if id := m.task_list_sort_status; id != nil {
+	if id := m.taskListSortStatus; id != nil {
 		ids = append(ids, *id)
 	}
 	return
 }
 
-// ResetTaskListSortStatus resets all changes to the "task_list_sort_status" edge.
+// ResetTaskListSortStatus resets all changes to the "taskListSortStatus" edge.
 func (m *TeammateTaskListStatusMutation) ResetTaskListSortStatus() {
-	m.task_list_sort_status = nil
-	m.clearedtask_list_sort_status = false
+	m.taskListSortStatus = nil
+	m.clearedtaskListSortStatus = false
 }
 
 // Where appends a list predicates to the TeammateTaskListStatusMutation builder.
@@ -23604,10 +23604,10 @@ func (m *TeammateTaskListStatusMutation) Fields() []string {
 	if m.teammate != nil {
 		fields = append(fields, teammatetaskliststatus.FieldTeammateID)
 	}
-	if m.task_list_completed_status != nil {
+	if m.taskListCompletedStatus != nil {
 		fields = append(fields, teammatetaskliststatus.FieldTaskListCompletedStatusID)
 	}
-	if m.task_list_sort_status != nil {
+	if m.taskListSortStatus != nil {
 		fields = append(fields, teammatetaskliststatus.FieldTaskListSortStatusID)
 	}
 	if m.created_at != nil {
@@ -23788,10 +23788,10 @@ func (m *TeammateTaskListStatusMutation) AddedEdges() []string {
 	if m.teammate != nil {
 		edges = append(edges, teammatetaskliststatus.EdgeTeammate)
 	}
-	if m.task_list_completed_status != nil {
+	if m.taskListCompletedStatus != nil {
 		edges = append(edges, teammatetaskliststatus.EdgeTaskListCompletedStatus)
 	}
-	if m.task_list_sort_status != nil {
+	if m.taskListSortStatus != nil {
 		edges = append(edges, teammatetaskliststatus.EdgeTaskListSortStatus)
 	}
 	return edges
@@ -23810,11 +23810,11 @@ func (m *TeammateTaskListStatusMutation) AddedIDs(name string) []ent.Value {
 			return []ent.Value{*id}
 		}
 	case teammatetaskliststatus.EdgeTaskListCompletedStatus:
-		if id := m.task_list_completed_status; id != nil {
+		if id := m.taskListCompletedStatus; id != nil {
 			return []ent.Value{*id}
 		}
 	case teammatetaskliststatus.EdgeTaskListSortStatus:
-		if id := m.task_list_sort_status; id != nil {
+		if id := m.taskListSortStatus; id != nil {
 			return []ent.Value{*id}
 		}
 	}
@@ -23844,10 +23844,10 @@ func (m *TeammateTaskListStatusMutation) ClearedEdges() []string {
 	if m.clearedteammate {
 		edges = append(edges, teammatetaskliststatus.EdgeTeammate)
 	}
-	if m.clearedtask_list_completed_status {
+	if m.clearedtaskListCompletedStatus {
 		edges = append(edges, teammatetaskliststatus.EdgeTaskListCompletedStatus)
 	}
-	if m.clearedtask_list_sort_status {
+	if m.clearedtaskListSortStatus {
 		edges = append(edges, teammatetaskliststatus.EdgeTaskListSortStatus)
 	}
 	return edges
@@ -23862,9 +23862,9 @@ func (m *TeammateTaskListStatusMutation) EdgeCleared(name string) bool {
 	case teammatetaskliststatus.EdgeTeammate:
 		return m.clearedteammate
 	case teammatetaskliststatus.EdgeTaskListCompletedStatus:
-		return m.clearedtask_list_completed_status
+		return m.clearedtaskListCompletedStatus
 	case teammatetaskliststatus.EdgeTaskListSortStatus:
-		return m.clearedtask_list_sort_status
+		return m.clearedtaskListSortStatus
 	}
 	return false
 }
@@ -25277,28 +25277,28 @@ func (m *TeammateTaskTabStatusMutation) ResetEdge(name string) error {
 // TestTodoMutation represents an operation that mutates the TestTodo nodes in the graph.
 type TestTodoMutation struct {
 	config
-	op               Op
-	typ              string
-	id               *ulid.ID
-	created_by       *ulid.ID
-	name             *string
-	status           *testtodo.Status
-	priority         *int
-	addpriority      *int
-	due_date         *time.Time
-	created_at       *time.Time
-	updated_at       *time.Time
-	clearedFields    map[string]struct{}
-	test_user        *ulid.ID
-	clearedtest_user bool
-	parent           *ulid.ID
-	clearedparent    bool
-	children         map[ulid.ID]struct{}
-	removedchildren  map[ulid.ID]struct{}
-	clearedchildren  bool
-	done             bool
-	oldValue         func(context.Context) (*TestTodo, error)
-	predicates       []predicate.TestTodo
+	op              Op
+	typ             string
+	id              *ulid.ID
+	created_by      *ulid.ID
+	name            *string
+	status          *testtodo.Status
+	priority        *int
+	addpriority     *int
+	due_date        *time.Time
+	created_at      *time.Time
+	updated_at      *time.Time
+	clearedFields   map[string]struct{}
+	testUser        *ulid.ID
+	clearedtestUser bool
+	parent          *ulid.ID
+	clearedparent   bool
+	children        map[ulid.ID]struct{}
+	removedchildren map[ulid.ID]struct{}
+	clearedchildren bool
+	done            bool
+	oldValue        func(context.Context) (*TestTodo, error)
+	predicates      []predicate.TestTodo
 }
 
 var _ ent.Mutation = (*TestTodoMutation)(nil)
@@ -25388,12 +25388,12 @@ func (m *TestTodoMutation) ID() (id ulid.ID, exists bool) {
 
 // SetTestUserID sets the "test_user_id" field.
 func (m *TestTodoMutation) SetTestUserID(u ulid.ID) {
-	m.test_user = &u
+	m.testUser = &u
 }
 
 // TestUserID returns the value of the "test_user_id" field in the mutation.
 func (m *TestTodoMutation) TestUserID() (r ulid.ID, exists bool) {
-	v := m.test_user
+	v := m.testUser
 	if v == nil {
 		return
 	}
@@ -25419,7 +25419,7 @@ func (m *TestTodoMutation) OldTestUserID(ctx context.Context) (v ulid.ID, err er
 
 // ClearTestUserID clears the value of the "test_user_id" field.
 func (m *TestTodoMutation) ClearTestUserID() {
-	m.test_user = nil
+	m.testUser = nil
 	m.clearedFields[testtodo.FieldTestUserID] = struct{}{}
 }
 
@@ -25431,7 +25431,7 @@ func (m *TestTodoMutation) TestUserIDCleared() bool {
 
 // ResetTestUserID resets all changes to the "test_user_id" field.
 func (m *TestTodoMutation) ResetTestUserID() {
-	m.test_user = nil
+	m.testUser = nil
 	delete(m.clearedFields, testtodo.FieldTestUserID)
 }
 
@@ -25769,30 +25769,30 @@ func (m *TestTodoMutation) ResetUpdatedAt() {
 	m.updated_at = nil
 }
 
-// ClearTestUser clears the "test_user" edge to the TestUser entity.
+// ClearTestUser clears the "testUser" edge to the TestUser entity.
 func (m *TestTodoMutation) ClearTestUser() {
-	m.clearedtest_user = true
+	m.clearedtestUser = true
 }
 
-// TestUserCleared reports if the "test_user" edge to the TestUser entity was cleared.
+// TestUserCleared reports if the "testUser" edge to the TestUser entity was cleared.
 func (m *TestTodoMutation) TestUserCleared() bool {
-	return m.TestUserIDCleared() || m.clearedtest_user
+	return m.TestUserIDCleared() || m.clearedtestUser
 }
 
-// TestUserIDs returns the "test_user" edge IDs in the mutation.
+// TestUserIDs returns the "testUser" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
 // TestUserID instead. It exists only for internal usage by the builders.
 func (m *TestTodoMutation) TestUserIDs() (ids []ulid.ID) {
-	if id := m.test_user; id != nil {
+	if id := m.testUser; id != nil {
 		ids = append(ids, *id)
 	}
 	return
 }
 
-// ResetTestUser resets all changes to the "test_user" edge.
+// ResetTestUser resets all changes to the "testUser" edge.
 func (m *TestTodoMutation) ResetTestUser() {
-	m.test_user = nil
-	m.clearedtest_user = false
+	m.testUser = nil
+	m.clearedtestUser = false
 }
 
 // SetParentID sets the "parent" edge to the TestTodo entity by id.
@@ -25908,7 +25908,7 @@ func (m *TestTodoMutation) Type() string {
 // AddedFields().
 func (m *TestTodoMutation) Fields() []string {
 	fields := make([]string, 0, 9)
-	if m.test_user != nil {
+	if m.testUser != nil {
 		fields = append(fields, testtodo.FieldTestUserID)
 	}
 	if m.created_by != nil {
@@ -26179,7 +26179,7 @@ func (m *TestTodoMutation) ResetField(name string) error {
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *TestTodoMutation) AddedEdges() []string {
 	edges := make([]string, 0, 3)
-	if m.test_user != nil {
+	if m.testUser != nil {
 		edges = append(edges, testtodo.EdgeTestUser)
 	}
 	if m.parent != nil {
@@ -26196,7 +26196,7 @@ func (m *TestTodoMutation) AddedEdges() []string {
 func (m *TestTodoMutation) AddedIDs(name string) []ent.Value {
 	switch name {
 	case testtodo.EdgeTestUser:
-		if id := m.test_user; id != nil {
+		if id := m.testUser; id != nil {
 			return []ent.Value{*id}
 		}
 	case testtodo.EdgeParent:
@@ -26239,7 +26239,7 @@ func (m *TestTodoMutation) RemovedIDs(name string) []ent.Value {
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *TestTodoMutation) ClearedEdges() []string {
 	edges := make([]string, 0, 3)
-	if m.clearedtest_user {
+	if m.clearedtestUser {
 		edges = append(edges, testtodo.EdgeTestUser)
 	}
 	if m.clearedparent {
@@ -26256,7 +26256,7 @@ func (m *TestTodoMutation) ClearedEdges() []string {
 func (m *TestTodoMutation) EdgeCleared(name string) bool {
 	switch name {
 	case testtodo.EdgeTestUser:
-		return m.clearedtest_user
+		return m.clearedtestUser
 	case testtodo.EdgeParent:
 		return m.clearedparent
 	case testtodo.EdgeChildren:

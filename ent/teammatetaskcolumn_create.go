@@ -118,7 +118,7 @@ func (ttcc *TeammateTaskColumnCreate) SetWorkspace(w *Workspace) *TeammateTaskCo
 	return ttcc.SetWorkspaceID(w.ID)
 }
 
-// SetTaskColumn sets the "task_column" edge to the TaskColumn entity.
+// SetTaskColumn sets the "taskColumn" edge to the TaskColumn entity.
 func (ttcc *TeammateTaskColumnCreate) SetTaskColumn(t *TaskColumn) *TeammateTaskColumnCreate {
 	return ttcc.SetTaskColumnID(t.ID)
 }
@@ -249,7 +249,7 @@ func (ttcc *TeammateTaskColumnCreate) check() error {
 		return &ValidationError{Name: "workspace", err: errors.New("ent: missing required edge \"workspace\"")}
 	}
 	if _, ok := ttcc.mutation.TaskColumnID(); !ok {
-		return &ValidationError{Name: "task_column", err: errors.New("ent: missing required edge \"task_column\"")}
+		return &ValidationError{Name: "taskColumn", err: errors.New("ent: missing required edge \"taskColumn\"")}
 	}
 	return nil
 }

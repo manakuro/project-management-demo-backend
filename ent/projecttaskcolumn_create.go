@@ -106,7 +106,7 @@ func (ptcc *ProjectTaskColumnCreate) SetProject(p *Project) *ProjectTaskColumnCr
 	return ptcc.SetProjectID(p.ID)
 }
 
-// SetTaskColumn sets the "task_column" edge to the TaskColumn entity.
+// SetTaskColumn sets the "taskColumn" edge to the TaskColumn entity.
 func (ptcc *ProjectTaskColumnCreate) SetTaskColumn(t *TaskColumn) *ProjectTaskColumnCreate {
 	return ptcc.SetTaskColumnID(t.ID)
 }
@@ -231,7 +231,7 @@ func (ptcc *ProjectTaskColumnCreate) check() error {
 		return &ValidationError{Name: "project", err: errors.New("ent: missing required edge \"project\"")}
 	}
 	if _, ok := ptcc.mutation.TaskColumnID(); !ok {
-		return &ValidationError{Name: "task_column", err: errors.New("ent: missing required edge \"task_column\"")}
+		return &ValidationError{Name: "taskColumn", err: errors.New("ent: missing required edge \"taskColumn\"")}
 	}
 	return nil
 }

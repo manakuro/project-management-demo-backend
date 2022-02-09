@@ -143,17 +143,17 @@ func (pc *ProjectCreate) SetWorkspace(w *Workspace) *ProjectCreate {
 	return pc.SetWorkspaceID(w.ID)
 }
 
-// SetProjectBaseColor sets the "project_base_color" edge to the ProjectBaseColor entity.
+// SetProjectBaseColor sets the "projectBaseColor" edge to the ProjectBaseColor entity.
 func (pc *ProjectCreate) SetProjectBaseColor(p *ProjectBaseColor) *ProjectCreate {
 	return pc.SetProjectBaseColorID(p.ID)
 }
 
-// SetProjectLightColor sets the "project_light_color" edge to the ProjectLightColor entity.
+// SetProjectLightColor sets the "projectLightColor" edge to the ProjectLightColor entity.
 func (pc *ProjectCreate) SetProjectLightColor(p *ProjectLightColor) *ProjectCreate {
 	return pc.SetProjectLightColorID(p.ID)
 }
 
-// SetProjectIcon sets the "project_icon" edge to the ProjectIcon entity.
+// SetProjectIcon sets the "projectIcon" edge to the ProjectIcon entity.
 func (pc *ProjectCreate) SetProjectIcon(p *ProjectIcon) *ProjectCreate {
 	return pc.SetProjectIconID(p.ID)
 }
@@ -405,13 +405,13 @@ func (pc *ProjectCreate) check() error {
 		return &ValidationError{Name: "workspace", err: errors.New("ent: missing required edge \"workspace\"")}
 	}
 	if _, ok := pc.mutation.ProjectBaseColorID(); !ok {
-		return &ValidationError{Name: "project_base_color", err: errors.New("ent: missing required edge \"project_base_color\"")}
+		return &ValidationError{Name: "projectBaseColor", err: errors.New("ent: missing required edge \"projectBaseColor\"")}
 	}
 	if _, ok := pc.mutation.ProjectLightColorID(); !ok {
-		return &ValidationError{Name: "project_light_color", err: errors.New("ent: missing required edge \"project_light_color\"")}
+		return &ValidationError{Name: "projectLightColor", err: errors.New("ent: missing required edge \"projectLightColor\"")}
 	}
 	if _, ok := pc.mutation.ProjectIconID(); !ok {
-		return &ValidationError{Name: "project_icon", err: errors.New("ent: missing required edge \"project_icon\"")}
+		return &ValidationError{Name: "projectIcon", err: errors.New("ent: missing required edge \"projectIcon\"")}
 	}
 	if _, ok := pc.mutation.TeammateID(); !ok {
 		return &ValidationError{Name: "teammate", err: errors.New("ent: missing required edge \"teammate\"")}

@@ -127,12 +127,12 @@ func (tfc *TaskFileCreate) SetTask(t *Task) *TaskFileCreate {
 	return tfc.SetTaskID(t.ID)
 }
 
-// SetTaskFeed sets the "task_feed" edge to the TaskFeed entity.
+// SetTaskFeed sets the "taskFeed" edge to the TaskFeed entity.
 func (tfc *TaskFileCreate) SetTaskFeed(t *TaskFeed) *TaskFileCreate {
 	return tfc.SetTaskFeedID(t.ID)
 }
 
-// SetFileType sets the "file_type" edge to the FileType entity.
+// SetFileType sets the "fileType" edge to the FileType entity.
 func (tfc *TaskFileCreate) SetFileType(f *FileType) *TaskFileCreate {
 	return tfc.SetFileTypeID(f.ID)
 }
@@ -272,10 +272,10 @@ func (tfc *TaskFileCreate) check() error {
 		return &ValidationError{Name: "task", err: errors.New("ent: missing required edge \"task\"")}
 	}
 	if _, ok := tfc.mutation.TaskFeedID(); !ok {
-		return &ValidationError{Name: "task_feed", err: errors.New("ent: missing required edge \"task_feed\"")}
+		return &ValidationError{Name: "taskFeed", err: errors.New("ent: missing required edge \"taskFeed\"")}
 	}
 	if _, ok := tfc.mutation.FileTypeID(); !ok {
-		return &ValidationError{Name: "file_type", err: errors.New("ent: missing required edge \"file_type\"")}
+		return &ValidationError{Name: "fileType", err: errors.New("ent: missing required edge \"fileType\"")}
 	}
 	return nil
 }

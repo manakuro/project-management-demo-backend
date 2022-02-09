@@ -50,10 +50,10 @@ type TaskFileEdges struct {
 	Project *Project `json:"project,omitempty"`
 	// Task holds the value of the task edge.
 	Task *Task `json:"task,omitempty"`
-	// TaskFeed holds the value of the task_feed edge.
-	TaskFeed *TaskFeed `json:"task_feed,omitempty"`
-	// FileType holds the value of the file_type edge.
-	FileType *FileType `json:"file_type,omitempty"`
+	// TaskFeed holds the value of the taskFeed edge.
+	TaskFeed *TaskFeed `json:"taskFeed,omitempty"`
+	// FileType holds the value of the fileType edge.
+	FileType *FileType `json:"fileType,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [4]bool
@@ -92,13 +92,13 @@ func (e TaskFileEdges) TaskOrErr() (*Task, error) {
 func (e TaskFileEdges) TaskFeedOrErr() (*TaskFeed, error) {
 	if e.loadedTypes[2] {
 		if e.TaskFeed == nil {
-			// The edge task_feed was loaded in eager-loading,
+			// The edge taskFeed was loaded in eager-loading,
 			// but was not found.
 			return nil, &NotFoundError{label: taskfeed.Label}
 		}
 		return e.TaskFeed, nil
 	}
-	return nil, &NotLoadedError{edge: "task_feed"}
+	return nil, &NotLoadedError{edge: "taskFeed"}
 }
 
 // FileTypeOrErr returns the FileType value or an error if the edge
@@ -106,13 +106,13 @@ func (e TaskFileEdges) TaskFeedOrErr() (*TaskFeed, error) {
 func (e TaskFileEdges) FileTypeOrErr() (*FileType, error) {
 	if e.loadedTypes[3] {
 		if e.FileType == nil {
-			// The edge file_type was loaded in eager-loading,
+			// The edge fileType was loaded in eager-loading,
 			// but was not found.
 			return nil, &NotFoundError{label: filetype.Label}
 		}
 		return e.FileType, nil
 	}
-	return nil, &NotLoadedError{edge: "file_type"}
+	return nil, &NotLoadedError{edge: "fileType"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -218,12 +218,12 @@ func (tf *TaskFile) QueryTask() *TaskQuery {
 	return (&TaskFileClient{config: tf.config}).QueryTask(tf)
 }
 
-// QueryTaskFeed queries the "task_feed" edge of the TaskFile entity.
+// QueryTaskFeed queries the "taskFeed" edge of the TaskFile entity.
 func (tf *TaskFile) QueryTaskFeed() *TaskFeedQuery {
 	return (&TaskFileClient{config: tf.config}).QueryTaskFeed(tf)
 }
 
-// QueryFileType queries the "file_type" edge of the TaskFile entity.
+// QueryFileType queries the "fileType" edge of the TaskFile entity.
 func (tf *TaskFile) QueryFileType() *FileTypeQuery {
 	return (&TaskFileClient{config: tf.config}).QueryFileType(tf)
 }

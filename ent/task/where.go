@@ -1259,7 +1259,7 @@ func HasTeammateWith(preds ...predicate.Teammate) predicate.Task {
 	})
 }
 
-// HasTaskPriority applies the HasEdge predicate on the "task_priority" edge.
+// HasTaskPriority applies the HasEdge predicate on the "taskPriority" edge.
 func HasTaskPriority() predicate.Task {
 	return predicate.Task(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
@@ -1271,7 +1271,7 @@ func HasTaskPriority() predicate.Task {
 	})
 }
 
-// HasTaskPriorityWith applies the HasEdge predicate on the "task_priority" edge with a given conditions (other predicates).
+// HasTaskPriorityWith applies the HasEdge predicate on the "taskPriority" edge with a given conditions (other predicates).
 func HasTaskPriorityWith(preds ...predicate.TaskPriority) predicate.Task {
 	return predicate.Task(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(

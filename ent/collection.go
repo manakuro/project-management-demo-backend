@@ -143,6 +143,18 @@ func (pr *ProjectQuery) collectField(ctx *graphql.OperationContext, field graphq
 			pr = pr.WithFavoriteProjects(func(query *FavoriteProjectQuery) {
 				query.collectField(ctx, field)
 			})
+		case "projectBaseColor":
+			pr = pr.WithProjectBaseColor(func(query *ProjectBaseColorQuery) {
+				query.collectField(ctx, field)
+			})
+		case "projectIcon":
+			pr = pr.WithProjectIcon(func(query *ProjectIconQuery) {
+				query.collectField(ctx, field)
+			})
+		case "projectLightColor":
+			pr = pr.WithProjectLightColor(func(query *ProjectLightColorQuery) {
+				query.collectField(ctx, field)
+			})
 		case "projectTaskColumns":
 			pr = pr.WithProjectTaskColumns(func(query *ProjectTaskColumnQuery) {
 				query.collectField(ctx, field)
@@ -161,18 +173,6 @@ func (pr *ProjectQuery) collectField(ctx *graphql.OperationContext, field graphq
 			})
 		case "projectTeammates":
 			pr = pr.WithProjectTeammates(func(query *ProjectTeammateQuery) {
-				query.collectField(ctx, field)
-			})
-		case "project_base_color":
-			pr = pr.WithProjectBaseColor(func(query *ProjectBaseColorQuery) {
-				query.collectField(ctx, field)
-			})
-		case "project_icon":
-			pr = pr.WithProjectIcon(func(query *ProjectIconQuery) {
-				query.collectField(ctx, field)
-			})
-		case "project_light_color":
-			pr = pr.WithProjectLightColor(func(query *ProjectLightColorQuery) {
 				query.collectField(ctx, field)
 			})
 		case "taskFiles":
@@ -307,7 +307,7 @@ func (ptc *ProjectTaskColumnQuery) collectField(ctx *graphql.OperationContext, f
 			ptc = ptc.WithProject(func(query *ProjectQuery) {
 				query.collectField(ctx, field)
 			})
-		case "task_column":
+		case "taskColumn":
 			ptc = ptc.WithTaskColumn(func(query *TaskColumnQuery) {
 				query.collectField(ctx, field)
 			})
@@ -331,11 +331,11 @@ func (ptls *ProjectTaskListStatusQuery) collectField(ctx *graphql.OperationConte
 			ptls = ptls.WithProject(func(query *ProjectQuery) {
 				query.collectField(ctx, field)
 			})
-		case "task_list_completed_status":
+		case "taskListCompletedStatus":
 			ptls = ptls.WithTaskListCompletedStatus(func(query *TaskListCompletedStatusQuery) {
 				query.collectField(ctx, field)
 			})
-		case "task_list_sort_status":
+		case "taskListSortStatus":
 			ptls = ptls.WithTaskListSortStatus(func(query *TaskListSortStatusQuery) {
 				query.collectField(ctx, field)
 			})
@@ -463,12 +463,12 @@ func (t *TaskQuery) collectField(ctx *graphql.OperationContext, field graphql.Co
 			t = t.WithTaskLikes(func(query *TaskLikeQuery) {
 				query.collectField(ctx, field)
 			})
-		case "taskTags":
-			t = t.WithTaskTags(func(query *TaskTagQuery) {
+		case "taskPriority":
+			t = t.WithTaskPriority(func(query *TaskPriorityQuery) {
 				query.collectField(ctx, field)
 			})
-		case "task_priority":
-			t = t.WithTaskPriority(func(query *TaskPriorityQuery) {
+		case "taskTags":
+			t = t.WithTaskTags(func(query *TaskTagQuery) {
 				query.collectField(ctx, field)
 			})
 		case "teammate":
@@ -603,7 +603,7 @@ func (tf *TaskFileQuery) CollectFields(ctx context.Context, satisfies ...string)
 func (tf *TaskFileQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *TaskFileQuery {
 	for _, field := range graphql.CollectFields(ctx, field.Selections, satisfies) {
 		switch field.Name {
-		case "file_type":
+		case "fileType":
 			tf = tf.WithFileType(func(query *FileTypeQuery) {
 				query.collectField(ctx, field)
 			})
@@ -615,7 +615,7 @@ func (tf *TaskFileQuery) collectField(ctx *graphql.OperationContext, field graph
 			tf = tf.WithTask(func(query *TaskQuery) {
 				query.collectField(ctx, field)
 			})
-		case "task_feed":
+		case "taskFeed":
 			tf = tf.WithTaskFeed(func(query *TaskFeedQuery) {
 				query.collectField(ctx, field)
 			})
@@ -859,7 +859,7 @@ func (tt *TeammateTaskQuery) collectField(ctx *graphql.OperationContext, field g
 			tt = tt.WithTeammate(func(query *TeammateQuery) {
 				query.collectField(ctx, field)
 			})
-		case "teammate_task_section":
+		case "teammateTaskSection":
 			tt = tt.WithTeammateTaskSection(func(query *TeammateTaskSectionQuery) {
 				query.collectField(ctx, field)
 			})
@@ -879,7 +879,7 @@ func (ttc *TeammateTaskColumnQuery) CollectFields(ctx context.Context, satisfies
 func (ttc *TeammateTaskColumnQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *TeammateTaskColumnQuery {
 	for _, field := range graphql.CollectFields(ctx, field.Selections, satisfies) {
 		switch field.Name {
-		case "task_column":
+		case "taskColumn":
 			ttc = ttc.WithTaskColumn(func(query *TaskColumnQuery) {
 				query.collectField(ctx, field)
 			})
@@ -907,11 +907,11 @@ func (ttls *TeammateTaskListStatusQuery) CollectFields(ctx context.Context, sati
 func (ttls *TeammateTaskListStatusQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *TeammateTaskListStatusQuery {
 	for _, field := range graphql.CollectFields(ctx, field.Selections, satisfies) {
 		switch field.Name {
-		case "task_list_completed_status":
+		case "taskListCompletedStatus":
 			ttls = ttls.WithTaskListCompletedStatus(func(query *TaskListCompletedStatusQuery) {
 				query.collectField(ctx, field)
 			})
-		case "task_list_sort_status":
+		case "taskListSortStatus":
 			ttls = ttls.WithTaskListSortStatus(func(query *TaskListSortStatusQuery) {
 				query.collectField(ctx, field)
 			})
@@ -995,7 +995,7 @@ func (tt *TestTodoQuery) collectField(ctx *graphql.OperationContext, field graph
 			tt = tt.WithParent(func(query *TestTodoQuery) {
 				query.collectField(ctx, field)
 			})
-		case "test_user":
+		case "testUser":
 			tt = tt.WithTestUser(func(query *TestUserQuery) {
 				query.collectField(ctx, field)
 			})

@@ -52,8 +52,8 @@ type Task struct {
 type TaskEdges struct {
 	// Teammate holds the value of the teammate edge.
 	Teammate *Teammate `json:"teammate,omitempty"`
-	// TaskPriority holds the value of the task_priority edge.
-	TaskPriority *TaskPriority `json:"task_priority,omitempty"`
+	// TaskPriority holds the value of the taskPriority edge.
+	TaskPriority *TaskPriority `json:"taskPriority,omitempty"`
 	// Parent holds the value of the parent edge.
 	Parent *Task `json:"parent,omitempty"`
 	// SubTasks holds the value of the subTasks edge.
@@ -98,13 +98,13 @@ func (e TaskEdges) TeammateOrErr() (*Teammate, error) {
 func (e TaskEdges) TaskPriorityOrErr() (*TaskPriority, error) {
 	if e.loadedTypes[1] {
 		if e.TaskPriority == nil {
-			// The edge task_priority was loaded in eager-loading,
+			// The edge taskPriority was loaded in eager-loading,
 			// but was not found.
 			return nil, &NotFoundError{label: taskpriority.Label}
 		}
 		return e.TaskPriority, nil
 	}
-	return nil, &NotLoadedError{edge: "task_priority"}
+	return nil, &NotLoadedError{edge: "taskPriority"}
 }
 
 // ParentOrErr returns the Parent value or an error if the edge
@@ -321,7 +321,7 @@ func (t *Task) QueryTeammate() *TeammateQuery {
 	return (&TaskClient{config: t.config}).QueryTeammate(t)
 }
 
-// QueryTaskPriority queries the "task_priority" edge of the Task entity.
+// QueryTaskPriority queries the "taskPriority" edge of the Task entity.
 func (t *Task) QueryTaskPriority() *TaskPriorityQuery {
 	return (&TaskClient{config: t.config}).QueryTaskPriority(t)
 }

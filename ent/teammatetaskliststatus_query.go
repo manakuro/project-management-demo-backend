@@ -114,7 +114,7 @@ func (ttlsq *TeammateTaskListStatusQuery) QueryTeammate() *TeammateQuery {
 	return query
 }
 
-// QueryTaskListCompletedStatus chains the current query on the "task_list_completed_status" edge.
+// QueryTaskListCompletedStatus chains the current query on the "taskListCompletedStatus" edge.
 func (ttlsq *TeammateTaskListStatusQuery) QueryTaskListCompletedStatus() *TaskListCompletedStatusQuery {
 	query := &TaskListCompletedStatusQuery{config: ttlsq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
@@ -136,7 +136,7 @@ func (ttlsq *TeammateTaskListStatusQuery) QueryTaskListCompletedStatus() *TaskLi
 	return query
 }
 
-// QueryTaskListSortStatus chains the current query on the "task_list_sort_status" edge.
+// QueryTaskListSortStatus chains the current query on the "taskListSortStatus" edge.
 func (ttlsq *TeammateTaskListStatusQuery) QueryTaskListSortStatus() *TaskListSortStatusQuery {
 	query := &TaskListSortStatusQuery{config: ttlsq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
@@ -372,7 +372,7 @@ func (ttlsq *TeammateTaskListStatusQuery) WithTeammate(opts ...func(*TeammateQue
 }
 
 // WithTaskListCompletedStatus tells the query-builder to eager-load the nodes that are connected to
-// the "task_list_completed_status" edge. The optional arguments are used to configure the query builder of the edge.
+// the "taskListCompletedStatus" edge. The optional arguments are used to configure the query builder of the edge.
 func (ttlsq *TeammateTaskListStatusQuery) WithTaskListCompletedStatus(opts ...func(*TaskListCompletedStatusQuery)) *TeammateTaskListStatusQuery {
 	query := &TaskListCompletedStatusQuery{config: ttlsq.config}
 	for _, opt := range opts {
@@ -383,7 +383,7 @@ func (ttlsq *TeammateTaskListStatusQuery) WithTaskListCompletedStatus(opts ...fu
 }
 
 // WithTaskListSortStatus tells the query-builder to eager-load the nodes that are connected to
-// the "task_list_sort_status" edge. The optional arguments are used to configure the query builder of the edge.
+// the "taskListSortStatus" edge. The optional arguments are used to configure the query builder of the edge.
 func (ttlsq *TeammateTaskListStatusQuery) WithTaskListSortStatus(opts ...func(*TaskListSortStatusQuery)) *TeammateTaskListStatusQuery {
 	query := &TaskListSortStatusQuery{config: ttlsq.config}
 	for _, opt := range opts {

@@ -43,8 +43,8 @@ type TestTodo struct {
 
 // TestTodoEdges holds the relations/edges for other nodes in the graph.
 type TestTodoEdges struct {
-	// TestUser holds the value of the test_user edge.
-	TestUser *TestUser `json:"test_user,omitempty"`
+	// TestUser holds the value of the testUser edge.
+	TestUser *TestUser `json:"testUser,omitempty"`
 	// Parent holds the value of the parent edge.
 	Parent *TestTodo `json:"parent,omitempty"`
 	// Children holds the value of the children edge.
@@ -59,13 +59,13 @@ type TestTodoEdges struct {
 func (e TestTodoEdges) TestUserOrErr() (*TestUser, error) {
 	if e.loadedTypes[0] {
 		if e.TestUser == nil {
-			// The edge test_user was loaded in eager-loading,
+			// The edge testUser was loaded in eager-loading,
 			// but was not found.
 			return nil, &NotFoundError{label: testuser.Label}
 		}
 		return e.TestUser, nil
 	}
-	return nil, &NotLoadedError{edge: "test_user"}
+	return nil, &NotLoadedError{edge: "testUser"}
 }
 
 // ParentOrErr returns the Parent value or an error if the edge
@@ -185,7 +185,7 @@ func (tt *TestTodo) assignValues(columns []string, values []interface{}) error {
 	return nil
 }
 
-// QueryTestUser queries the "test_user" edge of the TestTodo entity.
+// QueryTestUser queries the "testUser" edge of the TestTodo entity.
 func (tt *TestTodo) QueryTestUser() *TestUserQuery {
 	return (&TestTodoClient{config: tt.config}).QueryTestUser(tt)
 }

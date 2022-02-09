@@ -208,7 +208,7 @@ func (tc *TaskCreate) SetTeammate(t *Teammate) *TaskCreate {
 	return tc.SetTeammateID(t.ID)
 }
 
-// SetTaskPriority sets the "task_priority" edge to the TaskPriority entity.
+// SetTaskPriority sets the "taskPriority" edge to the TaskPriority entity.
 func (tc *TaskCreate) SetTaskPriority(t *TaskPriority) *TaskCreate {
 	return tc.SetTaskPriorityID(t.ID)
 }
@@ -489,7 +489,7 @@ func (tc *TaskCreate) check() error {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
 	}
 	if _, ok := tc.mutation.TaskPriorityID(); !ok {
-		return &ValidationError{Name: "task_priority", err: errors.New("ent: missing required edge \"task_priority\"")}
+		return &ValidationError{Name: "taskPriority", err: errors.New("ent: missing required edge \"taskPriority\"")}
 	}
 	return nil
 }

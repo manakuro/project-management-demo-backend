@@ -41,8 +41,8 @@ type TeammateTaskEdges struct {
 	Teammate *Teammate `json:"teammate,omitempty"`
 	// Task holds the value of the task edge.
 	Task *Task `json:"task,omitempty"`
-	// TeammateTaskSection holds the value of the teammate_task_section edge.
-	TeammateTaskSection *TeammateTaskSection `json:"teammate_task_section,omitempty"`
+	// TeammateTaskSection holds the value of the teammateTaskSection edge.
+	TeammateTaskSection *TeammateTaskSection `json:"teammateTaskSection,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [3]bool
@@ -81,13 +81,13 @@ func (e TeammateTaskEdges) TaskOrErr() (*Task, error) {
 func (e TeammateTaskEdges) TeammateTaskSectionOrErr() (*TeammateTaskSection, error) {
 	if e.loadedTypes[2] {
 		if e.TeammateTaskSection == nil {
-			// The edge teammate_task_section was loaded in eager-loading,
+			// The edge teammateTaskSection was loaded in eager-loading,
 			// but was not found.
 			return nil, &NotFoundError{label: teammatetasksection.Label}
 		}
 		return e.TeammateTaskSection, nil
 	}
-	return nil, &NotLoadedError{edge: "teammate_task_section"}
+	return nil, &NotLoadedError{edge: "teammateTaskSection"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -165,7 +165,7 @@ func (tt *TeammateTask) QueryTask() *TaskQuery {
 	return (&TeammateTaskClient{config: tt.config}).QueryTask(tt)
 }
 
-// QueryTeammateTaskSection queries the "teammate_task_section" edge of the TeammateTask entity.
+// QueryTeammateTaskSection queries the "teammateTaskSection" edge of the TeammateTask entity.
 func (tt *TeammateTask) QueryTeammateTaskSection() *TeammateTaskSectionQuery {
 	return (&TeammateTaskClient{config: tt.config}).QueryTeammateTaskSection(tt)
 }

@@ -34,8 +34,8 @@ const (
 	EdgeTeammate = "teammate"
 	// EdgeWorkspace holds the string denoting the workspace edge name in mutations.
 	EdgeWorkspace = "workspace"
-	// EdgeTaskColumn holds the string denoting the task_column edge name in mutations.
-	EdgeTaskColumn = "task_column"
+	// EdgeTaskColumn holds the string denoting the taskcolumn edge name in mutations.
+	EdgeTaskColumn = "taskColumn"
 	// Table holds the table name of the teammatetaskcolumn in the database.
 	Table = "teammate_task_columns"
 	// TeammateTable is the table that holds the teammate relation/edge.
@@ -52,12 +52,12 @@ const (
 	WorkspaceInverseTable = "workspaces"
 	// WorkspaceColumn is the table column denoting the workspace relation/edge.
 	WorkspaceColumn = "workspace_id"
-	// TaskColumnTable is the table that holds the task_column relation/edge.
+	// TaskColumnTable is the table that holds the taskColumn relation/edge.
 	TaskColumnTable = "teammate_task_columns"
 	// TaskColumnInverseTable is the table name for the TaskColumn entity.
 	// It exists in this package in order to avoid circular dependency with the "taskcolumn" package.
 	TaskColumnInverseTable = "task_columns"
-	// TaskColumnColumn is the table column denoting the task_column relation/edge.
+	// TaskColumnColumn is the table column denoting the taskColumn relation/edge.
 	TaskColumnColumn = "task_column_id"
 )
 
