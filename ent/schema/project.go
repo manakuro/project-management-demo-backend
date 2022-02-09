@@ -18,6 +18,8 @@ import (
 	entMixin "entgo.io/ent/schema/mixin"
 )
 
+const projectsRef string = "projects"
+
 // Project holds the schema definition for the Test entity.
 type Project struct {
 	ent.Schema
@@ -60,7 +62,7 @@ func (ProjectMixin) Fields() []ent.Field {
 func (Project) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("workspace", Workspace.Type).
-			Ref("projects").
+			Ref(projectsRef).
 			Unique().
 			Field("workspace_id").
 			Required().
@@ -70,7 +72,7 @@ func (Project) Edges() []ent.Edge {
 				),
 			),
 		edge.From("project_base_color", ProjectBaseColor.Type).
-			Ref("projects").
+			Ref(projectsRef).
 			Unique().
 			Field("project_base_color_id").
 			Required().
@@ -80,7 +82,7 @@ func (Project) Edges() []ent.Edge {
 				),
 			),
 		edge.From("project_light_color", ProjectLightColor.Type).
-			Ref("projects").
+			Ref(projectsRef).
 			Unique().
 			Field("project_light_color_id").
 			Required().
@@ -90,7 +92,7 @@ func (Project) Edges() []ent.Edge {
 				),
 			),
 		edge.From("project_icon", ProjectIcon.Type).
-			Ref("projects").
+			Ref(projectsRef).
 			Unique().
 			Field("project_icon_id").
 			Required().
@@ -100,7 +102,7 @@ func (Project) Edges() []ent.Edge {
 				),
 			),
 		edge.From("teammate", Teammate.Type).
-			Ref("projects").
+			Ref(projectsRef).
 			Unique().
 			Field("created_by").
 			Required().
@@ -109,43 +111,43 @@ func (Project) Edges() []ent.Edge {
 					annotation.Edge{FieldName: "created_by"},
 				),
 			),
-		edge.To("project_teammates", ProjectTeammate.Edges).
+		edge.To(projectTeammatesRef, ProjectTeammate.Edges).
 			Annotations(
 				schema.Annotation(
 					annotation.Edge{FieldName: "project_teammate_id"},
 				),
 			),
-		edge.To("favorite_projects", FavoriteProject.Type).
+		edge.To(favoriteProjectsRef, FavoriteProject.Type).
 			Annotations(
 				schema.Annotation(
 					annotation.Edge{FieldName: "favorite_project_id"},
 				),
 			),
-		edge.To("project_task_columns", ProjectTaskColumn.Type).
+		edge.To(projectTaskColumnsRef, ProjectTaskColumn.Type).
 			Annotations(
 				schema.Annotation(
 					annotation.Edge{FieldName: "project_task_column_id"},
 				),
 			),
-		edge.To("project_task_list_statuses", ProjectTaskListStatus.Type).
+		edge.To(projectTaskListStatusesRef, ProjectTaskListStatus.Type).
 			Annotations(
 				schema.Annotation(
 					annotation.Edge{FieldName: "project_task_list_status_id"},
 				),
 			),
-		edge.To("project_task_sections", ProjectTaskSection.Type).
+		edge.To(projectTaskSectionsRef, ProjectTaskSection.Type).
 			Annotations(
 				schema.Annotation(
 					annotation.Edge{FieldName: "project_task_section_id"},
 				),
 			),
-		edge.To("project_tasks", ProjectTask.Type).
+		edge.To(projectTasksRef, ProjectTask.Type).
 			Annotations(
 				schema.Annotation(
 					annotation.Edge{FieldName: "project_task_id"},
 				),
 			),
-		edge.To("task_files", TaskFile.Type).
+		edge.To(taskFilesRef, TaskFile.Type).
 			Annotations(
 				schema.Annotation(
 					annotation.Edge{FieldName: "task_file_id"},

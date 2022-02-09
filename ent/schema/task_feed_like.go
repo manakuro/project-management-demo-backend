@@ -15,6 +15,8 @@ import (
 	entMixin "entgo.io/ent/schema/mixin"
 )
 
+const taskFeedLikesRef string = "taskFeedLikes"
+
 // TaskFeedLike holds the schema definition for the Test entity.
 type TaskFeedLike struct {
 	ent.Schema
@@ -41,7 +43,7 @@ func (TaskFeedLikeMixin) Fields() []ent.Field {
 func (TaskFeedLike) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("task", Task.Type).
-			Ref("task_feed_likes").
+			Ref(taskFeedLikesRef).
 			Field("task_id").
 			Unique().
 			Required().
@@ -51,7 +53,7 @@ func (TaskFeedLike) Edges() []ent.Edge {
 				),
 			),
 		edge.From("teammate", Teammate.Type).
-			Ref("task_feed_likes").
+			Ref(taskFeedLikesRef).
 			Field("teammate_id").
 			Unique().
 			Required().
@@ -61,7 +63,7 @@ func (TaskFeedLike) Edges() []ent.Edge {
 				),
 			),
 		edge.From("feed", TaskFeed.Type).
-			Ref("task_feed_likes").
+			Ref(taskFeedLikesRef).
 			Field("task_feed_id").
 			Unique().
 			Required().

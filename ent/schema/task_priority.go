@@ -14,6 +14,8 @@ import (
 	entMixin "entgo.io/ent/schema/mixin"
 )
 
+const taskPrioritiesRef string = "taskPriorities"
+
 // TaskPriority holds the schema definition for the Test entity.
 type TaskPriority struct {
 	ent.Schema
@@ -45,7 +47,7 @@ func (TaskPriorityMixin) Fields() []ent.Field {
 func (TaskPriority) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("color", Color.Type).
-			Ref("task_priorities").
+			Ref(taskPrioritiesRef).
 			Field("color_id").
 			Unique().
 			Required().
@@ -54,7 +56,7 @@ func (TaskPriority) Edges() []ent.Edge {
 					annotation.Edge{FieldName: "color_id"},
 				),
 			),
-		edge.To("tasks", Task.Type).Annotations(
+		edge.To(tasksRef, Task.Type).Annotations(
 			schema.Annotation(
 				annotation.Edge{FieldName: "task_id"},
 			),

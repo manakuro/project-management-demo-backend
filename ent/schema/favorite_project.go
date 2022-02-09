@@ -15,6 +15,8 @@ import (
 	entMixin "entgo.io/ent/schema/mixin"
 )
 
+const favoriteProjectsRef string = "favoriteProjects"
+
 // FavoriteProject holds the schema definition for the Test entity.
 type FavoriteProject struct {
 	ent.Schema
@@ -39,7 +41,7 @@ func (FavoriteProjectMixin) Fields() []ent.Field {
 func (FavoriteProject) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("project", Project.Type).
-			Ref("favorite_projects").
+			Ref(favoriteProjectsRef).
 			Field("project_id").
 			Unique().
 			Required().
@@ -49,7 +51,7 @@ func (FavoriteProject) Edges() []ent.Edge {
 				),
 			),
 		edge.From("teammate", Teammate.Type).
-			Ref("favorite_projects").
+			Ref(favoriteProjectsRef).
 			Field("teammate_id").
 			Unique().
 			Required().

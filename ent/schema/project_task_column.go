@@ -15,6 +15,8 @@ import (
 	entMixin "entgo.io/ent/schema/mixin"
 )
 
+const projectTaskColumnsRef string = "projectTaskColumns"
+
 // ProjectTaskColumn holds the schema definition for the Test entity.
 type ProjectTaskColumn struct {
 	ent.Schema
@@ -45,7 +47,7 @@ func (ProjectTaskColumnMixin) Fields() []ent.Field {
 func (ProjectTaskColumn) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("project", Project.Type).
-			Ref("project_task_columns").
+			Ref(projectTaskColumnsRef).
 			Field("project_id").
 			Unique().
 			Required().
@@ -55,7 +57,7 @@ func (ProjectTaskColumn) Edges() []ent.Edge {
 				),
 			),
 		edge.From("task_column", TaskColumn.Type).
-			Ref("project_task_columns").
+			Ref(projectTaskColumnsRef).
 			Field("task_column_id").
 			Unique().
 			Required().

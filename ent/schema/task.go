@@ -6,6 +6,8 @@ import (
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/pkg/const/globalid"
 
+	"entgo.io/contrib/entgql"
+
 	"entgo.io/ent/dialect"
 
 	"entgo.io/ent/schema"
@@ -16,6 +18,8 @@ import (
 	"entgo.io/ent/schema/field"
 	entMixin "entgo.io/ent/schema/mixin"
 )
+
+const tasksRef string = "tasks"
 
 // Task holds the schema definition for the Test entity.
 type Task struct {
@@ -75,7 +79,7 @@ func (TaskMixin) Fields() []ent.Field {
 func (Task) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("teammate", Teammate.Type).
-			Ref("tasks").
+			Ref(tasksRef).
 			Unique().
 			Field("assignee_id").
 			Annotations(
@@ -84,7 +88,7 @@ func (Task) Edges() []ent.Edge {
 				),
 			),
 		edge.From("task_priority", TaskPriority.Type).
-			Ref("tasks").
+			Ref(tasksRef).
 			Unique().
 			Field("task_priority_id").
 			Required().
@@ -93,53 +97,64 @@ func (Task) Edges() []ent.Edge {
 					annotation.Edge{FieldName: "task_priority_id"},
 				),
 			),
-		edge.To("sub_tasks", Task.Type).
+		edge.To("subTasks", Task.Type).
+			Annotations(entgql.Bind()).
 			From("parent").
 			Field("task_parent_id").
 			Unique().
+			Annotations(entgql.Bind()).
 			Annotations(
 				schema.Annotation(
 					annotation.Edge{FieldName: "task_parent_id"},
 				),
 			),
-		edge.To("teammate_tasks", TeammateTask.Type).Annotations(
-			schema.Annotation(
-				annotation.Edge{FieldName: "teammate_task_id"},
-			),
-		),
-		edge.To("project_tasks", ProjectTask.Type).
+		edge.To(teammateTasksRef, TeammateTask.Type).
 			Annotations(
+				entgql.Bind(),
+				schema.Annotation(
+					annotation.Edge{FieldName: "teammate_task_id"},
+				),
+			),
+		edge.To(projectTasksRef, ProjectTask.Type).
+			Annotations(
+				entgql.Bind(),
 				schema.Annotation(
 					annotation.Edge{FieldName: "project_task_id"},
 				),
 			),
-		edge.To("task_likes", TaskLike.Type).Annotations(
+		edge.To(taskLikesRef, TaskLike.Type).Annotations(
+			entgql.Bind(),
 			schema.Annotation(
 				annotation.Edge{FieldName: "task_like_id"},
 			),
 		),
-		edge.To("task_tags", TaskTag.Type).Annotations(
+		edge.To(taskTagsRef, TaskTag.Type).Annotations(
+			entgql.Bind(),
 			schema.Annotation(
 				annotation.Edge{FieldName: "task_tag_id"},
 			),
 		),
-		edge.To("task_collaborators", TaskCollaborator.Type).Annotations(
+		edge.To(taskCollaboratorsRef, TaskCollaborator.Type).Annotations(
+			entgql.Bind(),
 			schema.Annotation(
 				annotation.Edge{FieldName: "task_collaborator_id"},
 			),
 		),
-		edge.To("task_feeds", TaskFeed.Type).Annotations(
+		edge.To(taskFeedsRef, TaskFeed.Type).Annotations(
+			entgql.Bind(),
 			schema.Annotation(
 				annotation.Edge{FieldName: "task_feed_id"},
 			),
 		),
-		edge.To("task_feed_likes", TaskFeedLike.Type).Annotations(
+		edge.To(taskFeedLikesRef, TaskFeedLike.Type).Annotations(
+			entgql.Bind(),
 			schema.Annotation(
 				annotation.Edge{FieldName: "task_feed_like_id"},
 			),
 		),
-		edge.To("task_files", TaskFile.Type).
+		edge.To(taskFilesRef, TaskFile.Type).
 			Annotations(
+				entgql.Bind(),
 				schema.Annotation(
 					annotation.Edge{FieldName: "task_file_id"},
 				),

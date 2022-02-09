@@ -76,13 +76,13 @@ func (ic *IconCreate) SetNillableID(u *ulid.ID) *IconCreate {
 	return ic
 }
 
-// AddProjectIconIDs adds the "project_icons" edge to the ProjectIcon entity by IDs.
+// AddProjectIconIDs adds the "projectIcons" edge to the ProjectIcon entity by IDs.
 func (ic *IconCreate) AddProjectIconIDs(ids ...ulid.ID) *IconCreate {
 	ic.mutation.AddProjectIconIDs(ids...)
 	return ic
 }
 
-// AddProjectIcons adds the "project_icons" edges to the ProjectIcon entity.
+// AddProjectIcons adds the "projectIcons" edges to the ProjectIcon entity.
 func (ic *IconCreate) AddProjectIcons(p ...*ProjectIcon) *IconCreate {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {

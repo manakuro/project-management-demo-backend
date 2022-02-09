@@ -124,13 +124,13 @@ func (tfc *TaskFeedCreate) SetTeammate(t *Teammate) *TaskFeedCreate {
 	return tfc.SetTeammateID(t.ID)
 }
 
-// AddTaskFeedLikeIDs adds the "task_feed_likes" edge to the TaskFeedLike entity by IDs.
+// AddTaskFeedLikeIDs adds the "taskFeedLikes" edge to the TaskFeedLike entity by IDs.
 func (tfc *TaskFeedCreate) AddTaskFeedLikeIDs(ids ...ulid.ID) *TaskFeedCreate {
 	tfc.mutation.AddTaskFeedLikeIDs(ids...)
 	return tfc
 }
 
-// AddTaskFeedLikes adds the "task_feed_likes" edges to the TaskFeedLike entity.
+// AddTaskFeedLikes adds the "taskFeedLikes" edges to the TaskFeedLike entity.
 func (tfc *TaskFeedCreate) AddTaskFeedLikes(t ...*TaskFeedLike) *TaskFeedCreate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -139,13 +139,13 @@ func (tfc *TaskFeedCreate) AddTaskFeedLikes(t ...*TaskFeedLike) *TaskFeedCreate 
 	return tfc.AddTaskFeedLikeIDs(ids...)
 }
 
-// AddTaskFileIDs adds the "task_files" edge to the TaskFile entity by IDs.
+// AddTaskFileIDs adds the "taskFiles" edge to the TaskFile entity by IDs.
 func (tfc *TaskFeedCreate) AddTaskFileIDs(ids ...ulid.ID) *TaskFeedCreate {
 	tfc.mutation.AddTaskFileIDs(ids...)
 	return tfc
 }
 
-// AddTaskFiles adds the "task_files" edges to the TaskFile entity.
+// AddTaskFiles adds the "taskFiles" edges to the TaskFile entity.
 func (tfc *TaskFeedCreate) AddTaskFiles(t ...*TaskFile) *TaskFeedCreate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {

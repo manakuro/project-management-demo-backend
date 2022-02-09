@@ -26,22 +26,22 @@ const (
 	EdgeTeammate = "teammate"
 	// EdgeProjects holds the string denoting the projects edge name in mutations.
 	EdgeProjects = "projects"
-	// EdgeWorkspaceTeammates holds the string denoting the workspace_teammates edge name in mutations.
-	EdgeWorkspaceTeammates = "workspace_teammates"
-	// EdgeFavoriteWorkspaces holds the string denoting the favorite_workspaces edge name in mutations.
-	EdgeFavoriteWorkspaces = "favorite_workspaces"
-	// EdgeTeammateTaskTabStatuses holds the string denoting the teammate_task_tab_statuses edge name in mutations.
-	EdgeTeammateTaskTabStatuses = "teammate_task_tab_statuses"
-	// EdgeTeammateTaskListStatuses holds the string denoting the teammate_task_list_statuses edge name in mutations.
-	EdgeTeammateTaskListStatuses = "teammate_task_list_statuses"
-	// EdgeTeammateTaskSections holds the string denoting the teammate_task_sections edge name in mutations.
-	EdgeTeammateTaskSections = "teammate_task_sections"
-	// EdgeTaskLikes holds the string denoting the task_likes edge name in mutations.
-	EdgeTaskLikes = "task_likes"
+	// EdgeWorkspaceTeammates holds the string denoting the workspaceteammates edge name in mutations.
+	EdgeWorkspaceTeammates = "workspaceTeammates"
+	// EdgeFavoriteWorkspaces holds the string denoting the favoriteworkspaces edge name in mutations.
+	EdgeFavoriteWorkspaces = "favoriteWorkspaces"
+	// EdgeTeammateTaskTabStatuses holds the string denoting the teammatetasktabstatuses edge name in mutations.
+	EdgeTeammateTaskTabStatuses = "teammateTaskTabStatuses"
+	// EdgeTeammateTaskListStatuses holds the string denoting the teammatetaskliststatuses edge name in mutations.
+	EdgeTeammateTaskListStatuses = "teammateTaskListStatuses"
+	// EdgeTeammateTaskSections holds the string denoting the teammatetasksections edge name in mutations.
+	EdgeTeammateTaskSections = "teammateTaskSections"
+	// EdgeTaskLikes holds the string denoting the tasklikes edge name in mutations.
+	EdgeTaskLikes = "taskLikes"
 	// EdgeTags holds the string denoting the tags edge name in mutations.
 	EdgeTags = "tags"
-	// EdgeTeammateTaskColumns holds the string denoting the teammate_task_columns edge name in mutations.
-	EdgeTeammateTaskColumns = "teammate_task_columns"
+	// EdgeTeammateTaskColumns holds the string denoting the teammatetaskcolumns edge name in mutations.
+	EdgeTeammateTaskColumns = "teammateTaskColumns"
 	// Table holds the table name of the workspace in the database.
 	Table = "workspaces"
 	// TeammateTable is the table that holds the teammate relation/edge.
@@ -58,47 +58,47 @@ const (
 	ProjectsInverseTable = "projects"
 	// ProjectsColumn is the table column denoting the projects relation/edge.
 	ProjectsColumn = "workspace_id"
-	// WorkspaceTeammatesTable is the table that holds the workspace_teammates relation/edge.
+	// WorkspaceTeammatesTable is the table that holds the workspaceTeammates relation/edge.
 	WorkspaceTeammatesTable = "workspace_teammates"
 	// WorkspaceTeammatesInverseTable is the table name for the WorkspaceTeammate entity.
 	// It exists in this package in order to avoid circular dependency with the "workspaceteammate" package.
 	WorkspaceTeammatesInverseTable = "workspace_teammates"
-	// WorkspaceTeammatesColumn is the table column denoting the workspace_teammates relation/edge.
+	// WorkspaceTeammatesColumn is the table column denoting the workspaceTeammates relation/edge.
 	WorkspaceTeammatesColumn = "workspace_id"
-	// FavoriteWorkspacesTable is the table that holds the favorite_workspaces relation/edge.
+	// FavoriteWorkspacesTable is the table that holds the favoriteWorkspaces relation/edge.
 	FavoriteWorkspacesTable = "favorite_workspaces"
 	// FavoriteWorkspacesInverseTable is the table name for the FavoriteWorkspace entity.
 	// It exists in this package in order to avoid circular dependency with the "favoriteworkspace" package.
 	FavoriteWorkspacesInverseTable = "favorite_workspaces"
-	// FavoriteWorkspacesColumn is the table column denoting the favorite_workspaces relation/edge.
+	// FavoriteWorkspacesColumn is the table column denoting the favoriteWorkspaces relation/edge.
 	FavoriteWorkspacesColumn = "workspace_id"
-	// TeammateTaskTabStatusesTable is the table that holds the teammate_task_tab_statuses relation/edge.
+	// TeammateTaskTabStatusesTable is the table that holds the teammateTaskTabStatuses relation/edge.
 	TeammateTaskTabStatusesTable = "teammate_task_tab_status"
 	// TeammateTaskTabStatusesInverseTable is the table name for the TeammateTaskTabStatus entity.
 	// It exists in this package in order to avoid circular dependency with the "teammatetasktabstatus" package.
 	TeammateTaskTabStatusesInverseTable = "teammate_task_tab_status"
-	// TeammateTaskTabStatusesColumn is the table column denoting the teammate_task_tab_statuses relation/edge.
+	// TeammateTaskTabStatusesColumn is the table column denoting the teammateTaskTabStatuses relation/edge.
 	TeammateTaskTabStatusesColumn = "workspace_id"
-	// TeammateTaskListStatusesTable is the table that holds the teammate_task_list_statuses relation/edge.
+	// TeammateTaskListStatusesTable is the table that holds the teammateTaskListStatuses relation/edge.
 	TeammateTaskListStatusesTable = "teammate_task_list_status"
 	// TeammateTaskListStatusesInverseTable is the table name for the TeammateTaskListStatus entity.
 	// It exists in this package in order to avoid circular dependency with the "teammatetaskliststatus" package.
 	TeammateTaskListStatusesInverseTable = "teammate_task_list_status"
-	// TeammateTaskListStatusesColumn is the table column denoting the teammate_task_list_statuses relation/edge.
+	// TeammateTaskListStatusesColumn is the table column denoting the teammateTaskListStatuses relation/edge.
 	TeammateTaskListStatusesColumn = "workspace_id"
-	// TeammateTaskSectionsTable is the table that holds the teammate_task_sections relation/edge.
+	// TeammateTaskSectionsTable is the table that holds the teammateTaskSections relation/edge.
 	TeammateTaskSectionsTable = "teammate_task_sections"
 	// TeammateTaskSectionsInverseTable is the table name for the TeammateTaskSection entity.
 	// It exists in this package in order to avoid circular dependency with the "teammatetasksection" package.
 	TeammateTaskSectionsInverseTable = "teammate_task_sections"
-	// TeammateTaskSectionsColumn is the table column denoting the teammate_task_sections relation/edge.
+	// TeammateTaskSectionsColumn is the table column denoting the teammateTaskSections relation/edge.
 	TeammateTaskSectionsColumn = "workspace_id"
-	// TaskLikesTable is the table that holds the task_likes relation/edge.
+	// TaskLikesTable is the table that holds the taskLikes relation/edge.
 	TaskLikesTable = "task_likes"
 	// TaskLikesInverseTable is the table name for the TaskLike entity.
 	// It exists in this package in order to avoid circular dependency with the "tasklike" package.
 	TaskLikesInverseTable = "task_likes"
-	// TaskLikesColumn is the table column denoting the task_likes relation/edge.
+	// TaskLikesColumn is the table column denoting the taskLikes relation/edge.
 	TaskLikesColumn = "workspace_id"
 	// TagsTable is the table that holds the tags relation/edge.
 	TagsTable = "tags"
@@ -107,12 +107,12 @@ const (
 	TagsInverseTable = "tags"
 	// TagsColumn is the table column denoting the tags relation/edge.
 	TagsColumn = "workspace_id"
-	// TeammateTaskColumnsTable is the table that holds the teammate_task_columns relation/edge.
+	// TeammateTaskColumnsTable is the table that holds the teammateTaskColumns relation/edge.
 	TeammateTaskColumnsTable = "teammate_task_columns"
 	// TeammateTaskColumnsInverseTable is the table name for the TeammateTaskColumn entity.
 	// It exists in this package in order to avoid circular dependency with the "teammatetaskcolumn" package.
 	TeammateTaskColumnsInverseTable = "teammate_task_columns"
-	// TeammateTaskColumnsColumn is the table column denoting the teammate_task_columns relation/edge.
+	// TeammateTaskColumnsColumn is the table column denoting the teammateTaskColumns relation/edge.
 	TeammateTaskColumnsColumn = "workspace_id"
 )
 

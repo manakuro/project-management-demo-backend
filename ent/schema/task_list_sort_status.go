@@ -46,13 +46,13 @@ func (TaskListSortStatusMixin) Fields() []ent.Field {
 // Edges of the TaskListSortStatus.
 func (TaskListSortStatus) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("teammate_task_list_statuses", TeammateTaskListStatus.Type).
+		edge.To(teammateTaskListStatusesRef, TeammateTaskListStatus.Type).
 			Annotations(
 				schema.Annotation(
 					annotation.Edge{FieldName: "teammate_task_list_status_id"},
 				),
 			),
-		edge.To("project_task_list_statuses", ProjectTaskListStatus.Type).
+		edge.To(projectTaskListStatusesRef, ProjectTaskListStatus.Type).
 			Annotations(
 				schema.Annotation(
 					annotation.Edge{FieldName: "project_task_list_status_id"},

@@ -22,36 +22,36 @@ const (
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
 	FieldUpdatedAt = "updated_at"
-	// EdgeProjectBaseColors holds the string denoting the project_base_colors edge name in mutations.
-	EdgeProjectBaseColors = "project_base_colors"
-	// EdgeProjectLightColors holds the string denoting the project_light_colors edge name in mutations.
-	EdgeProjectLightColors = "project_light_colors"
-	// EdgeTaskPriorities holds the string denoting the task_priorities edge name in mutations.
-	EdgeTaskPriorities = "task_priorities"
+	// EdgeProjectBaseColors holds the string denoting the projectbasecolors edge name in mutations.
+	EdgeProjectBaseColors = "projectBaseColors"
+	// EdgeProjectLightColors holds the string denoting the projectlightcolors edge name in mutations.
+	EdgeProjectLightColors = "projectLightColors"
+	// EdgeTaskPriorities holds the string denoting the taskpriorities edge name in mutations.
+	EdgeTaskPriorities = "taskPriorities"
 	// EdgeTags holds the string denoting the tags edge name in mutations.
 	EdgeTags = "tags"
 	// Table holds the table name of the color in the database.
 	Table = "colors"
-	// ProjectBaseColorsTable is the table that holds the project_base_colors relation/edge.
+	// ProjectBaseColorsTable is the table that holds the projectBaseColors relation/edge.
 	ProjectBaseColorsTable = "project_base_colors"
 	// ProjectBaseColorsInverseTable is the table name for the ProjectBaseColor entity.
 	// It exists in this package in order to avoid circular dependency with the "projectbasecolor" package.
 	ProjectBaseColorsInverseTable = "project_base_colors"
-	// ProjectBaseColorsColumn is the table column denoting the project_base_colors relation/edge.
+	// ProjectBaseColorsColumn is the table column denoting the projectBaseColors relation/edge.
 	ProjectBaseColorsColumn = "color_id"
-	// ProjectLightColorsTable is the table that holds the project_light_colors relation/edge.
+	// ProjectLightColorsTable is the table that holds the projectLightColors relation/edge.
 	ProjectLightColorsTable = "project_light_colors"
 	// ProjectLightColorsInverseTable is the table name for the ProjectLightColor entity.
 	// It exists in this package in order to avoid circular dependency with the "projectlightcolor" package.
 	ProjectLightColorsInverseTable = "project_light_colors"
-	// ProjectLightColorsColumn is the table column denoting the project_light_colors relation/edge.
+	// ProjectLightColorsColumn is the table column denoting the projectLightColors relation/edge.
 	ProjectLightColorsColumn = "color_id"
-	// TaskPrioritiesTable is the table that holds the task_priorities relation/edge.
+	// TaskPrioritiesTable is the table that holds the taskPriorities relation/edge.
 	TaskPrioritiesTable = "task_priorities"
 	// TaskPrioritiesInverseTable is the table name for the TaskPriority entity.
 	// It exists in this package in order to avoid circular dependency with the "taskpriority" package.
 	TaskPrioritiesInverseTable = "task_priorities"
-	// TaskPrioritiesColumn is the table column denoting the task_priorities relation/edge.
+	// TaskPrioritiesColumn is the table column denoting the taskPriorities relation/edge.
 	TaskPrioritiesColumn = "color_id"
 	// TagsTable is the table that holds the tags relation/edge.
 	TagsTable = "tags"

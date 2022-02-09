@@ -46,14 +46,14 @@ func (TaskColumnMixin) Fields() []ent.Field {
 // Edges of the TaskColumn.
 func (TaskColumn) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("teammate_task_columns", TeammateTaskColumn.Type).
+		edge.To(teammateTaskColumnsRef, TeammateTaskColumn.Type).
 			Annotations(
 				schema.Annotation(
 					annotation.Edge{FieldName: "teammate_task_column_id"},
 				),
 			),
 
-		edge.To("project_task_columns", ProjectTaskColumn.Type).
+		edge.To(projectTaskColumnsRef, ProjectTaskColumn.Type).
 			Annotations(
 				schema.Annotation(
 					annotation.Edge{FieldName: "project_task_column_id"},

@@ -197,6 +197,50 @@ func (t *TaskQuery) CollectFields(ctx context.Context, satisfies ...string) *Tas
 }
 
 func (t *TaskQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *TaskQuery {
+	for _, field := range graphql.CollectFields(ctx, field.Selections, satisfies) {
+		switch field.Name {
+		case "parent":
+			t = t.WithParent(func(query *TaskQuery) {
+				query.collectField(ctx, field)
+			})
+		case "projectTasks":
+			t = t.WithProjectTasks(func(query *ProjectTaskQuery) {
+				query.collectField(ctx, field)
+			})
+		case "subTasks":
+			t = t.WithSubTasks(func(query *TaskQuery) {
+				query.collectField(ctx, field)
+			})
+		case "taskCollaborators":
+			t = t.WithTaskCollaborators(func(query *TaskCollaboratorQuery) {
+				query.collectField(ctx, field)
+			})
+		case "taskFeedLikes":
+			t = t.WithTaskFeedLikes(func(query *TaskFeedLikeQuery) {
+				query.collectField(ctx, field)
+			})
+		case "taskFeeds":
+			t = t.WithTaskFeeds(func(query *TaskFeedQuery) {
+				query.collectField(ctx, field)
+			})
+		case "taskFiles":
+			t = t.WithTaskFiles(func(query *TaskFileQuery) {
+				query.collectField(ctx, field)
+			})
+		case "taskLikes":
+			t = t.WithTaskLikes(func(query *TaskLikeQuery) {
+				query.collectField(ctx, field)
+			})
+		case "taskTags":
+			t = t.WithTaskTags(func(query *TaskTagQuery) {
+				query.collectField(ctx, field)
+			})
+		case "teammateTasks":
+			t = t.WithTeammateTasks(func(query *TeammateTaskQuery) {
+				query.collectField(ctx, field)
+			})
+		}
+	}
 	return t
 }
 

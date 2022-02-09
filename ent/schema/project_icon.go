@@ -15,6 +15,8 @@ import (
 	entMixin "entgo.io/ent/schema/mixin"
 )
 
+const projectIconsRef string = "projectIcons"
+
 // ProjectIcon holds the schema definition for the Test entity.
 type ProjectIcon struct {
 	ent.Schema
@@ -36,14 +38,14 @@ func (ProjectIconMixin) Fields() []ent.Field {
 // Edges of the ProjectIcon.
 func (ProjectIcon) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("projects", Project.Type).
+		edge.To(projectsRef, Project.Type).
 			Annotations(
 				schema.Annotation(
 					annotation.Edge{FieldName: "project_id"},
 				),
 			),
 		edge.From("icon", Icon.Type).
-			Ref("project_icons").
+			Ref(projectIconsRef).
 			Field("icon_id").
 			Unique().
 			Required().

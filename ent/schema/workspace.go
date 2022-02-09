@@ -16,6 +16,8 @@ import (
 	entMixin "entgo.io/ent/schema/mixin"
 )
 
+const workspacesRef string = "workspaces"
+
 // Workspace holds the schema definition for the Test entity.
 type Workspace struct {
 	ent.Schema
@@ -42,7 +44,7 @@ func (WorkspaceMixin) Fields() []ent.Field {
 func (Workspace) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("teammate", Teammate.Type).
-			Ref("workspaces").
+			Ref(workspacesRef).
 			Unique().
 			Field("created_by").
 			Required().
@@ -51,48 +53,48 @@ func (Workspace) Edges() []ent.Edge {
 					annotation.Edge{FieldName: "created_by"},
 				),
 			),
-		edge.To("projects", Project.Type),
-		edge.To("workspace_teammates", WorkspaceTeammate.Type).
+		edge.To(projectsRef, Project.Type),
+		edge.To(workspaceTeammatesRef, WorkspaceTeammate.Type).
 			Annotations(
 				schema.Annotation(
 					annotation.Edge{FieldName: "workspace_teammate_id"},
 				),
 			),
-		edge.To("favorite_workspaces", FavoriteWorkspace.Type).
+		edge.To(favoriteWorkspacesRef, FavoriteWorkspace.Type).
 			Annotations(
 				schema.Annotation(
 					annotation.Edge{FieldName: "favorite_workspace_id"},
 				),
 			),
-		edge.To("teammate_task_tab_statuses", TeammateTaskTabStatus.Type).
+		edge.To(teammateTaskTabStatusesRef, TeammateTaskTabStatus.Type).
 			Annotations(
 				schema.Annotation(
 					annotation.Edge{FieldName: "teammate_task_tab_status_id"},
 				),
 			),
-		edge.To("teammate_task_list_statuses", TeammateTaskListStatus.Type).
+		edge.To(teammateTaskListStatusesRef, TeammateTaskListStatus.Type).
 			Annotations(
 				schema.Annotation(
 					annotation.Edge{FieldName: "teammate_task_list_status_id"},
 				),
 			),
-		edge.To("teammate_task_sections", TeammateTaskSection.Type).
+		edge.To(teammateTaskSectionsRef, TeammateTaskSection.Type).
 			Annotations(
 				schema.Annotation(
 					annotation.Edge{FieldName: "teammate_task_section_id"},
 				),
 			),
-		edge.To("task_likes", TaskLike.Type).Annotations(
+		edge.To(taskLikesRef, TaskLike.Type).Annotations(
 			schema.Annotation(
 				annotation.Edge{FieldName: "task_like_id"},
 			),
 		),
-		edge.To("tags", Tag.Type).Annotations(
+		edge.To(tagsRef, Tag.Type).Annotations(
 			schema.Annotation(
 				annotation.Edge{FieldName: "tag_id"},
 			),
 		),
-		edge.To("teammate_task_columns", TeammateTaskColumn.Type).Annotations(
+		edge.To(teammateTaskColumnsRef, TeammateTaskColumn.Type).Annotations(
 			schema.Annotation(
 				annotation.Edge{FieldName: "teammate_task_column_id"},
 			),

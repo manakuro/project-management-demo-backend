@@ -59,13 +59,13 @@ func (tu *TagUpdate) SetColor(c *Color) *TagUpdate {
 	return tu.SetColorID(c.ID)
 }
 
-// AddTaskTagIDs adds the "task_tags" edge to the TaskTag entity by IDs.
+// AddTaskTagIDs adds the "taskTags" edge to the TaskTag entity by IDs.
 func (tu *TagUpdate) AddTaskTagIDs(ids ...ulid.ID) *TagUpdate {
 	tu.mutation.AddTaskTagIDs(ids...)
 	return tu
 }
 
-// AddTaskTags adds the "task_tags" edges to the TaskTag entity.
+// AddTaskTags adds the "taskTags" edges to the TaskTag entity.
 func (tu *TagUpdate) AddTaskTags(t ...*TaskTag) *TagUpdate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -91,19 +91,19 @@ func (tu *TagUpdate) ClearColor() *TagUpdate {
 	return tu
 }
 
-// ClearTaskTags clears all "task_tags" edges to the TaskTag entity.
+// ClearTaskTags clears all "taskTags" edges to the TaskTag entity.
 func (tu *TagUpdate) ClearTaskTags() *TagUpdate {
 	tu.mutation.ClearTaskTags()
 	return tu
 }
 
-// RemoveTaskTagIDs removes the "task_tags" edge to TaskTag entities by IDs.
+// RemoveTaskTagIDs removes the "taskTags" edge to TaskTag entities by IDs.
 func (tu *TagUpdate) RemoveTaskTagIDs(ids ...ulid.ID) *TagUpdate {
 	tu.mutation.RemoveTaskTagIDs(ids...)
 	return tu
 }
 
-// RemoveTaskTags removes "task_tags" edges to TaskTag entities.
+// RemoveTaskTags removes "taskTags" edges to TaskTag entities.
 func (tu *TagUpdate) RemoveTaskTags(t ...*TaskTag) *TagUpdate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -384,13 +384,13 @@ func (tuo *TagUpdateOne) SetColor(c *Color) *TagUpdateOne {
 	return tuo.SetColorID(c.ID)
 }
 
-// AddTaskTagIDs adds the "task_tags" edge to the TaskTag entity by IDs.
+// AddTaskTagIDs adds the "taskTags" edge to the TaskTag entity by IDs.
 func (tuo *TagUpdateOne) AddTaskTagIDs(ids ...ulid.ID) *TagUpdateOne {
 	tuo.mutation.AddTaskTagIDs(ids...)
 	return tuo
 }
 
-// AddTaskTags adds the "task_tags" edges to the TaskTag entity.
+// AddTaskTags adds the "taskTags" edges to the TaskTag entity.
 func (tuo *TagUpdateOne) AddTaskTags(t ...*TaskTag) *TagUpdateOne {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -416,19 +416,19 @@ func (tuo *TagUpdateOne) ClearColor() *TagUpdateOne {
 	return tuo
 }
 
-// ClearTaskTags clears all "task_tags" edges to the TaskTag entity.
+// ClearTaskTags clears all "taskTags" edges to the TaskTag entity.
 func (tuo *TagUpdateOne) ClearTaskTags() *TagUpdateOne {
 	tuo.mutation.ClearTaskTags()
 	return tuo
 }
 
-// RemoveTaskTagIDs removes the "task_tags" edge to TaskTag entities by IDs.
+// RemoveTaskTagIDs removes the "taskTags" edge to TaskTag entities by IDs.
 func (tuo *TagUpdateOne) RemoveTaskTagIDs(ids ...ulid.ID) *TagUpdateOne {
 	tuo.mutation.RemoveTaskTagIDs(ids...)
 	return tuo
 }
 
-// RemoveTaskTags removes "task_tags" edges to TaskTag entities.
+// RemoveTaskTags removes "taskTags" edges to TaskTag entities.
 func (tuo *TagUpdateOne) RemoveTaskTags(t ...*TaskTag) *TagUpdateOne {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {

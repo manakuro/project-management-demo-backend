@@ -77,13 +77,13 @@ func (tcc *TaskColumnCreate) SetNillableID(u *ulid.ID) *TaskColumnCreate {
 	return tcc
 }
 
-// AddTeammateTaskColumnIDs adds the "teammate_task_columns" edge to the TeammateTaskColumn entity by IDs.
+// AddTeammateTaskColumnIDs adds the "teammateTaskColumns" edge to the TeammateTaskColumn entity by IDs.
 func (tcc *TaskColumnCreate) AddTeammateTaskColumnIDs(ids ...ulid.ID) *TaskColumnCreate {
 	tcc.mutation.AddTeammateTaskColumnIDs(ids...)
 	return tcc
 }
 
-// AddTeammateTaskColumns adds the "teammate_task_columns" edges to the TeammateTaskColumn entity.
+// AddTeammateTaskColumns adds the "teammateTaskColumns" edges to the TeammateTaskColumn entity.
 func (tcc *TaskColumnCreate) AddTeammateTaskColumns(t ...*TeammateTaskColumn) *TaskColumnCreate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -92,13 +92,13 @@ func (tcc *TaskColumnCreate) AddTeammateTaskColumns(t ...*TeammateTaskColumn) *T
 	return tcc.AddTeammateTaskColumnIDs(ids...)
 }
 
-// AddProjectTaskColumnIDs adds the "project_task_columns" edge to the ProjectTaskColumn entity by IDs.
+// AddProjectTaskColumnIDs adds the "projectTaskColumns" edge to the ProjectTaskColumn entity by IDs.
 func (tcc *TaskColumnCreate) AddProjectTaskColumnIDs(ids ...ulid.ID) *TaskColumnCreate {
 	tcc.mutation.AddProjectTaskColumnIDs(ids...)
 	return tcc
 }
 
-// AddProjectTaskColumns adds the "project_task_columns" edges to the ProjectTaskColumn entity.
+// AddProjectTaskColumns adds the "projectTaskColumns" edges to the ProjectTaskColumn entity.
 func (tcc *TaskColumnCreate) AddProjectTaskColumns(p ...*ProjectTaskColumn) *TaskColumnCreate {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {

@@ -151,7 +151,7 @@ func (tq *TaskQuery) QueryParent() *TaskQuery {
 	return query
 }
 
-// QuerySubTasks chains the current query on the "sub_tasks" edge.
+// QuerySubTasks chains the current query on the "subTasks" edge.
 func (tq *TaskQuery) QuerySubTasks() *TaskQuery {
 	query := &TaskQuery{config: tq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
@@ -173,7 +173,7 @@ func (tq *TaskQuery) QuerySubTasks() *TaskQuery {
 	return query
 }
 
-// QueryTeammateTasks chains the current query on the "teammate_tasks" edge.
+// QueryTeammateTasks chains the current query on the "teammateTasks" edge.
 func (tq *TaskQuery) QueryTeammateTasks() *TeammateTaskQuery {
 	query := &TeammateTaskQuery{config: tq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
@@ -195,7 +195,7 @@ func (tq *TaskQuery) QueryTeammateTasks() *TeammateTaskQuery {
 	return query
 }
 
-// QueryProjectTasks chains the current query on the "project_tasks" edge.
+// QueryProjectTasks chains the current query on the "projectTasks" edge.
 func (tq *TaskQuery) QueryProjectTasks() *ProjectTaskQuery {
 	query := &ProjectTaskQuery{config: tq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
@@ -217,7 +217,7 @@ func (tq *TaskQuery) QueryProjectTasks() *ProjectTaskQuery {
 	return query
 }
 
-// QueryTaskLikes chains the current query on the "task_likes" edge.
+// QueryTaskLikes chains the current query on the "taskLikes" edge.
 func (tq *TaskQuery) QueryTaskLikes() *TaskLikeQuery {
 	query := &TaskLikeQuery{config: tq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
@@ -239,7 +239,7 @@ func (tq *TaskQuery) QueryTaskLikes() *TaskLikeQuery {
 	return query
 }
 
-// QueryTaskTags chains the current query on the "task_tags" edge.
+// QueryTaskTags chains the current query on the "taskTags" edge.
 func (tq *TaskQuery) QueryTaskTags() *TaskTagQuery {
 	query := &TaskTagQuery{config: tq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
@@ -261,7 +261,7 @@ func (tq *TaskQuery) QueryTaskTags() *TaskTagQuery {
 	return query
 }
 
-// QueryTaskCollaborators chains the current query on the "task_collaborators" edge.
+// QueryTaskCollaborators chains the current query on the "taskCollaborators" edge.
 func (tq *TaskQuery) QueryTaskCollaborators() *TaskCollaboratorQuery {
 	query := &TaskCollaboratorQuery{config: tq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
@@ -283,7 +283,7 @@ func (tq *TaskQuery) QueryTaskCollaborators() *TaskCollaboratorQuery {
 	return query
 }
 
-// QueryTaskFeeds chains the current query on the "task_feeds" edge.
+// QueryTaskFeeds chains the current query on the "taskFeeds" edge.
 func (tq *TaskQuery) QueryTaskFeeds() *TaskFeedQuery {
 	query := &TaskFeedQuery{config: tq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
@@ -305,7 +305,7 @@ func (tq *TaskQuery) QueryTaskFeeds() *TaskFeedQuery {
 	return query
 }
 
-// QueryTaskFeedLikes chains the current query on the "task_feed_likes" edge.
+// QueryTaskFeedLikes chains the current query on the "taskFeedLikes" edge.
 func (tq *TaskQuery) QueryTaskFeedLikes() *TaskFeedLikeQuery {
 	query := &TaskFeedLikeQuery{config: tq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
@@ -327,7 +327,7 @@ func (tq *TaskQuery) QueryTaskFeedLikes() *TaskFeedLikeQuery {
 	return query
 }
 
-// QueryTaskFiles chains the current query on the "task_files" edge.
+// QueryTaskFiles chains the current query on the "taskFiles" edge.
 func (tq *TaskQuery) QueryTaskFiles() *TaskFileQuery {
 	query := &TaskFileQuery{config: tq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
@@ -582,7 +582,7 @@ func (tq *TaskQuery) WithParent(opts ...func(*TaskQuery)) *TaskQuery {
 }
 
 // WithSubTasks tells the query-builder to eager-load the nodes that are connected to
-// the "sub_tasks" edge. The optional arguments are used to configure the query builder of the edge.
+// the "subTasks" edge. The optional arguments are used to configure the query builder of the edge.
 func (tq *TaskQuery) WithSubTasks(opts ...func(*TaskQuery)) *TaskQuery {
 	query := &TaskQuery{config: tq.config}
 	for _, opt := range opts {
@@ -593,7 +593,7 @@ func (tq *TaskQuery) WithSubTasks(opts ...func(*TaskQuery)) *TaskQuery {
 }
 
 // WithTeammateTasks tells the query-builder to eager-load the nodes that are connected to
-// the "teammate_tasks" edge. The optional arguments are used to configure the query builder of the edge.
+// the "teammateTasks" edge. The optional arguments are used to configure the query builder of the edge.
 func (tq *TaskQuery) WithTeammateTasks(opts ...func(*TeammateTaskQuery)) *TaskQuery {
 	query := &TeammateTaskQuery{config: tq.config}
 	for _, opt := range opts {
@@ -604,7 +604,7 @@ func (tq *TaskQuery) WithTeammateTasks(opts ...func(*TeammateTaskQuery)) *TaskQu
 }
 
 // WithProjectTasks tells the query-builder to eager-load the nodes that are connected to
-// the "project_tasks" edge. The optional arguments are used to configure the query builder of the edge.
+// the "projectTasks" edge. The optional arguments are used to configure the query builder of the edge.
 func (tq *TaskQuery) WithProjectTasks(opts ...func(*ProjectTaskQuery)) *TaskQuery {
 	query := &ProjectTaskQuery{config: tq.config}
 	for _, opt := range opts {
@@ -615,7 +615,7 @@ func (tq *TaskQuery) WithProjectTasks(opts ...func(*ProjectTaskQuery)) *TaskQuer
 }
 
 // WithTaskLikes tells the query-builder to eager-load the nodes that are connected to
-// the "task_likes" edge. The optional arguments are used to configure the query builder of the edge.
+// the "taskLikes" edge. The optional arguments are used to configure the query builder of the edge.
 func (tq *TaskQuery) WithTaskLikes(opts ...func(*TaskLikeQuery)) *TaskQuery {
 	query := &TaskLikeQuery{config: tq.config}
 	for _, opt := range opts {
@@ -626,7 +626,7 @@ func (tq *TaskQuery) WithTaskLikes(opts ...func(*TaskLikeQuery)) *TaskQuery {
 }
 
 // WithTaskTags tells the query-builder to eager-load the nodes that are connected to
-// the "task_tags" edge. The optional arguments are used to configure the query builder of the edge.
+// the "taskTags" edge. The optional arguments are used to configure the query builder of the edge.
 func (tq *TaskQuery) WithTaskTags(opts ...func(*TaskTagQuery)) *TaskQuery {
 	query := &TaskTagQuery{config: tq.config}
 	for _, opt := range opts {
@@ -637,7 +637,7 @@ func (tq *TaskQuery) WithTaskTags(opts ...func(*TaskTagQuery)) *TaskQuery {
 }
 
 // WithTaskCollaborators tells the query-builder to eager-load the nodes that are connected to
-// the "task_collaborators" edge. The optional arguments are used to configure the query builder of the edge.
+// the "taskCollaborators" edge. The optional arguments are used to configure the query builder of the edge.
 func (tq *TaskQuery) WithTaskCollaborators(opts ...func(*TaskCollaboratorQuery)) *TaskQuery {
 	query := &TaskCollaboratorQuery{config: tq.config}
 	for _, opt := range opts {
@@ -648,7 +648,7 @@ func (tq *TaskQuery) WithTaskCollaborators(opts ...func(*TaskCollaboratorQuery))
 }
 
 // WithTaskFeeds tells the query-builder to eager-load the nodes that are connected to
-// the "task_feeds" edge. The optional arguments are used to configure the query builder of the edge.
+// the "taskFeeds" edge. The optional arguments are used to configure the query builder of the edge.
 func (tq *TaskQuery) WithTaskFeeds(opts ...func(*TaskFeedQuery)) *TaskQuery {
 	query := &TaskFeedQuery{config: tq.config}
 	for _, opt := range opts {
@@ -659,7 +659,7 @@ func (tq *TaskQuery) WithTaskFeeds(opts ...func(*TaskFeedQuery)) *TaskQuery {
 }
 
 // WithTaskFeedLikes tells the query-builder to eager-load the nodes that are connected to
-// the "task_feed_likes" edge. The optional arguments are used to configure the query builder of the edge.
+// the "taskFeedLikes" edge. The optional arguments are used to configure the query builder of the edge.
 func (tq *TaskQuery) WithTaskFeedLikes(opts ...func(*TaskFeedLikeQuery)) *TaskQuery {
 	query := &TaskFeedLikeQuery{config: tq.config}
 	for _, opt := range opts {
@@ -670,7 +670,7 @@ func (tq *TaskQuery) WithTaskFeedLikes(opts ...func(*TaskFeedLikeQuery)) *TaskQu
 }
 
 // WithTaskFiles tells the query-builder to eager-load the nodes that are connected to
-// the "task_files" edge. The optional arguments are used to configure the query builder of the edge.
+// the "taskFiles" edge. The optional arguments are used to configure the query builder of the edge.
 func (tq *TaskQuery) WithTaskFiles(opts ...func(*TaskFileQuery)) *TaskQuery {
 	query := &TaskFileQuery{config: tq.config}
 	for _, opt := range opts {

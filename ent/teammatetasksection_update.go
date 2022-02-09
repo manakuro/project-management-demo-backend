@@ -65,13 +65,13 @@ func (ttsu *TeammateTaskSectionUpdate) SetWorkspace(w *Workspace) *TeammateTaskS
 	return ttsu.SetWorkspaceID(w.ID)
 }
 
-// AddTeammateTaskIDs adds the "teammate_tasks" edge to the TeammateTask entity by IDs.
+// AddTeammateTaskIDs adds the "teammateTasks" edge to the TeammateTask entity by IDs.
 func (ttsu *TeammateTaskSectionUpdate) AddTeammateTaskIDs(ids ...ulid.ID) *TeammateTaskSectionUpdate {
 	ttsu.mutation.AddTeammateTaskIDs(ids...)
 	return ttsu
 }
 
-// AddTeammateTasks adds the "teammate_tasks" edges to the TeammateTask entity.
+// AddTeammateTasks adds the "teammateTasks" edges to the TeammateTask entity.
 func (ttsu *TeammateTaskSectionUpdate) AddTeammateTasks(t ...*TeammateTask) *TeammateTaskSectionUpdate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -97,19 +97,19 @@ func (ttsu *TeammateTaskSectionUpdate) ClearWorkspace() *TeammateTaskSectionUpda
 	return ttsu
 }
 
-// ClearTeammateTasks clears all "teammate_tasks" edges to the TeammateTask entity.
+// ClearTeammateTasks clears all "teammateTasks" edges to the TeammateTask entity.
 func (ttsu *TeammateTaskSectionUpdate) ClearTeammateTasks() *TeammateTaskSectionUpdate {
 	ttsu.mutation.ClearTeammateTasks()
 	return ttsu
 }
 
-// RemoveTeammateTaskIDs removes the "teammate_tasks" edge to TeammateTask entities by IDs.
+// RemoveTeammateTaskIDs removes the "teammateTasks" edge to TeammateTask entities by IDs.
 func (ttsu *TeammateTaskSectionUpdate) RemoveTeammateTaskIDs(ids ...ulid.ID) *TeammateTaskSectionUpdate {
 	ttsu.mutation.RemoveTeammateTaskIDs(ids...)
 	return ttsu
 }
 
-// RemoveTeammateTasks removes "teammate_tasks" edges to TeammateTask entities.
+// RemoveTeammateTasks removes "teammateTasks" edges to TeammateTask entities.
 func (ttsu *TeammateTaskSectionUpdate) RemoveTeammateTasks(t ...*TeammateTask) *TeammateTaskSectionUpdate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -403,13 +403,13 @@ func (ttsuo *TeammateTaskSectionUpdateOne) SetWorkspace(w *Workspace) *TeammateT
 	return ttsuo.SetWorkspaceID(w.ID)
 }
 
-// AddTeammateTaskIDs adds the "teammate_tasks" edge to the TeammateTask entity by IDs.
+// AddTeammateTaskIDs adds the "teammateTasks" edge to the TeammateTask entity by IDs.
 func (ttsuo *TeammateTaskSectionUpdateOne) AddTeammateTaskIDs(ids ...ulid.ID) *TeammateTaskSectionUpdateOne {
 	ttsuo.mutation.AddTeammateTaskIDs(ids...)
 	return ttsuo
 }
 
-// AddTeammateTasks adds the "teammate_tasks" edges to the TeammateTask entity.
+// AddTeammateTasks adds the "teammateTasks" edges to the TeammateTask entity.
 func (ttsuo *TeammateTaskSectionUpdateOne) AddTeammateTasks(t ...*TeammateTask) *TeammateTaskSectionUpdateOne {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -435,19 +435,19 @@ func (ttsuo *TeammateTaskSectionUpdateOne) ClearWorkspace() *TeammateTaskSection
 	return ttsuo
 }
 
-// ClearTeammateTasks clears all "teammate_tasks" edges to the TeammateTask entity.
+// ClearTeammateTasks clears all "teammateTasks" edges to the TeammateTask entity.
 func (ttsuo *TeammateTaskSectionUpdateOne) ClearTeammateTasks() *TeammateTaskSectionUpdateOne {
 	ttsuo.mutation.ClearTeammateTasks()
 	return ttsuo
 }
 
-// RemoveTeammateTaskIDs removes the "teammate_tasks" edge to TeammateTask entities by IDs.
+// RemoveTeammateTaskIDs removes the "teammateTasks" edge to TeammateTask entities by IDs.
 func (ttsuo *TeammateTaskSectionUpdateOne) RemoveTeammateTaskIDs(ids ...ulid.ID) *TeammateTaskSectionUpdateOne {
 	ttsuo.mutation.RemoveTeammateTaskIDs(ids...)
 	return ttsuo
 }
 
-// RemoveTeammateTasks removes "teammate_tasks" edges to TeammateTask entities.
+// RemoveTeammateTasks removes "teammateTasks" edges to TeammateTask entities.
 func (ttsuo *TeammateTaskSectionUpdateOne) RemoveTeammateTasks(t ...*TeammateTask) *TeammateTaskSectionUpdateOne {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {

@@ -1315,7 +1315,7 @@ func HasParentWith(preds ...predicate.Task) predicate.Task {
 	})
 }
 
-// HasSubTasks applies the HasEdge predicate on the "sub_tasks" edge.
+// HasSubTasks applies the HasEdge predicate on the "subTasks" edge.
 func HasSubTasks() predicate.Task {
 	return predicate.Task(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
@@ -1327,7 +1327,7 @@ func HasSubTasks() predicate.Task {
 	})
 }
 
-// HasSubTasksWith applies the HasEdge predicate on the "sub_tasks" edge with a given conditions (other predicates).
+// HasSubTasksWith applies the HasEdge predicate on the "subTasks" edge with a given conditions (other predicates).
 func HasSubTasksWith(preds ...predicate.Task) predicate.Task {
 	return predicate.Task(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
@@ -1343,7 +1343,7 @@ func HasSubTasksWith(preds ...predicate.Task) predicate.Task {
 	})
 }
 
-// HasTeammateTasks applies the HasEdge predicate on the "teammate_tasks" edge.
+// HasTeammateTasks applies the HasEdge predicate on the "teammateTasks" edge.
 func HasTeammateTasks() predicate.Task {
 	return predicate.Task(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
@@ -1355,7 +1355,7 @@ func HasTeammateTasks() predicate.Task {
 	})
 }
 
-// HasTeammateTasksWith applies the HasEdge predicate on the "teammate_tasks" edge with a given conditions (other predicates).
+// HasTeammateTasksWith applies the HasEdge predicate on the "teammateTasks" edge with a given conditions (other predicates).
 func HasTeammateTasksWith(preds ...predicate.TeammateTask) predicate.Task {
 	return predicate.Task(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
@@ -1371,7 +1371,7 @@ func HasTeammateTasksWith(preds ...predicate.TeammateTask) predicate.Task {
 	})
 }
 
-// HasProjectTasks applies the HasEdge predicate on the "project_tasks" edge.
+// HasProjectTasks applies the HasEdge predicate on the "projectTasks" edge.
 func HasProjectTasks() predicate.Task {
 	return predicate.Task(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
@@ -1383,7 +1383,7 @@ func HasProjectTasks() predicate.Task {
 	})
 }
 
-// HasProjectTasksWith applies the HasEdge predicate on the "project_tasks" edge with a given conditions (other predicates).
+// HasProjectTasksWith applies the HasEdge predicate on the "projectTasks" edge with a given conditions (other predicates).
 func HasProjectTasksWith(preds ...predicate.ProjectTask) predicate.Task {
 	return predicate.Task(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
@@ -1399,7 +1399,7 @@ func HasProjectTasksWith(preds ...predicate.ProjectTask) predicate.Task {
 	})
 }
 
-// HasTaskLikes applies the HasEdge predicate on the "task_likes" edge.
+// HasTaskLikes applies the HasEdge predicate on the "taskLikes" edge.
 func HasTaskLikes() predicate.Task {
 	return predicate.Task(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
@@ -1411,7 +1411,7 @@ func HasTaskLikes() predicate.Task {
 	})
 }
 
-// HasTaskLikesWith applies the HasEdge predicate on the "task_likes" edge with a given conditions (other predicates).
+// HasTaskLikesWith applies the HasEdge predicate on the "taskLikes" edge with a given conditions (other predicates).
 func HasTaskLikesWith(preds ...predicate.TaskLike) predicate.Task {
 	return predicate.Task(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
@@ -1427,7 +1427,7 @@ func HasTaskLikesWith(preds ...predicate.TaskLike) predicate.Task {
 	})
 }
 
-// HasTaskTags applies the HasEdge predicate on the "task_tags" edge.
+// HasTaskTags applies the HasEdge predicate on the "taskTags" edge.
 func HasTaskTags() predicate.Task {
 	return predicate.Task(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
@@ -1439,7 +1439,7 @@ func HasTaskTags() predicate.Task {
 	})
 }
 
-// HasTaskTagsWith applies the HasEdge predicate on the "task_tags" edge with a given conditions (other predicates).
+// HasTaskTagsWith applies the HasEdge predicate on the "taskTags" edge with a given conditions (other predicates).
 func HasTaskTagsWith(preds ...predicate.TaskTag) predicate.Task {
 	return predicate.Task(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
@@ -1455,7 +1455,7 @@ func HasTaskTagsWith(preds ...predicate.TaskTag) predicate.Task {
 	})
 }
 
-// HasTaskCollaborators applies the HasEdge predicate on the "task_collaborators" edge.
+// HasTaskCollaborators applies the HasEdge predicate on the "taskCollaborators" edge.
 func HasTaskCollaborators() predicate.Task {
 	return predicate.Task(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
@@ -1467,7 +1467,7 @@ func HasTaskCollaborators() predicate.Task {
 	})
 }
 
-// HasTaskCollaboratorsWith applies the HasEdge predicate on the "task_collaborators" edge with a given conditions (other predicates).
+// HasTaskCollaboratorsWith applies the HasEdge predicate on the "taskCollaborators" edge with a given conditions (other predicates).
 func HasTaskCollaboratorsWith(preds ...predicate.TaskCollaborator) predicate.Task {
 	return predicate.Task(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
@@ -1483,7 +1483,7 @@ func HasTaskCollaboratorsWith(preds ...predicate.TaskCollaborator) predicate.Tas
 	})
 }
 
-// HasTaskFeeds applies the HasEdge predicate on the "task_feeds" edge.
+// HasTaskFeeds applies the HasEdge predicate on the "taskFeeds" edge.
 func HasTaskFeeds() predicate.Task {
 	return predicate.Task(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
@@ -1495,7 +1495,7 @@ func HasTaskFeeds() predicate.Task {
 	})
 }
 
-// HasTaskFeedsWith applies the HasEdge predicate on the "task_feeds" edge with a given conditions (other predicates).
+// HasTaskFeedsWith applies the HasEdge predicate on the "taskFeeds" edge with a given conditions (other predicates).
 func HasTaskFeedsWith(preds ...predicate.TaskFeed) predicate.Task {
 	return predicate.Task(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
@@ -1511,7 +1511,7 @@ func HasTaskFeedsWith(preds ...predicate.TaskFeed) predicate.Task {
 	})
 }
 
-// HasTaskFeedLikes applies the HasEdge predicate on the "task_feed_likes" edge.
+// HasTaskFeedLikes applies the HasEdge predicate on the "taskFeedLikes" edge.
 func HasTaskFeedLikes() predicate.Task {
 	return predicate.Task(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
@@ -1523,7 +1523,7 @@ func HasTaskFeedLikes() predicate.Task {
 	})
 }
 
-// HasTaskFeedLikesWith applies the HasEdge predicate on the "task_feed_likes" edge with a given conditions (other predicates).
+// HasTaskFeedLikesWith applies the HasEdge predicate on the "taskFeedLikes" edge with a given conditions (other predicates).
 func HasTaskFeedLikesWith(preds ...predicate.TaskFeedLike) predicate.Task {
 	return predicate.Task(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
@@ -1539,7 +1539,7 @@ func HasTaskFeedLikesWith(preds ...predicate.TaskFeedLike) predicate.Task {
 	})
 }
 
-// HasTaskFiles applies the HasEdge predicate on the "task_files" edge.
+// HasTaskFiles applies the HasEdge predicate on the "taskFiles" edge.
 func HasTaskFiles() predicate.Task {
 	return predicate.Task(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
@@ -1551,7 +1551,7 @@ func HasTaskFiles() predicate.Task {
 	})
 }
 
-// HasTaskFilesWith applies the HasEdge predicate on the "task_files" edge with a given conditions (other predicates).
+// HasTaskFilesWith applies the HasEdge predicate on the "taskFiles" edge with a given conditions (other predicates).
 func HasTaskFilesWith(preds ...predicate.TaskFile) predicate.Task {
 	return predicate.Task(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(

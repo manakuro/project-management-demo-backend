@@ -34,12 +34,12 @@ type Color struct {
 
 // ColorEdges holds the relations/edges for other nodes in the graph.
 type ColorEdges struct {
-	// ProjectBaseColors holds the value of the project_base_colors edge.
-	ProjectBaseColors []*ProjectBaseColor `json:"project_base_colors,omitempty"`
-	// ProjectLightColors holds the value of the project_light_colors edge.
-	ProjectLightColors []*ProjectLightColor `json:"project_light_colors,omitempty"`
-	// TaskPriorities holds the value of the task_priorities edge.
-	TaskPriorities []*TaskPriority `json:"task_priorities,omitempty"`
+	// ProjectBaseColors holds the value of the projectBaseColors edge.
+	ProjectBaseColors []*ProjectBaseColor `json:"projectBaseColors,omitempty"`
+	// ProjectLightColors holds the value of the projectLightColors edge.
+	ProjectLightColors []*ProjectLightColor `json:"projectLightColors,omitempty"`
+	// TaskPriorities holds the value of the taskPriorities edge.
+	TaskPriorities []*TaskPriority `json:"taskPriorities,omitempty"`
 	// Tags holds the value of the tags edge.
 	Tags []*Tag `json:"tags,omitempty"`
 	// loadedTypes holds the information for reporting if a
@@ -53,7 +53,7 @@ func (e ColorEdges) ProjectBaseColorsOrErr() ([]*ProjectBaseColor, error) {
 	if e.loadedTypes[0] {
 		return e.ProjectBaseColors, nil
 	}
-	return nil, &NotLoadedError{edge: "project_base_colors"}
+	return nil, &NotLoadedError{edge: "projectBaseColors"}
 }
 
 // ProjectLightColorsOrErr returns the ProjectLightColors value or an error if the edge
@@ -62,7 +62,7 @@ func (e ColorEdges) ProjectLightColorsOrErr() ([]*ProjectLightColor, error) {
 	if e.loadedTypes[1] {
 		return e.ProjectLightColors, nil
 	}
-	return nil, &NotLoadedError{edge: "project_light_colors"}
+	return nil, &NotLoadedError{edge: "projectLightColors"}
 }
 
 // TaskPrioritiesOrErr returns the TaskPriorities value or an error if the edge
@@ -71,7 +71,7 @@ func (e ColorEdges) TaskPrioritiesOrErr() ([]*TaskPriority, error) {
 	if e.loadedTypes[2] {
 		return e.TaskPriorities, nil
 	}
-	return nil, &NotLoadedError{edge: "task_priorities"}
+	return nil, &NotLoadedError{edge: "taskPriorities"}
 }
 
 // TagsOrErr returns the Tags value or an error if the edge
@@ -150,17 +150,17 @@ func (c *Color) assignValues(columns []string, values []interface{}) error {
 	return nil
 }
 
-// QueryProjectBaseColors queries the "project_base_colors" edge of the Color entity.
+// QueryProjectBaseColors queries the "projectBaseColors" edge of the Color entity.
 func (c *Color) QueryProjectBaseColors() *ProjectBaseColorQuery {
 	return (&ColorClient{config: c.config}).QueryProjectBaseColors(c)
 }
 
-// QueryProjectLightColors queries the "project_light_colors" edge of the Color entity.
+// QueryProjectLightColors queries the "projectLightColors" edge of the Color entity.
 func (c *Color) QueryProjectLightColors() *ProjectLightColorQuery {
 	return (&ColorClient{config: c.config}).QueryProjectLightColors(c)
 }
 
-// QueryTaskPriorities queries the "task_priorities" edge of the Color entity.
+// QueryTaskPriorities queries the "taskPriorities" edge of the Color entity.
 func (c *Color) QueryTaskPriorities() *TaskPriorityQuery {
 	return (&ColorClient{config: c.config}).QueryTaskPriorities(c)
 }

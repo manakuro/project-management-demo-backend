@@ -115,7 +115,7 @@ func (tfq *TaskFeedQuery) QueryTeammate() *TeammateQuery {
 	return query
 }
 
-// QueryTaskFeedLikes chains the current query on the "task_feed_likes" edge.
+// QueryTaskFeedLikes chains the current query on the "taskFeedLikes" edge.
 func (tfq *TaskFeedQuery) QueryTaskFeedLikes() *TaskFeedLikeQuery {
 	query := &TaskFeedLikeQuery{config: tfq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
@@ -137,7 +137,7 @@ func (tfq *TaskFeedQuery) QueryTaskFeedLikes() *TaskFeedLikeQuery {
 	return query
 }
 
-// QueryTaskFiles chains the current query on the "task_files" edge.
+// QueryTaskFiles chains the current query on the "taskFiles" edge.
 func (tfq *TaskFeedQuery) QueryTaskFiles() *TaskFileQuery {
 	query := &TaskFileQuery{config: tfq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
@@ -373,7 +373,7 @@ func (tfq *TaskFeedQuery) WithTeammate(opts ...func(*TeammateQuery)) *TaskFeedQu
 }
 
 // WithTaskFeedLikes tells the query-builder to eager-load the nodes that are connected to
-// the "task_feed_likes" edge. The optional arguments are used to configure the query builder of the edge.
+// the "taskFeedLikes" edge. The optional arguments are used to configure the query builder of the edge.
 func (tfq *TaskFeedQuery) WithTaskFeedLikes(opts ...func(*TaskFeedLikeQuery)) *TaskFeedQuery {
 	query := &TaskFeedLikeQuery{config: tfq.config}
 	for _, opt := range opts {
@@ -384,7 +384,7 @@ func (tfq *TaskFeedQuery) WithTaskFeedLikes(opts ...func(*TaskFeedLikeQuery)) *T
 }
 
 // WithTaskFiles tells the query-builder to eager-load the nodes that are connected to
-// the "task_files" edge. The optional arguments are used to configure the query builder of the edge.
+// the "taskFiles" edge. The optional arguments are used to configure the query builder of the edge.
 func (tfq *TaskFeedQuery) WithTaskFiles(opts ...func(*TaskFileQuery)) *TaskFeedQuery {
 	query := &TaskFileQuery{config: tfq.config}
 	for _, opt := range opts {

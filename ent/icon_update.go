@@ -40,13 +40,13 @@ func (iu *IconUpdate) SetIcon(s string) *IconUpdate {
 	return iu
 }
 
-// AddProjectIconIDs adds the "project_icons" edge to the ProjectIcon entity by IDs.
+// AddProjectIconIDs adds the "projectIcons" edge to the ProjectIcon entity by IDs.
 func (iu *IconUpdate) AddProjectIconIDs(ids ...ulid.ID) *IconUpdate {
 	iu.mutation.AddProjectIconIDs(ids...)
 	return iu
 }
 
-// AddProjectIcons adds the "project_icons" edges to the ProjectIcon entity.
+// AddProjectIcons adds the "projectIcons" edges to the ProjectIcon entity.
 func (iu *IconUpdate) AddProjectIcons(p ...*ProjectIcon) *IconUpdate {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {
@@ -60,19 +60,19 @@ func (iu *IconUpdate) Mutation() *IconMutation {
 	return iu.mutation
 }
 
-// ClearProjectIcons clears all "project_icons" edges to the ProjectIcon entity.
+// ClearProjectIcons clears all "projectIcons" edges to the ProjectIcon entity.
 func (iu *IconUpdate) ClearProjectIcons() *IconUpdate {
 	iu.mutation.ClearProjectIcons()
 	return iu
 }
 
-// RemoveProjectIconIDs removes the "project_icons" edge to ProjectIcon entities by IDs.
+// RemoveProjectIconIDs removes the "projectIcons" edge to ProjectIcon entities by IDs.
 func (iu *IconUpdate) RemoveProjectIconIDs(ids ...ulid.ID) *IconUpdate {
 	iu.mutation.RemoveProjectIconIDs(ids...)
 	return iu
 }
 
-// RemoveProjectIcons removes "project_icons" edges to ProjectIcon entities.
+// RemoveProjectIcons removes "projectIcons" edges to ProjectIcon entities.
 func (iu *IconUpdate) RemoveProjectIcons(p ...*ProjectIcon) *IconUpdate {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {
@@ -273,13 +273,13 @@ func (iuo *IconUpdateOne) SetIcon(s string) *IconUpdateOne {
 	return iuo
 }
 
-// AddProjectIconIDs adds the "project_icons" edge to the ProjectIcon entity by IDs.
+// AddProjectIconIDs adds the "projectIcons" edge to the ProjectIcon entity by IDs.
 func (iuo *IconUpdateOne) AddProjectIconIDs(ids ...ulid.ID) *IconUpdateOne {
 	iuo.mutation.AddProjectIconIDs(ids...)
 	return iuo
 }
 
-// AddProjectIcons adds the "project_icons" edges to the ProjectIcon entity.
+// AddProjectIcons adds the "projectIcons" edges to the ProjectIcon entity.
 func (iuo *IconUpdateOne) AddProjectIcons(p ...*ProjectIcon) *IconUpdateOne {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {
@@ -293,19 +293,19 @@ func (iuo *IconUpdateOne) Mutation() *IconMutation {
 	return iuo.mutation
 }
 
-// ClearProjectIcons clears all "project_icons" edges to the ProjectIcon entity.
+// ClearProjectIcons clears all "projectIcons" edges to the ProjectIcon entity.
 func (iuo *IconUpdateOne) ClearProjectIcons() *IconUpdateOne {
 	iuo.mutation.ClearProjectIcons()
 	return iuo
 }
 
-// RemoveProjectIconIDs removes the "project_icons" edge to ProjectIcon entities by IDs.
+// RemoveProjectIconIDs removes the "projectIcons" edge to ProjectIcon entities by IDs.
 func (iuo *IconUpdateOne) RemoveProjectIconIDs(ids ...ulid.ID) *IconUpdateOne {
 	iuo.mutation.RemoveProjectIconIDs(ids...)
 	return iuo
 }
 
-// RemoveProjectIcons removes "project_icons" edges to ProjectIcon entities.
+// RemoveProjectIcons removes "projectIcons" edges to ProjectIcon entities.
 func (iuo *IconUpdateOne) RemoveProjectIcons(p ...*ProjectIcon) *IconUpdateOne {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {

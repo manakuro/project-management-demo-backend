@@ -85,13 +85,13 @@ func (cc *ColorCreate) SetNillableID(u *ulid.ID) *ColorCreate {
 	return cc
 }
 
-// AddProjectBaseColorIDs adds the "project_base_colors" edge to the ProjectBaseColor entity by IDs.
+// AddProjectBaseColorIDs adds the "projectBaseColors" edge to the ProjectBaseColor entity by IDs.
 func (cc *ColorCreate) AddProjectBaseColorIDs(ids ...ulid.ID) *ColorCreate {
 	cc.mutation.AddProjectBaseColorIDs(ids...)
 	return cc
 }
 
-// AddProjectBaseColors adds the "project_base_colors" edges to the ProjectBaseColor entity.
+// AddProjectBaseColors adds the "projectBaseColors" edges to the ProjectBaseColor entity.
 func (cc *ColorCreate) AddProjectBaseColors(p ...*ProjectBaseColor) *ColorCreate {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {
@@ -100,13 +100,13 @@ func (cc *ColorCreate) AddProjectBaseColors(p ...*ProjectBaseColor) *ColorCreate
 	return cc.AddProjectBaseColorIDs(ids...)
 }
 
-// AddProjectLightColorIDs adds the "project_light_colors" edge to the ProjectLightColor entity by IDs.
+// AddProjectLightColorIDs adds the "projectLightColors" edge to the ProjectLightColor entity by IDs.
 func (cc *ColorCreate) AddProjectLightColorIDs(ids ...ulid.ID) *ColorCreate {
 	cc.mutation.AddProjectLightColorIDs(ids...)
 	return cc
 }
 
-// AddProjectLightColors adds the "project_light_colors" edges to the ProjectLightColor entity.
+// AddProjectLightColors adds the "projectLightColors" edges to the ProjectLightColor entity.
 func (cc *ColorCreate) AddProjectLightColors(p ...*ProjectLightColor) *ColorCreate {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {
@@ -115,13 +115,13 @@ func (cc *ColorCreate) AddProjectLightColors(p ...*ProjectLightColor) *ColorCrea
 	return cc.AddProjectLightColorIDs(ids...)
 }
 
-// AddTaskPriorityIDs adds the "task_priorities" edge to the TaskPriority entity by IDs.
+// AddTaskPriorityIDs adds the "taskPriorities" edge to the TaskPriority entity by IDs.
 func (cc *ColorCreate) AddTaskPriorityIDs(ids ...ulid.ID) *ColorCreate {
 	cc.mutation.AddTaskPriorityIDs(ids...)
 	return cc
 }
 
-// AddTaskPriorities adds the "task_priorities" edges to the TaskPriority entity.
+// AddTaskPriorities adds the "taskPriorities" edges to the TaskPriority entity.
 func (cc *ColorCreate) AddTaskPriorities(t ...*TaskPriority) *ColorCreate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {

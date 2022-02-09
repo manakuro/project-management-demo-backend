@@ -77,34 +77,34 @@ func (tlcsc *TaskListCompletedStatusCreate) SetNillableID(u *ulid.ID) *TaskListC
 	return tlcsc
 }
 
-// AddTeammateTaskListStatusIDs adds the "teammate_task_list_statuses" edge to the TeammateTaskListStatus entity by IDs.
-func (tlcsc *TaskListCompletedStatusCreate) AddTeammateTaskListStatusIDs(ids ...ulid.ID) *TaskListCompletedStatusCreate {
-	tlcsc.mutation.AddTeammateTaskListStatusIDs(ids...)
+// AddTeammateTaskListStatuseIDs adds the "teammateTaskListStatuses" edge to the TeammateTaskListStatus entity by IDs.
+func (tlcsc *TaskListCompletedStatusCreate) AddTeammateTaskListStatuseIDs(ids ...ulid.ID) *TaskListCompletedStatusCreate {
+	tlcsc.mutation.AddTeammateTaskListStatuseIDs(ids...)
 	return tlcsc
 }
 
-// AddTeammateTaskListStatuses adds the "teammate_task_list_statuses" edges to the TeammateTaskListStatus entity.
+// AddTeammateTaskListStatuses adds the "teammateTaskListStatuses" edges to the TeammateTaskListStatus entity.
 func (tlcsc *TaskListCompletedStatusCreate) AddTeammateTaskListStatuses(t ...*TeammateTaskListStatus) *TaskListCompletedStatusCreate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
 		ids[i] = t[i].ID
 	}
-	return tlcsc.AddTeammateTaskListStatusIDs(ids...)
+	return tlcsc.AddTeammateTaskListStatuseIDs(ids...)
 }
 
-// AddProjectTaskListStatusIDs adds the "project_task_list_statuses" edge to the ProjectTaskListStatus entity by IDs.
-func (tlcsc *TaskListCompletedStatusCreate) AddProjectTaskListStatusIDs(ids ...ulid.ID) *TaskListCompletedStatusCreate {
-	tlcsc.mutation.AddProjectTaskListStatusIDs(ids...)
+// AddProjectTaskListStatuseIDs adds the "projectTaskListStatuses" edge to the ProjectTaskListStatus entity by IDs.
+func (tlcsc *TaskListCompletedStatusCreate) AddProjectTaskListStatuseIDs(ids ...ulid.ID) *TaskListCompletedStatusCreate {
+	tlcsc.mutation.AddProjectTaskListStatuseIDs(ids...)
 	return tlcsc
 }
 
-// AddProjectTaskListStatuses adds the "project_task_list_statuses" edges to the ProjectTaskListStatus entity.
+// AddProjectTaskListStatuses adds the "projectTaskListStatuses" edges to the ProjectTaskListStatus entity.
 func (tlcsc *TaskListCompletedStatusCreate) AddProjectTaskListStatuses(p ...*ProjectTaskListStatus) *TaskListCompletedStatusCreate {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
-	return tlcsc.AddProjectTaskListStatusIDs(ids...)
+	return tlcsc.AddProjectTaskListStatuseIDs(ids...)
 }
 
 // Mutation returns the TaskListCompletedStatusMutation object of the builder.

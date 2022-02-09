@@ -23,25 +23,25 @@ const (
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
 	FieldUpdatedAt = "updated_at"
-	// EdgeTeammateTaskColumns holds the string denoting the teammate_task_columns edge name in mutations.
-	EdgeTeammateTaskColumns = "teammate_task_columns"
-	// EdgeProjectTaskColumns holds the string denoting the project_task_columns edge name in mutations.
-	EdgeProjectTaskColumns = "project_task_columns"
+	// EdgeTeammateTaskColumns holds the string denoting the teammatetaskcolumns edge name in mutations.
+	EdgeTeammateTaskColumns = "teammateTaskColumns"
+	// EdgeProjectTaskColumns holds the string denoting the projecttaskcolumns edge name in mutations.
+	EdgeProjectTaskColumns = "projectTaskColumns"
 	// Table holds the table name of the taskcolumn in the database.
 	Table = "task_columns"
-	// TeammateTaskColumnsTable is the table that holds the teammate_task_columns relation/edge.
+	// TeammateTaskColumnsTable is the table that holds the teammateTaskColumns relation/edge.
 	TeammateTaskColumnsTable = "teammate_task_columns"
 	// TeammateTaskColumnsInverseTable is the table name for the TeammateTaskColumn entity.
 	// It exists in this package in order to avoid circular dependency with the "teammatetaskcolumn" package.
 	TeammateTaskColumnsInverseTable = "teammate_task_columns"
-	// TeammateTaskColumnsColumn is the table column denoting the teammate_task_columns relation/edge.
+	// TeammateTaskColumnsColumn is the table column denoting the teammateTaskColumns relation/edge.
 	TeammateTaskColumnsColumn = "task_column_id"
-	// ProjectTaskColumnsTable is the table that holds the project_task_columns relation/edge.
+	// ProjectTaskColumnsTable is the table that holds the projectTaskColumns relation/edge.
 	ProjectTaskColumnsTable = "project_task_columns"
 	// ProjectTaskColumnsInverseTable is the table name for the ProjectTaskColumn entity.
 	// It exists in this package in order to avoid circular dependency with the "projecttaskcolumn" package.
 	ProjectTaskColumnsInverseTable = "project_task_columns"
-	// ProjectTaskColumnsColumn is the table column denoting the project_task_columns relation/edge.
+	// ProjectTaskColumnsColumn is the table column denoting the projectTaskColumns relation/edge.
 	ProjectTaskColumnsColumn = "task_column_id"
 )
 

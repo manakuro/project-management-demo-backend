@@ -38,7 +38,7 @@ func (IconMixin) Fields() []ent.Field {
 // Edges of the Icon.
 func (Icon) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("project_icons", ProjectIcon.Type).
+		edge.To(projectIconsRef, ProjectIcon.Type).
 			Annotations(
 				schema.Annotation(
 					annotation.Edge{FieldName: "project_icon_id"},

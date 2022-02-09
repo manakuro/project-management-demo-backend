@@ -44,20 +44,20 @@ const (
 	EdgeProjectIcon = "project_icon"
 	// EdgeTeammate holds the string denoting the teammate edge name in mutations.
 	EdgeTeammate = "teammate"
-	// EdgeProjectTeammates holds the string denoting the project_teammates edge name in mutations.
-	EdgeProjectTeammates = "project_teammates"
-	// EdgeFavoriteProjects holds the string denoting the favorite_projects edge name in mutations.
-	EdgeFavoriteProjects = "favorite_projects"
-	// EdgeProjectTaskColumns holds the string denoting the project_task_columns edge name in mutations.
-	EdgeProjectTaskColumns = "project_task_columns"
-	// EdgeProjectTaskListStatuses holds the string denoting the project_task_list_statuses edge name in mutations.
-	EdgeProjectTaskListStatuses = "project_task_list_statuses"
-	// EdgeProjectTaskSections holds the string denoting the project_task_sections edge name in mutations.
-	EdgeProjectTaskSections = "project_task_sections"
-	// EdgeProjectTasks holds the string denoting the project_tasks edge name in mutations.
-	EdgeProjectTasks = "project_tasks"
-	// EdgeTaskFiles holds the string denoting the task_files edge name in mutations.
-	EdgeTaskFiles = "task_files"
+	// EdgeProjectTeammates holds the string denoting the projectteammates edge name in mutations.
+	EdgeProjectTeammates = "projectTeammates"
+	// EdgeFavoriteProjects holds the string denoting the favoriteprojects edge name in mutations.
+	EdgeFavoriteProjects = "favoriteProjects"
+	// EdgeProjectTaskColumns holds the string denoting the projecttaskcolumns edge name in mutations.
+	EdgeProjectTaskColumns = "projectTaskColumns"
+	// EdgeProjectTaskListStatuses holds the string denoting the projecttaskliststatuses edge name in mutations.
+	EdgeProjectTaskListStatuses = "projectTaskListStatuses"
+	// EdgeProjectTaskSections holds the string denoting the projecttasksections edge name in mutations.
+	EdgeProjectTaskSections = "projectTaskSections"
+	// EdgeProjectTasks holds the string denoting the projecttasks edge name in mutations.
+	EdgeProjectTasks = "projectTasks"
+	// EdgeTaskFiles holds the string denoting the taskfiles edge name in mutations.
+	EdgeTaskFiles = "taskFiles"
 	// Table holds the table name of the project in the database.
 	Table = "projects"
 	// WorkspaceTable is the table that holds the workspace relation/edge.
@@ -95,54 +95,54 @@ const (
 	TeammateInverseTable = "teammates"
 	// TeammateColumn is the table column denoting the teammate relation/edge.
 	TeammateColumn = "created_by"
-	// ProjectTeammatesTable is the table that holds the project_teammates relation/edge.
+	// ProjectTeammatesTable is the table that holds the projectTeammates relation/edge.
 	ProjectTeammatesTable = "project_teammates"
 	// ProjectTeammatesInverseTable is the table name for the ProjectTeammate entity.
 	// It exists in this package in order to avoid circular dependency with the "projectteammate" package.
 	ProjectTeammatesInverseTable = "project_teammates"
-	// ProjectTeammatesColumn is the table column denoting the project_teammates relation/edge.
+	// ProjectTeammatesColumn is the table column denoting the projectTeammates relation/edge.
 	ProjectTeammatesColumn = "project_id"
-	// FavoriteProjectsTable is the table that holds the favorite_projects relation/edge.
+	// FavoriteProjectsTable is the table that holds the favoriteProjects relation/edge.
 	FavoriteProjectsTable = "favorite_projects"
 	// FavoriteProjectsInverseTable is the table name for the FavoriteProject entity.
 	// It exists in this package in order to avoid circular dependency with the "favoriteproject" package.
 	FavoriteProjectsInverseTable = "favorite_projects"
-	// FavoriteProjectsColumn is the table column denoting the favorite_projects relation/edge.
+	// FavoriteProjectsColumn is the table column denoting the favoriteProjects relation/edge.
 	FavoriteProjectsColumn = "project_id"
-	// ProjectTaskColumnsTable is the table that holds the project_task_columns relation/edge.
+	// ProjectTaskColumnsTable is the table that holds the projectTaskColumns relation/edge.
 	ProjectTaskColumnsTable = "project_task_columns"
 	// ProjectTaskColumnsInverseTable is the table name for the ProjectTaskColumn entity.
 	// It exists in this package in order to avoid circular dependency with the "projecttaskcolumn" package.
 	ProjectTaskColumnsInverseTable = "project_task_columns"
-	// ProjectTaskColumnsColumn is the table column denoting the project_task_columns relation/edge.
+	// ProjectTaskColumnsColumn is the table column denoting the projectTaskColumns relation/edge.
 	ProjectTaskColumnsColumn = "project_id"
-	// ProjectTaskListStatusesTable is the table that holds the project_task_list_statuses relation/edge.
+	// ProjectTaskListStatusesTable is the table that holds the projectTaskListStatuses relation/edge.
 	ProjectTaskListStatusesTable = "project_task_list_status"
 	// ProjectTaskListStatusesInverseTable is the table name for the ProjectTaskListStatus entity.
 	// It exists in this package in order to avoid circular dependency with the "projecttaskliststatus" package.
 	ProjectTaskListStatusesInverseTable = "project_task_list_status"
-	// ProjectTaskListStatusesColumn is the table column denoting the project_task_list_statuses relation/edge.
+	// ProjectTaskListStatusesColumn is the table column denoting the projectTaskListStatuses relation/edge.
 	ProjectTaskListStatusesColumn = "project_id"
-	// ProjectTaskSectionsTable is the table that holds the project_task_sections relation/edge.
+	// ProjectTaskSectionsTable is the table that holds the projectTaskSections relation/edge.
 	ProjectTaskSectionsTable = "project_task_sections"
 	// ProjectTaskSectionsInverseTable is the table name for the ProjectTaskSection entity.
 	// It exists in this package in order to avoid circular dependency with the "projecttasksection" package.
 	ProjectTaskSectionsInverseTable = "project_task_sections"
-	// ProjectTaskSectionsColumn is the table column denoting the project_task_sections relation/edge.
+	// ProjectTaskSectionsColumn is the table column denoting the projectTaskSections relation/edge.
 	ProjectTaskSectionsColumn = "project_id"
-	// ProjectTasksTable is the table that holds the project_tasks relation/edge.
+	// ProjectTasksTable is the table that holds the projectTasks relation/edge.
 	ProjectTasksTable = "project_tasks"
 	// ProjectTasksInverseTable is the table name for the ProjectTask entity.
 	// It exists in this package in order to avoid circular dependency with the "projecttask" package.
 	ProjectTasksInverseTable = "project_tasks"
-	// ProjectTasksColumn is the table column denoting the project_tasks relation/edge.
+	// ProjectTasksColumn is the table column denoting the projectTasks relation/edge.
 	ProjectTasksColumn = "project_id"
-	// TaskFilesTable is the table that holds the task_files relation/edge.
+	// TaskFilesTable is the table that holds the taskFiles relation/edge.
 	TaskFilesTable = "task_files"
 	// TaskFilesInverseTable is the table name for the TaskFile entity.
 	// It exists in this package in order to avoid circular dependency with the "taskfile" package.
 	TaskFilesInverseTable = "task_files"
-	// TaskFilesColumn is the table column denoting the task_files relation/edge.
+	// TaskFilesColumn is the table column denoting the taskFiles relation/edge.
 	TaskFilesColumn = "project_id"
 )
 

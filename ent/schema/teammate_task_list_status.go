@@ -15,6 +15,8 @@ import (
 	entMixin "entgo.io/ent/schema/mixin"
 )
 
+const teammateTaskListStatusesRef string = "teammateTaskListStatuses"
+
 // TeammateTaskListStatus holds the schema definition for the Test entity.
 type TeammateTaskListStatus struct {
 	ent.Schema
@@ -43,7 +45,7 @@ func (TeammateTaskListStatusMixin) Fields() []ent.Field {
 func (TeammateTaskListStatus) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("workspace", Workspace.Type).
-			Ref("teammate_task_list_statuses").
+			Ref(teammateTaskListStatusesRef).
 			Field("workspace_id").
 			Unique().
 			Required().
@@ -53,7 +55,7 @@ func (TeammateTaskListStatus) Edges() []ent.Edge {
 				),
 			),
 		edge.From("teammate", Teammate.Type).
-			Ref("teammate_task_list_statuses").
+			Ref(teammateTaskListStatusesRef).
 			Field("teammate_id").
 			Unique().
 			Required().
@@ -63,7 +65,7 @@ func (TeammateTaskListStatus) Edges() []ent.Edge {
 				),
 			),
 		edge.From("task_list_completed_status", TaskListCompletedStatus.Type).
-			Ref("teammate_task_list_statuses").
+			Ref(teammateTaskListStatusesRef).
 			Field("task_list_completed_status_id").
 			Unique().
 			Required().
@@ -73,7 +75,7 @@ func (TeammateTaskListStatus) Edges() []ent.Edge {
 				),
 			),
 		edge.From("task_list_sort_status", TaskListSortStatus.Type).
-			Ref("teammate_task_list_statuses").
+			Ref(teammateTaskListStatusesRef).
 			Field("task_list_sort_status_id").
 			Unique().
 			Required().

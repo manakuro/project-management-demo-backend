@@ -65,7 +65,7 @@ func (iq *IconQuery) Order(o ...OrderFunc) *IconQuery {
 	return iq
 }
 
-// QueryProjectIcons chains the current query on the "project_icons" edge.
+// QueryProjectIcons chains the current query on the "projectIcons" edge.
 func (iq *IconQuery) QueryProjectIcons() *ProjectIconQuery {
 	query := &ProjectIconQuery{config: iq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
@@ -276,7 +276,7 @@ func (iq *IconQuery) Clone() *IconQuery {
 }
 
 // WithProjectIcons tells the query-builder to eager-load the nodes that are connected to
-// the "project_icons" edge. The optional arguments are used to configure the query builder of the edge.
+// the "projectIcons" edge. The optional arguments are used to configure the query builder of the edge.
 func (iq *IconQuery) WithProjectIcons(opts ...func(*ProjectIconQuery)) *IconQuery {
 	query := &ProjectIconQuery{config: iq.config}
 	for _, opt := range opts {

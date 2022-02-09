@@ -604,7 +604,7 @@ func HasTeammateWith(preds ...predicate.Teammate) predicate.TaskFeed {
 	})
 }
 
-// HasTaskFeedLikes applies the HasEdge predicate on the "task_feed_likes" edge.
+// HasTaskFeedLikes applies the HasEdge predicate on the "taskFeedLikes" edge.
 func HasTaskFeedLikes() predicate.TaskFeed {
 	return predicate.TaskFeed(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
@@ -616,7 +616,7 @@ func HasTaskFeedLikes() predicate.TaskFeed {
 	})
 }
 
-// HasTaskFeedLikesWith applies the HasEdge predicate on the "task_feed_likes" edge with a given conditions (other predicates).
+// HasTaskFeedLikesWith applies the HasEdge predicate on the "taskFeedLikes" edge with a given conditions (other predicates).
 func HasTaskFeedLikesWith(preds ...predicate.TaskFeedLike) predicate.TaskFeed {
 	return predicate.TaskFeed(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
@@ -632,7 +632,7 @@ func HasTaskFeedLikesWith(preds ...predicate.TaskFeedLike) predicate.TaskFeed {
 	})
 }
 
-// HasTaskFiles applies the HasEdge predicate on the "task_files" edge.
+// HasTaskFiles applies the HasEdge predicate on the "taskFiles" edge.
 func HasTaskFiles() predicate.TaskFeed {
 	return predicate.TaskFeed(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
@@ -644,7 +644,7 @@ func HasTaskFiles() predicate.TaskFeed {
 	})
 }
 
-// HasTaskFilesWith applies the HasEdge predicate on the "task_files" edge with a given conditions (other predicates).
+// HasTaskFilesWith applies the HasEdge predicate on the "taskFiles" edge with a given conditions (other predicates).
 func HasTaskFilesWith(preds ...predicate.TaskFile) predicate.TaskFeed {
 	return predicate.TaskFeed(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(

@@ -32,8 +32,8 @@ type FileType struct {
 
 // FileTypeEdges holds the relations/edges for other nodes in the graph.
 type FileTypeEdges struct {
-	// TaskFiles holds the value of the task_files edge.
-	TaskFiles []*TaskFile `json:"task_files,omitempty"`
+	// TaskFiles holds the value of the taskFiles edge.
+	TaskFiles []*TaskFile `json:"taskFiles,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [1]bool
@@ -45,7 +45,7 @@ func (e FileTypeEdges) TaskFilesOrErr() ([]*TaskFile, error) {
 	if e.loadedTypes[0] {
 		return e.TaskFiles, nil
 	}
-	return nil, &NotLoadedError{edge: "task_files"}
+	return nil, &NotLoadedError{edge: "taskFiles"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -109,7 +109,7 @@ func (ft *FileType) assignValues(columns []string, values []interface{}) error {
 	return nil
 }
 
-// QueryTaskFiles queries the "task_files" edge of the FileType entity.
+// QueryTaskFiles queries the "taskFiles" edge of the FileType entity.
 func (ft *FileType) QueryTaskFiles() *TaskFileQuery {
 	return (&FileTypeClient{config: ft.config}).QueryTaskFiles(ft)
 }

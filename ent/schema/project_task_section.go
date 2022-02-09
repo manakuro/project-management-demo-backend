@@ -15,6 +15,8 @@ import (
 	entMixin "entgo.io/ent/schema/mixin"
 )
 
+const projectTaskSectionsRef string = "projectTaskSections"
+
 // ProjectTaskSection holds the schema definition for the Test entity.
 type ProjectTaskSection struct {
 	ent.Schema
@@ -40,7 +42,7 @@ func (ProjectTaskSectionMixin) Fields() []ent.Field {
 func (ProjectTaskSection) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("project", Project.Type).
-			Ref("project_task_sections").
+			Ref(projectTaskSectionsRef).
 			Field("project_id").
 			Unique().
 			Required().
@@ -49,7 +51,7 @@ func (ProjectTaskSection) Edges() []ent.Edge {
 					annotation.Edge{FieldName: "project_id"},
 				),
 			),
-		edge.To("project_tasks", ProjectTask.Type).
+		edge.To(projectTasksRef, ProjectTask.Type).
 			Annotations(
 				schema.Annotation(
 					annotation.Edge{FieldName: "project_task_id"},

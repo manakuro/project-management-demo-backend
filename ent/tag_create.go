@@ -94,13 +94,13 @@ func (tc *TagCreate) SetColor(c *Color) *TagCreate {
 	return tc.SetColorID(c.ID)
 }
 
-// AddTaskTagIDs adds the "task_tags" edge to the TaskTag entity by IDs.
+// AddTaskTagIDs adds the "taskTags" edge to the TaskTag entity by IDs.
 func (tc *TagCreate) AddTaskTagIDs(ids ...ulid.ID) *TagCreate {
 	tc.mutation.AddTaskTagIDs(ids...)
 	return tc
 }
 
-// AddTaskTags adds the "task_tags" edges to the TaskTag entity.
+// AddTaskTags adds the "taskTags" edges to the TaskTag entity.
 func (tc *TagCreate) AddTaskTags(t ...*TaskTag) *TagCreate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {

@@ -41,13 +41,13 @@ func (tcu *TaskColumnUpdate) SetType(t taskcolumn.Type) *TaskColumnUpdate {
 	return tcu
 }
 
-// AddTeammateTaskColumnIDs adds the "teammate_task_columns" edge to the TeammateTaskColumn entity by IDs.
+// AddTeammateTaskColumnIDs adds the "teammateTaskColumns" edge to the TeammateTaskColumn entity by IDs.
 func (tcu *TaskColumnUpdate) AddTeammateTaskColumnIDs(ids ...ulid.ID) *TaskColumnUpdate {
 	tcu.mutation.AddTeammateTaskColumnIDs(ids...)
 	return tcu
 }
 
-// AddTeammateTaskColumns adds the "teammate_task_columns" edges to the TeammateTaskColumn entity.
+// AddTeammateTaskColumns adds the "teammateTaskColumns" edges to the TeammateTaskColumn entity.
 func (tcu *TaskColumnUpdate) AddTeammateTaskColumns(t ...*TeammateTaskColumn) *TaskColumnUpdate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -56,13 +56,13 @@ func (tcu *TaskColumnUpdate) AddTeammateTaskColumns(t ...*TeammateTaskColumn) *T
 	return tcu.AddTeammateTaskColumnIDs(ids...)
 }
 
-// AddProjectTaskColumnIDs adds the "project_task_columns" edge to the ProjectTaskColumn entity by IDs.
+// AddProjectTaskColumnIDs adds the "projectTaskColumns" edge to the ProjectTaskColumn entity by IDs.
 func (tcu *TaskColumnUpdate) AddProjectTaskColumnIDs(ids ...ulid.ID) *TaskColumnUpdate {
 	tcu.mutation.AddProjectTaskColumnIDs(ids...)
 	return tcu
 }
 
-// AddProjectTaskColumns adds the "project_task_columns" edges to the ProjectTaskColumn entity.
+// AddProjectTaskColumns adds the "projectTaskColumns" edges to the ProjectTaskColumn entity.
 func (tcu *TaskColumnUpdate) AddProjectTaskColumns(p ...*ProjectTaskColumn) *TaskColumnUpdate {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {
@@ -76,19 +76,19 @@ func (tcu *TaskColumnUpdate) Mutation() *TaskColumnMutation {
 	return tcu.mutation
 }
 
-// ClearTeammateTaskColumns clears all "teammate_task_columns" edges to the TeammateTaskColumn entity.
+// ClearTeammateTaskColumns clears all "teammateTaskColumns" edges to the TeammateTaskColumn entity.
 func (tcu *TaskColumnUpdate) ClearTeammateTaskColumns() *TaskColumnUpdate {
 	tcu.mutation.ClearTeammateTaskColumns()
 	return tcu
 }
 
-// RemoveTeammateTaskColumnIDs removes the "teammate_task_columns" edge to TeammateTaskColumn entities by IDs.
+// RemoveTeammateTaskColumnIDs removes the "teammateTaskColumns" edge to TeammateTaskColumn entities by IDs.
 func (tcu *TaskColumnUpdate) RemoveTeammateTaskColumnIDs(ids ...ulid.ID) *TaskColumnUpdate {
 	tcu.mutation.RemoveTeammateTaskColumnIDs(ids...)
 	return tcu
 }
 
-// RemoveTeammateTaskColumns removes "teammate_task_columns" edges to TeammateTaskColumn entities.
+// RemoveTeammateTaskColumns removes "teammateTaskColumns" edges to TeammateTaskColumn entities.
 func (tcu *TaskColumnUpdate) RemoveTeammateTaskColumns(t ...*TeammateTaskColumn) *TaskColumnUpdate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -97,19 +97,19 @@ func (tcu *TaskColumnUpdate) RemoveTeammateTaskColumns(t ...*TeammateTaskColumn)
 	return tcu.RemoveTeammateTaskColumnIDs(ids...)
 }
 
-// ClearProjectTaskColumns clears all "project_task_columns" edges to the ProjectTaskColumn entity.
+// ClearProjectTaskColumns clears all "projectTaskColumns" edges to the ProjectTaskColumn entity.
 func (tcu *TaskColumnUpdate) ClearProjectTaskColumns() *TaskColumnUpdate {
 	tcu.mutation.ClearProjectTaskColumns()
 	return tcu
 }
 
-// RemoveProjectTaskColumnIDs removes the "project_task_columns" edge to ProjectTaskColumn entities by IDs.
+// RemoveProjectTaskColumnIDs removes the "projectTaskColumns" edge to ProjectTaskColumn entities by IDs.
 func (tcu *TaskColumnUpdate) RemoveProjectTaskColumnIDs(ids ...ulid.ID) *TaskColumnUpdate {
 	tcu.mutation.RemoveProjectTaskColumnIDs(ids...)
 	return tcu
 }
 
-// RemoveProjectTaskColumns removes "project_task_columns" edges to ProjectTaskColumn entities.
+// RemoveProjectTaskColumns removes "projectTaskColumns" edges to ProjectTaskColumn entities.
 func (tcu *TaskColumnUpdate) RemoveProjectTaskColumns(p ...*ProjectTaskColumn) *TaskColumnUpdate {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {
@@ -364,13 +364,13 @@ func (tcuo *TaskColumnUpdateOne) SetType(t taskcolumn.Type) *TaskColumnUpdateOne
 	return tcuo
 }
 
-// AddTeammateTaskColumnIDs adds the "teammate_task_columns" edge to the TeammateTaskColumn entity by IDs.
+// AddTeammateTaskColumnIDs adds the "teammateTaskColumns" edge to the TeammateTaskColumn entity by IDs.
 func (tcuo *TaskColumnUpdateOne) AddTeammateTaskColumnIDs(ids ...ulid.ID) *TaskColumnUpdateOne {
 	tcuo.mutation.AddTeammateTaskColumnIDs(ids...)
 	return tcuo
 }
 
-// AddTeammateTaskColumns adds the "teammate_task_columns" edges to the TeammateTaskColumn entity.
+// AddTeammateTaskColumns adds the "teammateTaskColumns" edges to the TeammateTaskColumn entity.
 func (tcuo *TaskColumnUpdateOne) AddTeammateTaskColumns(t ...*TeammateTaskColumn) *TaskColumnUpdateOne {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -379,13 +379,13 @@ func (tcuo *TaskColumnUpdateOne) AddTeammateTaskColumns(t ...*TeammateTaskColumn
 	return tcuo.AddTeammateTaskColumnIDs(ids...)
 }
 
-// AddProjectTaskColumnIDs adds the "project_task_columns" edge to the ProjectTaskColumn entity by IDs.
+// AddProjectTaskColumnIDs adds the "projectTaskColumns" edge to the ProjectTaskColumn entity by IDs.
 func (tcuo *TaskColumnUpdateOne) AddProjectTaskColumnIDs(ids ...ulid.ID) *TaskColumnUpdateOne {
 	tcuo.mutation.AddProjectTaskColumnIDs(ids...)
 	return tcuo
 }
 
-// AddProjectTaskColumns adds the "project_task_columns" edges to the ProjectTaskColumn entity.
+// AddProjectTaskColumns adds the "projectTaskColumns" edges to the ProjectTaskColumn entity.
 func (tcuo *TaskColumnUpdateOne) AddProjectTaskColumns(p ...*ProjectTaskColumn) *TaskColumnUpdateOne {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {
@@ -399,19 +399,19 @@ func (tcuo *TaskColumnUpdateOne) Mutation() *TaskColumnMutation {
 	return tcuo.mutation
 }
 
-// ClearTeammateTaskColumns clears all "teammate_task_columns" edges to the TeammateTaskColumn entity.
+// ClearTeammateTaskColumns clears all "teammateTaskColumns" edges to the TeammateTaskColumn entity.
 func (tcuo *TaskColumnUpdateOne) ClearTeammateTaskColumns() *TaskColumnUpdateOne {
 	tcuo.mutation.ClearTeammateTaskColumns()
 	return tcuo
 }
 
-// RemoveTeammateTaskColumnIDs removes the "teammate_task_columns" edge to TeammateTaskColumn entities by IDs.
+// RemoveTeammateTaskColumnIDs removes the "teammateTaskColumns" edge to TeammateTaskColumn entities by IDs.
 func (tcuo *TaskColumnUpdateOne) RemoveTeammateTaskColumnIDs(ids ...ulid.ID) *TaskColumnUpdateOne {
 	tcuo.mutation.RemoveTeammateTaskColumnIDs(ids...)
 	return tcuo
 }
 
-// RemoveTeammateTaskColumns removes "teammate_task_columns" edges to TeammateTaskColumn entities.
+// RemoveTeammateTaskColumns removes "teammateTaskColumns" edges to TeammateTaskColumn entities.
 func (tcuo *TaskColumnUpdateOne) RemoveTeammateTaskColumns(t ...*TeammateTaskColumn) *TaskColumnUpdateOne {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -420,19 +420,19 @@ func (tcuo *TaskColumnUpdateOne) RemoveTeammateTaskColumns(t ...*TeammateTaskCol
 	return tcuo.RemoveTeammateTaskColumnIDs(ids...)
 }
 
-// ClearProjectTaskColumns clears all "project_task_columns" edges to the ProjectTaskColumn entity.
+// ClearProjectTaskColumns clears all "projectTaskColumns" edges to the ProjectTaskColumn entity.
 func (tcuo *TaskColumnUpdateOne) ClearProjectTaskColumns() *TaskColumnUpdateOne {
 	tcuo.mutation.ClearProjectTaskColumns()
 	return tcuo
 }
 
-// RemoveProjectTaskColumnIDs removes the "project_task_columns" edge to ProjectTaskColumn entities by IDs.
+// RemoveProjectTaskColumnIDs removes the "projectTaskColumns" edge to ProjectTaskColumn entities by IDs.
 func (tcuo *TaskColumnUpdateOne) RemoveProjectTaskColumnIDs(ids ...ulid.ID) *TaskColumnUpdateOne {
 	tcuo.mutation.RemoveProjectTaskColumnIDs(ids...)
 	return tcuo
 }
 
-// RemoveProjectTaskColumns removes "project_task_columns" edges to ProjectTaskColumn entities.
+// RemoveProjectTaskColumns removes "projectTaskColumns" edges to ProjectTaskColumn entities.
 func (tcuo *TaskColumnUpdateOne) RemoveProjectTaskColumns(p ...*ProjectTaskColumn) *TaskColumnUpdateOne {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {

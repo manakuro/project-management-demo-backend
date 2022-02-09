@@ -83,13 +83,13 @@ func (wu *WorkspaceUpdate) AddProjects(p ...*Project) *WorkspaceUpdate {
 	return wu.AddProjectIDs(ids...)
 }
 
-// AddWorkspaceTeammateIDs adds the "workspace_teammates" edge to the WorkspaceTeammate entity by IDs.
+// AddWorkspaceTeammateIDs adds the "workspaceTeammates" edge to the WorkspaceTeammate entity by IDs.
 func (wu *WorkspaceUpdate) AddWorkspaceTeammateIDs(ids ...ulid.ID) *WorkspaceUpdate {
 	wu.mutation.AddWorkspaceTeammateIDs(ids...)
 	return wu
 }
 
-// AddWorkspaceTeammates adds the "workspace_teammates" edges to the WorkspaceTeammate entity.
+// AddWorkspaceTeammates adds the "workspaceTeammates" edges to the WorkspaceTeammate entity.
 func (wu *WorkspaceUpdate) AddWorkspaceTeammates(w ...*WorkspaceTeammate) *WorkspaceUpdate {
 	ids := make([]ulid.ID, len(w))
 	for i := range w {
@@ -98,13 +98,13 @@ func (wu *WorkspaceUpdate) AddWorkspaceTeammates(w ...*WorkspaceTeammate) *Works
 	return wu.AddWorkspaceTeammateIDs(ids...)
 }
 
-// AddFavoriteWorkspaceIDs adds the "favorite_workspaces" edge to the FavoriteWorkspace entity by IDs.
+// AddFavoriteWorkspaceIDs adds the "favoriteWorkspaces" edge to the FavoriteWorkspace entity by IDs.
 func (wu *WorkspaceUpdate) AddFavoriteWorkspaceIDs(ids ...ulid.ID) *WorkspaceUpdate {
 	wu.mutation.AddFavoriteWorkspaceIDs(ids...)
 	return wu
 }
 
-// AddFavoriteWorkspaces adds the "favorite_workspaces" edges to the FavoriteWorkspace entity.
+// AddFavoriteWorkspaces adds the "favoriteWorkspaces" edges to the FavoriteWorkspace entity.
 func (wu *WorkspaceUpdate) AddFavoriteWorkspaces(f ...*FavoriteWorkspace) *WorkspaceUpdate {
 	ids := make([]ulid.ID, len(f))
 	for i := range f {
@@ -113,43 +113,43 @@ func (wu *WorkspaceUpdate) AddFavoriteWorkspaces(f ...*FavoriteWorkspace) *Works
 	return wu.AddFavoriteWorkspaceIDs(ids...)
 }
 
-// AddTeammateTaskTabStatusIDs adds the "teammate_task_tab_statuses" edge to the TeammateTaskTabStatus entity by IDs.
-func (wu *WorkspaceUpdate) AddTeammateTaskTabStatusIDs(ids ...ulid.ID) *WorkspaceUpdate {
-	wu.mutation.AddTeammateTaskTabStatusIDs(ids...)
+// AddTeammateTaskTabStatuseIDs adds the "teammateTaskTabStatuses" edge to the TeammateTaskTabStatus entity by IDs.
+func (wu *WorkspaceUpdate) AddTeammateTaskTabStatuseIDs(ids ...ulid.ID) *WorkspaceUpdate {
+	wu.mutation.AddTeammateTaskTabStatuseIDs(ids...)
 	return wu
 }
 
-// AddTeammateTaskTabStatuses adds the "teammate_task_tab_statuses" edges to the TeammateTaskTabStatus entity.
+// AddTeammateTaskTabStatuses adds the "teammateTaskTabStatuses" edges to the TeammateTaskTabStatus entity.
 func (wu *WorkspaceUpdate) AddTeammateTaskTabStatuses(t ...*TeammateTaskTabStatus) *WorkspaceUpdate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
 		ids[i] = t[i].ID
 	}
-	return wu.AddTeammateTaskTabStatusIDs(ids...)
+	return wu.AddTeammateTaskTabStatuseIDs(ids...)
 }
 
-// AddTeammateTaskListStatusIDs adds the "teammate_task_list_statuses" edge to the TeammateTaskListStatus entity by IDs.
-func (wu *WorkspaceUpdate) AddTeammateTaskListStatusIDs(ids ...ulid.ID) *WorkspaceUpdate {
-	wu.mutation.AddTeammateTaskListStatusIDs(ids...)
+// AddTeammateTaskListStatuseIDs adds the "teammateTaskListStatuses" edge to the TeammateTaskListStatus entity by IDs.
+func (wu *WorkspaceUpdate) AddTeammateTaskListStatuseIDs(ids ...ulid.ID) *WorkspaceUpdate {
+	wu.mutation.AddTeammateTaskListStatuseIDs(ids...)
 	return wu
 }
 
-// AddTeammateTaskListStatuses adds the "teammate_task_list_statuses" edges to the TeammateTaskListStatus entity.
+// AddTeammateTaskListStatuses adds the "teammateTaskListStatuses" edges to the TeammateTaskListStatus entity.
 func (wu *WorkspaceUpdate) AddTeammateTaskListStatuses(t ...*TeammateTaskListStatus) *WorkspaceUpdate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
 		ids[i] = t[i].ID
 	}
-	return wu.AddTeammateTaskListStatusIDs(ids...)
+	return wu.AddTeammateTaskListStatuseIDs(ids...)
 }
 
-// AddTeammateTaskSectionIDs adds the "teammate_task_sections" edge to the TeammateTaskSection entity by IDs.
+// AddTeammateTaskSectionIDs adds the "teammateTaskSections" edge to the TeammateTaskSection entity by IDs.
 func (wu *WorkspaceUpdate) AddTeammateTaskSectionIDs(ids ...ulid.ID) *WorkspaceUpdate {
 	wu.mutation.AddTeammateTaskSectionIDs(ids...)
 	return wu
 }
 
-// AddTeammateTaskSections adds the "teammate_task_sections" edges to the TeammateTaskSection entity.
+// AddTeammateTaskSections adds the "teammateTaskSections" edges to the TeammateTaskSection entity.
 func (wu *WorkspaceUpdate) AddTeammateTaskSections(t ...*TeammateTaskSection) *WorkspaceUpdate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -158,13 +158,13 @@ func (wu *WorkspaceUpdate) AddTeammateTaskSections(t ...*TeammateTaskSection) *W
 	return wu.AddTeammateTaskSectionIDs(ids...)
 }
 
-// AddTaskLikeIDs adds the "task_likes" edge to the TaskLike entity by IDs.
+// AddTaskLikeIDs adds the "taskLikes" edge to the TaskLike entity by IDs.
 func (wu *WorkspaceUpdate) AddTaskLikeIDs(ids ...ulid.ID) *WorkspaceUpdate {
 	wu.mutation.AddTaskLikeIDs(ids...)
 	return wu
 }
 
-// AddTaskLikes adds the "task_likes" edges to the TaskLike entity.
+// AddTaskLikes adds the "taskLikes" edges to the TaskLike entity.
 func (wu *WorkspaceUpdate) AddTaskLikes(t ...*TaskLike) *WorkspaceUpdate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -188,13 +188,13 @@ func (wu *WorkspaceUpdate) AddTags(t ...*Tag) *WorkspaceUpdate {
 	return wu.AddTagIDs(ids...)
 }
 
-// AddTeammateTaskColumnIDs adds the "teammate_task_columns" edge to the TeammateTaskColumn entity by IDs.
+// AddTeammateTaskColumnIDs adds the "teammateTaskColumns" edge to the TeammateTaskColumn entity by IDs.
 func (wu *WorkspaceUpdate) AddTeammateTaskColumnIDs(ids ...ulid.ID) *WorkspaceUpdate {
 	wu.mutation.AddTeammateTaskColumnIDs(ids...)
 	return wu
 }
 
-// AddTeammateTaskColumns adds the "teammate_task_columns" edges to the TeammateTaskColumn entity.
+// AddTeammateTaskColumns adds the "teammateTaskColumns" edges to the TeammateTaskColumn entity.
 func (wu *WorkspaceUpdate) AddTeammateTaskColumns(t ...*TeammateTaskColumn) *WorkspaceUpdate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -235,19 +235,19 @@ func (wu *WorkspaceUpdate) RemoveProjects(p ...*Project) *WorkspaceUpdate {
 	return wu.RemoveProjectIDs(ids...)
 }
 
-// ClearWorkspaceTeammates clears all "workspace_teammates" edges to the WorkspaceTeammate entity.
+// ClearWorkspaceTeammates clears all "workspaceTeammates" edges to the WorkspaceTeammate entity.
 func (wu *WorkspaceUpdate) ClearWorkspaceTeammates() *WorkspaceUpdate {
 	wu.mutation.ClearWorkspaceTeammates()
 	return wu
 }
 
-// RemoveWorkspaceTeammateIDs removes the "workspace_teammates" edge to WorkspaceTeammate entities by IDs.
+// RemoveWorkspaceTeammateIDs removes the "workspaceTeammates" edge to WorkspaceTeammate entities by IDs.
 func (wu *WorkspaceUpdate) RemoveWorkspaceTeammateIDs(ids ...ulid.ID) *WorkspaceUpdate {
 	wu.mutation.RemoveWorkspaceTeammateIDs(ids...)
 	return wu
 }
 
-// RemoveWorkspaceTeammates removes "workspace_teammates" edges to WorkspaceTeammate entities.
+// RemoveWorkspaceTeammates removes "workspaceTeammates" edges to WorkspaceTeammate entities.
 func (wu *WorkspaceUpdate) RemoveWorkspaceTeammates(w ...*WorkspaceTeammate) *WorkspaceUpdate {
 	ids := make([]ulid.ID, len(w))
 	for i := range w {
@@ -256,19 +256,19 @@ func (wu *WorkspaceUpdate) RemoveWorkspaceTeammates(w ...*WorkspaceTeammate) *Wo
 	return wu.RemoveWorkspaceTeammateIDs(ids...)
 }
 
-// ClearFavoriteWorkspaces clears all "favorite_workspaces" edges to the FavoriteWorkspace entity.
+// ClearFavoriteWorkspaces clears all "favoriteWorkspaces" edges to the FavoriteWorkspace entity.
 func (wu *WorkspaceUpdate) ClearFavoriteWorkspaces() *WorkspaceUpdate {
 	wu.mutation.ClearFavoriteWorkspaces()
 	return wu
 }
 
-// RemoveFavoriteWorkspaceIDs removes the "favorite_workspaces" edge to FavoriteWorkspace entities by IDs.
+// RemoveFavoriteWorkspaceIDs removes the "favoriteWorkspaces" edge to FavoriteWorkspace entities by IDs.
 func (wu *WorkspaceUpdate) RemoveFavoriteWorkspaceIDs(ids ...ulid.ID) *WorkspaceUpdate {
 	wu.mutation.RemoveFavoriteWorkspaceIDs(ids...)
 	return wu
 }
 
-// RemoveFavoriteWorkspaces removes "favorite_workspaces" edges to FavoriteWorkspace entities.
+// RemoveFavoriteWorkspaces removes "favoriteWorkspaces" edges to FavoriteWorkspace entities.
 func (wu *WorkspaceUpdate) RemoveFavoriteWorkspaces(f ...*FavoriteWorkspace) *WorkspaceUpdate {
 	ids := make([]ulid.ID, len(f))
 	for i := range f {
@@ -277,61 +277,61 @@ func (wu *WorkspaceUpdate) RemoveFavoriteWorkspaces(f ...*FavoriteWorkspace) *Wo
 	return wu.RemoveFavoriteWorkspaceIDs(ids...)
 }
 
-// ClearTeammateTaskTabStatuses clears all "teammate_task_tab_statuses" edges to the TeammateTaskTabStatus entity.
+// ClearTeammateTaskTabStatuses clears all "teammateTaskTabStatuses" edges to the TeammateTaskTabStatus entity.
 func (wu *WorkspaceUpdate) ClearTeammateTaskTabStatuses() *WorkspaceUpdate {
 	wu.mutation.ClearTeammateTaskTabStatuses()
 	return wu
 }
 
-// RemoveTeammateTaskTabStatusIDs removes the "teammate_task_tab_statuses" edge to TeammateTaskTabStatus entities by IDs.
-func (wu *WorkspaceUpdate) RemoveTeammateTaskTabStatusIDs(ids ...ulid.ID) *WorkspaceUpdate {
-	wu.mutation.RemoveTeammateTaskTabStatusIDs(ids...)
+// RemoveTeammateTaskTabStatuseIDs removes the "teammateTaskTabStatuses" edge to TeammateTaskTabStatus entities by IDs.
+func (wu *WorkspaceUpdate) RemoveTeammateTaskTabStatuseIDs(ids ...ulid.ID) *WorkspaceUpdate {
+	wu.mutation.RemoveTeammateTaskTabStatuseIDs(ids...)
 	return wu
 }
 
-// RemoveTeammateTaskTabStatuses removes "teammate_task_tab_statuses" edges to TeammateTaskTabStatus entities.
+// RemoveTeammateTaskTabStatuses removes "teammateTaskTabStatuses" edges to TeammateTaskTabStatus entities.
 func (wu *WorkspaceUpdate) RemoveTeammateTaskTabStatuses(t ...*TeammateTaskTabStatus) *WorkspaceUpdate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
 		ids[i] = t[i].ID
 	}
-	return wu.RemoveTeammateTaskTabStatusIDs(ids...)
+	return wu.RemoveTeammateTaskTabStatuseIDs(ids...)
 }
 
-// ClearTeammateTaskListStatuses clears all "teammate_task_list_statuses" edges to the TeammateTaskListStatus entity.
+// ClearTeammateTaskListStatuses clears all "teammateTaskListStatuses" edges to the TeammateTaskListStatus entity.
 func (wu *WorkspaceUpdate) ClearTeammateTaskListStatuses() *WorkspaceUpdate {
 	wu.mutation.ClearTeammateTaskListStatuses()
 	return wu
 }
 
-// RemoveTeammateTaskListStatusIDs removes the "teammate_task_list_statuses" edge to TeammateTaskListStatus entities by IDs.
-func (wu *WorkspaceUpdate) RemoveTeammateTaskListStatusIDs(ids ...ulid.ID) *WorkspaceUpdate {
-	wu.mutation.RemoveTeammateTaskListStatusIDs(ids...)
+// RemoveTeammateTaskListStatuseIDs removes the "teammateTaskListStatuses" edge to TeammateTaskListStatus entities by IDs.
+func (wu *WorkspaceUpdate) RemoveTeammateTaskListStatuseIDs(ids ...ulid.ID) *WorkspaceUpdate {
+	wu.mutation.RemoveTeammateTaskListStatuseIDs(ids...)
 	return wu
 }
 
-// RemoveTeammateTaskListStatuses removes "teammate_task_list_statuses" edges to TeammateTaskListStatus entities.
+// RemoveTeammateTaskListStatuses removes "teammateTaskListStatuses" edges to TeammateTaskListStatus entities.
 func (wu *WorkspaceUpdate) RemoveTeammateTaskListStatuses(t ...*TeammateTaskListStatus) *WorkspaceUpdate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
 		ids[i] = t[i].ID
 	}
-	return wu.RemoveTeammateTaskListStatusIDs(ids...)
+	return wu.RemoveTeammateTaskListStatuseIDs(ids...)
 }
 
-// ClearTeammateTaskSections clears all "teammate_task_sections" edges to the TeammateTaskSection entity.
+// ClearTeammateTaskSections clears all "teammateTaskSections" edges to the TeammateTaskSection entity.
 func (wu *WorkspaceUpdate) ClearTeammateTaskSections() *WorkspaceUpdate {
 	wu.mutation.ClearTeammateTaskSections()
 	return wu
 }
 
-// RemoveTeammateTaskSectionIDs removes the "teammate_task_sections" edge to TeammateTaskSection entities by IDs.
+// RemoveTeammateTaskSectionIDs removes the "teammateTaskSections" edge to TeammateTaskSection entities by IDs.
 func (wu *WorkspaceUpdate) RemoveTeammateTaskSectionIDs(ids ...ulid.ID) *WorkspaceUpdate {
 	wu.mutation.RemoveTeammateTaskSectionIDs(ids...)
 	return wu
 }
 
-// RemoveTeammateTaskSections removes "teammate_task_sections" edges to TeammateTaskSection entities.
+// RemoveTeammateTaskSections removes "teammateTaskSections" edges to TeammateTaskSection entities.
 func (wu *WorkspaceUpdate) RemoveTeammateTaskSections(t ...*TeammateTaskSection) *WorkspaceUpdate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -340,19 +340,19 @@ func (wu *WorkspaceUpdate) RemoveTeammateTaskSections(t ...*TeammateTaskSection)
 	return wu.RemoveTeammateTaskSectionIDs(ids...)
 }
 
-// ClearTaskLikes clears all "task_likes" edges to the TaskLike entity.
+// ClearTaskLikes clears all "taskLikes" edges to the TaskLike entity.
 func (wu *WorkspaceUpdate) ClearTaskLikes() *WorkspaceUpdate {
 	wu.mutation.ClearTaskLikes()
 	return wu
 }
 
-// RemoveTaskLikeIDs removes the "task_likes" edge to TaskLike entities by IDs.
+// RemoveTaskLikeIDs removes the "taskLikes" edge to TaskLike entities by IDs.
 func (wu *WorkspaceUpdate) RemoveTaskLikeIDs(ids ...ulid.ID) *WorkspaceUpdate {
 	wu.mutation.RemoveTaskLikeIDs(ids...)
 	return wu
 }
 
-// RemoveTaskLikes removes "task_likes" edges to TaskLike entities.
+// RemoveTaskLikes removes "taskLikes" edges to TaskLike entities.
 func (wu *WorkspaceUpdate) RemoveTaskLikes(t ...*TaskLike) *WorkspaceUpdate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -382,19 +382,19 @@ func (wu *WorkspaceUpdate) RemoveTags(t ...*Tag) *WorkspaceUpdate {
 	return wu.RemoveTagIDs(ids...)
 }
 
-// ClearTeammateTaskColumns clears all "teammate_task_columns" edges to the TeammateTaskColumn entity.
+// ClearTeammateTaskColumns clears all "teammateTaskColumns" edges to the TeammateTaskColumn entity.
 func (wu *WorkspaceUpdate) ClearTeammateTaskColumns() *WorkspaceUpdate {
 	wu.mutation.ClearTeammateTaskColumns()
 	return wu
 }
 
-// RemoveTeammateTaskColumnIDs removes the "teammate_task_columns" edge to TeammateTaskColumn entities by IDs.
+// RemoveTeammateTaskColumnIDs removes the "teammateTaskColumns" edge to TeammateTaskColumn entities by IDs.
 func (wu *WorkspaceUpdate) RemoveTeammateTaskColumnIDs(ids ...ulid.ID) *WorkspaceUpdate {
 	wu.mutation.RemoveTeammateTaskColumnIDs(ids...)
 	return wu
 }
 
-// RemoveTeammateTaskColumns removes "teammate_task_columns" edges to TeammateTaskColumn entities.
+// RemoveTeammateTaskColumns removes "teammateTaskColumns" edges to TeammateTaskColumn entities.
 func (wu *WorkspaceUpdate) RemoveTeammateTaskColumns(t ...*TeammateTaskColumn) *WorkspaceUpdate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -1092,13 +1092,13 @@ func (wuo *WorkspaceUpdateOne) AddProjects(p ...*Project) *WorkspaceUpdateOne {
 	return wuo.AddProjectIDs(ids...)
 }
 
-// AddWorkspaceTeammateIDs adds the "workspace_teammates" edge to the WorkspaceTeammate entity by IDs.
+// AddWorkspaceTeammateIDs adds the "workspaceTeammates" edge to the WorkspaceTeammate entity by IDs.
 func (wuo *WorkspaceUpdateOne) AddWorkspaceTeammateIDs(ids ...ulid.ID) *WorkspaceUpdateOne {
 	wuo.mutation.AddWorkspaceTeammateIDs(ids...)
 	return wuo
 }
 
-// AddWorkspaceTeammates adds the "workspace_teammates" edges to the WorkspaceTeammate entity.
+// AddWorkspaceTeammates adds the "workspaceTeammates" edges to the WorkspaceTeammate entity.
 func (wuo *WorkspaceUpdateOne) AddWorkspaceTeammates(w ...*WorkspaceTeammate) *WorkspaceUpdateOne {
 	ids := make([]ulid.ID, len(w))
 	for i := range w {
@@ -1107,13 +1107,13 @@ func (wuo *WorkspaceUpdateOne) AddWorkspaceTeammates(w ...*WorkspaceTeammate) *W
 	return wuo.AddWorkspaceTeammateIDs(ids...)
 }
 
-// AddFavoriteWorkspaceIDs adds the "favorite_workspaces" edge to the FavoriteWorkspace entity by IDs.
+// AddFavoriteWorkspaceIDs adds the "favoriteWorkspaces" edge to the FavoriteWorkspace entity by IDs.
 func (wuo *WorkspaceUpdateOne) AddFavoriteWorkspaceIDs(ids ...ulid.ID) *WorkspaceUpdateOne {
 	wuo.mutation.AddFavoriteWorkspaceIDs(ids...)
 	return wuo
 }
 
-// AddFavoriteWorkspaces adds the "favorite_workspaces" edges to the FavoriteWorkspace entity.
+// AddFavoriteWorkspaces adds the "favoriteWorkspaces" edges to the FavoriteWorkspace entity.
 func (wuo *WorkspaceUpdateOne) AddFavoriteWorkspaces(f ...*FavoriteWorkspace) *WorkspaceUpdateOne {
 	ids := make([]ulid.ID, len(f))
 	for i := range f {
@@ -1122,43 +1122,43 @@ func (wuo *WorkspaceUpdateOne) AddFavoriteWorkspaces(f ...*FavoriteWorkspace) *W
 	return wuo.AddFavoriteWorkspaceIDs(ids...)
 }
 
-// AddTeammateTaskTabStatusIDs adds the "teammate_task_tab_statuses" edge to the TeammateTaskTabStatus entity by IDs.
-func (wuo *WorkspaceUpdateOne) AddTeammateTaskTabStatusIDs(ids ...ulid.ID) *WorkspaceUpdateOne {
-	wuo.mutation.AddTeammateTaskTabStatusIDs(ids...)
+// AddTeammateTaskTabStatuseIDs adds the "teammateTaskTabStatuses" edge to the TeammateTaskTabStatus entity by IDs.
+func (wuo *WorkspaceUpdateOne) AddTeammateTaskTabStatuseIDs(ids ...ulid.ID) *WorkspaceUpdateOne {
+	wuo.mutation.AddTeammateTaskTabStatuseIDs(ids...)
 	return wuo
 }
 
-// AddTeammateTaskTabStatuses adds the "teammate_task_tab_statuses" edges to the TeammateTaskTabStatus entity.
+// AddTeammateTaskTabStatuses adds the "teammateTaskTabStatuses" edges to the TeammateTaskTabStatus entity.
 func (wuo *WorkspaceUpdateOne) AddTeammateTaskTabStatuses(t ...*TeammateTaskTabStatus) *WorkspaceUpdateOne {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
 		ids[i] = t[i].ID
 	}
-	return wuo.AddTeammateTaskTabStatusIDs(ids...)
+	return wuo.AddTeammateTaskTabStatuseIDs(ids...)
 }
 
-// AddTeammateTaskListStatusIDs adds the "teammate_task_list_statuses" edge to the TeammateTaskListStatus entity by IDs.
-func (wuo *WorkspaceUpdateOne) AddTeammateTaskListStatusIDs(ids ...ulid.ID) *WorkspaceUpdateOne {
-	wuo.mutation.AddTeammateTaskListStatusIDs(ids...)
+// AddTeammateTaskListStatuseIDs adds the "teammateTaskListStatuses" edge to the TeammateTaskListStatus entity by IDs.
+func (wuo *WorkspaceUpdateOne) AddTeammateTaskListStatuseIDs(ids ...ulid.ID) *WorkspaceUpdateOne {
+	wuo.mutation.AddTeammateTaskListStatuseIDs(ids...)
 	return wuo
 }
 
-// AddTeammateTaskListStatuses adds the "teammate_task_list_statuses" edges to the TeammateTaskListStatus entity.
+// AddTeammateTaskListStatuses adds the "teammateTaskListStatuses" edges to the TeammateTaskListStatus entity.
 func (wuo *WorkspaceUpdateOne) AddTeammateTaskListStatuses(t ...*TeammateTaskListStatus) *WorkspaceUpdateOne {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
 		ids[i] = t[i].ID
 	}
-	return wuo.AddTeammateTaskListStatusIDs(ids...)
+	return wuo.AddTeammateTaskListStatuseIDs(ids...)
 }
 
-// AddTeammateTaskSectionIDs adds the "teammate_task_sections" edge to the TeammateTaskSection entity by IDs.
+// AddTeammateTaskSectionIDs adds the "teammateTaskSections" edge to the TeammateTaskSection entity by IDs.
 func (wuo *WorkspaceUpdateOne) AddTeammateTaskSectionIDs(ids ...ulid.ID) *WorkspaceUpdateOne {
 	wuo.mutation.AddTeammateTaskSectionIDs(ids...)
 	return wuo
 }
 
-// AddTeammateTaskSections adds the "teammate_task_sections" edges to the TeammateTaskSection entity.
+// AddTeammateTaskSections adds the "teammateTaskSections" edges to the TeammateTaskSection entity.
 func (wuo *WorkspaceUpdateOne) AddTeammateTaskSections(t ...*TeammateTaskSection) *WorkspaceUpdateOne {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -1167,13 +1167,13 @@ func (wuo *WorkspaceUpdateOne) AddTeammateTaskSections(t ...*TeammateTaskSection
 	return wuo.AddTeammateTaskSectionIDs(ids...)
 }
 
-// AddTaskLikeIDs adds the "task_likes" edge to the TaskLike entity by IDs.
+// AddTaskLikeIDs adds the "taskLikes" edge to the TaskLike entity by IDs.
 func (wuo *WorkspaceUpdateOne) AddTaskLikeIDs(ids ...ulid.ID) *WorkspaceUpdateOne {
 	wuo.mutation.AddTaskLikeIDs(ids...)
 	return wuo
 }
 
-// AddTaskLikes adds the "task_likes" edges to the TaskLike entity.
+// AddTaskLikes adds the "taskLikes" edges to the TaskLike entity.
 func (wuo *WorkspaceUpdateOne) AddTaskLikes(t ...*TaskLike) *WorkspaceUpdateOne {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -1197,13 +1197,13 @@ func (wuo *WorkspaceUpdateOne) AddTags(t ...*Tag) *WorkspaceUpdateOne {
 	return wuo.AddTagIDs(ids...)
 }
 
-// AddTeammateTaskColumnIDs adds the "teammate_task_columns" edge to the TeammateTaskColumn entity by IDs.
+// AddTeammateTaskColumnIDs adds the "teammateTaskColumns" edge to the TeammateTaskColumn entity by IDs.
 func (wuo *WorkspaceUpdateOne) AddTeammateTaskColumnIDs(ids ...ulid.ID) *WorkspaceUpdateOne {
 	wuo.mutation.AddTeammateTaskColumnIDs(ids...)
 	return wuo
 }
 
-// AddTeammateTaskColumns adds the "teammate_task_columns" edges to the TeammateTaskColumn entity.
+// AddTeammateTaskColumns adds the "teammateTaskColumns" edges to the TeammateTaskColumn entity.
 func (wuo *WorkspaceUpdateOne) AddTeammateTaskColumns(t ...*TeammateTaskColumn) *WorkspaceUpdateOne {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -1244,19 +1244,19 @@ func (wuo *WorkspaceUpdateOne) RemoveProjects(p ...*Project) *WorkspaceUpdateOne
 	return wuo.RemoveProjectIDs(ids...)
 }
 
-// ClearWorkspaceTeammates clears all "workspace_teammates" edges to the WorkspaceTeammate entity.
+// ClearWorkspaceTeammates clears all "workspaceTeammates" edges to the WorkspaceTeammate entity.
 func (wuo *WorkspaceUpdateOne) ClearWorkspaceTeammates() *WorkspaceUpdateOne {
 	wuo.mutation.ClearWorkspaceTeammates()
 	return wuo
 }
 
-// RemoveWorkspaceTeammateIDs removes the "workspace_teammates" edge to WorkspaceTeammate entities by IDs.
+// RemoveWorkspaceTeammateIDs removes the "workspaceTeammates" edge to WorkspaceTeammate entities by IDs.
 func (wuo *WorkspaceUpdateOne) RemoveWorkspaceTeammateIDs(ids ...ulid.ID) *WorkspaceUpdateOne {
 	wuo.mutation.RemoveWorkspaceTeammateIDs(ids...)
 	return wuo
 }
 
-// RemoveWorkspaceTeammates removes "workspace_teammates" edges to WorkspaceTeammate entities.
+// RemoveWorkspaceTeammates removes "workspaceTeammates" edges to WorkspaceTeammate entities.
 func (wuo *WorkspaceUpdateOne) RemoveWorkspaceTeammates(w ...*WorkspaceTeammate) *WorkspaceUpdateOne {
 	ids := make([]ulid.ID, len(w))
 	for i := range w {
@@ -1265,19 +1265,19 @@ func (wuo *WorkspaceUpdateOne) RemoveWorkspaceTeammates(w ...*WorkspaceTeammate)
 	return wuo.RemoveWorkspaceTeammateIDs(ids...)
 }
 
-// ClearFavoriteWorkspaces clears all "favorite_workspaces" edges to the FavoriteWorkspace entity.
+// ClearFavoriteWorkspaces clears all "favoriteWorkspaces" edges to the FavoriteWorkspace entity.
 func (wuo *WorkspaceUpdateOne) ClearFavoriteWorkspaces() *WorkspaceUpdateOne {
 	wuo.mutation.ClearFavoriteWorkspaces()
 	return wuo
 }
 
-// RemoveFavoriteWorkspaceIDs removes the "favorite_workspaces" edge to FavoriteWorkspace entities by IDs.
+// RemoveFavoriteWorkspaceIDs removes the "favoriteWorkspaces" edge to FavoriteWorkspace entities by IDs.
 func (wuo *WorkspaceUpdateOne) RemoveFavoriteWorkspaceIDs(ids ...ulid.ID) *WorkspaceUpdateOne {
 	wuo.mutation.RemoveFavoriteWorkspaceIDs(ids...)
 	return wuo
 }
 
-// RemoveFavoriteWorkspaces removes "favorite_workspaces" edges to FavoriteWorkspace entities.
+// RemoveFavoriteWorkspaces removes "favoriteWorkspaces" edges to FavoriteWorkspace entities.
 func (wuo *WorkspaceUpdateOne) RemoveFavoriteWorkspaces(f ...*FavoriteWorkspace) *WorkspaceUpdateOne {
 	ids := make([]ulid.ID, len(f))
 	for i := range f {
@@ -1286,61 +1286,61 @@ func (wuo *WorkspaceUpdateOne) RemoveFavoriteWorkspaces(f ...*FavoriteWorkspace)
 	return wuo.RemoveFavoriteWorkspaceIDs(ids...)
 }
 
-// ClearTeammateTaskTabStatuses clears all "teammate_task_tab_statuses" edges to the TeammateTaskTabStatus entity.
+// ClearTeammateTaskTabStatuses clears all "teammateTaskTabStatuses" edges to the TeammateTaskTabStatus entity.
 func (wuo *WorkspaceUpdateOne) ClearTeammateTaskTabStatuses() *WorkspaceUpdateOne {
 	wuo.mutation.ClearTeammateTaskTabStatuses()
 	return wuo
 }
 
-// RemoveTeammateTaskTabStatusIDs removes the "teammate_task_tab_statuses" edge to TeammateTaskTabStatus entities by IDs.
-func (wuo *WorkspaceUpdateOne) RemoveTeammateTaskTabStatusIDs(ids ...ulid.ID) *WorkspaceUpdateOne {
-	wuo.mutation.RemoveTeammateTaskTabStatusIDs(ids...)
+// RemoveTeammateTaskTabStatuseIDs removes the "teammateTaskTabStatuses" edge to TeammateTaskTabStatus entities by IDs.
+func (wuo *WorkspaceUpdateOne) RemoveTeammateTaskTabStatuseIDs(ids ...ulid.ID) *WorkspaceUpdateOne {
+	wuo.mutation.RemoveTeammateTaskTabStatuseIDs(ids...)
 	return wuo
 }
 
-// RemoveTeammateTaskTabStatuses removes "teammate_task_tab_statuses" edges to TeammateTaskTabStatus entities.
+// RemoveTeammateTaskTabStatuses removes "teammateTaskTabStatuses" edges to TeammateTaskTabStatus entities.
 func (wuo *WorkspaceUpdateOne) RemoveTeammateTaskTabStatuses(t ...*TeammateTaskTabStatus) *WorkspaceUpdateOne {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
 		ids[i] = t[i].ID
 	}
-	return wuo.RemoveTeammateTaskTabStatusIDs(ids...)
+	return wuo.RemoveTeammateTaskTabStatuseIDs(ids...)
 }
 
-// ClearTeammateTaskListStatuses clears all "teammate_task_list_statuses" edges to the TeammateTaskListStatus entity.
+// ClearTeammateTaskListStatuses clears all "teammateTaskListStatuses" edges to the TeammateTaskListStatus entity.
 func (wuo *WorkspaceUpdateOne) ClearTeammateTaskListStatuses() *WorkspaceUpdateOne {
 	wuo.mutation.ClearTeammateTaskListStatuses()
 	return wuo
 }
 
-// RemoveTeammateTaskListStatusIDs removes the "teammate_task_list_statuses" edge to TeammateTaskListStatus entities by IDs.
-func (wuo *WorkspaceUpdateOne) RemoveTeammateTaskListStatusIDs(ids ...ulid.ID) *WorkspaceUpdateOne {
-	wuo.mutation.RemoveTeammateTaskListStatusIDs(ids...)
+// RemoveTeammateTaskListStatuseIDs removes the "teammateTaskListStatuses" edge to TeammateTaskListStatus entities by IDs.
+func (wuo *WorkspaceUpdateOne) RemoveTeammateTaskListStatuseIDs(ids ...ulid.ID) *WorkspaceUpdateOne {
+	wuo.mutation.RemoveTeammateTaskListStatuseIDs(ids...)
 	return wuo
 }
 
-// RemoveTeammateTaskListStatuses removes "teammate_task_list_statuses" edges to TeammateTaskListStatus entities.
+// RemoveTeammateTaskListStatuses removes "teammateTaskListStatuses" edges to TeammateTaskListStatus entities.
 func (wuo *WorkspaceUpdateOne) RemoveTeammateTaskListStatuses(t ...*TeammateTaskListStatus) *WorkspaceUpdateOne {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
 		ids[i] = t[i].ID
 	}
-	return wuo.RemoveTeammateTaskListStatusIDs(ids...)
+	return wuo.RemoveTeammateTaskListStatuseIDs(ids...)
 }
 
-// ClearTeammateTaskSections clears all "teammate_task_sections" edges to the TeammateTaskSection entity.
+// ClearTeammateTaskSections clears all "teammateTaskSections" edges to the TeammateTaskSection entity.
 func (wuo *WorkspaceUpdateOne) ClearTeammateTaskSections() *WorkspaceUpdateOne {
 	wuo.mutation.ClearTeammateTaskSections()
 	return wuo
 }
 
-// RemoveTeammateTaskSectionIDs removes the "teammate_task_sections" edge to TeammateTaskSection entities by IDs.
+// RemoveTeammateTaskSectionIDs removes the "teammateTaskSections" edge to TeammateTaskSection entities by IDs.
 func (wuo *WorkspaceUpdateOne) RemoveTeammateTaskSectionIDs(ids ...ulid.ID) *WorkspaceUpdateOne {
 	wuo.mutation.RemoveTeammateTaskSectionIDs(ids...)
 	return wuo
 }
 
-// RemoveTeammateTaskSections removes "teammate_task_sections" edges to TeammateTaskSection entities.
+// RemoveTeammateTaskSections removes "teammateTaskSections" edges to TeammateTaskSection entities.
 func (wuo *WorkspaceUpdateOne) RemoveTeammateTaskSections(t ...*TeammateTaskSection) *WorkspaceUpdateOne {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -1349,19 +1349,19 @@ func (wuo *WorkspaceUpdateOne) RemoveTeammateTaskSections(t ...*TeammateTaskSect
 	return wuo.RemoveTeammateTaskSectionIDs(ids...)
 }
 
-// ClearTaskLikes clears all "task_likes" edges to the TaskLike entity.
+// ClearTaskLikes clears all "taskLikes" edges to the TaskLike entity.
 func (wuo *WorkspaceUpdateOne) ClearTaskLikes() *WorkspaceUpdateOne {
 	wuo.mutation.ClearTaskLikes()
 	return wuo
 }
 
-// RemoveTaskLikeIDs removes the "task_likes" edge to TaskLike entities by IDs.
+// RemoveTaskLikeIDs removes the "taskLikes" edge to TaskLike entities by IDs.
 func (wuo *WorkspaceUpdateOne) RemoveTaskLikeIDs(ids ...ulid.ID) *WorkspaceUpdateOne {
 	wuo.mutation.RemoveTaskLikeIDs(ids...)
 	return wuo
 }
 
-// RemoveTaskLikes removes "task_likes" edges to TaskLike entities.
+// RemoveTaskLikes removes "taskLikes" edges to TaskLike entities.
 func (wuo *WorkspaceUpdateOne) RemoveTaskLikes(t ...*TaskLike) *WorkspaceUpdateOne {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -1391,19 +1391,19 @@ func (wuo *WorkspaceUpdateOne) RemoveTags(t ...*Tag) *WorkspaceUpdateOne {
 	return wuo.RemoveTagIDs(ids...)
 }
 
-// ClearTeammateTaskColumns clears all "teammate_task_columns" edges to the TeammateTaskColumn entity.
+// ClearTeammateTaskColumns clears all "teammateTaskColumns" edges to the TeammateTaskColumn entity.
 func (wuo *WorkspaceUpdateOne) ClearTeammateTaskColumns() *WorkspaceUpdateOne {
 	wuo.mutation.ClearTeammateTaskColumns()
 	return wuo
 }
 
-// RemoveTeammateTaskColumnIDs removes the "teammate_task_columns" edge to TeammateTaskColumn entities by IDs.
+// RemoveTeammateTaskColumnIDs removes the "teammateTaskColumns" edge to TeammateTaskColumn entities by IDs.
 func (wuo *WorkspaceUpdateOne) RemoveTeammateTaskColumnIDs(ids ...ulid.ID) *WorkspaceUpdateOne {
 	wuo.mutation.RemoveTeammateTaskColumnIDs(ids...)
 	return wuo
 }
 
-// RemoveTeammateTaskColumns removes "teammate_task_columns" edges to TeammateTaskColumn entities.
+// RemoveTeammateTaskColumns removes "teammateTaskColumns" edges to TeammateTaskColumn entities.
 func (wuo *WorkspaceUpdateOne) RemoveTeammateTaskColumns(t ...*TeammateTaskColumn) *WorkspaceUpdateOne {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {

@@ -15,6 +15,8 @@ import (
 	entMixin "entgo.io/ent/schema/mixin"
 )
 
+const projectTaskListStatusesRef string = "projectTaskListStatuses"
+
 // ProjectTaskListStatus holds the schema definition for the Test entity.
 type ProjectTaskListStatus struct {
 	ent.Schema
@@ -41,7 +43,7 @@ func (ProjectTaskListStatusMixin) Fields() []ent.Field {
 func (ProjectTaskListStatus) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("project", Project.Type).
-			Ref("project_task_list_statuses").
+			Ref(projectTaskListStatusesRef).
 			Field("project_id").
 			Unique().
 			Required().
@@ -51,7 +53,7 @@ func (ProjectTaskListStatus) Edges() []ent.Edge {
 				),
 			),
 		edge.From("task_list_completed_status", TaskListCompletedStatus.Type).
-			Ref("project_task_list_statuses").
+			Ref(projectTaskListStatusesRef).
 			Field("task_list_completed_status_id").
 			Unique().
 			Required().
@@ -61,7 +63,7 @@ func (ProjectTaskListStatus) Edges() []ent.Edge {
 				),
 			),
 		edge.From("task_list_sort_status", TaskListSortStatus.Type).
-			Ref("project_task_list_statuses").
+			Ref(projectTaskListStatusesRef).
 			Field("task_list_sort_status_id").
 			Unique().
 			Required().

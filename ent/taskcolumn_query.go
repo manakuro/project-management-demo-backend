@@ -67,7 +67,7 @@ func (tcq *TaskColumnQuery) Order(o ...OrderFunc) *TaskColumnQuery {
 	return tcq
 }
 
-// QueryTeammateTaskColumns chains the current query on the "teammate_task_columns" edge.
+// QueryTeammateTaskColumns chains the current query on the "teammateTaskColumns" edge.
 func (tcq *TaskColumnQuery) QueryTeammateTaskColumns() *TeammateTaskColumnQuery {
 	query := &TeammateTaskColumnQuery{config: tcq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
@@ -89,7 +89,7 @@ func (tcq *TaskColumnQuery) QueryTeammateTaskColumns() *TeammateTaskColumnQuery 
 	return query
 }
 
-// QueryProjectTaskColumns chains the current query on the "project_task_columns" edge.
+// QueryProjectTaskColumns chains the current query on the "projectTaskColumns" edge.
 func (tcq *TaskColumnQuery) QueryProjectTaskColumns() *ProjectTaskColumnQuery {
 	query := &ProjectTaskColumnQuery{config: tcq.config}
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
@@ -301,7 +301,7 @@ func (tcq *TaskColumnQuery) Clone() *TaskColumnQuery {
 }
 
 // WithTeammateTaskColumns tells the query-builder to eager-load the nodes that are connected to
-// the "teammate_task_columns" edge. The optional arguments are used to configure the query builder of the edge.
+// the "teammateTaskColumns" edge. The optional arguments are used to configure the query builder of the edge.
 func (tcq *TaskColumnQuery) WithTeammateTaskColumns(opts ...func(*TeammateTaskColumnQuery)) *TaskColumnQuery {
 	query := &TeammateTaskColumnQuery{config: tcq.config}
 	for _, opt := range opts {
@@ -312,7 +312,7 @@ func (tcq *TaskColumnQuery) WithTeammateTaskColumns(opts ...func(*TeammateTaskCo
 }
 
 // WithProjectTaskColumns tells the query-builder to eager-load the nodes that are connected to
-// the "project_task_columns" edge. The optional arguments are used to configure the query builder of the edge.
+// the "projectTaskColumns" edge. The optional arguments are used to configure the query builder of the edge.
 func (tcq *TaskColumnQuery) WithProjectTaskColumns(opts ...func(*ProjectTaskColumnQuery)) *TaskColumnQuery {
 	query := &ProjectTaskColumnQuery{config: tcq.config}
 	for _, opt := range opts {

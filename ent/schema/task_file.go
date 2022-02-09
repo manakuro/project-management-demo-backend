@@ -15,6 +15,8 @@ import (
 	entMixin "entgo.io/ent/schema/mixin"
 )
 
+const taskFilesRef string = "taskFiles"
+
 // TaskFile holds the schema definition for the Test entity.
 type TaskFile struct {
 	ent.Schema
@@ -51,7 +53,7 @@ func (TaskFileMixin) Fields() []ent.Field {
 func (TaskFile) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("project", Project.Type).
-			Ref("task_files").
+			Ref(taskFilesRef).
 			Field("project_id").
 			Unique().
 			Required().
@@ -61,7 +63,7 @@ func (TaskFile) Edges() []ent.Edge {
 				),
 			),
 		edge.From("task", Task.Type).
-			Ref("task_files").
+			Ref(taskFilesRef).
 			Field("task_id").
 			Unique().
 			Required().
@@ -71,7 +73,7 @@ func (TaskFile) Edges() []ent.Edge {
 				),
 			),
 		edge.From("task_feed", TaskFeed.Type).
-			Ref("task_files").
+			Ref(taskFilesRef).
 			Field("task_feed_id").
 			Unique().
 			Required().
@@ -81,7 +83,7 @@ func (TaskFile) Edges() []ent.Edge {
 				),
 			),
 		edge.From("file_type", FileType.Type).
-			Ref("task_files").
+			Ref(taskFilesRef).
 			Field("file_type_id").
 			Unique().
 			Required().

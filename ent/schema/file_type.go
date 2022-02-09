@@ -41,7 +41,7 @@ func (FileTypeMixin) Fields() []ent.Field {
 // Edges of the FileType.
 func (FileType) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("task_files", TaskFile.Type).
+		edge.To(taskFilesRef, TaskFile.Type).
 			Annotations(
 				schema.Annotation(
 					annotation.Edge{FieldName: "task_file_id"},

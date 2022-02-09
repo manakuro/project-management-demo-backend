@@ -32,10 +32,10 @@ type TaskListCompletedStatus struct {
 
 // TaskListCompletedStatusEdges holds the relations/edges for other nodes in the graph.
 type TaskListCompletedStatusEdges struct {
-	// TeammateTaskListStatuses holds the value of the teammate_task_list_statuses edge.
-	TeammateTaskListStatuses []*TeammateTaskListStatus `json:"teammate_task_list_statuses,omitempty"`
-	// ProjectTaskListStatuses holds the value of the project_task_list_statuses edge.
-	ProjectTaskListStatuses []*ProjectTaskListStatus `json:"project_task_list_statuses,omitempty"`
+	// TeammateTaskListStatuses holds the value of the teammateTaskListStatuses edge.
+	TeammateTaskListStatuses []*TeammateTaskListStatus `json:"teammateTaskListStatuses,omitempty"`
+	// ProjectTaskListStatuses holds the value of the projectTaskListStatuses edge.
+	ProjectTaskListStatuses []*ProjectTaskListStatus `json:"projectTaskListStatuses,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [2]bool
@@ -47,7 +47,7 @@ func (e TaskListCompletedStatusEdges) TeammateTaskListStatusesOrErr() ([]*Teamma
 	if e.loadedTypes[0] {
 		return e.TeammateTaskListStatuses, nil
 	}
-	return nil, &NotLoadedError{edge: "teammate_task_list_statuses"}
+	return nil, &NotLoadedError{edge: "teammateTaskListStatuses"}
 }
 
 // ProjectTaskListStatusesOrErr returns the ProjectTaskListStatuses value or an error if the edge
@@ -56,7 +56,7 @@ func (e TaskListCompletedStatusEdges) ProjectTaskListStatusesOrErr() ([]*Project
 	if e.loadedTypes[1] {
 		return e.ProjectTaskListStatuses, nil
 	}
-	return nil, &NotLoadedError{edge: "project_task_list_statuses"}
+	return nil, &NotLoadedError{edge: "projectTaskListStatuses"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -120,12 +120,12 @@ func (tlcs *TaskListCompletedStatus) assignValues(columns []string, values []int
 	return nil
 }
 
-// QueryTeammateTaskListStatuses queries the "teammate_task_list_statuses" edge of the TaskListCompletedStatus entity.
+// QueryTeammateTaskListStatuses queries the "teammateTaskListStatuses" edge of the TaskListCompletedStatus entity.
 func (tlcs *TaskListCompletedStatus) QueryTeammateTaskListStatuses() *TeammateTaskListStatusQuery {
 	return (&TaskListCompletedStatusClient{config: tlcs.config}).QueryTeammateTaskListStatuses(tlcs)
 }
 
-// QueryProjectTaskListStatuses queries the "project_task_list_statuses" edge of the TaskListCompletedStatus entity.
+// QueryProjectTaskListStatuses queries the "projectTaskListStatuses" edge of the TaskListCompletedStatus entity.
 func (tlcs *TaskListCompletedStatus) QueryProjectTaskListStatuses() *ProjectTaskListStatusQuery {
 	return (&TaskListCompletedStatusClient{config: tlcs.config}).QueryProjectTaskListStatuses(tlcs)
 }

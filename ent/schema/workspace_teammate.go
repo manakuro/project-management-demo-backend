@@ -15,6 +15,8 @@ import (
 	entMixin "entgo.io/ent/schema/mixin"
 )
 
+const workspaceTeammatesRef string = "workspaceTeammates"
+
 // WorkspaceTeammate holds the schema definition for the Test entity.
 type WorkspaceTeammate struct {
 	ent.Schema
@@ -42,7 +44,7 @@ func (WorkspaceTeammateMixin) Fields() []ent.Field {
 func (WorkspaceTeammate) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("workspace", Workspace.Type).
-			Ref("workspace_teammates").
+			Ref(workspaceTeammatesRef).
 			Field("workspace_id").
 			Unique().
 			Required().
@@ -52,7 +54,7 @@ func (WorkspaceTeammate) Edges() []ent.Edge {
 				),
 			),
 		edge.From("teammate", Teammate.Type).
-			Ref("workspace_teammates").
+			Ref(workspaceTeammatesRef).
 			Field("teammate_id").
 			Unique().
 			Required().

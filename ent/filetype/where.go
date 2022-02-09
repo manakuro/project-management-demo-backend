@@ -426,7 +426,7 @@ func UpdatedAtLTE(v time.Time) predicate.FileType {
 	})
 }
 
-// HasTaskFiles applies the HasEdge predicate on the "task_files" edge.
+// HasTaskFiles applies the HasEdge predicate on the "taskFiles" edge.
 func HasTaskFiles() predicate.FileType {
 	return predicate.FileType(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
@@ -438,7 +438,7 @@ func HasTaskFiles() predicate.FileType {
 	})
 }
 
-// HasTaskFilesWith applies the HasEdge predicate on the "task_files" edge with a given conditions (other predicates).
+// HasTaskFilesWith applies the HasEdge predicate on the "taskFiles" edge with a given conditions (other predicates).
 func HasTaskFilesWith(preds ...predicate.TaskFile) predicate.FileType {
 	return predicate.FileType(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(

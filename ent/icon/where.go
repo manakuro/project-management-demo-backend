@@ -496,7 +496,7 @@ func UpdatedAtLTE(v time.Time) predicate.Icon {
 	})
 }
 
-// HasProjectIcons applies the HasEdge predicate on the "project_icons" edge.
+// HasProjectIcons applies the HasEdge predicate on the "projectIcons" edge.
 func HasProjectIcons() predicate.Icon {
 	return predicate.Icon(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
@@ -508,7 +508,7 @@ func HasProjectIcons() predicate.Icon {
 	})
 }
 
-// HasProjectIconsWith applies the HasEdge predicate on the "project_icons" edge with a given conditions (other predicates).
+// HasProjectIconsWith applies the HasEdge predicate on the "projectIcons" edge with a given conditions (other predicates).
 func HasProjectIconsWith(preds ...predicate.ProjectIcon) predicate.Icon {
 	return predicate.Icon(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(

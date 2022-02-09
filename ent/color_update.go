@@ -49,13 +49,13 @@ func (cu *ColorUpdate) SetHex(s string) *ColorUpdate {
 	return cu
 }
 
-// AddProjectBaseColorIDs adds the "project_base_colors" edge to the ProjectBaseColor entity by IDs.
+// AddProjectBaseColorIDs adds the "projectBaseColors" edge to the ProjectBaseColor entity by IDs.
 func (cu *ColorUpdate) AddProjectBaseColorIDs(ids ...ulid.ID) *ColorUpdate {
 	cu.mutation.AddProjectBaseColorIDs(ids...)
 	return cu
 }
 
-// AddProjectBaseColors adds the "project_base_colors" edges to the ProjectBaseColor entity.
+// AddProjectBaseColors adds the "projectBaseColors" edges to the ProjectBaseColor entity.
 func (cu *ColorUpdate) AddProjectBaseColors(p ...*ProjectBaseColor) *ColorUpdate {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {
@@ -64,13 +64,13 @@ func (cu *ColorUpdate) AddProjectBaseColors(p ...*ProjectBaseColor) *ColorUpdate
 	return cu.AddProjectBaseColorIDs(ids...)
 }
 
-// AddProjectLightColorIDs adds the "project_light_colors" edge to the ProjectLightColor entity by IDs.
+// AddProjectLightColorIDs adds the "projectLightColors" edge to the ProjectLightColor entity by IDs.
 func (cu *ColorUpdate) AddProjectLightColorIDs(ids ...ulid.ID) *ColorUpdate {
 	cu.mutation.AddProjectLightColorIDs(ids...)
 	return cu
 }
 
-// AddProjectLightColors adds the "project_light_colors" edges to the ProjectLightColor entity.
+// AddProjectLightColors adds the "projectLightColors" edges to the ProjectLightColor entity.
 func (cu *ColorUpdate) AddProjectLightColors(p ...*ProjectLightColor) *ColorUpdate {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {
@@ -79,13 +79,13 @@ func (cu *ColorUpdate) AddProjectLightColors(p ...*ProjectLightColor) *ColorUpda
 	return cu.AddProjectLightColorIDs(ids...)
 }
 
-// AddTaskPriorityIDs adds the "task_priorities" edge to the TaskPriority entity by IDs.
+// AddTaskPriorityIDs adds the "taskPriorities" edge to the TaskPriority entity by IDs.
 func (cu *ColorUpdate) AddTaskPriorityIDs(ids ...ulid.ID) *ColorUpdate {
 	cu.mutation.AddTaskPriorityIDs(ids...)
 	return cu
 }
 
-// AddTaskPriorities adds the "task_priorities" edges to the TaskPriority entity.
+// AddTaskPriorities adds the "taskPriorities" edges to the TaskPriority entity.
 func (cu *ColorUpdate) AddTaskPriorities(t ...*TaskPriority) *ColorUpdate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -114,19 +114,19 @@ func (cu *ColorUpdate) Mutation() *ColorMutation {
 	return cu.mutation
 }
 
-// ClearProjectBaseColors clears all "project_base_colors" edges to the ProjectBaseColor entity.
+// ClearProjectBaseColors clears all "projectBaseColors" edges to the ProjectBaseColor entity.
 func (cu *ColorUpdate) ClearProjectBaseColors() *ColorUpdate {
 	cu.mutation.ClearProjectBaseColors()
 	return cu
 }
 
-// RemoveProjectBaseColorIDs removes the "project_base_colors" edge to ProjectBaseColor entities by IDs.
+// RemoveProjectBaseColorIDs removes the "projectBaseColors" edge to ProjectBaseColor entities by IDs.
 func (cu *ColorUpdate) RemoveProjectBaseColorIDs(ids ...ulid.ID) *ColorUpdate {
 	cu.mutation.RemoveProjectBaseColorIDs(ids...)
 	return cu
 }
 
-// RemoveProjectBaseColors removes "project_base_colors" edges to ProjectBaseColor entities.
+// RemoveProjectBaseColors removes "projectBaseColors" edges to ProjectBaseColor entities.
 func (cu *ColorUpdate) RemoveProjectBaseColors(p ...*ProjectBaseColor) *ColorUpdate {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {
@@ -135,19 +135,19 @@ func (cu *ColorUpdate) RemoveProjectBaseColors(p ...*ProjectBaseColor) *ColorUpd
 	return cu.RemoveProjectBaseColorIDs(ids...)
 }
 
-// ClearProjectLightColors clears all "project_light_colors" edges to the ProjectLightColor entity.
+// ClearProjectLightColors clears all "projectLightColors" edges to the ProjectLightColor entity.
 func (cu *ColorUpdate) ClearProjectLightColors() *ColorUpdate {
 	cu.mutation.ClearProjectLightColors()
 	return cu
 }
 
-// RemoveProjectLightColorIDs removes the "project_light_colors" edge to ProjectLightColor entities by IDs.
+// RemoveProjectLightColorIDs removes the "projectLightColors" edge to ProjectLightColor entities by IDs.
 func (cu *ColorUpdate) RemoveProjectLightColorIDs(ids ...ulid.ID) *ColorUpdate {
 	cu.mutation.RemoveProjectLightColorIDs(ids...)
 	return cu
 }
 
-// RemoveProjectLightColors removes "project_light_colors" edges to ProjectLightColor entities.
+// RemoveProjectLightColors removes "projectLightColors" edges to ProjectLightColor entities.
 func (cu *ColorUpdate) RemoveProjectLightColors(p ...*ProjectLightColor) *ColorUpdate {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {
@@ -156,19 +156,19 @@ func (cu *ColorUpdate) RemoveProjectLightColors(p ...*ProjectLightColor) *ColorU
 	return cu.RemoveProjectLightColorIDs(ids...)
 }
 
-// ClearTaskPriorities clears all "task_priorities" edges to the TaskPriority entity.
+// ClearTaskPriorities clears all "taskPriorities" edges to the TaskPriority entity.
 func (cu *ColorUpdate) ClearTaskPriorities() *ColorUpdate {
 	cu.mutation.ClearTaskPriorities()
 	return cu
 }
 
-// RemoveTaskPriorityIDs removes the "task_priorities" edge to TaskPriority entities by IDs.
+// RemoveTaskPriorityIDs removes the "taskPriorities" edge to TaskPriority entities by IDs.
 func (cu *ColorUpdate) RemoveTaskPriorityIDs(ids ...ulid.ID) *ColorUpdate {
 	cu.mutation.RemoveTaskPriorityIDs(ids...)
 	return cu
 }
 
-// RemoveTaskPriorities removes "task_priorities" edges to TaskPriority entities.
+// RemoveTaskPriorities removes "taskPriorities" edges to TaskPriority entities.
 func (cu *ColorUpdate) RemoveTaskPriorities(t ...*TaskPriority) *ColorUpdate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -570,13 +570,13 @@ func (cuo *ColorUpdateOne) SetHex(s string) *ColorUpdateOne {
 	return cuo
 }
 
-// AddProjectBaseColorIDs adds the "project_base_colors" edge to the ProjectBaseColor entity by IDs.
+// AddProjectBaseColorIDs adds the "projectBaseColors" edge to the ProjectBaseColor entity by IDs.
 func (cuo *ColorUpdateOne) AddProjectBaseColorIDs(ids ...ulid.ID) *ColorUpdateOne {
 	cuo.mutation.AddProjectBaseColorIDs(ids...)
 	return cuo
 }
 
-// AddProjectBaseColors adds the "project_base_colors" edges to the ProjectBaseColor entity.
+// AddProjectBaseColors adds the "projectBaseColors" edges to the ProjectBaseColor entity.
 func (cuo *ColorUpdateOne) AddProjectBaseColors(p ...*ProjectBaseColor) *ColorUpdateOne {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {
@@ -585,13 +585,13 @@ func (cuo *ColorUpdateOne) AddProjectBaseColors(p ...*ProjectBaseColor) *ColorUp
 	return cuo.AddProjectBaseColorIDs(ids...)
 }
 
-// AddProjectLightColorIDs adds the "project_light_colors" edge to the ProjectLightColor entity by IDs.
+// AddProjectLightColorIDs adds the "projectLightColors" edge to the ProjectLightColor entity by IDs.
 func (cuo *ColorUpdateOne) AddProjectLightColorIDs(ids ...ulid.ID) *ColorUpdateOne {
 	cuo.mutation.AddProjectLightColorIDs(ids...)
 	return cuo
 }
 
-// AddProjectLightColors adds the "project_light_colors" edges to the ProjectLightColor entity.
+// AddProjectLightColors adds the "projectLightColors" edges to the ProjectLightColor entity.
 func (cuo *ColorUpdateOne) AddProjectLightColors(p ...*ProjectLightColor) *ColorUpdateOne {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {
@@ -600,13 +600,13 @@ func (cuo *ColorUpdateOne) AddProjectLightColors(p ...*ProjectLightColor) *Color
 	return cuo.AddProjectLightColorIDs(ids...)
 }
 
-// AddTaskPriorityIDs adds the "task_priorities" edge to the TaskPriority entity by IDs.
+// AddTaskPriorityIDs adds the "taskPriorities" edge to the TaskPriority entity by IDs.
 func (cuo *ColorUpdateOne) AddTaskPriorityIDs(ids ...ulid.ID) *ColorUpdateOne {
 	cuo.mutation.AddTaskPriorityIDs(ids...)
 	return cuo
 }
 
-// AddTaskPriorities adds the "task_priorities" edges to the TaskPriority entity.
+// AddTaskPriorities adds the "taskPriorities" edges to the TaskPriority entity.
 func (cuo *ColorUpdateOne) AddTaskPriorities(t ...*TaskPriority) *ColorUpdateOne {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -635,19 +635,19 @@ func (cuo *ColorUpdateOne) Mutation() *ColorMutation {
 	return cuo.mutation
 }
 
-// ClearProjectBaseColors clears all "project_base_colors" edges to the ProjectBaseColor entity.
+// ClearProjectBaseColors clears all "projectBaseColors" edges to the ProjectBaseColor entity.
 func (cuo *ColorUpdateOne) ClearProjectBaseColors() *ColorUpdateOne {
 	cuo.mutation.ClearProjectBaseColors()
 	return cuo
 }
 
-// RemoveProjectBaseColorIDs removes the "project_base_colors" edge to ProjectBaseColor entities by IDs.
+// RemoveProjectBaseColorIDs removes the "projectBaseColors" edge to ProjectBaseColor entities by IDs.
 func (cuo *ColorUpdateOne) RemoveProjectBaseColorIDs(ids ...ulid.ID) *ColorUpdateOne {
 	cuo.mutation.RemoveProjectBaseColorIDs(ids...)
 	return cuo
 }
 
-// RemoveProjectBaseColors removes "project_base_colors" edges to ProjectBaseColor entities.
+// RemoveProjectBaseColors removes "projectBaseColors" edges to ProjectBaseColor entities.
 func (cuo *ColorUpdateOne) RemoveProjectBaseColors(p ...*ProjectBaseColor) *ColorUpdateOne {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {
@@ -656,19 +656,19 @@ func (cuo *ColorUpdateOne) RemoveProjectBaseColors(p ...*ProjectBaseColor) *Colo
 	return cuo.RemoveProjectBaseColorIDs(ids...)
 }
 
-// ClearProjectLightColors clears all "project_light_colors" edges to the ProjectLightColor entity.
+// ClearProjectLightColors clears all "projectLightColors" edges to the ProjectLightColor entity.
 func (cuo *ColorUpdateOne) ClearProjectLightColors() *ColorUpdateOne {
 	cuo.mutation.ClearProjectLightColors()
 	return cuo
 }
 
-// RemoveProjectLightColorIDs removes the "project_light_colors" edge to ProjectLightColor entities by IDs.
+// RemoveProjectLightColorIDs removes the "projectLightColors" edge to ProjectLightColor entities by IDs.
 func (cuo *ColorUpdateOne) RemoveProjectLightColorIDs(ids ...ulid.ID) *ColorUpdateOne {
 	cuo.mutation.RemoveProjectLightColorIDs(ids...)
 	return cuo
 }
 
-// RemoveProjectLightColors removes "project_light_colors" edges to ProjectLightColor entities.
+// RemoveProjectLightColors removes "projectLightColors" edges to ProjectLightColor entities.
 func (cuo *ColorUpdateOne) RemoveProjectLightColors(p ...*ProjectLightColor) *ColorUpdateOne {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {
@@ -677,19 +677,19 @@ func (cuo *ColorUpdateOne) RemoveProjectLightColors(p ...*ProjectLightColor) *Co
 	return cuo.RemoveProjectLightColorIDs(ids...)
 }
 
-// ClearTaskPriorities clears all "task_priorities" edges to the TaskPriority entity.
+// ClearTaskPriorities clears all "taskPriorities" edges to the TaskPriority entity.
 func (cuo *ColorUpdateOne) ClearTaskPriorities() *ColorUpdateOne {
 	cuo.mutation.ClearTaskPriorities()
 	return cuo
 }
 
-// RemoveTaskPriorityIDs removes the "task_priorities" edge to TaskPriority entities by IDs.
+// RemoveTaskPriorityIDs removes the "taskPriorities" edge to TaskPriority entities by IDs.
 func (cuo *ColorUpdateOne) RemoveTaskPriorityIDs(ids ...ulid.ID) *ColorUpdateOne {
 	cuo.mutation.RemoveTaskPriorityIDs(ids...)
 	return cuo
 }
 
-// RemoveTaskPriorities removes "task_priorities" edges to TaskPriority entities.
+// RemoveTaskPriorities removes "taskPriorities" edges to TaskPriority entities.
 func (cuo *ColorUpdateOne) RemoveTaskPriorities(t ...*TaskPriority) *ColorUpdateOne {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {

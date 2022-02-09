@@ -15,6 +15,8 @@ import (
 	entMixin "entgo.io/ent/schema/mixin"
 )
 
+const taskTagsRef string = "taskTags"
+
 // TaskTag holds the schema definition for the Test entity.
 type TaskTag struct {
 	ent.Schema
@@ -39,7 +41,7 @@ func (TaskTagMixin) Fields() []ent.Field {
 func (TaskTag) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("task", Task.Type).
-			Ref("task_tags").
+			Ref(taskTagsRef).
 			Field("task_id").
 			Unique().
 			Required().
@@ -49,7 +51,7 @@ func (TaskTag) Edges() []ent.Edge {
 				),
 			),
 		edge.From("tag", Tag.Type).
-			Ref("task_tags").
+			Ref(taskTagsRef).
 			Field("tag_id").
 			Unique().
 			Required().

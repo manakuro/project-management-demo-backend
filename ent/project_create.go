@@ -169,13 +169,13 @@ func (pc *ProjectCreate) SetTeammate(t *Teammate) *ProjectCreate {
 	return pc.SetTeammateID(t.ID)
 }
 
-// AddProjectTeammateIDs adds the "project_teammates" edge to the ProjectTeammate entity by IDs.
+// AddProjectTeammateIDs adds the "projectTeammates" edge to the ProjectTeammate entity by IDs.
 func (pc *ProjectCreate) AddProjectTeammateIDs(ids ...ulid.ID) *ProjectCreate {
 	pc.mutation.AddProjectTeammateIDs(ids...)
 	return pc
 }
 
-// AddProjectTeammates adds the "project_teammates" edges to the ProjectTeammate entity.
+// AddProjectTeammates adds the "projectTeammates" edges to the ProjectTeammate entity.
 func (pc *ProjectCreate) AddProjectTeammates(p ...*ProjectTeammate) *ProjectCreate {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {
@@ -184,13 +184,13 @@ func (pc *ProjectCreate) AddProjectTeammates(p ...*ProjectTeammate) *ProjectCrea
 	return pc.AddProjectTeammateIDs(ids...)
 }
 
-// AddFavoriteProjectIDs adds the "favorite_projects" edge to the FavoriteProject entity by IDs.
+// AddFavoriteProjectIDs adds the "favoriteProjects" edge to the FavoriteProject entity by IDs.
 func (pc *ProjectCreate) AddFavoriteProjectIDs(ids ...ulid.ID) *ProjectCreate {
 	pc.mutation.AddFavoriteProjectIDs(ids...)
 	return pc
 }
 
-// AddFavoriteProjects adds the "favorite_projects" edges to the FavoriteProject entity.
+// AddFavoriteProjects adds the "favoriteProjects" edges to the FavoriteProject entity.
 func (pc *ProjectCreate) AddFavoriteProjects(f ...*FavoriteProject) *ProjectCreate {
 	ids := make([]ulid.ID, len(f))
 	for i := range f {
@@ -199,13 +199,13 @@ func (pc *ProjectCreate) AddFavoriteProjects(f ...*FavoriteProject) *ProjectCrea
 	return pc.AddFavoriteProjectIDs(ids...)
 }
 
-// AddProjectTaskColumnIDs adds the "project_task_columns" edge to the ProjectTaskColumn entity by IDs.
+// AddProjectTaskColumnIDs adds the "projectTaskColumns" edge to the ProjectTaskColumn entity by IDs.
 func (pc *ProjectCreate) AddProjectTaskColumnIDs(ids ...ulid.ID) *ProjectCreate {
 	pc.mutation.AddProjectTaskColumnIDs(ids...)
 	return pc
 }
 
-// AddProjectTaskColumns adds the "project_task_columns" edges to the ProjectTaskColumn entity.
+// AddProjectTaskColumns adds the "projectTaskColumns" edges to the ProjectTaskColumn entity.
 func (pc *ProjectCreate) AddProjectTaskColumns(p ...*ProjectTaskColumn) *ProjectCreate {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {
@@ -214,28 +214,28 @@ func (pc *ProjectCreate) AddProjectTaskColumns(p ...*ProjectTaskColumn) *Project
 	return pc.AddProjectTaskColumnIDs(ids...)
 }
 
-// AddProjectTaskListStatusIDs adds the "project_task_list_statuses" edge to the ProjectTaskListStatus entity by IDs.
-func (pc *ProjectCreate) AddProjectTaskListStatusIDs(ids ...ulid.ID) *ProjectCreate {
-	pc.mutation.AddProjectTaskListStatusIDs(ids...)
+// AddProjectTaskListStatuseIDs adds the "projectTaskListStatuses" edge to the ProjectTaskListStatus entity by IDs.
+func (pc *ProjectCreate) AddProjectTaskListStatuseIDs(ids ...ulid.ID) *ProjectCreate {
+	pc.mutation.AddProjectTaskListStatuseIDs(ids...)
 	return pc
 }
 
-// AddProjectTaskListStatuses adds the "project_task_list_statuses" edges to the ProjectTaskListStatus entity.
+// AddProjectTaskListStatuses adds the "projectTaskListStatuses" edges to the ProjectTaskListStatus entity.
 func (pc *ProjectCreate) AddProjectTaskListStatuses(p ...*ProjectTaskListStatus) *ProjectCreate {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
-	return pc.AddProjectTaskListStatusIDs(ids...)
+	return pc.AddProjectTaskListStatuseIDs(ids...)
 }
 
-// AddProjectTaskSectionIDs adds the "project_task_sections" edge to the ProjectTaskSection entity by IDs.
+// AddProjectTaskSectionIDs adds the "projectTaskSections" edge to the ProjectTaskSection entity by IDs.
 func (pc *ProjectCreate) AddProjectTaskSectionIDs(ids ...ulid.ID) *ProjectCreate {
 	pc.mutation.AddProjectTaskSectionIDs(ids...)
 	return pc
 }
 
-// AddProjectTaskSections adds the "project_task_sections" edges to the ProjectTaskSection entity.
+// AddProjectTaskSections adds the "projectTaskSections" edges to the ProjectTaskSection entity.
 func (pc *ProjectCreate) AddProjectTaskSections(p ...*ProjectTaskSection) *ProjectCreate {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {
@@ -244,13 +244,13 @@ func (pc *ProjectCreate) AddProjectTaskSections(p ...*ProjectTaskSection) *Proje
 	return pc.AddProjectTaskSectionIDs(ids...)
 }
 
-// AddProjectTaskIDs adds the "project_tasks" edge to the ProjectTask entity by IDs.
+// AddProjectTaskIDs adds the "projectTasks" edge to the ProjectTask entity by IDs.
 func (pc *ProjectCreate) AddProjectTaskIDs(ids ...ulid.ID) *ProjectCreate {
 	pc.mutation.AddProjectTaskIDs(ids...)
 	return pc
 }
 
-// AddProjectTasks adds the "project_tasks" edges to the ProjectTask entity.
+// AddProjectTasks adds the "projectTasks" edges to the ProjectTask entity.
 func (pc *ProjectCreate) AddProjectTasks(p ...*ProjectTask) *ProjectCreate {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {
@@ -259,13 +259,13 @@ func (pc *ProjectCreate) AddProjectTasks(p ...*ProjectTask) *ProjectCreate {
 	return pc.AddProjectTaskIDs(ids...)
 }
 
-// AddTaskFileIDs adds the "task_files" edge to the TaskFile entity by IDs.
+// AddTaskFileIDs adds the "taskFiles" edge to the TaskFile entity by IDs.
 func (pc *ProjectCreate) AddTaskFileIDs(ids ...ulid.ID) *ProjectCreate {
 	pc.mutation.AddTaskFileIDs(ids...)
 	return pc
 }
 
-// AddTaskFiles adds the "task_files" edges to the TaskFile entity.
+// AddTaskFiles adds the "taskFiles" edges to the TaskFile entity.
 func (pc *ProjectCreate) AddTaskFiles(t ...*TaskFile) *ProjectCreate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {

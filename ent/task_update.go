@@ -228,13 +228,13 @@ func (tu *TaskUpdate) SetParent(t *Task) *TaskUpdate {
 	return tu.SetParentID(t.ID)
 }
 
-// AddSubTaskIDs adds the "sub_tasks" edge to the Task entity by IDs.
+// AddSubTaskIDs adds the "subTasks" edge to the Task entity by IDs.
 func (tu *TaskUpdate) AddSubTaskIDs(ids ...ulid.ID) *TaskUpdate {
 	tu.mutation.AddSubTaskIDs(ids...)
 	return tu
 }
 
-// AddSubTasks adds the "sub_tasks" edges to the Task entity.
+// AddSubTasks adds the "subTasks" edges to the Task entity.
 func (tu *TaskUpdate) AddSubTasks(t ...*Task) *TaskUpdate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -243,13 +243,13 @@ func (tu *TaskUpdate) AddSubTasks(t ...*Task) *TaskUpdate {
 	return tu.AddSubTaskIDs(ids...)
 }
 
-// AddTeammateTaskIDs adds the "teammate_tasks" edge to the TeammateTask entity by IDs.
+// AddTeammateTaskIDs adds the "teammateTasks" edge to the TeammateTask entity by IDs.
 func (tu *TaskUpdate) AddTeammateTaskIDs(ids ...ulid.ID) *TaskUpdate {
 	tu.mutation.AddTeammateTaskIDs(ids...)
 	return tu
 }
 
-// AddTeammateTasks adds the "teammate_tasks" edges to the TeammateTask entity.
+// AddTeammateTasks adds the "teammateTasks" edges to the TeammateTask entity.
 func (tu *TaskUpdate) AddTeammateTasks(t ...*TeammateTask) *TaskUpdate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -258,13 +258,13 @@ func (tu *TaskUpdate) AddTeammateTasks(t ...*TeammateTask) *TaskUpdate {
 	return tu.AddTeammateTaskIDs(ids...)
 }
 
-// AddProjectTaskIDs adds the "project_tasks" edge to the ProjectTask entity by IDs.
+// AddProjectTaskIDs adds the "projectTasks" edge to the ProjectTask entity by IDs.
 func (tu *TaskUpdate) AddProjectTaskIDs(ids ...ulid.ID) *TaskUpdate {
 	tu.mutation.AddProjectTaskIDs(ids...)
 	return tu
 }
 
-// AddProjectTasks adds the "project_tasks" edges to the ProjectTask entity.
+// AddProjectTasks adds the "projectTasks" edges to the ProjectTask entity.
 func (tu *TaskUpdate) AddProjectTasks(p ...*ProjectTask) *TaskUpdate {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {
@@ -273,13 +273,13 @@ func (tu *TaskUpdate) AddProjectTasks(p ...*ProjectTask) *TaskUpdate {
 	return tu.AddProjectTaskIDs(ids...)
 }
 
-// AddTaskLikeIDs adds the "task_likes" edge to the TaskLike entity by IDs.
+// AddTaskLikeIDs adds the "taskLikes" edge to the TaskLike entity by IDs.
 func (tu *TaskUpdate) AddTaskLikeIDs(ids ...ulid.ID) *TaskUpdate {
 	tu.mutation.AddTaskLikeIDs(ids...)
 	return tu
 }
 
-// AddTaskLikes adds the "task_likes" edges to the TaskLike entity.
+// AddTaskLikes adds the "taskLikes" edges to the TaskLike entity.
 func (tu *TaskUpdate) AddTaskLikes(t ...*TaskLike) *TaskUpdate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -288,13 +288,13 @@ func (tu *TaskUpdate) AddTaskLikes(t ...*TaskLike) *TaskUpdate {
 	return tu.AddTaskLikeIDs(ids...)
 }
 
-// AddTaskTagIDs adds the "task_tags" edge to the TaskTag entity by IDs.
+// AddTaskTagIDs adds the "taskTags" edge to the TaskTag entity by IDs.
 func (tu *TaskUpdate) AddTaskTagIDs(ids ...ulid.ID) *TaskUpdate {
 	tu.mutation.AddTaskTagIDs(ids...)
 	return tu
 }
 
-// AddTaskTags adds the "task_tags" edges to the TaskTag entity.
+// AddTaskTags adds the "taskTags" edges to the TaskTag entity.
 func (tu *TaskUpdate) AddTaskTags(t ...*TaskTag) *TaskUpdate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -303,13 +303,13 @@ func (tu *TaskUpdate) AddTaskTags(t ...*TaskTag) *TaskUpdate {
 	return tu.AddTaskTagIDs(ids...)
 }
 
-// AddTaskCollaboratorIDs adds the "task_collaborators" edge to the TaskCollaborator entity by IDs.
+// AddTaskCollaboratorIDs adds the "taskCollaborators" edge to the TaskCollaborator entity by IDs.
 func (tu *TaskUpdate) AddTaskCollaboratorIDs(ids ...ulid.ID) *TaskUpdate {
 	tu.mutation.AddTaskCollaboratorIDs(ids...)
 	return tu
 }
 
-// AddTaskCollaborators adds the "task_collaborators" edges to the TaskCollaborator entity.
+// AddTaskCollaborators adds the "taskCollaborators" edges to the TaskCollaborator entity.
 func (tu *TaskUpdate) AddTaskCollaborators(t ...*TaskCollaborator) *TaskUpdate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -318,13 +318,13 @@ func (tu *TaskUpdate) AddTaskCollaborators(t ...*TaskCollaborator) *TaskUpdate {
 	return tu.AddTaskCollaboratorIDs(ids...)
 }
 
-// AddTaskFeedIDs adds the "task_feeds" edge to the TaskFeed entity by IDs.
+// AddTaskFeedIDs adds the "taskFeeds" edge to the TaskFeed entity by IDs.
 func (tu *TaskUpdate) AddTaskFeedIDs(ids ...ulid.ID) *TaskUpdate {
 	tu.mutation.AddTaskFeedIDs(ids...)
 	return tu
 }
 
-// AddTaskFeeds adds the "task_feeds" edges to the TaskFeed entity.
+// AddTaskFeeds adds the "taskFeeds" edges to the TaskFeed entity.
 func (tu *TaskUpdate) AddTaskFeeds(t ...*TaskFeed) *TaskUpdate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -333,13 +333,13 @@ func (tu *TaskUpdate) AddTaskFeeds(t ...*TaskFeed) *TaskUpdate {
 	return tu.AddTaskFeedIDs(ids...)
 }
 
-// AddTaskFeedLikeIDs adds the "task_feed_likes" edge to the TaskFeedLike entity by IDs.
+// AddTaskFeedLikeIDs adds the "taskFeedLikes" edge to the TaskFeedLike entity by IDs.
 func (tu *TaskUpdate) AddTaskFeedLikeIDs(ids ...ulid.ID) *TaskUpdate {
 	tu.mutation.AddTaskFeedLikeIDs(ids...)
 	return tu
 }
 
-// AddTaskFeedLikes adds the "task_feed_likes" edges to the TaskFeedLike entity.
+// AddTaskFeedLikes adds the "taskFeedLikes" edges to the TaskFeedLike entity.
 func (tu *TaskUpdate) AddTaskFeedLikes(t ...*TaskFeedLike) *TaskUpdate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -348,13 +348,13 @@ func (tu *TaskUpdate) AddTaskFeedLikes(t ...*TaskFeedLike) *TaskUpdate {
 	return tu.AddTaskFeedLikeIDs(ids...)
 }
 
-// AddTaskFileIDs adds the "task_files" edge to the TaskFile entity by IDs.
+// AddTaskFileIDs adds the "taskFiles" edge to the TaskFile entity by IDs.
 func (tu *TaskUpdate) AddTaskFileIDs(ids ...ulid.ID) *TaskUpdate {
 	tu.mutation.AddTaskFileIDs(ids...)
 	return tu
 }
 
-// AddTaskFiles adds the "task_files" edges to the TaskFile entity.
+// AddTaskFiles adds the "taskFiles" edges to the TaskFile entity.
 func (tu *TaskUpdate) AddTaskFiles(t ...*TaskFile) *TaskUpdate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -386,19 +386,19 @@ func (tu *TaskUpdate) ClearParent() *TaskUpdate {
 	return tu
 }
 
-// ClearSubTasks clears all "sub_tasks" edges to the Task entity.
+// ClearSubTasks clears all "subTasks" edges to the Task entity.
 func (tu *TaskUpdate) ClearSubTasks() *TaskUpdate {
 	tu.mutation.ClearSubTasks()
 	return tu
 }
 
-// RemoveSubTaskIDs removes the "sub_tasks" edge to Task entities by IDs.
+// RemoveSubTaskIDs removes the "subTasks" edge to Task entities by IDs.
 func (tu *TaskUpdate) RemoveSubTaskIDs(ids ...ulid.ID) *TaskUpdate {
 	tu.mutation.RemoveSubTaskIDs(ids...)
 	return tu
 }
 
-// RemoveSubTasks removes "sub_tasks" edges to Task entities.
+// RemoveSubTasks removes "subTasks" edges to Task entities.
 func (tu *TaskUpdate) RemoveSubTasks(t ...*Task) *TaskUpdate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -407,19 +407,19 @@ func (tu *TaskUpdate) RemoveSubTasks(t ...*Task) *TaskUpdate {
 	return tu.RemoveSubTaskIDs(ids...)
 }
 
-// ClearTeammateTasks clears all "teammate_tasks" edges to the TeammateTask entity.
+// ClearTeammateTasks clears all "teammateTasks" edges to the TeammateTask entity.
 func (tu *TaskUpdate) ClearTeammateTasks() *TaskUpdate {
 	tu.mutation.ClearTeammateTasks()
 	return tu
 }
 
-// RemoveTeammateTaskIDs removes the "teammate_tasks" edge to TeammateTask entities by IDs.
+// RemoveTeammateTaskIDs removes the "teammateTasks" edge to TeammateTask entities by IDs.
 func (tu *TaskUpdate) RemoveTeammateTaskIDs(ids ...ulid.ID) *TaskUpdate {
 	tu.mutation.RemoveTeammateTaskIDs(ids...)
 	return tu
 }
 
-// RemoveTeammateTasks removes "teammate_tasks" edges to TeammateTask entities.
+// RemoveTeammateTasks removes "teammateTasks" edges to TeammateTask entities.
 func (tu *TaskUpdate) RemoveTeammateTasks(t ...*TeammateTask) *TaskUpdate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -428,19 +428,19 @@ func (tu *TaskUpdate) RemoveTeammateTasks(t ...*TeammateTask) *TaskUpdate {
 	return tu.RemoveTeammateTaskIDs(ids...)
 }
 
-// ClearProjectTasks clears all "project_tasks" edges to the ProjectTask entity.
+// ClearProjectTasks clears all "projectTasks" edges to the ProjectTask entity.
 func (tu *TaskUpdate) ClearProjectTasks() *TaskUpdate {
 	tu.mutation.ClearProjectTasks()
 	return tu
 }
 
-// RemoveProjectTaskIDs removes the "project_tasks" edge to ProjectTask entities by IDs.
+// RemoveProjectTaskIDs removes the "projectTasks" edge to ProjectTask entities by IDs.
 func (tu *TaskUpdate) RemoveProjectTaskIDs(ids ...ulid.ID) *TaskUpdate {
 	tu.mutation.RemoveProjectTaskIDs(ids...)
 	return tu
 }
 
-// RemoveProjectTasks removes "project_tasks" edges to ProjectTask entities.
+// RemoveProjectTasks removes "projectTasks" edges to ProjectTask entities.
 func (tu *TaskUpdate) RemoveProjectTasks(p ...*ProjectTask) *TaskUpdate {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {
@@ -449,19 +449,19 @@ func (tu *TaskUpdate) RemoveProjectTasks(p ...*ProjectTask) *TaskUpdate {
 	return tu.RemoveProjectTaskIDs(ids...)
 }
 
-// ClearTaskLikes clears all "task_likes" edges to the TaskLike entity.
+// ClearTaskLikes clears all "taskLikes" edges to the TaskLike entity.
 func (tu *TaskUpdate) ClearTaskLikes() *TaskUpdate {
 	tu.mutation.ClearTaskLikes()
 	return tu
 }
 
-// RemoveTaskLikeIDs removes the "task_likes" edge to TaskLike entities by IDs.
+// RemoveTaskLikeIDs removes the "taskLikes" edge to TaskLike entities by IDs.
 func (tu *TaskUpdate) RemoveTaskLikeIDs(ids ...ulid.ID) *TaskUpdate {
 	tu.mutation.RemoveTaskLikeIDs(ids...)
 	return tu
 }
 
-// RemoveTaskLikes removes "task_likes" edges to TaskLike entities.
+// RemoveTaskLikes removes "taskLikes" edges to TaskLike entities.
 func (tu *TaskUpdate) RemoveTaskLikes(t ...*TaskLike) *TaskUpdate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -470,19 +470,19 @@ func (tu *TaskUpdate) RemoveTaskLikes(t ...*TaskLike) *TaskUpdate {
 	return tu.RemoveTaskLikeIDs(ids...)
 }
 
-// ClearTaskTags clears all "task_tags" edges to the TaskTag entity.
+// ClearTaskTags clears all "taskTags" edges to the TaskTag entity.
 func (tu *TaskUpdate) ClearTaskTags() *TaskUpdate {
 	tu.mutation.ClearTaskTags()
 	return tu
 }
 
-// RemoveTaskTagIDs removes the "task_tags" edge to TaskTag entities by IDs.
+// RemoveTaskTagIDs removes the "taskTags" edge to TaskTag entities by IDs.
 func (tu *TaskUpdate) RemoveTaskTagIDs(ids ...ulid.ID) *TaskUpdate {
 	tu.mutation.RemoveTaskTagIDs(ids...)
 	return tu
 }
 
-// RemoveTaskTags removes "task_tags" edges to TaskTag entities.
+// RemoveTaskTags removes "taskTags" edges to TaskTag entities.
 func (tu *TaskUpdate) RemoveTaskTags(t ...*TaskTag) *TaskUpdate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -491,19 +491,19 @@ func (tu *TaskUpdate) RemoveTaskTags(t ...*TaskTag) *TaskUpdate {
 	return tu.RemoveTaskTagIDs(ids...)
 }
 
-// ClearTaskCollaborators clears all "task_collaborators" edges to the TaskCollaborator entity.
+// ClearTaskCollaborators clears all "taskCollaborators" edges to the TaskCollaborator entity.
 func (tu *TaskUpdate) ClearTaskCollaborators() *TaskUpdate {
 	tu.mutation.ClearTaskCollaborators()
 	return tu
 }
 
-// RemoveTaskCollaboratorIDs removes the "task_collaborators" edge to TaskCollaborator entities by IDs.
+// RemoveTaskCollaboratorIDs removes the "taskCollaborators" edge to TaskCollaborator entities by IDs.
 func (tu *TaskUpdate) RemoveTaskCollaboratorIDs(ids ...ulid.ID) *TaskUpdate {
 	tu.mutation.RemoveTaskCollaboratorIDs(ids...)
 	return tu
 }
 
-// RemoveTaskCollaborators removes "task_collaborators" edges to TaskCollaborator entities.
+// RemoveTaskCollaborators removes "taskCollaborators" edges to TaskCollaborator entities.
 func (tu *TaskUpdate) RemoveTaskCollaborators(t ...*TaskCollaborator) *TaskUpdate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -512,19 +512,19 @@ func (tu *TaskUpdate) RemoveTaskCollaborators(t ...*TaskCollaborator) *TaskUpdat
 	return tu.RemoveTaskCollaboratorIDs(ids...)
 }
 
-// ClearTaskFeeds clears all "task_feeds" edges to the TaskFeed entity.
+// ClearTaskFeeds clears all "taskFeeds" edges to the TaskFeed entity.
 func (tu *TaskUpdate) ClearTaskFeeds() *TaskUpdate {
 	tu.mutation.ClearTaskFeeds()
 	return tu
 }
 
-// RemoveTaskFeedIDs removes the "task_feeds" edge to TaskFeed entities by IDs.
+// RemoveTaskFeedIDs removes the "taskFeeds" edge to TaskFeed entities by IDs.
 func (tu *TaskUpdate) RemoveTaskFeedIDs(ids ...ulid.ID) *TaskUpdate {
 	tu.mutation.RemoveTaskFeedIDs(ids...)
 	return tu
 }
 
-// RemoveTaskFeeds removes "task_feeds" edges to TaskFeed entities.
+// RemoveTaskFeeds removes "taskFeeds" edges to TaskFeed entities.
 func (tu *TaskUpdate) RemoveTaskFeeds(t ...*TaskFeed) *TaskUpdate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -533,19 +533,19 @@ func (tu *TaskUpdate) RemoveTaskFeeds(t ...*TaskFeed) *TaskUpdate {
 	return tu.RemoveTaskFeedIDs(ids...)
 }
 
-// ClearTaskFeedLikes clears all "task_feed_likes" edges to the TaskFeedLike entity.
+// ClearTaskFeedLikes clears all "taskFeedLikes" edges to the TaskFeedLike entity.
 func (tu *TaskUpdate) ClearTaskFeedLikes() *TaskUpdate {
 	tu.mutation.ClearTaskFeedLikes()
 	return tu
 }
 
-// RemoveTaskFeedLikeIDs removes the "task_feed_likes" edge to TaskFeedLike entities by IDs.
+// RemoveTaskFeedLikeIDs removes the "taskFeedLikes" edge to TaskFeedLike entities by IDs.
 func (tu *TaskUpdate) RemoveTaskFeedLikeIDs(ids ...ulid.ID) *TaskUpdate {
 	tu.mutation.RemoveTaskFeedLikeIDs(ids...)
 	return tu
 }
 
-// RemoveTaskFeedLikes removes "task_feed_likes" edges to TaskFeedLike entities.
+// RemoveTaskFeedLikes removes "taskFeedLikes" edges to TaskFeedLike entities.
 func (tu *TaskUpdate) RemoveTaskFeedLikes(t ...*TaskFeedLike) *TaskUpdate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -554,19 +554,19 @@ func (tu *TaskUpdate) RemoveTaskFeedLikes(t ...*TaskFeedLike) *TaskUpdate {
 	return tu.RemoveTaskFeedLikeIDs(ids...)
 }
 
-// ClearTaskFiles clears all "task_files" edges to the TaskFile entity.
+// ClearTaskFiles clears all "taskFiles" edges to the TaskFile entity.
 func (tu *TaskUpdate) ClearTaskFiles() *TaskUpdate {
 	tu.mutation.ClearTaskFiles()
 	return tu
 }
 
-// RemoveTaskFileIDs removes the "task_files" edge to TaskFile entities by IDs.
+// RemoveTaskFileIDs removes the "taskFiles" edge to TaskFile entities by IDs.
 func (tu *TaskUpdate) RemoveTaskFileIDs(ids ...ulid.ID) *TaskUpdate {
 	tu.mutation.RemoveTaskFileIDs(ids...)
 	return tu
 }
 
-// RemoveTaskFiles removes "task_files" edges to TaskFile entities.
+// RemoveTaskFiles removes "taskFiles" edges to TaskFile entities.
 func (tu *TaskUpdate) RemoveTaskFiles(t ...*TaskFile) *TaskUpdate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -1532,13 +1532,13 @@ func (tuo *TaskUpdateOne) SetParent(t *Task) *TaskUpdateOne {
 	return tuo.SetParentID(t.ID)
 }
 
-// AddSubTaskIDs adds the "sub_tasks" edge to the Task entity by IDs.
+// AddSubTaskIDs adds the "subTasks" edge to the Task entity by IDs.
 func (tuo *TaskUpdateOne) AddSubTaskIDs(ids ...ulid.ID) *TaskUpdateOne {
 	tuo.mutation.AddSubTaskIDs(ids...)
 	return tuo
 }
 
-// AddSubTasks adds the "sub_tasks" edges to the Task entity.
+// AddSubTasks adds the "subTasks" edges to the Task entity.
 func (tuo *TaskUpdateOne) AddSubTasks(t ...*Task) *TaskUpdateOne {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -1547,13 +1547,13 @@ func (tuo *TaskUpdateOne) AddSubTasks(t ...*Task) *TaskUpdateOne {
 	return tuo.AddSubTaskIDs(ids...)
 }
 
-// AddTeammateTaskIDs adds the "teammate_tasks" edge to the TeammateTask entity by IDs.
+// AddTeammateTaskIDs adds the "teammateTasks" edge to the TeammateTask entity by IDs.
 func (tuo *TaskUpdateOne) AddTeammateTaskIDs(ids ...ulid.ID) *TaskUpdateOne {
 	tuo.mutation.AddTeammateTaskIDs(ids...)
 	return tuo
 }
 
-// AddTeammateTasks adds the "teammate_tasks" edges to the TeammateTask entity.
+// AddTeammateTasks adds the "teammateTasks" edges to the TeammateTask entity.
 func (tuo *TaskUpdateOne) AddTeammateTasks(t ...*TeammateTask) *TaskUpdateOne {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -1562,13 +1562,13 @@ func (tuo *TaskUpdateOne) AddTeammateTasks(t ...*TeammateTask) *TaskUpdateOne {
 	return tuo.AddTeammateTaskIDs(ids...)
 }
 
-// AddProjectTaskIDs adds the "project_tasks" edge to the ProjectTask entity by IDs.
+// AddProjectTaskIDs adds the "projectTasks" edge to the ProjectTask entity by IDs.
 func (tuo *TaskUpdateOne) AddProjectTaskIDs(ids ...ulid.ID) *TaskUpdateOne {
 	tuo.mutation.AddProjectTaskIDs(ids...)
 	return tuo
 }
 
-// AddProjectTasks adds the "project_tasks" edges to the ProjectTask entity.
+// AddProjectTasks adds the "projectTasks" edges to the ProjectTask entity.
 func (tuo *TaskUpdateOne) AddProjectTasks(p ...*ProjectTask) *TaskUpdateOne {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {
@@ -1577,13 +1577,13 @@ func (tuo *TaskUpdateOne) AddProjectTasks(p ...*ProjectTask) *TaskUpdateOne {
 	return tuo.AddProjectTaskIDs(ids...)
 }
 
-// AddTaskLikeIDs adds the "task_likes" edge to the TaskLike entity by IDs.
+// AddTaskLikeIDs adds the "taskLikes" edge to the TaskLike entity by IDs.
 func (tuo *TaskUpdateOne) AddTaskLikeIDs(ids ...ulid.ID) *TaskUpdateOne {
 	tuo.mutation.AddTaskLikeIDs(ids...)
 	return tuo
 }
 
-// AddTaskLikes adds the "task_likes" edges to the TaskLike entity.
+// AddTaskLikes adds the "taskLikes" edges to the TaskLike entity.
 func (tuo *TaskUpdateOne) AddTaskLikes(t ...*TaskLike) *TaskUpdateOne {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -1592,13 +1592,13 @@ func (tuo *TaskUpdateOne) AddTaskLikes(t ...*TaskLike) *TaskUpdateOne {
 	return tuo.AddTaskLikeIDs(ids...)
 }
 
-// AddTaskTagIDs adds the "task_tags" edge to the TaskTag entity by IDs.
+// AddTaskTagIDs adds the "taskTags" edge to the TaskTag entity by IDs.
 func (tuo *TaskUpdateOne) AddTaskTagIDs(ids ...ulid.ID) *TaskUpdateOne {
 	tuo.mutation.AddTaskTagIDs(ids...)
 	return tuo
 }
 
-// AddTaskTags adds the "task_tags" edges to the TaskTag entity.
+// AddTaskTags adds the "taskTags" edges to the TaskTag entity.
 func (tuo *TaskUpdateOne) AddTaskTags(t ...*TaskTag) *TaskUpdateOne {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -1607,13 +1607,13 @@ func (tuo *TaskUpdateOne) AddTaskTags(t ...*TaskTag) *TaskUpdateOne {
 	return tuo.AddTaskTagIDs(ids...)
 }
 
-// AddTaskCollaboratorIDs adds the "task_collaborators" edge to the TaskCollaborator entity by IDs.
+// AddTaskCollaboratorIDs adds the "taskCollaborators" edge to the TaskCollaborator entity by IDs.
 func (tuo *TaskUpdateOne) AddTaskCollaboratorIDs(ids ...ulid.ID) *TaskUpdateOne {
 	tuo.mutation.AddTaskCollaboratorIDs(ids...)
 	return tuo
 }
 
-// AddTaskCollaborators adds the "task_collaborators" edges to the TaskCollaborator entity.
+// AddTaskCollaborators adds the "taskCollaborators" edges to the TaskCollaborator entity.
 func (tuo *TaskUpdateOne) AddTaskCollaborators(t ...*TaskCollaborator) *TaskUpdateOne {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -1622,13 +1622,13 @@ func (tuo *TaskUpdateOne) AddTaskCollaborators(t ...*TaskCollaborator) *TaskUpda
 	return tuo.AddTaskCollaboratorIDs(ids...)
 }
 
-// AddTaskFeedIDs adds the "task_feeds" edge to the TaskFeed entity by IDs.
+// AddTaskFeedIDs adds the "taskFeeds" edge to the TaskFeed entity by IDs.
 func (tuo *TaskUpdateOne) AddTaskFeedIDs(ids ...ulid.ID) *TaskUpdateOne {
 	tuo.mutation.AddTaskFeedIDs(ids...)
 	return tuo
 }
 
-// AddTaskFeeds adds the "task_feeds" edges to the TaskFeed entity.
+// AddTaskFeeds adds the "taskFeeds" edges to the TaskFeed entity.
 func (tuo *TaskUpdateOne) AddTaskFeeds(t ...*TaskFeed) *TaskUpdateOne {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -1637,13 +1637,13 @@ func (tuo *TaskUpdateOne) AddTaskFeeds(t ...*TaskFeed) *TaskUpdateOne {
 	return tuo.AddTaskFeedIDs(ids...)
 }
 
-// AddTaskFeedLikeIDs adds the "task_feed_likes" edge to the TaskFeedLike entity by IDs.
+// AddTaskFeedLikeIDs adds the "taskFeedLikes" edge to the TaskFeedLike entity by IDs.
 func (tuo *TaskUpdateOne) AddTaskFeedLikeIDs(ids ...ulid.ID) *TaskUpdateOne {
 	tuo.mutation.AddTaskFeedLikeIDs(ids...)
 	return tuo
 }
 
-// AddTaskFeedLikes adds the "task_feed_likes" edges to the TaskFeedLike entity.
+// AddTaskFeedLikes adds the "taskFeedLikes" edges to the TaskFeedLike entity.
 func (tuo *TaskUpdateOne) AddTaskFeedLikes(t ...*TaskFeedLike) *TaskUpdateOne {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -1652,13 +1652,13 @@ func (tuo *TaskUpdateOne) AddTaskFeedLikes(t ...*TaskFeedLike) *TaskUpdateOne {
 	return tuo.AddTaskFeedLikeIDs(ids...)
 }
 
-// AddTaskFileIDs adds the "task_files" edge to the TaskFile entity by IDs.
+// AddTaskFileIDs adds the "taskFiles" edge to the TaskFile entity by IDs.
 func (tuo *TaskUpdateOne) AddTaskFileIDs(ids ...ulid.ID) *TaskUpdateOne {
 	tuo.mutation.AddTaskFileIDs(ids...)
 	return tuo
 }
 
-// AddTaskFiles adds the "task_files" edges to the TaskFile entity.
+// AddTaskFiles adds the "taskFiles" edges to the TaskFile entity.
 func (tuo *TaskUpdateOne) AddTaskFiles(t ...*TaskFile) *TaskUpdateOne {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -1690,19 +1690,19 @@ func (tuo *TaskUpdateOne) ClearParent() *TaskUpdateOne {
 	return tuo
 }
 
-// ClearSubTasks clears all "sub_tasks" edges to the Task entity.
+// ClearSubTasks clears all "subTasks" edges to the Task entity.
 func (tuo *TaskUpdateOne) ClearSubTasks() *TaskUpdateOne {
 	tuo.mutation.ClearSubTasks()
 	return tuo
 }
 
-// RemoveSubTaskIDs removes the "sub_tasks" edge to Task entities by IDs.
+// RemoveSubTaskIDs removes the "subTasks" edge to Task entities by IDs.
 func (tuo *TaskUpdateOne) RemoveSubTaskIDs(ids ...ulid.ID) *TaskUpdateOne {
 	tuo.mutation.RemoveSubTaskIDs(ids...)
 	return tuo
 }
 
-// RemoveSubTasks removes "sub_tasks" edges to Task entities.
+// RemoveSubTasks removes "subTasks" edges to Task entities.
 func (tuo *TaskUpdateOne) RemoveSubTasks(t ...*Task) *TaskUpdateOne {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -1711,19 +1711,19 @@ func (tuo *TaskUpdateOne) RemoveSubTasks(t ...*Task) *TaskUpdateOne {
 	return tuo.RemoveSubTaskIDs(ids...)
 }
 
-// ClearTeammateTasks clears all "teammate_tasks" edges to the TeammateTask entity.
+// ClearTeammateTasks clears all "teammateTasks" edges to the TeammateTask entity.
 func (tuo *TaskUpdateOne) ClearTeammateTasks() *TaskUpdateOne {
 	tuo.mutation.ClearTeammateTasks()
 	return tuo
 }
 
-// RemoveTeammateTaskIDs removes the "teammate_tasks" edge to TeammateTask entities by IDs.
+// RemoveTeammateTaskIDs removes the "teammateTasks" edge to TeammateTask entities by IDs.
 func (tuo *TaskUpdateOne) RemoveTeammateTaskIDs(ids ...ulid.ID) *TaskUpdateOne {
 	tuo.mutation.RemoveTeammateTaskIDs(ids...)
 	return tuo
 }
 
-// RemoveTeammateTasks removes "teammate_tasks" edges to TeammateTask entities.
+// RemoveTeammateTasks removes "teammateTasks" edges to TeammateTask entities.
 func (tuo *TaskUpdateOne) RemoveTeammateTasks(t ...*TeammateTask) *TaskUpdateOne {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -1732,19 +1732,19 @@ func (tuo *TaskUpdateOne) RemoveTeammateTasks(t ...*TeammateTask) *TaskUpdateOne
 	return tuo.RemoveTeammateTaskIDs(ids...)
 }
 
-// ClearProjectTasks clears all "project_tasks" edges to the ProjectTask entity.
+// ClearProjectTasks clears all "projectTasks" edges to the ProjectTask entity.
 func (tuo *TaskUpdateOne) ClearProjectTasks() *TaskUpdateOne {
 	tuo.mutation.ClearProjectTasks()
 	return tuo
 }
 
-// RemoveProjectTaskIDs removes the "project_tasks" edge to ProjectTask entities by IDs.
+// RemoveProjectTaskIDs removes the "projectTasks" edge to ProjectTask entities by IDs.
 func (tuo *TaskUpdateOne) RemoveProjectTaskIDs(ids ...ulid.ID) *TaskUpdateOne {
 	tuo.mutation.RemoveProjectTaskIDs(ids...)
 	return tuo
 }
 
-// RemoveProjectTasks removes "project_tasks" edges to ProjectTask entities.
+// RemoveProjectTasks removes "projectTasks" edges to ProjectTask entities.
 func (tuo *TaskUpdateOne) RemoveProjectTasks(p ...*ProjectTask) *TaskUpdateOne {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {
@@ -1753,19 +1753,19 @@ func (tuo *TaskUpdateOne) RemoveProjectTasks(p ...*ProjectTask) *TaskUpdateOne {
 	return tuo.RemoveProjectTaskIDs(ids...)
 }
 
-// ClearTaskLikes clears all "task_likes" edges to the TaskLike entity.
+// ClearTaskLikes clears all "taskLikes" edges to the TaskLike entity.
 func (tuo *TaskUpdateOne) ClearTaskLikes() *TaskUpdateOne {
 	tuo.mutation.ClearTaskLikes()
 	return tuo
 }
 
-// RemoveTaskLikeIDs removes the "task_likes" edge to TaskLike entities by IDs.
+// RemoveTaskLikeIDs removes the "taskLikes" edge to TaskLike entities by IDs.
 func (tuo *TaskUpdateOne) RemoveTaskLikeIDs(ids ...ulid.ID) *TaskUpdateOne {
 	tuo.mutation.RemoveTaskLikeIDs(ids...)
 	return tuo
 }
 
-// RemoveTaskLikes removes "task_likes" edges to TaskLike entities.
+// RemoveTaskLikes removes "taskLikes" edges to TaskLike entities.
 func (tuo *TaskUpdateOne) RemoveTaskLikes(t ...*TaskLike) *TaskUpdateOne {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -1774,19 +1774,19 @@ func (tuo *TaskUpdateOne) RemoveTaskLikes(t ...*TaskLike) *TaskUpdateOne {
 	return tuo.RemoveTaskLikeIDs(ids...)
 }
 
-// ClearTaskTags clears all "task_tags" edges to the TaskTag entity.
+// ClearTaskTags clears all "taskTags" edges to the TaskTag entity.
 func (tuo *TaskUpdateOne) ClearTaskTags() *TaskUpdateOne {
 	tuo.mutation.ClearTaskTags()
 	return tuo
 }
 
-// RemoveTaskTagIDs removes the "task_tags" edge to TaskTag entities by IDs.
+// RemoveTaskTagIDs removes the "taskTags" edge to TaskTag entities by IDs.
 func (tuo *TaskUpdateOne) RemoveTaskTagIDs(ids ...ulid.ID) *TaskUpdateOne {
 	tuo.mutation.RemoveTaskTagIDs(ids...)
 	return tuo
 }
 
-// RemoveTaskTags removes "task_tags" edges to TaskTag entities.
+// RemoveTaskTags removes "taskTags" edges to TaskTag entities.
 func (tuo *TaskUpdateOne) RemoveTaskTags(t ...*TaskTag) *TaskUpdateOne {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -1795,19 +1795,19 @@ func (tuo *TaskUpdateOne) RemoveTaskTags(t ...*TaskTag) *TaskUpdateOne {
 	return tuo.RemoveTaskTagIDs(ids...)
 }
 
-// ClearTaskCollaborators clears all "task_collaborators" edges to the TaskCollaborator entity.
+// ClearTaskCollaborators clears all "taskCollaborators" edges to the TaskCollaborator entity.
 func (tuo *TaskUpdateOne) ClearTaskCollaborators() *TaskUpdateOne {
 	tuo.mutation.ClearTaskCollaborators()
 	return tuo
 }
 
-// RemoveTaskCollaboratorIDs removes the "task_collaborators" edge to TaskCollaborator entities by IDs.
+// RemoveTaskCollaboratorIDs removes the "taskCollaborators" edge to TaskCollaborator entities by IDs.
 func (tuo *TaskUpdateOne) RemoveTaskCollaboratorIDs(ids ...ulid.ID) *TaskUpdateOne {
 	tuo.mutation.RemoveTaskCollaboratorIDs(ids...)
 	return tuo
 }
 
-// RemoveTaskCollaborators removes "task_collaborators" edges to TaskCollaborator entities.
+// RemoveTaskCollaborators removes "taskCollaborators" edges to TaskCollaborator entities.
 func (tuo *TaskUpdateOne) RemoveTaskCollaborators(t ...*TaskCollaborator) *TaskUpdateOne {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -1816,19 +1816,19 @@ func (tuo *TaskUpdateOne) RemoveTaskCollaborators(t ...*TaskCollaborator) *TaskU
 	return tuo.RemoveTaskCollaboratorIDs(ids...)
 }
 
-// ClearTaskFeeds clears all "task_feeds" edges to the TaskFeed entity.
+// ClearTaskFeeds clears all "taskFeeds" edges to the TaskFeed entity.
 func (tuo *TaskUpdateOne) ClearTaskFeeds() *TaskUpdateOne {
 	tuo.mutation.ClearTaskFeeds()
 	return tuo
 }
 
-// RemoveTaskFeedIDs removes the "task_feeds" edge to TaskFeed entities by IDs.
+// RemoveTaskFeedIDs removes the "taskFeeds" edge to TaskFeed entities by IDs.
 func (tuo *TaskUpdateOne) RemoveTaskFeedIDs(ids ...ulid.ID) *TaskUpdateOne {
 	tuo.mutation.RemoveTaskFeedIDs(ids...)
 	return tuo
 }
 
-// RemoveTaskFeeds removes "task_feeds" edges to TaskFeed entities.
+// RemoveTaskFeeds removes "taskFeeds" edges to TaskFeed entities.
 func (tuo *TaskUpdateOne) RemoveTaskFeeds(t ...*TaskFeed) *TaskUpdateOne {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -1837,19 +1837,19 @@ func (tuo *TaskUpdateOne) RemoveTaskFeeds(t ...*TaskFeed) *TaskUpdateOne {
 	return tuo.RemoveTaskFeedIDs(ids...)
 }
 
-// ClearTaskFeedLikes clears all "task_feed_likes" edges to the TaskFeedLike entity.
+// ClearTaskFeedLikes clears all "taskFeedLikes" edges to the TaskFeedLike entity.
 func (tuo *TaskUpdateOne) ClearTaskFeedLikes() *TaskUpdateOne {
 	tuo.mutation.ClearTaskFeedLikes()
 	return tuo
 }
 
-// RemoveTaskFeedLikeIDs removes the "task_feed_likes" edge to TaskFeedLike entities by IDs.
+// RemoveTaskFeedLikeIDs removes the "taskFeedLikes" edge to TaskFeedLike entities by IDs.
 func (tuo *TaskUpdateOne) RemoveTaskFeedLikeIDs(ids ...ulid.ID) *TaskUpdateOne {
 	tuo.mutation.RemoveTaskFeedLikeIDs(ids...)
 	return tuo
 }
 
-// RemoveTaskFeedLikes removes "task_feed_likes" edges to TaskFeedLike entities.
+// RemoveTaskFeedLikes removes "taskFeedLikes" edges to TaskFeedLike entities.
 func (tuo *TaskUpdateOne) RemoveTaskFeedLikes(t ...*TaskFeedLike) *TaskUpdateOne {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -1858,19 +1858,19 @@ func (tuo *TaskUpdateOne) RemoveTaskFeedLikes(t ...*TaskFeedLike) *TaskUpdateOne
 	return tuo.RemoveTaskFeedLikeIDs(ids...)
 }
 
-// ClearTaskFiles clears all "task_files" edges to the TaskFile entity.
+// ClearTaskFiles clears all "taskFiles" edges to the TaskFile entity.
 func (tuo *TaskUpdateOne) ClearTaskFiles() *TaskUpdateOne {
 	tuo.mutation.ClearTaskFiles()
 	return tuo
 }
 
-// RemoveTaskFileIDs removes the "task_files" edge to TaskFile entities by IDs.
+// RemoveTaskFileIDs removes the "taskFiles" edge to TaskFile entities by IDs.
 func (tuo *TaskUpdateOne) RemoveTaskFileIDs(ids ...ulid.ID) *TaskUpdateOne {
 	tuo.mutation.RemoveTaskFileIDs(ids...)
 	return tuo
 }
 
-// RemoveTaskFiles removes "task_files" edges to TaskFile entities.
+// RemoveTaskFiles removes "taskFiles" edges to TaskFile entities.
 func (tuo *TaskUpdateOne) RemoveTaskFiles(t ...*TaskFile) *TaskUpdateOne {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {

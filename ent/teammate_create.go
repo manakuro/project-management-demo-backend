@@ -127,13 +127,13 @@ func (tc *TeammateCreate) AddProjects(p ...*Project) *TeammateCreate {
 	return tc.AddProjectIDs(ids...)
 }
 
-// AddProjectTeammateIDs adds the "project_teammates" edge to the ProjectTeammate entity by IDs.
+// AddProjectTeammateIDs adds the "projectTeammates" edge to the ProjectTeammate entity by IDs.
 func (tc *TeammateCreate) AddProjectTeammateIDs(ids ...ulid.ID) *TeammateCreate {
 	tc.mutation.AddProjectTeammateIDs(ids...)
 	return tc
 }
 
-// AddProjectTeammates adds the "project_teammates" edges to the ProjectTeammate entity.
+// AddProjectTeammates adds the "projectTeammates" edges to the ProjectTeammate entity.
 func (tc *TeammateCreate) AddProjectTeammates(p ...*ProjectTeammate) *TeammateCreate {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {
@@ -142,13 +142,13 @@ func (tc *TeammateCreate) AddProjectTeammates(p ...*ProjectTeammate) *TeammateCr
 	return tc.AddProjectTeammateIDs(ids...)
 }
 
-// AddWorkspaceTeammateIDs adds the "workspace_teammates" edge to the WorkspaceTeammate entity by IDs.
+// AddWorkspaceTeammateIDs adds the "workspaceTeammates" edge to the WorkspaceTeammate entity by IDs.
 func (tc *TeammateCreate) AddWorkspaceTeammateIDs(ids ...ulid.ID) *TeammateCreate {
 	tc.mutation.AddWorkspaceTeammateIDs(ids...)
 	return tc
 }
 
-// AddWorkspaceTeammates adds the "workspace_teammates" edges to the WorkspaceTeammate entity.
+// AddWorkspaceTeammates adds the "workspaceTeammates" edges to the WorkspaceTeammate entity.
 func (tc *TeammateCreate) AddWorkspaceTeammates(w ...*WorkspaceTeammate) *TeammateCreate {
 	ids := make([]ulid.ID, len(w))
 	for i := range w {
@@ -157,13 +157,13 @@ func (tc *TeammateCreate) AddWorkspaceTeammates(w ...*WorkspaceTeammate) *Teamma
 	return tc.AddWorkspaceTeammateIDs(ids...)
 }
 
-// AddFavoriteProjectIDs adds the "favorite_projects" edge to the FavoriteProject entity by IDs.
+// AddFavoriteProjectIDs adds the "favoriteProjects" edge to the FavoriteProject entity by IDs.
 func (tc *TeammateCreate) AddFavoriteProjectIDs(ids ...ulid.ID) *TeammateCreate {
 	tc.mutation.AddFavoriteProjectIDs(ids...)
 	return tc
 }
 
-// AddFavoriteProjects adds the "favorite_projects" edges to the FavoriteProject entity.
+// AddFavoriteProjects adds the "favoriteProjects" edges to the FavoriteProject entity.
 func (tc *TeammateCreate) AddFavoriteProjects(f ...*FavoriteProject) *TeammateCreate {
 	ids := make([]ulid.ID, len(f))
 	for i := range f {
@@ -172,13 +172,13 @@ func (tc *TeammateCreate) AddFavoriteProjects(f ...*FavoriteProject) *TeammateCr
 	return tc.AddFavoriteProjectIDs(ids...)
 }
 
-// AddFavoriteWorkspaceIDs adds the "favorite_workspaces" edge to the FavoriteWorkspace entity by IDs.
+// AddFavoriteWorkspaceIDs adds the "favoriteWorkspaces" edge to the FavoriteWorkspace entity by IDs.
 func (tc *TeammateCreate) AddFavoriteWorkspaceIDs(ids ...ulid.ID) *TeammateCreate {
 	tc.mutation.AddFavoriteWorkspaceIDs(ids...)
 	return tc
 }
 
-// AddFavoriteWorkspaces adds the "favorite_workspaces" edges to the FavoriteWorkspace entity.
+// AddFavoriteWorkspaces adds the "favoriteWorkspaces" edges to the FavoriteWorkspace entity.
 func (tc *TeammateCreate) AddFavoriteWorkspaces(f ...*FavoriteWorkspace) *TeammateCreate {
 	ids := make([]ulid.ID, len(f))
 	for i := range f {
@@ -187,28 +187,28 @@ func (tc *TeammateCreate) AddFavoriteWorkspaces(f ...*FavoriteWorkspace) *Teamma
 	return tc.AddFavoriteWorkspaceIDs(ids...)
 }
 
-// AddTeammateTaskTabStatusIDs adds the "teammate_task_tab_statuses" edge to the TeammateTaskTabStatus entity by IDs.
-func (tc *TeammateCreate) AddTeammateTaskTabStatusIDs(ids ...ulid.ID) *TeammateCreate {
-	tc.mutation.AddTeammateTaskTabStatusIDs(ids...)
+// AddTeammateTaskTabStatuseIDs adds the "teammateTaskTabStatuses" edge to the TeammateTaskTabStatus entity by IDs.
+func (tc *TeammateCreate) AddTeammateTaskTabStatuseIDs(ids ...ulid.ID) *TeammateCreate {
+	tc.mutation.AddTeammateTaskTabStatuseIDs(ids...)
 	return tc
 }
 
-// AddTeammateTaskTabStatuses adds the "teammate_task_tab_statuses" edges to the TeammateTaskTabStatus entity.
+// AddTeammateTaskTabStatuses adds the "teammateTaskTabStatuses" edges to the TeammateTaskTabStatus entity.
 func (tc *TeammateCreate) AddTeammateTaskTabStatuses(t ...*TeammateTaskTabStatus) *TeammateCreate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
 		ids[i] = t[i].ID
 	}
-	return tc.AddTeammateTaskTabStatusIDs(ids...)
+	return tc.AddTeammateTaskTabStatuseIDs(ids...)
 }
 
-// AddTeammateTaskColumnIDs adds the "teammate_task_columns" edge to the TeammateTaskColumn entity by IDs.
+// AddTeammateTaskColumnIDs adds the "teammateTaskColumns" edge to the TeammateTaskColumn entity by IDs.
 func (tc *TeammateCreate) AddTeammateTaskColumnIDs(ids ...ulid.ID) *TeammateCreate {
 	tc.mutation.AddTeammateTaskColumnIDs(ids...)
 	return tc
 }
 
-// AddTeammateTaskColumns adds the "teammate_task_columns" edges to the TeammateTaskColumn entity.
+// AddTeammateTaskColumns adds the "teammateTaskColumns" edges to the TeammateTaskColumn entity.
 func (tc *TeammateCreate) AddTeammateTaskColumns(t ...*TeammateTaskColumn) *TeammateCreate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -217,28 +217,28 @@ func (tc *TeammateCreate) AddTeammateTaskColumns(t ...*TeammateTaskColumn) *Team
 	return tc.AddTeammateTaskColumnIDs(ids...)
 }
 
-// AddTeammateTaskListStatusIDs adds the "teammate_task_list_statuses" edge to the TeammateTaskListStatus entity by IDs.
-func (tc *TeammateCreate) AddTeammateTaskListStatusIDs(ids ...ulid.ID) *TeammateCreate {
-	tc.mutation.AddTeammateTaskListStatusIDs(ids...)
+// AddTeammateTaskListStatuseIDs adds the "teammateTaskListStatuses" edge to the TeammateTaskListStatus entity by IDs.
+func (tc *TeammateCreate) AddTeammateTaskListStatuseIDs(ids ...ulid.ID) *TeammateCreate {
+	tc.mutation.AddTeammateTaskListStatuseIDs(ids...)
 	return tc
 }
 
-// AddTeammateTaskListStatuses adds the "teammate_task_list_statuses" edges to the TeammateTaskListStatus entity.
+// AddTeammateTaskListStatuses adds the "teammateTaskListStatuses" edges to the TeammateTaskListStatus entity.
 func (tc *TeammateCreate) AddTeammateTaskListStatuses(t ...*TeammateTaskListStatus) *TeammateCreate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
 		ids[i] = t[i].ID
 	}
-	return tc.AddTeammateTaskListStatusIDs(ids...)
+	return tc.AddTeammateTaskListStatuseIDs(ids...)
 }
 
-// AddTeammateTaskSectionIDs adds the "teammate_task_sections" edge to the TeammateTaskSection entity by IDs.
+// AddTeammateTaskSectionIDs adds the "teammateTaskSections" edge to the TeammateTaskSection entity by IDs.
 func (tc *TeammateCreate) AddTeammateTaskSectionIDs(ids ...ulid.ID) *TeammateCreate {
 	tc.mutation.AddTeammateTaskSectionIDs(ids...)
 	return tc
 }
 
-// AddTeammateTaskSections adds the "teammate_task_sections" edges to the TeammateTaskSection entity.
+// AddTeammateTaskSections adds the "teammateTaskSections" edges to the TeammateTaskSection entity.
 func (tc *TeammateCreate) AddTeammateTaskSections(t ...*TeammateTaskSection) *TeammateCreate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -262,13 +262,13 @@ func (tc *TeammateCreate) AddTasks(t ...*Task) *TeammateCreate {
 	return tc.AddTaskIDs(ids...)
 }
 
-// AddTeammateTaskIDs adds the "teammate_tasks" edge to the TeammateTask entity by IDs.
+// AddTeammateTaskIDs adds the "teammateTasks" edge to the TeammateTask entity by IDs.
 func (tc *TeammateCreate) AddTeammateTaskIDs(ids ...ulid.ID) *TeammateCreate {
 	tc.mutation.AddTeammateTaskIDs(ids...)
 	return tc
 }
 
-// AddTeammateTasks adds the "teammate_tasks" edges to the TeammateTask entity.
+// AddTeammateTasks adds the "teammateTasks" edges to the TeammateTask entity.
 func (tc *TeammateCreate) AddTeammateTasks(t ...*TeammateTask) *TeammateCreate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -277,13 +277,13 @@ func (tc *TeammateCreate) AddTeammateTasks(t ...*TeammateTask) *TeammateCreate {
 	return tc.AddTeammateTaskIDs(ids...)
 }
 
-// AddTaskLikeIDs adds the "task_likes" edge to the TaskLike entity by IDs.
+// AddTaskLikeIDs adds the "taskLikes" edge to the TaskLike entity by IDs.
 func (tc *TeammateCreate) AddTaskLikeIDs(ids ...ulid.ID) *TeammateCreate {
 	tc.mutation.AddTaskLikeIDs(ids...)
 	return tc
 }
 
-// AddTaskLikes adds the "task_likes" edges to the TaskLike entity.
+// AddTaskLikes adds the "taskLikes" edges to the TaskLike entity.
 func (tc *TeammateCreate) AddTaskLikes(t ...*TaskLike) *TeammateCreate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -292,13 +292,13 @@ func (tc *TeammateCreate) AddTaskLikes(t ...*TaskLike) *TeammateCreate {
 	return tc.AddTaskLikeIDs(ids...)
 }
 
-// AddTaskCollaboratorIDs adds the "task_collaborators" edge to the TaskCollaborator entity by IDs.
+// AddTaskCollaboratorIDs adds the "taskCollaborators" edge to the TaskCollaborator entity by IDs.
 func (tc *TeammateCreate) AddTaskCollaboratorIDs(ids ...ulid.ID) *TeammateCreate {
 	tc.mutation.AddTaskCollaboratorIDs(ids...)
 	return tc
 }
 
-// AddTaskCollaborators adds the "task_collaborators" edges to the TaskCollaborator entity.
+// AddTaskCollaborators adds the "taskCollaborators" edges to the TaskCollaborator entity.
 func (tc *TeammateCreate) AddTaskCollaborators(t ...*TaskCollaborator) *TeammateCreate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -307,13 +307,13 @@ func (tc *TeammateCreate) AddTaskCollaborators(t ...*TaskCollaborator) *Teammate
 	return tc.AddTaskCollaboratorIDs(ids...)
 }
 
-// AddTaskFeedIDs adds the "task_feeds" edge to the TaskFeed entity by IDs.
+// AddTaskFeedIDs adds the "taskFeeds" edge to the TaskFeed entity by IDs.
 func (tc *TeammateCreate) AddTaskFeedIDs(ids ...ulid.ID) *TeammateCreate {
 	tc.mutation.AddTaskFeedIDs(ids...)
 	return tc
 }
 
-// AddTaskFeeds adds the "task_feeds" edges to the TaskFeed entity.
+// AddTaskFeeds adds the "taskFeeds" edges to the TaskFeed entity.
 func (tc *TeammateCreate) AddTaskFeeds(t ...*TaskFeed) *TeammateCreate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
@@ -322,13 +322,13 @@ func (tc *TeammateCreate) AddTaskFeeds(t ...*TaskFeed) *TeammateCreate {
 	return tc.AddTaskFeedIDs(ids...)
 }
 
-// AddTaskFeedLikeIDs adds the "task_feed_likes" edge to the TaskFeedLike entity by IDs.
+// AddTaskFeedLikeIDs adds the "taskFeedLikes" edge to the TaskFeedLike entity by IDs.
 func (tc *TeammateCreate) AddTaskFeedLikeIDs(ids ...ulid.ID) *TeammateCreate {
 	tc.mutation.AddTaskFeedLikeIDs(ids...)
 	return tc
 }
 
-// AddTaskFeedLikes adds the "task_feed_likes" edges to the TaskFeedLike entity.
+// AddTaskFeedLikes adds the "taskFeedLikes" edges to the TaskFeedLike entity.
 func (tc *TeammateCreate) AddTaskFeedLikes(t ...*TaskFeedLike) *TeammateCreate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {

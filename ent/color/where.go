@@ -614,7 +614,7 @@ func UpdatedAtLTE(v time.Time) predicate.Color {
 	})
 }
 
-// HasProjectBaseColors applies the HasEdge predicate on the "project_base_colors" edge.
+// HasProjectBaseColors applies the HasEdge predicate on the "projectBaseColors" edge.
 func HasProjectBaseColors() predicate.Color {
 	return predicate.Color(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
@@ -626,7 +626,7 @@ func HasProjectBaseColors() predicate.Color {
 	})
 }
 
-// HasProjectBaseColorsWith applies the HasEdge predicate on the "project_base_colors" edge with a given conditions (other predicates).
+// HasProjectBaseColorsWith applies the HasEdge predicate on the "projectBaseColors" edge with a given conditions (other predicates).
 func HasProjectBaseColorsWith(preds ...predicate.ProjectBaseColor) predicate.Color {
 	return predicate.Color(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
@@ -642,7 +642,7 @@ func HasProjectBaseColorsWith(preds ...predicate.ProjectBaseColor) predicate.Col
 	})
 }
 
-// HasProjectLightColors applies the HasEdge predicate on the "project_light_colors" edge.
+// HasProjectLightColors applies the HasEdge predicate on the "projectLightColors" edge.
 func HasProjectLightColors() predicate.Color {
 	return predicate.Color(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
@@ -654,7 +654,7 @@ func HasProjectLightColors() predicate.Color {
 	})
 }
 
-// HasProjectLightColorsWith applies the HasEdge predicate on the "project_light_colors" edge with a given conditions (other predicates).
+// HasProjectLightColorsWith applies the HasEdge predicate on the "projectLightColors" edge with a given conditions (other predicates).
 func HasProjectLightColorsWith(preds ...predicate.ProjectLightColor) predicate.Color {
 	return predicate.Color(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
@@ -670,7 +670,7 @@ func HasProjectLightColorsWith(preds ...predicate.ProjectLightColor) predicate.C
 	})
 }
 
-// HasTaskPriorities applies the HasEdge predicate on the "task_priorities" edge.
+// HasTaskPriorities applies the HasEdge predicate on the "taskPriorities" edge.
 func HasTaskPriorities() predicate.Color {
 	return predicate.Color(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
@@ -682,7 +682,7 @@ func HasTaskPriorities() predicate.Color {
 	})
 }
 
-// HasTaskPrioritiesWith applies the HasEdge predicate on the "task_priorities" edge with a given conditions (other predicates).
+// HasTaskPrioritiesWith applies the HasEdge predicate on the "taskPriorities" edge with a given conditions (other predicates).
 func HasTaskPrioritiesWith(preds ...predicate.TaskPriority) predicate.Color {
 	return predicate.Color(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(

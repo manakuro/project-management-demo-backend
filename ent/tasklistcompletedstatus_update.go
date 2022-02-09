@@ -41,34 +41,34 @@ func (tlcsu *TaskListCompletedStatusUpdate) SetStatusCode(tc tasklistcompletedst
 	return tlcsu
 }
 
-// AddTeammateTaskListStatusIDs adds the "teammate_task_list_statuses" edge to the TeammateTaskListStatus entity by IDs.
-func (tlcsu *TaskListCompletedStatusUpdate) AddTeammateTaskListStatusIDs(ids ...ulid.ID) *TaskListCompletedStatusUpdate {
-	tlcsu.mutation.AddTeammateTaskListStatusIDs(ids...)
+// AddTeammateTaskListStatuseIDs adds the "teammateTaskListStatuses" edge to the TeammateTaskListStatus entity by IDs.
+func (tlcsu *TaskListCompletedStatusUpdate) AddTeammateTaskListStatuseIDs(ids ...ulid.ID) *TaskListCompletedStatusUpdate {
+	tlcsu.mutation.AddTeammateTaskListStatuseIDs(ids...)
 	return tlcsu
 }
 
-// AddTeammateTaskListStatuses adds the "teammate_task_list_statuses" edges to the TeammateTaskListStatus entity.
+// AddTeammateTaskListStatuses adds the "teammateTaskListStatuses" edges to the TeammateTaskListStatus entity.
 func (tlcsu *TaskListCompletedStatusUpdate) AddTeammateTaskListStatuses(t ...*TeammateTaskListStatus) *TaskListCompletedStatusUpdate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
 		ids[i] = t[i].ID
 	}
-	return tlcsu.AddTeammateTaskListStatusIDs(ids...)
+	return tlcsu.AddTeammateTaskListStatuseIDs(ids...)
 }
 
-// AddProjectTaskListStatusIDs adds the "project_task_list_statuses" edge to the ProjectTaskListStatus entity by IDs.
-func (tlcsu *TaskListCompletedStatusUpdate) AddProjectTaskListStatusIDs(ids ...ulid.ID) *TaskListCompletedStatusUpdate {
-	tlcsu.mutation.AddProjectTaskListStatusIDs(ids...)
+// AddProjectTaskListStatuseIDs adds the "projectTaskListStatuses" edge to the ProjectTaskListStatus entity by IDs.
+func (tlcsu *TaskListCompletedStatusUpdate) AddProjectTaskListStatuseIDs(ids ...ulid.ID) *TaskListCompletedStatusUpdate {
+	tlcsu.mutation.AddProjectTaskListStatuseIDs(ids...)
 	return tlcsu
 }
 
-// AddProjectTaskListStatuses adds the "project_task_list_statuses" edges to the ProjectTaskListStatus entity.
+// AddProjectTaskListStatuses adds the "projectTaskListStatuses" edges to the ProjectTaskListStatus entity.
 func (tlcsu *TaskListCompletedStatusUpdate) AddProjectTaskListStatuses(p ...*ProjectTaskListStatus) *TaskListCompletedStatusUpdate {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
-	return tlcsu.AddProjectTaskListStatusIDs(ids...)
+	return tlcsu.AddProjectTaskListStatuseIDs(ids...)
 }
 
 // Mutation returns the TaskListCompletedStatusMutation object of the builder.
@@ -76,46 +76,46 @@ func (tlcsu *TaskListCompletedStatusUpdate) Mutation() *TaskListCompletedStatusM
 	return tlcsu.mutation
 }
 
-// ClearTeammateTaskListStatuses clears all "teammate_task_list_statuses" edges to the TeammateTaskListStatus entity.
+// ClearTeammateTaskListStatuses clears all "teammateTaskListStatuses" edges to the TeammateTaskListStatus entity.
 func (tlcsu *TaskListCompletedStatusUpdate) ClearTeammateTaskListStatuses() *TaskListCompletedStatusUpdate {
 	tlcsu.mutation.ClearTeammateTaskListStatuses()
 	return tlcsu
 }
 
-// RemoveTeammateTaskListStatusIDs removes the "teammate_task_list_statuses" edge to TeammateTaskListStatus entities by IDs.
-func (tlcsu *TaskListCompletedStatusUpdate) RemoveTeammateTaskListStatusIDs(ids ...ulid.ID) *TaskListCompletedStatusUpdate {
-	tlcsu.mutation.RemoveTeammateTaskListStatusIDs(ids...)
+// RemoveTeammateTaskListStatuseIDs removes the "teammateTaskListStatuses" edge to TeammateTaskListStatus entities by IDs.
+func (tlcsu *TaskListCompletedStatusUpdate) RemoveTeammateTaskListStatuseIDs(ids ...ulid.ID) *TaskListCompletedStatusUpdate {
+	tlcsu.mutation.RemoveTeammateTaskListStatuseIDs(ids...)
 	return tlcsu
 }
 
-// RemoveTeammateTaskListStatuses removes "teammate_task_list_statuses" edges to TeammateTaskListStatus entities.
+// RemoveTeammateTaskListStatuses removes "teammateTaskListStatuses" edges to TeammateTaskListStatus entities.
 func (tlcsu *TaskListCompletedStatusUpdate) RemoveTeammateTaskListStatuses(t ...*TeammateTaskListStatus) *TaskListCompletedStatusUpdate {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
 		ids[i] = t[i].ID
 	}
-	return tlcsu.RemoveTeammateTaskListStatusIDs(ids...)
+	return tlcsu.RemoveTeammateTaskListStatuseIDs(ids...)
 }
 
-// ClearProjectTaskListStatuses clears all "project_task_list_statuses" edges to the ProjectTaskListStatus entity.
+// ClearProjectTaskListStatuses clears all "projectTaskListStatuses" edges to the ProjectTaskListStatus entity.
 func (tlcsu *TaskListCompletedStatusUpdate) ClearProjectTaskListStatuses() *TaskListCompletedStatusUpdate {
 	tlcsu.mutation.ClearProjectTaskListStatuses()
 	return tlcsu
 }
 
-// RemoveProjectTaskListStatusIDs removes the "project_task_list_statuses" edge to ProjectTaskListStatus entities by IDs.
-func (tlcsu *TaskListCompletedStatusUpdate) RemoveProjectTaskListStatusIDs(ids ...ulid.ID) *TaskListCompletedStatusUpdate {
-	tlcsu.mutation.RemoveProjectTaskListStatusIDs(ids...)
+// RemoveProjectTaskListStatuseIDs removes the "projectTaskListStatuses" edge to ProjectTaskListStatus entities by IDs.
+func (tlcsu *TaskListCompletedStatusUpdate) RemoveProjectTaskListStatuseIDs(ids ...ulid.ID) *TaskListCompletedStatusUpdate {
+	tlcsu.mutation.RemoveProjectTaskListStatuseIDs(ids...)
 	return tlcsu
 }
 
-// RemoveProjectTaskListStatuses removes "project_task_list_statuses" edges to ProjectTaskListStatus entities.
+// RemoveProjectTaskListStatuses removes "projectTaskListStatuses" edges to ProjectTaskListStatus entities.
 func (tlcsu *TaskListCompletedStatusUpdate) RemoveProjectTaskListStatuses(p ...*ProjectTaskListStatus) *TaskListCompletedStatusUpdate {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
-	return tlcsu.RemoveProjectTaskListStatusIDs(ids...)
+	return tlcsu.RemoveProjectTaskListStatuseIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -364,34 +364,34 @@ func (tlcsuo *TaskListCompletedStatusUpdateOne) SetStatusCode(tc tasklistcomplet
 	return tlcsuo
 }
 
-// AddTeammateTaskListStatusIDs adds the "teammate_task_list_statuses" edge to the TeammateTaskListStatus entity by IDs.
-func (tlcsuo *TaskListCompletedStatusUpdateOne) AddTeammateTaskListStatusIDs(ids ...ulid.ID) *TaskListCompletedStatusUpdateOne {
-	tlcsuo.mutation.AddTeammateTaskListStatusIDs(ids...)
+// AddTeammateTaskListStatuseIDs adds the "teammateTaskListStatuses" edge to the TeammateTaskListStatus entity by IDs.
+func (tlcsuo *TaskListCompletedStatusUpdateOne) AddTeammateTaskListStatuseIDs(ids ...ulid.ID) *TaskListCompletedStatusUpdateOne {
+	tlcsuo.mutation.AddTeammateTaskListStatuseIDs(ids...)
 	return tlcsuo
 }
 
-// AddTeammateTaskListStatuses adds the "teammate_task_list_statuses" edges to the TeammateTaskListStatus entity.
+// AddTeammateTaskListStatuses adds the "teammateTaskListStatuses" edges to the TeammateTaskListStatus entity.
 func (tlcsuo *TaskListCompletedStatusUpdateOne) AddTeammateTaskListStatuses(t ...*TeammateTaskListStatus) *TaskListCompletedStatusUpdateOne {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
 		ids[i] = t[i].ID
 	}
-	return tlcsuo.AddTeammateTaskListStatusIDs(ids...)
+	return tlcsuo.AddTeammateTaskListStatuseIDs(ids...)
 }
 
-// AddProjectTaskListStatusIDs adds the "project_task_list_statuses" edge to the ProjectTaskListStatus entity by IDs.
-func (tlcsuo *TaskListCompletedStatusUpdateOne) AddProjectTaskListStatusIDs(ids ...ulid.ID) *TaskListCompletedStatusUpdateOne {
-	tlcsuo.mutation.AddProjectTaskListStatusIDs(ids...)
+// AddProjectTaskListStatuseIDs adds the "projectTaskListStatuses" edge to the ProjectTaskListStatus entity by IDs.
+func (tlcsuo *TaskListCompletedStatusUpdateOne) AddProjectTaskListStatuseIDs(ids ...ulid.ID) *TaskListCompletedStatusUpdateOne {
+	tlcsuo.mutation.AddProjectTaskListStatuseIDs(ids...)
 	return tlcsuo
 }
 
-// AddProjectTaskListStatuses adds the "project_task_list_statuses" edges to the ProjectTaskListStatus entity.
+// AddProjectTaskListStatuses adds the "projectTaskListStatuses" edges to the ProjectTaskListStatus entity.
 func (tlcsuo *TaskListCompletedStatusUpdateOne) AddProjectTaskListStatuses(p ...*ProjectTaskListStatus) *TaskListCompletedStatusUpdateOne {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
-	return tlcsuo.AddProjectTaskListStatusIDs(ids...)
+	return tlcsuo.AddProjectTaskListStatuseIDs(ids...)
 }
 
 // Mutation returns the TaskListCompletedStatusMutation object of the builder.
@@ -399,46 +399,46 @@ func (tlcsuo *TaskListCompletedStatusUpdateOne) Mutation() *TaskListCompletedSta
 	return tlcsuo.mutation
 }
 
-// ClearTeammateTaskListStatuses clears all "teammate_task_list_statuses" edges to the TeammateTaskListStatus entity.
+// ClearTeammateTaskListStatuses clears all "teammateTaskListStatuses" edges to the TeammateTaskListStatus entity.
 func (tlcsuo *TaskListCompletedStatusUpdateOne) ClearTeammateTaskListStatuses() *TaskListCompletedStatusUpdateOne {
 	tlcsuo.mutation.ClearTeammateTaskListStatuses()
 	return tlcsuo
 }
 
-// RemoveTeammateTaskListStatusIDs removes the "teammate_task_list_statuses" edge to TeammateTaskListStatus entities by IDs.
-func (tlcsuo *TaskListCompletedStatusUpdateOne) RemoveTeammateTaskListStatusIDs(ids ...ulid.ID) *TaskListCompletedStatusUpdateOne {
-	tlcsuo.mutation.RemoveTeammateTaskListStatusIDs(ids...)
+// RemoveTeammateTaskListStatuseIDs removes the "teammateTaskListStatuses" edge to TeammateTaskListStatus entities by IDs.
+func (tlcsuo *TaskListCompletedStatusUpdateOne) RemoveTeammateTaskListStatuseIDs(ids ...ulid.ID) *TaskListCompletedStatusUpdateOne {
+	tlcsuo.mutation.RemoveTeammateTaskListStatuseIDs(ids...)
 	return tlcsuo
 }
 
-// RemoveTeammateTaskListStatuses removes "teammate_task_list_statuses" edges to TeammateTaskListStatus entities.
+// RemoveTeammateTaskListStatuses removes "teammateTaskListStatuses" edges to TeammateTaskListStatus entities.
 func (tlcsuo *TaskListCompletedStatusUpdateOne) RemoveTeammateTaskListStatuses(t ...*TeammateTaskListStatus) *TaskListCompletedStatusUpdateOne {
 	ids := make([]ulid.ID, len(t))
 	for i := range t {
 		ids[i] = t[i].ID
 	}
-	return tlcsuo.RemoveTeammateTaskListStatusIDs(ids...)
+	return tlcsuo.RemoveTeammateTaskListStatuseIDs(ids...)
 }
 
-// ClearProjectTaskListStatuses clears all "project_task_list_statuses" edges to the ProjectTaskListStatus entity.
+// ClearProjectTaskListStatuses clears all "projectTaskListStatuses" edges to the ProjectTaskListStatus entity.
 func (tlcsuo *TaskListCompletedStatusUpdateOne) ClearProjectTaskListStatuses() *TaskListCompletedStatusUpdateOne {
 	tlcsuo.mutation.ClearProjectTaskListStatuses()
 	return tlcsuo
 }
 
-// RemoveProjectTaskListStatusIDs removes the "project_task_list_statuses" edge to ProjectTaskListStatus entities by IDs.
-func (tlcsuo *TaskListCompletedStatusUpdateOne) RemoveProjectTaskListStatusIDs(ids ...ulid.ID) *TaskListCompletedStatusUpdateOne {
-	tlcsuo.mutation.RemoveProjectTaskListStatusIDs(ids...)
+// RemoveProjectTaskListStatuseIDs removes the "projectTaskListStatuses" edge to ProjectTaskListStatus entities by IDs.
+func (tlcsuo *TaskListCompletedStatusUpdateOne) RemoveProjectTaskListStatuseIDs(ids ...ulid.ID) *TaskListCompletedStatusUpdateOne {
+	tlcsuo.mutation.RemoveProjectTaskListStatuseIDs(ids...)
 	return tlcsuo
 }
 
-// RemoveProjectTaskListStatuses removes "project_task_list_statuses" edges to ProjectTaskListStatus entities.
+// RemoveProjectTaskListStatuses removes "projectTaskListStatuses" edges to ProjectTaskListStatus entities.
 func (tlcsuo *TaskListCompletedStatusUpdateOne) RemoveProjectTaskListStatuses(p ...*ProjectTaskListStatus) *TaskListCompletedStatusUpdateOne {
 	ids := make([]ulid.ID, len(p))
 	for i := range p {
 		ids[i] = p[i].ID
 	}
-	return tlcsuo.RemoveProjectTaskListStatusIDs(ids...)
+	return tlcsuo.RemoveProjectTaskListStatuseIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.

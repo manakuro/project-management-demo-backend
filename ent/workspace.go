@@ -41,22 +41,22 @@ type WorkspaceEdges struct {
 	Teammate *Teammate `json:"teammate,omitempty"`
 	// Projects holds the value of the projects edge.
 	Projects []*Project `json:"projects,omitempty"`
-	// WorkspaceTeammates holds the value of the workspace_teammates edge.
-	WorkspaceTeammates []*WorkspaceTeammate `json:"workspace_teammates,omitempty"`
-	// FavoriteWorkspaces holds the value of the favorite_workspaces edge.
-	FavoriteWorkspaces []*FavoriteWorkspace `json:"favorite_workspaces,omitempty"`
-	// TeammateTaskTabStatuses holds the value of the teammate_task_tab_statuses edge.
-	TeammateTaskTabStatuses []*TeammateTaskTabStatus `json:"teammate_task_tab_statuses,omitempty"`
-	// TeammateTaskListStatuses holds the value of the teammate_task_list_statuses edge.
-	TeammateTaskListStatuses []*TeammateTaskListStatus `json:"teammate_task_list_statuses,omitempty"`
-	// TeammateTaskSections holds the value of the teammate_task_sections edge.
-	TeammateTaskSections []*TeammateTaskSection `json:"teammate_task_sections,omitempty"`
-	// TaskLikes holds the value of the task_likes edge.
-	TaskLikes []*TaskLike `json:"task_likes,omitempty"`
+	// WorkspaceTeammates holds the value of the workspaceTeammates edge.
+	WorkspaceTeammates []*WorkspaceTeammate `json:"workspaceTeammates,omitempty"`
+	// FavoriteWorkspaces holds the value of the favoriteWorkspaces edge.
+	FavoriteWorkspaces []*FavoriteWorkspace `json:"favoriteWorkspaces,omitempty"`
+	// TeammateTaskTabStatuses holds the value of the teammateTaskTabStatuses edge.
+	TeammateTaskTabStatuses []*TeammateTaskTabStatus `json:"teammateTaskTabStatuses,omitempty"`
+	// TeammateTaskListStatuses holds the value of the teammateTaskListStatuses edge.
+	TeammateTaskListStatuses []*TeammateTaskListStatus `json:"teammateTaskListStatuses,omitempty"`
+	// TeammateTaskSections holds the value of the teammateTaskSections edge.
+	TeammateTaskSections []*TeammateTaskSection `json:"teammateTaskSections,omitempty"`
+	// TaskLikes holds the value of the taskLikes edge.
+	TaskLikes []*TaskLike `json:"taskLikes,omitempty"`
 	// Tags holds the value of the tags edge.
 	Tags []*Tag `json:"tags,omitempty"`
-	// TeammateTaskColumns holds the value of the teammate_task_columns edge.
-	TeammateTaskColumns []*TeammateTaskColumn `json:"teammate_task_columns,omitempty"`
+	// TeammateTaskColumns holds the value of the teammateTaskColumns edge.
+	TeammateTaskColumns []*TeammateTaskColumn `json:"teammateTaskColumns,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [10]bool
@@ -91,7 +91,7 @@ func (e WorkspaceEdges) WorkspaceTeammatesOrErr() ([]*WorkspaceTeammate, error) 
 	if e.loadedTypes[2] {
 		return e.WorkspaceTeammates, nil
 	}
-	return nil, &NotLoadedError{edge: "workspace_teammates"}
+	return nil, &NotLoadedError{edge: "workspaceTeammates"}
 }
 
 // FavoriteWorkspacesOrErr returns the FavoriteWorkspaces value or an error if the edge
@@ -100,7 +100,7 @@ func (e WorkspaceEdges) FavoriteWorkspacesOrErr() ([]*FavoriteWorkspace, error) 
 	if e.loadedTypes[3] {
 		return e.FavoriteWorkspaces, nil
 	}
-	return nil, &NotLoadedError{edge: "favorite_workspaces"}
+	return nil, &NotLoadedError{edge: "favoriteWorkspaces"}
 }
 
 // TeammateTaskTabStatusesOrErr returns the TeammateTaskTabStatuses value or an error if the edge
@@ -109,7 +109,7 @@ func (e WorkspaceEdges) TeammateTaskTabStatusesOrErr() ([]*TeammateTaskTabStatus
 	if e.loadedTypes[4] {
 		return e.TeammateTaskTabStatuses, nil
 	}
-	return nil, &NotLoadedError{edge: "teammate_task_tab_statuses"}
+	return nil, &NotLoadedError{edge: "teammateTaskTabStatuses"}
 }
 
 // TeammateTaskListStatusesOrErr returns the TeammateTaskListStatuses value or an error if the edge
@@ -118,7 +118,7 @@ func (e WorkspaceEdges) TeammateTaskListStatusesOrErr() ([]*TeammateTaskListStat
 	if e.loadedTypes[5] {
 		return e.TeammateTaskListStatuses, nil
 	}
-	return nil, &NotLoadedError{edge: "teammate_task_list_statuses"}
+	return nil, &NotLoadedError{edge: "teammateTaskListStatuses"}
 }
 
 // TeammateTaskSectionsOrErr returns the TeammateTaskSections value or an error if the edge
@@ -127,7 +127,7 @@ func (e WorkspaceEdges) TeammateTaskSectionsOrErr() ([]*TeammateTaskSection, err
 	if e.loadedTypes[6] {
 		return e.TeammateTaskSections, nil
 	}
-	return nil, &NotLoadedError{edge: "teammate_task_sections"}
+	return nil, &NotLoadedError{edge: "teammateTaskSections"}
 }
 
 // TaskLikesOrErr returns the TaskLikes value or an error if the edge
@@ -136,7 +136,7 @@ func (e WorkspaceEdges) TaskLikesOrErr() ([]*TaskLike, error) {
 	if e.loadedTypes[7] {
 		return e.TaskLikes, nil
 	}
-	return nil, &NotLoadedError{edge: "task_likes"}
+	return nil, &NotLoadedError{edge: "taskLikes"}
 }
 
 // TagsOrErr returns the Tags value or an error if the edge
@@ -154,7 +154,7 @@ func (e WorkspaceEdges) TeammateTaskColumnsOrErr() ([]*TeammateTaskColumn, error
 	if e.loadedTypes[9] {
 		return e.TeammateTaskColumns, nil
 	}
-	return nil, &NotLoadedError{edge: "teammate_task_columns"}
+	return nil, &NotLoadedError{edge: "teammateTaskColumns"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -238,32 +238,32 @@ func (w *Workspace) QueryProjects() *ProjectQuery {
 	return (&WorkspaceClient{config: w.config}).QueryProjects(w)
 }
 
-// QueryWorkspaceTeammates queries the "workspace_teammates" edge of the Workspace entity.
+// QueryWorkspaceTeammates queries the "workspaceTeammates" edge of the Workspace entity.
 func (w *Workspace) QueryWorkspaceTeammates() *WorkspaceTeammateQuery {
 	return (&WorkspaceClient{config: w.config}).QueryWorkspaceTeammates(w)
 }
 
-// QueryFavoriteWorkspaces queries the "favorite_workspaces" edge of the Workspace entity.
+// QueryFavoriteWorkspaces queries the "favoriteWorkspaces" edge of the Workspace entity.
 func (w *Workspace) QueryFavoriteWorkspaces() *FavoriteWorkspaceQuery {
 	return (&WorkspaceClient{config: w.config}).QueryFavoriteWorkspaces(w)
 }
 
-// QueryTeammateTaskTabStatuses queries the "teammate_task_tab_statuses" edge of the Workspace entity.
+// QueryTeammateTaskTabStatuses queries the "teammateTaskTabStatuses" edge of the Workspace entity.
 func (w *Workspace) QueryTeammateTaskTabStatuses() *TeammateTaskTabStatusQuery {
 	return (&WorkspaceClient{config: w.config}).QueryTeammateTaskTabStatuses(w)
 }
 
-// QueryTeammateTaskListStatuses queries the "teammate_task_list_statuses" edge of the Workspace entity.
+// QueryTeammateTaskListStatuses queries the "teammateTaskListStatuses" edge of the Workspace entity.
 func (w *Workspace) QueryTeammateTaskListStatuses() *TeammateTaskListStatusQuery {
 	return (&WorkspaceClient{config: w.config}).QueryTeammateTaskListStatuses(w)
 }
 
-// QueryTeammateTaskSections queries the "teammate_task_sections" edge of the Workspace entity.
+// QueryTeammateTaskSections queries the "teammateTaskSections" edge of the Workspace entity.
 func (w *Workspace) QueryTeammateTaskSections() *TeammateTaskSectionQuery {
 	return (&WorkspaceClient{config: w.config}).QueryTeammateTaskSections(w)
 }
 
-// QueryTaskLikes queries the "task_likes" edge of the Workspace entity.
+// QueryTaskLikes queries the "taskLikes" edge of the Workspace entity.
 func (w *Workspace) QueryTaskLikes() *TaskLikeQuery {
 	return (&WorkspaceClient{config: w.config}).QueryTaskLikes(w)
 }
@@ -273,7 +273,7 @@ func (w *Workspace) QueryTags() *TagQuery {
 	return (&WorkspaceClient{config: w.config}).QueryTags(w)
 }
 
-// QueryTeammateTaskColumns queries the "teammate_task_columns" edge of the Workspace entity.
+// QueryTeammateTaskColumns queries the "teammateTaskColumns" edge of the Workspace entity.
 func (w *Workspace) QueryTeammateTaskColumns() *TeammateTaskColumnQuery {
 	return (&WorkspaceClient{config: w.config}).QueryTeammateTaskColumns(w)
 }

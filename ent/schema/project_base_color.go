@@ -15,6 +15,8 @@ import (
 	entMixin "entgo.io/ent/schema/mixin"
 )
 
+const projectBaseColorsRef string = "projectBaseColors"
+
 // ProjectBaseColor holds the schema definition for the Test entity.
 type ProjectBaseColor struct {
 	ent.Schema
@@ -36,14 +38,14 @@ func (ProjectBaseColorMixin) Fields() []ent.Field {
 // Edges of the ProjectBaseColor.
 func (ProjectBaseColor) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("projects", Project.Type).
+		edge.To(projectsRef, Project.Type).
 			Annotations(
 				schema.Annotation(
 					annotation.Edge{FieldName: "project_id"},
 				),
 			),
 		edge.From("color", Color.Type).
-			Ref("project_base_colors").
+			Ref(projectBaseColorsRef).
 			Field("color_id").
 			Unique().
 			Required().

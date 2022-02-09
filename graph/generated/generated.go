@@ -7820,35 +7820,35 @@ input TeammateWhereInput {
   hasProjects: Boolean
   hasProjectsWith: [ProjectWhereInput!]
   
-  """project_teammates edge predicates"""
+  """projectTeammates edge predicates"""
   hasProjectTeammates: Boolean
   hasProjectTeammatesWith: [ProjectTeammateWhereInput!]
   
-  """workspace_teammates edge predicates"""
+  """workspaceTeammates edge predicates"""
   hasWorkspaceTeammates: Boolean
   hasWorkspaceTeammatesWith: [WorkspaceTeammateWhereInput!]
   
-  """favorite_projects edge predicates"""
+  """favoriteProjects edge predicates"""
   hasFavoriteProjects: Boolean
   hasFavoriteProjectsWith: [FavoriteProjectWhereInput!]
   
-  """favorite_workspaces edge predicates"""
+  """favoriteWorkspaces edge predicates"""
   hasFavoriteWorkspaces: Boolean
   hasFavoriteWorkspacesWith: [FavoriteWorkspaceWhereInput!]
   
-  """teammate_task_tab_statuses edge predicates"""
+  """teammateTaskTabStatuses edge predicates"""
   hasTeammateTaskTabStatuses: Boolean
   hasTeammateTaskTabStatusesWith: [TeammateTaskTabStatusWhereInput!]
   
-  """teammate_task_columns edge predicates"""
+  """teammateTaskColumns edge predicates"""
   hasTeammateTaskColumns: Boolean
   hasTeammateTaskColumnsWith: [TeammateTaskColumnWhereInput!]
   
-  """teammate_task_list_statuses edge predicates"""
+  """teammateTaskListStatuses edge predicates"""
   hasTeammateTaskListStatuses: Boolean
   hasTeammateTaskListStatusesWith: [TeammateTaskListStatusWhereInput!]
   
-  """teammate_task_sections edge predicates"""
+  """teammateTaskSections edge predicates"""
   hasTeammateTaskSections: Boolean
   hasTeammateTaskSectionsWith: [TeammateTaskSectionWhereInput!]
   
@@ -7856,23 +7856,23 @@ input TeammateWhereInput {
   hasTasks: Boolean
   hasTasksWith: [TaskWhereInput!]
   
-  """teammate_tasks edge predicates"""
+  """teammateTasks edge predicates"""
   hasTeammateTasks: Boolean
   hasTeammateTasksWith: [TeammateTaskWhereInput!]
   
-  """task_likes edge predicates"""
+  """taskLikes edge predicates"""
   hasTaskLikes: Boolean
   hasTaskLikesWith: [TaskLikeWhereInput!]
   
-  """task_collaborators edge predicates"""
+  """taskCollaborators edge predicates"""
   hasTaskCollaborators: Boolean
   hasTaskCollaboratorsWith: [TaskCollaboratorWhereInput!]
   
-  """task_feeds edge predicates"""
+  """taskFeeds edge predicates"""
   hasTaskFeeds: Boolean
   hasTaskFeedsWith: [TaskFeedWhereInput!]
   
-  """task_feed_likes edge predicates"""
+  """taskFeedLikes edge predicates"""
   hasTaskFeedLikes: Boolean
   hasTaskFeedLikesWith: [TaskFeedLikeWhereInput!]
 }
@@ -7954,27 +7954,27 @@ input WorkspaceWhereInput {
   hasProjects: Boolean
   hasProjectsWith: [ProjectWhereInput!]
   
-  """workspace_teammates edge predicates"""
+  """workspaceTeammates edge predicates"""
   hasWorkspaceTeammates: Boolean
   hasWorkspaceTeammatesWith: [WorkspaceTeammateWhereInput!]
   
-  """favorite_workspaces edge predicates"""
+  """favoriteWorkspaces edge predicates"""
   hasFavoriteWorkspaces: Boolean
   hasFavoriteWorkspacesWith: [FavoriteWorkspaceWhereInput!]
   
-  """teammate_task_tab_statuses edge predicates"""
+  """teammateTaskTabStatuses edge predicates"""
   hasTeammateTaskTabStatuses: Boolean
   hasTeammateTaskTabStatusesWith: [TeammateTaskTabStatusWhereInput!]
   
-  """teammate_task_list_statuses edge predicates"""
+  """teammateTaskListStatuses edge predicates"""
   hasTeammateTaskListStatuses: Boolean
   hasTeammateTaskListStatusesWith: [TeammateTaskListStatusWhereInput!]
   
-  """teammate_task_sections edge predicates"""
+  """teammateTaskSections edge predicates"""
   hasTeammateTaskSections: Boolean
   hasTeammateTaskSectionsWith: [TeammateTaskSectionWhereInput!]
   
-  """task_likes edge predicates"""
+  """taskLikes edge predicates"""
   hasTaskLikes: Boolean
   hasTaskLikesWith: [TaskLikeWhereInput!]
   
@@ -7982,7 +7982,7 @@ input WorkspaceWhereInput {
   hasTags: Boolean
   hasTagsWith: [TagWhereInput!]
   
-  """teammate_task_columns edge predicates"""
+  """teammateTaskColumns edge predicates"""
   hasTeammateTaskColumns: Boolean
   hasTeammateTaskColumnsWith: [TeammateTaskColumnWhereInput!]
 }
@@ -8071,15 +8071,15 @@ input ColorWhereInput {
   idLT: ID
   idLTE: ID
   
-  """project_base_colors edge predicates"""
+  """projectBaseColors edge predicates"""
   hasProjectBaseColors: Boolean
   hasProjectBaseColorsWith: [ProjectBaseColorWhereInput!]
   
-  """project_light_colors edge predicates"""
+  """projectLightColors edge predicates"""
   hasProjectLightColors: Boolean
   hasProjectLightColorsWith: [ProjectLightColorWhereInput!]
   
-  """task_priorities edge predicates"""
+  """taskPriorities edge predicates"""
   hasTaskPriorities: Boolean
   hasTaskPrioritiesWith: [TaskPriorityWhereInput!]
   
@@ -8157,7 +8157,7 @@ input IconWhereInput {
   idLT: ID
   idLTE: ID
   
-  """project_icons edge predicates"""
+  """projectIcons edge predicates"""
   hasProjectIcons: Boolean
   hasProjectIconsWith: [ProjectIconWhereInput!]
 }
@@ -8338,31 +8338,31 @@ input ProjectWhereInput {
   hasTeammate: Boolean
   hasTeammateWith: [TeammateWhereInput!]
   
-  """project_teammates edge predicates"""
+  """projectTeammates edge predicates"""
   hasProjectTeammates: Boolean
   hasProjectTeammatesWith: [ProjectTeammateWhereInput!]
   
-  """favorite_projects edge predicates"""
+  """favoriteProjects edge predicates"""
   hasFavoriteProjects: Boolean
   hasFavoriteProjectsWith: [FavoriteProjectWhereInput!]
   
-  """project_task_columns edge predicates"""
+  """projectTaskColumns edge predicates"""
   hasProjectTaskColumns: Boolean
   hasProjectTaskColumnsWith: [ProjectTaskColumnWhereInput!]
   
-  """project_task_list_statuses edge predicates"""
+  """projectTaskListStatuses edge predicates"""
   hasProjectTaskListStatuses: Boolean
   hasProjectTaskListStatusesWith: [ProjectTaskListStatusWhereInput!]
   
-  """project_task_sections edge predicates"""
+  """projectTaskSections edge predicates"""
   hasProjectTaskSections: Boolean
   hasProjectTaskSectionsWith: [ProjectTaskSectionWhereInput!]
   
-  """project_tasks edge predicates"""
+  """projectTasks edge predicates"""
   hasProjectTasks: Boolean
   hasProjectTasksWith: [ProjectTaskWhereInput!]
   
-  """task_files edge predicates"""
+  """taskFiles edge predicates"""
   hasTaskFiles: Boolean
   hasTaskFilesWith: [TaskFileWhereInput!]
 }
@@ -8966,11 +8966,11 @@ input TaskColumnWhereInput {
   idLT: ID
   idLTE: ID
   
-  """teammate_task_columns edge predicates"""
+  """teammateTaskColumns edge predicates"""
   hasTeammateTaskColumns: Boolean
   hasTeammateTaskColumnsWith: [TeammateTaskColumnWhereInput!]
   
-  """project_task_columns edge predicates"""
+  """projectTaskColumns edge predicates"""
   hasProjectTaskColumns: Boolean
   hasProjectTaskColumnsWith: [ProjectTaskColumnWhereInput!]
 }
@@ -9331,11 +9331,11 @@ input TaskListCompletedStatusWhereInput {
   idLT: ID
   idLTE: ID
   
-  """teammate_task_list_statuses edge predicates"""
+  """teammateTaskListStatuses edge predicates"""
   hasTeammateTaskListStatuses: Boolean
   hasTeammateTaskListStatusesWith: [TeammateTaskListStatusWhereInput!]
   
-  """project_task_list_statuses edge predicates"""
+  """projectTaskListStatuses edge predicates"""
   hasProjectTaskListStatuses: Boolean
   hasProjectTaskListStatusesWith: [ProjectTaskListStatusWhereInput!]
 }
@@ -9400,11 +9400,11 @@ input TaskListSortStatusWhereInput {
   idLT: ID
   idLTE: ID
   
-  """teammate_task_list_statuses edge predicates"""
+  """teammateTaskListStatuses edge predicates"""
   hasTeammateTaskListStatuses: Boolean
   hasTeammateTaskListStatusesWith: [TeammateTaskListStatusWhereInput!]
   
-  """project_task_list_statuses edge predicates"""
+  """projectTaskListStatuses edge predicates"""
   hasProjectTaskListStatuses: Boolean
   hasProjectTaskListStatusesWith: [ProjectTaskListStatusWhereInput!]
 }
@@ -9802,7 +9802,7 @@ input TeammateTaskSectionWhereInput {
   hasWorkspace: Boolean
   hasWorkspaceWith: [WorkspaceWhereInput!]
   
-  """teammate_tasks edge predicates"""
+  """teammateTasks edge predicates"""
   hasTeammateTasks: Boolean
   hasTeammateTasksWith: [TeammateTaskWhereInput!]
 }
@@ -9880,7 +9880,7 @@ input ProjectTaskSectionWhereInput {
   hasProject: Boolean
   hasProjectWith: [ProjectWhereInput!]
   
-  """project_tasks edge predicates"""
+  """projectTasks edge predicates"""
   hasProjectTasks: Boolean
   hasProjectTasksWith: [ProjectTaskWhereInput!]
 }
@@ -10143,39 +10143,39 @@ input TaskWhereInput {
   hasParent: Boolean
   hasParentWith: [TaskWhereInput!]
   
-  """sub_tasks edge predicates"""
+  """subTasks edge predicates"""
   hasSubTasks: Boolean
   hasSubTasksWith: [TaskWhereInput!]
   
-  """teammate_tasks edge predicates"""
+  """teammateTasks edge predicates"""
   hasTeammateTasks: Boolean
   hasTeammateTasksWith: [TeammateTaskWhereInput!]
   
-  """project_tasks edge predicates"""
+  """projectTasks edge predicates"""
   hasProjectTasks: Boolean
   hasProjectTasksWith: [ProjectTaskWhereInput!]
   
-  """task_likes edge predicates"""
+  """taskLikes edge predicates"""
   hasTaskLikes: Boolean
   hasTaskLikesWith: [TaskLikeWhereInput!]
   
-  """task_tags edge predicates"""
+  """taskTags edge predicates"""
   hasTaskTags: Boolean
   hasTaskTagsWith: [TaskTagWhereInput!]
   
-  """task_collaborators edge predicates"""
+  """taskCollaborators edge predicates"""
   hasTaskCollaborators: Boolean
   hasTaskCollaboratorsWith: [TaskCollaboratorWhereInput!]
   
-  """task_feeds edge predicates"""
+  """taskFeeds edge predicates"""
   hasTaskFeeds: Boolean
   hasTaskFeedsWith: [TaskFeedWhereInput!]
   
-  """task_feed_likes edge predicates"""
+  """taskFeedLikes edge predicates"""
   hasTaskFeedLikes: Boolean
   hasTaskFeedLikesWith: [TaskFeedLikeWhereInput!]
   
-  """task_files edge predicates"""
+  """taskFiles edge predicates"""
   hasTaskFiles: Boolean
   hasTaskFilesWith: [TaskFileWhereInput!]
 }
@@ -10563,7 +10563,7 @@ input TagWhereInput {
   hasColor: Boolean
   hasColorWith: [ColorWhereInput!]
   
-  """task_tags edge predicates"""
+  """taskTags edge predicates"""
   hasTaskTags: Boolean
   hasTaskTagsWith: [TaskTagWhereInput!]
 }
@@ -10809,11 +10809,11 @@ input TaskFeedWhereInput {
   hasTeammate: Boolean
   hasTeammateWith: [TeammateWhereInput!]
   
-  """task_feed_likes edge predicates"""
+  """taskFeedLikes edge predicates"""
   hasTaskFeedLikes: Boolean
   hasTaskFeedLikesWith: [TaskFeedLikeWhereInput!]
   
-  """task_files edge predicates"""
+  """taskFiles edge predicates"""
   hasTaskFiles: Boolean
   hasTaskFilesWith: [TaskFileWhereInput!]
 }
@@ -10975,7 +10975,7 @@ input FileTypeWhereInput {
   idLT: ID
   idLTE: ID
   
-  """task_files edge predicates"""
+  """taskFiles edge predicates"""
   hasTaskFiles: Boolean
   hasTaskFilesWith: [TaskFileWhereInput!]
 }
