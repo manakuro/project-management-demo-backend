@@ -6,6 +6,8 @@ import (
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/pkg/const/globalid"
 
+	"entgo.io/contrib/entgql"
+
 	"entgo.io/ent/schema"
 
 	"entgo.io/ent/schema/edge"
@@ -40,6 +42,7 @@ func (ProjectIcon) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To(projectsRef, Project.Type).
 			Annotations(
+				entgql.Bind(),
 				schema.Annotation(
 					annotation.Edge{FieldName: "project_id"},
 				),
@@ -50,6 +53,7 @@ func (ProjectIcon) Edges() []ent.Edge {
 			Unique().
 			Required().
 			Annotations(
+				entgql.Bind(),
 				schema.Annotation(
 					annotation.Edge{FieldName: "icon_id"},
 				),

@@ -5,6 +5,8 @@ import (
 	"project-management-demo-backend/ent/mixin"
 	"project-management-demo-backend/pkg/const/globalid"
 
+	"entgo.io/contrib/entgql"
+
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
 
@@ -48,6 +50,7 @@ func (TaskColumn) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To(teammateTaskColumnsRef, TeammateTaskColumn.Type).
 			Annotations(
+				entgql.Bind(),
 				schema.Annotation(
 					annotation.Edge{FieldName: "teammate_task_column_id"},
 				),
@@ -55,6 +58,7 @@ func (TaskColumn) Edges() []ent.Edge {
 
 		edge.To(projectTaskColumnsRef, ProjectTaskColumn.Type).
 			Annotations(
+				entgql.Bind(),
 				schema.Annotation(
 					annotation.Edge{FieldName: "project_task_column_id"},
 				),

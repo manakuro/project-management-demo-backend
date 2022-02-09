@@ -5,6 +5,8 @@ import (
 	"project-management-demo-backend/ent/mixin"
 	"project-management-demo-backend/pkg/const/globalid"
 
+	"entgo.io/contrib/entgql"
+
 	"entgo.io/ent/schema"
 
 	"entgo.io/ent/schema/edge"
@@ -49,12 +51,14 @@ func (TaskListCompletedStatus) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To(teammateTaskListStatusesRef, TeammateTaskListStatus.Type).
 			Annotations(
+				entgql.Bind(),
 				schema.Annotation(
 					annotation.Edge{FieldName: "teammate_task_list_status_id"},
 				),
 			),
 		edge.To(projectTaskListStatusesRef, ProjectTaskListStatus.Type).
 			Annotations(
+				entgql.Bind(),
 				schema.Annotation(
 					annotation.Edge{FieldName: "project_task_list_status_id"},
 				),

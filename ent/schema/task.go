@@ -83,6 +83,7 @@ func (Task) Edges() []ent.Edge {
 			Unique().
 			Field("assignee_id").
 			Annotations(
+				entgql.Bind(),
 				schema.Annotation(
 					annotation.Edge{FieldName: "assignee_id"},
 				),
@@ -93,6 +94,7 @@ func (Task) Edges() []ent.Edge {
 			Field("task_priority_id").
 			Required().
 			Annotations(
+				entgql.Bind(),
 				schema.Annotation(
 					annotation.Edge{FieldName: "task_priority_id"},
 				),

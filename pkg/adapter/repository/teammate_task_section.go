@@ -6,7 +6,6 @@ import (
 	"project-management-demo-backend/ent/teammatetasksection"
 	"project-management-demo-backend/pkg/entity/model"
 	ur "project-management-demo-backend/pkg/usecase/repository"
-	"project-management-demo-backend/pkg/util/collection"
 )
 
 type teammateTaskSectionRepository struct {
@@ -52,30 +51,6 @@ func (r *teammateTaskSectionRepository) List(ctx context.Context) ([]*model.Team
 
 func (r *teammateTaskSectionRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TeammateTaskSectionWhereInput, requestedFields []string) (*model.TeammateTaskSectionConnection, error) {
 	q := r.client.TeammateTaskSection.Query()
-
-	if collection.Contains(requestedFields, "edges.node.project") {
-		q.WithWorkspace()
-	}
-
-	if collection.Contains(requestedFields, "edges.node.teammate") {
-		q.WithTeammate()
-	}
-
-	if collection.Contains(requestedFields, "edges.node.teammateTasks") {
-		q.WithTeammateTasks(func(teammateTaskQuery *ent.TeammateTaskQuery) {
-			teammateTaskQuery.WithTask(func(taskQuery *ent.TaskQuery) {
-				WithTask(taskQuery, WithTaskOptions{
-					SubTasks:          true,
-					TaskFiles:         true,
-					TaskFeeds:         true,
-					TaskCollaborators: true,
-					TaskTags:          true,
-					ProjectTasks:      true,
-					TaskPriority:      true,
-				})
-			})
-		})
-	}
 
 	res, err := q.Paginate(ctx, after, first, before, last, ent.WithTeammateTaskSectionFilter(where.Filter))
 	if err != nil {

@@ -6,6 +6,8 @@ import (
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/pkg/const/globalid"
 
+	"entgo.io/contrib/entgql"
+
 	"entgo.io/ent/schema/index"
 
 	"entgo.io/ent/dialect"
@@ -75,6 +77,7 @@ func (TestTodo) Edges() []ent.Edge {
 			Unique().
 			Field("test_user_id").
 			Annotations(
+				entgql.Bind(),
 				schema.Annotation(
 					annotation.Edge{FieldName: "test_user_id"},
 				),
@@ -84,6 +87,7 @@ func (TestTodo) Edges() []ent.Edge {
 			Field("parent_todo_id").
 			Unique().
 			Annotations(
+				entgql.Bind(),
 				schema.Annotation(
 					annotation.Edge{FieldName: "parent_todo_id"},
 				),

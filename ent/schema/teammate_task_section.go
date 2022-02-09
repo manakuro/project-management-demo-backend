@@ -6,6 +6,8 @@ import (
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/pkg/const/globalid"
 
+	"entgo.io/contrib/entgql"
+
 	"entgo.io/ent/schema"
 
 	"entgo.io/ent/schema/edge"
@@ -50,6 +52,7 @@ func (TeammateTaskSection) Edges() []ent.Edge {
 			Unique().
 			Required().
 			Annotations(
+				entgql.Bind(),
 				schema.Annotation(
 					annotation.Edge{FieldName: "teammate_id"},
 				),
@@ -60,15 +63,18 @@ func (TeammateTaskSection) Edges() []ent.Edge {
 			Unique().
 			Required().
 			Annotations(
+				entgql.Bind(),
 				schema.Annotation(
 					annotation.Edge{FieldName: "workspace_id"},
 				),
 			),
-		edge.To(teammateTasksRef, TeammateTask.Type).Annotations(
-			schema.Annotation(
-				annotation.Edge{FieldName: "teammate_task_id"},
+		edge.To(teammateTasksRef, TeammateTask.Type).
+			Annotations(
+				entgql.Bind(),
+				schema.Annotation(
+					annotation.Edge{FieldName: "teammate_task_id"},
+				),
 			),
-		),
 	}
 }
 

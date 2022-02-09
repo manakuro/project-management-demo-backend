@@ -5,7 +5,6 @@ import (
 	"project-management-demo-backend/ent"
 	"project-management-demo-backend/pkg/entity/model"
 	ur "project-management-demo-backend/pkg/usecase/repository"
-	"project-management-demo-backend/pkg/util/collection"
 )
 
 type projectRepository struct {
@@ -51,27 +50,6 @@ func (r *projectRepository) List(ctx context.Context) ([]*model.Project, error) 
 
 func (r *projectRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ProjectWhereInput, requestedFields []string) (*model.ProjectConnection, error) {
 	q := r.client.Project.Query()
-
-	if collection.Contains(requestedFields, "edges.node.projectIcon") {
-		q.WithProjectIcon(func(query *ent.ProjectIconQuery) {
-			query.WithIcon()
-		})
-	}
-	if collection.Contains(requestedFields, "edges.node.projectBaseColor") {
-		q.WithProjectBaseColor(func(query *ent.ProjectBaseColorQuery) {
-			query.WithColor()
-		})
-	}
-	if collection.Contains(requestedFields, "edges.node.projectLightColor") {
-		q.WithProjectLightColor(func(query *ent.ProjectLightColorQuery) {
-			query.WithColor()
-		})
-	}
-	if collection.Contains(requestedFields, "edges.node.projectTeammates") {
-		q.WithProjectTeammates(func(query *ent.ProjectTeammateQuery) {
-			query.WithTeammate()
-		})
-	}
 
 	res, err := q.Paginate(ctx, after, first, before, last, ent.WithProjectFilter(where.Filter))
 	if err != nil {

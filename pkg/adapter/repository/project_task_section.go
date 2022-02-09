@@ -6,7 +6,6 @@ import (
 	"project-management-demo-backend/ent/projecttasksection"
 	"project-management-demo-backend/pkg/entity/model"
 	ur "project-management-demo-backend/pkg/usecase/repository"
-	"project-management-demo-backend/pkg/util/collection"
 )
 
 type projectTaskSectionRepository struct {
@@ -52,10 +51,6 @@ func (r *projectTaskSectionRepository) List(ctx context.Context) ([]*model.Proje
 
 func (r *projectTaskSectionRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ProjectTaskSectionWhereInput, requestedFields []string) (*model.ProjectTaskSectionConnection, error) {
 	q := r.client.ProjectTaskSection.Query()
-
-	if collection.Contains(requestedFields, "edges.node.project") {
-		q.WithProject()
-	}
 
 	res, err := q.Paginate(ctx, after, first, before, last, ent.WithProjectTaskSectionFilter(where.Filter))
 	if err != nil {

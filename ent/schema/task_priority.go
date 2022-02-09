@@ -6,6 +6,8 @@ import (
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/pkg/const/globalid"
 
+	"entgo.io/contrib/entgql"
+
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/edge"
 
@@ -52,15 +54,18 @@ func (TaskPriority) Edges() []ent.Edge {
 			Unique().
 			Required().
 			Annotations(
+				entgql.Bind(),
 				schema.Annotation(
 					annotation.Edge{FieldName: "color_id"},
 				),
 			),
-		edge.To(tasksRef, Task.Type).Annotations(
-			schema.Annotation(
-				annotation.Edge{FieldName: "task_id"},
+		edge.To(tasksRef, Task.Type).
+			Annotations(
+				entgql.Bind(),
+				schema.Annotation(
+					annotation.Edge{FieldName: "task_id"},
+				),
 			),
-		),
 	}
 }
 

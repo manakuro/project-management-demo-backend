@@ -7,6 +7,8 @@ import (
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/pkg/const/globalid"
 
+	"entgo.io/contrib/entgql"
+
 	"entgo.io/ent/dialect"
 
 	"entgo.io/ent/schema"
@@ -67,6 +69,7 @@ func (Project) Edges() []ent.Edge {
 			Field("workspace_id").
 			Required().
 			Annotations(
+				entgql.Bind(),
 				schema.Annotation(
 					annotation.Edge{FieldName: "workspace_id"},
 				),
@@ -77,6 +80,7 @@ func (Project) Edges() []ent.Edge {
 			Field("project_base_color_id").
 			Required().
 			Annotations(
+				entgql.Bind(),
 				schema.Annotation(
 					annotation.Edge{FieldName: "project_base_color_id"},
 				),
@@ -87,6 +91,7 @@ func (Project) Edges() []ent.Edge {
 			Field("project_light_color_id").
 			Required().
 			Annotations(
+				entgql.Bind(),
 				schema.Annotation(
 					annotation.Edge{FieldName: "project_light_color_id"},
 				),
@@ -97,6 +102,7 @@ func (Project) Edges() []ent.Edge {
 			Field("project_icon_id").
 			Required().
 			Annotations(
+				entgql.Bind(),
 				schema.Annotation(
 					annotation.Edge{FieldName: "project_icon_id"},
 				),
@@ -107,48 +113,56 @@ func (Project) Edges() []ent.Edge {
 			Field("created_by").
 			Required().
 			Annotations(
+				entgql.Bind(),
 				schema.Annotation(
 					annotation.Edge{FieldName: "created_by"},
 				),
 			),
 		edge.To(projectTeammatesRef, ProjectTeammate.Edges).
 			Annotations(
+				entgql.Bind(),
 				schema.Annotation(
 					annotation.Edge{FieldName: "project_teammate_id"},
 				),
 			),
 		edge.To(favoriteProjectsRef, FavoriteProject.Type).
 			Annotations(
+				entgql.Bind(),
 				schema.Annotation(
 					annotation.Edge{FieldName: "favorite_project_id"},
 				),
 			),
 		edge.To(projectTaskColumnsRef, ProjectTaskColumn.Type).
 			Annotations(
+				entgql.Bind(),
 				schema.Annotation(
 					annotation.Edge{FieldName: "project_task_column_id"},
 				),
 			),
 		edge.To(projectTaskListStatusesRef, ProjectTaskListStatus.Type).
 			Annotations(
+				entgql.Bind(),
 				schema.Annotation(
 					annotation.Edge{FieldName: "project_task_list_status_id"},
 				),
 			),
 		edge.To(projectTaskSectionsRef, ProjectTaskSection.Type).
 			Annotations(
+				entgql.Bind(),
 				schema.Annotation(
 					annotation.Edge{FieldName: "project_task_section_id"},
 				),
 			),
 		edge.To(projectTasksRef, ProjectTask.Type).
 			Annotations(
+				entgql.Bind(),
 				schema.Annotation(
 					annotation.Edge{FieldName: "project_task_id"},
 				),
 			),
 		edge.To(taskFilesRef, TaskFile.Type).
 			Annotations(
+				entgql.Bind(),
 				schema.Annotation(
 					annotation.Edge{FieldName: "task_file_id"},
 				),

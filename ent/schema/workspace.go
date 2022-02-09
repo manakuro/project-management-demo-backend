@@ -7,6 +7,8 @@ import (
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/pkg/const/globalid"
 
+	"entgo.io/contrib/entgql"
+
 	"entgo.io/ent/schema"
 
 	"entgo.io/ent/schema/edge"
@@ -49,6 +51,7 @@ func (Workspace) Edges() []ent.Edge {
 			Field("created_by").
 			Required().
 			Annotations(
+				entgql.Bind(),
 				schema.Annotation(
 					annotation.Edge{FieldName: "created_by"},
 				),
@@ -56,49 +59,60 @@ func (Workspace) Edges() []ent.Edge {
 		edge.To(projectsRef, Project.Type),
 		edge.To(workspaceTeammatesRef, WorkspaceTeammate.Type).
 			Annotations(
+				entgql.Bind(),
 				schema.Annotation(
 					annotation.Edge{FieldName: "workspace_teammate_id"},
 				),
 			),
 		edge.To(favoriteWorkspacesRef, FavoriteWorkspace.Type).
 			Annotations(
+				entgql.Bind(),
 				schema.Annotation(
 					annotation.Edge{FieldName: "favorite_workspace_id"},
 				),
 			),
 		edge.To(teammateTaskTabStatusesRef, TeammateTaskTabStatus.Type).
 			Annotations(
+				entgql.Bind(),
 				schema.Annotation(
 					annotation.Edge{FieldName: "teammate_task_tab_status_id"},
 				),
 			),
 		edge.To(teammateTaskListStatusesRef, TeammateTaskListStatus.Type).
 			Annotations(
+				entgql.Bind(),
 				schema.Annotation(
 					annotation.Edge{FieldName: "teammate_task_list_status_id"},
 				),
 			),
 		edge.To(teammateTaskSectionsRef, TeammateTaskSection.Type).
 			Annotations(
+				entgql.Bind(),
 				schema.Annotation(
 					annotation.Edge{FieldName: "teammate_task_section_id"},
 				),
 			),
-		edge.To(taskLikesRef, TaskLike.Type).Annotations(
-			schema.Annotation(
-				annotation.Edge{FieldName: "task_like_id"},
+		edge.To(taskLikesRef, TaskLike.Type).
+			Annotations(
+				entgql.Bind(),
+				schema.Annotation(
+					annotation.Edge{FieldName: "task_like_id"},
+				),
 			),
-		),
-		edge.To(tagsRef, Tag.Type).Annotations(
-			schema.Annotation(
-				annotation.Edge{FieldName: "tag_id"},
+		edge.To(tagsRef, Tag.Type).
+			Annotations(
+				entgql.Bind(),
+				schema.Annotation(
+					annotation.Edge{FieldName: "tag_id"},
+				),
 			),
-		),
-		edge.To(teammateTaskColumnsRef, TeammateTaskColumn.Type).Annotations(
-			schema.Annotation(
-				annotation.Edge{FieldName: "teammate_task_column_id"},
+		edge.To(teammateTaskColumnsRef, TeammateTaskColumn.Type).
+			Annotations(
+				entgql.Bind(),
+				schema.Annotation(
+					annotation.Edge{FieldName: "teammate_task_column_id"},
+				),
 			),
-		),
 	}
 }
 

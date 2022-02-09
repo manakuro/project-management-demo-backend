@@ -5,7 +5,6 @@ import (
 	"project-management-demo-backend/ent"
 	"project-management-demo-backend/pkg/entity/model"
 	ur "project-management-demo-backend/pkg/usecase/repository"
-	"project-management-demo-backend/pkg/util/collection"
 )
 
 type projectIconRepository struct {
@@ -51,10 +50,6 @@ func (r *projectIconRepository) List(ctx context.Context) ([]*model.ProjectIcon,
 
 func (r *projectIconRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ProjectIconWhereInput, requestedFields []string) (*model.ProjectIconConnection, error) {
 	q := r.client.ProjectIcon.Query()
-
-	if collection.Contains(requestedFields, "edges.node.icon") {
-		q.WithIcon()
-	}
 
 	res, err := q.Paginate(ctx, after, first, before, last, ent.WithProjectIconFilter(where.Filter))
 	if err != nil {

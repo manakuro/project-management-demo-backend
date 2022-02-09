@@ -5,7 +5,6 @@ import (
 	"project-management-demo-backend/ent"
 	"project-management-demo-backend/pkg/entity/model"
 	ur "project-management-demo-backend/pkg/usecase/repository"
-	"project-management-demo-backend/pkg/util/collection"
 )
 
 type taskRepository struct {
@@ -51,14 +50,6 @@ func (r *taskRepository) List(ctx context.Context) ([]*model.Task, error) {
 
 func (r *taskRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TaskWhereInput, requestedFields []string) (*model.TaskConnection, error) {
 	q := r.client.Task.Query()
-
-	if collection.Contains(requestedFields, "edges.node.taskPriority") {
-		q.WithTaskPriority()
-	}
-
-	if collection.Contains(requestedFields, "edges.node.subTasks") {
-		q.WithSubTasks()
-	}
 
 	res, err := q.Paginate(ctx, after, first, before, last, ent.WithTaskFilter(where.Filter))
 	if err != nil {

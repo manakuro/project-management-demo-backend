@@ -8,7 +8,6 @@ import (
 	"project-management-demo-backend/ent/teammatetasksection"
 	"project-management-demo-backend/pkg/entity/model"
 	ur "project-management-demo-backend/pkg/usecase/repository"
-	"project-management-demo-backend/pkg/util/collection"
 	"project-management-demo-backend/pkg/util/datetime"
 	"time"
 )
@@ -91,16 +90,6 @@ func (r *teammateTaskRepository) TasksDueSoon(ctx context.Context, workspaceID m
 
 func (r *teammateTaskRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TeammateTaskWhereInput, requestedFields []string) (*model.TeammateTaskConnection, error) {
 	q := r.client.TeammateTask.Query()
-
-	if collection.Contains(requestedFields, "edges.node.task") {
-		q.WithTask(func(query *ent.TaskQuery) {
-			query.WithSubTasks()
-		})
-	}
-
-	if collection.Contains(requestedFields, "edges.node.teammateTaskSection") {
-		q.WithTeammateTaskSection()
-	}
 
 	res, err := q.Paginate(ctx, after, first, before, last, ent.WithTeammateTaskFilter(where.Filter))
 	if err != nil {

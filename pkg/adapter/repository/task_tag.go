@@ -6,7 +6,6 @@ import (
 	"project-management-demo-backend/ent/tasktag"
 	"project-management-demo-backend/pkg/entity/model"
 	ur "project-management-demo-backend/pkg/usecase/repository"
-	"project-management-demo-backend/pkg/util/collection"
 )
 
 type taskTagRepository struct {
@@ -59,12 +58,6 @@ func (r *taskTagRepository) List(ctx context.Context, where *model.TaskTagWhereI
 
 func (r *taskTagRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TaskTagWhereInput, requestedFields []string) (*model.TaskTagConnection, error) {
 	q := r.client.TaskTag.Query()
-
-	if collection.Contains(requestedFields, "edges.node.tag") {
-		q.WithTag(func(query *ent.TagQuery) {
-			query.WithColor()
-		})
-	}
 
 	res, err := q.Paginate(ctx, after, first, before, last, ent.WithTaskTagFilter(where.Filter))
 	if err != nil {

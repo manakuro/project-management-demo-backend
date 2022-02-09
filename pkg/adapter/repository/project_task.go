@@ -6,7 +6,6 @@ import (
 	"project-management-demo-backend/ent/projecttask"
 	"project-management-demo-backend/pkg/entity/model"
 	ur "project-management-demo-backend/pkg/usecase/repository"
-	"project-management-demo-backend/pkg/util/collection"
 )
 
 type projectTaskRepository struct {
@@ -52,16 +51,6 @@ func (r *projectTaskRepository) List(ctx context.Context) ([]*model.ProjectTask,
 
 func (r *projectTaskRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ProjectTaskWhereInput, requestedFields []string) (*model.ProjectTaskConnection, error) {
 	q := r.client.ProjectTask.Query()
-
-	if collection.Contains(requestedFields, "edges.node.task") {
-		q.WithTask(func(query *ent.TaskQuery) {
-			query.WithSubTasks()
-		})
-	}
-
-	if collection.Contains(requestedFields, "edges.node.projectTaskSection") {
-		q.WithProjectTaskSection()
-	}
 
 	res, err := q.Paginate(ctx, after, first, before, last, ent.WithProjectTaskFilter(where.Filter))
 	if err != nil {

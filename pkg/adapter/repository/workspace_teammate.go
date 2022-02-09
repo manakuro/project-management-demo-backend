@@ -5,7 +5,6 @@ import (
 	"project-management-demo-backend/ent"
 	"project-management-demo-backend/pkg/entity/model"
 	ur "project-management-demo-backend/pkg/usecase/repository"
-	"project-management-demo-backend/pkg/util/collection"
 )
 
 type workspaceTeammateRepository struct {
@@ -52,14 +51,6 @@ func (r *workspaceTeammateRepository) List(ctx context.Context) ([]*model.Worksp
 
 func (r *workspaceTeammateRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.WorkspaceTeammateWhereInput, requestedFields []string) (*model.WorkspaceTeammateConnection, error) {
 	q := r.client.WorkspaceTeammate.Query()
-
-	if collection.Contains(requestedFields, "edges.node.workspace") {
-		q.WithWorkspace()
-	}
-
-	if collection.Contains(requestedFields, "edges.node.teammate") {
-		q.WithTeammate()
-	}
 
 	res, err := q.Paginate(ctx, after, first, before, last, ent.WithWorkspaceTeammateFilter(where.Filter))
 	if err != nil {

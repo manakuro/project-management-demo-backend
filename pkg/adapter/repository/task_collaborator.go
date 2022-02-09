@@ -6,7 +6,6 @@ import (
 	"project-management-demo-backend/ent/taskcollaborator"
 	"project-management-demo-backend/pkg/entity/model"
 	ur "project-management-demo-backend/pkg/usecase/repository"
-	"project-management-demo-backend/pkg/util/collection"
 )
 
 type taskCollaboratorRepository struct {
@@ -59,10 +58,6 @@ func (r *taskCollaboratorRepository) List(ctx context.Context, where *model.Task
 
 func (r *taskCollaboratorRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TaskCollaboratorWhereInput, requestedFields []string) (*model.TaskCollaboratorConnection, error) {
 	q := r.client.TaskCollaborator.Query()
-
-	if collection.Contains(requestedFields, "edges.node.tag") {
-		q.WithTeammate()
-	}
 
 	res, err := q.Paginate(ctx, after, first, before, last, ent.WithTaskCollaboratorFilter(where.Filter))
 	if err != nil {
