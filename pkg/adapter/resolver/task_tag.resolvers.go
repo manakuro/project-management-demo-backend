@@ -79,7 +79,6 @@ func (r *queryResolver) TaskTag(ctx context.Context, where *ent.TaskTagWhereInpu
 }
 
 func (r *queryResolver) TaskTags(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskTagWhereInput) (*ent.TaskTagConnection, error) {
-
 	ts, err := r.controller.TaskTag.ListWithPagination(ctx, after, first, before, last, where)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)

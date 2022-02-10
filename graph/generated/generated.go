@@ -10007,6 +10007,8 @@ input TaskWhereInput {
   taskPriorityIDContains: ID
   taskPriorityIDHasPrefix: ID
   taskPriorityIDHasSuffix: ID
+  taskPriorityIDIsNil: Boolean
+  taskPriorityIDNotNil: Boolean
   taskPriorityIDEqualFold: ID
   taskPriorityIDContainsFold: ID
   
@@ -11826,6 +11828,7 @@ extend type Mutation {
   name: String!
   taskParentId: ID!
   taskPriorityId: ID!
+  taskPriority: TaskPriority
   assigneeId: ID!
   createdBy: ID!
   completed: Boolean!
@@ -11837,7 +11840,6 @@ extend type Mutation {
   taskFiles: [TaskFile!]!
   taskFeeds: [TaskFeed!]!
   taskCollaborators: [TaskCollaborator!]!
-  taskPriority: TaskPriority!
   taskTags: [TaskTag!]!
   projectTasks: [ProjectTask!]!
   createdAt: String!
@@ -32709,6 +32711,38 @@ func (ec *executionContext) _Task_taskPriorityId(ctx context.Context, field grap
 	return ec.marshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Task_taskPriority(ctx context.Context, field graphql.CollectedField, obj *ent.Task) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Task",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TaskPriority(ctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*ent.TaskPriority)
+	fc.Result = res
+	return ec.marshalOTaskPriority2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskPriority(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Task_assigneeId(ctx context.Context, field graphql.CollectedField, obj *ent.Task) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -33092,41 +33126,6 @@ func (ec *executionContext) _Task_taskCollaborators(ctx context.Context, field g
 	res := resTmp.([]*ent.TaskCollaborator)
 	fc.Result = res
 	return ec.marshalNTaskCollaborator2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskCollaboratorᚄ(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) _Task_taskPriority(ctx context.Context, field graphql.CollectedField, obj *ent.Task) (ret graphql.Marshaler) {
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	fc := &graphql.FieldContext{
-		Object:     "Task",
-		Field:      field,
-		Args:       nil,
-		IsMethod:   true,
-		IsResolver: false,
-	}
-
-	ctx = graphql.WithFieldContext(ctx, fc)
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.TaskPriority(ctx)
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(*ent.TaskPriority)
-	fc.Result = res
-	return ec.marshalNTaskPriority2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskPriority(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Task_taskTags(ctx context.Context, field graphql.CollectedField, obj *ent.Task) (ret graphql.Marshaler) {
@@ -59674,6 +59673,22 @@ func (ec *executionContext) unmarshalInputTaskWhereInput(ctx context.Context, ob
 			if err != nil {
 				return it, err
 			}
+		case "taskPriorityIDIsNil":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskPriorityIDIsNil"))
+			it.TaskPriorityIDIsNil, err = ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskPriorityIDNotNil":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskPriorityIDNotNil"))
+			it.TaskPriorityIDNotNil, err = ec.unmarshalOBoolean2bool(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		case "taskPriorityIDEqualFold":
 			var err error
 
@@ -73169,6 +73184,17 @@ func (ec *executionContext) _Task(ctx context.Context, sel ast.SelectionSet, obj
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)
 			}
+		case "taskPriority":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Task_taskPriority(ctx, field, obj)
+				return res
+			})
 		case "assigneeId":
 			out.Values[i] = ec._Task_assigneeId(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -73282,20 +73308,6 @@ func (ec *executionContext) _Task(ctx context.Context, sel ast.SelectionSet, obj
 					}
 				}()
 				res = ec._Task_taskCollaborators(ctx, field, obj)
-				if res == graphql.Null {
-					atomic.AddUint32(&invalids, 1)
-				}
-				return res
-			})
-		case "taskPriority":
-			field := field
-			out.Concurrently(i, func() (res graphql.Marshaler) {
-				defer func() {
-					if r := recover(); r != nil {
-						ec.Error(ctx, ec.Recover(ctx, r))
-					}
-				}()
-				res = ec._Task_taskPriority(ctx, field, obj)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}

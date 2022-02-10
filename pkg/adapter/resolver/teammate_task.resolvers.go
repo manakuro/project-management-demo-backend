@@ -45,7 +45,6 @@ func (r *queryResolver) TeammateTask(ctx context.Context, where *ent.TeammateTas
 }
 
 func (r *queryResolver) TeammateTasks(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TeammateTaskWhereInput) (*ent.TeammateTaskConnection, error) {
-
 	ts, err := r.controller.TeammateTask.ListWithPagination(ctx, after, first, before, last, where)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
@@ -55,7 +54,6 @@ func (r *queryResolver) TeammateTasks(ctx context.Context, after *ent.Cursor, fi
 }
 
 func (r *queryResolver) TasksDueSoon(ctx context.Context, workspaceID ulid.ID, teammateID ulid.ID) ([]*ent.TeammateTask, error) {
-
 	ts, err := r.controller.TeammateTask.TasksDueSoon(ctx, workspaceID, teammateID)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)

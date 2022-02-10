@@ -54,7 +54,6 @@ func (r *queryResolver) ProjectTaskListStatus(ctx context.Context, where *ent.Pr
 }
 
 func (r *queryResolver) ProjectTaskListStatuses(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectTaskListStatusWhereInput) (*ent.ProjectTaskListStatusConnection, error) {
-
 	ps, err := r.controller.ProjectTaskListStatus.ListWithPagination(ctx, after, first, before, last, where)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)

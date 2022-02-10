@@ -53,7 +53,6 @@ func (r *queryResolver) ProjectBaseColor(ctx context.Context, where *ent.Project
 }
 
 func (r *queryResolver) ProjectBaseColors(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectBaseColorWhereInput) (*ent.ProjectBaseColorConnection, error) {
-
 	ps, err := r.controller.ProjectBaseColor.ListWithPagination(ctx, after, first, before, last, where)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)

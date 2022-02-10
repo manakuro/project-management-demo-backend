@@ -36,7 +36,6 @@ func (r *queryResolver) TaskListSortStatus(ctx context.Context, where *ent.TaskL
 }
 
 func (r *queryResolver) TaskListSortStatuses(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskListSortStatusWhereInput) (*ent.TaskListSortStatusConnection, error) {
-
 	ts, err := r.controller.TaskListSortStatus.ListWithPagination(ctx, after, first, before, last, where)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)

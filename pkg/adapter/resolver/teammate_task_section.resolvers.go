@@ -45,7 +45,6 @@ func (r *queryResolver) TeammateTaskSection(ctx context.Context, where *ent.Team
 }
 
 func (r *queryResolver) TeammateTaskSections(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TeammateTaskSectionWhereInput) (*ent.TeammateTaskSectionConnection, error) {
-
 	ts, err := r.controller.TeammateTaskSection.ListWithPagination(ctx, after, first, before, last, where)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)

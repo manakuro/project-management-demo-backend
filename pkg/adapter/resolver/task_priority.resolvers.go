@@ -36,7 +36,6 @@ func (r *queryResolver) TaskPriority(ctx context.Context, where *ent.TaskPriorit
 }
 
 func (r *queryResolver) TaskPriorities(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskPriorityWhereInput) (*ent.TaskPriorityConnection, error) {
-
 	ts, err := r.controller.TaskPriority.ListWithPagination(ctx, after, first, before, last, where)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)

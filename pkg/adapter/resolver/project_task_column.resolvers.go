@@ -53,7 +53,6 @@ func (r *queryResolver) ProjectTaskColumn(ctx context.Context, where *ent.Projec
 }
 
 func (r *queryResolver) ProjectTaskColumns(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectTaskColumnWhereInput) (*ent.ProjectTaskColumnConnection, error) {
-
 	ps, err := r.controller.ProjectTaskColumn.ListWithPagination(ctx, after, first, before, last, where)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)

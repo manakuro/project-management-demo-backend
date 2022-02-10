@@ -46,7 +46,6 @@ func (r *queryResolver) TeammateTaskTabStatus(ctx context.Context, where *ent.Te
 }
 
 func (r *queryResolver) TeammateTaskTabStatuses(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TeammateTaskTabStatusWhereInput) (*ent.TeammateTaskTabStatusConnection, error) {
-
 	ts, err := r.controller.TeammateTaskTabStatus.ListWithPagination(ctx, after, first, before, last, where)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)

@@ -53,7 +53,6 @@ func (r *queryResolver) TestUser(ctx context.Context, id ulid.ID, age *int) (*en
 }
 
 func (r *queryResolver) TestUsers(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TestUserWhereInput) (*ent.TestUserConnection, error) {
-
 	ts, err := r.controller.TestUser.ListWithPagination(ctx, after, first, before, last, where)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)

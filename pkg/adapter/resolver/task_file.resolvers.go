@@ -46,7 +46,6 @@ func (r *queryResolver) TaskFile(ctx context.Context, where *ent.TaskFileWhereIn
 }
 
 func (r *queryResolver) TaskFiles(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskFileWhereInput) (*ent.TaskFileConnection, error) {
-
 	ts, err := r.controller.TaskFile.ListWithPagination(ctx, after, first, before, last, where)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)

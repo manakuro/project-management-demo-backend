@@ -3,6 +3,7 @@ type Task implements Node {
   name: String!
   taskParentId: ID!
   taskPriorityId: ID!
+  taskPriority: TaskPriority
   assigneeId: ID!
   createdBy: ID!
   completed: Boolean!
@@ -14,7 +15,6 @@ type Task implements Node {
   taskFiles: [TaskFile!]!
   taskFeeds: [TaskFeed!]!
   taskCollaborators: [TaskCollaborator!]!
-  taskPriority: TaskPriority!
   taskTags: [TaskTag!]!
   projectTasks: [ProjectTask!]!
   createdAt: String!

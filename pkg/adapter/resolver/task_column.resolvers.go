@@ -44,7 +44,6 @@ func (r *queryResolver) TaskColumn(ctx context.Context, where *ent.TaskColumnWhe
 }
 
 func (r *queryResolver) TaskColumns(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskColumnWhereInput) (*ent.TaskColumnConnection, error) {
-
 	ts, err := r.controller.TaskColumn.ListWithPagination(ctx, after, first, before, last, where)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)

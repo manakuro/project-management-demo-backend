@@ -46,7 +46,6 @@ func (r *queryResolver) Tag(ctx context.Context, where *ent.TagWhereInput) (*ent
 }
 
 func (r *queryResolver) Tags(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TagWhereInput) (*ent.TagConnection, error) {
-
 	ts, err := r.controller.Tag.ListWithPagination(ctx, after, first, before, last, where)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)

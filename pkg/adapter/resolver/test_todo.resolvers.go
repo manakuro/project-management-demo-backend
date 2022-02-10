@@ -36,7 +36,6 @@ func (r *queryResolver) TestTodo(ctx context.Context, where *ent.TestTodoWhereIn
 }
 
 func (r *queryResolver) TestTodos(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TestTodoWhereInput) (*ent.TestTodoConnection, error) {
-
 	ts, err := r.controller.TestTodo.ListWithPagination(ctx, after, first, before, last, where)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)

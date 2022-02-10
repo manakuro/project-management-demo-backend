@@ -79,7 +79,6 @@ func (r *queryResolver) TaskFeedLike(ctx context.Context, where *ent.TaskFeedLik
 }
 
 func (r *queryResolver) TaskFeedLikes(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskFeedLikeWhereInput) (*ent.TaskFeedLikeConnection, error) {
-
 	ts, err := r.controller.TaskFeedLike.ListWithPagination(ctx, after, first, before, last, where)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)

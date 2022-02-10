@@ -46,7 +46,6 @@ func (r *queryResolver) TaskSection(ctx context.Context, where *ent.TaskSectionW
 }
 
 func (r *queryResolver) TaskSections(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskSectionWhereInput) (*ent.TaskSectionConnection, error) {
-
 	ts, err := r.controller.TaskSection.ListWithPagination(ctx, after, first, before, last, where)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)

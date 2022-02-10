@@ -53,7 +53,6 @@ func (r *queryResolver) ProjectIcon(ctx context.Context, where *ent.ProjectIconW
 }
 
 func (r *queryResolver) ProjectIcons(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectIconWhereInput) (*ent.ProjectIconConnection, error) {
-
 	pis, err := r.controller.ProjectIcon.ListWithPagination(ctx, after, first, before, last, where)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)

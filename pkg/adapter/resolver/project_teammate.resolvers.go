@@ -53,7 +53,6 @@ func (r *queryResolver) ProjectTeammate(ctx context.Context, where *ent.ProjectT
 }
 
 func (r *queryResolver) ProjectTeammates(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectTeammateWhereInput) (*ent.ProjectTeammateConnection, error) {
-
 	ps, err := r.controller.ProjectTeammate.ListWithPagination(ctx, after, first, before, last, where)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)

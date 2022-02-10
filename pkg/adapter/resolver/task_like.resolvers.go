@@ -55,7 +55,6 @@ func (r *queryResolver) TaskLike(ctx context.Context, where *ent.TaskLikeWhereIn
 }
 
 func (r *queryResolver) TaskLikes(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskLikeWhereInput) (*ent.TaskLikeConnection, error) {
-
 	ts, err := r.controller.TaskLike.ListWithPagination(ctx, after, first, before, last, where)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
