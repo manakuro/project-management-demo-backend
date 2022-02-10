@@ -4,7 +4,6 @@ package ent
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"project-management-demo-backend/ent/predicate"
 	"project-management-demo-backend/ent/projecttask"
@@ -62,6 +61,20 @@ func (tu *TaskUpdate) ClearTaskParentID() *TaskUpdate {
 // SetTaskPriorityID sets the "task_priority_id" field.
 func (tu *TaskUpdate) SetTaskPriorityID(u ulid.ID) *TaskUpdate {
 	tu.mutation.SetTaskPriorityID(u)
+	return tu
+}
+
+// SetNillableTaskPriorityID sets the "task_priority_id" field if the given value is not nil.
+func (tu *TaskUpdate) SetNillableTaskPriorityID(u *ulid.ID) *TaskUpdate {
+	if u != nil {
+		tu.SetTaskPriorityID(*u)
+	}
+	return tu
+}
+
+// ClearTaskPriorityID clears the value of the "task_priority_id" field.
+func (tu *TaskUpdate) ClearTaskPriorityID() *TaskUpdate {
+	tu.mutation.ClearTaskPriorityID()
 	return tu
 }
 
@@ -641,9 +654,6 @@ func (tu *TaskUpdate) check() error {
 		if err := task.NameValidator(v); err != nil {
 			return &ValidationError{Name: "name", err: fmt.Errorf("ent: validator failed for field \"name\": %w", err)}
 		}
-	}
-	if _, ok := tu.mutation.TaskPriorityID(); tu.mutation.TaskPriorityCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"taskPriority\"")
 	}
 	return nil
 }
@@ -1369,6 +1379,20 @@ func (tuo *TaskUpdateOne) SetTaskPriorityID(u ulid.ID) *TaskUpdateOne {
 	return tuo
 }
 
+// SetNillableTaskPriorityID sets the "task_priority_id" field if the given value is not nil.
+func (tuo *TaskUpdateOne) SetNillableTaskPriorityID(u *ulid.ID) *TaskUpdateOne {
+	if u != nil {
+		tuo.SetTaskPriorityID(*u)
+	}
+	return tuo
+}
+
+// ClearTaskPriorityID clears the value of the "task_priority_id" field.
+func (tuo *TaskUpdateOne) ClearTaskPriorityID() *TaskUpdateOne {
+	tuo.mutation.ClearTaskPriorityID()
+	return tuo
+}
+
 // SetAssigneeID sets the "assignee_id" field.
 func (tuo *TaskUpdateOne) SetAssigneeID(u ulid.ID) *TaskUpdateOne {
 	tuo.mutation.SetAssigneeID(u)
@@ -1952,9 +1976,6 @@ func (tuo *TaskUpdateOne) check() error {
 		if err := task.NameValidator(v); err != nil {
 			return &ValidationError{Name: "name", err: fmt.Errorf("ent: validator failed for field \"name\": %w", err)}
 		}
-	}
-	if _, ok := tuo.mutation.TaskPriorityID(); tuo.mutation.TaskPriorityCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"taskPriority\"")
 	}
 	return nil
 }

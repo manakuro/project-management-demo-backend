@@ -408,6 +408,20 @@ func TaskPriorityIDHasSuffix(v ulid.ID) predicate.Task {
 	})
 }
 
+// TaskPriorityIDIsNil applies the IsNil predicate on the "task_priority_id" field.
+func TaskPriorityIDIsNil() predicate.Task {
+	return predicate.Task(func(s *sql.Selector) {
+		s.Where(sql.IsNull(s.C(FieldTaskPriorityID)))
+	})
+}
+
+// TaskPriorityIDNotNil applies the NotNil predicate on the "task_priority_id" field.
+func TaskPriorityIDNotNil() predicate.Task {
+	return predicate.Task(func(s *sql.Selector) {
+		s.Where(sql.NotNull(s.C(FieldTaskPriorityID)))
+	})
+}
+
 // TaskPriorityIDEqualFold applies the EqualFold predicate on the "task_priority_id" field.
 func TaskPriorityIDEqualFold(v ulid.ID) predicate.Task {
 	vc := string(v)

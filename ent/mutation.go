@@ -10815,9 +10815,22 @@ func (m *TaskMutation) OldTaskPriorityID(ctx context.Context) (v ulid.ID, err er
 	return oldValue.TaskPriorityID, nil
 }
 
+// ClearTaskPriorityID clears the value of the "task_priority_id" field.
+func (m *TaskMutation) ClearTaskPriorityID() {
+	m.taskPriority = nil
+	m.clearedFields[task.FieldTaskPriorityID] = struct{}{}
+}
+
+// TaskPriorityIDCleared returns if the "task_priority_id" field was cleared in this mutation.
+func (m *TaskMutation) TaskPriorityIDCleared() bool {
+	_, ok := m.clearedFields[task.FieldTaskPriorityID]
+	return ok
+}
+
 // ResetTaskPriorityID resets all changes to the "task_priority_id" field.
 func (m *TaskMutation) ResetTaskPriorityID() {
 	m.taskPriority = nil
+	delete(m.clearedFields, task.FieldTaskPriorityID)
 }
 
 // SetAssigneeID sets the "assignee_id" field.
@@ -11278,7 +11291,7 @@ func (m *TaskMutation) ClearTaskPriority() {
 
 // TaskPriorityCleared reports if the "taskPriority" edge to the TaskPriority entity was cleared.
 func (m *TaskMutation) TaskPriorityCleared() bool {
-	return m.clearedtaskPriority
+	return m.TaskPriorityIDCleared() || m.clearedtaskPriority
 }
 
 // TaskPriorityIDs returns the "taskPriority" edge IDs in the mutation.
@@ -12069,6 +12082,9 @@ func (m *TaskMutation) ClearedFields() []string {
 	if m.FieldCleared(task.FieldTaskParentID) {
 		fields = append(fields, task.FieldTaskParentID)
 	}
+	if m.FieldCleared(task.FieldTaskPriorityID) {
+		fields = append(fields, task.FieldTaskPriorityID)
+	}
 	if m.FieldCleared(task.FieldAssigneeID) {
 		fields = append(fields, task.FieldAssigneeID)
 	}
@@ -12097,6 +12113,9 @@ func (m *TaskMutation) ClearField(name string) error {
 	switch name {
 	case task.FieldTaskParentID:
 		m.ClearTaskParentID()
+		return nil
+	case task.FieldTaskPriorityID:
+		m.ClearTaskPriorityID()
 		return nil
 	case task.FieldAssigneeID:
 		m.ClearAssigneeID()

@@ -2490,6 +2490,8 @@ input TaskWhereInput {
   taskPriorityIDContains: ID
   taskPriorityIDHasPrefix: ID
   taskPriorityIDHasSuffix: ID
+  taskPriorityIDIsNil: Boolean
+  taskPriorityIDNotNil: Boolean
   taskPriorityIDEqualFold: ID
   taskPriorityIDContainsFold: ID
   

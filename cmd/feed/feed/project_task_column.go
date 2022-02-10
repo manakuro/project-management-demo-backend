@@ -18,7 +18,7 @@ func ProjectTaskColumn(ctx context.Context, client *ent.Client) {
 		{
 			TaskColumnID: feedutil.GetTaskColumnByName(ctx, client, taskColumnFeed.taskName.Name).ID,
 			ProjectID:    feedutil.GetProjectByName(ctx, client, projectFeed.appDevelopment.name).ID,
-			Width:        "400px",
+			Width:        "600px",
 			Disabled:     false,
 			Customizable: false,
 			Order:        1,
@@ -66,7 +66,7 @@ func ProjectTaskColumn(ctx context.Context, client *ent.Client) {
 		{
 			TaskColumnID: feedutil.GetTaskColumnByName(ctx, client, taskColumnFeed.taskName.Name).ID,
 			ProjectID:    feedutil.GetProjectByName(ctx, client, projectFeed.marketing.name).ID,
-			Width:        "400px",
+			Width:        "600px",
 			Disabled:     false,
 			Customizable: false,
 			Order:        1,
@@ -114,7 +114,7 @@ func ProjectTaskColumn(ctx context.Context, client *ent.Client) {
 		{
 			TaskColumnID: feedutil.GetTaskColumnByName(ctx, client, taskColumnFeed.taskName.Name).ID,
 			ProjectID:    feedutil.GetProjectByName(ctx, client, projectFeed.customerSuccess.name).ID,
-			Width:        "400px",
+			Width:        "600px",
 			Disabled:     false,
 			Customizable: false,
 			Order:        1,

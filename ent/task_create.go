@@ -51,6 +51,14 @@ func (tc *TaskCreate) SetTaskPriorityID(u ulid.ID) *TaskCreate {
 	return tc
 }
 
+// SetNillableTaskPriorityID sets the "task_priority_id" field if the given value is not nil.
+func (tc *TaskCreate) SetNillableTaskPriorityID(u *ulid.ID) *TaskCreate {
+	if u != nil {
+		tc.SetTaskPriorityID(*u)
+	}
+	return tc
+}
+
 // SetAssigneeID sets the "assignee_id" field.
 func (tc *TaskCreate) SetAssigneeID(u ulid.ID) *TaskCreate {
 	tc.mutation.SetAssigneeID(u)
@@ -462,9 +470,6 @@ func (tc *TaskCreate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (tc *TaskCreate) check() error {
-	if _, ok := tc.mutation.TaskPriorityID(); !ok {
-		return &ValidationError{Name: "task_priority_id", err: errors.New(`ent: missing required field "task_priority_id"`)}
-	}
 	if _, ok := tc.mutation.CreatedBy(); !ok {
 		return &ValidationError{Name: "created_by", err: errors.New(`ent: missing required field "created_by"`)}
 	}
@@ -487,9 +492,6 @@ func (tc *TaskCreate) check() error {
 	}
 	if _, ok := tc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
-	}
-	if _, ok := tc.mutation.TaskPriorityID(); !ok {
-		return &ValidationError{Name: "taskPriority", err: errors.New("ent: missing required edge \"taskPriority\"")}
 	}
 	return nil
 }

@@ -38,7 +38,8 @@ func (TaskMixin) Fields() []ent.Field {
 			GoType(ulid.ID("")).
 			Optional(),
 		field.String("task_priority_id").
-			GoType(ulid.ID("")),
+			GoType(ulid.ID("")).
+			Optional(),
 		field.String("assignee_id").
 			GoType(ulid.ID("")).
 			Optional(),
@@ -92,7 +93,6 @@ func (Task) Edges() []ent.Edge {
 			Ref(tasksRef).
 			Unique().
 			Field("task_priority_id").
-			Required().
 			Annotations(
 				entgql.Bind(),
 				schema.Annotation(

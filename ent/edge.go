@@ -361,7 +361,7 @@ func (t *Task) TaskPriority(ctx context.Context) (*TaskPriority, error) {
 	if IsNotLoaded(err) {
 		result, err = t.QueryTaskPriority().Only(ctx)
 	}
-	return result, err
+	return result, MaskNotFound(err)
 }
 
 func (t *Task) Parent(ctx context.Context) (*Task, error) {

@@ -5844,6 +5844,8 @@ type TaskWhereInput struct {
 	TaskPriorityIDContains     *ulid.ID  `json:"taskPriorityIDContains,omitempty"`
 	TaskPriorityIDHasPrefix    *ulid.ID  `json:"taskPriorityIDHasPrefix,omitempty"`
 	TaskPriorityIDHasSuffix    *ulid.ID  `json:"taskPriorityIDHasSuffix,omitempty"`
+	TaskPriorityIDIsNil        bool      `json:"taskPriorityIDIsNil,omitempty"`
+	TaskPriorityIDNotNil       bool      `json:"taskPriorityIDNotNil,omitempty"`
 	TaskPriorityIDEqualFold    *ulid.ID  `json:"taskPriorityIDEqualFold,omitempty"`
 	TaskPriorityIDContainsFold *ulid.ID  `json:"taskPriorityIDContainsFold,omitempty"`
 
@@ -6167,6 +6169,12 @@ func (i *TaskWhereInput) P() (predicate.Task, error) {
 	}
 	if i.TaskPriorityIDHasSuffix != nil {
 		predicates = append(predicates, task.TaskPriorityIDHasSuffix(*i.TaskPriorityIDHasSuffix))
+	}
+	if i.TaskPriorityIDIsNil {
+		predicates = append(predicates, task.TaskPriorityIDIsNil())
+	}
+	if i.TaskPriorityIDNotNil {
+		predicates = append(predicates, task.TaskPriorityIDNotNil())
 	}
 	if i.TaskPriorityIDEqualFold != nil {
 		predicates = append(predicates, task.TaskPriorityIDEqualFold(*i.TaskPriorityIDEqualFold))

@@ -43,12 +43,48 @@ var taskNoAssignedFeed = struct {
 	task2Subtask1 ent.CreateTaskInput
 	task2Subtask2 ent.CreateTaskInput
 	task2Subtask3 ent.CreateTaskInput
+	mTask1        ent.CreateTaskInput
+	mTask2        ent.CreateTaskInput
+	mTask3        ent.CreateTaskInput
+	mTask4        ent.CreateTaskInput
+	mTask5        ent.CreateTaskInput
+	mTask6        ent.CreateTaskInput
+	mTask7        ent.CreateTaskInput
+	mTask8        ent.CreateTaskInput
+	mTask9        ent.CreateTaskInput
+	mTask10       ent.CreateTaskInput
+	mTask11       ent.CreateTaskInput
+	mTask12       ent.CreateTaskInput
+	mTask13       ent.CreateTaskInput
+	mTask14       ent.CreateTaskInput
 }{
 	task1:         ent.CreateTaskInput{Name: "Launch updated task list", DueDate: feedutil.AddDate(10)},
 	task2:         ent.CreateTaskInput{Name: "Finalize workspace design", DueDate: feedutil.AddDate(5)},
 	task2Subtask1: ent.CreateTaskInput{Name: "Prep for review", DueDate: feedutil.AddDate(2)},
 	task2Subtask2: ent.CreateTaskInput{Name: "Tweak project card design", DueDate: feedutil.AddDate(2)},
 	task2Subtask3: ent.CreateTaskInput{Name: "Usability testing for top bar", DueDate: feedutil.AddDate(2)},
+
+	// Marketing - Planning
+	mTask1: ent.CreateTaskInput{Name: "Weekly Analytics report", DueDate: feedutil.AddDate(5)},
+	mTask2: ent.CreateTaskInput{Name: "Finalize campaign brief", DueDate: feedutil.AddDate(5)},
+	mTask3: ent.CreateTaskInput{Name: "Kickoff new project", DueDate: feedutil.AddDate(2)},
+	mTask4: ent.CreateTaskInput{Name: "Brainstorming", DueDate: feedutil.AddDate(3)},
+
+	// Marketing - Upcoming
+	mTask5: ent.CreateTaskInput{Name: "Brief for Black Friday campaign"},
+	mTask6: ent.CreateTaskInput{Name: "Q4 brand campaign"},
+	mTask7: ent.CreateTaskInput{Name: "Past campaign performance reports"},
+	mTask8: ent.CreateTaskInput{Name: "YouTube promotion"},
+
+	// Marketing - Content Development
+	mTask9:  ent.CreateTaskInput{Name: "Create new assets design"},
+	mTask10: ent.CreateTaskInput{Name: "Develop promotion message framework"},
+	mTask11: ent.CreateTaskInput{Name: "Draft content for social media promotion"},
+
+	// Marketing - Campaign Promotion
+	mTask12: ent.CreateTaskInput{Name: "Create sales outreach plan"},
+	mTask13: ent.CreateTaskInput{Name: "Finalize press release"},
+	mTask14: ent.CreateTaskInput{Name: "Interview Ticktocker"},
 }
 
 // Task generates tasks data
@@ -65,7 +101,7 @@ func Task(ctx context.Context, client *ent.Client) {
 		DueDate:        taskAssignedFeed.task2.DueDate,
 		AssigneeID:     &teammate.ID,
 		CreatedBy:      teammate.ID,
-		TaskPriorityID: feedutil.GetTaskPriorityByName(ctx, client, taskPriorityFeed.high.Name).ID,
+		TaskPriorityID: &feedutil.GetTaskPriorityByName(ctx, client, taskPriorityFeed.high.Name).ID,
 	}).Save(ctx)
 	if err != nil {
 		log.Fatalf("Task failed to feed data: %v", err)
@@ -75,11 +111,15 @@ func Task(ctx context.Context, client *ent.Client) {
 		Name:           taskNoAssignedFeed.task2.Name,
 		DueDate:        taskNoAssignedFeed.task2.DueDate,
 		CreatedBy:      teammate.ID,
-		TaskPriorityID: feedutil.GetTaskPriorityByName(ctx, client, taskPriorityFeed.high.Name).ID,
+		TaskPriorityID: &feedutil.GetTaskPriorityByName(ctx, client, taskPriorityFeed.high.Name).ID,
 	}).Save(ctx)
 	if err != nil {
 		log.Fatalf("Task failed to feed data: %v", err)
 	}
+
+	taskPriorityHighID := &feedutil.GetTaskPriorityByName(ctx, client, taskPriorityFeed.high.Name).ID
+	taskPriorityMediumID := &feedutil.GetTaskPriorityByName(ctx, client, taskPriorityFeed.medium.Name).ID
+	taskPriorityLowID := &feedutil.GetTaskPriorityByName(ctx, client, taskPriorityFeed.low.Name).ID
 
 	ts := []ent.CreateTaskInput{
 		{
@@ -87,7 +127,7 @@ func Task(ctx context.Context, client *ent.Client) {
 			DueDate:        taskAssignedFeed.task1.DueDate,
 			AssigneeID:     &teammate.ID,
 			CreatedBy:      teammate.ID,
-			TaskPriorityID: feedutil.GetTaskPriorityByName(ctx, client, taskPriorityFeed.medium.Name).ID,
+			TaskPriorityID: taskPriorityMediumID,
 		},
 
 		{
@@ -96,7 +136,7 @@ func Task(ctx context.Context, client *ent.Client) {
 			AssigneeID:     &teammate.ID,
 			CreatedBy:      teammate.ID,
 			TaskParentID:   &assignedTask2.ID,
-			TaskPriorityID: feedutil.GetTaskPriorityByName(ctx, client, taskPriorityFeed.medium.Name).ID,
+			TaskPriorityID: taskPriorityMediumID,
 		},
 		{
 			Name:           taskAssignedFeed.task2Subtask2.Name,
@@ -104,7 +144,7 @@ func Task(ctx context.Context, client *ent.Client) {
 			AssigneeID:     &teammate.ID,
 			CreatedBy:      teammate.ID,
 			TaskParentID:   &assignedTask2.ID,
-			TaskPriorityID: feedutil.GetTaskPriorityByName(ctx, client, taskPriorityFeed.medium.Name).ID,
+			TaskPriorityID: taskPriorityMediumID,
 		},
 		{
 			Name:           taskAssignedFeed.task2Subtask3.Name,
@@ -112,7 +152,7 @@ func Task(ctx context.Context, client *ent.Client) {
 			AssigneeID:     &teammate.ID,
 			CreatedBy:      teammate.ID,
 			TaskParentID:   &assignedTask2.ID,
-			TaskPriorityID: feedutil.GetTaskPriorityByName(ctx, client, taskPriorityFeed.medium.Name).ID,
+			TaskPriorityID: taskPriorityMediumID,
 		},
 
 		{
@@ -120,35 +160,35 @@ func Task(ctx context.Context, client *ent.Client) {
 			DueDate:        taskAssignedFeed.task3.DueDate,
 			AssigneeID:     &teammate.ID,
 			CreatedBy:      teammate.ID,
-			TaskPriorityID: feedutil.GetTaskPriorityByName(ctx, client, taskPriorityFeed.medium.Name).ID,
+			TaskPriorityID: taskPriorityMediumID,
 		},
 		{
 			Name:           taskAssignedFeed.task4.Name,
 			DueDate:        taskAssignedFeed.task4.DueDate,
 			AssigneeID:     &teammate.ID,
 			CreatedBy:      teammate.ID,
-			TaskPriorityID: feedutil.GetTaskPriorityByName(ctx, client, taskPriorityFeed.medium.Name).ID,
+			TaskPriorityID: taskPriorityMediumID,
 		},
 		{
 			Name:           taskAssignedFeed.task5.Name,
 			DueDate:        taskAssignedFeed.task5.DueDate,
 			AssigneeID:     &teammate.ID,
 			CreatedBy:      teammate.ID,
-			TaskPriorityID: feedutil.GetTaskPriorityByName(ctx, client, taskPriorityFeed.low.Name).ID,
+			TaskPriorityID: taskPriorityLowID,
 		},
 		{
 			Name:           taskAssignedFeed.task6.Name,
 			DueDate:        taskAssignedFeed.task6.DueDate,
 			AssigneeID:     &teammate.ID,
 			CreatedBy:      teammate.ID,
-			TaskPriorityID: feedutil.GetTaskPriorityByName(ctx, client, taskPriorityFeed.low.Name).ID,
+			TaskPriorityID: taskPriorityLowID,
 		},
 		{
 			Name:           taskAssignedFeed.task7.Name,
 			DueDate:        taskAssignedFeed.task7.DueDate,
 			AssigneeID:     &teammate.ID,
 			CreatedBy:      teammate.ID,
-			TaskPriorityID: feedutil.GetTaskPriorityByName(ctx, client, taskPriorityFeed.low.Name).ID,
+			TaskPriorityID: taskPriorityLowID,
 		},
 		{
 			Name:           taskAssignedFeed.task8.Name,
@@ -157,7 +197,7 @@ func Task(ctx context.Context, client *ent.Client) {
 			Completed:      &completed,
 			CompletedAt:    feedutil.AddDate(-2),
 			CreatedBy:      teammate.ID,
-			TaskPriorityID: feedutil.GetTaskPriorityByName(ctx, client, taskPriorityFeed.low.Name).ID,
+			TaskPriorityID: taskPriorityLowID,
 		},
 		{
 			Name:           taskAssignedFeed.task9.Name,
@@ -166,7 +206,7 @@ func Task(ctx context.Context, client *ent.Client) {
 			Completed:      &completed,
 			CompletedAt:    feedutil.AddDate(-10),
 			CreatedBy:      teammate.ID,
-			TaskPriorityID: feedutil.GetTaskPriorityByName(ctx, client, taskPriorityFeed.low.Name).ID,
+			TaskPriorityID: taskPriorityLowID,
 		},
 		{
 			Name:           taskAssignedFeed.task10.Name,
@@ -175,7 +215,7 @@ func Task(ctx context.Context, client *ent.Client) {
 			Completed:      &completed,
 			CompletedAt:    feedutil.AddDate(-7),
 			CreatedBy:      teammate.ID,
-			TaskPriorityID: feedutil.GetTaskPriorityByName(ctx, client, taskPriorityFeed.low.Name).ID,
+			TaskPriorityID: taskPriorityLowID,
 		},
 
 		// No assigned feed
@@ -184,21 +224,101 @@ func Task(ctx context.Context, client *ent.Client) {
 			DueDate:        taskAssignedFeed.task2Subtask1.DueDate,
 			CreatedBy:      teammate.ID,
 			TaskParentID:   &noAssignedTask2.ID,
-			TaskPriorityID: feedutil.GetTaskPriorityByName(ctx, client, taskPriorityFeed.medium.Name).ID,
+			TaskPriorityID: taskPriorityMediumID,
 		},
 		{
 			Name:           taskNoAssignedFeed.task2Subtask2.Name,
 			DueDate:        taskAssignedFeed.task2Subtask2.DueDate,
 			CreatedBy:      teammate.ID,
 			TaskParentID:   &noAssignedTask2.ID,
-			TaskPriorityID: feedutil.GetTaskPriorityByName(ctx, client, taskPriorityFeed.medium.Name).ID,
+			TaskPriorityID: taskPriorityMediumID,
 		},
 		{
 			Name:           taskNoAssignedFeed.task2Subtask3.Name,
 			DueDate:        taskAssignedFeed.task2Subtask3.DueDate,
 			CreatedBy:      teammate.ID,
 			TaskParentID:   &noAssignedTask2.ID,
-			TaskPriorityID: feedutil.GetTaskPriorityByName(ctx, client, taskPriorityFeed.medium.Name).ID,
+			TaskPriorityID: taskPriorityMediumID,
+		},
+
+		// Marketing - Planning
+		{
+			Name:           taskNoAssignedFeed.mTask1.Name,
+			DueDate:        taskNoAssignedFeed.mTask1.DueDate,
+			CreatedBy:      teammate.ID,
+			TaskPriorityID: taskPriorityMediumID,
+		},
+		{
+			Name:           taskNoAssignedFeed.mTask2.Name,
+			DueDate:        taskNoAssignedFeed.mTask2.DueDate,
+			CreatedBy:      teammate.ID,
+			TaskPriorityID: taskPriorityHighID,
+		},
+		{
+			Name:           taskNoAssignedFeed.mTask3.Name,
+			DueDate:        taskNoAssignedFeed.mTask3.DueDate,
+			CreatedBy:      teammate.ID,
+			TaskPriorityID: taskPriorityHighID,
+		},
+		{
+			Name:      taskNoAssignedFeed.mTask4.Name,
+			DueDate:   taskNoAssignedFeed.mTask4.DueDate,
+			CreatedBy: teammate.ID,
+		},
+		// Marketing - Upcoming
+		{
+			Name:      taskNoAssignedFeed.mTask5.Name,
+			DueDate:   taskNoAssignedFeed.mTask5.DueDate,
+			CreatedBy: teammate.ID,
+		},
+		{
+			Name:      taskNoAssignedFeed.mTask6.Name,
+			DueDate:   taskNoAssignedFeed.mTask6.DueDate,
+			CreatedBy: teammate.ID,
+		},
+		{
+			Name:      taskNoAssignedFeed.mTask7.Name,
+			DueDate:   taskNoAssignedFeed.mTask7.DueDate,
+			CreatedBy: teammate.ID,
+		},
+		{
+			Name:      taskNoAssignedFeed.mTask8.Name,
+			DueDate:   taskNoAssignedFeed.mTask8.DueDate,
+			CreatedBy: teammate.ID,
+		},
+		// Marketing - Content Development
+		{
+			Name:           taskNoAssignedFeed.mTask9.Name,
+			DueDate:        taskNoAssignedFeed.mTask9.DueDate,
+			CreatedBy:      teammate.ID,
+			TaskPriorityID: taskPriorityHighID,
+		},
+		{
+			Name:      taskNoAssignedFeed.mTask10.Name,
+			DueDate:   taskNoAssignedFeed.mTask10.DueDate,
+			CreatedBy: teammate.ID,
+		},
+		{
+			Name:      taskNoAssignedFeed.mTask11.Name,
+			DueDate:   taskNoAssignedFeed.mTask11.DueDate,
+			CreatedBy: teammate.ID,
+		},
+		// Marketing - Campaign Promotion
+		{
+			Name:           taskNoAssignedFeed.mTask12.Name,
+			DueDate:        taskNoAssignedFeed.mTask12.DueDate,
+			CreatedBy:      teammate.ID,
+			TaskPriorityID: taskPriorityHighID,
+		},
+		{
+			Name:      taskNoAssignedFeed.mTask13.Name,
+			DueDate:   taskNoAssignedFeed.mTask13.DueDate,
+			CreatedBy: teammate.ID,
+		},
+		{
+			Name:      taskNoAssignedFeed.mTask14.Name,
+			DueDate:   taskNoAssignedFeed.mTask14.DueDate,
+			CreatedBy: teammate.ID,
 		},
 	}
 	bulk := make([]*ent.TaskCreate, len(ts))

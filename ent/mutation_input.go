@@ -1259,7 +1259,7 @@ type CreateTaskInput struct {
 	CreatedAt           *time.Time
 	UpdatedAt           *time.Time
 	AssigneeID          *ulid.ID
-	TaskPriorityID      ulid.ID
+	TaskPriorityID      *ulid.ID
 	TaskParentID        *ulid.ID
 	SubTaskIDs          []ulid.ID
 	TeammateTaskIDs     []ulid.ID
@@ -1300,7 +1300,9 @@ func (i *CreateTaskInput) Mutate(m *TaskCreate) {
 	if v := i.AssigneeID; v != nil {
 		m.SetTeammateID(*v)
 	}
-	m.SetTaskPriorityID(i.TaskPriorityID)
+	if v := i.TaskPriorityID; v != nil {
+		m.SetTaskPriorityID(*v)
+	}
 	if v := i.TaskParentID; v != nil {
 		m.SetParentID(*v)
 	}

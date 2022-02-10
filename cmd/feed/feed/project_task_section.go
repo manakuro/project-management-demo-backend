@@ -7,7 +7,7 @@ import (
 	"project-management-demo-backend/ent"
 )
 
-var projectTaskSectionFeed = struct {
+var projectTaskSectionFeedAppDevelopment = struct {
 	backlog    ent.CreateProjectTaskSectionInput
 	ready      ent.CreateProjectTaskSectionInput
 	inProgress ent.CreateProjectTaskSectionInput
@@ -27,6 +27,26 @@ var projectTaskSectionFeed = struct {
 	},
 }
 
+var projectTaskSectionFeedMarketing = struct {
+	upcoming           ent.CreateProjectTaskSectionInput
+	planning           ent.CreateProjectTaskSectionInput
+	campaign           ent.CreateProjectTaskSectionInput
+	contentDevelopment ent.CreateProjectTaskSectionInput
+}{
+	upcoming: ent.CreateProjectTaskSectionInput{
+		Name: "Upcoming Work",
+	},
+	planning: ent.CreateProjectTaskSectionInput{
+		Name: "Planning",
+	},
+	contentDevelopment: ent.CreateProjectTaskSectionInput{
+		Name: "Content Development",
+	},
+	campaign: ent.CreateProjectTaskSectionInput{
+		Name: "Campaign Promotion",
+	},
+}
+
 // ProjectTaskSection generates project_projects data
 func ProjectTaskSection(ctx context.Context, client *ent.Client) {
 	_, err := client.ProjectTaskSection.Delete().Exec(ctx)
@@ -39,55 +59,58 @@ func ProjectTaskSection(ctx context.Context, client *ent.Client) {
 	customerSuccessProject := feedutil.GetProjectByName(ctx, client, projectFeed.customerSuccess.name)
 
 	ts := []ent.CreateProjectTaskSectionInput{
+		// App Development
 		{
 			ProjectID: appDevelopmentProject.ID,
-			Name:      projectTaskSectionFeed.backlog.Name,
+			Name:      projectTaskSectionFeedAppDevelopment.backlog.Name,
 		},
 		{
 			ProjectID: appDevelopmentProject.ID,
-			Name:      projectTaskSectionFeed.ready.Name,
+			Name:      projectTaskSectionFeedAppDevelopment.ready.Name,
 		},
 		{
 			ProjectID: appDevelopmentProject.ID,
-			Name:      projectTaskSectionFeed.inProgress.Name,
+			Name:      projectTaskSectionFeedAppDevelopment.inProgress.Name,
 		},
 		{
 			ProjectID: appDevelopmentProject.ID,
-			Name:      projectTaskSectionFeed.done.Name,
+			Name:      projectTaskSectionFeedAppDevelopment.done.Name,
 		},
 
+		// Marketing
 		{
 			ProjectID: marketingProject.ID,
-			Name:      projectTaskSectionFeed.backlog.Name,
+			Name:      projectTaskSectionFeedMarketing.upcoming.Name,
 		},
 		{
 			ProjectID: marketingProject.ID,
-			Name:      projectTaskSectionFeed.ready.Name,
+			Name:      projectTaskSectionFeedMarketing.planning.Name,
 		},
 		{
 			ProjectID: marketingProject.ID,
-			Name:      projectTaskSectionFeed.inProgress.Name,
+			Name:      projectTaskSectionFeedMarketing.contentDevelopment.Name,
 		},
 		{
 			ProjectID: marketingProject.ID,
-			Name:      projectTaskSectionFeed.done.Name,
+			Name:      projectTaskSectionFeedMarketing.campaign.Name,
 		},
 
+		// Customer Success
 		{
 			ProjectID: customerSuccessProject.ID,
-			Name:      projectTaskSectionFeed.backlog.Name,
+			Name:      projectTaskSectionFeedAppDevelopment.backlog.Name,
 		},
 		{
 			ProjectID: customerSuccessProject.ID,
-			Name:      projectTaskSectionFeed.ready.Name,
+			Name:      projectTaskSectionFeedAppDevelopment.ready.Name,
 		},
 		{
 			ProjectID: customerSuccessProject.ID,
-			Name:      projectTaskSectionFeed.inProgress.Name,
+			Name:      projectTaskSectionFeedAppDevelopment.inProgress.Name,
 		},
 		{
 			ProjectID: customerSuccessProject.ID,
-			Name:      projectTaskSectionFeed.done.Name,
+			Name:      projectTaskSectionFeedAppDevelopment.done.Name,
 		},
 	}
 	bulk := make([]*ent.ProjectTaskSectionCreate, len(ts))
