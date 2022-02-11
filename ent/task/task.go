@@ -32,6 +32,8 @@ const (
 	FieldDueDate = "due_date"
 	// FieldDueTime holds the string denoting the due_time field in the database.
 	FieldDueTime = "due_time"
+	// FieldDescription holds the string denoting the description field in the database.
+	FieldDescription = "description"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
@@ -155,6 +157,7 @@ var Columns = []string{
 	FieldName,
 	FieldDueDate,
 	FieldDueTime,
+	FieldDescription,
 	FieldCreatedAt,
 	FieldUpdatedAt,
 }

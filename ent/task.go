@@ -3,7 +3,9 @@
 package ent
 
 import (
+	"encoding/json"
 	"fmt"
+	"project-management-demo-backend/ent/schema/editor"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/task"
 	"project-management-demo-backend/ent/taskpriority"
@@ -39,6 +41,8 @@ type Task struct {
 	DueDate *time.Time `json:"due_date,omitempty"`
 	// DueTime holds the value of the "due_time" field.
 	DueTime *time.Time `json:"due_time,omitempty"`
+	// Description holds the value of the "description" field.
+	Description editor.Description `json:"description,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -207,6 +211,8 @@ func (*Task) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case task.FieldDescription:
+			values[i] = new([]byte)
 		case task.FieldCompleted, task.FieldIsNew:
 			values[i] = new(sql.NullBool)
 		case task.FieldName:
@@ -298,6 +304,14 @@ func (t *Task) assignValues(columns []string, values []interface{}) error {
 			} else if value.Valid {
 				t.DueTime = new(time.Time)
 				*t.DueTime = value.Time
+			}
+		case task.FieldDescription:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field description", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &t.Description); err != nil {
+					return fmt.Errorf("unmarshal field description: %w", err)
+				}
 			}
 		case task.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -425,6 +439,8 @@ func (t *Task) String() string {
 		builder.WriteString(", due_time=")
 		builder.WriteString(v.Format(time.ANSIC))
 	}
+	builder.WriteString(", description=")
+	builder.WriteString(fmt.Sprintf("%v", t.Description))
 	builder.WriteString(", created_at=")
 	builder.WriteString(t.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", updated_at=")

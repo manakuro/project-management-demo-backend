@@ -1268,7 +1268,7 @@ func (t *Task) Node(ctx context.Context) (node *Node, err error) {
 	node = &Node{
 		ID:     t.ID,
 		Type:   "Task",
-		Fields: make([]*Field, 12),
+		Fields: make([]*Field, 13),
 		Edges:  make([]*Edge, 12),
 	}
 	var buf []byte
@@ -1352,10 +1352,18 @@ func (t *Task) Node(ctx context.Context) (node *Node, err error) {
 		Name:  "due_time",
 		Value: string(buf),
 	}
-	if buf, err = json.Marshal(t.CreatedAt); err != nil {
+	if buf, err = json.Marshal(t.Description); err != nil {
 		return nil, err
 	}
 	node.Fields[10] = &Field{
+		Type:  "editor.Description",
+		Name:  "description",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(t.CreatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[11] = &Field{
 		Type:  "time.Time",
 		Name:  "created_at",
 		Value: string(buf),
@@ -1363,7 +1371,7 @@ func (t *Task) Node(ctx context.Context) (node *Node, err error) {
 	if buf, err = json.Marshal(t.UpdatedAt); err != nil {
 		return nil, err
 	}
-	node.Fields[11] = &Field{
+	node.Fields[12] = &Field{
 		Type:  "time.Time",
 		Name:  "updated_at",
 		Value: string(buf),

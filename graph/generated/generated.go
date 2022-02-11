@@ -662,6 +662,7 @@ type ComplexityRoot struct {
 		CompletedAt       func(childComplexity int) int
 		CreatedAt         func(childComplexity int) int
 		CreatedBy         func(childComplexity int) int
+		Description       func(childComplexity int) int
 		DueDate           func(childComplexity int) int
 		DueTime           func(childComplexity int) int
 		ID                func(childComplexity int) int
@@ -5316,6 +5317,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Task.CreatedBy(childComplexity), true
+
+	case "Task.description":
+		if e.complexity.Task.Description == nil {
+			break
+		}
+
+		return e.complexity.Task.Description(childComplexity), true
 
 	case "Task.dueDate":
 		if e.complexity.Task.DueDate == nil {
@@ -11826,6 +11834,7 @@ extend type Mutation {
 	{Name: "graph/schema/task/task.graphql", Input: `type Task implements Node {
   id: ID!
   name: String!
+  description: EditorDescription!
   taskParentId: ID!
   taskPriorityId: ID!
   taskPriority: TaskPriority
@@ -11857,6 +11866,7 @@ type TaskEdge {
 
 input CreateTaskInput {
   name: String!
+  description: EditorDescriptionInput
   isNew: Boolean
   taskParentId: ID
   createdBy: ID!
@@ -11865,6 +11875,7 @@ input CreateTaskInput {
 input UpdateTaskInput {
   id: ID!
   name: String
+  description: EditorDescriptionInput
   taskParentId: ID
   taskPriorityId: ID
   assigneeId: ID
@@ -32641,6 +32652,41 @@ func (ec *executionContext) _Task_name(ctx context.Context, field graphql.Collec
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Task_description(ctx context.Context, field graphql.CollectedField, obj *ent.Task) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Task",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Description, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(editor.Description)
+	fc.Result = res
+	return ec.marshalNEditorDescription2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋeditorᚐDescription(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Task_taskParentId(ctx context.Context, field graphql.CollectedField, obj *ent.Task) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -45277,6 +45323,14 @@ func (ec *executionContext) unmarshalInputCreateTaskInput(ctx context.Context, o
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
 			it.Name, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "description":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("description"))
+			it.Description, err = ec.unmarshalOEditorDescriptionInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋeditorᚐDescription(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -66995,6 +67049,14 @@ func (ec *executionContext) unmarshalInputUpdateTaskInput(ctx context.Context, o
 			if err != nil {
 				return it, err
 			}
+		case "description":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("description"))
+			it.Description, err = ec.unmarshalOEditorDescriptionInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋeditorᚐDescription(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		case "taskParentId":
 			var err error
 
@@ -73171,6 +73233,11 @@ func (ec *executionContext) _Task(ctx context.Context, sel ast.SelectionSet, obj
 			}
 		case "name":
 			out.Values[i] = ec._Task_name(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "description":
+			out.Values[i] = ec._Task_description(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)
 			}

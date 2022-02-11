@@ -1256,6 +1256,7 @@ type CreateTaskInput struct {
 	Name                string
 	DueDate             *time.Time
 	DueTime             *time.Time
+	Description         editor.Description
 	CreatedAt           *time.Time
 	UpdatedAt           *time.Time
 	AssigneeID          *ulid.ID
@@ -1291,6 +1292,7 @@ func (i *CreateTaskInput) Mutate(m *TaskCreate) {
 	if v := i.DueTime; v != nil {
 		m.SetDueTime(*v)
 	}
+	m.SetDescription(i.Description)
 	if v := i.CreatedAt; v != nil {
 		m.SetCreatedAt(*v)
 	}
@@ -1354,6 +1356,7 @@ type UpdateTaskInput struct {
 	ClearDueDate              bool
 	DueTime                   *time.Time
 	ClearDueTime              bool
+	Description               *editor.Description
 	AssigneeID                *ulid.ID
 	ClearTeammate             bool
 	TaskPriorityID            *ulid.ID
@@ -1411,6 +1414,9 @@ func (i *UpdateTaskInput) Mutate(m *TaskMutation) {
 	}
 	if v := i.DueTime; v != nil {
 		m.SetDueTime(*v)
+	}
+	if v := i.Description; v != nil {
+		m.SetDescription(*v)
 	}
 	if i.ClearTeammate {
 		m.ClearTeammate()

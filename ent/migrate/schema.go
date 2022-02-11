@@ -416,6 +416,7 @@ var (
 		{Name: "name", Type: field.TypeString, Size: 255},
 		{Name: "due_date", Type: field.TypeTime, Nullable: true, SchemaType: map[string]string{"mysql": "datetime"}},
 		{Name: "due_time", Type: field.TypeTime, Nullable: true, SchemaType: map[string]string{"mysql": "datetime"}},
+		{Name: "description", Type: field.TypeJSON},
 		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
 		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
 		{Name: "task_parent_id", Type: field.TypeString, Nullable: true},
@@ -430,19 +431,19 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "tasks_tasks_subTasks",
-				Columns:    []*schema.Column{TasksColumns[10]},
+				Columns:    []*schema.Column{TasksColumns[11]},
 				RefColumns: []*schema.Column{TasksColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "tasks_task_priorities_tasks",
-				Columns:    []*schema.Column{TasksColumns[11]},
+				Columns:    []*schema.Column{TasksColumns[12]},
 				RefColumns: []*schema.Column{TaskPrioritiesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "tasks_teammates_tasks",
-				Columns:    []*schema.Column{TasksColumns[12]},
+				Columns:    []*schema.Column{TasksColumns[13]},
 				RefColumns: []*schema.Column{TeammatesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},

@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"project-management-demo-backend/ent/predicate"
 	"project-management-demo-backend/ent/projecttask"
+	"project-management-demo-backend/ent/schema/editor"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/task"
 	"project-management-demo-backend/ent/taskcollaborator"
@@ -195,6 +196,12 @@ func (tu *TaskUpdate) SetNillableDueTime(t *time.Time) *TaskUpdate {
 // ClearDueTime clears the value of the "due_time" field.
 func (tu *TaskUpdate) ClearDueTime() *TaskUpdate {
 	tu.mutation.ClearDueTime()
+	return tu
+}
+
+// SetDescription sets the "description" field.
+func (tu *TaskUpdate) SetDescription(e editor.Description) *TaskUpdate {
+	tu.mutation.SetDescription(e)
 	return tu
 }
 
@@ -741,6 +748,13 @@ func (tu *TaskUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Column: task.FieldDueTime,
+		})
+	}
+	if value, ok := tu.mutation.Description(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: task.FieldDescription,
 		})
 	}
 	if tu.mutation.TeammateCleared() {
@@ -1513,6 +1527,12 @@ func (tuo *TaskUpdateOne) ClearDueTime() *TaskUpdateOne {
 	return tuo
 }
 
+// SetDescription sets the "description" field.
+func (tuo *TaskUpdateOne) SetDescription(e editor.Description) *TaskUpdateOne {
+	tuo.mutation.SetDescription(e)
+	return tuo
+}
+
 // SetTeammateID sets the "teammate" edge to the Teammate entity by ID.
 func (tuo *TaskUpdateOne) SetTeammateID(id ulid.ID) *TaskUpdateOne {
 	tuo.mutation.SetTeammateID(id)
@@ -2080,6 +2100,13 @@ func (tuo *TaskUpdateOne) sqlSave(ctx context.Context) (_node *Task, err error) 
 		_spec.Fields.Clear = append(_spec.Fields.Clear, &sqlgraph.FieldSpec{
 			Type:   field.TypeTime,
 			Column: task.FieldDueTime,
+		})
+	}
+	if value, ok := tuo.mutation.Description(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: task.FieldDescription,
 		})
 	}
 	if tuo.mutation.TeammateCleared() {

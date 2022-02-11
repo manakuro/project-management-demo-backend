@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"project-management-demo-backend/ent/projecttask"
+	"project-management-demo-backend/ent/schema/editor"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/task"
 	"project-management-demo-backend/ent/taskcollaborator"
@@ -152,6 +153,12 @@ func (tc *TaskCreate) SetNillableDueTime(t *time.Time) *TaskCreate {
 	if t != nil {
 		tc.SetDueTime(*t)
 	}
+	return tc
+}
+
+// SetDescription sets the "description" field.
+func (tc *TaskCreate) SetDescription(e editor.Description) *TaskCreate {
+	tc.mutation.SetDescription(e)
 	return tc
 }
 
@@ -487,6 +494,9 @@ func (tc *TaskCreate) check() error {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "name": %w`, err)}
 		}
 	}
+	if _, ok := tc.mutation.Description(); !ok {
+		return &ValidationError{Name: "description", err: errors.New(`ent: missing required field "description"`)}
+	}
 	if _, ok := tc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
 	}
@@ -580,6 +590,14 @@ func (tc *TaskCreate) createSpec() (*Task, *sqlgraph.CreateSpec) {
 			Column: task.FieldDueTime,
 		})
 		_node.DueTime = &value
+	}
+	if value, ok := tc.mutation.Description(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: task.FieldDescription,
+		})
+		_node.Description = value
 	}
 	if value, ok := tc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
