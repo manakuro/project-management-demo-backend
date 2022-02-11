@@ -18,6 +18,7 @@ func TaskFeed(ctx context.Context, client *ent.Client) {
 	isFirstTrue := true
 
 	ts := []ent.CreateTaskFeedInput{
+		// task 1
 		{
 			TaskID:      feedutil.GetTaskByName(ctx, client, taskAssignedFeed.task1.Name).ID,
 			TeammateID:  manatoID,
@@ -27,12 +28,220 @@ func TaskFeed(ctx context.Context, client *ent.Client) {
 		{
 			TaskID:      feedutil.GetTaskByName(ctx, client, taskAssignedFeed.task1.Name).ID,
 			TeammateID:  manatoID,
-			Description: feedutil.ParseDescription([]byte(`{"type":"doc","content":[{"type":"paragraph","content":[{"type":"text","text":"Welcome to the Marketing team! We’ll be using this project to track our progress on our Q1 product launch. Final ad designs are in the “Key Resources” section below. Use this form to submit new ideas!"}]},{"type":"paragraph"},{"type":"paragraph","content":[{"type":"text","text":"Project Owner: "},{"type":"mention","attrs":{"mentionId":"1","mentionType":"1"}}]},{"type":"paragraph","content":[{"type":"text","text":"Tech Lead:"}]},{"type":"paragraph","content":[{"type":"mention","attrs":{"mentionId":"2","mentionType":"1"}}]},{"type":"paragraph"},{"type":"paragraph"}]}`)),
+			Description: feedutil.ParseDescription([]byte(`{"type":"doc","content":[{"type":"paragraph","content":[{"type":"text","text":"Take a look at the attachment above.","attrs":{"mentionId":"","mentionType":""}}]}]}`)),
 		},
 		{
 			TaskID:      feedutil.GetTaskByName(ctx, client, taskAssignedFeed.task1.Name).ID,
 			TeammateID:  manatoID,
-			Description: feedutil.ParseDescription([]byte(`{"type":"doc","content":[{"type":"paragraph","content":[{"type":"text","text":"😜"}]},{"type":"paragraph","content":[{"type":"text","text":"test"}]}]}`)),
+			Description: feedutil.ParseDescription([]byte(`{"type":"doc","content":[{"type":"paragraph","content":[{"type":"text","text":"Could you give me a review for the proposal?","attrs":{"mentionId":"","mentionType":""}}]}]}`)),
+		},
+
+		// task 2
+		{
+			TaskID:      feedutil.GetTaskByName(ctx, client, taskAssignedFeed.task2.Name).ID,
+			TeammateID:  manatoID,
+			IsFirst:     &isFirstTrue,
+			Description: feedutil.ParseDescription([]byte(`{"type": "doc", "content": []}`)),
+		},
+		// task 3
+		{
+			TaskID:      feedutil.GetTaskByName(ctx, client, taskAssignedFeed.task3.Name).ID,
+			TeammateID:  manatoID,
+			IsFirst:     &isFirstTrue,
+			Description: feedutil.ParseDescription([]byte(`{"type": "doc", "content": []}`)),
+		},
+		// task 4
+		{
+			TaskID:      feedutil.GetTaskByName(ctx, client, taskAssignedFeed.task4.Name).ID,
+			TeammateID:  manatoID,
+			IsFirst:     &isFirstTrue,
+			Description: feedutil.ParseDescription([]byte(`{"type": "doc", "content": []}`)),
+		},
+		// task 5
+		{
+			TaskID:      feedutil.GetTaskByName(ctx, client, taskAssignedFeed.task5.Name).ID,
+			TeammateID:  manatoID,
+			IsFirst:     &isFirstTrue,
+			Description: feedutil.ParseDescription([]byte(`{"type": "doc", "content": []}`)),
+		},
+		// task 6
+		{
+			TaskID:      feedutil.GetTaskByName(ctx, client, taskAssignedFeed.task6.Name).ID,
+			TeammateID:  manatoID,
+			IsFirst:     &isFirstTrue,
+			Description: feedutil.ParseDescription([]byte(`{"type": "doc", "content": []}`)),
+		},
+		// task 7
+		{
+			TaskID:      feedutil.GetTaskByName(ctx, client, taskAssignedFeed.task7.Name).ID,
+			TeammateID:  manatoID,
+			IsFirst:     &isFirstTrue,
+			Description: feedutil.ParseDescription([]byte(`{"type": "doc", "content": []}`)),
+		},
+		// task 8
+		{
+			TaskID:      feedutil.GetTaskByName(ctx, client, taskAssignedFeed.task8.Name).ID,
+			TeammateID:  manatoID,
+			IsFirst:     &isFirstTrue,
+			Description: feedutil.ParseDescription([]byte(`{"type": "doc", "content": []}`)),
+		},
+		// task 9
+		{
+			TaskID:      feedutil.GetTaskByName(ctx, client, taskAssignedFeed.task9.Name).ID,
+			TeammateID:  manatoID,
+			IsFirst:     &isFirstTrue,
+			Description: feedutil.ParseDescription([]byte(`{"type": "doc", "content": []}`)),
+		},
+		// task 10
+		{
+			TaskID:      feedutil.GetTaskByName(ctx, client, taskAssignedFeed.task10.Name).ID,
+			TeammateID:  manatoID,
+			IsFirst:     &isFirstTrue,
+			Description: feedutil.ParseDescription([]byte(`{"type": "doc", "content": []}`)),
+		},
+		// task 2 - 1
+		{
+			TaskID:      feedutil.GetTaskByName(ctx, client, taskAssignedFeed.task2Subtask1.Name).ID,
+			TeammateID:  manatoID,
+			IsFirst:     &isFirstTrue,
+			Description: feedutil.ParseDescription([]byte(`{"type": "doc", "content": []}`)),
+		},
+		// task 2 - 2
+		{
+			TaskID:      feedutil.GetTaskByName(ctx, client, taskAssignedFeed.task2Subtask2.Name).ID,
+			TeammateID:  manatoID,
+			IsFirst:     &isFirstTrue,
+			Description: feedutil.ParseDescription([]byte(`{"type": "doc", "content": []}`)),
+		},
+		// task 2 - 3
+		{
+			TaskID:      feedutil.GetTaskByName(ctx, client, taskAssignedFeed.task2Subtask3.Name).ID,
+			TeammateID:  manatoID,
+			IsFirst:     &isFirstTrue,
+			Description: feedutil.ParseDescription([]byte(`{"type": "doc", "content": []}`)),
+		},
+
+		/** taskNoAssignedFeed **/
+		// task 1
+		{
+			TaskID:      feedutil.GetTaskByName(ctx, client, taskNoAssignedFeed.task1.Name).ID,
+			TeammateID:  manatoID,
+			IsFirst:     &isFirstTrue,
+			Description: feedutil.ParseDescription([]byte(`{"type": "doc", "content": []}`)),
+		},
+		// task 2
+		{
+			TaskID:      feedutil.GetTaskByName(ctx, client, taskNoAssignedFeed.task2.Name).ID,
+			TeammateID:  manatoID,
+			IsFirst:     &isFirstTrue,
+			Description: feedutil.ParseDescription([]byte(`{"type": "doc", "content": []}`)),
+		},
+		// task 2 - 1
+		{
+			TaskID:      feedutil.GetTaskByName(ctx, client, taskNoAssignedFeed.task2Subtask1.Name).ID,
+			TeammateID:  manatoID,
+			IsFirst:     &isFirstTrue,
+			Description: feedutil.ParseDescription([]byte(`{"type": "doc", "content": []}`)),
+		},
+		// task 2 - 2
+		{
+			TaskID:      feedutil.GetTaskByName(ctx, client, taskNoAssignedFeed.task2Subtask2.Name).ID,
+			TeammateID:  manatoID,
+			IsFirst:     &isFirstTrue,
+			Description: feedutil.ParseDescription([]byte(`{"type": "doc", "content": []}`)),
+		},
+		// task 2 - 3
+		{
+			TaskID:      feedutil.GetTaskByName(ctx, client, taskNoAssignedFeed.task2Subtask3.Name).ID,
+			TeammateID:  manatoID,
+			IsFirst:     &isFirstTrue,
+			Description: feedutil.ParseDescription([]byte(`{"type": "doc", "content": []}`)),
+		},
+
+		/** Marketing **/
+		{
+			TaskID:      feedutil.GetTaskByName(ctx, client, taskNoAssignedFeed.mTask1.Name).ID,
+			TeammateID:  manatoID,
+			IsFirst:     &isFirstTrue,
+			Description: feedutil.ParseDescription([]byte(`{"type": "doc", "content": []}`)),
+		},
+		{
+			TaskID:      feedutil.GetTaskByName(ctx, client, taskNoAssignedFeed.mTask2.Name).ID,
+			TeammateID:  manatoID,
+			IsFirst:     &isFirstTrue,
+			Description: feedutil.ParseDescription([]byte(`{"type": "doc", "content": []}`)),
+		},
+		{
+			TaskID:      feedutil.GetTaskByName(ctx, client, taskNoAssignedFeed.mTask3.Name).ID,
+			TeammateID:  manatoID,
+			IsFirst:     &isFirstTrue,
+			Description: feedutil.ParseDescription([]byte(`{"type": "doc", "content": []}`)),
+		},
+		{
+			TaskID:      feedutil.GetTaskByName(ctx, client, taskNoAssignedFeed.mTask4.Name).ID,
+			TeammateID:  manatoID,
+			IsFirst:     &isFirstTrue,
+			Description: feedutil.ParseDescription([]byte(`{"type": "doc", "content": []}`)),
+		},
+		{
+			TaskID:      feedutil.GetTaskByName(ctx, client, taskNoAssignedFeed.mTask5.Name).ID,
+			TeammateID:  manatoID,
+			IsFirst:     &isFirstTrue,
+			Description: feedutil.ParseDescription([]byte(`{"type": "doc", "content": []}`)),
+		},
+		{
+			TaskID:      feedutil.GetTaskByName(ctx, client, taskNoAssignedFeed.mTask6.Name).ID,
+			TeammateID:  manatoID,
+			IsFirst:     &isFirstTrue,
+			Description: feedutil.ParseDescription([]byte(`{"type": "doc", "content": []}`)),
+		},
+		{
+			TaskID:      feedutil.GetTaskByName(ctx, client, taskNoAssignedFeed.mTask7.Name).ID,
+			TeammateID:  manatoID,
+			IsFirst:     &isFirstTrue,
+			Description: feedutil.ParseDescription([]byte(`{"type": "doc", "content": []}`)),
+		},
+		{
+			TaskID:      feedutil.GetTaskByName(ctx, client, taskNoAssignedFeed.mTask8.Name).ID,
+			TeammateID:  manatoID,
+			IsFirst:     &isFirstTrue,
+			Description: feedutil.ParseDescription([]byte(`{"type": "doc", "content": []}`)),
+		},
+		{
+			TaskID:      feedutil.GetTaskByName(ctx, client, taskNoAssignedFeed.mTask9.Name).ID,
+			TeammateID:  manatoID,
+			IsFirst:     &isFirstTrue,
+			Description: feedutil.ParseDescription([]byte(`{"type": "doc", "content": []}`)),
+		},
+		{
+			TaskID:      feedutil.GetTaskByName(ctx, client, taskNoAssignedFeed.mTask10.Name).ID,
+			TeammateID:  manatoID,
+			IsFirst:     &isFirstTrue,
+			Description: feedutil.ParseDescription([]byte(`{"type": "doc", "content": []}`)),
+		},
+		{
+			TaskID:      feedutil.GetTaskByName(ctx, client, taskNoAssignedFeed.mTask11.Name).ID,
+			TeammateID:  manatoID,
+			IsFirst:     &isFirstTrue,
+			Description: feedutil.ParseDescription([]byte(`{"type": "doc", "content": []}`)),
+		},
+		{
+			TaskID:      feedutil.GetTaskByName(ctx, client, taskNoAssignedFeed.mTask12.Name).ID,
+			TeammateID:  manatoID,
+			IsFirst:     &isFirstTrue,
+			Description: feedutil.ParseDescription([]byte(`{"type": "doc", "content": []}`)),
+		},
+		{
+			TaskID:      feedutil.GetTaskByName(ctx, client, taskNoAssignedFeed.mTask13.Name).ID,
+			TeammateID:  manatoID,
+			IsFirst:     &isFirstTrue,
+			Description: feedutil.ParseDescription([]byte(`{"type": "doc", "content": []}`)),
+		},
+		{
+			TaskID:      feedutil.GetTaskByName(ctx, client, taskNoAssignedFeed.mTask14.Name).ID,
+			TeammateID:  manatoID,
+			IsFirst:     &isFirstTrue,
+			Description: feedutil.ParseDescription([]byte(`{"type": "doc", "content": []}`)),
 		},
 	}
 	bulk := make([]*ent.TaskFeedCreate, len(ts))

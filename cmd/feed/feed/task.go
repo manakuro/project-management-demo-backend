@@ -220,6 +220,12 @@ func Task(ctx context.Context, client *ent.Client) {
 
 		// No assigned feed
 		{
+			Name:           taskNoAssignedFeed.task1.Name,
+			DueDate:        taskAssignedFeed.task2Subtask1.DueDate,
+			CreatedBy:      teammate.ID,
+			TaskPriorityID: taskPriorityMediumID,
+		},
+		{
 			Name:           taskNoAssignedFeed.task2Subtask1.Name,
 			DueDate:        taskAssignedFeed.task2Subtask1.DueDate,
 			CreatedBy:      teammate.ID,

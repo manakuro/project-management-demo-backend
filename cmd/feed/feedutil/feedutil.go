@@ -169,7 +169,7 @@ func GetTaskPriorityByName(ctx context.Context, client *ent.Client, val string) 
 func GetTaskByName(ctx context.Context, client *ent.Client, val string) *ent.Task {
 	res, err := client.Task.Query().Where(task.NameEQ(val)).Only(ctx)
 	if err != nil {
-		log.Fatalf("GetTaskListSortStatusByName: failed get data: %v", err)
+		log.Fatalf("GetTaskByName: failed get data: %v", err)
 	}
 
 	return res
