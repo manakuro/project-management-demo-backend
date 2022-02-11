@@ -102,6 +102,7 @@ func Task(ctx context.Context, client *ent.Client) {
 		AssigneeID:     &teammate.ID,
 		CreatedBy:      teammate.ID,
 		TaskPriorityID: &feedutil.GetTaskPriorityByName(ctx, client, taskPriorityFeed.high.Name).ID,
+		Description:    feedutil.ParseDescription([]byte(`{"type": "doc", "content": []}`)),
 	}).Save(ctx)
 	if err != nil {
 		log.Fatalf("Task failed to feed data: %v", err)
@@ -112,6 +113,7 @@ func Task(ctx context.Context, client *ent.Client) {
 		DueDate:        taskNoAssignedFeed.task2.DueDate,
 		CreatedBy:      teammate.ID,
 		TaskPriorityID: &feedutil.GetTaskPriorityByName(ctx, client, taskPriorityFeed.high.Name).ID,
+		Description:    feedutil.ParseDescription([]byte(`{"type": "doc", "content": []}`)),
 	}).Save(ctx)
 	if err != nil {
 		log.Fatalf("Task failed to feed data: %v", err)
@@ -252,6 +254,7 @@ func Task(ctx context.Context, client *ent.Client) {
 			CreatedBy:      teammate.ID,
 			TaskParentID:   &noAssignedTask2.ID,
 			TaskPriorityID: taskPriorityMediumID,
+			Description:    feedutil.ParseDescription([]byte(`{"type": "doc", "content": []}`)),
 		},
 		{
 			Name:           taskNoAssignedFeed.task2Subtask3.Name,
@@ -285,9 +288,10 @@ func Task(ctx context.Context, client *ent.Client) {
 			Description:    feedutil.ParseDescription([]byte(`{"type": "doc", "content": []}`)),
 		},
 		{
-			Name:      taskNoAssignedFeed.mTask4.Name,
-			DueDate:   taskNoAssignedFeed.mTask4.DueDate,
-			CreatedBy: teammate.ID,
+			Name:        taskNoAssignedFeed.mTask4.Name,
+			DueDate:     taskNoAssignedFeed.mTask4.DueDate,
+			CreatedBy:   teammate.ID,
+			Description: feedutil.ParseDescription([]byte(`{"type": "doc", "content": []}`)),
 		},
 		// Marketing - Upcoming
 		{
@@ -320,6 +324,7 @@ func Task(ctx context.Context, client *ent.Client) {
 			DueDate:        taskNoAssignedFeed.mTask9.DueDate,
 			CreatedBy:      teammate.ID,
 			TaskPriorityID: taskPriorityHighID,
+			Description:    feedutil.ParseDescription([]byte(`{"type": "doc", "content": []}`)),
 		},
 		{
 			Name:        taskNoAssignedFeed.mTask10.Name,
@@ -339,6 +344,7 @@ func Task(ctx context.Context, client *ent.Client) {
 			DueDate:        taskNoAssignedFeed.mTask12.DueDate,
 			CreatedBy:      teammate.ID,
 			TaskPriorityID: taskPriorityHighID,
+			Description:    feedutil.ParseDescription([]byte(`{"type": "doc", "content": []}`)),
 		},
 		{
 			Name:        taskNoAssignedFeed.mTask13.Name,
