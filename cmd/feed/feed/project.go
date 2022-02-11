@@ -2,11 +2,9 @@ package feed
 
 import (
 	"context"
-	"encoding/json"
 	"log"
 	"project-management-demo-backend/cmd/feed/feedutil"
 	"project-management-demo-backend/ent"
-	"project-management-demo-backend/ent/schema/editor"
 	"time"
 )
 
@@ -33,7 +31,6 @@ func Project(ctx context.Context, client *ent.Client) {
 
 	createdBy := feedutil.GetTeammateByEmail(ctx, client, teammateFeed.manato.Email)
 	ws := feedutil.GetWorkspace(ctx, client)
-	desc := getDescription()
 	ts := []ent.CreateProjectInput{
 		{
 			Name:                projectFeed.appDevelopment.name,
@@ -41,7 +38,7 @@ func Project(ctx context.Context, client *ent.Client) {
 			ProjectBaseColorID:  feedutil.GetProjectBaseColorByColor(ctx, client, colorFeed.pink400.Color).ID,
 			ProjectLightColorID: feedutil.GetProjectLightColorByColor(ctx, client, colorFeed.pink200.Color).ID,
 			ProjectIconID:       feedutil.GetProjectIconByIcon(ctx, client, iconFeed.sun.Icon).ID,
-			Description:         desc,
+			Description:         feedutil.ParseDescription([]byte(`{"type":"doc","content":[{"type":"paragraph","content":[{"type":"text","text":"Welcome to the App Development team! We’ll be using this project to track our progress on our Q1 product launch. Final ad designs are in the “Key Resources” section below. Use this form to submit new ideas! 😆","attrs":{"mentionId":"","mentionType":""}}]},{"type":"paragraph","content":null},{"type":"paragraph","content":null},{"type":"paragraph","content":null},{"type":"paragraph","content":null}]}`)),
 			DescriptionTitle:    "How we'll collaborate",
 			DueDate:             getDueDate(3),
 			CreatedBy:           createdBy.ID,
@@ -52,7 +49,7 @@ func Project(ctx context.Context, client *ent.Client) {
 			ProjectBaseColorID:  feedutil.GetProjectBaseColorByColor(ctx, client, colorFeed.teal400.Color).ID,
 			ProjectLightColorID: feedutil.GetProjectLightColorByColor(ctx, client, colorFeed.teal200.Color).ID,
 			ProjectIconID:       feedutil.GetProjectIconByIcon(ctx, client, iconFeed.moon.Icon).ID,
-			Description:         desc,
+			Description:         feedutil.ParseDescription([]byte(`{"type":"doc","content":[{"type":"paragraph","content":[{"type":"text","text":"Welcome to the Marketing team! We’ll be using this project to track our progress on our Q1 product launch. Final ad designs are in the “Key Resources” section below. Use this form to submit new ideas! 😆","attrs":{"mentionId":"","mentionType":""}}]},{"type":"paragraph","content":null},{"type":"paragraph","content":null},{"type":"paragraph","content":null},{"type":"paragraph","content":null}]}`)),
 			DescriptionTitle:    "How we'll collaborate",
 			DueDate:             getDueDate(10),
 			CreatedBy:           createdBy.ID,
@@ -63,7 +60,7 @@ func Project(ctx context.Context, client *ent.Client) {
 			ProjectBaseColorID:  feedutil.GetProjectBaseColorByColor(ctx, client, colorFeed.orange400.Color).ID,
 			ProjectLightColorID: feedutil.GetProjectLightColorByColor(ctx, client, colorFeed.orange200.Color).ID,
 			ProjectIconID:       feedutil.GetProjectIconByIcon(ctx, client, iconFeed.moon.Icon).ID,
-			Description:         desc,
+			Description:         feedutil.ParseDescription([]byte(`{"type":"doc","content":[{"type":"paragraph","content":[{"type":"text","text":"Welcome to the Customer Success team! We’ll be using this project to track our progress on our Q1 product launch. Final ad designs are in the “Key Resources” section below. Use this form to submit new ideas! 😆","attrs":{"mentionId":"","mentionType":""}}]},{"type":"paragraph","content":null},{"type":"paragraph","content":null},{"type":"paragraph","content":null},{"type":"paragraph","content":null}]}`)),
 			DescriptionTitle:    "How we'll collaborate",
 			DueDate:             nil,
 			CreatedBy:           createdBy.ID,
@@ -76,17 +73,6 @@ func Project(ctx context.Context, client *ent.Client) {
 	if _, err = client.Project.CreateBulk(bulk...).Save(ctx); err != nil {
 		log.Fatalf("Project failed to feed data: %v", err)
 	}
-}
-
-func getDescription() editor.Description {
-	b := []byte(`{"type":"doc","content":[{"type":"paragraph","content":[{"type":"text","text":"Welcome to the Marketing team! We’ll be using this project to track our progress on our Q1 product launch. Final ad designs are in the “Key Resources” section below. Use this form to submit new ideas!"}]},{"type":"paragraph"},{"type":"paragraph","content":[{"type":"text","text":"Project Owner: "},{"type":"mention","attrs":{"mentionId":"1","mentionType":"1"}}]},{"type":"paragraph","content":[{"type":"text","text":"Tech Lead:"}]},{"type":"paragraph","content":[{"type":"mention","attrs":{"mentionId":"2","mentionType":"1"}}]},{"type":"paragraph"},{"type":"paragraph"}]}`)
-
-	var description editor.Description
-	if err := json.Unmarshal(b, &description); err != nil {
-		log.Fatalf("Project failed to encode json")
-	}
-
-	return description
 }
 
 func getDueDate(date int) *time.Time {
