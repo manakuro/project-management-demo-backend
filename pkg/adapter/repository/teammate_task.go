@@ -93,6 +93,7 @@ func (r *teammateTaskRepository) Create(ctx context.Context, input model.CreateT
 		Create().
 		SetIsNew(true).
 		SetCreatedBy(input.TeammateID).
+		SetAssigneeID(input.TeammateID).
 		SetName("").
 		SetDescription(model.DefaultEditorDescription()).
 		Save(ctx)
