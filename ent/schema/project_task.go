@@ -80,6 +80,22 @@ func (ProjectTask) Edges() []ent.Edge {
 	}
 }
 
+// Annotations of the ProjectTask.
+func (ProjectTask) Annotations() []schema.Annotation {
+	return []schema.Annotation{
+		schema.Annotation(
+			annotation.MutationInput{
+				Create: []annotation.MutationInputField{
+					{
+						Key:  "CreatedBy",
+						Type: "ulid.ID",
+					},
+				},
+			},
+		),
+	}
+}
+
 // Mixin of the ProjectTask.
 func (ProjectTask) Mixin() []ent.Mixin {
 	return []ent.Mixin{

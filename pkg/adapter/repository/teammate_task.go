@@ -87,6 +87,7 @@ func (r *teammateTaskRepository) ListWithPagination(ctx context.Context, after *
 }
 
 func (r *teammateTaskRepository) Create(ctx context.Context, input model.CreateTeammateTaskInput) (*model.TeammateTask, error) {
+	// TODO: Add transaction here
 	//client := WithTransactionalMutation(ctx)
 
 	newTask, err := r.client.Task.

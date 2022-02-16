@@ -60,10 +60,21 @@ func (r *projectTaskRepository) ListWithPagination(ctx context.Context, after *m
 }
 
 func (r *projectTaskRepository) Create(ctx context.Context, input model.CreateProjectTaskInput) (*model.ProjectTask, error) {
+	newTask, err := r.client.Task.
+		Create().
+		SetIsNew(true).
+		SetName("").
+		SetDescription(model.DefaultEditorDescription()).
+		Save(ctx)
+	if err != nil {
+		return nil, model.NewDBError(err)
+	}
+
 	res, err := r.client.
 		ProjectTask.
 		Create().
 		SetInput(input).
+		SetTask(newTask).
 		Save(ctx)
 
 	if err != nil {

@@ -27,6 +27,11 @@
                 {{ $structField }} []{{ $e.Type.ID.Type }}
             {{- end }}
         {{- end }}
+        {{- if $n.Annotations.MutationInput }}
+            {{- range $i := $n.Annotations.MutationInput.Create }}
+                {{ $i.Key }} {{ $i.Type }}
+            {{- end }}
+        {{- end }}
         }
 
         // Mutate applies the {{ $input }} on the {{ $n.CreateName }} builder.
