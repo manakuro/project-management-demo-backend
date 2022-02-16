@@ -625,6 +625,7 @@ type ComplexityRoot struct {
 		TaskTagsUpdated               func(childComplexity int, taskID ulid.ID) int
 		TaskUpdated                   func(childComplexity int, id ulid.ID) int
 		TeammateTaskColumnUpdated     func(childComplexity int, id ulid.ID) int
+		TeammateTaskCreated           func(childComplexity int, teammateID ulid.ID, workspaceID ulid.ID) int
 		TeammateTaskListStatusUpdated func(childComplexity int, id ulid.ID) int
 		TeammateTaskSectionUpdated    func(childComplexity int, id ulid.ID) int
 		TeammateTaskTabStatusUpdated  func(childComplexity int, id ulid.ID) int
@@ -1416,6 +1417,7 @@ type SubscriptionResolver interface {
 	TaskTagsUpdated(ctx context.Context, taskID ulid.ID) (<-chan []*ent.TaskTag, error)
 	TeammateUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.Teammate, error)
 	TeammateTaskUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.TeammateTask, error)
+	TeammateTaskCreated(ctx context.Context, teammateID ulid.ID, workspaceID ulid.ID) (<-chan *ent.TeammateTask, error)
 	TeammateTaskColumnUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.TeammateTaskColumn, error)
 	TeammateTaskListStatusUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.TeammateTaskListStatus, error)
 	TeammateTaskSectionUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.TeammateTaskSection, error)
@@ -5103,6 +5105,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Subscription.TeammateTaskColumnUpdated(childComplexity, args["id"].(ulid.ID)), true
+
+	case "Subscription.teammateTaskCreated":
+		if e.complexity.Subscription.TeammateTaskCreated == nil {
+			break
+		}
+
+		args, err := ec.field_Subscription_teammateTaskCreated_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Subscription.TeammateTaskCreated(childComplexity, args["teammateId"].(ulid.ID), args["workspaceId"].(ulid.ID)), true
 
 	case "Subscription.teammateTaskListStatusUpdated":
 		if e.complexity.Subscription.TeammateTaskListStatusUpdated == nil {
@@ -12570,6 +12584,7 @@ input UpdateTeammateTaskInput {
 
 extend type Subscription {
   teammateTaskUpdated(id: ID!): TeammateTask!
+  teammateTaskCreated(teammateId: ID!, workspaceId: ID!): TeammateTask!
 }
 
 extend type Query {
@@ -17149,6 +17164,30 @@ func (ec *executionContext) field_Subscription_teammateTaskColumnUpdated_args(ct
 		}
 	}
 	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Subscription_teammateTaskCreated_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 ulid.ID
+	if tmp, ok := rawArgs["teammateId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("teammateId"))
+		arg0, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["teammateId"] = arg0
+	var arg1 ulid.ID
+	if tmp, ok := rawArgs["workspaceId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceId"))
+		arg1, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["workspaceId"] = arg1
 	return args, nil
 }
 
@@ -31833,6 +31872,58 @@ func (ec *executionContext) _Subscription_teammateTaskUpdated(ctx context.Contex
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Subscription().TeammateTaskUpdated(rctx, args["id"].(ulid.ID))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return nil
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return nil
+	}
+	return func() graphql.Marshaler {
+		res, ok := <-resTmp.(<-chan *ent.TeammateTask)
+		if !ok {
+			return nil
+		}
+		return graphql.WriterFunc(func(w io.Writer) {
+			w.Write([]byte{'{'})
+			graphql.MarshalString(field.Alias).MarshalGQL(w)
+			w.Write([]byte{':'})
+			ec.marshalNTeammateTask2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTeammateTask(ctx, field.Selections, res).MarshalGQL(w)
+			w.Write([]byte{'}'})
+		})
+	}
+}
+
+func (ec *executionContext) _Subscription_teammateTaskCreated(ctx context.Context, field graphql.CollectedField) (ret func() graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = nil
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Subscription",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Subscription_teammateTaskCreated_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return nil
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Subscription().TeammateTaskCreated(rctx, args["teammateId"].(ulid.ID), args["workspaceId"].(ulid.ID))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -73459,6 +73550,8 @@ func (ec *executionContext) _Subscription(ctx context.Context, sel ast.Selection
 		return ec._Subscription_teammateUpdated(ctx, fields[0])
 	case "teammateTaskUpdated":
 		return ec._Subscription_teammateTaskUpdated(ctx, fields[0])
+	case "teammateTaskCreated":
+		return ec._Subscription_teammateTaskCreated(ctx, fields[0])
 	case "teammateTaskColumnUpdated":
 		return ec._Subscription_teammateTaskColumnUpdated(ctx, fields[0])
 	case "teammateTaskListStatusUpdated":

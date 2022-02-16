@@ -35,6 +35,7 @@ input UpdateTeammateTaskInput {
 
 extend type Subscription {
   teammateTaskUpdated(id: ID!): TeammateTask!
+  teammateTaskCreated(teammateId: ID!, workspaceId: ID!): TeammateTask!
 }
 
 extend type Query {

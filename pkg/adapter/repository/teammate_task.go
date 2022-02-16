@@ -87,9 +87,9 @@ func (r *teammateTaskRepository) ListWithPagination(ctx context.Context, after *
 }
 
 func (r *teammateTaskRepository) Create(ctx context.Context, input model.CreateTeammateTaskInput) (*model.TeammateTask, error) {
-	client := WithTransactionalMutation(ctx)
+	//client := WithTransactionalMutation(ctx)
 
-	newTask, err := client.Task.
+	newTask, err := r.client.Task.
 		Create().
 		SetIsNew(true).
 		SetCreatedBy(input.TeammateID).
@@ -101,7 +101,7 @@ func (r *teammateTaskRepository) Create(ctx context.Context, input model.CreateT
 		return nil, model.NewDBError(err)
 	}
 
-	res, err := client.
+	res, err := r.client.
 		TeammateTask.
 		Create().
 		SetInput(input).

@@ -18,6 +18,15 @@ func (r *mutationResolver) CreateTeammateTask(ctx context.Context, input ent.Cre
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
+
+	go func() {
+		for _, u := range r.subscriptions.TeammateTaskCreated {
+			if u.TeammateID == t.TeammateID && u.WorkspaceID == t.WorkspaceID {
+				u.Ch <- t
+			}
+		}
+	}()
+
 	return t, nil
 }
 
@@ -27,11 +36,13 @@ func (r *mutationResolver) UpdateTeammateTask(ctx context.Context, input ent.Upd
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
 
-	for _, u := range r.subscriptions.TeammateTaskUpdated {
-		if u.ID == t.ID {
-			u.Ch <- t
+	go func() {
+		for _, u := range r.subscriptions.TeammateTaskUpdated {
+			if u.ID == t.ID {
+				u.Ch <- t
+			}
 		}
-	}
+	}()
 
 	return t, nil
 }
@@ -77,6 +88,28 @@ func (r *subscriptionResolver) TeammateTaskUpdated(ctx context.Context, id ulid.
 		<-ctx.Done()
 		r.mutex.Lock()
 		delete(r.subscriptions.TeammateTaskUpdated, key)
+		r.mutex.Unlock()
+	}()
+
+	return ch, nil
+}
+
+func (r *subscriptionResolver) TeammateTaskCreated(ctx context.Context, teammateID ulid.ID, workspaceID ulid.ID) (<-chan *ent.TeammateTask, error) {
+	key := subscription.NewKey()
+	ch := make(chan *ent.TeammateTask)
+
+	r.mutex.Lock()
+	r.subscriptions.TeammateTaskCreated[key] = subscription.TeammateTaskCreated{
+		TeammateID:  teammateID,
+		WorkspaceID: workspaceID,
+		Ch:          ch,
+	}
+	r.mutex.Unlock()
+
+	go func() {
+		<-ctx.Done()
+		r.mutex.Lock()
+		delete(r.subscriptions.TeammateTaskCreated, key)
 		r.mutex.Unlock()
 	}()
 
