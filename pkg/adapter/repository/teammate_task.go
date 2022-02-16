@@ -94,6 +94,7 @@ func (r *teammateTaskRepository) Create(ctx context.Context, input model.CreateT
 		SetIsNew(true).
 		SetCreatedBy(input.TeammateID).
 		SetName("").
+		SetDescription(model.DefaultEditorDescription()).
 		Save(ctx)
 	if err != nil {
 		return nil, model.NewDBError(err)

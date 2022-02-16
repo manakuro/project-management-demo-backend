@@ -558,21 +558,7 @@ func init() {
 	// taskDescName is the schema descriptor for name field.
 	taskDescName := taskMixinFields1[7].Descriptor()
 	// task.NameValidator is a validator for the "name" field. It is called by the builders before save.
-	task.NameValidator = func() func(string) error {
-		validators := taskDescName.Validators
-		fns := [...]func(string) error{
-			validators[0].(func(string) error),
-			validators[1].(func(string) error),
-		}
-		return func(name string) error {
-			for _, fn := range fns {
-				if err := fn(name); err != nil {
-					return err
-				}
-			}
-			return nil
-		}
-	}()
+	task.NameValidator = taskDescName.Validators[0].(func(string) error)
 	// taskDescCreatedAt is the schema descriptor for created_at field.
 	taskDescCreatedAt := taskMixinFields2[0].Descriptor()
 	// task.DefaultCreatedAt holds the default value on creation for the created_at field.

@@ -60,7 +60,6 @@ func (TaskMixin) Fields() []ent.Field {
 		field.Bool("is_new").
 			Default(false),
 		field.String("name").
-			NotEmpty().
 			MaxLen(255),
 		field.Time("due_date").
 			Nillable().

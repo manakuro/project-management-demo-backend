@@ -39,6 +39,14 @@ type DescriptionWithTypename struct {
 	Typename string               `json:"__typename"`
 }
 
+// DefaultValue returns default json value for editor.
+func (d *Description) DefaultValue() Description {
+	return Description{
+		Type:    "doc",
+		Content: []DescriptionContent{},
+	}
+}
+
 // UnmarshalGQL implements the graphql.Unmarshaller interface.
 func (d *Description) UnmarshalGQL(v interface{}) error {
 	return d.Scan(v)
