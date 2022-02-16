@@ -130,7 +130,7 @@ func Task(ctx context.Context, client *ent.Client) {
 			AssigneeID:     &teammate.ID,
 			CreatedBy:      teammate.ID,
 			TaskPriorityID: taskPriorityMediumID,
-			Description:    feedutil.ParseDescription([]byte(`{"type": "doc", "content": []}`)),
+			Description:    feedutil.ParseDescription([]byte(`{"type":"doc","content":[{"type":"paragraph","content":[{"text":"Implement a new card design for the Home page by the end of this month.","type":"text","attrs":{"mentionId":"","mentionType":""}}]},{"type":"paragraph","content":null},{"type":"paragraph","content":[{"text":"Please look at the attachment below.","type":"text","attrs":{"mentionId":"","mentionType":""}}]},{"type":"paragraph","content":null}]}`)),
 		},
 
 		{
