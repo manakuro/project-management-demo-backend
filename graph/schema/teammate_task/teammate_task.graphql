@@ -6,6 +6,7 @@ type TeammateTask implements Node {
   task: Task!
   teammateTaskSectionId: ID!
   teammateTaskSection: TeammateTaskSection!
+  workspaceId: ID!
   createdAt: String!
   updatedAt: String!
 }
@@ -22,6 +23,7 @@ type TeammateTaskEdge {
 input CreateTeammateTaskInput {
   teammateId: ID!
   teammateTaskSectionId: ID!
+  workspaceId: ID!
 }
 
 input UpdateTeammateTaskInput {
