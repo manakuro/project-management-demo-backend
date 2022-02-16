@@ -11,6 +11,7 @@ import (
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/teammatetask"
 	"project-management-demo-backend/ent/teammatetasksection"
+	"project-management-demo-backend/ent/workspace"
 	"time"
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -39,6 +40,12 @@ func (ttc *TeammateTaskCreate) SetTaskID(u ulid.ID) *TeammateTaskCreate {
 // SetTeammateTaskSectionID sets the "teammate_task_section_id" field.
 func (ttc *TeammateTaskCreate) SetTeammateTaskSectionID(u ulid.ID) *TeammateTaskCreate {
 	ttc.mutation.SetTeammateTaskSectionID(u)
+	return ttc
+}
+
+// SetWorkspaceID sets the "workspace_id" field.
+func (ttc *TeammateTaskCreate) SetWorkspaceID(u ulid.ID) *TeammateTaskCreate {
+	ttc.mutation.SetWorkspaceID(u)
 	return ttc
 }
 
@@ -97,6 +104,11 @@ func (ttc *TeammateTaskCreate) SetTask(t *Task) *TeammateTaskCreate {
 // SetTeammateTaskSection sets the "teammateTaskSection" edge to the TeammateTaskSection entity.
 func (ttc *TeammateTaskCreate) SetTeammateTaskSection(t *TeammateTaskSection) *TeammateTaskCreate {
 	return ttc.SetTeammateTaskSectionID(t.ID)
+}
+
+// SetWorkspace sets the "workspace" edge to the Workspace entity.
+func (ttc *TeammateTaskCreate) SetWorkspace(w *Workspace) *TeammateTaskCreate {
+	return ttc.SetWorkspaceID(w.ID)
 }
 
 // Mutation returns the TeammateTaskMutation object of the builder.
@@ -195,6 +207,9 @@ func (ttc *TeammateTaskCreate) check() error {
 	if _, ok := ttc.mutation.TeammateTaskSectionID(); !ok {
 		return &ValidationError{Name: "teammate_task_section_id", err: errors.New(`ent: missing required field "teammate_task_section_id"`)}
 	}
+	if _, ok := ttc.mutation.WorkspaceID(); !ok {
+		return &ValidationError{Name: "workspace_id", err: errors.New(`ent: missing required field "workspace_id"`)}
+	}
 	if _, ok := ttc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
 	}
@@ -209,6 +224,9 @@ func (ttc *TeammateTaskCreate) check() error {
 	}
 	if _, ok := ttc.mutation.TeammateTaskSectionID(); !ok {
 		return &ValidationError{Name: "teammateTaskSection", err: errors.New("ent: missing required edge \"teammateTaskSection\"")}
+	}
+	if _, ok := ttc.mutation.WorkspaceID(); !ok {
+		return &ValidationError{Name: "workspace", err: errors.New("ent: missing required edge \"workspace\"")}
 	}
 	return nil
 }
@@ -316,6 +334,26 @@ func (ttc *TeammateTaskCreate) createSpec() (*TeammateTask, *sqlgraph.CreateSpec
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.TeammateTaskSectionID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ttc.mutation.WorkspaceIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   teammatetask.WorkspaceTable,
+			Columns: []string{teammatetask.WorkspaceColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: workspace.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.WorkspaceID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

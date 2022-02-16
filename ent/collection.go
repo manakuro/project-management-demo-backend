@@ -863,6 +863,10 @@ func (tt *TeammateTaskQuery) collectField(ctx *graphql.OperationContext, field g
 			tt = tt.WithTeammateTaskSection(func(query *TeammateTaskSectionQuery) {
 				query.collectField(ctx, field)
 			})
+		case "workspace":
+			tt = tt.WithWorkspace(func(query *WorkspaceQuery) {
+				query.collectField(ctx, field)
+			})
 		}
 	}
 	return tt
@@ -1065,6 +1069,10 @@ func (w *WorkspaceQuery) collectField(ctx *graphql.OperationContext, field graph
 			})
 		case "teammateTaskTabStatuses":
 			w = w.WithTeammateTaskTabStatuses(func(query *TeammateTaskTabStatusQuery) {
+				query.collectField(ctx, field)
+			})
+		case "teammateTasks":
+			w = w.WithTeammateTasks(func(query *TeammateTaskQuery) {
 				query.collectField(ctx, field)
 			})
 		case "workspaceTeammates":

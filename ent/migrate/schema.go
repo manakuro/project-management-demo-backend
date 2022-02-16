@@ -752,6 +752,7 @@ var (
 		{Name: "task_id", Type: field.TypeString, Nullable: true},
 		{Name: "teammate_id", Type: field.TypeString, Nullable: true},
 		{Name: "teammate_task_section_id", Type: field.TypeString, Nullable: true},
+		{Name: "workspace_id", Type: field.TypeString, Nullable: true},
 	}
 	// TeammateTasksTable holds the schema information for the "teammate_tasks" table.
 	TeammateTasksTable = &schema.Table{
@@ -775,6 +776,12 @@ var (
 				Symbol:     "teammate_tasks_teammate_task_sections_teammateTasks",
 				Columns:    []*schema.Column{TeammateTasksColumns[5]},
 				RefColumns: []*schema.Column{TeammateTaskSectionsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "teammate_tasks_workspaces_teammateTasks",
+				Columns:    []*schema.Column{TeammateTasksColumns[6]},
+				RefColumns: []*schema.Column{WorkspacesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 		},
@@ -1118,6 +1125,7 @@ func init() {
 	TeammateTasksTable.ForeignKeys[0].RefTable = TasksTable
 	TeammateTasksTable.ForeignKeys[1].RefTable = TeammatesTable
 	TeammateTasksTable.ForeignKeys[2].RefTable = TeammateTaskSectionsTable
+	TeammateTasksTable.ForeignKeys[3].RefTable = WorkspacesTable
 	TeammateTaskColumnsTable.ForeignKeys[0].RefTable = TaskColumnsTable
 	TeammateTaskColumnsTable.ForeignKeys[1].RefTable = TeammatesTable
 	TeammateTaskColumnsTable.ForeignKeys[2].RefTable = WorkspacesTable

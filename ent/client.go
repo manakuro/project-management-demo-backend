@@ -4580,6 +4580,22 @@ func (c *TeammateTaskClient) QueryTeammateTaskSection(tt *TeammateTask) *Teammat
 	return query
 }
 
+// QueryWorkspace queries the workspace edge of a TeammateTask.
+func (c *TeammateTaskClient) QueryWorkspace(tt *TeammateTask) *WorkspaceQuery {
+	query := &WorkspaceQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := tt.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(teammatetask.Table, teammatetask.FieldID, id),
+			sqlgraph.To(workspace.Table, workspace.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, teammatetask.WorkspaceTable, teammatetask.WorkspaceColumn),
+		)
+		fromV = sqlgraph.Neighbors(tt.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *TeammateTaskClient) Hooks() []Hook {
 	return c.hooks.TeammateTask
@@ -5619,6 +5635,22 @@ func (c *WorkspaceClient) QueryTeammateTaskColumns(w *Workspace) *TeammateTaskCo
 			sqlgraph.From(workspace.Table, workspace.FieldID, id),
 			sqlgraph.To(teammatetaskcolumn.Table, teammatetaskcolumn.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, workspace.TeammateTaskColumnsTable, workspace.TeammateTaskColumnsColumn),
+		)
+		fromV = sqlgraph.Neighbors(w.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryTeammateTasks queries the teammateTasks edge of a Workspace.
+func (c *WorkspaceClient) QueryTeammateTasks(w *Workspace) *TeammateTaskQuery {
+	query := &TeammateTaskQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := w.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(workspace.Table, workspace.FieldID, id),
+			sqlgraph.To(teammatetask.Table, teammatetask.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, workspace.TeammateTasksTable, workspace.TeammateTasksColumn),
 		)
 		fromV = sqlgraph.Neighbors(w.driver.Dialect(), step)
 		return fromV, nil

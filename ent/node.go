@@ -2527,8 +2527,8 @@ func (tt *TeammateTask) Node(ctx context.Context) (node *Node, err error) {
 	node = &Node{
 		ID:     tt.ID,
 		Type:   "TeammateTask",
-		Fields: make([]*Field, 5),
-		Edges:  make([]*Edge, 3),
+		Fields: make([]*Field, 6),
+		Edges:  make([]*Edge, 4),
 	}
 	var buf []byte
 	if buf, err = json.Marshal(tt.TeammateID); err != nil {
@@ -2555,10 +2555,18 @@ func (tt *TeammateTask) Node(ctx context.Context) (node *Node, err error) {
 		Name:  "teammate_task_section_id",
 		Value: string(buf),
 	}
-	if buf, err = json.Marshal(tt.CreatedAt); err != nil {
+	if buf, err = json.Marshal(tt.WorkspaceID); err != nil {
 		return nil, err
 	}
 	node.Fields[3] = &Field{
+		Type:  "ulid.ID",
+		Name:  "workspace_id",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(tt.CreatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[4] = &Field{
 		Type:  "time.Time",
 		Name:  "created_at",
 		Value: string(buf),
@@ -2566,7 +2574,7 @@ func (tt *TeammateTask) Node(ctx context.Context) (node *Node, err error) {
 	if buf, err = json.Marshal(tt.UpdatedAt); err != nil {
 		return nil, err
 	}
-	node.Fields[4] = &Field{
+	node.Fields[5] = &Field{
 		Type:  "time.Time",
 		Name:  "updated_at",
 		Value: string(buf),
@@ -2598,6 +2606,16 @@ func (tt *TeammateTask) Node(ctx context.Context) (node *Node, err error) {
 	err = tt.QueryTeammateTaskSection().
 		Select(teammatetasksection.FieldID).
 		Scan(ctx, &node.Edges[2].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[3] = &Edge{
+		Type: "Workspace",
+		Name: "workspace",
+	}
+	err = tt.QueryWorkspace().
+		Select(workspace.FieldID).
+		Scan(ctx, &node.Edges[3].IDs)
 	if err != nil {
 		return nil, err
 	}
@@ -3155,7 +3173,7 @@ func (w *Workspace) Node(ctx context.Context) (node *Node, err error) {
 		ID:     w.ID,
 		Type:   "Workspace",
 		Fields: make([]*Field, 5),
-		Edges:  make([]*Edge, 10),
+		Edges:  make([]*Edge, 11),
 	}
 	var buf []byte
 	if buf, err = json.Marshal(w.CreatedBy); err != nil {
@@ -3295,6 +3313,16 @@ func (w *Workspace) Node(ctx context.Context) (node *Node, err error) {
 	err = w.QueryTeammateTaskColumns().
 		Select(teammatetaskcolumn.FieldID).
 		Scan(ctx, &node.Edges[9].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[10] = &Edge{
+		Type: "TeammateTask",
+		Name: "teammateTasks",
+	}
+	err = w.QueryTeammateTasks().
+		Select(teammatetask.FieldID).
+		Scan(ctx, &node.Edges[10].IDs)
 	if err != nil {
 		return nil, err
 	}

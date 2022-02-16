@@ -13,6 +13,7 @@ import (
 	"project-management-demo-backend/ent/tag"
 	"project-management-demo-backend/ent/tasklike"
 	"project-management-demo-backend/ent/teammate"
+	"project-management-demo-backend/ent/teammatetask"
 	"project-management-demo-backend/ent/teammatetaskcolumn"
 	"project-management-demo-backend/ent/teammatetaskliststatus"
 	"project-management-demo-backend/ent/teammatetasksection"
@@ -236,6 +237,21 @@ func (wc *WorkspaceCreate) AddTeammateTaskColumns(t ...*TeammateTaskColumn) *Wor
 		ids[i] = t[i].ID
 	}
 	return wc.AddTeammateTaskColumnIDs(ids...)
+}
+
+// AddTeammateTaskIDs adds the "teammateTasks" edge to the TeammateTask entity by IDs.
+func (wc *WorkspaceCreate) AddTeammateTaskIDs(ids ...ulid.ID) *WorkspaceCreate {
+	wc.mutation.AddTeammateTaskIDs(ids...)
+	return wc
+}
+
+// AddTeammateTasks adds the "teammateTasks" edges to the TeammateTask entity.
+func (wc *WorkspaceCreate) AddTeammateTasks(t ...*TeammateTask) *WorkspaceCreate {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return wc.AddTeammateTaskIDs(ids...)
 }
 
 // Mutation returns the WorkspaceMutation object of the builder.
@@ -595,6 +611,25 @@ func (wc *WorkspaceCreate) createSpec() (*Workspace, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: teammatetaskcolumn.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := wc.mutation.TeammateTasksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   workspace.TeammateTasksTable,
+			Columns: []string{workspace.TeammateTasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: teammatetask.FieldID,
 				},
 			},
 		}

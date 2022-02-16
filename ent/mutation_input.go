@@ -2611,6 +2611,7 @@ type CreateTeammateTaskInput struct {
 	TeammateID            ulid.ID
 	TaskID                ulid.ID
 	TeammateTaskSectionID ulid.ID
+	WorkspaceID           ulid.ID
 }
 
 // Mutate applies the CreateTeammateTaskInput on the TeammateTaskCreate builder.
@@ -2624,6 +2625,7 @@ func (i *CreateTeammateTaskInput) Mutate(m *TeammateTaskCreate) {
 	m.SetTeammateID(i.TeammateID)
 	m.SetTaskID(i.TaskID)
 	m.SetTeammateTaskSectionID(i.TeammateTaskSectionID)
+	m.SetWorkspaceID(i.WorkspaceID)
 }
 
 // SetInput applies the change-set in the CreateTeammateTaskInput on the create builder.
@@ -2641,6 +2643,8 @@ type UpdateTeammateTaskInput struct {
 	ClearTask                bool
 	TeammateTaskSectionID    *ulid.ID
 	ClearTeammateTaskSection bool
+	WorkspaceID              *ulid.ID
+	ClearWorkspace           bool
 }
 
 // Mutate applies the UpdateTeammateTaskInput on the TeammateTaskMutation.
@@ -2662,6 +2666,12 @@ func (i *UpdateTeammateTaskInput) Mutate(m *TeammateTaskMutation) {
 	}
 	if v := i.TeammateTaskSectionID; v != nil {
 		m.SetTeammateTaskSectionID(*v)
+	}
+	if i.ClearWorkspace {
+		m.ClearWorkspace()
+	}
+	if v := i.WorkspaceID; v != nil {
+		m.SetWorkspaceID(*v)
 	}
 }
 
@@ -3225,6 +3235,7 @@ type CreateWorkspaceInput struct {
 	TaskLikeIDs                []ulid.ID
 	TagIDs                     []ulid.ID
 	TeammateTaskColumnIDs      []ulid.ID
+	TeammateTaskIDs            []ulid.ID
 }
 
 // Mutate applies the CreateWorkspaceInput on the WorkspaceCreate builder.
@@ -3265,6 +3276,9 @@ func (i *CreateWorkspaceInput) Mutate(m *WorkspaceCreate) {
 	if ids := i.TeammateTaskColumnIDs; len(ids) > 0 {
 		m.AddTeammateTaskColumnIDs(ids...)
 	}
+	if ids := i.TeammateTaskIDs; len(ids) > 0 {
+		m.AddTeammateTaskIDs(ids...)
+	}
 }
 
 // SetInput applies the change-set in the CreateWorkspaceInput on the create builder.
@@ -3298,6 +3312,8 @@ type UpdateWorkspaceInput struct {
 	RemoveTagIDs                     []ulid.ID
 	AddTeammateTaskColumnIDs         []ulid.ID
 	RemoveTeammateTaskColumnIDs      []ulid.ID
+	AddTeammateTaskIDs               []ulid.ID
+	RemoveTeammateTaskIDs            []ulid.ID
 }
 
 // Mutate applies the UpdateWorkspaceInput on the WorkspaceMutation.
@@ -3367,6 +3383,12 @@ func (i *UpdateWorkspaceInput) Mutate(m *WorkspaceMutation) {
 	}
 	if ids := i.RemoveTeammateTaskColumnIDs; len(ids) > 0 {
 		m.RemoveTeammateTaskColumnIDs(ids...)
+	}
+	if ids := i.AddTeammateTaskIDs; len(ids) > 0 {
+		m.AddTeammateTaskIDs(ids...)
+	}
+	if ids := i.RemoveTeammateTaskIDs; len(ids) > 0 {
+		m.RemoveTeammateTaskIDs(ids...)
 	}
 }
 

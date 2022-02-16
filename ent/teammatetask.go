@@ -9,6 +9,7 @@ import (
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/teammatetask"
 	"project-management-demo-backend/ent/teammatetasksection"
+	"project-management-demo-backend/ent/workspace"
 	"strings"
 	"time"
 
@@ -26,6 +27,8 @@ type TeammateTask struct {
 	TaskID ulid.ID `json:"task_id,omitempty"`
 	// TeammateTaskSectionID holds the value of the "teammate_task_section_id" field.
 	TeammateTaskSectionID ulid.ID `json:"teammate_task_section_id,omitempty"`
+	// WorkspaceID holds the value of the "workspace_id" field.
+	WorkspaceID ulid.ID `json:"workspace_id,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -43,9 +46,11 @@ type TeammateTaskEdges struct {
 	Task *Task `json:"task,omitempty"`
 	// TeammateTaskSection holds the value of the teammateTaskSection edge.
 	TeammateTaskSection *TeammateTaskSection `json:"teammateTaskSection,omitempty"`
+	// Workspace holds the value of the workspace edge.
+	Workspace *Workspace `json:"workspace,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [3]bool
+	loadedTypes [4]bool
 }
 
 // TeammateOrErr returns the Teammate value or an error if the edge
@@ -90,6 +95,20 @@ func (e TeammateTaskEdges) TeammateTaskSectionOrErr() (*TeammateTaskSection, err
 	return nil, &NotLoadedError{edge: "teammateTaskSection"}
 }
 
+// WorkspaceOrErr returns the Workspace value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e TeammateTaskEdges) WorkspaceOrErr() (*Workspace, error) {
+	if e.loadedTypes[3] {
+		if e.Workspace == nil {
+			// The edge workspace was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: workspace.Label}
+		}
+		return e.Workspace, nil
+	}
+	return nil, &NotLoadedError{edge: "workspace"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*TeammateTask) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
@@ -97,7 +116,7 @@ func (*TeammateTask) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case teammatetask.FieldCreatedAt, teammatetask.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
-		case teammatetask.FieldID, teammatetask.FieldTeammateID, teammatetask.FieldTaskID, teammatetask.FieldTeammateTaskSectionID:
+		case teammatetask.FieldID, teammatetask.FieldTeammateID, teammatetask.FieldTaskID, teammatetask.FieldTeammateTaskSectionID, teammatetask.FieldWorkspaceID:
 			values[i] = new(ulid.ID)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type TeammateTask", columns[i])
@@ -138,6 +157,12 @@ func (tt *TeammateTask) assignValues(columns []string, values []interface{}) err
 			} else if value != nil {
 				tt.TeammateTaskSectionID = *value
 			}
+		case teammatetask.FieldWorkspaceID:
+			if value, ok := values[i].(*ulid.ID); !ok {
+				return fmt.Errorf("unexpected type %T for field workspace_id", values[i])
+			} else if value != nil {
+				tt.WorkspaceID = *value
+			}
 		case teammatetask.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
@@ -170,6 +195,11 @@ func (tt *TeammateTask) QueryTeammateTaskSection() *TeammateTaskSectionQuery {
 	return (&TeammateTaskClient{config: tt.config}).QueryTeammateTaskSection(tt)
 }
 
+// QueryWorkspace queries the "workspace" edge of the TeammateTask entity.
+func (tt *TeammateTask) QueryWorkspace() *WorkspaceQuery {
+	return (&TeammateTaskClient{config: tt.config}).QueryWorkspace(tt)
+}
+
 // Update returns a builder for updating this TeammateTask.
 // Note that you need to call TeammateTask.Unwrap() before calling this method if this TeammateTask
 // was returned from a transaction, and the transaction was committed or rolled back.
@@ -199,6 +229,8 @@ func (tt *TeammateTask) String() string {
 	builder.WriteString(fmt.Sprintf("%v", tt.TaskID))
 	builder.WriteString(", teammate_task_section_id=")
 	builder.WriteString(fmt.Sprintf("%v", tt.TeammateTaskSectionID))
+	builder.WriteString(", workspace_id=")
+	builder.WriteString(fmt.Sprintf("%v", tt.WorkspaceID))
 	builder.WriteString(", created_at=")
 	builder.WriteString(tt.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", updated_at=")

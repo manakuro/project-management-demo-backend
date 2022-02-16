@@ -13,6 +13,7 @@ import (
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/teammatetask"
 	"project-management-demo-backend/ent/teammatetasksection"
+	"project-management-demo-backend/ent/workspace"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -32,6 +33,7 @@ type TeammateTaskQuery struct {
 	withTeammate            *TeammateQuery
 	withTask                *TaskQuery
 	withTeammateTaskSection *TeammateTaskSectionQuery
+	withWorkspace           *WorkspaceQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -127,6 +129,28 @@ func (ttq *TeammateTaskQuery) QueryTeammateTaskSection() *TeammateTaskSectionQue
 			sqlgraph.From(teammatetask.Table, teammatetask.FieldID, selector),
 			sqlgraph.To(teammatetasksection.Table, teammatetasksection.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, teammatetask.TeammateTaskSectionTable, teammatetask.TeammateTaskSectionColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(ttq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryWorkspace chains the current query on the "workspace" edge.
+func (ttq *TeammateTaskQuery) QueryWorkspace() *WorkspaceQuery {
+	query := &WorkspaceQuery{config: ttq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := ttq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := ttq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(teammatetask.Table, teammatetask.FieldID, selector),
+			sqlgraph.To(workspace.Table, workspace.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, teammatetask.WorkspaceTable, teammatetask.WorkspaceColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(ttq.driver.Dialect(), step)
 		return fromU, nil
@@ -318,6 +342,7 @@ func (ttq *TeammateTaskQuery) Clone() *TeammateTaskQuery {
 		withTeammate:            ttq.withTeammate.Clone(),
 		withTask:                ttq.withTask.Clone(),
 		withTeammateTaskSection: ttq.withTeammateTaskSection.Clone(),
+		withWorkspace:           ttq.withWorkspace.Clone(),
 		// clone intermediate query.
 		sql:  ttq.sql.Clone(),
 		path: ttq.path,
@@ -354,6 +379,17 @@ func (ttq *TeammateTaskQuery) WithTeammateTaskSection(opts ...func(*TeammateTask
 		opt(query)
 	}
 	ttq.withTeammateTaskSection = query
+	return ttq
+}
+
+// WithWorkspace tells the query-builder to eager-load the nodes that are connected to
+// the "workspace" edge. The optional arguments are used to configure the query builder of the edge.
+func (ttq *TeammateTaskQuery) WithWorkspace(opts ...func(*WorkspaceQuery)) *TeammateTaskQuery {
+	query := &WorkspaceQuery{config: ttq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	ttq.withWorkspace = query
 	return ttq
 }
 
@@ -422,10 +458,11 @@ func (ttq *TeammateTaskQuery) sqlAll(ctx context.Context) ([]*TeammateTask, erro
 	var (
 		nodes       = []*TeammateTask{}
 		_spec       = ttq.querySpec()
-		loadedTypes = [3]bool{
+		loadedTypes = [4]bool{
 			ttq.withTeammate != nil,
 			ttq.withTask != nil,
 			ttq.withTeammateTaskSection != nil,
+			ttq.withWorkspace != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -522,6 +559,32 @@ func (ttq *TeammateTaskQuery) sqlAll(ctx context.Context) ([]*TeammateTask, erro
 			}
 			for i := range nodes {
 				nodes[i].Edges.TeammateTaskSection = n
+			}
+		}
+	}
+
+	if query := ttq.withWorkspace; query != nil {
+		ids := make([]ulid.ID, 0, len(nodes))
+		nodeids := make(map[ulid.ID][]*TeammateTask)
+		for i := range nodes {
+			fk := nodes[i].WorkspaceID
+			if _, ok := nodeids[fk]; !ok {
+				ids = append(ids, fk)
+			}
+			nodeids[fk] = append(nodeids[fk], nodes[i])
+		}
+		query.Where(workspace.IDIn(ids...))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nodeids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "workspace_id" returned %v`, n.ID)
+			}
+			for i := range nodes {
+				nodes[i].Edges.Workspace = n
 			}
 		}
 	}

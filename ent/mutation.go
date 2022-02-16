@@ -21669,6 +21669,8 @@ type TeammateTaskMutation struct {
 	clearedtask                bool
 	teammateTaskSection        *ulid.ID
 	clearedteammateTaskSection bool
+	workspace                  *ulid.ID
+	clearedworkspace           bool
 	done                       bool
 	oldValue                   func(context.Context) (*TeammateTask, error)
 	predicates                 []predicate.TeammateTask
@@ -21867,6 +21869,42 @@ func (m *TeammateTaskMutation) ResetTeammateTaskSectionID() {
 	m.teammateTaskSection = nil
 }
 
+// SetWorkspaceID sets the "workspace_id" field.
+func (m *TeammateTaskMutation) SetWorkspaceID(u ulid.ID) {
+	m.workspace = &u
+}
+
+// WorkspaceID returns the value of the "workspace_id" field in the mutation.
+func (m *TeammateTaskMutation) WorkspaceID() (r ulid.ID, exists bool) {
+	v := m.workspace
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldWorkspaceID returns the old "workspace_id" field's value of the TeammateTask entity.
+// If the TeammateTask object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TeammateTaskMutation) OldWorkspaceID(ctx context.Context) (v ulid.ID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldWorkspaceID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldWorkspaceID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldWorkspaceID: %w", err)
+	}
+	return oldValue.WorkspaceID, nil
+}
+
+// ResetWorkspaceID resets all changes to the "workspace_id" field.
+func (m *TeammateTaskMutation) ResetWorkspaceID() {
+	m.workspace = nil
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (m *TeammateTaskMutation) SetCreatedAt(t time.Time) {
 	m.created_at = &t
@@ -22017,6 +22055,32 @@ func (m *TeammateTaskMutation) ResetTeammateTaskSection() {
 	m.clearedteammateTaskSection = false
 }
 
+// ClearWorkspace clears the "workspace" edge to the Workspace entity.
+func (m *TeammateTaskMutation) ClearWorkspace() {
+	m.clearedworkspace = true
+}
+
+// WorkspaceCleared reports if the "workspace" edge to the Workspace entity was cleared.
+func (m *TeammateTaskMutation) WorkspaceCleared() bool {
+	return m.clearedworkspace
+}
+
+// WorkspaceIDs returns the "workspace" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// WorkspaceID instead. It exists only for internal usage by the builders.
+func (m *TeammateTaskMutation) WorkspaceIDs() (ids []ulid.ID) {
+	if id := m.workspace; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetWorkspace resets all changes to the "workspace" edge.
+func (m *TeammateTaskMutation) ResetWorkspace() {
+	m.workspace = nil
+	m.clearedworkspace = false
+}
+
 // Where appends a list predicates to the TeammateTaskMutation builder.
 func (m *TeammateTaskMutation) Where(ps ...predicate.TeammateTask) {
 	m.predicates = append(m.predicates, ps...)
@@ -22036,7 +22100,7 @@ func (m *TeammateTaskMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *TeammateTaskMutation) Fields() []string {
-	fields := make([]string, 0, 5)
+	fields := make([]string, 0, 6)
 	if m.teammate != nil {
 		fields = append(fields, teammatetask.FieldTeammateID)
 	}
@@ -22045,6 +22109,9 @@ func (m *TeammateTaskMutation) Fields() []string {
 	}
 	if m.teammateTaskSection != nil {
 		fields = append(fields, teammatetask.FieldTeammateTaskSectionID)
+	}
+	if m.workspace != nil {
+		fields = append(fields, teammatetask.FieldWorkspaceID)
 	}
 	if m.created_at != nil {
 		fields = append(fields, teammatetask.FieldCreatedAt)
@@ -22066,6 +22133,8 @@ func (m *TeammateTaskMutation) Field(name string) (ent.Value, bool) {
 		return m.TaskID()
 	case teammatetask.FieldTeammateTaskSectionID:
 		return m.TeammateTaskSectionID()
+	case teammatetask.FieldWorkspaceID:
+		return m.WorkspaceID()
 	case teammatetask.FieldCreatedAt:
 		return m.CreatedAt()
 	case teammatetask.FieldUpdatedAt:
@@ -22085,6 +22154,8 @@ func (m *TeammateTaskMutation) OldField(ctx context.Context, name string) (ent.V
 		return m.OldTaskID(ctx)
 	case teammatetask.FieldTeammateTaskSectionID:
 		return m.OldTeammateTaskSectionID(ctx)
+	case teammatetask.FieldWorkspaceID:
+		return m.OldWorkspaceID(ctx)
 	case teammatetask.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case teammatetask.FieldUpdatedAt:
@@ -22118,6 +22189,13 @@ func (m *TeammateTaskMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetTeammateTaskSectionID(v)
+		return nil
+	case teammatetask.FieldWorkspaceID:
+		v, ok := value.(ulid.ID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetWorkspaceID(v)
 		return nil
 	case teammatetask.FieldCreatedAt:
 		v, ok := value.(time.Time)
@@ -22191,6 +22269,9 @@ func (m *TeammateTaskMutation) ResetField(name string) error {
 	case teammatetask.FieldTeammateTaskSectionID:
 		m.ResetTeammateTaskSectionID()
 		return nil
+	case teammatetask.FieldWorkspaceID:
+		m.ResetWorkspaceID()
+		return nil
 	case teammatetask.FieldCreatedAt:
 		m.ResetCreatedAt()
 		return nil
@@ -22203,7 +22284,7 @@ func (m *TeammateTaskMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *TeammateTaskMutation) AddedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.teammate != nil {
 		edges = append(edges, teammatetask.EdgeTeammate)
 	}
@@ -22212,6 +22293,9 @@ func (m *TeammateTaskMutation) AddedEdges() []string {
 	}
 	if m.teammateTaskSection != nil {
 		edges = append(edges, teammatetask.EdgeTeammateTaskSection)
+	}
+	if m.workspace != nil {
+		edges = append(edges, teammatetask.EdgeWorkspace)
 	}
 	return edges
 }
@@ -22232,13 +22316,17 @@ func (m *TeammateTaskMutation) AddedIDs(name string) []ent.Value {
 		if id := m.teammateTaskSection; id != nil {
 			return []ent.Value{*id}
 		}
+	case teammatetask.EdgeWorkspace:
+		if id := m.workspace; id != nil {
+			return []ent.Value{*id}
+		}
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *TeammateTaskMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	return edges
 }
 
@@ -22252,7 +22340,7 @@ func (m *TeammateTaskMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *TeammateTaskMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.clearedteammate {
 		edges = append(edges, teammatetask.EdgeTeammate)
 	}
@@ -22261,6 +22349,9 @@ func (m *TeammateTaskMutation) ClearedEdges() []string {
 	}
 	if m.clearedteammateTaskSection {
 		edges = append(edges, teammatetask.EdgeTeammateTaskSection)
+	}
+	if m.clearedworkspace {
+		edges = append(edges, teammatetask.EdgeWorkspace)
 	}
 	return edges
 }
@@ -22275,6 +22366,8 @@ func (m *TeammateTaskMutation) EdgeCleared(name string) bool {
 		return m.clearedtask
 	case teammatetask.EdgeTeammateTaskSection:
 		return m.clearedteammateTaskSection
+	case teammatetask.EdgeWorkspace:
+		return m.clearedworkspace
 	}
 	return false
 }
@@ -22292,6 +22385,9 @@ func (m *TeammateTaskMutation) ClearEdge(name string) error {
 	case teammatetask.EdgeTeammateTaskSection:
 		m.ClearTeammateTaskSection()
 		return nil
+	case teammatetask.EdgeWorkspace:
+		m.ClearWorkspace()
+		return nil
 	}
 	return fmt.Errorf("unknown TeammateTask unique edge %s", name)
 }
@@ -22308,6 +22404,9 @@ func (m *TeammateTaskMutation) ResetEdge(name string) error {
 		return nil
 	case teammatetask.EdgeTeammateTaskSection:
 		m.ResetTeammateTaskSection()
+		return nil
+	case teammatetask.EdgeWorkspace:
+		m.ResetWorkspace()
 		return nil
 	}
 	return fmt.Errorf("unknown TeammateTask edge %s", name)
@@ -27052,6 +27151,9 @@ type WorkspaceMutation struct {
 	teammateTaskColumns             map[ulid.ID]struct{}
 	removedteammateTaskColumns      map[ulid.ID]struct{}
 	clearedteammateTaskColumns      bool
+	teammateTasks                   map[ulid.ID]struct{}
+	removedteammateTasks            map[ulid.ID]struct{}
+	clearedteammateTasks            bool
 	done                            bool
 	oldValue                        func(context.Context) (*Workspace, error)
 	predicates                      []predicate.Workspace
@@ -27847,6 +27949,60 @@ func (m *WorkspaceMutation) ResetTeammateTaskColumns() {
 	m.removedteammateTaskColumns = nil
 }
 
+// AddTeammateTaskIDs adds the "teammateTasks" edge to the TeammateTask entity by ids.
+func (m *WorkspaceMutation) AddTeammateTaskIDs(ids ...ulid.ID) {
+	if m.teammateTasks == nil {
+		m.teammateTasks = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		m.teammateTasks[ids[i]] = struct{}{}
+	}
+}
+
+// ClearTeammateTasks clears the "teammateTasks" edge to the TeammateTask entity.
+func (m *WorkspaceMutation) ClearTeammateTasks() {
+	m.clearedteammateTasks = true
+}
+
+// TeammateTasksCleared reports if the "teammateTasks" edge to the TeammateTask entity was cleared.
+func (m *WorkspaceMutation) TeammateTasksCleared() bool {
+	return m.clearedteammateTasks
+}
+
+// RemoveTeammateTaskIDs removes the "teammateTasks" edge to the TeammateTask entity by IDs.
+func (m *WorkspaceMutation) RemoveTeammateTaskIDs(ids ...ulid.ID) {
+	if m.removedteammateTasks == nil {
+		m.removedteammateTasks = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		delete(m.teammateTasks, ids[i])
+		m.removedteammateTasks[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedTeammateTasks returns the removed IDs of the "teammateTasks" edge to the TeammateTask entity.
+func (m *WorkspaceMutation) RemovedTeammateTasksIDs() (ids []ulid.ID) {
+	for id := range m.removedteammateTasks {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// TeammateTasksIDs returns the "teammateTasks" edge IDs in the mutation.
+func (m *WorkspaceMutation) TeammateTasksIDs() (ids []ulid.ID) {
+	for id := range m.teammateTasks {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetTeammateTasks resets all changes to the "teammateTasks" edge.
+func (m *WorkspaceMutation) ResetTeammateTasks() {
+	m.teammateTasks = nil
+	m.clearedteammateTasks = false
+	m.removedteammateTasks = nil
+}
+
 // Where appends a list predicates to the WorkspaceMutation builder.
 func (m *WorkspaceMutation) Where(ps ...predicate.Workspace) {
 	m.predicates = append(m.predicates, ps...)
@@ -28033,7 +28189,7 @@ func (m *WorkspaceMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *WorkspaceMutation) AddedEdges() []string {
-	edges := make([]string, 0, 10)
+	edges := make([]string, 0, 11)
 	if m.teammate != nil {
 		edges = append(edges, workspace.EdgeTeammate)
 	}
@@ -28063,6 +28219,9 @@ func (m *WorkspaceMutation) AddedEdges() []string {
 	}
 	if m.teammateTaskColumns != nil {
 		edges = append(edges, workspace.EdgeTeammateTaskColumns)
+	}
+	if m.teammateTasks != nil {
+		edges = append(edges, workspace.EdgeTeammateTasks)
 	}
 	return edges
 }
@@ -28129,13 +28288,19 @@ func (m *WorkspaceMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case workspace.EdgeTeammateTasks:
+		ids := make([]ent.Value, 0, len(m.teammateTasks))
+		for id := range m.teammateTasks {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *WorkspaceMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 10)
+	edges := make([]string, 0, 11)
 	if m.removedprojects != nil {
 		edges = append(edges, workspace.EdgeProjects)
 	}
@@ -28162,6 +28327,9 @@ func (m *WorkspaceMutation) RemovedEdges() []string {
 	}
 	if m.removedteammateTaskColumns != nil {
 		edges = append(edges, workspace.EdgeTeammateTaskColumns)
+	}
+	if m.removedteammateTasks != nil {
+		edges = append(edges, workspace.EdgeTeammateTasks)
 	}
 	return edges
 }
@@ -28224,13 +28392,19 @@ func (m *WorkspaceMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case workspace.EdgeTeammateTasks:
+		ids := make([]ent.Value, 0, len(m.removedteammateTasks))
+		for id := range m.removedteammateTasks {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *WorkspaceMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 10)
+	edges := make([]string, 0, 11)
 	if m.clearedteammate {
 		edges = append(edges, workspace.EdgeTeammate)
 	}
@@ -28261,6 +28435,9 @@ func (m *WorkspaceMutation) ClearedEdges() []string {
 	if m.clearedteammateTaskColumns {
 		edges = append(edges, workspace.EdgeTeammateTaskColumns)
 	}
+	if m.clearedteammateTasks {
+		edges = append(edges, workspace.EdgeTeammateTasks)
+	}
 	return edges
 }
 
@@ -28288,6 +28465,8 @@ func (m *WorkspaceMutation) EdgeCleared(name string) bool {
 		return m.clearedtags
 	case workspace.EdgeTeammateTaskColumns:
 		return m.clearedteammateTaskColumns
+	case workspace.EdgeTeammateTasks:
+		return m.clearedteammateTasks
 	}
 	return false
 }
@@ -28336,6 +28515,9 @@ func (m *WorkspaceMutation) ResetEdge(name string) error {
 		return nil
 	case workspace.EdgeTeammateTaskColumns:
 		m.ResetTeammateTaskColumns()
+		return nil
+	case workspace.EdgeTeammateTasks:
+		m.ResetTeammateTasks()
 		return nil
 	}
 	return fmt.Errorf("unknown Workspace edge %s", name)

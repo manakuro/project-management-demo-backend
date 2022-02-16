@@ -115,6 +115,13 @@ func TeammateTaskSectionID(v ulid.ID) predicate.TeammateTask {
 	})
 }
 
+// WorkspaceID applies equality check predicate on the "workspace_id" field. It's identical to WorkspaceIDEQ.
+func WorkspaceID(v ulid.ID) predicate.TeammateTask {
+	return predicate.TeammateTask(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldWorkspaceID), v))
+	})
+}
+
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.TeammateTask {
 	return predicate.TeammateTask(func(s *sql.Selector) {
@@ -477,6 +484,122 @@ func TeammateTaskSectionIDContainsFold(v ulid.ID) predicate.TeammateTask {
 	})
 }
 
+// WorkspaceIDEQ applies the EQ predicate on the "workspace_id" field.
+func WorkspaceIDEQ(v ulid.ID) predicate.TeammateTask {
+	return predicate.TeammateTask(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldWorkspaceID), v))
+	})
+}
+
+// WorkspaceIDNEQ applies the NEQ predicate on the "workspace_id" field.
+func WorkspaceIDNEQ(v ulid.ID) predicate.TeammateTask {
+	return predicate.TeammateTask(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldWorkspaceID), v))
+	})
+}
+
+// WorkspaceIDIn applies the In predicate on the "workspace_id" field.
+func WorkspaceIDIn(vs ...ulid.ID) predicate.TeammateTask {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.TeammateTask(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldWorkspaceID), v...))
+	})
+}
+
+// WorkspaceIDNotIn applies the NotIn predicate on the "workspace_id" field.
+func WorkspaceIDNotIn(vs ...ulid.ID) predicate.TeammateTask {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.TeammateTask(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldWorkspaceID), v...))
+	})
+}
+
+// WorkspaceIDGT applies the GT predicate on the "workspace_id" field.
+func WorkspaceIDGT(v ulid.ID) predicate.TeammateTask {
+	return predicate.TeammateTask(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldWorkspaceID), v))
+	})
+}
+
+// WorkspaceIDGTE applies the GTE predicate on the "workspace_id" field.
+func WorkspaceIDGTE(v ulid.ID) predicate.TeammateTask {
+	return predicate.TeammateTask(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldWorkspaceID), v))
+	})
+}
+
+// WorkspaceIDLT applies the LT predicate on the "workspace_id" field.
+func WorkspaceIDLT(v ulid.ID) predicate.TeammateTask {
+	return predicate.TeammateTask(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldWorkspaceID), v))
+	})
+}
+
+// WorkspaceIDLTE applies the LTE predicate on the "workspace_id" field.
+func WorkspaceIDLTE(v ulid.ID) predicate.TeammateTask {
+	return predicate.TeammateTask(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldWorkspaceID), v))
+	})
+}
+
+// WorkspaceIDContains applies the Contains predicate on the "workspace_id" field.
+func WorkspaceIDContains(v ulid.ID) predicate.TeammateTask {
+	vc := string(v)
+	return predicate.TeammateTask(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldWorkspaceID), vc))
+	})
+}
+
+// WorkspaceIDHasPrefix applies the HasPrefix predicate on the "workspace_id" field.
+func WorkspaceIDHasPrefix(v ulid.ID) predicate.TeammateTask {
+	vc := string(v)
+	return predicate.TeammateTask(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldWorkspaceID), vc))
+	})
+}
+
+// WorkspaceIDHasSuffix applies the HasSuffix predicate on the "workspace_id" field.
+func WorkspaceIDHasSuffix(v ulid.ID) predicate.TeammateTask {
+	vc := string(v)
+	return predicate.TeammateTask(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldWorkspaceID), vc))
+	})
+}
+
+// WorkspaceIDEqualFold applies the EqualFold predicate on the "workspace_id" field.
+func WorkspaceIDEqualFold(v ulid.ID) predicate.TeammateTask {
+	vc := string(v)
+	return predicate.TeammateTask(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldWorkspaceID), vc))
+	})
+}
+
+// WorkspaceIDContainsFold applies the ContainsFold predicate on the "workspace_id" field.
+func WorkspaceIDContainsFold(v ulid.ID) predicate.TeammateTask {
+	vc := string(v)
+	return predicate.TeammateTask(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldWorkspaceID), vc))
+	})
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.TeammateTask {
 	return predicate.TeammateTask(func(s *sql.Selector) {
@@ -704,6 +827,34 @@ func HasTeammateTaskSectionWith(preds ...predicate.TeammateTaskSection) predicat
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(TeammateTaskSectionInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, TeammateTaskSectionTable, TeammateTaskSectionColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasWorkspace applies the HasEdge predicate on the "workspace" edge.
+func HasWorkspace() predicate.TeammateTask {
+	return predicate.TeammateTask(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(WorkspaceTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, WorkspaceTable, WorkspaceColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasWorkspaceWith applies the HasEdge predicate on the "workspace" edge with a given conditions (other predicates).
+func HasWorkspaceWith(preds ...predicate.Workspace) predicate.TeammateTask {
+	return predicate.TeammateTask(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(WorkspaceInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, WorkspaceTable, WorkspaceColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

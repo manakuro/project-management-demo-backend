@@ -38,6 +38,8 @@ func (TeammateTaskMixin) Fields() []ent.Field {
 			GoType(ulid.ID("")),
 		field.String("teammate_task_section_id").
 			GoType(ulid.ID("")),
+		field.String("workspace_id").
+			GoType(ulid.ID("")),
 	}
 }
 
@@ -75,6 +77,17 @@ func (TeammateTask) Edges() []ent.Edge {
 				entgql.Bind(),
 				schema.Annotation(
 					annotation.Edge{FieldName: "teammate_task_section_id"},
+				),
+			),
+		edge.From("workspace", Workspace.Type).
+			Ref(teammateTasksRef).
+			Field("workspace_id").
+			Unique().
+			Required().
+			Annotations(
+				entgql.Bind(),
+				schema.Annotation(
+					annotation.Edge{FieldName: "workspace_id"},
 				),
 			),
 	}
