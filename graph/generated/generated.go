@@ -11588,9 +11588,9 @@ type ProjectTaskEdge {
 }
 
 input CreateProjectTaskInput {
-  taskId: ID!
   projectId: ID!
   projectTaskSectionId: ID!
+  createdBy: ID!
 }
 
 input UpdateProjectTaskInput {
@@ -45101,14 +45101,6 @@ func (ec *executionContext) unmarshalInputCreateProjectTaskInput(ctx context.Con
 
 	for k, v := range asMap {
 		switch k {
-		case "taskId":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskId"))
-			it.TaskID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		case "projectId":
 			var err error
 
@@ -45122,6 +45114,14 @@ func (ec *executionContext) unmarshalInputCreateProjectTaskInput(ctx context.Con
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("projectTaskSectionId"))
 			it.ProjectTaskSectionID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdBy":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdBy"))
+			it.CreatedBy, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}

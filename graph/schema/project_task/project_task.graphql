@@ -20,9 +20,9 @@ type ProjectTaskEdge {
 }
 
 input CreateProjectTaskInput {
-  taskId: ID!
   projectId: ID!
   projectTaskSectionId: ID!
+  createdBy: ID!
 }
 
 input UpdateProjectTaskInput {

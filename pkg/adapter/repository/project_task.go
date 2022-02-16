@@ -64,6 +64,7 @@ func (r *projectTaskRepository) Create(ctx context.Context, input model.CreatePr
 		Create().
 		SetIsNew(true).
 		SetName("").
+		SetCreatedBy(input.CreatedBy).
 		SetDescription(model.DefaultEditorDescription()).
 		Save(ctx)
 	if err != nil {
