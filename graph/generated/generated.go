@@ -12501,7 +12501,6 @@ type TeammateTaskEdge {
 }
 
 input CreateTeammateTaskInput {
-  taskId: ID!
   teammateId: ID!
   teammateTaskSectionId: ID!
 }
@@ -45669,14 +45668,6 @@ func (ec *executionContext) unmarshalInputCreateTeammateTaskInput(ctx context.Co
 
 	for k, v := range asMap {
 		switch k {
-		case "taskId":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskId"))
-			it.TaskID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		case "teammateId":
 			var err error
 

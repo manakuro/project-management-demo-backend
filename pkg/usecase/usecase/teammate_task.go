@@ -22,8 +22,8 @@ type TeammateTask interface {
 }
 
 // NewTeammateTaskUsecase generates a repository.
-func NewTeammateTaskUsecase(r repository.TeammateTask) TeammateTask {
-	return &teammateTaskUsecase{teammateTaskRepository: r}
+func NewTeammateTaskUsecase(ttr repository.TeammateTask) TeammateTask {
+	return &teammateTaskUsecase{teammateTaskRepository: ttr}
 }
 
 func (u *teammateTaskUsecase) Get(ctx context.Context, where *model.TeammateTaskWhereInput) (*model.TeammateTask, error) {

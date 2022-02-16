@@ -20,7 +20,6 @@ type TeammateTaskEdge {
 }
 
 input CreateTeammateTaskInput {
-  taskId: ID!
   teammateId: ID!
   teammateTaskSectionId: ID!
 }

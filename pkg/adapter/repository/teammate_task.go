@@ -87,10 +87,16 @@ func (r *teammateTaskRepository) ListWithPagination(ctx context.Context, after *
 }
 
 func (r *teammateTaskRepository) Create(ctx context.Context, input model.CreateTeammateTaskInput) (*model.TeammateTask, error) {
+	newTask, err := r.client.Task.Create().SetIsNew(true).Save(ctx)
+	if err != nil {
+		return nil, model.NewDBError(err)
+	}
+
 	res, err := r.client.
 		TeammateTask.
 		Create().
 		SetInput(input).
+		SetTask(newTask).
 		Save(ctx)
 
 	if err != nil {
