@@ -53,6 +53,29 @@ input UpdateTaskInput {
   dueDate: Time
   dueTime: Time
   addSubTaskIDs: [ID!]
+  clearCompletedAt: Boolean
+  clearDueDate: Boolean
+  clearDueTime: Boolean
+  clearTaskPriority: Boolean
+  clearParent: Boolean
+  clearTeammate: Boolean
+  removeSubTaskIDs: [ID!]
+  addTeammateTaskIDs: [ID!]
+  removeTeammateTaskIDs: [ID!]
+  addProjectTaskIDs: [ID!]
+  removeProjectTaskIDs: [ID!]
+  addTaskLikeIDs: [ID!]
+  removeTaskLikeIDs: [ID!]
+  addTaskTagIDs: [ID!]
+  removeTaskTagIDs: [ID!]
+  addTaskCollaboratorIDs: [ID!]
+  removeTaskCollaboratorIDs: [ID!]
+  addTaskFeedIDs: [ID!]
+  removeTaskFeedIDs: [ID!]
+  addTaskFeedLikeIDs: [ID!]
+  removeTaskFeedLikeIDs: [ID!]
+  addTaskFileIDs: [ID!]
+  removeTaskFileIDs: [ID!]
 }
 
 extend type Subscription {
