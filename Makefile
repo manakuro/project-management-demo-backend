@@ -27,9 +27,9 @@ migrate_up:
 migrate_down:
 	migrate -path $$(yq e '.development.path' db/config.yaml) -database $$(yq e '.development.database' db/config.yaml) down
 
-# Feed data
-feed:
-	go1.16.9 run ./cmd/feed/main.go
+# Seed data
+seed:
+	go1.16.9 run ./cmd/seed/main.go
 
 ent_generate:
 	go1.16.9 generate ./ent --idtype string
