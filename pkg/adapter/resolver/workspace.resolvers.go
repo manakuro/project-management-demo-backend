@@ -27,11 +27,13 @@ func (r *mutationResolver) UpdateWorkspace(ctx context.Context, input ent.Update
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
 
-	for _, wu := range r.subscriptions.WorkspaceUpdated {
-		if wu.ID == w.ID {
-			wu.Ch <- w
+	go func() {
+		for _, u := range r.subscriptions.WorkspaceUpdated {
+			if u.ID == w.ID && u.RequestID != input.RequestID {
+				u.Ch <- w
+			}
 		}
-	}
+	}()
 
 	return w, nil
 }
@@ -52,14 +54,15 @@ func (r *queryResolver) Workspaces(ctx context.Context, after *ent.Cursor, first
 	return ws, nil
 }
 
-func (r *subscriptionResolver) WorkspaceUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.Workspace, error) {
+func (r *subscriptionResolver) WorkspaceUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.Workspace, error) {
 	key := subscription.NewKey()
 	ch := make(chan *ent.Workspace, 1)
 
 	r.mutex.Lock()
 	r.subscriptions.WorkspaceUpdated[key] = subscription.WorkspaceUpdated{
-		ID: id,
-		Ch: ch,
+		ID:        id,
+		RequestID: requestID,
+		Ch:        ch,
 	}
 	r.mutex.Unlock()
 

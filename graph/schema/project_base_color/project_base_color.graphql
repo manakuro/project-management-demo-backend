@@ -16,10 +16,12 @@ type ProjectBaseColorEdge {
 
 input CreateProjectBaseColorInput {
   colorId: ID!
+  requestId: String!
 }
 input UpdateProjectBaseColorInput {
   id: ID!
   colorId: ID
+  requestId: String!
 }
 
 extend type Query {
@@ -28,7 +30,7 @@ extend type Query {
 }
 
 extend type Subscription {
-  projectBaseColorUpdated(id: ID!): ProjectBaseColor!
+  projectBaseColorUpdated(id: ID!, requestId: String!): ProjectBaseColor!
 }
 
 extend type Mutation {

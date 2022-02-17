@@ -22,6 +22,7 @@ input CreateTaskFeedInput {
   taskId: ID!
   teammateId: ID!
   description: EditorDescriptionInput!
+  requestId: String!
 }
 
 input UpdateTaskFeedInput {
@@ -31,6 +32,7 @@ input UpdateTaskFeedInput {
   description: EditorDescriptionInput
   isFirst: Boolean
   isPinned: Boolean
+  requestId: String!
 }
 
 input DeleteTaskFeedInput {
@@ -38,7 +40,7 @@ input DeleteTaskFeedInput {
 }
 
 extend type Subscription {
-  taskFeedUpdated(id: ID!): TaskFeed!
+  taskFeedUpdated(id: ID!, requestId: String!): TaskFeed!
 }
 
 extend type Query {

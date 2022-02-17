@@ -87,14 +87,15 @@ func (r *queryResolver) TaskFeedLikes(ctx context.Context, after *ent.Cursor, fi
 	return ts, nil
 }
 
-func (r *subscriptionResolver) TaskFeedLikesUpdated(ctx context.Context, taskID ulid.ID) (<-chan []*ent.TaskFeedLike, error) {
+func (r *subscriptionResolver) TaskFeedLikesUpdated(ctx context.Context, taskID ulid.ID, requestID string) (<-chan []*ent.TaskFeedLike, error) {
 	key := subscription.NewKey()
 	ch := make(chan []*ent.TaskFeedLike, 1)
 
 	r.mutex.Lock()
 	r.subscriptions.TaskFeedLikeUpdated[key] = subscription.TaskFeedLikeUpdated{
-		TaskID: taskID,
-		Ch:     ch,
+		TaskID:    taskID,
+		RequestID: requestID,
+		Ch:        ch,
 	}
 	r.mutex.Unlock()
 

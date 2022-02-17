@@ -24,4 +24,5 @@ type UpdateFavoriteWorkspaceInput = ent.UpdateFavoriteWorkspaceInput
 type DeleteFavoriteWorkspaceInput struct {
 	WorkspaceID ulid.ID
 	TeammateID  ulid.ID
+	RequestID   string
 }

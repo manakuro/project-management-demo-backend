@@ -21,16 +21,18 @@ input CreateTagInput {
   name: String!
   workspaceId: ID!
   colorId: ID
+  requestId: String!
 }
 
 input UpdateTagInput {
   id: ID!
   name: String
   colorId: ID
+  requestId: String!
 }
 
 extend type Subscription {
-  tagUpdated(id: ID!): Tag!
+  tagUpdated(id: ID!, requestId: String!): Tag!
 }
 
 extend type Query {

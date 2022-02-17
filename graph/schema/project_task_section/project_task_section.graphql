@@ -19,16 +19,18 @@ type ProjectTaskSectionEdge {
 
 input CreateProjectTaskSectionInput {
   projectId: ID!
+  requestId: String!
 }
 
 input UpdateProjectTaskSectionInput {
   id: ID!
   projectId: ID
   name: String
+  requestId: String!
 }
 
 extend type Subscription {
-  projectTaskSectionUpdated(id: ID!): ProjectTaskSection!
+  projectTaskSectionUpdated(id: ID!, requestId: String!): ProjectTaskSection!
 }
 
 extend type Query {

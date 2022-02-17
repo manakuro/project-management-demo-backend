@@ -34,11 +34,14 @@ func (r *mutationResolver) UpdateColor(ctx context.Context, input ent.UpdateColo
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
-	for _, cu := range r.subscriptions.ColorUpdated {
-		if cu.ID == c.ID {
-			cu.Ch <- c
+
+	go func() {
+		for _, u := range r.subscriptions.ColorUpdated {
+			if u.ID == c.ID && u.RequestID != u.RequestID {
+				u.Ch <- c
+			}
 		}
-	}
+	}()
 
 	return c, nil
 }
@@ -60,14 +63,15 @@ func (r *queryResolver) Colors(ctx context.Context, after *ent.Cursor, first *in
 	return cs, nil
 }
 
-func (r *subscriptionResolver) ColorUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.Color, error) {
+func (r *subscriptionResolver) ColorUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.Color, error) {
 	key := subscription.NewKey()
 	ch := make(chan *ent.Color, 1)
 
 	r.mutex.Lock()
 	r.subscriptions.ColorUpdated[key] = subscription.ColorUpdated{
-		ID: id,
-		Ch: ch,
+		ID:        id,
+		RequestID: requestID,
+		Ch:        ch,
 	}
 	r.mutex.Unlock()
 

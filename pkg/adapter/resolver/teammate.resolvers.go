@@ -27,11 +27,13 @@ func (r *mutationResolver) UpdateTeammate(ctx context.Context, input ent.UpdateT
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
 
-	for _, tu := range r.subscriptions.TeammateUpdated {
-		if tu.ID == t.ID {
-			tu.Ch <- t
+	go func() {
+		for _, u := range r.subscriptions.TeammateUpdated {
+			if u.ID == t.ID && u.RequestID != input.RequestID {
+				u.Ch <- t
+			}
 		}
-	}
+	}()
 
 	return t, nil
 }
@@ -52,12 +54,16 @@ func (r *queryResolver) Teammates(ctx context.Context, after *ent.Cursor, first 
 	return ts, nil
 }
 
-func (r *subscriptionResolver) TeammateUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.Teammate, error) {
+func (r *subscriptionResolver) TeammateUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.Teammate, error) {
 	key := subscription.NewKey()
 	ch := make(chan *ent.Teammate, 1)
 
 	r.mutex.Lock()
-	r.subscriptions.TeammateUpdated[key] = subscription.TeammateUpdated{ID: id, Ch: ch}
+	r.subscriptions.TeammateUpdated[key] = subscription.TeammateUpdated{
+		ID:        id,
+		RequestID: requestID,
+		Ch:        ch,
+	}
 	r.mutex.Unlock()
 
 	go func() {

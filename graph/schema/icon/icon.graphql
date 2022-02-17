@@ -18,11 +18,13 @@ type IconEdge {
 input CreateIconInput {
   name: String!
   icon: String!
+  requestId: String!
 }
 input UpdateIconInput {
   id: ID!
   name: String
   icon: String
+  requestId: String!
 }
 
 extend type Query {
@@ -31,7 +33,7 @@ extend type Query {
 }
 
 extend type Subscription {
-  iconUpdated(id: ID!): Icon!
+  iconUpdated(id: ID!, requestId: String!): Icon!
 }
 
 extend type Mutation {

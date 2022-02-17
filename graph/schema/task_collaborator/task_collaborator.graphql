@@ -19,12 +19,14 @@ type TaskCollaboratorEdge {
 input CreateTaskCollaboratorInput {
   taskId: ID!
   teammateId: ID!
+  requestId: String!
 }
 
 input UpdateTaskCollaboratorInput {
   id: ID!
   taskId: ID
   teammateId: ID
+  requestId: String!
 }
 
 input DeleteTaskCollaboratorInput {
@@ -33,7 +35,7 @@ input DeleteTaskCollaboratorInput {
 
 
 extend type Subscription {
-  taskCollaboratorsUpdated(taskId: ID!): [TaskCollaborator!]!
+  taskCollaboratorsUpdated(taskId: ID!, requestId: String!): [TaskCollaborator!]!
 }
 
 extend type Query {

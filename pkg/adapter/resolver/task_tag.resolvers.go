@@ -87,14 +87,15 @@ func (r *queryResolver) TaskTags(ctx context.Context, after *ent.Cursor, first *
 	return ts, nil
 }
 
-func (r *subscriptionResolver) TaskTagsUpdated(ctx context.Context, taskID ulid.ID) (<-chan []*ent.TaskTag, error) {
+func (r *subscriptionResolver) TaskTagsUpdated(ctx context.Context, taskID ulid.ID, requestID string) (<-chan []*ent.TaskTag, error) {
 	key := subscription.NewKey()
 	ch := make(chan []*ent.TaskTag, 1)
 
 	r.mutex.Lock()
 	r.subscriptions.TaskTagUpdated[key] = subscription.TaskTagUpdated{
-		TaskID: taskID,
-		Ch:     ch,
+		TaskID:    taskID,
+		RequestID: requestID,
+		Ch:        ch,
 	}
 	r.mutex.Unlock()
 

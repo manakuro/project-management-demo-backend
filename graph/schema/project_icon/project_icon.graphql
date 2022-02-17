@@ -16,10 +16,12 @@ type ProjectIconEdge {
 
 input CreateProjectIconInput {
   iconId: ID!
+  requestId: String!
 }
 input UpdateProjectIconInput {
   id: ID!
   iconId: ID
+  requestId: String!
 }
 
 extend type Query {
@@ -28,7 +30,7 @@ extend type Query {
 }
 
 extend type Subscription {
-  projectIconUpdated(id: ID!): ProjectIcon!
+  projectIconUpdated(id: ID!, requestId: String!): ProjectIcon!
 }
 
 extend type Mutation {

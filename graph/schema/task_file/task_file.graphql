@@ -30,6 +30,7 @@ input CreateTaskFileInput {
   taskFeedId: ID!
   fileTypeId: ID!
   attached: Boolean!
+  requestId: String!
 }
 
 input UpdateTaskFileInput {
@@ -41,10 +42,11 @@ input UpdateTaskFileInput {
   taskFeedId: ID
   fileTypeId: ID
   attached: Boolean
+  requestId: String!
 }
 
 extend type Subscription {
-  taskFileUpdated(id: ID!): TaskFile!
+  taskFileUpdated(id: ID!, requestId: String!): TaskFile!
 }
 
 extend type Query {

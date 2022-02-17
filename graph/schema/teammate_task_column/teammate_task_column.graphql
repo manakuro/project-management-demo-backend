@@ -28,6 +28,7 @@ input CreateTeammateTaskColumnInput {
   disabled: Boolean!
   customizable: Boolean!
   order: Int!
+  requestId: String!
 }
 
 input UpdateTeammateTaskColumnInput {
@@ -36,10 +37,11 @@ input UpdateTeammateTaskColumnInput {
   disabled: Boolean
   customizable: Boolean
   order: Int
+  requestId: String!
 }
 
 extend type Subscription {
-  teammateTaskColumnUpdated(id: ID!): TeammateTaskColumn!
+  teammateTaskColumnUpdated(id: ID!, requestId: String!): TeammateTaskColumn!
 }
 
 extend type Query {

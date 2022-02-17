@@ -20,6 +20,7 @@ input CreateTaskFeedLikeInput {
   taskId: ID!
   teammateId: ID!
   taskFeedId: ID!
+  requestId: String!
 }
 
 input UpdateTaskFeedLikeInput {
@@ -27,14 +28,16 @@ input UpdateTaskFeedLikeInput {
   taskId: ID
   teammateId: ID
   taskFeedId: ID
+  requestId: String!
 }
 
 input DeleteTaskFeedLikeInput {
   id: ID!
+  requestId: String!
 }
 
 extend type Subscription {
-  taskFeedLikesUpdated(taskId: ID!): [TaskFeedLike!]!
+  taskFeedLikesUpdated(taskId: ID!, requestId: String!): [TaskFeedLike!]!
 }
 
 extend type Query {

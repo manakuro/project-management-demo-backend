@@ -37,6 +37,7 @@ input CreateTaskInput {
   isNew: Boolean
   taskParentId: ID
   createdBy: ID!
+  requestId: String!
 }
 
 input UpdateTaskInput {
@@ -76,10 +77,11 @@ input UpdateTaskInput {
   removeTaskFeedLikeIDs: [ID!]
   addTaskFileIDs: [ID!]
   removeTaskFileIDs: [ID!]
+  requestId: String!
 }
 
 extend type Subscription {
-  taskUpdated(id: ID!): Task!
+  taskUpdated(id: ID!, requestId: String!): Task!
 }
 
 extend type Query {

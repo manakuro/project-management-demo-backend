@@ -28,11 +28,13 @@ func (r *mutationResolver) UpdateTag(ctx context.Context, input ent.UpdateTagInp
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
 
-	for _, u := range r.subscriptions.TagUpdated {
-		if u.ID == t.ID {
-			u.Ch <- t
+	go func() {
+		for _, u := range r.subscriptions.TagUpdated {
+			if u.ID == t.ID && u.RequestID != input.RequestID {
+				u.Ch <- t
+			}
 		}
-	}
+	}()
 
 	return t, nil
 }
@@ -54,14 +56,15 @@ func (r *queryResolver) Tags(ctx context.Context, after *ent.Cursor, first *int,
 	return ts, nil
 }
 
-func (r *subscriptionResolver) TagUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.Tag, error) {
+func (r *subscriptionResolver) TagUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.Tag, error) {
 	key := subscription.NewKey()
 	ch := make(chan *ent.Tag, 1)
 
 	r.mutex.Lock()
 	r.subscriptions.TagUpdated[key] = subscription.TagUpdated{
-		ID: id,
-		Ch: ch,
+		ID:        id,
+		RequestID: requestID,
+		Ch:        ch,
 	}
 	r.mutex.Unlock()
 

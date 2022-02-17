@@ -22,5 +22,6 @@ type UpdateTaskCollaboratorInput = ent.UpdateTaskCollaboratorInput
 
 // DeleteTaskCollaboratorInput represents a mutation input.
 type DeleteTaskCollaboratorInput struct {
-	ID ulid.ID
+	ID        ulid.ID
+	RequestID string
 }

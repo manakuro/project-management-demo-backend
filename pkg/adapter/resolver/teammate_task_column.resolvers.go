@@ -28,11 +28,13 @@ func (r *mutationResolver) UpdateTeammateTaskColumn(ctx context.Context, input e
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
 
-	for _, u := range r.subscriptions.TeammateTaskColumnUpdated {
-		if u.ID == t.ID {
-			u.Ch <- t
+	go func() {
+		for _, u := range r.subscriptions.TeammateTaskColumnUpdated {
+			if u.ID == t.ID && u.RequestID != input.RequestID {
+				u.Ch <- t
+			}
 		}
-	}
+	}()
 
 	return t, nil
 }
@@ -54,14 +56,15 @@ func (r *queryResolver) TeammateTaskColumns(ctx context.Context, after *ent.Curs
 	return ts, nil
 }
 
-func (r *subscriptionResolver) TeammateTaskColumnUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.TeammateTaskColumn, error) {
+func (r *subscriptionResolver) TeammateTaskColumnUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.TeammateTaskColumn, error) {
 	key := subscription.NewKey()
 	ch := make(chan *ent.TeammateTaskColumn, 1)
 
 	r.mutex.Lock()
 	r.subscriptions.TeammateTaskColumnUpdated[key] = subscription.TeammateTaskColumnUpdated{
-		ID: id,
-		Ch: ch,
+		ID:        id,
+		RequestID: requestID,
+		Ch:        ch,
 	}
 	r.mutex.Unlock()
 

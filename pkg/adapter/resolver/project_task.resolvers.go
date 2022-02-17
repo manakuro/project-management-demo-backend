@@ -38,7 +38,7 @@ func (r *mutationResolver) UpdateProjectTask(ctx context.Context, input ent.Upda
 
 	go func() {
 		for _, u := range r.subscriptions.ProjectTaskUpdated {
-			if u.ID == p.ID {
+			if u.ID == p.ID && u.RequestID != input.RequestID {
 				u.Ch <- p
 			}
 		}
@@ -72,7 +72,7 @@ func (r *queryResolver) ProjectTasks(ctx context.Context, after *ent.Cursor, fir
 	return ps, nil
 }
 
-func (r *subscriptionResolver) ProjectTaskUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.ProjectTask, error) {
+func (r *subscriptionResolver) ProjectTaskUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.ProjectTask, error) {
 	key := subscription.NewKey()
 	ch := make(chan *ent.ProjectTask, 1)
 

@@ -30,9 +30,9 @@ func (r *mutationResolver) CreateFavoriteWorkspace(ctx context.Context, input en
 
 	go func() {
 		ids, _ := r.controller.FavoriteWorkspace.FavoriteWorkspaceIDs(context.Background(), input.TeammateID, &input.WorkspaceID)
-		for _, created := range r.subscriptions.FavoriteWorkspaceIDsUpdated {
-			if created.TeammateID == input.TeammateID {
-				created.Ch <- ids
+		for _, u := range r.subscriptions.FavoriteWorkspaceIDsUpdated {
+			if u.TeammateID == input.TeammateID && u.RequestID != input.RequestID {
+				u.Ch <- ids
 			}
 		}
 	}()
@@ -48,9 +48,9 @@ func (r *mutationResolver) DeleteFavoriteWorkspace(ctx context.Context, input mo
 
 	go func() {
 		ids, _ := r.controller.FavoriteWorkspace.FavoriteWorkspaceIDs(context.Background(), input.TeammateID, &input.WorkspaceID)
-		for _, created := range r.subscriptions.FavoriteWorkspaceIDsUpdated {
-			if created.TeammateID == input.TeammateID {
-				created.Ch <- ids
+		for _, u := range r.subscriptions.FavoriteWorkspaceIDsUpdated {
+			if u.TeammateID == input.TeammateID && u.RequestID != input.RequestID {
+				u.Ch <- ids
 			}
 		}
 	}()
@@ -83,13 +83,14 @@ func (r *queryResolver) FavoriteWorkspaceIds(ctx context.Context, teammateID uli
 	return ids, nil
 }
 
-func (r *subscriptionResolver) FavoriteWorkspaceIdsUpdated(ctx context.Context, teammateID ulid.ID) (<-chan []ulid.ID, error) {
+func (r *subscriptionResolver) FavoriteWorkspaceIdsUpdated(ctx context.Context, teammateID ulid.ID, requestID string) (<-chan []ulid.ID, error) {
 	key := subscription.NewKey()
 	ch := make(chan []ulid.ID, 1)
 
 	r.mutex.Lock()
 	r.subscriptions.FavoriteWorkspaceIDsUpdated[key] = subscription.FavoriteWorkspaceIDsUpdated{
 		TeammateID: teammateID,
+		RequestID:  requestID,
 		Ch:         ch,
 	}
 	r.mutex.Unlock()

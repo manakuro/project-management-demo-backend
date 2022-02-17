@@ -28,11 +28,13 @@ func (r *mutationResolver) UpdateProject(ctx context.Context, input ent.UpdatePr
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
 
-	for _, pu := range r.subscriptions.ProjectUpdated {
-		if pu.ID == p.ID {
-			pu.Ch <- p
+	go func() {
+		for _, u := range r.subscriptions.ProjectUpdated {
+			if u.ID == p.ID && u.RequestID != input.RequestID {
+				u.Ch <- p
+			}
 		}
-	}
+	}()
 
 	return p, nil
 }
@@ -85,14 +87,15 @@ func (r *queryResolver) Projects(ctx context.Context, after *ent.Cursor, first *
 	return ps, nil
 }
 
-func (r *subscriptionResolver) ProjectUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.Project, error) {
+func (r *subscriptionResolver) ProjectUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.Project, error) {
 	key := subscription.NewKey()
 	ch := make(chan *ent.Project, 1)
 
 	r.mutex.Lock()
 	r.subscriptions.ProjectUpdated[key] = subscription.ProjectUpdated{
-		ID: id,
-		Ch: ch,
+		ID:        id,
+		RequestID: requestID,
+		Ch:        ch,
 	}
 	r.mutex.Unlock()
 

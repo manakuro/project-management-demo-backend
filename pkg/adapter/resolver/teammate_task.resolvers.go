@@ -21,7 +21,7 @@ func (r *mutationResolver) CreateTeammateTask(ctx context.Context, input ent.Cre
 
 	go func() {
 		for _, c := range r.subscriptions.TeammateTaskCreated {
-			if c.TeammateID == t.TeammateID && c.WorkspaceID == t.WorkspaceID {
+			if c.TeammateID == t.TeammateID && c.WorkspaceID == t.WorkspaceID && c.RequestID != input.RequestID {
 				c.Ch <- t
 			}
 		}
@@ -38,7 +38,7 @@ func (r *mutationResolver) UpdateTeammateTask(ctx context.Context, input ent.Upd
 
 	go func() {
 		for _, u := range r.subscriptions.TeammateTaskUpdated {
-			if u.ID == t.ID {
+			if u.ID == t.ID && u.RequestID != input.RequestID {
 				u.Ch <- t
 			}
 		}
@@ -73,14 +73,15 @@ func (r *queryResolver) TasksDueSoon(ctx context.Context, workspaceID ulid.ID, t
 	return ts, nil
 }
 
-func (r *subscriptionResolver) TeammateTaskUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.TeammateTask, error) {
+func (r *subscriptionResolver) TeammateTaskUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.TeammateTask, error) {
 	key := subscription.NewKey()
 	ch := make(chan *ent.TeammateTask, 1)
 
 	r.mutex.Lock()
 	r.subscriptions.TeammateTaskUpdated[key] = subscription.TeammateTaskUpdated{
-		ID: id,
-		Ch: ch,
+		ID:        id,
+		RequestID: requestID,
+		Ch:        ch,
 	}
 	r.mutex.Unlock()
 
@@ -94,7 +95,7 @@ func (r *subscriptionResolver) TeammateTaskUpdated(ctx context.Context, id ulid.
 	return ch, nil
 }
 
-func (r *subscriptionResolver) TeammateTaskCreated(ctx context.Context, teammateID ulid.ID, workspaceID ulid.ID) (<-chan *ent.TeammateTask, error) {
+func (r *subscriptionResolver) TeammateTaskCreated(ctx context.Context, teammateID ulid.ID, workspaceID ulid.ID, requestID string) (<-chan *ent.TeammateTask, error) {
 	key := subscription.NewKey()
 	ch := make(chan *ent.TeammateTask)
 
@@ -102,6 +103,7 @@ func (r *subscriptionResolver) TeammateTaskCreated(ctx context.Context, teammate
 	r.subscriptions.TeammateTaskCreated[key] = subscription.TeammateTaskCreated{
 		TeammateID:  teammateID,
 		WorkspaceID: workspaceID,
+		RequestID:   requestID,
 		Ch:          ch,
 	}
 	r.mutex.Unlock()

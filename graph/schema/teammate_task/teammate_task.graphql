@@ -24,6 +24,7 @@ input CreateTeammateTaskInput {
   teammateId: ID!
   teammateTaskSectionId: ID!
   workspaceId: ID!
+  requestId: String!
 }
 
 input UpdateTeammateTaskInput {
@@ -31,11 +32,12 @@ input UpdateTeammateTaskInput {
   taskId: ID
   teammateId: ID
   teammateTaskSectionId: ID
+  requestId: String!
 }
 
 extend type Subscription {
-  teammateTaskUpdated(id: ID!): TeammateTask!
-  teammateTaskCreated(teammateId: ID!, workspaceId: ID!): TeammateTask!
+  teammateTaskUpdated(id: ID!, requestId: String!): TeammateTask!
+  teammateTaskCreated(teammateId: ID!, workspaceId: ID!, requestId: String!): TeammateTask!
 }
 
 extend type Query {

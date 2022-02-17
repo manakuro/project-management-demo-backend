@@ -63,14 +63,15 @@ func (r *queryResolver) TaskLikes(ctx context.Context, after *ent.Cursor, first 
 	return ts, nil
 }
 
-func (r *subscriptionResolver) TaskLikesUpdated(ctx context.Context, where ent.TaskLikeWhereInput) (<-chan []*ent.TaskLike, error) {
+func (r *subscriptionResolver) TaskLikesUpdated(ctx context.Context, where ent.TaskLikeWhereInput, requestID string) (<-chan []*ent.TaskLike, error) {
 	key := subscription.NewKey()
 	ch := make(chan []*ent.TaskLike, 1)
 
 	r.mutex.Lock()
 	r.subscriptions.TaskLikesUpdated[key] = subscription.TaskLikesUpdated{
-		Where: where,
-		Ch:    ch,
+		Where:     where,
+		RequestID: requestID,
+		Ch:        ch,
 	}
 	r.mutex.Unlock()
 

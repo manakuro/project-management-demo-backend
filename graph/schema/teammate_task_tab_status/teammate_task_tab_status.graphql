@@ -28,6 +28,7 @@ type TeammateTaskTabStatusEdge {
 input CreateTeammateTaskTabStatusInput {
   workspaceId: ID!
   teammateId: ID!
+  requestId: String!
 }
 
 input UpdateTeammateTaskTabStatusInput {
@@ -35,10 +36,11 @@ input UpdateTeammateTaskTabStatusInput {
   workspaceId: ID
   teammateId: ID
   statusCode: TeammateTaskTabStatusCode
+  requestId: String!
 }
 
 extend type Subscription {
-  teammateTaskTabStatusUpdated(id: ID!): TeammateTaskTabStatus!
+  teammateTaskTabStatusUpdated(id: ID!, requestId: String!): TeammateTaskTabStatus!
 }
 
 extend type Query {

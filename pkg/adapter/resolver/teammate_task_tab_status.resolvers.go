@@ -28,11 +28,13 @@ func (r *mutationResolver) UpdateTeammateTaskTabStatus(ctx context.Context, inpu
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
 
-	for _, u := range r.subscriptions.TeammateTaskTabStatusUpdated {
-		if u.ID == t.ID {
-			u.Ch <- t
+	go func() {
+		for _, u := range r.subscriptions.TeammateTaskTabStatusUpdated {
+			if u.ID == t.ID && u.RequestID != input.RequestID {
+				u.Ch <- t
+			}
 		}
-	}
+	}()
 
 	return t, nil
 }
@@ -54,14 +56,15 @@ func (r *queryResolver) TeammateTaskTabStatuses(ctx context.Context, after *ent.
 	return ts, nil
 }
 
-func (r *subscriptionResolver) TeammateTaskTabStatusUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.TeammateTaskTabStatus, error) {
+func (r *subscriptionResolver) TeammateTaskTabStatusUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.TeammateTaskTabStatus, error) {
 	key := subscription.NewKey()
 	ch := make(chan *ent.TeammateTaskTabStatus, 1)
 
 	r.mutex.Lock()
 	r.subscriptions.TeammateTaskTabStatusUpdated[key] = subscription.TeammateTaskTabStatusUpdated{
-		ID: id,
-		Ch: ch,
+		ID:        id,
+		RequestID: requestID,
+		Ch:        ch,
 	}
 	r.mutex.Unlock()
 

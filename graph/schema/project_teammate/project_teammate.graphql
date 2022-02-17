@@ -24,6 +24,7 @@ input CreateProjectTeammateInput {
   teammateId: ID!
   role: String!
   isOwner: Boolean!
+  requestId: String!
 }
 input UpdateProjectTeammateInput {
   id: ID!
@@ -31,6 +32,7 @@ input UpdateProjectTeammateInput {
   teammateId: ID
   role: String
   isOwner: Boolean
+  requestId: String!
 }
 
 extend type Query {
@@ -39,7 +41,7 @@ extend type Query {
 }
 
 extend type Subscription {
-  projectTeammateUpdated(id: ID!): ProjectTeammate!
+  projectTeammateUpdated(id: ID!, requestId: String!): ProjectTeammate!
 }
 
 extend type Mutation {

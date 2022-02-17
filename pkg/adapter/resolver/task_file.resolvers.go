@@ -28,11 +28,13 @@ func (r *mutationResolver) UpdateTaskFile(ctx context.Context, input ent.UpdateT
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
 
-	for _, u := range r.subscriptions.TaskFileUpdated {
-		if u.ID == t.ID {
-			u.Ch <- t
+	go func() {
+		for _, u := range r.subscriptions.TaskFileUpdated {
+			if u.ID == t.ID && u.RequestID != input.RequestID {
+				u.Ch <- t
+			}
 		}
-	}
+	}()
 
 	return t, nil
 }
@@ -54,14 +56,15 @@ func (r *queryResolver) TaskFiles(ctx context.Context, after *ent.Cursor, first 
 	return ts, nil
 }
 
-func (r *subscriptionResolver) TaskFileUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.TaskFile, error) {
+func (r *subscriptionResolver) TaskFileUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.TaskFile, error) {
 	key := subscription.NewKey()
 	ch := make(chan *ent.TaskFile, 1)
 
 	r.mutex.Lock()
 	r.subscriptions.TaskFileUpdated[key] = subscription.TaskFileUpdated{
-		ID: id,
-		Ch: ch,
+		ID:        id,
+		RequestID: requestID,
+		Ch:        ch,
 	}
 	r.mutex.Unlock()
 

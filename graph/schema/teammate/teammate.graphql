@@ -20,12 +20,14 @@ input CreateTeammateInput {
   name: String!
   image: String!
   email: String!
+  requestId: String!
 }
 input UpdateTeammateInput {
   id: ID!
   name: String
   image: String
   email: String
+  requestId: String!
 }
 
 extend type Query {
@@ -34,7 +36,7 @@ extend type Query {
 }
 
 extend type Subscription {
-  teammateUpdated(id: ID!): Teammate!
+  teammateUpdated(id: ID!, requestId: String!): Teammate!
 }
 
 extend type Mutation {

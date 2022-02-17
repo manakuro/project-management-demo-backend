@@ -27,11 +27,13 @@ func (r *mutationResolver) UpdateProjectIcon(ctx context.Context, input ent.Upda
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
 
-	for _, pu := range r.subscriptions.ProjectIconUpdated {
-		if pu.ID == pi.ID {
-			pu.Ch <- pi
+	go func() {
+		for _, u := range r.subscriptions.ProjectIconUpdated {
+			if u.ID == pi.ID && u.RequestID != input.RequestID {
+				u.Ch <- pi
+			}
 		}
-	}
+	}()
 
 	return pi, nil
 }
@@ -60,14 +62,15 @@ func (r *queryResolver) ProjectIcons(ctx context.Context, after *ent.Cursor, fir
 	return pis, nil
 }
 
-func (r *subscriptionResolver) ProjectIconUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.ProjectIcon, error) {
+func (r *subscriptionResolver) ProjectIconUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.ProjectIcon, error) {
 	key := subscription.NewKey()
 	ch := make(chan *ent.ProjectIcon, 1)
 
 	r.mutex.Lock()
 	r.subscriptions.ProjectIconUpdated[key] = subscription.ProjectIconUpdated{
-		ID: id,
-		Ch: ch,
+		ID:        id,
+		RequestID: requestID,
+		Ch:        ch,
 	}
 	r.mutex.Unlock()
 

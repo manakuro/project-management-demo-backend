@@ -24,4 +24,5 @@ type UpdateFavoriteProjectInput = ent.UpdateFavoriteProjectInput
 type DeleteFavoriteProjectInput struct {
 	ProjectID  ulid.ID
 	TeammateID ulid.ID
+	RequestID  string
 }

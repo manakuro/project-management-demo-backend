@@ -22,12 +22,14 @@ input CreateWorkspaceInput {
   name: String!
   createdBy: ID!
   description: EditorDescriptionInput
+  requestId: String!
 }
 input UpdateWorkspaceInput {
   id: ID!
   name: String
   createdBy: ID
   description: EditorDescriptionInput
+  requestId: String!
 }
 
 extend type Query {
@@ -36,7 +38,7 @@ extend type Query {
 }
 
 extend type Subscription {
-  workspaceUpdated(id: ID!): Workspace!
+  workspaceUpdated(id: ID!, requestId: String!): Workspace!
 }
 
 extend type Mutation {

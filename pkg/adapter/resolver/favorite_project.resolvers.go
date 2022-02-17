@@ -30,9 +30,9 @@ func (r *mutationResolver) CreateFavoriteProject(ctx context.Context, input ent.
 
 	go func() {
 		ids, _ := r.controller.FavoriteProject.FavoriteProjectIDs(context.Background(), input.TeammateID)
-		for _, created := range r.subscriptions.FavoriteProjectIDsUpdated {
-			if created.TeammateID == input.TeammateID {
-				created.Ch <- ids
+		for _, u := range r.subscriptions.FavoriteProjectIDsUpdated {
+			if u.TeammateID == input.TeammateID && u.RequestID != input.RequestID {
+				u.Ch <- ids
 			}
 		}
 	}()
@@ -48,9 +48,9 @@ func (r *mutationResolver) DeleteFavoriteProject(ctx context.Context, input mode
 
 	go func() {
 		ids, _ := r.controller.FavoriteProject.FavoriteProjectIDs(context.Background(), input.TeammateID)
-		for _, created := range r.subscriptions.FavoriteProjectIDsUpdated {
-			if created.TeammateID == input.TeammateID {
-				created.Ch <- ids
+		for _, u := range r.subscriptions.FavoriteProjectIDsUpdated {
+			if u.TeammateID == input.TeammateID && u.RequestID != input.RequestID {
+				u.Ch <- ids
 			}
 		}
 	}()
@@ -83,13 +83,14 @@ func (r *queryResolver) FavoriteProjectIds(ctx context.Context, teammateID ulid.
 	return ids, nil
 }
 
-func (r *subscriptionResolver) FavoriteProjectCreated(ctx context.Context, teammateID ulid.ID) (<-chan *ent.FavoriteProject, error) {
+func (r *subscriptionResolver) FavoriteProjectCreated(ctx context.Context, teammateID ulid.ID, requestID string) (<-chan *ent.FavoriteProject, error) {
 	key := subscription.NewKey()
 	ch := make(chan *ent.FavoriteProject, 1)
 
 	r.mutex.Lock()
 	r.subscriptions.FavoriteProjectCreated[key] = subscription.FavoriteProjectCreated{
 		TeammateID: teammateID,
+		RequestID:  requestID,
 		Ch:         ch,
 	}
 	r.mutex.Unlock()
@@ -104,13 +105,14 @@ func (r *subscriptionResolver) FavoriteProjectCreated(ctx context.Context, teamm
 	return ch, nil
 }
 
-func (r *subscriptionResolver) FavoriteProjectIdsUpdated(ctx context.Context, teammateID ulid.ID) (<-chan []ulid.ID, error) {
+func (r *subscriptionResolver) FavoriteProjectIdsUpdated(ctx context.Context, teammateID ulid.ID, requestID string) (<-chan []ulid.ID, error) {
 	key := subscription.NewKey()
 	ch := make(chan []ulid.ID, 1)
 
 	r.mutex.Lock()
 	r.subscriptions.FavoriteProjectIDsUpdated[key] = subscription.FavoriteProjectIDsUpdated{
 		TeammateID: teammateID,
+		RequestID:  requestID,
 		Ch:         ch,
 	}
 	r.mutex.Unlock()

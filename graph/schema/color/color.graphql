@@ -20,12 +20,14 @@ input CreateColorInput {
   name: String!
   color: String!
   hex: String!
+  requestId: String!
 }
 input UpdateColorInput {
   id: ID!
   name: String
   color: String
   hex: String
+  requestId: String!
 }
 
 extend type Query {
@@ -34,7 +36,7 @@ extend type Query {
 }
 
 extend type Subscription {
-  colorUpdated(id: ID!): Color!
+  colorUpdated(id: ID!, requestId: String!): Color!
 }
 
 extend type Mutation {

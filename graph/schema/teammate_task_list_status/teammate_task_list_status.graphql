@@ -26,6 +26,7 @@ input CreateTeammateTaskListStatusInput {
   teammateId: ID!
   taskListCompletedStatusId: ID!
   taskListSortStatusId: ID!
+  requestId: String!
 }
 
 input UpdateTeammateTaskListStatusInput {
@@ -34,10 +35,11 @@ input UpdateTeammateTaskListStatusInput {
   teammateId: ID
   taskListCompletedStatusId: ID
   taskListSortStatusId: ID
+  requestId: String!
 }
 
 extend type Subscription {
-  teammateTaskListStatusUpdated(id: ID!): TeammateTaskListStatus!
+  teammateTaskListStatusUpdated(id: ID!, requestId: String!): TeammateTaskListStatus!
 }
 
 extend type Query {

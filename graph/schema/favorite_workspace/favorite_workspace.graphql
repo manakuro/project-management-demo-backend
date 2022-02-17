@@ -20,15 +20,17 @@ type FavoriteWorkspaceEdge {
 input CreateFavoriteWorkspaceInput {
   workspaceId: ID!
   teammateId: ID!
+  requestId: String!
 }
 
 input DeleteFavoriteWorkspaceInput {
   workspaceId: ID!
   teammateId: ID!
+  requestId: String!
 }
 
 extend type Subscription {
-  favoriteWorkspaceIdsUpdated(teammateId: ID!): [ID!]!
+  favoriteWorkspaceIdsUpdated(teammateId: ID!, requestId: String!): [ID!]!
 }
 
 extend type Query {

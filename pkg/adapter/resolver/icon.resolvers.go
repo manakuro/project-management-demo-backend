@@ -35,11 +35,13 @@ func (r *mutationResolver) UpdateIcon(ctx context.Context, input ent.UpdateIconI
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
 
-	for _, ic := range r.subscriptions.IconUpdated {
-		if ic.ID == i.ID {
-			ic.Ch <- i
+	go func() {
+		for _, u := range r.subscriptions.IconUpdated {
+			if u.ID == i.ID && u.RequestID != input.RequestID {
+				u.Ch <- i
+			}
 		}
-	}
+	}()
 
 	return i, nil
 }
@@ -60,14 +62,15 @@ func (r *queryResolver) Icons(ctx context.Context, after *ent.Cursor, first *int
 	return is, nil
 }
 
-func (r *subscriptionResolver) IconUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.Icon, error) {
+func (r *subscriptionResolver) IconUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.Icon, error) {
 	key := subscription.NewKey()
 	ch := make(chan *ent.Icon, 1)
 
 	r.mutex.Lock()
 	r.subscriptions.IconUpdated[key] = subscription.IconUpdated{
-		ID: id,
-		Ch: ch,
+		ID:        id,
+		RequestID: requestID,
+		Ch:        ch,
 	}
 	r.mutex.Unlock()
 

@@ -23,6 +23,7 @@ type TeammateTaskSectionEdge {
 input CreateTeammateTaskSectionInput {
   workspaceId: ID!
   teammateId: ID!
+  requestId: String!
 }
 
 input UpdateTeammateTaskSectionInput {
@@ -30,10 +31,11 @@ input UpdateTeammateTaskSectionInput {
   workspaceId: ID
   teammateId: ID
   name: String
+  requestId: String!
 }
 
 extend type Subscription {
-  teammateTaskSectionUpdated(id: ID!): TeammateTaskSection!
+  teammateTaskSectionUpdated(id: ID!, requestId: String!): TeammateTaskSection!
 }
 
 extend type Query {

@@ -24,6 +24,7 @@ input CreateWorkspaceTeammateInput {
   teammateId: ID!
   role: String!
   isOwner: Boolean!
+  requestId: String!
 }
 input UpdateWorkspaceTeammateInput {
   id: ID!
@@ -31,6 +32,7 @@ input UpdateWorkspaceTeammateInput {
   teammateId: ID
   role: String
   isOwner: Boolean
+  requestId: String!
 }
 
 extend type Query {
@@ -39,7 +41,7 @@ extend type Query {
 }
 
 extend type Subscription {
-  workspaceTeammateUpdated(id: ID!): WorkspaceTeammate!
+  workspaceTeammateUpdated(id: ID!, requestId: String!): WorkspaceTeammate!
 }
 
 extend type Mutation {

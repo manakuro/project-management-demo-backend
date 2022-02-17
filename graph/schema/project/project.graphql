@@ -37,6 +37,7 @@ input CreateProjectInput {
   description: EditorDescriptionInput
   descriptionTitle: String
   dueDate: Time
+  requestId: String!
 }
 input UpdateProjectInput {
   id: ID!
@@ -48,6 +49,7 @@ input UpdateProjectInput {
   description: EditorDescriptionInput
   descriptionTitle: String
   dueDate: Time
+  requestId: String!
 }
 
 extend type Query {
@@ -56,7 +58,7 @@ extend type Query {
 }
 
 extend type Subscription {
-  projectUpdated(id: ID!): Project!
+  projectUpdated(id: ID!, requestId: String!): Project!
 }
 
 extend type Mutation {

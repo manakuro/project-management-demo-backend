@@ -19,16 +19,18 @@ input CreateTaskLikeInput {
   taskId: ID!
   teammateId: ID!
   workspaceId: ID!
+  requestId: String!
 }
 
 input UpdateTaskLikeInput {
   id: ID!
   taskId: ID
   teammateId: ID
+  requestId: String!
 }
 
 extend type Subscription {
-  taskLikesUpdated(where: TaskLikeWhereInput!): [TaskLike!]!
+  taskLikesUpdated(where: TaskLikeWhereInput!, requestId: String!): [TaskLike!]!
 }
 
 extend type Query {

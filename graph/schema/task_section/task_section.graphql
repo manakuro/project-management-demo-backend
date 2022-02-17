@@ -16,15 +16,17 @@ type TaskSectionEdge {
 
 input CreateTaskSectionInput {
   name: String!
+  requestId: String!
 }
 
 input UpdateTaskSectionInput {
   id: ID!
   name: String
+  requestId: String!
 }
 
 extend type Subscription {
-  taskSectionUpdated(id: ID!): TaskSection!
+  taskSectionUpdated(id: ID!, requestId: String!): TaskSection!
 }
 
 extend type Query {

@@ -23,7 +23,7 @@ func (r *mutationResolver) CreateTaskCollaborator(ctx context.Context, input ent
 
 	var ts []*ent.TaskCollaborator
 	for _, u := range r.subscriptions.TaskCollaboratorUpdated {
-		if u.TaskID == t.TaskID {
+		if u.TaskID == t.TaskID && u.RequestID != input.RequestID {
 			if ts == nil {
 				ts, err = r.controller.TaskCollaborator.List(ctx, &ent.TaskCollaboratorWhereInput{TaskID: &t.TaskID})
 				if err != nil {
@@ -55,7 +55,7 @@ func (r *mutationResolver) DeleteTaskCollaborator(ctx context.Context, input mod
 
 	var ts []*ent.TaskCollaborator
 	for _, u := range r.subscriptions.TaskCollaboratorUpdated {
-		if u.TaskID == t.TaskID {
+		if u.TaskID == t.TaskID && u.RequestID != input.RequestID {
 			if ts == nil {
 				ts, err = r.controller.TaskCollaborator.List(ctx, &ent.TaskCollaboratorWhereInput{TaskID: &t.TaskID})
 				if err != nil {
@@ -87,14 +87,15 @@ func (r *queryResolver) TaskCollaborators(ctx context.Context, after *ent.Cursor
 	return ts, nil
 }
 
-func (r *subscriptionResolver) TaskCollaboratorsUpdated(ctx context.Context, taskID ulid.ID) (<-chan []*ent.TaskCollaborator, error) {
+func (r *subscriptionResolver) TaskCollaboratorsUpdated(ctx context.Context, taskID ulid.ID, requestID string) (<-chan []*ent.TaskCollaborator, error) {
 	key := subscription.NewKey()
 	ch := make(chan []*ent.TaskCollaborator, 1)
 
 	r.mutex.Lock()
 	r.subscriptions.TaskCollaboratorUpdated[key] = subscription.TaskCollaboratorUpdated{
-		TaskID: taskID,
-		Ch:     ch,
+		TaskID:    taskID,
+		RequestID: requestID,
+		Ch:        ch,
 	}
 	r.mutex.Unlock()
 

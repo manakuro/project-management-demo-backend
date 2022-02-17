@@ -27,11 +27,13 @@ func (r *mutationResolver) UpdateProjectBaseColor(ctx context.Context, input ent
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
 
-	for _, pu := range r.subscriptions.ProjectBaseColorUpdated {
-		if pu.ID == p.ID {
-			pu.Ch <- p
+	go func() {
+		for _, u := range r.subscriptions.ProjectBaseColorUpdated {
+			if u.ID == p.ID && u.RequestID != input.RequestID {
+				u.Ch <- p
+			}
 		}
-	}
+	}()
 
 	return p, nil
 }
@@ -60,14 +62,15 @@ func (r *queryResolver) ProjectBaseColors(ctx context.Context, after *ent.Cursor
 	return ps, nil
 }
 
-func (r *subscriptionResolver) ProjectBaseColorUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.ProjectBaseColor, error) {
+func (r *subscriptionResolver) ProjectBaseColorUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.ProjectBaseColor, error) {
 	key := subscription.NewKey()
 	ch := make(chan *ent.ProjectBaseColor, 1)
 
 	r.mutex.Lock()
 	r.subscriptions.ProjectBaseColorUpdated[key] = subscription.ProjectBaseColorUpdated{
-		ID: id,
-		Ch: ch,
+		ID:        id,
+		RequestID: requestID,
+		Ch:        ch,
 	}
 	r.mutex.Unlock()
 

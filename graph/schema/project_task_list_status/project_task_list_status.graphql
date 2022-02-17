@@ -23,6 +23,7 @@ input CreateProjectTaskListStatusInput {
   projectId: ID!
   taskListCompletedStatusId: ID!
   taskListSortStatusId: ID!
+  requestId: String!
 }
 
 input UpdateProjectTaskListStatusInput {
@@ -30,10 +31,11 @@ input UpdateProjectTaskListStatusInput {
   projectId: ID
   taskListCompletedStatusId: ID
   taskListSortStatusId: ID
+  requestId: String!
 }
 
 extend type Subscription {
-  projectTaskListStatusUpdated(id: ID!): ProjectTaskListStatus!
+  projectTaskListStatusUpdated(id: ID!, requestId: String!): ProjectTaskListStatus!
 }
 
 extend type Query {
