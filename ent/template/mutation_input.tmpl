@@ -32,6 +32,7 @@
                 {{ $i.Key }} {{ $i.Type }}
             {{- end }}
         {{- end }}
+            RequestID string
         }
 
         // Mutate applies the {{ $input }} on the {{ $n.CreateName }} builder.
@@ -94,6 +95,7 @@
                 {{ $e.MutationRemove }} []{{ $e.Type.ID.Type }}
             {{- end }}
         {{- end }}
+            RequestID string
         }
 
         // Mutate applies the {{ $input }} on the {{ $n.MutationName }}.

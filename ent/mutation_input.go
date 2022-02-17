@@ -27,6 +27,7 @@ type CreateColorInput struct {
 	ProjectLightColorIDs []ulid.ID
 	TaskPriorityIDs      []ulid.ID
 	TagIDs               []ulid.ID
+	RequestID            string
 }
 
 // Mutate applies the CreateColorInput on the ColorCreate builder.
@@ -74,6 +75,7 @@ type UpdateColorInput struct {
 	RemoveTaskPriorityIDs      []ulid.ID
 	AddTagIDs                  []ulid.ID
 	RemoveTagIDs               []ulid.ID
+	RequestID                  string
 }
 
 // Mutate applies the UpdateColorInput on the ColorMutation.
@@ -131,6 +133,7 @@ type CreateFavoriteProjectInput struct {
 	UpdatedAt  *time.Time
 	ProjectID  ulid.ID
 	TeammateID ulid.ID
+	RequestID  string
 }
 
 // Mutate applies the CreateFavoriteProjectInput on the FavoriteProjectCreate builder.
@@ -158,6 +161,7 @@ type UpdateFavoriteProjectInput struct {
 	ClearProject  bool
 	TeammateID    *ulid.ID
 	ClearTeammate bool
+	RequestID     string
 }
 
 // Mutate applies the UpdateFavoriteProjectInput on the FavoriteProjectMutation.
@@ -194,6 +198,7 @@ type CreateFavoriteWorkspaceInput struct {
 	UpdatedAt   *time.Time
 	WorkspaceID ulid.ID
 	TeammateID  ulid.ID
+	RequestID   string
 }
 
 // Mutate applies the CreateFavoriteWorkspaceInput on the FavoriteWorkspaceCreate builder.
@@ -221,6 +226,7 @@ type UpdateFavoriteWorkspaceInput struct {
 	ClearWorkspace bool
 	TeammateID     *ulid.ID
 	ClearTeammate  bool
+	RequestID      string
 }
 
 // Mutate applies the UpdateFavoriteWorkspaceInput on the FavoriteWorkspaceMutation.
@@ -258,6 +264,7 @@ type CreateFileTypeInput struct {
 	CreatedAt   *time.Time
 	UpdatedAt   *time.Time
 	TaskFileIDs []ulid.ID
+	RequestID   string
 }
 
 // Mutate applies the CreateFileTypeInput on the FileTypeCreate builder.
@@ -288,6 +295,7 @@ type UpdateFileTypeInput struct {
 	TypeCode          *filetype.TypeCode
 	AddTaskFileIDs    []ulid.ID
 	RemoveTaskFileIDs []ulid.ID
+	RequestID         string
 }
 
 // Mutate applies the UpdateFileTypeInput on the FileTypeMutation.
@@ -325,6 +333,7 @@ type CreateIconInput struct {
 	CreatedAt      *time.Time
 	UpdatedAt      *time.Time
 	ProjectIconIDs []ulid.ID
+	RequestID      string
 }
 
 // Mutate applies the CreateIconInput on the IconCreate builder.
@@ -355,6 +364,7 @@ type UpdateIconInput struct {
 	Icon                 *string
 	AddProjectIconIDs    []ulid.ID
 	RemoveProjectIconIDs []ulid.ID
+	RequestID            string
 }
 
 // Mutate applies the UpdateIconInput on the IconMutation.
@@ -405,6 +415,7 @@ type CreateProjectInput struct {
 	ProjectTaskSectionIDs     []ulid.ID
 	ProjectTaskIDs            []ulid.ID
 	TaskFileIDs               []ulid.ID
+	RequestID                 string
 }
 
 // Mutate applies the CreateProjectInput on the ProjectCreate builder.
@@ -487,6 +498,7 @@ type UpdateProjectInput struct {
 	RemoveProjectTaskIDs            []ulid.ID
 	AddTaskFileIDs                  []ulid.ID
 	RemoveTaskFileIDs               []ulid.ID
+	RequestID                       string
 }
 
 // Mutate applies the UpdateProjectInput on the ProjectMutation.
@@ -598,6 +610,7 @@ type CreateProjectBaseColorInput struct {
 	UpdatedAt  *time.Time
 	ProjectIDs []ulid.ID
 	ColorID    ulid.ID
+	RequestID  string
 }
 
 // Mutate applies the CreateProjectBaseColorInput on the ProjectBaseColorCreate builder.
@@ -627,6 +640,7 @@ type UpdateProjectBaseColorInput struct {
 	RemoveProjectIDs []ulid.ID
 	ColorID          *ulid.ID
 	ClearColor       bool
+	RequestID        string
 }
 
 // Mutate applies the UpdateProjectBaseColorInput on the ProjectBaseColorMutation.
@@ -663,6 +677,7 @@ type CreateProjectIconInput struct {
 	UpdatedAt  *time.Time
 	ProjectIDs []ulid.ID
 	IconID     ulid.ID
+	RequestID  string
 }
 
 // Mutate applies the CreateProjectIconInput on the ProjectIconCreate builder.
@@ -692,6 +707,7 @@ type UpdateProjectIconInput struct {
 	RemoveProjectIDs []ulid.ID
 	IconID           *ulid.ID
 	ClearIcon        bool
+	RequestID        string
 }
 
 // Mutate applies the UpdateProjectIconInput on the ProjectIconMutation.
@@ -728,6 +744,7 @@ type CreateProjectLightColorInput struct {
 	UpdatedAt  *time.Time
 	ProjectIDs []ulid.ID
 	ColorID    ulid.ID
+	RequestID  string
 }
 
 // Mutate applies the CreateProjectLightColorInput on the ProjectLightColorCreate builder.
@@ -757,6 +774,7 @@ type UpdateProjectLightColorInput struct {
 	RemoveProjectIDs []ulid.ID
 	ColorID          *ulid.ID
 	ClearColor       bool
+	RequestID        string
 }
 
 // Mutate applies the UpdateProjectLightColorInput on the ProjectLightColorMutation.
@@ -826,6 +844,7 @@ type UpdateProjectTaskInput struct {
 	ClearTask               bool
 	ProjectTaskSectionID    *ulid.ID
 	ClearProjectTaskSection bool
+	RequestID               string
 }
 
 // Mutate applies the UpdateProjectTaskInput on the ProjectTaskMutation.
@@ -872,6 +891,7 @@ type CreateProjectTaskColumnInput struct {
 	UpdatedAt    *time.Time
 	ProjectID    ulid.ID
 	TaskColumnID ulid.ID
+	RequestID    string
 }
 
 // Mutate applies the CreateProjectTaskColumnInput on the ProjectTaskColumnCreate builder.
@@ -907,6 +927,7 @@ type UpdateProjectTaskColumnInput struct {
 	ClearProject    bool
 	TaskColumnID    *ulid.ID
 	ClearTaskColumn bool
+	RequestID       string
 }
 
 // Mutate applies the UpdateProjectTaskColumnInput on the ProjectTaskColumnMutation.
@@ -956,6 +977,7 @@ type CreateProjectTaskListStatusInput struct {
 	ProjectID                 ulid.ID
 	TaskListCompletedStatusID ulid.ID
 	TaskListSortStatusID      ulid.ID
+	RequestID                 string
 }
 
 // Mutate applies the CreateProjectTaskListStatusInput on the ProjectTaskListStatusCreate builder.
@@ -986,6 +1008,7 @@ type UpdateProjectTaskListStatusInput struct {
 	ClearTaskListCompletedStatus bool
 	TaskListSortStatusID         *ulid.ID
 	ClearTaskListSortStatus      bool
+	RequestID                    string
 }
 
 // Mutate applies the UpdateProjectTaskListStatusInput on the ProjectTaskListStatusMutation.
@@ -1029,6 +1052,7 @@ type CreateProjectTaskSectionInput struct {
 	UpdatedAt      *time.Time
 	ProjectID      ulid.ID
 	ProjectTaskIDs []ulid.ID
+	RequestID      string
 }
 
 // Mutate applies the CreateProjectTaskSectionInput on the ProjectTaskSectionCreate builder.
@@ -1060,6 +1084,7 @@ type UpdateProjectTaskSectionInput struct {
 	ClearProject         bool
 	AddProjectTaskIDs    []ulid.ID
 	RemoveProjectTaskIDs []ulid.ID
+	RequestID            string
 }
 
 // Mutate applies the UpdateProjectTaskSectionInput on the ProjectTaskSectionMutation.
@@ -1101,6 +1126,7 @@ type CreateProjectTeammateInput struct {
 	UpdatedAt  *time.Time
 	ProjectID  ulid.ID
 	TeammateID ulid.ID
+	RequestID  string
 }
 
 // Mutate applies the CreateProjectTeammateInput on the ProjectTeammateCreate builder.
@@ -1132,6 +1158,7 @@ type UpdateProjectTeammateInput struct {
 	ClearProject  bool
 	TeammateID    *ulid.ID
 	ClearTeammate bool
+	RequestID     string
 }
 
 // Mutate applies the UpdateProjectTeammateInput on the ProjectTeammateMutation.
@@ -1176,6 +1203,7 @@ type CreateTagInput struct {
 	WorkspaceID ulid.ID
 	ColorID     ulid.ID
 	TaskTagIDs  []ulid.ID
+	RequestID   string
 }
 
 // Mutate applies the CreateTagInput on the TagCreate builder.
@@ -1210,6 +1238,7 @@ type UpdateTagInput struct {
 	ClearColor       bool
 	AddTaskTagIDs    []ulid.ID
 	RemoveTaskTagIDs []ulid.ID
+	RequestID        string
 }
 
 // Mutate applies the UpdateTagInput on the TagMutation.
@@ -1273,6 +1302,7 @@ type CreateTaskInput struct {
 	TaskFeedIDs         []ulid.ID
 	TaskFeedLikeIDs     []ulid.ID
 	TaskFileIDs         []ulid.ID
+	RequestID           string
 }
 
 // Mutate applies the CreateTaskInput on the TaskCreate builder.
@@ -1383,6 +1413,7 @@ type UpdateTaskInput struct {
 	RemoveTaskFeedLikeIDs     []ulid.ID
 	AddTaskFileIDs            []ulid.ID
 	RemoveTaskFileIDs         []ulid.ID
+	RequestID                 string
 }
 
 // Mutate applies the UpdateTaskInput on the TaskMutation.
@@ -1512,6 +1543,7 @@ type CreateTaskCollaboratorInput struct {
 	UpdatedAt  *time.Time
 	TaskID     ulid.ID
 	TeammateID ulid.ID
+	RequestID  string
 }
 
 // Mutate applies the CreateTaskCollaboratorInput on the TaskCollaboratorCreate builder.
@@ -1539,6 +1571,7 @@ type UpdateTaskCollaboratorInput struct {
 	ClearTask     bool
 	TeammateID    *ulid.ID
 	ClearTeammate bool
+	RequestID     string
 }
 
 // Mutate applies the UpdateTaskCollaboratorInput on the TaskCollaboratorMutation.
@@ -1577,6 +1610,7 @@ type CreateTaskColumnInput struct {
 	UpdatedAt             *time.Time
 	TeammateTaskColumnIDs []ulid.ID
 	ProjectTaskColumnIDs  []ulid.ID
+	RequestID             string
 }
 
 // Mutate applies the CreateTaskColumnInput on the TaskColumnCreate builder.
@@ -1612,6 +1646,7 @@ type UpdateTaskColumnInput struct {
 	RemoveTeammateTaskColumnIDs []ulid.ID
 	AddProjectTaskColumnIDs     []ulid.ID
 	RemoveProjectTaskColumnIDs  []ulid.ID
+	RequestID                   string
 }
 
 // Mutate applies the UpdateTaskColumnInput on the TaskColumnMutation.
@@ -1659,6 +1694,7 @@ type CreateTaskFeedInput struct {
 	TeammateID      ulid.ID
 	TaskFeedLikeIDs []ulid.ID
 	TaskFileIDs     []ulid.ID
+	RequestID       string
 }
 
 // Mutate applies the CreateTaskFeedInput on the TaskFeedCreate builder.
@@ -1706,6 +1742,7 @@ type UpdateTaskFeedInput struct {
 	RemoveTaskFeedLikeIDs []ulid.ID
 	AddTaskFileIDs        []ulid.ID
 	RemoveTaskFileIDs     []ulid.ID
+	RequestID             string
 }
 
 // Mutate applies the UpdateTaskFeedInput on the TaskFeedMutation.
@@ -1764,6 +1801,7 @@ type CreateTaskFeedLikeInput struct {
 	TaskID     ulid.ID
 	TeammateID ulid.ID
 	TaskFeedID ulid.ID
+	RequestID  string
 }
 
 // Mutate applies the CreateTaskFeedLikeInput on the TaskFeedLikeCreate builder.
@@ -1794,6 +1832,7 @@ type UpdateTaskFeedLikeInput struct {
 	ClearTeammate bool
 	TaskFeedID    *ulid.ID
 	ClearFeed     bool
+	RequestID     string
 }
 
 // Mutate applies the UpdateTaskFeedLikeInput on the TaskFeedLikeMutation.
@@ -1841,6 +1880,7 @@ type CreateTaskFileInput struct {
 	TaskID     ulid.ID
 	TaskFeedID ulid.ID
 	FileTypeID ulid.ID
+	RequestID  string
 }
 
 // Mutate applies the CreateTaskFileInput on the TaskFileCreate builder.
@@ -1882,6 +1922,7 @@ type UpdateTaskFileInput struct {
 	ClearTaskFeed bool
 	FileTypeID    *ulid.ID
 	ClearFileType bool
+	RequestID     string
 }
 
 // Mutate applies the UpdateTaskFileInput on the TaskFileMutation.
@@ -1940,6 +1981,7 @@ type CreateTaskLikeInput struct {
 	TaskID      ulid.ID
 	TeammateID  ulid.ID
 	WorkspaceID ulid.ID
+	RequestID   string
 }
 
 // Mutate applies the CreateTaskLikeInput on the TaskLikeCreate builder.
@@ -1970,6 +2012,7 @@ type UpdateTaskLikeInput struct {
 	ClearTeammate  bool
 	WorkspaceID    *ulid.ID
 	ClearWorkspace bool
+	RequestID      string
 }
 
 // Mutate applies the UpdateTaskLikeInput on the TaskLikeMutation.
@@ -2014,6 +2057,7 @@ type CreateTaskListCompletedStatusInput struct {
 	UpdatedAt                  *time.Time
 	TeammateTaskListStatuseIDs []ulid.ID
 	ProjectTaskListStatuseIDs  []ulid.ID
+	RequestID                  string
 }
 
 // Mutate applies the CreateTaskListCompletedStatusInput on the TaskListCompletedStatusCreate builder.
@@ -2049,6 +2093,7 @@ type UpdateTaskListCompletedStatusInput struct {
 	RemoveTeammateTaskListStatuseIDs []ulid.ID
 	AddProjectTaskListStatuseIDs     []ulid.ID
 	RemoveProjectTaskListStatuseIDs  []ulid.ID
+	RequestID                        string
 }
 
 // Mutate applies the UpdateTaskListCompletedStatusInput on the TaskListCompletedStatusMutation.
@@ -2093,6 +2138,7 @@ type CreateTaskListSortStatusInput struct {
 	UpdatedAt                  *time.Time
 	TeammateTaskListStatuseIDs []ulid.ID
 	ProjectTaskListStatuseIDs  []ulid.ID
+	RequestID                  string
 }
 
 // Mutate applies the CreateTaskListSortStatusInput on the TaskListSortStatusCreate builder.
@@ -2128,6 +2174,7 @@ type UpdateTaskListSortStatusInput struct {
 	RemoveTeammateTaskListStatuseIDs []ulid.ID
 	AddProjectTaskListStatuseIDs     []ulid.ID
 	RemoveProjectTaskListStatuseIDs  []ulid.ID
+	RequestID                        string
 }
 
 // Mutate applies the UpdateTaskListSortStatusInput on the TaskListSortStatusMutation.
@@ -2172,6 +2219,7 @@ type CreateTaskPriorityInput struct {
 	UpdatedAt    *time.Time
 	ColorID      ulid.ID
 	TaskIDs      []ulid.ID
+	RequestID    string
 }
 
 // Mutate applies the CreateTaskPriorityInput on the TaskPriorityCreate builder.
@@ -2205,6 +2253,7 @@ type UpdateTaskPriorityInput struct {
 	ClearColor    bool
 	AddTaskIDs    []ulid.ID
 	RemoveTaskIDs []ulid.ID
+	RequestID     string
 }
 
 // Mutate applies the UpdateTaskPriorityInput on the TaskPriorityMutation.
@@ -2246,6 +2295,7 @@ type CreateTaskSectionInput struct {
 	Name      string
 	CreatedAt *time.Time
 	UpdatedAt *time.Time
+	RequestID string
 }
 
 // Mutate applies the CreateTaskSectionInput on the TaskSectionCreate builder.
@@ -2267,8 +2317,9 @@ func (c *TaskSectionCreate) SetInput(i CreateTaskSectionInput) *TaskSectionCreat
 
 // UpdateTaskSectionInput represents a mutation input for updating tasksections.
 type UpdateTaskSectionInput struct {
-	ID   ulid.ID
-	Name *string
+	ID        ulid.ID
+	Name      *string
+	RequestID string
 }
 
 // Mutate applies the UpdateTaskSectionInput on the TaskSectionMutation.
@@ -2296,6 +2347,7 @@ type CreateTaskTagInput struct {
 	UpdatedAt *time.Time
 	TaskID    ulid.ID
 	TagID     ulid.ID
+	RequestID string
 }
 
 // Mutate applies the CreateTaskTagInput on the TaskTagCreate builder.
@@ -2323,6 +2375,7 @@ type UpdateTaskTagInput struct {
 	ClearTask bool
 	TagID     *ulid.ID
 	ClearTag  bool
+	RequestID string
 }
 
 // Mutate applies the UpdateTaskTagInput on the TaskTagMutation.
@@ -2376,6 +2429,7 @@ type CreateTeammateInput struct {
 	TaskCollaboratorIDs        []ulid.ID
 	TaskFeedIDs                []ulid.ID
 	TaskFeedLikeIDs            []ulid.ID
+	RequestID                  string
 }
 
 // Mutate applies the CreateTeammateInput on the TeammateCreate builder.
@@ -2483,6 +2537,7 @@ type UpdateTeammateInput struct {
 	RemoveTaskFeedIDs                []ulid.ID
 	AddTaskFeedLikeIDs               []ulid.ID
 	RemoveTaskFeedLikeIDs            []ulid.ID
+	RequestID                        string
 }
 
 // Mutate applies the UpdateTeammateInput on the TeammateMutation.
@@ -2614,6 +2669,7 @@ type CreateTeammateTaskInput struct {
 	TaskID                ulid.ID
 	TeammateTaskSectionID ulid.ID
 	WorkspaceID           ulid.ID
+	RequestID             string
 }
 
 // Mutate applies the CreateTeammateTaskInput on the TeammateTaskCreate builder.
@@ -2647,6 +2703,7 @@ type UpdateTeammateTaskInput struct {
 	ClearTeammateTaskSection bool
 	WorkspaceID              *ulid.ID
 	ClearWorkspace           bool
+	RequestID                string
 }
 
 // Mutate applies the UpdateTeammateTaskInput on the TeammateTaskMutation.
@@ -2700,6 +2757,7 @@ type CreateTeammateTaskColumnInput struct {
 	TeammateID   ulid.ID
 	WorkspaceID  ulid.ID
 	TaskColumnID ulid.ID
+	RequestID    string
 }
 
 // Mutate applies the CreateTeammateTaskColumnInput on the TeammateTaskColumnCreate builder.
@@ -2738,6 +2796,7 @@ type UpdateTeammateTaskColumnInput struct {
 	ClearWorkspace  bool
 	TaskColumnID    *ulid.ID
 	ClearTaskColumn bool
+	RequestID       string
 }
 
 // Mutate applies the UpdateTeammateTaskColumnInput on the TeammateTaskColumnMutation.
@@ -2794,6 +2853,7 @@ type CreateTeammateTaskListStatusInput struct {
 	TeammateID                ulid.ID
 	TaskListCompletedStatusID ulid.ID
 	TaskListSortStatusID      ulid.ID
+	RequestID                 string
 }
 
 // Mutate applies the CreateTeammateTaskListStatusInput on the TeammateTaskListStatusCreate builder.
@@ -2827,6 +2887,7 @@ type UpdateTeammateTaskListStatusInput struct {
 	ClearTaskListCompletedStatus bool
 	TaskListSortStatusID         *ulid.ID
 	ClearTaskListSortStatus      bool
+	RequestID                    string
 }
 
 // Mutate applies the UpdateTeammateTaskListStatusInput on the TeammateTaskListStatusMutation.
@@ -2878,6 +2939,7 @@ type CreateTeammateTaskSectionInput struct {
 	TeammateID      ulid.ID
 	WorkspaceID     ulid.ID
 	TeammateTaskIDs []ulid.ID
+	RequestID       string
 }
 
 // Mutate applies the CreateTeammateTaskSectionInput on the TeammateTaskSectionCreate builder.
@@ -2914,6 +2976,7 @@ type UpdateTeammateTaskSectionInput struct {
 	ClearWorkspace        bool
 	AddTeammateTaskIDs    []ulid.ID
 	RemoveTeammateTaskIDs []ulid.ID
+	RequestID             string
 }
 
 // Mutate applies the UpdateTeammateTaskSectionInput on the TeammateTaskSectionMutation.
@@ -2963,6 +3026,7 @@ type CreateTeammateTaskTabStatusInput struct {
 	UpdatedAt   *time.Time
 	WorkspaceID ulid.ID
 	TeammateID  ulid.ID
+	RequestID   string
 }
 
 // Mutate applies the CreateTeammateTaskTabStatusInput on the TeammateTaskTabStatusCreate builder.
@@ -2994,6 +3058,7 @@ type UpdateTeammateTaskTabStatusInput struct {
 	ClearWorkspace bool
 	TeammateID     *ulid.ID
 	ClearTeammate  bool
+	RequestID      string
 }
 
 // Mutate applies the UpdateTeammateTaskTabStatusInput on the TeammateTaskTabStatusMutation.
@@ -3039,6 +3104,7 @@ type CreateTestTodoInput struct {
 	TestUserID   *ulid.ID
 	ParentTodoID *ulid.ID
 	ChildIDs     []ulid.ID
+	RequestID    string
 }
 
 // Mutate applies the CreateTestTodoInput on the TestTodoCreate builder.
@@ -3094,6 +3160,7 @@ type UpdateTestTodoInput struct {
 	ClearParent    bool
 	AddChildIDs    []ulid.ID
 	RemoveChildIDs []ulid.ID
+	RequestID      string
 }
 
 // Mutate applies the UpdateTestTodoInput on the TestTodoMutation.
@@ -3156,6 +3223,7 @@ type CreateTestUserInput struct {
 	CreatedAt   *time.Time
 	UpdatedAt   *time.Time
 	TestTodoIDs []ulid.ID
+	RequestID   string
 }
 
 // Mutate applies the CreateTestUserInput on the TestUserCreate builder.
@@ -3188,6 +3256,7 @@ type UpdateTestUserInput struct {
 	Profile           *testuserprofile.TestUserProfile
 	AddTestTodoIDs    []ulid.ID
 	RemoveTestTodoIDs []ulid.ID
+	RequestID         string
 }
 
 // Mutate applies the UpdateTestUserInput on the TestUserMutation.
@@ -3238,6 +3307,7 @@ type CreateWorkspaceInput struct {
 	TagIDs                     []ulid.ID
 	TeammateTaskColumnIDs      []ulid.ID
 	TeammateTaskIDs            []ulid.ID
+	RequestID                  string
 }
 
 // Mutate applies the CreateWorkspaceInput on the WorkspaceCreate builder.
@@ -3316,6 +3386,7 @@ type UpdateWorkspaceInput struct {
 	RemoveTeammateTaskColumnIDs      []ulid.ID
 	AddTeammateTaskIDs               []ulid.ID
 	RemoveTeammateTaskIDs            []ulid.ID
+	RequestID                        string
 }
 
 // Mutate applies the UpdateWorkspaceInput on the WorkspaceMutation.
@@ -3414,6 +3485,7 @@ type CreateWorkspaceTeammateInput struct {
 	UpdatedAt   *time.Time
 	WorkspaceID ulid.ID
 	TeammateID  ulid.ID
+	RequestID   string
 }
 
 // Mutate applies the CreateWorkspaceTeammateInput on the WorkspaceTeammateCreate builder.
@@ -3445,6 +3517,7 @@ type UpdateWorkspaceTeammateInput struct {
 	ClearWorkspace bool
 	TeammateID     *ulid.ID
 	ClearTeammate  bool
+	RequestID      string
 }
 
 // Mutate applies the UpdateWorkspaceTeammateInput on the WorkspaceTeammateMutation.

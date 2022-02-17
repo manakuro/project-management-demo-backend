@@ -90,10 +90,6 @@ func (ProjectTask) Annotations() []schema.Annotation {
 						Key:  "CreatedBy",
 						Type: "ulid.ID",
 					},
-					{
-						Key:  "RequestID",
-						Type: "string",
-					},
 				},
 			},
 		),
