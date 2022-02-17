@@ -20,9 +20,9 @@ func (r *mutationResolver) CreateTeammateTask(ctx context.Context, input ent.Cre
 	}
 
 	go func() {
-		for _, u := range r.subscriptions.TeammateTaskCreated {
-			if u.TeammateID == t.TeammateID && u.WorkspaceID == t.WorkspaceID {
-				u.Ch <- t
+		for _, c := range r.subscriptions.TeammateTaskCreated {
+			if c.TeammateID == t.TeammateID && c.WorkspaceID == t.WorkspaceID {
+				c.Ch <- t
 			}
 		}
 	}()

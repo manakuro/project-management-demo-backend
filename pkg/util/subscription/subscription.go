@@ -177,6 +177,12 @@ type ProjectTaskUpdated struct {
 	Ch chan *model.ProjectTask
 }
 
+// ProjectTaskCreated is a channel for subscription.
+type ProjectTaskCreated struct {
+	ProjectID model.ID
+	Ch        chan *model.ProjectTask
+}
+
 // TaskLikesUpdated is a channel for subscription.
 type TaskLikesUpdated struct {
 	Where model.TaskLikeWhereInput
@@ -231,6 +237,7 @@ type Subscriptions struct {
 	ProjectIconUpdated            map[string]ProjectIconUpdated
 	ProjectLightColorUpdated      map[string]ProjectLightColorUpdated
 	ProjectTaskColumnUpdated      map[string]ProjectTaskColumnUpdated
+	ProjectTaskCreated            map[string]ProjectTaskCreated
 	ProjectTaskListStatusUpdated  map[string]ProjectTaskListStatusUpdated
 	ProjectTaskSectionUpdated     map[string]ProjectTaskSectionUpdated
 	ProjectTaskUpdated            map[string]ProjectTaskUpdated

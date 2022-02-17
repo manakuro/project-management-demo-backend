@@ -34,6 +34,7 @@ input UpdateProjectTaskInput {
 
 extend type Subscription {
   projectTaskUpdated(id: ID!): ProjectTask!
+  projectTaskCreated(projectId: ID!): ProjectTask!
 }
 
 extend type Query {

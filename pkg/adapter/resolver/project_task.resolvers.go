@@ -18,6 +18,15 @@ func (r *mutationResolver) CreateProjectTask(ctx context.Context, input ent.Crea
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
+
+	go func() {
+		for _, c := range r.subscriptions.ProjectTaskCreated {
+			if c.ProjectID == p.ProjectID {
+				c.Ch <- p
+			}
+		}
+	}()
+
 	return p, nil
 }
 
@@ -27,11 +36,13 @@ func (r *mutationResolver) UpdateProjectTask(ctx context.Context, input ent.Upda
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
 
-	for _, u := range r.subscriptions.ProjectTaskUpdated {
-		if u.ID == p.ID {
-			u.Ch <- p
+	go func() {
+		for _, u := range r.subscriptions.ProjectTaskUpdated {
+			if u.ID == p.ID {
+				u.Ch <- p
+			}
 		}
-	}
+	}()
 
 	return p, nil
 }
@@ -76,6 +87,27 @@ func (r *subscriptionResolver) ProjectTaskUpdated(ctx context.Context, id ulid.I
 		<-ctx.Done()
 		r.mutex.Lock()
 		delete(r.subscriptions.ProjectTaskUpdated, key)
+		r.mutex.Unlock()
+	}()
+
+	return ch, nil
+}
+
+func (r *subscriptionResolver) ProjectTaskCreated(ctx context.Context, projectID ulid.ID) (<-chan *ent.ProjectTask, error) {
+	key := subscription.NewKey()
+	ch := make(chan *ent.ProjectTask)
+
+	r.mutex.Lock()
+	r.subscriptions.ProjectTaskCreated[key] = subscription.ProjectTaskCreated{
+		ProjectID: projectID,
+		Ch:        ch,
+	}
+	r.mutex.Unlock()
+
+	go func() {
+		<-ctx.Done()
+		r.mutex.Lock()
+		delete(r.subscriptions.ProjectTaskCreated, key)
 		r.mutex.Unlock()
 	}()
 
