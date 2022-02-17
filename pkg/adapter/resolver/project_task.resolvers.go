@@ -21,7 +21,7 @@ func (r *mutationResolver) CreateProjectTask(ctx context.Context, input ent.Crea
 
 	go func() {
 		for _, c := range r.subscriptions.ProjectTaskCreated {
-			if c.ProjectID == p.ProjectID {
+			if c.ProjectID == p.ProjectID && c.RequestID != input.RequestID {
 				c.Ch <- p
 			}
 		}
@@ -93,13 +93,14 @@ func (r *subscriptionResolver) ProjectTaskUpdated(ctx context.Context, id ulid.I
 	return ch, nil
 }
 
-func (r *subscriptionResolver) ProjectTaskCreated(ctx context.Context, projectID ulid.ID) (<-chan *ent.ProjectTask, error) {
+func (r *subscriptionResolver) ProjectTaskCreated(ctx context.Context, projectID ulid.ID, requestID string) (<-chan *ent.ProjectTask, error) {
 	key := subscription.NewKey()
 	ch := make(chan *ent.ProjectTask)
 
 	r.mutex.Lock()
 	r.subscriptions.ProjectTaskCreated[key] = subscription.ProjectTaskCreated{
 		ProjectID: projectID,
+		RequestID: requestID,
 		Ch:        ch,
 	}
 	r.mutex.Unlock()

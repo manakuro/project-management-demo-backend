@@ -795,6 +795,7 @@ type CreateProjectTaskInput struct {
 	TaskID               ulid.ID
 	ProjectTaskSectionID ulid.ID
 	CreatedBy            ulid.ID
+	RequestID            string
 }
 
 // Mutate applies the CreateProjectTaskInput on the ProjectTaskCreate builder.

@@ -610,7 +610,7 @@ type ComplexityRoot struct {
 		ProjectIconUpdated            func(childComplexity int, id ulid.ID) int
 		ProjectLightColorUpdated      func(childComplexity int, id ulid.ID) int
 		ProjectTaskColumnUpdated      func(childComplexity int, id ulid.ID) int
-		ProjectTaskCreated            func(childComplexity int, projectID ulid.ID) int
+		ProjectTaskCreated            func(childComplexity int, projectID ulid.ID, requestID string) int
 		ProjectTaskListStatusUpdated  func(childComplexity int, id ulid.ID) int
 		ProjectTaskSectionUpdated     func(childComplexity int, id ulid.ID) int
 		ProjectTaskUpdated            func(childComplexity int, id ulid.ID) int
@@ -1403,7 +1403,7 @@ type SubscriptionResolver interface {
 	ProjectIconUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.ProjectIcon, error)
 	ProjectLightColorUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.ProjectLightColor, error)
 	ProjectTaskUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.ProjectTask, error)
-	ProjectTaskCreated(ctx context.Context, projectID ulid.ID) (<-chan *ent.ProjectTask, error)
+	ProjectTaskCreated(ctx context.Context, projectID ulid.ID, requestID string) (<-chan *ent.ProjectTask, error)
 	ProjectTaskColumnUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.ProjectTaskColumn, error)
 	ProjectTaskListStatusUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.ProjectTaskListStatus, error)
 	ProjectTaskSectionUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.ProjectTaskSection, error)
@@ -4938,7 +4938,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Subscription.ProjectTaskCreated(childComplexity, args["projectId"].(ulid.ID)), true
+		return e.complexity.Subscription.ProjectTaskCreated(childComplexity, args["projectId"].(ulid.ID), args["requestId"].(string)), true
 
 	case "Subscription.projectTaskListStatusUpdated":
 		if e.complexity.Subscription.ProjectTaskListStatusUpdated == nil {
@@ -11605,6 +11605,7 @@ input CreateProjectTaskInput {
   projectId: ID!
   projectTaskSectionId: ID!
   createdBy: ID!
+  requestID: String!
 }
 
 input UpdateProjectTaskInput {
@@ -11616,7 +11617,7 @@ input UpdateProjectTaskInput {
 
 extend type Subscription {
   projectTaskUpdated(id: ID!): ProjectTask!
-  projectTaskCreated(projectId: ID!): ProjectTask!
+  projectTaskCreated(projectId: ID!, requestId: String!): ProjectTask!
 }
 
 extend type Query {
@@ -16969,6 +16970,15 @@ func (ec *executionContext) field_Subscription_projectTaskCreated_args(ctx conte
 		}
 	}
 	args["projectId"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["requestId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("requestId"))
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["requestId"] = arg1
 	return args, nil
 }
 
@@ -31173,7 +31183,7 @@ func (ec *executionContext) _Subscription_projectTaskCreated(ctx context.Context
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Subscription().ProjectTaskCreated(rctx, args["projectId"].(ulid.ID))
+		return ec.resolvers.Subscription().ProjectTaskCreated(rctx, args["projectId"].(ulid.ID), args["requestId"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -45204,6 +45214,14 @@ func (ec *executionContext) unmarshalInputCreateProjectTaskInput(ctx context.Con
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdBy"))
 			it.CreatedBy, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "requestID":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("requestID"))
+			it.RequestID, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}

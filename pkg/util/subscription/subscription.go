@@ -180,6 +180,7 @@ type ProjectTaskUpdated struct {
 // ProjectTaskCreated is a channel for subscription.
 type ProjectTaskCreated struct {
 	ProjectID model.ID
+	RequestID string
 	Ch        chan *model.ProjectTask
 }
 
