@@ -18,6 +18,15 @@ func (r *mutationResolver) CreateTeammateTaskSection(ctx context.Context, input 
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
+
+	go func() {
+		for _, c := range r.subscriptions.TeammateTaskSectionCreated {
+			if c.TeammateID == t.TeammateID && c.WorkspaceID == t.WorkspaceID && c.RequestID != input.RequestID {
+				c.Ch <- t
+			}
+		}
+	}()
+
 	return t, nil
 }
 
@@ -71,6 +80,29 @@ func (r *subscriptionResolver) TeammateTaskSectionUpdated(ctx context.Context, i
 		<-ctx.Done()
 		r.mutex.Lock()
 		delete(r.subscriptions.TeammateTaskSectionUpdated, key)
+		r.mutex.Unlock()
+	}()
+
+	return ch, nil
+}
+
+func (r *subscriptionResolver) TeammateTaskSectionCreated(ctx context.Context, teammateID ulid.ID, workspaceID ulid.ID, requestID string) (<-chan *ent.TeammateTaskSection, error) {
+	key := subscription.NewKey()
+	ch := make(chan *ent.TeammateTaskSection, 1)
+
+	r.mutex.Lock()
+	r.subscriptions.TeammateTaskSectionCreated[key] = subscription.TeammateTaskSectionCreated{
+		TeammateID:  teammateID,
+		WorkspaceID: workspaceID,
+		RequestID:   requestID,
+		Ch:          ch,
+	}
+	r.mutex.Unlock()
+
+	go func() {
+		<-ctx.Done()
+		r.mutex.Lock()
+		delete(r.subscriptions.TeammateTaskSectionCreated, key)
 		r.mutex.Unlock()
 	}()
 

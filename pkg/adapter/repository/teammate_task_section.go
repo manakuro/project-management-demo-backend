@@ -64,6 +64,7 @@ func (r *teammateTaskSectionRepository) Create(ctx context.Context, input model.
 		TeammateTaskSection.
 		Create().
 		SetInput(input).
+		SetName("").
 		Save(ctx)
 
 	if err != nil {

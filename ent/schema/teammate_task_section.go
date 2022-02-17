@@ -37,7 +37,6 @@ func (TeammateTaskSectionMixin) Fields() []ent.Field {
 		field.String("workspace_id").
 			GoType(ulid.ID("")),
 		field.String("name").
-			NotEmpty().
 			MaxLen(255),
 		field.Bool("assigned"),
 	}

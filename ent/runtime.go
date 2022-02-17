@@ -1068,21 +1068,7 @@ func init() {
 	// teammatetasksectionDescName is the schema descriptor for name field.
 	teammatetasksectionDescName := teammatetasksectionMixinFields1[2].Descriptor()
 	// teammatetasksection.NameValidator is a validator for the "name" field. It is called by the builders before save.
-	teammatetasksection.NameValidator = func() func(string) error {
-		validators := teammatetasksectionDescName.Validators
-		fns := [...]func(string) error{
-			validators[0].(func(string) error),
-			validators[1].(func(string) error),
-		}
-		return func(name string) error {
-			for _, fn := range fns {
-				if err := fn(name); err != nil {
-					return err
-				}
-			}
-			return nil
-		}
-	}()
+	teammatetasksection.NameValidator = teammatetasksectionDescName.Validators[0].(func(string) error)
 	// teammatetasksectionDescCreatedAt is the schema descriptor for created_at field.
 	teammatetasksectionDescCreatedAt := teammatetasksectionMixinFields2[0].Descriptor()
 	// teammatetasksection.DefaultCreatedAt holds the default value on creation for the created_at field.

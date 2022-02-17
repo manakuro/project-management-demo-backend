@@ -168,6 +168,14 @@ type TeammateTaskSectionUpdated struct {
 	Ch        chan *model.TeammateTaskSection
 }
 
+// TeammateTaskSectionCreated is a channel for subscription.
+type TeammateTaskSectionCreated struct {
+	TeammateID  model.ID
+	WorkspaceID model.ID
+	RequestID   string
+	Ch          chan *model.TeammateTaskSection
+}
+
 // ProjectTaskSectionUpdated is a channel for subscription.
 type ProjectTaskSectionUpdated struct {
 	ID        model.ID
@@ -291,6 +299,7 @@ type Subscriptions struct {
 	TeammateTaskColumnUpdated     map[string]TeammateTaskColumnUpdated
 	TeammateTaskCreated           map[string]TeammateTaskCreated
 	TeammateTaskListStatusUpdated map[string]TeammateTaskListStatusUpdated
+	TeammateTaskSectionCreated    map[string]TeammateTaskSectionCreated
 	TeammateTaskSectionUpdated    map[string]TeammateTaskSectionUpdated
 	TeammateTaskTabStatusUpdated  map[string]TeammateTaskTabStatusUpdated
 	TeammateTaskUpdated           map[string]TeammateTaskUpdated
