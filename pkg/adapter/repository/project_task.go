@@ -71,6 +71,17 @@ func (r *projectTaskRepository) Create(ctx context.Context, input model.CreatePr
 		return nil, model.NewDBError(err)
 	}
 
+	_, err = r.client.TaskFeed.Create().
+		SetTask(newTask).
+		SetIsFirst(true).
+		SetDescription(model.DefaultEditorDescription()).
+		SetTeammateID(input.CreatedBy).
+		Save(ctx)
+
+	if err != nil {
+		return nil, model.NewDBError(err)
+	}
+
 	res, err := r.client.
 		ProjectTask.
 		Create().

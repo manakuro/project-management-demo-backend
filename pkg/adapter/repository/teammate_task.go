@@ -102,6 +102,17 @@ func (r *teammateTaskRepository) Create(ctx context.Context, input model.CreateT
 		return nil, model.NewDBError(err)
 	}
 
+	_, err = r.client.TaskFeed.Create().
+		SetTask(newTask).
+		SetIsFirst(true).
+		SetDescription(model.DefaultEditorDescription()).
+		SetTeammateID(input.TeammateID).
+		Save(ctx)
+
+	if err != nil {
+		return nil, model.NewDBError(err)
+	}
+
 	res, err := r.client.
 		TeammateTask.
 		Create().
