@@ -270,6 +270,7 @@ type ComplexityRoot struct {
 		DeleteTaskCollaborator        func(childComplexity int, input model.DeleteTaskCollaboratorInput) int
 		DeleteTaskFeed                func(childComplexity int, input model.DeleteTaskFeedInput) int
 		DeleteTaskFeedLike            func(childComplexity int, input model.DeleteTaskFeedLikeInput) int
+		DeleteTaskLike                func(childComplexity int, input model.DeleteTaskLikeInput) int
 		DeleteTaskTag                 func(childComplexity int, input model.DeleteTaskTagInput) int
 		UpdateColor                   func(childComplexity int, input ent.UpdateColorInput) int
 		UpdateFileType                func(childComplexity int, input ent.UpdateFileTypeInput) int
@@ -622,7 +623,7 @@ type ComplexityRoot struct {
 		TaskFeedLikesUpdated          func(childComplexity int, taskID ulid.ID, requestID string) int
 		TaskFeedUpdated               func(childComplexity int, id ulid.ID, requestID string) int
 		TaskFileUpdated               func(childComplexity int, id ulid.ID, requestID string) int
-		TaskLikesUpdated              func(childComplexity int, where ent.TaskLikeWhereInput, requestID string) int
+		TaskLikeUpdated               func(childComplexity int, workspaceID ulid.ID, requestID string) int
 		TaskSectionUpdated            func(childComplexity int, id ulid.ID, requestID string) int
 		TaskTagsUpdated               func(childComplexity int, taskID ulid.ID, requestID string) int
 		TaskUpdated                   func(childComplexity int, id ulid.ID, requestID string) int
@@ -803,11 +804,12 @@ type ComplexityRoot struct {
 	}
 
 	TaskLike struct {
-		CreatedAt  func(childComplexity int) int
-		ID         func(childComplexity int) int
-		TaskID     func(childComplexity int) int
-		TeammateID func(childComplexity int) int
-		UpdatedAt  func(childComplexity int) int
+		CreatedAt   func(childComplexity int) int
+		ID          func(childComplexity int) int
+		TaskID      func(childComplexity int) int
+		TeammateID  func(childComplexity int) int
+		UpdatedAt   func(childComplexity int) int
+		WorkspaceID func(childComplexity int) int
 	}
 
 	TaskLikeConnection struct {
@@ -1239,6 +1241,7 @@ type MutationResolver interface {
 	UpdateTaskFile(ctx context.Context, input ent.UpdateTaskFileInput) (*ent.TaskFile, error)
 	CreateTaskLike(ctx context.Context, input ent.CreateTaskLikeInput) (*ent.TaskLike, error)
 	UpdateTaskLike(ctx context.Context, input ent.UpdateTaskLikeInput) (*ent.TaskLike, error)
+	DeleteTaskLike(ctx context.Context, input model.DeleteTaskLikeInput) (*ent.TaskLike, error)
 	CreateTaskListCompletedStatus(ctx context.Context, input ent.CreateTaskListCompletedStatusInput) (*ent.TaskListCompletedStatus, error)
 	UpdateTaskListCompletedStatus(ctx context.Context, input ent.UpdateTaskListCompletedStatusInput) (*ent.TaskListCompletedStatus, error)
 	CreateTaskListSortStatus(ctx context.Context, input ent.CreateTaskListSortStatusInput) (*ent.TaskListSortStatus, error)
@@ -1417,7 +1420,7 @@ type SubscriptionResolver interface {
 	TaskFeedUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.TaskFeed, error)
 	TaskFeedLikesUpdated(ctx context.Context, taskID ulid.ID, requestID string) (<-chan []*ent.TaskFeedLike, error)
 	TaskFileUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.TaskFile, error)
-	TaskLikesUpdated(ctx context.Context, where ent.TaskLikeWhereInput, requestID string) (<-chan []*ent.TaskLike, error)
+	TaskLikeUpdated(ctx context.Context, workspaceID ulid.ID, requestID string) (<-chan *ent.TaskLike, error)
 	TaskSectionUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.TaskSection, error)
 	TaskTagsUpdated(ctx context.Context, taskID ulid.ID, requestID string) (<-chan []*ent.TaskTag, error)
 	TeammateUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.Teammate, error)
@@ -2551,6 +2554,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.DeleteTaskFeedLike(childComplexity, args["input"].(model.DeleteTaskFeedLikeInput)), true
+
+	case "Mutation.deleteTaskLike":
+		if e.complexity.Mutation.DeleteTaskLike == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deleteTaskLike_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteTaskLike(childComplexity, args["input"].(model.DeleteTaskLikeInput)), true
 
 	case "Mutation.deleteTaskTag":
 		if e.complexity.Mutation.DeleteTaskTag == nil {
@@ -5076,17 +5091,17 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Subscription.TaskFileUpdated(childComplexity, args["id"].(ulid.ID), args["requestId"].(string)), true
 
-	case "Subscription.taskLikesUpdated":
-		if e.complexity.Subscription.TaskLikesUpdated == nil {
+	case "Subscription.taskLikeUpdated":
+		if e.complexity.Subscription.TaskLikeUpdated == nil {
 			break
 		}
 
-		args, err := ec.field_Subscription_taskLikesUpdated_args(context.TODO(), rawArgs)
+		args, err := ec.field_Subscription_taskLikeUpdated_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Subscription.TaskLikesUpdated(childComplexity, args["where"].(ent.TaskLikeWhereInput), args["requestId"].(string)), true
+		return e.complexity.Subscription.TaskLikeUpdated(childComplexity, args["workspaceId"].(ulid.ID), args["requestId"].(string)), true
 
 	case "Subscription.taskSectionUpdated":
 		if e.complexity.Subscription.TaskSectionUpdated == nil {
@@ -5990,6 +6005,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.TaskLike.UpdatedAt(childComplexity), true
+
+	case "TaskLike.workspaceId":
+		if e.complexity.TaskLike.WorkspaceID == nil {
+			break
+		}
+
+		return e.complexity.TaskLike.WorkspaceID(childComplexity), true
 
 	case "TaskLikeConnection.edges":
 		if e.complexity.TaskLikeConnection.Edges == nil {
@@ -12315,6 +12337,7 @@ extend type Mutation {
 	{Name: "graph/schema/task_like/task_like.graphql", Input: `type TaskLike implements Node {
   id: ID!
   teammateId: ID!
+  workspaceId: ID!
   taskId: ID!
   createdAt: String!
   updatedAt: String!
@@ -12342,9 +12365,13 @@ input UpdateTaskLikeInput {
   teammateId: ID
   requestId: String!
 }
+input DeleteTaskLikeInput {
+  id: ID!
+  requestId: String!
+}
 
 extend type Subscription {
-  taskLikesUpdated(where: TaskLikeWhereInput!, requestId: String!): [TaskLike!]!
+  taskLikeUpdated(workspaceId: ID!, requestId: String!): TaskLike!
 }
 
 extend type Query {
@@ -12355,6 +12382,7 @@ extend type Query {
 extend type Mutation {
   createTaskLike(input: CreateTaskLikeInput!): TaskLike!
   updateTaskLike(input: UpdateTaskLikeInput!): TaskLike!
+  deleteTaskLike(input: DeleteTaskLikeInput!): TaskLike!
 }
 `, BuiltIn: false},
 	{Name: "graph/schema/task_list_completed_status/task_list_completed_status.graphql", Input: `enum TaskListCompletedStatusCode {
@@ -13775,6 +13803,21 @@ func (ec *executionContext) field_Mutation_deleteTaskFeed_args(ctx context.Conte
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNDeleteTaskFeedInput2projectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐDeleteTaskFeedInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_deleteTaskLike_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.DeleteTaskLikeInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNDeleteTaskLikeInput2projectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐDeleteTaskLikeInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -17416,18 +17459,18 @@ func (ec *executionContext) field_Subscription_taskFileUpdated_args(ctx context.
 	return args, nil
 }
 
-func (ec *executionContext) field_Subscription_taskLikesUpdated_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Subscription_taskLikeUpdated_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 ent.TaskLikeWhereInput
-	if tmp, ok := rawArgs["where"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
-		arg0, err = ec.unmarshalNTaskLikeWhereInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskLikeWhereInput(ctx, tmp)
+	var arg0 ulid.ID
+	if tmp, ok := rawArgs["workspaceId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceId"))
+		arg0, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["where"] = arg0
+	args["workspaceId"] = arg0
 	var arg1 string
 	if tmp, ok := rawArgs["requestId"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("requestId"))
@@ -22219,6 +22262,48 @@ func (ec *executionContext) _Mutation_updateTaskLike(ctx context.Context, field 
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Mutation().UpdateTaskLike(rctx, args["input"].(ent.UpdateTaskLikeInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.TaskLike)
+	fc.Result = res
+	return ec.marshalNTaskLike2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskLike(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_deleteTaskLike(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_deleteTaskLike_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().DeleteTaskLike(rctx, args["input"].(model.DeleteTaskLikeInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -32216,7 +32301,7 @@ func (ec *executionContext) _Subscription_taskFileUpdated(ctx context.Context, f
 	}
 }
 
-func (ec *executionContext) _Subscription_taskLikesUpdated(ctx context.Context, field graphql.CollectedField) (ret func() graphql.Marshaler) {
+func (ec *executionContext) _Subscription_taskLikeUpdated(ctx context.Context, field graphql.CollectedField) (ret func() graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -32233,7 +32318,7 @@ func (ec *executionContext) _Subscription_taskLikesUpdated(ctx context.Context, 
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Subscription_taskLikesUpdated_args(ctx, rawArgs)
+	args, err := ec.field_Subscription_taskLikeUpdated_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return nil
@@ -32241,7 +32326,7 @@ func (ec *executionContext) _Subscription_taskLikesUpdated(ctx context.Context, 
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Subscription().TaskLikesUpdated(rctx, args["where"].(ent.TaskLikeWhereInput), args["requestId"].(string))
+		return ec.resolvers.Subscription().TaskLikeUpdated(rctx, args["workspaceId"].(ulid.ID), args["requestId"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -32254,7 +32339,7 @@ func (ec *executionContext) _Subscription_taskLikesUpdated(ctx context.Context, 
 		return nil
 	}
 	return func() graphql.Marshaler {
-		res, ok := <-resTmp.(<-chan []*ent.TaskLike)
+		res, ok := <-resTmp.(<-chan *ent.TaskLike)
 		if !ok {
 			return nil
 		}
@@ -32262,7 +32347,7 @@ func (ec *executionContext) _Subscription_taskLikesUpdated(ctx context.Context, 
 			w.Write([]byte{'{'})
 			graphql.MarshalString(field.Alias).MarshalGQL(w)
 			w.Write([]byte{':'})
-			ec.marshalNTaskLike2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskLikeᚄ(ctx, field.Selections, res).MarshalGQL(w)
+			ec.marshalNTaskLike2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskLike(ctx, field.Selections, res).MarshalGQL(w)
 			w.Write([]byte{'}'})
 		})
 	}
@@ -36450,6 +36535,41 @@ func (ec *executionContext) _TaskLike_teammateId(ctx context.Context, field grap
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.TeammateID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(ulid.ID)
+	fc.Result = res
+	return ec.marshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _TaskLike_workspaceId(ctx context.Context, field graphql.CollectedField, obj *ent.TaskLike) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "TaskLike",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.WorkspaceID, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -47161,6 +47281,37 @@ func (ec *executionContext) unmarshalInputDeleteTaskFeedInput(ctx context.Contex
 
 func (ec *executionContext) unmarshalInputDeleteTaskFeedLikeInput(ctx context.Context, obj interface{}) (model.DeleteTaskFeedLikeInput, error) {
 	var it model.DeleteTaskFeedLikeInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			it.ID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "requestId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("requestId"))
+			it.RequestID, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputDeleteTaskLikeInput(ctx context.Context, obj interface{}) (model.DeleteTaskLikeInput, error) {
+	var it model.DeleteTaskLikeInput
 	asMap := map[string]interface{}{}
 	for k, v := range obj.(map[string]interface{}) {
 		asMap[k] = v
@@ -71980,6 +72131,11 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "deleteTaskLike":
+			out.Values[i] = ec._Mutation_deleteTaskLike(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		case "createTaskListCompletedStatus":
 			out.Values[i] = ec._Mutation_createTaskListCompletedStatus(ctx, field)
 			if out.Values[i] == graphql.Null {
@@ -74654,8 +74810,8 @@ func (ec *executionContext) _Subscription(ctx context.Context, sel ast.Selection
 		return ec._Subscription_taskFeedLikesUpdated(ctx, fields[0])
 	case "taskFileUpdated":
 		return ec._Subscription_taskFileUpdated(ctx, fields[0])
-	case "taskLikesUpdated":
-		return ec._Subscription_taskLikesUpdated(ctx, fields[0])
+	case "taskLikeUpdated":
+		return ec._Subscription_taskLikeUpdated(ctx, fields[0])
 	case "taskSectionUpdated":
 		return ec._Subscription_taskSectionUpdated(ctx, fields[0])
 	case "taskTagsUpdated":
@@ -75871,6 +76027,11 @@ func (ec *executionContext) _TaskLike(ctx context.Context, sel ast.SelectionSet,
 			}
 		case "teammateId":
 			out.Values[i] = ec._TaskLike_teammateId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "workspaceId":
+			out.Values[i] = ec._TaskLike_workspaceId(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)
 			}
@@ -78910,6 +79071,11 @@ func (ec *executionContext) unmarshalNDeleteTaskFeedLikeInput2projectᚑmanageme
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
+func (ec *executionContext) unmarshalNDeleteTaskLikeInput2projectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐDeleteTaskLikeInput(ctx context.Context, v interface{}) (model.DeleteTaskLikeInput, error) {
+	res, err := ec.unmarshalInputDeleteTaskLikeInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNDeleteTaskTagInput2projectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐDeleteTaskTagInput(ctx context.Context, v interface{}) (model.DeleteTaskTagInput, error) {
 	res, err := ec.unmarshalInputDeleteTaskTagInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -79940,50 +80106,6 @@ func (ec *executionContext) marshalNTaskLike2projectᚑmanagementᚑdemoᚑbacke
 	return ec._TaskLike(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNTaskLike2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskLikeᚄ(ctx context.Context, sel ast.SelectionSet, v []*ent.TaskLike) graphql.Marshaler {
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalNTaskLike2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskLike(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
-
-	for _, e := range ret {
-		if e == graphql.Null {
-			return graphql.Null
-		}
-	}
-
-	return ret
-}
-
 func (ec *executionContext) marshalNTaskLike2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskLike(ctx context.Context, sel ast.SelectionSet, v *ent.TaskLike) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
@@ -79992,11 +80114,6 @@ func (ec *executionContext) marshalNTaskLike2ᚖprojectᚑmanagementᚑdemoᚑba
 		return graphql.Null
 	}
 	return ec._TaskLike(ctx, sel, v)
-}
-
-func (ec *executionContext) unmarshalNTaskLikeWhereInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskLikeWhereInput(ctx context.Context, v interface{}) (ent.TaskLikeWhereInput, error) {
-	res, err := ec.unmarshalInputTaskLikeWhereInput(ctx, v)
-	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalNTaskLikeWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskLikeWhereInput(ctx context.Context, v interface{}) (*ent.TaskLikeWhereInput, error) {

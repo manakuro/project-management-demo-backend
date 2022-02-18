@@ -228,9 +228,9 @@ type ProjectTaskCreated struct {
 
 // TaskLikesUpdated is a channel for subscription.
 type TaskLikesUpdated struct {
-	Where     model.TaskLikeWhereInput
-	RequestID string
-	Ch        chan []*model.TaskLike
+	WorkspaceID model.ID
+	RequestID   string
+	Ch          chan *model.TaskLike
 }
 
 // TagUpdated is a channel for subscription.

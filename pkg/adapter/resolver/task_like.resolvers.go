@@ -6,8 +6,10 @@ package resolver
 import (
 	"context"
 	"project-management-demo-backend/ent"
+	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/graph/generated"
 	"project-management-demo-backend/pkg/adapter/handler"
+	"project-management-demo-backend/pkg/entity/model"
 	"project-management-demo-backend/pkg/util/datetime"
 	"project-management-demo-backend/pkg/util/subscription"
 )
@@ -19,17 +21,9 @@ func (r *mutationResolver) CreateTaskLike(ctx context.Context, input ent.CreateT
 	}
 
 	go func() {
-		var ts []*ent.TaskLike
 		for _, u := range r.subscriptions.TaskLikesUpdated {
-			if *u.Where.WorkspaceID == t.WorkspaceID {
-				if ts == nil {
-					ts, err = r.controller.TaskLike.List(ctx, &u.Where)
-					if err != nil {
-						break
-					}
-				}
-
-				u.Ch <- ts
+			if u.WorkspaceID == t.WorkspaceID && u.RequestID != input.RequestID {
+				u.Ch <- t
 			}
 		}
 	}()
@@ -42,6 +36,23 @@ func (r *mutationResolver) UpdateTaskLike(ctx context.Context, input ent.UpdateT
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
+
+	return t, nil
+}
+
+func (r *mutationResolver) DeleteTaskLike(ctx context.Context, input model.DeleteTaskLikeInput) (*ent.TaskLike, error) {
+	t, err := r.controller.TaskLike.Delete(ctx, input)
+	if err != nil {
+		return nil, handler.HandleGraphQLError(ctx, err)
+	}
+
+	go func() {
+		for _, u := range r.subscriptions.TaskLikesUpdated {
+			if u.WorkspaceID == t.WorkspaceID && u.RequestID != input.RequestID {
+				u.Ch <- t
+			}
+		}
+	}()
 
 	return t, nil
 }
@@ -63,15 +74,15 @@ func (r *queryResolver) TaskLikes(ctx context.Context, after *ent.Cursor, first 
 	return ts, nil
 }
 
-func (r *subscriptionResolver) TaskLikesUpdated(ctx context.Context, where ent.TaskLikeWhereInput, requestID string) (<-chan []*ent.TaskLike, error) {
+func (r *subscriptionResolver) TaskLikeUpdated(ctx context.Context, workspaceID ulid.ID, requestID string) (<-chan *ent.TaskLike, error) {
 	key := subscription.NewKey()
-	ch := make(chan []*ent.TaskLike, 1)
+	ch := make(chan *ent.TaskLike, 1)
 
 	r.mutex.Lock()
 	r.subscriptions.TaskLikesUpdated[key] = subscription.TaskLikesUpdated{
-		Where:     where,
-		RequestID: requestID,
-		Ch:        ch,
+		WorkspaceID: workspaceID,
+		RequestID:   requestID,
+		Ch:          ch,
 	}
 	r.mutex.Unlock()
 
