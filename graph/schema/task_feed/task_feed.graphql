@@ -37,10 +37,13 @@ input UpdateTaskFeedInput {
 
 input DeleteTaskFeedInput {
   id: ID!
+  requestId: String!
 }
 
 extend type Subscription {
   taskFeedUpdated(id: ID!, requestId: String!): TaskFeed!
+  taskFeedCreated(taskId: ID!, requestId: String!): TaskFeed!
+  taskFeedDeleted(taskId: ID!, requestId: String!): TaskFeed!
 }
 
 extend type Query {

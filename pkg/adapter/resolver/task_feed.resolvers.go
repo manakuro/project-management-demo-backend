@@ -20,6 +20,14 @@ func (r *mutationResolver) CreateTaskFeed(ctx context.Context, input ent.CreateT
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
 
+	go func() {
+		for _, c := range r.subscriptions.TaskFeedCreated {
+			if c.TaskID == t.TaskID && c.RequestID != input.RequestID {
+				c.Ch <- t
+			}
+		}
+	}()
+
 	return t, nil
 }
 
@@ -45,6 +53,14 @@ func (r *mutationResolver) DeleteTaskFeed(ctx context.Context, input model.Delet
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
+
+	go func() {
+		for _, d := range r.subscriptions.TaskFeedDeleted {
+			if d.TaskID == t.TaskID && d.RequestID != input.RequestID {
+				d.Ch <- t
+			}
+		}
+	}()
 
 	return t, nil
 }
@@ -82,6 +98,50 @@ func (r *subscriptionResolver) TaskFeedUpdated(ctx context.Context, id ulid.ID, 
 		<-ctx.Done()
 		r.mutex.Lock()
 		delete(r.subscriptions.TaskFeedUpdated, key)
+		r.mutex.Unlock()
+	}()
+
+	return ch, nil
+}
+
+func (r *subscriptionResolver) TaskFeedCreated(ctx context.Context, taskID ulid.ID, requestID string) (<-chan *ent.TaskFeed, error) {
+	key := subscription.NewKey()
+	ch := make(chan *ent.TaskFeed, 1)
+
+	r.mutex.Lock()
+	r.subscriptions.TaskFeedCreated[key] = subscription.TaskFeedCreated{
+		TaskID:    taskID,
+		RequestID: requestID,
+		Ch:        ch,
+	}
+	r.mutex.Unlock()
+
+	go func() {
+		<-ctx.Done()
+		r.mutex.Lock()
+		delete(r.subscriptions.TaskFeedCreated, key)
+		r.mutex.Unlock()
+	}()
+
+	return ch, nil
+}
+
+func (r *subscriptionResolver) TaskFeedDeleted(ctx context.Context, taskID ulid.ID, requestID string) (<-chan *ent.TaskFeed, error) {
+	key := subscription.NewKey()
+	ch := make(chan *ent.TaskFeed, 1)
+
+	r.mutex.Lock()
+	r.subscriptions.TaskFeedDeleted[key] = subscription.TaskFeedDeleted{
+		TaskID:    taskID,
+		RequestID: requestID,
+		Ch:        ch,
+	}
+	r.mutex.Unlock()
+
+	go func() {
+		<-ctx.Done()
+		r.mutex.Lock()
+		delete(r.subscriptions.TaskFeedDeleted, key)
 		r.mutex.Unlock()
 	}()
 
