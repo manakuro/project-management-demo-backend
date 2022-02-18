@@ -18,6 +18,15 @@ func (r *mutationResolver) CreateProjectTaskSection(ctx context.Context, input e
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
+
+	go func() {
+		for _, c := range r.subscriptions.ProjectTaskSectionCreated {
+			if c.ProjectID == p.ProjectID && c.RequestID != input.RequestID {
+				c.Ch <- p
+			}
+		}
+	}()
+
 	return p, nil
 }
 
@@ -79,6 +88,28 @@ func (r *subscriptionResolver) ProjectTaskSectionUpdated(ctx context.Context, id
 		<-ctx.Done()
 		r.mutex.Lock()
 		delete(r.subscriptions.ProjectTaskSectionUpdated, key)
+		r.mutex.Unlock()
+	}()
+
+	return ch, nil
+}
+
+func (r *subscriptionResolver) ProjectTaskSectionCreated(ctx context.Context, projectID ulid.ID, requestID string) (<-chan *ent.ProjectTaskSection, error) {
+	key := subscription.NewKey()
+	ch := make(chan *ent.ProjectTaskSection, 1)
+
+	r.mutex.Lock()
+	r.subscriptions.ProjectTaskSectionCreated[key] = subscription.ProjectTaskSectionCreated{
+		ProjectID: projectID,
+		RequestID: requestID,
+		Ch:        ch,
+	}
+	r.mutex.Unlock()
+
+	go func() {
+		<-ctx.Done()
+		r.mutex.Lock()
+		delete(r.subscriptions.ProjectTaskSectionCreated, key)
 		r.mutex.Unlock()
 	}()
 

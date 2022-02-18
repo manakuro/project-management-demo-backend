@@ -447,21 +447,7 @@ func init() {
 	// projecttasksectionDescName is the schema descriptor for name field.
 	projecttasksectionDescName := projecttasksectionMixinFields1[1].Descriptor()
 	// projecttasksection.NameValidator is a validator for the "name" field. It is called by the builders before save.
-	projecttasksection.NameValidator = func() func(string) error {
-		validators := projecttasksectionDescName.Validators
-		fns := [...]func(string) error{
-			validators[0].(func(string) error),
-			validators[1].(func(string) error),
-		}
-		return func(name string) error {
-			for _, fn := range fns {
-				if err := fn(name); err != nil {
-					return err
-				}
-			}
-			return nil
-		}
-	}()
+	projecttasksection.NameValidator = projecttasksectionDescName.Validators[0].(func(string) error)
 	// projecttasksectionDescCreatedAt is the schema descriptor for created_at field.
 	projecttasksectionDescCreatedAt := projecttasksectionMixinFields2[0].Descriptor()
 	// projecttasksection.DefaultCreatedAt holds the default value on creation for the created_at field.

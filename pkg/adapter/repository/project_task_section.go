@@ -64,6 +64,7 @@ func (r *projectTaskSectionRepository) Create(ctx context.Context, input model.C
 		ProjectTaskSection.
 		Create().
 		SetInput(input).
+		SetName("").
 		Save(ctx)
 
 	if err != nil {

@@ -612,6 +612,7 @@ type ComplexityRoot struct {
 		ProjectTaskColumnUpdated      func(childComplexity int, id ulid.ID, requestID string) int
 		ProjectTaskCreated            func(childComplexity int, projectID ulid.ID, requestID string) int
 		ProjectTaskListStatusUpdated  func(childComplexity int, id ulid.ID, requestID string) int
+		ProjectTaskSectionCreated     func(childComplexity int, projectID ulid.ID, requestID string) int
 		ProjectTaskSectionUpdated     func(childComplexity int, id ulid.ID, requestID string) int
 		ProjectTaskUpdated            func(childComplexity int, id ulid.ID, requestID string) int
 		ProjectTeammateUpdated        func(childComplexity int, id ulid.ID, requestID string) int
@@ -1408,6 +1409,7 @@ type SubscriptionResolver interface {
 	ProjectTaskColumnUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.ProjectTaskColumn, error)
 	ProjectTaskListStatusUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.ProjectTaskListStatus, error)
 	ProjectTaskSectionUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.ProjectTaskSection, error)
+	ProjectTaskSectionCreated(ctx context.Context, projectID ulid.ID, requestID string) (<-chan *ent.ProjectTaskSection, error)
 	ProjectTeammateUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.ProjectTeammate, error)
 	TagUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.Tag, error)
 	TaskUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.Task, error)
@@ -4953,6 +4955,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Subscription.ProjectTaskListStatusUpdated(childComplexity, args["id"].(ulid.ID), args["requestId"].(string)), true
+
+	case "Subscription.projectTaskSectionCreated":
+		if e.complexity.Subscription.ProjectTaskSectionCreated == nil {
+			break
+		}
+
+		args, err := ec.field_Subscription_projectTaskSectionCreated_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Subscription.ProjectTaskSectionCreated(childComplexity, args["projectId"].(ulid.ID), args["requestId"].(string)), true
 
 	case "Subscription.projectTaskSectionUpdated":
 		if e.complexity.Subscription.ProjectTaskSectionUpdated == nil {
@@ -11799,6 +11813,7 @@ input UpdateProjectTaskSectionInput {
 
 extend type Subscription {
   projectTaskSectionUpdated(id: ID!, requestId: String!): ProjectTaskSection!
+  projectTaskSectionCreated(projectId: ID!, requestId: String!): ProjectTaskSection!
 }
 
 extend type Query {
@@ -17149,6 +17164,30 @@ func (ec *executionContext) field_Subscription_projectTaskListStatusUpdated_args
 		}
 	}
 	args["id"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["requestId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("requestId"))
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["requestId"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Subscription_projectTaskSectionCreated_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 ulid.ID
+	if tmp, ok := rawArgs["projectId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("projectId"))
+		arg0, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["projectId"] = arg0
 	var arg1 string
 	if tmp, ok := rawArgs["requestId"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("requestId"))
@@ -31735,6 +31774,58 @@ func (ec *executionContext) _Subscription_projectTaskSectionUpdated(ctx context.
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Subscription().ProjectTaskSectionUpdated(rctx, args["id"].(ulid.ID), args["requestId"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return nil
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return nil
+	}
+	return func() graphql.Marshaler {
+		res, ok := <-resTmp.(<-chan *ent.ProjectTaskSection)
+		if !ok {
+			return nil
+		}
+		return graphql.WriterFunc(func(w io.Writer) {
+			w.Write([]byte{'{'})
+			graphql.MarshalString(field.Alias).MarshalGQL(w)
+			w.Write([]byte{':'})
+			ec.marshalNProjectTaskSection2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTaskSection(ctx, field.Selections, res).MarshalGQL(w)
+			w.Write([]byte{'}'})
+		})
+	}
+}
+
+func (ec *executionContext) _Subscription_projectTaskSectionCreated(ctx context.Context, field graphql.CollectedField) (ret func() graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = nil
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Subscription",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Subscription_projectTaskSectionCreated_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return nil
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Subscription().ProjectTaskSectionCreated(rctx, args["projectId"].(ulid.ID), args["requestId"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -74547,6 +74638,8 @@ func (ec *executionContext) _Subscription(ctx context.Context, sel ast.Selection
 		return ec._Subscription_projectTaskListStatusUpdated(ctx, fields[0])
 	case "projectTaskSectionUpdated":
 		return ec._Subscription_projectTaskSectionUpdated(ctx, fields[0])
+	case "projectTaskSectionCreated":
+		return ec._Subscription_projectTaskSectionCreated(ctx, fields[0])
 	case "projectTeammateUpdated":
 		return ec._Subscription_projectTeammateUpdated(ctx, fields[0])
 	case "tagUpdated":

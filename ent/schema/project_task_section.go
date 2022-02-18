@@ -35,7 +35,6 @@ func (ProjectTaskSectionMixin) Fields() []ent.Field {
 		field.String("project_id").
 			GoType(ulid.ID("")),
 		field.String("name").
-			NotEmpty().
 			MaxLen(255),
 	}
 }
