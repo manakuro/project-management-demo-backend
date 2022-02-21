@@ -5,7 +5,6 @@ package resolver
 
 import (
 	"context"
-	"fmt"
 	"project-management-demo-backend/ent"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/graph/generated"
@@ -21,19 +20,13 @@ func (r *mutationResolver) CreateTaskFeedLike(ctx context.Context, input ent.Cre
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
 
-	var ts []*ent.TaskFeedLike
-	for _, u := range r.subscriptions.TaskFeedLikeUpdated {
-		if u.TaskID == t.TaskID {
-			if ts == nil {
-				ts, err = r.controller.TaskFeedLike.List(ctx, &ent.TaskFeedLikeWhereInput{TaskID: &t.TaskID})
-				if err != nil {
-					// TODO: Add error handling
-					fmt.Println(err)
-				}
+	go func() {
+		for _, u := range r.subscriptions.TaskFeedLikeUpdated {
+			if u.TaskID == t.TaskID && u.RequestID != input.RequestID {
+				u.Ch <- t
 			}
-			u.Ch <- ts
 		}
-	}
+	}()
 
 	return t, nil
 }
@@ -53,18 +46,13 @@ func (r *mutationResolver) DeleteTaskFeedLike(ctx context.Context, input model.D
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
 
-	var ts []*ent.TaskFeedLike
-	for _, u := range r.subscriptions.TaskFeedLikeUpdated {
-		if u.TaskID == t.TaskID {
-			if ts == nil {
-				ts, err = r.controller.TaskFeedLike.List(ctx, &ent.TaskFeedLikeWhereInput{TaskID: &t.TaskID})
-				if err != nil {
-					fmt.Println(err)
-				}
+	go func() {
+		for _, u := range r.subscriptions.TaskFeedLikeUpdated {
+			if u.TaskID == t.TaskID && u.RequestID != input.RequestID {
+				u.Ch <- t
 			}
-			u.Ch <- ts
 		}
-	}
+	}()
 
 	return t, nil
 }
@@ -87,9 +75,9 @@ func (r *queryResolver) TaskFeedLikes(ctx context.Context, after *ent.Cursor, fi
 	return ts, nil
 }
 
-func (r *subscriptionResolver) TaskFeedLikesUpdated(ctx context.Context, taskID ulid.ID, requestID string) (<-chan []*ent.TaskFeedLike, error) {
+func (r *subscriptionResolver) TaskFeedLikesUpdated(ctx context.Context, taskID ulid.ID, requestID string) (<-chan *ent.TaskFeedLike, error) {
 	key := subscription.NewKey()
-	ch := make(chan []*ent.TaskFeedLike, 1)
+	ch := make(chan *ent.TaskFeedLike, 1)
 
 	r.mutex.Lock()
 	r.subscriptions.TaskFeedLikeUpdated[key] = subscription.TaskFeedLikeUpdated{

@@ -37,7 +37,7 @@ input DeleteTaskFeedLikeInput {
 }
 
 extend type Subscription {
-  taskFeedLikesUpdated(taskId: ID!, requestId: String!): [TaskFeedLike!]!
+  taskFeedLikesUpdated(taskId: ID!, requestId: String!): TaskFeedLike!
 }
 
 extend type Query {

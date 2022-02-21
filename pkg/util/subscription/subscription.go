@@ -279,7 +279,7 @@ type TaskFeedDeleted struct {
 type TaskFeedLikeUpdated struct {
 	TaskID    model.ID
 	RequestID string
-	Ch        chan []*model.TaskFeedLike
+	Ch        chan *model.TaskFeedLike
 }
 
 // TaskFileUpdated is a channel for subscription.

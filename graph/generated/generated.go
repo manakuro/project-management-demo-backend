@@ -1422,7 +1422,7 @@ type SubscriptionResolver interface {
 	TaskFeedUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.TaskFeed, error)
 	TaskFeedCreated(ctx context.Context, taskID ulid.ID, requestID string) (<-chan *ent.TaskFeed, error)
 	TaskFeedDeleted(ctx context.Context, taskID ulid.ID, requestID string) (<-chan *ent.TaskFeed, error)
-	TaskFeedLikesUpdated(ctx context.Context, taskID ulid.ID, requestID string) (<-chan []*ent.TaskFeedLike, error)
+	TaskFeedLikesUpdated(ctx context.Context, taskID ulid.ID, requestID string) (<-chan *ent.TaskFeedLike, error)
 	TaskFileUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.TaskFile, error)
 	TaskLikeUpdated(ctx context.Context, workspaceID ulid.ID, requestID string) (<-chan *ent.TaskLike, error)
 	TaskSectionUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.TaskSection, error)
@@ -12290,7 +12290,7 @@ input DeleteTaskFeedLikeInput {
 }
 
 extend type Subscription {
-  taskFeedLikesUpdated(taskId: ID!, requestId: String!): [TaskFeedLike!]!
+  taskFeedLikesUpdated(taskId: ID!, requestId: String!): TaskFeedLike!
 }
 
 extend type Query {
@@ -32418,7 +32418,7 @@ func (ec *executionContext) _Subscription_taskFeedLikesUpdated(ctx context.Conte
 		return nil
 	}
 	return func() graphql.Marshaler {
-		res, ok := <-resTmp.(<-chan []*ent.TaskFeedLike)
+		res, ok := <-resTmp.(<-chan *ent.TaskFeedLike)
 		if !ok {
 			return nil
 		}
@@ -32426,7 +32426,7 @@ func (ec *executionContext) _Subscription_taskFeedLikesUpdated(ctx context.Conte
 			w.Write([]byte{'{'})
 			graphql.MarshalString(field.Alias).MarshalGQL(w)
 			w.Write([]byte{':'})
-			ec.marshalNTaskFeedLike2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskFeedLikeᚄ(ctx, field.Selections, res).MarshalGQL(w)
+			ec.marshalNTaskFeedLike2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskFeedLike(ctx, field.Selections, res).MarshalGQL(w)
 			w.Write([]byte{'}'})
 		})
 	}
@@ -80168,50 +80168,6 @@ func (ec *executionContext) marshalNTaskFeed2ᚖprojectᚑmanagementᚑdemoᚑba
 
 func (ec *executionContext) marshalNTaskFeedLike2projectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskFeedLike(ctx context.Context, sel ast.SelectionSet, v ent.TaskFeedLike) graphql.Marshaler {
 	return ec._TaskFeedLike(ctx, sel, &v)
-}
-
-func (ec *executionContext) marshalNTaskFeedLike2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskFeedLikeᚄ(ctx context.Context, sel ast.SelectionSet, v []*ent.TaskFeedLike) graphql.Marshaler {
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalNTaskFeedLike2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskFeedLike(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
-
-	for _, e := range ret {
-		if e == graphql.Null {
-			return graphql.Null
-		}
-	}
-
-	return ret
 }
 
 func (ec *executionContext) marshalNTaskFeedLike2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskFeedLike(ctx context.Context, sel ast.SelectionSet, v *ent.TaskFeedLike) graphql.Marshaler {

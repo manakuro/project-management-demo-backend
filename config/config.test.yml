@@ -16,4 +16,4 @@ firebase:
   serviceKey: .keys/firebase-service-key.json
 
 server:
-  address: 8081
+  address: 8082
