@@ -15,6 +15,7 @@ type Task implements Node {
   subTasks: [Task!]!
   taskFiles: [TaskFile!]!
   taskFeeds: [TaskFeed!]!
+  taskFeedLikes: [TaskFeedLike!]!
   taskCollaborators: [TaskCollaborator!]!
   taskTags: [TaskTag!]!
   projectTasks: [ProjectTask!]!

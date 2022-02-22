@@ -275,11 +275,18 @@ type TaskFeedDeleted struct {
 	Ch        chan *model.TaskFeed
 }
 
-// TaskFeedLikeUpdated is a channel for subscription.
-type TaskFeedLikeUpdated struct {
-	TaskID    model.ID
-	RequestID string
-	Ch        chan *model.TaskFeedLike
+// TaskFeedLikeCreated is a channel for subscription.
+type TaskFeedLikeCreated struct {
+	TaskFeedID model.ID
+	RequestID  string
+	Ch         chan *model.TaskFeedLike
+}
+
+// TaskFeedLikeDeleted is a channel for subscription.
+type TaskFeedLikeDeleted struct {
+	TaskFeedID model.ID
+	RequestID  string
+	Ch         chan *model.TaskFeedLike
 }
 
 // TaskFileUpdated is a channel for subscription.
@@ -311,7 +318,8 @@ type Subscriptions struct {
 	TagUpdated                    map[string]TagUpdated
 	TaskCollaboratorUpdated       map[string]TaskCollaboratorUpdated
 	TaskColumnUpdated             map[string]TaskColumnUpdated
-	TaskFeedLikeUpdated           map[string]TaskFeedLikeUpdated
+	TaskFeedLikeCreated           map[string]TaskFeedLikeCreated
+	TaskFeedLikeDeleted           map[string]TaskFeedLikeDeleted
 	TaskFeedUpdated               map[string]TaskFeedUpdated
 	TaskFeedCreated               map[string]TaskFeedCreated
 	TaskFeedDeleted               map[string]TaskFeedDeleted

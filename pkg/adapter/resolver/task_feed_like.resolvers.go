@@ -21,8 +21,8 @@ func (r *mutationResolver) CreateTaskFeedLike(ctx context.Context, input ent.Cre
 	}
 
 	go func() {
-		for _, u := range r.subscriptions.TaskFeedLikeUpdated {
-			if u.TaskID == t.TaskID && u.RequestID != input.RequestID {
+		for _, u := range r.subscriptions.TaskFeedLikeCreated {
+			if u.TaskFeedID == t.TaskFeedID && u.RequestID != input.RequestID {
 				u.Ch <- t
 			}
 		}
@@ -47,8 +47,8 @@ func (r *mutationResolver) DeleteTaskFeedLike(ctx context.Context, input model.D
 	}
 
 	go func() {
-		for _, u := range r.subscriptions.TaskFeedLikeUpdated {
-			if u.TaskID == t.TaskID && u.RequestID != input.RequestID {
+		for _, u := range r.subscriptions.TaskFeedLikeDeleted {
+			if u.TaskFeedID == t.TaskFeedID && u.RequestID != input.RequestID {
 				u.Ch <- t
 			}
 		}
@@ -75,22 +75,44 @@ func (r *queryResolver) TaskFeedLikes(ctx context.Context, after *ent.Cursor, fi
 	return ts, nil
 }
 
-func (r *subscriptionResolver) TaskFeedLikesUpdated(ctx context.Context, taskID ulid.ID, requestID string) (<-chan *ent.TaskFeedLike, error) {
+func (r *subscriptionResolver) TaskFeedLikeCreated(ctx context.Context, taskFeedID ulid.ID, requestID string) (<-chan *ent.TaskFeedLike, error) {
 	key := subscription.NewKey()
 	ch := make(chan *ent.TaskFeedLike, 1)
 
 	r.mutex.Lock()
-	r.subscriptions.TaskFeedLikeUpdated[key] = subscription.TaskFeedLikeUpdated{
-		TaskID:    taskID,
-		RequestID: requestID,
-		Ch:        ch,
+	r.subscriptions.TaskFeedLikeCreated[key] = subscription.TaskFeedLikeCreated{
+		TaskFeedID: taskFeedID,
+		RequestID:  requestID,
+		Ch:         ch,
 	}
 	r.mutex.Unlock()
 
 	go func() {
 		<-ctx.Done()
 		r.mutex.Lock()
-		delete(r.subscriptions.TaskFeedLikeUpdated, key)
+		delete(r.subscriptions.TaskFeedLikeCreated, key)
+		r.mutex.Unlock()
+	}()
+
+	return ch, nil
+}
+
+func (r *subscriptionResolver) TaskFeedLikeDeleted(ctx context.Context, taskFeedID ulid.ID, requestID string) (<-chan *ent.TaskFeedLike, error) {
+	key := subscription.NewKey()
+	ch := make(chan *ent.TaskFeedLike)
+
+	r.mutex.Lock()
+	r.subscriptions.TaskFeedLikeDeleted[key] = subscription.TaskFeedLikeDeleted{
+		TaskFeedID: taskFeedID,
+		RequestID:  requestID,
+		Ch:         ch,
+	}
+	r.mutex.Unlock()
+
+	go func() {
+		<-ctx.Done()
+		r.mutex.Lock()
+		delete(r.subscriptions.TaskFeedDeleted, key)
 		r.mutex.Unlock()
 	}()
 

@@ -622,7 +622,8 @@ type ComplexityRoot struct {
 		TaskCollaboratorsUpdated      func(childComplexity int, taskID ulid.ID, requestID string) int
 		TaskFeedCreated               func(childComplexity int, taskID ulid.ID, requestID string) int
 		TaskFeedDeleted               func(childComplexity int, taskID ulid.ID, requestID string) int
-		TaskFeedLikesUpdated          func(childComplexity int, taskID ulid.ID, requestID string) int
+		TaskFeedLikeCreated           func(childComplexity int, taskFeedID ulid.ID, requestID string) int
+		TaskFeedLikeDeleted           func(childComplexity int, taskFeedID ulid.ID, requestID string) int
 		TaskFeedUpdated               func(childComplexity int, id ulid.ID, requestID string) int
 		TaskFileUpdated               func(childComplexity int, id ulid.ID, requestID string) int
 		TaskLikeUpdated               func(childComplexity int, workspaceID ulid.ID, requestID string) int
@@ -678,6 +679,7 @@ type ComplexityRoot struct {
 		ProjectTasks      func(childComplexity int) int
 		SubTasks          func(childComplexity int) int
 		TaskCollaborators func(childComplexity int) int
+		TaskFeedLikes     func(childComplexity int) int
 		TaskFeeds         func(childComplexity int) int
 		TaskFiles         func(childComplexity int) int
 		TaskParentID      func(childComplexity int) int
@@ -1422,7 +1424,8 @@ type SubscriptionResolver interface {
 	TaskFeedUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.TaskFeed, error)
 	TaskFeedCreated(ctx context.Context, taskID ulid.ID, requestID string) (<-chan *ent.TaskFeed, error)
 	TaskFeedDeleted(ctx context.Context, taskID ulid.ID, requestID string) (<-chan *ent.TaskFeed, error)
-	TaskFeedLikesUpdated(ctx context.Context, taskID ulid.ID, requestID string) (<-chan *ent.TaskFeedLike, error)
+	TaskFeedLikeCreated(ctx context.Context, taskFeedID ulid.ID, requestID string) (<-chan *ent.TaskFeedLike, error)
+	TaskFeedLikeDeleted(ctx context.Context, taskFeedID ulid.ID, requestID string) (<-chan *ent.TaskFeedLike, error)
 	TaskFileUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.TaskFile, error)
 	TaskLikeUpdated(ctx context.Context, workspaceID ulid.ID, requestID string) (<-chan *ent.TaskLike, error)
 	TaskSectionUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.TaskSection, error)
@@ -5083,17 +5086,29 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Subscription.TaskFeedDeleted(childComplexity, args["taskId"].(ulid.ID), args["requestId"].(string)), true
 
-	case "Subscription.taskFeedLikesUpdated":
-		if e.complexity.Subscription.TaskFeedLikesUpdated == nil {
+	case "Subscription.taskFeedLikeCreated":
+		if e.complexity.Subscription.TaskFeedLikeCreated == nil {
 			break
 		}
 
-		args, err := ec.field_Subscription_taskFeedLikesUpdated_args(context.TODO(), rawArgs)
+		args, err := ec.field_Subscription_taskFeedLikeCreated_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Subscription.TaskFeedLikesUpdated(childComplexity, args["taskId"].(ulid.ID), args["requestId"].(string)), true
+		return e.complexity.Subscription.TaskFeedLikeCreated(childComplexity, args["taskFeedId"].(ulid.ID), args["requestId"].(string)), true
+
+	case "Subscription.taskFeedLikeDeleted":
+		if e.complexity.Subscription.TaskFeedLikeDeleted == nil {
+			break
+		}
+
+		args, err := ec.field_Subscription_taskFeedLikeDeleted_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Subscription.TaskFeedLikeDeleted(childComplexity, args["taskFeedId"].(ulid.ID), args["requestId"].(string)), true
 
 	case "Subscription.taskFeedUpdated":
 		if e.complexity.Subscription.TaskFeedUpdated == nil {
@@ -5480,6 +5495,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Task.TaskCollaborators(childComplexity), true
+
+	case "Task.taskFeedLikes":
+		if e.complexity.Task.TaskFeedLikes == nil {
+			break
+		}
+
+		return e.complexity.Task.TaskFeedLikes(childComplexity), true
 
 	case "Task.taskFeeds":
 		if e.complexity.Task.TaskFeeds == nil {
@@ -12014,6 +12036,7 @@ extend type Mutation {
   subTasks: [Task!]!
   taskFiles: [TaskFile!]!
   taskFeeds: [TaskFeed!]!
+  taskFeedLikes: [TaskFeedLike!]!
   taskCollaborators: [TaskCollaborator!]!
   taskTags: [TaskTag!]!
   projectTasks: [ProjectTask!]!
@@ -12290,7 +12313,8 @@ input DeleteTaskFeedLikeInput {
 }
 
 extend type Subscription {
-  taskFeedLikesUpdated(taskId: ID!, requestId: String!): TaskFeedLike!
+  taskFeedLikeCreated(taskFeedId: ID!, requestId: String!): TaskFeedLike!
+  taskFeedLikeDeleted(taskFeedId: ID!, requestId: String!): TaskFeedLike!
 }
 
 extend type Query {
@@ -17466,18 +17490,42 @@ func (ec *executionContext) field_Subscription_taskFeedDeleted_args(ctx context.
 	return args, nil
 }
 
-func (ec *executionContext) field_Subscription_taskFeedLikesUpdated_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Subscription_taskFeedLikeCreated_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 ulid.ID
-	if tmp, ok := rawArgs["taskId"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskId"))
+	if tmp, ok := rawArgs["taskFeedId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskFeedId"))
 		arg0, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["taskId"] = arg0
+	args["taskFeedId"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["requestId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("requestId"))
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["requestId"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Subscription_taskFeedLikeDeleted_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 ulid.ID
+	if tmp, ok := rawArgs["taskFeedId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskFeedId"))
+		arg0, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["taskFeedId"] = arg0
 	var arg1 string
 	if tmp, ok := rawArgs["requestId"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("requestId"))
@@ -32380,7 +32428,7 @@ func (ec *executionContext) _Subscription_taskFeedDeleted(ctx context.Context, f
 	}
 }
 
-func (ec *executionContext) _Subscription_taskFeedLikesUpdated(ctx context.Context, field graphql.CollectedField) (ret func() graphql.Marshaler) {
+func (ec *executionContext) _Subscription_taskFeedLikeCreated(ctx context.Context, field graphql.CollectedField) (ret func() graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -32397,7 +32445,7 @@ func (ec *executionContext) _Subscription_taskFeedLikesUpdated(ctx context.Conte
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Subscription_taskFeedLikesUpdated_args(ctx, rawArgs)
+	args, err := ec.field_Subscription_taskFeedLikeCreated_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return nil
@@ -32405,7 +32453,59 @@ func (ec *executionContext) _Subscription_taskFeedLikesUpdated(ctx context.Conte
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Subscription().TaskFeedLikesUpdated(rctx, args["taskId"].(ulid.ID), args["requestId"].(string))
+		return ec.resolvers.Subscription().TaskFeedLikeCreated(rctx, args["taskFeedId"].(ulid.ID), args["requestId"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return nil
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return nil
+	}
+	return func() graphql.Marshaler {
+		res, ok := <-resTmp.(<-chan *ent.TaskFeedLike)
+		if !ok {
+			return nil
+		}
+		return graphql.WriterFunc(func(w io.Writer) {
+			w.Write([]byte{'{'})
+			graphql.MarshalString(field.Alias).MarshalGQL(w)
+			w.Write([]byte{':'})
+			ec.marshalNTaskFeedLike2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskFeedLike(ctx, field.Selections, res).MarshalGQL(w)
+			w.Write([]byte{'}'})
+		})
+	}
+}
+
+func (ec *executionContext) _Subscription_taskFeedLikeDeleted(ctx context.Context, field graphql.CollectedField) (ret func() graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = nil
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Subscription",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Subscription_taskFeedLikeDeleted_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return nil
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Subscription().TaskFeedLikeDeleted(rctx, args["taskFeedId"].(ulid.ID), args["requestId"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -34181,6 +34281,41 @@ func (ec *executionContext) _Task_taskFeeds(ctx context.Context, field graphql.C
 	res := resTmp.([]*ent.TaskFeed)
 	fc.Result = res
 	return ec.marshalNTaskFeed2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskFeedᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Task_taskFeedLikes(ctx context.Context, field graphql.CollectedField, obj *ent.Task) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Task",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TaskFeedLikes(ctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*ent.TaskFeedLike)
+	fc.Result = res
+	return ec.marshalNTaskFeedLike2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskFeedLikeᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Task_taskCollaborators(ctx context.Context, field graphql.CollectedField, obj *ent.Task) (ret graphql.Marshaler) {
@@ -75001,8 +75136,10 @@ func (ec *executionContext) _Subscription(ctx context.Context, sel ast.Selection
 		return ec._Subscription_taskFeedCreated(ctx, fields[0])
 	case "taskFeedDeleted":
 		return ec._Subscription_taskFeedDeleted(ctx, fields[0])
-	case "taskFeedLikesUpdated":
-		return ec._Subscription_taskFeedLikesUpdated(ctx, fields[0])
+	case "taskFeedLikeCreated":
+		return ec._Subscription_taskFeedLikeCreated(ctx, fields[0])
+	case "taskFeedLikeDeleted":
+		return ec._Subscription_taskFeedLikeDeleted(ctx, fields[0])
 	case "taskFileUpdated":
 		return ec._Subscription_taskFileUpdated(ctx, fields[0])
 	case "taskLikeUpdated":
@@ -75331,6 +75468,20 @@ func (ec *executionContext) _Task(ctx context.Context, sel ast.SelectionSet, obj
 					}
 				}()
 				res = ec._Task_taskFeeds(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "taskFeedLikes":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Task_taskFeedLikes(ctx, field, obj)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
@@ -80168,6 +80319,50 @@ func (ec *executionContext) marshalNTaskFeed2ᚖprojectᚑmanagementᚑdemoᚑba
 
 func (ec *executionContext) marshalNTaskFeedLike2projectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskFeedLike(ctx context.Context, sel ast.SelectionSet, v ent.TaskFeedLike) graphql.Marshaler {
 	return ec._TaskFeedLike(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNTaskFeedLike2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskFeedLikeᚄ(ctx context.Context, sel ast.SelectionSet, v []*ent.TaskFeedLike) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNTaskFeedLike2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskFeedLike(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
 }
 
 func (ec *executionContext) marshalNTaskFeedLike2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskFeedLike(ctx context.Context, sel ast.SelectionSet, v *ent.TaskFeedLike) graphql.Marshaler {
