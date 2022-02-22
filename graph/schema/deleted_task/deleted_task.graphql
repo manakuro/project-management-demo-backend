@@ -1,8 +1,14 @@
+enum DeletedTaskType {
+  TEAMMATE
+  PROJECT
+}
+
 type DeletedTask implements Node {
   id: ID!
   taskId: ID!
   task: Task!
   workspaceId: ID!
+  taskType: DeletedTaskType!
   createdAt: String!
   updatedAt: String!
 }

@@ -3685,6 +3685,27 @@ input DeletedTaskWhereInput {
   workspaceIDEqualFold: ID
   workspaceIDContainsFold: ID
   
+  """task_section_id field predicates"""
+  taskSectionID: ID
+  taskSectionIDNEQ: ID
+  taskSectionIDIn: [ID!]
+  taskSectionIDNotIn: [ID!]
+  taskSectionIDGT: ID
+  taskSectionIDGTE: ID
+  taskSectionIDLT: ID
+  taskSectionIDLTE: ID
+  taskSectionIDContains: ID
+  taskSectionIDHasPrefix: ID
+  taskSectionIDHasSuffix: ID
+  taskSectionIDEqualFold: ID
+  taskSectionIDContainsFold: ID
+  
+  """task_type field predicates"""
+  taskType: DeletedTaskType
+  taskTypeNEQ: DeletedTaskType
+  taskTypeIn: [DeletedTaskType!]
+  taskTypeNotIn: [DeletedTaskType!]
+  
   """created_at field predicates"""
   createdAt: Time
   createdAtNEQ: Time

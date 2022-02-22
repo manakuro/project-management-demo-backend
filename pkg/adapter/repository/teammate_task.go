@@ -3,6 +3,8 @@ package repository
 import (
 	"context"
 	"project-management-demo-backend/ent"
+	"project-management-demo-backend/ent/deletedtask"
+	"project-management-demo-backend/ent/projecttask"
 	"project-management-demo-backend/ent/task"
 	"project-management-demo-backend/ent/teammatetask"
 	"project-management-demo-backend/ent/teammatetasksection"
@@ -166,9 +168,37 @@ func (r *teammateTaskRepository) Delete(ctx context.Context, input model.DeleteT
 		Create().
 		SetTaskID(input.TaskID).
 		SetWorkspaceID(input.WorkspaceID).
+		SetTaskType(deletedtask.TaskTypeTeammate).
+		SetTaskSectionID(deleted.TeammateTaskSectionID).
 		Save(ctx)
 	if err != nil {
 		return nil, model.NewDBError(err)
+	}
+
+	deletedProjectTask, err := r.client.ProjectTask.
+		Query().
+		Where(projecttask.TaskID(input.TaskID)).
+		Only(ctx)
+
+	if err != nil {
+		return nil, model.NewDBError(err)
+	}
+
+	if deletedProjectTask != nil {
+		err = r.client.ProjectTask.DeleteOneID(deletedProjectTask.ID).Exec(ctx)
+		if err != nil {
+			return nil, model.NewDBError(err)
+		}
+		_, err = r.client.DeletedTask.
+			Create().
+			SetTaskID(input.TaskID).
+			SetWorkspaceID(input.WorkspaceID).
+			SetTaskType(deletedtask.TaskTypeProject).
+			SetTaskSectionID(deletedProjectTask.ProjectTaskSectionID).
+			Save(ctx)
+		if err != nil {
+			return nil, model.NewDBError(err)
+		}
 	}
 
 	return deleted, nil

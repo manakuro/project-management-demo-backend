@@ -964,6 +964,8 @@ type DeletedTaskMutation struct {
 	op               Op
 	typ              string
 	id               *ulid.ID
+	task_section_id  *ulid.ID
+	task_type        *deletedtask.TaskType
 	created_at       *time.Time
 	updated_at       *time.Time
 	clearedFields    map[string]struct{}
@@ -1133,6 +1135,78 @@ func (m *DeletedTaskMutation) ResetWorkspaceID() {
 	m.workspace = nil
 }
 
+// SetTaskSectionID sets the "task_section_id" field.
+func (m *DeletedTaskMutation) SetTaskSectionID(u ulid.ID) {
+	m.task_section_id = &u
+}
+
+// TaskSectionID returns the value of the "task_section_id" field in the mutation.
+func (m *DeletedTaskMutation) TaskSectionID() (r ulid.ID, exists bool) {
+	v := m.task_section_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTaskSectionID returns the old "task_section_id" field's value of the DeletedTask entity.
+// If the DeletedTask object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DeletedTaskMutation) OldTaskSectionID(ctx context.Context) (v ulid.ID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldTaskSectionID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldTaskSectionID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTaskSectionID: %w", err)
+	}
+	return oldValue.TaskSectionID, nil
+}
+
+// ResetTaskSectionID resets all changes to the "task_section_id" field.
+func (m *DeletedTaskMutation) ResetTaskSectionID() {
+	m.task_section_id = nil
+}
+
+// SetTaskType sets the "task_type" field.
+func (m *DeletedTaskMutation) SetTaskType(dt deletedtask.TaskType) {
+	m.task_type = &dt
+}
+
+// TaskType returns the value of the "task_type" field in the mutation.
+func (m *DeletedTaskMutation) TaskType() (r deletedtask.TaskType, exists bool) {
+	v := m.task_type
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTaskType returns the old "task_type" field's value of the DeletedTask entity.
+// If the DeletedTask object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DeletedTaskMutation) OldTaskType(ctx context.Context) (v deletedtask.TaskType, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, fmt.Errorf("OldTaskType is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, fmt.Errorf("OldTaskType requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTaskType: %w", err)
+	}
+	return oldValue.TaskType, nil
+}
+
+// ResetTaskType resets all changes to the "task_type" field.
+func (m *DeletedTaskMutation) ResetTaskType() {
+	m.task_type = nil
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (m *DeletedTaskMutation) SetCreatedAt(t time.Time) {
 	m.created_at = &t
@@ -1276,12 +1350,18 @@ func (m *DeletedTaskMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *DeletedTaskMutation) Fields() []string {
-	fields := make([]string, 0, 4)
+	fields := make([]string, 0, 6)
 	if m.task != nil {
 		fields = append(fields, deletedtask.FieldTaskID)
 	}
 	if m.workspace != nil {
 		fields = append(fields, deletedtask.FieldWorkspaceID)
+	}
+	if m.task_section_id != nil {
+		fields = append(fields, deletedtask.FieldTaskSectionID)
+	}
+	if m.task_type != nil {
+		fields = append(fields, deletedtask.FieldTaskType)
 	}
 	if m.created_at != nil {
 		fields = append(fields, deletedtask.FieldCreatedAt)
@@ -1301,6 +1381,10 @@ func (m *DeletedTaskMutation) Field(name string) (ent.Value, bool) {
 		return m.TaskID()
 	case deletedtask.FieldWorkspaceID:
 		return m.WorkspaceID()
+	case deletedtask.FieldTaskSectionID:
+		return m.TaskSectionID()
+	case deletedtask.FieldTaskType:
+		return m.TaskType()
 	case deletedtask.FieldCreatedAt:
 		return m.CreatedAt()
 	case deletedtask.FieldUpdatedAt:
@@ -1318,6 +1402,10 @@ func (m *DeletedTaskMutation) OldField(ctx context.Context, name string) (ent.Va
 		return m.OldTaskID(ctx)
 	case deletedtask.FieldWorkspaceID:
 		return m.OldWorkspaceID(ctx)
+	case deletedtask.FieldTaskSectionID:
+		return m.OldTaskSectionID(ctx)
+	case deletedtask.FieldTaskType:
+		return m.OldTaskType(ctx)
 	case deletedtask.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case deletedtask.FieldUpdatedAt:
@@ -1344,6 +1432,20 @@ func (m *DeletedTaskMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetWorkspaceID(v)
+		return nil
+	case deletedtask.FieldTaskSectionID:
+		v, ok := value.(ulid.ID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTaskSectionID(v)
+		return nil
+	case deletedtask.FieldTaskType:
+		v, ok := value.(deletedtask.TaskType)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTaskType(v)
 		return nil
 	case deletedtask.FieldCreatedAt:
 		v, ok := value.(time.Time)
@@ -1413,6 +1515,12 @@ func (m *DeletedTaskMutation) ResetField(name string) error {
 		return nil
 	case deletedtask.FieldWorkspaceID:
 		m.ResetWorkspaceID()
+		return nil
+	case deletedtask.FieldTaskSectionID:
+		m.ResetTaskSectionID()
+		return nil
+	case deletedtask.FieldTaskType:
+		m.ResetTaskType()
 		return nil
 	case deletedtask.FieldCreatedAt:
 		m.ResetCreatedAt()

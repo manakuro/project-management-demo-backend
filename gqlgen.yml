@@ -76,4 +76,7 @@ models:
   FileTypeCode:
     model:
       - project-management-demo-backend/ent/filetype.TypeCode
+  DeletedTaskType:
+    model:
+      - project-management-demo-backend/ent/deletedtask.TaskType
 

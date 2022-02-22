@@ -108,6 +108,13 @@ func WorkspaceID(v ulid.ID) predicate.DeletedTask {
 	})
 }
 
+// TaskSectionID applies equality check predicate on the "task_section_id" field. It's identical to TaskSectionIDEQ.
+func TaskSectionID(v ulid.ID) predicate.DeletedTask {
+	return predicate.DeletedTask(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldTaskSectionID), v))
+	})
+}
+
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.DeletedTask {
 	return predicate.DeletedTask(func(s *sql.Selector) {
@@ -351,6 +358,170 @@ func WorkspaceIDContainsFold(v ulid.ID) predicate.DeletedTask {
 	vc := string(v)
 	return predicate.DeletedTask(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldWorkspaceID), vc))
+	})
+}
+
+// TaskSectionIDEQ applies the EQ predicate on the "task_section_id" field.
+func TaskSectionIDEQ(v ulid.ID) predicate.DeletedTask {
+	return predicate.DeletedTask(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldTaskSectionID), v))
+	})
+}
+
+// TaskSectionIDNEQ applies the NEQ predicate on the "task_section_id" field.
+func TaskSectionIDNEQ(v ulid.ID) predicate.DeletedTask {
+	return predicate.DeletedTask(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldTaskSectionID), v))
+	})
+}
+
+// TaskSectionIDIn applies the In predicate on the "task_section_id" field.
+func TaskSectionIDIn(vs ...ulid.ID) predicate.DeletedTask {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.DeletedTask(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldTaskSectionID), v...))
+	})
+}
+
+// TaskSectionIDNotIn applies the NotIn predicate on the "task_section_id" field.
+func TaskSectionIDNotIn(vs ...ulid.ID) predicate.DeletedTask {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.DeletedTask(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldTaskSectionID), v...))
+	})
+}
+
+// TaskSectionIDGT applies the GT predicate on the "task_section_id" field.
+func TaskSectionIDGT(v ulid.ID) predicate.DeletedTask {
+	return predicate.DeletedTask(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldTaskSectionID), v))
+	})
+}
+
+// TaskSectionIDGTE applies the GTE predicate on the "task_section_id" field.
+func TaskSectionIDGTE(v ulid.ID) predicate.DeletedTask {
+	return predicate.DeletedTask(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldTaskSectionID), v))
+	})
+}
+
+// TaskSectionIDLT applies the LT predicate on the "task_section_id" field.
+func TaskSectionIDLT(v ulid.ID) predicate.DeletedTask {
+	return predicate.DeletedTask(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldTaskSectionID), v))
+	})
+}
+
+// TaskSectionIDLTE applies the LTE predicate on the "task_section_id" field.
+func TaskSectionIDLTE(v ulid.ID) predicate.DeletedTask {
+	return predicate.DeletedTask(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldTaskSectionID), v))
+	})
+}
+
+// TaskSectionIDContains applies the Contains predicate on the "task_section_id" field.
+func TaskSectionIDContains(v ulid.ID) predicate.DeletedTask {
+	vc := string(v)
+	return predicate.DeletedTask(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldTaskSectionID), vc))
+	})
+}
+
+// TaskSectionIDHasPrefix applies the HasPrefix predicate on the "task_section_id" field.
+func TaskSectionIDHasPrefix(v ulid.ID) predicate.DeletedTask {
+	vc := string(v)
+	return predicate.DeletedTask(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldTaskSectionID), vc))
+	})
+}
+
+// TaskSectionIDHasSuffix applies the HasSuffix predicate on the "task_section_id" field.
+func TaskSectionIDHasSuffix(v ulid.ID) predicate.DeletedTask {
+	vc := string(v)
+	return predicate.DeletedTask(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldTaskSectionID), vc))
+	})
+}
+
+// TaskSectionIDEqualFold applies the EqualFold predicate on the "task_section_id" field.
+func TaskSectionIDEqualFold(v ulid.ID) predicate.DeletedTask {
+	vc := string(v)
+	return predicate.DeletedTask(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldTaskSectionID), vc))
+	})
+}
+
+// TaskSectionIDContainsFold applies the ContainsFold predicate on the "task_section_id" field.
+func TaskSectionIDContainsFold(v ulid.ID) predicate.DeletedTask {
+	vc := string(v)
+	return predicate.DeletedTask(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldTaskSectionID), vc))
+	})
+}
+
+// TaskTypeEQ applies the EQ predicate on the "task_type" field.
+func TaskTypeEQ(v TaskType) predicate.DeletedTask {
+	return predicate.DeletedTask(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldTaskType), v))
+	})
+}
+
+// TaskTypeNEQ applies the NEQ predicate on the "task_type" field.
+func TaskTypeNEQ(v TaskType) predicate.DeletedTask {
+	return predicate.DeletedTask(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldTaskType), v))
+	})
+}
+
+// TaskTypeIn applies the In predicate on the "task_type" field.
+func TaskTypeIn(vs ...TaskType) predicate.DeletedTask {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.DeletedTask(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldTaskType), v...))
+	})
+}
+
+// TaskTypeNotIn applies the NotIn predicate on the "task_type" field.
+func TaskTypeNotIn(vs ...TaskType) predicate.DeletedTask {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.DeletedTask(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldTaskType), v...))
 	})
 }
 

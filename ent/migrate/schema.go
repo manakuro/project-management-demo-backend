@@ -26,6 +26,8 @@ var (
 	// DeletedTasksColumns holds the columns for the "deleted_tasks" table.
 	DeletedTasksColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString},
+		{Name: "task_section_id", Type: field.TypeString},
+		{Name: "task_type", Type: field.TypeEnum, Enums: []string{"TEAMMATE", "PROJECT"}},
 		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
 		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
 		{Name: "task_id", Type: field.TypeString, Nullable: true},
@@ -39,13 +41,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "deleted_tasks_tasks_deletedTasksRef",
-				Columns:    []*schema.Column{DeletedTasksColumns[3]},
+				Columns:    []*schema.Column{DeletedTasksColumns[5]},
 				RefColumns: []*schema.Column{TasksColumns[0]},
 				OnDelete:   schema.SetNull,
 			},
 			{
 				Symbol:     "deleted_tasks_workspaces_deletedTasksRef",
-				Columns:    []*schema.Column{DeletedTasksColumns[4]},
+				Columns:    []*schema.Column{DeletedTasksColumns[6]},
 				RefColumns: []*schema.Column{WorkspacesColumns[0]},
 				OnDelete:   schema.SetNull,
 			},

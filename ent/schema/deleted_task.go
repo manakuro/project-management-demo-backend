@@ -36,6 +36,16 @@ func (DeletedTaskMixin) Fields() []ent.Field {
 			GoType(ulid.ID("")),
 		field.String("workspace_id").
 			GoType(ulid.ID("")),
+		field.String("task_section_id").
+			GoType(ulid.ID("")).
+			Annotations(
+				annotation.WhereInput{Type: "ID"},
+			),
+		field.Enum("task_type").
+			NamedValues(
+				"Teammate", "TEAMMATE",
+				"Project", "PROJECT",
+			),
 	}
 }
 

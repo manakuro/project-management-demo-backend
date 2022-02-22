@@ -3,6 +3,7 @@
 package ent
 
 import (
+	"project-management-demo-backend/ent/deletedtask"
 	"project-management-demo-backend/ent/filetype"
 	"project-management-demo-backend/ent/schema/editor"
 	"project-management-demo-backend/ent/schema/testuserprofile"
@@ -129,15 +130,19 @@ func (u *ColorUpdateOne) SetInput(i UpdateColorInput) *ColorUpdateOne {
 
 // CreateDeletedTaskInput represents a mutation input for creating deletedtasks.
 type CreateDeletedTaskInput struct {
-	CreatedAt   *time.Time
-	UpdatedAt   *time.Time
-	TaskID      ulid.ID
-	WorkspaceID ulid.ID
-	RequestID   string
+	TaskSectionID ulid.ID
+	TaskType      deletedtask.TaskType
+	CreatedAt     *time.Time
+	UpdatedAt     *time.Time
+	TaskID        ulid.ID
+	WorkspaceID   ulid.ID
+	RequestID     string
 }
 
 // Mutate applies the CreateDeletedTaskInput on the DeletedTaskCreate builder.
 func (i *CreateDeletedTaskInput) Mutate(m *DeletedTaskCreate) {
+	m.SetTaskSectionID(i.TaskSectionID)
+	m.SetTaskType(i.TaskType)
 	if v := i.CreatedAt; v != nil {
 		m.SetCreatedAt(*v)
 	}
@@ -157,6 +162,8 @@ func (c *DeletedTaskCreate) SetInput(i CreateDeletedTaskInput) *DeletedTaskCreat
 // UpdateDeletedTaskInput represents a mutation input for updating deletedtasks.
 type UpdateDeletedTaskInput struct {
 	ID             ulid.ID
+	TaskSectionID  *ulid.ID
+	TaskType       *deletedtask.TaskType
 	TaskID         *ulid.ID
 	ClearTask      bool
 	WorkspaceID    *ulid.ID
@@ -166,6 +173,12 @@ type UpdateDeletedTaskInput struct {
 
 // Mutate applies the UpdateDeletedTaskInput on the DeletedTaskMutation.
 func (i *UpdateDeletedTaskInput) Mutate(m *DeletedTaskMutation) {
+	if v := i.TaskSectionID; v != nil {
+		m.SetTaskSectionID(*v)
+	}
+	if v := i.TaskType; v != nil {
+		m.SetTaskType(*v)
+	}
 	if i.ClearTask {
 		m.ClearTask()
 	}

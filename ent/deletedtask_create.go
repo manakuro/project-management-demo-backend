@@ -35,6 +35,18 @@ func (dtc *DeletedTaskCreate) SetWorkspaceID(u ulid.ID) *DeletedTaskCreate {
 	return dtc
 }
 
+// SetTaskSectionID sets the "task_section_id" field.
+func (dtc *DeletedTaskCreate) SetTaskSectionID(u ulid.ID) *DeletedTaskCreate {
+	dtc.mutation.SetTaskSectionID(u)
+	return dtc
+}
+
+// SetTaskType sets the "task_type" field.
+func (dtc *DeletedTaskCreate) SetTaskType(dt deletedtask.TaskType) *DeletedTaskCreate {
+	dtc.mutation.SetTaskType(dt)
+	return dtc
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (dtc *DeletedTaskCreate) SetCreatedAt(t time.Time) *DeletedTaskCreate {
 	dtc.mutation.SetCreatedAt(t)
@@ -180,6 +192,17 @@ func (dtc *DeletedTaskCreate) check() error {
 	if _, ok := dtc.mutation.WorkspaceID(); !ok {
 		return &ValidationError{Name: "workspace_id", err: errors.New(`ent: missing required field "workspace_id"`)}
 	}
+	if _, ok := dtc.mutation.TaskSectionID(); !ok {
+		return &ValidationError{Name: "task_section_id", err: errors.New(`ent: missing required field "task_section_id"`)}
+	}
+	if _, ok := dtc.mutation.TaskType(); !ok {
+		return &ValidationError{Name: "task_type", err: errors.New(`ent: missing required field "task_type"`)}
+	}
+	if v, ok := dtc.mutation.TaskType(); ok {
+		if err := deletedtask.TaskTypeValidator(v); err != nil {
+			return &ValidationError{Name: "task_type", err: fmt.Errorf(`ent: validator failed for field "task_type": %w`, err)}
+		}
+	}
 	if _, ok := dtc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
 	}
@@ -223,6 +246,22 @@ func (dtc *DeletedTaskCreate) createSpec() (*DeletedTask, *sqlgraph.CreateSpec) 
 	if id, ok := dtc.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = id
+	}
+	if value, ok := dtc.mutation.TaskSectionID(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: deletedtask.FieldTaskSectionID,
+		})
+		_node.TaskSectionID = value
+	}
+	if value, ok := dtc.mutation.TaskType(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeEnum,
+			Value:  value,
+			Column: deletedtask.FieldTaskType,
+		})
+		_node.TaskType = value
 	}
 	if value, ok := dtc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
