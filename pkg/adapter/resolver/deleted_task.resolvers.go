@@ -9,6 +9,7 @@ import (
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/graph/generated"
 	"project-management-demo-backend/pkg/adapter/handler"
+	"project-management-demo-backend/pkg/entity/model"
 	"project-management-demo-backend/pkg/util/datetime"
 	"project-management-demo-backend/pkg/util/subscription"
 )
@@ -53,6 +54,15 @@ func (r *mutationResolver) UpdateDeletedTask(ctx context.Context, input ent.Upda
 	}()
 
 	return d, nil
+}
+
+func (r *mutationResolver) UndeleteDeletedTask(ctx context.Context, input model.UndeleteDeletedTaskInput) ([]*ent.DeletedTask, error) {
+	ds, err := r.controller.DeletedTask.Undelete(ctx, input)
+	if err != nil {
+		return nil, handler.HandleGraphQLError(ctx, err)
+	}
+
+	return ds, nil
 }
 
 func (r *queryResolver) DeletedTask(ctx context.Context, where *ent.DeletedTaskWhereInput) (*ent.DeletedTask, error) {

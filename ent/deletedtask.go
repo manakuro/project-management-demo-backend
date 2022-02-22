@@ -25,6 +25,9 @@ type DeletedTask struct {
 	WorkspaceID ulid.ID `json:"workspace_id,omitempty"`
 	// TaskSectionID holds the value of the "task_section_id" field.
 	TaskSectionID ulid.ID `json:"task_section_id,omitempty"`
+	// TaskJoinID holds the value of the "task_join_id" field.
+	// teammate_tasks.id | project_tasks.id
+	TaskJoinID ulid.ID `json:"task_join_id,omitempty"`
 	// TaskType holds the value of the "task_type" field.
 	TaskType deletedtask.TaskType `json:"task_type,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
@@ -84,7 +87,7 @@ func (*DeletedTask) scanValues(columns []string) ([]interface{}, error) {
 			values[i] = new(sql.NullString)
 		case deletedtask.FieldCreatedAt, deletedtask.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
-		case deletedtask.FieldID, deletedtask.FieldTaskID, deletedtask.FieldWorkspaceID, deletedtask.FieldTaskSectionID:
+		case deletedtask.FieldID, deletedtask.FieldTaskID, deletedtask.FieldWorkspaceID, deletedtask.FieldTaskSectionID, deletedtask.FieldTaskJoinID:
 			values[i] = new(ulid.ID)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type DeletedTask", columns[i])
@@ -124,6 +127,12 @@ func (dt *DeletedTask) assignValues(columns []string, values []interface{}) erro
 				return fmt.Errorf("unexpected type %T for field task_section_id", values[i])
 			} else if value != nil {
 				dt.TaskSectionID = *value
+			}
+		case deletedtask.FieldTaskJoinID:
+			if value, ok := values[i].(*ulid.ID); !ok {
+				return fmt.Errorf("unexpected type %T for field task_join_id", values[i])
+			} else if value != nil {
+				dt.TaskJoinID = *value
 			}
 		case deletedtask.FieldTaskType:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -187,6 +196,8 @@ func (dt *DeletedTask) String() string {
 	builder.WriteString(fmt.Sprintf("%v", dt.WorkspaceID))
 	builder.WriteString(", task_section_id=")
 	builder.WriteString(fmt.Sprintf("%v", dt.TaskSectionID))
+	builder.WriteString(", task_join_id=")
+	builder.WriteString(fmt.Sprintf("%v", dt.TaskJoinID))
 	builder.WriteString(", task_type=")
 	builder.WriteString(fmt.Sprintf("%v", dt.TaskType))
 	builder.WriteString(", created_at=")

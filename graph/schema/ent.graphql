@@ -3700,6 +3700,21 @@ input DeletedTaskWhereInput {
   taskSectionIDEqualFold: ID
   taskSectionIDContainsFold: ID
   
+  """task_join_id field predicates"""
+  taskJoinID: ID
+  taskJoinIDNEQ: ID
+  taskJoinIDIn: [ID!]
+  taskJoinIDNotIn: [ID!]
+  taskJoinIDGT: ID
+  taskJoinIDGTE: ID
+  taskJoinIDLT: ID
+  taskJoinIDLTE: ID
+  taskJoinIDContains: ID
+  taskJoinIDHasPrefix: ID
+  taskJoinIDHasSuffix: ID
+  taskJoinIDEqualFold: ID
+  taskJoinIDContainsFold: ID
+  
   """task_type field predicates"""
   taskType: DeletedTaskType
   taskTypeNEQ: DeletedTaskType

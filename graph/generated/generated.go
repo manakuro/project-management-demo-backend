@@ -297,6 +297,7 @@ type ComplexityRoot struct {
 		DeleteTaskLike                func(childComplexity int, input model.DeleteTaskLikeInput) int
 		DeleteTaskTag                 func(childComplexity int, input model.DeleteTaskTagInput) int
 		DeleteTeammateTask            func(childComplexity int, input model.DeleteTeammateTaskInput) int
+		UndeleteDeletedTask           func(childComplexity int, input model.UndeleteDeletedTaskInput) int
 		UpdateColor                   func(childComplexity int, input ent.UpdateColorInput) int
 		UpdateDeletedTask             func(childComplexity int, input ent.UpdateDeletedTaskInput) int
 		UpdateFileType                func(childComplexity int, input ent.UpdateFileTypeInput) int
@@ -1238,6 +1239,7 @@ type MutationResolver interface {
 	UpdateColor(ctx context.Context, input ent.UpdateColorInput) (*ent.Color, error)
 	CreateDeletedTask(ctx context.Context, input ent.CreateDeletedTaskInput) (*ent.DeletedTask, error)
 	UpdateDeletedTask(ctx context.Context, input ent.UpdateDeletedTaskInput) (*ent.DeletedTask, error)
+	UndeleteDeletedTask(ctx context.Context, input model.UndeleteDeletedTaskInput) ([]*ent.DeletedTask, error)
 	CreateFavoriteProject(ctx context.Context, input ent.CreateFavoriteProjectInput) (*ent.FavoriteProject, error)
 	DeleteFavoriteProject(ctx context.Context, input model.DeleteFavoriteProjectInput) (*ent.FavoriteProject, error)
 	CreateFavoriteWorkspace(ctx context.Context, input ent.CreateFavoriteWorkspaceInput) (*ent.FavoriteWorkspace, error)
@@ -2739,6 +2741,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.DeleteTeammateTask(childComplexity, args["input"].(model.DeleteTeammateTaskInput)), true
+
+	case "Mutation.undeleteDeletedTask":
+		if e.complexity.Mutation.UndeleteDeletedTask == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_undeleteDeletedTask_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UndeleteDeletedTask(childComplexity, args["input"].(model.UndeleteDeletedTaskInput)), true
 
 	case "Mutation.updateColor":
 		if e.complexity.Mutation.UpdateColor == nil {
@@ -7906,6 +7920,10 @@ input UpdateDeletedTaskInput {
   workspaceId: ID
   requestId: String!
 }
+input UndeleteDeletedTaskInput {
+  taskId: ID!
+  requestId: String!
+}
 
 extend type Subscription {
   deletedTaskUpdated(id: ID!, requestId: String!): DeletedTask!
@@ -7920,6 +7938,7 @@ extend type Query {
 extend type Mutation {
   createDeletedTask(input: CreateDeletedTaskInput!): DeletedTask!
   updateDeletedTask(input: UpdateDeletedTaskInput!): DeletedTask!
+  undeleteDeletedTask(input: UndeleteDeletedTaskInput!): [DeletedTask!]!
 }
 `, BuiltIn: false},
 	{Name: "graph/schema/editor.graphql", Input: `type EditorDescription {
@@ -11660,6 +11679,21 @@ input DeletedTaskWhereInput {
   taskSectionIDEqualFold: ID
   taskSectionIDContainsFold: ID
   
+  """task_join_id field predicates"""
+  taskJoinID: ID
+  taskJoinIDNEQ: ID
+  taskJoinIDIn: [ID!]
+  taskJoinIDNotIn: [ID!]
+  taskJoinIDGT: ID
+  taskJoinIDGTE: ID
+  taskJoinIDLT: ID
+  taskJoinIDLTE: ID
+  taskJoinIDContains: ID
+  taskJoinIDHasPrefix: ID
+  taskJoinIDHasSuffix: ID
+  taskJoinIDEqualFold: ID
+  taskJoinIDContainsFold: ID
+  
   """task_type field predicates"""
   taskType: DeletedTaskType
   taskTypeNEQ: DeletedTaskType
@@ -14334,6 +14368,21 @@ func (ec *executionContext) field_Mutation_deleteTeammateTask_args(ctx context.C
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNDeleteTeammateTaskInput2projectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐDeleteTeammateTaskInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_undeleteDeletedTask_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.UndeleteDeletedTaskInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNUndeleteDeletedTaskInput2projectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐUndeleteDeletedTaskInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -21601,6 +21650,48 @@ func (ec *executionContext) _Mutation_updateDeletedTask(ctx context.Context, fie
 	res := resTmp.(*ent.DeletedTask)
 	fc.Result = res
 	return ec.marshalNDeletedTask2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐDeletedTask(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_undeleteDeletedTask(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_undeleteDeletedTask_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UndeleteDeletedTask(rctx, args["input"].(model.UndeleteDeletedTaskInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*ent.DeletedTask)
+	fc.Result = res
+	return ec.marshalNDeletedTask2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐDeletedTaskᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_createFavoriteProject(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -49622,6 +49713,110 @@ func (ec *executionContext) unmarshalInputDeletedTaskWhereInput(ctx context.Cont
 			if err != nil {
 				return it, err
 			}
+		case "taskJoinID":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskJoinID"))
+			it.TaskJoinID, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskJoinIDNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskJoinIDNEQ"))
+			it.TaskJoinIDNEQ, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskJoinIDIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskJoinIDIn"))
+			it.TaskJoinIDIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskJoinIDNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskJoinIDNotIn"))
+			it.TaskJoinIDNotIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskJoinIDGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskJoinIDGT"))
+			it.TaskJoinIDGT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskJoinIDGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskJoinIDGTE"))
+			it.TaskJoinIDGTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskJoinIDLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskJoinIDLT"))
+			it.TaskJoinIDLT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskJoinIDLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskJoinIDLTE"))
+			it.TaskJoinIDLTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskJoinIDContains":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskJoinIDContains"))
+			it.TaskJoinIDContains, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskJoinIDHasPrefix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskJoinIDHasPrefix"))
+			it.TaskJoinIDHasPrefix, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskJoinIDHasSuffix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskJoinIDHasSuffix"))
+			it.TaskJoinIDHasSuffix, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskJoinIDEqualFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskJoinIDEqualFold"))
+			it.TaskJoinIDEqualFold, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskJoinIDContainsFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskJoinIDContainsFold"))
+			it.TaskJoinIDContainsFold, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		case "taskType":
 			var err error
 
@@ -70021,6 +70216,37 @@ func (ec *executionContext) unmarshalInputTestUserWhereInput(ctx context.Context
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputUndeleteDeletedTaskInput(ctx context.Context, obj interface{}) (model.UndeleteDeletedTaskInput, error) {
+	var it model.UndeleteDeletedTaskInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "taskId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskId"))
+			it.TaskID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "requestId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("requestId"))
+			it.RequestID, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputUpdateColorInput(ctx context.Context, obj interface{}) (ent.UpdateColorInput, error) {
 	var it ent.UpdateColorInput
 	asMap := map[string]interface{}{}
@@ -74659,6 +74885,11 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			}
 		case "updateDeletedTask":
 			out.Values[i] = ec._Mutation_updateDeletedTask(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "undeleteDeletedTask":
+			out.Values[i] = ec._Mutation_undeleteDeletedTask(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -81925,6 +82156,50 @@ func (ec *executionContext) marshalNDeletedTask2projectᚑmanagementᚑdemoᚑba
 	return ec._DeletedTask(ctx, sel, &v)
 }
 
+func (ec *executionContext) marshalNDeletedTask2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐDeletedTaskᚄ(ctx context.Context, sel ast.SelectionSet, v []*ent.DeletedTask) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNDeletedTask2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐDeletedTask(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
 func (ec *executionContext) marshalNDeletedTask2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐDeletedTask(ctx context.Context, sel ast.SelectionSet, v *ent.DeletedTask) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
@@ -83491,6 +83766,11 @@ func (ec *executionContext) marshalNTime2timeᚐTime(ctx context.Context, sel as
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) unmarshalNUndeleteDeletedTaskInput2projectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐUndeleteDeletedTaskInput(ctx context.Context, v interface{}) (model.UndeleteDeletedTaskInput, error) {
+	res, err := ec.unmarshalInputUndeleteDeletedTaskInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalNUpdateColorInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐUpdateColorInput(ctx context.Context, v interface{}) (ent.UpdateColorInput, error) {

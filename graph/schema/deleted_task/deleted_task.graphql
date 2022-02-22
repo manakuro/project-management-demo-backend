@@ -34,6 +34,10 @@ input UpdateDeletedTaskInput {
   workspaceId: ID
   requestId: String!
 }
+input UndeleteDeletedTaskInput {
+  taskId: ID!
+  requestId: String!
+}
 
 extend type Subscription {
   deletedTaskUpdated(id: ID!, requestId: String!): DeletedTask!
@@ -48,4 +52,5 @@ extend type Query {
 extend type Mutation {
   createDeletedTask(input: CreateDeletedTaskInput!): DeletedTask!
   updateDeletedTask(input: UpdateDeletedTaskInput!): DeletedTask!
+  undeleteDeletedTask(input: UndeleteDeletedTaskInput!): [DeletedTask!]!
 }

@@ -127,3 +127,54 @@ func (r *deletedTaskRepository) Delete(ctx context.Context, input model.DeleteDe
 
 	return deleted, nil
 }
+
+func (r *deletedTaskRepository) Undelete(ctx context.Context, input model.UndeleteDeletedTaskInput) ([]*model.DeletedTask, error) {
+	deletedTasks, err := r.client.DeletedTask.Query().Where(deletedtask.TaskID(input.TaskID)).All(ctx)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return nil, model.NewNotFoundError(err, input.TaskID)
+		}
+		return nil, model.NewDBError(err)
+	}
+
+	// The task to be undeleted will be limited up to two records.
+	for _, t := range deletedTasks {
+		if t.TaskType == deletedtask.TaskTypeTeammate {
+			_, err = r.client.TeammateTask.Create().
+				SetWorkspaceID(t.WorkspaceID).
+				SetTaskID(t.TaskID).
+				SetTeammateID(t.TaskJoinID).
+				SetTeammateTaskSectionID(t.TaskSectionID).
+				Save(ctx)
+			if err != nil {
+				return nil, model.NewDBError(err)
+			}
+		}
+		if t.TaskType == deletedtask.TaskTypeProject {
+			_, err = r.client.ProjectTask.Create().
+				SetProjectID(t.TaskJoinID).
+				SetTaskID(t.TaskID).
+				SetProjectTaskSectionID(t.TaskSectionID).
+				Save(ctx)
+			if err != nil {
+				return nil, model.NewDBError(err)
+			}
+		}
+	}
+
+	deletedIds := make([]model.ID, len(deletedTasks))
+	for i, t := range deletedTasks {
+		deletedIds[i] = t.ID
+	}
+
+	_, err = r.client.DeletedTask.
+		Delete().
+		Where(deletedtask.IDIn(deletedIds...)).
+		Exec(ctx)
+
+	if err != nil {
+		return nil, model.NewDBError(err)
+	}
+
+	return deletedTasks, nil
+}

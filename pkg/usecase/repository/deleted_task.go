@@ -13,4 +13,5 @@ type DeletedTask interface {
 	Create(ctx context.Context, input model.CreateDeletedTaskInput) (*model.DeletedTask, error)
 	Update(ctx context.Context, input model.UpdateDeletedTaskInput) (*model.DeletedTask, error)
 	Delete(ctx context.Context, input model.DeleteDeletedTaskInput) (*model.DeletedTask, error)
+	Undelete(ctx context.Context, input model.UndeleteDeletedTaskInput) ([]*model.DeletedTask, error)
 }

@@ -25,3 +25,9 @@ type DeleteDeletedTaskInput struct {
 	ID        ulid.ID
 	RequestID string
 }
+
+// UndeleteDeletedTaskInput represents a mutation input.
+type UndeleteDeletedTaskInput struct {
+	TaskID    ulid.ID
+	RequestID string
+}

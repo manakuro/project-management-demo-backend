@@ -169,6 +169,7 @@ func (r *teammateTaskRepository) Delete(ctx context.Context, input model.DeleteT
 		SetTaskID(input.TaskID).
 		SetWorkspaceID(input.WorkspaceID).
 		SetTaskType(deletedtask.TaskTypeTeammate).
+		SetTaskJoinID(deleted.TeammateID).
 		SetTaskSectionID(deleted.TeammateTaskSectionID).
 		Save(ctx)
 	if err != nil {
@@ -194,6 +195,7 @@ func (r *teammateTaskRepository) Delete(ctx context.Context, input model.DeleteT
 			SetTaskID(input.TaskID).
 			SetWorkspaceID(input.WorkspaceID).
 			SetTaskType(deletedtask.TaskTypeProject).
+			SetTaskJoinID(deletedProjectTask.ProjectID).
 			SetTaskSectionID(deletedProjectTask.ProjectTaskSectionID).
 			Save(ctx)
 		if err != nil {

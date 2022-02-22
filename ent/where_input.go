@@ -537,6 +537,21 @@ type DeletedTaskWhereInput struct {
 	TaskSectionIDEqualFold    *ulid.ID  `json:"taskSectionIDEqualFold,omitempty"`
 	TaskSectionIDContainsFold *ulid.ID  `json:"taskSectionIDContainsFold,omitempty"`
 
+	// "task_join_id" field predicates.
+	TaskJoinID             *ulid.ID  `json:"taskJoinID,omitempty"`
+	TaskJoinIDNEQ          *ulid.ID  `json:"taskJoinIDNEQ,omitempty"`
+	TaskJoinIDIn           []ulid.ID `json:"taskJoinIDIn,omitempty"`
+	TaskJoinIDNotIn        []ulid.ID `json:"taskJoinIDNotIn,omitempty"`
+	TaskJoinIDGT           *ulid.ID  `json:"taskJoinIDGT,omitempty"`
+	TaskJoinIDGTE          *ulid.ID  `json:"taskJoinIDGTE,omitempty"`
+	TaskJoinIDLT           *ulid.ID  `json:"taskJoinIDLT,omitempty"`
+	TaskJoinIDLTE          *ulid.ID  `json:"taskJoinIDLTE,omitempty"`
+	TaskJoinIDContains     *ulid.ID  `json:"taskJoinIDContains,omitempty"`
+	TaskJoinIDHasPrefix    *ulid.ID  `json:"taskJoinIDHasPrefix,omitempty"`
+	TaskJoinIDHasSuffix    *ulid.ID  `json:"taskJoinIDHasSuffix,omitempty"`
+	TaskJoinIDEqualFold    *ulid.ID  `json:"taskJoinIDEqualFold,omitempty"`
+	TaskJoinIDContainsFold *ulid.ID  `json:"taskJoinIDContainsFold,omitempty"`
+
 	// "task_type" field predicates.
 	TaskType      *deletedtask.TaskType  `json:"taskType,omitempty"`
 	TaskTypeNEQ   *deletedtask.TaskType  `json:"taskTypeNEQ,omitempty"`
@@ -771,6 +786,45 @@ func (i *DeletedTaskWhereInput) P() (predicate.DeletedTask, error) {
 	}
 	if i.TaskSectionIDContainsFold != nil {
 		predicates = append(predicates, deletedtask.TaskSectionIDContainsFold(*i.TaskSectionIDContainsFold))
+	}
+	if i.TaskJoinID != nil {
+		predicates = append(predicates, deletedtask.TaskJoinIDEQ(*i.TaskJoinID))
+	}
+	if i.TaskJoinIDNEQ != nil {
+		predicates = append(predicates, deletedtask.TaskJoinIDNEQ(*i.TaskJoinIDNEQ))
+	}
+	if len(i.TaskJoinIDIn) > 0 {
+		predicates = append(predicates, deletedtask.TaskJoinIDIn(i.TaskJoinIDIn...))
+	}
+	if len(i.TaskJoinIDNotIn) > 0 {
+		predicates = append(predicates, deletedtask.TaskJoinIDNotIn(i.TaskJoinIDNotIn...))
+	}
+	if i.TaskJoinIDGT != nil {
+		predicates = append(predicates, deletedtask.TaskJoinIDGT(*i.TaskJoinIDGT))
+	}
+	if i.TaskJoinIDGTE != nil {
+		predicates = append(predicates, deletedtask.TaskJoinIDGTE(*i.TaskJoinIDGTE))
+	}
+	if i.TaskJoinIDLT != nil {
+		predicates = append(predicates, deletedtask.TaskJoinIDLT(*i.TaskJoinIDLT))
+	}
+	if i.TaskJoinIDLTE != nil {
+		predicates = append(predicates, deletedtask.TaskJoinIDLTE(*i.TaskJoinIDLTE))
+	}
+	if i.TaskJoinIDContains != nil {
+		predicates = append(predicates, deletedtask.TaskJoinIDContains(*i.TaskJoinIDContains))
+	}
+	if i.TaskJoinIDHasPrefix != nil {
+		predicates = append(predicates, deletedtask.TaskJoinIDHasPrefix(*i.TaskJoinIDHasPrefix))
+	}
+	if i.TaskJoinIDHasSuffix != nil {
+		predicates = append(predicates, deletedtask.TaskJoinIDHasSuffix(*i.TaskJoinIDHasSuffix))
+	}
+	if i.TaskJoinIDEqualFold != nil {
+		predicates = append(predicates, deletedtask.TaskJoinIDEqualFold(*i.TaskJoinIDEqualFold))
+	}
+	if i.TaskJoinIDContainsFold != nil {
+		predicates = append(predicates, deletedtask.TaskJoinIDContainsFold(*i.TaskJoinIDContainsFold))
 	}
 	if i.TaskType != nil {
 		predicates = append(predicates, deletedtask.TaskTypeEQ(*i.TaskType))

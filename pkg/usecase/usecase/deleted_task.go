@@ -18,6 +18,7 @@ type DeletedTask interface {
 	Create(ctx context.Context, input model.CreateDeletedTaskInput) (*model.DeletedTask, error)
 	Update(ctx context.Context, input model.UpdateDeletedTaskInput) (*model.DeletedTask, error)
 	Delete(ctx context.Context, input model.DeleteDeletedTaskInput) (*model.DeletedTask, error)
+	Undelete(ctx context.Context, input model.UndeleteDeletedTaskInput) ([]*model.DeletedTask, error)
 }
 
 // NewDeletedTaskUsecase generates a repository.
@@ -47,4 +48,8 @@ func (u *deletedTaskUsecase) Update(ctx context.Context, input model.UpdateDelet
 
 func (u *deletedTaskUsecase) Delete(ctx context.Context, input model.DeleteDeletedTaskInput) (*model.DeletedTask, error) {
 	return u.deletedTaskRepository.Delete(ctx, input)
+}
+
+func (u *deletedTaskUsecase) Undelete(ctx context.Context, input model.UndeleteDeletedTaskInput) ([]*model.DeletedTask, error) {
+	return u.deletedTaskRepository.Undelete(ctx, input)
 }

@@ -21,6 +21,8 @@ const (
 	FieldWorkspaceID = "workspace_id"
 	// FieldTaskSectionID holds the string denoting the task_section_id field in the database.
 	FieldTaskSectionID = "task_section_id"
+	// FieldTaskJoinID holds the string denoting the task_join_id field in the database.
+	FieldTaskJoinID = "task_join_id"
 	// FieldTaskType holds the string denoting the task_type field in the database.
 	FieldTaskType = "task_type"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
@@ -55,6 +57,7 @@ var Columns = []string{
 	FieldTaskID,
 	FieldWorkspaceID,
 	FieldTaskSectionID,
+	FieldTaskJoinID,
 	FieldTaskType,
 	FieldCreatedAt,
 	FieldUpdatedAt,

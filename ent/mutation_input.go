@@ -131,6 +131,7 @@ func (u *ColorUpdateOne) SetInput(i UpdateColorInput) *ColorUpdateOne {
 // CreateDeletedTaskInput represents a mutation input for creating deletedtasks.
 type CreateDeletedTaskInput struct {
 	TaskSectionID ulid.ID
+	TaskJoinID    ulid.ID
 	TaskType      deletedtask.TaskType
 	CreatedAt     *time.Time
 	UpdatedAt     *time.Time
@@ -142,6 +143,7 @@ type CreateDeletedTaskInput struct {
 // Mutate applies the CreateDeletedTaskInput on the DeletedTaskCreate builder.
 func (i *CreateDeletedTaskInput) Mutate(m *DeletedTaskCreate) {
 	m.SetTaskSectionID(i.TaskSectionID)
+	m.SetTaskJoinID(i.TaskJoinID)
 	m.SetTaskType(i.TaskType)
 	if v := i.CreatedAt; v != nil {
 		m.SetCreatedAt(*v)
@@ -163,6 +165,7 @@ func (c *DeletedTaskCreate) SetInput(i CreateDeletedTaskInput) *DeletedTaskCreat
 type UpdateDeletedTaskInput struct {
 	ID             ulid.ID
 	TaskSectionID  *ulid.ID
+	TaskJoinID     *ulid.ID
 	TaskType       *deletedtask.TaskType
 	TaskID         *ulid.ID
 	ClearTask      bool
@@ -175,6 +178,9 @@ type UpdateDeletedTaskInput struct {
 func (i *UpdateDeletedTaskInput) Mutate(m *DeletedTaskMutation) {
 	if v := i.TaskSectionID; v != nil {
 		m.SetTaskSectionID(*v)
+	}
+	if v := i.TaskJoinID; v != nil {
+		m.SetTaskJoinID(*v)
 	}
 	if v := i.TaskType; v != nil {
 		m.SetTaskType(*v)

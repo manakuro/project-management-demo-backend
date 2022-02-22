@@ -48,6 +48,12 @@ func (dtu *DeletedTaskUpdate) SetTaskSectionID(u ulid.ID) *DeletedTaskUpdate {
 	return dtu
 }
 
+// SetTaskJoinID sets the "task_join_id" field.
+func (dtu *DeletedTaskUpdate) SetTaskJoinID(u ulid.ID) *DeletedTaskUpdate {
+	dtu.mutation.SetTaskJoinID(u)
+	return dtu
+}
+
 // SetTaskType sets the "task_type" field.
 func (dtu *DeletedTaskUpdate) SetTaskType(dt deletedtask.TaskType) *DeletedTaskUpdate {
 	dtu.mutation.SetTaskType(dt)
@@ -182,6 +188,13 @@ func (dtu *DeletedTaskUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: deletedtask.FieldTaskSectionID,
 		})
 	}
+	if value, ok := dtu.mutation.TaskJoinID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: deletedtask.FieldTaskJoinID,
+		})
+	}
 	if value, ok := dtu.mutation.TaskType(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
 			Type:   field.TypeEnum,
@@ -293,6 +306,12 @@ func (dtuo *DeletedTaskUpdateOne) SetWorkspaceID(u ulid.ID) *DeletedTaskUpdateOn
 // SetTaskSectionID sets the "task_section_id" field.
 func (dtuo *DeletedTaskUpdateOne) SetTaskSectionID(u ulid.ID) *DeletedTaskUpdateOne {
 	dtuo.mutation.SetTaskSectionID(u)
+	return dtuo
+}
+
+// SetTaskJoinID sets the "task_join_id" field.
+func (dtuo *DeletedTaskUpdateOne) SetTaskJoinID(u ulid.ID) *DeletedTaskUpdateOne {
+	dtuo.mutation.SetTaskJoinID(u)
 	return dtuo
 }
 
@@ -452,6 +471,13 @@ func (dtuo *DeletedTaskUpdateOne) sqlSave(ctx context.Context) (_node *DeletedTa
 			Type:   field.TypeString,
 			Value:  value,
 			Column: deletedtask.FieldTaskSectionID,
+		})
+	}
+	if value, ok := dtuo.mutation.TaskJoinID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: deletedtask.FieldTaskJoinID,
 		})
 	}
 	if value, ok := dtuo.mutation.TaskType(); ok {

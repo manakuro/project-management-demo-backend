@@ -115,6 +115,13 @@ func TaskSectionID(v ulid.ID) predicate.DeletedTask {
 	})
 }
 
+// TaskJoinID applies equality check predicate on the "task_join_id" field. It's identical to TaskJoinIDEQ.
+func TaskJoinID(v ulid.ID) predicate.DeletedTask {
+	return predicate.DeletedTask(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldTaskJoinID), v))
+	})
+}
+
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.DeletedTask {
 	return predicate.DeletedTask(func(s *sql.Selector) {
@@ -474,6 +481,122 @@ func TaskSectionIDContainsFold(v ulid.ID) predicate.DeletedTask {
 	vc := string(v)
 	return predicate.DeletedTask(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldTaskSectionID), vc))
+	})
+}
+
+// TaskJoinIDEQ applies the EQ predicate on the "task_join_id" field.
+func TaskJoinIDEQ(v ulid.ID) predicate.DeletedTask {
+	return predicate.DeletedTask(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldTaskJoinID), v))
+	})
+}
+
+// TaskJoinIDNEQ applies the NEQ predicate on the "task_join_id" field.
+func TaskJoinIDNEQ(v ulid.ID) predicate.DeletedTask {
+	return predicate.DeletedTask(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldTaskJoinID), v))
+	})
+}
+
+// TaskJoinIDIn applies the In predicate on the "task_join_id" field.
+func TaskJoinIDIn(vs ...ulid.ID) predicate.DeletedTask {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.DeletedTask(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldTaskJoinID), v...))
+	})
+}
+
+// TaskJoinIDNotIn applies the NotIn predicate on the "task_join_id" field.
+func TaskJoinIDNotIn(vs ...ulid.ID) predicate.DeletedTask {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.DeletedTask(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldTaskJoinID), v...))
+	})
+}
+
+// TaskJoinIDGT applies the GT predicate on the "task_join_id" field.
+func TaskJoinIDGT(v ulid.ID) predicate.DeletedTask {
+	return predicate.DeletedTask(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldTaskJoinID), v))
+	})
+}
+
+// TaskJoinIDGTE applies the GTE predicate on the "task_join_id" field.
+func TaskJoinIDGTE(v ulid.ID) predicate.DeletedTask {
+	return predicate.DeletedTask(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldTaskJoinID), v))
+	})
+}
+
+// TaskJoinIDLT applies the LT predicate on the "task_join_id" field.
+func TaskJoinIDLT(v ulid.ID) predicate.DeletedTask {
+	return predicate.DeletedTask(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldTaskJoinID), v))
+	})
+}
+
+// TaskJoinIDLTE applies the LTE predicate on the "task_join_id" field.
+func TaskJoinIDLTE(v ulid.ID) predicate.DeletedTask {
+	return predicate.DeletedTask(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldTaskJoinID), v))
+	})
+}
+
+// TaskJoinIDContains applies the Contains predicate on the "task_join_id" field.
+func TaskJoinIDContains(v ulid.ID) predicate.DeletedTask {
+	vc := string(v)
+	return predicate.DeletedTask(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldTaskJoinID), vc))
+	})
+}
+
+// TaskJoinIDHasPrefix applies the HasPrefix predicate on the "task_join_id" field.
+func TaskJoinIDHasPrefix(v ulid.ID) predicate.DeletedTask {
+	vc := string(v)
+	return predicate.DeletedTask(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldTaskJoinID), vc))
+	})
+}
+
+// TaskJoinIDHasSuffix applies the HasSuffix predicate on the "task_join_id" field.
+func TaskJoinIDHasSuffix(v ulid.ID) predicate.DeletedTask {
+	vc := string(v)
+	return predicate.DeletedTask(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldTaskJoinID), vc))
+	})
+}
+
+// TaskJoinIDEqualFold applies the EqualFold predicate on the "task_join_id" field.
+func TaskJoinIDEqualFold(v ulid.ID) predicate.DeletedTask {
+	vc := string(v)
+	return predicate.DeletedTask(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldTaskJoinID), vc))
+	})
+}
+
+// TaskJoinIDContainsFold applies the ContainsFold predicate on the "task_join_id" field.
+func TaskJoinIDContainsFold(v ulid.ID) predicate.DeletedTask {
+	vc := string(v)
+	return predicate.DeletedTask(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldTaskJoinID), vc))
 	})
 }
 

@@ -14,6 +14,7 @@ type DeletedTask interface {
 	Create(ctx context.Context, input model.CreateDeletedTaskInput) (*model.DeletedTask, error)
 	Update(ctx context.Context, input model.UpdateDeletedTaskInput) (*model.DeletedTask, error)
 	Delete(ctx context.Context, input model.DeleteDeletedTaskInput) (*model.DeletedTask, error)
+	Undelete(ctx context.Context, input model.UndeleteDeletedTaskInput) ([]*model.DeletedTask, error)
 }
 
 type deletedTaskController struct {
@@ -49,4 +50,8 @@ func (c *deletedTaskController) Update(ctx context.Context, input model.UpdateDe
 
 func (c *deletedTaskController) Delete(ctx context.Context, input model.DeleteDeletedTaskInput) (*model.DeletedTask, error) {
 	return c.deletedTaskUsecase.Delete(ctx, input)
+}
+
+func (c *deletedTaskController) Undelete(ctx context.Context, input model.UndeleteDeletedTaskInput) ([]*model.DeletedTask, error) {
+	return c.deletedTaskUsecase.Undelete(ctx, input)
 }

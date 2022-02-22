@@ -41,6 +41,12 @@ func (dtc *DeletedTaskCreate) SetTaskSectionID(u ulid.ID) *DeletedTaskCreate {
 	return dtc
 }
 
+// SetTaskJoinID sets the "task_join_id" field.
+func (dtc *DeletedTaskCreate) SetTaskJoinID(u ulid.ID) *DeletedTaskCreate {
+	dtc.mutation.SetTaskJoinID(u)
+	return dtc
+}
+
 // SetTaskType sets the "task_type" field.
 func (dtc *DeletedTaskCreate) SetTaskType(dt deletedtask.TaskType) *DeletedTaskCreate {
 	dtc.mutation.SetTaskType(dt)
@@ -195,6 +201,9 @@ func (dtc *DeletedTaskCreate) check() error {
 	if _, ok := dtc.mutation.TaskSectionID(); !ok {
 		return &ValidationError{Name: "task_section_id", err: errors.New(`ent: missing required field "task_section_id"`)}
 	}
+	if _, ok := dtc.mutation.TaskJoinID(); !ok {
+		return &ValidationError{Name: "task_join_id", err: errors.New(`ent: missing required field "task_join_id"`)}
+	}
 	if _, ok := dtc.mutation.TaskType(); !ok {
 		return &ValidationError{Name: "task_type", err: errors.New(`ent: missing required field "task_type"`)}
 	}
@@ -254,6 +263,14 @@ func (dtc *DeletedTaskCreate) createSpec() (*DeletedTask, *sqlgraph.CreateSpec) 
 			Column: deletedtask.FieldTaskSectionID,
 		})
 		_node.TaskSectionID = value
+	}
+	if value, ok := dtc.mutation.TaskJoinID(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: deletedtask.FieldTaskJoinID,
+		})
+		_node.TaskJoinID = value
 	}
 	if value, ok := dtc.mutation.TaskType(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
