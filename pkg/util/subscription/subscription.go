@@ -226,11 +226,18 @@ type ProjectTaskCreated struct {
 	Ch        chan *model.ProjectTask
 }
 
-// TaskLikesUpdated is a channel for subscription.
-type TaskLikesUpdated struct {
-	WorkspaceID model.ID
-	RequestID   string
-	Ch          chan *model.TaskLike
+// TaskLikesCreated is a channel for subscription.
+type TaskLikesCreated struct {
+	TaskID    model.ID
+	RequestID string
+	Ch        chan *model.TaskLike
+}
+
+// TaskLikesDeleted is a channel for subscription.
+type TaskLikesDeleted struct {
+	TaskID    model.ID
+	RequestID string
+	Ch        chan *model.TaskLike
 }
 
 // TagUpdated is a channel for subscription.
@@ -324,7 +331,8 @@ type Subscriptions struct {
 	TaskFeedCreated               map[string]TaskFeedCreated
 	TaskFeedDeleted               map[string]TaskFeedDeleted
 	TaskFileUpdated               map[string]TaskFileUpdated
-	TaskLikesUpdated              map[string]TaskLikesUpdated
+	TaskLikesCreated              map[string]TaskLikesCreated
+	TaskLikesDeleted              map[string]TaskLikesDeleted
 	TaskSectionUpdated            map[string]TaskSectionUpdated
 	TaskTagUpdated                map[string]TaskTagUpdated
 	TaskUpdated                   map[string]TaskUpdated
