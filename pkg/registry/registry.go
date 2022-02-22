@@ -25,6 +25,7 @@ func (r *registry) NewController() controller.Controller {
 	return controller.Controller{
 		Auth:                    r.NewAuthController(),
 		Color:                   r.NewColorController(),
+		DeletedTask:             r.NewDeletedTaskController(),
 		FavoriteProject:         r.NewFavoriteProjectController(),
 		FavoriteWorkspace:       r.NewFavoriteWorkspaceController(),
 		FileType:                r.NewFileTypeController(),

@@ -2,7 +2,6 @@ package subscription
 
 import (
 	"project-management-demo-backend/ent"
-	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/pkg/entity/model"
 
 	"github.com/thanhpk/randstr"
@@ -10,90 +9,90 @@ import (
 
 // TestUserUpdated is a channel for subscription.
 type TestUserUpdated struct {
-	ID ulid.ID
+	ID model.ID
 	Ch chan *ent.TestUser
 }
 
 // TeammateUpdated is a channel for subscription.
 type TeammateUpdated struct {
-	ID        ulid.ID
+	ID        model.ID
 	RequestID string
 	Ch        chan *ent.Teammate
 }
 
 // WorkspaceUpdated is a channel for subscription.
 type WorkspaceUpdated struct {
-	ID        ulid.ID
+	ID        model.ID
 	RequestID string
 	Ch        chan *ent.Workspace
 }
 
 // ColorUpdated is a channel for subscription.
 type ColorUpdated struct {
-	ID        ulid.ID
+	ID        model.ID
 	RequestID string
 	Ch        chan *ent.Color
 }
 
 // IconUpdated is a channel for subscription.
 type IconUpdated struct {
-	ID        ulid.ID
+	ID        model.ID
 	RequestID string
 	Ch        chan *ent.Icon
 }
 
 // ProjectUpdated is a channel for subscription.
 type ProjectUpdated struct {
-	ID        ulid.ID
+	ID        model.ID
 	RequestID string
 	Ch        chan *ent.Project
 }
 
 // ProjectTeammateUpdated is a channel for subscription.
 type ProjectTeammateUpdated struct {
-	ID        ulid.ID
+	ID        model.ID
 	RequestID string
 	Ch        chan *ent.ProjectTeammate
 }
 
 // ProjectBaseColorUpdated is a channel for subscription.
 type ProjectBaseColorUpdated struct {
-	ID        ulid.ID
+	ID        model.ID
 	RequestID string
 	Ch        chan *ent.ProjectBaseColor
 }
 
 // ProjectLightColorUpdated is a channel for subscription.
 type ProjectLightColorUpdated struct {
-	ID        ulid.ID
+	ID        model.ID
 	RequestID string
 	Ch        chan *ent.ProjectLightColor
 }
 
 // ProjectIconUpdated is a channel for subscription.
 type ProjectIconUpdated struct {
-	ID        ulid.ID
+	ID        model.ID
 	RequestID string
 	Ch        chan *ent.ProjectIcon
 }
 
 // MeUpdated is a channel for subscription.
 type MeUpdated struct {
-	ID        ulid.ID
+	ID        model.ID
 	RequestID string
 	Ch        chan *model.Me
 }
 
 // WorkspaceTeammateUpdated is a channel for subscription.
 type WorkspaceTeammateUpdated struct {
-	ID        ulid.ID
+	ID        model.ID
 	RequestID string
 	Ch        chan *model.WorkspaceTeammate
 }
 
 // FavoriteProjectCreated is a channel for subscription.
 type FavoriteProjectCreated struct {
-	TeammateID ulid.ID
+	TeammateID model.ID
 	RequestID  string
 	Ch         chan *model.FavoriteProject
 }
@@ -206,8 +205,8 @@ type TeammateTaskUpdated struct {
 
 // TeammateTaskCreated is a channel for subscription.
 type TeammateTaskCreated struct {
-	TeammateID  ulid.ID
-	WorkspaceID ulid.ID
+	TeammateID  model.ID
+	WorkspaceID model.ID
 	RequestID   string
 	Ch          chan *model.TeammateTask
 }
@@ -298,14 +297,30 @@ type TaskFeedLikeDeleted struct {
 
 // TaskFileUpdated is a channel for subscription.
 type TaskFileUpdated struct {
-	ID        ulid.ID
+	ID        model.ID
 	RequestID string
 	Ch        chan *ent.TaskFile
+}
+
+// DeletedTaskUpdated is a channel for subscription.
+type DeletedTaskUpdated struct {
+	ID        model.ID
+	RequestID string
+	Ch        chan *ent.DeletedTask
+}
+
+// DeletedTaskCreated is a channel for subscription.
+type DeletedTaskCreated struct {
+	WorkspaceID model.ID
+	RequestID   string
+	Ch          chan *ent.DeletedTask
 }
 
 // Subscriptions hold an id and a channel of subscription.
 type Subscriptions struct {
 	ColorUpdated                  map[string]ColorUpdated
+	DeletedTaskCreated            map[string]DeletedTaskCreated
+	DeletedTaskUpdated            map[string]DeletedTaskUpdated
 	FavoriteProjectCreated        map[string]FavoriteProjectCreated
 	FavoriteProjectIDsUpdated     map[string]FavoriteProjectIDsUpdated
 	FavoriteWorkspaceIDsUpdated   map[string]FavoriteWorkspaceIDsUpdated
@@ -317,19 +332,19 @@ type Subscriptions struct {
 	ProjectTaskColumnUpdated      map[string]ProjectTaskColumnUpdated
 	ProjectTaskCreated            map[string]ProjectTaskCreated
 	ProjectTaskListStatusUpdated  map[string]ProjectTaskListStatusUpdated
-	ProjectTaskSectionUpdated     map[string]ProjectTaskSectionUpdated
 	ProjectTaskSectionCreated     map[string]ProjectTaskSectionCreated
+	ProjectTaskSectionUpdated     map[string]ProjectTaskSectionUpdated
 	ProjectTaskUpdated            map[string]ProjectTaskUpdated
 	ProjectTeammateUpdated        map[string]ProjectTeammateUpdated
 	ProjectUpdated                map[string]ProjectUpdated
 	TagUpdated                    map[string]TagUpdated
 	TaskCollaboratorUpdated       map[string]TaskCollaboratorUpdated
 	TaskColumnUpdated             map[string]TaskColumnUpdated
+	TaskFeedCreated               map[string]TaskFeedCreated
+	TaskFeedDeleted               map[string]TaskFeedDeleted
 	TaskFeedLikeCreated           map[string]TaskFeedLikeCreated
 	TaskFeedLikeDeleted           map[string]TaskFeedLikeDeleted
 	TaskFeedUpdated               map[string]TaskFeedUpdated
-	TaskFeedCreated               map[string]TaskFeedCreated
-	TaskFeedDeleted               map[string]TaskFeedDeleted
 	TaskFileUpdated               map[string]TaskFileUpdated
 	TaskLikesCreated              map[string]TaskLikesCreated
 	TaskLikesDeleted              map[string]TaskLikesDeleted

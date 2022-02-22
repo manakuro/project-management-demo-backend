@@ -31,6 +31,8 @@ func NewSchema(client *ent.Client, controller controller.Controller) graphql.Exe
 			controller: controller,
 			subscriptions: &subscription.Subscriptions{
 				ColorUpdated:                  map[string]subscription.ColorUpdated{},
+				DeletedTaskCreated:            map[string]subscription.DeletedTaskCreated{},
+				DeletedTaskUpdated:            map[string]subscription.DeletedTaskUpdated{},
 				FavoriteProjectCreated:        map[string]subscription.FavoriteProjectCreated{},
 				FavoriteProjectIDsUpdated:     map[string]subscription.FavoriteProjectIDsUpdated{},
 				FavoriteWorkspaceIDsUpdated:   map[string]subscription.FavoriteWorkspaceIDsUpdated{},
