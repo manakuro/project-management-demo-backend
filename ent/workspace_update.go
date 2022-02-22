@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"project-management-demo-backend/ent/deletedtask"
 	"project-management-demo-backend/ent/favoriteworkspace"
 	"project-management-demo-backend/ent/predicate"
 	"project-management-demo-backend/ent/project"
@@ -217,6 +218,21 @@ func (wu *WorkspaceUpdate) AddTeammateTasks(t ...*TeammateTask) *WorkspaceUpdate
 		ids[i] = t[i].ID
 	}
 	return wu.AddTeammateTaskIDs(ids...)
+}
+
+// AddDeletedTasksRefIDs adds the "deletedTasksRef" edge to the DeletedTask entity by IDs.
+func (wu *WorkspaceUpdate) AddDeletedTasksRefIDs(ids ...ulid.ID) *WorkspaceUpdate {
+	wu.mutation.AddDeletedTasksRefIDs(ids...)
+	return wu
+}
+
+// AddDeletedTasksRef adds the "deletedTasksRef" edges to the DeletedTask entity.
+func (wu *WorkspaceUpdate) AddDeletedTasksRef(d ...*DeletedTask) *WorkspaceUpdate {
+	ids := make([]ulid.ID, len(d))
+	for i := range d {
+		ids[i] = d[i].ID
+	}
+	return wu.AddDeletedTasksRefIDs(ids...)
 }
 
 // Mutation returns the WorkspaceMutation object of the builder.
@@ -438,6 +454,27 @@ func (wu *WorkspaceUpdate) RemoveTeammateTasks(t ...*TeammateTask) *WorkspaceUpd
 		ids[i] = t[i].ID
 	}
 	return wu.RemoveTeammateTaskIDs(ids...)
+}
+
+// ClearDeletedTasksRef clears all "deletedTasksRef" edges to the DeletedTask entity.
+func (wu *WorkspaceUpdate) ClearDeletedTasksRef() *WorkspaceUpdate {
+	wu.mutation.ClearDeletedTasksRef()
+	return wu
+}
+
+// RemoveDeletedTasksRefIDs removes the "deletedTasksRef" edge to DeletedTask entities by IDs.
+func (wu *WorkspaceUpdate) RemoveDeletedTasksRefIDs(ids ...ulid.ID) *WorkspaceUpdate {
+	wu.mutation.RemoveDeletedTasksRefIDs(ids...)
+	return wu
+}
+
+// RemoveDeletedTasksRef removes "deletedTasksRef" edges to DeletedTask entities.
+func (wu *WorkspaceUpdate) RemoveDeletedTasksRef(d ...*DeletedTask) *WorkspaceUpdate {
+	ids := make([]ulid.ID, len(d))
+	for i := range d {
+		ids[i] = d[i].ID
+	}
+	return wu.RemoveDeletedTasksRefIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -1120,6 +1157,60 @@ func (wu *WorkspaceUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if wu.mutation.DeletedTasksRefCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   workspace.DeletedTasksRefTable,
+			Columns: []string{workspace.DeletedTasksRefColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: deletedtask.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := wu.mutation.RemovedDeletedTasksRefIDs(); len(nodes) > 0 && !wu.mutation.DeletedTasksRefCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   workspace.DeletedTasksRefTable,
+			Columns: []string{workspace.DeletedTasksRefColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: deletedtask.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := wu.mutation.DeletedTasksRefIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   workspace.DeletedTasksRefTable,
+			Columns: []string{workspace.DeletedTasksRefColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: deletedtask.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, wu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{workspace.Label}
@@ -1316,6 +1407,21 @@ func (wuo *WorkspaceUpdateOne) AddTeammateTasks(t ...*TeammateTask) *WorkspaceUp
 		ids[i] = t[i].ID
 	}
 	return wuo.AddTeammateTaskIDs(ids...)
+}
+
+// AddDeletedTasksRefIDs adds the "deletedTasksRef" edge to the DeletedTask entity by IDs.
+func (wuo *WorkspaceUpdateOne) AddDeletedTasksRefIDs(ids ...ulid.ID) *WorkspaceUpdateOne {
+	wuo.mutation.AddDeletedTasksRefIDs(ids...)
+	return wuo
+}
+
+// AddDeletedTasksRef adds the "deletedTasksRef" edges to the DeletedTask entity.
+func (wuo *WorkspaceUpdateOne) AddDeletedTasksRef(d ...*DeletedTask) *WorkspaceUpdateOne {
+	ids := make([]ulid.ID, len(d))
+	for i := range d {
+		ids[i] = d[i].ID
+	}
+	return wuo.AddDeletedTasksRefIDs(ids...)
 }
 
 // Mutation returns the WorkspaceMutation object of the builder.
@@ -1537,6 +1643,27 @@ func (wuo *WorkspaceUpdateOne) RemoveTeammateTasks(t ...*TeammateTask) *Workspac
 		ids[i] = t[i].ID
 	}
 	return wuo.RemoveTeammateTaskIDs(ids...)
+}
+
+// ClearDeletedTasksRef clears all "deletedTasksRef" edges to the DeletedTask entity.
+func (wuo *WorkspaceUpdateOne) ClearDeletedTasksRef() *WorkspaceUpdateOne {
+	wuo.mutation.ClearDeletedTasksRef()
+	return wuo
+}
+
+// RemoveDeletedTasksRefIDs removes the "deletedTasksRef" edge to DeletedTask entities by IDs.
+func (wuo *WorkspaceUpdateOne) RemoveDeletedTasksRefIDs(ids ...ulid.ID) *WorkspaceUpdateOne {
+	wuo.mutation.RemoveDeletedTasksRefIDs(ids...)
+	return wuo
+}
+
+// RemoveDeletedTasksRef removes "deletedTasksRef" edges to DeletedTask entities.
+func (wuo *WorkspaceUpdateOne) RemoveDeletedTasksRef(d ...*DeletedTask) *WorkspaceUpdateOne {
+	ids := make([]ulid.ID, len(d))
+	for i := range d {
+		ids[i] = d[i].ID
+	}
+	return wuo.RemoveDeletedTasksRefIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -2235,6 +2362,60 @@ func (wuo *WorkspaceUpdateOne) sqlSave(ctx context.Context) (_node *Workspace, e
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: teammatetask.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if wuo.mutation.DeletedTasksRefCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   workspace.DeletedTasksRefTable,
+			Columns: []string{workspace.DeletedTasksRefColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: deletedtask.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := wuo.mutation.RemovedDeletedTasksRefIDs(); len(nodes) > 0 && !wuo.mutation.DeletedTasksRefCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   workspace.DeletedTasksRefTable,
+			Columns: []string{workspace.DeletedTasksRefColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: deletedtask.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := wuo.mutation.DeletedTasksRefIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   workspace.DeletedTasksRefTable,
+			Columns: []string{workspace.DeletedTasksRefColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: deletedtask.FieldID,
 				},
 			},
 		}

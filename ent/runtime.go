@@ -4,6 +4,7 @@ package ent
 
 import (
 	"project-management-demo-backend/ent/color"
+	"project-management-demo-backend/ent/deletedtask"
 	"project-management-demo-backend/ent/favoriteproject"
 	"project-management-demo-backend/ent/favoriteworkspace"
 	"project-management-demo-backend/ent/filetype"
@@ -124,6 +125,25 @@ func init() {
 	colorDescID := colorMixinFields0[0].Descriptor()
 	// color.DefaultID holds the default value on creation for the id field.
 	color.DefaultID = colorDescID.Default.(func() ulid.ID)
+	deletedtaskMixin := schema.DeletedTask{}.Mixin()
+	deletedtaskMixinFields0 := deletedtaskMixin[0].Fields()
+	_ = deletedtaskMixinFields0
+	deletedtaskMixinFields2 := deletedtaskMixin[2].Fields()
+	_ = deletedtaskMixinFields2
+	deletedtaskFields := schema.DeletedTask{}.Fields()
+	_ = deletedtaskFields
+	// deletedtaskDescCreatedAt is the schema descriptor for created_at field.
+	deletedtaskDescCreatedAt := deletedtaskMixinFields2[0].Descriptor()
+	// deletedtask.DefaultCreatedAt holds the default value on creation for the created_at field.
+	deletedtask.DefaultCreatedAt = deletedtaskDescCreatedAt.Default.(func() time.Time)
+	// deletedtaskDescUpdatedAt is the schema descriptor for updated_at field.
+	deletedtaskDescUpdatedAt := deletedtaskMixinFields2[1].Descriptor()
+	// deletedtask.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	deletedtask.DefaultUpdatedAt = deletedtaskDescUpdatedAt.Default.(func() time.Time)
+	// deletedtaskDescID is the schema descriptor for id field.
+	deletedtaskDescID := deletedtaskMixinFields0[0].Descriptor()
+	// deletedtask.DefaultID holds the default value on creation for the id field.
+	deletedtask.DefaultID = deletedtaskDescID.Default.(func() ulid.ID)
 	favoriteprojectMixin := schema.FavoriteProject{}.Mixin()
 	favoriteprojectMixinFields0 := favoriteprojectMixin[0].Fields()
 	_ = favoriteprojectMixinFields0

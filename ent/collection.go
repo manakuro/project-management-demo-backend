@@ -41,6 +41,30 @@ func (c *ColorQuery) collectField(ctx *graphql.OperationContext, field graphql.C
 }
 
 // CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
+func (dt *DeletedTaskQuery) CollectFields(ctx context.Context, satisfies ...string) *DeletedTaskQuery {
+	if fc := graphql.GetFieldContext(ctx); fc != nil {
+		dt = dt.collectField(graphql.GetOperationContext(ctx), fc.Field, satisfies...)
+	}
+	return dt
+}
+
+func (dt *DeletedTaskQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *DeletedTaskQuery {
+	for _, field := range graphql.CollectFields(ctx, field.Selections, satisfies) {
+		switch field.Name {
+		case "task":
+			dt = dt.WithTask(func(query *TaskQuery) {
+				query.collectField(ctx, field)
+			})
+		case "workspace":
+			dt = dt.WithWorkspace(func(query *WorkspaceQuery) {
+				query.collectField(ctx, field)
+			})
+		}
+	}
+	return dt
+}
+
+// CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
 func (fp *FavoriteProjectQuery) CollectFields(ctx context.Context, satisfies ...string) *FavoriteProjectQuery {
 	if fc := graphql.GetFieldContext(ctx); fc != nil {
 		fp = fp.collectField(graphql.GetOperationContext(ctx), fc.Field, satisfies...)
@@ -431,6 +455,10 @@ func (t *TaskQuery) CollectFields(ctx context.Context, satisfies ...string) *Tas
 func (t *TaskQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *TaskQuery {
 	for _, field := range graphql.CollectFields(ctx, field.Selections, satisfies) {
 		switch field.Name {
+		case "deletedTasksRef":
+			t = t.WithDeletedTasksRef(func(query *DeletedTaskQuery) {
+				query.collectField(ctx, field)
+			})
 		case "parent":
 			t = t.WithParent(func(query *TaskQuery) {
 				query.collectField(ctx, field)
@@ -1039,6 +1067,10 @@ func (w *WorkspaceQuery) CollectFields(ctx context.Context, satisfies ...string)
 func (w *WorkspaceQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *WorkspaceQuery {
 	for _, field := range graphql.CollectFields(ctx, field.Selections, satisfies) {
 		switch field.Name {
+		case "deletedTasksRef":
+			w = w.WithDeletedTasksRef(func(query *DeletedTaskQuery) {
+				query.collectField(ctx, field)
+			})
 		case "favoriteWorkspaces":
 			w = w.WithFavoriteWorkspaces(func(query *FavoriteWorkspaceQuery) {
 				query.collectField(ctx, field)

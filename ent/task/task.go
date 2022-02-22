@@ -62,6 +62,8 @@ const (
 	EdgeTaskFeedLikes = "taskFeedLikes"
 	// EdgeTaskFiles holds the string denoting the taskfiles edge name in mutations.
 	EdgeTaskFiles = "taskFiles"
+	// EdgeDeletedTasksRef holds the string denoting the deletedtasksref edge name in mutations.
+	EdgeDeletedTasksRef = "deletedTasksRef"
 	// Table holds the table name of the task in the database.
 	Table = "tasks"
 	// TeammateTable is the table that holds the teammate relation/edge.
@@ -142,6 +144,13 @@ const (
 	TaskFilesInverseTable = "task_files"
 	// TaskFilesColumn is the table column denoting the taskFiles relation/edge.
 	TaskFilesColumn = "task_id"
+	// DeletedTasksRefTable is the table that holds the deletedTasksRef relation/edge.
+	DeletedTasksRefTable = "deleted_tasks"
+	// DeletedTasksRefInverseTable is the table name for the DeletedTask entity.
+	// It exists in this package in order to avoid circular dependency with the "deletedtask" package.
+	DeletedTasksRefInverseTable = "deleted_tasks"
+	// DeletedTasksRefColumn is the table column denoting the deletedTasksRef relation/edge.
+	DeletedTasksRefColumn = "task_id"
 )
 
 // Columns holds all SQL columns for task fields.

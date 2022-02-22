@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io"
 	"project-management-demo-backend/ent/color"
+	"project-management-demo-backend/ent/deletedtask"
 	"project-management-demo-backend/ent/favoriteproject"
 	"project-management-demo-backend/ent/favoriteworkspace"
 	"project-management-demo-backend/ent/filetype"
@@ -493,6 +494,233 @@ func (c *Color) ToEdge(order *ColorOrder) *ColorEdge {
 	return &ColorEdge{
 		Node:   c,
 		Cursor: order.Field.toCursor(c),
+	}
+}
+
+// DeletedTaskEdge is the edge representation of DeletedTask.
+type DeletedTaskEdge struct {
+	Node   *DeletedTask `json:"node"`
+	Cursor Cursor       `json:"cursor"`
+}
+
+// DeletedTaskConnection is the connection containing edges to DeletedTask.
+type DeletedTaskConnection struct {
+	Edges      []*DeletedTaskEdge `json:"edges"`
+	PageInfo   PageInfo           `json:"pageInfo"`
+	TotalCount int                `json:"totalCount"`
+}
+
+// DeletedTaskPaginateOption enables pagination customization.
+type DeletedTaskPaginateOption func(*deletedTaskPager) error
+
+// WithDeletedTaskOrder configures pagination ordering.
+func WithDeletedTaskOrder(order *DeletedTaskOrder) DeletedTaskPaginateOption {
+	if order == nil {
+		order = DefaultDeletedTaskOrder
+	}
+	o := *order
+	return func(pager *deletedTaskPager) error {
+		if err := o.Direction.Validate(); err != nil {
+			return err
+		}
+		if o.Field == nil {
+			o.Field = DefaultDeletedTaskOrder.Field
+		}
+		pager.order = &o
+		return nil
+	}
+}
+
+// WithDeletedTaskFilter configures pagination filter.
+func WithDeletedTaskFilter(filter func(*DeletedTaskQuery) (*DeletedTaskQuery, error)) DeletedTaskPaginateOption {
+	return func(pager *deletedTaskPager) error {
+		if filter == nil {
+			return errors.New("DeletedTaskQuery filter cannot be nil")
+		}
+		pager.filter = filter
+		return nil
+	}
+}
+
+type deletedTaskPager struct {
+	order  *DeletedTaskOrder
+	filter func(*DeletedTaskQuery) (*DeletedTaskQuery, error)
+}
+
+func newDeletedTaskPager(opts []DeletedTaskPaginateOption) (*deletedTaskPager, error) {
+	pager := &deletedTaskPager{}
+	for _, opt := range opts {
+		if err := opt(pager); err != nil {
+			return nil, err
+		}
+	}
+	if pager.order == nil {
+		pager.order = DefaultDeletedTaskOrder
+	}
+	return pager, nil
+}
+
+func (p *deletedTaskPager) applyFilter(query *DeletedTaskQuery) (*DeletedTaskQuery, error) {
+	if p.filter != nil {
+		return p.filter(query)
+	}
+	return query, nil
+}
+
+func (p *deletedTaskPager) toCursor(dt *DeletedTask) Cursor {
+	return p.order.Field.toCursor(dt)
+}
+
+func (p *deletedTaskPager) applyCursors(query *DeletedTaskQuery, after, before *Cursor) *DeletedTaskQuery {
+	for _, predicate := range cursorsToPredicates(
+		p.order.Direction, after, before,
+		p.order.Field.field, DefaultDeletedTaskOrder.Field.field,
+	) {
+		query = query.Where(predicate)
+	}
+	return query
+}
+
+func (p *deletedTaskPager) applyOrder(query *DeletedTaskQuery, reverse bool) *DeletedTaskQuery {
+	direction := p.order.Direction
+	if reverse {
+		direction = direction.reverse()
+	}
+	query = query.Order(direction.orderFunc(p.order.Field.field))
+	if p.order.Field != DefaultDeletedTaskOrder.Field {
+		query = query.Order(direction.orderFunc(DefaultDeletedTaskOrder.Field.field))
+	}
+	return query
+}
+
+// Paginate executes the query and returns a relay based cursor connection to DeletedTask.
+func (dt *DeletedTaskQuery) Paginate(
+	ctx context.Context, after *Cursor, first *int,
+	before *Cursor, last *int, opts ...DeletedTaskPaginateOption,
+) (*DeletedTaskConnection, error) {
+	if err := validateFirstLast(first, last); err != nil {
+		return nil, err
+	}
+	pager, err := newDeletedTaskPager(opts)
+	if err != nil {
+		return nil, err
+	}
+
+	if dt, err = pager.applyFilter(dt); err != nil {
+		return nil, err
+	}
+
+	conn := &DeletedTaskConnection{Edges: []*DeletedTaskEdge{}}
+	if !hasCollectedField(ctx, edgesField) || first != nil && *first == 0 || last != nil && *last == 0 {
+		if hasCollectedField(ctx, totalCountField) ||
+			hasCollectedField(ctx, pageInfoField) {
+			count, err := dt.Count(ctx)
+			if err != nil {
+				return nil, err
+			}
+			conn.TotalCount = count
+			conn.PageInfo.HasNextPage = first != nil && count > 0
+			conn.PageInfo.HasPreviousPage = last != nil && count > 0
+		}
+		return conn, nil
+	}
+
+	if (after != nil || first != nil || before != nil || last != nil) && hasCollectedField(ctx, totalCountField) {
+		count, err := dt.Clone().Count(ctx)
+		if err != nil {
+			return nil, err
+		}
+		conn.TotalCount = count
+	}
+
+	dt = pager.applyCursors(dt, after, before)
+	dt = pager.applyOrder(dt, last != nil)
+	var limit int
+	if first != nil {
+		limit = *first + 1
+	} else if last != nil {
+		limit = *last + 1
+	}
+	if limit > 0 {
+		dt = dt.Limit(limit)
+	}
+
+	if field := getCollectedField(ctx, edgesField, nodeField); field != nil {
+		dt = dt.collectField(graphql.GetOperationContext(ctx), *field)
+	}
+
+	nodes, err := dt.All(ctx)
+	if err != nil || len(nodes) == 0 {
+		return conn, err
+	}
+
+	if len(nodes) == limit {
+		conn.PageInfo.HasNextPage = first != nil
+		conn.PageInfo.HasPreviousPage = last != nil
+		nodes = nodes[:len(nodes)-1]
+	}
+
+	var nodeAt func(int) *DeletedTask
+	if last != nil {
+		n := len(nodes) - 1
+		nodeAt = func(i int) *DeletedTask {
+			return nodes[n-i]
+		}
+	} else {
+		nodeAt = func(i int) *DeletedTask {
+			return nodes[i]
+		}
+	}
+
+	conn.Edges = make([]*DeletedTaskEdge, len(nodes))
+	for i := range nodes {
+		node := nodeAt(i)
+		conn.Edges[i] = &DeletedTaskEdge{
+			Node:   node,
+			Cursor: pager.toCursor(node),
+		}
+	}
+
+	conn.PageInfo.StartCursor = &conn.Edges[0].Cursor
+	conn.PageInfo.EndCursor = &conn.Edges[len(conn.Edges)-1].Cursor
+	if conn.TotalCount == 0 {
+		conn.TotalCount = len(nodes)
+	}
+
+	return conn, nil
+}
+
+// DeletedTaskOrderField defines the ordering field of DeletedTask.
+type DeletedTaskOrderField struct {
+	field    string
+	toCursor func(*DeletedTask) Cursor
+}
+
+// DeletedTaskOrder defines the ordering of DeletedTask.
+type DeletedTaskOrder struct {
+	Direction OrderDirection         `json:"direction"`
+	Field     *DeletedTaskOrderField `json:"field"`
+}
+
+// DefaultDeletedTaskOrder is the default ordering of DeletedTask.
+var DefaultDeletedTaskOrder = &DeletedTaskOrder{
+	Direction: OrderDirectionAsc,
+	Field: &DeletedTaskOrderField{
+		field: deletedtask.FieldID,
+		toCursor: func(dt *DeletedTask) Cursor {
+			return Cursor{ID: dt.ID}
+		},
+	},
+}
+
+// ToEdge converts DeletedTask into DeletedTaskEdge.
+func (dt *DeletedTask) ToEdge(order *DeletedTaskOrder) *DeletedTaskEdge {
+	if order == nil {
+		order = DefaultDeletedTaskOrder
+	}
+	return &DeletedTaskEdge{
+		Node:   dt,
+		Cursor: order.Field.toCursor(dt),
 	}
 }
 

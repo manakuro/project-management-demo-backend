@@ -162,6 +162,13 @@ func (Task) Edges() []ent.Edge {
 					annotation.Edge{FieldName: "task_file_id"},
 				),
 			),
+		edge.To(deletedTasksRef, DeletedTask.Type).
+			Annotations(
+				entgql.Bind(),
+				schema.Annotation(
+					annotation.Edge{FieldName: "deleted_task_id"},
+				),
+			),
 	}
 }
 

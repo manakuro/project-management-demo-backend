@@ -5,6 +5,7 @@ package ent
 import (
 	"context"
 	"fmt"
+	"project-management-demo-backend/ent/deletedtask"
 	"project-management-demo-backend/ent/predicate"
 	"project-management-demo-backend/ent/projecttask"
 	"project-management-demo-backend/ent/schema/editor"
@@ -383,6 +384,21 @@ func (tu *TaskUpdate) AddTaskFiles(t ...*TaskFile) *TaskUpdate {
 	return tu.AddTaskFileIDs(ids...)
 }
 
+// AddDeletedTasksRefIDs adds the "deletedTasksRef" edge to the DeletedTask entity by IDs.
+func (tu *TaskUpdate) AddDeletedTasksRefIDs(ids ...ulid.ID) *TaskUpdate {
+	tu.mutation.AddDeletedTasksRefIDs(ids...)
+	return tu
+}
+
+// AddDeletedTasksRef adds the "deletedTasksRef" edges to the DeletedTask entity.
+func (tu *TaskUpdate) AddDeletedTasksRef(d ...*DeletedTask) *TaskUpdate {
+	ids := make([]ulid.ID, len(d))
+	for i := range d {
+		ids[i] = d[i].ID
+	}
+	return tu.AddDeletedTasksRefIDs(ids...)
+}
+
 // Mutation returns the TaskMutation object of the builder.
 func (tu *TaskUpdate) Mutation() *TaskMutation {
 	return tu.mutation
@@ -593,6 +609,27 @@ func (tu *TaskUpdate) RemoveTaskFiles(t ...*TaskFile) *TaskUpdate {
 		ids[i] = t[i].ID
 	}
 	return tu.RemoveTaskFileIDs(ids...)
+}
+
+// ClearDeletedTasksRef clears all "deletedTasksRef" edges to the DeletedTask entity.
+func (tu *TaskUpdate) ClearDeletedTasksRef() *TaskUpdate {
+	tu.mutation.ClearDeletedTasksRef()
+	return tu
+}
+
+// RemoveDeletedTasksRefIDs removes the "deletedTasksRef" edge to DeletedTask entities by IDs.
+func (tu *TaskUpdate) RemoveDeletedTasksRefIDs(ids ...ulid.ID) *TaskUpdate {
+	tu.mutation.RemoveDeletedTasksRefIDs(ids...)
+	return tu
+}
+
+// RemoveDeletedTasksRef removes "deletedTasksRef" edges to DeletedTask entities.
+func (tu *TaskUpdate) RemoveDeletedTasksRef(d ...*DeletedTask) *TaskUpdate {
+	ids := make([]ulid.ID, len(d))
+	for i := range d {
+		ids[i] = d[i].ID
+	}
+	return tu.RemoveDeletedTasksRefIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -1348,6 +1385,60 @@ func (tu *TaskUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if tu.mutation.DeletedTasksRefCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   task.DeletedTasksRefTable,
+			Columns: []string{task.DeletedTasksRefColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: deletedtask.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tu.mutation.RemovedDeletedTasksRefIDs(); len(nodes) > 0 && !tu.mutation.DeletedTasksRefCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   task.DeletedTasksRefTable,
+			Columns: []string{task.DeletedTasksRefColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: deletedtask.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tu.mutation.DeletedTasksRefIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   task.DeletedTasksRefTable,
+			Columns: []string{task.DeletedTasksRefColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: deletedtask.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, tu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{task.Label}
@@ -1711,6 +1802,21 @@ func (tuo *TaskUpdateOne) AddTaskFiles(t ...*TaskFile) *TaskUpdateOne {
 	return tuo.AddTaskFileIDs(ids...)
 }
 
+// AddDeletedTasksRefIDs adds the "deletedTasksRef" edge to the DeletedTask entity by IDs.
+func (tuo *TaskUpdateOne) AddDeletedTasksRefIDs(ids ...ulid.ID) *TaskUpdateOne {
+	tuo.mutation.AddDeletedTasksRefIDs(ids...)
+	return tuo
+}
+
+// AddDeletedTasksRef adds the "deletedTasksRef" edges to the DeletedTask entity.
+func (tuo *TaskUpdateOne) AddDeletedTasksRef(d ...*DeletedTask) *TaskUpdateOne {
+	ids := make([]ulid.ID, len(d))
+	for i := range d {
+		ids[i] = d[i].ID
+	}
+	return tuo.AddDeletedTasksRefIDs(ids...)
+}
+
 // Mutation returns the TaskMutation object of the builder.
 func (tuo *TaskUpdateOne) Mutation() *TaskMutation {
 	return tuo.mutation
@@ -1921,6 +2027,27 @@ func (tuo *TaskUpdateOne) RemoveTaskFiles(t ...*TaskFile) *TaskUpdateOne {
 		ids[i] = t[i].ID
 	}
 	return tuo.RemoveTaskFileIDs(ids...)
+}
+
+// ClearDeletedTasksRef clears all "deletedTasksRef" edges to the DeletedTask entity.
+func (tuo *TaskUpdateOne) ClearDeletedTasksRef() *TaskUpdateOne {
+	tuo.mutation.ClearDeletedTasksRef()
+	return tuo
+}
+
+// RemoveDeletedTasksRefIDs removes the "deletedTasksRef" edge to DeletedTask entities by IDs.
+func (tuo *TaskUpdateOne) RemoveDeletedTasksRefIDs(ids ...ulid.ID) *TaskUpdateOne {
+	tuo.mutation.RemoveDeletedTasksRefIDs(ids...)
+	return tuo
+}
+
+// RemoveDeletedTasksRef removes "deletedTasksRef" edges to DeletedTask entities.
+func (tuo *TaskUpdateOne) RemoveDeletedTasksRef(d ...*DeletedTask) *TaskUpdateOne {
+	ids := make([]ulid.ID, len(d))
+	for i := range d {
+		ids[i] = d[i].ID
+	}
+	return tuo.RemoveDeletedTasksRefIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -2692,6 +2819,60 @@ func (tuo *TaskUpdateOne) sqlSave(ctx context.Context) (_node *Task, err error) 
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: taskfile.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if tuo.mutation.DeletedTasksRefCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   task.DeletedTasksRefTable,
+			Columns: []string{task.DeletedTasksRefColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: deletedtask.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tuo.mutation.RemovedDeletedTasksRefIDs(); len(nodes) > 0 && !tuo.mutation.DeletedTasksRefCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   task.DeletedTasksRefTable,
+			Columns: []string{task.DeletedTasksRefColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: deletedtask.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tuo.mutation.DeletedTasksRefIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   task.DeletedTasksRefTable,
+			Columns: []string{task.DeletedTasksRefColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: deletedtask.FieldID,
 				},
 			},
 		}

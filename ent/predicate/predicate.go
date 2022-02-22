@@ -9,6 +9,9 @@ import (
 // Color is the predicate function for color builders.
 type Color func(*sql.Selector)
 
+// DeletedTask is the predicate function for deletedtask builders.
+type DeletedTask func(*sql.Selector)
+
 // FavoriteProject is the predicate function for favoriteproject builders.
 type FavoriteProject func(*sql.Selector)
 

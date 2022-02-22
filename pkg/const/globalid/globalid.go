@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"project-management-demo-backend/ent/color"
+	"project-management-demo-backend/ent/deletedtask"
 	"project-management-demo-backend/ent/favoriteproject"
 	"project-management-demo-backend/ent/favoriteworkspace"
 	"project-management-demo-backend/ent/filetype"
@@ -87,6 +88,7 @@ type GlobalIDs struct {
 	TaskFeedLike            field
 	FileType                field
 	TaskFile                field
+	DeletedTask             field
 }
 
 // New generates a map object that is intended to be used as global identification for node interface query.
@@ -240,6 +242,10 @@ func New() GlobalIDs {
 		TaskFile: field{
 			Prefix: "0BK",
 			Table:  taskfile.Table,
+		},
+		DeletedTask: field{
+			Prefix: "0BL",
+			Table:  deletedtask.Table,
 		},
 	}
 }

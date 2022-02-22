@@ -23,6 +23,34 @@ var (
 		Columns:    ColorsColumns,
 		PrimaryKey: []*schema.Column{ColorsColumns[0]},
 	}
+	// DeletedTasksColumns holds the columns for the "deleted_tasks" table.
+	DeletedTasksColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
+		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
+		{Name: "task_id", Type: field.TypeString, Nullable: true},
+		{Name: "workspace_id", Type: field.TypeString, Nullable: true},
+	}
+	// DeletedTasksTable holds the schema information for the "deleted_tasks" table.
+	DeletedTasksTable = &schema.Table{
+		Name:       "deleted_tasks",
+		Columns:    DeletedTasksColumns,
+		PrimaryKey: []*schema.Column{DeletedTasksColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "deleted_tasks_tasks_deletedTasksRef",
+				Columns:    []*schema.Column{DeletedTasksColumns[3]},
+				RefColumns: []*schema.Column{TasksColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+			{
+				Symbol:     "deleted_tasks_workspaces_deletedTasksRef",
+				Columns:    []*schema.Column{DeletedTasksColumns[4]},
+				RefColumns: []*schema.Column{WorkspacesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
 	// FavoriteProjectsColumns holds the columns for the "favorite_projects" table.
 	FavoriteProjectsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString},
@@ -1037,6 +1065,7 @@ var (
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		ColorsTable,
+		DeletedTasksTable,
 		FavoriteProjectsTable,
 		FavoriteWorkspacesTable,
 		FileTypesTable,
@@ -1077,6 +1106,8 @@ var (
 )
 
 func init() {
+	DeletedTasksTable.ForeignKeys[0].RefTable = TasksTable
+	DeletedTasksTable.ForeignKeys[1].RefTable = WorkspacesTable
 	FavoriteProjectsTable.ForeignKeys[0].RefTable = ProjectsTable
 	FavoriteProjectsTable.ForeignKeys[1].RefTable = TeammatesTable
 	FavoriteWorkspacesTable.ForeignKeys[0].RefTable = TeammatesTable
