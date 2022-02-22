@@ -145,7 +145,11 @@ func (r *teammateTaskRepository) Update(ctx context.Context, input model.UpdateT
 }
 
 func (r *teammateTaskRepository) Delete(ctx context.Context, input model.DeleteTeammateTaskInput) (*model.TeammateTask, error) {
-	deleted, err := r.client.TeammateTask.Query().Where(teammatetask.IDEQ(input.ID)).Only(ctx)
+	deleted, err := r.client.
+		TeammateTask.Query().
+		Where(teammatetask.IDEQ(input.ID)).
+		Only(ctx)
+
 	if err != nil {
 		if ent.IsNotFound(err) {
 			return nil, model.NewNotFoundError(err, input.ID)
@@ -154,6 +158,15 @@ func (r *teammateTaskRepository) Delete(ctx context.Context, input model.DeleteT
 	}
 
 	err = r.client.TeammateTask.DeleteOneID(input.ID).Exec(ctx)
+	if err != nil {
+		return nil, model.NewDBError(err)
+	}
+
+	_, err = r.client.DeletedTask.
+		Create().
+		SetTaskID(input.TaskID).
+		SetWorkspaceID(input.WorkspaceID).
+		Save(ctx)
 	if err != nil {
 		return nil, model.NewDBError(err)
 	}

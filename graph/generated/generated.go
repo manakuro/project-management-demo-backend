@@ -294,6 +294,7 @@ type ComplexityRoot struct {
 		DeleteTaskFeedLike            func(childComplexity int, input model.DeleteTaskFeedLikeInput) int
 		DeleteTaskLike                func(childComplexity int, input model.DeleteTaskLikeInput) int
 		DeleteTaskTag                 func(childComplexity int, input model.DeleteTaskTagInput) int
+		DeleteTeammateTask            func(childComplexity int, input model.DeleteTeammateTaskInput) int
 		UpdateColor                   func(childComplexity int, input ent.UpdateColorInput) int
 		UpdateDeletedTask             func(childComplexity int, input ent.UpdateDeletedTaskInput) int
 		UpdateFileType                func(childComplexity int, input ent.UpdateFileTypeInput) int
@@ -1296,6 +1297,7 @@ type MutationResolver interface {
 	UpdateTeammate(ctx context.Context, input ent.UpdateTeammateInput) (*ent.Teammate, error)
 	CreateTeammateTask(ctx context.Context, input ent.CreateTeammateTaskInput) (*ent.TeammateTask, error)
 	UpdateTeammateTask(ctx context.Context, input ent.UpdateTeammateTaskInput) (*ent.TeammateTask, error)
+	DeleteTeammateTask(ctx context.Context, input model.DeleteTeammateTaskInput) (*ent.TeammateTask, error)
 	CreateTeammateTaskColumn(ctx context.Context, input ent.CreateTeammateTaskColumnInput) (*ent.TeammateTaskColumn, error)
 	UpdateTeammateTaskColumn(ctx context.Context, input ent.UpdateTeammateTaskColumnInput) (*ent.TeammateTaskColumn, error)
 	CreateTeammateTaskListStatus(ctx context.Context, input ent.CreateTeammateTaskListStatusInput) (*ent.TeammateTaskListStatus, error)
@@ -2714,6 +2716,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.DeleteTaskTag(childComplexity, args["input"].(model.DeleteTaskTagInput)), true
+
+	case "Mutation.deleteTeammateTask":
+		if e.complexity.Mutation.DeleteTeammateTask == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deleteTeammateTask_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteTeammateTask(childComplexity, args["input"].(model.DeleteTeammateTaskInput)), true
 
 	case "Mutation.updateColor":
 		if e.complexity.Mutation.UpdateColor == nil {
@@ -13091,6 +13105,13 @@ input CreateTeammateTaskInput {
   requestId: String!
 }
 
+input DeleteTeammateTaskInput {
+  id: ID!
+  taskId: ID!
+  workspaceId: ID!
+  requestId: String!
+}
+
 input UpdateTeammateTaskInput {
   id: ID!
   taskId: ID
@@ -13113,6 +13134,7 @@ extend type Query {
 extend type Mutation {
   createTeammateTask(input: CreateTeammateTaskInput!): TeammateTask!
   updateTeammateTask(input: UpdateTeammateTaskInput!): TeammateTask!
+  deleteTeammateTask(input: DeleteTeammateTaskInput!): TeammateTask!
 }
 `, BuiltIn: false},
 	{Name: "graph/schema/teammate_task_column/teammate_task_column.graphql", Input: `type TeammateTaskColumn implements Node {
@@ -14245,6 +14267,21 @@ func (ec *executionContext) field_Mutation_deleteTaskTag_args(ctx context.Contex
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNDeleteTaskTagInput2projectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐDeleteTaskTagInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_deleteTeammateTask_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.DeleteTeammateTaskInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNDeleteTeammateTaskInput2projectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐDeleteTeammateTaskInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -24034,6 +24071,48 @@ func (ec *executionContext) _Mutation_updateTeammateTask(ctx context.Context, fi
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Mutation().UpdateTeammateTask(rctx, args["input"].(ent.UpdateTeammateTaskInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.TeammateTask)
+	fc.Result = res
+	return ec.marshalNTeammateTask2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTeammateTask(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_deleteTeammateTask(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_deleteTeammateTask_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().DeleteTeammateTask(rctx, args["input"].(model.DeleteTeammateTaskInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -48962,6 +49041,53 @@ func (ec *executionContext) unmarshalInputDeleteTaskTagInput(ctx context.Context
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
 			it.ID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputDeleteTeammateTaskInput(ctx context.Context, obj interface{}) (model.DeleteTeammateTaskInput, error) {
+	var it model.DeleteTeammateTaskInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			it.ID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskId"))
+			it.TaskID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "workspaceId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceId"))
+			it.WorkspaceID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "requestId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("requestId"))
+			it.RequestID, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -74525,6 +74651,11 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "deleteTeammateTask":
+			out.Values[i] = ec._Mutation_deleteTeammateTask(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		case "createTeammateTaskColumn":
 			out.Values[i] = ec._Mutation_createTeammateTaskColumn(ctx, field)
 			if out.Values[i] == graphql.Null {
@@ -81459,6 +81590,11 @@ func (ec *executionContext) unmarshalNDeleteTaskLikeInput2projectᚑmanagement�
 
 func (ec *executionContext) unmarshalNDeleteTaskTagInput2projectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐDeleteTaskTagInput(ctx context.Context, v interface{}) (model.DeleteTaskTagInput, error) {
 	res, err := ec.unmarshalInputDeleteTaskTagInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNDeleteTeammateTaskInput2projectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐDeleteTeammateTaskInput(ctx context.Context, v interface{}) (model.DeleteTeammateTaskInput, error) {
+	res, err := ec.unmarshalInputDeleteTeammateTaskInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 

@@ -27,6 +27,13 @@ input CreateTeammateTaskInput {
   requestId: String!
 }
 
+input DeleteTeammateTaskInput {
+  id: ID!
+  taskId: ID!
+  workspaceId: ID!
+  requestId: String!
+}
+
 input UpdateTeammateTaskInput {
   id: ID!
   taskId: ID
@@ -49,4 +56,5 @@ extend type Query {
 extend type Mutation {
   createTeammateTask(input: CreateTeammateTaskInput!): TeammateTask!
   updateTeammateTask(input: UpdateTeammateTaskInput!): TeammateTask!
+  deleteTeammateTask(input: DeleteTeammateTaskInput!): TeammateTask!
 }

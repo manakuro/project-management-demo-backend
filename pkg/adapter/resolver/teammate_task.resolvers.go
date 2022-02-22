@@ -9,6 +9,7 @@ import (
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/graph/generated"
 	"project-management-demo-backend/pkg/adapter/handler"
+	"project-management-demo-backend/pkg/entity/model"
 	"project-management-demo-backend/pkg/util/datetime"
 	"project-management-demo-backend/pkg/util/subscription"
 )
@@ -43,6 +44,15 @@ func (r *mutationResolver) UpdateTeammateTask(ctx context.Context, input ent.Upd
 			}
 		}
 	}()
+
+	return t, nil
+}
+
+func (r *mutationResolver) DeleteTeammateTask(ctx context.Context, input model.DeleteTeammateTaskInput) (*ent.TeammateTask, error) {
+	t, err := r.controller.TeammateTask.Delete(ctx, input)
+	if err != nil {
+		return nil, handler.HandleGraphQLError(ctx, err)
+	}
 
 	return t, nil
 }
