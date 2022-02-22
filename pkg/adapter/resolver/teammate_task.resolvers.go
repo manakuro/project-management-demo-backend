@@ -54,6 +54,14 @@ func (r *mutationResolver) DeleteTeammateTask(ctx context.Context, input model.D
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
 
+	go func() {
+		for _, d := range r.subscriptions.TeammateTaskDeleted {
+			if d.WorkspaceID == input.WorkspaceID && d.TeammateID == input.TeammateID && d.RequestID != input.RequestID {
+				d.Ch <- t
+			}
+		}
+	}()
+
 	return t, nil
 }
 
@@ -122,6 +130,29 @@ func (r *subscriptionResolver) TeammateTaskCreated(ctx context.Context, teammate
 		<-ctx.Done()
 		r.mutex.Lock()
 		delete(r.subscriptions.TeammateTaskCreated, key)
+		r.mutex.Unlock()
+	}()
+
+	return ch, nil
+}
+
+func (r *subscriptionResolver) TeammateTaskDeleted(ctx context.Context, teammateID ulid.ID, workspaceID ulid.ID, requestID string) (<-chan *ent.TeammateTask, error) {
+	key := subscription.NewKey()
+	ch := make(chan *ent.TeammateTask)
+
+	r.mutex.Lock()
+	r.subscriptions.TeammateTaskDeleted[key] = subscription.TeammateTaskDeleted{
+		TeammateID:  teammateID,
+		WorkspaceID: workspaceID,
+		RequestID:   requestID,
+		Ch:          ch,
+	}
+	r.mutex.Unlock()
+
+	go func() {
+		<-ctx.Done()
+		r.mutex.Lock()
+		delete(r.subscriptions.TeammateTaskDeleted, key)
 		r.mutex.Unlock()
 	}()
 

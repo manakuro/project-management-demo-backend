@@ -24,6 +24,7 @@ type UpdateTeammateTaskInput = ent.UpdateTeammateTaskInput
 type DeleteTeammateTaskInput struct {
 	ID          ulid.ID
 	TaskID      ulid.ID
+	TeammateID  ulid.ID
 	WorkspaceID ulid.ID
 	RequestID   string
 }

@@ -65,6 +65,7 @@ func NewSchema(client *ent.Client, controller controller.Controller) graphql.Exe
 				TaskUpdated:                   map[string]subscription.TaskUpdated{},
 				TeammateTaskColumnUpdated:     map[string]subscription.TeammateTaskColumnUpdated{},
 				TeammateTaskCreated:           map[string]subscription.TeammateTaskCreated{},
+				TeammateTaskDeleted:           map[string]subscription.TeammateTaskDeleted{},
 				TeammateTaskListStatusUpdated: map[string]subscription.TeammateTaskListStatusUpdated{},
 				TeammateTaskSectionCreated:    map[string]subscription.TeammateTaskSectionCreated{},
 				TeammateTaskSectionUpdated:    map[string]subscription.TeammateTaskSectionUpdated{},

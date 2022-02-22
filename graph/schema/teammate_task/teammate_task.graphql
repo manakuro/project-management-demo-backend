@@ -30,6 +30,7 @@ input CreateTeammateTaskInput {
 input DeleteTeammateTaskInput {
   id: ID!
   taskId: ID!
+  teammateId: ID!
   workspaceId: ID!
   requestId: String!
 }
@@ -45,6 +46,7 @@ input UpdateTeammateTaskInput {
 extend type Subscription {
   teammateTaskUpdated(id: ID!, requestId: String!): TeammateTask!
   teammateTaskCreated(teammateId: ID!, workspaceId: ID!, requestId: String!): TeammateTask!
+  teammateTaskDeleted(teammateId: ID!, workspaceId: ID!, requestId: String!): TeammateTask!
 }
 
 extend type Query {
