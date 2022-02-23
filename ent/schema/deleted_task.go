@@ -31,7 +31,7 @@ type DeletedTaskMixin struct {
 
 // Fields of the DeletedTask.
 func (DeletedTaskMixin) Fields() []ent.Field {
-	// TODO: DeletedTask might be split into DeletedTeammateTask and DeletedProjectTask.
+	// TODO: DeletedTask can be split into DeletedTeammateTask and DeletedProjectTask.
 	return []ent.Field{
 		field.String("task_id").
 			GoType(ulid.ID("")),

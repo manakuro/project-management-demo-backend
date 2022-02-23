@@ -147,8 +147,11 @@ func (r *teammateTaskRepository) Update(ctx context.Context, input model.UpdateT
 }
 
 func (r *teammateTaskRepository) Delete(ctx context.Context, input model.DeleteTeammateTaskInput) (*model.TeammateTask, error) {
-	deleted, err := r.client.
+	client := WithTransactionalMutation(ctx)
+
+	deleted, err := client.
 		TeammateTask.Query().
+		WithTask().
 		Where(teammatetask.IDEQ(input.ID)).
 		Only(ctx)
 
@@ -159,12 +162,21 @@ func (r *teammateTaskRepository) Delete(ctx context.Context, input model.DeleteT
 		return nil, model.NewDBError(err)
 	}
 
-	err = r.client.TeammateTask.DeleteOneID(input.ID).Exec(ctx)
+	deletedTask, err := deleted.Task(ctx)
 	if err != nil {
 		return nil, model.NewDBError(err)
 	}
 
-	_, err = r.client.DeletedTask.
+	err = client.TeammateTask.DeleteOneID(input.ID).Exec(ctx)
+	if err != nil {
+		return nil, model.NewDBError(err)
+	}
+
+	if deletedTask.IsNew {
+		return deleted, nil
+	}
+
+	_, err = client.DeletedTask.
 		Create().
 		SetTaskID(input.TaskID).
 		SetWorkspaceID(input.WorkspaceID).
@@ -176,17 +188,21 @@ func (r *teammateTaskRepository) Delete(ctx context.Context, input model.DeleteT
 		return nil, model.NewDBError(err)
 	}
 
-	deletedProjectTask, err := r.client.ProjectTask.
+	deletedProjectTask, err := client.ProjectTask.
 		Query().
+		WithTask().
 		Where(projecttask.TaskID(input.TaskID)).
 		Only(ctx)
 
 	if err != nil {
+		if ent.IsNotFound(err) {
+			return deleted, nil
+		}
 		return nil, model.NewDBError(err)
 	}
 
 	if deletedProjectTask != nil {
-		err = r.client.ProjectTask.DeleteOneID(deletedProjectTask.ID).Exec(ctx)
+		err = client.ProjectTask.DeleteOneID(deletedProjectTask.ID).Exec(ctx)
 		if err != nil {
 			return nil, model.NewDBError(err)
 		}
