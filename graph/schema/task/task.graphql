@@ -97,6 +97,7 @@ type DeleteTaskPayload {
 
 extend type Subscription {
   taskUpdated(id: ID!, requestId: String!): Task!
+  taskDeleted(id: ID!, requestId: String!): DeleteTaskPayload!
 }
 
 extend type Query {

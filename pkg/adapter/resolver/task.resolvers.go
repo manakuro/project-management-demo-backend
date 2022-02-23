@@ -46,6 +46,23 @@ func (r *mutationResolver) DeleteTask(ctx context.Context, input model.DeleteTas
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
 
+	payload := &model.DeleteTaskPayload{
+		TeammateTask: &model.TeammateTask{
+			ID: p.TeammateTask.ID,
+		},
+		ProjectTask: &model.ProjectTask{
+			ID: p.ProjectTask.ID,
+		},
+		DeletedTasks: p.DeletedTasks,
+	}
+	go func() {
+		for _, d := range r.subscriptions.TaskDeleted {
+			if d.ID == input.TaskID && d.RequestID != input.RequestID {
+				d.Ch <- payload
+			}
+		}
+	}()
+
 	return p, nil
 }
 
@@ -82,6 +99,28 @@ func (r *subscriptionResolver) TaskUpdated(ctx context.Context, id ulid.ID, requ
 		<-ctx.Done()
 		r.mutex.Lock()
 		delete(r.subscriptions.TaskUpdated, key)
+		r.mutex.Unlock()
+	}()
+
+	return ch, nil
+}
+
+func (r *subscriptionResolver) TaskDeleted(ctx context.Context, id ulid.ID, requestID string) (<-chan *model.DeleteTaskPayload, error) {
+	key := subscription.NewKey()
+	ch := make(chan *model.DeleteTaskPayload, 1)
+
+	r.mutex.Lock()
+	r.subscriptions.TaskDeleted[key] = subscription.TaskDeleted{
+		ID:        id,
+		RequestID: requestID,
+		Ch:        ch,
+	}
+	r.mutex.Unlock()
+
+	go func() {
+		<-ctx.Done()
+		r.mutex.Lock()
+		delete(r.subscriptions.TaskDeleted, key)
 		r.mutex.Unlock()
 	}()
 

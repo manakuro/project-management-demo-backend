@@ -658,6 +658,7 @@ type ComplexityRoot struct {
 		ProjectUpdated                func(childComplexity int, id ulid.ID, requestID string) int
 		TagUpdated                    func(childComplexity int, id ulid.ID, requestID string) int
 		TaskCollaboratorsUpdated      func(childComplexity int, taskID ulid.ID, requestID string) int
+		TaskDeleted                   func(childComplexity int, id ulid.ID, requestID string) int
 		TaskFeedCreated               func(childComplexity int, taskID ulid.ID, requestID string) int
 		TaskFeedDeleted               func(childComplexity int, taskID ulid.ID, requestID string) int
 		TaskFeedLikeCreated           func(childComplexity int, taskFeedID ulid.ID, requestID string) int
@@ -1474,6 +1475,7 @@ type SubscriptionResolver interface {
 	ProjectTeammateUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.ProjectTeammate, error)
 	TagUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.Tag, error)
 	TaskUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.Task, error)
+	TaskDeleted(ctx context.Context, id ulid.ID, requestID string) (<-chan *model.DeleteTaskPayload, error)
 	TaskCollaboratorsUpdated(ctx context.Context, taskID ulid.ID, requestID string) (<-chan []*ent.TaskCollaborator, error)
 	TaskFeedUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.TaskFeed, error)
 	TaskFeedCreated(ctx context.Context, taskID ulid.ID, requestID string) (<-chan *ent.TaskFeed, error)
@@ -5330,6 +5332,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Subscription.TaskCollaboratorsUpdated(childComplexity, args["taskId"].(ulid.ID), args["requestId"].(string)), true
+
+	case "Subscription.taskDeleted":
+		if e.complexity.Subscription.TaskDeleted == nil {
+			break
+		}
+
+		args, err := ec.field_Subscription_taskDeleted_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Subscription.TaskDeleted(childComplexity, args["id"].(ulid.ID), args["requestId"].(string)), true
 
 	case "Subscription.taskFeedCreated":
 		if e.complexity.Subscription.TaskFeedCreated == nil {
@@ -12597,6 +12611,7 @@ type DeleteTaskPayload {
 
 extend type Subscription {
   taskUpdated(id: ID!, requestId: String!): Task!
+  taskDeleted(id: ID!, requestId: String!): DeleteTaskPayload!
 }
 
 extend type Query {
@@ -18124,6 +18139,30 @@ func (ec *executionContext) field_Subscription_taskCollaboratorsUpdated_args(ctx
 		}
 	}
 	args["taskId"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["requestId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("requestId"))
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["requestId"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Subscription_taskDeleted_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 ulid.ID
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
 	var arg1 string
 	if tmp, ok := rawArgs["requestId"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("requestId"))
@@ -33877,6 +33916,58 @@ func (ec *executionContext) _Subscription_taskUpdated(ctx context.Context, field
 			graphql.MarshalString(field.Alias).MarshalGQL(w)
 			w.Write([]byte{':'})
 			ec.marshalNTask2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTask(ctx, field.Selections, res).MarshalGQL(w)
+			w.Write([]byte{'}'})
+		})
+	}
+}
+
+func (ec *executionContext) _Subscription_taskDeleted(ctx context.Context, field graphql.CollectedField) (ret func() graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = nil
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Subscription",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Subscription_taskDeleted_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return nil
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Subscription().TaskDeleted(rctx, args["id"].(ulid.ID), args["requestId"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return nil
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return nil
+	}
+	return func() graphql.Marshaler {
+		res, ok := <-resTmp.(<-chan *model.DeleteTaskPayload)
+		if !ok {
+			return nil
+		}
+		return graphql.WriterFunc(func(w io.Writer) {
+			w.Write([]byte{'{'})
+			graphql.MarshalString(field.Alias).MarshalGQL(w)
+			w.Write([]byte{':'})
+			ec.marshalNDeleteTaskPayload2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐDeleteTaskPayload(ctx, field.Selections, res).MarshalGQL(w)
 			w.Write([]byte{'}'})
 		})
 	}
@@ -78139,6 +78230,8 @@ func (ec *executionContext) _Subscription(ctx context.Context, sel ast.Selection
 		return ec._Subscription_tagUpdated(ctx, fields[0])
 	case "taskUpdated":
 		return ec._Subscription_taskUpdated(ctx, fields[0])
+	case "taskDeleted":
+		return ec._Subscription_taskDeleted(ctx, fields[0])
 	case "taskCollaboratorsUpdated":
 		return ec._Subscription_taskCollaboratorsUpdated(ctx, fields[0])
 	case "taskFeedUpdated":
