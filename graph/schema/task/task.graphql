@@ -82,6 +82,19 @@ input UpdateTaskInput {
   requestId: String!
 }
 
+input DeleteTaskInput {
+  taskId: ID!
+  teammateTaskId: ID!
+  teammateId: ID!
+  workspaceId: ID!
+  requestId: String!
+}
+type DeleteTaskPayload {
+  teammateTask: TeammateTask!
+  projectTask: ProjectTask!
+  deletedTasks: [DeletedTask!]!
+}
+
 extend type Subscription {
   taskUpdated(id: ID!, requestId: String!): Task!
 }
@@ -94,4 +107,5 @@ extend type Query {
 extend type Mutation {
   createTask(input: CreateTaskInput!): Task!
   updateTask(input: UpdateTaskInput!): Task!
+  deleteTask(input: DeleteTaskInput!): DeleteTaskPayload!
 }

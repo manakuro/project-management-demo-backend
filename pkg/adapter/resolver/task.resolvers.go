@@ -9,6 +9,7 @@ import (
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/graph/generated"
 	"project-management-demo-backend/pkg/adapter/handler"
+	"project-management-demo-backend/pkg/entity/model"
 	"project-management-demo-backend/pkg/util/datetime"
 	"project-management-demo-backend/pkg/util/subscription"
 )
@@ -37,6 +38,15 @@ func (r *mutationResolver) UpdateTask(ctx context.Context, input ent.UpdateTaskI
 	}()
 
 	return t, nil
+}
+
+func (r *mutationResolver) DeleteTask(ctx context.Context, input model.DeleteTaskInput) (*model.DeleteTaskPayload, error) {
+	p, err := r.controller.Task.Delete(ctx, input)
+	if err != nil {
+		return nil, handler.HandleGraphQLError(ctx, err)
+	}
+
+	return p, nil
 }
 
 func (r *queryResolver) Task(ctx context.Context, where *ent.TaskWhereInput) (*ent.Task, error) {

@@ -13,6 +13,7 @@ type Task interface {
 	ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TaskWhereInput) (*model.TaskConnection, error)
 	Create(ctx context.Context, input model.CreateTaskInput) (*model.Task, error)
 	Update(ctx context.Context, input model.UpdateTaskInput) (*model.Task, error)
+	Delete(ctx context.Context, input model.DeleteTaskInput) (*model.DeleteTaskPayload, error)
 }
 
 type taskController struct {
@@ -44,4 +45,8 @@ func (c *taskController) Create(ctx context.Context, input model.CreateTaskInput
 
 func (c *taskController) Update(ctx context.Context, input model.UpdateTaskInput) (*model.Task, error) {
 	return c.taskUsecase.Update(ctx, input)
+}
+
+func (c *taskController) Delete(ctx context.Context, input model.DeleteTaskInput) (*model.DeleteTaskPayload, error) {
+	return c.taskUsecase.Delete(ctx, input)
 }

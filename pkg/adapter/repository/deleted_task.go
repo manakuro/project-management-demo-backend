@@ -129,7 +129,14 @@ func (r *deletedTaskRepository) Delete(ctx context.Context, input model.DeleteDe
 }
 
 func (r *deletedTaskRepository) Undelete(ctx context.Context, input model.UndeleteDeletedTaskInput) ([]*model.DeletedTask, error) {
-	deletedTasks, err := r.client.DeletedTask.Query().Where(deletedtask.TaskID(input.TaskID)).All(ctx)
+	client := WithTransactionalMutation(ctx)
+
+	deletedTasks, err := client.DeletedTask.
+		Query().
+		WithTask().
+		Where(deletedtask.TaskID(input.TaskID)).
+		All(ctx)
+
 	if err != nil {
 		if ent.IsNotFound(err) {
 			return nil, model.NewNotFoundError(err, input.TaskID)
@@ -140,7 +147,7 @@ func (r *deletedTaskRepository) Undelete(ctx context.Context, input model.Undele
 	// The task to be undeleted will be limited up to two records.
 	for _, t := range deletedTasks {
 		if t.TaskType == deletedtask.TaskTypeTeammate {
-			_, err = r.client.TeammateTask.Create().
+			_, err = client.TeammateTask.Create().
 				SetWorkspaceID(t.WorkspaceID).
 				SetTaskID(t.TaskID).
 				SetTeammateID(t.TaskJoinID).
@@ -151,7 +158,7 @@ func (r *deletedTaskRepository) Undelete(ctx context.Context, input model.Undele
 			}
 		}
 		if t.TaskType == deletedtask.TaskTypeProject {
-			_, err = r.client.ProjectTask.Create().
+			_, err = client.ProjectTask.Create().
 				SetProjectID(t.TaskJoinID).
 				SetTaskID(t.TaskID).
 				SetProjectTaskSectionID(t.TaskSectionID).
@@ -167,7 +174,7 @@ func (r *deletedTaskRepository) Undelete(ctx context.Context, input model.Undele
 		deletedIds[i] = t.ID
 	}
 
-	_, err = r.client.DeletedTask.
+	_, err = client.DeletedTask.
 		Delete().
 		Where(deletedtask.IDIn(deletedIds...)).
 		Exec(ctx)
