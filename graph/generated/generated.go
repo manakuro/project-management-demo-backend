@@ -12598,8 +12598,6 @@ input UpdateTaskInput {
 
 input DeleteTaskInput {
   taskId: ID!
-  teammateTaskId: ID!
-  teammateId: ID!
   workspaceId: ID!
   requestId: String!
 }
@@ -49581,22 +49579,6 @@ func (ec *executionContext) unmarshalInputDeleteTaskInput(ctx context.Context, o
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskId"))
 			it.TaskID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "teammateTaskId":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("teammateTaskId"))
-			it.TeammateTaskID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "teammateId":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("teammateId"))
-			it.TeammateID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}

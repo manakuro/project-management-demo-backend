@@ -84,8 +84,6 @@ input UpdateTaskInput {
 
 input DeleteTaskInput {
   taskId: ID!
-  teammateTaskId: ID!
-  teammateId: ID!
   workspaceId: ID!
   requestId: String!
 }

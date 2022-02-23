@@ -122,7 +122,7 @@ func (r *taskRepository) Delete(ctx context.Context, input model.DeleteTaskInput
 
 	var deletedTeammateTaskDeletedTask *model.DeletedTask
 	if deletedTeammateTask != nil {
-		err = client.TeammateTask.DeleteOneID(input.TeammateTaskID).Exec(ctx)
+		err = client.TeammateTask.DeleteOneID(deletedTeammateTask.ID).Exec(ctx)
 		if err != nil {
 			return nil, model.NewDBError(err)
 		}
