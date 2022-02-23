@@ -138,7 +138,12 @@ func (r *taskRepository) Delete(ctx context.Context, input model.DeleteTaskInput
 			if derr != nil {
 				return nil, model.NewDBError(derr)
 			}
-			deletedTeammateTaskDeletedTask = d
+			// Restore the state in order to get an entity after a successful transaction.
+			d, derr = client.DeletedTask.Query().WithTask().Where(deletedtask.ID(d.ID)).Only(ctx)
+			if derr != nil {
+				return nil, model.NewDBError(derr)
+			}
+			deletedTeammateTaskDeletedTask = d.Unwrap()
 		}
 	}
 
@@ -169,7 +174,12 @@ func (r *taskRepository) Delete(ctx context.Context, input model.DeleteTaskInput
 			if derr != nil {
 				return nil, model.NewDBError(derr)
 			}
-			deletedProjectTaskDeletedTask = d
+			// Restore the state in order to get an entity after a successful transaction.
+			d, derr = client.DeletedTask.Query().WithTask().Where(deletedtask.ID(d.ID)).Only(ctx)
+			if derr != nil {
+				return nil, model.NewDBError(derr)
+			}
+			deletedProjectTaskDeletedTask = d.Unwrap()
 		}
 	}
 

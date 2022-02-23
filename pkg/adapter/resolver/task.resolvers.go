@@ -47,12 +47,8 @@ func (r *mutationResolver) DeleteTask(ctx context.Context, input model.DeleteTas
 	}
 
 	payload := &model.DeleteTaskPayload{
-		TeammateTask: &model.TeammateTask{
-			ID: p.TeammateTask.ID,
-		},
-		ProjectTask: &model.ProjectTask{
-			ID: p.ProjectTask.ID,
-		},
+		TeammateTask: p.TeammateTask,
+		ProjectTask:  p.ProjectTask,
 		DeletedTasks: p.DeletedTasks,
 	}
 	go func() {
