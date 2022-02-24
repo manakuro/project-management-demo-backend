@@ -139,7 +139,17 @@ func (r *taskRepository) Delete(ctx context.Context, input model.DeleteTaskInput
 				return nil, model.NewDBError(derr)
 			}
 			// Restore the state in order to get an entity after a successful transaction.
-			d, derr = client.DeletedTask.Query().WithTask().Where(deletedtask.ID(d.ID)).Only(ctx)
+			d, derr = client.DeletedTask.Query().WithTask(func(tq *ent.TaskQuery) {
+				tq.WithTaskFeeds()
+				tq.WithTaskFiles()
+				tq.WithTaskFeedLikes()
+				tq.WithTaskPriority()
+				tq.WithSubTasks()
+				tq.WithProjectTasks()
+				tq.WithTaskTags()
+				tq.WithTaskLikes()
+				tq.WithTaskCollaborators()
+			}).Where(deletedtask.ID(d.ID)).Only(ctx)
 			if derr != nil {
 				return nil, model.NewDBError(derr)
 			}
@@ -175,7 +185,17 @@ func (r *taskRepository) Delete(ctx context.Context, input model.DeleteTaskInput
 				return nil, model.NewDBError(derr)
 			}
 			// Restore the state in order to get an entity after a successful transaction.
-			d, derr = client.DeletedTask.Query().WithTask().Where(deletedtask.ID(d.ID)).Only(ctx)
+			d, derr = client.DeletedTask.Query().WithTask(func(tq *ent.TaskQuery) {
+				tq.WithTaskFeeds()
+				tq.WithTaskFiles()
+				tq.WithTaskFeedLikes()
+				tq.WithTaskPriority()
+				tq.WithSubTasks()
+				tq.WithProjectTasks()
+				tq.WithTaskTags()
+				tq.WithTaskLikes()
+				tq.WithTaskCollaborators()
+			}).Where(deletedtask.ID(d.ID)).Only(ctx)
 			if derr != nil {
 				return nil, model.NewDBError(derr)
 			}
