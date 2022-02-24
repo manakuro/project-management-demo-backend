@@ -140,15 +140,7 @@ func (r *taskRepository) Delete(ctx context.Context, input model.DeleteTaskInput
 			}
 			// Restore the state in order to get an entity after a successful transaction.
 			d, derr = client.DeletedTask.Query().WithTask(func(tq *ent.TaskQuery) {
-				tq.WithTaskFeeds()
-				tq.WithTaskFiles()
-				tq.WithTaskFeedLikes()
-				tq.WithTaskPriority()
-				tq.WithSubTasks()
-				tq.WithProjectTasks()
-				tq.WithTaskTags()
-				tq.WithTaskLikes()
-				tq.WithTaskCollaborators()
+				WithTask(tq)
 			}).Where(deletedtask.ID(d.ID)).Only(ctx)
 			if derr != nil {
 				return nil, model.NewDBError(derr)
@@ -186,15 +178,7 @@ func (r *taskRepository) Delete(ctx context.Context, input model.DeleteTaskInput
 			}
 			// Restore the state in order to get an entity after a successful transaction.
 			d, derr = client.DeletedTask.Query().WithTask(func(tq *ent.TaskQuery) {
-				tq.WithTaskFeeds()
-				tq.WithTaskFiles()
-				tq.WithTaskFeedLikes()
-				tq.WithTaskPriority()
-				tq.WithSubTasks()
-				tq.WithProjectTasks()
-				tq.WithTaskTags()
-				tq.WithTaskLikes()
-				tq.WithTaskCollaborators()
+				WithTask(tq)
 			}).Where(deletedtask.ID(d.ID)).Only(ctx)
 			if derr != nil {
 				return nil, model.NewDBError(derr)
@@ -303,4 +287,17 @@ func (r *taskRepository) Undelete(ctx context.Context, input model.UndeleteTaskI
 	payload.DeletedTasks = deletedTasks
 
 	return payload, nil
+}
+
+// WithTask eager-loads associations with task entity.
+func WithTask(taskQuery *ent.TaskQuery) {
+	taskQuery.WithTaskFeeds()
+	taskQuery.WithTaskFiles()
+	taskQuery.WithTaskFeedLikes()
+	taskQuery.WithTaskPriority()
+	taskQuery.WithSubTasks()
+	taskQuery.WithProjectTasks()
+	taskQuery.WithTaskTags()
+	taskQuery.WithTaskLikes()
+	taskQuery.WithTaskCollaborators()
 }
