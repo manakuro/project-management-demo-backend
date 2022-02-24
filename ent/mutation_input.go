@@ -897,6 +897,7 @@ type CreateProjectTaskInput struct {
 	TaskID               ulid.ID
 	ProjectTaskSectionID ulid.ID
 	CreatedBy            ulid.ID
+	WorkspaceID          ulid.ID
 	RequestID            string
 }
 
@@ -928,6 +929,7 @@ type UpdateProjectTaskInput struct {
 	ClearTask               bool
 	ProjectTaskSectionID    *ulid.ID
 	ClearProjectTaskSection bool
+	WorkspaceID             ulid.ID
 	RequestID               string
 }
 
@@ -1136,6 +1138,7 @@ type CreateProjectTaskSectionInput struct {
 	UpdatedAt      *time.Time
 	ProjectID      ulid.ID
 	ProjectTaskIDs []ulid.ID
+	WorkspaceID    ulid.ID
 	RequestID      string
 }
 
@@ -1168,6 +1171,7 @@ type UpdateProjectTaskSectionInput struct {
 	ClearProject         bool
 	AddProjectTaskIDs    []ulid.ID
 	RemoveProjectTaskIDs []ulid.ID
+	WorkspaceID          ulid.ID
 	RequestID            string
 }
 
@@ -1387,6 +1391,7 @@ type CreateTaskInput struct {
 	TaskFeedLikeIDs     []ulid.ID
 	TaskFileIDs         []ulid.ID
 	DeletedTasksRefIDs  []ulid.ID
+	WorkspaceID         ulid.ID
 	RequestID           string
 }
 
@@ -1503,6 +1508,7 @@ type UpdateTaskInput struct {
 	RemoveTaskFileIDs         []ulid.ID
 	AddDeletedTasksRefIDs     []ulid.ID
 	RemoveDeletedTasksRefIDs  []ulid.ID
+	WorkspaceID               ulid.ID
 	RequestID                 string
 }
 
@@ -1790,6 +1796,7 @@ type CreateTaskFeedInput struct {
 	TeammateID      ulid.ID
 	TaskFeedLikeIDs []ulid.ID
 	TaskFileIDs     []ulid.ID
+	WorkspaceID     ulid.ID
 	RequestID       string
 }
 
@@ -1838,6 +1845,7 @@ type UpdateTaskFeedInput struct {
 	RemoveTaskFeedLikeIDs []ulid.ID
 	AddTaskFileIDs        []ulid.ID
 	RemoveTaskFileIDs     []ulid.ID
+	WorkspaceID           ulid.ID
 	RequestID             string
 }
 
@@ -1892,12 +1900,13 @@ func (u *TaskFeedUpdateOne) SetInput(i UpdateTaskFeedInput) *TaskFeedUpdateOne {
 
 // CreateTaskFeedLikeInput represents a mutation input for creating taskfeedlikes.
 type CreateTaskFeedLikeInput struct {
-	CreatedAt  *time.Time
-	UpdatedAt  *time.Time
-	TaskID     ulid.ID
-	TeammateID ulid.ID
-	TaskFeedID ulid.ID
-	RequestID  string
+	CreatedAt   *time.Time
+	UpdatedAt   *time.Time
+	TaskID      ulid.ID
+	TeammateID  ulid.ID
+	TaskFeedID  ulid.ID
+	WorkspaceID ulid.ID
+	RequestID   string
 }
 
 // Mutate applies the CreateTaskFeedLikeInput on the TaskFeedLikeCreate builder.
@@ -1928,6 +1937,7 @@ type UpdateTaskFeedLikeInput struct {
 	ClearTeammate bool
 	TaskFeedID    *ulid.ID
 	ClearFeed     bool
+	WorkspaceID   ulid.ID
 	RequestID     string
 }
 

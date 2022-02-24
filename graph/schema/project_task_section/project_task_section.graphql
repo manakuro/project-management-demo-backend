@@ -20,6 +20,7 @@ type ProjectTaskSectionEdge {
 input CreateProjectTaskSectionInput {
   projectId: ID!
   requestId: String!
+  workspaceId: ID!
 }
 
 input UpdateProjectTaskSectionInput {
@@ -27,11 +28,12 @@ input UpdateProjectTaskSectionInput {
   projectId: ID
   name: String
   requestId: String!
+  workspaceId: ID!
 }
 
 extend type Subscription {
-  projectTaskSectionUpdated(id: ID!, requestId: String!): ProjectTaskSection!
-  projectTaskSectionCreated(projectId: ID!, requestId: String!): ProjectTaskSection!
+  projectTaskSectionUpdated(workspaceId: ID!, requestId: String!): ProjectTaskSection!
+  projectTaskSectionCreated(workspaceId: ID!, requestId: String!): ProjectTaskSection!
 }
 
 extend type Query {

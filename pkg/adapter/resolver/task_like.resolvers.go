@@ -22,7 +22,7 @@ func (r *mutationResolver) CreateTaskLike(ctx context.Context, input ent.CreateT
 
 	go func() {
 		for _, u := range r.subscriptions.TaskLikesCreated {
-			if u.TaskID == t.TaskID && u.RequestID != input.RequestID {
+			if u.WorkspaceID == input.WorkspaceID && u.RequestID != input.RequestID {
 				u.Ch <- t
 			}
 		}
@@ -48,7 +48,7 @@ func (r *mutationResolver) DeleteTaskLike(ctx context.Context, input model.Delet
 
 	go func() {
 		for _, u := range r.subscriptions.TaskLikesDeleted {
-			if u.TaskID == t.TaskID && u.RequestID != input.RequestID {
+			if u.WorkspaceID == input.WorkspaceID && u.RequestID != input.RequestID {
 				u.Ch <- t
 			}
 		}
@@ -74,15 +74,15 @@ func (r *queryResolver) TaskLikes(ctx context.Context, after *ent.Cursor, first 
 	return ts, nil
 }
 
-func (r *subscriptionResolver) TaskLikeCreated(ctx context.Context, taskID ulid.ID, requestID string) (<-chan *ent.TaskLike, error) {
+func (r *subscriptionResolver) TaskLikeCreated(ctx context.Context, workspaceID ulid.ID, requestID string) (<-chan *ent.TaskLike, error) {
 	key := subscription.NewKey()
 	ch := make(chan *ent.TaskLike, 1)
 
 	r.mutex.Lock()
 	r.subscriptions.TaskLikesCreated[key] = subscription.TaskLikesCreated{
-		TaskID:    taskID,
-		RequestID: requestID,
-		Ch:        ch,
+		WorkspaceID: workspaceID,
+		RequestID:   requestID,
+		Ch:          ch,
 	}
 	r.mutex.Unlock()
 
@@ -96,15 +96,15 @@ func (r *subscriptionResolver) TaskLikeCreated(ctx context.Context, taskID ulid.
 	return ch, nil
 }
 
-func (r *subscriptionResolver) TaskLikeDeleted(ctx context.Context, taskID ulid.ID, requestID string) (<-chan *ent.TaskLike, error) {
+func (r *subscriptionResolver) TaskLikeDeleted(ctx context.Context, workspaceID ulid.ID, requestID string) (<-chan *ent.TaskLike, error) {
 	key := subscription.NewKey()
 	ch := make(chan *ent.TaskLike, 1)
 
 	r.mutex.Lock()
 	r.subscriptions.TaskLikesDeleted[key] = subscription.TaskLikesDeleted{
-		TaskID:    taskID,
-		RequestID: requestID,
-		Ch:        ch,
+		WorkspaceID: workspaceID,
+		RequestID:   requestID,
+		Ch:          ch,
 	}
 	r.mutex.Unlock()
 

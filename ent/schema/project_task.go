@@ -90,6 +90,16 @@ func (ProjectTask) Annotations() []schema.Annotation {
 						Key:  "CreatedBy",
 						Type: "ulid.ID",
 					},
+					{
+						Key:  "WorkspaceID",
+						Type: "ulid.ID",
+					},
+				},
+				Update: []annotation.MutationInputField{
+					{
+						Key:  "WorkspaceID",
+						Type: "ulid.ID",
+					},
 				},
 			},
 		),

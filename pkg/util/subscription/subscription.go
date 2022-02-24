@@ -43,9 +43,9 @@ type IconUpdated struct {
 
 // ProjectUpdated is a channel for subscription.
 type ProjectUpdated struct {
-	ID        model.ID
-	RequestID string
-	Ch        chan *ent.Project
+	WorkspaceID model.ID
+	RequestID   string
+	Ch          chan *ent.Project
 }
 
 // ProjectTeammateUpdated is a channel for subscription.
@@ -162,9 +162,9 @@ type ProjectTaskListStatusUpdated struct {
 
 // TeammateTaskSectionUpdated is a channel for subscription.
 type TeammateTaskSectionUpdated struct {
-	ID        model.ID
-	RequestID string
-	Ch        chan *model.TeammateTaskSection
+	WorkspaceID model.ID
+	RequestID   string
+	Ch          chan *model.TeammateTaskSection
 }
 
 // TeammateTaskSectionCreated is a channel for subscription.
@@ -177,44 +177,44 @@ type TeammateTaskSectionCreated struct {
 
 // ProjectTaskSectionUpdated is a channel for subscription.
 type ProjectTaskSectionUpdated struct {
-	ID        model.ID
-	RequestID string
-	Ch        chan *model.ProjectTaskSection
+	WorkspaceID model.ID
+	RequestID   string
+	Ch          chan *model.ProjectTaskSection
 }
 
 // ProjectTaskSectionCreated is a channel for subscription.
 type ProjectTaskSectionCreated struct {
-	ProjectID model.ID
-	RequestID string
-	Ch        chan *model.ProjectTaskSection
+	WorkspaceID model.ID
+	RequestID   string
+	Ch          chan *model.ProjectTaskSection
 }
 
 // TaskUpdated is a channel for subscription.
 type TaskUpdated struct {
-	ID        model.ID
-	RequestID string
-	Ch        chan *model.Task
+	WorkspaceID model.ID
+	RequestID   string
+	Ch          chan *model.Task
 }
 
 // TaskDeleted is a channel for subscription.
 type TaskDeleted struct {
-	ID        model.ID
-	RequestID string
-	Ch        chan *model.DeleteTaskPayload
+	WorkspaceID model.ID
+	RequestID   string
+	Ch          chan *model.DeleteTaskPayload
 }
 
 // TaskUndeleted is a channel for subscription.
 type TaskUndeleted struct {
-	ID        model.ID
-	RequestID string
-	Ch        chan *model.UndeleteTaskPayload
+	WorkspaceID model.ID
+	RequestID   string
+	Ch          chan *model.UndeleteTaskPayload
 }
 
 // TeammateTaskUpdated is a channel for subscription.
 type TeammateTaskUpdated struct {
-	ID        model.ID
-	RequestID string
-	Ch        chan *model.TeammateTask
+	WorkspaceID model.ID
+	RequestID   string
+	Ch          chan *model.TeammateTask
 }
 
 // TeammateTaskCreated is a channel for subscription.
@@ -242,23 +242,23 @@ type ProjectTaskUpdated struct {
 
 // ProjectTaskCreated is a channel for subscription.
 type ProjectTaskCreated struct {
-	ProjectID model.ID
-	RequestID string
-	Ch        chan *model.ProjectTask
+	WorkspaceID model.ID
+	RequestID   string
+	Ch          chan *model.ProjectTask
 }
 
 // TaskLikesCreated is a channel for subscription.
 type TaskLikesCreated struct {
-	TaskID    model.ID
-	RequestID string
-	Ch        chan *model.TaskLike
+	WorkspaceID model.ID
+	RequestID   string
+	Ch          chan *model.TaskLike
 }
 
 // TaskLikesDeleted is a channel for subscription.
 type TaskLikesDeleted struct {
-	TaskID    model.ID
-	RequestID string
-	Ch        chan *model.TaskLike
+	WorkspaceID model.ID
+	RequestID   string
+	Ch          chan *model.TaskLike
 }
 
 // TagUpdated is a channel for subscription.
@@ -284,37 +284,37 @@ type TaskCollaboratorUpdated struct {
 
 // TaskFeedUpdated is a channel for subscription.
 type TaskFeedUpdated struct {
-	ID        model.ID
-	RequestID string
-	Ch        chan *model.TaskFeed
+	WorkspaceID model.ID
+	RequestID   string
+	Ch          chan *model.TaskFeed
 }
 
 // TaskFeedCreated is a channel for subscription.
 type TaskFeedCreated struct {
-	TaskID    model.ID
-	RequestID string
-	Ch        chan *model.TaskFeed
+	WorkspaceID model.ID
+	RequestID   string
+	Ch          chan *model.TaskFeed
 }
 
 // TaskFeedDeleted is a channel for subscription.
 type TaskFeedDeleted struct {
-	TaskID    model.ID
-	RequestID string
-	Ch        chan *model.TaskFeed
+	WorkspaceID model.ID
+	RequestID   string
+	Ch          chan *model.TaskFeed
 }
 
 // TaskFeedLikeCreated is a channel for subscription.
 type TaskFeedLikeCreated struct {
-	TaskFeedID model.ID
-	RequestID  string
-	Ch         chan *model.TaskFeedLike
+	WorkspaceID model.ID
+	RequestID   string
+	Ch          chan *model.TaskFeedLike
 }
 
 // TaskFeedLikeDeleted is a channel for subscription.
 type TaskFeedLikeDeleted struct {
-	TaskFeedID model.ID
-	RequestID  string
-	Ch         chan *model.TaskFeedLike
+	WorkspaceID model.ID
+	RequestID   string
+	Ch          chan *model.TaskFeedLike
 }
 
 // TaskFileUpdated is a channel for subscription.

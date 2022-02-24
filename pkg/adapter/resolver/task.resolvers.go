@@ -31,7 +31,7 @@ func (r *mutationResolver) UpdateTask(ctx context.Context, input ent.UpdateTaskI
 
 	go func() {
 		for _, u := range r.subscriptions.TaskUpdated {
-			if u.ID == t.ID && u.RequestID != input.RequestID {
+			if u.WorkspaceID == input.WorkspaceID && u.RequestID != input.RequestID {
 				u.Ch <- t
 			}
 		}
@@ -48,7 +48,7 @@ func (r *mutationResolver) DeleteTask(ctx context.Context, input model.DeleteTas
 
 	go func() {
 		for _, d := range r.subscriptions.TaskDeleted {
-			if d.ID == input.TaskID && d.RequestID != input.RequestID {
+			if d.WorkspaceID == input.WorkspaceID && d.RequestID != input.RequestID {
 				d.Ch <- p
 			}
 		}
@@ -65,7 +65,7 @@ func (r *mutationResolver) UndeleteTask(ctx context.Context, input model.Undelet
 
 	go func() {
 		for _, u := range r.subscriptions.TaskUndeleted {
-			if u.ID == input.TaskID && u.RequestID != input.RequestID {
+			if u.WorkspaceID == input.WorkspaceID && u.RequestID != input.RequestID {
 				u.Ch <- p
 			}
 		}
@@ -91,15 +91,15 @@ func (r *queryResolver) Tasks(ctx context.Context, after *ent.Cursor, first *int
 	return ts, nil
 }
 
-func (r *subscriptionResolver) TaskUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.Task, error) {
+func (r *subscriptionResolver) TaskUpdated(ctx context.Context, workspaceID ulid.ID, requestID string) (<-chan *ent.Task, error) {
 	key := subscription.NewKey()
 	ch := make(chan *ent.Task, 1)
 
 	r.mutex.Lock()
 	r.subscriptions.TaskUpdated[key] = subscription.TaskUpdated{
-		ID:        id,
-		RequestID: requestID,
-		Ch:        ch,
+		WorkspaceID: workspaceID,
+		RequestID:   requestID,
+		Ch:          ch,
 	}
 	r.mutex.Unlock()
 
@@ -113,15 +113,15 @@ func (r *subscriptionResolver) TaskUpdated(ctx context.Context, id ulid.ID, requ
 	return ch, nil
 }
 
-func (r *subscriptionResolver) TaskDeleted(ctx context.Context, id ulid.ID, requestID string) (<-chan *model.DeleteTaskPayload, error) {
+func (r *subscriptionResolver) TaskDeleted(ctx context.Context, workspaceID ulid.ID, requestID string) (<-chan *model.DeleteTaskPayload, error) {
 	key := subscription.NewKey()
 	ch := make(chan *model.DeleteTaskPayload, 1)
 
 	r.mutex.Lock()
 	r.subscriptions.TaskDeleted[key] = subscription.TaskDeleted{
-		ID:        id,
-		RequestID: requestID,
-		Ch:        ch,
+		WorkspaceID: workspaceID,
+		RequestID:   requestID,
+		Ch:          ch,
 	}
 	r.mutex.Unlock()
 
@@ -135,15 +135,15 @@ func (r *subscriptionResolver) TaskDeleted(ctx context.Context, id ulid.ID, requ
 	return ch, nil
 }
 
-func (r *subscriptionResolver) TaskUndeleted(ctx context.Context, id ulid.ID, requestID string) (<-chan *model.UndeleteTaskPayload, error) {
+func (r *subscriptionResolver) TaskUndeleted(ctx context.Context, workspaceID ulid.ID, requestID string) (<-chan *model.UndeleteTaskPayload, error) {
 	key := subscription.NewKey()
 	ch := make(chan *model.UndeleteTaskPayload, 1)
 
 	r.mutex.Lock()
 	r.subscriptions.TaskUndeleted[key] = subscription.TaskUndeleted{
-		ID:        id,
-		RequestID: requestID,
-		Ch:        ch,
+		WorkspaceID: workspaceID,
+		RequestID:   requestID,
+		Ch:          ch,
 	}
 	r.mutex.Unlock()
 

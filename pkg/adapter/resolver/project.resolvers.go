@@ -30,7 +30,7 @@ func (r *mutationResolver) UpdateProject(ctx context.Context, input ent.UpdatePr
 
 	go func() {
 		for _, u := range r.subscriptions.ProjectUpdated {
-			if u.ID == p.ID && u.RequestID != input.RequestID {
+			if u.WorkspaceID == *input.WorkspaceID && u.RequestID != input.RequestID {
 				u.Ch <- p
 			}
 		}
@@ -87,15 +87,15 @@ func (r *queryResolver) Projects(ctx context.Context, after *ent.Cursor, first *
 	return ps, nil
 }
 
-func (r *subscriptionResolver) ProjectUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.Project, error) {
+func (r *subscriptionResolver) ProjectUpdated(ctx context.Context, workspaceID ulid.ID, requestID string) (<-chan *ent.Project, error) {
 	key := subscription.NewKey()
 	ch := make(chan *ent.Project, 1)
 
 	r.mutex.Lock()
 	r.subscriptions.ProjectUpdated[key] = subscription.ProjectUpdated{
-		ID:        id,
-		RequestID: requestID,
-		Ch:        ch,
+		WorkspaceID: workspaceID,
+		RequestID:   requestID,
+		Ch:          ch,
 	}
 	r.mutex.Unlock()
 

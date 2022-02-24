@@ -22,6 +22,7 @@ type UpdateTaskFeedInput = ent.UpdateTaskFeedInput
 
 // DeleteTaskFeedInput represents a mutation input.
 type DeleteTaskFeedInput struct {
-	ID        ulid.ID
-	RequestID string
+	ID          ulid.ID
+	RequestID   string
+	WorkspaceID ulid.ID
 }

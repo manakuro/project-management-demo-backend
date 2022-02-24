@@ -22,7 +22,7 @@ func (r *mutationResolver) CreateTaskFeed(ctx context.Context, input ent.CreateT
 
 	go func() {
 		for _, c := range r.subscriptions.TaskFeedCreated {
-			if c.TaskID == t.TaskID && c.RequestID != input.RequestID {
+			if c.WorkspaceID == input.WorkspaceID && c.RequestID != input.RequestID {
 				c.Ch <- t
 			}
 		}
@@ -39,7 +39,7 @@ func (r *mutationResolver) UpdateTaskFeed(ctx context.Context, input ent.UpdateT
 
 	go func() {
 		for _, u := range r.subscriptions.TaskFeedUpdated {
-			if u.ID == t.ID && u.RequestID != input.RequestID {
+			if u.WorkspaceID == input.WorkspaceID && u.RequestID != input.RequestID {
 				u.Ch <- t
 			}
 		}
@@ -56,7 +56,7 @@ func (r *mutationResolver) DeleteTaskFeed(ctx context.Context, input model.Delet
 
 	go func() {
 		for _, d := range r.subscriptions.TaskFeedDeleted {
-			if d.TaskID == t.TaskID && d.RequestID != input.RequestID {
+			if d.WorkspaceID == input.WorkspaceID && d.RequestID != input.RequestID {
 				d.Ch <- t
 			}
 		}
@@ -82,15 +82,15 @@ func (r *queryResolver) TaskFeeds(ctx context.Context, after *ent.Cursor, first 
 	return ts, nil
 }
 
-func (r *subscriptionResolver) TaskFeedUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.TaskFeed, error) {
+func (r *subscriptionResolver) TaskFeedUpdated(ctx context.Context, workspaceID ulid.ID, requestID string) (<-chan *ent.TaskFeed, error) {
 	key := subscription.NewKey()
 	ch := make(chan *ent.TaskFeed, 1)
 
 	r.mutex.Lock()
 	r.subscriptions.TaskFeedUpdated[key] = subscription.TaskFeedUpdated{
-		ID:        id,
-		RequestID: requestID,
-		Ch:        ch,
+		WorkspaceID: workspaceID,
+		RequestID:   requestID,
+		Ch:          ch,
 	}
 	r.mutex.Unlock()
 
@@ -104,15 +104,15 @@ func (r *subscriptionResolver) TaskFeedUpdated(ctx context.Context, id ulid.ID, 
 	return ch, nil
 }
 
-func (r *subscriptionResolver) TaskFeedCreated(ctx context.Context, taskID ulid.ID, requestID string) (<-chan *ent.TaskFeed, error) {
+func (r *subscriptionResolver) TaskFeedCreated(ctx context.Context, workspaceID ulid.ID, requestID string) (<-chan *ent.TaskFeed, error) {
 	key := subscription.NewKey()
 	ch := make(chan *ent.TaskFeed, 1)
 
 	r.mutex.Lock()
 	r.subscriptions.TaskFeedCreated[key] = subscription.TaskFeedCreated{
-		TaskID:    taskID,
-		RequestID: requestID,
-		Ch:        ch,
+		WorkspaceID: workspaceID,
+		RequestID:   requestID,
+		Ch:          ch,
 	}
 	r.mutex.Unlock()
 
@@ -126,15 +126,15 @@ func (r *subscriptionResolver) TaskFeedCreated(ctx context.Context, taskID ulid.
 	return ch, nil
 }
 
-func (r *subscriptionResolver) TaskFeedDeleted(ctx context.Context, taskID ulid.ID, requestID string) (<-chan *ent.TaskFeed, error) {
+func (r *subscriptionResolver) TaskFeedDeleted(ctx context.Context, workspaceID ulid.ID, requestID string) (<-chan *ent.TaskFeed, error) {
 	key := subscription.NewKey()
 	ch := make(chan *ent.TaskFeed, 1)
 
 	r.mutex.Lock()
 	r.subscriptions.TaskFeedDeleted[key] = subscription.TaskFeedDeleted{
-		TaskID:    taskID,
-		RequestID: requestID,
-		Ch:        ch,
+		WorkspaceID: workspaceID,
+		RequestID:   requestID,
+		Ch:          ch,
 	}
 	r.mutex.Unlock()
 
