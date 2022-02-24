@@ -1581,6 +1581,34 @@ func HasTaskFilesWith(preds ...predicate.TaskFile) predicate.Task {
 	})
 }
 
+// HasDeletedTasksRef applies the HasEdge predicate on the "deletedTasksRef" edge.
+func HasDeletedTasksRef() predicate.Task {
+	return predicate.Task(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(DeletedTasksRefTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, DeletedTasksRefTable, DeletedTasksRefColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasDeletedTasksRefWith applies the HasEdge predicate on the "deletedTasksRef" edge with a given conditions (other predicates).
+func HasDeletedTasksRefWith(preds ...predicate.DeletedTask) predicate.Task {
+	return predicate.Task(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(DeletedTasksRefInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, DeletedTasksRefTable, DeletedTasksRefColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Task) predicate.Task {
 	return predicate.Task(func(s *sql.Selector) {

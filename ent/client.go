@@ -11,6 +11,7 @@ import (
 	"project-management-demo-backend/ent/schema/ulid"
 
 	"project-management-demo-backend/ent/color"
+	"project-management-demo-backend/ent/deletedtask"
 	"project-management-demo-backend/ent/favoriteproject"
 	"project-management-demo-backend/ent/favoriteworkspace"
 	"project-management-demo-backend/ent/filetype"
@@ -60,6 +61,8 @@ type Client struct {
 	Schema *migrate.Schema
 	// Color is the client for interacting with the Color builders.
 	Color *ColorClient
+	// DeletedTask is the client for interacting with the DeletedTask builders.
+	DeletedTask *DeletedTaskClient
 	// FavoriteProject is the client for interacting with the FavoriteProject builders.
 	FavoriteProject *FavoriteProjectClient
 	// FavoriteWorkspace is the client for interacting with the FavoriteWorkspace builders.
@@ -146,6 +149,7 @@ func NewClient(opts ...Option) *Client {
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.Color = NewColorClient(c.config)
+	c.DeletedTask = NewDeletedTaskClient(c.config)
 	c.FavoriteProject = NewFavoriteProjectClient(c.config)
 	c.FavoriteWorkspace = NewFavoriteWorkspaceClient(c.config)
 	c.FileType = NewFileTypeClient(c.config)
@@ -216,6 +220,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		ctx:                     ctx,
 		config:                  cfg,
 		Color:                   NewColorClient(cfg),
+		DeletedTask:             NewDeletedTaskClient(cfg),
 		FavoriteProject:         NewFavoriteProjectClient(cfg),
 		FavoriteWorkspace:       NewFavoriteWorkspaceClient(cfg),
 		FileType:                NewFileTypeClient(cfg),
@@ -271,6 +276,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	return &Tx{
 		config:                  cfg,
 		Color:                   NewColorClient(cfg),
+		DeletedTask:             NewDeletedTaskClient(cfg),
 		FavoriteProject:         NewFavoriteProjectClient(cfg),
 		FavoriteWorkspace:       NewFavoriteWorkspaceClient(cfg),
 		FileType:                NewFileTypeClient(cfg),
@@ -337,6 +343,7 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	c.Color.Use(hooks...)
+	c.DeletedTask.Use(hooks...)
 	c.FavoriteProject.Use(hooks...)
 	c.FavoriteWorkspace.Use(hooks...)
 	c.FileType.Use(hooks...)
@@ -527,6 +534,128 @@ func (c *ColorClient) QueryTags(co *Color) *TagQuery {
 // Hooks returns the client hooks.
 func (c *ColorClient) Hooks() []Hook {
 	return c.hooks.Color
+}
+
+// DeletedTaskClient is a client for the DeletedTask schema.
+type DeletedTaskClient struct {
+	config
+}
+
+// NewDeletedTaskClient returns a client for the DeletedTask from the given config.
+func NewDeletedTaskClient(c config) *DeletedTaskClient {
+	return &DeletedTaskClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `deletedtask.Hooks(f(g(h())))`.
+func (c *DeletedTaskClient) Use(hooks ...Hook) {
+	c.hooks.DeletedTask = append(c.hooks.DeletedTask, hooks...)
+}
+
+// Create returns a create builder for DeletedTask.
+func (c *DeletedTaskClient) Create() *DeletedTaskCreate {
+	mutation := newDeletedTaskMutation(c.config, OpCreate)
+	return &DeletedTaskCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of DeletedTask entities.
+func (c *DeletedTaskClient) CreateBulk(builders ...*DeletedTaskCreate) *DeletedTaskCreateBulk {
+	return &DeletedTaskCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for DeletedTask.
+func (c *DeletedTaskClient) Update() *DeletedTaskUpdate {
+	mutation := newDeletedTaskMutation(c.config, OpUpdate)
+	return &DeletedTaskUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *DeletedTaskClient) UpdateOne(dt *DeletedTask) *DeletedTaskUpdateOne {
+	mutation := newDeletedTaskMutation(c.config, OpUpdateOne, withDeletedTask(dt))
+	return &DeletedTaskUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *DeletedTaskClient) UpdateOneID(id ulid.ID) *DeletedTaskUpdateOne {
+	mutation := newDeletedTaskMutation(c.config, OpUpdateOne, withDeletedTaskID(id))
+	return &DeletedTaskUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for DeletedTask.
+func (c *DeletedTaskClient) Delete() *DeletedTaskDelete {
+	mutation := newDeletedTaskMutation(c.config, OpDelete)
+	return &DeletedTaskDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *DeletedTaskClient) DeleteOne(dt *DeletedTask) *DeletedTaskDeleteOne {
+	return c.DeleteOneID(dt.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *DeletedTaskClient) DeleteOneID(id ulid.ID) *DeletedTaskDeleteOne {
+	builder := c.Delete().Where(deletedtask.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &DeletedTaskDeleteOne{builder}
+}
+
+// Query returns a query builder for DeletedTask.
+func (c *DeletedTaskClient) Query() *DeletedTaskQuery {
+	return &DeletedTaskQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a DeletedTask entity by its id.
+func (c *DeletedTaskClient) Get(ctx context.Context, id ulid.ID) (*DeletedTask, error) {
+	return c.Query().Where(deletedtask.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *DeletedTaskClient) GetX(ctx context.Context, id ulid.ID) *DeletedTask {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryTask queries the task edge of a DeletedTask.
+func (c *DeletedTaskClient) QueryTask(dt *DeletedTask) *TaskQuery {
+	query := &TaskQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := dt.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(deletedtask.Table, deletedtask.FieldID, id),
+			sqlgraph.To(task.Table, task.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, deletedtask.TaskTable, deletedtask.TaskColumn),
+		)
+		fromV = sqlgraph.Neighbors(dt.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryWorkspace queries the workspace edge of a DeletedTask.
+func (c *DeletedTaskClient) QueryWorkspace(dt *DeletedTask) *WorkspaceQuery {
+	query := &WorkspaceQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := dt.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(deletedtask.Table, deletedtask.FieldID, id),
+			sqlgraph.To(workspace.Table, workspace.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, deletedtask.WorkspaceTable, deletedtask.WorkspaceColumn),
+		)
+		fromV = sqlgraph.Neighbors(dt.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *DeletedTaskClient) Hooks() []Hook {
+	return c.hooks.DeletedTask
 }
 
 // FavoriteProjectClient is a client for the FavoriteProject schema.
@@ -2683,6 +2812,22 @@ func (c *TaskClient) QueryTaskFiles(t *Task) *TaskFileQuery {
 			sqlgraph.From(task.Table, task.FieldID, id),
 			sqlgraph.To(taskfile.Table, taskfile.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, task.TaskFilesTable, task.TaskFilesColumn),
+		)
+		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryDeletedTasksRef queries the deletedTasksRef edge of a Task.
+func (c *TaskClient) QueryDeletedTasksRef(t *Task) *DeletedTaskQuery {
+	query := &DeletedTaskQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := t.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(task.Table, task.FieldID, id),
+			sqlgraph.To(deletedtask.Table, deletedtask.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, task.DeletedTasksRefTable, task.DeletedTasksRefColumn),
 		)
 		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
 		return fromV, nil
@@ -5651,6 +5796,22 @@ func (c *WorkspaceClient) QueryTeammateTasks(w *Workspace) *TeammateTaskQuery {
 			sqlgraph.From(workspace.Table, workspace.FieldID, id),
 			sqlgraph.To(teammatetask.Table, teammatetask.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, workspace.TeammateTasksTable, workspace.TeammateTasksColumn),
+		)
+		fromV = sqlgraph.Neighbors(w.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryDeletedTasksRef queries the deletedTasksRef edge of a Workspace.
+func (c *WorkspaceClient) QueryDeletedTasksRef(w *Workspace) *DeletedTaskQuery {
+	query := &DeletedTaskQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := w.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(workspace.Table, workspace.FieldID, id),
+			sqlgraph.To(deletedtask.Table, deletedtask.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, workspace.DeletedTasksRefTable, workspace.DeletedTasksRefColumn),
 		)
 		fromV = sqlgraph.Neighbors(w.driver.Dialect(), step)
 		return fromV, nil

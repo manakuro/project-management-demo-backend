@@ -4,6 +4,7 @@ package controller
 type Controller struct {
 	Auth                    interface{ Auth }
 	Color                   interface{ Color }
+	DeletedTask             interface{ DeletedTask }
 	FavoriteProject         interface{ FavoriteProject }
 	FavoriteWorkspace       interface{ FavoriteWorkspace }
 	FileType                interface{ FileType }

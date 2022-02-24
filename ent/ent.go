@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"project-management-demo-backend/ent/color"
+	"project-management-demo-backend/ent/deletedtask"
 	"project-management-demo-backend/ent/favoriteproject"
 	"project-management-demo-backend/ent/favoriteworkspace"
 	"project-management-demo-backend/ent/filetype"
@@ -66,6 +67,7 @@ type OrderFunc func(*sql.Selector)
 func columnChecker(table string) func(string) error {
 	checks := map[string]func(string) bool{
 		color.Table:                   color.ValidColumn,
+		deletedtask.Table:             deletedtask.ValidColumn,
 		favoriteproject.Table:         favoriteproject.ValidColumn,
 		favoriteworkspace.Table:       favoriteworkspace.ValidColumn,
 		filetype.Table:                filetype.ValidColumn,

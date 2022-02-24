@@ -17,6 +17,8 @@ type Task interface {
 	ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TaskWhereInput) (*model.TaskConnection, error)
 	Create(ctx context.Context, input model.CreateTaskInput) (*model.Task, error)
 	Update(ctx context.Context, input model.UpdateTaskInput) (*model.Task, error)
+	Delete(ctx context.Context, input model.DeleteTaskInput) (*model.DeleteTaskPayload, error)
+	Undelete(ctx context.Context, input model.UndeleteTaskInput) (*model.UndeleteTaskPayload, error)
 }
 
 // NewTaskUsecase generates test user repository
@@ -42,4 +44,12 @@ func (u *taskUsecase) Create(ctx context.Context, input model.CreateTaskInput) (
 
 func (u *taskUsecase) Update(ctx context.Context, input model.UpdateTaskInput) (*model.Task, error) {
 	return u.taskRepository.Update(ctx, input)
+}
+
+func (u *taskUsecase) Delete(ctx context.Context, input model.DeleteTaskInput) (*model.DeleteTaskPayload, error) {
+	return u.taskRepository.Delete(ctx, input)
+}
+
+func (u *taskUsecase) Undelete(ctx context.Context, input model.UndeleteTaskInput) (*model.UndeleteTaskPayload, error) {
+	return u.taskRepository.Undelete(ctx, input)
 }

@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"project-management-demo-backend/ent/deletedtask"
 	"project-management-demo-backend/ent/projecttask"
 	"project-management-demo-backend/ent/schema/editor"
 	"project-management-demo-backend/ent/schema/ulid"
@@ -380,6 +381,21 @@ func (tc *TaskCreate) AddTaskFiles(t ...*TaskFile) *TaskCreate {
 		ids[i] = t[i].ID
 	}
 	return tc.AddTaskFileIDs(ids...)
+}
+
+// AddDeletedTasksRefIDs adds the "deletedTasksRef" edge to the DeletedTask entity by IDs.
+func (tc *TaskCreate) AddDeletedTasksRefIDs(ids ...ulid.ID) *TaskCreate {
+	tc.mutation.AddDeletedTasksRefIDs(ids...)
+	return tc
+}
+
+// AddDeletedTasksRef adds the "deletedTasksRef" edges to the DeletedTask entity.
+func (tc *TaskCreate) AddDeletedTasksRef(d ...*DeletedTask) *TaskCreate {
+	ids := make([]ulid.ID, len(d))
+	for i := range d {
+		ids[i] = d[i].ID
+	}
+	return tc.AddDeletedTasksRefIDs(ids...)
 }
 
 // Mutation returns the TaskMutation object of the builder.
@@ -838,6 +854,25 @@ func (tc *TaskCreate) createSpec() (*Task, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: taskfile.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := tc.mutation.DeletedTasksRefIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   task.DeletedTasksRefTable,
+			Columns: []string{task.DeletedTasksRefColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: deletedtask.FieldID,
 				},
 			},
 		}

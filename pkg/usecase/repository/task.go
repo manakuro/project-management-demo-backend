@@ -12,4 +12,6 @@ type Task interface {
 	ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TaskWhereInput) (*model.TaskConnection, error)
 	Create(ctx context.Context, input model.CreateTaskInput) (*model.Task, error)
 	Update(ctx context.Context, input model.UpdateTaskInput) (*model.Task, error)
+	Delete(ctx context.Context, input model.DeleteTaskInput) (*model.DeleteTaskPayload, error)
+	Undelete(ctx context.Context, input model.UndeleteTaskInput) (*model.UndeleteTaskPayload, error)
 }

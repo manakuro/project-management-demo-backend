@@ -36,6 +36,22 @@ func (c *Color) Tags(ctx context.Context) ([]*Tag, error) {
 	return result, err
 }
 
+func (dt *DeletedTask) Task(ctx context.Context) (*Task, error) {
+	result, err := dt.Edges.TaskOrErr()
+	if IsNotLoaded(err) {
+		result, err = dt.QueryTask().Only(ctx)
+	}
+	return result, err
+}
+
+func (dt *DeletedTask) Workspace(ctx context.Context) (*Workspace, error) {
+	result, err := dt.Edges.WorkspaceOrErr()
+	if IsNotLoaded(err) {
+		result, err = dt.QueryWorkspace().Only(ctx)
+	}
+	return result, err
+}
+
 func (fp *FavoriteProject) Project(ctx context.Context) (*Project, error) {
 	result, err := fp.Edges.ProjectOrErr()
 	if IsNotLoaded(err) {
@@ -440,6 +456,14 @@ func (t *Task) TaskFiles(ctx context.Context) ([]*TaskFile, error) {
 	result, err := t.Edges.TaskFilesOrErr()
 	if IsNotLoaded(err) {
 		result, err = t.QueryTaskFiles().All(ctx)
+	}
+	return result, err
+}
+
+func (t *Task) DeletedTasksRef(ctx context.Context) ([]*DeletedTask, error) {
+	result, err := t.Edges.DeletedTasksRefOrErr()
+	if IsNotLoaded(err) {
+		result, err = t.QueryDeletedTasksRef().All(ctx)
 	}
 	return result, err
 }
@@ -1024,6 +1048,14 @@ func (w *Workspace) TeammateTasks(ctx context.Context) ([]*TeammateTask, error) 
 	result, err := w.Edges.TeammateTasksOrErr()
 	if IsNotLoaded(err) {
 		result, err = w.QueryTeammateTasks().All(ctx)
+	}
+	return result, err
+}
+
+func (w *Workspace) DeletedTasksRef(ctx context.Context) ([]*DeletedTask, error) {
+	result, err := w.Edges.DeletedTasksRefOrErr()
+	if IsNotLoaded(err) {
+		result, err = w.QueryDeletedTasksRef().All(ctx)
 	}
 	return result, err
 }

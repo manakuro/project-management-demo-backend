@@ -9,6 +9,7 @@ import (
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/graph/generated"
 	"project-management-demo-backend/pkg/adapter/handler"
+	"project-management-demo-backend/pkg/entity/model"
 	"project-management-demo-backend/pkg/util/datetime"
 	"project-management-demo-backend/pkg/util/subscription"
 )
@@ -40,6 +41,23 @@ func (r *mutationResolver) UpdateTeammateTask(ctx context.Context, input ent.Upd
 		for _, u := range r.subscriptions.TeammateTaskUpdated {
 			if u.ID == t.ID && u.RequestID != input.RequestID {
 				u.Ch <- t
+			}
+		}
+	}()
+
+	return t, nil
+}
+
+func (r *mutationResolver) DeleteTeammateTask(ctx context.Context, input model.DeleteTeammateTaskInput) (*ent.TeammateTask, error) {
+	t, err := r.controller.TeammateTask.Delete(ctx, input)
+	if err != nil {
+		return nil, handler.HandleGraphQLError(ctx, err)
+	}
+
+	go func() {
+		for _, d := range r.subscriptions.TeammateTaskDeleted {
+			if d.WorkspaceID == input.WorkspaceID && d.TeammateID == input.TeammateID && d.RequestID != input.RequestID {
+				d.Ch <- t
 			}
 		}
 	}()
@@ -112,6 +130,29 @@ func (r *subscriptionResolver) TeammateTaskCreated(ctx context.Context, teammate
 		<-ctx.Done()
 		r.mutex.Lock()
 		delete(r.subscriptions.TeammateTaskCreated, key)
+		r.mutex.Unlock()
+	}()
+
+	return ch, nil
+}
+
+func (r *subscriptionResolver) TeammateTaskDeleted(ctx context.Context, teammateID ulid.ID, workspaceID ulid.ID, requestID string) (<-chan *ent.TeammateTask, error) {
+	key := subscription.NewKey()
+	ch := make(chan *ent.TeammateTask)
+
+	r.mutex.Lock()
+	r.subscriptions.TeammateTaskDeleted[key] = subscription.TeammateTaskDeleted{
+		TeammateID:  teammateID,
+		WorkspaceID: workspaceID,
+		RequestID:   requestID,
+		Ch:          ch,
+	}
+	r.mutex.Unlock()
+
+	go func() {
+		<-ctx.Done()
+		r.mutex.Lock()
+		delete(r.subscriptions.TeammateTaskDeleted, key)
 		r.mutex.Unlock()
 	}()
 

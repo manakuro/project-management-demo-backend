@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io"
 	"project-management-demo-backend/ent"
+	"project-management-demo-backend/ent/deletedtask"
 	"project-management-demo-backend/ent/filetype"
 	"project-management-demo-backend/ent/schema/editor"
 	"project-management-demo-backend/ent/schema/testuserprofile"
@@ -50,6 +51,7 @@ type Config struct {
 
 type ResolverRoot interface {
 	Color() ColorResolver
+	DeletedTask() DeletedTaskResolver
 	FavoriteProject() FavoriteProjectResolver
 	FavoriteWorkspace() FavoriteWorkspaceResolver
 	FileType() FileTypeResolver
@@ -112,6 +114,33 @@ type ComplexityRoot struct {
 	}
 
 	ColorEdge struct {
+		Cursor func(childComplexity int) int
+		Node   func(childComplexity int) int
+	}
+
+	DeleteTaskPayload struct {
+		DeletedTasks func(childComplexity int) int
+		ProjectTask  func(childComplexity int) int
+		TeammateTask func(childComplexity int) int
+	}
+
+	DeletedTask struct {
+		CreatedAt   func(childComplexity int) int
+		ID          func(childComplexity int) int
+		Task        func(childComplexity int) int
+		TaskID      func(childComplexity int) int
+		TaskType    func(childComplexity int) int
+		UpdatedAt   func(childComplexity int) int
+		WorkspaceID func(childComplexity int) int
+	}
+
+	DeletedTaskConnection struct {
+		Edges      func(childComplexity int) int
+		PageInfo   func(childComplexity int) int
+		TotalCount func(childComplexity int) int
+	}
+
+	DeletedTaskEdge struct {
 		Cursor func(childComplexity int) int
 		Node   func(childComplexity int) int
 	}
@@ -228,6 +257,7 @@ type ComplexityRoot struct {
 
 	Mutation struct {
 		CreateColor                   func(childComplexity int, input ent.CreateColorInput) int
+		CreateDeletedTask             func(childComplexity int, input ent.CreateDeletedTaskInput) int
 		CreateFavoriteProject         func(childComplexity int, input ent.CreateFavoriteProjectInput) int
 		CreateFavoriteWorkspace       func(childComplexity int, input ent.CreateFavoriteWorkspaceInput) int
 		CreateFileType                func(childComplexity int, input ent.CreateFileTypeInput) int
@@ -267,12 +297,17 @@ type ComplexityRoot struct {
 		CreateWorkspaceTeammate       func(childComplexity int, input ent.CreateWorkspaceTeammateInput) int
 		DeleteFavoriteProject         func(childComplexity int, input model.DeleteFavoriteProjectInput) int
 		DeleteFavoriteWorkspace       func(childComplexity int, input model.DeleteFavoriteWorkspaceInput) int
+		DeleteTask                    func(childComplexity int, input model.DeleteTaskInput) int
 		DeleteTaskCollaborator        func(childComplexity int, input model.DeleteTaskCollaboratorInput) int
 		DeleteTaskFeed                func(childComplexity int, input model.DeleteTaskFeedInput) int
 		DeleteTaskFeedLike            func(childComplexity int, input model.DeleteTaskFeedLikeInput) int
 		DeleteTaskLike                func(childComplexity int, input model.DeleteTaskLikeInput) int
 		DeleteTaskTag                 func(childComplexity int, input model.DeleteTaskTagInput) int
+		DeleteTeammateTask            func(childComplexity int, input model.DeleteTeammateTaskInput) int
+		UndeleteDeletedTask           func(childComplexity int, input model.UndeleteDeletedTaskInput) int
+		UndeleteTask                  func(childComplexity int, input model.UndeleteTaskInput) int
 		UpdateColor                   func(childComplexity int, input ent.UpdateColorInput) int
+		UpdateDeletedTask             func(childComplexity int, input ent.UpdateDeletedTaskInput) int
 		UpdateFileType                func(childComplexity int, input ent.UpdateFileTypeInput) int
 		UpdateIcon                    func(childComplexity int, input ent.UpdateIconInput) int
 		UpdateMe                      func(childComplexity int, input model.UpdateMeInput) int
@@ -520,6 +555,8 @@ type ComplexityRoot struct {
 	Query struct {
 		Color                     func(childComplexity int, id ulid.ID) int
 		Colors                    func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ColorWhereInput) int
+		DeletedTask               func(childComplexity int, where *ent.DeletedTaskWhereInput) int
+		DeletedTasks              func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.DeletedTaskWhereInput) int
 		FavoriteProject           func(childComplexity int, where *ent.FavoriteProjectWhereInput) int
 		FavoriteProjectIds        func(childComplexity int, teammateID ulid.ID) int
 		FavoriteProjects          func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.FavoriteProjectWhereInput) int
@@ -602,6 +639,8 @@ type ComplexityRoot struct {
 
 	Subscription struct {
 		ColorUpdated                  func(childComplexity int, id ulid.ID, requestID string) int
+		DeletedTaskCreated            func(childComplexity int, workspaceID ulid.ID, requestID string) int
+		DeletedTaskUpdated            func(childComplexity int, id ulid.ID, requestID string) int
 		FavoriteProjectCreated        func(childComplexity int, teammateID ulid.ID, requestID string) int
 		FavoriteProjectIdsUpdated     func(childComplexity int, teammateID ulid.ID, requestID string) int
 		FavoriteWorkspaceIdsUpdated   func(childComplexity int, teammateID ulid.ID, requestID string) int
@@ -620,6 +659,7 @@ type ComplexityRoot struct {
 		ProjectUpdated                func(childComplexity int, id ulid.ID, requestID string) int
 		TagUpdated                    func(childComplexity int, id ulid.ID, requestID string) int
 		TaskCollaboratorsUpdated      func(childComplexity int, taskID ulid.ID, requestID string) int
+		TaskDeleted                   func(childComplexity int, id ulid.ID, requestID string) int
 		TaskFeedCreated               func(childComplexity int, taskID ulid.ID, requestID string) int
 		TaskFeedDeleted               func(childComplexity int, taskID ulid.ID, requestID string) int
 		TaskFeedLikeCreated           func(childComplexity int, taskFeedID ulid.ID, requestID string) int
@@ -630,9 +670,11 @@ type ComplexityRoot struct {
 		TaskLikeDeleted               func(childComplexity int, taskID ulid.ID, requestID string) int
 		TaskSectionUpdated            func(childComplexity int, id ulid.ID, requestID string) int
 		TaskTagsUpdated               func(childComplexity int, taskID ulid.ID, requestID string) int
+		TaskUndeleted                 func(childComplexity int, id ulid.ID, requestID string) int
 		TaskUpdated                   func(childComplexity int, id ulid.ID, requestID string) int
 		TeammateTaskColumnUpdated     func(childComplexity int, id ulid.ID, requestID string) int
 		TeammateTaskCreated           func(childComplexity int, teammateID ulid.ID, workspaceID ulid.ID, requestID string) int
+		TeammateTaskDeleted           func(childComplexity int, teammateID ulid.ID, workspaceID ulid.ID, requestID string) int
 		TeammateTaskListStatusUpdated func(childComplexity int, id ulid.ID, requestID string) int
 		TeammateTaskSectionCreated    func(childComplexity int, teammateID ulid.ID, workspaceID ulid.ID, requestID string) int
 		TeammateTaskSectionUpdated    func(childComplexity int, id ulid.ID, requestID string) int
@@ -1128,6 +1170,12 @@ type ComplexityRoot struct {
 		Type func(childComplexity int) int
 	}
 
+	UndeleteTaskPayload struct {
+		DeletedTasks func(childComplexity int) int
+		ProjectTask  func(childComplexity int) int
+		TeammateTask func(childComplexity int) int
+	}
+
 	Workspace struct {
 		CreatedAt          func(childComplexity int) int
 		CreatedBy          func(childComplexity int) int
@@ -1178,6 +1226,10 @@ type ColorResolver interface {
 	CreatedAt(ctx context.Context, obj *ent.Color) (string, error)
 	UpdatedAt(ctx context.Context, obj *ent.Color) (string, error)
 }
+type DeletedTaskResolver interface {
+	CreatedAt(ctx context.Context, obj *ent.DeletedTask) (string, error)
+	UpdatedAt(ctx context.Context, obj *ent.DeletedTask) (string, error)
+}
 type FavoriteProjectResolver interface {
 	CreatedAt(ctx context.Context, obj *ent.FavoriteProject) (string, error)
 	UpdatedAt(ctx context.Context, obj *ent.FavoriteProject) (string, error)
@@ -1201,6 +1253,9 @@ type MeResolver interface {
 type MutationResolver interface {
 	CreateColor(ctx context.Context, input ent.CreateColorInput) (*ent.Color, error)
 	UpdateColor(ctx context.Context, input ent.UpdateColorInput) (*ent.Color, error)
+	CreateDeletedTask(ctx context.Context, input ent.CreateDeletedTaskInput) (*ent.DeletedTask, error)
+	UpdateDeletedTask(ctx context.Context, input ent.UpdateDeletedTaskInput) (*ent.DeletedTask, error)
+	UndeleteDeletedTask(ctx context.Context, input model.UndeleteDeletedTaskInput) ([]*ent.DeletedTask, error)
 	CreateFavoriteProject(ctx context.Context, input ent.CreateFavoriteProjectInput) (*ent.FavoriteProject, error)
 	DeleteFavoriteProject(ctx context.Context, input model.DeleteFavoriteProjectInput) (*ent.FavoriteProject, error)
 	CreateFavoriteWorkspace(ctx context.Context, input ent.CreateFavoriteWorkspaceInput) (*ent.FavoriteWorkspace, error)
@@ -1232,6 +1287,8 @@ type MutationResolver interface {
 	UpdateTag(ctx context.Context, input ent.UpdateTagInput) (*ent.Tag, error)
 	CreateTask(ctx context.Context, input ent.CreateTaskInput) (*ent.Task, error)
 	UpdateTask(ctx context.Context, input ent.UpdateTaskInput) (*ent.Task, error)
+	DeleteTask(ctx context.Context, input model.DeleteTaskInput) (*model.DeleteTaskPayload, error)
+	UndeleteTask(ctx context.Context, input model.UndeleteTaskInput) (*model.UndeleteTaskPayload, error)
 	CreateTaskCollaborator(ctx context.Context, input ent.CreateTaskCollaboratorInput) (*ent.TaskCollaborator, error)
 	UpdateTaskCollaborator(ctx context.Context, input ent.UpdateTaskCollaboratorInput) (*ent.TaskCollaborator, error)
 	DeleteTaskCollaborator(ctx context.Context, input model.DeleteTaskCollaboratorInput) (*ent.TaskCollaborator, error)
@@ -1263,6 +1320,7 @@ type MutationResolver interface {
 	UpdateTeammate(ctx context.Context, input ent.UpdateTeammateInput) (*ent.Teammate, error)
 	CreateTeammateTask(ctx context.Context, input ent.CreateTeammateTaskInput) (*ent.TeammateTask, error)
 	UpdateTeammateTask(ctx context.Context, input ent.UpdateTeammateTaskInput) (*ent.TeammateTask, error)
+	DeleteTeammateTask(ctx context.Context, input model.DeleteTeammateTaskInput) (*ent.TeammateTask, error)
 	CreateTeammateTaskColumn(ctx context.Context, input ent.CreateTeammateTaskColumnInput) (*ent.TeammateTaskColumn, error)
 	UpdateTeammateTaskColumn(ctx context.Context, input ent.UpdateTeammateTaskColumnInput) (*ent.TeammateTaskColumn, error)
 	CreateTeammateTaskListStatus(ctx context.Context, input ent.CreateTeammateTaskListStatusInput) (*ent.TeammateTaskListStatus, error)
@@ -1325,6 +1383,8 @@ type QueryResolver interface {
 	Nodes(ctx context.Context, ids []ulid.ID) ([]ent.Noder, error)
 	Color(ctx context.Context, id ulid.ID) (*ent.Color, error)
 	Colors(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ColorWhereInput) (*ent.ColorConnection, error)
+	DeletedTask(ctx context.Context, where *ent.DeletedTaskWhereInput) (*ent.DeletedTask, error)
+	DeletedTasks(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.DeletedTaskWhereInput) (*ent.DeletedTaskConnection, error)
 	FavoriteProject(ctx context.Context, where *ent.FavoriteProjectWhereInput) (*ent.FavoriteProject, error)
 	FavoriteProjects(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.FavoriteProjectWhereInput) (*ent.FavoriteProjectConnection, error)
 	FavoriteProjectIds(ctx context.Context, teammateID ulid.ID) ([]ulid.ID, error)
@@ -1404,6 +1464,8 @@ type QueryResolver interface {
 }
 type SubscriptionResolver interface {
 	ColorUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.Color, error)
+	DeletedTaskUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.DeletedTask, error)
+	DeletedTaskCreated(ctx context.Context, workspaceID ulid.ID, requestID string) (<-chan *ent.DeletedTask, error)
 	FavoriteProjectCreated(ctx context.Context, teammateID ulid.ID, requestID string) (<-chan *ent.FavoriteProject, error)
 	FavoriteProjectIdsUpdated(ctx context.Context, teammateID ulid.ID, requestID string) (<-chan []ulid.ID, error)
 	FavoriteWorkspaceIdsUpdated(ctx context.Context, teammateID ulid.ID, requestID string) (<-chan []ulid.ID, error)
@@ -1422,6 +1484,8 @@ type SubscriptionResolver interface {
 	ProjectTeammateUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.ProjectTeammate, error)
 	TagUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.Tag, error)
 	TaskUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.Task, error)
+	TaskDeleted(ctx context.Context, id ulid.ID, requestID string) (<-chan *model.DeleteTaskPayload, error)
+	TaskUndeleted(ctx context.Context, id ulid.ID, requestID string) (<-chan *model.UndeleteTaskPayload, error)
 	TaskCollaboratorsUpdated(ctx context.Context, taskID ulid.ID, requestID string) (<-chan []*ent.TaskCollaborator, error)
 	TaskFeedUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.TaskFeed, error)
 	TaskFeedCreated(ctx context.Context, taskID ulid.ID, requestID string) (<-chan *ent.TaskFeed, error)
@@ -1436,6 +1500,7 @@ type SubscriptionResolver interface {
 	TeammateUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.Teammate, error)
 	TeammateTaskUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.TeammateTask, error)
 	TeammateTaskCreated(ctx context.Context, teammateID ulid.ID, workspaceID ulid.ID, requestID string) (<-chan *ent.TeammateTask, error)
+	TeammateTaskDeleted(ctx context.Context, teammateID ulid.ID, workspaceID ulid.ID, requestID string) (<-chan *ent.TeammateTask, error)
 	TeammateTaskColumnUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.TeammateTaskColumn, error)
 	TeammateTaskListStatusUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.TeammateTaskListStatus, error)
 	TeammateTaskSectionUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.TeammateTaskSection, error)
@@ -1635,6 +1700,111 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.ColorEdge.Node(childComplexity), true
+
+	case "DeleteTaskPayload.deletedTasks":
+		if e.complexity.DeleteTaskPayload.DeletedTasks == nil {
+			break
+		}
+
+		return e.complexity.DeleteTaskPayload.DeletedTasks(childComplexity), true
+
+	case "DeleteTaskPayload.projectTask":
+		if e.complexity.DeleteTaskPayload.ProjectTask == nil {
+			break
+		}
+
+		return e.complexity.DeleteTaskPayload.ProjectTask(childComplexity), true
+
+	case "DeleteTaskPayload.teammateTask":
+		if e.complexity.DeleteTaskPayload.TeammateTask == nil {
+			break
+		}
+
+		return e.complexity.DeleteTaskPayload.TeammateTask(childComplexity), true
+
+	case "DeletedTask.createdAt":
+		if e.complexity.DeletedTask.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.DeletedTask.CreatedAt(childComplexity), true
+
+	case "DeletedTask.id":
+		if e.complexity.DeletedTask.ID == nil {
+			break
+		}
+
+		return e.complexity.DeletedTask.ID(childComplexity), true
+
+	case "DeletedTask.task":
+		if e.complexity.DeletedTask.Task == nil {
+			break
+		}
+
+		return e.complexity.DeletedTask.Task(childComplexity), true
+
+	case "DeletedTask.taskId":
+		if e.complexity.DeletedTask.TaskID == nil {
+			break
+		}
+
+		return e.complexity.DeletedTask.TaskID(childComplexity), true
+
+	case "DeletedTask.taskType":
+		if e.complexity.DeletedTask.TaskType == nil {
+			break
+		}
+
+		return e.complexity.DeletedTask.TaskType(childComplexity), true
+
+	case "DeletedTask.updatedAt":
+		if e.complexity.DeletedTask.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.DeletedTask.UpdatedAt(childComplexity), true
+
+	case "DeletedTask.workspaceId":
+		if e.complexity.DeletedTask.WorkspaceID == nil {
+			break
+		}
+
+		return e.complexity.DeletedTask.WorkspaceID(childComplexity), true
+
+	case "DeletedTaskConnection.edges":
+		if e.complexity.DeletedTaskConnection.Edges == nil {
+			break
+		}
+
+		return e.complexity.DeletedTaskConnection.Edges(childComplexity), true
+
+	case "DeletedTaskConnection.pageInfo":
+		if e.complexity.DeletedTaskConnection.PageInfo == nil {
+			break
+		}
+
+		return e.complexity.DeletedTaskConnection.PageInfo(childComplexity), true
+
+	case "DeletedTaskConnection.totalCount":
+		if e.complexity.DeletedTaskConnection.TotalCount == nil {
+			break
+		}
+
+		return e.complexity.DeletedTaskConnection.TotalCount(childComplexity), true
+
+	case "DeletedTaskEdge.cursor":
+		if e.complexity.DeletedTaskEdge.Cursor == nil {
+			break
+		}
+
+		return e.complexity.DeletedTaskEdge.Cursor(childComplexity), true
+
+	case "DeletedTaskEdge.node":
+		if e.complexity.DeletedTaskEdge.Node == nil {
+			break
+		}
+
+		return e.complexity.DeletedTaskEdge.Node(childComplexity), true
 
 	case "EditorDescription.content":
 		if e.complexity.EditorDescription.Content == nil {
@@ -2060,6 +2230,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.CreateColor(childComplexity, args["input"].(ent.CreateColorInput)), true
+
+	case "Mutation.createDeletedTask":
+		if e.complexity.Mutation.CreateDeletedTask == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createDeletedTask_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateDeletedTask(childComplexity, args["input"].(ent.CreateDeletedTaskInput)), true
 
 	case "Mutation.createFavoriteProject":
 		if e.complexity.Mutation.CreateFavoriteProject == nil {
@@ -2529,6 +2711,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.DeleteFavoriteWorkspace(childComplexity, args["input"].(model.DeleteFavoriteWorkspaceInput)), true
 
+	case "Mutation.deleteTask":
+		if e.complexity.Mutation.DeleteTask == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deleteTask_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteTask(childComplexity, args["input"].(model.DeleteTaskInput)), true
+
 	case "Mutation.deleteTaskCollaborator":
 		if e.complexity.Mutation.DeleteTaskCollaborator == nil {
 			break
@@ -2589,6 +2783,42 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.DeleteTaskTag(childComplexity, args["input"].(model.DeleteTaskTagInput)), true
 
+	case "Mutation.deleteTeammateTask":
+		if e.complexity.Mutation.DeleteTeammateTask == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deleteTeammateTask_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteTeammateTask(childComplexity, args["input"].(model.DeleteTeammateTaskInput)), true
+
+	case "Mutation.undeleteDeletedTask":
+		if e.complexity.Mutation.UndeleteDeletedTask == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_undeleteDeletedTask_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UndeleteDeletedTask(childComplexity, args["input"].(model.UndeleteDeletedTaskInput)), true
+
+	case "Mutation.undeleteTask":
+		if e.complexity.Mutation.UndeleteTask == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_undeleteTask_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UndeleteTask(childComplexity, args["input"].(model.UndeleteTaskInput)), true
+
 	case "Mutation.updateColor":
 		if e.complexity.Mutation.UpdateColor == nil {
 			break
@@ -2600,6 +2830,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.UpdateColor(childComplexity, args["input"].(ent.UpdateColorInput)), true
+
+	case "Mutation.updateDeletedTask":
+		if e.complexity.Mutation.UpdateDeletedTask == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateDeletedTask_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateDeletedTask(childComplexity, args["input"].(ent.UpdateDeletedTaskInput)), true
 
 	case "Mutation.updateFileType":
 		if e.complexity.Mutation.UpdateFileType == nil {
@@ -3906,6 +4148,30 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.Colors(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["where"].(*ent.ColorWhereInput)), true
 
+	case "Query.deletedTask":
+		if e.complexity.Query.DeletedTask == nil {
+			break
+		}
+
+		args, err := ec.field_Query_deletedTask_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.DeletedTask(childComplexity, args["where"].(*ent.DeletedTaskWhereInput)), true
+
+	case "Query.deletedTasks":
+		if e.complexity.Query.DeletedTasks == nil {
+			break
+		}
+
+		args, err := ec.field_Query_deletedTasks_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.DeletedTasks(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["where"].(*ent.DeletedTaskWhereInput)), true
+
 	case "Query.favoriteProject":
 		if e.complexity.Query.FavoriteProject == nil {
 			break
@@ -4849,6 +5115,30 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Subscription.ColorUpdated(childComplexity, args["id"].(ulid.ID), args["requestId"].(string)), true
 
+	case "Subscription.deletedTaskCreated":
+		if e.complexity.Subscription.DeletedTaskCreated == nil {
+			break
+		}
+
+		args, err := ec.field_Subscription_deletedTaskCreated_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Subscription.DeletedTaskCreated(childComplexity, args["workspaceId"].(ulid.ID), args["requestId"].(string)), true
+
+	case "Subscription.deletedTaskUpdated":
+		if e.complexity.Subscription.DeletedTaskUpdated == nil {
+			break
+		}
+
+		args, err := ec.field_Subscription_deletedTaskUpdated_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Subscription.DeletedTaskUpdated(childComplexity, args["id"].(ulid.ID), args["requestId"].(string)), true
+
 	case "Subscription.favoriteProjectCreated":
 		if e.complexity.Subscription.FavoriteProjectCreated == nil {
 			break
@@ -5065,6 +5355,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Subscription.TaskCollaboratorsUpdated(childComplexity, args["taskId"].(ulid.ID), args["requestId"].(string)), true
 
+	case "Subscription.taskDeleted":
+		if e.complexity.Subscription.TaskDeleted == nil {
+			break
+		}
+
+		args, err := ec.field_Subscription_taskDeleted_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Subscription.TaskDeleted(childComplexity, args["id"].(ulid.ID), args["requestId"].(string)), true
+
 	case "Subscription.taskFeedCreated":
 		if e.complexity.Subscription.TaskFeedCreated == nil {
 			break
@@ -5185,6 +5487,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Subscription.TaskTagsUpdated(childComplexity, args["taskId"].(ulid.ID), args["requestId"].(string)), true
 
+	case "Subscription.taskUndeleted":
+		if e.complexity.Subscription.TaskUndeleted == nil {
+			break
+		}
+
+		args, err := ec.field_Subscription_taskUndeleted_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Subscription.TaskUndeleted(childComplexity, args["id"].(ulid.ID), args["requestId"].(string)), true
+
 	case "Subscription.taskUpdated":
 		if e.complexity.Subscription.TaskUpdated == nil {
 			break
@@ -5220,6 +5534,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Subscription.TeammateTaskCreated(childComplexity, args["teammateId"].(ulid.ID), args["workspaceId"].(ulid.ID), args["requestId"].(string)), true
+
+	case "Subscription.teammateTaskDeleted":
+		if e.complexity.Subscription.TeammateTaskDeleted == nil {
+			break
+		}
+
+		args, err := ec.field_Subscription_teammateTaskDeleted_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Subscription.TeammateTaskDeleted(childComplexity, args["teammateId"].(ulid.ID), args["workspaceId"].(ulid.ID), args["requestId"].(string)), true
 
 	case "Subscription.teammateTaskListStatusUpdated":
 		if e.complexity.Subscription.TeammateTaskListStatusUpdated == nil {
@@ -7331,6 +7657,27 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.TestUserProfileBodyComment.Type(childComplexity), true
 
+	case "UndeleteTaskPayload.deletedTasks":
+		if e.complexity.UndeleteTaskPayload.DeletedTasks == nil {
+			break
+		}
+
+		return e.complexity.UndeleteTaskPayload.DeletedTasks(childComplexity), true
+
+	case "UndeleteTaskPayload.projectTask":
+		if e.complexity.UndeleteTaskPayload.ProjectTask == nil {
+			break
+		}
+
+		return e.complexity.UndeleteTaskPayload.ProjectTask(childComplexity), true
+
+	case "UndeleteTaskPayload.teammateTask":
+		if e.complexity.UndeleteTaskPayload.TeammateTask == nil {
+			break
+		}
+
+		return e.complexity.UndeleteTaskPayload.TeammateTask(childComplexity), true
+
 	case "Workspace.createdAt":
 		if e.complexity.Workspace.CreatedAt == nil {
 			break
@@ -7645,6 +7992,63 @@ extend type Subscription {
 extend type Mutation {
   createColor(input: CreateColorInput!): Color!
   updateColor(input: UpdateColorInput!): Color!
+}
+`, BuiltIn: false},
+	{Name: "graph/schema/deleted_task/deleted_task.graphql", Input: `enum DeletedTaskType {
+  TEAMMATE
+  PROJECT
+}
+
+type DeletedTask implements Node {
+  id: ID!
+  taskId: ID!
+  task: Task!
+  workspaceId: ID!
+  taskType: DeletedTaskType!
+  createdAt: String!
+  updatedAt: String!
+}
+type DeletedTaskConnection {
+  totalCount: Int!
+  pageInfo: PageInfo!
+  edges: [DeletedTaskEdge]
+}
+type DeletedTaskEdge {
+  node: DeletedTask
+  cursor: Cursor!
+}
+
+input CreateDeletedTaskInput {
+  taskId: ID!
+  workspaceId: ID!
+  requestId: String!
+}
+
+input UpdateDeletedTaskInput {
+  id: ID!
+  taskId: ID
+  workspaceId: ID
+  requestId: String!
+}
+input UndeleteDeletedTaskInput {
+  taskId: ID!
+  requestId: String!
+}
+
+extend type Subscription {
+  deletedTaskUpdated(id: ID!, requestId: String!): DeletedTask!
+  deletedTaskCreated(workspaceId: ID!, requestId: String!): DeletedTask!
+}
+
+extend type Query {
+  deletedTask(where: DeletedTaskWhereInput): DeletedTask
+  deletedTasks(after: Cursor, first: Int, before: Cursor, last: Int, where: DeletedTaskWhereInput): DeletedTaskConnection
+}
+
+extend type Mutation {
+  createDeletedTask(input: CreateDeletedTaskInput!): DeletedTask!
+  updateDeletedTask(input: UpdateDeletedTaskInput!): DeletedTask!
+  undeleteDeletedTask(input: UndeleteDeletedTaskInput!): [DeletedTask!]!
 }
 `, BuiltIn: false},
 	{Name: "graph/schema/editor.graphql", Input: `type EditorDescription {
@@ -8157,6 +8561,10 @@ input WorkspaceWhereInput {
   """teammateTasks edge predicates"""
   hasTeammateTasks: Boolean
   hasTeammateTasksWith: [TeammateTaskWhereInput!]
+  
+  """deletedTasksRef edge predicates"""
+  hasDeletedTasksRef: Boolean
+  hasDeletedTasksRefWith: [DeletedTaskWhereInput!]
 }
 
 """
@@ -10352,6 +10760,10 @@ input TaskWhereInput {
   """taskFiles edge predicates"""
   hasTaskFiles: Boolean
   hasTaskFilesWith: [TaskFileWhereInput!]
+  
+  """deletedTasksRef edge predicates"""
+  hasDeletedTasksRef: Boolean
+  hasDeletedTasksRefWith: [DeletedTaskWhereInput!]
 }
 
 """
@@ -11322,6 +11734,120 @@ input TaskFileWhereInput {
   hasFileType: Boolean
   hasFileTypeWith: [FileTypeWhereInput!]
 }
+
+"""
+DeletedTaskWhereInput is used for filtering DeletedTask objects.
+Input was generated by ent.
+"""
+input DeletedTaskWhereInput {
+  not: DeletedTaskWhereInput
+  and: [DeletedTaskWhereInput!]
+  or: [DeletedTaskWhereInput!]
+  
+  """task_id field predicates"""
+  taskID: ID
+  taskIDNEQ: ID
+  taskIDIn: [ID!]
+  taskIDNotIn: [ID!]
+  taskIDGT: ID
+  taskIDGTE: ID
+  taskIDLT: ID
+  taskIDLTE: ID
+  taskIDContains: ID
+  taskIDHasPrefix: ID
+  taskIDHasSuffix: ID
+  taskIDEqualFold: ID
+  taskIDContainsFold: ID
+  
+  """workspace_id field predicates"""
+  workspaceID: ID
+  workspaceIDNEQ: ID
+  workspaceIDIn: [ID!]
+  workspaceIDNotIn: [ID!]
+  workspaceIDGT: ID
+  workspaceIDGTE: ID
+  workspaceIDLT: ID
+  workspaceIDLTE: ID
+  workspaceIDContains: ID
+  workspaceIDHasPrefix: ID
+  workspaceIDHasSuffix: ID
+  workspaceIDEqualFold: ID
+  workspaceIDContainsFold: ID
+  
+  """task_section_id field predicates"""
+  taskSectionID: ID
+  taskSectionIDNEQ: ID
+  taskSectionIDIn: [ID!]
+  taskSectionIDNotIn: [ID!]
+  taskSectionIDGT: ID
+  taskSectionIDGTE: ID
+  taskSectionIDLT: ID
+  taskSectionIDLTE: ID
+  taskSectionIDContains: ID
+  taskSectionIDHasPrefix: ID
+  taskSectionIDHasSuffix: ID
+  taskSectionIDEqualFold: ID
+  taskSectionIDContainsFold: ID
+  
+  """task_join_id field predicates"""
+  taskJoinID: ID
+  taskJoinIDNEQ: ID
+  taskJoinIDIn: [ID!]
+  taskJoinIDNotIn: [ID!]
+  taskJoinIDGT: ID
+  taskJoinIDGTE: ID
+  taskJoinIDLT: ID
+  taskJoinIDLTE: ID
+  taskJoinIDContains: ID
+  taskJoinIDHasPrefix: ID
+  taskJoinIDHasSuffix: ID
+  taskJoinIDEqualFold: ID
+  taskJoinIDContainsFold: ID
+  
+  """task_type field predicates"""
+  taskType: DeletedTaskType
+  taskTypeNEQ: DeletedTaskType
+  taskTypeIn: [DeletedTaskType!]
+  taskTypeNotIn: [DeletedTaskType!]
+  
+  """created_at field predicates"""
+  createdAt: Time
+  createdAtNEQ: Time
+  createdAtIn: [Time!]
+  createdAtNotIn: [Time!]
+  createdAtGT: Time
+  createdAtGTE: Time
+  createdAtLT: Time
+  createdAtLTE: Time
+  
+  """updated_at field predicates"""
+  updatedAt: Time
+  updatedAtNEQ: Time
+  updatedAtIn: [Time!]
+  updatedAtNotIn: [Time!]
+  updatedAtGT: Time
+  updatedAtGTE: Time
+  updatedAtLT: Time
+  updatedAtLTE: Time
+  
+  """id field predicates"""
+  id: ID
+  idNEQ: ID
+  idIn: [ID!]
+  idNotIn: [ID!]
+  idGT: ID
+  idGTE: ID
+  idLT: ID
+  idLTE: ID
+  
+  """task edge predicates"""
+  hasTask: Boolean
+  hasTaskWith: [TaskWhereInput!]
+  
+  """workspace edge predicates"""
+  hasWorkspace: Boolean
+  hasWorkspaceWith: [WorkspaceWhereInput!]
+}
 `, BuiltIn: false},
 	{Name: "graph/schema/favorite_project/favorite_project.graphql", Input: `type FavoriteProject implements Node {
   id: ID!
@@ -12125,8 +12651,32 @@ input UpdateTaskInput {
   requestId: String!
 }
 
+input DeleteTaskInput {
+  taskId: ID!
+  workspaceId: ID!
+  requestId: String!
+}
+type DeleteTaskPayload {
+  teammateTask: TeammateTask!
+  projectTask: ProjectTask!
+  deletedTasks: [DeletedTask!]!
+}
+
+input UndeleteTaskInput {
+  taskId: ID!
+  workspaceId: ID!
+  requestId: String!
+}
+type UndeleteTaskPayload {
+  teammateTask: TeammateTask
+  projectTask: ProjectTask
+  deletedTasks: [DeletedTask!]!
+}
+
 extend type Subscription {
   taskUpdated(id: ID!, requestId: String!): Task!
+  taskDeleted(id: ID!, requestId: String!): DeleteTaskPayload!
+  taskUndeleted(id: ID!, requestId: String!): UndeleteTaskPayload!
 }
 
 extend type Query {
@@ -12137,6 +12687,8 @@ extend type Query {
 extend type Mutation {
   createTask(input: CreateTaskInput!): Task!
   updateTask(input: UpdateTaskInput!): Task!
+  deleteTask(input: DeleteTaskInput!): DeleteTaskPayload!
+  undeleteTask(input: UndeleteTaskInput!): UndeleteTaskPayload!
 }
 `, BuiltIn: false},
 	{Name: "graph/schema/task_collaborator/task_collaborator.graphql", Input: `type TaskCollaborator implements Node {
@@ -12773,6 +13325,14 @@ input CreateTeammateTaskInput {
   requestId: String!
 }
 
+input DeleteTeammateTaskInput {
+  id: ID!
+  taskId: ID!
+  teammateId: ID!
+  workspaceId: ID!
+  requestId: String!
+}
+
 input UpdateTeammateTaskInput {
   id: ID!
   taskId: ID
@@ -12784,6 +13344,7 @@ input UpdateTeammateTaskInput {
 extend type Subscription {
   teammateTaskUpdated(id: ID!, requestId: String!): TeammateTask!
   teammateTaskCreated(teammateId: ID!, workspaceId: ID!, requestId: String!): TeammateTask!
+  teammateTaskDeleted(teammateId: ID!, workspaceId: ID!, requestId: String!): TeammateTask!
 }
 
 extend type Query {
@@ -12795,6 +13356,7 @@ extend type Query {
 extend type Mutation {
   createTeammateTask(input: CreateTeammateTaskInput!): TeammateTask!
   updateTeammateTask(input: UpdateTeammateTaskInput!): TeammateTask!
+  deleteTeammateTask(input: DeleteTeammateTaskInput!): TeammateTask!
 }
 `, BuiltIn: false},
 	{Name: "graph/schema/teammate_task_column/teammate_task_column.graphql", Input: `type TeammateTaskColumn implements Node {
@@ -13252,6 +13814,21 @@ func (ec *executionContext) field_Mutation_createColor_args(ctx context.Context,
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNCreateColorInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐCreateColorInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_createDeletedTask_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 ent.CreateDeletedTaskInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNCreateDeletedTaskInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐCreateDeletedTaskInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -13920,6 +14497,66 @@ func (ec *executionContext) field_Mutation_deleteTaskTag_args(ctx context.Contex
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_deleteTask_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.DeleteTaskInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNDeleteTaskInput2projectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐDeleteTaskInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_deleteTeammateTask_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.DeleteTeammateTaskInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNDeleteTeammateTaskInput2projectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐDeleteTeammateTaskInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_undeleteDeletedTask_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.UndeleteDeletedTaskInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNUndeleteDeletedTaskInput2projectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐUndeleteDeletedTaskInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_undeleteTask_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.UndeleteTaskInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNUndeleteTaskInput2projectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐUndeleteTaskInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_updateColor_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -13927,6 +14564,21 @@ func (ec *executionContext) field_Mutation_updateColor_args(ctx context.Context,
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNUpdateColorInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐUpdateColorInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_updateDeletedTask_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 ent.UpdateDeletedTaskInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNUpdateDeletedTaskInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐUpdateDeletedTaskInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -14533,6 +15185,72 @@ func (ec *executionContext) field_Query_colors_args(ctx context.Context, rawArgs
 	if tmp, ok := rawArgs["where"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
 		arg4, err = ec.unmarshalOColorWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐColorWhereInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["where"] = arg4
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_deletedTask_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *ent.DeletedTaskWhereInput
+	if tmp, ok := rawArgs["where"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
+		arg0, err = ec.unmarshalODeletedTaskWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐDeletedTaskWhereInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["where"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_deletedTasks_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *ent.Cursor
+	if tmp, ok := rawArgs["after"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
+		arg0, err = ec.unmarshalOCursor2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐCursor(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["after"] = arg0
+	var arg1 *int
+	if tmp, ok := rawArgs["first"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("first"))
+		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["first"] = arg1
+	var arg2 *ent.Cursor
+	if tmp, ok := rawArgs["before"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("before"))
+		arg2, err = ec.unmarshalOCursor2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐCursor(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["before"] = arg2
+	var arg3 *int
+	if tmp, ok := rawArgs["last"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("last"))
+		arg3, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["last"] = arg3
+	var arg4 *ent.DeletedTaskWhereInput
+	if tmp, ok := rawArgs["where"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
+		arg4, err = ec.unmarshalODeletedTaskWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐDeletedTaskWhereInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -17043,6 +17761,54 @@ func (ec *executionContext) field_Subscription_colorUpdated_args(ctx context.Con
 	return args, nil
 }
 
+func (ec *executionContext) field_Subscription_deletedTaskCreated_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 ulid.ID
+	if tmp, ok := rawArgs["workspaceId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceId"))
+		arg0, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["workspaceId"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["requestId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("requestId"))
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["requestId"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Subscription_deletedTaskUpdated_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 ulid.ID
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["requestId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("requestId"))
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["requestId"] = arg1
+	return args, nil
+}
+
 func (ec *executionContext) field_Subscription_favoriteProjectCreated_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -17466,6 +18232,30 @@ func (ec *executionContext) field_Subscription_taskCollaboratorsUpdated_args(ctx
 	return args, nil
 }
 
+func (ec *executionContext) field_Subscription_taskDeleted_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 ulid.ID
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["requestId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("requestId"))
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["requestId"] = arg1
+	return args, nil
+}
+
 func (ec *executionContext) field_Subscription_taskFeedCreated_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -17706,6 +18496,30 @@ func (ec *executionContext) field_Subscription_taskTagsUpdated_args(ctx context.
 	return args, nil
 }
 
+func (ec *executionContext) field_Subscription_taskUndeleted_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 ulid.ID
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["requestId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("requestId"))
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["requestId"] = arg1
+	return args, nil
+}
+
 func (ec *executionContext) field_Subscription_taskUpdated_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -17755,6 +18569,39 @@ func (ec *executionContext) field_Subscription_teammateTaskColumnUpdated_args(ct
 }
 
 func (ec *executionContext) field_Subscription_teammateTaskCreated_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 ulid.ID
+	if tmp, ok := rawArgs["teammateId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("teammateId"))
+		arg0, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["teammateId"] = arg0
+	var arg1 ulid.ID
+	if tmp, ok := rawArgs["workspaceId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceId"))
+		arg1, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["workspaceId"] = arg1
+	var arg2 string
+	if tmp, ok := rawArgs["requestId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("requestId"))
+		arg2, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["requestId"] = arg2
+	return args, nil
+}
+
+func (ec *executionContext) field_Subscription_teammateTaskDeleted_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 ulid.ID
@@ -18394,6 +19241,525 @@ func (ec *executionContext) _ColorEdge_cursor(ctx context.Context, field graphql
 	}()
 	fc := &graphql.FieldContext{
 		Object:     "ColorEdge",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Cursor, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(ent.Cursor)
+	fc.Result = res
+	return ec.marshalNCursor2projectᚑmanagementᚑdemoᚑbackendᚋentᚐCursor(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _DeleteTaskPayload_teammateTask(ctx context.Context, field graphql.CollectedField, obj *model.DeleteTaskPayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "DeleteTaskPayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TeammateTask, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.TeammateTask)
+	fc.Result = res
+	return ec.marshalNTeammateTask2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTeammateTask(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _DeleteTaskPayload_projectTask(ctx context.Context, field graphql.CollectedField, obj *model.DeleteTaskPayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "DeleteTaskPayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ProjectTask, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.ProjectTask)
+	fc.Result = res
+	return ec.marshalNProjectTask2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTask(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _DeleteTaskPayload_deletedTasks(ctx context.Context, field graphql.CollectedField, obj *model.DeleteTaskPayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "DeleteTaskPayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.DeletedTasks, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*ent.DeletedTask)
+	fc.Result = res
+	return ec.marshalNDeletedTask2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐDeletedTaskᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _DeletedTask_id(ctx context.Context, field graphql.CollectedField, obj *ent.DeletedTask) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "DeletedTask",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(ulid.ID)
+	fc.Result = res
+	return ec.marshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _DeletedTask_taskId(ctx context.Context, field graphql.CollectedField, obj *ent.DeletedTask) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "DeletedTask",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TaskID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(ulid.ID)
+	fc.Result = res
+	return ec.marshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _DeletedTask_task(ctx context.Context, field graphql.CollectedField, obj *ent.DeletedTask) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "DeletedTask",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Task(ctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.Task)
+	fc.Result = res
+	return ec.marshalNTask2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTask(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _DeletedTask_workspaceId(ctx context.Context, field graphql.CollectedField, obj *ent.DeletedTask) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "DeletedTask",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.WorkspaceID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(ulid.ID)
+	fc.Result = res
+	return ec.marshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _DeletedTask_taskType(ctx context.Context, field graphql.CollectedField, obj *ent.DeletedTask) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "DeletedTask",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TaskType, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(deletedtask.TaskType)
+	fc.Result = res
+	return ec.marshalNDeletedTaskType2projectᚑmanagementᚑdemoᚑbackendᚋentᚋdeletedtaskᚐTaskType(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _DeletedTask_createdAt(ctx context.Context, field graphql.CollectedField, obj *ent.DeletedTask) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "DeletedTask",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.DeletedTask().CreatedAt(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _DeletedTask_updatedAt(ctx context.Context, field graphql.CollectedField, obj *ent.DeletedTask) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "DeletedTask",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.DeletedTask().UpdatedAt(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _DeletedTaskConnection_totalCount(ctx context.Context, field graphql.CollectedField, obj *ent.DeletedTaskConnection) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "DeletedTaskConnection",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TotalCount, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _DeletedTaskConnection_pageInfo(ctx context.Context, field graphql.CollectedField, obj *ent.DeletedTaskConnection) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "DeletedTaskConnection",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PageInfo, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(ent.PageInfo)
+	fc.Result = res
+	return ec.marshalNPageInfo2projectᚑmanagementᚑdemoᚑbackendᚋentᚐPageInfo(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _DeletedTaskConnection_edges(ctx context.Context, field graphql.CollectedField, obj *ent.DeletedTaskConnection) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "DeletedTaskConnection",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Edges, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*ent.DeletedTaskEdge)
+	fc.Result = res
+	return ec.marshalODeletedTaskEdge2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐDeletedTaskEdge(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _DeletedTaskEdge_node(ctx context.Context, field graphql.CollectedField, obj *ent.DeletedTaskEdge) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "DeletedTaskEdge",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Node, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*ent.DeletedTask)
+	fc.Result = res
+	return ec.marshalODeletedTask2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐDeletedTask(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _DeletedTaskEdge_cursor(ctx context.Context, field graphql.CollectedField, obj *ent.DeletedTaskEdge) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "DeletedTaskEdge",
 		Field:      field,
 		Args:       nil,
 		IsMethod:   false,
@@ -20521,6 +21887,132 @@ func (ec *executionContext) _Mutation_updateColor(ctx context.Context, field gra
 	return ec.marshalNColor2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐColor(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Mutation_createDeletedTask(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_createDeletedTask_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreateDeletedTask(rctx, args["input"].(ent.CreateDeletedTaskInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.DeletedTask)
+	fc.Result = res
+	return ec.marshalNDeletedTask2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐDeletedTask(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_updateDeletedTask(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_updateDeletedTask_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdateDeletedTask(rctx, args["input"].(ent.UpdateDeletedTaskInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.DeletedTask)
+	fc.Result = res
+	return ec.marshalNDeletedTask2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐDeletedTask(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_undeleteDeletedTask(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_undeleteDeletedTask_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UndeleteDeletedTask(rctx, args["input"].(model.UndeleteDeletedTaskInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*ent.DeletedTask)
+	fc.Result = res
+	return ec.marshalNDeletedTask2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐDeletedTaskᚄ(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Mutation_createFavoriteProject(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -21823,6 +23315,90 @@ func (ec *executionContext) _Mutation_updateTask(ctx context.Context, field grap
 	return ec.marshalNTask2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTask(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Mutation_deleteTask(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_deleteTask_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().DeleteTask(rctx, args["input"].(model.DeleteTaskInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.DeleteTaskPayload)
+	fc.Result = res
+	return ec.marshalNDeleteTaskPayload2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐDeleteTaskPayload(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_undeleteTask(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_undeleteTask_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UndeleteTask(rctx, args["input"].(model.UndeleteTaskInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.UndeleteTaskPayload)
+	fc.Result = res
+	return ec.marshalNUndeleteTaskPayload2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐUndeleteTaskPayload(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Mutation_createTaskCollaborator(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -23109,6 +24685,48 @@ func (ec *executionContext) _Mutation_updateTeammateTask(ctx context.Context, fi
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Mutation().UpdateTeammateTask(rctx, args["input"].(ent.UpdateTeammateTaskInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.TeammateTask)
+	fc.Result = res
+	return ec.marshalNTeammateTask2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTeammateTask(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_deleteTeammateTask(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_deleteTeammateTask_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().DeleteTeammateTask(rctx, args["input"].(model.DeleteTeammateTaskInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -28243,6 +29861,84 @@ func (ec *executionContext) _Query_colors(ctx context.Context, field graphql.Col
 	return ec.marshalOColorConnection2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐColorConnection(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _Query_deletedTask(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_deletedTask_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().DeletedTask(rctx, args["where"].(*ent.DeletedTaskWhereInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*ent.DeletedTask)
+	fc.Result = res
+	return ec.marshalODeletedTask2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐDeletedTask(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_deletedTasks(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_deletedTasks_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().DeletedTasks(rctx, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["where"].(*ent.DeletedTaskWhereInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*ent.DeletedTaskConnection)
+	fc.Result = res
+	return ec.marshalODeletedTaskConnection2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐDeletedTaskConnection(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Query_favoriteProject(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -31332,6 +33028,110 @@ func (ec *executionContext) _Subscription_colorUpdated(ctx context.Context, fiel
 	}
 }
 
+func (ec *executionContext) _Subscription_deletedTaskUpdated(ctx context.Context, field graphql.CollectedField) (ret func() graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = nil
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Subscription",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Subscription_deletedTaskUpdated_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return nil
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Subscription().DeletedTaskUpdated(rctx, args["id"].(ulid.ID), args["requestId"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return nil
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return nil
+	}
+	return func() graphql.Marshaler {
+		res, ok := <-resTmp.(<-chan *ent.DeletedTask)
+		if !ok {
+			return nil
+		}
+		return graphql.WriterFunc(func(w io.Writer) {
+			w.Write([]byte{'{'})
+			graphql.MarshalString(field.Alias).MarshalGQL(w)
+			w.Write([]byte{':'})
+			ec.marshalNDeletedTask2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐDeletedTask(ctx, field.Selections, res).MarshalGQL(w)
+			w.Write([]byte{'}'})
+		})
+	}
+}
+
+func (ec *executionContext) _Subscription_deletedTaskCreated(ctx context.Context, field graphql.CollectedField) (ret func() graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = nil
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Subscription",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Subscription_deletedTaskCreated_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return nil
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Subscription().DeletedTaskCreated(rctx, args["workspaceId"].(ulid.ID), args["requestId"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return nil
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return nil
+	}
+	return func() graphql.Marshaler {
+		res, ok := <-resTmp.(<-chan *ent.DeletedTask)
+		if !ok {
+			return nil
+		}
+		return graphql.WriterFunc(func(w io.Writer) {
+			w.Write([]byte{'{'})
+			graphql.MarshalString(field.Alias).MarshalGQL(w)
+			w.Write([]byte{':'})
+			ec.marshalNDeletedTask2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐDeletedTask(ctx, field.Selections, res).MarshalGQL(w)
+			w.Write([]byte{'}'})
+		})
+	}
+}
+
 func (ec *executionContext) _Subscription_favoriteProjectCreated(ctx context.Context, field graphql.CollectedField) (ret func() graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -32268,6 +34068,110 @@ func (ec *executionContext) _Subscription_taskUpdated(ctx context.Context, field
 	}
 }
 
+func (ec *executionContext) _Subscription_taskDeleted(ctx context.Context, field graphql.CollectedField) (ret func() graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = nil
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Subscription",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Subscription_taskDeleted_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return nil
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Subscription().TaskDeleted(rctx, args["id"].(ulid.ID), args["requestId"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return nil
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return nil
+	}
+	return func() graphql.Marshaler {
+		res, ok := <-resTmp.(<-chan *model.DeleteTaskPayload)
+		if !ok {
+			return nil
+		}
+		return graphql.WriterFunc(func(w io.Writer) {
+			w.Write([]byte{'{'})
+			graphql.MarshalString(field.Alias).MarshalGQL(w)
+			w.Write([]byte{':'})
+			ec.marshalNDeleteTaskPayload2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐDeleteTaskPayload(ctx, field.Selections, res).MarshalGQL(w)
+			w.Write([]byte{'}'})
+		})
+	}
+}
+
+func (ec *executionContext) _Subscription_taskUndeleted(ctx context.Context, field graphql.CollectedField) (ret func() graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = nil
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Subscription",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Subscription_taskUndeleted_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return nil
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Subscription().TaskUndeleted(rctx, args["id"].(ulid.ID), args["requestId"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return nil
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return nil
+	}
+	return func() graphql.Marshaler {
+		res, ok := <-resTmp.(<-chan *model.UndeleteTaskPayload)
+		if !ok {
+			return nil
+		}
+		return graphql.WriterFunc(func(w io.Writer) {
+			w.Write([]byte{'{'})
+			graphql.MarshalString(field.Alias).MarshalGQL(w)
+			w.Write([]byte{':'})
+			ec.marshalNUndeleteTaskPayload2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐUndeleteTaskPayload(ctx, field.Selections, res).MarshalGQL(w)
+			w.Write([]byte{'}'})
+		})
+	}
+}
+
 func (ec *executionContext) _Subscription_taskCollaboratorsUpdated(ctx context.Context, field graphql.CollectedField) (ret func() graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -32970,6 +34874,58 @@ func (ec *executionContext) _Subscription_teammateTaskCreated(ctx context.Contex
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Subscription().TeammateTaskCreated(rctx, args["teammateId"].(ulid.ID), args["workspaceId"].(ulid.ID), args["requestId"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return nil
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return nil
+	}
+	return func() graphql.Marshaler {
+		res, ok := <-resTmp.(<-chan *ent.TeammateTask)
+		if !ok {
+			return nil
+		}
+		return graphql.WriterFunc(func(w io.Writer) {
+			w.Write([]byte{'{'})
+			graphql.MarshalString(field.Alias).MarshalGQL(w)
+			w.Write([]byte{':'})
+			ec.marshalNTeammateTask2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTeammateTask(ctx, field.Selections, res).MarshalGQL(w)
+			w.Write([]byte{'}'})
+		})
+	}
+}
+
+func (ec *executionContext) _Subscription_teammateTaskDeleted(ctx context.Context, field graphql.CollectedField) (ret func() graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = nil
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Subscription",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Subscription_teammateTaskDeleted_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return nil
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Subscription().TeammateTaskDeleted(rctx, args["teammateId"].(ulid.ID), args["workspaceId"].(ulid.ID), args["requestId"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -43251,6 +45207,105 @@ func (ec *executionContext) _TestUserProfileBodyComment_text(ctx context.Context
 	return ec.marshalOString2string(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _UndeleteTaskPayload_teammateTask(ctx context.Context, field graphql.CollectedField, obj *model.UndeleteTaskPayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "UndeleteTaskPayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TeammateTask, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*ent.TeammateTask)
+	fc.Result = res
+	return ec.marshalOTeammateTask2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTeammateTask(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _UndeleteTaskPayload_projectTask(ctx context.Context, field graphql.CollectedField, obj *model.UndeleteTaskPayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "UndeleteTaskPayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ProjectTask, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*ent.ProjectTask)
+	fc.Result = res
+	return ec.marshalOProjectTask2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTask(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _UndeleteTaskPayload_deletedTasks(ctx context.Context, field graphql.CollectedField, obj *model.UndeleteTaskPayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "UndeleteTaskPayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.DeletedTasks, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*ent.DeletedTask)
+	fc.Result = res
+	return ec.marshalNDeletedTask2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐDeletedTaskᚄ(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _Workspace_id(ctx context.Context, field graphql.CollectedField, obj *ent.Workspace) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -45960,6 +48015,45 @@ func (ec *executionContext) unmarshalInputCreateColorInput(ctx context.Context, 
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputCreateDeletedTaskInput(ctx context.Context, obj interface{}) (ent.CreateDeletedTaskInput, error) {
+	var it ent.CreateDeletedTaskInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "taskId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskId"))
+			it.TaskID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "workspaceId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceId"))
+			it.WorkspaceID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "requestId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("requestId"))
+			it.RequestID, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputCreateFavoriteProjectInput(ctx context.Context, obj interface{}) (ent.CreateFavoriteProjectInput, error) {
 	var it ent.CreateFavoriteProjectInput
 	asMap := map[string]interface{}{}
@@ -47771,6 +49865,45 @@ func (ec *executionContext) unmarshalInputDeleteTaskFeedLikeInput(ctx context.Co
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputDeleteTaskInput(ctx context.Context, obj interface{}) (model.DeleteTaskInput, error) {
+	var it model.DeleteTaskInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "taskId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskId"))
+			it.TaskID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "workspaceId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceId"))
+			it.WorkspaceID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "requestId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("requestId"))
+			it.RequestID, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputDeleteTaskLikeInput(ctx context.Context, obj interface{}) (model.DeleteTaskLikeInput, error) {
 	var it model.DeleteTaskLikeInput
 	asMap := map[string]interface{}{}
@@ -47816,6 +49949,772 @@ func (ec *executionContext) unmarshalInputDeleteTaskTagInput(ctx context.Context
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
 			it.ID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputDeleteTeammateTaskInput(ctx context.Context, obj interface{}) (model.DeleteTeammateTaskInput, error) {
+	var it model.DeleteTeammateTaskInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			it.ID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskId"))
+			it.TaskID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "teammateId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("teammateId"))
+			it.TeammateID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "workspaceId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceId"))
+			it.WorkspaceID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "requestId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("requestId"))
+			it.RequestID, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputDeletedTaskWhereInput(ctx context.Context, obj interface{}) (ent.DeletedTaskWhereInput, error) {
+	var it ent.DeletedTaskWhereInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "not":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("not"))
+			it.Not, err = ec.unmarshalODeletedTaskWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐDeletedTaskWhereInput(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "and":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("and"))
+			it.And, err = ec.unmarshalODeletedTaskWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐDeletedTaskWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "or":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("or"))
+			it.Or, err = ec.unmarshalODeletedTaskWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐDeletedTaskWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskID":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskID"))
+			it.TaskID, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskIDNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskIDNEQ"))
+			it.TaskIDNEQ, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskIDIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskIDIn"))
+			it.TaskIDIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskIDNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskIDNotIn"))
+			it.TaskIDNotIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskIDGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskIDGT"))
+			it.TaskIDGT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskIDGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskIDGTE"))
+			it.TaskIDGTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskIDLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskIDLT"))
+			it.TaskIDLT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskIDLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskIDLTE"))
+			it.TaskIDLTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskIDContains":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskIDContains"))
+			it.TaskIDContains, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskIDHasPrefix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskIDHasPrefix"))
+			it.TaskIDHasPrefix, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskIDHasSuffix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskIDHasSuffix"))
+			it.TaskIDHasSuffix, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskIDEqualFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskIDEqualFold"))
+			it.TaskIDEqualFold, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskIDContainsFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskIDContainsFold"))
+			it.TaskIDContainsFold, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "workspaceID":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceID"))
+			it.WorkspaceID, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "workspaceIDNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceIDNEQ"))
+			it.WorkspaceIDNEQ, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "workspaceIDIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceIDIn"))
+			it.WorkspaceIDIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "workspaceIDNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceIDNotIn"))
+			it.WorkspaceIDNotIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "workspaceIDGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceIDGT"))
+			it.WorkspaceIDGT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "workspaceIDGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceIDGTE"))
+			it.WorkspaceIDGTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "workspaceIDLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceIDLT"))
+			it.WorkspaceIDLT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "workspaceIDLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceIDLTE"))
+			it.WorkspaceIDLTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "workspaceIDContains":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceIDContains"))
+			it.WorkspaceIDContains, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "workspaceIDHasPrefix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceIDHasPrefix"))
+			it.WorkspaceIDHasPrefix, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "workspaceIDHasSuffix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceIDHasSuffix"))
+			it.WorkspaceIDHasSuffix, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "workspaceIDEqualFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceIDEqualFold"))
+			it.WorkspaceIDEqualFold, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "workspaceIDContainsFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceIDContainsFold"))
+			it.WorkspaceIDContainsFold, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskSectionID":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskSectionID"))
+			it.TaskSectionID, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskSectionIDNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskSectionIDNEQ"))
+			it.TaskSectionIDNEQ, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskSectionIDIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskSectionIDIn"))
+			it.TaskSectionIDIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskSectionIDNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskSectionIDNotIn"))
+			it.TaskSectionIDNotIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskSectionIDGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskSectionIDGT"))
+			it.TaskSectionIDGT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskSectionIDGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskSectionIDGTE"))
+			it.TaskSectionIDGTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskSectionIDLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskSectionIDLT"))
+			it.TaskSectionIDLT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskSectionIDLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskSectionIDLTE"))
+			it.TaskSectionIDLTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskSectionIDContains":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskSectionIDContains"))
+			it.TaskSectionIDContains, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskSectionIDHasPrefix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskSectionIDHasPrefix"))
+			it.TaskSectionIDHasPrefix, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskSectionIDHasSuffix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskSectionIDHasSuffix"))
+			it.TaskSectionIDHasSuffix, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskSectionIDEqualFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskSectionIDEqualFold"))
+			it.TaskSectionIDEqualFold, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskSectionIDContainsFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskSectionIDContainsFold"))
+			it.TaskSectionIDContainsFold, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskJoinID":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskJoinID"))
+			it.TaskJoinID, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskJoinIDNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskJoinIDNEQ"))
+			it.TaskJoinIDNEQ, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskJoinIDIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskJoinIDIn"))
+			it.TaskJoinIDIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskJoinIDNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskJoinIDNotIn"))
+			it.TaskJoinIDNotIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskJoinIDGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskJoinIDGT"))
+			it.TaskJoinIDGT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskJoinIDGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskJoinIDGTE"))
+			it.TaskJoinIDGTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskJoinIDLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskJoinIDLT"))
+			it.TaskJoinIDLT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskJoinIDLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskJoinIDLTE"))
+			it.TaskJoinIDLTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskJoinIDContains":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskJoinIDContains"))
+			it.TaskJoinIDContains, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskJoinIDHasPrefix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskJoinIDHasPrefix"))
+			it.TaskJoinIDHasPrefix, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskJoinIDHasSuffix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskJoinIDHasSuffix"))
+			it.TaskJoinIDHasSuffix, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskJoinIDEqualFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskJoinIDEqualFold"))
+			it.TaskJoinIDEqualFold, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskJoinIDContainsFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskJoinIDContainsFold"))
+			it.TaskJoinIDContainsFold, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskType":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskType"))
+			it.TaskType, err = ec.unmarshalODeletedTaskType2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋdeletedtaskᚐTaskType(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskTypeNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskTypeNEQ"))
+			it.TaskTypeNEQ, err = ec.unmarshalODeletedTaskType2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋdeletedtaskᚐTaskType(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskTypeIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskTypeIn"))
+			it.TaskTypeIn, err = ec.unmarshalODeletedTaskType2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋdeletedtaskᚐTaskTypeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskTypeNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskTypeNotIn"))
+			it.TaskTypeNotIn, err = ec.unmarshalODeletedTaskType2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋdeletedtaskᚐTaskTypeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAt":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAt"))
+			it.CreatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtNEQ"))
+			it.CreatedAtNEQ, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtIn"))
+			it.CreatedAtIn, err = ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtNotIn"))
+			it.CreatedAtNotIn, err = ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtGT"))
+			it.CreatedAtGT, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtGTE"))
+			it.CreatedAtGTE, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtLT"))
+			it.CreatedAtLT, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtLTE"))
+			it.CreatedAtLTE, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAt":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAt"))
+			it.UpdatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtNEQ"))
+			it.UpdatedAtNEQ, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtIn"))
+			it.UpdatedAtIn, err = ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtNotIn"))
+			it.UpdatedAtNotIn, err = ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtGT"))
+			it.UpdatedAtGT, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtGTE"))
+			it.UpdatedAtGTE, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtLT"))
+			it.UpdatedAtLT, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtLTE"))
+			it.UpdatedAtLTE, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			it.ID, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idNEQ"))
+			it.IDNEQ, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idIn"))
+			it.IDIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idNotIn"))
+			it.IDNotIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idGT"))
+			it.IDGT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idGTE"))
+			it.IDGTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idLT"))
+			it.IDLT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idLTE"))
+			it.IDLTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasTask":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasTask"))
+			it.HasTask, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasTaskWith":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasTaskWith"))
+			it.HasTaskWith, err = ec.unmarshalOTaskWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasWorkspace":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasWorkspace"))
+			it.HasWorkspace, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasWorkspaceWith":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasWorkspaceWith"))
+			it.HasWorkspaceWith, err = ec.unmarshalOWorkspaceWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐWorkspaceWhereInputᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -62430,6 +65329,22 @@ func (ec *executionContext) unmarshalInputTaskWhereInput(ctx context.Context, ob
 			if err != nil {
 				return it, err
 			}
+		case "hasDeletedTasksRef":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasDeletedTasksRef"))
+			it.HasDeletedTasksRef, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasDeletedTasksRefWith":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasDeletedTasksRefWith"))
+			it.HasDeletedTasksRefWith, err = ec.unmarshalODeletedTaskWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐDeletedTaskWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		}
 	}
 
@@ -67946,6 +70861,76 @@ func (ec *executionContext) unmarshalInputTestUserWhereInput(ctx context.Context
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputUndeleteDeletedTaskInput(ctx context.Context, obj interface{}) (model.UndeleteDeletedTaskInput, error) {
+	var it model.UndeleteDeletedTaskInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "taskId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskId"))
+			it.TaskID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "requestId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("requestId"))
+			it.RequestID, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputUndeleteTaskInput(ctx context.Context, obj interface{}) (model.UndeleteTaskInput, error) {
+	var it model.UndeleteTaskInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "taskId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskId"))
+			it.TaskID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "workspaceId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceId"))
+			it.WorkspaceID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "requestId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("requestId"))
+			it.RequestID, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputUpdateColorInput(ctx context.Context, obj interface{}) (ent.UpdateColorInput, error) {
 	var it ent.UpdateColorInput
 	asMap := map[string]interface{}{}
@@ -67984,6 +70969,53 @@ func (ec *executionContext) unmarshalInputUpdateColorInput(ctx context.Context, 
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hex"))
 			it.Hex, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "requestId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("requestId"))
+			it.RequestID, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputUpdateDeletedTaskInput(ctx context.Context, obj interface{}) (ent.UpdateDeletedTaskInput, error) {
+	var it ent.UpdateDeletedTaskInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			it.ID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskId"))
+			it.TaskID, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "workspaceId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceId"))
+			it.WorkspaceID, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -71254,6 +74286,22 @@ func (ec *executionContext) unmarshalInputWorkspaceWhereInput(ctx context.Contex
 			if err != nil {
 				return it, err
 			}
+		case "hasDeletedTasksRef":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasDeletedTasksRef"))
+			it.HasDeletedTasksRef, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasDeletedTasksRefWith":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasDeletedTasksRefWith"))
+			it.HasDeletedTasksRefWith, err = ec.unmarshalODeletedTaskWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐDeletedTaskWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		}
 	}
 
@@ -71273,6 +74321,11 @@ func (ec *executionContext) _Node(ctx context.Context, sel ast.SelectionSet, obj
 			return graphql.Null
 		}
 		return ec._Color(ctx, sel, obj)
+	case *ent.DeletedTask:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._DeletedTask(ctx, sel, obj)
 	case *ent.FavoriteProject:
 		if obj == nil {
 			return graphql.Null
@@ -71576,6 +74629,190 @@ func (ec *executionContext) _ColorEdge(ctx context.Context, sel ast.SelectionSet
 			out.Values[i] = ec._ColorEdge_node(ctx, field, obj)
 		case "cursor":
 			out.Values[i] = ec._ColorEdge_cursor(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var deleteTaskPayloadImplementors = []string{"DeleteTaskPayload"}
+
+func (ec *executionContext) _DeleteTaskPayload(ctx context.Context, sel ast.SelectionSet, obj *model.DeleteTaskPayload) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, deleteTaskPayloadImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("DeleteTaskPayload")
+		case "teammateTask":
+			out.Values[i] = ec._DeleteTaskPayload_teammateTask(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "projectTask":
+			out.Values[i] = ec._DeleteTaskPayload_projectTask(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "deletedTasks":
+			out.Values[i] = ec._DeleteTaskPayload_deletedTasks(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var deletedTaskImplementors = []string{"DeletedTask", "Node"}
+
+func (ec *executionContext) _DeletedTask(ctx context.Context, sel ast.SelectionSet, obj *ent.DeletedTask) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, deletedTaskImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("DeletedTask")
+		case "id":
+			out.Values[i] = ec._DeletedTask_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "taskId":
+			out.Values[i] = ec._DeletedTask_taskId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "task":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._DeletedTask_task(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "workspaceId":
+			out.Values[i] = ec._DeletedTask_workspaceId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "taskType":
+			out.Values[i] = ec._DeletedTask_taskType(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "createdAt":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._DeletedTask_createdAt(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "updatedAt":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._DeletedTask_updatedAt(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var deletedTaskConnectionImplementors = []string{"DeletedTaskConnection"}
+
+func (ec *executionContext) _DeletedTaskConnection(ctx context.Context, sel ast.SelectionSet, obj *ent.DeletedTaskConnection) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, deletedTaskConnectionImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("DeletedTaskConnection")
+		case "totalCount":
+			out.Values[i] = ec._DeletedTaskConnection_totalCount(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "pageInfo":
+			out.Values[i] = ec._DeletedTaskConnection_pageInfo(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "edges":
+			out.Values[i] = ec._DeletedTaskConnection_edges(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var deletedTaskEdgeImplementors = []string{"DeletedTaskEdge"}
+
+func (ec *executionContext) _DeletedTaskEdge(ctx context.Context, sel ast.SelectionSet, obj *ent.DeletedTaskEdge) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, deletedTaskEdgeImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("DeletedTaskEdge")
+		case "node":
+			out.Values[i] = ec._DeletedTaskEdge_node(ctx, field, obj)
+		case "cursor":
+			out.Values[i] = ec._DeletedTaskEdge_cursor(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -72362,6 +75599,21 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "createDeletedTask":
+			out.Values[i] = ec._Mutation_createDeletedTask(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "updateDeletedTask":
+			out.Values[i] = ec._Mutation_updateDeletedTask(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "undeleteDeletedTask":
+			out.Values[i] = ec._Mutation_undeleteDeletedTask(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		case "createFavoriteProject":
 			out.Values[i] = ec._Mutation_createFavoriteProject(ctx, field)
 			if out.Values[i] == graphql.Null {
@@ -72517,6 +75769,16 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "deleteTask":
+			out.Values[i] = ec._Mutation_deleteTask(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "undeleteTask":
+			out.Values[i] = ec._Mutation_undeleteTask(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		case "createTaskCollaborator":
 			out.Values[i] = ec._Mutation_createTaskCollaborator(ctx, field)
 			if out.Values[i] == graphql.Null {
@@ -72669,6 +75931,11 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			}
 		case "updateTeammateTask":
 			out.Values[i] = ec._Mutation_updateTeammateTask(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "deleteTeammateTask":
+			out.Values[i] = ec._Mutation_deleteTeammateTask(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -74352,6 +77619,28 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 				res = ec._Query_colors(ctx, field)
 				return res
 			})
+		case "deletedTask":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_deletedTask(ctx, field)
+				return res
+			})
+		case "deletedTasks":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_deletedTasks(ctx, field)
+				return res
+			})
 		case "favoriteProject":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
@@ -75227,6 +78516,10 @@ func (ec *executionContext) _Subscription(ctx context.Context, sel ast.Selection
 	switch fields[0].Name {
 	case "colorUpdated":
 		return ec._Subscription_colorUpdated(ctx, fields[0])
+	case "deletedTaskUpdated":
+		return ec._Subscription_deletedTaskUpdated(ctx, fields[0])
+	case "deletedTaskCreated":
+		return ec._Subscription_deletedTaskCreated(ctx, fields[0])
 	case "favoriteProjectCreated":
 		return ec._Subscription_favoriteProjectCreated(ctx, fields[0])
 	case "favoriteProjectIdsUpdated":
@@ -75263,6 +78556,10 @@ func (ec *executionContext) _Subscription(ctx context.Context, sel ast.Selection
 		return ec._Subscription_tagUpdated(ctx, fields[0])
 	case "taskUpdated":
 		return ec._Subscription_taskUpdated(ctx, fields[0])
+	case "taskDeleted":
+		return ec._Subscription_taskDeleted(ctx, fields[0])
+	case "taskUndeleted":
+		return ec._Subscription_taskUndeleted(ctx, fields[0])
 	case "taskCollaboratorsUpdated":
 		return ec._Subscription_taskCollaboratorsUpdated(ctx, fields[0])
 	case "taskFeedUpdated":
@@ -75291,6 +78588,8 @@ func (ec *executionContext) _Subscription(ctx context.Context, sel ast.Selection
 		return ec._Subscription_teammateTaskUpdated(ctx, fields[0])
 	case "teammateTaskCreated":
 		return ec._Subscription_teammateTaskCreated(ctx, fields[0])
+	case "teammateTaskDeleted":
+		return ec._Subscription_teammateTaskDeleted(ctx, fields[0])
 	case "teammateTaskColumnUpdated":
 		return ec._Subscription_teammateTaskColumnUpdated(ctx, fields[0])
 	case "teammateTaskListStatusUpdated":
@@ -78716,6 +82015,37 @@ func (ec *executionContext) _TestUserProfileBodyComment(ctx context.Context, sel
 	return out
 }
 
+var undeleteTaskPayloadImplementors = []string{"UndeleteTaskPayload"}
+
+func (ec *executionContext) _UndeleteTaskPayload(ctx context.Context, sel ast.SelectionSet, obj *model.UndeleteTaskPayload) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, undeleteTaskPayloadImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("UndeleteTaskPayload")
+		case "teammateTask":
+			out.Values[i] = ec._UndeleteTaskPayload_teammateTask(ctx, field, obj)
+		case "projectTask":
+			out.Values[i] = ec._UndeleteTaskPayload_projectTask(ctx, field, obj)
+		case "deletedTasks":
+			out.Values[i] = ec._UndeleteTaskPayload_deletedTasks(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var workspaceImplementors = []string{"Workspace", "Node"}
 
 func (ec *executionContext) _Workspace(ctx context.Context, sel ast.SelectionSet, obj *ent.Workspace) graphql.Marshaler {
@@ -79353,6 +82683,11 @@ func (ec *executionContext) unmarshalNCreateColorInput2projectᚑmanagementᚑde
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
+func (ec *executionContext) unmarshalNCreateDeletedTaskInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐCreateDeletedTaskInput(ctx context.Context, v interface{}) (ent.CreateDeletedTaskInput, error) {
+	res, err := ec.unmarshalInputCreateDeletedTaskInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNCreateFavoriteProjectInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐCreateFavoriteProjectInput(ctx context.Context, v interface{}) (ent.CreateFavoriteProjectInput, error) {
 	res, err := ec.unmarshalInputCreateFavoriteProjectInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -79568,14 +82903,111 @@ func (ec *executionContext) unmarshalNDeleteTaskFeedLikeInput2projectᚑmanageme
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
+func (ec *executionContext) unmarshalNDeleteTaskInput2projectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐDeleteTaskInput(ctx context.Context, v interface{}) (model.DeleteTaskInput, error) {
+	res, err := ec.unmarshalInputDeleteTaskInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNDeleteTaskLikeInput2projectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐDeleteTaskLikeInput(ctx context.Context, v interface{}) (model.DeleteTaskLikeInput, error) {
 	res, err := ec.unmarshalInputDeleteTaskLikeInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
+func (ec *executionContext) marshalNDeleteTaskPayload2projectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐDeleteTaskPayload(ctx context.Context, sel ast.SelectionSet, v model.DeleteTaskPayload) graphql.Marshaler {
+	return ec._DeleteTaskPayload(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNDeleteTaskPayload2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐDeleteTaskPayload(ctx context.Context, sel ast.SelectionSet, v *model.DeleteTaskPayload) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._DeleteTaskPayload(ctx, sel, v)
+}
+
 func (ec *executionContext) unmarshalNDeleteTaskTagInput2projectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐDeleteTaskTagInput(ctx context.Context, v interface{}) (model.DeleteTaskTagInput, error) {
 	res, err := ec.unmarshalInputDeleteTaskTagInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNDeleteTeammateTaskInput2projectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐDeleteTeammateTaskInput(ctx context.Context, v interface{}) (model.DeleteTeammateTaskInput, error) {
+	res, err := ec.unmarshalInputDeleteTeammateTaskInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNDeletedTask2projectᚑmanagementᚑdemoᚑbackendᚋentᚐDeletedTask(ctx context.Context, sel ast.SelectionSet, v ent.DeletedTask) graphql.Marshaler {
+	return ec._DeletedTask(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNDeletedTask2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐDeletedTaskᚄ(ctx context.Context, sel ast.SelectionSet, v []*ent.DeletedTask) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNDeletedTask2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐDeletedTask(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNDeletedTask2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐDeletedTask(ctx context.Context, sel ast.SelectionSet, v *ent.DeletedTask) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._DeletedTask(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNDeletedTaskType2projectᚑmanagementᚑdemoᚑbackendᚋentᚋdeletedtaskᚐTaskType(ctx context.Context, v interface{}) (deletedtask.TaskType, error) {
+	var res deletedtask.TaskType
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNDeletedTaskType2projectᚑmanagementᚑdemoᚑbackendᚋentᚋdeletedtaskᚐTaskType(ctx context.Context, sel ast.SelectionSet, v deletedtask.TaskType) graphql.Marshaler {
+	return v
+}
+
+func (ec *executionContext) unmarshalNDeletedTaskWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐDeletedTaskWhereInput(ctx context.Context, v interface{}) (*ent.DeletedTaskWhereInput, error) {
+	res, err := ec.unmarshalInputDeletedTaskWhereInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalNEditorDescription2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋeditorᚐDescription(ctx context.Context, sel ast.SelectionSet, v editor.Description) graphql.Marshaler {
@@ -81121,8 +84553,37 @@ func (ec *executionContext) marshalNTime2timeᚐTime(ctx context.Context, sel as
 	return res
 }
 
+func (ec *executionContext) unmarshalNUndeleteDeletedTaskInput2projectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐUndeleteDeletedTaskInput(ctx context.Context, v interface{}) (model.UndeleteDeletedTaskInput, error) {
+	res, err := ec.unmarshalInputUndeleteDeletedTaskInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNUndeleteTaskInput2projectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐUndeleteTaskInput(ctx context.Context, v interface{}) (model.UndeleteTaskInput, error) {
+	res, err := ec.unmarshalInputUndeleteTaskInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNUndeleteTaskPayload2projectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐUndeleteTaskPayload(ctx context.Context, sel ast.SelectionSet, v model.UndeleteTaskPayload) graphql.Marshaler {
+	return ec._UndeleteTaskPayload(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNUndeleteTaskPayload2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐUndeleteTaskPayload(ctx context.Context, sel ast.SelectionSet, v *model.UndeleteTaskPayload) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._UndeleteTaskPayload(ctx, sel, v)
+}
+
 func (ec *executionContext) unmarshalNUpdateColorInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐUpdateColorInput(ctx context.Context, v interface{}) (ent.UpdateColorInput, error) {
 	res, err := ec.unmarshalInputUpdateColorInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNUpdateDeletedTaskInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐUpdateDeletedTaskInput(ctx context.Context, v interface{}) (ent.UpdateDeletedTaskInput, error) {
+	res, err := ec.unmarshalInputUpdateDeletedTaskInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
@@ -81772,6 +85233,187 @@ func (ec *executionContext) marshalOCursor2ᚖprojectᚑmanagementᚑdemoᚑback
 		return graphql.Null
 	}
 	return v
+}
+
+func (ec *executionContext) marshalODeletedTask2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐDeletedTask(ctx context.Context, sel ast.SelectionSet, v *ent.DeletedTask) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._DeletedTask(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalODeletedTaskConnection2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐDeletedTaskConnection(ctx context.Context, sel ast.SelectionSet, v *ent.DeletedTaskConnection) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._DeletedTaskConnection(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalODeletedTaskEdge2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐDeletedTaskEdge(ctx context.Context, sel ast.SelectionSet, v []*ent.DeletedTaskEdge) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalODeletedTaskEdge2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐDeletedTaskEdge(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	return ret
+}
+
+func (ec *executionContext) marshalODeletedTaskEdge2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐDeletedTaskEdge(ctx context.Context, sel ast.SelectionSet, v *ent.DeletedTaskEdge) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._DeletedTaskEdge(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalODeletedTaskType2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋdeletedtaskᚐTaskTypeᚄ(ctx context.Context, v interface{}) ([]deletedtask.TaskType, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var vSlice []interface{}
+	if v != nil {
+		if tmp1, ok := v.([]interface{}); ok {
+			vSlice = tmp1
+		} else {
+			vSlice = []interface{}{v}
+		}
+	}
+	var err error
+	res := make([]deletedtask.TaskType, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNDeletedTaskType2projectᚑmanagementᚑdemoᚑbackendᚋentᚋdeletedtaskᚐTaskType(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) marshalODeletedTaskType2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋdeletedtaskᚐTaskTypeᚄ(ctx context.Context, sel ast.SelectionSet, v []deletedtask.TaskType) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNDeletedTaskType2projectᚑmanagementᚑdemoᚑbackendᚋentᚋdeletedtaskᚐTaskType(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) unmarshalODeletedTaskType2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋdeletedtaskᚐTaskType(ctx context.Context, v interface{}) (*deletedtask.TaskType, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var res = new(deletedtask.TaskType)
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalODeletedTaskType2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋdeletedtaskᚐTaskType(ctx context.Context, sel ast.SelectionSet, v *deletedtask.TaskType) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return v
+}
+
+func (ec *executionContext) unmarshalODeletedTaskWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐDeletedTaskWhereInputᚄ(ctx context.Context, v interface{}) ([]*ent.DeletedTaskWhereInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var vSlice []interface{}
+	if v != nil {
+		if tmp1, ok := v.([]interface{}); ok {
+			vSlice = tmp1
+		} else {
+			vSlice = []interface{}{v}
+		}
+	}
+	var err error
+	res := make([]*ent.DeletedTaskWhereInput, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNDeletedTaskWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐDeletedTaskWhereInput(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) unmarshalODeletedTaskWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐDeletedTaskWhereInput(ctx context.Context, v interface{}) (*ent.DeletedTaskWhereInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputDeletedTaskWhereInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalOEditorDescriptionContent2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋeditorᚐDescriptionContent(ctx context.Context, sel ast.SelectionSet, v editor.DescriptionContent) graphql.Marshaler {
