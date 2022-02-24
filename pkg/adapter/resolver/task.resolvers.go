@@ -63,6 +63,14 @@ func (r *mutationResolver) UndeleteTask(ctx context.Context, input model.Undelet
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
 
+	go func() {
+		for _, u := range r.subscriptions.TaskUndeleted {
+			if u.ID == input.TaskID && u.RequestID != input.RequestID {
+				u.Ch <- p
+			}
+		}
+	}()
+
 	return p, nil
 }
 
@@ -121,6 +129,28 @@ func (r *subscriptionResolver) TaskDeleted(ctx context.Context, id ulid.ID, requ
 		<-ctx.Done()
 		r.mutex.Lock()
 		delete(r.subscriptions.TaskDeleted, key)
+		r.mutex.Unlock()
+	}()
+
+	return ch, nil
+}
+
+func (r *subscriptionResolver) TaskUndeleted(ctx context.Context, id ulid.ID, requestID string) (<-chan *model.UndeleteTaskPayload, error) {
+	key := subscription.NewKey()
+	ch := make(chan *model.UndeleteTaskPayload, 1)
+
+	r.mutex.Lock()
+	r.subscriptions.TaskUndeleted[key] = subscription.TaskUndeleted{
+		ID:        id,
+		RequestID: requestID,
+		Ch:        ch,
+	}
+	r.mutex.Unlock()
+
+	go func() {
+		<-ctx.Done()
+		r.mutex.Lock()
+		delete(r.subscriptions.TaskUndeleted, key)
 		r.mutex.Unlock()
 	}()
 

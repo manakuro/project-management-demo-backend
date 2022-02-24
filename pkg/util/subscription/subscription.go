@@ -203,6 +203,13 @@ type TaskDeleted struct {
 	Ch        chan *model.DeleteTaskPayload
 }
 
+// TaskUndeleted is a channel for subscription.
+type TaskUndeleted struct {
+	ID        model.ID
+	RequestID string
+	Ch        chan *model.UndeleteTaskPayload
+}
+
 // TeammateTaskUpdated is a channel for subscription.
 type TeammateTaskUpdated struct {
 	ID        model.ID
@@ -367,6 +374,7 @@ type Subscriptions struct {
 	TaskTagUpdated                map[string]TaskTagUpdated
 	TaskUpdated                   map[string]TaskUpdated
 	TaskDeleted                   map[string]TaskDeleted
+	TaskUndeleted                 map[string]TaskUndeleted
 	TeammateTaskColumnUpdated     map[string]TeammateTaskColumnUpdated
 	TeammateTaskCreated           map[string]TeammateTaskCreated
 	TeammateTaskDeleted           map[string]TeammateTaskDeleted

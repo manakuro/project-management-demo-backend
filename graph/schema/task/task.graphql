@@ -107,6 +107,7 @@ type UndeleteTaskPayload {
 extend type Subscription {
   taskUpdated(id: ID!, requestId: String!): Task!
   taskDeleted(id: ID!, requestId: String!): DeleteTaskPayload!
+  taskUndeleted(id: ID!, requestId: String!): UndeleteTaskPayload!
 }
 
 extend type Query {
