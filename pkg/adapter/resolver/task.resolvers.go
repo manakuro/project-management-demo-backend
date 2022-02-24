@@ -46,18 +46,22 @@ func (r *mutationResolver) DeleteTask(ctx context.Context, input model.DeleteTas
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
 
-	payload := &model.DeleteTaskPayload{
-		TeammateTask: p.TeammateTask,
-		ProjectTask:  p.ProjectTask,
-		DeletedTasks: p.DeletedTasks,
-	}
 	go func() {
 		for _, d := range r.subscriptions.TaskDeleted {
 			if d.ID == input.TaskID && d.RequestID != input.RequestID {
-				d.Ch <- payload
+				d.Ch <- p
 			}
 		}
 	}()
+
+	return p, nil
+}
+
+func (r *mutationResolver) UndeleteTask(ctx context.Context, input model.UndeleteTaskInput) (*model.UndeleteTaskPayload, error) {
+	p, err := r.controller.Task.Undelete(ctx, input)
+	if err != nil {
+		return nil, handler.HandleGraphQLError(ctx, err)
+	}
 
 	return p, nil
 }

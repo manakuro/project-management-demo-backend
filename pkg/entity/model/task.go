@@ -33,3 +33,17 @@ type DeleteTaskPayload struct {
 	ProjectTask  *ProjectTask
 	DeletedTasks []*DeletedTask
 }
+
+// UndeleteTaskInput represents a mutation input.
+type UndeleteTaskInput struct {
+	TaskID      ulid.ID
+	WorkspaceID ulid.ID
+	RequestID   string
+}
+
+// UndeleteTaskPayload represents a mutation result.
+type UndeleteTaskPayload struct {
+	TeammateTask *TeammateTask
+	ProjectTask  *ProjectTask
+	DeletedTasks []*DeletedTask
+}

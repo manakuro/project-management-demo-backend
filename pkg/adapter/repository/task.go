@@ -163,7 +163,7 @@ func (r *taskRepository) Delete(ctx context.Context, input model.DeleteTaskInput
 			return nil, model.NewDBError(err)
 		}
 		if !deletedTask.IsNew {
-			d, derr := r.client.DeletedTask.
+			d, derr := client.DeletedTask.
 				Create().
 				SetTaskID(input.TaskID).
 				SetWorkspaceID(input.WorkspaceID).
@@ -195,6 +195,92 @@ func (r *taskRepository) Delete(ctx context.Context, input model.DeleteTaskInput
 	if deletedProjectTaskDeletedTask != nil {
 		payload.DeletedTasks = append(payload.DeletedTasks, deletedProjectTaskDeletedTask)
 	}
+
+	return payload, nil
+}
+
+func (r *taskRepository) Undelete(ctx context.Context, input model.UndeleteTaskInput) (*model.UndeleteTaskPayload, error) {
+	client := WithTransactionalMutation(ctx)
+
+	payload := &model.UndeleteTaskPayload{
+		TeammateTask: nil,
+		ProjectTask:  nil,
+		DeletedTasks: []*model.DeletedTask{},
+	}
+
+	deletedTasks, err := client.DeletedTask.
+		Query().
+		WithTask().
+		Where(deletedtask.TaskID(input.TaskID)).
+		All(ctx)
+
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return nil, model.NewNotFoundError(err, input.TaskID)
+		}
+		return nil, model.NewDBError(err)
+	}
+
+	// The task to be undeleted will be limited up to two records.
+	var undeletedTeammateTask *model.TeammateTask
+	var undeletedProjectTask *model.ProjectTask
+	for _, t := range deletedTasks {
+		if t.TaskType == deletedtask.TaskTypeTeammate {
+			undeletedTeammateTask, err = client.TeammateTask.Create().
+				SetWorkspaceID(t.WorkspaceID).
+				SetTaskID(t.TaskID).
+				SetTeammateID(t.TaskJoinID).
+				SetTeammateTaskSectionID(t.TaskSectionID).
+				Save(ctx)
+			if err != nil {
+				return nil, model.NewDBError(err)
+			}
+		}
+		if t.TaskType == deletedtask.TaskTypeProject {
+			undeletedProjectTask, err = client.ProjectTask.Create().
+				SetProjectID(t.TaskJoinID).
+				SetTaskID(t.TaskID).
+				SetProjectTaskSectionID(t.TaskSectionID).
+				Save(ctx)
+			if err != nil {
+				return nil, model.NewDBError(err)
+			}
+		}
+	}
+
+	deletedIds := make([]model.ID, len(deletedTasks))
+	for i, t := range deletedTasks {
+		deletedIds[i] = t.ID
+	}
+
+	_, err = client.DeletedTask.
+		Delete().
+		Where(deletedtask.IDIn(deletedIds...)).
+		Exec(ctx)
+
+	if err != nil {
+		return nil, model.NewDBError(err)
+	}
+
+	if undeletedTeammateTask != nil {
+		// Restore the state in order to query en entity after successful transaction.
+		t, terr := client.TeammateTask.Query().WithTask().Where(teammatetask.ID(undeletedTeammateTask.ID)).Only(ctx)
+
+		if terr != nil {
+			return nil, model.NewDBError(err)
+		}
+		payload.TeammateTask = t.Unwrap()
+	}
+	if undeletedProjectTask != nil {
+		// Restore the state in order to query en entity after successful transaction.
+		t, terr := client.ProjectTask.Query().WithTask().Where(projecttask.ID(undeletedProjectTask.ID)).Only(ctx)
+		if terr != nil {
+			return nil, model.NewDBError(err)
+		}
+		payload.ProjectTask = t.Unwrap()
+	}
+
+	payload.DeletedTasks = deletedTasks
 
 	return payload, nil
 }
