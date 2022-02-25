@@ -17,6 +17,7 @@ type TeammateTaskColumn interface {
 	ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TeammateTaskColumnWhereInput) (*model.TeammateTaskColumnConnection, error)
 	Create(ctx context.Context, input model.CreateTeammateTaskColumnInput) (*model.TeammateTaskColumn, error)
 	Update(ctx context.Context, input model.UpdateTeammateTaskColumnInput) (*model.TeammateTaskColumn, error)
+	UpdateOrder(ctx context.Context, input model.UpdateTeammateTaskColumnOrderInput) ([]*model.TeammateTaskColumn, error)
 }
 
 // NewTeammateTaskColumnUsecase generates test user repository
@@ -42,4 +43,8 @@ func (u *teammateTaskColumnUsecase) Create(ctx context.Context, input model.Crea
 
 func (u *teammateTaskColumnUsecase) Update(ctx context.Context, input model.UpdateTeammateTaskColumnInput) (*model.TeammateTaskColumn, error) {
 	return u.teammateTaskColumnRepository.Update(ctx, input)
+}
+
+func (u *teammateTaskColumnUsecase) UpdateOrder(ctx context.Context, input model.UpdateTeammateTaskColumnOrderInput) ([]*model.TeammateTaskColumn, error) {
+	return u.teammateTaskColumnRepository.UpdateOrder(ctx, input)
 }

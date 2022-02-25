@@ -12,6 +12,8 @@ import (
 	"project-management-demo-backend/ent/teammate"
 	"time"
 
+	"entgo.io/ent/dialect"
+	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 )
@@ -21,6 +23,7 @@ type FavoriteProjectCreate struct {
 	config
 	mutation *FavoriteProjectMutation
 	hooks    []Hook
+	conflict []sql.ConflictOption
 }
 
 // SetProjectID sets the "project_id" field.
@@ -220,6 +223,7 @@ func (fpc *FavoriteProjectCreate) createSpec() (*FavoriteProject, *sqlgraph.Crea
 			},
 		}
 	)
+	_spec.OnConflict = fpc.conflict
 	if id, ok := fpc.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = id
@@ -283,10 +287,254 @@ func (fpc *FavoriteProjectCreate) createSpec() (*FavoriteProject, *sqlgraph.Crea
 	return _node, _spec
 }
 
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.FavoriteProject.Create().
+//		SetProjectID(v).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.FavoriteProjectUpsert) {
+//			SetProjectID(v+v).
+//		}).
+//		Exec(ctx)
+//
+func (fpc *FavoriteProjectCreate) OnConflict(opts ...sql.ConflictOption) *FavoriteProjectUpsertOne {
+	fpc.conflict = opts
+	return &FavoriteProjectUpsertOne{
+		create: fpc,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.FavoriteProject.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+//
+func (fpc *FavoriteProjectCreate) OnConflictColumns(columns ...string) *FavoriteProjectUpsertOne {
+	fpc.conflict = append(fpc.conflict, sql.ConflictColumns(columns...))
+	return &FavoriteProjectUpsertOne{
+		create: fpc,
+	}
+}
+
+type (
+	// FavoriteProjectUpsertOne is the builder for "upsert"-ing
+	//  one FavoriteProject node.
+	FavoriteProjectUpsertOne struct {
+		create *FavoriteProjectCreate
+	}
+
+	// FavoriteProjectUpsert is the "OnConflict" setter.
+	FavoriteProjectUpsert struct {
+		*sql.UpdateSet
+	}
+)
+
+// SetProjectID sets the "project_id" field.
+func (u *FavoriteProjectUpsert) SetProjectID(v ulid.ID) *FavoriteProjectUpsert {
+	u.Set(favoriteproject.FieldProjectID, v)
+	return u
+}
+
+// UpdateProjectID sets the "project_id" field to the value that was provided on create.
+func (u *FavoriteProjectUpsert) UpdateProjectID() *FavoriteProjectUpsert {
+	u.SetExcluded(favoriteproject.FieldProjectID)
+	return u
+}
+
+// SetTeammateID sets the "teammate_id" field.
+func (u *FavoriteProjectUpsert) SetTeammateID(v ulid.ID) *FavoriteProjectUpsert {
+	u.Set(favoriteproject.FieldTeammateID, v)
+	return u
+}
+
+// UpdateTeammateID sets the "teammate_id" field to the value that was provided on create.
+func (u *FavoriteProjectUpsert) UpdateTeammateID() *FavoriteProjectUpsert {
+	u.SetExcluded(favoriteproject.FieldTeammateID)
+	return u
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *FavoriteProjectUpsert) SetCreatedAt(v time.Time) *FavoriteProjectUpsert {
+	u.Set(favoriteproject.FieldCreatedAt, v)
+	return u
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *FavoriteProjectUpsert) UpdateCreatedAt() *FavoriteProjectUpsert {
+	u.SetExcluded(favoriteproject.FieldCreatedAt)
+	return u
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *FavoriteProjectUpsert) SetUpdatedAt(v time.Time) *FavoriteProjectUpsert {
+	u.Set(favoriteproject.FieldUpdatedAt, v)
+	return u
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *FavoriteProjectUpsert) UpdateUpdatedAt() *FavoriteProjectUpsert {
+	u.SetExcluded(favoriteproject.FieldUpdatedAt)
+	return u
+}
+
+// UpdateNewValues updates the fields using the new values that were set on create except the ID field.
+// Using this option is equivalent to using:
+//
+//	client.FavoriteProject.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(favoriteproject.FieldID)
+//			}),
+//		).
+//		Exec(ctx)
+//
+func (u *FavoriteProjectUpsertOne) UpdateNewValues() *FavoriteProjectUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		if _, exists := u.create.mutation.ID(); exists {
+			s.SetIgnore(favoriteproject.FieldID)
+		}
+	}))
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//  client.FavoriteProject.Create().
+//      OnConflict(sql.ResolveWithIgnore()).
+//      Exec(ctx)
+//
+func (u *FavoriteProjectUpsertOne) Ignore() *FavoriteProjectUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *FavoriteProjectUpsertOne) DoNothing() *FavoriteProjectUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the FavoriteProjectCreate.OnConflict
+// documentation for more info.
+func (u *FavoriteProjectUpsertOne) Update(set func(*FavoriteProjectUpsert)) *FavoriteProjectUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&FavoriteProjectUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetProjectID sets the "project_id" field.
+func (u *FavoriteProjectUpsertOne) SetProjectID(v ulid.ID) *FavoriteProjectUpsertOne {
+	return u.Update(func(s *FavoriteProjectUpsert) {
+		s.SetProjectID(v)
+	})
+}
+
+// UpdateProjectID sets the "project_id" field to the value that was provided on create.
+func (u *FavoriteProjectUpsertOne) UpdateProjectID() *FavoriteProjectUpsertOne {
+	return u.Update(func(s *FavoriteProjectUpsert) {
+		s.UpdateProjectID()
+	})
+}
+
+// SetTeammateID sets the "teammate_id" field.
+func (u *FavoriteProjectUpsertOne) SetTeammateID(v ulid.ID) *FavoriteProjectUpsertOne {
+	return u.Update(func(s *FavoriteProjectUpsert) {
+		s.SetTeammateID(v)
+	})
+}
+
+// UpdateTeammateID sets the "teammate_id" field to the value that was provided on create.
+func (u *FavoriteProjectUpsertOne) UpdateTeammateID() *FavoriteProjectUpsertOne {
+	return u.Update(func(s *FavoriteProjectUpsert) {
+		s.UpdateTeammateID()
+	})
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *FavoriteProjectUpsertOne) SetCreatedAt(v time.Time) *FavoriteProjectUpsertOne {
+	return u.Update(func(s *FavoriteProjectUpsert) {
+		s.SetCreatedAt(v)
+	})
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *FavoriteProjectUpsertOne) UpdateCreatedAt() *FavoriteProjectUpsertOne {
+	return u.Update(func(s *FavoriteProjectUpsert) {
+		s.UpdateCreatedAt()
+	})
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *FavoriteProjectUpsertOne) SetUpdatedAt(v time.Time) *FavoriteProjectUpsertOne {
+	return u.Update(func(s *FavoriteProjectUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *FavoriteProjectUpsertOne) UpdateUpdatedAt() *FavoriteProjectUpsertOne {
+	return u.Update(func(s *FavoriteProjectUpsert) {
+		s.UpdateUpdatedAt()
+	})
+}
+
+// Exec executes the query.
+func (u *FavoriteProjectUpsertOne) Exec(ctx context.Context) error {
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for FavoriteProjectCreate.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *FavoriteProjectUpsertOne) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// Exec executes the UPSERT query and returns the inserted/updated ID.
+func (u *FavoriteProjectUpsertOne) ID(ctx context.Context) (id ulid.ID, err error) {
+	if u.create.driver.Dialect() == dialect.MySQL {
+		// In case of "ON CONFLICT", there is no way to get back non-numeric ID
+		// fields from the database since MySQL does not support the RETURNING clause.
+		return id, errors.New("ent: FavoriteProjectUpsertOne.ID is not supported by MySQL driver. Use FavoriteProjectUpsertOne.Exec instead")
+	}
+	node, err := u.create.Save(ctx)
+	if err != nil {
+		return id, err
+	}
+	return node.ID, nil
+}
+
+// IDX is like ID, but panics if an error occurs.
+func (u *FavoriteProjectUpsertOne) IDX(ctx context.Context) ulid.ID {
+	id, err := u.ID(ctx)
+	if err != nil {
+		panic(err)
+	}
+	return id
+}
+
 // FavoriteProjectCreateBulk is the builder for creating many FavoriteProject entities in bulk.
 type FavoriteProjectCreateBulk struct {
 	config
 	builders []*FavoriteProjectCreate
+	conflict []sql.ConflictOption
 }
 
 // Save creates the FavoriteProject entities in the database.
@@ -313,6 +561,7 @@ func (fpcb *FavoriteProjectCreateBulk) Save(ctx context.Context) ([]*FavoritePro
 					_, err = mutators[i+1].Mutate(root, fpcb.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
+					spec.OnConflict = fpcb.conflict
 					// Invoke the actual operation on the latest mutation in the chain.
 					if err = sqlgraph.BatchCreate(ctx, fpcb.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
@@ -359,6 +608,178 @@ func (fpcb *FavoriteProjectCreateBulk) Exec(ctx context.Context) error {
 // ExecX is like Exec, but panics if an error occurs.
 func (fpcb *FavoriteProjectCreateBulk) ExecX(ctx context.Context) {
 	if err := fpcb.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.FavoriteProject.CreateBulk(builders...).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.FavoriteProjectUpsert) {
+//			SetProjectID(v+v).
+//		}).
+//		Exec(ctx)
+//
+func (fpcb *FavoriteProjectCreateBulk) OnConflict(opts ...sql.ConflictOption) *FavoriteProjectUpsertBulk {
+	fpcb.conflict = opts
+	return &FavoriteProjectUpsertBulk{
+		create: fpcb,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.FavoriteProject.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+//
+func (fpcb *FavoriteProjectCreateBulk) OnConflictColumns(columns ...string) *FavoriteProjectUpsertBulk {
+	fpcb.conflict = append(fpcb.conflict, sql.ConflictColumns(columns...))
+	return &FavoriteProjectUpsertBulk{
+		create: fpcb,
+	}
+}
+
+// FavoriteProjectUpsertBulk is the builder for "upsert"-ing
+// a bulk of FavoriteProject nodes.
+type FavoriteProjectUpsertBulk struct {
+	create *FavoriteProjectCreateBulk
+}
+
+// UpdateNewValues updates the fields using the new values that
+// were set on create. Using this option is equivalent to using:
+//
+//	client.FavoriteProject.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(favoriteproject.FieldID)
+//			}),
+//		).
+//		Exec(ctx)
+//
+func (u *FavoriteProjectUpsertBulk) UpdateNewValues() *FavoriteProjectUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		for _, b := range u.create.builders {
+			if _, exists := b.mutation.ID(); exists {
+				s.SetIgnore(favoriteproject.FieldID)
+				return
+			}
+		}
+	}))
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//	client.FavoriteProject.Create().
+//		OnConflict(sql.ResolveWithIgnore()).
+//		Exec(ctx)
+//
+func (u *FavoriteProjectUpsertBulk) Ignore() *FavoriteProjectUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *FavoriteProjectUpsertBulk) DoNothing() *FavoriteProjectUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the FavoriteProjectCreateBulk.OnConflict
+// documentation for more info.
+func (u *FavoriteProjectUpsertBulk) Update(set func(*FavoriteProjectUpsert)) *FavoriteProjectUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&FavoriteProjectUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetProjectID sets the "project_id" field.
+func (u *FavoriteProjectUpsertBulk) SetProjectID(v ulid.ID) *FavoriteProjectUpsertBulk {
+	return u.Update(func(s *FavoriteProjectUpsert) {
+		s.SetProjectID(v)
+	})
+}
+
+// UpdateProjectID sets the "project_id" field to the value that was provided on create.
+func (u *FavoriteProjectUpsertBulk) UpdateProjectID() *FavoriteProjectUpsertBulk {
+	return u.Update(func(s *FavoriteProjectUpsert) {
+		s.UpdateProjectID()
+	})
+}
+
+// SetTeammateID sets the "teammate_id" field.
+func (u *FavoriteProjectUpsertBulk) SetTeammateID(v ulid.ID) *FavoriteProjectUpsertBulk {
+	return u.Update(func(s *FavoriteProjectUpsert) {
+		s.SetTeammateID(v)
+	})
+}
+
+// UpdateTeammateID sets the "teammate_id" field to the value that was provided on create.
+func (u *FavoriteProjectUpsertBulk) UpdateTeammateID() *FavoriteProjectUpsertBulk {
+	return u.Update(func(s *FavoriteProjectUpsert) {
+		s.UpdateTeammateID()
+	})
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *FavoriteProjectUpsertBulk) SetCreatedAt(v time.Time) *FavoriteProjectUpsertBulk {
+	return u.Update(func(s *FavoriteProjectUpsert) {
+		s.SetCreatedAt(v)
+	})
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *FavoriteProjectUpsertBulk) UpdateCreatedAt() *FavoriteProjectUpsertBulk {
+	return u.Update(func(s *FavoriteProjectUpsert) {
+		s.UpdateCreatedAt()
+	})
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *FavoriteProjectUpsertBulk) SetUpdatedAt(v time.Time) *FavoriteProjectUpsertBulk {
+	return u.Update(func(s *FavoriteProjectUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *FavoriteProjectUpsertBulk) UpdateUpdatedAt() *FavoriteProjectUpsertBulk {
+	return u.Update(func(s *FavoriteProjectUpsert) {
+		s.UpdateUpdatedAt()
+	})
+}
+
+// Exec executes the query.
+func (u *FavoriteProjectUpsertBulk) Exec(ctx context.Context) error {
+	for i, b := range u.create.builders {
+		if len(b.conflict) != 0 {
+			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the FavoriteProjectCreateBulk instead", i)
+		}
+	}
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for FavoriteProjectCreateBulk.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *FavoriteProjectUpsertBulk) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

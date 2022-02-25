@@ -12,6 +12,8 @@ import (
 	"project-management-demo-backend/ent/teammatetaskliststatus"
 	"time"
 
+	"entgo.io/ent/dialect"
+	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 )
@@ -21,6 +23,7 @@ type TaskListCompletedStatusCreate struct {
 	config
 	mutation *TaskListCompletedStatusMutation
 	hooks    []Hook
+	conflict []sql.ConflictOption
 }
 
 // SetName sets the "name" field.
@@ -244,6 +247,7 @@ func (tlcsc *TaskListCompletedStatusCreate) createSpec() (*TaskListCompletedStat
 			},
 		}
 	)
+	_spec.OnConflict = tlcsc.conflict
 	if id, ok := tlcsc.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = id
@@ -321,10 +325,254 @@ func (tlcsc *TaskListCompletedStatusCreate) createSpec() (*TaskListCompletedStat
 	return _node, _spec
 }
 
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.TaskListCompletedStatus.Create().
+//		SetName(v).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.TaskListCompletedStatusUpsert) {
+//			SetName(v+v).
+//		}).
+//		Exec(ctx)
+//
+func (tlcsc *TaskListCompletedStatusCreate) OnConflict(opts ...sql.ConflictOption) *TaskListCompletedStatusUpsertOne {
+	tlcsc.conflict = opts
+	return &TaskListCompletedStatusUpsertOne{
+		create: tlcsc,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.TaskListCompletedStatus.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+//
+func (tlcsc *TaskListCompletedStatusCreate) OnConflictColumns(columns ...string) *TaskListCompletedStatusUpsertOne {
+	tlcsc.conflict = append(tlcsc.conflict, sql.ConflictColumns(columns...))
+	return &TaskListCompletedStatusUpsertOne{
+		create: tlcsc,
+	}
+}
+
+type (
+	// TaskListCompletedStatusUpsertOne is the builder for "upsert"-ing
+	//  one TaskListCompletedStatus node.
+	TaskListCompletedStatusUpsertOne struct {
+		create *TaskListCompletedStatusCreate
+	}
+
+	// TaskListCompletedStatusUpsert is the "OnConflict" setter.
+	TaskListCompletedStatusUpsert struct {
+		*sql.UpdateSet
+	}
+)
+
+// SetName sets the "name" field.
+func (u *TaskListCompletedStatusUpsert) SetName(v string) *TaskListCompletedStatusUpsert {
+	u.Set(tasklistcompletedstatus.FieldName, v)
+	return u
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *TaskListCompletedStatusUpsert) UpdateName() *TaskListCompletedStatusUpsert {
+	u.SetExcluded(tasklistcompletedstatus.FieldName)
+	return u
+}
+
+// SetStatusCode sets the "status_code" field.
+func (u *TaskListCompletedStatusUpsert) SetStatusCode(v tasklistcompletedstatus.StatusCode) *TaskListCompletedStatusUpsert {
+	u.Set(tasklistcompletedstatus.FieldStatusCode, v)
+	return u
+}
+
+// UpdateStatusCode sets the "status_code" field to the value that was provided on create.
+func (u *TaskListCompletedStatusUpsert) UpdateStatusCode() *TaskListCompletedStatusUpsert {
+	u.SetExcluded(tasklistcompletedstatus.FieldStatusCode)
+	return u
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *TaskListCompletedStatusUpsert) SetCreatedAt(v time.Time) *TaskListCompletedStatusUpsert {
+	u.Set(tasklistcompletedstatus.FieldCreatedAt, v)
+	return u
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *TaskListCompletedStatusUpsert) UpdateCreatedAt() *TaskListCompletedStatusUpsert {
+	u.SetExcluded(tasklistcompletedstatus.FieldCreatedAt)
+	return u
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *TaskListCompletedStatusUpsert) SetUpdatedAt(v time.Time) *TaskListCompletedStatusUpsert {
+	u.Set(tasklistcompletedstatus.FieldUpdatedAt, v)
+	return u
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *TaskListCompletedStatusUpsert) UpdateUpdatedAt() *TaskListCompletedStatusUpsert {
+	u.SetExcluded(tasklistcompletedstatus.FieldUpdatedAt)
+	return u
+}
+
+// UpdateNewValues updates the fields using the new values that were set on create except the ID field.
+// Using this option is equivalent to using:
+//
+//	client.TaskListCompletedStatus.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(tasklistcompletedstatus.FieldID)
+//			}),
+//		).
+//		Exec(ctx)
+//
+func (u *TaskListCompletedStatusUpsertOne) UpdateNewValues() *TaskListCompletedStatusUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		if _, exists := u.create.mutation.ID(); exists {
+			s.SetIgnore(tasklistcompletedstatus.FieldID)
+		}
+	}))
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//  client.TaskListCompletedStatus.Create().
+//      OnConflict(sql.ResolveWithIgnore()).
+//      Exec(ctx)
+//
+func (u *TaskListCompletedStatusUpsertOne) Ignore() *TaskListCompletedStatusUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *TaskListCompletedStatusUpsertOne) DoNothing() *TaskListCompletedStatusUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the TaskListCompletedStatusCreate.OnConflict
+// documentation for more info.
+func (u *TaskListCompletedStatusUpsertOne) Update(set func(*TaskListCompletedStatusUpsert)) *TaskListCompletedStatusUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&TaskListCompletedStatusUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetName sets the "name" field.
+func (u *TaskListCompletedStatusUpsertOne) SetName(v string) *TaskListCompletedStatusUpsertOne {
+	return u.Update(func(s *TaskListCompletedStatusUpsert) {
+		s.SetName(v)
+	})
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *TaskListCompletedStatusUpsertOne) UpdateName() *TaskListCompletedStatusUpsertOne {
+	return u.Update(func(s *TaskListCompletedStatusUpsert) {
+		s.UpdateName()
+	})
+}
+
+// SetStatusCode sets the "status_code" field.
+func (u *TaskListCompletedStatusUpsertOne) SetStatusCode(v tasklistcompletedstatus.StatusCode) *TaskListCompletedStatusUpsertOne {
+	return u.Update(func(s *TaskListCompletedStatusUpsert) {
+		s.SetStatusCode(v)
+	})
+}
+
+// UpdateStatusCode sets the "status_code" field to the value that was provided on create.
+func (u *TaskListCompletedStatusUpsertOne) UpdateStatusCode() *TaskListCompletedStatusUpsertOne {
+	return u.Update(func(s *TaskListCompletedStatusUpsert) {
+		s.UpdateStatusCode()
+	})
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *TaskListCompletedStatusUpsertOne) SetCreatedAt(v time.Time) *TaskListCompletedStatusUpsertOne {
+	return u.Update(func(s *TaskListCompletedStatusUpsert) {
+		s.SetCreatedAt(v)
+	})
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *TaskListCompletedStatusUpsertOne) UpdateCreatedAt() *TaskListCompletedStatusUpsertOne {
+	return u.Update(func(s *TaskListCompletedStatusUpsert) {
+		s.UpdateCreatedAt()
+	})
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *TaskListCompletedStatusUpsertOne) SetUpdatedAt(v time.Time) *TaskListCompletedStatusUpsertOne {
+	return u.Update(func(s *TaskListCompletedStatusUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *TaskListCompletedStatusUpsertOne) UpdateUpdatedAt() *TaskListCompletedStatusUpsertOne {
+	return u.Update(func(s *TaskListCompletedStatusUpsert) {
+		s.UpdateUpdatedAt()
+	})
+}
+
+// Exec executes the query.
+func (u *TaskListCompletedStatusUpsertOne) Exec(ctx context.Context) error {
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for TaskListCompletedStatusCreate.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *TaskListCompletedStatusUpsertOne) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// Exec executes the UPSERT query and returns the inserted/updated ID.
+func (u *TaskListCompletedStatusUpsertOne) ID(ctx context.Context) (id ulid.ID, err error) {
+	if u.create.driver.Dialect() == dialect.MySQL {
+		// In case of "ON CONFLICT", there is no way to get back non-numeric ID
+		// fields from the database since MySQL does not support the RETURNING clause.
+		return id, errors.New("ent: TaskListCompletedStatusUpsertOne.ID is not supported by MySQL driver. Use TaskListCompletedStatusUpsertOne.Exec instead")
+	}
+	node, err := u.create.Save(ctx)
+	if err != nil {
+		return id, err
+	}
+	return node.ID, nil
+}
+
+// IDX is like ID, but panics if an error occurs.
+func (u *TaskListCompletedStatusUpsertOne) IDX(ctx context.Context) ulid.ID {
+	id, err := u.ID(ctx)
+	if err != nil {
+		panic(err)
+	}
+	return id
+}
+
 // TaskListCompletedStatusCreateBulk is the builder for creating many TaskListCompletedStatus entities in bulk.
 type TaskListCompletedStatusCreateBulk struct {
 	config
 	builders []*TaskListCompletedStatusCreate
+	conflict []sql.ConflictOption
 }
 
 // Save creates the TaskListCompletedStatus entities in the database.
@@ -351,6 +599,7 @@ func (tlcscb *TaskListCompletedStatusCreateBulk) Save(ctx context.Context) ([]*T
 					_, err = mutators[i+1].Mutate(root, tlcscb.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
+					spec.OnConflict = tlcscb.conflict
 					// Invoke the actual operation on the latest mutation in the chain.
 					if err = sqlgraph.BatchCreate(ctx, tlcscb.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
@@ -397,6 +646,178 @@ func (tlcscb *TaskListCompletedStatusCreateBulk) Exec(ctx context.Context) error
 // ExecX is like Exec, but panics if an error occurs.
 func (tlcscb *TaskListCompletedStatusCreateBulk) ExecX(ctx context.Context) {
 	if err := tlcscb.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.TaskListCompletedStatus.CreateBulk(builders...).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.TaskListCompletedStatusUpsert) {
+//			SetName(v+v).
+//		}).
+//		Exec(ctx)
+//
+func (tlcscb *TaskListCompletedStatusCreateBulk) OnConflict(opts ...sql.ConflictOption) *TaskListCompletedStatusUpsertBulk {
+	tlcscb.conflict = opts
+	return &TaskListCompletedStatusUpsertBulk{
+		create: tlcscb,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.TaskListCompletedStatus.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+//
+func (tlcscb *TaskListCompletedStatusCreateBulk) OnConflictColumns(columns ...string) *TaskListCompletedStatusUpsertBulk {
+	tlcscb.conflict = append(tlcscb.conflict, sql.ConflictColumns(columns...))
+	return &TaskListCompletedStatusUpsertBulk{
+		create: tlcscb,
+	}
+}
+
+// TaskListCompletedStatusUpsertBulk is the builder for "upsert"-ing
+// a bulk of TaskListCompletedStatus nodes.
+type TaskListCompletedStatusUpsertBulk struct {
+	create *TaskListCompletedStatusCreateBulk
+}
+
+// UpdateNewValues updates the fields using the new values that
+// were set on create. Using this option is equivalent to using:
+//
+//	client.TaskListCompletedStatus.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(tasklistcompletedstatus.FieldID)
+//			}),
+//		).
+//		Exec(ctx)
+//
+func (u *TaskListCompletedStatusUpsertBulk) UpdateNewValues() *TaskListCompletedStatusUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		for _, b := range u.create.builders {
+			if _, exists := b.mutation.ID(); exists {
+				s.SetIgnore(tasklistcompletedstatus.FieldID)
+				return
+			}
+		}
+	}))
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//	client.TaskListCompletedStatus.Create().
+//		OnConflict(sql.ResolveWithIgnore()).
+//		Exec(ctx)
+//
+func (u *TaskListCompletedStatusUpsertBulk) Ignore() *TaskListCompletedStatusUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *TaskListCompletedStatusUpsertBulk) DoNothing() *TaskListCompletedStatusUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the TaskListCompletedStatusCreateBulk.OnConflict
+// documentation for more info.
+func (u *TaskListCompletedStatusUpsertBulk) Update(set func(*TaskListCompletedStatusUpsert)) *TaskListCompletedStatusUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&TaskListCompletedStatusUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetName sets the "name" field.
+func (u *TaskListCompletedStatusUpsertBulk) SetName(v string) *TaskListCompletedStatusUpsertBulk {
+	return u.Update(func(s *TaskListCompletedStatusUpsert) {
+		s.SetName(v)
+	})
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *TaskListCompletedStatusUpsertBulk) UpdateName() *TaskListCompletedStatusUpsertBulk {
+	return u.Update(func(s *TaskListCompletedStatusUpsert) {
+		s.UpdateName()
+	})
+}
+
+// SetStatusCode sets the "status_code" field.
+func (u *TaskListCompletedStatusUpsertBulk) SetStatusCode(v tasklistcompletedstatus.StatusCode) *TaskListCompletedStatusUpsertBulk {
+	return u.Update(func(s *TaskListCompletedStatusUpsert) {
+		s.SetStatusCode(v)
+	})
+}
+
+// UpdateStatusCode sets the "status_code" field to the value that was provided on create.
+func (u *TaskListCompletedStatusUpsertBulk) UpdateStatusCode() *TaskListCompletedStatusUpsertBulk {
+	return u.Update(func(s *TaskListCompletedStatusUpsert) {
+		s.UpdateStatusCode()
+	})
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *TaskListCompletedStatusUpsertBulk) SetCreatedAt(v time.Time) *TaskListCompletedStatusUpsertBulk {
+	return u.Update(func(s *TaskListCompletedStatusUpsert) {
+		s.SetCreatedAt(v)
+	})
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *TaskListCompletedStatusUpsertBulk) UpdateCreatedAt() *TaskListCompletedStatusUpsertBulk {
+	return u.Update(func(s *TaskListCompletedStatusUpsert) {
+		s.UpdateCreatedAt()
+	})
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *TaskListCompletedStatusUpsertBulk) SetUpdatedAt(v time.Time) *TaskListCompletedStatusUpsertBulk {
+	return u.Update(func(s *TaskListCompletedStatusUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *TaskListCompletedStatusUpsertBulk) UpdateUpdatedAt() *TaskListCompletedStatusUpsertBulk {
+	return u.Update(func(s *TaskListCompletedStatusUpsert) {
+		s.UpdateUpdatedAt()
+	})
+}
+
+// Exec executes the query.
+func (u *TaskListCompletedStatusUpsertBulk) Exec(ctx context.Context) error {
+	for i, b := range u.create.builders {
+		if len(b.conflict) != 0 {
+			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the TaskListCompletedStatusCreateBulk instead", i)
+		}
+	}
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for TaskListCompletedStatusCreateBulk.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *TaskListCompletedStatusUpsertBulk) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

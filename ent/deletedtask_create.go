@@ -12,6 +12,8 @@ import (
 	"project-management-demo-backend/ent/workspace"
 	"time"
 
+	"entgo.io/ent/dialect"
+	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 )
@@ -21,6 +23,7 @@ type DeletedTaskCreate struct {
 	config
 	mutation *DeletedTaskMutation
 	hooks    []Hook
+	conflict []sql.ConflictOption
 }
 
 // SetTaskID sets the "task_id" field.
@@ -252,6 +255,7 @@ func (dtc *DeletedTaskCreate) createSpec() (*DeletedTask, *sqlgraph.CreateSpec) 
 			},
 		}
 	)
+	_spec.OnConflict = dtc.conflict
 	if id, ok := dtc.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = id
@@ -339,10 +343,332 @@ func (dtc *DeletedTaskCreate) createSpec() (*DeletedTask, *sqlgraph.CreateSpec) 
 	return _node, _spec
 }
 
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.DeletedTask.Create().
+//		SetTaskID(v).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.DeletedTaskUpsert) {
+//			SetTaskID(v+v).
+//		}).
+//		Exec(ctx)
+//
+func (dtc *DeletedTaskCreate) OnConflict(opts ...sql.ConflictOption) *DeletedTaskUpsertOne {
+	dtc.conflict = opts
+	return &DeletedTaskUpsertOne{
+		create: dtc,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.DeletedTask.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+//
+func (dtc *DeletedTaskCreate) OnConflictColumns(columns ...string) *DeletedTaskUpsertOne {
+	dtc.conflict = append(dtc.conflict, sql.ConflictColumns(columns...))
+	return &DeletedTaskUpsertOne{
+		create: dtc,
+	}
+}
+
+type (
+	// DeletedTaskUpsertOne is the builder for "upsert"-ing
+	//  one DeletedTask node.
+	DeletedTaskUpsertOne struct {
+		create *DeletedTaskCreate
+	}
+
+	// DeletedTaskUpsert is the "OnConflict" setter.
+	DeletedTaskUpsert struct {
+		*sql.UpdateSet
+	}
+)
+
+// SetTaskID sets the "task_id" field.
+func (u *DeletedTaskUpsert) SetTaskID(v ulid.ID) *DeletedTaskUpsert {
+	u.Set(deletedtask.FieldTaskID, v)
+	return u
+}
+
+// UpdateTaskID sets the "task_id" field to the value that was provided on create.
+func (u *DeletedTaskUpsert) UpdateTaskID() *DeletedTaskUpsert {
+	u.SetExcluded(deletedtask.FieldTaskID)
+	return u
+}
+
+// SetWorkspaceID sets the "workspace_id" field.
+func (u *DeletedTaskUpsert) SetWorkspaceID(v ulid.ID) *DeletedTaskUpsert {
+	u.Set(deletedtask.FieldWorkspaceID, v)
+	return u
+}
+
+// UpdateWorkspaceID sets the "workspace_id" field to the value that was provided on create.
+func (u *DeletedTaskUpsert) UpdateWorkspaceID() *DeletedTaskUpsert {
+	u.SetExcluded(deletedtask.FieldWorkspaceID)
+	return u
+}
+
+// SetTaskSectionID sets the "task_section_id" field.
+func (u *DeletedTaskUpsert) SetTaskSectionID(v ulid.ID) *DeletedTaskUpsert {
+	u.Set(deletedtask.FieldTaskSectionID, v)
+	return u
+}
+
+// UpdateTaskSectionID sets the "task_section_id" field to the value that was provided on create.
+func (u *DeletedTaskUpsert) UpdateTaskSectionID() *DeletedTaskUpsert {
+	u.SetExcluded(deletedtask.FieldTaskSectionID)
+	return u
+}
+
+// SetTaskJoinID sets the "task_join_id" field.
+func (u *DeletedTaskUpsert) SetTaskJoinID(v ulid.ID) *DeletedTaskUpsert {
+	u.Set(deletedtask.FieldTaskJoinID, v)
+	return u
+}
+
+// UpdateTaskJoinID sets the "task_join_id" field to the value that was provided on create.
+func (u *DeletedTaskUpsert) UpdateTaskJoinID() *DeletedTaskUpsert {
+	u.SetExcluded(deletedtask.FieldTaskJoinID)
+	return u
+}
+
+// SetTaskType sets the "task_type" field.
+func (u *DeletedTaskUpsert) SetTaskType(v deletedtask.TaskType) *DeletedTaskUpsert {
+	u.Set(deletedtask.FieldTaskType, v)
+	return u
+}
+
+// UpdateTaskType sets the "task_type" field to the value that was provided on create.
+func (u *DeletedTaskUpsert) UpdateTaskType() *DeletedTaskUpsert {
+	u.SetExcluded(deletedtask.FieldTaskType)
+	return u
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *DeletedTaskUpsert) SetCreatedAt(v time.Time) *DeletedTaskUpsert {
+	u.Set(deletedtask.FieldCreatedAt, v)
+	return u
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *DeletedTaskUpsert) UpdateCreatedAt() *DeletedTaskUpsert {
+	u.SetExcluded(deletedtask.FieldCreatedAt)
+	return u
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *DeletedTaskUpsert) SetUpdatedAt(v time.Time) *DeletedTaskUpsert {
+	u.Set(deletedtask.FieldUpdatedAt, v)
+	return u
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *DeletedTaskUpsert) UpdateUpdatedAt() *DeletedTaskUpsert {
+	u.SetExcluded(deletedtask.FieldUpdatedAt)
+	return u
+}
+
+// UpdateNewValues updates the fields using the new values that were set on create except the ID field.
+// Using this option is equivalent to using:
+//
+//	client.DeletedTask.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(deletedtask.FieldID)
+//			}),
+//		).
+//		Exec(ctx)
+//
+func (u *DeletedTaskUpsertOne) UpdateNewValues() *DeletedTaskUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		if _, exists := u.create.mutation.ID(); exists {
+			s.SetIgnore(deletedtask.FieldID)
+		}
+	}))
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//  client.DeletedTask.Create().
+//      OnConflict(sql.ResolveWithIgnore()).
+//      Exec(ctx)
+//
+func (u *DeletedTaskUpsertOne) Ignore() *DeletedTaskUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *DeletedTaskUpsertOne) DoNothing() *DeletedTaskUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the DeletedTaskCreate.OnConflict
+// documentation for more info.
+func (u *DeletedTaskUpsertOne) Update(set func(*DeletedTaskUpsert)) *DeletedTaskUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&DeletedTaskUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetTaskID sets the "task_id" field.
+func (u *DeletedTaskUpsertOne) SetTaskID(v ulid.ID) *DeletedTaskUpsertOne {
+	return u.Update(func(s *DeletedTaskUpsert) {
+		s.SetTaskID(v)
+	})
+}
+
+// UpdateTaskID sets the "task_id" field to the value that was provided on create.
+func (u *DeletedTaskUpsertOne) UpdateTaskID() *DeletedTaskUpsertOne {
+	return u.Update(func(s *DeletedTaskUpsert) {
+		s.UpdateTaskID()
+	})
+}
+
+// SetWorkspaceID sets the "workspace_id" field.
+func (u *DeletedTaskUpsertOne) SetWorkspaceID(v ulid.ID) *DeletedTaskUpsertOne {
+	return u.Update(func(s *DeletedTaskUpsert) {
+		s.SetWorkspaceID(v)
+	})
+}
+
+// UpdateWorkspaceID sets the "workspace_id" field to the value that was provided on create.
+func (u *DeletedTaskUpsertOne) UpdateWorkspaceID() *DeletedTaskUpsertOne {
+	return u.Update(func(s *DeletedTaskUpsert) {
+		s.UpdateWorkspaceID()
+	})
+}
+
+// SetTaskSectionID sets the "task_section_id" field.
+func (u *DeletedTaskUpsertOne) SetTaskSectionID(v ulid.ID) *DeletedTaskUpsertOne {
+	return u.Update(func(s *DeletedTaskUpsert) {
+		s.SetTaskSectionID(v)
+	})
+}
+
+// UpdateTaskSectionID sets the "task_section_id" field to the value that was provided on create.
+func (u *DeletedTaskUpsertOne) UpdateTaskSectionID() *DeletedTaskUpsertOne {
+	return u.Update(func(s *DeletedTaskUpsert) {
+		s.UpdateTaskSectionID()
+	})
+}
+
+// SetTaskJoinID sets the "task_join_id" field.
+func (u *DeletedTaskUpsertOne) SetTaskJoinID(v ulid.ID) *DeletedTaskUpsertOne {
+	return u.Update(func(s *DeletedTaskUpsert) {
+		s.SetTaskJoinID(v)
+	})
+}
+
+// UpdateTaskJoinID sets the "task_join_id" field to the value that was provided on create.
+func (u *DeletedTaskUpsertOne) UpdateTaskJoinID() *DeletedTaskUpsertOne {
+	return u.Update(func(s *DeletedTaskUpsert) {
+		s.UpdateTaskJoinID()
+	})
+}
+
+// SetTaskType sets the "task_type" field.
+func (u *DeletedTaskUpsertOne) SetTaskType(v deletedtask.TaskType) *DeletedTaskUpsertOne {
+	return u.Update(func(s *DeletedTaskUpsert) {
+		s.SetTaskType(v)
+	})
+}
+
+// UpdateTaskType sets the "task_type" field to the value that was provided on create.
+func (u *DeletedTaskUpsertOne) UpdateTaskType() *DeletedTaskUpsertOne {
+	return u.Update(func(s *DeletedTaskUpsert) {
+		s.UpdateTaskType()
+	})
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *DeletedTaskUpsertOne) SetCreatedAt(v time.Time) *DeletedTaskUpsertOne {
+	return u.Update(func(s *DeletedTaskUpsert) {
+		s.SetCreatedAt(v)
+	})
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *DeletedTaskUpsertOne) UpdateCreatedAt() *DeletedTaskUpsertOne {
+	return u.Update(func(s *DeletedTaskUpsert) {
+		s.UpdateCreatedAt()
+	})
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *DeletedTaskUpsertOne) SetUpdatedAt(v time.Time) *DeletedTaskUpsertOne {
+	return u.Update(func(s *DeletedTaskUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *DeletedTaskUpsertOne) UpdateUpdatedAt() *DeletedTaskUpsertOne {
+	return u.Update(func(s *DeletedTaskUpsert) {
+		s.UpdateUpdatedAt()
+	})
+}
+
+// Exec executes the query.
+func (u *DeletedTaskUpsertOne) Exec(ctx context.Context) error {
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for DeletedTaskCreate.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *DeletedTaskUpsertOne) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// Exec executes the UPSERT query and returns the inserted/updated ID.
+func (u *DeletedTaskUpsertOne) ID(ctx context.Context) (id ulid.ID, err error) {
+	if u.create.driver.Dialect() == dialect.MySQL {
+		// In case of "ON CONFLICT", there is no way to get back non-numeric ID
+		// fields from the database since MySQL does not support the RETURNING clause.
+		return id, errors.New("ent: DeletedTaskUpsertOne.ID is not supported by MySQL driver. Use DeletedTaskUpsertOne.Exec instead")
+	}
+	node, err := u.create.Save(ctx)
+	if err != nil {
+		return id, err
+	}
+	return node.ID, nil
+}
+
+// IDX is like ID, but panics if an error occurs.
+func (u *DeletedTaskUpsertOne) IDX(ctx context.Context) ulid.ID {
+	id, err := u.ID(ctx)
+	if err != nil {
+		panic(err)
+	}
+	return id
+}
+
 // DeletedTaskCreateBulk is the builder for creating many DeletedTask entities in bulk.
 type DeletedTaskCreateBulk struct {
 	config
 	builders []*DeletedTaskCreate
+	conflict []sql.ConflictOption
 }
 
 // Save creates the DeletedTask entities in the database.
@@ -369,6 +695,7 @@ func (dtcb *DeletedTaskCreateBulk) Save(ctx context.Context) ([]*DeletedTask, er
 					_, err = mutators[i+1].Mutate(root, dtcb.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
+					spec.OnConflict = dtcb.conflict
 					// Invoke the actual operation on the latest mutation in the chain.
 					if err = sqlgraph.BatchCreate(ctx, dtcb.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
@@ -415,6 +742,220 @@ func (dtcb *DeletedTaskCreateBulk) Exec(ctx context.Context) error {
 // ExecX is like Exec, but panics if an error occurs.
 func (dtcb *DeletedTaskCreateBulk) ExecX(ctx context.Context) {
 	if err := dtcb.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.DeletedTask.CreateBulk(builders...).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.DeletedTaskUpsert) {
+//			SetTaskID(v+v).
+//		}).
+//		Exec(ctx)
+//
+func (dtcb *DeletedTaskCreateBulk) OnConflict(opts ...sql.ConflictOption) *DeletedTaskUpsertBulk {
+	dtcb.conflict = opts
+	return &DeletedTaskUpsertBulk{
+		create: dtcb,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.DeletedTask.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+//
+func (dtcb *DeletedTaskCreateBulk) OnConflictColumns(columns ...string) *DeletedTaskUpsertBulk {
+	dtcb.conflict = append(dtcb.conflict, sql.ConflictColumns(columns...))
+	return &DeletedTaskUpsertBulk{
+		create: dtcb,
+	}
+}
+
+// DeletedTaskUpsertBulk is the builder for "upsert"-ing
+// a bulk of DeletedTask nodes.
+type DeletedTaskUpsertBulk struct {
+	create *DeletedTaskCreateBulk
+}
+
+// UpdateNewValues updates the fields using the new values that
+// were set on create. Using this option is equivalent to using:
+//
+//	client.DeletedTask.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(deletedtask.FieldID)
+//			}),
+//		).
+//		Exec(ctx)
+//
+func (u *DeletedTaskUpsertBulk) UpdateNewValues() *DeletedTaskUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		for _, b := range u.create.builders {
+			if _, exists := b.mutation.ID(); exists {
+				s.SetIgnore(deletedtask.FieldID)
+				return
+			}
+		}
+	}))
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//	client.DeletedTask.Create().
+//		OnConflict(sql.ResolveWithIgnore()).
+//		Exec(ctx)
+//
+func (u *DeletedTaskUpsertBulk) Ignore() *DeletedTaskUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *DeletedTaskUpsertBulk) DoNothing() *DeletedTaskUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the DeletedTaskCreateBulk.OnConflict
+// documentation for more info.
+func (u *DeletedTaskUpsertBulk) Update(set func(*DeletedTaskUpsert)) *DeletedTaskUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&DeletedTaskUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetTaskID sets the "task_id" field.
+func (u *DeletedTaskUpsertBulk) SetTaskID(v ulid.ID) *DeletedTaskUpsertBulk {
+	return u.Update(func(s *DeletedTaskUpsert) {
+		s.SetTaskID(v)
+	})
+}
+
+// UpdateTaskID sets the "task_id" field to the value that was provided on create.
+func (u *DeletedTaskUpsertBulk) UpdateTaskID() *DeletedTaskUpsertBulk {
+	return u.Update(func(s *DeletedTaskUpsert) {
+		s.UpdateTaskID()
+	})
+}
+
+// SetWorkspaceID sets the "workspace_id" field.
+func (u *DeletedTaskUpsertBulk) SetWorkspaceID(v ulid.ID) *DeletedTaskUpsertBulk {
+	return u.Update(func(s *DeletedTaskUpsert) {
+		s.SetWorkspaceID(v)
+	})
+}
+
+// UpdateWorkspaceID sets the "workspace_id" field to the value that was provided on create.
+func (u *DeletedTaskUpsertBulk) UpdateWorkspaceID() *DeletedTaskUpsertBulk {
+	return u.Update(func(s *DeletedTaskUpsert) {
+		s.UpdateWorkspaceID()
+	})
+}
+
+// SetTaskSectionID sets the "task_section_id" field.
+func (u *DeletedTaskUpsertBulk) SetTaskSectionID(v ulid.ID) *DeletedTaskUpsertBulk {
+	return u.Update(func(s *DeletedTaskUpsert) {
+		s.SetTaskSectionID(v)
+	})
+}
+
+// UpdateTaskSectionID sets the "task_section_id" field to the value that was provided on create.
+func (u *DeletedTaskUpsertBulk) UpdateTaskSectionID() *DeletedTaskUpsertBulk {
+	return u.Update(func(s *DeletedTaskUpsert) {
+		s.UpdateTaskSectionID()
+	})
+}
+
+// SetTaskJoinID sets the "task_join_id" field.
+func (u *DeletedTaskUpsertBulk) SetTaskJoinID(v ulid.ID) *DeletedTaskUpsertBulk {
+	return u.Update(func(s *DeletedTaskUpsert) {
+		s.SetTaskJoinID(v)
+	})
+}
+
+// UpdateTaskJoinID sets the "task_join_id" field to the value that was provided on create.
+func (u *DeletedTaskUpsertBulk) UpdateTaskJoinID() *DeletedTaskUpsertBulk {
+	return u.Update(func(s *DeletedTaskUpsert) {
+		s.UpdateTaskJoinID()
+	})
+}
+
+// SetTaskType sets the "task_type" field.
+func (u *DeletedTaskUpsertBulk) SetTaskType(v deletedtask.TaskType) *DeletedTaskUpsertBulk {
+	return u.Update(func(s *DeletedTaskUpsert) {
+		s.SetTaskType(v)
+	})
+}
+
+// UpdateTaskType sets the "task_type" field to the value that was provided on create.
+func (u *DeletedTaskUpsertBulk) UpdateTaskType() *DeletedTaskUpsertBulk {
+	return u.Update(func(s *DeletedTaskUpsert) {
+		s.UpdateTaskType()
+	})
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *DeletedTaskUpsertBulk) SetCreatedAt(v time.Time) *DeletedTaskUpsertBulk {
+	return u.Update(func(s *DeletedTaskUpsert) {
+		s.SetCreatedAt(v)
+	})
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *DeletedTaskUpsertBulk) UpdateCreatedAt() *DeletedTaskUpsertBulk {
+	return u.Update(func(s *DeletedTaskUpsert) {
+		s.UpdateCreatedAt()
+	})
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *DeletedTaskUpsertBulk) SetUpdatedAt(v time.Time) *DeletedTaskUpsertBulk {
+	return u.Update(func(s *DeletedTaskUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *DeletedTaskUpsertBulk) UpdateUpdatedAt() *DeletedTaskUpsertBulk {
+	return u.Update(func(s *DeletedTaskUpsert) {
+		s.UpdateUpdatedAt()
+	})
+}
+
+// Exec executes the query.
+func (u *DeletedTaskUpsertBulk) Exec(ctx context.Context) error {
+	for i, b := range u.create.builders {
+		if len(b.conflict) != 0 {
+			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the DeletedTaskCreateBulk instead", i)
+		}
+	}
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for DeletedTaskCreateBulk.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *DeletedTaskUpsertBulk) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

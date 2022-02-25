@@ -14,6 +14,8 @@ import (
 	"project-management-demo-backend/ent/taskfile"
 	"time"
 
+	"entgo.io/ent/dialect"
+	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 )
@@ -23,6 +25,7 @@ type TaskFileCreate struct {
 	config
 	mutation *TaskFileMutation
 	hooks    []Hook
+	conflict []sql.ConflictOption
 }
 
 // SetProjectID sets the "project_id" field.
@@ -305,6 +308,7 @@ func (tfc *TaskFileCreate) createSpec() (*TaskFile, *sqlgraph.CreateSpec) {
 			},
 		}
 	)
+	_spec.OnConflict = tfc.conflict
 	if id, ok := tfc.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = id
@@ -432,10 +436,384 @@ func (tfc *TaskFileCreate) createSpec() (*TaskFile, *sqlgraph.CreateSpec) {
 	return _node, _spec
 }
 
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.TaskFile.Create().
+//		SetProjectID(v).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.TaskFileUpsert) {
+//			SetProjectID(v+v).
+//		}).
+//		Exec(ctx)
+//
+func (tfc *TaskFileCreate) OnConflict(opts ...sql.ConflictOption) *TaskFileUpsertOne {
+	tfc.conflict = opts
+	return &TaskFileUpsertOne{
+		create: tfc,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.TaskFile.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+//
+func (tfc *TaskFileCreate) OnConflictColumns(columns ...string) *TaskFileUpsertOne {
+	tfc.conflict = append(tfc.conflict, sql.ConflictColumns(columns...))
+	return &TaskFileUpsertOne{
+		create: tfc,
+	}
+}
+
+type (
+	// TaskFileUpsertOne is the builder for "upsert"-ing
+	//  one TaskFile node.
+	TaskFileUpsertOne struct {
+		create *TaskFileCreate
+	}
+
+	// TaskFileUpsert is the "OnConflict" setter.
+	TaskFileUpsert struct {
+		*sql.UpdateSet
+	}
+)
+
+// SetProjectID sets the "project_id" field.
+func (u *TaskFileUpsert) SetProjectID(v ulid.ID) *TaskFileUpsert {
+	u.Set(taskfile.FieldProjectID, v)
+	return u
+}
+
+// UpdateProjectID sets the "project_id" field to the value that was provided on create.
+func (u *TaskFileUpsert) UpdateProjectID() *TaskFileUpsert {
+	u.SetExcluded(taskfile.FieldProjectID)
+	return u
+}
+
+// SetTaskID sets the "task_id" field.
+func (u *TaskFileUpsert) SetTaskID(v ulid.ID) *TaskFileUpsert {
+	u.Set(taskfile.FieldTaskID, v)
+	return u
+}
+
+// UpdateTaskID sets the "task_id" field to the value that was provided on create.
+func (u *TaskFileUpsert) UpdateTaskID() *TaskFileUpsert {
+	u.SetExcluded(taskfile.FieldTaskID)
+	return u
+}
+
+// SetTaskFeedID sets the "task_feed_id" field.
+func (u *TaskFileUpsert) SetTaskFeedID(v ulid.ID) *TaskFileUpsert {
+	u.Set(taskfile.FieldTaskFeedID, v)
+	return u
+}
+
+// UpdateTaskFeedID sets the "task_feed_id" field to the value that was provided on create.
+func (u *TaskFileUpsert) UpdateTaskFeedID() *TaskFileUpsert {
+	u.SetExcluded(taskfile.FieldTaskFeedID)
+	return u
+}
+
+// SetFileTypeID sets the "file_type_id" field.
+func (u *TaskFileUpsert) SetFileTypeID(v ulid.ID) *TaskFileUpsert {
+	u.Set(taskfile.FieldFileTypeID, v)
+	return u
+}
+
+// UpdateFileTypeID sets the "file_type_id" field to the value that was provided on create.
+func (u *TaskFileUpsert) UpdateFileTypeID() *TaskFileUpsert {
+	u.SetExcluded(taskfile.FieldFileTypeID)
+	return u
+}
+
+// SetName sets the "name" field.
+func (u *TaskFileUpsert) SetName(v string) *TaskFileUpsert {
+	u.Set(taskfile.FieldName, v)
+	return u
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *TaskFileUpsert) UpdateName() *TaskFileUpsert {
+	u.SetExcluded(taskfile.FieldName)
+	return u
+}
+
+// SetSrc sets the "src" field.
+func (u *TaskFileUpsert) SetSrc(v string) *TaskFileUpsert {
+	u.Set(taskfile.FieldSrc, v)
+	return u
+}
+
+// UpdateSrc sets the "src" field to the value that was provided on create.
+func (u *TaskFileUpsert) UpdateSrc() *TaskFileUpsert {
+	u.SetExcluded(taskfile.FieldSrc)
+	return u
+}
+
+// SetAttached sets the "attached" field.
+func (u *TaskFileUpsert) SetAttached(v bool) *TaskFileUpsert {
+	u.Set(taskfile.FieldAttached, v)
+	return u
+}
+
+// UpdateAttached sets the "attached" field to the value that was provided on create.
+func (u *TaskFileUpsert) UpdateAttached() *TaskFileUpsert {
+	u.SetExcluded(taskfile.FieldAttached)
+	return u
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *TaskFileUpsert) SetCreatedAt(v time.Time) *TaskFileUpsert {
+	u.Set(taskfile.FieldCreatedAt, v)
+	return u
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *TaskFileUpsert) UpdateCreatedAt() *TaskFileUpsert {
+	u.SetExcluded(taskfile.FieldCreatedAt)
+	return u
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *TaskFileUpsert) SetUpdatedAt(v time.Time) *TaskFileUpsert {
+	u.Set(taskfile.FieldUpdatedAt, v)
+	return u
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *TaskFileUpsert) UpdateUpdatedAt() *TaskFileUpsert {
+	u.SetExcluded(taskfile.FieldUpdatedAt)
+	return u
+}
+
+// UpdateNewValues updates the fields using the new values that were set on create except the ID field.
+// Using this option is equivalent to using:
+//
+//	client.TaskFile.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(taskfile.FieldID)
+//			}),
+//		).
+//		Exec(ctx)
+//
+func (u *TaskFileUpsertOne) UpdateNewValues() *TaskFileUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		if _, exists := u.create.mutation.ID(); exists {
+			s.SetIgnore(taskfile.FieldID)
+		}
+	}))
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//  client.TaskFile.Create().
+//      OnConflict(sql.ResolveWithIgnore()).
+//      Exec(ctx)
+//
+func (u *TaskFileUpsertOne) Ignore() *TaskFileUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *TaskFileUpsertOne) DoNothing() *TaskFileUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the TaskFileCreate.OnConflict
+// documentation for more info.
+func (u *TaskFileUpsertOne) Update(set func(*TaskFileUpsert)) *TaskFileUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&TaskFileUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetProjectID sets the "project_id" field.
+func (u *TaskFileUpsertOne) SetProjectID(v ulid.ID) *TaskFileUpsertOne {
+	return u.Update(func(s *TaskFileUpsert) {
+		s.SetProjectID(v)
+	})
+}
+
+// UpdateProjectID sets the "project_id" field to the value that was provided on create.
+func (u *TaskFileUpsertOne) UpdateProjectID() *TaskFileUpsertOne {
+	return u.Update(func(s *TaskFileUpsert) {
+		s.UpdateProjectID()
+	})
+}
+
+// SetTaskID sets the "task_id" field.
+func (u *TaskFileUpsertOne) SetTaskID(v ulid.ID) *TaskFileUpsertOne {
+	return u.Update(func(s *TaskFileUpsert) {
+		s.SetTaskID(v)
+	})
+}
+
+// UpdateTaskID sets the "task_id" field to the value that was provided on create.
+func (u *TaskFileUpsertOne) UpdateTaskID() *TaskFileUpsertOne {
+	return u.Update(func(s *TaskFileUpsert) {
+		s.UpdateTaskID()
+	})
+}
+
+// SetTaskFeedID sets the "task_feed_id" field.
+func (u *TaskFileUpsertOne) SetTaskFeedID(v ulid.ID) *TaskFileUpsertOne {
+	return u.Update(func(s *TaskFileUpsert) {
+		s.SetTaskFeedID(v)
+	})
+}
+
+// UpdateTaskFeedID sets the "task_feed_id" field to the value that was provided on create.
+func (u *TaskFileUpsertOne) UpdateTaskFeedID() *TaskFileUpsertOne {
+	return u.Update(func(s *TaskFileUpsert) {
+		s.UpdateTaskFeedID()
+	})
+}
+
+// SetFileTypeID sets the "file_type_id" field.
+func (u *TaskFileUpsertOne) SetFileTypeID(v ulid.ID) *TaskFileUpsertOne {
+	return u.Update(func(s *TaskFileUpsert) {
+		s.SetFileTypeID(v)
+	})
+}
+
+// UpdateFileTypeID sets the "file_type_id" field to the value that was provided on create.
+func (u *TaskFileUpsertOne) UpdateFileTypeID() *TaskFileUpsertOne {
+	return u.Update(func(s *TaskFileUpsert) {
+		s.UpdateFileTypeID()
+	})
+}
+
+// SetName sets the "name" field.
+func (u *TaskFileUpsertOne) SetName(v string) *TaskFileUpsertOne {
+	return u.Update(func(s *TaskFileUpsert) {
+		s.SetName(v)
+	})
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *TaskFileUpsertOne) UpdateName() *TaskFileUpsertOne {
+	return u.Update(func(s *TaskFileUpsert) {
+		s.UpdateName()
+	})
+}
+
+// SetSrc sets the "src" field.
+func (u *TaskFileUpsertOne) SetSrc(v string) *TaskFileUpsertOne {
+	return u.Update(func(s *TaskFileUpsert) {
+		s.SetSrc(v)
+	})
+}
+
+// UpdateSrc sets the "src" field to the value that was provided on create.
+func (u *TaskFileUpsertOne) UpdateSrc() *TaskFileUpsertOne {
+	return u.Update(func(s *TaskFileUpsert) {
+		s.UpdateSrc()
+	})
+}
+
+// SetAttached sets the "attached" field.
+func (u *TaskFileUpsertOne) SetAttached(v bool) *TaskFileUpsertOne {
+	return u.Update(func(s *TaskFileUpsert) {
+		s.SetAttached(v)
+	})
+}
+
+// UpdateAttached sets the "attached" field to the value that was provided on create.
+func (u *TaskFileUpsertOne) UpdateAttached() *TaskFileUpsertOne {
+	return u.Update(func(s *TaskFileUpsert) {
+		s.UpdateAttached()
+	})
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *TaskFileUpsertOne) SetCreatedAt(v time.Time) *TaskFileUpsertOne {
+	return u.Update(func(s *TaskFileUpsert) {
+		s.SetCreatedAt(v)
+	})
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *TaskFileUpsertOne) UpdateCreatedAt() *TaskFileUpsertOne {
+	return u.Update(func(s *TaskFileUpsert) {
+		s.UpdateCreatedAt()
+	})
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *TaskFileUpsertOne) SetUpdatedAt(v time.Time) *TaskFileUpsertOne {
+	return u.Update(func(s *TaskFileUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *TaskFileUpsertOne) UpdateUpdatedAt() *TaskFileUpsertOne {
+	return u.Update(func(s *TaskFileUpsert) {
+		s.UpdateUpdatedAt()
+	})
+}
+
+// Exec executes the query.
+func (u *TaskFileUpsertOne) Exec(ctx context.Context) error {
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for TaskFileCreate.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *TaskFileUpsertOne) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// Exec executes the UPSERT query and returns the inserted/updated ID.
+func (u *TaskFileUpsertOne) ID(ctx context.Context) (id ulid.ID, err error) {
+	if u.create.driver.Dialect() == dialect.MySQL {
+		// In case of "ON CONFLICT", there is no way to get back non-numeric ID
+		// fields from the database since MySQL does not support the RETURNING clause.
+		return id, errors.New("ent: TaskFileUpsertOne.ID is not supported by MySQL driver. Use TaskFileUpsertOne.Exec instead")
+	}
+	node, err := u.create.Save(ctx)
+	if err != nil {
+		return id, err
+	}
+	return node.ID, nil
+}
+
+// IDX is like ID, but panics if an error occurs.
+func (u *TaskFileUpsertOne) IDX(ctx context.Context) ulid.ID {
+	id, err := u.ID(ctx)
+	if err != nil {
+		panic(err)
+	}
+	return id
+}
+
 // TaskFileCreateBulk is the builder for creating many TaskFile entities in bulk.
 type TaskFileCreateBulk struct {
 	config
 	builders []*TaskFileCreate
+	conflict []sql.ConflictOption
 }
 
 // Save creates the TaskFile entities in the database.
@@ -462,6 +840,7 @@ func (tfcb *TaskFileCreateBulk) Save(ctx context.Context) ([]*TaskFile, error) {
 					_, err = mutators[i+1].Mutate(root, tfcb.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
+					spec.OnConflict = tfcb.conflict
 					// Invoke the actual operation on the latest mutation in the chain.
 					if err = sqlgraph.BatchCreate(ctx, tfcb.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
@@ -508,6 +887,248 @@ func (tfcb *TaskFileCreateBulk) Exec(ctx context.Context) error {
 // ExecX is like Exec, but panics if an error occurs.
 func (tfcb *TaskFileCreateBulk) ExecX(ctx context.Context) {
 	if err := tfcb.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.TaskFile.CreateBulk(builders...).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.TaskFileUpsert) {
+//			SetProjectID(v+v).
+//		}).
+//		Exec(ctx)
+//
+func (tfcb *TaskFileCreateBulk) OnConflict(opts ...sql.ConflictOption) *TaskFileUpsertBulk {
+	tfcb.conflict = opts
+	return &TaskFileUpsertBulk{
+		create: tfcb,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.TaskFile.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+//
+func (tfcb *TaskFileCreateBulk) OnConflictColumns(columns ...string) *TaskFileUpsertBulk {
+	tfcb.conflict = append(tfcb.conflict, sql.ConflictColumns(columns...))
+	return &TaskFileUpsertBulk{
+		create: tfcb,
+	}
+}
+
+// TaskFileUpsertBulk is the builder for "upsert"-ing
+// a bulk of TaskFile nodes.
+type TaskFileUpsertBulk struct {
+	create *TaskFileCreateBulk
+}
+
+// UpdateNewValues updates the fields using the new values that
+// were set on create. Using this option is equivalent to using:
+//
+//	client.TaskFile.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(taskfile.FieldID)
+//			}),
+//		).
+//		Exec(ctx)
+//
+func (u *TaskFileUpsertBulk) UpdateNewValues() *TaskFileUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		for _, b := range u.create.builders {
+			if _, exists := b.mutation.ID(); exists {
+				s.SetIgnore(taskfile.FieldID)
+				return
+			}
+		}
+	}))
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//	client.TaskFile.Create().
+//		OnConflict(sql.ResolveWithIgnore()).
+//		Exec(ctx)
+//
+func (u *TaskFileUpsertBulk) Ignore() *TaskFileUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *TaskFileUpsertBulk) DoNothing() *TaskFileUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the TaskFileCreateBulk.OnConflict
+// documentation for more info.
+func (u *TaskFileUpsertBulk) Update(set func(*TaskFileUpsert)) *TaskFileUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&TaskFileUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetProjectID sets the "project_id" field.
+func (u *TaskFileUpsertBulk) SetProjectID(v ulid.ID) *TaskFileUpsertBulk {
+	return u.Update(func(s *TaskFileUpsert) {
+		s.SetProjectID(v)
+	})
+}
+
+// UpdateProjectID sets the "project_id" field to the value that was provided on create.
+func (u *TaskFileUpsertBulk) UpdateProjectID() *TaskFileUpsertBulk {
+	return u.Update(func(s *TaskFileUpsert) {
+		s.UpdateProjectID()
+	})
+}
+
+// SetTaskID sets the "task_id" field.
+func (u *TaskFileUpsertBulk) SetTaskID(v ulid.ID) *TaskFileUpsertBulk {
+	return u.Update(func(s *TaskFileUpsert) {
+		s.SetTaskID(v)
+	})
+}
+
+// UpdateTaskID sets the "task_id" field to the value that was provided on create.
+func (u *TaskFileUpsertBulk) UpdateTaskID() *TaskFileUpsertBulk {
+	return u.Update(func(s *TaskFileUpsert) {
+		s.UpdateTaskID()
+	})
+}
+
+// SetTaskFeedID sets the "task_feed_id" field.
+func (u *TaskFileUpsertBulk) SetTaskFeedID(v ulid.ID) *TaskFileUpsertBulk {
+	return u.Update(func(s *TaskFileUpsert) {
+		s.SetTaskFeedID(v)
+	})
+}
+
+// UpdateTaskFeedID sets the "task_feed_id" field to the value that was provided on create.
+func (u *TaskFileUpsertBulk) UpdateTaskFeedID() *TaskFileUpsertBulk {
+	return u.Update(func(s *TaskFileUpsert) {
+		s.UpdateTaskFeedID()
+	})
+}
+
+// SetFileTypeID sets the "file_type_id" field.
+func (u *TaskFileUpsertBulk) SetFileTypeID(v ulid.ID) *TaskFileUpsertBulk {
+	return u.Update(func(s *TaskFileUpsert) {
+		s.SetFileTypeID(v)
+	})
+}
+
+// UpdateFileTypeID sets the "file_type_id" field to the value that was provided on create.
+func (u *TaskFileUpsertBulk) UpdateFileTypeID() *TaskFileUpsertBulk {
+	return u.Update(func(s *TaskFileUpsert) {
+		s.UpdateFileTypeID()
+	})
+}
+
+// SetName sets the "name" field.
+func (u *TaskFileUpsertBulk) SetName(v string) *TaskFileUpsertBulk {
+	return u.Update(func(s *TaskFileUpsert) {
+		s.SetName(v)
+	})
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *TaskFileUpsertBulk) UpdateName() *TaskFileUpsertBulk {
+	return u.Update(func(s *TaskFileUpsert) {
+		s.UpdateName()
+	})
+}
+
+// SetSrc sets the "src" field.
+func (u *TaskFileUpsertBulk) SetSrc(v string) *TaskFileUpsertBulk {
+	return u.Update(func(s *TaskFileUpsert) {
+		s.SetSrc(v)
+	})
+}
+
+// UpdateSrc sets the "src" field to the value that was provided on create.
+func (u *TaskFileUpsertBulk) UpdateSrc() *TaskFileUpsertBulk {
+	return u.Update(func(s *TaskFileUpsert) {
+		s.UpdateSrc()
+	})
+}
+
+// SetAttached sets the "attached" field.
+func (u *TaskFileUpsertBulk) SetAttached(v bool) *TaskFileUpsertBulk {
+	return u.Update(func(s *TaskFileUpsert) {
+		s.SetAttached(v)
+	})
+}
+
+// UpdateAttached sets the "attached" field to the value that was provided on create.
+func (u *TaskFileUpsertBulk) UpdateAttached() *TaskFileUpsertBulk {
+	return u.Update(func(s *TaskFileUpsert) {
+		s.UpdateAttached()
+	})
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *TaskFileUpsertBulk) SetCreatedAt(v time.Time) *TaskFileUpsertBulk {
+	return u.Update(func(s *TaskFileUpsert) {
+		s.SetCreatedAt(v)
+	})
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *TaskFileUpsertBulk) UpdateCreatedAt() *TaskFileUpsertBulk {
+	return u.Update(func(s *TaskFileUpsert) {
+		s.UpdateCreatedAt()
+	})
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *TaskFileUpsertBulk) SetUpdatedAt(v time.Time) *TaskFileUpsertBulk {
+	return u.Update(func(s *TaskFileUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *TaskFileUpsertBulk) UpdateUpdatedAt() *TaskFileUpsertBulk {
+	return u.Update(func(s *TaskFileUpsert) {
+		s.UpdateUpdatedAt()
+	})
+}
+
+// Exec executes the query.
+func (u *TaskFileUpsertBulk) Exec(ctx context.Context) error {
+	for i, b := range u.create.builders {
+		if len(b.conflict) != 0 {
+			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the TaskFileCreateBulk instead", i)
+		}
+	}
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for TaskFileCreateBulk.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *TaskFileUpsertBulk) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

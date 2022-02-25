@@ -3,6 +3,8 @@ package repository
 import (
 	"context"
 	"project-management-demo-backend/ent"
+	"project-management-demo-backend/ent/schema/ulid"
+	"project-management-demo-backend/ent/teammatetaskcolumn"
 	"project-management-demo-backend/pkg/entity/model"
 	ur "project-management-demo-backend/pkg/usecase/repository"
 )
@@ -49,7 +51,7 @@ func (r *teammateTaskColumnRepository) List(ctx context.Context) ([]*model.Teamm
 }
 
 func (r *teammateTaskColumnRepository) ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TeammateTaskColumnWhereInput) (*model.TeammateTaskColumnConnection, error) {
-	q := r.client.TeammateTaskColumn.Query()
+	q := r.client.TeammateTaskColumn.Query().Order(ent.Asc(teammatetaskcolumn.FieldOrder))
 
 	res, err := q.Paginate(ctx, after, first, before, last, ent.WithTeammateTaskColumnFilter(where.Filter))
 	if err != nil {
@@ -87,4 +89,49 @@ func (r *teammateTaskColumnRepository) Update(ctx context.Context, input model.U
 	}
 
 	return res, nil
+}
+
+func (r *teammateTaskColumnRepository) UpdateOrder(ctx context.Context, input model.UpdateTeammateTaskColumnOrderInput) ([]*model.TeammateTaskColumn, error) {
+	client := WithTransactionalMutation(ctx)
+	if len(input.IDs) == 0 {
+		return nil, model.NewInvalidParamError(input.IDs)
+	}
+
+	ts, err := client.TeammateTaskColumn.
+		Query().
+		WithTaskColumn().
+		Where(teammatetaskcolumn.IDIn(input.IDs...)).
+		All(ctx)
+	if err != nil {
+		return nil, model.NewDBError(err)
+	}
+
+	groupedByID := make(map[ulid.ID]*model.TeammateTaskColumn, len(ts))
+	for _, t := range ts {
+		groupedByID[t.ID] = t
+	}
+
+	bulk := make([]*ent.TeammateTaskColumnCreate, len(input.IDs))
+	for i, id := range input.IDs {
+		g, ok := groupedByID[id]
+		if ok {
+			bulk[i] = client.TeammateTaskColumn.Create().
+				SetID(id).
+				SetOrder(i).
+				SetTeammateID(g.TeammateID).
+				SetTaskColumnID(g.TaskColumnID).
+				SetWorkspaceID(g.WorkspaceID).
+				SetWidth(g.Width).
+				SetCustomizable(g.Customizable).
+				SetDisabled(g.Disabled).
+				SetCreatedAt(g.CreatedAt)
+		}
+	}
+
+	err = client.TeammateTaskColumn.CreateBulk(bulk...).OnConflict().UpdateNewValues().Exec(ctx)
+	if err != nil {
+		return nil, model.NewDBError(err)
+	}
+
+	return ts, nil
 }

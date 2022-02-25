@@ -336,6 +336,7 @@ type ComplexityRoot struct {
 		UpdateTeammate                func(childComplexity int, input ent.UpdateTeammateInput) int
 		UpdateTeammateTask            func(childComplexity int, input ent.UpdateTeammateTaskInput) int
 		UpdateTeammateTaskColumn      func(childComplexity int, input ent.UpdateTeammateTaskColumnInput) int
+		UpdateTeammateTaskColumnOrder func(childComplexity int, input model.UpdateTeammateTaskColumnOrderInput) int
 		UpdateTeammateTaskListStatus  func(childComplexity int, input ent.UpdateTeammateTaskListStatusInput) int
 		UpdateTeammateTaskSection     func(childComplexity int, input ent.UpdateTeammateTaskSectionInput) int
 		UpdateTeammateTaskTabStatus   func(childComplexity int, input ent.UpdateTeammateTaskTabStatusInput) int
@@ -1323,6 +1324,7 @@ type MutationResolver interface {
 	DeleteTeammateTask(ctx context.Context, input model.DeleteTeammateTaskInput) (*ent.TeammateTask, error)
 	CreateTeammateTaskColumn(ctx context.Context, input ent.CreateTeammateTaskColumnInput) (*ent.TeammateTaskColumn, error)
 	UpdateTeammateTaskColumn(ctx context.Context, input ent.UpdateTeammateTaskColumnInput) (*ent.TeammateTaskColumn, error)
+	UpdateTeammateTaskColumnOrder(ctx context.Context, input model.UpdateTeammateTaskColumnOrderInput) ([]*ent.TeammateTaskColumn, error)
 	CreateTeammateTaskListStatus(ctx context.Context, input ent.CreateTeammateTaskListStatusInput) (*ent.TeammateTaskListStatus, error)
 	UpdateTeammateTaskListStatus(ctx context.Context, input ent.UpdateTeammateTaskListStatusInput) (*ent.TeammateTaskListStatus, error)
 	CreateTeammateTaskSection(ctx context.Context, input ent.CreateTeammateTaskSectionInput) (*ent.TeammateTaskSection, error)
@@ -3178,6 +3180,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.UpdateTeammateTaskColumn(childComplexity, args["input"].(ent.UpdateTeammateTaskColumnInput)), true
+
+	case "Mutation.updateTeammateTaskColumnOrder":
+		if e.complexity.Mutation.UpdateTeammateTaskColumnOrder == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateTeammateTaskColumnOrder_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateTeammateTaskColumnOrder(childComplexity, args["input"].(model.UpdateTeammateTaskColumnOrderInput)), true
 
 	case "Mutation.updateTeammateTaskListStatus":
 		if e.complexity.Mutation.UpdateTeammateTaskListStatus == nil {
@@ -13418,6 +13432,10 @@ input UpdateTeammateTaskColumnInput {
   requestId: String!
 }
 
+input UpdateTeammateTaskColumnOrderInput {
+  ids: [ID!]!
+}
+
 extend type Subscription {
   teammateTaskColumnUpdated(id: ID!, requestId: String!): TeammateTaskColumn!
 }
@@ -13430,6 +13448,7 @@ extend type Query {
 extend type Mutation {
   createTeammateTaskColumn(input: CreateTeammateTaskColumnInput!): TeammateTaskColumn!
   updateTeammateTaskColumn(input: UpdateTeammateTaskColumnInput!): TeammateTaskColumn!
+  updateTeammateTaskColumnOrder(input: UpdateTeammateTaskColumnOrderInput!): [TeammateTaskColumn!]!
 }
 `, BuiltIn: false},
 	{Name: "graph/schema/teammate_task_list_status/teammate_task_list_status.graphql", Input: `type TeammateTaskListStatus implements Node {
@@ -14971,6 +14990,21 @@ func (ec *executionContext) field_Mutation_updateTask_args(ctx context.Context, 
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNUpdateTaskInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐUpdateTaskInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_updateTeammateTaskColumnOrder_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.UpdateTeammateTaskColumnOrderInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNUpdateTeammateTaskColumnOrderInput2projectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐUpdateTeammateTaskColumnOrderInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -24851,6 +24885,48 @@ func (ec *executionContext) _Mutation_updateTeammateTaskColumn(ctx context.Conte
 	res := resTmp.(*ent.TeammateTaskColumn)
 	fc.Result = res
 	return ec.marshalNTeammateTaskColumn2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTeammateTaskColumn(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_updateTeammateTaskColumnOrder(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_updateTeammateTaskColumnOrder_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdateTeammateTaskColumnOrder(rctx, args["input"].(model.UpdateTeammateTaskColumnOrderInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*ent.TeammateTaskColumn)
+	fc.Result = res
+	return ec.marshalNTeammateTaskColumn2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTeammateTaskColumnᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_createTeammateTaskListStatus(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -72800,6 +72876,29 @@ func (ec *executionContext) unmarshalInputUpdateTeammateTaskColumnInput(ctx cont
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputUpdateTeammateTaskColumnOrderInput(ctx context.Context, obj interface{}) (model.UpdateTeammateTaskColumnOrderInput, error) {
+	var it model.UpdateTeammateTaskColumnOrderInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "ids":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("ids"))
+			it.IDs, err = ec.unmarshalNID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputUpdateTeammateTaskInput(ctx context.Context, obj interface{}) (ent.UpdateTeammateTaskInput, error) {
 	var it ent.UpdateTeammateTaskInput
 	asMap := map[string]interface{}{}
@@ -76108,6 +76207,11 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			}
 		case "updateTeammateTaskColumn":
 			out.Values[i] = ec._Mutation_updateTeammateTaskColumn(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "updateTeammateTaskColumnOrder":
+			out.Values[i] = ec._Mutation_updateTeammateTaskColumnOrder(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -84506,6 +84610,50 @@ func (ec *executionContext) marshalNTeammateTaskColumn2projectᚑmanagementᚑde
 	return ec._TeammateTaskColumn(ctx, sel, &v)
 }
 
+func (ec *executionContext) marshalNTeammateTaskColumn2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTeammateTaskColumnᚄ(ctx context.Context, sel ast.SelectionSet, v []*ent.TeammateTaskColumn) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNTeammateTaskColumn2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTeammateTaskColumn(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
 func (ec *executionContext) marshalNTeammateTaskColumn2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTeammateTaskColumn(ctx context.Context, sel ast.SelectionSet, v *ent.TeammateTaskColumn) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
@@ -84881,6 +85029,11 @@ func (ec *executionContext) unmarshalNUpdateTeammateInput2projectᚑmanagement�
 
 func (ec *executionContext) unmarshalNUpdateTeammateTaskColumnInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐUpdateTeammateTaskColumnInput(ctx context.Context, v interface{}) (ent.UpdateTeammateTaskColumnInput, error) {
 	res, err := ec.unmarshalInputUpdateTeammateTaskColumnInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNUpdateTeammateTaskColumnOrderInput2projectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐUpdateTeammateTaskColumnOrderInput(ctx context.Context, v interface{}) (model.UpdateTeammateTaskColumnOrderInput, error) {
+	res, err := ec.unmarshalInputUpdateTeammateTaskColumnOrderInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 

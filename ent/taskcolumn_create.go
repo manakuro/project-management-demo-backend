@@ -12,6 +12,8 @@ import (
 	"project-management-demo-backend/ent/teammatetaskcolumn"
 	"time"
 
+	"entgo.io/ent/dialect"
+	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 )
@@ -21,6 +23,7 @@ type TaskColumnCreate struct {
 	config
 	mutation *TaskColumnMutation
 	hooks    []Hook
+	conflict []sql.ConflictOption
 }
 
 // SetName sets the "name" field.
@@ -244,6 +247,7 @@ func (tcc *TaskColumnCreate) createSpec() (*TaskColumn, *sqlgraph.CreateSpec) {
 			},
 		}
 	)
+	_spec.OnConflict = tcc.conflict
 	if id, ok := tcc.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = id
@@ -321,10 +325,254 @@ func (tcc *TaskColumnCreate) createSpec() (*TaskColumn, *sqlgraph.CreateSpec) {
 	return _node, _spec
 }
 
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.TaskColumn.Create().
+//		SetName(v).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.TaskColumnUpsert) {
+//			SetName(v+v).
+//		}).
+//		Exec(ctx)
+//
+func (tcc *TaskColumnCreate) OnConflict(opts ...sql.ConflictOption) *TaskColumnUpsertOne {
+	tcc.conflict = opts
+	return &TaskColumnUpsertOne{
+		create: tcc,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.TaskColumn.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+//
+func (tcc *TaskColumnCreate) OnConflictColumns(columns ...string) *TaskColumnUpsertOne {
+	tcc.conflict = append(tcc.conflict, sql.ConflictColumns(columns...))
+	return &TaskColumnUpsertOne{
+		create: tcc,
+	}
+}
+
+type (
+	// TaskColumnUpsertOne is the builder for "upsert"-ing
+	//  one TaskColumn node.
+	TaskColumnUpsertOne struct {
+		create *TaskColumnCreate
+	}
+
+	// TaskColumnUpsert is the "OnConflict" setter.
+	TaskColumnUpsert struct {
+		*sql.UpdateSet
+	}
+)
+
+// SetName sets the "name" field.
+func (u *TaskColumnUpsert) SetName(v string) *TaskColumnUpsert {
+	u.Set(taskcolumn.FieldName, v)
+	return u
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *TaskColumnUpsert) UpdateName() *TaskColumnUpsert {
+	u.SetExcluded(taskcolumn.FieldName)
+	return u
+}
+
+// SetType sets the "type" field.
+func (u *TaskColumnUpsert) SetType(v taskcolumn.Type) *TaskColumnUpsert {
+	u.Set(taskcolumn.FieldType, v)
+	return u
+}
+
+// UpdateType sets the "type" field to the value that was provided on create.
+func (u *TaskColumnUpsert) UpdateType() *TaskColumnUpsert {
+	u.SetExcluded(taskcolumn.FieldType)
+	return u
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *TaskColumnUpsert) SetCreatedAt(v time.Time) *TaskColumnUpsert {
+	u.Set(taskcolumn.FieldCreatedAt, v)
+	return u
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *TaskColumnUpsert) UpdateCreatedAt() *TaskColumnUpsert {
+	u.SetExcluded(taskcolumn.FieldCreatedAt)
+	return u
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *TaskColumnUpsert) SetUpdatedAt(v time.Time) *TaskColumnUpsert {
+	u.Set(taskcolumn.FieldUpdatedAt, v)
+	return u
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *TaskColumnUpsert) UpdateUpdatedAt() *TaskColumnUpsert {
+	u.SetExcluded(taskcolumn.FieldUpdatedAt)
+	return u
+}
+
+// UpdateNewValues updates the fields using the new values that were set on create except the ID field.
+// Using this option is equivalent to using:
+//
+//	client.TaskColumn.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(taskcolumn.FieldID)
+//			}),
+//		).
+//		Exec(ctx)
+//
+func (u *TaskColumnUpsertOne) UpdateNewValues() *TaskColumnUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		if _, exists := u.create.mutation.ID(); exists {
+			s.SetIgnore(taskcolumn.FieldID)
+		}
+	}))
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//  client.TaskColumn.Create().
+//      OnConflict(sql.ResolveWithIgnore()).
+//      Exec(ctx)
+//
+func (u *TaskColumnUpsertOne) Ignore() *TaskColumnUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *TaskColumnUpsertOne) DoNothing() *TaskColumnUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the TaskColumnCreate.OnConflict
+// documentation for more info.
+func (u *TaskColumnUpsertOne) Update(set func(*TaskColumnUpsert)) *TaskColumnUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&TaskColumnUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetName sets the "name" field.
+func (u *TaskColumnUpsertOne) SetName(v string) *TaskColumnUpsertOne {
+	return u.Update(func(s *TaskColumnUpsert) {
+		s.SetName(v)
+	})
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *TaskColumnUpsertOne) UpdateName() *TaskColumnUpsertOne {
+	return u.Update(func(s *TaskColumnUpsert) {
+		s.UpdateName()
+	})
+}
+
+// SetType sets the "type" field.
+func (u *TaskColumnUpsertOne) SetType(v taskcolumn.Type) *TaskColumnUpsertOne {
+	return u.Update(func(s *TaskColumnUpsert) {
+		s.SetType(v)
+	})
+}
+
+// UpdateType sets the "type" field to the value that was provided on create.
+func (u *TaskColumnUpsertOne) UpdateType() *TaskColumnUpsertOne {
+	return u.Update(func(s *TaskColumnUpsert) {
+		s.UpdateType()
+	})
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *TaskColumnUpsertOne) SetCreatedAt(v time.Time) *TaskColumnUpsertOne {
+	return u.Update(func(s *TaskColumnUpsert) {
+		s.SetCreatedAt(v)
+	})
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *TaskColumnUpsertOne) UpdateCreatedAt() *TaskColumnUpsertOne {
+	return u.Update(func(s *TaskColumnUpsert) {
+		s.UpdateCreatedAt()
+	})
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *TaskColumnUpsertOne) SetUpdatedAt(v time.Time) *TaskColumnUpsertOne {
+	return u.Update(func(s *TaskColumnUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *TaskColumnUpsertOne) UpdateUpdatedAt() *TaskColumnUpsertOne {
+	return u.Update(func(s *TaskColumnUpsert) {
+		s.UpdateUpdatedAt()
+	})
+}
+
+// Exec executes the query.
+func (u *TaskColumnUpsertOne) Exec(ctx context.Context) error {
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for TaskColumnCreate.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *TaskColumnUpsertOne) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// Exec executes the UPSERT query and returns the inserted/updated ID.
+func (u *TaskColumnUpsertOne) ID(ctx context.Context) (id ulid.ID, err error) {
+	if u.create.driver.Dialect() == dialect.MySQL {
+		// In case of "ON CONFLICT", there is no way to get back non-numeric ID
+		// fields from the database since MySQL does not support the RETURNING clause.
+		return id, errors.New("ent: TaskColumnUpsertOne.ID is not supported by MySQL driver. Use TaskColumnUpsertOne.Exec instead")
+	}
+	node, err := u.create.Save(ctx)
+	if err != nil {
+		return id, err
+	}
+	return node.ID, nil
+}
+
+// IDX is like ID, but panics if an error occurs.
+func (u *TaskColumnUpsertOne) IDX(ctx context.Context) ulid.ID {
+	id, err := u.ID(ctx)
+	if err != nil {
+		panic(err)
+	}
+	return id
+}
+
 // TaskColumnCreateBulk is the builder for creating many TaskColumn entities in bulk.
 type TaskColumnCreateBulk struct {
 	config
 	builders []*TaskColumnCreate
+	conflict []sql.ConflictOption
 }
 
 // Save creates the TaskColumn entities in the database.
@@ -351,6 +599,7 @@ func (tccb *TaskColumnCreateBulk) Save(ctx context.Context) ([]*TaskColumn, erro
 					_, err = mutators[i+1].Mutate(root, tccb.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
+					spec.OnConflict = tccb.conflict
 					// Invoke the actual operation on the latest mutation in the chain.
 					if err = sqlgraph.BatchCreate(ctx, tccb.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
@@ -397,6 +646,178 @@ func (tccb *TaskColumnCreateBulk) Exec(ctx context.Context) error {
 // ExecX is like Exec, but panics if an error occurs.
 func (tccb *TaskColumnCreateBulk) ExecX(ctx context.Context) {
 	if err := tccb.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.TaskColumn.CreateBulk(builders...).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.TaskColumnUpsert) {
+//			SetName(v+v).
+//		}).
+//		Exec(ctx)
+//
+func (tccb *TaskColumnCreateBulk) OnConflict(opts ...sql.ConflictOption) *TaskColumnUpsertBulk {
+	tccb.conflict = opts
+	return &TaskColumnUpsertBulk{
+		create: tccb,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.TaskColumn.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+//
+func (tccb *TaskColumnCreateBulk) OnConflictColumns(columns ...string) *TaskColumnUpsertBulk {
+	tccb.conflict = append(tccb.conflict, sql.ConflictColumns(columns...))
+	return &TaskColumnUpsertBulk{
+		create: tccb,
+	}
+}
+
+// TaskColumnUpsertBulk is the builder for "upsert"-ing
+// a bulk of TaskColumn nodes.
+type TaskColumnUpsertBulk struct {
+	create *TaskColumnCreateBulk
+}
+
+// UpdateNewValues updates the fields using the new values that
+// were set on create. Using this option is equivalent to using:
+//
+//	client.TaskColumn.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(taskcolumn.FieldID)
+//			}),
+//		).
+//		Exec(ctx)
+//
+func (u *TaskColumnUpsertBulk) UpdateNewValues() *TaskColumnUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		for _, b := range u.create.builders {
+			if _, exists := b.mutation.ID(); exists {
+				s.SetIgnore(taskcolumn.FieldID)
+				return
+			}
+		}
+	}))
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//	client.TaskColumn.Create().
+//		OnConflict(sql.ResolveWithIgnore()).
+//		Exec(ctx)
+//
+func (u *TaskColumnUpsertBulk) Ignore() *TaskColumnUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *TaskColumnUpsertBulk) DoNothing() *TaskColumnUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the TaskColumnCreateBulk.OnConflict
+// documentation for more info.
+func (u *TaskColumnUpsertBulk) Update(set func(*TaskColumnUpsert)) *TaskColumnUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&TaskColumnUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetName sets the "name" field.
+func (u *TaskColumnUpsertBulk) SetName(v string) *TaskColumnUpsertBulk {
+	return u.Update(func(s *TaskColumnUpsert) {
+		s.SetName(v)
+	})
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *TaskColumnUpsertBulk) UpdateName() *TaskColumnUpsertBulk {
+	return u.Update(func(s *TaskColumnUpsert) {
+		s.UpdateName()
+	})
+}
+
+// SetType sets the "type" field.
+func (u *TaskColumnUpsertBulk) SetType(v taskcolumn.Type) *TaskColumnUpsertBulk {
+	return u.Update(func(s *TaskColumnUpsert) {
+		s.SetType(v)
+	})
+}
+
+// UpdateType sets the "type" field to the value that was provided on create.
+func (u *TaskColumnUpsertBulk) UpdateType() *TaskColumnUpsertBulk {
+	return u.Update(func(s *TaskColumnUpsert) {
+		s.UpdateType()
+	})
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *TaskColumnUpsertBulk) SetCreatedAt(v time.Time) *TaskColumnUpsertBulk {
+	return u.Update(func(s *TaskColumnUpsert) {
+		s.SetCreatedAt(v)
+	})
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *TaskColumnUpsertBulk) UpdateCreatedAt() *TaskColumnUpsertBulk {
+	return u.Update(func(s *TaskColumnUpsert) {
+		s.UpdateCreatedAt()
+	})
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *TaskColumnUpsertBulk) SetUpdatedAt(v time.Time) *TaskColumnUpsertBulk {
+	return u.Update(func(s *TaskColumnUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *TaskColumnUpsertBulk) UpdateUpdatedAt() *TaskColumnUpsertBulk {
+	return u.Update(func(s *TaskColumnUpsert) {
+		s.UpdateUpdatedAt()
+	})
+}
+
+// Exec executes the query.
+func (u *TaskColumnUpsertBulk) Exec(ctx context.Context) error {
+	for i, b := range u.create.builders {
+		if len(b.conflict) != 0 {
+			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the TaskColumnCreateBulk instead", i)
+		}
+	}
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for TaskColumnCreateBulk.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *TaskColumnUpsertBulk) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

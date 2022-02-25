@@ -34,7 +34,11 @@ func main() {
 		entc.TemplateDir("./template"),
 	}
 
-	if err := entc.Generate("./schema", &gen.Config{}, opts...); err != nil {
+	if err := entc.Generate("./schema", &gen.Config{
+		Features: []gen.Feature{
+			gen.FeatureUpsert,
+		},
+	}, opts...); err != nil {
 		log.Fatalf("Error: failed running ent codegen: %v", err)
 	}
 }

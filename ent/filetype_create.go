@@ -11,6 +11,8 @@ import (
 	"project-management-demo-backend/ent/taskfile"
 	"time"
 
+	"entgo.io/ent/dialect"
+	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 )
@@ -20,6 +22,7 @@ type FileTypeCreate struct {
 	config
 	mutation *FileTypeMutation
 	hooks    []Hook
+	conflict []sql.ConflictOption
 }
 
 // SetName sets the "name" field.
@@ -228,6 +231,7 @@ func (ftc *FileTypeCreate) createSpec() (*FileType, *sqlgraph.CreateSpec) {
 			},
 		}
 	)
+	_spec.OnConflict = ftc.conflict
 	if id, ok := ftc.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = id
@@ -286,10 +290,254 @@ func (ftc *FileTypeCreate) createSpec() (*FileType, *sqlgraph.CreateSpec) {
 	return _node, _spec
 }
 
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.FileType.Create().
+//		SetName(v).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.FileTypeUpsert) {
+//			SetName(v+v).
+//		}).
+//		Exec(ctx)
+//
+func (ftc *FileTypeCreate) OnConflict(opts ...sql.ConflictOption) *FileTypeUpsertOne {
+	ftc.conflict = opts
+	return &FileTypeUpsertOne{
+		create: ftc,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.FileType.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+//
+func (ftc *FileTypeCreate) OnConflictColumns(columns ...string) *FileTypeUpsertOne {
+	ftc.conflict = append(ftc.conflict, sql.ConflictColumns(columns...))
+	return &FileTypeUpsertOne{
+		create: ftc,
+	}
+}
+
+type (
+	// FileTypeUpsertOne is the builder for "upsert"-ing
+	//  one FileType node.
+	FileTypeUpsertOne struct {
+		create *FileTypeCreate
+	}
+
+	// FileTypeUpsert is the "OnConflict" setter.
+	FileTypeUpsert struct {
+		*sql.UpdateSet
+	}
+)
+
+// SetName sets the "name" field.
+func (u *FileTypeUpsert) SetName(v string) *FileTypeUpsert {
+	u.Set(filetype.FieldName, v)
+	return u
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *FileTypeUpsert) UpdateName() *FileTypeUpsert {
+	u.SetExcluded(filetype.FieldName)
+	return u
+}
+
+// SetTypeCode sets the "type_code" field.
+func (u *FileTypeUpsert) SetTypeCode(v filetype.TypeCode) *FileTypeUpsert {
+	u.Set(filetype.FieldTypeCode, v)
+	return u
+}
+
+// UpdateTypeCode sets the "type_code" field to the value that was provided on create.
+func (u *FileTypeUpsert) UpdateTypeCode() *FileTypeUpsert {
+	u.SetExcluded(filetype.FieldTypeCode)
+	return u
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *FileTypeUpsert) SetCreatedAt(v time.Time) *FileTypeUpsert {
+	u.Set(filetype.FieldCreatedAt, v)
+	return u
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *FileTypeUpsert) UpdateCreatedAt() *FileTypeUpsert {
+	u.SetExcluded(filetype.FieldCreatedAt)
+	return u
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *FileTypeUpsert) SetUpdatedAt(v time.Time) *FileTypeUpsert {
+	u.Set(filetype.FieldUpdatedAt, v)
+	return u
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *FileTypeUpsert) UpdateUpdatedAt() *FileTypeUpsert {
+	u.SetExcluded(filetype.FieldUpdatedAt)
+	return u
+}
+
+// UpdateNewValues updates the fields using the new values that were set on create except the ID field.
+// Using this option is equivalent to using:
+//
+//	client.FileType.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(filetype.FieldID)
+//			}),
+//		).
+//		Exec(ctx)
+//
+func (u *FileTypeUpsertOne) UpdateNewValues() *FileTypeUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		if _, exists := u.create.mutation.ID(); exists {
+			s.SetIgnore(filetype.FieldID)
+		}
+	}))
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//  client.FileType.Create().
+//      OnConflict(sql.ResolveWithIgnore()).
+//      Exec(ctx)
+//
+func (u *FileTypeUpsertOne) Ignore() *FileTypeUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *FileTypeUpsertOne) DoNothing() *FileTypeUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the FileTypeCreate.OnConflict
+// documentation for more info.
+func (u *FileTypeUpsertOne) Update(set func(*FileTypeUpsert)) *FileTypeUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&FileTypeUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetName sets the "name" field.
+func (u *FileTypeUpsertOne) SetName(v string) *FileTypeUpsertOne {
+	return u.Update(func(s *FileTypeUpsert) {
+		s.SetName(v)
+	})
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *FileTypeUpsertOne) UpdateName() *FileTypeUpsertOne {
+	return u.Update(func(s *FileTypeUpsert) {
+		s.UpdateName()
+	})
+}
+
+// SetTypeCode sets the "type_code" field.
+func (u *FileTypeUpsertOne) SetTypeCode(v filetype.TypeCode) *FileTypeUpsertOne {
+	return u.Update(func(s *FileTypeUpsert) {
+		s.SetTypeCode(v)
+	})
+}
+
+// UpdateTypeCode sets the "type_code" field to the value that was provided on create.
+func (u *FileTypeUpsertOne) UpdateTypeCode() *FileTypeUpsertOne {
+	return u.Update(func(s *FileTypeUpsert) {
+		s.UpdateTypeCode()
+	})
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *FileTypeUpsertOne) SetCreatedAt(v time.Time) *FileTypeUpsertOne {
+	return u.Update(func(s *FileTypeUpsert) {
+		s.SetCreatedAt(v)
+	})
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *FileTypeUpsertOne) UpdateCreatedAt() *FileTypeUpsertOne {
+	return u.Update(func(s *FileTypeUpsert) {
+		s.UpdateCreatedAt()
+	})
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *FileTypeUpsertOne) SetUpdatedAt(v time.Time) *FileTypeUpsertOne {
+	return u.Update(func(s *FileTypeUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *FileTypeUpsertOne) UpdateUpdatedAt() *FileTypeUpsertOne {
+	return u.Update(func(s *FileTypeUpsert) {
+		s.UpdateUpdatedAt()
+	})
+}
+
+// Exec executes the query.
+func (u *FileTypeUpsertOne) Exec(ctx context.Context) error {
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for FileTypeCreate.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *FileTypeUpsertOne) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// Exec executes the UPSERT query and returns the inserted/updated ID.
+func (u *FileTypeUpsertOne) ID(ctx context.Context) (id ulid.ID, err error) {
+	if u.create.driver.Dialect() == dialect.MySQL {
+		// In case of "ON CONFLICT", there is no way to get back non-numeric ID
+		// fields from the database since MySQL does not support the RETURNING clause.
+		return id, errors.New("ent: FileTypeUpsertOne.ID is not supported by MySQL driver. Use FileTypeUpsertOne.Exec instead")
+	}
+	node, err := u.create.Save(ctx)
+	if err != nil {
+		return id, err
+	}
+	return node.ID, nil
+}
+
+// IDX is like ID, but panics if an error occurs.
+func (u *FileTypeUpsertOne) IDX(ctx context.Context) ulid.ID {
+	id, err := u.ID(ctx)
+	if err != nil {
+		panic(err)
+	}
+	return id
+}
+
 // FileTypeCreateBulk is the builder for creating many FileType entities in bulk.
 type FileTypeCreateBulk struct {
 	config
 	builders []*FileTypeCreate
+	conflict []sql.ConflictOption
 }
 
 // Save creates the FileType entities in the database.
@@ -316,6 +564,7 @@ func (ftcb *FileTypeCreateBulk) Save(ctx context.Context) ([]*FileType, error) {
 					_, err = mutators[i+1].Mutate(root, ftcb.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
+					spec.OnConflict = ftcb.conflict
 					// Invoke the actual operation on the latest mutation in the chain.
 					if err = sqlgraph.BatchCreate(ctx, ftcb.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
@@ -362,6 +611,178 @@ func (ftcb *FileTypeCreateBulk) Exec(ctx context.Context) error {
 // ExecX is like Exec, but panics if an error occurs.
 func (ftcb *FileTypeCreateBulk) ExecX(ctx context.Context) {
 	if err := ftcb.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.FileType.CreateBulk(builders...).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.FileTypeUpsert) {
+//			SetName(v+v).
+//		}).
+//		Exec(ctx)
+//
+func (ftcb *FileTypeCreateBulk) OnConflict(opts ...sql.ConflictOption) *FileTypeUpsertBulk {
+	ftcb.conflict = opts
+	return &FileTypeUpsertBulk{
+		create: ftcb,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.FileType.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+//
+func (ftcb *FileTypeCreateBulk) OnConflictColumns(columns ...string) *FileTypeUpsertBulk {
+	ftcb.conflict = append(ftcb.conflict, sql.ConflictColumns(columns...))
+	return &FileTypeUpsertBulk{
+		create: ftcb,
+	}
+}
+
+// FileTypeUpsertBulk is the builder for "upsert"-ing
+// a bulk of FileType nodes.
+type FileTypeUpsertBulk struct {
+	create *FileTypeCreateBulk
+}
+
+// UpdateNewValues updates the fields using the new values that
+// were set on create. Using this option is equivalent to using:
+//
+//	client.FileType.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(filetype.FieldID)
+//			}),
+//		).
+//		Exec(ctx)
+//
+func (u *FileTypeUpsertBulk) UpdateNewValues() *FileTypeUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		for _, b := range u.create.builders {
+			if _, exists := b.mutation.ID(); exists {
+				s.SetIgnore(filetype.FieldID)
+				return
+			}
+		}
+	}))
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//	client.FileType.Create().
+//		OnConflict(sql.ResolveWithIgnore()).
+//		Exec(ctx)
+//
+func (u *FileTypeUpsertBulk) Ignore() *FileTypeUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *FileTypeUpsertBulk) DoNothing() *FileTypeUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the FileTypeCreateBulk.OnConflict
+// documentation for more info.
+func (u *FileTypeUpsertBulk) Update(set func(*FileTypeUpsert)) *FileTypeUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&FileTypeUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetName sets the "name" field.
+func (u *FileTypeUpsertBulk) SetName(v string) *FileTypeUpsertBulk {
+	return u.Update(func(s *FileTypeUpsert) {
+		s.SetName(v)
+	})
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *FileTypeUpsertBulk) UpdateName() *FileTypeUpsertBulk {
+	return u.Update(func(s *FileTypeUpsert) {
+		s.UpdateName()
+	})
+}
+
+// SetTypeCode sets the "type_code" field.
+func (u *FileTypeUpsertBulk) SetTypeCode(v filetype.TypeCode) *FileTypeUpsertBulk {
+	return u.Update(func(s *FileTypeUpsert) {
+		s.SetTypeCode(v)
+	})
+}
+
+// UpdateTypeCode sets the "type_code" field to the value that was provided on create.
+func (u *FileTypeUpsertBulk) UpdateTypeCode() *FileTypeUpsertBulk {
+	return u.Update(func(s *FileTypeUpsert) {
+		s.UpdateTypeCode()
+	})
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *FileTypeUpsertBulk) SetCreatedAt(v time.Time) *FileTypeUpsertBulk {
+	return u.Update(func(s *FileTypeUpsert) {
+		s.SetCreatedAt(v)
+	})
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *FileTypeUpsertBulk) UpdateCreatedAt() *FileTypeUpsertBulk {
+	return u.Update(func(s *FileTypeUpsert) {
+		s.UpdateCreatedAt()
+	})
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *FileTypeUpsertBulk) SetUpdatedAt(v time.Time) *FileTypeUpsertBulk {
+	return u.Update(func(s *FileTypeUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *FileTypeUpsertBulk) UpdateUpdatedAt() *FileTypeUpsertBulk {
+	return u.Update(func(s *FileTypeUpsert) {
+		s.UpdateUpdatedAt()
+	})
+}
+
+// Exec executes the query.
+func (u *FileTypeUpsertBulk) Exec(ctx context.Context) error {
+	for i, b := range u.create.builders {
+		if len(b.conflict) != 0 {
+			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the FileTypeCreateBulk instead", i)
+		}
+	}
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for FileTypeCreateBulk.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *FileTypeUpsertBulk) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

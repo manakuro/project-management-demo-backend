@@ -9,6 +9,7 @@ import (
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/graph/generated"
 	"project-management-demo-backend/pkg/adapter/handler"
+	"project-management-demo-backend/pkg/entity/model"
 	"project-management-demo-backend/pkg/util/datetime"
 	"project-management-demo-backend/pkg/util/subscription"
 )
@@ -37,6 +38,15 @@ func (r *mutationResolver) UpdateTeammateTaskColumn(ctx context.Context, input e
 	}()
 
 	return t, nil
+}
+
+func (r *mutationResolver) UpdateTeammateTaskColumnOrder(ctx context.Context, input model.UpdateTeammateTaskColumnOrderInput) ([]*ent.TeammateTaskColumn, error) {
+	ts, err := r.controller.TeammateTaskColumn.UpdateOrder(ctx, input)
+	if err != nil {
+		return nil, handler.HandleGraphQLError(ctx, err)
+	}
+
+	return ts, nil
 }
 
 func (r *queryResolver) TeammateTaskColumn(ctx context.Context, where *ent.TeammateTaskColumnWhereInput) (*ent.TeammateTaskColumn, error) {

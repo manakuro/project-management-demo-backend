@@ -12,6 +12,8 @@ import (
 	"project-management-demo-backend/ent/workspace"
 	"time"
 
+	"entgo.io/ent/dialect"
+	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 )
@@ -21,6 +23,7 @@ type FavoriteWorkspaceCreate struct {
 	config
 	mutation *FavoriteWorkspaceMutation
 	hooks    []Hook
+	conflict []sql.ConflictOption
 }
 
 // SetWorkspaceID sets the "workspace_id" field.
@@ -220,6 +223,7 @@ func (fwc *FavoriteWorkspaceCreate) createSpec() (*FavoriteWorkspace, *sqlgraph.
 			},
 		}
 	)
+	_spec.OnConflict = fwc.conflict
 	if id, ok := fwc.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = id
@@ -283,10 +287,254 @@ func (fwc *FavoriteWorkspaceCreate) createSpec() (*FavoriteWorkspace, *sqlgraph.
 	return _node, _spec
 }
 
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.FavoriteWorkspace.Create().
+//		SetWorkspaceID(v).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.FavoriteWorkspaceUpsert) {
+//			SetWorkspaceID(v+v).
+//		}).
+//		Exec(ctx)
+//
+func (fwc *FavoriteWorkspaceCreate) OnConflict(opts ...sql.ConflictOption) *FavoriteWorkspaceUpsertOne {
+	fwc.conflict = opts
+	return &FavoriteWorkspaceUpsertOne{
+		create: fwc,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.FavoriteWorkspace.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+//
+func (fwc *FavoriteWorkspaceCreate) OnConflictColumns(columns ...string) *FavoriteWorkspaceUpsertOne {
+	fwc.conflict = append(fwc.conflict, sql.ConflictColumns(columns...))
+	return &FavoriteWorkspaceUpsertOne{
+		create: fwc,
+	}
+}
+
+type (
+	// FavoriteWorkspaceUpsertOne is the builder for "upsert"-ing
+	//  one FavoriteWorkspace node.
+	FavoriteWorkspaceUpsertOne struct {
+		create *FavoriteWorkspaceCreate
+	}
+
+	// FavoriteWorkspaceUpsert is the "OnConflict" setter.
+	FavoriteWorkspaceUpsert struct {
+		*sql.UpdateSet
+	}
+)
+
+// SetWorkspaceID sets the "workspace_id" field.
+func (u *FavoriteWorkspaceUpsert) SetWorkspaceID(v ulid.ID) *FavoriteWorkspaceUpsert {
+	u.Set(favoriteworkspace.FieldWorkspaceID, v)
+	return u
+}
+
+// UpdateWorkspaceID sets the "workspace_id" field to the value that was provided on create.
+func (u *FavoriteWorkspaceUpsert) UpdateWorkspaceID() *FavoriteWorkspaceUpsert {
+	u.SetExcluded(favoriteworkspace.FieldWorkspaceID)
+	return u
+}
+
+// SetTeammateID sets the "teammate_id" field.
+func (u *FavoriteWorkspaceUpsert) SetTeammateID(v ulid.ID) *FavoriteWorkspaceUpsert {
+	u.Set(favoriteworkspace.FieldTeammateID, v)
+	return u
+}
+
+// UpdateTeammateID sets the "teammate_id" field to the value that was provided on create.
+func (u *FavoriteWorkspaceUpsert) UpdateTeammateID() *FavoriteWorkspaceUpsert {
+	u.SetExcluded(favoriteworkspace.FieldTeammateID)
+	return u
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *FavoriteWorkspaceUpsert) SetCreatedAt(v time.Time) *FavoriteWorkspaceUpsert {
+	u.Set(favoriteworkspace.FieldCreatedAt, v)
+	return u
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *FavoriteWorkspaceUpsert) UpdateCreatedAt() *FavoriteWorkspaceUpsert {
+	u.SetExcluded(favoriteworkspace.FieldCreatedAt)
+	return u
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *FavoriteWorkspaceUpsert) SetUpdatedAt(v time.Time) *FavoriteWorkspaceUpsert {
+	u.Set(favoriteworkspace.FieldUpdatedAt, v)
+	return u
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *FavoriteWorkspaceUpsert) UpdateUpdatedAt() *FavoriteWorkspaceUpsert {
+	u.SetExcluded(favoriteworkspace.FieldUpdatedAt)
+	return u
+}
+
+// UpdateNewValues updates the fields using the new values that were set on create except the ID field.
+// Using this option is equivalent to using:
+//
+//	client.FavoriteWorkspace.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(favoriteworkspace.FieldID)
+//			}),
+//		).
+//		Exec(ctx)
+//
+func (u *FavoriteWorkspaceUpsertOne) UpdateNewValues() *FavoriteWorkspaceUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		if _, exists := u.create.mutation.ID(); exists {
+			s.SetIgnore(favoriteworkspace.FieldID)
+		}
+	}))
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//  client.FavoriteWorkspace.Create().
+//      OnConflict(sql.ResolveWithIgnore()).
+//      Exec(ctx)
+//
+func (u *FavoriteWorkspaceUpsertOne) Ignore() *FavoriteWorkspaceUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *FavoriteWorkspaceUpsertOne) DoNothing() *FavoriteWorkspaceUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the FavoriteWorkspaceCreate.OnConflict
+// documentation for more info.
+func (u *FavoriteWorkspaceUpsertOne) Update(set func(*FavoriteWorkspaceUpsert)) *FavoriteWorkspaceUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&FavoriteWorkspaceUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetWorkspaceID sets the "workspace_id" field.
+func (u *FavoriteWorkspaceUpsertOne) SetWorkspaceID(v ulid.ID) *FavoriteWorkspaceUpsertOne {
+	return u.Update(func(s *FavoriteWorkspaceUpsert) {
+		s.SetWorkspaceID(v)
+	})
+}
+
+// UpdateWorkspaceID sets the "workspace_id" field to the value that was provided on create.
+func (u *FavoriteWorkspaceUpsertOne) UpdateWorkspaceID() *FavoriteWorkspaceUpsertOne {
+	return u.Update(func(s *FavoriteWorkspaceUpsert) {
+		s.UpdateWorkspaceID()
+	})
+}
+
+// SetTeammateID sets the "teammate_id" field.
+func (u *FavoriteWorkspaceUpsertOne) SetTeammateID(v ulid.ID) *FavoriteWorkspaceUpsertOne {
+	return u.Update(func(s *FavoriteWorkspaceUpsert) {
+		s.SetTeammateID(v)
+	})
+}
+
+// UpdateTeammateID sets the "teammate_id" field to the value that was provided on create.
+func (u *FavoriteWorkspaceUpsertOne) UpdateTeammateID() *FavoriteWorkspaceUpsertOne {
+	return u.Update(func(s *FavoriteWorkspaceUpsert) {
+		s.UpdateTeammateID()
+	})
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *FavoriteWorkspaceUpsertOne) SetCreatedAt(v time.Time) *FavoriteWorkspaceUpsertOne {
+	return u.Update(func(s *FavoriteWorkspaceUpsert) {
+		s.SetCreatedAt(v)
+	})
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *FavoriteWorkspaceUpsertOne) UpdateCreatedAt() *FavoriteWorkspaceUpsertOne {
+	return u.Update(func(s *FavoriteWorkspaceUpsert) {
+		s.UpdateCreatedAt()
+	})
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *FavoriteWorkspaceUpsertOne) SetUpdatedAt(v time.Time) *FavoriteWorkspaceUpsertOne {
+	return u.Update(func(s *FavoriteWorkspaceUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *FavoriteWorkspaceUpsertOne) UpdateUpdatedAt() *FavoriteWorkspaceUpsertOne {
+	return u.Update(func(s *FavoriteWorkspaceUpsert) {
+		s.UpdateUpdatedAt()
+	})
+}
+
+// Exec executes the query.
+func (u *FavoriteWorkspaceUpsertOne) Exec(ctx context.Context) error {
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for FavoriteWorkspaceCreate.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *FavoriteWorkspaceUpsertOne) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// Exec executes the UPSERT query and returns the inserted/updated ID.
+func (u *FavoriteWorkspaceUpsertOne) ID(ctx context.Context) (id ulid.ID, err error) {
+	if u.create.driver.Dialect() == dialect.MySQL {
+		// In case of "ON CONFLICT", there is no way to get back non-numeric ID
+		// fields from the database since MySQL does not support the RETURNING clause.
+		return id, errors.New("ent: FavoriteWorkspaceUpsertOne.ID is not supported by MySQL driver. Use FavoriteWorkspaceUpsertOne.Exec instead")
+	}
+	node, err := u.create.Save(ctx)
+	if err != nil {
+		return id, err
+	}
+	return node.ID, nil
+}
+
+// IDX is like ID, but panics if an error occurs.
+func (u *FavoriteWorkspaceUpsertOne) IDX(ctx context.Context) ulid.ID {
+	id, err := u.ID(ctx)
+	if err != nil {
+		panic(err)
+	}
+	return id
+}
+
 // FavoriteWorkspaceCreateBulk is the builder for creating many FavoriteWorkspace entities in bulk.
 type FavoriteWorkspaceCreateBulk struct {
 	config
 	builders []*FavoriteWorkspaceCreate
+	conflict []sql.ConflictOption
 }
 
 // Save creates the FavoriteWorkspace entities in the database.
@@ -313,6 +561,7 @@ func (fwcb *FavoriteWorkspaceCreateBulk) Save(ctx context.Context) ([]*FavoriteW
 					_, err = mutators[i+1].Mutate(root, fwcb.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
+					spec.OnConflict = fwcb.conflict
 					// Invoke the actual operation on the latest mutation in the chain.
 					if err = sqlgraph.BatchCreate(ctx, fwcb.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
@@ -359,6 +608,178 @@ func (fwcb *FavoriteWorkspaceCreateBulk) Exec(ctx context.Context) error {
 // ExecX is like Exec, but panics if an error occurs.
 func (fwcb *FavoriteWorkspaceCreateBulk) ExecX(ctx context.Context) {
 	if err := fwcb.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.FavoriteWorkspace.CreateBulk(builders...).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.FavoriteWorkspaceUpsert) {
+//			SetWorkspaceID(v+v).
+//		}).
+//		Exec(ctx)
+//
+func (fwcb *FavoriteWorkspaceCreateBulk) OnConflict(opts ...sql.ConflictOption) *FavoriteWorkspaceUpsertBulk {
+	fwcb.conflict = opts
+	return &FavoriteWorkspaceUpsertBulk{
+		create: fwcb,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.FavoriteWorkspace.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+//
+func (fwcb *FavoriteWorkspaceCreateBulk) OnConflictColumns(columns ...string) *FavoriteWorkspaceUpsertBulk {
+	fwcb.conflict = append(fwcb.conflict, sql.ConflictColumns(columns...))
+	return &FavoriteWorkspaceUpsertBulk{
+		create: fwcb,
+	}
+}
+
+// FavoriteWorkspaceUpsertBulk is the builder for "upsert"-ing
+// a bulk of FavoriteWorkspace nodes.
+type FavoriteWorkspaceUpsertBulk struct {
+	create *FavoriteWorkspaceCreateBulk
+}
+
+// UpdateNewValues updates the fields using the new values that
+// were set on create. Using this option is equivalent to using:
+//
+//	client.FavoriteWorkspace.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(favoriteworkspace.FieldID)
+//			}),
+//		).
+//		Exec(ctx)
+//
+func (u *FavoriteWorkspaceUpsertBulk) UpdateNewValues() *FavoriteWorkspaceUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		for _, b := range u.create.builders {
+			if _, exists := b.mutation.ID(); exists {
+				s.SetIgnore(favoriteworkspace.FieldID)
+				return
+			}
+		}
+	}))
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//	client.FavoriteWorkspace.Create().
+//		OnConflict(sql.ResolveWithIgnore()).
+//		Exec(ctx)
+//
+func (u *FavoriteWorkspaceUpsertBulk) Ignore() *FavoriteWorkspaceUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *FavoriteWorkspaceUpsertBulk) DoNothing() *FavoriteWorkspaceUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the FavoriteWorkspaceCreateBulk.OnConflict
+// documentation for more info.
+func (u *FavoriteWorkspaceUpsertBulk) Update(set func(*FavoriteWorkspaceUpsert)) *FavoriteWorkspaceUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&FavoriteWorkspaceUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetWorkspaceID sets the "workspace_id" field.
+func (u *FavoriteWorkspaceUpsertBulk) SetWorkspaceID(v ulid.ID) *FavoriteWorkspaceUpsertBulk {
+	return u.Update(func(s *FavoriteWorkspaceUpsert) {
+		s.SetWorkspaceID(v)
+	})
+}
+
+// UpdateWorkspaceID sets the "workspace_id" field to the value that was provided on create.
+func (u *FavoriteWorkspaceUpsertBulk) UpdateWorkspaceID() *FavoriteWorkspaceUpsertBulk {
+	return u.Update(func(s *FavoriteWorkspaceUpsert) {
+		s.UpdateWorkspaceID()
+	})
+}
+
+// SetTeammateID sets the "teammate_id" field.
+func (u *FavoriteWorkspaceUpsertBulk) SetTeammateID(v ulid.ID) *FavoriteWorkspaceUpsertBulk {
+	return u.Update(func(s *FavoriteWorkspaceUpsert) {
+		s.SetTeammateID(v)
+	})
+}
+
+// UpdateTeammateID sets the "teammate_id" field to the value that was provided on create.
+func (u *FavoriteWorkspaceUpsertBulk) UpdateTeammateID() *FavoriteWorkspaceUpsertBulk {
+	return u.Update(func(s *FavoriteWorkspaceUpsert) {
+		s.UpdateTeammateID()
+	})
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *FavoriteWorkspaceUpsertBulk) SetCreatedAt(v time.Time) *FavoriteWorkspaceUpsertBulk {
+	return u.Update(func(s *FavoriteWorkspaceUpsert) {
+		s.SetCreatedAt(v)
+	})
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *FavoriteWorkspaceUpsertBulk) UpdateCreatedAt() *FavoriteWorkspaceUpsertBulk {
+	return u.Update(func(s *FavoriteWorkspaceUpsert) {
+		s.UpdateCreatedAt()
+	})
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *FavoriteWorkspaceUpsertBulk) SetUpdatedAt(v time.Time) *FavoriteWorkspaceUpsertBulk {
+	return u.Update(func(s *FavoriteWorkspaceUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *FavoriteWorkspaceUpsertBulk) UpdateUpdatedAt() *FavoriteWorkspaceUpsertBulk {
+	return u.Update(func(s *FavoriteWorkspaceUpsert) {
+		s.UpdateUpdatedAt()
+	})
+}
+
+// Exec executes the query.
+func (u *FavoriteWorkspaceUpsertBulk) Exec(ctx context.Context) error {
+	for i, b := range u.create.builders {
+		if len(b.conflict) != 0 {
+			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the FavoriteWorkspaceCreateBulk instead", i)
+		}
+	}
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for FavoriteWorkspaceCreateBulk.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *FavoriteWorkspaceUpsertBulk) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

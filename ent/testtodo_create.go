@@ -11,6 +11,8 @@ import (
 	"project-management-demo-backend/ent/testuser"
 	"time"
 
+	"entgo.io/ent/dialect"
+	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 )
@@ -20,6 +22,7 @@ type TestTodoCreate struct {
 	config
 	mutation *TestTodoMutation
 	hooks    []Hook
+	conflict []sql.ConflictOption
 }
 
 // SetTestUserID sets the "test_user_id" field.
@@ -343,6 +346,7 @@ func (ttc *TestTodoCreate) createSpec() (*TestTodo, *sqlgraph.CreateSpec) {
 			},
 		}
 	)
+	_spec.OnConflict = ttc.conflict
 	if id, ok := ttc.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = id
@@ -465,10 +469,423 @@ func (ttc *TestTodoCreate) createSpec() (*TestTodo, *sqlgraph.CreateSpec) {
 	return _node, _spec
 }
 
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.TestTodo.Create().
+//		SetTestUserID(v).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.TestTodoUpsert) {
+//			SetTestUserID(v+v).
+//		}).
+//		Exec(ctx)
+//
+func (ttc *TestTodoCreate) OnConflict(opts ...sql.ConflictOption) *TestTodoUpsertOne {
+	ttc.conflict = opts
+	return &TestTodoUpsertOne{
+		create: ttc,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.TestTodo.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+//
+func (ttc *TestTodoCreate) OnConflictColumns(columns ...string) *TestTodoUpsertOne {
+	ttc.conflict = append(ttc.conflict, sql.ConflictColumns(columns...))
+	return &TestTodoUpsertOne{
+		create: ttc,
+	}
+}
+
+type (
+	// TestTodoUpsertOne is the builder for "upsert"-ing
+	//  one TestTodo node.
+	TestTodoUpsertOne struct {
+		create *TestTodoCreate
+	}
+
+	// TestTodoUpsert is the "OnConflict" setter.
+	TestTodoUpsert struct {
+		*sql.UpdateSet
+	}
+)
+
+// SetTestUserID sets the "test_user_id" field.
+func (u *TestTodoUpsert) SetTestUserID(v ulid.ID) *TestTodoUpsert {
+	u.Set(testtodo.FieldTestUserID, v)
+	return u
+}
+
+// UpdateTestUserID sets the "test_user_id" field to the value that was provided on create.
+func (u *TestTodoUpsert) UpdateTestUserID() *TestTodoUpsert {
+	u.SetExcluded(testtodo.FieldTestUserID)
+	return u
+}
+
+// ClearTestUserID clears the value of the "test_user_id" field.
+func (u *TestTodoUpsert) ClearTestUserID() *TestTodoUpsert {
+	u.SetNull(testtodo.FieldTestUserID)
+	return u
+}
+
+// SetCreatedBy sets the "created_by" field.
+func (u *TestTodoUpsert) SetCreatedBy(v ulid.ID) *TestTodoUpsert {
+	u.Set(testtodo.FieldCreatedBy, v)
+	return u
+}
+
+// UpdateCreatedBy sets the "created_by" field to the value that was provided on create.
+func (u *TestTodoUpsert) UpdateCreatedBy() *TestTodoUpsert {
+	u.SetExcluded(testtodo.FieldCreatedBy)
+	return u
+}
+
+// SetParentTodoID sets the "parent_todo_id" field.
+func (u *TestTodoUpsert) SetParentTodoID(v ulid.ID) *TestTodoUpsert {
+	u.Set(testtodo.FieldParentTodoID, v)
+	return u
+}
+
+// UpdateParentTodoID sets the "parent_todo_id" field to the value that was provided on create.
+func (u *TestTodoUpsert) UpdateParentTodoID() *TestTodoUpsert {
+	u.SetExcluded(testtodo.FieldParentTodoID)
+	return u
+}
+
+// ClearParentTodoID clears the value of the "parent_todo_id" field.
+func (u *TestTodoUpsert) ClearParentTodoID() *TestTodoUpsert {
+	u.SetNull(testtodo.FieldParentTodoID)
+	return u
+}
+
+// SetName sets the "name" field.
+func (u *TestTodoUpsert) SetName(v string) *TestTodoUpsert {
+	u.Set(testtodo.FieldName, v)
+	return u
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *TestTodoUpsert) UpdateName() *TestTodoUpsert {
+	u.SetExcluded(testtodo.FieldName)
+	return u
+}
+
+// SetStatus sets the "status" field.
+func (u *TestTodoUpsert) SetStatus(v testtodo.Status) *TestTodoUpsert {
+	u.Set(testtodo.FieldStatus, v)
+	return u
+}
+
+// UpdateStatus sets the "status" field to the value that was provided on create.
+func (u *TestTodoUpsert) UpdateStatus() *TestTodoUpsert {
+	u.SetExcluded(testtodo.FieldStatus)
+	return u
+}
+
+// SetPriority sets the "priority" field.
+func (u *TestTodoUpsert) SetPriority(v int) *TestTodoUpsert {
+	u.Set(testtodo.FieldPriority, v)
+	return u
+}
+
+// UpdatePriority sets the "priority" field to the value that was provided on create.
+func (u *TestTodoUpsert) UpdatePriority() *TestTodoUpsert {
+	u.SetExcluded(testtodo.FieldPriority)
+	return u
+}
+
+// SetDueDate sets the "due_date" field.
+func (u *TestTodoUpsert) SetDueDate(v time.Time) *TestTodoUpsert {
+	u.Set(testtodo.FieldDueDate, v)
+	return u
+}
+
+// UpdateDueDate sets the "due_date" field to the value that was provided on create.
+func (u *TestTodoUpsert) UpdateDueDate() *TestTodoUpsert {
+	u.SetExcluded(testtodo.FieldDueDate)
+	return u
+}
+
+// ClearDueDate clears the value of the "due_date" field.
+func (u *TestTodoUpsert) ClearDueDate() *TestTodoUpsert {
+	u.SetNull(testtodo.FieldDueDate)
+	return u
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *TestTodoUpsert) SetCreatedAt(v time.Time) *TestTodoUpsert {
+	u.Set(testtodo.FieldCreatedAt, v)
+	return u
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *TestTodoUpsert) UpdateCreatedAt() *TestTodoUpsert {
+	u.SetExcluded(testtodo.FieldCreatedAt)
+	return u
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *TestTodoUpsert) SetUpdatedAt(v time.Time) *TestTodoUpsert {
+	u.Set(testtodo.FieldUpdatedAt, v)
+	return u
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *TestTodoUpsert) UpdateUpdatedAt() *TestTodoUpsert {
+	u.SetExcluded(testtodo.FieldUpdatedAt)
+	return u
+}
+
+// UpdateNewValues updates the fields using the new values that were set on create except the ID field.
+// Using this option is equivalent to using:
+//
+//	client.TestTodo.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(testtodo.FieldID)
+//			}),
+//		).
+//		Exec(ctx)
+//
+func (u *TestTodoUpsertOne) UpdateNewValues() *TestTodoUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		if _, exists := u.create.mutation.ID(); exists {
+			s.SetIgnore(testtodo.FieldID)
+		}
+	}))
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//  client.TestTodo.Create().
+//      OnConflict(sql.ResolveWithIgnore()).
+//      Exec(ctx)
+//
+func (u *TestTodoUpsertOne) Ignore() *TestTodoUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *TestTodoUpsertOne) DoNothing() *TestTodoUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the TestTodoCreate.OnConflict
+// documentation for more info.
+func (u *TestTodoUpsertOne) Update(set func(*TestTodoUpsert)) *TestTodoUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&TestTodoUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetTestUserID sets the "test_user_id" field.
+func (u *TestTodoUpsertOne) SetTestUserID(v ulid.ID) *TestTodoUpsertOne {
+	return u.Update(func(s *TestTodoUpsert) {
+		s.SetTestUserID(v)
+	})
+}
+
+// UpdateTestUserID sets the "test_user_id" field to the value that was provided on create.
+func (u *TestTodoUpsertOne) UpdateTestUserID() *TestTodoUpsertOne {
+	return u.Update(func(s *TestTodoUpsert) {
+		s.UpdateTestUserID()
+	})
+}
+
+// ClearTestUserID clears the value of the "test_user_id" field.
+func (u *TestTodoUpsertOne) ClearTestUserID() *TestTodoUpsertOne {
+	return u.Update(func(s *TestTodoUpsert) {
+		s.ClearTestUserID()
+	})
+}
+
+// SetCreatedBy sets the "created_by" field.
+func (u *TestTodoUpsertOne) SetCreatedBy(v ulid.ID) *TestTodoUpsertOne {
+	return u.Update(func(s *TestTodoUpsert) {
+		s.SetCreatedBy(v)
+	})
+}
+
+// UpdateCreatedBy sets the "created_by" field to the value that was provided on create.
+func (u *TestTodoUpsertOne) UpdateCreatedBy() *TestTodoUpsertOne {
+	return u.Update(func(s *TestTodoUpsert) {
+		s.UpdateCreatedBy()
+	})
+}
+
+// SetParentTodoID sets the "parent_todo_id" field.
+func (u *TestTodoUpsertOne) SetParentTodoID(v ulid.ID) *TestTodoUpsertOne {
+	return u.Update(func(s *TestTodoUpsert) {
+		s.SetParentTodoID(v)
+	})
+}
+
+// UpdateParentTodoID sets the "parent_todo_id" field to the value that was provided on create.
+func (u *TestTodoUpsertOne) UpdateParentTodoID() *TestTodoUpsertOne {
+	return u.Update(func(s *TestTodoUpsert) {
+		s.UpdateParentTodoID()
+	})
+}
+
+// ClearParentTodoID clears the value of the "parent_todo_id" field.
+func (u *TestTodoUpsertOne) ClearParentTodoID() *TestTodoUpsertOne {
+	return u.Update(func(s *TestTodoUpsert) {
+		s.ClearParentTodoID()
+	})
+}
+
+// SetName sets the "name" field.
+func (u *TestTodoUpsertOne) SetName(v string) *TestTodoUpsertOne {
+	return u.Update(func(s *TestTodoUpsert) {
+		s.SetName(v)
+	})
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *TestTodoUpsertOne) UpdateName() *TestTodoUpsertOne {
+	return u.Update(func(s *TestTodoUpsert) {
+		s.UpdateName()
+	})
+}
+
+// SetStatus sets the "status" field.
+func (u *TestTodoUpsertOne) SetStatus(v testtodo.Status) *TestTodoUpsertOne {
+	return u.Update(func(s *TestTodoUpsert) {
+		s.SetStatus(v)
+	})
+}
+
+// UpdateStatus sets the "status" field to the value that was provided on create.
+func (u *TestTodoUpsertOne) UpdateStatus() *TestTodoUpsertOne {
+	return u.Update(func(s *TestTodoUpsert) {
+		s.UpdateStatus()
+	})
+}
+
+// SetPriority sets the "priority" field.
+func (u *TestTodoUpsertOne) SetPriority(v int) *TestTodoUpsertOne {
+	return u.Update(func(s *TestTodoUpsert) {
+		s.SetPriority(v)
+	})
+}
+
+// UpdatePriority sets the "priority" field to the value that was provided on create.
+func (u *TestTodoUpsertOne) UpdatePriority() *TestTodoUpsertOne {
+	return u.Update(func(s *TestTodoUpsert) {
+		s.UpdatePriority()
+	})
+}
+
+// SetDueDate sets the "due_date" field.
+func (u *TestTodoUpsertOne) SetDueDate(v time.Time) *TestTodoUpsertOne {
+	return u.Update(func(s *TestTodoUpsert) {
+		s.SetDueDate(v)
+	})
+}
+
+// UpdateDueDate sets the "due_date" field to the value that was provided on create.
+func (u *TestTodoUpsertOne) UpdateDueDate() *TestTodoUpsertOne {
+	return u.Update(func(s *TestTodoUpsert) {
+		s.UpdateDueDate()
+	})
+}
+
+// ClearDueDate clears the value of the "due_date" field.
+func (u *TestTodoUpsertOne) ClearDueDate() *TestTodoUpsertOne {
+	return u.Update(func(s *TestTodoUpsert) {
+		s.ClearDueDate()
+	})
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *TestTodoUpsertOne) SetCreatedAt(v time.Time) *TestTodoUpsertOne {
+	return u.Update(func(s *TestTodoUpsert) {
+		s.SetCreatedAt(v)
+	})
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *TestTodoUpsertOne) UpdateCreatedAt() *TestTodoUpsertOne {
+	return u.Update(func(s *TestTodoUpsert) {
+		s.UpdateCreatedAt()
+	})
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *TestTodoUpsertOne) SetUpdatedAt(v time.Time) *TestTodoUpsertOne {
+	return u.Update(func(s *TestTodoUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *TestTodoUpsertOne) UpdateUpdatedAt() *TestTodoUpsertOne {
+	return u.Update(func(s *TestTodoUpsert) {
+		s.UpdateUpdatedAt()
+	})
+}
+
+// Exec executes the query.
+func (u *TestTodoUpsertOne) Exec(ctx context.Context) error {
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for TestTodoCreate.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *TestTodoUpsertOne) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// Exec executes the UPSERT query and returns the inserted/updated ID.
+func (u *TestTodoUpsertOne) ID(ctx context.Context) (id ulid.ID, err error) {
+	if u.create.driver.Dialect() == dialect.MySQL {
+		// In case of "ON CONFLICT", there is no way to get back non-numeric ID
+		// fields from the database since MySQL does not support the RETURNING clause.
+		return id, errors.New("ent: TestTodoUpsertOne.ID is not supported by MySQL driver. Use TestTodoUpsertOne.Exec instead")
+	}
+	node, err := u.create.Save(ctx)
+	if err != nil {
+		return id, err
+	}
+	return node.ID, nil
+}
+
+// IDX is like ID, but panics if an error occurs.
+func (u *TestTodoUpsertOne) IDX(ctx context.Context) ulid.ID {
+	id, err := u.ID(ctx)
+	if err != nil {
+		panic(err)
+	}
+	return id
+}
+
 // TestTodoCreateBulk is the builder for creating many TestTodo entities in bulk.
 type TestTodoCreateBulk struct {
 	config
 	builders []*TestTodoCreate
+	conflict []sql.ConflictOption
 }
 
 // Save creates the TestTodo entities in the database.
@@ -495,6 +912,7 @@ func (ttcb *TestTodoCreateBulk) Save(ctx context.Context) ([]*TestTodo, error) {
 					_, err = mutators[i+1].Mutate(root, ttcb.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
+					spec.OnConflict = ttcb.conflict
 					// Invoke the actual operation on the latest mutation in the chain.
 					if err = sqlgraph.BatchCreate(ctx, ttcb.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
@@ -541,6 +959,269 @@ func (ttcb *TestTodoCreateBulk) Exec(ctx context.Context) error {
 // ExecX is like Exec, but panics if an error occurs.
 func (ttcb *TestTodoCreateBulk) ExecX(ctx context.Context) {
 	if err := ttcb.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.TestTodo.CreateBulk(builders...).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.TestTodoUpsert) {
+//			SetTestUserID(v+v).
+//		}).
+//		Exec(ctx)
+//
+func (ttcb *TestTodoCreateBulk) OnConflict(opts ...sql.ConflictOption) *TestTodoUpsertBulk {
+	ttcb.conflict = opts
+	return &TestTodoUpsertBulk{
+		create: ttcb,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.TestTodo.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+//
+func (ttcb *TestTodoCreateBulk) OnConflictColumns(columns ...string) *TestTodoUpsertBulk {
+	ttcb.conflict = append(ttcb.conflict, sql.ConflictColumns(columns...))
+	return &TestTodoUpsertBulk{
+		create: ttcb,
+	}
+}
+
+// TestTodoUpsertBulk is the builder for "upsert"-ing
+// a bulk of TestTodo nodes.
+type TestTodoUpsertBulk struct {
+	create *TestTodoCreateBulk
+}
+
+// UpdateNewValues updates the fields using the new values that
+// were set on create. Using this option is equivalent to using:
+//
+//	client.TestTodo.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(testtodo.FieldID)
+//			}),
+//		).
+//		Exec(ctx)
+//
+func (u *TestTodoUpsertBulk) UpdateNewValues() *TestTodoUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		for _, b := range u.create.builders {
+			if _, exists := b.mutation.ID(); exists {
+				s.SetIgnore(testtodo.FieldID)
+				return
+			}
+		}
+	}))
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//	client.TestTodo.Create().
+//		OnConflict(sql.ResolveWithIgnore()).
+//		Exec(ctx)
+//
+func (u *TestTodoUpsertBulk) Ignore() *TestTodoUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *TestTodoUpsertBulk) DoNothing() *TestTodoUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the TestTodoCreateBulk.OnConflict
+// documentation for more info.
+func (u *TestTodoUpsertBulk) Update(set func(*TestTodoUpsert)) *TestTodoUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&TestTodoUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetTestUserID sets the "test_user_id" field.
+func (u *TestTodoUpsertBulk) SetTestUserID(v ulid.ID) *TestTodoUpsertBulk {
+	return u.Update(func(s *TestTodoUpsert) {
+		s.SetTestUserID(v)
+	})
+}
+
+// UpdateTestUserID sets the "test_user_id" field to the value that was provided on create.
+func (u *TestTodoUpsertBulk) UpdateTestUserID() *TestTodoUpsertBulk {
+	return u.Update(func(s *TestTodoUpsert) {
+		s.UpdateTestUserID()
+	})
+}
+
+// ClearTestUserID clears the value of the "test_user_id" field.
+func (u *TestTodoUpsertBulk) ClearTestUserID() *TestTodoUpsertBulk {
+	return u.Update(func(s *TestTodoUpsert) {
+		s.ClearTestUserID()
+	})
+}
+
+// SetCreatedBy sets the "created_by" field.
+func (u *TestTodoUpsertBulk) SetCreatedBy(v ulid.ID) *TestTodoUpsertBulk {
+	return u.Update(func(s *TestTodoUpsert) {
+		s.SetCreatedBy(v)
+	})
+}
+
+// UpdateCreatedBy sets the "created_by" field to the value that was provided on create.
+func (u *TestTodoUpsertBulk) UpdateCreatedBy() *TestTodoUpsertBulk {
+	return u.Update(func(s *TestTodoUpsert) {
+		s.UpdateCreatedBy()
+	})
+}
+
+// SetParentTodoID sets the "parent_todo_id" field.
+func (u *TestTodoUpsertBulk) SetParentTodoID(v ulid.ID) *TestTodoUpsertBulk {
+	return u.Update(func(s *TestTodoUpsert) {
+		s.SetParentTodoID(v)
+	})
+}
+
+// UpdateParentTodoID sets the "parent_todo_id" field to the value that was provided on create.
+func (u *TestTodoUpsertBulk) UpdateParentTodoID() *TestTodoUpsertBulk {
+	return u.Update(func(s *TestTodoUpsert) {
+		s.UpdateParentTodoID()
+	})
+}
+
+// ClearParentTodoID clears the value of the "parent_todo_id" field.
+func (u *TestTodoUpsertBulk) ClearParentTodoID() *TestTodoUpsertBulk {
+	return u.Update(func(s *TestTodoUpsert) {
+		s.ClearParentTodoID()
+	})
+}
+
+// SetName sets the "name" field.
+func (u *TestTodoUpsertBulk) SetName(v string) *TestTodoUpsertBulk {
+	return u.Update(func(s *TestTodoUpsert) {
+		s.SetName(v)
+	})
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *TestTodoUpsertBulk) UpdateName() *TestTodoUpsertBulk {
+	return u.Update(func(s *TestTodoUpsert) {
+		s.UpdateName()
+	})
+}
+
+// SetStatus sets the "status" field.
+func (u *TestTodoUpsertBulk) SetStatus(v testtodo.Status) *TestTodoUpsertBulk {
+	return u.Update(func(s *TestTodoUpsert) {
+		s.SetStatus(v)
+	})
+}
+
+// UpdateStatus sets the "status" field to the value that was provided on create.
+func (u *TestTodoUpsertBulk) UpdateStatus() *TestTodoUpsertBulk {
+	return u.Update(func(s *TestTodoUpsert) {
+		s.UpdateStatus()
+	})
+}
+
+// SetPriority sets the "priority" field.
+func (u *TestTodoUpsertBulk) SetPriority(v int) *TestTodoUpsertBulk {
+	return u.Update(func(s *TestTodoUpsert) {
+		s.SetPriority(v)
+	})
+}
+
+// UpdatePriority sets the "priority" field to the value that was provided on create.
+func (u *TestTodoUpsertBulk) UpdatePriority() *TestTodoUpsertBulk {
+	return u.Update(func(s *TestTodoUpsert) {
+		s.UpdatePriority()
+	})
+}
+
+// SetDueDate sets the "due_date" field.
+func (u *TestTodoUpsertBulk) SetDueDate(v time.Time) *TestTodoUpsertBulk {
+	return u.Update(func(s *TestTodoUpsert) {
+		s.SetDueDate(v)
+	})
+}
+
+// UpdateDueDate sets the "due_date" field to the value that was provided on create.
+func (u *TestTodoUpsertBulk) UpdateDueDate() *TestTodoUpsertBulk {
+	return u.Update(func(s *TestTodoUpsert) {
+		s.UpdateDueDate()
+	})
+}
+
+// ClearDueDate clears the value of the "due_date" field.
+func (u *TestTodoUpsertBulk) ClearDueDate() *TestTodoUpsertBulk {
+	return u.Update(func(s *TestTodoUpsert) {
+		s.ClearDueDate()
+	})
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *TestTodoUpsertBulk) SetCreatedAt(v time.Time) *TestTodoUpsertBulk {
+	return u.Update(func(s *TestTodoUpsert) {
+		s.SetCreatedAt(v)
+	})
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *TestTodoUpsertBulk) UpdateCreatedAt() *TestTodoUpsertBulk {
+	return u.Update(func(s *TestTodoUpsert) {
+		s.UpdateCreatedAt()
+	})
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *TestTodoUpsertBulk) SetUpdatedAt(v time.Time) *TestTodoUpsertBulk {
+	return u.Update(func(s *TestTodoUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *TestTodoUpsertBulk) UpdateUpdatedAt() *TestTodoUpsertBulk {
+	return u.Update(func(s *TestTodoUpsert) {
+		s.UpdateUpdatedAt()
+	})
+}
+
+// Exec executes the query.
+func (u *TestTodoUpsertBulk) Exec(ctx context.Context) error {
+	for i, b := range u.create.builders {
+		if len(b.conflict) != 0 {
+			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the TestTodoCreateBulk instead", i)
+		}
+	}
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for TestTodoCreateBulk.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *TestTodoUpsertBulk) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

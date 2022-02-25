@@ -32,7 +32,7 @@ seed:
 	go1.16.9 run ./cmd/seed/main.go
 
 ent_generate:
-	go1.16.9 generate ./ent --idtype string
+	go1.16.9 generate ./ent --feature sql/upsert --idtype string
 
 generate:
 	go1.16.9 generate ./...

@@ -12,6 +12,8 @@ import (
 	"project-management-demo-backend/ent/schema/ulid"
 	"time"
 
+	"entgo.io/ent/dialect"
+	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 )
@@ -21,6 +23,7 @@ type ProjectBaseColorCreate struct {
 	config
 	mutation *ProjectBaseColorMutation
 	hooks    []Hook
+	conflict []sql.ConflictOption
 }
 
 // SetColorID sets the "color_id" field.
@@ -218,6 +221,7 @@ func (pbcc *ProjectBaseColorCreate) createSpec() (*ProjectBaseColor, *sqlgraph.C
 			},
 		}
 	)
+	_spec.OnConflict = pbcc.conflict
 	if id, ok := pbcc.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = id
@@ -280,10 +284,228 @@ func (pbcc *ProjectBaseColorCreate) createSpec() (*ProjectBaseColor, *sqlgraph.C
 	return _node, _spec
 }
 
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.ProjectBaseColor.Create().
+//		SetColorID(v).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.ProjectBaseColorUpsert) {
+//			SetColorID(v+v).
+//		}).
+//		Exec(ctx)
+//
+func (pbcc *ProjectBaseColorCreate) OnConflict(opts ...sql.ConflictOption) *ProjectBaseColorUpsertOne {
+	pbcc.conflict = opts
+	return &ProjectBaseColorUpsertOne{
+		create: pbcc,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.ProjectBaseColor.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+//
+func (pbcc *ProjectBaseColorCreate) OnConflictColumns(columns ...string) *ProjectBaseColorUpsertOne {
+	pbcc.conflict = append(pbcc.conflict, sql.ConflictColumns(columns...))
+	return &ProjectBaseColorUpsertOne{
+		create: pbcc,
+	}
+}
+
+type (
+	// ProjectBaseColorUpsertOne is the builder for "upsert"-ing
+	//  one ProjectBaseColor node.
+	ProjectBaseColorUpsertOne struct {
+		create *ProjectBaseColorCreate
+	}
+
+	// ProjectBaseColorUpsert is the "OnConflict" setter.
+	ProjectBaseColorUpsert struct {
+		*sql.UpdateSet
+	}
+)
+
+// SetColorID sets the "color_id" field.
+func (u *ProjectBaseColorUpsert) SetColorID(v ulid.ID) *ProjectBaseColorUpsert {
+	u.Set(projectbasecolor.FieldColorID, v)
+	return u
+}
+
+// UpdateColorID sets the "color_id" field to the value that was provided on create.
+func (u *ProjectBaseColorUpsert) UpdateColorID() *ProjectBaseColorUpsert {
+	u.SetExcluded(projectbasecolor.FieldColorID)
+	return u
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *ProjectBaseColorUpsert) SetCreatedAt(v time.Time) *ProjectBaseColorUpsert {
+	u.Set(projectbasecolor.FieldCreatedAt, v)
+	return u
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *ProjectBaseColorUpsert) UpdateCreatedAt() *ProjectBaseColorUpsert {
+	u.SetExcluded(projectbasecolor.FieldCreatedAt)
+	return u
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *ProjectBaseColorUpsert) SetUpdatedAt(v time.Time) *ProjectBaseColorUpsert {
+	u.Set(projectbasecolor.FieldUpdatedAt, v)
+	return u
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *ProjectBaseColorUpsert) UpdateUpdatedAt() *ProjectBaseColorUpsert {
+	u.SetExcluded(projectbasecolor.FieldUpdatedAt)
+	return u
+}
+
+// UpdateNewValues updates the fields using the new values that were set on create except the ID field.
+// Using this option is equivalent to using:
+//
+//	client.ProjectBaseColor.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(projectbasecolor.FieldID)
+//			}),
+//		).
+//		Exec(ctx)
+//
+func (u *ProjectBaseColorUpsertOne) UpdateNewValues() *ProjectBaseColorUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		if _, exists := u.create.mutation.ID(); exists {
+			s.SetIgnore(projectbasecolor.FieldID)
+		}
+	}))
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//  client.ProjectBaseColor.Create().
+//      OnConflict(sql.ResolveWithIgnore()).
+//      Exec(ctx)
+//
+func (u *ProjectBaseColorUpsertOne) Ignore() *ProjectBaseColorUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *ProjectBaseColorUpsertOne) DoNothing() *ProjectBaseColorUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the ProjectBaseColorCreate.OnConflict
+// documentation for more info.
+func (u *ProjectBaseColorUpsertOne) Update(set func(*ProjectBaseColorUpsert)) *ProjectBaseColorUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&ProjectBaseColorUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetColorID sets the "color_id" field.
+func (u *ProjectBaseColorUpsertOne) SetColorID(v ulid.ID) *ProjectBaseColorUpsertOne {
+	return u.Update(func(s *ProjectBaseColorUpsert) {
+		s.SetColorID(v)
+	})
+}
+
+// UpdateColorID sets the "color_id" field to the value that was provided on create.
+func (u *ProjectBaseColorUpsertOne) UpdateColorID() *ProjectBaseColorUpsertOne {
+	return u.Update(func(s *ProjectBaseColorUpsert) {
+		s.UpdateColorID()
+	})
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *ProjectBaseColorUpsertOne) SetCreatedAt(v time.Time) *ProjectBaseColorUpsertOne {
+	return u.Update(func(s *ProjectBaseColorUpsert) {
+		s.SetCreatedAt(v)
+	})
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *ProjectBaseColorUpsertOne) UpdateCreatedAt() *ProjectBaseColorUpsertOne {
+	return u.Update(func(s *ProjectBaseColorUpsert) {
+		s.UpdateCreatedAt()
+	})
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *ProjectBaseColorUpsertOne) SetUpdatedAt(v time.Time) *ProjectBaseColorUpsertOne {
+	return u.Update(func(s *ProjectBaseColorUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *ProjectBaseColorUpsertOne) UpdateUpdatedAt() *ProjectBaseColorUpsertOne {
+	return u.Update(func(s *ProjectBaseColorUpsert) {
+		s.UpdateUpdatedAt()
+	})
+}
+
+// Exec executes the query.
+func (u *ProjectBaseColorUpsertOne) Exec(ctx context.Context) error {
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for ProjectBaseColorCreate.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *ProjectBaseColorUpsertOne) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// Exec executes the UPSERT query and returns the inserted/updated ID.
+func (u *ProjectBaseColorUpsertOne) ID(ctx context.Context) (id ulid.ID, err error) {
+	if u.create.driver.Dialect() == dialect.MySQL {
+		// In case of "ON CONFLICT", there is no way to get back non-numeric ID
+		// fields from the database since MySQL does not support the RETURNING clause.
+		return id, errors.New("ent: ProjectBaseColorUpsertOne.ID is not supported by MySQL driver. Use ProjectBaseColorUpsertOne.Exec instead")
+	}
+	node, err := u.create.Save(ctx)
+	if err != nil {
+		return id, err
+	}
+	return node.ID, nil
+}
+
+// IDX is like ID, but panics if an error occurs.
+func (u *ProjectBaseColorUpsertOne) IDX(ctx context.Context) ulid.ID {
+	id, err := u.ID(ctx)
+	if err != nil {
+		panic(err)
+	}
+	return id
+}
+
 // ProjectBaseColorCreateBulk is the builder for creating many ProjectBaseColor entities in bulk.
 type ProjectBaseColorCreateBulk struct {
 	config
 	builders []*ProjectBaseColorCreate
+	conflict []sql.ConflictOption
 }
 
 // Save creates the ProjectBaseColor entities in the database.
@@ -310,6 +532,7 @@ func (pbccb *ProjectBaseColorCreateBulk) Save(ctx context.Context) ([]*ProjectBa
 					_, err = mutators[i+1].Mutate(root, pbccb.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
+					spec.OnConflict = pbccb.conflict
 					// Invoke the actual operation on the latest mutation in the chain.
 					if err = sqlgraph.BatchCreate(ctx, pbccb.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
@@ -356,6 +579,164 @@ func (pbccb *ProjectBaseColorCreateBulk) Exec(ctx context.Context) error {
 // ExecX is like Exec, but panics if an error occurs.
 func (pbccb *ProjectBaseColorCreateBulk) ExecX(ctx context.Context) {
 	if err := pbccb.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.ProjectBaseColor.CreateBulk(builders...).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.ProjectBaseColorUpsert) {
+//			SetColorID(v+v).
+//		}).
+//		Exec(ctx)
+//
+func (pbccb *ProjectBaseColorCreateBulk) OnConflict(opts ...sql.ConflictOption) *ProjectBaseColorUpsertBulk {
+	pbccb.conflict = opts
+	return &ProjectBaseColorUpsertBulk{
+		create: pbccb,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.ProjectBaseColor.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+//
+func (pbccb *ProjectBaseColorCreateBulk) OnConflictColumns(columns ...string) *ProjectBaseColorUpsertBulk {
+	pbccb.conflict = append(pbccb.conflict, sql.ConflictColumns(columns...))
+	return &ProjectBaseColorUpsertBulk{
+		create: pbccb,
+	}
+}
+
+// ProjectBaseColorUpsertBulk is the builder for "upsert"-ing
+// a bulk of ProjectBaseColor nodes.
+type ProjectBaseColorUpsertBulk struct {
+	create *ProjectBaseColorCreateBulk
+}
+
+// UpdateNewValues updates the fields using the new values that
+// were set on create. Using this option is equivalent to using:
+//
+//	client.ProjectBaseColor.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(projectbasecolor.FieldID)
+//			}),
+//		).
+//		Exec(ctx)
+//
+func (u *ProjectBaseColorUpsertBulk) UpdateNewValues() *ProjectBaseColorUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		for _, b := range u.create.builders {
+			if _, exists := b.mutation.ID(); exists {
+				s.SetIgnore(projectbasecolor.FieldID)
+				return
+			}
+		}
+	}))
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//	client.ProjectBaseColor.Create().
+//		OnConflict(sql.ResolveWithIgnore()).
+//		Exec(ctx)
+//
+func (u *ProjectBaseColorUpsertBulk) Ignore() *ProjectBaseColorUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *ProjectBaseColorUpsertBulk) DoNothing() *ProjectBaseColorUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the ProjectBaseColorCreateBulk.OnConflict
+// documentation for more info.
+func (u *ProjectBaseColorUpsertBulk) Update(set func(*ProjectBaseColorUpsert)) *ProjectBaseColorUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&ProjectBaseColorUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetColorID sets the "color_id" field.
+func (u *ProjectBaseColorUpsertBulk) SetColorID(v ulid.ID) *ProjectBaseColorUpsertBulk {
+	return u.Update(func(s *ProjectBaseColorUpsert) {
+		s.SetColorID(v)
+	})
+}
+
+// UpdateColorID sets the "color_id" field to the value that was provided on create.
+func (u *ProjectBaseColorUpsertBulk) UpdateColorID() *ProjectBaseColorUpsertBulk {
+	return u.Update(func(s *ProjectBaseColorUpsert) {
+		s.UpdateColorID()
+	})
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *ProjectBaseColorUpsertBulk) SetCreatedAt(v time.Time) *ProjectBaseColorUpsertBulk {
+	return u.Update(func(s *ProjectBaseColorUpsert) {
+		s.SetCreatedAt(v)
+	})
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *ProjectBaseColorUpsertBulk) UpdateCreatedAt() *ProjectBaseColorUpsertBulk {
+	return u.Update(func(s *ProjectBaseColorUpsert) {
+		s.UpdateCreatedAt()
+	})
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *ProjectBaseColorUpsertBulk) SetUpdatedAt(v time.Time) *ProjectBaseColorUpsertBulk {
+	return u.Update(func(s *ProjectBaseColorUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *ProjectBaseColorUpsertBulk) UpdateUpdatedAt() *ProjectBaseColorUpsertBulk {
+	return u.Update(func(s *ProjectBaseColorUpsert) {
+		s.UpdateUpdatedAt()
+	})
+}
+
+// Exec executes the query.
+func (u *ProjectBaseColorUpsertBulk) Exec(ctx context.Context) error {
+	for i, b := range u.create.builders {
+		if len(b.conflict) != 0 {
+			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the ProjectBaseColorCreateBulk instead", i)
+		}
+	}
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for ProjectBaseColorCreateBulk.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *ProjectBaseColorUpsertBulk) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

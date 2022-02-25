@@ -13,6 +13,8 @@ import (
 	"project-management-demo-backend/ent/workspace"
 	"time"
 
+	"entgo.io/ent/dialect"
+	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 )
@@ -22,6 +24,7 @@ type TaskLikeCreate struct {
 	config
 	mutation *TaskLikeMutation
 	hooks    []Hook
+	conflict []sql.ConflictOption
 }
 
 // SetTaskID sets the "task_id" field.
@@ -238,6 +241,7 @@ func (tlc *TaskLikeCreate) createSpec() (*TaskLike, *sqlgraph.CreateSpec) {
 			},
 		}
 	)
+	_spec.OnConflict = tlc.conflict
 	if id, ok := tlc.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = id
@@ -321,10 +325,280 @@ func (tlc *TaskLikeCreate) createSpec() (*TaskLike, *sqlgraph.CreateSpec) {
 	return _node, _spec
 }
 
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.TaskLike.Create().
+//		SetTaskID(v).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.TaskLikeUpsert) {
+//			SetTaskID(v+v).
+//		}).
+//		Exec(ctx)
+//
+func (tlc *TaskLikeCreate) OnConflict(opts ...sql.ConflictOption) *TaskLikeUpsertOne {
+	tlc.conflict = opts
+	return &TaskLikeUpsertOne{
+		create: tlc,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.TaskLike.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+//
+func (tlc *TaskLikeCreate) OnConflictColumns(columns ...string) *TaskLikeUpsertOne {
+	tlc.conflict = append(tlc.conflict, sql.ConflictColumns(columns...))
+	return &TaskLikeUpsertOne{
+		create: tlc,
+	}
+}
+
+type (
+	// TaskLikeUpsertOne is the builder for "upsert"-ing
+	//  one TaskLike node.
+	TaskLikeUpsertOne struct {
+		create *TaskLikeCreate
+	}
+
+	// TaskLikeUpsert is the "OnConflict" setter.
+	TaskLikeUpsert struct {
+		*sql.UpdateSet
+	}
+)
+
+// SetTaskID sets the "task_id" field.
+func (u *TaskLikeUpsert) SetTaskID(v ulid.ID) *TaskLikeUpsert {
+	u.Set(tasklike.FieldTaskID, v)
+	return u
+}
+
+// UpdateTaskID sets the "task_id" field to the value that was provided on create.
+func (u *TaskLikeUpsert) UpdateTaskID() *TaskLikeUpsert {
+	u.SetExcluded(tasklike.FieldTaskID)
+	return u
+}
+
+// SetTeammateID sets the "teammate_id" field.
+func (u *TaskLikeUpsert) SetTeammateID(v ulid.ID) *TaskLikeUpsert {
+	u.Set(tasklike.FieldTeammateID, v)
+	return u
+}
+
+// UpdateTeammateID sets the "teammate_id" field to the value that was provided on create.
+func (u *TaskLikeUpsert) UpdateTeammateID() *TaskLikeUpsert {
+	u.SetExcluded(tasklike.FieldTeammateID)
+	return u
+}
+
+// SetWorkspaceID sets the "workspace_id" field.
+func (u *TaskLikeUpsert) SetWorkspaceID(v ulid.ID) *TaskLikeUpsert {
+	u.Set(tasklike.FieldWorkspaceID, v)
+	return u
+}
+
+// UpdateWorkspaceID sets the "workspace_id" field to the value that was provided on create.
+func (u *TaskLikeUpsert) UpdateWorkspaceID() *TaskLikeUpsert {
+	u.SetExcluded(tasklike.FieldWorkspaceID)
+	return u
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *TaskLikeUpsert) SetCreatedAt(v time.Time) *TaskLikeUpsert {
+	u.Set(tasklike.FieldCreatedAt, v)
+	return u
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *TaskLikeUpsert) UpdateCreatedAt() *TaskLikeUpsert {
+	u.SetExcluded(tasklike.FieldCreatedAt)
+	return u
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *TaskLikeUpsert) SetUpdatedAt(v time.Time) *TaskLikeUpsert {
+	u.Set(tasklike.FieldUpdatedAt, v)
+	return u
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *TaskLikeUpsert) UpdateUpdatedAt() *TaskLikeUpsert {
+	u.SetExcluded(tasklike.FieldUpdatedAt)
+	return u
+}
+
+// UpdateNewValues updates the fields using the new values that were set on create except the ID field.
+// Using this option is equivalent to using:
+//
+//	client.TaskLike.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(tasklike.FieldID)
+//			}),
+//		).
+//		Exec(ctx)
+//
+func (u *TaskLikeUpsertOne) UpdateNewValues() *TaskLikeUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		if _, exists := u.create.mutation.ID(); exists {
+			s.SetIgnore(tasklike.FieldID)
+		}
+	}))
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//  client.TaskLike.Create().
+//      OnConflict(sql.ResolveWithIgnore()).
+//      Exec(ctx)
+//
+func (u *TaskLikeUpsertOne) Ignore() *TaskLikeUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *TaskLikeUpsertOne) DoNothing() *TaskLikeUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the TaskLikeCreate.OnConflict
+// documentation for more info.
+func (u *TaskLikeUpsertOne) Update(set func(*TaskLikeUpsert)) *TaskLikeUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&TaskLikeUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetTaskID sets the "task_id" field.
+func (u *TaskLikeUpsertOne) SetTaskID(v ulid.ID) *TaskLikeUpsertOne {
+	return u.Update(func(s *TaskLikeUpsert) {
+		s.SetTaskID(v)
+	})
+}
+
+// UpdateTaskID sets the "task_id" field to the value that was provided on create.
+func (u *TaskLikeUpsertOne) UpdateTaskID() *TaskLikeUpsertOne {
+	return u.Update(func(s *TaskLikeUpsert) {
+		s.UpdateTaskID()
+	})
+}
+
+// SetTeammateID sets the "teammate_id" field.
+func (u *TaskLikeUpsertOne) SetTeammateID(v ulid.ID) *TaskLikeUpsertOne {
+	return u.Update(func(s *TaskLikeUpsert) {
+		s.SetTeammateID(v)
+	})
+}
+
+// UpdateTeammateID sets the "teammate_id" field to the value that was provided on create.
+func (u *TaskLikeUpsertOne) UpdateTeammateID() *TaskLikeUpsertOne {
+	return u.Update(func(s *TaskLikeUpsert) {
+		s.UpdateTeammateID()
+	})
+}
+
+// SetWorkspaceID sets the "workspace_id" field.
+func (u *TaskLikeUpsertOne) SetWorkspaceID(v ulid.ID) *TaskLikeUpsertOne {
+	return u.Update(func(s *TaskLikeUpsert) {
+		s.SetWorkspaceID(v)
+	})
+}
+
+// UpdateWorkspaceID sets the "workspace_id" field to the value that was provided on create.
+func (u *TaskLikeUpsertOne) UpdateWorkspaceID() *TaskLikeUpsertOne {
+	return u.Update(func(s *TaskLikeUpsert) {
+		s.UpdateWorkspaceID()
+	})
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *TaskLikeUpsertOne) SetCreatedAt(v time.Time) *TaskLikeUpsertOne {
+	return u.Update(func(s *TaskLikeUpsert) {
+		s.SetCreatedAt(v)
+	})
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *TaskLikeUpsertOne) UpdateCreatedAt() *TaskLikeUpsertOne {
+	return u.Update(func(s *TaskLikeUpsert) {
+		s.UpdateCreatedAt()
+	})
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *TaskLikeUpsertOne) SetUpdatedAt(v time.Time) *TaskLikeUpsertOne {
+	return u.Update(func(s *TaskLikeUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *TaskLikeUpsertOne) UpdateUpdatedAt() *TaskLikeUpsertOne {
+	return u.Update(func(s *TaskLikeUpsert) {
+		s.UpdateUpdatedAt()
+	})
+}
+
+// Exec executes the query.
+func (u *TaskLikeUpsertOne) Exec(ctx context.Context) error {
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for TaskLikeCreate.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *TaskLikeUpsertOne) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// Exec executes the UPSERT query and returns the inserted/updated ID.
+func (u *TaskLikeUpsertOne) ID(ctx context.Context) (id ulid.ID, err error) {
+	if u.create.driver.Dialect() == dialect.MySQL {
+		// In case of "ON CONFLICT", there is no way to get back non-numeric ID
+		// fields from the database since MySQL does not support the RETURNING clause.
+		return id, errors.New("ent: TaskLikeUpsertOne.ID is not supported by MySQL driver. Use TaskLikeUpsertOne.Exec instead")
+	}
+	node, err := u.create.Save(ctx)
+	if err != nil {
+		return id, err
+	}
+	return node.ID, nil
+}
+
+// IDX is like ID, but panics if an error occurs.
+func (u *TaskLikeUpsertOne) IDX(ctx context.Context) ulid.ID {
+	id, err := u.ID(ctx)
+	if err != nil {
+		panic(err)
+	}
+	return id
+}
+
 // TaskLikeCreateBulk is the builder for creating many TaskLike entities in bulk.
 type TaskLikeCreateBulk struct {
 	config
 	builders []*TaskLikeCreate
+	conflict []sql.ConflictOption
 }
 
 // Save creates the TaskLike entities in the database.
@@ -351,6 +625,7 @@ func (tlcb *TaskLikeCreateBulk) Save(ctx context.Context) ([]*TaskLike, error) {
 					_, err = mutators[i+1].Mutate(root, tlcb.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
+					spec.OnConflict = tlcb.conflict
 					// Invoke the actual operation on the latest mutation in the chain.
 					if err = sqlgraph.BatchCreate(ctx, tlcb.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
@@ -397,6 +672,192 @@ func (tlcb *TaskLikeCreateBulk) Exec(ctx context.Context) error {
 // ExecX is like Exec, but panics if an error occurs.
 func (tlcb *TaskLikeCreateBulk) ExecX(ctx context.Context) {
 	if err := tlcb.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.TaskLike.CreateBulk(builders...).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.TaskLikeUpsert) {
+//			SetTaskID(v+v).
+//		}).
+//		Exec(ctx)
+//
+func (tlcb *TaskLikeCreateBulk) OnConflict(opts ...sql.ConflictOption) *TaskLikeUpsertBulk {
+	tlcb.conflict = opts
+	return &TaskLikeUpsertBulk{
+		create: tlcb,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.TaskLike.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+//
+func (tlcb *TaskLikeCreateBulk) OnConflictColumns(columns ...string) *TaskLikeUpsertBulk {
+	tlcb.conflict = append(tlcb.conflict, sql.ConflictColumns(columns...))
+	return &TaskLikeUpsertBulk{
+		create: tlcb,
+	}
+}
+
+// TaskLikeUpsertBulk is the builder for "upsert"-ing
+// a bulk of TaskLike nodes.
+type TaskLikeUpsertBulk struct {
+	create *TaskLikeCreateBulk
+}
+
+// UpdateNewValues updates the fields using the new values that
+// were set on create. Using this option is equivalent to using:
+//
+//	client.TaskLike.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(tasklike.FieldID)
+//			}),
+//		).
+//		Exec(ctx)
+//
+func (u *TaskLikeUpsertBulk) UpdateNewValues() *TaskLikeUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		for _, b := range u.create.builders {
+			if _, exists := b.mutation.ID(); exists {
+				s.SetIgnore(tasklike.FieldID)
+				return
+			}
+		}
+	}))
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//	client.TaskLike.Create().
+//		OnConflict(sql.ResolveWithIgnore()).
+//		Exec(ctx)
+//
+func (u *TaskLikeUpsertBulk) Ignore() *TaskLikeUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *TaskLikeUpsertBulk) DoNothing() *TaskLikeUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the TaskLikeCreateBulk.OnConflict
+// documentation for more info.
+func (u *TaskLikeUpsertBulk) Update(set func(*TaskLikeUpsert)) *TaskLikeUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&TaskLikeUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetTaskID sets the "task_id" field.
+func (u *TaskLikeUpsertBulk) SetTaskID(v ulid.ID) *TaskLikeUpsertBulk {
+	return u.Update(func(s *TaskLikeUpsert) {
+		s.SetTaskID(v)
+	})
+}
+
+// UpdateTaskID sets the "task_id" field to the value that was provided on create.
+func (u *TaskLikeUpsertBulk) UpdateTaskID() *TaskLikeUpsertBulk {
+	return u.Update(func(s *TaskLikeUpsert) {
+		s.UpdateTaskID()
+	})
+}
+
+// SetTeammateID sets the "teammate_id" field.
+func (u *TaskLikeUpsertBulk) SetTeammateID(v ulid.ID) *TaskLikeUpsertBulk {
+	return u.Update(func(s *TaskLikeUpsert) {
+		s.SetTeammateID(v)
+	})
+}
+
+// UpdateTeammateID sets the "teammate_id" field to the value that was provided on create.
+func (u *TaskLikeUpsertBulk) UpdateTeammateID() *TaskLikeUpsertBulk {
+	return u.Update(func(s *TaskLikeUpsert) {
+		s.UpdateTeammateID()
+	})
+}
+
+// SetWorkspaceID sets the "workspace_id" field.
+func (u *TaskLikeUpsertBulk) SetWorkspaceID(v ulid.ID) *TaskLikeUpsertBulk {
+	return u.Update(func(s *TaskLikeUpsert) {
+		s.SetWorkspaceID(v)
+	})
+}
+
+// UpdateWorkspaceID sets the "workspace_id" field to the value that was provided on create.
+func (u *TaskLikeUpsertBulk) UpdateWorkspaceID() *TaskLikeUpsertBulk {
+	return u.Update(func(s *TaskLikeUpsert) {
+		s.UpdateWorkspaceID()
+	})
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *TaskLikeUpsertBulk) SetCreatedAt(v time.Time) *TaskLikeUpsertBulk {
+	return u.Update(func(s *TaskLikeUpsert) {
+		s.SetCreatedAt(v)
+	})
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *TaskLikeUpsertBulk) UpdateCreatedAt() *TaskLikeUpsertBulk {
+	return u.Update(func(s *TaskLikeUpsert) {
+		s.UpdateCreatedAt()
+	})
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *TaskLikeUpsertBulk) SetUpdatedAt(v time.Time) *TaskLikeUpsertBulk {
+	return u.Update(func(s *TaskLikeUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *TaskLikeUpsertBulk) UpdateUpdatedAt() *TaskLikeUpsertBulk {
+	return u.Update(func(s *TaskLikeUpsert) {
+		s.UpdateUpdatedAt()
+	})
+}
+
+// Exec executes the query.
+func (u *TaskLikeUpsertBulk) Exec(ctx context.Context) error {
+	for i, b := range u.create.builders {
+		if len(b.conflict) != 0 {
+			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the TaskLikeCreateBulk instead", i)
+		}
+	}
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for TaskLikeCreateBulk.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *TaskLikeUpsertBulk) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

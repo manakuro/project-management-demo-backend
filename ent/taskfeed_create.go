@@ -15,6 +15,8 @@ import (
 	"project-management-demo-backend/ent/teammate"
 	"time"
 
+	"entgo.io/ent/dialect"
+	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 )
@@ -24,6 +26,7 @@ type TaskFeedCreate struct {
 	config
 	mutation *TaskFeedMutation
 	hooks    []Hook
+	conflict []sql.ConflictOption
 }
 
 // SetTaskID sets the "task_id" field.
@@ -304,6 +307,7 @@ func (tfc *TaskFeedCreate) createSpec() (*TaskFeed, *sqlgraph.CreateSpec) {
 			},
 		}
 	)
+	_spec.OnConflict = tfc.conflict
 	if id, ok := tfc.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = id
@@ -429,10 +433,332 @@ func (tfc *TaskFeedCreate) createSpec() (*TaskFeed, *sqlgraph.CreateSpec) {
 	return _node, _spec
 }
 
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.TaskFeed.Create().
+//		SetTaskID(v).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.TaskFeedUpsert) {
+//			SetTaskID(v+v).
+//		}).
+//		Exec(ctx)
+//
+func (tfc *TaskFeedCreate) OnConflict(opts ...sql.ConflictOption) *TaskFeedUpsertOne {
+	tfc.conflict = opts
+	return &TaskFeedUpsertOne{
+		create: tfc,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.TaskFeed.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+//
+func (tfc *TaskFeedCreate) OnConflictColumns(columns ...string) *TaskFeedUpsertOne {
+	tfc.conflict = append(tfc.conflict, sql.ConflictColumns(columns...))
+	return &TaskFeedUpsertOne{
+		create: tfc,
+	}
+}
+
+type (
+	// TaskFeedUpsertOne is the builder for "upsert"-ing
+	//  one TaskFeed node.
+	TaskFeedUpsertOne struct {
+		create *TaskFeedCreate
+	}
+
+	// TaskFeedUpsert is the "OnConflict" setter.
+	TaskFeedUpsert struct {
+		*sql.UpdateSet
+	}
+)
+
+// SetTaskID sets the "task_id" field.
+func (u *TaskFeedUpsert) SetTaskID(v ulid.ID) *TaskFeedUpsert {
+	u.Set(taskfeed.FieldTaskID, v)
+	return u
+}
+
+// UpdateTaskID sets the "task_id" field to the value that was provided on create.
+func (u *TaskFeedUpsert) UpdateTaskID() *TaskFeedUpsert {
+	u.SetExcluded(taskfeed.FieldTaskID)
+	return u
+}
+
+// SetTeammateID sets the "teammate_id" field.
+func (u *TaskFeedUpsert) SetTeammateID(v ulid.ID) *TaskFeedUpsert {
+	u.Set(taskfeed.FieldTeammateID, v)
+	return u
+}
+
+// UpdateTeammateID sets the "teammate_id" field to the value that was provided on create.
+func (u *TaskFeedUpsert) UpdateTeammateID() *TaskFeedUpsert {
+	u.SetExcluded(taskfeed.FieldTeammateID)
+	return u
+}
+
+// SetDescription sets the "description" field.
+func (u *TaskFeedUpsert) SetDescription(v editor.Description) *TaskFeedUpsert {
+	u.Set(taskfeed.FieldDescription, v)
+	return u
+}
+
+// UpdateDescription sets the "description" field to the value that was provided on create.
+func (u *TaskFeedUpsert) UpdateDescription() *TaskFeedUpsert {
+	u.SetExcluded(taskfeed.FieldDescription)
+	return u
+}
+
+// SetIsFirst sets the "is_first" field.
+func (u *TaskFeedUpsert) SetIsFirst(v bool) *TaskFeedUpsert {
+	u.Set(taskfeed.FieldIsFirst, v)
+	return u
+}
+
+// UpdateIsFirst sets the "is_first" field to the value that was provided on create.
+func (u *TaskFeedUpsert) UpdateIsFirst() *TaskFeedUpsert {
+	u.SetExcluded(taskfeed.FieldIsFirst)
+	return u
+}
+
+// SetIsPinned sets the "is_pinned" field.
+func (u *TaskFeedUpsert) SetIsPinned(v bool) *TaskFeedUpsert {
+	u.Set(taskfeed.FieldIsPinned, v)
+	return u
+}
+
+// UpdateIsPinned sets the "is_pinned" field to the value that was provided on create.
+func (u *TaskFeedUpsert) UpdateIsPinned() *TaskFeedUpsert {
+	u.SetExcluded(taskfeed.FieldIsPinned)
+	return u
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *TaskFeedUpsert) SetCreatedAt(v time.Time) *TaskFeedUpsert {
+	u.Set(taskfeed.FieldCreatedAt, v)
+	return u
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *TaskFeedUpsert) UpdateCreatedAt() *TaskFeedUpsert {
+	u.SetExcluded(taskfeed.FieldCreatedAt)
+	return u
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *TaskFeedUpsert) SetUpdatedAt(v time.Time) *TaskFeedUpsert {
+	u.Set(taskfeed.FieldUpdatedAt, v)
+	return u
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *TaskFeedUpsert) UpdateUpdatedAt() *TaskFeedUpsert {
+	u.SetExcluded(taskfeed.FieldUpdatedAt)
+	return u
+}
+
+// UpdateNewValues updates the fields using the new values that were set on create except the ID field.
+// Using this option is equivalent to using:
+//
+//	client.TaskFeed.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(taskfeed.FieldID)
+//			}),
+//		).
+//		Exec(ctx)
+//
+func (u *TaskFeedUpsertOne) UpdateNewValues() *TaskFeedUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		if _, exists := u.create.mutation.ID(); exists {
+			s.SetIgnore(taskfeed.FieldID)
+		}
+	}))
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//  client.TaskFeed.Create().
+//      OnConflict(sql.ResolveWithIgnore()).
+//      Exec(ctx)
+//
+func (u *TaskFeedUpsertOne) Ignore() *TaskFeedUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *TaskFeedUpsertOne) DoNothing() *TaskFeedUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the TaskFeedCreate.OnConflict
+// documentation for more info.
+func (u *TaskFeedUpsertOne) Update(set func(*TaskFeedUpsert)) *TaskFeedUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&TaskFeedUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetTaskID sets the "task_id" field.
+func (u *TaskFeedUpsertOne) SetTaskID(v ulid.ID) *TaskFeedUpsertOne {
+	return u.Update(func(s *TaskFeedUpsert) {
+		s.SetTaskID(v)
+	})
+}
+
+// UpdateTaskID sets the "task_id" field to the value that was provided on create.
+func (u *TaskFeedUpsertOne) UpdateTaskID() *TaskFeedUpsertOne {
+	return u.Update(func(s *TaskFeedUpsert) {
+		s.UpdateTaskID()
+	})
+}
+
+// SetTeammateID sets the "teammate_id" field.
+func (u *TaskFeedUpsertOne) SetTeammateID(v ulid.ID) *TaskFeedUpsertOne {
+	return u.Update(func(s *TaskFeedUpsert) {
+		s.SetTeammateID(v)
+	})
+}
+
+// UpdateTeammateID sets the "teammate_id" field to the value that was provided on create.
+func (u *TaskFeedUpsertOne) UpdateTeammateID() *TaskFeedUpsertOne {
+	return u.Update(func(s *TaskFeedUpsert) {
+		s.UpdateTeammateID()
+	})
+}
+
+// SetDescription sets the "description" field.
+func (u *TaskFeedUpsertOne) SetDescription(v editor.Description) *TaskFeedUpsertOne {
+	return u.Update(func(s *TaskFeedUpsert) {
+		s.SetDescription(v)
+	})
+}
+
+// UpdateDescription sets the "description" field to the value that was provided on create.
+func (u *TaskFeedUpsertOne) UpdateDescription() *TaskFeedUpsertOne {
+	return u.Update(func(s *TaskFeedUpsert) {
+		s.UpdateDescription()
+	})
+}
+
+// SetIsFirst sets the "is_first" field.
+func (u *TaskFeedUpsertOne) SetIsFirst(v bool) *TaskFeedUpsertOne {
+	return u.Update(func(s *TaskFeedUpsert) {
+		s.SetIsFirst(v)
+	})
+}
+
+// UpdateIsFirst sets the "is_first" field to the value that was provided on create.
+func (u *TaskFeedUpsertOne) UpdateIsFirst() *TaskFeedUpsertOne {
+	return u.Update(func(s *TaskFeedUpsert) {
+		s.UpdateIsFirst()
+	})
+}
+
+// SetIsPinned sets the "is_pinned" field.
+func (u *TaskFeedUpsertOne) SetIsPinned(v bool) *TaskFeedUpsertOne {
+	return u.Update(func(s *TaskFeedUpsert) {
+		s.SetIsPinned(v)
+	})
+}
+
+// UpdateIsPinned sets the "is_pinned" field to the value that was provided on create.
+func (u *TaskFeedUpsertOne) UpdateIsPinned() *TaskFeedUpsertOne {
+	return u.Update(func(s *TaskFeedUpsert) {
+		s.UpdateIsPinned()
+	})
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *TaskFeedUpsertOne) SetCreatedAt(v time.Time) *TaskFeedUpsertOne {
+	return u.Update(func(s *TaskFeedUpsert) {
+		s.SetCreatedAt(v)
+	})
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *TaskFeedUpsertOne) UpdateCreatedAt() *TaskFeedUpsertOne {
+	return u.Update(func(s *TaskFeedUpsert) {
+		s.UpdateCreatedAt()
+	})
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *TaskFeedUpsertOne) SetUpdatedAt(v time.Time) *TaskFeedUpsertOne {
+	return u.Update(func(s *TaskFeedUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *TaskFeedUpsertOne) UpdateUpdatedAt() *TaskFeedUpsertOne {
+	return u.Update(func(s *TaskFeedUpsert) {
+		s.UpdateUpdatedAt()
+	})
+}
+
+// Exec executes the query.
+func (u *TaskFeedUpsertOne) Exec(ctx context.Context) error {
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for TaskFeedCreate.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *TaskFeedUpsertOne) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// Exec executes the UPSERT query and returns the inserted/updated ID.
+func (u *TaskFeedUpsertOne) ID(ctx context.Context) (id ulid.ID, err error) {
+	if u.create.driver.Dialect() == dialect.MySQL {
+		// In case of "ON CONFLICT", there is no way to get back non-numeric ID
+		// fields from the database since MySQL does not support the RETURNING clause.
+		return id, errors.New("ent: TaskFeedUpsertOne.ID is not supported by MySQL driver. Use TaskFeedUpsertOne.Exec instead")
+	}
+	node, err := u.create.Save(ctx)
+	if err != nil {
+		return id, err
+	}
+	return node.ID, nil
+}
+
+// IDX is like ID, but panics if an error occurs.
+func (u *TaskFeedUpsertOne) IDX(ctx context.Context) ulid.ID {
+	id, err := u.ID(ctx)
+	if err != nil {
+		panic(err)
+	}
+	return id
+}
+
 // TaskFeedCreateBulk is the builder for creating many TaskFeed entities in bulk.
 type TaskFeedCreateBulk struct {
 	config
 	builders []*TaskFeedCreate
+	conflict []sql.ConflictOption
 }
 
 // Save creates the TaskFeed entities in the database.
@@ -459,6 +785,7 @@ func (tfcb *TaskFeedCreateBulk) Save(ctx context.Context) ([]*TaskFeed, error) {
 					_, err = mutators[i+1].Mutate(root, tfcb.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
+					spec.OnConflict = tfcb.conflict
 					// Invoke the actual operation on the latest mutation in the chain.
 					if err = sqlgraph.BatchCreate(ctx, tfcb.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
@@ -505,6 +832,220 @@ func (tfcb *TaskFeedCreateBulk) Exec(ctx context.Context) error {
 // ExecX is like Exec, but panics if an error occurs.
 func (tfcb *TaskFeedCreateBulk) ExecX(ctx context.Context) {
 	if err := tfcb.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.TaskFeed.CreateBulk(builders...).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.TaskFeedUpsert) {
+//			SetTaskID(v+v).
+//		}).
+//		Exec(ctx)
+//
+func (tfcb *TaskFeedCreateBulk) OnConflict(opts ...sql.ConflictOption) *TaskFeedUpsertBulk {
+	tfcb.conflict = opts
+	return &TaskFeedUpsertBulk{
+		create: tfcb,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.TaskFeed.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+//
+func (tfcb *TaskFeedCreateBulk) OnConflictColumns(columns ...string) *TaskFeedUpsertBulk {
+	tfcb.conflict = append(tfcb.conflict, sql.ConflictColumns(columns...))
+	return &TaskFeedUpsertBulk{
+		create: tfcb,
+	}
+}
+
+// TaskFeedUpsertBulk is the builder for "upsert"-ing
+// a bulk of TaskFeed nodes.
+type TaskFeedUpsertBulk struct {
+	create *TaskFeedCreateBulk
+}
+
+// UpdateNewValues updates the fields using the new values that
+// were set on create. Using this option is equivalent to using:
+//
+//	client.TaskFeed.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(taskfeed.FieldID)
+//			}),
+//		).
+//		Exec(ctx)
+//
+func (u *TaskFeedUpsertBulk) UpdateNewValues() *TaskFeedUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		for _, b := range u.create.builders {
+			if _, exists := b.mutation.ID(); exists {
+				s.SetIgnore(taskfeed.FieldID)
+				return
+			}
+		}
+	}))
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//	client.TaskFeed.Create().
+//		OnConflict(sql.ResolveWithIgnore()).
+//		Exec(ctx)
+//
+func (u *TaskFeedUpsertBulk) Ignore() *TaskFeedUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *TaskFeedUpsertBulk) DoNothing() *TaskFeedUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the TaskFeedCreateBulk.OnConflict
+// documentation for more info.
+func (u *TaskFeedUpsertBulk) Update(set func(*TaskFeedUpsert)) *TaskFeedUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&TaskFeedUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetTaskID sets the "task_id" field.
+func (u *TaskFeedUpsertBulk) SetTaskID(v ulid.ID) *TaskFeedUpsertBulk {
+	return u.Update(func(s *TaskFeedUpsert) {
+		s.SetTaskID(v)
+	})
+}
+
+// UpdateTaskID sets the "task_id" field to the value that was provided on create.
+func (u *TaskFeedUpsertBulk) UpdateTaskID() *TaskFeedUpsertBulk {
+	return u.Update(func(s *TaskFeedUpsert) {
+		s.UpdateTaskID()
+	})
+}
+
+// SetTeammateID sets the "teammate_id" field.
+func (u *TaskFeedUpsertBulk) SetTeammateID(v ulid.ID) *TaskFeedUpsertBulk {
+	return u.Update(func(s *TaskFeedUpsert) {
+		s.SetTeammateID(v)
+	})
+}
+
+// UpdateTeammateID sets the "teammate_id" field to the value that was provided on create.
+func (u *TaskFeedUpsertBulk) UpdateTeammateID() *TaskFeedUpsertBulk {
+	return u.Update(func(s *TaskFeedUpsert) {
+		s.UpdateTeammateID()
+	})
+}
+
+// SetDescription sets the "description" field.
+func (u *TaskFeedUpsertBulk) SetDescription(v editor.Description) *TaskFeedUpsertBulk {
+	return u.Update(func(s *TaskFeedUpsert) {
+		s.SetDescription(v)
+	})
+}
+
+// UpdateDescription sets the "description" field to the value that was provided on create.
+func (u *TaskFeedUpsertBulk) UpdateDescription() *TaskFeedUpsertBulk {
+	return u.Update(func(s *TaskFeedUpsert) {
+		s.UpdateDescription()
+	})
+}
+
+// SetIsFirst sets the "is_first" field.
+func (u *TaskFeedUpsertBulk) SetIsFirst(v bool) *TaskFeedUpsertBulk {
+	return u.Update(func(s *TaskFeedUpsert) {
+		s.SetIsFirst(v)
+	})
+}
+
+// UpdateIsFirst sets the "is_first" field to the value that was provided on create.
+func (u *TaskFeedUpsertBulk) UpdateIsFirst() *TaskFeedUpsertBulk {
+	return u.Update(func(s *TaskFeedUpsert) {
+		s.UpdateIsFirst()
+	})
+}
+
+// SetIsPinned sets the "is_pinned" field.
+func (u *TaskFeedUpsertBulk) SetIsPinned(v bool) *TaskFeedUpsertBulk {
+	return u.Update(func(s *TaskFeedUpsert) {
+		s.SetIsPinned(v)
+	})
+}
+
+// UpdateIsPinned sets the "is_pinned" field to the value that was provided on create.
+func (u *TaskFeedUpsertBulk) UpdateIsPinned() *TaskFeedUpsertBulk {
+	return u.Update(func(s *TaskFeedUpsert) {
+		s.UpdateIsPinned()
+	})
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *TaskFeedUpsertBulk) SetCreatedAt(v time.Time) *TaskFeedUpsertBulk {
+	return u.Update(func(s *TaskFeedUpsert) {
+		s.SetCreatedAt(v)
+	})
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *TaskFeedUpsertBulk) UpdateCreatedAt() *TaskFeedUpsertBulk {
+	return u.Update(func(s *TaskFeedUpsert) {
+		s.UpdateCreatedAt()
+	})
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *TaskFeedUpsertBulk) SetUpdatedAt(v time.Time) *TaskFeedUpsertBulk {
+	return u.Update(func(s *TaskFeedUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *TaskFeedUpsertBulk) UpdateUpdatedAt() *TaskFeedUpsertBulk {
+	return u.Update(func(s *TaskFeedUpsert) {
+		s.UpdateUpdatedAt()
+	})
+}
+
+// Exec executes the query.
+func (u *TaskFeedUpsertBulk) Exec(ctx context.Context) error {
+	for i, b := range u.create.builders {
+		if len(b.conflict) != 0 {
+			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the TaskFeedCreateBulk instead", i)
+		}
+	}
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for TaskFeedCreateBulk.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *TaskFeedUpsertBulk) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

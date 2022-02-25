@@ -26,6 +26,8 @@ import (
 	"project-management-demo-backend/ent/workspaceteammate"
 	"time"
 
+	"entgo.io/ent/dialect"
+	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 )
@@ -35,6 +37,7 @@ type TeammateCreate struct {
 	config
 	mutation *TeammateMutation
 	hooks    []Hook
+	conflict []sql.ConflictOption
 }
 
 // SetName sets the "name" field.
@@ -482,6 +485,7 @@ func (tc *TeammateCreate) createSpec() (*Teammate, *sqlgraph.CreateSpec) {
 			},
 		}
 	)
+	_spec.OnConflict = tc.conflict
 	if id, ok := tc.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = id
@@ -833,10 +837,280 @@ func (tc *TeammateCreate) createSpec() (*Teammate, *sqlgraph.CreateSpec) {
 	return _node, _spec
 }
 
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.Teammate.Create().
+//		SetName(v).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.TeammateUpsert) {
+//			SetName(v+v).
+//		}).
+//		Exec(ctx)
+//
+func (tc *TeammateCreate) OnConflict(opts ...sql.ConflictOption) *TeammateUpsertOne {
+	tc.conflict = opts
+	return &TeammateUpsertOne{
+		create: tc,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.Teammate.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+//
+func (tc *TeammateCreate) OnConflictColumns(columns ...string) *TeammateUpsertOne {
+	tc.conflict = append(tc.conflict, sql.ConflictColumns(columns...))
+	return &TeammateUpsertOne{
+		create: tc,
+	}
+}
+
+type (
+	// TeammateUpsertOne is the builder for "upsert"-ing
+	//  one Teammate node.
+	TeammateUpsertOne struct {
+		create *TeammateCreate
+	}
+
+	// TeammateUpsert is the "OnConflict" setter.
+	TeammateUpsert struct {
+		*sql.UpdateSet
+	}
+)
+
+// SetName sets the "name" field.
+func (u *TeammateUpsert) SetName(v string) *TeammateUpsert {
+	u.Set(teammate.FieldName, v)
+	return u
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *TeammateUpsert) UpdateName() *TeammateUpsert {
+	u.SetExcluded(teammate.FieldName)
+	return u
+}
+
+// SetImage sets the "image" field.
+func (u *TeammateUpsert) SetImage(v string) *TeammateUpsert {
+	u.Set(teammate.FieldImage, v)
+	return u
+}
+
+// UpdateImage sets the "image" field to the value that was provided on create.
+func (u *TeammateUpsert) UpdateImage() *TeammateUpsert {
+	u.SetExcluded(teammate.FieldImage)
+	return u
+}
+
+// SetEmail sets the "email" field.
+func (u *TeammateUpsert) SetEmail(v string) *TeammateUpsert {
+	u.Set(teammate.FieldEmail, v)
+	return u
+}
+
+// UpdateEmail sets the "email" field to the value that was provided on create.
+func (u *TeammateUpsert) UpdateEmail() *TeammateUpsert {
+	u.SetExcluded(teammate.FieldEmail)
+	return u
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *TeammateUpsert) SetCreatedAt(v time.Time) *TeammateUpsert {
+	u.Set(teammate.FieldCreatedAt, v)
+	return u
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *TeammateUpsert) UpdateCreatedAt() *TeammateUpsert {
+	u.SetExcluded(teammate.FieldCreatedAt)
+	return u
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *TeammateUpsert) SetUpdatedAt(v time.Time) *TeammateUpsert {
+	u.Set(teammate.FieldUpdatedAt, v)
+	return u
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *TeammateUpsert) UpdateUpdatedAt() *TeammateUpsert {
+	u.SetExcluded(teammate.FieldUpdatedAt)
+	return u
+}
+
+// UpdateNewValues updates the fields using the new values that were set on create except the ID field.
+// Using this option is equivalent to using:
+//
+//	client.Teammate.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(teammate.FieldID)
+//			}),
+//		).
+//		Exec(ctx)
+//
+func (u *TeammateUpsertOne) UpdateNewValues() *TeammateUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		if _, exists := u.create.mutation.ID(); exists {
+			s.SetIgnore(teammate.FieldID)
+		}
+	}))
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//  client.Teammate.Create().
+//      OnConflict(sql.ResolveWithIgnore()).
+//      Exec(ctx)
+//
+func (u *TeammateUpsertOne) Ignore() *TeammateUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *TeammateUpsertOne) DoNothing() *TeammateUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the TeammateCreate.OnConflict
+// documentation for more info.
+func (u *TeammateUpsertOne) Update(set func(*TeammateUpsert)) *TeammateUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&TeammateUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetName sets the "name" field.
+func (u *TeammateUpsertOne) SetName(v string) *TeammateUpsertOne {
+	return u.Update(func(s *TeammateUpsert) {
+		s.SetName(v)
+	})
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *TeammateUpsertOne) UpdateName() *TeammateUpsertOne {
+	return u.Update(func(s *TeammateUpsert) {
+		s.UpdateName()
+	})
+}
+
+// SetImage sets the "image" field.
+func (u *TeammateUpsertOne) SetImage(v string) *TeammateUpsertOne {
+	return u.Update(func(s *TeammateUpsert) {
+		s.SetImage(v)
+	})
+}
+
+// UpdateImage sets the "image" field to the value that was provided on create.
+func (u *TeammateUpsertOne) UpdateImage() *TeammateUpsertOne {
+	return u.Update(func(s *TeammateUpsert) {
+		s.UpdateImage()
+	})
+}
+
+// SetEmail sets the "email" field.
+func (u *TeammateUpsertOne) SetEmail(v string) *TeammateUpsertOne {
+	return u.Update(func(s *TeammateUpsert) {
+		s.SetEmail(v)
+	})
+}
+
+// UpdateEmail sets the "email" field to the value that was provided on create.
+func (u *TeammateUpsertOne) UpdateEmail() *TeammateUpsertOne {
+	return u.Update(func(s *TeammateUpsert) {
+		s.UpdateEmail()
+	})
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *TeammateUpsertOne) SetCreatedAt(v time.Time) *TeammateUpsertOne {
+	return u.Update(func(s *TeammateUpsert) {
+		s.SetCreatedAt(v)
+	})
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *TeammateUpsertOne) UpdateCreatedAt() *TeammateUpsertOne {
+	return u.Update(func(s *TeammateUpsert) {
+		s.UpdateCreatedAt()
+	})
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *TeammateUpsertOne) SetUpdatedAt(v time.Time) *TeammateUpsertOne {
+	return u.Update(func(s *TeammateUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *TeammateUpsertOne) UpdateUpdatedAt() *TeammateUpsertOne {
+	return u.Update(func(s *TeammateUpsert) {
+		s.UpdateUpdatedAt()
+	})
+}
+
+// Exec executes the query.
+func (u *TeammateUpsertOne) Exec(ctx context.Context) error {
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for TeammateCreate.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *TeammateUpsertOne) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// Exec executes the UPSERT query and returns the inserted/updated ID.
+func (u *TeammateUpsertOne) ID(ctx context.Context) (id ulid.ID, err error) {
+	if u.create.driver.Dialect() == dialect.MySQL {
+		// In case of "ON CONFLICT", there is no way to get back non-numeric ID
+		// fields from the database since MySQL does not support the RETURNING clause.
+		return id, errors.New("ent: TeammateUpsertOne.ID is not supported by MySQL driver. Use TeammateUpsertOne.Exec instead")
+	}
+	node, err := u.create.Save(ctx)
+	if err != nil {
+		return id, err
+	}
+	return node.ID, nil
+}
+
+// IDX is like ID, but panics if an error occurs.
+func (u *TeammateUpsertOne) IDX(ctx context.Context) ulid.ID {
+	id, err := u.ID(ctx)
+	if err != nil {
+		panic(err)
+	}
+	return id
+}
+
 // TeammateCreateBulk is the builder for creating many Teammate entities in bulk.
 type TeammateCreateBulk struct {
 	config
 	builders []*TeammateCreate
+	conflict []sql.ConflictOption
 }
 
 // Save creates the Teammate entities in the database.
@@ -863,6 +1137,7 @@ func (tcb *TeammateCreateBulk) Save(ctx context.Context) ([]*Teammate, error) {
 					_, err = mutators[i+1].Mutate(root, tcb.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
+					spec.OnConflict = tcb.conflict
 					// Invoke the actual operation on the latest mutation in the chain.
 					if err = sqlgraph.BatchCreate(ctx, tcb.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
@@ -909,6 +1184,192 @@ func (tcb *TeammateCreateBulk) Exec(ctx context.Context) error {
 // ExecX is like Exec, but panics if an error occurs.
 func (tcb *TeammateCreateBulk) ExecX(ctx context.Context) {
 	if err := tcb.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.Teammate.CreateBulk(builders...).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.TeammateUpsert) {
+//			SetName(v+v).
+//		}).
+//		Exec(ctx)
+//
+func (tcb *TeammateCreateBulk) OnConflict(opts ...sql.ConflictOption) *TeammateUpsertBulk {
+	tcb.conflict = opts
+	return &TeammateUpsertBulk{
+		create: tcb,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.Teammate.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+//
+func (tcb *TeammateCreateBulk) OnConflictColumns(columns ...string) *TeammateUpsertBulk {
+	tcb.conflict = append(tcb.conflict, sql.ConflictColumns(columns...))
+	return &TeammateUpsertBulk{
+		create: tcb,
+	}
+}
+
+// TeammateUpsertBulk is the builder for "upsert"-ing
+// a bulk of Teammate nodes.
+type TeammateUpsertBulk struct {
+	create *TeammateCreateBulk
+}
+
+// UpdateNewValues updates the fields using the new values that
+// were set on create. Using this option is equivalent to using:
+//
+//	client.Teammate.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(teammate.FieldID)
+//			}),
+//		).
+//		Exec(ctx)
+//
+func (u *TeammateUpsertBulk) UpdateNewValues() *TeammateUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		for _, b := range u.create.builders {
+			if _, exists := b.mutation.ID(); exists {
+				s.SetIgnore(teammate.FieldID)
+				return
+			}
+		}
+	}))
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//	client.Teammate.Create().
+//		OnConflict(sql.ResolveWithIgnore()).
+//		Exec(ctx)
+//
+func (u *TeammateUpsertBulk) Ignore() *TeammateUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *TeammateUpsertBulk) DoNothing() *TeammateUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the TeammateCreateBulk.OnConflict
+// documentation for more info.
+func (u *TeammateUpsertBulk) Update(set func(*TeammateUpsert)) *TeammateUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&TeammateUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetName sets the "name" field.
+func (u *TeammateUpsertBulk) SetName(v string) *TeammateUpsertBulk {
+	return u.Update(func(s *TeammateUpsert) {
+		s.SetName(v)
+	})
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *TeammateUpsertBulk) UpdateName() *TeammateUpsertBulk {
+	return u.Update(func(s *TeammateUpsert) {
+		s.UpdateName()
+	})
+}
+
+// SetImage sets the "image" field.
+func (u *TeammateUpsertBulk) SetImage(v string) *TeammateUpsertBulk {
+	return u.Update(func(s *TeammateUpsert) {
+		s.SetImage(v)
+	})
+}
+
+// UpdateImage sets the "image" field to the value that was provided on create.
+func (u *TeammateUpsertBulk) UpdateImage() *TeammateUpsertBulk {
+	return u.Update(func(s *TeammateUpsert) {
+		s.UpdateImage()
+	})
+}
+
+// SetEmail sets the "email" field.
+func (u *TeammateUpsertBulk) SetEmail(v string) *TeammateUpsertBulk {
+	return u.Update(func(s *TeammateUpsert) {
+		s.SetEmail(v)
+	})
+}
+
+// UpdateEmail sets the "email" field to the value that was provided on create.
+func (u *TeammateUpsertBulk) UpdateEmail() *TeammateUpsertBulk {
+	return u.Update(func(s *TeammateUpsert) {
+		s.UpdateEmail()
+	})
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *TeammateUpsertBulk) SetCreatedAt(v time.Time) *TeammateUpsertBulk {
+	return u.Update(func(s *TeammateUpsert) {
+		s.SetCreatedAt(v)
+	})
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *TeammateUpsertBulk) UpdateCreatedAt() *TeammateUpsertBulk {
+	return u.Update(func(s *TeammateUpsert) {
+		s.UpdateCreatedAt()
+	})
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *TeammateUpsertBulk) SetUpdatedAt(v time.Time) *TeammateUpsertBulk {
+	return u.Update(func(s *TeammateUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *TeammateUpsertBulk) UpdateUpdatedAt() *TeammateUpsertBulk {
+	return u.Update(func(s *TeammateUpsert) {
+		s.UpdateUpdatedAt()
+	})
+}
+
+// Exec executes the query.
+func (u *TeammateUpsertBulk) Exec(ctx context.Context) error {
+	for i, b := range u.create.builders {
+		if len(b.conflict) != 0 {
+			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the TeammateCreateBulk instead", i)
+		}
+	}
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for TeammateCreateBulk.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *TeammateUpsertBulk) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

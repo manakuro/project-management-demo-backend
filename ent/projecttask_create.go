@@ -13,6 +13,8 @@ import (
 	"project-management-demo-backend/ent/task"
 	"time"
 
+	"entgo.io/ent/dialect"
+	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 )
@@ -22,6 +24,7 @@ type ProjectTaskCreate struct {
 	config
 	mutation *ProjectTaskMutation
 	hooks    []Hook
+	conflict []sql.ConflictOption
 }
 
 // SetProjectID sets the "project_id" field.
@@ -238,6 +241,7 @@ func (ptc *ProjectTaskCreate) createSpec() (*ProjectTask, *sqlgraph.CreateSpec) 
 			},
 		}
 	)
+	_spec.OnConflict = ptc.conflict
 	if id, ok := ptc.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = id
@@ -321,10 +325,280 @@ func (ptc *ProjectTaskCreate) createSpec() (*ProjectTask, *sqlgraph.CreateSpec) 
 	return _node, _spec
 }
 
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.ProjectTask.Create().
+//		SetProjectID(v).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.ProjectTaskUpsert) {
+//			SetProjectID(v+v).
+//		}).
+//		Exec(ctx)
+//
+func (ptc *ProjectTaskCreate) OnConflict(opts ...sql.ConflictOption) *ProjectTaskUpsertOne {
+	ptc.conflict = opts
+	return &ProjectTaskUpsertOne{
+		create: ptc,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.ProjectTask.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+//
+func (ptc *ProjectTaskCreate) OnConflictColumns(columns ...string) *ProjectTaskUpsertOne {
+	ptc.conflict = append(ptc.conflict, sql.ConflictColumns(columns...))
+	return &ProjectTaskUpsertOne{
+		create: ptc,
+	}
+}
+
+type (
+	// ProjectTaskUpsertOne is the builder for "upsert"-ing
+	//  one ProjectTask node.
+	ProjectTaskUpsertOne struct {
+		create *ProjectTaskCreate
+	}
+
+	// ProjectTaskUpsert is the "OnConflict" setter.
+	ProjectTaskUpsert struct {
+		*sql.UpdateSet
+	}
+)
+
+// SetProjectID sets the "project_id" field.
+func (u *ProjectTaskUpsert) SetProjectID(v ulid.ID) *ProjectTaskUpsert {
+	u.Set(projecttask.FieldProjectID, v)
+	return u
+}
+
+// UpdateProjectID sets the "project_id" field to the value that was provided on create.
+func (u *ProjectTaskUpsert) UpdateProjectID() *ProjectTaskUpsert {
+	u.SetExcluded(projecttask.FieldProjectID)
+	return u
+}
+
+// SetTaskID sets the "task_id" field.
+func (u *ProjectTaskUpsert) SetTaskID(v ulid.ID) *ProjectTaskUpsert {
+	u.Set(projecttask.FieldTaskID, v)
+	return u
+}
+
+// UpdateTaskID sets the "task_id" field to the value that was provided on create.
+func (u *ProjectTaskUpsert) UpdateTaskID() *ProjectTaskUpsert {
+	u.SetExcluded(projecttask.FieldTaskID)
+	return u
+}
+
+// SetProjectTaskSectionID sets the "project_task_section_id" field.
+func (u *ProjectTaskUpsert) SetProjectTaskSectionID(v ulid.ID) *ProjectTaskUpsert {
+	u.Set(projecttask.FieldProjectTaskSectionID, v)
+	return u
+}
+
+// UpdateProjectTaskSectionID sets the "project_task_section_id" field to the value that was provided on create.
+func (u *ProjectTaskUpsert) UpdateProjectTaskSectionID() *ProjectTaskUpsert {
+	u.SetExcluded(projecttask.FieldProjectTaskSectionID)
+	return u
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *ProjectTaskUpsert) SetCreatedAt(v time.Time) *ProjectTaskUpsert {
+	u.Set(projecttask.FieldCreatedAt, v)
+	return u
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *ProjectTaskUpsert) UpdateCreatedAt() *ProjectTaskUpsert {
+	u.SetExcluded(projecttask.FieldCreatedAt)
+	return u
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *ProjectTaskUpsert) SetUpdatedAt(v time.Time) *ProjectTaskUpsert {
+	u.Set(projecttask.FieldUpdatedAt, v)
+	return u
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *ProjectTaskUpsert) UpdateUpdatedAt() *ProjectTaskUpsert {
+	u.SetExcluded(projecttask.FieldUpdatedAt)
+	return u
+}
+
+// UpdateNewValues updates the fields using the new values that were set on create except the ID field.
+// Using this option is equivalent to using:
+//
+//	client.ProjectTask.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(projecttask.FieldID)
+//			}),
+//		).
+//		Exec(ctx)
+//
+func (u *ProjectTaskUpsertOne) UpdateNewValues() *ProjectTaskUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		if _, exists := u.create.mutation.ID(); exists {
+			s.SetIgnore(projecttask.FieldID)
+		}
+	}))
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//  client.ProjectTask.Create().
+//      OnConflict(sql.ResolveWithIgnore()).
+//      Exec(ctx)
+//
+func (u *ProjectTaskUpsertOne) Ignore() *ProjectTaskUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *ProjectTaskUpsertOne) DoNothing() *ProjectTaskUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the ProjectTaskCreate.OnConflict
+// documentation for more info.
+func (u *ProjectTaskUpsertOne) Update(set func(*ProjectTaskUpsert)) *ProjectTaskUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&ProjectTaskUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetProjectID sets the "project_id" field.
+func (u *ProjectTaskUpsertOne) SetProjectID(v ulid.ID) *ProjectTaskUpsertOne {
+	return u.Update(func(s *ProjectTaskUpsert) {
+		s.SetProjectID(v)
+	})
+}
+
+// UpdateProjectID sets the "project_id" field to the value that was provided on create.
+func (u *ProjectTaskUpsertOne) UpdateProjectID() *ProjectTaskUpsertOne {
+	return u.Update(func(s *ProjectTaskUpsert) {
+		s.UpdateProjectID()
+	})
+}
+
+// SetTaskID sets the "task_id" field.
+func (u *ProjectTaskUpsertOne) SetTaskID(v ulid.ID) *ProjectTaskUpsertOne {
+	return u.Update(func(s *ProjectTaskUpsert) {
+		s.SetTaskID(v)
+	})
+}
+
+// UpdateTaskID sets the "task_id" field to the value that was provided on create.
+func (u *ProjectTaskUpsertOne) UpdateTaskID() *ProjectTaskUpsertOne {
+	return u.Update(func(s *ProjectTaskUpsert) {
+		s.UpdateTaskID()
+	})
+}
+
+// SetProjectTaskSectionID sets the "project_task_section_id" field.
+func (u *ProjectTaskUpsertOne) SetProjectTaskSectionID(v ulid.ID) *ProjectTaskUpsertOne {
+	return u.Update(func(s *ProjectTaskUpsert) {
+		s.SetProjectTaskSectionID(v)
+	})
+}
+
+// UpdateProjectTaskSectionID sets the "project_task_section_id" field to the value that was provided on create.
+func (u *ProjectTaskUpsertOne) UpdateProjectTaskSectionID() *ProjectTaskUpsertOne {
+	return u.Update(func(s *ProjectTaskUpsert) {
+		s.UpdateProjectTaskSectionID()
+	})
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *ProjectTaskUpsertOne) SetCreatedAt(v time.Time) *ProjectTaskUpsertOne {
+	return u.Update(func(s *ProjectTaskUpsert) {
+		s.SetCreatedAt(v)
+	})
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *ProjectTaskUpsertOne) UpdateCreatedAt() *ProjectTaskUpsertOne {
+	return u.Update(func(s *ProjectTaskUpsert) {
+		s.UpdateCreatedAt()
+	})
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *ProjectTaskUpsertOne) SetUpdatedAt(v time.Time) *ProjectTaskUpsertOne {
+	return u.Update(func(s *ProjectTaskUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *ProjectTaskUpsertOne) UpdateUpdatedAt() *ProjectTaskUpsertOne {
+	return u.Update(func(s *ProjectTaskUpsert) {
+		s.UpdateUpdatedAt()
+	})
+}
+
+// Exec executes the query.
+func (u *ProjectTaskUpsertOne) Exec(ctx context.Context) error {
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for ProjectTaskCreate.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *ProjectTaskUpsertOne) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// Exec executes the UPSERT query and returns the inserted/updated ID.
+func (u *ProjectTaskUpsertOne) ID(ctx context.Context) (id ulid.ID, err error) {
+	if u.create.driver.Dialect() == dialect.MySQL {
+		// In case of "ON CONFLICT", there is no way to get back non-numeric ID
+		// fields from the database since MySQL does not support the RETURNING clause.
+		return id, errors.New("ent: ProjectTaskUpsertOne.ID is not supported by MySQL driver. Use ProjectTaskUpsertOne.Exec instead")
+	}
+	node, err := u.create.Save(ctx)
+	if err != nil {
+		return id, err
+	}
+	return node.ID, nil
+}
+
+// IDX is like ID, but panics if an error occurs.
+func (u *ProjectTaskUpsertOne) IDX(ctx context.Context) ulid.ID {
+	id, err := u.ID(ctx)
+	if err != nil {
+		panic(err)
+	}
+	return id
+}
+
 // ProjectTaskCreateBulk is the builder for creating many ProjectTask entities in bulk.
 type ProjectTaskCreateBulk struct {
 	config
 	builders []*ProjectTaskCreate
+	conflict []sql.ConflictOption
 }
 
 // Save creates the ProjectTask entities in the database.
@@ -351,6 +625,7 @@ func (ptcb *ProjectTaskCreateBulk) Save(ctx context.Context) ([]*ProjectTask, er
 					_, err = mutators[i+1].Mutate(root, ptcb.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
+					spec.OnConflict = ptcb.conflict
 					// Invoke the actual operation on the latest mutation in the chain.
 					if err = sqlgraph.BatchCreate(ctx, ptcb.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
@@ -397,6 +672,192 @@ func (ptcb *ProjectTaskCreateBulk) Exec(ctx context.Context) error {
 // ExecX is like Exec, but panics if an error occurs.
 func (ptcb *ProjectTaskCreateBulk) ExecX(ctx context.Context) {
 	if err := ptcb.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.ProjectTask.CreateBulk(builders...).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.ProjectTaskUpsert) {
+//			SetProjectID(v+v).
+//		}).
+//		Exec(ctx)
+//
+func (ptcb *ProjectTaskCreateBulk) OnConflict(opts ...sql.ConflictOption) *ProjectTaskUpsertBulk {
+	ptcb.conflict = opts
+	return &ProjectTaskUpsertBulk{
+		create: ptcb,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.ProjectTask.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+//
+func (ptcb *ProjectTaskCreateBulk) OnConflictColumns(columns ...string) *ProjectTaskUpsertBulk {
+	ptcb.conflict = append(ptcb.conflict, sql.ConflictColumns(columns...))
+	return &ProjectTaskUpsertBulk{
+		create: ptcb,
+	}
+}
+
+// ProjectTaskUpsertBulk is the builder for "upsert"-ing
+// a bulk of ProjectTask nodes.
+type ProjectTaskUpsertBulk struct {
+	create *ProjectTaskCreateBulk
+}
+
+// UpdateNewValues updates the fields using the new values that
+// were set on create. Using this option is equivalent to using:
+//
+//	client.ProjectTask.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(projecttask.FieldID)
+//			}),
+//		).
+//		Exec(ctx)
+//
+func (u *ProjectTaskUpsertBulk) UpdateNewValues() *ProjectTaskUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		for _, b := range u.create.builders {
+			if _, exists := b.mutation.ID(); exists {
+				s.SetIgnore(projecttask.FieldID)
+				return
+			}
+		}
+	}))
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//	client.ProjectTask.Create().
+//		OnConflict(sql.ResolveWithIgnore()).
+//		Exec(ctx)
+//
+func (u *ProjectTaskUpsertBulk) Ignore() *ProjectTaskUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *ProjectTaskUpsertBulk) DoNothing() *ProjectTaskUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the ProjectTaskCreateBulk.OnConflict
+// documentation for more info.
+func (u *ProjectTaskUpsertBulk) Update(set func(*ProjectTaskUpsert)) *ProjectTaskUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&ProjectTaskUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetProjectID sets the "project_id" field.
+func (u *ProjectTaskUpsertBulk) SetProjectID(v ulid.ID) *ProjectTaskUpsertBulk {
+	return u.Update(func(s *ProjectTaskUpsert) {
+		s.SetProjectID(v)
+	})
+}
+
+// UpdateProjectID sets the "project_id" field to the value that was provided on create.
+func (u *ProjectTaskUpsertBulk) UpdateProjectID() *ProjectTaskUpsertBulk {
+	return u.Update(func(s *ProjectTaskUpsert) {
+		s.UpdateProjectID()
+	})
+}
+
+// SetTaskID sets the "task_id" field.
+func (u *ProjectTaskUpsertBulk) SetTaskID(v ulid.ID) *ProjectTaskUpsertBulk {
+	return u.Update(func(s *ProjectTaskUpsert) {
+		s.SetTaskID(v)
+	})
+}
+
+// UpdateTaskID sets the "task_id" field to the value that was provided on create.
+func (u *ProjectTaskUpsertBulk) UpdateTaskID() *ProjectTaskUpsertBulk {
+	return u.Update(func(s *ProjectTaskUpsert) {
+		s.UpdateTaskID()
+	})
+}
+
+// SetProjectTaskSectionID sets the "project_task_section_id" field.
+func (u *ProjectTaskUpsertBulk) SetProjectTaskSectionID(v ulid.ID) *ProjectTaskUpsertBulk {
+	return u.Update(func(s *ProjectTaskUpsert) {
+		s.SetProjectTaskSectionID(v)
+	})
+}
+
+// UpdateProjectTaskSectionID sets the "project_task_section_id" field to the value that was provided on create.
+func (u *ProjectTaskUpsertBulk) UpdateProjectTaskSectionID() *ProjectTaskUpsertBulk {
+	return u.Update(func(s *ProjectTaskUpsert) {
+		s.UpdateProjectTaskSectionID()
+	})
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *ProjectTaskUpsertBulk) SetCreatedAt(v time.Time) *ProjectTaskUpsertBulk {
+	return u.Update(func(s *ProjectTaskUpsert) {
+		s.SetCreatedAt(v)
+	})
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *ProjectTaskUpsertBulk) UpdateCreatedAt() *ProjectTaskUpsertBulk {
+	return u.Update(func(s *ProjectTaskUpsert) {
+		s.UpdateCreatedAt()
+	})
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *ProjectTaskUpsertBulk) SetUpdatedAt(v time.Time) *ProjectTaskUpsertBulk {
+	return u.Update(func(s *ProjectTaskUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *ProjectTaskUpsertBulk) UpdateUpdatedAt() *ProjectTaskUpsertBulk {
+	return u.Update(func(s *ProjectTaskUpsert) {
+		s.UpdateUpdatedAt()
+	})
+}
+
+// Exec executes the query.
+func (u *ProjectTaskUpsertBulk) Exec(ctx context.Context) error {
+	for i, b := range u.create.builders {
+		if len(b.conflict) != 0 {
+			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the ProjectTaskCreateBulk instead", i)
+		}
+	}
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for ProjectTaskCreateBulk.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *ProjectTaskUpsertBulk) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

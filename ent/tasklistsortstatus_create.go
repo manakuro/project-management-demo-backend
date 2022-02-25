@@ -12,6 +12,8 @@ import (
 	"project-management-demo-backend/ent/teammatetaskliststatus"
 	"time"
 
+	"entgo.io/ent/dialect"
+	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 )
@@ -21,6 +23,7 @@ type TaskListSortStatusCreate struct {
 	config
 	mutation *TaskListSortStatusMutation
 	hooks    []Hook
+	conflict []sql.ConflictOption
 }
 
 // SetName sets the "name" field.
@@ -244,6 +247,7 @@ func (tlssc *TaskListSortStatusCreate) createSpec() (*TaskListSortStatus, *sqlgr
 			},
 		}
 	)
+	_spec.OnConflict = tlssc.conflict
 	if id, ok := tlssc.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = id
@@ -321,10 +325,254 @@ func (tlssc *TaskListSortStatusCreate) createSpec() (*TaskListSortStatus, *sqlgr
 	return _node, _spec
 }
 
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.TaskListSortStatus.Create().
+//		SetName(v).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.TaskListSortStatusUpsert) {
+//			SetName(v+v).
+//		}).
+//		Exec(ctx)
+//
+func (tlssc *TaskListSortStatusCreate) OnConflict(opts ...sql.ConflictOption) *TaskListSortStatusUpsertOne {
+	tlssc.conflict = opts
+	return &TaskListSortStatusUpsertOne{
+		create: tlssc,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.TaskListSortStatus.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+//
+func (tlssc *TaskListSortStatusCreate) OnConflictColumns(columns ...string) *TaskListSortStatusUpsertOne {
+	tlssc.conflict = append(tlssc.conflict, sql.ConflictColumns(columns...))
+	return &TaskListSortStatusUpsertOne{
+		create: tlssc,
+	}
+}
+
+type (
+	// TaskListSortStatusUpsertOne is the builder for "upsert"-ing
+	//  one TaskListSortStatus node.
+	TaskListSortStatusUpsertOne struct {
+		create *TaskListSortStatusCreate
+	}
+
+	// TaskListSortStatusUpsert is the "OnConflict" setter.
+	TaskListSortStatusUpsert struct {
+		*sql.UpdateSet
+	}
+)
+
+// SetName sets the "name" field.
+func (u *TaskListSortStatusUpsert) SetName(v string) *TaskListSortStatusUpsert {
+	u.Set(tasklistsortstatus.FieldName, v)
+	return u
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *TaskListSortStatusUpsert) UpdateName() *TaskListSortStatusUpsert {
+	u.SetExcluded(tasklistsortstatus.FieldName)
+	return u
+}
+
+// SetStatusCode sets the "status_code" field.
+func (u *TaskListSortStatusUpsert) SetStatusCode(v tasklistsortstatus.StatusCode) *TaskListSortStatusUpsert {
+	u.Set(tasklistsortstatus.FieldStatusCode, v)
+	return u
+}
+
+// UpdateStatusCode sets the "status_code" field to the value that was provided on create.
+func (u *TaskListSortStatusUpsert) UpdateStatusCode() *TaskListSortStatusUpsert {
+	u.SetExcluded(tasklistsortstatus.FieldStatusCode)
+	return u
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *TaskListSortStatusUpsert) SetCreatedAt(v time.Time) *TaskListSortStatusUpsert {
+	u.Set(tasklistsortstatus.FieldCreatedAt, v)
+	return u
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *TaskListSortStatusUpsert) UpdateCreatedAt() *TaskListSortStatusUpsert {
+	u.SetExcluded(tasklistsortstatus.FieldCreatedAt)
+	return u
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *TaskListSortStatusUpsert) SetUpdatedAt(v time.Time) *TaskListSortStatusUpsert {
+	u.Set(tasklistsortstatus.FieldUpdatedAt, v)
+	return u
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *TaskListSortStatusUpsert) UpdateUpdatedAt() *TaskListSortStatusUpsert {
+	u.SetExcluded(tasklistsortstatus.FieldUpdatedAt)
+	return u
+}
+
+// UpdateNewValues updates the fields using the new values that were set on create except the ID field.
+// Using this option is equivalent to using:
+//
+//	client.TaskListSortStatus.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(tasklistsortstatus.FieldID)
+//			}),
+//		).
+//		Exec(ctx)
+//
+func (u *TaskListSortStatusUpsertOne) UpdateNewValues() *TaskListSortStatusUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		if _, exists := u.create.mutation.ID(); exists {
+			s.SetIgnore(tasklistsortstatus.FieldID)
+		}
+	}))
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//  client.TaskListSortStatus.Create().
+//      OnConflict(sql.ResolveWithIgnore()).
+//      Exec(ctx)
+//
+func (u *TaskListSortStatusUpsertOne) Ignore() *TaskListSortStatusUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *TaskListSortStatusUpsertOne) DoNothing() *TaskListSortStatusUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the TaskListSortStatusCreate.OnConflict
+// documentation for more info.
+func (u *TaskListSortStatusUpsertOne) Update(set func(*TaskListSortStatusUpsert)) *TaskListSortStatusUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&TaskListSortStatusUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetName sets the "name" field.
+func (u *TaskListSortStatusUpsertOne) SetName(v string) *TaskListSortStatusUpsertOne {
+	return u.Update(func(s *TaskListSortStatusUpsert) {
+		s.SetName(v)
+	})
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *TaskListSortStatusUpsertOne) UpdateName() *TaskListSortStatusUpsertOne {
+	return u.Update(func(s *TaskListSortStatusUpsert) {
+		s.UpdateName()
+	})
+}
+
+// SetStatusCode sets the "status_code" field.
+func (u *TaskListSortStatusUpsertOne) SetStatusCode(v tasklistsortstatus.StatusCode) *TaskListSortStatusUpsertOne {
+	return u.Update(func(s *TaskListSortStatusUpsert) {
+		s.SetStatusCode(v)
+	})
+}
+
+// UpdateStatusCode sets the "status_code" field to the value that was provided on create.
+func (u *TaskListSortStatusUpsertOne) UpdateStatusCode() *TaskListSortStatusUpsertOne {
+	return u.Update(func(s *TaskListSortStatusUpsert) {
+		s.UpdateStatusCode()
+	})
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *TaskListSortStatusUpsertOne) SetCreatedAt(v time.Time) *TaskListSortStatusUpsertOne {
+	return u.Update(func(s *TaskListSortStatusUpsert) {
+		s.SetCreatedAt(v)
+	})
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *TaskListSortStatusUpsertOne) UpdateCreatedAt() *TaskListSortStatusUpsertOne {
+	return u.Update(func(s *TaskListSortStatusUpsert) {
+		s.UpdateCreatedAt()
+	})
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *TaskListSortStatusUpsertOne) SetUpdatedAt(v time.Time) *TaskListSortStatusUpsertOne {
+	return u.Update(func(s *TaskListSortStatusUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *TaskListSortStatusUpsertOne) UpdateUpdatedAt() *TaskListSortStatusUpsertOne {
+	return u.Update(func(s *TaskListSortStatusUpsert) {
+		s.UpdateUpdatedAt()
+	})
+}
+
+// Exec executes the query.
+func (u *TaskListSortStatusUpsertOne) Exec(ctx context.Context) error {
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for TaskListSortStatusCreate.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *TaskListSortStatusUpsertOne) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// Exec executes the UPSERT query and returns the inserted/updated ID.
+func (u *TaskListSortStatusUpsertOne) ID(ctx context.Context) (id ulid.ID, err error) {
+	if u.create.driver.Dialect() == dialect.MySQL {
+		// In case of "ON CONFLICT", there is no way to get back non-numeric ID
+		// fields from the database since MySQL does not support the RETURNING clause.
+		return id, errors.New("ent: TaskListSortStatusUpsertOne.ID is not supported by MySQL driver. Use TaskListSortStatusUpsertOne.Exec instead")
+	}
+	node, err := u.create.Save(ctx)
+	if err != nil {
+		return id, err
+	}
+	return node.ID, nil
+}
+
+// IDX is like ID, but panics if an error occurs.
+func (u *TaskListSortStatusUpsertOne) IDX(ctx context.Context) ulid.ID {
+	id, err := u.ID(ctx)
+	if err != nil {
+		panic(err)
+	}
+	return id
+}
+
 // TaskListSortStatusCreateBulk is the builder for creating many TaskListSortStatus entities in bulk.
 type TaskListSortStatusCreateBulk struct {
 	config
 	builders []*TaskListSortStatusCreate
+	conflict []sql.ConflictOption
 }
 
 // Save creates the TaskListSortStatus entities in the database.
@@ -351,6 +599,7 @@ func (tlsscb *TaskListSortStatusCreateBulk) Save(ctx context.Context) ([]*TaskLi
 					_, err = mutators[i+1].Mutate(root, tlsscb.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
+					spec.OnConflict = tlsscb.conflict
 					// Invoke the actual operation on the latest mutation in the chain.
 					if err = sqlgraph.BatchCreate(ctx, tlsscb.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
@@ -397,6 +646,178 @@ func (tlsscb *TaskListSortStatusCreateBulk) Exec(ctx context.Context) error {
 // ExecX is like Exec, but panics if an error occurs.
 func (tlsscb *TaskListSortStatusCreateBulk) ExecX(ctx context.Context) {
 	if err := tlsscb.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.TaskListSortStatus.CreateBulk(builders...).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.TaskListSortStatusUpsert) {
+//			SetName(v+v).
+//		}).
+//		Exec(ctx)
+//
+func (tlsscb *TaskListSortStatusCreateBulk) OnConflict(opts ...sql.ConflictOption) *TaskListSortStatusUpsertBulk {
+	tlsscb.conflict = opts
+	return &TaskListSortStatusUpsertBulk{
+		create: tlsscb,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.TaskListSortStatus.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+//
+func (tlsscb *TaskListSortStatusCreateBulk) OnConflictColumns(columns ...string) *TaskListSortStatusUpsertBulk {
+	tlsscb.conflict = append(tlsscb.conflict, sql.ConflictColumns(columns...))
+	return &TaskListSortStatusUpsertBulk{
+		create: tlsscb,
+	}
+}
+
+// TaskListSortStatusUpsertBulk is the builder for "upsert"-ing
+// a bulk of TaskListSortStatus nodes.
+type TaskListSortStatusUpsertBulk struct {
+	create *TaskListSortStatusCreateBulk
+}
+
+// UpdateNewValues updates the fields using the new values that
+// were set on create. Using this option is equivalent to using:
+//
+//	client.TaskListSortStatus.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(tasklistsortstatus.FieldID)
+//			}),
+//		).
+//		Exec(ctx)
+//
+func (u *TaskListSortStatusUpsertBulk) UpdateNewValues() *TaskListSortStatusUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		for _, b := range u.create.builders {
+			if _, exists := b.mutation.ID(); exists {
+				s.SetIgnore(tasklistsortstatus.FieldID)
+				return
+			}
+		}
+	}))
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//	client.TaskListSortStatus.Create().
+//		OnConflict(sql.ResolveWithIgnore()).
+//		Exec(ctx)
+//
+func (u *TaskListSortStatusUpsertBulk) Ignore() *TaskListSortStatusUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *TaskListSortStatusUpsertBulk) DoNothing() *TaskListSortStatusUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the TaskListSortStatusCreateBulk.OnConflict
+// documentation for more info.
+func (u *TaskListSortStatusUpsertBulk) Update(set func(*TaskListSortStatusUpsert)) *TaskListSortStatusUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&TaskListSortStatusUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetName sets the "name" field.
+func (u *TaskListSortStatusUpsertBulk) SetName(v string) *TaskListSortStatusUpsertBulk {
+	return u.Update(func(s *TaskListSortStatusUpsert) {
+		s.SetName(v)
+	})
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *TaskListSortStatusUpsertBulk) UpdateName() *TaskListSortStatusUpsertBulk {
+	return u.Update(func(s *TaskListSortStatusUpsert) {
+		s.UpdateName()
+	})
+}
+
+// SetStatusCode sets the "status_code" field.
+func (u *TaskListSortStatusUpsertBulk) SetStatusCode(v tasklistsortstatus.StatusCode) *TaskListSortStatusUpsertBulk {
+	return u.Update(func(s *TaskListSortStatusUpsert) {
+		s.SetStatusCode(v)
+	})
+}
+
+// UpdateStatusCode sets the "status_code" field to the value that was provided on create.
+func (u *TaskListSortStatusUpsertBulk) UpdateStatusCode() *TaskListSortStatusUpsertBulk {
+	return u.Update(func(s *TaskListSortStatusUpsert) {
+		s.UpdateStatusCode()
+	})
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *TaskListSortStatusUpsertBulk) SetCreatedAt(v time.Time) *TaskListSortStatusUpsertBulk {
+	return u.Update(func(s *TaskListSortStatusUpsert) {
+		s.SetCreatedAt(v)
+	})
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *TaskListSortStatusUpsertBulk) UpdateCreatedAt() *TaskListSortStatusUpsertBulk {
+	return u.Update(func(s *TaskListSortStatusUpsert) {
+		s.UpdateCreatedAt()
+	})
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *TaskListSortStatusUpsertBulk) SetUpdatedAt(v time.Time) *TaskListSortStatusUpsertBulk {
+	return u.Update(func(s *TaskListSortStatusUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *TaskListSortStatusUpsertBulk) UpdateUpdatedAt() *TaskListSortStatusUpsertBulk {
+	return u.Update(func(s *TaskListSortStatusUpsert) {
+		s.UpdateUpdatedAt()
+	})
+}
+
+// Exec executes the query.
+func (u *TaskListSortStatusUpsertBulk) Exec(ctx context.Context) error {
+	for i, b := range u.create.builders {
+		if len(b.conflict) != 0 {
+			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the TaskListSortStatusCreateBulk instead", i)
+		}
+	}
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for TaskListSortStatusCreateBulk.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *TaskListSortStatusUpsertBulk) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

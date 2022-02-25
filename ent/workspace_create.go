@@ -23,6 +23,8 @@ import (
 	"project-management-demo-backend/ent/workspaceteammate"
 	"time"
 
+	"entgo.io/ent/dialect"
+	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 )
@@ -32,6 +34,7 @@ type WorkspaceCreate struct {
 	config
 	mutation *WorkspaceMutation
 	hooks    []Hook
+	conflict []sql.ConflictOption
 }
 
 // SetCreatedBy sets the "created_by" field.
@@ -408,6 +411,7 @@ func (wc *WorkspaceCreate) createSpec() (*Workspace, *sqlgraph.CreateSpec) {
 			},
 		}
 	)
+	_spec.OnConflict = wc.conflict
 	if id, ok := wc.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = id
@@ -676,10 +680,280 @@ func (wc *WorkspaceCreate) createSpec() (*Workspace, *sqlgraph.CreateSpec) {
 	return _node, _spec
 }
 
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.Workspace.Create().
+//		SetCreatedBy(v).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.WorkspaceUpsert) {
+//			SetCreatedBy(v+v).
+//		}).
+//		Exec(ctx)
+//
+func (wc *WorkspaceCreate) OnConflict(opts ...sql.ConflictOption) *WorkspaceUpsertOne {
+	wc.conflict = opts
+	return &WorkspaceUpsertOne{
+		create: wc,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.Workspace.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+//
+func (wc *WorkspaceCreate) OnConflictColumns(columns ...string) *WorkspaceUpsertOne {
+	wc.conflict = append(wc.conflict, sql.ConflictColumns(columns...))
+	return &WorkspaceUpsertOne{
+		create: wc,
+	}
+}
+
+type (
+	// WorkspaceUpsertOne is the builder for "upsert"-ing
+	//  one Workspace node.
+	WorkspaceUpsertOne struct {
+		create *WorkspaceCreate
+	}
+
+	// WorkspaceUpsert is the "OnConflict" setter.
+	WorkspaceUpsert struct {
+		*sql.UpdateSet
+	}
+)
+
+// SetCreatedBy sets the "created_by" field.
+func (u *WorkspaceUpsert) SetCreatedBy(v ulid.ID) *WorkspaceUpsert {
+	u.Set(workspace.FieldCreatedBy, v)
+	return u
+}
+
+// UpdateCreatedBy sets the "created_by" field to the value that was provided on create.
+func (u *WorkspaceUpsert) UpdateCreatedBy() *WorkspaceUpsert {
+	u.SetExcluded(workspace.FieldCreatedBy)
+	return u
+}
+
+// SetName sets the "name" field.
+func (u *WorkspaceUpsert) SetName(v string) *WorkspaceUpsert {
+	u.Set(workspace.FieldName, v)
+	return u
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *WorkspaceUpsert) UpdateName() *WorkspaceUpsert {
+	u.SetExcluded(workspace.FieldName)
+	return u
+}
+
+// SetDescription sets the "description" field.
+func (u *WorkspaceUpsert) SetDescription(v editor.Description) *WorkspaceUpsert {
+	u.Set(workspace.FieldDescription, v)
+	return u
+}
+
+// UpdateDescription sets the "description" field to the value that was provided on create.
+func (u *WorkspaceUpsert) UpdateDescription() *WorkspaceUpsert {
+	u.SetExcluded(workspace.FieldDescription)
+	return u
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *WorkspaceUpsert) SetCreatedAt(v time.Time) *WorkspaceUpsert {
+	u.Set(workspace.FieldCreatedAt, v)
+	return u
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *WorkspaceUpsert) UpdateCreatedAt() *WorkspaceUpsert {
+	u.SetExcluded(workspace.FieldCreatedAt)
+	return u
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *WorkspaceUpsert) SetUpdatedAt(v time.Time) *WorkspaceUpsert {
+	u.Set(workspace.FieldUpdatedAt, v)
+	return u
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *WorkspaceUpsert) UpdateUpdatedAt() *WorkspaceUpsert {
+	u.SetExcluded(workspace.FieldUpdatedAt)
+	return u
+}
+
+// UpdateNewValues updates the fields using the new values that were set on create except the ID field.
+// Using this option is equivalent to using:
+//
+//	client.Workspace.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(workspace.FieldID)
+//			}),
+//		).
+//		Exec(ctx)
+//
+func (u *WorkspaceUpsertOne) UpdateNewValues() *WorkspaceUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		if _, exists := u.create.mutation.ID(); exists {
+			s.SetIgnore(workspace.FieldID)
+		}
+	}))
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//  client.Workspace.Create().
+//      OnConflict(sql.ResolveWithIgnore()).
+//      Exec(ctx)
+//
+func (u *WorkspaceUpsertOne) Ignore() *WorkspaceUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *WorkspaceUpsertOne) DoNothing() *WorkspaceUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the WorkspaceCreate.OnConflict
+// documentation for more info.
+func (u *WorkspaceUpsertOne) Update(set func(*WorkspaceUpsert)) *WorkspaceUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&WorkspaceUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetCreatedBy sets the "created_by" field.
+func (u *WorkspaceUpsertOne) SetCreatedBy(v ulid.ID) *WorkspaceUpsertOne {
+	return u.Update(func(s *WorkspaceUpsert) {
+		s.SetCreatedBy(v)
+	})
+}
+
+// UpdateCreatedBy sets the "created_by" field to the value that was provided on create.
+func (u *WorkspaceUpsertOne) UpdateCreatedBy() *WorkspaceUpsertOne {
+	return u.Update(func(s *WorkspaceUpsert) {
+		s.UpdateCreatedBy()
+	})
+}
+
+// SetName sets the "name" field.
+func (u *WorkspaceUpsertOne) SetName(v string) *WorkspaceUpsertOne {
+	return u.Update(func(s *WorkspaceUpsert) {
+		s.SetName(v)
+	})
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *WorkspaceUpsertOne) UpdateName() *WorkspaceUpsertOne {
+	return u.Update(func(s *WorkspaceUpsert) {
+		s.UpdateName()
+	})
+}
+
+// SetDescription sets the "description" field.
+func (u *WorkspaceUpsertOne) SetDescription(v editor.Description) *WorkspaceUpsertOne {
+	return u.Update(func(s *WorkspaceUpsert) {
+		s.SetDescription(v)
+	})
+}
+
+// UpdateDescription sets the "description" field to the value that was provided on create.
+func (u *WorkspaceUpsertOne) UpdateDescription() *WorkspaceUpsertOne {
+	return u.Update(func(s *WorkspaceUpsert) {
+		s.UpdateDescription()
+	})
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *WorkspaceUpsertOne) SetCreatedAt(v time.Time) *WorkspaceUpsertOne {
+	return u.Update(func(s *WorkspaceUpsert) {
+		s.SetCreatedAt(v)
+	})
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *WorkspaceUpsertOne) UpdateCreatedAt() *WorkspaceUpsertOne {
+	return u.Update(func(s *WorkspaceUpsert) {
+		s.UpdateCreatedAt()
+	})
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *WorkspaceUpsertOne) SetUpdatedAt(v time.Time) *WorkspaceUpsertOne {
+	return u.Update(func(s *WorkspaceUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *WorkspaceUpsertOne) UpdateUpdatedAt() *WorkspaceUpsertOne {
+	return u.Update(func(s *WorkspaceUpsert) {
+		s.UpdateUpdatedAt()
+	})
+}
+
+// Exec executes the query.
+func (u *WorkspaceUpsertOne) Exec(ctx context.Context) error {
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for WorkspaceCreate.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *WorkspaceUpsertOne) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// Exec executes the UPSERT query and returns the inserted/updated ID.
+func (u *WorkspaceUpsertOne) ID(ctx context.Context) (id ulid.ID, err error) {
+	if u.create.driver.Dialect() == dialect.MySQL {
+		// In case of "ON CONFLICT", there is no way to get back non-numeric ID
+		// fields from the database since MySQL does not support the RETURNING clause.
+		return id, errors.New("ent: WorkspaceUpsertOne.ID is not supported by MySQL driver. Use WorkspaceUpsertOne.Exec instead")
+	}
+	node, err := u.create.Save(ctx)
+	if err != nil {
+		return id, err
+	}
+	return node.ID, nil
+}
+
+// IDX is like ID, but panics if an error occurs.
+func (u *WorkspaceUpsertOne) IDX(ctx context.Context) ulid.ID {
+	id, err := u.ID(ctx)
+	if err != nil {
+		panic(err)
+	}
+	return id
+}
+
 // WorkspaceCreateBulk is the builder for creating many Workspace entities in bulk.
 type WorkspaceCreateBulk struct {
 	config
 	builders []*WorkspaceCreate
+	conflict []sql.ConflictOption
 }
 
 // Save creates the Workspace entities in the database.
@@ -706,6 +980,7 @@ func (wcb *WorkspaceCreateBulk) Save(ctx context.Context) ([]*Workspace, error) 
 					_, err = mutators[i+1].Mutate(root, wcb.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
+					spec.OnConflict = wcb.conflict
 					// Invoke the actual operation on the latest mutation in the chain.
 					if err = sqlgraph.BatchCreate(ctx, wcb.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
@@ -752,6 +1027,192 @@ func (wcb *WorkspaceCreateBulk) Exec(ctx context.Context) error {
 // ExecX is like Exec, but panics if an error occurs.
 func (wcb *WorkspaceCreateBulk) ExecX(ctx context.Context) {
 	if err := wcb.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.Workspace.CreateBulk(builders...).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.WorkspaceUpsert) {
+//			SetCreatedBy(v+v).
+//		}).
+//		Exec(ctx)
+//
+func (wcb *WorkspaceCreateBulk) OnConflict(opts ...sql.ConflictOption) *WorkspaceUpsertBulk {
+	wcb.conflict = opts
+	return &WorkspaceUpsertBulk{
+		create: wcb,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.Workspace.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+//
+func (wcb *WorkspaceCreateBulk) OnConflictColumns(columns ...string) *WorkspaceUpsertBulk {
+	wcb.conflict = append(wcb.conflict, sql.ConflictColumns(columns...))
+	return &WorkspaceUpsertBulk{
+		create: wcb,
+	}
+}
+
+// WorkspaceUpsertBulk is the builder for "upsert"-ing
+// a bulk of Workspace nodes.
+type WorkspaceUpsertBulk struct {
+	create *WorkspaceCreateBulk
+}
+
+// UpdateNewValues updates the fields using the new values that
+// were set on create. Using this option is equivalent to using:
+//
+//	client.Workspace.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(workspace.FieldID)
+//			}),
+//		).
+//		Exec(ctx)
+//
+func (u *WorkspaceUpsertBulk) UpdateNewValues() *WorkspaceUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		for _, b := range u.create.builders {
+			if _, exists := b.mutation.ID(); exists {
+				s.SetIgnore(workspace.FieldID)
+				return
+			}
+		}
+	}))
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//	client.Workspace.Create().
+//		OnConflict(sql.ResolveWithIgnore()).
+//		Exec(ctx)
+//
+func (u *WorkspaceUpsertBulk) Ignore() *WorkspaceUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *WorkspaceUpsertBulk) DoNothing() *WorkspaceUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the WorkspaceCreateBulk.OnConflict
+// documentation for more info.
+func (u *WorkspaceUpsertBulk) Update(set func(*WorkspaceUpsert)) *WorkspaceUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&WorkspaceUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetCreatedBy sets the "created_by" field.
+func (u *WorkspaceUpsertBulk) SetCreatedBy(v ulid.ID) *WorkspaceUpsertBulk {
+	return u.Update(func(s *WorkspaceUpsert) {
+		s.SetCreatedBy(v)
+	})
+}
+
+// UpdateCreatedBy sets the "created_by" field to the value that was provided on create.
+func (u *WorkspaceUpsertBulk) UpdateCreatedBy() *WorkspaceUpsertBulk {
+	return u.Update(func(s *WorkspaceUpsert) {
+		s.UpdateCreatedBy()
+	})
+}
+
+// SetName sets the "name" field.
+func (u *WorkspaceUpsertBulk) SetName(v string) *WorkspaceUpsertBulk {
+	return u.Update(func(s *WorkspaceUpsert) {
+		s.SetName(v)
+	})
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *WorkspaceUpsertBulk) UpdateName() *WorkspaceUpsertBulk {
+	return u.Update(func(s *WorkspaceUpsert) {
+		s.UpdateName()
+	})
+}
+
+// SetDescription sets the "description" field.
+func (u *WorkspaceUpsertBulk) SetDescription(v editor.Description) *WorkspaceUpsertBulk {
+	return u.Update(func(s *WorkspaceUpsert) {
+		s.SetDescription(v)
+	})
+}
+
+// UpdateDescription sets the "description" field to the value that was provided on create.
+func (u *WorkspaceUpsertBulk) UpdateDescription() *WorkspaceUpsertBulk {
+	return u.Update(func(s *WorkspaceUpsert) {
+		s.UpdateDescription()
+	})
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *WorkspaceUpsertBulk) SetCreatedAt(v time.Time) *WorkspaceUpsertBulk {
+	return u.Update(func(s *WorkspaceUpsert) {
+		s.SetCreatedAt(v)
+	})
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *WorkspaceUpsertBulk) UpdateCreatedAt() *WorkspaceUpsertBulk {
+	return u.Update(func(s *WorkspaceUpsert) {
+		s.UpdateCreatedAt()
+	})
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *WorkspaceUpsertBulk) SetUpdatedAt(v time.Time) *WorkspaceUpsertBulk {
+	return u.Update(func(s *WorkspaceUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *WorkspaceUpsertBulk) UpdateUpdatedAt() *WorkspaceUpsertBulk {
+	return u.Update(func(s *WorkspaceUpsert) {
+		s.UpdateUpdatedAt()
+	})
+}
+
+// Exec executes the query.
+func (u *WorkspaceUpsertBulk) Exec(ctx context.Context) error {
+	for i, b := range u.create.builders {
+		if len(b.conflict) != 0 {
+			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the WorkspaceCreateBulk instead", i)
+		}
+	}
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for WorkspaceCreateBulk.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *WorkspaceUpsertBulk) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

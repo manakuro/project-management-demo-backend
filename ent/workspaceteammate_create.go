@@ -12,6 +12,8 @@ import (
 	"project-management-demo-backend/ent/workspaceteammate"
 	"time"
 
+	"entgo.io/ent/dialect"
+	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 )
@@ -21,6 +23,7 @@ type WorkspaceTeammateCreate struct {
 	config
 	mutation *WorkspaceTeammateMutation
 	hooks    []Hook
+	conflict []sql.ConflictOption
 }
 
 // SetWorkspaceID sets the "workspace_id" field.
@@ -243,6 +246,7 @@ func (wtc *WorkspaceTeammateCreate) createSpec() (*WorkspaceTeammate, *sqlgraph.
 			},
 		}
 	)
+	_spec.OnConflict = wtc.conflict
 	if id, ok := wtc.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = id
@@ -322,10 +326,306 @@ func (wtc *WorkspaceTeammateCreate) createSpec() (*WorkspaceTeammate, *sqlgraph.
 	return _node, _spec
 }
 
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.WorkspaceTeammate.Create().
+//		SetWorkspaceID(v).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.WorkspaceTeammateUpsert) {
+//			SetWorkspaceID(v+v).
+//		}).
+//		Exec(ctx)
+//
+func (wtc *WorkspaceTeammateCreate) OnConflict(opts ...sql.ConflictOption) *WorkspaceTeammateUpsertOne {
+	wtc.conflict = opts
+	return &WorkspaceTeammateUpsertOne{
+		create: wtc,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.WorkspaceTeammate.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+//
+func (wtc *WorkspaceTeammateCreate) OnConflictColumns(columns ...string) *WorkspaceTeammateUpsertOne {
+	wtc.conflict = append(wtc.conflict, sql.ConflictColumns(columns...))
+	return &WorkspaceTeammateUpsertOne{
+		create: wtc,
+	}
+}
+
+type (
+	// WorkspaceTeammateUpsertOne is the builder for "upsert"-ing
+	//  one WorkspaceTeammate node.
+	WorkspaceTeammateUpsertOne struct {
+		create *WorkspaceTeammateCreate
+	}
+
+	// WorkspaceTeammateUpsert is the "OnConflict" setter.
+	WorkspaceTeammateUpsert struct {
+		*sql.UpdateSet
+	}
+)
+
+// SetWorkspaceID sets the "workspace_id" field.
+func (u *WorkspaceTeammateUpsert) SetWorkspaceID(v ulid.ID) *WorkspaceTeammateUpsert {
+	u.Set(workspaceteammate.FieldWorkspaceID, v)
+	return u
+}
+
+// UpdateWorkspaceID sets the "workspace_id" field to the value that was provided on create.
+func (u *WorkspaceTeammateUpsert) UpdateWorkspaceID() *WorkspaceTeammateUpsert {
+	u.SetExcluded(workspaceteammate.FieldWorkspaceID)
+	return u
+}
+
+// SetTeammateID sets the "teammate_id" field.
+func (u *WorkspaceTeammateUpsert) SetTeammateID(v ulid.ID) *WorkspaceTeammateUpsert {
+	u.Set(workspaceteammate.FieldTeammateID, v)
+	return u
+}
+
+// UpdateTeammateID sets the "teammate_id" field to the value that was provided on create.
+func (u *WorkspaceTeammateUpsert) UpdateTeammateID() *WorkspaceTeammateUpsert {
+	u.SetExcluded(workspaceteammate.FieldTeammateID)
+	return u
+}
+
+// SetRole sets the "role" field.
+func (u *WorkspaceTeammateUpsert) SetRole(v string) *WorkspaceTeammateUpsert {
+	u.Set(workspaceteammate.FieldRole, v)
+	return u
+}
+
+// UpdateRole sets the "role" field to the value that was provided on create.
+func (u *WorkspaceTeammateUpsert) UpdateRole() *WorkspaceTeammateUpsert {
+	u.SetExcluded(workspaceteammate.FieldRole)
+	return u
+}
+
+// SetIsOwner sets the "is_owner" field.
+func (u *WorkspaceTeammateUpsert) SetIsOwner(v bool) *WorkspaceTeammateUpsert {
+	u.Set(workspaceteammate.FieldIsOwner, v)
+	return u
+}
+
+// UpdateIsOwner sets the "is_owner" field to the value that was provided on create.
+func (u *WorkspaceTeammateUpsert) UpdateIsOwner() *WorkspaceTeammateUpsert {
+	u.SetExcluded(workspaceteammate.FieldIsOwner)
+	return u
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *WorkspaceTeammateUpsert) SetCreatedAt(v time.Time) *WorkspaceTeammateUpsert {
+	u.Set(workspaceteammate.FieldCreatedAt, v)
+	return u
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *WorkspaceTeammateUpsert) UpdateCreatedAt() *WorkspaceTeammateUpsert {
+	u.SetExcluded(workspaceteammate.FieldCreatedAt)
+	return u
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *WorkspaceTeammateUpsert) SetUpdatedAt(v time.Time) *WorkspaceTeammateUpsert {
+	u.Set(workspaceteammate.FieldUpdatedAt, v)
+	return u
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *WorkspaceTeammateUpsert) UpdateUpdatedAt() *WorkspaceTeammateUpsert {
+	u.SetExcluded(workspaceteammate.FieldUpdatedAt)
+	return u
+}
+
+// UpdateNewValues updates the fields using the new values that were set on create except the ID field.
+// Using this option is equivalent to using:
+//
+//	client.WorkspaceTeammate.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(workspaceteammate.FieldID)
+//			}),
+//		).
+//		Exec(ctx)
+//
+func (u *WorkspaceTeammateUpsertOne) UpdateNewValues() *WorkspaceTeammateUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		if _, exists := u.create.mutation.ID(); exists {
+			s.SetIgnore(workspaceteammate.FieldID)
+		}
+	}))
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//  client.WorkspaceTeammate.Create().
+//      OnConflict(sql.ResolveWithIgnore()).
+//      Exec(ctx)
+//
+func (u *WorkspaceTeammateUpsertOne) Ignore() *WorkspaceTeammateUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *WorkspaceTeammateUpsertOne) DoNothing() *WorkspaceTeammateUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the WorkspaceTeammateCreate.OnConflict
+// documentation for more info.
+func (u *WorkspaceTeammateUpsertOne) Update(set func(*WorkspaceTeammateUpsert)) *WorkspaceTeammateUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&WorkspaceTeammateUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetWorkspaceID sets the "workspace_id" field.
+func (u *WorkspaceTeammateUpsertOne) SetWorkspaceID(v ulid.ID) *WorkspaceTeammateUpsertOne {
+	return u.Update(func(s *WorkspaceTeammateUpsert) {
+		s.SetWorkspaceID(v)
+	})
+}
+
+// UpdateWorkspaceID sets the "workspace_id" field to the value that was provided on create.
+func (u *WorkspaceTeammateUpsertOne) UpdateWorkspaceID() *WorkspaceTeammateUpsertOne {
+	return u.Update(func(s *WorkspaceTeammateUpsert) {
+		s.UpdateWorkspaceID()
+	})
+}
+
+// SetTeammateID sets the "teammate_id" field.
+func (u *WorkspaceTeammateUpsertOne) SetTeammateID(v ulid.ID) *WorkspaceTeammateUpsertOne {
+	return u.Update(func(s *WorkspaceTeammateUpsert) {
+		s.SetTeammateID(v)
+	})
+}
+
+// UpdateTeammateID sets the "teammate_id" field to the value that was provided on create.
+func (u *WorkspaceTeammateUpsertOne) UpdateTeammateID() *WorkspaceTeammateUpsertOne {
+	return u.Update(func(s *WorkspaceTeammateUpsert) {
+		s.UpdateTeammateID()
+	})
+}
+
+// SetRole sets the "role" field.
+func (u *WorkspaceTeammateUpsertOne) SetRole(v string) *WorkspaceTeammateUpsertOne {
+	return u.Update(func(s *WorkspaceTeammateUpsert) {
+		s.SetRole(v)
+	})
+}
+
+// UpdateRole sets the "role" field to the value that was provided on create.
+func (u *WorkspaceTeammateUpsertOne) UpdateRole() *WorkspaceTeammateUpsertOne {
+	return u.Update(func(s *WorkspaceTeammateUpsert) {
+		s.UpdateRole()
+	})
+}
+
+// SetIsOwner sets the "is_owner" field.
+func (u *WorkspaceTeammateUpsertOne) SetIsOwner(v bool) *WorkspaceTeammateUpsertOne {
+	return u.Update(func(s *WorkspaceTeammateUpsert) {
+		s.SetIsOwner(v)
+	})
+}
+
+// UpdateIsOwner sets the "is_owner" field to the value that was provided on create.
+func (u *WorkspaceTeammateUpsertOne) UpdateIsOwner() *WorkspaceTeammateUpsertOne {
+	return u.Update(func(s *WorkspaceTeammateUpsert) {
+		s.UpdateIsOwner()
+	})
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *WorkspaceTeammateUpsertOne) SetCreatedAt(v time.Time) *WorkspaceTeammateUpsertOne {
+	return u.Update(func(s *WorkspaceTeammateUpsert) {
+		s.SetCreatedAt(v)
+	})
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *WorkspaceTeammateUpsertOne) UpdateCreatedAt() *WorkspaceTeammateUpsertOne {
+	return u.Update(func(s *WorkspaceTeammateUpsert) {
+		s.UpdateCreatedAt()
+	})
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *WorkspaceTeammateUpsertOne) SetUpdatedAt(v time.Time) *WorkspaceTeammateUpsertOne {
+	return u.Update(func(s *WorkspaceTeammateUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *WorkspaceTeammateUpsertOne) UpdateUpdatedAt() *WorkspaceTeammateUpsertOne {
+	return u.Update(func(s *WorkspaceTeammateUpsert) {
+		s.UpdateUpdatedAt()
+	})
+}
+
+// Exec executes the query.
+func (u *WorkspaceTeammateUpsertOne) Exec(ctx context.Context) error {
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for WorkspaceTeammateCreate.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *WorkspaceTeammateUpsertOne) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// Exec executes the UPSERT query and returns the inserted/updated ID.
+func (u *WorkspaceTeammateUpsertOne) ID(ctx context.Context) (id ulid.ID, err error) {
+	if u.create.driver.Dialect() == dialect.MySQL {
+		// In case of "ON CONFLICT", there is no way to get back non-numeric ID
+		// fields from the database since MySQL does not support the RETURNING clause.
+		return id, errors.New("ent: WorkspaceTeammateUpsertOne.ID is not supported by MySQL driver. Use WorkspaceTeammateUpsertOne.Exec instead")
+	}
+	node, err := u.create.Save(ctx)
+	if err != nil {
+		return id, err
+	}
+	return node.ID, nil
+}
+
+// IDX is like ID, but panics if an error occurs.
+func (u *WorkspaceTeammateUpsertOne) IDX(ctx context.Context) ulid.ID {
+	id, err := u.ID(ctx)
+	if err != nil {
+		panic(err)
+	}
+	return id
+}
+
 // WorkspaceTeammateCreateBulk is the builder for creating many WorkspaceTeammate entities in bulk.
 type WorkspaceTeammateCreateBulk struct {
 	config
 	builders []*WorkspaceTeammateCreate
+	conflict []sql.ConflictOption
 }
 
 // Save creates the WorkspaceTeammate entities in the database.
@@ -352,6 +652,7 @@ func (wtcb *WorkspaceTeammateCreateBulk) Save(ctx context.Context) ([]*Workspace
 					_, err = mutators[i+1].Mutate(root, wtcb.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
+					spec.OnConflict = wtcb.conflict
 					// Invoke the actual operation on the latest mutation in the chain.
 					if err = sqlgraph.BatchCreate(ctx, wtcb.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
@@ -398,6 +699,206 @@ func (wtcb *WorkspaceTeammateCreateBulk) Exec(ctx context.Context) error {
 // ExecX is like Exec, but panics if an error occurs.
 func (wtcb *WorkspaceTeammateCreateBulk) ExecX(ctx context.Context) {
 	if err := wtcb.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.WorkspaceTeammate.CreateBulk(builders...).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.WorkspaceTeammateUpsert) {
+//			SetWorkspaceID(v+v).
+//		}).
+//		Exec(ctx)
+//
+func (wtcb *WorkspaceTeammateCreateBulk) OnConflict(opts ...sql.ConflictOption) *WorkspaceTeammateUpsertBulk {
+	wtcb.conflict = opts
+	return &WorkspaceTeammateUpsertBulk{
+		create: wtcb,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.WorkspaceTeammate.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+//
+func (wtcb *WorkspaceTeammateCreateBulk) OnConflictColumns(columns ...string) *WorkspaceTeammateUpsertBulk {
+	wtcb.conflict = append(wtcb.conflict, sql.ConflictColumns(columns...))
+	return &WorkspaceTeammateUpsertBulk{
+		create: wtcb,
+	}
+}
+
+// WorkspaceTeammateUpsertBulk is the builder for "upsert"-ing
+// a bulk of WorkspaceTeammate nodes.
+type WorkspaceTeammateUpsertBulk struct {
+	create *WorkspaceTeammateCreateBulk
+}
+
+// UpdateNewValues updates the fields using the new values that
+// were set on create. Using this option is equivalent to using:
+//
+//	client.WorkspaceTeammate.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(workspaceteammate.FieldID)
+//			}),
+//		).
+//		Exec(ctx)
+//
+func (u *WorkspaceTeammateUpsertBulk) UpdateNewValues() *WorkspaceTeammateUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		for _, b := range u.create.builders {
+			if _, exists := b.mutation.ID(); exists {
+				s.SetIgnore(workspaceteammate.FieldID)
+				return
+			}
+		}
+	}))
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//	client.WorkspaceTeammate.Create().
+//		OnConflict(sql.ResolveWithIgnore()).
+//		Exec(ctx)
+//
+func (u *WorkspaceTeammateUpsertBulk) Ignore() *WorkspaceTeammateUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *WorkspaceTeammateUpsertBulk) DoNothing() *WorkspaceTeammateUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the WorkspaceTeammateCreateBulk.OnConflict
+// documentation for more info.
+func (u *WorkspaceTeammateUpsertBulk) Update(set func(*WorkspaceTeammateUpsert)) *WorkspaceTeammateUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&WorkspaceTeammateUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetWorkspaceID sets the "workspace_id" field.
+func (u *WorkspaceTeammateUpsertBulk) SetWorkspaceID(v ulid.ID) *WorkspaceTeammateUpsertBulk {
+	return u.Update(func(s *WorkspaceTeammateUpsert) {
+		s.SetWorkspaceID(v)
+	})
+}
+
+// UpdateWorkspaceID sets the "workspace_id" field to the value that was provided on create.
+func (u *WorkspaceTeammateUpsertBulk) UpdateWorkspaceID() *WorkspaceTeammateUpsertBulk {
+	return u.Update(func(s *WorkspaceTeammateUpsert) {
+		s.UpdateWorkspaceID()
+	})
+}
+
+// SetTeammateID sets the "teammate_id" field.
+func (u *WorkspaceTeammateUpsertBulk) SetTeammateID(v ulid.ID) *WorkspaceTeammateUpsertBulk {
+	return u.Update(func(s *WorkspaceTeammateUpsert) {
+		s.SetTeammateID(v)
+	})
+}
+
+// UpdateTeammateID sets the "teammate_id" field to the value that was provided on create.
+func (u *WorkspaceTeammateUpsertBulk) UpdateTeammateID() *WorkspaceTeammateUpsertBulk {
+	return u.Update(func(s *WorkspaceTeammateUpsert) {
+		s.UpdateTeammateID()
+	})
+}
+
+// SetRole sets the "role" field.
+func (u *WorkspaceTeammateUpsertBulk) SetRole(v string) *WorkspaceTeammateUpsertBulk {
+	return u.Update(func(s *WorkspaceTeammateUpsert) {
+		s.SetRole(v)
+	})
+}
+
+// UpdateRole sets the "role" field to the value that was provided on create.
+func (u *WorkspaceTeammateUpsertBulk) UpdateRole() *WorkspaceTeammateUpsertBulk {
+	return u.Update(func(s *WorkspaceTeammateUpsert) {
+		s.UpdateRole()
+	})
+}
+
+// SetIsOwner sets the "is_owner" field.
+func (u *WorkspaceTeammateUpsertBulk) SetIsOwner(v bool) *WorkspaceTeammateUpsertBulk {
+	return u.Update(func(s *WorkspaceTeammateUpsert) {
+		s.SetIsOwner(v)
+	})
+}
+
+// UpdateIsOwner sets the "is_owner" field to the value that was provided on create.
+func (u *WorkspaceTeammateUpsertBulk) UpdateIsOwner() *WorkspaceTeammateUpsertBulk {
+	return u.Update(func(s *WorkspaceTeammateUpsert) {
+		s.UpdateIsOwner()
+	})
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *WorkspaceTeammateUpsertBulk) SetCreatedAt(v time.Time) *WorkspaceTeammateUpsertBulk {
+	return u.Update(func(s *WorkspaceTeammateUpsert) {
+		s.SetCreatedAt(v)
+	})
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *WorkspaceTeammateUpsertBulk) UpdateCreatedAt() *WorkspaceTeammateUpsertBulk {
+	return u.Update(func(s *WorkspaceTeammateUpsert) {
+		s.UpdateCreatedAt()
+	})
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *WorkspaceTeammateUpsertBulk) SetUpdatedAt(v time.Time) *WorkspaceTeammateUpsertBulk {
+	return u.Update(func(s *WorkspaceTeammateUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *WorkspaceTeammateUpsertBulk) UpdateUpdatedAt() *WorkspaceTeammateUpsertBulk {
+	return u.Update(func(s *WorkspaceTeammateUpsert) {
+		s.UpdateUpdatedAt()
+	})
+}
+
+// Exec executes the query.
+func (u *WorkspaceTeammateUpsertBulk) Exec(ctx context.Context) error {
+	for i, b := range u.create.builders {
+		if len(b.conflict) != 0 {
+			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the WorkspaceTeammateCreateBulk instead", i)
+		}
+	}
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for WorkspaceTeammateCreateBulk.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *WorkspaceTeammateUpsertBulk) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

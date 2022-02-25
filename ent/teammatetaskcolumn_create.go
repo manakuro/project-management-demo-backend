@@ -13,6 +13,8 @@ import (
 	"project-management-demo-backend/ent/workspace"
 	"time"
 
+	"entgo.io/ent/dialect"
+	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 )
@@ -22,6 +24,7 @@ type TeammateTaskColumnCreate struct {
 	config
 	mutation *TeammateTaskColumnMutation
 	hooks    []Hook
+	conflict []sql.ConflictOption
 }
 
 // SetTeammateID sets the "teammate_id" field.
@@ -279,6 +282,7 @@ func (ttcc *TeammateTaskColumnCreate) createSpec() (*TeammateTaskColumn, *sqlgra
 			},
 		}
 	)
+	_spec.OnConflict = ttcc.conflict
 	if id, ok := ttcc.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = id
@@ -394,10 +398,384 @@ func (ttcc *TeammateTaskColumnCreate) createSpec() (*TeammateTaskColumn, *sqlgra
 	return _node, _spec
 }
 
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.TeammateTaskColumn.Create().
+//		SetTeammateID(v).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.TeammateTaskColumnUpsert) {
+//			SetTeammateID(v+v).
+//		}).
+//		Exec(ctx)
+//
+func (ttcc *TeammateTaskColumnCreate) OnConflict(opts ...sql.ConflictOption) *TeammateTaskColumnUpsertOne {
+	ttcc.conflict = opts
+	return &TeammateTaskColumnUpsertOne{
+		create: ttcc,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.TeammateTaskColumn.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+//
+func (ttcc *TeammateTaskColumnCreate) OnConflictColumns(columns ...string) *TeammateTaskColumnUpsertOne {
+	ttcc.conflict = append(ttcc.conflict, sql.ConflictColumns(columns...))
+	return &TeammateTaskColumnUpsertOne{
+		create: ttcc,
+	}
+}
+
+type (
+	// TeammateTaskColumnUpsertOne is the builder for "upsert"-ing
+	//  one TeammateTaskColumn node.
+	TeammateTaskColumnUpsertOne struct {
+		create *TeammateTaskColumnCreate
+	}
+
+	// TeammateTaskColumnUpsert is the "OnConflict" setter.
+	TeammateTaskColumnUpsert struct {
+		*sql.UpdateSet
+	}
+)
+
+// SetTeammateID sets the "teammate_id" field.
+func (u *TeammateTaskColumnUpsert) SetTeammateID(v ulid.ID) *TeammateTaskColumnUpsert {
+	u.Set(teammatetaskcolumn.FieldTeammateID, v)
+	return u
+}
+
+// UpdateTeammateID sets the "teammate_id" field to the value that was provided on create.
+func (u *TeammateTaskColumnUpsert) UpdateTeammateID() *TeammateTaskColumnUpsert {
+	u.SetExcluded(teammatetaskcolumn.FieldTeammateID)
+	return u
+}
+
+// SetTaskColumnID sets the "task_column_id" field.
+func (u *TeammateTaskColumnUpsert) SetTaskColumnID(v ulid.ID) *TeammateTaskColumnUpsert {
+	u.Set(teammatetaskcolumn.FieldTaskColumnID, v)
+	return u
+}
+
+// UpdateTaskColumnID sets the "task_column_id" field to the value that was provided on create.
+func (u *TeammateTaskColumnUpsert) UpdateTaskColumnID() *TeammateTaskColumnUpsert {
+	u.SetExcluded(teammatetaskcolumn.FieldTaskColumnID)
+	return u
+}
+
+// SetWorkspaceID sets the "workspace_id" field.
+func (u *TeammateTaskColumnUpsert) SetWorkspaceID(v ulid.ID) *TeammateTaskColumnUpsert {
+	u.Set(teammatetaskcolumn.FieldWorkspaceID, v)
+	return u
+}
+
+// UpdateWorkspaceID sets the "workspace_id" field to the value that was provided on create.
+func (u *TeammateTaskColumnUpsert) UpdateWorkspaceID() *TeammateTaskColumnUpsert {
+	u.SetExcluded(teammatetaskcolumn.FieldWorkspaceID)
+	return u
+}
+
+// SetWidth sets the "width" field.
+func (u *TeammateTaskColumnUpsert) SetWidth(v string) *TeammateTaskColumnUpsert {
+	u.Set(teammatetaskcolumn.FieldWidth, v)
+	return u
+}
+
+// UpdateWidth sets the "width" field to the value that was provided on create.
+func (u *TeammateTaskColumnUpsert) UpdateWidth() *TeammateTaskColumnUpsert {
+	u.SetExcluded(teammatetaskcolumn.FieldWidth)
+	return u
+}
+
+// SetDisabled sets the "disabled" field.
+func (u *TeammateTaskColumnUpsert) SetDisabled(v bool) *TeammateTaskColumnUpsert {
+	u.Set(teammatetaskcolumn.FieldDisabled, v)
+	return u
+}
+
+// UpdateDisabled sets the "disabled" field to the value that was provided on create.
+func (u *TeammateTaskColumnUpsert) UpdateDisabled() *TeammateTaskColumnUpsert {
+	u.SetExcluded(teammatetaskcolumn.FieldDisabled)
+	return u
+}
+
+// SetCustomizable sets the "customizable" field.
+func (u *TeammateTaskColumnUpsert) SetCustomizable(v bool) *TeammateTaskColumnUpsert {
+	u.Set(teammatetaskcolumn.FieldCustomizable, v)
+	return u
+}
+
+// UpdateCustomizable sets the "customizable" field to the value that was provided on create.
+func (u *TeammateTaskColumnUpsert) UpdateCustomizable() *TeammateTaskColumnUpsert {
+	u.SetExcluded(teammatetaskcolumn.FieldCustomizable)
+	return u
+}
+
+// SetOrder sets the "order" field.
+func (u *TeammateTaskColumnUpsert) SetOrder(v int) *TeammateTaskColumnUpsert {
+	u.Set(teammatetaskcolumn.FieldOrder, v)
+	return u
+}
+
+// UpdateOrder sets the "order" field to the value that was provided on create.
+func (u *TeammateTaskColumnUpsert) UpdateOrder() *TeammateTaskColumnUpsert {
+	u.SetExcluded(teammatetaskcolumn.FieldOrder)
+	return u
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *TeammateTaskColumnUpsert) SetCreatedAt(v time.Time) *TeammateTaskColumnUpsert {
+	u.Set(teammatetaskcolumn.FieldCreatedAt, v)
+	return u
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *TeammateTaskColumnUpsert) UpdateCreatedAt() *TeammateTaskColumnUpsert {
+	u.SetExcluded(teammatetaskcolumn.FieldCreatedAt)
+	return u
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *TeammateTaskColumnUpsert) SetUpdatedAt(v time.Time) *TeammateTaskColumnUpsert {
+	u.Set(teammatetaskcolumn.FieldUpdatedAt, v)
+	return u
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *TeammateTaskColumnUpsert) UpdateUpdatedAt() *TeammateTaskColumnUpsert {
+	u.SetExcluded(teammatetaskcolumn.FieldUpdatedAt)
+	return u
+}
+
+// UpdateNewValues updates the fields using the new values that were set on create except the ID field.
+// Using this option is equivalent to using:
+//
+//	client.TeammateTaskColumn.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(teammatetaskcolumn.FieldID)
+//			}),
+//		).
+//		Exec(ctx)
+//
+func (u *TeammateTaskColumnUpsertOne) UpdateNewValues() *TeammateTaskColumnUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		if _, exists := u.create.mutation.ID(); exists {
+			s.SetIgnore(teammatetaskcolumn.FieldID)
+		}
+	}))
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//  client.TeammateTaskColumn.Create().
+//      OnConflict(sql.ResolveWithIgnore()).
+//      Exec(ctx)
+//
+func (u *TeammateTaskColumnUpsertOne) Ignore() *TeammateTaskColumnUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *TeammateTaskColumnUpsertOne) DoNothing() *TeammateTaskColumnUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the TeammateTaskColumnCreate.OnConflict
+// documentation for more info.
+func (u *TeammateTaskColumnUpsertOne) Update(set func(*TeammateTaskColumnUpsert)) *TeammateTaskColumnUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&TeammateTaskColumnUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetTeammateID sets the "teammate_id" field.
+func (u *TeammateTaskColumnUpsertOne) SetTeammateID(v ulid.ID) *TeammateTaskColumnUpsertOne {
+	return u.Update(func(s *TeammateTaskColumnUpsert) {
+		s.SetTeammateID(v)
+	})
+}
+
+// UpdateTeammateID sets the "teammate_id" field to the value that was provided on create.
+func (u *TeammateTaskColumnUpsertOne) UpdateTeammateID() *TeammateTaskColumnUpsertOne {
+	return u.Update(func(s *TeammateTaskColumnUpsert) {
+		s.UpdateTeammateID()
+	})
+}
+
+// SetTaskColumnID sets the "task_column_id" field.
+func (u *TeammateTaskColumnUpsertOne) SetTaskColumnID(v ulid.ID) *TeammateTaskColumnUpsertOne {
+	return u.Update(func(s *TeammateTaskColumnUpsert) {
+		s.SetTaskColumnID(v)
+	})
+}
+
+// UpdateTaskColumnID sets the "task_column_id" field to the value that was provided on create.
+func (u *TeammateTaskColumnUpsertOne) UpdateTaskColumnID() *TeammateTaskColumnUpsertOne {
+	return u.Update(func(s *TeammateTaskColumnUpsert) {
+		s.UpdateTaskColumnID()
+	})
+}
+
+// SetWorkspaceID sets the "workspace_id" field.
+func (u *TeammateTaskColumnUpsertOne) SetWorkspaceID(v ulid.ID) *TeammateTaskColumnUpsertOne {
+	return u.Update(func(s *TeammateTaskColumnUpsert) {
+		s.SetWorkspaceID(v)
+	})
+}
+
+// UpdateWorkspaceID sets the "workspace_id" field to the value that was provided on create.
+func (u *TeammateTaskColumnUpsertOne) UpdateWorkspaceID() *TeammateTaskColumnUpsertOne {
+	return u.Update(func(s *TeammateTaskColumnUpsert) {
+		s.UpdateWorkspaceID()
+	})
+}
+
+// SetWidth sets the "width" field.
+func (u *TeammateTaskColumnUpsertOne) SetWidth(v string) *TeammateTaskColumnUpsertOne {
+	return u.Update(func(s *TeammateTaskColumnUpsert) {
+		s.SetWidth(v)
+	})
+}
+
+// UpdateWidth sets the "width" field to the value that was provided on create.
+func (u *TeammateTaskColumnUpsertOne) UpdateWidth() *TeammateTaskColumnUpsertOne {
+	return u.Update(func(s *TeammateTaskColumnUpsert) {
+		s.UpdateWidth()
+	})
+}
+
+// SetDisabled sets the "disabled" field.
+func (u *TeammateTaskColumnUpsertOne) SetDisabled(v bool) *TeammateTaskColumnUpsertOne {
+	return u.Update(func(s *TeammateTaskColumnUpsert) {
+		s.SetDisabled(v)
+	})
+}
+
+// UpdateDisabled sets the "disabled" field to the value that was provided on create.
+func (u *TeammateTaskColumnUpsertOne) UpdateDisabled() *TeammateTaskColumnUpsertOne {
+	return u.Update(func(s *TeammateTaskColumnUpsert) {
+		s.UpdateDisabled()
+	})
+}
+
+// SetCustomizable sets the "customizable" field.
+func (u *TeammateTaskColumnUpsertOne) SetCustomizable(v bool) *TeammateTaskColumnUpsertOne {
+	return u.Update(func(s *TeammateTaskColumnUpsert) {
+		s.SetCustomizable(v)
+	})
+}
+
+// UpdateCustomizable sets the "customizable" field to the value that was provided on create.
+func (u *TeammateTaskColumnUpsertOne) UpdateCustomizable() *TeammateTaskColumnUpsertOne {
+	return u.Update(func(s *TeammateTaskColumnUpsert) {
+		s.UpdateCustomizable()
+	})
+}
+
+// SetOrder sets the "order" field.
+func (u *TeammateTaskColumnUpsertOne) SetOrder(v int) *TeammateTaskColumnUpsertOne {
+	return u.Update(func(s *TeammateTaskColumnUpsert) {
+		s.SetOrder(v)
+	})
+}
+
+// UpdateOrder sets the "order" field to the value that was provided on create.
+func (u *TeammateTaskColumnUpsertOne) UpdateOrder() *TeammateTaskColumnUpsertOne {
+	return u.Update(func(s *TeammateTaskColumnUpsert) {
+		s.UpdateOrder()
+	})
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *TeammateTaskColumnUpsertOne) SetCreatedAt(v time.Time) *TeammateTaskColumnUpsertOne {
+	return u.Update(func(s *TeammateTaskColumnUpsert) {
+		s.SetCreatedAt(v)
+	})
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *TeammateTaskColumnUpsertOne) UpdateCreatedAt() *TeammateTaskColumnUpsertOne {
+	return u.Update(func(s *TeammateTaskColumnUpsert) {
+		s.UpdateCreatedAt()
+	})
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *TeammateTaskColumnUpsertOne) SetUpdatedAt(v time.Time) *TeammateTaskColumnUpsertOne {
+	return u.Update(func(s *TeammateTaskColumnUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *TeammateTaskColumnUpsertOne) UpdateUpdatedAt() *TeammateTaskColumnUpsertOne {
+	return u.Update(func(s *TeammateTaskColumnUpsert) {
+		s.UpdateUpdatedAt()
+	})
+}
+
+// Exec executes the query.
+func (u *TeammateTaskColumnUpsertOne) Exec(ctx context.Context) error {
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for TeammateTaskColumnCreate.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *TeammateTaskColumnUpsertOne) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// Exec executes the UPSERT query and returns the inserted/updated ID.
+func (u *TeammateTaskColumnUpsertOne) ID(ctx context.Context) (id ulid.ID, err error) {
+	if u.create.driver.Dialect() == dialect.MySQL {
+		// In case of "ON CONFLICT", there is no way to get back non-numeric ID
+		// fields from the database since MySQL does not support the RETURNING clause.
+		return id, errors.New("ent: TeammateTaskColumnUpsertOne.ID is not supported by MySQL driver. Use TeammateTaskColumnUpsertOne.Exec instead")
+	}
+	node, err := u.create.Save(ctx)
+	if err != nil {
+		return id, err
+	}
+	return node.ID, nil
+}
+
+// IDX is like ID, but panics if an error occurs.
+func (u *TeammateTaskColumnUpsertOne) IDX(ctx context.Context) ulid.ID {
+	id, err := u.ID(ctx)
+	if err != nil {
+		panic(err)
+	}
+	return id
+}
+
 // TeammateTaskColumnCreateBulk is the builder for creating many TeammateTaskColumn entities in bulk.
 type TeammateTaskColumnCreateBulk struct {
 	config
 	builders []*TeammateTaskColumnCreate
+	conflict []sql.ConflictOption
 }
 
 // Save creates the TeammateTaskColumn entities in the database.
@@ -424,6 +802,7 @@ func (ttccb *TeammateTaskColumnCreateBulk) Save(ctx context.Context) ([]*Teammat
 					_, err = mutators[i+1].Mutate(root, ttccb.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
+					spec.OnConflict = ttccb.conflict
 					// Invoke the actual operation on the latest mutation in the chain.
 					if err = sqlgraph.BatchCreate(ctx, ttccb.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
@@ -470,6 +849,248 @@ func (ttccb *TeammateTaskColumnCreateBulk) Exec(ctx context.Context) error {
 // ExecX is like Exec, but panics if an error occurs.
 func (ttccb *TeammateTaskColumnCreateBulk) ExecX(ctx context.Context) {
 	if err := ttccb.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.TeammateTaskColumn.CreateBulk(builders...).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.TeammateTaskColumnUpsert) {
+//			SetTeammateID(v+v).
+//		}).
+//		Exec(ctx)
+//
+func (ttccb *TeammateTaskColumnCreateBulk) OnConflict(opts ...sql.ConflictOption) *TeammateTaskColumnUpsertBulk {
+	ttccb.conflict = opts
+	return &TeammateTaskColumnUpsertBulk{
+		create: ttccb,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.TeammateTaskColumn.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+//
+func (ttccb *TeammateTaskColumnCreateBulk) OnConflictColumns(columns ...string) *TeammateTaskColumnUpsertBulk {
+	ttccb.conflict = append(ttccb.conflict, sql.ConflictColumns(columns...))
+	return &TeammateTaskColumnUpsertBulk{
+		create: ttccb,
+	}
+}
+
+// TeammateTaskColumnUpsertBulk is the builder for "upsert"-ing
+// a bulk of TeammateTaskColumn nodes.
+type TeammateTaskColumnUpsertBulk struct {
+	create *TeammateTaskColumnCreateBulk
+}
+
+// UpdateNewValues updates the fields using the new values that
+// were set on create. Using this option is equivalent to using:
+//
+//	client.TeammateTaskColumn.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(teammatetaskcolumn.FieldID)
+//			}),
+//		).
+//		Exec(ctx)
+//
+func (u *TeammateTaskColumnUpsertBulk) UpdateNewValues() *TeammateTaskColumnUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		for _, b := range u.create.builders {
+			if _, exists := b.mutation.ID(); exists {
+				s.SetIgnore(teammatetaskcolumn.FieldID)
+				return
+			}
+		}
+	}))
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//	client.TeammateTaskColumn.Create().
+//		OnConflict(sql.ResolveWithIgnore()).
+//		Exec(ctx)
+//
+func (u *TeammateTaskColumnUpsertBulk) Ignore() *TeammateTaskColumnUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *TeammateTaskColumnUpsertBulk) DoNothing() *TeammateTaskColumnUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the TeammateTaskColumnCreateBulk.OnConflict
+// documentation for more info.
+func (u *TeammateTaskColumnUpsertBulk) Update(set func(*TeammateTaskColumnUpsert)) *TeammateTaskColumnUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&TeammateTaskColumnUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetTeammateID sets the "teammate_id" field.
+func (u *TeammateTaskColumnUpsertBulk) SetTeammateID(v ulid.ID) *TeammateTaskColumnUpsertBulk {
+	return u.Update(func(s *TeammateTaskColumnUpsert) {
+		s.SetTeammateID(v)
+	})
+}
+
+// UpdateTeammateID sets the "teammate_id" field to the value that was provided on create.
+func (u *TeammateTaskColumnUpsertBulk) UpdateTeammateID() *TeammateTaskColumnUpsertBulk {
+	return u.Update(func(s *TeammateTaskColumnUpsert) {
+		s.UpdateTeammateID()
+	})
+}
+
+// SetTaskColumnID sets the "task_column_id" field.
+func (u *TeammateTaskColumnUpsertBulk) SetTaskColumnID(v ulid.ID) *TeammateTaskColumnUpsertBulk {
+	return u.Update(func(s *TeammateTaskColumnUpsert) {
+		s.SetTaskColumnID(v)
+	})
+}
+
+// UpdateTaskColumnID sets the "task_column_id" field to the value that was provided on create.
+func (u *TeammateTaskColumnUpsertBulk) UpdateTaskColumnID() *TeammateTaskColumnUpsertBulk {
+	return u.Update(func(s *TeammateTaskColumnUpsert) {
+		s.UpdateTaskColumnID()
+	})
+}
+
+// SetWorkspaceID sets the "workspace_id" field.
+func (u *TeammateTaskColumnUpsertBulk) SetWorkspaceID(v ulid.ID) *TeammateTaskColumnUpsertBulk {
+	return u.Update(func(s *TeammateTaskColumnUpsert) {
+		s.SetWorkspaceID(v)
+	})
+}
+
+// UpdateWorkspaceID sets the "workspace_id" field to the value that was provided on create.
+func (u *TeammateTaskColumnUpsertBulk) UpdateWorkspaceID() *TeammateTaskColumnUpsertBulk {
+	return u.Update(func(s *TeammateTaskColumnUpsert) {
+		s.UpdateWorkspaceID()
+	})
+}
+
+// SetWidth sets the "width" field.
+func (u *TeammateTaskColumnUpsertBulk) SetWidth(v string) *TeammateTaskColumnUpsertBulk {
+	return u.Update(func(s *TeammateTaskColumnUpsert) {
+		s.SetWidth(v)
+	})
+}
+
+// UpdateWidth sets the "width" field to the value that was provided on create.
+func (u *TeammateTaskColumnUpsertBulk) UpdateWidth() *TeammateTaskColumnUpsertBulk {
+	return u.Update(func(s *TeammateTaskColumnUpsert) {
+		s.UpdateWidth()
+	})
+}
+
+// SetDisabled sets the "disabled" field.
+func (u *TeammateTaskColumnUpsertBulk) SetDisabled(v bool) *TeammateTaskColumnUpsertBulk {
+	return u.Update(func(s *TeammateTaskColumnUpsert) {
+		s.SetDisabled(v)
+	})
+}
+
+// UpdateDisabled sets the "disabled" field to the value that was provided on create.
+func (u *TeammateTaskColumnUpsertBulk) UpdateDisabled() *TeammateTaskColumnUpsertBulk {
+	return u.Update(func(s *TeammateTaskColumnUpsert) {
+		s.UpdateDisabled()
+	})
+}
+
+// SetCustomizable sets the "customizable" field.
+func (u *TeammateTaskColumnUpsertBulk) SetCustomizable(v bool) *TeammateTaskColumnUpsertBulk {
+	return u.Update(func(s *TeammateTaskColumnUpsert) {
+		s.SetCustomizable(v)
+	})
+}
+
+// UpdateCustomizable sets the "customizable" field to the value that was provided on create.
+func (u *TeammateTaskColumnUpsertBulk) UpdateCustomizable() *TeammateTaskColumnUpsertBulk {
+	return u.Update(func(s *TeammateTaskColumnUpsert) {
+		s.UpdateCustomizable()
+	})
+}
+
+// SetOrder sets the "order" field.
+func (u *TeammateTaskColumnUpsertBulk) SetOrder(v int) *TeammateTaskColumnUpsertBulk {
+	return u.Update(func(s *TeammateTaskColumnUpsert) {
+		s.SetOrder(v)
+	})
+}
+
+// UpdateOrder sets the "order" field to the value that was provided on create.
+func (u *TeammateTaskColumnUpsertBulk) UpdateOrder() *TeammateTaskColumnUpsertBulk {
+	return u.Update(func(s *TeammateTaskColumnUpsert) {
+		s.UpdateOrder()
+	})
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *TeammateTaskColumnUpsertBulk) SetCreatedAt(v time.Time) *TeammateTaskColumnUpsertBulk {
+	return u.Update(func(s *TeammateTaskColumnUpsert) {
+		s.SetCreatedAt(v)
+	})
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *TeammateTaskColumnUpsertBulk) UpdateCreatedAt() *TeammateTaskColumnUpsertBulk {
+	return u.Update(func(s *TeammateTaskColumnUpsert) {
+		s.UpdateCreatedAt()
+	})
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *TeammateTaskColumnUpsertBulk) SetUpdatedAt(v time.Time) *TeammateTaskColumnUpsertBulk {
+	return u.Update(func(s *TeammateTaskColumnUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *TeammateTaskColumnUpsertBulk) UpdateUpdatedAt() *TeammateTaskColumnUpsertBulk {
+	return u.Update(func(s *TeammateTaskColumnUpsert) {
+		s.UpdateUpdatedAt()
+	})
+}
+
+// Exec executes the query.
+func (u *TeammateTaskColumnUpsertBulk) Exec(ctx context.Context) error {
+	for i, b := range u.create.builders {
+		if len(b.conflict) != 0 {
+			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the TeammateTaskColumnCreateBulk instead", i)
+		}
+	}
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for TeammateTaskColumnCreateBulk.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *TeammateTaskColumnUpsertBulk) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

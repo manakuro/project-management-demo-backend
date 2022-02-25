@@ -12,6 +12,8 @@ import (
 	"project-management-demo-backend/ent/teammate"
 	"time"
 
+	"entgo.io/ent/dialect"
+	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 )
@@ -21,6 +23,7 @@ type TaskCollaboratorCreate struct {
 	config
 	mutation *TaskCollaboratorMutation
 	hooks    []Hook
+	conflict []sql.ConflictOption
 }
 
 // SetTaskID sets the "task_id" field.
@@ -220,6 +223,7 @@ func (tcc *TaskCollaboratorCreate) createSpec() (*TaskCollaborator, *sqlgraph.Cr
 			},
 		}
 	)
+	_spec.OnConflict = tcc.conflict
 	if id, ok := tcc.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = id
@@ -283,10 +287,254 @@ func (tcc *TaskCollaboratorCreate) createSpec() (*TaskCollaborator, *sqlgraph.Cr
 	return _node, _spec
 }
 
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.TaskCollaborator.Create().
+//		SetTaskID(v).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.TaskCollaboratorUpsert) {
+//			SetTaskID(v+v).
+//		}).
+//		Exec(ctx)
+//
+func (tcc *TaskCollaboratorCreate) OnConflict(opts ...sql.ConflictOption) *TaskCollaboratorUpsertOne {
+	tcc.conflict = opts
+	return &TaskCollaboratorUpsertOne{
+		create: tcc,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.TaskCollaborator.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+//
+func (tcc *TaskCollaboratorCreate) OnConflictColumns(columns ...string) *TaskCollaboratorUpsertOne {
+	tcc.conflict = append(tcc.conflict, sql.ConflictColumns(columns...))
+	return &TaskCollaboratorUpsertOne{
+		create: tcc,
+	}
+}
+
+type (
+	// TaskCollaboratorUpsertOne is the builder for "upsert"-ing
+	//  one TaskCollaborator node.
+	TaskCollaboratorUpsertOne struct {
+		create *TaskCollaboratorCreate
+	}
+
+	// TaskCollaboratorUpsert is the "OnConflict" setter.
+	TaskCollaboratorUpsert struct {
+		*sql.UpdateSet
+	}
+)
+
+// SetTaskID sets the "task_id" field.
+func (u *TaskCollaboratorUpsert) SetTaskID(v ulid.ID) *TaskCollaboratorUpsert {
+	u.Set(taskcollaborator.FieldTaskID, v)
+	return u
+}
+
+// UpdateTaskID sets the "task_id" field to the value that was provided on create.
+func (u *TaskCollaboratorUpsert) UpdateTaskID() *TaskCollaboratorUpsert {
+	u.SetExcluded(taskcollaborator.FieldTaskID)
+	return u
+}
+
+// SetTeammateID sets the "teammate_id" field.
+func (u *TaskCollaboratorUpsert) SetTeammateID(v ulid.ID) *TaskCollaboratorUpsert {
+	u.Set(taskcollaborator.FieldTeammateID, v)
+	return u
+}
+
+// UpdateTeammateID sets the "teammate_id" field to the value that was provided on create.
+func (u *TaskCollaboratorUpsert) UpdateTeammateID() *TaskCollaboratorUpsert {
+	u.SetExcluded(taskcollaborator.FieldTeammateID)
+	return u
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *TaskCollaboratorUpsert) SetCreatedAt(v time.Time) *TaskCollaboratorUpsert {
+	u.Set(taskcollaborator.FieldCreatedAt, v)
+	return u
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *TaskCollaboratorUpsert) UpdateCreatedAt() *TaskCollaboratorUpsert {
+	u.SetExcluded(taskcollaborator.FieldCreatedAt)
+	return u
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *TaskCollaboratorUpsert) SetUpdatedAt(v time.Time) *TaskCollaboratorUpsert {
+	u.Set(taskcollaborator.FieldUpdatedAt, v)
+	return u
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *TaskCollaboratorUpsert) UpdateUpdatedAt() *TaskCollaboratorUpsert {
+	u.SetExcluded(taskcollaborator.FieldUpdatedAt)
+	return u
+}
+
+// UpdateNewValues updates the fields using the new values that were set on create except the ID field.
+// Using this option is equivalent to using:
+//
+//	client.TaskCollaborator.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(taskcollaborator.FieldID)
+//			}),
+//		).
+//		Exec(ctx)
+//
+func (u *TaskCollaboratorUpsertOne) UpdateNewValues() *TaskCollaboratorUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		if _, exists := u.create.mutation.ID(); exists {
+			s.SetIgnore(taskcollaborator.FieldID)
+		}
+	}))
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//  client.TaskCollaborator.Create().
+//      OnConflict(sql.ResolveWithIgnore()).
+//      Exec(ctx)
+//
+func (u *TaskCollaboratorUpsertOne) Ignore() *TaskCollaboratorUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *TaskCollaboratorUpsertOne) DoNothing() *TaskCollaboratorUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the TaskCollaboratorCreate.OnConflict
+// documentation for more info.
+func (u *TaskCollaboratorUpsertOne) Update(set func(*TaskCollaboratorUpsert)) *TaskCollaboratorUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&TaskCollaboratorUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetTaskID sets the "task_id" field.
+func (u *TaskCollaboratorUpsertOne) SetTaskID(v ulid.ID) *TaskCollaboratorUpsertOne {
+	return u.Update(func(s *TaskCollaboratorUpsert) {
+		s.SetTaskID(v)
+	})
+}
+
+// UpdateTaskID sets the "task_id" field to the value that was provided on create.
+func (u *TaskCollaboratorUpsertOne) UpdateTaskID() *TaskCollaboratorUpsertOne {
+	return u.Update(func(s *TaskCollaboratorUpsert) {
+		s.UpdateTaskID()
+	})
+}
+
+// SetTeammateID sets the "teammate_id" field.
+func (u *TaskCollaboratorUpsertOne) SetTeammateID(v ulid.ID) *TaskCollaboratorUpsertOne {
+	return u.Update(func(s *TaskCollaboratorUpsert) {
+		s.SetTeammateID(v)
+	})
+}
+
+// UpdateTeammateID sets the "teammate_id" field to the value that was provided on create.
+func (u *TaskCollaboratorUpsertOne) UpdateTeammateID() *TaskCollaboratorUpsertOne {
+	return u.Update(func(s *TaskCollaboratorUpsert) {
+		s.UpdateTeammateID()
+	})
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *TaskCollaboratorUpsertOne) SetCreatedAt(v time.Time) *TaskCollaboratorUpsertOne {
+	return u.Update(func(s *TaskCollaboratorUpsert) {
+		s.SetCreatedAt(v)
+	})
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *TaskCollaboratorUpsertOne) UpdateCreatedAt() *TaskCollaboratorUpsertOne {
+	return u.Update(func(s *TaskCollaboratorUpsert) {
+		s.UpdateCreatedAt()
+	})
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *TaskCollaboratorUpsertOne) SetUpdatedAt(v time.Time) *TaskCollaboratorUpsertOne {
+	return u.Update(func(s *TaskCollaboratorUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *TaskCollaboratorUpsertOne) UpdateUpdatedAt() *TaskCollaboratorUpsertOne {
+	return u.Update(func(s *TaskCollaboratorUpsert) {
+		s.UpdateUpdatedAt()
+	})
+}
+
+// Exec executes the query.
+func (u *TaskCollaboratorUpsertOne) Exec(ctx context.Context) error {
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for TaskCollaboratorCreate.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *TaskCollaboratorUpsertOne) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// Exec executes the UPSERT query and returns the inserted/updated ID.
+func (u *TaskCollaboratorUpsertOne) ID(ctx context.Context) (id ulid.ID, err error) {
+	if u.create.driver.Dialect() == dialect.MySQL {
+		// In case of "ON CONFLICT", there is no way to get back non-numeric ID
+		// fields from the database since MySQL does not support the RETURNING clause.
+		return id, errors.New("ent: TaskCollaboratorUpsertOne.ID is not supported by MySQL driver. Use TaskCollaboratorUpsertOne.Exec instead")
+	}
+	node, err := u.create.Save(ctx)
+	if err != nil {
+		return id, err
+	}
+	return node.ID, nil
+}
+
+// IDX is like ID, but panics if an error occurs.
+func (u *TaskCollaboratorUpsertOne) IDX(ctx context.Context) ulid.ID {
+	id, err := u.ID(ctx)
+	if err != nil {
+		panic(err)
+	}
+	return id
+}
+
 // TaskCollaboratorCreateBulk is the builder for creating many TaskCollaborator entities in bulk.
 type TaskCollaboratorCreateBulk struct {
 	config
 	builders []*TaskCollaboratorCreate
+	conflict []sql.ConflictOption
 }
 
 // Save creates the TaskCollaborator entities in the database.
@@ -313,6 +561,7 @@ func (tccb *TaskCollaboratorCreateBulk) Save(ctx context.Context) ([]*TaskCollab
 					_, err = mutators[i+1].Mutate(root, tccb.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
+					spec.OnConflict = tccb.conflict
 					// Invoke the actual operation on the latest mutation in the chain.
 					if err = sqlgraph.BatchCreate(ctx, tccb.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
@@ -359,6 +608,178 @@ func (tccb *TaskCollaboratorCreateBulk) Exec(ctx context.Context) error {
 // ExecX is like Exec, but panics if an error occurs.
 func (tccb *TaskCollaboratorCreateBulk) ExecX(ctx context.Context) {
 	if err := tccb.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.TaskCollaborator.CreateBulk(builders...).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.TaskCollaboratorUpsert) {
+//			SetTaskID(v+v).
+//		}).
+//		Exec(ctx)
+//
+func (tccb *TaskCollaboratorCreateBulk) OnConflict(opts ...sql.ConflictOption) *TaskCollaboratorUpsertBulk {
+	tccb.conflict = opts
+	return &TaskCollaboratorUpsertBulk{
+		create: tccb,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.TaskCollaborator.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+//
+func (tccb *TaskCollaboratorCreateBulk) OnConflictColumns(columns ...string) *TaskCollaboratorUpsertBulk {
+	tccb.conflict = append(tccb.conflict, sql.ConflictColumns(columns...))
+	return &TaskCollaboratorUpsertBulk{
+		create: tccb,
+	}
+}
+
+// TaskCollaboratorUpsertBulk is the builder for "upsert"-ing
+// a bulk of TaskCollaborator nodes.
+type TaskCollaboratorUpsertBulk struct {
+	create *TaskCollaboratorCreateBulk
+}
+
+// UpdateNewValues updates the fields using the new values that
+// were set on create. Using this option is equivalent to using:
+//
+//	client.TaskCollaborator.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(taskcollaborator.FieldID)
+//			}),
+//		).
+//		Exec(ctx)
+//
+func (u *TaskCollaboratorUpsertBulk) UpdateNewValues() *TaskCollaboratorUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		for _, b := range u.create.builders {
+			if _, exists := b.mutation.ID(); exists {
+				s.SetIgnore(taskcollaborator.FieldID)
+				return
+			}
+		}
+	}))
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//	client.TaskCollaborator.Create().
+//		OnConflict(sql.ResolveWithIgnore()).
+//		Exec(ctx)
+//
+func (u *TaskCollaboratorUpsertBulk) Ignore() *TaskCollaboratorUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *TaskCollaboratorUpsertBulk) DoNothing() *TaskCollaboratorUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the TaskCollaboratorCreateBulk.OnConflict
+// documentation for more info.
+func (u *TaskCollaboratorUpsertBulk) Update(set func(*TaskCollaboratorUpsert)) *TaskCollaboratorUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&TaskCollaboratorUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetTaskID sets the "task_id" field.
+func (u *TaskCollaboratorUpsertBulk) SetTaskID(v ulid.ID) *TaskCollaboratorUpsertBulk {
+	return u.Update(func(s *TaskCollaboratorUpsert) {
+		s.SetTaskID(v)
+	})
+}
+
+// UpdateTaskID sets the "task_id" field to the value that was provided on create.
+func (u *TaskCollaboratorUpsertBulk) UpdateTaskID() *TaskCollaboratorUpsertBulk {
+	return u.Update(func(s *TaskCollaboratorUpsert) {
+		s.UpdateTaskID()
+	})
+}
+
+// SetTeammateID sets the "teammate_id" field.
+func (u *TaskCollaboratorUpsertBulk) SetTeammateID(v ulid.ID) *TaskCollaboratorUpsertBulk {
+	return u.Update(func(s *TaskCollaboratorUpsert) {
+		s.SetTeammateID(v)
+	})
+}
+
+// UpdateTeammateID sets the "teammate_id" field to the value that was provided on create.
+func (u *TaskCollaboratorUpsertBulk) UpdateTeammateID() *TaskCollaboratorUpsertBulk {
+	return u.Update(func(s *TaskCollaboratorUpsert) {
+		s.UpdateTeammateID()
+	})
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *TaskCollaboratorUpsertBulk) SetCreatedAt(v time.Time) *TaskCollaboratorUpsertBulk {
+	return u.Update(func(s *TaskCollaboratorUpsert) {
+		s.SetCreatedAt(v)
+	})
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *TaskCollaboratorUpsertBulk) UpdateCreatedAt() *TaskCollaboratorUpsertBulk {
+	return u.Update(func(s *TaskCollaboratorUpsert) {
+		s.UpdateCreatedAt()
+	})
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *TaskCollaboratorUpsertBulk) SetUpdatedAt(v time.Time) *TaskCollaboratorUpsertBulk {
+	return u.Update(func(s *TaskCollaboratorUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *TaskCollaboratorUpsertBulk) UpdateUpdatedAt() *TaskCollaboratorUpsertBulk {
+	return u.Update(func(s *TaskCollaboratorUpsert) {
+		s.UpdateUpdatedAt()
+	})
+}
+
+// Exec executes the query.
+func (u *TaskCollaboratorUpsertBulk) Exec(ctx context.Context) error {
+	for i, b := range u.create.builders {
+		if len(b.conflict) != 0 {
+			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the TaskCollaboratorCreateBulk instead", i)
+		}
+	}
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for TaskCollaboratorCreateBulk.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *TaskCollaboratorUpsertBulk) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

@@ -40,6 +40,10 @@ input UpdateTeammateTaskColumnInput {
   requestId: String!
 }
 
+input UpdateTeammateTaskColumnOrderInput {
+  ids: [ID!]!
+}
+
 extend type Subscription {
   teammateTaskColumnUpdated(id: ID!, requestId: String!): TeammateTaskColumn!
 }
@@ -52,4 +56,5 @@ extend type Query {
 extend type Mutation {
   createTeammateTaskColumn(input: CreateTeammateTaskColumnInput!): TeammateTaskColumn!
   updateTeammateTaskColumn(input: UpdateTeammateTaskColumnInput!): TeammateTaskColumn!
+  updateTeammateTaskColumnOrder(input: UpdateTeammateTaskColumnOrderInput!): [TeammateTaskColumn!]!
 }

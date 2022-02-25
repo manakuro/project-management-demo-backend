@@ -12,6 +12,8 @@ import (
 	"project-management-demo-backend/ent/workspace"
 	"time"
 
+	"entgo.io/ent/dialect"
+	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 )
@@ -21,6 +23,7 @@ type TeammateTaskTabStatusCreate struct {
 	config
 	mutation *TeammateTaskTabStatusMutation
 	hooks    []Hook
+	conflict []sql.ConflictOption
 }
 
 // SetWorkspaceID sets the "workspace_id" field.
@@ -246,6 +249,7 @@ func (tttsc *TeammateTaskTabStatusCreate) createSpec() (*TeammateTaskTabStatus, 
 			},
 		}
 	)
+	_spec.OnConflict = tttsc.conflict
 	if id, ok := tttsc.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = id
@@ -317,10 +321,280 @@ func (tttsc *TeammateTaskTabStatusCreate) createSpec() (*TeammateTaskTabStatus, 
 	return _node, _spec
 }
 
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.TeammateTaskTabStatus.Create().
+//		SetWorkspaceID(v).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.TeammateTaskTabStatusUpsert) {
+//			SetWorkspaceID(v+v).
+//		}).
+//		Exec(ctx)
+//
+func (tttsc *TeammateTaskTabStatusCreate) OnConflict(opts ...sql.ConflictOption) *TeammateTaskTabStatusUpsertOne {
+	tttsc.conflict = opts
+	return &TeammateTaskTabStatusUpsertOne{
+		create: tttsc,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.TeammateTaskTabStatus.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+//
+func (tttsc *TeammateTaskTabStatusCreate) OnConflictColumns(columns ...string) *TeammateTaskTabStatusUpsertOne {
+	tttsc.conflict = append(tttsc.conflict, sql.ConflictColumns(columns...))
+	return &TeammateTaskTabStatusUpsertOne{
+		create: tttsc,
+	}
+}
+
+type (
+	// TeammateTaskTabStatusUpsertOne is the builder for "upsert"-ing
+	//  one TeammateTaskTabStatus node.
+	TeammateTaskTabStatusUpsertOne struct {
+		create *TeammateTaskTabStatusCreate
+	}
+
+	// TeammateTaskTabStatusUpsert is the "OnConflict" setter.
+	TeammateTaskTabStatusUpsert struct {
+		*sql.UpdateSet
+	}
+)
+
+// SetWorkspaceID sets the "workspace_id" field.
+func (u *TeammateTaskTabStatusUpsert) SetWorkspaceID(v ulid.ID) *TeammateTaskTabStatusUpsert {
+	u.Set(teammatetasktabstatus.FieldWorkspaceID, v)
+	return u
+}
+
+// UpdateWorkspaceID sets the "workspace_id" field to the value that was provided on create.
+func (u *TeammateTaskTabStatusUpsert) UpdateWorkspaceID() *TeammateTaskTabStatusUpsert {
+	u.SetExcluded(teammatetasktabstatus.FieldWorkspaceID)
+	return u
+}
+
+// SetTeammateID sets the "teammate_id" field.
+func (u *TeammateTaskTabStatusUpsert) SetTeammateID(v ulid.ID) *TeammateTaskTabStatusUpsert {
+	u.Set(teammatetasktabstatus.FieldTeammateID, v)
+	return u
+}
+
+// UpdateTeammateID sets the "teammate_id" field to the value that was provided on create.
+func (u *TeammateTaskTabStatusUpsert) UpdateTeammateID() *TeammateTaskTabStatusUpsert {
+	u.SetExcluded(teammatetasktabstatus.FieldTeammateID)
+	return u
+}
+
+// SetStatusCode sets the "status_code" field.
+func (u *TeammateTaskTabStatusUpsert) SetStatusCode(v teammatetasktabstatus.StatusCode) *TeammateTaskTabStatusUpsert {
+	u.Set(teammatetasktabstatus.FieldStatusCode, v)
+	return u
+}
+
+// UpdateStatusCode sets the "status_code" field to the value that was provided on create.
+func (u *TeammateTaskTabStatusUpsert) UpdateStatusCode() *TeammateTaskTabStatusUpsert {
+	u.SetExcluded(teammatetasktabstatus.FieldStatusCode)
+	return u
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *TeammateTaskTabStatusUpsert) SetCreatedAt(v time.Time) *TeammateTaskTabStatusUpsert {
+	u.Set(teammatetasktabstatus.FieldCreatedAt, v)
+	return u
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *TeammateTaskTabStatusUpsert) UpdateCreatedAt() *TeammateTaskTabStatusUpsert {
+	u.SetExcluded(teammatetasktabstatus.FieldCreatedAt)
+	return u
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *TeammateTaskTabStatusUpsert) SetUpdatedAt(v time.Time) *TeammateTaskTabStatusUpsert {
+	u.Set(teammatetasktabstatus.FieldUpdatedAt, v)
+	return u
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *TeammateTaskTabStatusUpsert) UpdateUpdatedAt() *TeammateTaskTabStatusUpsert {
+	u.SetExcluded(teammatetasktabstatus.FieldUpdatedAt)
+	return u
+}
+
+// UpdateNewValues updates the fields using the new values that were set on create except the ID field.
+// Using this option is equivalent to using:
+//
+//	client.TeammateTaskTabStatus.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(teammatetasktabstatus.FieldID)
+//			}),
+//		).
+//		Exec(ctx)
+//
+func (u *TeammateTaskTabStatusUpsertOne) UpdateNewValues() *TeammateTaskTabStatusUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		if _, exists := u.create.mutation.ID(); exists {
+			s.SetIgnore(teammatetasktabstatus.FieldID)
+		}
+	}))
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//  client.TeammateTaskTabStatus.Create().
+//      OnConflict(sql.ResolveWithIgnore()).
+//      Exec(ctx)
+//
+func (u *TeammateTaskTabStatusUpsertOne) Ignore() *TeammateTaskTabStatusUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *TeammateTaskTabStatusUpsertOne) DoNothing() *TeammateTaskTabStatusUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the TeammateTaskTabStatusCreate.OnConflict
+// documentation for more info.
+func (u *TeammateTaskTabStatusUpsertOne) Update(set func(*TeammateTaskTabStatusUpsert)) *TeammateTaskTabStatusUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&TeammateTaskTabStatusUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetWorkspaceID sets the "workspace_id" field.
+func (u *TeammateTaskTabStatusUpsertOne) SetWorkspaceID(v ulid.ID) *TeammateTaskTabStatusUpsertOne {
+	return u.Update(func(s *TeammateTaskTabStatusUpsert) {
+		s.SetWorkspaceID(v)
+	})
+}
+
+// UpdateWorkspaceID sets the "workspace_id" field to the value that was provided on create.
+func (u *TeammateTaskTabStatusUpsertOne) UpdateWorkspaceID() *TeammateTaskTabStatusUpsertOne {
+	return u.Update(func(s *TeammateTaskTabStatusUpsert) {
+		s.UpdateWorkspaceID()
+	})
+}
+
+// SetTeammateID sets the "teammate_id" field.
+func (u *TeammateTaskTabStatusUpsertOne) SetTeammateID(v ulid.ID) *TeammateTaskTabStatusUpsertOne {
+	return u.Update(func(s *TeammateTaskTabStatusUpsert) {
+		s.SetTeammateID(v)
+	})
+}
+
+// UpdateTeammateID sets the "teammate_id" field to the value that was provided on create.
+func (u *TeammateTaskTabStatusUpsertOne) UpdateTeammateID() *TeammateTaskTabStatusUpsertOne {
+	return u.Update(func(s *TeammateTaskTabStatusUpsert) {
+		s.UpdateTeammateID()
+	})
+}
+
+// SetStatusCode sets the "status_code" field.
+func (u *TeammateTaskTabStatusUpsertOne) SetStatusCode(v teammatetasktabstatus.StatusCode) *TeammateTaskTabStatusUpsertOne {
+	return u.Update(func(s *TeammateTaskTabStatusUpsert) {
+		s.SetStatusCode(v)
+	})
+}
+
+// UpdateStatusCode sets the "status_code" field to the value that was provided on create.
+func (u *TeammateTaskTabStatusUpsertOne) UpdateStatusCode() *TeammateTaskTabStatusUpsertOne {
+	return u.Update(func(s *TeammateTaskTabStatusUpsert) {
+		s.UpdateStatusCode()
+	})
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *TeammateTaskTabStatusUpsertOne) SetCreatedAt(v time.Time) *TeammateTaskTabStatusUpsertOne {
+	return u.Update(func(s *TeammateTaskTabStatusUpsert) {
+		s.SetCreatedAt(v)
+	})
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *TeammateTaskTabStatusUpsertOne) UpdateCreatedAt() *TeammateTaskTabStatusUpsertOne {
+	return u.Update(func(s *TeammateTaskTabStatusUpsert) {
+		s.UpdateCreatedAt()
+	})
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *TeammateTaskTabStatusUpsertOne) SetUpdatedAt(v time.Time) *TeammateTaskTabStatusUpsertOne {
+	return u.Update(func(s *TeammateTaskTabStatusUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *TeammateTaskTabStatusUpsertOne) UpdateUpdatedAt() *TeammateTaskTabStatusUpsertOne {
+	return u.Update(func(s *TeammateTaskTabStatusUpsert) {
+		s.UpdateUpdatedAt()
+	})
+}
+
+// Exec executes the query.
+func (u *TeammateTaskTabStatusUpsertOne) Exec(ctx context.Context) error {
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for TeammateTaskTabStatusCreate.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *TeammateTaskTabStatusUpsertOne) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// Exec executes the UPSERT query and returns the inserted/updated ID.
+func (u *TeammateTaskTabStatusUpsertOne) ID(ctx context.Context) (id ulid.ID, err error) {
+	if u.create.driver.Dialect() == dialect.MySQL {
+		// In case of "ON CONFLICT", there is no way to get back non-numeric ID
+		// fields from the database since MySQL does not support the RETURNING clause.
+		return id, errors.New("ent: TeammateTaskTabStatusUpsertOne.ID is not supported by MySQL driver. Use TeammateTaskTabStatusUpsertOne.Exec instead")
+	}
+	node, err := u.create.Save(ctx)
+	if err != nil {
+		return id, err
+	}
+	return node.ID, nil
+}
+
+// IDX is like ID, but panics if an error occurs.
+func (u *TeammateTaskTabStatusUpsertOne) IDX(ctx context.Context) ulid.ID {
+	id, err := u.ID(ctx)
+	if err != nil {
+		panic(err)
+	}
+	return id
+}
+
 // TeammateTaskTabStatusCreateBulk is the builder for creating many TeammateTaskTabStatus entities in bulk.
 type TeammateTaskTabStatusCreateBulk struct {
 	config
 	builders []*TeammateTaskTabStatusCreate
+	conflict []sql.ConflictOption
 }
 
 // Save creates the TeammateTaskTabStatus entities in the database.
@@ -347,6 +621,7 @@ func (tttscb *TeammateTaskTabStatusCreateBulk) Save(ctx context.Context) ([]*Tea
 					_, err = mutators[i+1].Mutate(root, tttscb.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
+					spec.OnConflict = tttscb.conflict
 					// Invoke the actual operation on the latest mutation in the chain.
 					if err = sqlgraph.BatchCreate(ctx, tttscb.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
@@ -393,6 +668,192 @@ func (tttscb *TeammateTaskTabStatusCreateBulk) Exec(ctx context.Context) error {
 // ExecX is like Exec, but panics if an error occurs.
 func (tttscb *TeammateTaskTabStatusCreateBulk) ExecX(ctx context.Context) {
 	if err := tttscb.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.TeammateTaskTabStatus.CreateBulk(builders...).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.TeammateTaskTabStatusUpsert) {
+//			SetWorkspaceID(v+v).
+//		}).
+//		Exec(ctx)
+//
+func (tttscb *TeammateTaskTabStatusCreateBulk) OnConflict(opts ...sql.ConflictOption) *TeammateTaskTabStatusUpsertBulk {
+	tttscb.conflict = opts
+	return &TeammateTaskTabStatusUpsertBulk{
+		create: tttscb,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.TeammateTaskTabStatus.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+//
+func (tttscb *TeammateTaskTabStatusCreateBulk) OnConflictColumns(columns ...string) *TeammateTaskTabStatusUpsertBulk {
+	tttscb.conflict = append(tttscb.conflict, sql.ConflictColumns(columns...))
+	return &TeammateTaskTabStatusUpsertBulk{
+		create: tttscb,
+	}
+}
+
+// TeammateTaskTabStatusUpsertBulk is the builder for "upsert"-ing
+// a bulk of TeammateTaskTabStatus nodes.
+type TeammateTaskTabStatusUpsertBulk struct {
+	create *TeammateTaskTabStatusCreateBulk
+}
+
+// UpdateNewValues updates the fields using the new values that
+// were set on create. Using this option is equivalent to using:
+//
+//	client.TeammateTaskTabStatus.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(teammatetasktabstatus.FieldID)
+//			}),
+//		).
+//		Exec(ctx)
+//
+func (u *TeammateTaskTabStatusUpsertBulk) UpdateNewValues() *TeammateTaskTabStatusUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		for _, b := range u.create.builders {
+			if _, exists := b.mutation.ID(); exists {
+				s.SetIgnore(teammatetasktabstatus.FieldID)
+				return
+			}
+		}
+	}))
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//	client.TeammateTaskTabStatus.Create().
+//		OnConflict(sql.ResolveWithIgnore()).
+//		Exec(ctx)
+//
+func (u *TeammateTaskTabStatusUpsertBulk) Ignore() *TeammateTaskTabStatusUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *TeammateTaskTabStatusUpsertBulk) DoNothing() *TeammateTaskTabStatusUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the TeammateTaskTabStatusCreateBulk.OnConflict
+// documentation for more info.
+func (u *TeammateTaskTabStatusUpsertBulk) Update(set func(*TeammateTaskTabStatusUpsert)) *TeammateTaskTabStatusUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&TeammateTaskTabStatusUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetWorkspaceID sets the "workspace_id" field.
+func (u *TeammateTaskTabStatusUpsertBulk) SetWorkspaceID(v ulid.ID) *TeammateTaskTabStatusUpsertBulk {
+	return u.Update(func(s *TeammateTaskTabStatusUpsert) {
+		s.SetWorkspaceID(v)
+	})
+}
+
+// UpdateWorkspaceID sets the "workspace_id" field to the value that was provided on create.
+func (u *TeammateTaskTabStatusUpsertBulk) UpdateWorkspaceID() *TeammateTaskTabStatusUpsertBulk {
+	return u.Update(func(s *TeammateTaskTabStatusUpsert) {
+		s.UpdateWorkspaceID()
+	})
+}
+
+// SetTeammateID sets the "teammate_id" field.
+func (u *TeammateTaskTabStatusUpsertBulk) SetTeammateID(v ulid.ID) *TeammateTaskTabStatusUpsertBulk {
+	return u.Update(func(s *TeammateTaskTabStatusUpsert) {
+		s.SetTeammateID(v)
+	})
+}
+
+// UpdateTeammateID sets the "teammate_id" field to the value that was provided on create.
+func (u *TeammateTaskTabStatusUpsertBulk) UpdateTeammateID() *TeammateTaskTabStatusUpsertBulk {
+	return u.Update(func(s *TeammateTaskTabStatusUpsert) {
+		s.UpdateTeammateID()
+	})
+}
+
+// SetStatusCode sets the "status_code" field.
+func (u *TeammateTaskTabStatusUpsertBulk) SetStatusCode(v teammatetasktabstatus.StatusCode) *TeammateTaskTabStatusUpsertBulk {
+	return u.Update(func(s *TeammateTaskTabStatusUpsert) {
+		s.SetStatusCode(v)
+	})
+}
+
+// UpdateStatusCode sets the "status_code" field to the value that was provided on create.
+func (u *TeammateTaskTabStatusUpsertBulk) UpdateStatusCode() *TeammateTaskTabStatusUpsertBulk {
+	return u.Update(func(s *TeammateTaskTabStatusUpsert) {
+		s.UpdateStatusCode()
+	})
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *TeammateTaskTabStatusUpsertBulk) SetCreatedAt(v time.Time) *TeammateTaskTabStatusUpsertBulk {
+	return u.Update(func(s *TeammateTaskTabStatusUpsert) {
+		s.SetCreatedAt(v)
+	})
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *TeammateTaskTabStatusUpsertBulk) UpdateCreatedAt() *TeammateTaskTabStatusUpsertBulk {
+	return u.Update(func(s *TeammateTaskTabStatusUpsert) {
+		s.UpdateCreatedAt()
+	})
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *TeammateTaskTabStatusUpsertBulk) SetUpdatedAt(v time.Time) *TeammateTaskTabStatusUpsertBulk {
+	return u.Update(func(s *TeammateTaskTabStatusUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *TeammateTaskTabStatusUpsertBulk) UpdateUpdatedAt() *TeammateTaskTabStatusUpsertBulk {
+	return u.Update(func(s *TeammateTaskTabStatusUpsert) {
+		s.UpdateUpdatedAt()
+	})
+}
+
+// Exec executes the query.
+func (u *TeammateTaskTabStatusUpsertBulk) Exec(ctx context.Context) error {
+	for i, b := range u.create.builders {
+		if len(b.conflict) != 0 {
+			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the TeammateTaskTabStatusCreateBulk instead", i)
+		}
+	}
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for TeammateTaskTabStatusCreateBulk.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *TeammateTaskTabStatusUpsertBulk) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

@@ -12,6 +12,8 @@ import (
 	"project-management-demo-backend/ent/taskpriority"
 	"time"
 
+	"entgo.io/ent/dialect"
+	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 )
@@ -21,6 +23,7 @@ type TaskPriorityCreate struct {
 	config
 	mutation *TaskPriorityMutation
 	hooks    []Hook
+	conflict []sql.ConflictOption
 }
 
 // SetColorID sets the "color_id" field.
@@ -246,6 +249,7 @@ func (tpc *TaskPriorityCreate) createSpec() (*TaskPriority, *sqlgraph.CreateSpec
 			},
 		}
 	)
+	_spec.OnConflict = tpc.conflict
 	if id, ok := tpc.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = id
@@ -324,10 +328,280 @@ func (tpc *TaskPriorityCreate) createSpec() (*TaskPriority, *sqlgraph.CreateSpec
 	return _node, _spec
 }
 
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.TaskPriority.Create().
+//		SetColorID(v).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.TaskPriorityUpsert) {
+//			SetColorID(v+v).
+//		}).
+//		Exec(ctx)
+//
+func (tpc *TaskPriorityCreate) OnConflict(opts ...sql.ConflictOption) *TaskPriorityUpsertOne {
+	tpc.conflict = opts
+	return &TaskPriorityUpsertOne{
+		create: tpc,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.TaskPriority.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+//
+func (tpc *TaskPriorityCreate) OnConflictColumns(columns ...string) *TaskPriorityUpsertOne {
+	tpc.conflict = append(tpc.conflict, sql.ConflictColumns(columns...))
+	return &TaskPriorityUpsertOne{
+		create: tpc,
+	}
+}
+
+type (
+	// TaskPriorityUpsertOne is the builder for "upsert"-ing
+	//  one TaskPriority node.
+	TaskPriorityUpsertOne struct {
+		create *TaskPriorityCreate
+	}
+
+	// TaskPriorityUpsert is the "OnConflict" setter.
+	TaskPriorityUpsert struct {
+		*sql.UpdateSet
+	}
+)
+
+// SetColorID sets the "color_id" field.
+func (u *TaskPriorityUpsert) SetColorID(v ulid.ID) *TaskPriorityUpsert {
+	u.Set(taskpriority.FieldColorID, v)
+	return u
+}
+
+// UpdateColorID sets the "color_id" field to the value that was provided on create.
+func (u *TaskPriorityUpsert) UpdateColorID() *TaskPriorityUpsert {
+	u.SetExcluded(taskpriority.FieldColorID)
+	return u
+}
+
+// SetName sets the "name" field.
+func (u *TaskPriorityUpsert) SetName(v string) *TaskPriorityUpsert {
+	u.Set(taskpriority.FieldName, v)
+	return u
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *TaskPriorityUpsert) UpdateName() *TaskPriorityUpsert {
+	u.SetExcluded(taskpriority.FieldName)
+	return u
+}
+
+// SetPriorityType sets the "priority_type" field.
+func (u *TaskPriorityUpsert) SetPriorityType(v taskpriority.PriorityType) *TaskPriorityUpsert {
+	u.Set(taskpriority.FieldPriorityType, v)
+	return u
+}
+
+// UpdatePriorityType sets the "priority_type" field to the value that was provided on create.
+func (u *TaskPriorityUpsert) UpdatePriorityType() *TaskPriorityUpsert {
+	u.SetExcluded(taskpriority.FieldPriorityType)
+	return u
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *TaskPriorityUpsert) SetCreatedAt(v time.Time) *TaskPriorityUpsert {
+	u.Set(taskpriority.FieldCreatedAt, v)
+	return u
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *TaskPriorityUpsert) UpdateCreatedAt() *TaskPriorityUpsert {
+	u.SetExcluded(taskpriority.FieldCreatedAt)
+	return u
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *TaskPriorityUpsert) SetUpdatedAt(v time.Time) *TaskPriorityUpsert {
+	u.Set(taskpriority.FieldUpdatedAt, v)
+	return u
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *TaskPriorityUpsert) UpdateUpdatedAt() *TaskPriorityUpsert {
+	u.SetExcluded(taskpriority.FieldUpdatedAt)
+	return u
+}
+
+// UpdateNewValues updates the fields using the new values that were set on create except the ID field.
+// Using this option is equivalent to using:
+//
+//	client.TaskPriority.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(taskpriority.FieldID)
+//			}),
+//		).
+//		Exec(ctx)
+//
+func (u *TaskPriorityUpsertOne) UpdateNewValues() *TaskPriorityUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		if _, exists := u.create.mutation.ID(); exists {
+			s.SetIgnore(taskpriority.FieldID)
+		}
+	}))
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//  client.TaskPriority.Create().
+//      OnConflict(sql.ResolveWithIgnore()).
+//      Exec(ctx)
+//
+func (u *TaskPriorityUpsertOne) Ignore() *TaskPriorityUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *TaskPriorityUpsertOne) DoNothing() *TaskPriorityUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the TaskPriorityCreate.OnConflict
+// documentation for more info.
+func (u *TaskPriorityUpsertOne) Update(set func(*TaskPriorityUpsert)) *TaskPriorityUpsertOne {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&TaskPriorityUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetColorID sets the "color_id" field.
+func (u *TaskPriorityUpsertOne) SetColorID(v ulid.ID) *TaskPriorityUpsertOne {
+	return u.Update(func(s *TaskPriorityUpsert) {
+		s.SetColorID(v)
+	})
+}
+
+// UpdateColorID sets the "color_id" field to the value that was provided on create.
+func (u *TaskPriorityUpsertOne) UpdateColorID() *TaskPriorityUpsertOne {
+	return u.Update(func(s *TaskPriorityUpsert) {
+		s.UpdateColorID()
+	})
+}
+
+// SetName sets the "name" field.
+func (u *TaskPriorityUpsertOne) SetName(v string) *TaskPriorityUpsertOne {
+	return u.Update(func(s *TaskPriorityUpsert) {
+		s.SetName(v)
+	})
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *TaskPriorityUpsertOne) UpdateName() *TaskPriorityUpsertOne {
+	return u.Update(func(s *TaskPriorityUpsert) {
+		s.UpdateName()
+	})
+}
+
+// SetPriorityType sets the "priority_type" field.
+func (u *TaskPriorityUpsertOne) SetPriorityType(v taskpriority.PriorityType) *TaskPriorityUpsertOne {
+	return u.Update(func(s *TaskPriorityUpsert) {
+		s.SetPriorityType(v)
+	})
+}
+
+// UpdatePriorityType sets the "priority_type" field to the value that was provided on create.
+func (u *TaskPriorityUpsertOne) UpdatePriorityType() *TaskPriorityUpsertOne {
+	return u.Update(func(s *TaskPriorityUpsert) {
+		s.UpdatePriorityType()
+	})
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *TaskPriorityUpsertOne) SetCreatedAt(v time.Time) *TaskPriorityUpsertOne {
+	return u.Update(func(s *TaskPriorityUpsert) {
+		s.SetCreatedAt(v)
+	})
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *TaskPriorityUpsertOne) UpdateCreatedAt() *TaskPriorityUpsertOne {
+	return u.Update(func(s *TaskPriorityUpsert) {
+		s.UpdateCreatedAt()
+	})
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *TaskPriorityUpsertOne) SetUpdatedAt(v time.Time) *TaskPriorityUpsertOne {
+	return u.Update(func(s *TaskPriorityUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *TaskPriorityUpsertOne) UpdateUpdatedAt() *TaskPriorityUpsertOne {
+	return u.Update(func(s *TaskPriorityUpsert) {
+		s.UpdateUpdatedAt()
+	})
+}
+
+// Exec executes the query.
+func (u *TaskPriorityUpsertOne) Exec(ctx context.Context) error {
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for TaskPriorityCreate.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *TaskPriorityUpsertOne) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// Exec executes the UPSERT query and returns the inserted/updated ID.
+func (u *TaskPriorityUpsertOne) ID(ctx context.Context) (id ulid.ID, err error) {
+	if u.create.driver.Dialect() == dialect.MySQL {
+		// In case of "ON CONFLICT", there is no way to get back non-numeric ID
+		// fields from the database since MySQL does not support the RETURNING clause.
+		return id, errors.New("ent: TaskPriorityUpsertOne.ID is not supported by MySQL driver. Use TaskPriorityUpsertOne.Exec instead")
+	}
+	node, err := u.create.Save(ctx)
+	if err != nil {
+		return id, err
+	}
+	return node.ID, nil
+}
+
+// IDX is like ID, but panics if an error occurs.
+func (u *TaskPriorityUpsertOne) IDX(ctx context.Context) ulid.ID {
+	id, err := u.ID(ctx)
+	if err != nil {
+		panic(err)
+	}
+	return id
+}
+
 // TaskPriorityCreateBulk is the builder for creating many TaskPriority entities in bulk.
 type TaskPriorityCreateBulk struct {
 	config
 	builders []*TaskPriorityCreate
+	conflict []sql.ConflictOption
 }
 
 // Save creates the TaskPriority entities in the database.
@@ -354,6 +628,7 @@ func (tpcb *TaskPriorityCreateBulk) Save(ctx context.Context) ([]*TaskPriority, 
 					_, err = mutators[i+1].Mutate(root, tpcb.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
+					spec.OnConflict = tpcb.conflict
 					// Invoke the actual operation on the latest mutation in the chain.
 					if err = sqlgraph.BatchCreate(ctx, tpcb.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
@@ -400,6 +675,192 @@ func (tpcb *TaskPriorityCreateBulk) Exec(ctx context.Context) error {
 // ExecX is like Exec, but panics if an error occurs.
 func (tpcb *TaskPriorityCreateBulk) ExecX(ctx context.Context) {
 	if err := tpcb.Exec(ctx); err != nil {
+		panic(err)
+	}
+}
+
+// OnConflict allows configuring the `ON CONFLICT` / `ON DUPLICATE KEY` clause
+// of the `INSERT` statement. For example:
+//
+//	client.TaskPriority.CreateBulk(builders...).
+//		OnConflict(
+//			// Update the row with the new values
+//			// the was proposed for insertion.
+//			sql.ResolveWithNewValues(),
+//		).
+//		// Override some of the fields with custom
+//		// update values.
+//		Update(func(u *ent.TaskPriorityUpsert) {
+//			SetColorID(v+v).
+//		}).
+//		Exec(ctx)
+//
+func (tpcb *TaskPriorityCreateBulk) OnConflict(opts ...sql.ConflictOption) *TaskPriorityUpsertBulk {
+	tpcb.conflict = opts
+	return &TaskPriorityUpsertBulk{
+		create: tpcb,
+	}
+}
+
+// OnConflictColumns calls `OnConflict` and configures the columns
+// as conflict target. Using this option is equivalent to using:
+//
+//	client.TaskPriority.Create().
+//		OnConflict(sql.ConflictColumns(columns...)).
+//		Exec(ctx)
+//
+func (tpcb *TaskPriorityCreateBulk) OnConflictColumns(columns ...string) *TaskPriorityUpsertBulk {
+	tpcb.conflict = append(tpcb.conflict, sql.ConflictColumns(columns...))
+	return &TaskPriorityUpsertBulk{
+		create: tpcb,
+	}
+}
+
+// TaskPriorityUpsertBulk is the builder for "upsert"-ing
+// a bulk of TaskPriority nodes.
+type TaskPriorityUpsertBulk struct {
+	create *TaskPriorityCreateBulk
+}
+
+// UpdateNewValues updates the fields using the new values that
+// were set on create. Using this option is equivalent to using:
+//
+//	client.TaskPriority.Create().
+//		OnConflict(
+//			sql.ResolveWithNewValues(),
+//			sql.ResolveWith(func(u *sql.UpdateSet) {
+//				u.SetIgnore(taskpriority.FieldID)
+//			}),
+//		).
+//		Exec(ctx)
+//
+func (u *TaskPriorityUpsertBulk) UpdateNewValues() *TaskPriorityUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithNewValues())
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
+		for _, b := range u.create.builders {
+			if _, exists := b.mutation.ID(); exists {
+				s.SetIgnore(taskpriority.FieldID)
+				return
+			}
+		}
+	}))
+	return u
+}
+
+// Ignore sets each column to itself in case of conflict.
+// Using this option is equivalent to using:
+//
+//	client.TaskPriority.Create().
+//		OnConflict(sql.ResolveWithIgnore()).
+//		Exec(ctx)
+//
+func (u *TaskPriorityUpsertBulk) Ignore() *TaskPriorityUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWithIgnore())
+	return u
+}
+
+// DoNothing configures the conflict_action to `DO NOTHING`.
+// Supported only by SQLite and PostgreSQL.
+func (u *TaskPriorityUpsertBulk) DoNothing() *TaskPriorityUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.DoNothing())
+	return u
+}
+
+// Update allows overriding fields `UPDATE` values. See the TaskPriorityCreateBulk.OnConflict
+// documentation for more info.
+func (u *TaskPriorityUpsertBulk) Update(set func(*TaskPriorityUpsert)) *TaskPriorityUpsertBulk {
+	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(update *sql.UpdateSet) {
+		set(&TaskPriorityUpsert{UpdateSet: update})
+	}))
+	return u
+}
+
+// SetColorID sets the "color_id" field.
+func (u *TaskPriorityUpsertBulk) SetColorID(v ulid.ID) *TaskPriorityUpsertBulk {
+	return u.Update(func(s *TaskPriorityUpsert) {
+		s.SetColorID(v)
+	})
+}
+
+// UpdateColorID sets the "color_id" field to the value that was provided on create.
+func (u *TaskPriorityUpsertBulk) UpdateColorID() *TaskPriorityUpsertBulk {
+	return u.Update(func(s *TaskPriorityUpsert) {
+		s.UpdateColorID()
+	})
+}
+
+// SetName sets the "name" field.
+func (u *TaskPriorityUpsertBulk) SetName(v string) *TaskPriorityUpsertBulk {
+	return u.Update(func(s *TaskPriorityUpsert) {
+		s.SetName(v)
+	})
+}
+
+// UpdateName sets the "name" field to the value that was provided on create.
+func (u *TaskPriorityUpsertBulk) UpdateName() *TaskPriorityUpsertBulk {
+	return u.Update(func(s *TaskPriorityUpsert) {
+		s.UpdateName()
+	})
+}
+
+// SetPriorityType sets the "priority_type" field.
+func (u *TaskPriorityUpsertBulk) SetPriorityType(v taskpriority.PriorityType) *TaskPriorityUpsertBulk {
+	return u.Update(func(s *TaskPriorityUpsert) {
+		s.SetPriorityType(v)
+	})
+}
+
+// UpdatePriorityType sets the "priority_type" field to the value that was provided on create.
+func (u *TaskPriorityUpsertBulk) UpdatePriorityType() *TaskPriorityUpsertBulk {
+	return u.Update(func(s *TaskPriorityUpsert) {
+		s.UpdatePriorityType()
+	})
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (u *TaskPriorityUpsertBulk) SetCreatedAt(v time.Time) *TaskPriorityUpsertBulk {
+	return u.Update(func(s *TaskPriorityUpsert) {
+		s.SetCreatedAt(v)
+	})
+}
+
+// UpdateCreatedAt sets the "created_at" field to the value that was provided on create.
+func (u *TaskPriorityUpsertBulk) UpdateCreatedAt() *TaskPriorityUpsertBulk {
+	return u.Update(func(s *TaskPriorityUpsert) {
+		s.UpdateCreatedAt()
+	})
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (u *TaskPriorityUpsertBulk) SetUpdatedAt(v time.Time) *TaskPriorityUpsertBulk {
+	return u.Update(func(s *TaskPriorityUpsert) {
+		s.SetUpdatedAt(v)
+	})
+}
+
+// UpdateUpdatedAt sets the "updated_at" field to the value that was provided on create.
+func (u *TaskPriorityUpsertBulk) UpdateUpdatedAt() *TaskPriorityUpsertBulk {
+	return u.Update(func(s *TaskPriorityUpsert) {
+		s.UpdateUpdatedAt()
+	})
+}
+
+// Exec executes the query.
+func (u *TaskPriorityUpsertBulk) Exec(ctx context.Context) error {
+	for i, b := range u.create.builders {
+		if len(b.conflict) != 0 {
+			return fmt.Errorf("ent: OnConflict was set for builder %d. Set it on the TaskPriorityCreateBulk instead", i)
+		}
+	}
+	if len(u.create.conflict) == 0 {
+		return errors.New("ent: missing options for TaskPriorityCreateBulk.OnConflict")
+	}
+	return u.create.Exec(ctx)
+}
+
+// ExecX is like Exec, but panics if an error occurs.
+func (u *TaskPriorityUpsertBulk) ExecX(ctx context.Context) {
+	if err := u.create.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
