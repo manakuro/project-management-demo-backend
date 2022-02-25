@@ -23,11 +23,13 @@ input CreateProjectTaskInput {
   projectId: ID!
   projectTaskSectionId: ID!
   createdBy: ID!
+  workspaceId: ID!
   requestId: String!
 }
 
 input UpdateProjectTaskInput {
   id: ID!
+  workspaceId: ID!
   taskId: ID
   projectId: ID
   projectTaskSectionId: ID
@@ -35,7 +37,7 @@ input UpdateProjectTaskInput {
 
 extend type Subscription {
   projectTaskUpdated(id: ID!, requestId: String!): ProjectTask!
-  projectTaskCreated(projectId: ID!, requestId: String!): ProjectTask!
+  projectTaskCreated(workspaceId: ID!, requestId: String!): ProjectTask!
 }
 
 extend type Query {

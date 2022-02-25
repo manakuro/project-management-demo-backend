@@ -95,6 +95,11 @@
                 {{ $e.MutationRemove }} []{{ $e.Type.ID.Type }}
             {{- end }}
         {{- end }}
+        {{- if $n.Annotations.MutationInput }}
+            {{- range $i := $n.Annotations.MutationInput.Update }}
+                {{ $i.Key }} {{ $i.Type }}
+            {{- end }}
+        {{- end }}
             RequestID string
         }
 

@@ -268,7 +268,12 @@ func (r *taskRepository) Undelete(ctx context.Context, input model.UndeleteTaskI
 
 	if undeletedTeammateTask != nil {
 		// Restore the state in order to query en entity after successful transaction.
-		t, terr := client.TeammateTask.Query().WithTask().Where(teammatetask.ID(undeletedTeammateTask.ID)).Only(ctx)
+		t, terr := client.TeammateTask.
+			Query().
+			WithTask(func(tq *ent.TaskQuery) {
+				WithTask(tq)
+			}).
+			Where(teammatetask.ID(undeletedTeammateTask.ID)).Only(ctx)
 
 		if terr != nil {
 			return nil, model.NewDBError(err)
@@ -277,7 +282,12 @@ func (r *taskRepository) Undelete(ctx context.Context, input model.UndeleteTaskI
 	}
 	if undeletedProjectTask != nil {
 		// Restore the state in order to query en entity after successful transaction.
-		t, terr := client.ProjectTask.Query().WithTask().Where(projecttask.ID(undeletedProjectTask.ID)).Only(ctx)
+		t, terr := client.ProjectTask.
+			Query().
+			WithTask(func(tq *ent.TaskQuery) {
+				WithTask(tq)
+			}).
+			Where(projecttask.ID(undeletedProjectTask.ID)).Only(ctx)
 		if terr != nil {
 			return nil, model.NewDBError(err)
 		}

@@ -80,6 +80,28 @@ func (TaskFeedLike) Edges() []ent.Edge {
 	}
 }
 
+// Annotations of the ProjectTask.
+func (TaskFeedLike) Annotations() []schema.Annotation {
+	return []schema.Annotation{
+		schema.Annotation(
+			annotation.MutationInput{
+				Create: []annotation.MutationInputField{
+					{
+						Key:  "WorkspaceID",
+						Type: "ulid.ID",
+					},
+				},
+				Update: []annotation.MutationInputField{
+					{
+						Key:  "WorkspaceID",
+						Type: "ulid.ID",
+					},
+				},
+			},
+		),
+	}
+}
+
 // Mixin of the TaskFeedLike.
 func (TaskFeedLike) Mixin() []ent.Mixin {
 	return []ent.Mixin{

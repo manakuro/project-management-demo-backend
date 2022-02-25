@@ -21,7 +21,7 @@ func (r *mutationResolver) CreateProjectTaskSection(ctx context.Context, input e
 
 	go func() {
 		for _, c := range r.subscriptions.ProjectTaskSectionCreated {
-			if c.ProjectID == p.ProjectID && c.RequestID != input.RequestID {
+			if c.WorkspaceID == input.WorkspaceID && c.RequestID != input.RequestID {
 				c.Ch <- p
 			}
 		}
@@ -38,7 +38,7 @@ func (r *mutationResolver) UpdateProjectTaskSection(ctx context.Context, input e
 
 	go func() {
 		for _, u := range r.subscriptions.ProjectTaskSectionUpdated {
-			if u.ID == p.ID && u.RequestID != input.RequestID {
+			if u.WorkspaceID == input.WorkspaceID && u.RequestID != input.RequestID {
 				u.Ch <- p
 			}
 		}
@@ -72,15 +72,15 @@ func (r *queryResolver) ProjectTaskSections(ctx context.Context, after *ent.Curs
 	return ps, nil
 }
 
-func (r *subscriptionResolver) ProjectTaskSectionUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.ProjectTaskSection, error) {
+func (r *subscriptionResolver) ProjectTaskSectionUpdated(ctx context.Context, workspaceID ulid.ID, requestID string) (<-chan *ent.ProjectTaskSection, error) {
 	key := subscription.NewKey()
 	ch := make(chan *ent.ProjectTaskSection, 1)
 
 	r.mutex.Lock()
 	r.subscriptions.ProjectTaskSectionUpdated[key] = subscription.ProjectTaskSectionUpdated{
-		ID:        id,
-		RequestID: requestID,
-		Ch:        ch,
+		WorkspaceID: workspaceID,
+		RequestID:   requestID,
+		Ch:          ch,
 	}
 	r.mutex.Unlock()
 
@@ -94,15 +94,15 @@ func (r *subscriptionResolver) ProjectTaskSectionUpdated(ctx context.Context, id
 	return ch, nil
 }
 
-func (r *subscriptionResolver) ProjectTaskSectionCreated(ctx context.Context, projectID ulid.ID, requestID string) (<-chan *ent.ProjectTaskSection, error) {
+func (r *subscriptionResolver) ProjectTaskSectionCreated(ctx context.Context, workspaceID ulid.ID, requestID string) (<-chan *ent.ProjectTaskSection, error) {
 	key := subscription.NewKey()
 	ch := make(chan *ent.ProjectTaskSection, 1)
 
 	r.mutex.Lock()
 	r.subscriptions.ProjectTaskSectionCreated[key] = subscription.ProjectTaskSectionCreated{
-		ProjectID: projectID,
-		RequestID: requestID,
-		Ch:        ch,
+		WorkspaceID: workspaceID,
+		RequestID:   requestID,
+		Ch:          ch,
 	}
 	r.mutex.Unlock()
 

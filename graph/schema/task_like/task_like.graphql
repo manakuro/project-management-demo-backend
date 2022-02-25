@@ -28,15 +28,17 @@ input UpdateTaskLikeInput {
   taskId: ID
   teammateId: ID
   requestId: String!
+  workspaceId: ID!
 }
 input DeleteTaskLikeInput {
   id: ID!
   requestId: String!
+  workspaceId: ID!
 }
 
 extend type Subscription {
-  taskLikeCreated(taskId: ID!, requestId: String!): TaskLike!
-  taskLikeDeleted(taskId: ID!, requestId: String!): TaskLike!
+  taskLikeCreated(workspaceId: ID!, requestId: String!): TaskLike!
+  taskLikeDeleted(workspaceId: ID!, requestId: String!): TaskLike!
 }
 
 extend type Query {

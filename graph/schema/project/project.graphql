@@ -50,6 +50,7 @@ input UpdateProjectInput {
   descriptionTitle: String
   dueDate: Time
   requestId: String!
+  workspaceId: ID!
 }
 
 extend type Query {
@@ -58,7 +59,7 @@ extend type Query {
 }
 
 extend type Subscription {
-  projectUpdated(id: ID!, requestId: String!): Project!
+  projectUpdated(workspaceId: ID!, requestId: String!): Project!
 }
 
 extend type Mutation {

@@ -63,6 +63,28 @@ func (ProjectTaskSection) Edges() []ent.Edge {
 	}
 }
 
+// Annotations of the ProjectTask.
+func (ProjectTaskSection) Annotations() []schema.Annotation {
+	return []schema.Annotation{
+		schema.Annotation(
+			annotation.MutationInput{
+				Create: []annotation.MutationInputField{
+					{
+						Key:  "WorkspaceID",
+						Type: "ulid.ID",
+					},
+				},
+				Update: []annotation.MutationInputField{
+					{
+						Key:  "WorkspaceID",
+						Type: "ulid.ID",
+					},
+				},
+			},
+		),
+	}
+}
+
 // Mixin of the ProjectTaskSection.
 func (ProjectTaskSection) Mixin() []ent.Mixin {
 	return []ent.Mixin{

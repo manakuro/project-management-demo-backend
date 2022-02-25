@@ -41,10 +41,11 @@ input UpdateTeammateTaskInput {
   teammateId: ID
   teammateTaskSectionId: ID
   requestId: String!
+  workspaceId: ID!
 }
 
 extend type Subscription {
-  teammateTaskUpdated(id: ID!, requestId: String!): TeammateTask!
+  teammateTaskUpdated(workspaceId: ID!, requestId: String!): TeammateTask!
   teammateTaskCreated(teammateId: ID!, workspaceId: ID!, requestId: String!): TeammateTask!
   teammateTaskDeleted(teammateId: ID!, workspaceId: ID!, requestId: String!): TeammateTask!
 }

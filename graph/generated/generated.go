@@ -650,36 +650,36 @@ type ComplexityRoot struct {
 		ProjectIconUpdated            func(childComplexity int, id ulid.ID, requestID string) int
 		ProjectLightColorUpdated      func(childComplexity int, id ulid.ID, requestID string) int
 		ProjectTaskColumnUpdated      func(childComplexity int, id ulid.ID, requestID string) int
-		ProjectTaskCreated            func(childComplexity int, projectID ulid.ID, requestID string) int
+		ProjectTaskCreated            func(childComplexity int, workspaceID ulid.ID, requestID string) int
 		ProjectTaskListStatusUpdated  func(childComplexity int, id ulid.ID, requestID string) int
-		ProjectTaskSectionCreated     func(childComplexity int, projectID ulid.ID, requestID string) int
-		ProjectTaskSectionUpdated     func(childComplexity int, id ulid.ID, requestID string) int
+		ProjectTaskSectionCreated     func(childComplexity int, workspaceID ulid.ID, requestID string) int
+		ProjectTaskSectionUpdated     func(childComplexity int, workspaceID ulid.ID, requestID string) int
 		ProjectTaskUpdated            func(childComplexity int, id ulid.ID, requestID string) int
 		ProjectTeammateUpdated        func(childComplexity int, id ulid.ID, requestID string) int
-		ProjectUpdated                func(childComplexity int, id ulid.ID, requestID string) int
+		ProjectUpdated                func(childComplexity int, workspaceID ulid.ID, requestID string) int
 		TagUpdated                    func(childComplexity int, id ulid.ID, requestID string) int
 		TaskCollaboratorsUpdated      func(childComplexity int, taskID ulid.ID, requestID string) int
-		TaskDeleted                   func(childComplexity int, id ulid.ID, requestID string) int
-		TaskFeedCreated               func(childComplexity int, taskID ulid.ID, requestID string) int
-		TaskFeedDeleted               func(childComplexity int, taskID ulid.ID, requestID string) int
-		TaskFeedLikeCreated           func(childComplexity int, taskFeedID ulid.ID, requestID string) int
-		TaskFeedLikeDeleted           func(childComplexity int, taskFeedID ulid.ID, requestID string) int
-		TaskFeedUpdated               func(childComplexity int, id ulid.ID, requestID string) int
+		TaskDeleted                   func(childComplexity int, workspaceID ulid.ID, requestID string) int
+		TaskFeedCreated               func(childComplexity int, workspaceID ulid.ID, requestID string) int
+		TaskFeedDeleted               func(childComplexity int, workspaceID ulid.ID, requestID string) int
+		TaskFeedLikeCreated           func(childComplexity int, workspaceID ulid.ID, requestID string) int
+		TaskFeedLikeDeleted           func(childComplexity int, workspaceID ulid.ID, requestID string) int
+		TaskFeedUpdated               func(childComplexity int, workspaceID ulid.ID, requestID string) int
 		TaskFileUpdated               func(childComplexity int, id ulid.ID, requestID string) int
-		TaskLikeCreated               func(childComplexity int, taskID ulid.ID, requestID string) int
-		TaskLikeDeleted               func(childComplexity int, taskID ulid.ID, requestID string) int
+		TaskLikeCreated               func(childComplexity int, workspaceID ulid.ID, requestID string) int
+		TaskLikeDeleted               func(childComplexity int, workspaceID ulid.ID, requestID string) int
 		TaskSectionUpdated            func(childComplexity int, id ulid.ID, requestID string) int
 		TaskTagsUpdated               func(childComplexity int, taskID ulid.ID, requestID string) int
-		TaskUndeleted                 func(childComplexity int, id ulid.ID, requestID string) int
-		TaskUpdated                   func(childComplexity int, id ulid.ID, requestID string) int
+		TaskUndeleted                 func(childComplexity int, workspaceID ulid.ID, requestID string) int
+		TaskUpdated                   func(childComplexity int, workspaceID ulid.ID, requestID string) int
 		TeammateTaskColumnUpdated     func(childComplexity int, id ulid.ID, requestID string) int
 		TeammateTaskCreated           func(childComplexity int, teammateID ulid.ID, workspaceID ulid.ID, requestID string) int
 		TeammateTaskDeleted           func(childComplexity int, teammateID ulid.ID, workspaceID ulid.ID, requestID string) int
 		TeammateTaskListStatusUpdated func(childComplexity int, id ulid.ID, requestID string) int
 		TeammateTaskSectionCreated    func(childComplexity int, teammateID ulid.ID, workspaceID ulid.ID, requestID string) int
-		TeammateTaskSectionUpdated    func(childComplexity int, id ulid.ID, requestID string) int
+		TeammateTaskSectionUpdated    func(childComplexity int, workspaceID ulid.ID, requestID string) int
 		TeammateTaskTabStatusUpdated  func(childComplexity int, id ulid.ID, requestID string) int
-		TeammateTaskUpdated           func(childComplexity int, id ulid.ID, requestID string) int
+		TeammateTaskUpdated           func(childComplexity int, workspaceID ulid.ID, requestID string) int
 		TeammateUpdated               func(childComplexity int, id ulid.ID, requestID string) int
 		TestUserUpdated               func(childComplexity int, id ulid.ID) int
 		WorkspaceTeammateUpdated      func(childComplexity int, id ulid.ID, requestID string) int
@@ -1471,39 +1471,39 @@ type SubscriptionResolver interface {
 	FavoriteWorkspaceIdsUpdated(ctx context.Context, teammateID ulid.ID, requestID string) (<-chan []ulid.ID, error)
 	IconUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.Icon, error)
 	MeUpdated(ctx context.Context, id ulid.ID) (<-chan *model.Me, error)
-	ProjectUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.Project, error)
+	ProjectUpdated(ctx context.Context, workspaceID ulid.ID, requestID string) (<-chan *ent.Project, error)
 	ProjectBaseColorUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.ProjectBaseColor, error)
 	ProjectIconUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.ProjectIcon, error)
 	ProjectLightColorUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.ProjectLightColor, error)
 	ProjectTaskUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.ProjectTask, error)
-	ProjectTaskCreated(ctx context.Context, projectID ulid.ID, requestID string) (<-chan *ent.ProjectTask, error)
+	ProjectTaskCreated(ctx context.Context, workspaceID ulid.ID, requestID string) (<-chan *ent.ProjectTask, error)
 	ProjectTaskColumnUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.ProjectTaskColumn, error)
 	ProjectTaskListStatusUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.ProjectTaskListStatus, error)
-	ProjectTaskSectionUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.ProjectTaskSection, error)
-	ProjectTaskSectionCreated(ctx context.Context, projectID ulid.ID, requestID string) (<-chan *ent.ProjectTaskSection, error)
+	ProjectTaskSectionUpdated(ctx context.Context, workspaceID ulid.ID, requestID string) (<-chan *ent.ProjectTaskSection, error)
+	ProjectTaskSectionCreated(ctx context.Context, workspaceID ulid.ID, requestID string) (<-chan *ent.ProjectTaskSection, error)
 	ProjectTeammateUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.ProjectTeammate, error)
 	TagUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.Tag, error)
-	TaskUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.Task, error)
-	TaskDeleted(ctx context.Context, id ulid.ID, requestID string) (<-chan *model.DeleteTaskPayload, error)
-	TaskUndeleted(ctx context.Context, id ulid.ID, requestID string) (<-chan *model.UndeleteTaskPayload, error)
+	TaskUpdated(ctx context.Context, workspaceID ulid.ID, requestID string) (<-chan *ent.Task, error)
+	TaskDeleted(ctx context.Context, workspaceID ulid.ID, requestID string) (<-chan *model.DeleteTaskPayload, error)
+	TaskUndeleted(ctx context.Context, workspaceID ulid.ID, requestID string) (<-chan *model.UndeleteTaskPayload, error)
 	TaskCollaboratorsUpdated(ctx context.Context, taskID ulid.ID, requestID string) (<-chan []*ent.TaskCollaborator, error)
-	TaskFeedUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.TaskFeed, error)
-	TaskFeedCreated(ctx context.Context, taskID ulid.ID, requestID string) (<-chan *ent.TaskFeed, error)
-	TaskFeedDeleted(ctx context.Context, taskID ulid.ID, requestID string) (<-chan *ent.TaskFeed, error)
-	TaskFeedLikeCreated(ctx context.Context, taskFeedID ulid.ID, requestID string) (<-chan *ent.TaskFeedLike, error)
-	TaskFeedLikeDeleted(ctx context.Context, taskFeedID ulid.ID, requestID string) (<-chan *ent.TaskFeedLike, error)
+	TaskFeedUpdated(ctx context.Context, workspaceID ulid.ID, requestID string) (<-chan *ent.TaskFeed, error)
+	TaskFeedCreated(ctx context.Context, workspaceID ulid.ID, requestID string) (<-chan *ent.TaskFeed, error)
+	TaskFeedDeleted(ctx context.Context, workspaceID ulid.ID, requestID string) (<-chan *ent.TaskFeed, error)
+	TaskFeedLikeCreated(ctx context.Context, workspaceID ulid.ID, requestID string) (<-chan *ent.TaskFeedLike, error)
+	TaskFeedLikeDeleted(ctx context.Context, workspaceID ulid.ID, requestID string) (<-chan *ent.TaskFeedLike, error)
 	TaskFileUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.TaskFile, error)
-	TaskLikeCreated(ctx context.Context, taskID ulid.ID, requestID string) (<-chan *ent.TaskLike, error)
-	TaskLikeDeleted(ctx context.Context, taskID ulid.ID, requestID string) (<-chan *ent.TaskLike, error)
+	TaskLikeCreated(ctx context.Context, workspaceID ulid.ID, requestID string) (<-chan *ent.TaskLike, error)
+	TaskLikeDeleted(ctx context.Context, workspaceID ulid.ID, requestID string) (<-chan *ent.TaskLike, error)
 	TaskSectionUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.TaskSection, error)
 	TaskTagsUpdated(ctx context.Context, taskID ulid.ID, requestID string) (<-chan []*ent.TaskTag, error)
 	TeammateUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.Teammate, error)
-	TeammateTaskUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.TeammateTask, error)
+	TeammateTaskUpdated(ctx context.Context, workspaceID ulid.ID, requestID string) (<-chan *ent.TeammateTask, error)
 	TeammateTaskCreated(ctx context.Context, teammateID ulid.ID, workspaceID ulid.ID, requestID string) (<-chan *ent.TeammateTask, error)
 	TeammateTaskDeleted(ctx context.Context, teammateID ulid.ID, workspaceID ulid.ID, requestID string) (<-chan *ent.TeammateTask, error)
 	TeammateTaskColumnUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.TeammateTaskColumn, error)
 	TeammateTaskListStatusUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.TeammateTaskListStatus, error)
-	TeammateTaskSectionUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.TeammateTaskSection, error)
+	TeammateTaskSectionUpdated(ctx context.Context, workspaceID ulid.ID, requestID string) (<-chan *ent.TeammateTaskSection, error)
 	TeammateTaskSectionCreated(ctx context.Context, teammateID ulid.ID, workspaceID ulid.ID, requestID string) (<-chan *ent.TeammateTaskSection, error)
 	TeammateTaskTabStatusUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.TeammateTaskTabStatus, error)
 	TestUserUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.TestUser, error)
@@ -5257,7 +5257,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Subscription.ProjectTaskCreated(childComplexity, args["projectId"].(ulid.ID), args["requestId"].(string)), true
+		return e.complexity.Subscription.ProjectTaskCreated(childComplexity, args["workspaceId"].(ulid.ID), args["requestId"].(string)), true
 
 	case "Subscription.projectTaskListStatusUpdated":
 		if e.complexity.Subscription.ProjectTaskListStatusUpdated == nil {
@@ -5281,7 +5281,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Subscription.ProjectTaskSectionCreated(childComplexity, args["projectId"].(ulid.ID), args["requestId"].(string)), true
+		return e.complexity.Subscription.ProjectTaskSectionCreated(childComplexity, args["workspaceId"].(ulid.ID), args["requestId"].(string)), true
 
 	case "Subscription.projectTaskSectionUpdated":
 		if e.complexity.Subscription.ProjectTaskSectionUpdated == nil {
@@ -5293,7 +5293,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Subscription.ProjectTaskSectionUpdated(childComplexity, args["id"].(ulid.ID), args["requestId"].(string)), true
+		return e.complexity.Subscription.ProjectTaskSectionUpdated(childComplexity, args["workspaceId"].(ulid.ID), args["requestId"].(string)), true
 
 	case "Subscription.projectTaskUpdated":
 		if e.complexity.Subscription.ProjectTaskUpdated == nil {
@@ -5329,7 +5329,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Subscription.ProjectUpdated(childComplexity, args["id"].(ulid.ID), args["requestId"].(string)), true
+		return e.complexity.Subscription.ProjectUpdated(childComplexity, args["workspaceId"].(ulid.ID), args["requestId"].(string)), true
 
 	case "Subscription.tagUpdated":
 		if e.complexity.Subscription.TagUpdated == nil {
@@ -5365,7 +5365,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Subscription.TaskDeleted(childComplexity, args["id"].(ulid.ID), args["requestId"].(string)), true
+		return e.complexity.Subscription.TaskDeleted(childComplexity, args["workspaceId"].(ulid.ID), args["requestId"].(string)), true
 
 	case "Subscription.taskFeedCreated":
 		if e.complexity.Subscription.TaskFeedCreated == nil {
@@ -5377,7 +5377,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Subscription.TaskFeedCreated(childComplexity, args["taskId"].(ulid.ID), args["requestId"].(string)), true
+		return e.complexity.Subscription.TaskFeedCreated(childComplexity, args["workspaceId"].(ulid.ID), args["requestId"].(string)), true
 
 	case "Subscription.taskFeedDeleted":
 		if e.complexity.Subscription.TaskFeedDeleted == nil {
@@ -5389,7 +5389,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Subscription.TaskFeedDeleted(childComplexity, args["taskId"].(ulid.ID), args["requestId"].(string)), true
+		return e.complexity.Subscription.TaskFeedDeleted(childComplexity, args["workspaceId"].(ulid.ID), args["requestId"].(string)), true
 
 	case "Subscription.taskFeedLikeCreated":
 		if e.complexity.Subscription.TaskFeedLikeCreated == nil {
@@ -5401,7 +5401,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Subscription.TaskFeedLikeCreated(childComplexity, args["taskFeedId"].(ulid.ID), args["requestId"].(string)), true
+		return e.complexity.Subscription.TaskFeedLikeCreated(childComplexity, args["workspaceId"].(ulid.ID), args["requestId"].(string)), true
 
 	case "Subscription.taskFeedLikeDeleted":
 		if e.complexity.Subscription.TaskFeedLikeDeleted == nil {
@@ -5413,7 +5413,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Subscription.TaskFeedLikeDeleted(childComplexity, args["taskFeedId"].(ulid.ID), args["requestId"].(string)), true
+		return e.complexity.Subscription.TaskFeedLikeDeleted(childComplexity, args["workspaceId"].(ulid.ID), args["requestId"].(string)), true
 
 	case "Subscription.taskFeedUpdated":
 		if e.complexity.Subscription.TaskFeedUpdated == nil {
@@ -5425,7 +5425,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Subscription.TaskFeedUpdated(childComplexity, args["id"].(ulid.ID), args["requestId"].(string)), true
+		return e.complexity.Subscription.TaskFeedUpdated(childComplexity, args["workspaceId"].(ulid.ID), args["requestId"].(string)), true
 
 	case "Subscription.taskFileUpdated":
 		if e.complexity.Subscription.TaskFileUpdated == nil {
@@ -5449,7 +5449,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Subscription.TaskLikeCreated(childComplexity, args["taskId"].(ulid.ID), args["requestId"].(string)), true
+		return e.complexity.Subscription.TaskLikeCreated(childComplexity, args["workspaceId"].(ulid.ID), args["requestId"].(string)), true
 
 	case "Subscription.taskLikeDeleted":
 		if e.complexity.Subscription.TaskLikeDeleted == nil {
@@ -5461,7 +5461,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Subscription.TaskLikeDeleted(childComplexity, args["taskId"].(ulid.ID), args["requestId"].(string)), true
+		return e.complexity.Subscription.TaskLikeDeleted(childComplexity, args["workspaceId"].(ulid.ID), args["requestId"].(string)), true
 
 	case "Subscription.taskSectionUpdated":
 		if e.complexity.Subscription.TaskSectionUpdated == nil {
@@ -5497,7 +5497,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Subscription.TaskUndeleted(childComplexity, args["id"].(ulid.ID), args["requestId"].(string)), true
+		return e.complexity.Subscription.TaskUndeleted(childComplexity, args["workspaceId"].(ulid.ID), args["requestId"].(string)), true
 
 	case "Subscription.taskUpdated":
 		if e.complexity.Subscription.TaskUpdated == nil {
@@ -5509,7 +5509,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Subscription.TaskUpdated(childComplexity, args["id"].(ulid.ID), args["requestId"].(string)), true
+		return e.complexity.Subscription.TaskUpdated(childComplexity, args["workspaceId"].(ulid.ID), args["requestId"].(string)), true
 
 	case "Subscription.teammateTaskColumnUpdated":
 		if e.complexity.Subscription.TeammateTaskColumnUpdated == nil {
@@ -5581,7 +5581,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Subscription.TeammateTaskSectionUpdated(childComplexity, args["id"].(ulid.ID), args["requestId"].(string)), true
+		return e.complexity.Subscription.TeammateTaskSectionUpdated(childComplexity, args["workspaceId"].(ulid.ID), args["requestId"].(string)), true
 
 	case "Subscription.teammateTaskTabStatusUpdated":
 		if e.complexity.Subscription.TeammateTaskTabStatusUpdated == nil {
@@ -5605,7 +5605,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Subscription.TeammateTaskUpdated(childComplexity, args["id"].(ulid.ID), args["requestId"].(string)), true
+		return e.complexity.Subscription.TeammateTaskUpdated(childComplexity, args["workspaceId"].(ulid.ID), args["requestId"].(string)), true
 
 	case "Subscription.teammateUpdated":
 		if e.complexity.Subscription.TeammateUpdated == nil {
@@ -12108,6 +12108,7 @@ input UpdateProjectInput {
   descriptionTitle: String
   dueDate: Time
   requestId: String!
+  workspaceId: ID!
 }
 
 extend type Query {
@@ -12116,7 +12117,7 @@ extend type Query {
 }
 
 extend type Subscription {
-  projectUpdated(id: ID!, requestId: String!): Project!
+  projectUpdated(workspaceId: ID!, requestId: String!): Project!
 }
 
 extend type Mutation {
@@ -12269,11 +12270,13 @@ input CreateProjectTaskInput {
   projectId: ID!
   projectTaskSectionId: ID!
   createdBy: ID!
+  workspaceId: ID!
   requestId: String!
 }
 
 input UpdateProjectTaskInput {
   id: ID!
+  workspaceId: ID!
   taskId: ID
   projectId: ID
   projectTaskSectionId: ID
@@ -12281,7 +12284,7 @@ input UpdateProjectTaskInput {
 
 extend type Subscription {
   projectTaskUpdated(id: ID!, requestId: String!): ProjectTask!
-  projectTaskCreated(projectId: ID!, requestId: String!): ProjectTask!
+  projectTaskCreated(workspaceId: ID!, requestId: String!): ProjectTask!
 }
 
 extend type Query {
@@ -12422,6 +12425,7 @@ type ProjectTaskSectionEdge {
 input CreateProjectTaskSectionInput {
   projectId: ID!
   requestId: String!
+  workspaceId: ID!
 }
 
 input UpdateProjectTaskSectionInput {
@@ -12429,11 +12433,12 @@ input UpdateProjectTaskSectionInput {
   projectId: ID
   name: String
   requestId: String!
+  workspaceId: ID!
 }
 
 extend type Subscription {
-  projectTaskSectionUpdated(id: ID!, requestId: String!): ProjectTaskSection!
-  projectTaskSectionCreated(projectId: ID!, requestId: String!): ProjectTaskSection!
+  projectTaskSectionUpdated(workspaceId: ID!, requestId: String!): ProjectTaskSection!
+  projectTaskSectionCreated(workspaceId: ID!, requestId: String!): ProjectTaskSection!
 }
 
 extend type Query {
@@ -12609,6 +12614,7 @@ input CreateTaskInput {
   taskParentId: ID
   createdBy: ID!
   requestId: String!
+  workspaceId: ID!
 }
 
 input UpdateTaskInput {
@@ -12649,6 +12655,7 @@ input UpdateTaskInput {
   addTaskFileIDs: [ID!]
   removeTaskFileIDs: [ID!]
   requestId: String!
+  workspaceId: ID!
 }
 
 input DeleteTaskInput {
@@ -12674,9 +12681,9 @@ type UndeleteTaskPayload {
 }
 
 extend type Subscription {
-  taskUpdated(id: ID!, requestId: String!): Task!
-  taskDeleted(id: ID!, requestId: String!): DeleteTaskPayload!
-  taskUndeleted(id: ID!, requestId: String!): UndeleteTaskPayload!
+  taskUpdated(workspaceId: ID!, requestId: String!): Task!
+  taskDeleted(workspaceId: ID!, requestId: String!): DeleteTaskPayload!
+  taskUndeleted(workspaceId: ID!, requestId: String!): UndeleteTaskPayload!
 }
 
 extend type Query {
@@ -12815,6 +12822,7 @@ input CreateTaskFeedInput {
   teammateId: ID!
   description: EditorDescriptionInput!
   requestId: String!
+  workspaceId: ID!
 }
 
 input UpdateTaskFeedInput {
@@ -12825,17 +12833,19 @@ input UpdateTaskFeedInput {
   isFirst: Boolean
   isPinned: Boolean
   requestId: String!
+  workspaceId: ID!
 }
 
 input DeleteTaskFeedInput {
   id: ID!
   requestId: String!
+  workspaceId: ID!
 }
 
 extend type Subscription {
-  taskFeedUpdated(id: ID!, requestId: String!): TaskFeed!
-  taskFeedCreated(taskId: ID!, requestId: String!): TaskFeed!
-  taskFeedDeleted(taskId: ID!, requestId: String!): TaskFeed!
+  taskFeedUpdated(workspaceId: ID!, requestId: String!): TaskFeed!
+  taskFeedCreated(workspaceId: ID!, requestId: String!): TaskFeed!
+  taskFeedDeleted(workspaceId: ID!, requestId: String!): TaskFeed!
 }
 
 extend type Query {
@@ -12872,6 +12882,7 @@ input CreateTaskFeedLikeInput {
   teammateId: ID!
   taskFeedId: ID!
   requestId: String!
+  workspaceId: ID!
 }
 
 input UpdateTaskFeedLikeInput {
@@ -12880,16 +12891,18 @@ input UpdateTaskFeedLikeInput {
   teammateId: ID
   taskFeedId: ID
   requestId: String!
+  workspaceId: ID!
 }
 
 input DeleteTaskFeedLikeInput {
   id: ID!
   requestId: String!
+  workspaceId: ID!
 }
 
 extend type Subscription {
-  taskFeedLikeCreated(taskFeedId: ID!, requestId: String!): TaskFeedLike!
-  taskFeedLikeDeleted(taskFeedId: ID!, requestId: String!): TaskFeedLike!
+  taskFeedLikeCreated(workspaceId: ID!, requestId: String!): TaskFeedLike!
+  taskFeedLikeDeleted(workspaceId: ID!, requestId: String!): TaskFeedLike!
 }
 
 extend type Query {
@@ -12994,15 +13007,17 @@ input UpdateTaskLikeInput {
   taskId: ID
   teammateId: ID
   requestId: String!
+  workspaceId: ID!
 }
 input DeleteTaskLikeInput {
   id: ID!
   requestId: String!
+  workspaceId: ID!
 }
 
 extend type Subscription {
-  taskLikeCreated(taskId: ID!, requestId: String!): TaskLike!
-  taskLikeDeleted(taskId: ID!, requestId: String!): TaskLike!
+  taskLikeCreated(workspaceId: ID!, requestId: String!): TaskLike!
+  taskLikeDeleted(workspaceId: ID!, requestId: String!): TaskLike!
 }
 
 extend type Query {
@@ -13339,10 +13354,11 @@ input UpdateTeammateTaskInput {
   teammateId: ID
   teammateTaskSectionId: ID
   requestId: String!
+  workspaceId: ID!
 }
 
 extend type Subscription {
-  teammateTaskUpdated(id: ID!, requestId: String!): TeammateTask!
+  teammateTaskUpdated(workspaceId: ID!, requestId: String!): TeammateTask!
   teammateTaskCreated(teammateId: ID!, workspaceId: ID!, requestId: String!): TeammateTask!
   teammateTaskDeleted(teammateId: ID!, workspaceId: ID!, requestId: String!): TeammateTask!
 }
@@ -13506,7 +13522,7 @@ input UpdateTeammateTaskSectionInput {
 }
 
 extend type Subscription {
-  teammateTaskSectionUpdated(id: ID!, requestId: String!): TeammateTaskSection!
+  teammateTaskSectionUpdated(workspaceId: ID!, requestId: String!): TeammateTaskSection!
   teammateTaskSectionCreated(teammateId: ID!, workspaceId: ID!, requestId: String!): TeammateTaskSection!
 }
 
@@ -18020,14 +18036,14 @@ func (ec *executionContext) field_Subscription_projectTaskCreated_args(ctx conte
 	var err error
 	args := map[string]interface{}{}
 	var arg0 ulid.ID
-	if tmp, ok := rawArgs["projectId"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("projectId"))
+	if tmp, ok := rawArgs["workspaceId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceId"))
 		arg0, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["projectId"] = arg0
+	args["workspaceId"] = arg0
 	var arg1 string
 	if tmp, ok := rawArgs["requestId"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("requestId"))
@@ -18068,14 +18084,14 @@ func (ec *executionContext) field_Subscription_projectTaskSectionCreated_args(ct
 	var err error
 	args := map[string]interface{}{}
 	var arg0 ulid.ID
-	if tmp, ok := rawArgs["projectId"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("projectId"))
+	if tmp, ok := rawArgs["workspaceId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceId"))
 		arg0, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["projectId"] = arg0
+	args["workspaceId"] = arg0
 	var arg1 string
 	if tmp, ok := rawArgs["requestId"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("requestId"))
@@ -18092,14 +18108,14 @@ func (ec *executionContext) field_Subscription_projectTaskSectionUpdated_args(ct
 	var err error
 	args := map[string]interface{}{}
 	var arg0 ulid.ID
-	if tmp, ok := rawArgs["id"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+	if tmp, ok := rawArgs["workspaceId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceId"))
 		arg0, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["id"] = arg0
+	args["workspaceId"] = arg0
 	var arg1 string
 	if tmp, ok := rawArgs["requestId"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("requestId"))
@@ -18164,14 +18180,14 @@ func (ec *executionContext) field_Subscription_projectUpdated_args(ctx context.C
 	var err error
 	args := map[string]interface{}{}
 	var arg0 ulid.ID
-	if tmp, ok := rawArgs["id"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+	if tmp, ok := rawArgs["workspaceId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceId"))
 		arg0, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["id"] = arg0
+	args["workspaceId"] = arg0
 	var arg1 string
 	if tmp, ok := rawArgs["requestId"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("requestId"))
@@ -18236,14 +18252,14 @@ func (ec *executionContext) field_Subscription_taskDeleted_args(ctx context.Cont
 	var err error
 	args := map[string]interface{}{}
 	var arg0 ulid.ID
-	if tmp, ok := rawArgs["id"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+	if tmp, ok := rawArgs["workspaceId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceId"))
 		arg0, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["id"] = arg0
+	args["workspaceId"] = arg0
 	var arg1 string
 	if tmp, ok := rawArgs["requestId"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("requestId"))
@@ -18260,14 +18276,14 @@ func (ec *executionContext) field_Subscription_taskFeedCreated_args(ctx context.
 	var err error
 	args := map[string]interface{}{}
 	var arg0 ulid.ID
-	if tmp, ok := rawArgs["taskId"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskId"))
+	if tmp, ok := rawArgs["workspaceId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceId"))
 		arg0, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["taskId"] = arg0
+	args["workspaceId"] = arg0
 	var arg1 string
 	if tmp, ok := rawArgs["requestId"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("requestId"))
@@ -18284,14 +18300,14 @@ func (ec *executionContext) field_Subscription_taskFeedDeleted_args(ctx context.
 	var err error
 	args := map[string]interface{}{}
 	var arg0 ulid.ID
-	if tmp, ok := rawArgs["taskId"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskId"))
+	if tmp, ok := rawArgs["workspaceId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceId"))
 		arg0, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["taskId"] = arg0
+	args["workspaceId"] = arg0
 	var arg1 string
 	if tmp, ok := rawArgs["requestId"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("requestId"))
@@ -18308,14 +18324,14 @@ func (ec *executionContext) field_Subscription_taskFeedLikeCreated_args(ctx cont
 	var err error
 	args := map[string]interface{}{}
 	var arg0 ulid.ID
-	if tmp, ok := rawArgs["taskFeedId"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskFeedId"))
+	if tmp, ok := rawArgs["workspaceId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceId"))
 		arg0, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["taskFeedId"] = arg0
+	args["workspaceId"] = arg0
 	var arg1 string
 	if tmp, ok := rawArgs["requestId"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("requestId"))
@@ -18332,14 +18348,14 @@ func (ec *executionContext) field_Subscription_taskFeedLikeDeleted_args(ctx cont
 	var err error
 	args := map[string]interface{}{}
 	var arg0 ulid.ID
-	if tmp, ok := rawArgs["taskFeedId"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskFeedId"))
+	if tmp, ok := rawArgs["workspaceId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceId"))
 		arg0, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["taskFeedId"] = arg0
+	args["workspaceId"] = arg0
 	var arg1 string
 	if tmp, ok := rawArgs["requestId"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("requestId"))
@@ -18356,14 +18372,14 @@ func (ec *executionContext) field_Subscription_taskFeedUpdated_args(ctx context.
 	var err error
 	args := map[string]interface{}{}
 	var arg0 ulid.ID
-	if tmp, ok := rawArgs["id"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+	if tmp, ok := rawArgs["workspaceId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceId"))
 		arg0, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["id"] = arg0
+	args["workspaceId"] = arg0
 	var arg1 string
 	if tmp, ok := rawArgs["requestId"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("requestId"))
@@ -18404,14 +18420,14 @@ func (ec *executionContext) field_Subscription_taskLikeCreated_args(ctx context.
 	var err error
 	args := map[string]interface{}{}
 	var arg0 ulid.ID
-	if tmp, ok := rawArgs["taskId"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskId"))
+	if tmp, ok := rawArgs["workspaceId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceId"))
 		arg0, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["taskId"] = arg0
+	args["workspaceId"] = arg0
 	var arg1 string
 	if tmp, ok := rawArgs["requestId"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("requestId"))
@@ -18428,14 +18444,14 @@ func (ec *executionContext) field_Subscription_taskLikeDeleted_args(ctx context.
 	var err error
 	args := map[string]interface{}{}
 	var arg0 ulid.ID
-	if tmp, ok := rawArgs["taskId"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskId"))
+	if tmp, ok := rawArgs["workspaceId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceId"))
 		arg0, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["taskId"] = arg0
+	args["workspaceId"] = arg0
 	var arg1 string
 	if tmp, ok := rawArgs["requestId"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("requestId"))
@@ -18500,14 +18516,14 @@ func (ec *executionContext) field_Subscription_taskUndeleted_args(ctx context.Co
 	var err error
 	args := map[string]interface{}{}
 	var arg0 ulid.ID
-	if tmp, ok := rawArgs["id"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+	if tmp, ok := rawArgs["workspaceId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceId"))
 		arg0, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["id"] = arg0
+	args["workspaceId"] = arg0
 	var arg1 string
 	if tmp, ok := rawArgs["requestId"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("requestId"))
@@ -18524,14 +18540,14 @@ func (ec *executionContext) field_Subscription_taskUpdated_args(ctx context.Cont
 	var err error
 	args := map[string]interface{}{}
 	var arg0 ulid.ID
-	if tmp, ok := rawArgs["id"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+	if tmp, ok := rawArgs["workspaceId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceId"))
 		arg0, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["id"] = arg0
+	args["workspaceId"] = arg0
 	var arg1 string
 	if tmp, ok := rawArgs["requestId"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("requestId"))
@@ -18695,14 +18711,14 @@ func (ec *executionContext) field_Subscription_teammateTaskSectionUpdated_args(c
 	var err error
 	args := map[string]interface{}{}
 	var arg0 ulid.ID
-	if tmp, ok := rawArgs["id"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+	if tmp, ok := rawArgs["workspaceId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceId"))
 		arg0, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["id"] = arg0
+	args["workspaceId"] = arg0
 	var arg1 string
 	if tmp, ok := rawArgs["requestId"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("requestId"))
@@ -18743,14 +18759,14 @@ func (ec *executionContext) field_Subscription_teammateTaskUpdated_args(ctx cont
 	var err error
 	args := map[string]interface{}{}
 	var arg0 ulid.ID
-	if tmp, ok := rawArgs["id"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+	if tmp, ok := rawArgs["workspaceId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceId"))
 		arg0, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["id"] = arg0
+	args["workspaceId"] = arg0
 	var arg1 string
 	if tmp, ok := rawArgs["requestId"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("requestId"))
@@ -33417,7 +33433,7 @@ func (ec *executionContext) _Subscription_projectUpdated(ctx context.Context, fi
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Subscription().ProjectUpdated(rctx, args["id"].(ulid.ID), args["requestId"].(string))
+		return ec.resolvers.Subscription().ProjectUpdated(rctx, args["workspaceId"].(ulid.ID), args["requestId"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -33677,7 +33693,7 @@ func (ec *executionContext) _Subscription_projectTaskCreated(ctx context.Context
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Subscription().ProjectTaskCreated(rctx, args["projectId"].(ulid.ID), args["requestId"].(string))
+		return ec.resolvers.Subscription().ProjectTaskCreated(rctx, args["workspaceId"].(ulid.ID), args["requestId"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -33833,7 +33849,7 @@ func (ec *executionContext) _Subscription_projectTaskSectionUpdated(ctx context.
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Subscription().ProjectTaskSectionUpdated(rctx, args["id"].(ulid.ID), args["requestId"].(string))
+		return ec.resolvers.Subscription().ProjectTaskSectionUpdated(rctx, args["workspaceId"].(ulid.ID), args["requestId"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -33885,7 +33901,7 @@ func (ec *executionContext) _Subscription_projectTaskSectionCreated(ctx context.
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Subscription().ProjectTaskSectionCreated(rctx, args["projectId"].(ulid.ID), args["requestId"].(string))
+		return ec.resolvers.Subscription().ProjectTaskSectionCreated(rctx, args["workspaceId"].(ulid.ID), args["requestId"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -34041,7 +34057,7 @@ func (ec *executionContext) _Subscription_taskUpdated(ctx context.Context, field
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Subscription().TaskUpdated(rctx, args["id"].(ulid.ID), args["requestId"].(string))
+		return ec.resolvers.Subscription().TaskUpdated(rctx, args["workspaceId"].(ulid.ID), args["requestId"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -34093,7 +34109,7 @@ func (ec *executionContext) _Subscription_taskDeleted(ctx context.Context, field
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Subscription().TaskDeleted(rctx, args["id"].(ulid.ID), args["requestId"].(string))
+		return ec.resolvers.Subscription().TaskDeleted(rctx, args["workspaceId"].(ulid.ID), args["requestId"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -34145,7 +34161,7 @@ func (ec *executionContext) _Subscription_taskUndeleted(ctx context.Context, fie
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Subscription().TaskUndeleted(rctx, args["id"].(ulid.ID), args["requestId"].(string))
+		return ec.resolvers.Subscription().TaskUndeleted(rctx, args["workspaceId"].(ulid.ID), args["requestId"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -34249,7 +34265,7 @@ func (ec *executionContext) _Subscription_taskFeedUpdated(ctx context.Context, f
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Subscription().TaskFeedUpdated(rctx, args["id"].(ulid.ID), args["requestId"].(string))
+		return ec.resolvers.Subscription().TaskFeedUpdated(rctx, args["workspaceId"].(ulid.ID), args["requestId"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -34301,7 +34317,7 @@ func (ec *executionContext) _Subscription_taskFeedCreated(ctx context.Context, f
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Subscription().TaskFeedCreated(rctx, args["taskId"].(ulid.ID), args["requestId"].(string))
+		return ec.resolvers.Subscription().TaskFeedCreated(rctx, args["workspaceId"].(ulid.ID), args["requestId"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -34353,7 +34369,7 @@ func (ec *executionContext) _Subscription_taskFeedDeleted(ctx context.Context, f
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Subscription().TaskFeedDeleted(rctx, args["taskId"].(ulid.ID), args["requestId"].(string))
+		return ec.resolvers.Subscription().TaskFeedDeleted(rctx, args["workspaceId"].(ulid.ID), args["requestId"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -34405,7 +34421,7 @@ func (ec *executionContext) _Subscription_taskFeedLikeCreated(ctx context.Contex
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Subscription().TaskFeedLikeCreated(rctx, args["taskFeedId"].(ulid.ID), args["requestId"].(string))
+		return ec.resolvers.Subscription().TaskFeedLikeCreated(rctx, args["workspaceId"].(ulid.ID), args["requestId"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -34457,7 +34473,7 @@ func (ec *executionContext) _Subscription_taskFeedLikeDeleted(ctx context.Contex
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Subscription().TaskFeedLikeDeleted(rctx, args["taskFeedId"].(ulid.ID), args["requestId"].(string))
+		return ec.resolvers.Subscription().TaskFeedLikeDeleted(rctx, args["workspaceId"].(ulid.ID), args["requestId"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -34561,7 +34577,7 @@ func (ec *executionContext) _Subscription_taskLikeCreated(ctx context.Context, f
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Subscription().TaskLikeCreated(rctx, args["taskId"].(ulid.ID), args["requestId"].(string))
+		return ec.resolvers.Subscription().TaskLikeCreated(rctx, args["workspaceId"].(ulid.ID), args["requestId"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -34613,7 +34629,7 @@ func (ec *executionContext) _Subscription_taskLikeDeleted(ctx context.Context, f
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Subscription().TaskLikeDeleted(rctx, args["taskId"].(ulid.ID), args["requestId"].(string))
+		return ec.resolvers.Subscription().TaskLikeDeleted(rctx, args["workspaceId"].(ulid.ID), args["requestId"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -34821,7 +34837,7 @@ func (ec *executionContext) _Subscription_teammateTaskUpdated(ctx context.Contex
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Subscription().TeammateTaskUpdated(rctx, args["id"].(ulid.ID), args["requestId"].(string))
+		return ec.resolvers.Subscription().TeammateTaskUpdated(rctx, args["workspaceId"].(ulid.ID), args["requestId"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -35081,7 +35097,7 @@ func (ec *executionContext) _Subscription_teammateTaskSectionUpdated(ctx context
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Subscription().TeammateTaskSectionUpdated(rctx, args["id"].(ulid.ID), args["requestId"].(string))
+		return ec.resolvers.Subscription().TeammateTaskSectionUpdated(rctx, args["workspaceId"].(ulid.ID), args["requestId"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -48494,6 +48510,14 @@ func (ec *executionContext) unmarshalInputCreateProjectTaskInput(ctx context.Con
 			if err != nil {
 				return it, err
 			}
+		case "workspaceId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceId"))
+			it.WorkspaceID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		case "requestId":
 			var err error
 
@@ -48577,6 +48601,14 @@ func (ec *executionContext) unmarshalInputCreateProjectTaskSectionInput(ctx cont
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("requestId"))
 			it.RequestID, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "workspaceId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceId"))
+			it.WorkspaceID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -48799,6 +48831,14 @@ func (ec *executionContext) unmarshalInputCreateTaskFeedInput(ctx context.Contex
 			if err != nil {
 				return it, err
 			}
+		case "workspaceId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceId"))
+			it.WorkspaceID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		}
 	}
 
@@ -48843,6 +48883,14 @@ func (ec *executionContext) unmarshalInputCreateTaskFeedLikeInput(ctx context.Co
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("requestId"))
 			it.RequestID, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "workspaceId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceId"))
+			it.WorkspaceID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -48985,6 +49033,14 @@ func (ec *executionContext) unmarshalInputCreateTaskInput(ctx context.Context, o
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("requestId"))
 			it.RequestID, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "workspaceId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceId"))
+			it.WorkspaceID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -49828,6 +49884,14 @@ func (ec *executionContext) unmarshalInputDeleteTaskFeedInput(ctx context.Contex
 			if err != nil {
 				return it, err
 			}
+		case "workspaceId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceId"))
+			it.WorkspaceID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		}
 	}
 
@@ -49856,6 +49920,14 @@ func (ec *executionContext) unmarshalInputDeleteTaskFeedLikeInput(ctx context.Co
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("requestId"))
 			it.RequestID, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "workspaceId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceId"))
+			it.WorkspaceID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -49926,6 +49998,14 @@ func (ec *executionContext) unmarshalInputDeleteTaskLikeInput(ctx context.Contex
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("requestId"))
 			it.RequestID, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "workspaceId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceId"))
+			it.WorkspaceID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -71325,6 +71405,14 @@ func (ec *executionContext) unmarshalInputUpdateProjectInput(ctx context.Context
 			if err != nil {
 				return it, err
 			}
+		case "workspaceId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceId"))
+			it.WorkspaceID, err = ec.unmarshalNID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		}
 	}
 
@@ -71447,6 +71535,14 @@ func (ec *executionContext) unmarshalInputUpdateProjectTaskInput(ctx context.Con
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
 			it.ID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "workspaceId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceId"))
+			it.WorkspaceID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -71573,6 +71669,14 @@ func (ec *executionContext) unmarshalInputUpdateProjectTaskSectionInput(ctx cont
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("requestId"))
 			it.RequestID, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "workspaceId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceId"))
+			it.WorkspaceID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -71835,6 +71939,14 @@ func (ec *executionContext) unmarshalInputUpdateTaskFeedInput(ctx context.Contex
 			if err != nil {
 				return it, err
 			}
+		case "workspaceId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceId"))
+			it.WorkspaceID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		}
 	}
 
@@ -71887,6 +71999,14 @@ func (ec *executionContext) unmarshalInputUpdateTaskFeedLikeInput(ctx context.Co
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("requestId"))
 			it.RequestID, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "workspaceId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceId"))
+			it.WorkspaceID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -72288,6 +72408,14 @@ func (ec *executionContext) unmarshalInputUpdateTaskInput(ctx context.Context, o
 			if err != nil {
 				return it, err
 			}
+		case "workspaceId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceId"))
+			it.WorkspaceID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		}
 	}
 
@@ -72332,6 +72460,14 @@ func (ec *executionContext) unmarshalInputUpdateTaskLikeInput(ctx context.Contex
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("requestId"))
 			it.RequestID, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "workspaceId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceId"))
+			it.WorkspaceID, err = ec.unmarshalNID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -72692,6 +72828,14 @@ func (ec *executionContext) unmarshalInputUpdateTeammateTaskInput(ctx context.Co
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("requestId"))
 			it.RequestID, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "workspaceId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceId"))
+			it.WorkspaceID, err = ec.unmarshalNID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
