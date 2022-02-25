@@ -33,10 +33,11 @@ input UpdateProjectTaskInput {
   taskId: ID
   projectId: ID
   projectTaskSectionId: ID
+  requestId: String!
 }
 
 extend type Subscription {
-  projectTaskUpdated(id: ID!, requestId: String!): ProjectTask!
+  projectTaskUpdated(workspaceId: ID!, requestId: String!): ProjectTask!
   projectTaskCreated(workspaceId: ID!, requestId: String!): ProjectTask!
 }
 

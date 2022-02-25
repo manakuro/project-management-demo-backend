@@ -39,7 +39,7 @@ func (r *mutationResolver) UpdateTeammateTask(ctx context.Context, input ent.Upd
 
 	go func() {
 		for _, u := range r.subscriptions.TeammateTaskUpdated {
-			if u.WorkspaceID == *input.WorkspaceID && u.RequestID != input.RequestID {
+			if u.TeammateID == t.TeammateID && u.WorkspaceID == t.WorkspaceID && u.RequestID != input.RequestID {
 				u.Ch <- t
 			}
 		}
@@ -91,12 +91,13 @@ func (r *queryResolver) TasksDueSoon(ctx context.Context, workspaceID ulid.ID, t
 	return ts, nil
 }
 
-func (r *subscriptionResolver) TeammateTaskUpdated(ctx context.Context, workspaceID ulid.ID, requestID string) (<-chan *ent.TeammateTask, error) {
+func (r *subscriptionResolver) TeammateTaskUpdated(ctx context.Context, teammateID ulid.ID, workspaceID ulid.ID, requestID string) (<-chan *ent.TeammateTask, error) {
 	key := subscription.NewKey()
 	ch := make(chan *ent.TeammateTask, 1)
 
 	r.mutex.Lock()
 	r.subscriptions.TeammateTaskUpdated[key] = subscription.TeammateTaskUpdated{
+		TeammateID:  teammateID,
 		WorkspaceID: workspaceID,
 		RequestID:   requestID,
 		Ch:          ch,
