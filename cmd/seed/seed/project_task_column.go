@@ -32,7 +32,7 @@ func ProjectTaskColumn(ctx context.Context, client *ent.Client) {
 			Order:        2,
 		},
 		{
-			TaskColumnID: seedutil.GetTaskColumnByName(ctx, client, taskColumnFeed.projects.Name).ID,
+			TaskColumnID: seedutil.GetTaskColumnByName(ctx, client, taskColumnFeed.dueDate.Name).ID,
 			ProjectID:    seedutil.GetProjectByName(ctx, client, projectFeed.appDevelopment.name).ID,
 			Width:        "120px",
 			Disabled:     false,
@@ -40,7 +40,7 @@ func ProjectTaskColumn(ctx context.Context, client *ent.Client) {
 			Order:        3,
 		},
 		{
-			TaskColumnID: seedutil.GetTaskColumnByName(ctx, client, taskColumnFeed.dueDate.Name).ID,
+			TaskColumnID: seedutil.GetTaskColumnByName(ctx, client, taskColumnFeed.tags.Name).ID,
 			ProjectID:    seedutil.GetProjectByName(ctx, client, projectFeed.appDevelopment.name).ID,
 			Width:        "120px",
 			Disabled:     false,
@@ -48,20 +48,12 @@ func ProjectTaskColumn(ctx context.Context, client *ent.Client) {
 			Order:        4,
 		},
 		{
-			TaskColumnID: seedutil.GetTaskColumnByName(ctx, client, taskColumnFeed.tags.Name).ID,
-			ProjectID:    seedutil.GetProjectByName(ctx, client, projectFeed.appDevelopment.name).ID,
-			Width:        "120px",
-			Disabled:     false,
-			Customizable: true,
-			Order:        5,
-		},
-		{
 			TaskColumnID: seedutil.GetTaskColumnByName(ctx, client, taskColumnFeed.priority.Name).ID,
 			ProjectID:    seedutil.GetProjectByName(ctx, client, projectFeed.appDevelopment.name).ID,
 			Width:        "120px",
 			Disabled:     false,
 			Customizable: true,
-			Order:        6,
+			Order:        5,
 		},
 		{
 			TaskColumnID: seedutil.GetTaskColumnByName(ctx, client, taskColumnFeed.taskName.Name).ID,
@@ -80,7 +72,7 @@ func ProjectTaskColumn(ctx context.Context, client *ent.Client) {
 			Order:        2,
 		},
 		{
-			TaskColumnID: seedutil.GetTaskColumnByName(ctx, client, taskColumnFeed.projects.Name).ID,
+			TaskColumnID: seedutil.GetTaskColumnByName(ctx, client, taskColumnFeed.dueDate.Name).ID,
 			ProjectID:    seedutil.GetProjectByName(ctx, client, projectFeed.marketing.name).ID,
 			Width:        "120px",
 			Disabled:     false,
@@ -88,7 +80,7 @@ func ProjectTaskColumn(ctx context.Context, client *ent.Client) {
 			Order:        3,
 		},
 		{
-			TaskColumnID: seedutil.GetTaskColumnByName(ctx, client, taskColumnFeed.dueDate.Name).ID,
+			TaskColumnID: seedutil.GetTaskColumnByName(ctx, client, taskColumnFeed.tags.Name).ID,
 			ProjectID:    seedutil.GetProjectByName(ctx, client, projectFeed.marketing.name).ID,
 			Width:        "120px",
 			Disabled:     false,
@@ -96,20 +88,12 @@ func ProjectTaskColumn(ctx context.Context, client *ent.Client) {
 			Order:        4,
 		},
 		{
-			TaskColumnID: seedutil.GetTaskColumnByName(ctx, client, taskColumnFeed.tags.Name).ID,
-			ProjectID:    seedutil.GetProjectByName(ctx, client, projectFeed.marketing.name).ID,
-			Width:        "120px",
-			Disabled:     false,
-			Customizable: true,
-			Order:        5,
-		},
-		{
 			TaskColumnID: seedutil.GetTaskColumnByName(ctx, client, taskColumnFeed.priority.Name).ID,
 			ProjectID:    seedutil.GetProjectByName(ctx, client, projectFeed.marketing.name).ID,
 			Width:        "120px",
 			Disabled:     false,
 			Customizable: true,
-			Order:        6,
+			Order:        5,
 		},
 		{
 			TaskColumnID: seedutil.GetTaskColumnByName(ctx, client, taskColumnFeed.taskName.Name).ID,
@@ -128,7 +112,7 @@ func ProjectTaskColumn(ctx context.Context, client *ent.Client) {
 			Order:        2,
 		},
 		{
-			TaskColumnID: seedutil.GetTaskColumnByName(ctx, client, taskColumnFeed.projects.Name).ID,
+			TaskColumnID: seedutil.GetTaskColumnByName(ctx, client, taskColumnFeed.dueDate.Name).ID,
 			ProjectID:    seedutil.GetProjectByName(ctx, client, projectFeed.customerSuccess.name).ID,
 			Width:        "120px",
 			Disabled:     false,
@@ -136,7 +120,7 @@ func ProjectTaskColumn(ctx context.Context, client *ent.Client) {
 			Order:        3,
 		},
 		{
-			TaskColumnID: seedutil.GetTaskColumnByName(ctx, client, taskColumnFeed.dueDate.Name).ID,
+			TaskColumnID: seedutil.GetTaskColumnByName(ctx, client, taskColumnFeed.tags.Name).ID,
 			ProjectID:    seedutil.GetProjectByName(ctx, client, projectFeed.customerSuccess.name).ID,
 			Width:        "120px",
 			Disabled:     false,
@@ -144,20 +128,12 @@ func ProjectTaskColumn(ctx context.Context, client *ent.Client) {
 			Order:        4,
 		},
 		{
-			TaskColumnID: seedutil.GetTaskColumnByName(ctx, client, taskColumnFeed.tags.Name).ID,
-			ProjectID:    seedutil.GetProjectByName(ctx, client, projectFeed.customerSuccess.name).ID,
-			Width:        "120px",
-			Disabled:     false,
-			Customizable: true,
-			Order:        5,
-		},
-		{
 			TaskColumnID: seedutil.GetTaskColumnByName(ctx, client, taskColumnFeed.priority.Name).ID,
 			ProjectID:    seedutil.GetProjectByName(ctx, client, projectFeed.customerSuccess.name).ID,
 			Width:        "120px",
 			Disabled:     false,
 			Customizable: true,
-			Order:        6,
+			Order:        5,
 		},
 	}
 	bulk := make([]*ent.ProjectTaskColumnCreate, len(ts))

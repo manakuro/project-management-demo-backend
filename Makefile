@@ -54,4 +54,4 @@ setup_e2e_db:
 e2e:
 	go1.16.9 test ./test/e2e/...
 
-.PHONY: install setup_db migrate_up migrate_down start migrate_schema schema_description ent_generate setup_test_db setup_e2e_db e2e test_repository feed
+.PHONY: install setup_db migrate_up migrate_down start migrate_schema schema_description ent_generate setup_test_db setup_e2e_db e2e test_repository seed
