@@ -106,6 +106,17 @@ type UndeleteTaskPayload {
   deletedTasks: [DeletedTask!]!
 }
 
+input DeleteAllTaskInput {
+  taskIds: [ID!]!
+  workspaceId: ID!
+  requestId: String!
+}
+type DeleteAllTaskPayload {
+  teammateTasks: [TeammateTask!]!
+  projectTasks: [ProjectTask!]!
+  deletedTasks: [DeletedTask!]!
+}
+
 extend type Subscription {
   taskUpdated(workspaceId: ID!, requestId: String!): Task!
   taskDeleted(workspaceId: ID!, requestId: String!): DeleteTaskPayload!
@@ -121,5 +132,6 @@ extend type Mutation {
   createTask(input: CreateTaskInput!): Task!
   updateTask(input: UpdateTaskInput!): Task!
   deleteTask(input: DeleteTaskInput!): DeleteTaskPayload!
+  deleteAllTask(input: DeleteAllTaskInput!): DeleteAllTaskPayload!
   undeleteTask(input: UndeleteTaskInput!): UndeleteTaskPayload!
 }

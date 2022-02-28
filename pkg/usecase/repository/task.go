@@ -13,5 +13,6 @@ type Task interface {
 	Create(ctx context.Context, input model.CreateTaskInput) (*model.Task, error)
 	Update(ctx context.Context, input model.UpdateTaskInput) (*model.Task, error)
 	Delete(ctx context.Context, input model.DeleteTaskInput) (*model.DeleteTaskPayload, error)
+	DeleteAll(ctx context.Context, input model.DeleteAllTaskInput) (*model.DeleteAllTaskPayload, error)
 	Undelete(ctx context.Context, input model.UndeleteTaskInput) (*model.UndeleteTaskPayload, error)
 }

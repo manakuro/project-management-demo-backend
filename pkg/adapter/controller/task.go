@@ -14,6 +14,7 @@ type Task interface {
 	Create(ctx context.Context, input model.CreateTaskInput) (*model.Task, error)
 	Update(ctx context.Context, input model.UpdateTaskInput) (*model.Task, error)
 	Delete(ctx context.Context, input model.DeleteTaskInput) (*model.DeleteTaskPayload, error)
+	DeleteAll(ctx context.Context, input model.DeleteAllTaskInput) (*model.DeleteAllTaskPayload, error)
 	Undelete(ctx context.Context, input model.UndeleteTaskInput) (*model.UndeleteTaskPayload, error)
 }
 
@@ -50,6 +51,10 @@ func (c *taskController) Update(ctx context.Context, input model.UpdateTaskInput
 
 func (c *taskController) Delete(ctx context.Context, input model.DeleteTaskInput) (*model.DeleteTaskPayload, error) {
 	return c.taskUsecase.Delete(ctx, input)
+}
+
+func (c *taskController) DeleteAll(ctx context.Context, input model.DeleteAllTaskInput) (*model.DeleteAllTaskPayload, error) {
+	return c.taskUsecase.DeleteAll(ctx, input)
 }
 
 func (c *taskController) Undelete(ctx context.Context, input model.UndeleteTaskInput) (*model.UndeleteTaskPayload, error) {

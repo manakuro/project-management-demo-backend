@@ -57,6 +57,15 @@ func (r *mutationResolver) DeleteTask(ctx context.Context, input model.DeleteTas
 	return p, nil
 }
 
+func (r *mutationResolver) DeleteAllTask(ctx context.Context, input model.DeleteAllTaskInput) (*model.DeleteAllTaskPayload, error) {
+	p, err := r.controller.Task.DeleteAll(ctx, input)
+	if err != nil {
+		return nil, handler.HandleGraphQLError(ctx, err)
+	}
+
+	return p, nil
+}
+
 func (r *mutationResolver) UndeleteTask(ctx context.Context, input model.UndeleteTaskInput) (*model.UndeleteTaskPayload, error) {
 	p, err := r.controller.Task.Undelete(ctx, input)
 	if err != nil {
