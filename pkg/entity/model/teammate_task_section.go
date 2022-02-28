@@ -24,3 +24,15 @@ type UpdateTeammateTaskSectionInput = ent.UpdateTeammateTaskSectionInput
 type DeleteTeammateTaskSectionInput struct {
 	ID ulid.ID
 }
+
+// DeleteTeammateTaskSectionAndKeepTasksInput represents a mutation input.
+type DeleteTeammateTaskSectionAndKeepTasksInput struct {
+	ID        ulid.ID
+	RequestID string
+}
+
+// DeleteTeammateTaskSectionAndKeepTasksPayload represents a mutation payload.
+type DeleteTeammateTaskSectionAndKeepTasksPayload struct {
+	TeammateTaskSection *TeammateTaskSection
+	TeammateTaskIDs     []ulid.ID
+}
