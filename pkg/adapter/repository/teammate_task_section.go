@@ -113,7 +113,10 @@ func (r *teammateTaskSectionRepository) Delete(ctx context.Context, input model.
 func (r *teammateTaskSectionRepository) DeleteTeammateTaskSectionAndKeepTasks(ctx context.Context, input model.DeleteTeammateTaskSectionAndKeepTasksInput) (*model.DeleteTeammateTaskSectionAndKeepTasksPayload, error) {
 	client := WithTransactionalMutation(ctx)
 
-	deleted, err := client.TeammateTaskSection.Query().Where(teammatetasksection.IDEQ(input.ID)).Only(ctx)
+	deleted, err := client.TeammateTaskSection.
+		Query().
+		Where(teammatetasksection.IDEQ(input.ID)).
+		Only(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
 			return nil, model.NewNotFoundError(err, input)
@@ -173,6 +176,64 @@ func (r *teammateTaskSectionRepository) DeleteTeammateTaskSectionAndKeepTasks(ct
 	}
 
 	return &model.DeleteTeammateTaskSectionAndKeepTasksPayload{
+		TeammateTaskSection: deleted,
+		TeammateTaskIDs:     teammateTaskIDs,
+	}, nil
+}
+
+func (r *teammateTaskSectionRepository) DeleteTeammateTaskSectionAndDeleteTasks(ctx context.Context, input model.DeleteTeammateTaskSectionAndDeleteTasksInput) (*model.DeleteTeammateTaskSectionAndDeleteTasksPayload, error) {
+	client := WithTransactionalMutation(ctx)
+
+	deleted, err := client.TeammateTaskSection.
+		Query().
+		Where(teammatetasksection.IDEQ(input.ID)).
+		Only(ctx)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return nil, model.NewNotFoundError(err, input)
+		}
+		return nil, model.NewDBError(err)
+	}
+
+	teammateTasks, err := client.TeammateTask.
+		Query().
+		Where(teammatetask.TeammateTaskSectionIDEQ(deleted.ID)).
+		All(ctx)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return nil, model.NewNotFoundError(err, deleted.ID)
+		}
+		return nil, model.NewDBError(err)
+	}
+
+	err = client.TeammateTaskSection.DeleteOneID(deleted.ID).Exec(ctx)
+	if err != nil {
+		return nil, model.NewDBError(err)
+	}
+
+	taskIDs := make([]ulid.ID, len(teammateTasks))
+	for i, t := range teammateTasks {
+		taskIDs[i] = t.TaskID
+	}
+
+	taskRepo := taskRepository{
+		client: r.client,
+	}
+	_, err = taskRepo.DeleteAll(ctx, model.DeleteAllTaskInput{
+		TaskIDs:     taskIDs,
+		WorkspaceID: input.WorkspaceID,
+		RequestID:   "",
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	teammateTaskIDs := make([]ulid.ID, len(teammateTasks))
+	for i, t := range teammateTasks {
+		teammateTaskIDs[i] = t.ID
+	}
+
+	return &model.DeleteTeammateTaskSectionAndDeleteTasksPayload{
 		TeammateTaskSection: deleted,
 		TeammateTaskIDs:     teammateTaskIDs,
 	}, nil

@@ -27,12 +27,26 @@ type DeleteTeammateTaskSectionInput struct {
 
 // DeleteTeammateTaskSectionAndKeepTasksInput represents a mutation input.
 type DeleteTeammateTaskSectionAndKeepTasksInput struct {
-	ID        ulid.ID
-	RequestID string
+	ID          ulid.ID
+	WorkspaceID ulid.ID
+	RequestID   string
 }
 
 // DeleteTeammateTaskSectionAndKeepTasksPayload represents a mutation payload.
 type DeleteTeammateTaskSectionAndKeepTasksPayload struct {
+	TeammateTaskSection *TeammateTaskSection
+	TeammateTaskIDs     []ulid.ID
+}
+
+// DeleteTeammateTaskSectionAndDeleteTasksInput represents a mutation input.
+type DeleteTeammateTaskSectionAndDeleteTasksInput struct {
+	ID          ulid.ID
+	WorkspaceID ulid.ID
+	RequestID   string
+}
+
+// DeleteTeammateTaskSectionAndDeleteTasksPayload represents a mutation payload.
+type DeleteTeammateTaskSectionAndDeleteTasksPayload struct {
 	TeammateTaskSection *TeammateTaskSection
 	TeammateTaskIDs     []ulid.ID
 }
