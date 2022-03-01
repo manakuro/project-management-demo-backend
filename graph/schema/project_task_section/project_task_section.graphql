@@ -37,6 +37,17 @@ input DeleteProjectTaskSectionInput {
   requestId: String!
 }
 
+input DeleteProjectTaskSectionAndKeepTasksInput {
+  id: ID!
+  workspaceId: ID!
+  requestId: String!
+}
+
+type DeleteProjectTaskSectionAndKeepTasksPayload {
+  projectTaskSection: ProjectTaskSection!
+  projectTaskIds: [ID!]!
+}
+
 extend type Subscription {
   projectTaskSectionUpdated(workspaceId: ID!, requestId: String!): ProjectTaskSection!
   projectTaskSectionCreated(workspaceId: ID!, requestId: String!): ProjectTaskSection!
@@ -51,4 +62,5 @@ extend type Mutation {
   createProjectTaskSection(input: CreateProjectTaskSectionInput!): ProjectTaskSection!
   updateProjectTaskSection(input: UpdateProjectTaskSectionInput!): ProjectTaskSection!
   deleteProjectTaskSection(input: DeleteProjectTaskSectionInput!): ProjectTaskSection!
+  deleteProjectTaskSectionAndKeepTasks(input: DeleteProjectTaskSectionAndKeepTasksInput!): DeleteProjectTaskSectionAndKeepTasksPayload!
 }
