@@ -94,7 +94,13 @@ func (r *teammateTaskSectionRepository) Update(ctx context.Context, input model.
 }
 
 func (r *teammateTaskSectionRepository) Delete(ctx context.Context, input model.DeleteTeammateTaskSectionInput) (*model.TeammateTaskSection, error) {
-	deleted, err := r.client.TeammateTaskSection.Query().Where(teammatetasksection.IDEQ(input.ID)).Only(ctx)
+	client := WithTransactionalMutation(ctx)
+
+	deleted, err := client.TeammateTaskSection.
+		Query().
+		Where(teammatetasksection.IDEQ(input.ID)).
+		Only(ctx)
+
 	if err != nil {
 		if ent.IsNotFound(err) {
 			return nil, model.NewNotFoundError(err, input.ID)
@@ -102,7 +108,7 @@ func (r *teammateTaskSectionRepository) Delete(ctx context.Context, input model.
 		return nil, model.NewDBError(err)
 	}
 
-	err = r.client.TeammateTaskSection.DeleteOneID(input.ID).Exec(ctx)
+	err = client.TeammateTaskSection.DeleteOneID(input.ID).Exec(ctx)
 	if err != nil {
 		return nil, model.NewDBError(err)
 	}
@@ -216,6 +222,7 @@ func (r *teammateTaskSectionRepository) DeleteTeammateTaskSectionAndDeleteTasks(
 		taskIDs[i] = t.TaskID
 	}
 
+	// TODO: Task repository can be called in usecase/usecase package
 	taskRepo := taskRepository{
 		client: r.client,
 	}
