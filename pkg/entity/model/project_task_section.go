@@ -50,5 +50,5 @@ type DeleteProjectTaskSectionAndDeleteTasksInput struct {
 // DeleteProjectTaskSectionAndDeleteTasksPayload represents a mutation payload.
 type DeleteProjectTaskSectionAndDeleteTasksPayload struct {
 	ProjectTaskSection *ProjectTaskSection
-	TeammateTaskIDs    []ulid.ID
+	ProjectTaskIDs     []ulid.ID
 }

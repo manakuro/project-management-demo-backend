@@ -66,6 +66,15 @@ func (r *mutationResolver) DeleteProjectTaskSectionAndKeepTasks(ctx context.Cont
 	return p, nil
 }
 
+func (r *mutationResolver) DeleteProjectTaskSectionAndDeleteTasks(ctx context.Context, input model.DeleteProjectTaskSectionAndDeleteTasksInput) (*model.DeleteProjectTaskSectionAndDeleteTasksPayload, error) {
+	p, err := r.controller.ProjectTaskSection.DeleteProjectTaskSectionAndDeleteTasks(ctx, input)
+	if err != nil {
+		return nil, handler.HandleGraphQLError(ctx, err)
+	}
+
+	return p, nil
+}
+
 func (r *projectTaskSectionResolver) CreatedAt(ctx context.Context, obj *ent.ProjectTaskSection) (string, error) {
 	return datetime.FormatDate(obj.CreatedAt), nil
 }
