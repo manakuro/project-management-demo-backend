@@ -34,6 +34,27 @@ input UpdateTeammateTaskSectionInput {
   requestId: String!
 }
 
+input DeleteTeammateTaskSectionAndKeepTasksInput {
+  id: ID!
+  workspaceId: ID!
+  requestId: String!
+}
+
+type DeleteTeammateTaskSectionAndKeepTasksPayload {
+  teammateTaskSection: TeammateTaskSection!
+  teammateTaskIds: [ID!]!
+}
+
+input DeleteTeammateTaskSectionAndDeleteTasksInput {
+  id: ID!
+  workspaceId: ID!
+  requestId: String!
+}
+type DeleteTeammateTaskSectionAndDeleteTasksPayload {
+  teammateTaskSection: TeammateTaskSection!
+  teammateTaskIds: [ID!]!
+}
+
 extend type Subscription {
   teammateTaskSectionUpdated(workspaceId: ID!, requestId: String!): TeammateTaskSection!
   teammateTaskSectionCreated(teammateId: ID!, workspaceId: ID!, requestId: String!): TeammateTaskSection!
@@ -47,4 +68,6 @@ extend type Query {
 extend type Mutation {
   createTeammateTaskSection(input: CreateTeammateTaskSectionInput!): TeammateTaskSection!
   updateTeammateTaskSection(input: UpdateTeammateTaskSectionInput!): TeammateTaskSection!
+  deleteTeammateTaskSectionAndKeepTasks(input: DeleteTeammateTaskSectionAndKeepTasksInput!): DeleteTeammateTaskSectionAndKeepTasksPayload!
+  deleteTeammateTaskSectionAndDeleteTasks(input: DeleteTeammateTaskSectionAndDeleteTasksInput!): DeleteTeammateTaskSectionAndDeleteTasksPayload!
 }

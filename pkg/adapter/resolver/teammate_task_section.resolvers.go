@@ -9,6 +9,7 @@ import (
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/graph/generated"
 	"project-management-demo-backend/pkg/adapter/handler"
+	"project-management-demo-backend/pkg/entity/model"
 	"project-management-demo-backend/pkg/util/datetime"
 	"project-management-demo-backend/pkg/util/subscription"
 )
@@ -45,6 +46,24 @@ func (r *mutationResolver) UpdateTeammateTaskSection(ctx context.Context, input 
 	}()
 
 	return t, nil
+}
+
+func (r *mutationResolver) DeleteTeammateTaskSectionAndKeepTasks(ctx context.Context, input model.DeleteTeammateTaskSectionAndKeepTasksInput) (*model.DeleteTeammateTaskSectionAndKeepTasksPayload, error) {
+	p, err := r.controller.TeammateTaskSection.DeleteTeammateTaskSectionAndKeepTasks(ctx, input)
+	if err != nil {
+		return nil, handler.HandleGraphQLError(ctx, err)
+	}
+
+	return p, nil
+}
+
+func (r *mutationResolver) DeleteTeammateTaskSectionAndDeleteTasks(ctx context.Context, input model.DeleteTeammateTaskSectionAndDeleteTasksInput) (*model.DeleteTeammateTaskSectionAndDeleteTasksPayload, error) {
+	p, err := r.controller.TeammateTaskSection.DeleteTeammateTaskSectionAndDeleteTasks(ctx, input)
+	if err != nil {
+		return nil, handler.HandleGraphQLError(ctx, err)
+	}
+
+	return p, nil
 }
 
 func (r *queryResolver) TeammateTaskSection(ctx context.Context, where *ent.TeammateTaskSectionWhereInput) (*ent.TeammateTaskSection, error) {
