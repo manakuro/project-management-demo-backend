@@ -92,7 +92,9 @@ func (r *projectTaskSectionRepository) Update(ctx context.Context, input model.U
 }
 
 func (r *projectTaskSectionRepository) Delete(ctx context.Context, input model.DeleteProjectTaskSectionInput) (*model.ProjectTaskSection, error) {
-	deleted, err := r.client.ProjectTaskSection.Query().Where(projecttasksection.IDEQ(input.ID)).Only(ctx)
+	client := WithTransactionalMutation(ctx)
+
+	deleted, err := client.ProjectTaskSection.Query().Where(projecttasksection.IDEQ(input.ID)).Only(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
 			return nil, model.NewNotFoundError(err, input.ID)
@@ -100,7 +102,7 @@ func (r *projectTaskSectionRepository) Delete(ctx context.Context, input model.D
 		return nil, model.NewDBError(err)
 	}
 
-	err = r.client.ProjectTaskSection.DeleteOneID(input.ID).Exec(ctx)
+	err = client.ProjectTaskSection.DeleteOneID(input.ID).Exec(ctx)
 	if err != nil {
 		return nil, model.NewDBError(err)
 	}

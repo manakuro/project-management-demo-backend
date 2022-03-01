@@ -22,5 +22,33 @@ type UpdateProjectTaskSectionInput = ent.UpdateProjectTaskSectionInput
 
 // DeleteProjectTaskSectionInput represents a mutation input.
 type DeleteProjectTaskSectionInput struct {
-	ID ulid.ID
+	ID          ulid.ID
+	WorkspaceID ulid.ID
+	RequestID   string
+}
+
+// DeleteProjectTaskSectionAndKeepTasksInput represents a mutation input.
+type DeleteProjectTaskSectionAndKeepTasksInput struct {
+	ID          ulid.ID
+	WorkspaceID ulid.ID
+	RequestID   string
+}
+
+// DeleteProjectTaskSectionAndKeepTasksPayload represents a mutation payload.
+type DeleteProjectTaskSectionAndKeepTasksPayload struct {
+	ProjectTaskSection *ProjectTaskSection
+	ProjectTaskIDs     []ulid.ID
+}
+
+// DeleteProjectTaskSectionAndDeleteTasksInput represents a mutation input.
+type DeleteProjectTaskSectionAndDeleteTasksInput struct {
+	ID          ulid.ID
+	WorkspaceID ulid.ID
+	RequestID   string
+}
+
+// DeleteProjectTaskSectionAndDeleteTasksPayload represents a mutation payload.
+type DeleteProjectTaskSectionAndDeleteTasksPayload struct {
+	ProjectTaskSection *ProjectTaskSection
+	TeammateTaskIDs    []ulid.ID
 }
