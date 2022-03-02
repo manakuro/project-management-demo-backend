@@ -9,6 +9,7 @@ import (
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/graph/generated"
 	"project-management-demo-backend/pkg/adapter/handler"
+	"project-management-demo-backend/pkg/entity/model"
 	"project-management-demo-backend/pkg/util/datetime"
 	"project-management-demo-backend/pkg/util/subscription"
 )
@@ -43,6 +44,33 @@ func (r *mutationResolver) UpdateProjectTaskSection(ctx context.Context, input e
 			}
 		}
 	}()
+
+	return p, nil
+}
+
+func (r *mutationResolver) DeleteProjectTaskSection(ctx context.Context, input model.DeleteProjectTaskSectionInput) (*ent.ProjectTaskSection, error) {
+	p, err := r.controller.ProjectTaskSection.Delete(ctx, input)
+	if err != nil {
+		return nil, handler.HandleGraphQLError(ctx, err)
+	}
+
+	return p, nil
+}
+
+func (r *mutationResolver) DeleteProjectTaskSectionAndKeepTasks(ctx context.Context, input model.DeleteProjectTaskSectionAndKeepTasksInput) (*model.DeleteProjectTaskSectionAndKeepTasksPayload, error) {
+	p, err := r.controller.ProjectTaskSection.DeleteProjectTaskSectionAndKeepTasks(ctx, input)
+	if err != nil {
+		return nil, handler.HandleGraphQLError(ctx, err)
+	}
+
+	return p, nil
+}
+
+func (r *mutationResolver) DeleteProjectTaskSectionAndDeleteTasks(ctx context.Context, input model.DeleteProjectTaskSectionAndDeleteTasksInput) (*model.DeleteProjectTaskSectionAndDeleteTasksPayload, error) {
+	p, err := r.controller.ProjectTaskSection.DeleteProjectTaskSectionAndDeleteTasks(ctx, input)
+	if err != nil {
+		return nil, handler.HandleGraphQLError(ctx, err)
+	}
 
 	return p, nil
 }
