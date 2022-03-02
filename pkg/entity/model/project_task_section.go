@@ -36,8 +36,9 @@ type DeleteProjectTaskSectionAndKeepTasksInput struct {
 
 // DeleteProjectTaskSectionAndKeepTasksPayload represents a mutation payload.
 type DeleteProjectTaskSectionAndKeepTasksPayload struct {
-	ProjectTaskSection *ProjectTaskSection
-	ProjectTaskIDs     []ulid.ID
+	ProjectTaskSection     *ProjectTaskSection
+	KeptProjectTaskSection *ProjectTaskSection
+	ProjectTaskIDs         []ulid.ID
 }
 
 // DeleteProjectTaskSectionAndDeleteTasksInput represents a mutation input.

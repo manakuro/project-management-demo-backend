@@ -175,8 +175,9 @@ func (r *projectTaskSectionRepository) DeleteProjectTaskSectionAndKeepTasks(ctx 
 	}
 
 	return &model.DeleteProjectTaskSectionAndKeepTasksPayload{
-		ProjectTaskSection: deleted,
-		ProjectTaskIDs:     projectTaskIDs,
+		ProjectTaskSection:     deleted,
+		KeptProjectTaskSection: projectTaskSection,
+		ProjectTaskIDs:         projectTaskIDs,
 	}, nil
 }
 

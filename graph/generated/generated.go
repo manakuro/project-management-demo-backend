@@ -130,8 +130,9 @@ type ComplexityRoot struct {
 	}
 
 	DeleteProjectTaskSectionAndKeepTasksPayload struct {
-		ProjectTaskIDs     func(childComplexity int) int
-		ProjectTaskSection func(childComplexity int) int
+		KeptProjectTaskSection func(childComplexity int) int
+		ProjectTaskIDs         func(childComplexity int) int
+		ProjectTaskSection     func(childComplexity int) int
 	}
 
 	DeleteTaskPayload struct {
@@ -1777,6 +1778,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.DeleteProjectTaskSectionAndDeleteTasksPayload.ProjectTaskSection(childComplexity), true
+
+	case "DeleteProjectTaskSectionAndKeepTasksPayload.keptProjectTaskSection":
+		if e.complexity.DeleteProjectTaskSectionAndKeepTasksPayload.KeptProjectTaskSection == nil {
+			break
+		}
+
+		return e.complexity.DeleteProjectTaskSectionAndKeepTasksPayload.KeptProjectTaskSection(childComplexity), true
 
 	case "DeleteProjectTaskSectionAndKeepTasksPayload.projectTaskIds":
 		if e.complexity.DeleteProjectTaskSectionAndKeepTasksPayload.ProjectTaskIDs == nil {
@@ -12666,6 +12674,7 @@ input DeleteProjectTaskSectionAndKeepTasksInput {
 
 type DeleteProjectTaskSectionAndKeepTasksPayload {
   projectTaskSection: ProjectTaskSection!
+  keptProjectTaskSection: ProjectTaskSection!
   projectTaskIds: [ID!]!
 }
 
@@ -19900,6 +19909,41 @@ func (ec *executionContext) _DeleteProjectTaskSectionAndKeepTasksPayload_project
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
 		return obj.ProjectTaskSection, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.ProjectTaskSection)
+	fc.Result = res
+	return ec.marshalNProjectTaskSection2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTaskSection(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _DeleteProjectTaskSectionAndKeepTasksPayload_keptProjectTaskSection(ctx context.Context, field graphql.CollectedField, obj *model.DeleteProjectTaskSectionAndKeepTasksPayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "DeleteProjectTaskSectionAndKeepTasksPayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.KeptProjectTaskSection, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -76317,6 +76361,11 @@ func (ec *executionContext) _DeleteProjectTaskSectionAndKeepTasksPayload(ctx con
 			out.Values[i] = graphql.MarshalString("DeleteProjectTaskSectionAndKeepTasksPayload")
 		case "projectTaskSection":
 			out.Values[i] = ec._DeleteProjectTaskSectionAndKeepTasksPayload_projectTaskSection(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "keptProjectTaskSection":
+			out.Values[i] = ec._DeleteProjectTaskSectionAndKeepTasksPayload_keptProjectTaskSection(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}

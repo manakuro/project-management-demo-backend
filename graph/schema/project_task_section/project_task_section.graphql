@@ -45,6 +45,7 @@ input DeleteProjectTaskSectionAndKeepTasksInput {
 
 type DeleteProjectTaskSectionAndKeepTasksPayload {
   projectTaskSection: ProjectTaskSection!
+  keptProjectTaskSection: ProjectTaskSection!
   projectTaskIds: [ID!]!
 }
 
