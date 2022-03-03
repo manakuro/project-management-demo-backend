@@ -184,6 +184,14 @@ type TeammateTaskSectionDeleted struct {
 	Ch          chan *model.TeammateTaskSection
 }
 
+// TeammateTaskSectionDeletedAndKeepTasks is a channel for subscription.
+type TeammateTaskSectionDeletedAndKeepTasks struct {
+	TeammateID  model.ID
+	WorkspaceID model.ID
+	RequestID   string
+	Ch          chan *model.DeleteTeammateTaskSectionAndKeepTasksPayload
+}
+
 // ProjectTaskSectionUpdated is a channel for subscription.
 type ProjectTaskSectionUpdated struct {
 	WorkspaceID model.ID
@@ -350,54 +358,55 @@ type DeletedTaskCreated struct {
 
 // Subscriptions hold an id and a channel of subscription.
 type Subscriptions struct {
-	ColorUpdated                  map[string]ColorUpdated
-	DeletedTaskCreated            map[string]DeletedTaskCreated
-	DeletedTaskUpdated            map[string]DeletedTaskUpdated
-	FavoriteProjectCreated        map[string]FavoriteProjectCreated
-	FavoriteProjectIDsUpdated     map[string]FavoriteProjectIDsUpdated
-	FavoriteWorkspaceIDsUpdated   map[string]FavoriteWorkspaceIDsUpdated
-	IconUpdated                   map[string]IconUpdated
-	MeUpdated                     map[string]MeUpdated
-	ProjectBaseColorUpdated       map[string]ProjectBaseColorUpdated
-	ProjectIconUpdated            map[string]ProjectIconUpdated
-	ProjectLightColorUpdated      map[string]ProjectLightColorUpdated
-	ProjectTaskColumnUpdated      map[string]ProjectTaskColumnUpdated
-	ProjectTaskCreated            map[string]ProjectTaskCreated
-	ProjectTaskListStatusUpdated  map[string]ProjectTaskListStatusUpdated
-	ProjectTaskSectionCreated     map[string]ProjectTaskSectionCreated
-	ProjectTaskSectionUpdated     map[string]ProjectTaskSectionUpdated
-	ProjectTaskUpdated            map[string]ProjectTaskUpdated
-	ProjectTeammateUpdated        map[string]ProjectTeammateUpdated
-	ProjectUpdated                map[string]ProjectUpdated
-	TagUpdated                    map[string]TagUpdated
-	TaskCollaboratorUpdated       map[string]TaskCollaboratorUpdated
-	TaskColumnUpdated             map[string]TaskColumnUpdated
-	TaskFeedCreated               map[string]TaskFeedCreated
-	TaskFeedDeleted               map[string]TaskFeedDeleted
-	TaskFeedLikeCreated           map[string]TaskFeedLikeCreated
-	TaskFeedLikeDeleted           map[string]TaskFeedLikeDeleted
-	TaskFeedUpdated               map[string]TaskFeedUpdated
-	TaskFileUpdated               map[string]TaskFileUpdated
-	TaskLikesCreated              map[string]TaskLikesCreated
-	TaskLikesDeleted              map[string]TaskLikesDeleted
-	TaskSectionUpdated            map[string]TaskSectionUpdated
-	TaskTagUpdated                map[string]TaskTagUpdated
-	TaskUpdated                   map[string]TaskUpdated
-	TaskDeleted                   map[string]TaskDeleted
-	TaskUndeleted                 map[string]TaskUndeleted
-	TeammateTaskColumnUpdated     map[string]TeammateTaskColumnUpdated
-	TeammateTaskCreated           map[string]TeammateTaskCreated
-	TeammateTaskDeleted           map[string]TeammateTaskDeleted
-	TeammateTaskListStatusUpdated map[string]TeammateTaskListStatusUpdated
-	TeammateTaskSectionCreated    map[string]TeammateTaskSectionCreated
-	TeammateTaskSectionDeleted    map[string]TeammateTaskSectionDeleted
-	TeammateTaskSectionUpdated    map[string]TeammateTaskSectionUpdated
-	TeammateTaskTabStatusUpdated  map[string]TeammateTaskTabStatusUpdated
-	TeammateTaskUpdated           map[string]TeammateTaskUpdated
-	TeammateUpdated               map[string]TeammateUpdated
-	TestUserUpdated               map[string]TestUserUpdated
-	WorkspaceTeammateUpdated      map[string]WorkspaceTeammateUpdated
-	WorkspaceUpdated              map[string]WorkspaceUpdated
+	ColorUpdated                           map[string]ColorUpdated
+	DeletedTaskCreated                     map[string]DeletedTaskCreated
+	DeletedTaskUpdated                     map[string]DeletedTaskUpdated
+	FavoriteProjectCreated                 map[string]FavoriteProjectCreated
+	FavoriteProjectIDsUpdated              map[string]FavoriteProjectIDsUpdated
+	FavoriteWorkspaceIDsUpdated            map[string]FavoriteWorkspaceIDsUpdated
+	IconUpdated                            map[string]IconUpdated
+	MeUpdated                              map[string]MeUpdated
+	ProjectBaseColorUpdated                map[string]ProjectBaseColorUpdated
+	ProjectIconUpdated                     map[string]ProjectIconUpdated
+	ProjectLightColorUpdated               map[string]ProjectLightColorUpdated
+	ProjectTaskColumnUpdated               map[string]ProjectTaskColumnUpdated
+	ProjectTaskCreated                     map[string]ProjectTaskCreated
+	ProjectTaskListStatusUpdated           map[string]ProjectTaskListStatusUpdated
+	ProjectTaskSectionCreated              map[string]ProjectTaskSectionCreated
+	ProjectTaskSectionUpdated              map[string]ProjectTaskSectionUpdated
+	ProjectTaskUpdated                     map[string]ProjectTaskUpdated
+	ProjectTeammateUpdated                 map[string]ProjectTeammateUpdated
+	ProjectUpdated                         map[string]ProjectUpdated
+	TagUpdated                             map[string]TagUpdated
+	TaskCollaboratorUpdated                map[string]TaskCollaboratorUpdated
+	TaskColumnUpdated                      map[string]TaskColumnUpdated
+	TaskFeedCreated                        map[string]TaskFeedCreated
+	TaskFeedDeleted                        map[string]TaskFeedDeleted
+	TaskFeedLikeCreated                    map[string]TaskFeedLikeCreated
+	TaskFeedLikeDeleted                    map[string]TaskFeedLikeDeleted
+	TaskFeedUpdated                        map[string]TaskFeedUpdated
+	TaskFileUpdated                        map[string]TaskFileUpdated
+	TaskLikesCreated                       map[string]TaskLikesCreated
+	TaskLikesDeleted                       map[string]TaskLikesDeleted
+	TaskSectionUpdated                     map[string]TaskSectionUpdated
+	TaskTagUpdated                         map[string]TaskTagUpdated
+	TaskUpdated                            map[string]TaskUpdated
+	TaskDeleted                            map[string]TaskDeleted
+	TaskUndeleted                          map[string]TaskUndeleted
+	TeammateTaskColumnUpdated              map[string]TeammateTaskColumnUpdated
+	TeammateTaskCreated                    map[string]TeammateTaskCreated
+	TeammateTaskDeleted                    map[string]TeammateTaskDeleted
+	TeammateTaskListStatusUpdated          map[string]TeammateTaskListStatusUpdated
+	TeammateTaskSectionCreated             map[string]TeammateTaskSectionCreated
+	TeammateTaskSectionDeleted             map[string]TeammateTaskSectionDeleted
+	TeammateTaskSectionDeletedAndKeepTasks map[string]TeammateTaskSectionDeletedAndKeepTasks
+	TeammateTaskSectionUpdated             map[string]TeammateTaskSectionUpdated
+	TeammateTaskTabStatusUpdated           map[string]TeammateTaskTabStatusUpdated
+	TeammateTaskUpdated                    map[string]TeammateTaskUpdated
+	TeammateUpdated                        map[string]TeammateUpdated
+	TestUserUpdated                        map[string]TestUserUpdated
+	WorkspaceTeammateUpdated               map[string]WorkspaceTeammateUpdated
+	WorkspaceUpdated                       map[string]WorkspaceUpdated
 }
 
 // NewKey generates a random hex string with length of 16.

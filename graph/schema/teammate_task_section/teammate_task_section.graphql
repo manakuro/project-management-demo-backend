@@ -48,6 +48,7 @@ input DeleteTeammateTaskSectionAndKeepTasksInput {
 
 type DeleteTeammateTaskSectionAndKeepTasksPayload {
   teammateTaskSection: TeammateTaskSection!
+  keptTeammateTaskSection: TeammateTaskSection!
   teammateTaskIds: [ID!]!
 }
 
@@ -65,6 +66,7 @@ extend type Subscription {
   teammateTaskSectionUpdated(teammateId: ID!, workspaceId: ID!, requestId: String!): TeammateTaskSection!
   teammateTaskSectionCreated(teammateId: ID!, workspaceId: ID!, requestId: String!): TeammateTaskSection!
   teammateTaskSectionDeleted(teammateId: ID!, workspaceId: ID!, requestId: String!): TeammateTaskSection!
+  teammateTaskSectionDeletedAndKeepTasks(teammateId: ID!, workspaceId: ID!, requestId: String!): DeleteTeammateTaskSectionAndKeepTasksPayload!
 }
 
 extend type Query {

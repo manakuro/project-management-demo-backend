@@ -182,8 +182,9 @@ func (r *teammateTaskSectionRepository) DeleteTeammateTaskSectionAndKeepTasks(ct
 	}
 
 	return &model.DeleteTeammateTaskSectionAndKeepTasksPayload{
-		TeammateTaskSection: deleted,
-		TeammateTaskIDs:     teammateTaskIDs,
+		TeammateTaskSection:     deleted,
+		KeptTeammateTaskSection: teammateTaskSection,
+		TeammateTaskIDs:         teammateTaskIDs,
 	}, nil
 }
 
