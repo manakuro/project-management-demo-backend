@@ -214,6 +214,27 @@ type ProjectTaskSectionCreated struct {
 	Ch          chan *model.ProjectTaskSection
 }
 
+// ProjectTaskSectionDeleted is a channel for subscription.
+type ProjectTaskSectionDeleted struct {
+	WorkspaceID model.ID
+	RequestID   string
+	Ch          chan *model.ProjectTaskSection
+}
+
+// ProjectTaskSectionDeletedAndKeepTasks is a channel for subscription.
+type ProjectTaskSectionDeletedAndKeepTasks struct {
+	WorkspaceID model.ID
+	RequestID   string
+	Ch          chan *model.DeleteProjectTaskSectionAndKeepTasksPayload
+}
+
+// ProjectTaskSectionDeletedAndDeleteTasks is a channel for subscription.
+type ProjectTaskSectionDeletedAndDeleteTasks struct {
+	WorkspaceID model.ID
+	RequestID   string
+	Ch          chan *model.DeleteProjectTaskSectionAndDeleteTasksPayload
+}
+
 // TaskUpdated is a channel for subscription.
 type TaskUpdated struct {
 	WorkspaceID model.ID
@@ -382,6 +403,9 @@ type Subscriptions struct {
 	ProjectTaskListStatusUpdated             map[string]ProjectTaskListStatusUpdated
 	ProjectTaskSectionCreated                map[string]ProjectTaskSectionCreated
 	ProjectTaskSectionUpdated                map[string]ProjectTaskSectionUpdated
+	ProjectTaskSectionDeleted                map[string]ProjectTaskSectionDeleted
+	ProjectTaskSectionDeletedAndKeepTasks    map[string]ProjectTaskSectionDeletedAndKeepTasks
+	ProjectTaskSectionDeletedAndDeleteTasks  map[string]ProjectTaskSectionDeletedAndDeleteTasks
 	ProjectTaskUpdated                       map[string]ProjectTaskUpdated
 	ProjectTeammateUpdated                   map[string]ProjectTeammateUpdated
 	ProjectUpdated                           map[string]ProjectUpdated
