@@ -54,6 +54,14 @@ func (r *mutationResolver) DeleteProjectTaskSection(ctx context.Context, input m
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
 
+	go func() {
+		for _, d := range r.subscriptions.ProjectTaskSectionDeleted {
+			if d.WorkspaceID == input.WorkspaceID && d.RequestID != input.RequestID {
+				d.Ch <- p
+			}
+		}
+	}()
+
 	return p, nil
 }
 
@@ -138,6 +146,28 @@ func (r *subscriptionResolver) ProjectTaskSectionCreated(ctx context.Context, wo
 		<-ctx.Done()
 		r.mutex.Lock()
 		delete(r.subscriptions.ProjectTaskSectionCreated, key)
+		r.mutex.Unlock()
+	}()
+
+	return ch, nil
+}
+
+func (r *subscriptionResolver) ProjectTaskSectionDeleted(ctx context.Context, workspaceID ulid.ID, requestID string) (<-chan *ent.ProjectTaskSection, error) {
+	key := subscription.NewKey()
+	ch := make(chan *ent.ProjectTaskSection, 1)
+
+	r.mutex.Lock()
+	r.subscriptions.ProjectTaskSectionDeleted[key] = subscription.ProjectTaskSectionDeleted{
+		WorkspaceID: workspaceID,
+		RequestID:   requestID,
+		Ch:          ch,
+	}
+	r.mutex.Unlock()
+
+	go func() {
+		<-ctx.Done()
+		r.mutex.Lock()
+		delete(r.subscriptions.ProjectTaskSectionDeleted, key)
 		r.mutex.Unlock()
 	}()
 

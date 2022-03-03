@@ -63,6 +63,7 @@ type DeleteProjectTaskSectionAndDeleteTasksPayload {
 extend type Subscription {
   projectTaskSectionUpdated(workspaceId: ID!, requestId: String!): ProjectTaskSection!
   projectTaskSectionCreated(workspaceId: ID!, requestId: String!): ProjectTaskSection!
+  projectTaskSectionDeleted(workspaceId: ID!, requestId: String!): ProjectTaskSection!
 }
 
 extend type Query {
