@@ -53,3 +53,10 @@ type DeleteTeammateTaskSectionAndDeleteTasksPayload struct {
 	TeammateTaskSection *TeammateTaskSection
 	TeammateTaskIDs     []ulid.ID
 }
+
+// UndeleteTeammateTaskSectionInput represents a mutation input.
+type UndeleteTeammateTaskSectionInput struct {
+	ID          ulid.ID
+	WorkspaceID ulid.ID
+	RequestID   string
+}

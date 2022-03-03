@@ -66,7 +66,7 @@ func (r *mutationResolver) DeleteTeammateTaskSection(ctx context.Context, input 
 }
 
 func (r *mutationResolver) DeleteTeammateTaskSectionAndKeepTasks(ctx context.Context, input model.DeleteTeammateTaskSectionAndKeepTasksInput) (*model.DeleteTeammateTaskSectionAndKeepTasksPayload, error) {
-	p, err := r.controller.TeammateTaskSection.DeleteTeammateTaskSectionAndKeepTasks(ctx, input)
+	p, err := r.controller.TeammateTaskSection.DeleteAndKeepTasks(ctx, input)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
@@ -83,7 +83,7 @@ func (r *mutationResolver) DeleteTeammateTaskSectionAndKeepTasks(ctx context.Con
 }
 
 func (r *mutationResolver) DeleteTeammateTaskSectionAndDeleteTasks(ctx context.Context, input model.DeleteTeammateTaskSectionAndDeleteTasksInput) (*model.DeleteTeammateTaskSectionAndDeleteTasksPayload, error) {
-	p, err := r.controller.TeammateTaskSection.DeleteTeammateTaskSectionAndDeleteTasks(ctx, input)
+	p, err := r.controller.TeammateTaskSection.DeleteAndDeleteTasks(ctx, input)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}

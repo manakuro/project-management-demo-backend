@@ -14,8 +14,8 @@ type TeammateTaskSection interface {
 	Create(ctx context.Context, input model.CreateTeammateTaskSectionInput) (*model.TeammateTaskSection, error)
 	Update(ctx context.Context, input model.UpdateTeammateTaskSectionInput) (*model.TeammateTaskSection, error)
 	Delete(ctx context.Context, input model.DeleteTeammateTaskSectionInput) (*model.TeammateTaskSection, error)
-	DeleteTeammateTaskSectionAndKeepTasks(ctx context.Context, input model.DeleteTeammateTaskSectionAndKeepTasksInput) (*model.DeleteTeammateTaskSectionAndKeepTasksPayload, error)
-	DeleteTeammateTaskSectionAndDeleteTasks(ctx context.Context, input model.DeleteTeammateTaskSectionAndDeleteTasksInput) (*model.DeleteTeammateTaskSectionAndDeleteTasksPayload, error)
+	DeleteAndKeepTasks(ctx context.Context, input model.DeleteTeammateTaskSectionAndKeepTasksInput) (*model.DeleteTeammateTaskSectionAndKeepTasksPayload, error)
+	DeleteAndDeleteTasks(ctx context.Context, input model.DeleteTeammateTaskSectionAndDeleteTasksInput) (*model.DeleteTeammateTaskSectionAndDeleteTasksPayload, error)
 }
 
 type teammateTaskSectionController struct {
@@ -53,10 +53,10 @@ func (c *teammateTaskSectionController) Delete(ctx context.Context, input model.
 	return c.teammateTaskSectionUsecase.Delete(ctx, input)
 }
 
-func (c *teammateTaskSectionController) DeleteTeammateTaskSectionAndKeepTasks(ctx context.Context, input model.DeleteTeammateTaskSectionAndKeepTasksInput) (*model.DeleteTeammateTaskSectionAndKeepTasksPayload, error) {
-	return c.teammateTaskSectionUsecase.DeleteTeammateTaskSectionAndKeepTasks(ctx, input)
+func (c *teammateTaskSectionController) DeleteAndKeepTasks(ctx context.Context, input model.DeleteTeammateTaskSectionAndKeepTasksInput) (*model.DeleteTeammateTaskSectionAndKeepTasksPayload, error) {
+	return c.teammateTaskSectionUsecase.DeleteAndKeepTasks(ctx, input)
 }
 
-func (c *teammateTaskSectionController) DeleteTeammateTaskSectionAndDeleteTasks(ctx context.Context, input model.DeleteTeammateTaskSectionAndDeleteTasksInput) (*model.DeleteTeammateTaskSectionAndDeleteTasksPayload, error) {
-	return c.teammateTaskSectionUsecase.DeleteTeammateTaskSectionAndDeleteTasks(ctx, input)
+func (c *teammateTaskSectionController) DeleteAndDeleteTasks(ctx context.Context, input model.DeleteTeammateTaskSectionAndDeleteTasksInput) (*model.DeleteTeammateTaskSectionAndDeleteTasksPayload, error) {
+	return c.teammateTaskSectionUsecase.DeleteAndDeleteTasks(ctx, input)
 }

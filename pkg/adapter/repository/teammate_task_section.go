@@ -116,7 +116,7 @@ func (r *teammateTaskSectionRepository) Delete(ctx context.Context, input model.
 	return deleted, nil
 }
 
-func (r *teammateTaskSectionRepository) DeleteTeammateTaskSectionAndKeepTasks(ctx context.Context, input model.DeleteTeammateTaskSectionAndKeepTasksInput) (*model.DeleteTeammateTaskSectionAndKeepTasksPayload, error) {
+func (r *teammateTaskSectionRepository) DeleteAndKeepTasks(ctx context.Context, input model.DeleteTeammateTaskSectionAndKeepTasksInput) (*model.DeleteTeammateTaskSectionAndKeepTasksPayload, error) {
 	client := WithTransactionalMutation(ctx)
 
 	deleted, err := client.TeammateTaskSection.
@@ -188,7 +188,7 @@ func (r *teammateTaskSectionRepository) DeleteTeammateTaskSectionAndKeepTasks(ct
 	}, nil
 }
 
-func (r *teammateTaskSectionRepository) DeleteTeammateTaskSectionAndDeleteTasks(ctx context.Context, input model.DeleteTeammateTaskSectionAndDeleteTasksInput) (*model.DeleteTeammateTaskSectionAndDeleteTasksPayload, error) {
+func (r *teammateTaskSectionRepository) DeleteAndDeleteTasks(ctx context.Context, input model.DeleteTeammateTaskSectionAndDeleteTasksInput) (*model.DeleteTeammateTaskSectionAndDeleteTasksPayload, error) {
 	client := WithTransactionalMutation(ctx)
 
 	deleted, err := client.TeammateTaskSection.
