@@ -64,6 +64,7 @@ extend type Subscription {
   projectTaskSectionUpdated(workspaceId: ID!, requestId: String!): ProjectTaskSection!
   projectTaskSectionCreated(workspaceId: ID!, requestId: String!): ProjectTaskSection!
   projectTaskSectionDeleted(workspaceId: ID!, requestId: String!): ProjectTaskSection!
+  projectTaskSectionDeletedAndKeepTasks(workspaceId: ID!, requestId: String!): DeleteProjectTaskSectionAndKeepTasksPayload!
 }
 
 extend type Query {
