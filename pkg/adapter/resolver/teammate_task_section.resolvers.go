@@ -39,7 +39,7 @@ func (r *mutationResolver) UpdateTeammateTaskSection(ctx context.Context, input 
 
 	go func() {
 		for _, u := range r.subscriptions.TeammateTaskSectionUpdated {
-			if u.WorkspaceID == *input.WorkspaceID && u.RequestID != input.RequestID {
+			if u.TeammateID == t.TeammateID && u.WorkspaceID == *input.WorkspaceID && u.RequestID != input.RequestID {
 				u.Ch <- t
 			}
 		}
@@ -54,6 +54,14 @@ func (r *mutationResolver) DeleteTeammateTaskSection(ctx context.Context, input 
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
 
+	go func() {
+		for _, d := range r.subscriptions.TeammateTaskSectionDeleted {
+			if d.TeammateID == t.TeammateID && d.WorkspaceID == t.WorkspaceID && d.RequestID != input.RequestID {
+				d.Ch <- t
+			}
+		}
+	}()
+
 	return t, nil
 }
 
@@ -63,6 +71,14 @@ func (r *mutationResolver) DeleteTeammateTaskSectionAndKeepTasks(ctx context.Con
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
 
+	go func() {
+		for _, d := range r.subscriptions.TeammateTaskSectionDeletedAndKeepTasks {
+			if d.TeammateID == p.TeammateTaskSection.TeammateID && d.WorkspaceID == p.TeammateTaskSection.WorkspaceID && d.RequestID != input.RequestID {
+				d.Ch <- p
+			}
+		}
+	}()
+
 	return p, nil
 }
 
@@ -71,6 +87,14 @@ func (r *mutationResolver) DeleteTeammateTaskSectionAndDeleteTasks(ctx context.C
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
+
+	go func() {
+		for _, d := range r.subscriptions.TeammateTaskSectionDeletedAndDeleteTasks {
+			if d.TeammateID == p.TeammateTaskSection.TeammateID && d.WorkspaceID == p.TeammateTaskSection.WorkspaceID && d.RequestID != input.RequestID {
+				d.Ch <- p
+			}
+		}
+	}()
 
 	return p, nil
 }
@@ -92,12 +116,13 @@ func (r *queryResolver) TeammateTaskSections(ctx context.Context, after *ent.Cur
 	return ts, nil
 }
 
-func (r *subscriptionResolver) TeammateTaskSectionUpdated(ctx context.Context, workspaceID ulid.ID, requestID string) (<-chan *ent.TeammateTaskSection, error) {
+func (r *subscriptionResolver) TeammateTaskSectionUpdated(ctx context.Context, teammateID ulid.ID, workspaceID ulid.ID, requestID string) (<-chan *ent.TeammateTaskSection, error) {
 	key := subscription.NewKey()
 	ch := make(chan *ent.TeammateTaskSection, 1)
 
 	r.mutex.Lock()
 	r.subscriptions.TeammateTaskSectionUpdated[key] = subscription.TeammateTaskSectionUpdated{
+		TeammateID:  teammateID,
 		WorkspaceID: workspaceID,
 		RequestID:   requestID,
 		Ch:          ch,
@@ -131,6 +156,75 @@ func (r *subscriptionResolver) TeammateTaskSectionCreated(ctx context.Context, t
 		<-ctx.Done()
 		r.mutex.Lock()
 		delete(r.subscriptions.TeammateTaskSectionCreated, key)
+		r.mutex.Unlock()
+	}()
+
+	return ch, nil
+}
+
+func (r *subscriptionResolver) TeammateTaskSectionDeleted(ctx context.Context, teammateID ulid.ID, workspaceID ulid.ID, requestID string) (<-chan *ent.TeammateTaskSection, error) {
+	key := subscription.NewKey()
+	ch := make(chan *ent.TeammateTaskSection, 1)
+
+	r.mutex.Lock()
+	r.subscriptions.TeammateTaskSectionDeleted[key] = subscription.TeammateTaskSectionDeleted{
+		TeammateID:  teammateID,
+		WorkspaceID: workspaceID,
+		RequestID:   requestID,
+		Ch:          ch,
+	}
+	r.mutex.Unlock()
+
+	go func() {
+		<-ctx.Done()
+		r.mutex.Lock()
+		delete(r.subscriptions.TeammateTaskSectionDeleted, key)
+		r.mutex.Unlock()
+	}()
+
+	return ch, nil
+}
+
+func (r *subscriptionResolver) TeammateTaskSectionDeletedAndKeepTasks(ctx context.Context, teammateID ulid.ID, workspaceID ulid.ID, requestID string) (<-chan *model.DeleteTeammateTaskSectionAndKeepTasksPayload, error) {
+	key := subscription.NewKey()
+	ch := make(chan *model.DeleteTeammateTaskSectionAndKeepTasksPayload, 1)
+
+	r.mutex.Lock()
+	r.subscriptions.TeammateTaskSectionDeletedAndKeepTasks[key] = subscription.TeammateTaskSectionDeletedAndKeepTasks{
+		TeammateID:  teammateID,
+		WorkspaceID: workspaceID,
+		RequestID:   requestID,
+		Ch:          ch,
+	}
+	r.mutex.Unlock()
+
+	go func() {
+		<-ctx.Done()
+		r.mutex.Lock()
+		delete(r.subscriptions.TeammateTaskSectionDeletedAndKeepTasks, key)
+		r.mutex.Unlock()
+	}()
+
+	return ch, nil
+}
+
+func (r *subscriptionResolver) TeammateTaskSectionDeletedAndDeleteTasks(ctx context.Context, teammateID ulid.ID, workspaceID ulid.ID, requestID string) (<-chan *model.DeleteTeammateTaskSectionAndDeleteTasksPayload, error) {
+	key := subscription.NewKey()
+	ch := make(chan *model.DeleteTeammateTaskSectionAndDeleteTasksPayload, 1)
+
+	r.mutex.Lock()
+	r.subscriptions.TeammateTaskSectionDeletedAndDeleteTasks[key] = subscription.TeammateTaskSectionDeletedAndDeleteTasks{
+		TeammateID:  teammateID,
+		WorkspaceID: workspaceID,
+		RequestID:   requestID,
+		Ch:          ch,
+	}
+	r.mutex.Unlock()
+
+	go func() {
+		<-ctx.Done()
+		r.mutex.Lock()
+		delete(r.subscriptions.TeammateTaskSectionDeletedAndDeleteTasks, key)
 		r.mutex.Unlock()
 	}()
 

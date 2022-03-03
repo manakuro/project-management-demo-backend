@@ -36,8 +36,9 @@ type DeleteTeammateTaskSectionAndKeepTasksInput struct {
 
 // DeleteTeammateTaskSectionAndKeepTasksPayload represents a mutation payload.
 type DeleteTeammateTaskSectionAndKeepTasksPayload struct {
-	TeammateTaskSection *TeammateTaskSection
-	TeammateTaskIDs     []ulid.ID
+	TeammateTaskSection     *TeammateTaskSection
+	KeptTeammateTaskSection *TeammateTaskSection
+	TeammateTaskIDs         []ulid.ID
 }
 
 // DeleteTeammateTaskSectionAndDeleteTasksInput represents a mutation input.
