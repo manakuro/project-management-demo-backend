@@ -162,6 +162,7 @@ type ProjectTaskListStatusUpdated struct {
 
 // TeammateTaskSectionUpdated is a channel for subscription.
 type TeammateTaskSectionUpdated struct {
+	TeammateID  model.ID
 	WorkspaceID model.ID
 	RequestID   string
 	Ch          chan *model.TeammateTaskSection
@@ -169,6 +170,14 @@ type TeammateTaskSectionUpdated struct {
 
 // TeammateTaskSectionCreated is a channel for subscription.
 type TeammateTaskSectionCreated struct {
+	TeammateID  model.ID
+	WorkspaceID model.ID
+	RequestID   string
+	Ch          chan *model.TeammateTaskSection
+}
+
+// TeammateTaskSectionDeleted is a channel for subscription.
+type TeammateTaskSectionDeleted struct {
 	TeammateID  model.ID
 	WorkspaceID model.ID
 	RequestID   string
@@ -381,6 +390,7 @@ type Subscriptions struct {
 	TeammateTaskDeleted           map[string]TeammateTaskDeleted
 	TeammateTaskListStatusUpdated map[string]TeammateTaskListStatusUpdated
 	TeammateTaskSectionCreated    map[string]TeammateTaskSectionCreated
+	TeammateTaskSectionDeleted    map[string]TeammateTaskSectionDeleted
 	TeammateTaskSectionUpdated    map[string]TeammateTaskSectionUpdated
 	TeammateTaskTabStatusUpdated  map[string]TeammateTaskTabStatusUpdated
 	TeammateTaskUpdated           map[string]TeammateTaskUpdated
