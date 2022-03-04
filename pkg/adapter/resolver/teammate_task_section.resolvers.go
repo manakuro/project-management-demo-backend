@@ -108,6 +108,15 @@ func (r *mutationResolver) UndeleteTeammateTaskSectionAndKeepTasks(ctx context.C
 	return p, nil
 }
 
+func (r *mutationResolver) UndeleteTeammateTaskSectionAndDeleteTasks(ctx context.Context, input model.UndeleteTeammateTaskSectionAndDeleteTasksInput) (*model.UndeleteTeammateTaskSectionAndDeleteTasksPayload, error) {
+	p, err := r.controller.TeammateTaskSection.UndeleteAndDeleteTasks(ctx, input)
+	if err != nil {
+		return nil, handler.HandleGraphQLError(ctx, err)
+	}
+
+	return p, nil
+}
+
 func (r *queryResolver) TeammateTaskSection(ctx context.Context, where *ent.TeammateTaskSectionWhereInput) (*ent.TeammateTaskSection, error) {
 	t, err := r.controller.TeammateTaskSection.Get(ctx, where)
 	if err != nil {

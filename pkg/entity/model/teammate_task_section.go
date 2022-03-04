@@ -2,7 +2,6 @@ package model
 
 import (
 	"project-management-demo-backend/ent"
-	"project-management-demo-backend/ent/schema/ulid"
 	"time"
 )
 
@@ -23,15 +22,15 @@ type UpdateTeammateTaskSectionInput = ent.UpdateTeammateTaskSectionInput
 
 // DeleteTeammateTaskSectionInput represents a mutation input.
 type DeleteTeammateTaskSectionInput struct {
-	ID          ulid.ID
-	WorkspaceID ulid.ID
+	ID          ID
+	WorkspaceID ID
 	RequestID   string
 }
 
 // DeleteTeammateTaskSectionAndKeepTasksInput represents a mutation input.
 type DeleteTeammateTaskSectionAndKeepTasksInput struct {
-	ID          ulid.ID
-	WorkspaceID ulid.ID
+	ID          ID
+	WorkspaceID ID
 	RequestID   string
 }
 
@@ -39,20 +38,21 @@ type DeleteTeammateTaskSectionAndKeepTasksInput struct {
 type DeleteTeammateTaskSectionAndKeepTasksPayload struct {
 	TeammateTaskSection     *TeammateTaskSection
 	KeptTeammateTaskSection *TeammateTaskSection
-	TeammateTaskIDs         []ulid.ID
+	TeammateTaskIDs         []ID
 }
 
 // DeleteTeammateTaskSectionAndDeleteTasksInput represents a mutation input.
 type DeleteTeammateTaskSectionAndDeleteTasksInput struct {
-	ID          ulid.ID
-	WorkspaceID ulid.ID
+	ID          ID
+	WorkspaceID ID
 	RequestID   string
 }
 
 // DeleteTeammateTaskSectionAndDeleteTasksPayload represents a mutation payload.
 type DeleteTeammateTaskSectionAndDeleteTasksPayload struct {
 	TeammateTaskSection *TeammateTaskSection
-	TeammateTaskIDs     []ulid.ID
+	TeammateTaskIDs     []ID
+	TaskIDs             []ID
 }
 
 // UndeleteTeammateTaskSectionAndKeepTasksInput represents a mutation input.
@@ -61,14 +61,33 @@ type UndeleteTeammateTaskSectionAndKeepTasksInput struct {
 	Assigned            bool
 	CreatedAt           *time.Time
 	UpdatedAt           *time.Time
-	TeammateID          ulid.ID
-	KeptTeammateTaskIDs []ulid.ID
-	WorkspaceID         ulid.ID
+	TeammateID          ID
+	KeptTeammateTaskIDs []ID
+	WorkspaceID         ID
 	RequestID           string
 }
 
 // UndeleteTeammateTaskSectionAndKeepTasksPayload represents a mutation payload.
 type UndeleteTeammateTaskSectionAndKeepTasksPayload struct {
 	TeammateTaskSection *TeammateTaskSection
-	TeammateTaskIDs     []ulid.ID
+	TeammateTaskIDs     []ID
+}
+
+// UndeleteTeammateTaskSectionAndDeleteTasksInput represents a mutation input.
+type UndeleteTeammateTaskSectionAndDeleteTasksInput struct {
+	Name                   string
+	Assigned               bool
+	CreatedAt              *time.Time
+	UpdatedAt              *time.Time
+	TeammateID             ID
+	WorkspaceID            ID
+	DeletedTeammateTaskIDs []ID
+	DeletedTaskIDs         []ID
+	RequestID              string
+}
+
+// UndeleteTeammateTaskSectionAndDeleteTasksPayload represents a mutation payload.
+type UndeleteTeammateTaskSectionAndDeleteTasksPayload struct {
+	TeammateTaskSection *TeammateTaskSection
+	TeammateTasks       []*TeammateTask
 }

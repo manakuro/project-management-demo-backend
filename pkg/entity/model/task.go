@@ -2,7 +2,6 @@ package model
 
 import (
 	"project-management-demo-backend/ent"
-	"project-management-demo-backend/ent/schema/ulid"
 )
 
 // Task is the model entity for the Task schema
@@ -22,8 +21,8 @@ type UpdateTaskInput = ent.UpdateTaskInput
 
 // DeleteTaskInput represents a mutation input.
 type DeleteTaskInput struct {
-	TaskID      ulid.ID
-	WorkspaceID ulid.ID
+	TaskID      ID
+	WorkspaceID ID
 	RequestID   string
 }
 
@@ -36,8 +35,8 @@ type DeleteTaskPayload struct {
 
 // UndeleteTaskInput represents a mutation input.
 type UndeleteTaskInput struct {
-	TaskID      ulid.ID
-	WorkspaceID ulid.ID
+	TaskID      ID
+	WorkspaceID ID
 	RequestID   string
 }
 
@@ -50,13 +49,29 @@ type UndeleteTaskPayload struct {
 
 // DeleteAllTaskInput represents a mutation input.
 type DeleteAllTaskInput struct {
-	TaskIDs     []ulid.ID
-	WorkspaceID ulid.ID
+	TaskIDs     []ID
+	WorkspaceID ID
 	RequestID   string
 }
 
 // DeleteAllTaskPayload represents a mutation result.
 type DeleteAllTaskPayload struct {
+	TeammateTasks []*TeammateTask
+	ProjectTasks  []*ProjectTask
+	DeletedTasks  []*DeletedTask
+}
+
+// UndeleteAllTaskInput represents a mutation input.
+type UndeleteAllTaskInput struct {
+	TaskIDs               []ID
+	WorkspaceID           ID
+	TeammateTaskSectionID *ID
+	ProjectTaskSectionID  *ID
+	RequestID             string
+}
+
+// UndeleteAllTaskPayload represents a mutation result.
+type UndeleteAllTaskPayload struct {
 	TeammateTasks []*TeammateTask
 	ProjectTasks  []*ProjectTask
 	DeletedTasks  []*DeletedTask

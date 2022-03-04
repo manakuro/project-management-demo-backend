@@ -21,6 +21,7 @@ type TeammateTaskSection interface {
 	DeleteAndKeepTasks(ctx context.Context, input model.DeleteTeammateTaskSectionAndKeepTasksInput) (*model.DeleteTeammateTaskSectionAndKeepTasksPayload, error)
 	DeleteAndDeleteTasks(ctx context.Context, input model.DeleteTeammateTaskSectionAndDeleteTasksInput) (*model.DeleteTeammateTaskSectionAndDeleteTasksPayload, error)
 	UndeleteAndKeepTasks(ctx context.Context, input model.UndeleteTeammateTaskSectionAndKeepTasksInput) (*model.UndeleteTeammateTaskSectionAndKeepTasksPayload, error)
+	UndeleteAndDeleteTasks(ctx context.Context, input model.UndeleteTeammateTaskSectionAndDeleteTasksInput) (*model.UndeleteTeammateTaskSectionAndDeleteTasksPayload, error)
 }
 
 // NewTeammateTaskSectionUsecase generates a repository.
@@ -62,4 +63,8 @@ func (u *teammateTaskSectionUsecase) DeleteAndDeleteTasks(ctx context.Context, i
 
 func (u *teammateTaskSectionUsecase) UndeleteAndKeepTasks(ctx context.Context, input model.UndeleteTeammateTaskSectionAndKeepTasksInput) (*model.UndeleteTeammateTaskSectionAndKeepTasksPayload, error) {
 	return u.teammateTaskSectionRepository.UndeleteAndKeepTasks(ctx, input)
+}
+
+func (u *teammateTaskSectionUsecase) UndeleteAndDeleteTasks(ctx context.Context, input model.UndeleteTeammateTaskSectionAndDeleteTasksInput) (*model.UndeleteTeammateTaskSectionAndDeleteTasksPayload, error) {
+	return u.teammateTaskSectionRepository.UndeleteAndDeleteTasks(ctx, input)
 }
