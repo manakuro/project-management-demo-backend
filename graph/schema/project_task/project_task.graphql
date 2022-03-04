@@ -24,6 +24,7 @@ input CreateProjectTaskInput {
   projectTaskSectionId: ID!
   createdBy: ID!
   workspaceId: ID!
+  taskParentId: ID
   requestId: String!
 }
 

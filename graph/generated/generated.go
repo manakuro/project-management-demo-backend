@@ -12619,6 +12619,7 @@ input CreateProjectTaskInput {
   projectTaskSectionId: ID!
   createdBy: ID!
   workspaceId: ID!
+  taskParentId: ID
   requestId: String!
 }
 
@@ -50506,6 +50507,14 @@ func (ec *executionContext) unmarshalInputCreateProjectTaskInput(ctx context.Con
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceId"))
 			it.WorkspaceID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskParentId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskParentId"))
+			it.TaskParentID, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
