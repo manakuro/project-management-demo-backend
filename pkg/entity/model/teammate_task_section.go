@@ -3,6 +3,7 @@ package model
 import (
 	"project-management-demo-backend/ent"
 	"project-management-demo-backend/ent/schema/ulid"
+	"time"
 )
 
 // TeammateTaskSection is the model entity for the TeammateTaskSection schema.
@@ -54,9 +55,20 @@ type DeleteTeammateTaskSectionAndDeleteTasksPayload struct {
 	TeammateTaskIDs     []ulid.ID
 }
 
-// UndeleteTeammateTaskSectionInput represents a mutation input.
-type UndeleteTeammateTaskSectionInput struct {
-	ID          ulid.ID
-	WorkspaceID ulid.ID
-	RequestID   string
+// UndeleteTeammateTaskSectionAndKeepTasksInput represents a mutation input.
+type UndeleteTeammateTaskSectionAndKeepTasksInput struct {
+	Name                string
+	Assigned            bool
+	CreatedAt           *time.Time
+	UpdatedAt           *time.Time
+	TeammateID          ulid.ID
+	KeptTeammateTaskIDs []ulid.ID
+	WorkspaceID         ulid.ID
+	RequestID           string
+}
+
+// UndeleteTeammateTaskSectionAndKeepTasksPayload represents a mutation payload.
+type UndeleteTeammateTaskSectionAndKeepTasksPayload struct {
+	TeammateTaskSection *TeammateTaskSection
+	TeammateTaskIDs     []ulid.ID
 }

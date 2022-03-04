@@ -16,6 +16,7 @@ type TeammateTaskSection interface {
 	Delete(ctx context.Context, input model.DeleteTeammateTaskSectionInput) (*model.TeammateTaskSection, error)
 	DeleteAndKeepTasks(ctx context.Context, input model.DeleteTeammateTaskSectionAndKeepTasksInput) (*model.DeleteTeammateTaskSectionAndKeepTasksPayload, error)
 	DeleteAndDeleteTasks(ctx context.Context, input model.DeleteTeammateTaskSectionAndDeleteTasksInput) (*model.DeleteTeammateTaskSectionAndDeleteTasksPayload, error)
+	UndeleteAndKeepTasks(ctx context.Context, input model.UndeleteTeammateTaskSectionAndKeepTasksInput) (*model.UndeleteTeammateTaskSectionAndKeepTasksPayload, error)
 }
 
 type teammateTaskSectionController struct {
@@ -59,4 +60,8 @@ func (c *teammateTaskSectionController) DeleteAndKeepTasks(ctx context.Context, 
 
 func (c *teammateTaskSectionController) DeleteAndDeleteTasks(ctx context.Context, input model.DeleteTeammateTaskSectionAndDeleteTasksInput) (*model.DeleteTeammateTaskSectionAndDeleteTasksPayload, error) {
 	return c.teammateTaskSectionUsecase.DeleteAndDeleteTasks(ctx, input)
+}
+
+func (c *teammateTaskSectionController) UndeleteAndKeepTasks(ctx context.Context, input model.UndeleteTeammateTaskSectionAndKeepTasksInput) (*model.UndeleteTeammateTaskSectionAndKeepTasksPayload, error) {
+	return c.teammateTaskSectionUsecase.UndeleteAndKeepTasks(ctx, input)
 }
