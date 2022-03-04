@@ -92,14 +92,19 @@ func (r *teammateTaskRepository) Create(ctx context.Context, input model.CreateT
 	// TODO: Add transaction here
 	//client := WithTransactionalMutation(ctx)
 
-	newTask, err := r.client.Task.
+	tc := r.client.Task.
 		Create().
 		SetIsNew(true).
 		SetCreatedBy(input.TeammateID).
 		SetAssigneeID(input.TeammateID).
 		SetName("").
-		SetDescription(model.DefaultEditorDescription()).
-		Save(ctx)
+		SetDescription(model.DefaultEditorDescription())
+
+	if input.TaskParentID != nil {
+		tc.SetTaskParentID(*input.TaskParentID)
+	}
+
+	newTask, err := tc.Save(ctx)
 	if err != nil {
 		return nil, model.NewDBError(err)
 	}

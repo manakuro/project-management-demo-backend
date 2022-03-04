@@ -93,6 +93,22 @@ func (TeammateTask) Edges() []ent.Edge {
 	}
 }
 
+// Annotations of the TeammateTask.
+func (TeammateTask) Annotations() []schema.Annotation {
+	return []schema.Annotation{
+		schema.Annotation(
+			annotation.MutationInput{
+				Create: []annotation.MutationInputField{
+					{
+						Key:  "TaskParentID",
+						Type: "*ulid.ID",
+					},
+				},
+			},
+		),
+	}
+}
+
 // Mixin of the TeammateTask.
 func (TeammateTask) Mixin() []ent.Mixin {
 	return []ent.Mixin{
