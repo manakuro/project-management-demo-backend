@@ -24,6 +24,7 @@ input CreateTeammateTaskInput {
   teammateId: ID!
   teammateTaskSectionId: ID!
   workspaceId: ID!
+  taskParentId: ID
   requestId: String!
 }
 

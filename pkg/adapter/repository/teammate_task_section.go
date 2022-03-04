@@ -3,7 +3,7 @@ package repository
 import (
 	"context"
 	"project-management-demo-backend/ent"
-	"project-management-demo-backend/ent/schema/ulid"
+	"project-management-demo-backend/ent/deletedtask"
 	"project-management-demo-backend/ent/teammatetask"
 	"project-management-demo-backend/ent/teammatetasksection"
 	"project-management-demo-backend/pkg/entity/model"
@@ -116,7 +116,7 @@ func (r *teammateTaskSectionRepository) Delete(ctx context.Context, input model.
 	return deleted, nil
 }
 
-func (r *teammateTaskSectionRepository) DeleteTeammateTaskSectionAndKeepTasks(ctx context.Context, input model.DeleteTeammateTaskSectionAndKeepTasksInput) (*model.DeleteTeammateTaskSectionAndKeepTasksPayload, error) {
+func (r *teammateTaskSectionRepository) DeleteAndKeepTasks(ctx context.Context, input model.DeleteTeammateTaskSectionAndKeepTasksInput) (*model.DeleteTeammateTaskSectionAndKeepTasksPayload, error) {
 	client := WithTransactionalMutation(ctx)
 
 	deleted, err := client.TeammateTaskSection.
@@ -176,7 +176,7 @@ func (r *teammateTaskSectionRepository) DeleteTeammateTaskSectionAndKeepTasks(ct
 		return nil, model.NewDBError(err)
 	}
 
-	teammateTaskIDs := make([]ulid.ID, len(teammateTasks))
+	teammateTaskIDs := make([]model.ID, len(teammateTasks))
 	for i, task := range teammateTasks {
 		teammateTaskIDs[i] = task.ID
 	}
@@ -188,7 +188,7 @@ func (r *teammateTaskSectionRepository) DeleteTeammateTaskSectionAndKeepTasks(ct
 	}, nil
 }
 
-func (r *teammateTaskSectionRepository) DeleteTeammateTaskSectionAndDeleteTasks(ctx context.Context, input model.DeleteTeammateTaskSectionAndDeleteTasksInput) (*model.DeleteTeammateTaskSectionAndDeleteTasksPayload, error) {
+func (r *teammateTaskSectionRepository) DeleteAndDeleteTasks(ctx context.Context, input model.DeleteTeammateTaskSectionAndDeleteTasksInput) (*model.DeleteTeammateTaskSectionAndDeleteTasksPayload, error) {
 	client := WithTransactionalMutation(ctx)
 
 	deleted, err := client.TeammateTaskSection.
@@ -213,12 +213,7 @@ func (r *teammateTaskSectionRepository) DeleteTeammateTaskSectionAndDeleteTasks(
 		return nil, model.NewDBError(err)
 	}
 
-	err = client.TeammateTaskSection.DeleteOneID(deleted.ID).Exec(ctx)
-	if err != nil {
-		return nil, model.NewDBError(err)
-	}
-
-	taskIDs := make([]ulid.ID, len(teammateTasks))
+	taskIDs := make([]model.ID, len(teammateTasks))
 	for i, t := range teammateTasks {
 		taskIDs[i] = t.TaskID
 	}
@@ -227,7 +222,7 @@ func (r *teammateTaskSectionRepository) DeleteTeammateTaskSectionAndDeleteTasks(
 	taskRepo := taskRepository{
 		client: r.client,
 	}
-	_, err = taskRepo.DeleteAll(ctx, model.DeleteAllTaskInput{
+	p, err := taskRepo.DeleteAll(ctx, model.DeleteAllTaskInput{
 		TaskIDs:     taskIDs,
 		WorkspaceID: input.WorkspaceID,
 		RequestID:   "",
@@ -236,13 +231,162 @@ func (r *teammateTaskSectionRepository) DeleteTeammateTaskSectionAndDeleteTasks(
 		return nil, err
 	}
 
-	teammateTaskIDs := make([]ulid.ID, len(teammateTasks))
-	for i, t := range teammateTasks {
-		teammateTaskIDs[i] = t.ID
+	err = client.TeammateTaskSection.DeleteOneID(deleted.ID).Exec(ctx)
+	if err != nil {
+		return nil, model.NewDBError(err)
+	}
+
+	deletedTeammateTaskIDs := make([]model.ID, len(p.TeammateTasks))
+	deletedTaskIDs := make([]model.ID, len(p.TeammateTasks))
+	for i, t := range p.TeammateTasks {
+		deletedTeammateTaskIDs[i] = t.ID
+		deletedTaskIDs[i] = t.TaskID
 	}
 
 	return &model.DeleteTeammateTaskSectionAndDeleteTasksPayload{
 		TeammateTaskSection: deleted,
+		TeammateTaskIDs:     deletedTeammateTaskIDs,
+		TaskIDs:             deletedTaskIDs,
+	}, nil
+}
+
+func (r *teammateTaskSectionRepository) UndeleteAndKeepTasks(ctx context.Context, input model.UndeleteTeammateTaskSectionAndKeepTasksInput) (*model.UndeleteTeammateTaskSectionAndKeepTasksPayload, error) {
+	client := WithTransactionalMutation(ctx)
+
+	createdTeammateTaskSection, err := client.TeammateTaskSection.
+		Create().
+		SetTeammateID(input.TeammateID).
+		SetWorkspaceID(input.WorkspaceID).
+		SetName(input.Name).
+		SetAssigned(false).
+		SetCreatedAt(*input.CreatedAt).
+		SetUpdatedAt(*input.UpdatedAt).
+		Save(ctx)
+
+	if err != nil {
+		return nil, model.NewDBError(err)
+	}
+
+	teammateTasks, err := client.TeammateTask.Query().Where(teammatetask.IDIn(input.KeptTeammateTaskIDs...)).All(ctx)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return nil, model.NewNotFoundError(err, input.KeptTeammateTaskIDs)
+		}
+		return nil, model.NewDBError(err)
+	}
+	bulk := make([]*ent.TeammateTaskCreate, len(teammateTasks))
+	for i, t := range teammateTasks {
+		bulk[i] = client.TeammateTask.Create().
+			SetID(t.ID).
+			SetTaskID(t.TaskID).
+			SetTeammateID(t.TeammateID).
+			SetWorkspaceID(t.WorkspaceID).
+			SetTeammateTaskSectionID(createdTeammateTaskSection.ID).
+			SetCreatedAt(t.CreatedAt)
+	}
+	err = client.TeammateTask.CreateBulk(bulk...).OnConflict().UpdateNewValues().Exec(ctx)
+	if err != nil {
+		return nil, model.NewDBError(err)
+	}
+	teammateTaskIDs := make([]model.ID, len(teammateTasks))
+	for i, t := range teammateTasks {
+		teammateTaskIDs[i] = t.ID
+	}
+
+	return &model.UndeleteTeammateTaskSectionAndKeepTasksPayload{
+		TeammateTaskSection: createdTeammateTaskSection,
 		TeammateTaskIDs:     teammateTaskIDs,
+	}, nil
+}
+
+func (r *teammateTaskSectionRepository) UndeleteAndDeleteTasks(ctx context.Context, input model.UndeleteTeammateTaskSectionAndDeleteTasksInput) (*model.UndeleteTeammateTaskSectionAndDeleteTasksPayload, error) {
+	client := WithTransactionalMutation(ctx)
+
+	createdTeammateTaskSection, err := client.TeammateTaskSection.
+		Create().
+		SetTeammateID(input.TeammateID).
+		SetWorkspaceID(input.WorkspaceID).
+		SetName(input.Name).
+		SetAssigned(false).
+		SetCreatedAt(*input.CreatedAt).
+		SetUpdatedAt(*input.UpdatedAt).
+		Save(ctx)
+
+	if err != nil {
+		return nil, model.NewDBError(err)
+	}
+
+	deletedTasks, err := client.DeletedTask.
+		Query().
+		Where(
+			deletedtask.TaskIDIn(input.DeletedTaskIDs...),
+			deletedtask.TaskTypeEQ(deletedtask.TaskTypeTeammate),
+		).
+		All(ctx)
+	if err != nil {
+		return nil, model.NewDBError(err)
+	}
+	if deletedTasks == nil {
+		return nil, model.NewNotFoundError(err, input)
+	}
+
+	taskIDs := make([]model.ID, len(deletedTasks))
+	for i, t := range deletedTasks {
+		taskIDs[i] = t.TaskID
+	}
+
+	// TODO: Task repository can be called in usecase/usecase package
+	taskRepo := taskRepository{
+		client: r.client,
+	}
+
+	p, rerr := taskRepo.UndeleteAll(ctx, model.UndeleteAllTaskInput{
+		TaskIDs:               taskIDs,
+		WorkspaceID:           input.WorkspaceID,
+		TeammateTaskSectionID: &createdTeammateTaskSection.ID,
+		RequestID:             "",
+	})
+	if rerr != nil {
+		return nil, model.NewDBError(err)
+	}
+
+	bulk := make([]*ent.TeammateTaskCreate, len(p.TeammateTasks))
+	for i, t := range p.TeammateTasks {
+		bulk[i] = client.TeammateTask.Create().
+			SetID(t.ID).
+			SetCreatedAt(t.CreatedAt).
+			SetUpdatedAt(t.UpdatedAt).
+			SetTaskID(t.TaskID).
+			SetTeammateID(t.TeammateID).
+			SetWorkspaceID(t.WorkspaceID).
+			SetTeammateTaskSectionID(createdTeammateTaskSection.ID)
+	}
+	err = client.TeammateTask.CreateBulk(bulk...).OnConflict().UpdateNewValues().Exec(ctx)
+	if err != nil {
+		return nil, model.NewDBError(err)
+	}
+
+	teammateTaskIDs := make([]model.ID, len(p.TeammateTasks))
+	for i, t := range p.TeammateTasks {
+		teammateTaskIDs[i] = t.ID
+	}
+	ts, err := client.TeammateTask.Query().Where(teammatetask.IDIn(teammateTaskIDs...)).All(ctx)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return nil, model.NewNotFoundError(err, map[string]interface{}{
+				"IDs": teammateTaskIDs,
+			})
+		}
+		return nil, model.NewDBError(err)
+	}
+
+	createdTeammateTasks := make([]*model.TeammateTask, len(ts))
+	for i, t := range ts {
+		createdTeammateTasks[i] = t.Unwrap()
+	}
+
+	return &model.UndeleteTeammateTaskSectionAndDeleteTasksPayload{
+		TeammateTaskSection: createdTeammateTaskSection,
+		TeammateTasks:       createdTeammateTasks,
 	}, nil
 }

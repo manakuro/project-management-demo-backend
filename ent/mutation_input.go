@@ -898,6 +898,7 @@ type CreateProjectTaskInput struct {
 	ProjectTaskSectionID ulid.ID
 	CreatedBy            ulid.ID
 	WorkspaceID          ulid.ID
+	TaskParentID         *ulid.ID
 	RequestID            string
 }
 
@@ -2775,6 +2776,7 @@ type CreateTeammateTaskInput struct {
 	TaskID                ulid.ID
 	TeammateTaskSectionID ulid.ID
 	WorkspaceID           ulid.ID
+	TaskParentID          *ulid.ID
 	RequestID             string
 }
 

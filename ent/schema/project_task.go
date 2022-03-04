@@ -94,6 +94,10 @@ func (ProjectTask) Annotations() []schema.Annotation {
 						Key:  "WorkspaceID",
 						Type: "ulid.ID",
 					},
+					{
+						Key:  "TaskParentID",
+						Type: "*ulid.ID",
+					},
 				},
 				Update: []annotation.MutationInputField{
 					{
