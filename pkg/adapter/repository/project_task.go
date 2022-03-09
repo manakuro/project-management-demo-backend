@@ -135,3 +135,13 @@ func (r *projectTaskRepository) Delete(ctx context.Context, input model.DeletePr
 
 	return deleted, nil
 }
+
+// WithProjectTask eager-loads association with project task.
+func WithProjectTask(query *ent.ProjectTaskQuery) {
+	query.WithTask(func(tq *ent.TaskQuery) {
+		WithTask(tq)
+	})
+	query.WithProject(func(pq *ent.ProjectQuery) {
+		WithProject(pq)
+	})
+}

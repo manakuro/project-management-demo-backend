@@ -88,3 +88,8 @@ func (r *projectRepository) Update(ctx context.Context, input model.UpdateProjec
 
 	return res, nil
 }
+
+// WithProject eager-loads association with project.
+func WithProject(pq *ent.ProjectQuery) {
+	pq.WithProjectTeammates()
+}

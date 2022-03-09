@@ -374,8 +374,20 @@ func (r *projectTaskSectionRepository) UndeleteAndDeleteTasks(ctx context.Contex
 		createdProjectTasks[i] = t.Unwrap()
 	}
 
+	// Eager-loads associations with task.
+	projectTaskSection, err := client.ProjectTaskSection.Query().
+		WithProjectTasks(func(ptq *ent.ProjectTaskQuery) {
+			WithProjectTask(ptq)
+		}).
+		Where(projecttasksection.ID(createdProjectTaskSection.ID)).
+		Only(ctx)
+
+	if err != nil {
+		return nil, model.NewDBError(err)
+	}
+
 	return &model.UndeleteProjectTaskSectionAndDeleteTasksPayload{
-		ProjectTaskSection: createdProjectTaskSection,
+		ProjectTaskSection: projectTaskSection,
 		ProjectTasks:       createdProjectTasks,
 	}, nil
 }
