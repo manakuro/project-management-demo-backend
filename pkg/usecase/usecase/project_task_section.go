@@ -18,8 +18,10 @@ type ProjectTaskSection interface {
 	Create(ctx context.Context, input model.CreateProjectTaskSectionInput) (*model.ProjectTaskSection, error)
 	Update(ctx context.Context, input model.UpdateProjectTaskSectionInput) (*model.ProjectTaskSection, error)
 	Delete(ctx context.Context, input model.DeleteProjectTaskSectionInput) (*model.ProjectTaskSection, error)
-	DeleteProjectTaskSectionAndKeepTasks(ctx context.Context, input model.DeleteProjectTaskSectionAndKeepTasksInput) (*model.DeleteProjectTaskSectionAndKeepTasksPayload, error)
-	DeleteProjectTaskSectionAndDeleteTasks(ctx context.Context, input model.DeleteProjectTaskSectionAndDeleteTasksInput) (*model.DeleteProjectTaskSectionAndDeleteTasksPayload, error)
+	DeleteAndKeepTasks(ctx context.Context, input model.DeleteProjectTaskSectionAndKeepTasksInput) (*model.DeleteProjectTaskSectionAndKeepTasksPayload, error)
+	DeleteAndDeleteTasks(ctx context.Context, input model.DeleteProjectTaskSectionAndDeleteTasksInput) (*model.DeleteProjectTaskSectionAndDeleteTasksPayload, error)
+	UndeleteAndKeepTasks(ctx context.Context, input model.UndeleteProjectTaskSectionAndKeepTasksInput) (*model.UndeleteProjectTaskSectionAndKeepTasksPayload, error)
+	UndeleteAndDeleteTasks(ctx context.Context, input model.UndeleteProjectTaskSectionAndDeleteTasksInput) (*model.UndeleteProjectTaskSectionAndDeleteTasksPayload, error)
 }
 
 // NewProjectTaskSectionUsecase generates a repository.
@@ -51,10 +53,18 @@ func (u *projectTaskSectionUsecase) Delete(ctx context.Context, input model.Dele
 	return u.projectTaskSectionRepository.Delete(ctx, input)
 }
 
-func (u *projectTaskSectionUsecase) DeleteProjectTaskSectionAndKeepTasks(ctx context.Context, input model.DeleteProjectTaskSectionAndKeepTasksInput) (*model.DeleteProjectTaskSectionAndKeepTasksPayload, error) {
-	return u.projectTaskSectionRepository.DeleteProjectTaskSectionAndKeepTasks(ctx, input)
+func (u *projectTaskSectionUsecase) DeleteAndKeepTasks(ctx context.Context, input model.DeleteProjectTaskSectionAndKeepTasksInput) (*model.DeleteProjectTaskSectionAndKeepTasksPayload, error) {
+	return u.projectTaskSectionRepository.DeleteAndKeepTasks(ctx, input)
 }
 
-func (u *projectTaskSectionUsecase) DeleteProjectTaskSectionAndDeleteTasks(ctx context.Context, input model.DeleteProjectTaskSectionAndDeleteTasksInput) (*model.DeleteProjectTaskSectionAndDeleteTasksPayload, error) {
-	return u.projectTaskSectionRepository.DeleteProjectTaskSectionAndDeleteTasks(ctx, input)
+func (u *projectTaskSectionUsecase) DeleteAndDeleteTasks(ctx context.Context, input model.DeleteProjectTaskSectionAndDeleteTasksInput) (*model.DeleteProjectTaskSectionAndDeleteTasksPayload, error) {
+	return u.projectTaskSectionRepository.DeleteAndDeleteTasks(ctx, input)
+}
+
+func (u *projectTaskSectionUsecase) UndeleteAndKeepTasks(ctx context.Context, input model.UndeleteProjectTaskSectionAndKeepTasksInput) (*model.UndeleteProjectTaskSectionAndKeepTasksPayload, error) {
+	return u.projectTaskSectionRepository.UndeleteAndKeepTasks(ctx, input)
+}
+
+func (u *projectTaskSectionUsecase) UndeleteAndDeleteTasks(ctx context.Context, input model.UndeleteProjectTaskSectionAndDeleteTasksInput) (*model.UndeleteProjectTaskSectionAndDeleteTasksPayload, error) {
+	return u.projectTaskSectionRepository.UndeleteAndDeleteTasks(ctx, input)
 }

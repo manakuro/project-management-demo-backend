@@ -127,6 +127,7 @@ type ComplexityRoot struct {
 	DeleteProjectTaskSectionAndDeleteTasksPayload struct {
 		ProjectTaskIDs     func(childComplexity int) int
 		ProjectTaskSection func(childComplexity int) int
+		TaskIDs            func(childComplexity int) int
 	}
 
 	DeleteProjectTaskSectionAndKeepTasksPayload struct {
@@ -341,6 +342,8 @@ type ComplexityRoot struct {
 		DeleteTeammateTaskSectionAndDeleteTasks   func(childComplexity int, input model.DeleteTeammateTaskSectionAndDeleteTasksInput) int
 		DeleteTeammateTaskSectionAndKeepTasks     func(childComplexity int, input model.DeleteTeammateTaskSectionAndKeepTasksInput) int
 		UndeleteDeletedTask                       func(childComplexity int, input model.UndeleteDeletedTaskInput) int
+		UndeleteProjectTaskSectionAndDeleteTasks  func(childComplexity int, input model.UndeleteProjectTaskSectionAndDeleteTasksInput) int
+		UndeleteProjectTaskSectionAndKeepTasks    func(childComplexity int, input model.UndeleteProjectTaskSectionAndKeepTasksInput) int
 		UndeleteTask                              func(childComplexity int, input model.UndeleteTaskInput) int
 		UndeleteTeammateTaskSectionAndDeleteTasks func(childComplexity int, input model.UndeleteTeammateTaskSectionAndDeleteTasksInput) int
 		UndeleteTeammateTaskSectionAndKeepTasks   func(childComplexity int, input model.UndeleteTeammateTaskSectionAndKeepTasksInput) int
@@ -1215,6 +1218,16 @@ type ComplexityRoot struct {
 		Type func(childComplexity int) int
 	}
 
+	UndeleteProjectTaskSectionAndDeleteTasksPayload struct {
+		ProjectTaskSection func(childComplexity int) int
+		ProjectTasks       func(childComplexity int) int
+	}
+
+	UndeleteProjectTaskSectionAndKeepTasksPayload struct {
+		ProjectTaskIDs     func(childComplexity int) int
+		ProjectTaskSection func(childComplexity int) int
+	}
+
 	UndeleteTaskPayload struct {
 		DeletedTasks func(childComplexity int) int
 		ProjectTask  func(childComplexity int) int
@@ -1339,6 +1352,8 @@ type MutationResolver interface {
 	DeleteProjectTaskSection(ctx context.Context, input model.DeleteProjectTaskSectionInput) (*ent.ProjectTaskSection, error)
 	DeleteProjectTaskSectionAndKeepTasks(ctx context.Context, input model.DeleteProjectTaskSectionAndKeepTasksInput) (*model.DeleteProjectTaskSectionAndKeepTasksPayload, error)
 	DeleteProjectTaskSectionAndDeleteTasks(ctx context.Context, input model.DeleteProjectTaskSectionAndDeleteTasksInput) (*model.DeleteProjectTaskSectionAndDeleteTasksPayload, error)
+	UndeleteProjectTaskSectionAndKeepTasks(ctx context.Context, input model.UndeleteProjectTaskSectionAndKeepTasksInput) (*model.UndeleteProjectTaskSectionAndKeepTasksPayload, error)
+	UndeleteProjectTaskSectionAndDeleteTasks(ctx context.Context, input model.UndeleteProjectTaskSectionAndDeleteTasksInput) (*model.UndeleteProjectTaskSectionAndDeleteTasksPayload, error)
 	CreateProjectTeammate(ctx context.Context, input ent.CreateProjectTeammateInput) (*ent.ProjectTeammate, error)
 	UpdateProjectTeammate(ctx context.Context, input ent.UpdateProjectTeammateInput) (*ent.ProjectTeammate, error)
 	CreateTag(ctx context.Context, input ent.CreateTagInput) (*ent.Tag, error)
@@ -1806,6 +1821,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.DeleteProjectTaskSectionAndDeleteTasksPayload.ProjectTaskSection(childComplexity), true
+
+	case "DeleteProjectTaskSectionAndDeleteTasksPayload.taskIds":
+		if e.complexity.DeleteProjectTaskSectionAndDeleteTasksPayload.TaskIDs == nil {
+			break
+		}
+
+		return e.complexity.DeleteProjectTaskSectionAndDeleteTasksPayload.TaskIDs(childComplexity), true
 
 	case "DeleteProjectTaskSectionAndKeepTasksPayload.keptProjectTaskSection":
 		if e.complexity.DeleteProjectTaskSectionAndKeepTasksPayload.KeptProjectTaskSection == nil {
@@ -3059,6 +3081,30 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.UndeleteDeletedTask(childComplexity, args["input"].(model.UndeleteDeletedTaskInput)), true
+
+	case "Mutation.undeleteProjectTaskSectionAndDeleteTasks":
+		if e.complexity.Mutation.UndeleteProjectTaskSectionAndDeleteTasks == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_undeleteProjectTaskSectionAndDeleteTasks_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UndeleteProjectTaskSectionAndDeleteTasks(childComplexity, args["input"].(model.UndeleteProjectTaskSectionAndDeleteTasksInput)), true
+
+	case "Mutation.undeleteProjectTaskSectionAndKeepTasks":
+		if e.complexity.Mutation.UndeleteProjectTaskSectionAndKeepTasks == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_undeleteProjectTaskSectionAndKeepTasks_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UndeleteProjectTaskSectionAndKeepTasks(childComplexity, args["input"].(model.UndeleteProjectTaskSectionAndKeepTasksInput)), true
 
 	case "Mutation.undeleteTask":
 		if e.complexity.Mutation.UndeleteTask == nil {
@@ -8018,6 +8064,34 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.TestUserProfileBodyComment.Type(childComplexity), true
 
+	case "UndeleteProjectTaskSectionAndDeleteTasksPayload.projectTaskSection":
+		if e.complexity.UndeleteProjectTaskSectionAndDeleteTasksPayload.ProjectTaskSection == nil {
+			break
+		}
+
+		return e.complexity.UndeleteProjectTaskSectionAndDeleteTasksPayload.ProjectTaskSection(childComplexity), true
+
+	case "UndeleteProjectTaskSectionAndDeleteTasksPayload.projectTasks":
+		if e.complexity.UndeleteProjectTaskSectionAndDeleteTasksPayload.ProjectTasks == nil {
+			break
+		}
+
+		return e.complexity.UndeleteProjectTaskSectionAndDeleteTasksPayload.ProjectTasks(childComplexity), true
+
+	case "UndeleteProjectTaskSectionAndKeepTasksPayload.projectTaskIds":
+		if e.complexity.UndeleteProjectTaskSectionAndKeepTasksPayload.ProjectTaskIDs == nil {
+			break
+		}
+
+		return e.complexity.UndeleteProjectTaskSectionAndKeepTasksPayload.ProjectTaskIDs(childComplexity), true
+
+	case "UndeleteProjectTaskSectionAndKeepTasksPayload.projectTaskSection":
+		if e.complexity.UndeleteProjectTaskSectionAndKeepTasksPayload.ProjectTaskSection == nil {
+			break
+		}
+
+		return e.complexity.UndeleteProjectTaskSectionAndKeepTasksPayload.ProjectTaskSection(childComplexity), true
+
 	case "UndeleteTaskPayload.deletedTasks":
 		if e.complexity.UndeleteTaskPayload.DeletedTasks == nil {
 			break
@@ -12853,8 +12927,37 @@ input DeleteProjectTaskSectionAndDeleteTasksInput {
 type DeleteProjectTaskSectionAndDeleteTasksPayload {
   projectTaskSection: ProjectTaskSection!
   projectTaskIds: [ID!]!
+  taskIds: [ID!]!
 }
 
+input UndeleteProjectTaskSectionAndKeepTasksInput {
+  name: String!
+  createdAt: Time!
+  updatedAt: Time!
+  projectId: ID!
+  keptProjectTaskIds: [ID!]!
+  workspaceId: ID!
+  requestId: String!
+}
+type UndeleteProjectTaskSectionAndKeepTasksPayload {
+  projectTaskSection: ProjectTaskSection!
+  projectTaskIds: [ID!]!
+}
+
+input UndeleteProjectTaskSectionAndDeleteTasksInput {
+  name: String!
+  createdAt: Time!
+  updatedAt: Time!
+  projectId: ID!
+  deletedProjectTaskIds: [ID!]!
+  deletedTaskIds: [ID!]!
+  workspaceId: ID!
+  requestId: String!
+}
+type UndeleteProjectTaskSectionAndDeleteTasksPayload {
+  projectTaskSection: ProjectTaskSection!
+  projectTasks: [ProjectTask!]!
+}
 
 extend type Subscription {
   projectTaskSectionUpdated(workspaceId: ID!, requestId: String!): ProjectTaskSection!
@@ -12875,6 +12978,8 @@ extend type Mutation {
   deleteProjectTaskSection(input: DeleteProjectTaskSectionInput!): ProjectTaskSection!
   deleteProjectTaskSectionAndKeepTasks(input: DeleteProjectTaskSectionAndKeepTasksInput!): DeleteProjectTaskSectionAndKeepTasksPayload!
   deleteProjectTaskSectionAndDeleteTasks(input: DeleteProjectTaskSectionAndDeleteTasksInput!): DeleteProjectTaskSectionAndDeleteTasksPayload!
+  undeleteProjectTaskSectionAndKeepTasks(input: UndeleteProjectTaskSectionAndKeepTasksInput!): UndeleteProjectTaskSectionAndKeepTasksPayload!
+  undeleteProjectTaskSectionAndDeleteTasks(input: UndeleteProjectTaskSectionAndDeleteTasksInput!): UndeleteProjectTaskSectionAndDeleteTasksPayload!
 }
 `, BuiltIn: false},
 	{Name: "graph/schema/project_teammate/project_teammate.graphql", Input: `type ProjectTeammate implements Node {
@@ -15166,6 +15271,36 @@ func (ec *executionContext) field_Mutation_undeleteDeletedTask_args(ctx context.
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNUndeleteDeletedTaskInput2projectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐUndeleteDeletedTaskInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_undeleteProjectTaskSectionAndDeleteTasks_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.UndeleteProjectTaskSectionAndDeleteTasksInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNUndeleteProjectTaskSectionAndDeleteTasksInput2projectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐUndeleteProjectTaskSectionAndDeleteTasksInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_undeleteProjectTaskSectionAndKeepTasks_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.UndeleteProjectTaskSectionAndKeepTasksInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNUndeleteProjectTaskSectionAndKeepTasksInput2projectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐUndeleteProjectTaskSectionAndKeepTasksInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -20308,6 +20443,41 @@ func (ec *executionContext) _DeleteProjectTaskSectionAndDeleteTasksPayload_proje
 	return ec.marshalNID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _DeleteProjectTaskSectionAndDeleteTasksPayload_taskIds(ctx context.Context, field graphql.CollectedField, obj *model.DeleteProjectTaskSectionAndDeleteTasksPayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "DeleteProjectTaskSectionAndDeleteTasksPayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TaskIDs, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]ulid.ID)
+	fc.Result = res
+	return ec.marshalNID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _DeleteProjectTaskSectionAndKeepTasksPayload_projectTaskSection(ctx context.Context, field graphql.CollectedField, obj *model.DeleteProjectTaskSectionAndKeepTasksPayload) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -24543,6 +24713,90 @@ func (ec *executionContext) _Mutation_deleteProjectTaskSectionAndDeleteTasks(ctx
 	res := resTmp.(*model.DeleteProjectTaskSectionAndDeleteTasksPayload)
 	fc.Result = res
 	return ec.marshalNDeleteProjectTaskSectionAndDeleteTasksPayload2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐDeleteProjectTaskSectionAndDeleteTasksPayload(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_undeleteProjectTaskSectionAndKeepTasks(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_undeleteProjectTaskSectionAndKeepTasks_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UndeleteProjectTaskSectionAndKeepTasks(rctx, args["input"].(model.UndeleteProjectTaskSectionAndKeepTasksInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.UndeleteProjectTaskSectionAndKeepTasksPayload)
+	fc.Result = res
+	return ec.marshalNUndeleteProjectTaskSectionAndKeepTasksPayload2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐUndeleteProjectTaskSectionAndKeepTasksPayload(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_undeleteProjectTaskSectionAndDeleteTasks(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_undeleteProjectTaskSectionAndDeleteTasks_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UndeleteProjectTaskSectionAndDeleteTasks(rctx, args["input"].(model.UndeleteProjectTaskSectionAndDeleteTasksInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.UndeleteProjectTaskSectionAndDeleteTasksPayload)
+	fc.Result = res
+	return ec.marshalNUndeleteProjectTaskSectionAndDeleteTasksPayload2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐUndeleteProjectTaskSectionAndDeleteTasksPayload(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_createProjectTeammate(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -47293,6 +47547,146 @@ func (ec *executionContext) _TestUserProfileBodyComment_text(ctx context.Context
 	res := resTmp.(string)
 	fc.Result = res
 	return ec.marshalOString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _UndeleteProjectTaskSectionAndDeleteTasksPayload_projectTaskSection(ctx context.Context, field graphql.CollectedField, obj *model.UndeleteProjectTaskSectionAndDeleteTasksPayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "UndeleteProjectTaskSectionAndDeleteTasksPayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ProjectTaskSection, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.ProjectTaskSection)
+	fc.Result = res
+	return ec.marshalNProjectTaskSection2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTaskSection(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _UndeleteProjectTaskSectionAndDeleteTasksPayload_projectTasks(ctx context.Context, field graphql.CollectedField, obj *model.UndeleteProjectTaskSectionAndDeleteTasksPayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "UndeleteProjectTaskSectionAndDeleteTasksPayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ProjectTasks, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*ent.ProjectTask)
+	fc.Result = res
+	return ec.marshalNProjectTask2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTaskᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _UndeleteProjectTaskSectionAndKeepTasksPayload_projectTaskSection(ctx context.Context, field graphql.CollectedField, obj *model.UndeleteProjectTaskSectionAndKeepTasksPayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "UndeleteProjectTaskSectionAndKeepTasksPayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ProjectTaskSection, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.ProjectTaskSection)
+	fc.Result = res
+	return ec.marshalNProjectTaskSection2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTaskSection(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _UndeleteProjectTaskSectionAndKeepTasksPayload_projectTaskIds(ctx context.Context, field graphql.CollectedField, obj *model.UndeleteProjectTaskSectionAndKeepTasksPayload) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "UndeleteProjectTaskSectionAndKeepTasksPayload",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ProjectTaskIDs, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]ulid.ID)
+	fc.Result = res
+	return ec.marshalNID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _UndeleteTaskPayload_teammateTask(ctx context.Context, field graphql.CollectedField, obj *model.UndeleteTaskPayload) (ret graphql.Marshaler) {
@@ -73473,6 +73867,156 @@ func (ec *executionContext) unmarshalInputUndeleteDeletedTaskInput(ctx context.C
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputUndeleteProjectTaskSectionAndDeleteTasksInput(ctx context.Context, obj interface{}) (model.UndeleteProjectTaskSectionAndDeleteTasksInput, error) {
+	var it model.UndeleteProjectTaskSectionAndDeleteTasksInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "name":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			it.Name, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAt":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAt"))
+			it.CreatedAt, err = ec.unmarshalNTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAt":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAt"))
+			it.UpdatedAt, err = ec.unmarshalNTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "projectId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("projectId"))
+			it.ProjectID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "deletedProjectTaskIds":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deletedProjectTaskIds"))
+			it.DeletedProjectTaskIDs, err = ec.unmarshalNID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "deletedTaskIds":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deletedTaskIds"))
+			it.DeletedTaskIDs, err = ec.unmarshalNID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "workspaceId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceId"))
+			it.WorkspaceID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "requestId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("requestId"))
+			it.RequestID, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputUndeleteProjectTaskSectionAndKeepTasksInput(ctx context.Context, obj interface{}) (model.UndeleteProjectTaskSectionAndKeepTasksInput, error) {
+	var it model.UndeleteProjectTaskSectionAndKeepTasksInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "name":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			it.Name, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAt":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAt"))
+			it.CreatedAt, err = ec.unmarshalNTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAt":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAt"))
+			it.UpdatedAt, err = ec.unmarshalNTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "projectId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("projectId"))
+			it.ProjectID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "keptProjectTaskIds":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("keptProjectTaskIds"))
+			it.KeptProjectTaskIDs, err = ec.unmarshalNID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "workspaceId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceId"))
+			it.WorkspaceID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "requestId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("requestId"))
+			it.RequestID, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputUndeleteTaskInput(ctx context.Context, obj interface{}) (model.UndeleteTaskInput, error) {
 	var it model.UndeleteTaskInput
 	asMap := map[string]interface{}{}
@@ -77527,6 +78071,11 @@ func (ec *executionContext) _DeleteProjectTaskSectionAndDeleteTasksPayload(ctx c
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "taskIds":
+			out.Values[i] = ec._DeleteProjectTaskSectionAndDeleteTasksPayload_taskIds(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -78757,6 +79306,16 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			}
 		case "deleteProjectTaskSectionAndDeleteTasks":
 			out.Values[i] = ec._Mutation_deleteProjectTaskSectionAndDeleteTasks(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "undeleteProjectTaskSectionAndKeepTasks":
+			out.Values[i] = ec._Mutation_undeleteProjectTaskSectionAndKeepTasks(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "undeleteProjectTaskSectionAndDeleteTasks":
+			out.Values[i] = ec._Mutation_undeleteProjectTaskSectionAndDeleteTasks(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -85083,6 +85642,70 @@ func (ec *executionContext) _TestUserProfileBodyComment(ctx context.Context, sel
 	return out
 }
 
+var undeleteProjectTaskSectionAndDeleteTasksPayloadImplementors = []string{"UndeleteProjectTaskSectionAndDeleteTasksPayload"}
+
+func (ec *executionContext) _UndeleteProjectTaskSectionAndDeleteTasksPayload(ctx context.Context, sel ast.SelectionSet, obj *model.UndeleteProjectTaskSectionAndDeleteTasksPayload) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, undeleteProjectTaskSectionAndDeleteTasksPayloadImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("UndeleteProjectTaskSectionAndDeleteTasksPayload")
+		case "projectTaskSection":
+			out.Values[i] = ec._UndeleteProjectTaskSectionAndDeleteTasksPayload_projectTaskSection(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "projectTasks":
+			out.Values[i] = ec._UndeleteProjectTaskSectionAndDeleteTasksPayload_projectTasks(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var undeleteProjectTaskSectionAndKeepTasksPayloadImplementors = []string{"UndeleteProjectTaskSectionAndKeepTasksPayload"}
+
+func (ec *executionContext) _UndeleteProjectTaskSectionAndKeepTasksPayload(ctx context.Context, sel ast.SelectionSet, obj *model.UndeleteProjectTaskSectionAndKeepTasksPayload) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, undeleteProjectTaskSectionAndKeepTasksPayloadImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("UndeleteProjectTaskSectionAndKeepTasksPayload")
+		case "projectTaskSection":
+			out.Values[i] = ec._UndeleteProjectTaskSectionAndKeepTasksPayload_projectTaskSection(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "projectTaskIds":
+			out.Values[i] = ec._UndeleteProjectTaskSectionAndKeepTasksPayload_projectTaskIds(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var undeleteTaskPayloadImplementors = []string{"UndeleteTaskPayload"}
 
 func (ec *executionContext) _UndeleteTaskPayload(ctx context.Context, sel ast.SelectionSet, obj *model.UndeleteTaskPayload) graphql.Marshaler {
@@ -87858,6 +88481,44 @@ func (ec *executionContext) marshalNTime2ᚖtimeᚐTime(ctx context.Context, sel
 func (ec *executionContext) unmarshalNUndeleteDeletedTaskInput2projectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐUndeleteDeletedTaskInput(ctx context.Context, v interface{}) (model.UndeleteDeletedTaskInput, error) {
 	res, err := ec.unmarshalInputUndeleteDeletedTaskInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNUndeleteProjectTaskSectionAndDeleteTasksInput2projectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐUndeleteProjectTaskSectionAndDeleteTasksInput(ctx context.Context, v interface{}) (model.UndeleteProjectTaskSectionAndDeleteTasksInput, error) {
+	res, err := ec.unmarshalInputUndeleteProjectTaskSectionAndDeleteTasksInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNUndeleteProjectTaskSectionAndDeleteTasksPayload2projectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐUndeleteProjectTaskSectionAndDeleteTasksPayload(ctx context.Context, sel ast.SelectionSet, v model.UndeleteProjectTaskSectionAndDeleteTasksPayload) graphql.Marshaler {
+	return ec._UndeleteProjectTaskSectionAndDeleteTasksPayload(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNUndeleteProjectTaskSectionAndDeleteTasksPayload2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐUndeleteProjectTaskSectionAndDeleteTasksPayload(ctx context.Context, sel ast.SelectionSet, v *model.UndeleteProjectTaskSectionAndDeleteTasksPayload) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._UndeleteProjectTaskSectionAndDeleteTasksPayload(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNUndeleteProjectTaskSectionAndKeepTasksInput2projectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐUndeleteProjectTaskSectionAndKeepTasksInput(ctx context.Context, v interface{}) (model.UndeleteProjectTaskSectionAndKeepTasksInput, error) {
+	res, err := ec.unmarshalInputUndeleteProjectTaskSectionAndKeepTasksInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNUndeleteProjectTaskSectionAndKeepTasksPayload2projectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐUndeleteProjectTaskSectionAndKeepTasksPayload(ctx context.Context, sel ast.SelectionSet, v model.UndeleteProjectTaskSectionAndKeepTasksPayload) graphql.Marshaler {
+	return ec._UndeleteProjectTaskSectionAndKeepTasksPayload(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNUndeleteProjectTaskSectionAndKeepTasksPayload2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐUndeleteProjectTaskSectionAndKeepTasksPayload(ctx context.Context, sel ast.SelectionSet, v *model.UndeleteProjectTaskSectionAndKeepTasksPayload) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._UndeleteProjectTaskSectionAndKeepTasksPayload(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNUndeleteTaskInput2projectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐUndeleteTaskInput(ctx context.Context, v interface{}) (model.UndeleteTaskInput, error) {

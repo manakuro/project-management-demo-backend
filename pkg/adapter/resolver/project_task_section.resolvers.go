@@ -66,7 +66,7 @@ func (r *mutationResolver) DeleteProjectTaskSection(ctx context.Context, input m
 }
 
 func (r *mutationResolver) DeleteProjectTaskSectionAndKeepTasks(ctx context.Context, input model.DeleteProjectTaskSectionAndKeepTasksInput) (*model.DeleteProjectTaskSectionAndKeepTasksPayload, error) {
-	p, err := r.controller.ProjectTaskSection.DeleteProjectTaskSectionAndKeepTasks(ctx, input)
+	p, err := r.controller.ProjectTaskSection.DeleteAndKeepTasks(ctx, input)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
@@ -83,7 +83,7 @@ func (r *mutationResolver) DeleteProjectTaskSectionAndKeepTasks(ctx context.Cont
 }
 
 func (r *mutationResolver) DeleteProjectTaskSectionAndDeleteTasks(ctx context.Context, input model.DeleteProjectTaskSectionAndDeleteTasksInput) (*model.DeleteProjectTaskSectionAndDeleteTasksPayload, error) {
-	p, err := r.controller.ProjectTaskSection.DeleteProjectTaskSectionAndDeleteTasks(ctx, input)
+	p, err := r.controller.ProjectTaskSection.DeleteAndDeleteTasks(ctx, input)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
@@ -95,6 +95,24 @@ func (r *mutationResolver) DeleteProjectTaskSectionAndDeleteTasks(ctx context.Co
 			}
 		}
 	}()
+
+	return p, nil
+}
+
+func (r *mutationResolver) UndeleteProjectTaskSectionAndKeepTasks(ctx context.Context, input model.UndeleteProjectTaskSectionAndKeepTasksInput) (*model.UndeleteProjectTaskSectionAndKeepTasksPayload, error) {
+	p, err := r.controller.ProjectTaskSection.UndeleteAndKeepTasks(ctx, input)
+	if err != nil {
+		return nil, handler.HandleGraphQLError(ctx, err)
+	}
+
+	return p, nil
+}
+
+func (r *mutationResolver) UndeleteProjectTaskSectionAndDeleteTasks(ctx context.Context, input model.UndeleteProjectTaskSectionAndDeleteTasksInput) (*model.UndeleteProjectTaskSectionAndDeleteTasksPayload, error) {
+	p, err := r.controller.ProjectTaskSection.UndeleteAndDeleteTasks(ctx, input)
+	if err != nil {
+		return nil, handler.HandleGraphQLError(ctx, err)
+	}
 
 	return p, nil
 }
