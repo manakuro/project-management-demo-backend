@@ -2,7 +2,6 @@ package model
 
 import (
 	"project-management-demo-backend/ent"
-	"project-management-demo-backend/ent/schema/ulid"
 	"time"
 )
 
@@ -23,15 +22,15 @@ type UpdateProjectTaskSectionInput = ent.UpdateProjectTaskSectionInput
 
 // DeleteProjectTaskSectionInput represents a mutation input.
 type DeleteProjectTaskSectionInput struct {
-	ID          ulid.ID
-	WorkspaceID ulid.ID
+	ID          ID
+	WorkspaceID ID
 	RequestID   string
 }
 
 // DeleteProjectTaskSectionAndKeepTasksInput represents a mutation input.
 type DeleteProjectTaskSectionAndKeepTasksInput struct {
-	ID          ulid.ID
-	WorkspaceID ulid.ID
+	ID          ID
+	WorkspaceID ID
 	RequestID   string
 }
 
@@ -39,20 +38,21 @@ type DeleteProjectTaskSectionAndKeepTasksInput struct {
 type DeleteProjectTaskSectionAndKeepTasksPayload struct {
 	ProjectTaskSection     *ProjectTaskSection
 	KeptProjectTaskSection *ProjectTaskSection
-	ProjectTaskIDs         []ulid.ID
+	ProjectTaskIDs         []ID
 }
 
 // DeleteProjectTaskSectionAndDeleteTasksInput represents a mutation input.
 type DeleteProjectTaskSectionAndDeleteTasksInput struct {
-	ID          ulid.ID
-	WorkspaceID ulid.ID
+	ID          ID
+	WorkspaceID ID
 	RequestID   string
 }
 
 // DeleteProjectTaskSectionAndDeleteTasksPayload represents a mutation payload.
 type DeleteProjectTaskSectionAndDeleteTasksPayload struct {
 	ProjectTaskSection *ProjectTaskSection
-	ProjectTaskIDs     []ulid.ID
+	ProjectTaskIDs     []ID
+	TaskIDs            []ID
 }
 
 // UndeleteProjectTaskSectionAndKeepTasksInput represents a mutation input.
@@ -70,4 +70,22 @@ type UndeleteProjectTaskSectionAndKeepTasksInput struct {
 type UndeleteProjectTaskSectionAndKeepTasksPayload struct {
 	ProjectTaskSection *ProjectTaskSection
 	ProjectTaskIDs     []ID
+}
+
+// UndeleteProjectTaskSectionAndDeleteTasksInput represents a mutation input.
+type UndeleteProjectTaskSectionAndDeleteTasksInput struct {
+	Name                  string
+	CreatedAt             *time.Time
+	UpdatedAt             *time.Time
+	ProjectID             ID
+	WorkspaceID           ID
+	DeletedProjectTaskIDs []ID
+	DeletedTaskIDs        []ID
+	RequestID             string
+}
+
+// UndeleteProjectTaskSectionAndDeleteTasksPayload represents a mutation payload.
+type UndeleteProjectTaskSectionAndDeleteTasksPayload struct {
+	ProjectTaskSection *ProjectTaskSection
+	ProjectTasks       []*ProjectTask
 }

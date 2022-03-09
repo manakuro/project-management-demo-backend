@@ -108,6 +108,15 @@ func (r *mutationResolver) UndeleteProjectTaskSectionAndKeepTasks(ctx context.Co
 	return p, nil
 }
 
+func (r *mutationResolver) UndeleteProjectTaskSectionAndDeleteTasks(ctx context.Context, input model.UndeleteProjectTaskSectionAndDeleteTasksInput) (*model.UndeleteProjectTaskSectionAndDeleteTasksPayload, error) {
+	p, err := r.controller.ProjectTaskSection.UndeleteAndDeleteTasks(ctx, input)
+	if err != nil {
+		return nil, handler.HandleGraphQLError(ctx, err)
+	}
+
+	return p, nil
+}
+
 func (r *projectTaskSectionResolver) CreatedAt(ctx context.Context, obj *ent.ProjectTaskSection) (string, error) {
 	return datetime.FormatDate(obj.CreatedAt), nil
 }

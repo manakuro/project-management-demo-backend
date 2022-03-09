@@ -17,6 +17,7 @@ type ProjectTaskSection interface {
 	DeleteAndKeepTasks(ctx context.Context, input model.DeleteProjectTaskSectionAndKeepTasksInput) (*model.DeleteProjectTaskSectionAndKeepTasksPayload, error)
 	DeleteAndDeleteTasks(ctx context.Context, input model.DeleteProjectTaskSectionAndDeleteTasksInput) (*model.DeleteProjectTaskSectionAndDeleteTasksPayload, error)
 	UndeleteAndKeepTasks(ctx context.Context, input model.UndeleteProjectTaskSectionAndKeepTasksInput) (*model.UndeleteProjectTaskSectionAndKeepTasksPayload, error)
+	UndeleteAndDeleteTasks(ctx context.Context, input model.UndeleteProjectTaskSectionAndDeleteTasksInput) (*model.UndeleteProjectTaskSectionAndDeleteTasksPayload, error)
 }
 
 type projectTaskSectionController struct {
@@ -64,4 +65,8 @@ func (c *projectTaskSectionController) DeleteAndDeleteTasks(ctx context.Context,
 
 func (c *projectTaskSectionController) UndeleteAndKeepTasks(ctx context.Context, input model.UndeleteProjectTaskSectionAndKeepTasksInput) (*model.UndeleteProjectTaskSectionAndKeepTasksPayload, error) {
 	return c.projectTaskSectionUsecase.UndeleteAndKeepTasks(ctx, input)
+}
+
+func (c *projectTaskSectionController) UndeleteAndDeleteTasks(ctx context.Context, input model.UndeleteProjectTaskSectionAndDeleteTasksInput) (*model.UndeleteProjectTaskSectionAndDeleteTasksPayload, error) {
+	return c.projectTaskSectionUsecase.UndeleteAndDeleteTasks(ctx, input)
 }

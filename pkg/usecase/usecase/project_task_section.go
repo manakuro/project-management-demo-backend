@@ -21,6 +21,7 @@ type ProjectTaskSection interface {
 	DeleteAndKeepTasks(ctx context.Context, input model.DeleteProjectTaskSectionAndKeepTasksInput) (*model.DeleteProjectTaskSectionAndKeepTasksPayload, error)
 	DeleteAndDeleteTasks(ctx context.Context, input model.DeleteProjectTaskSectionAndDeleteTasksInput) (*model.DeleteProjectTaskSectionAndDeleteTasksPayload, error)
 	UndeleteAndKeepTasks(ctx context.Context, input model.UndeleteProjectTaskSectionAndKeepTasksInput) (*model.UndeleteProjectTaskSectionAndKeepTasksPayload, error)
+	UndeleteAndDeleteTasks(ctx context.Context, input model.UndeleteProjectTaskSectionAndDeleteTasksInput) (*model.UndeleteProjectTaskSectionAndDeleteTasksPayload, error)
 }
 
 // NewProjectTaskSectionUsecase generates a repository.
@@ -62,4 +63,8 @@ func (u *projectTaskSectionUsecase) DeleteAndDeleteTasks(ctx context.Context, in
 
 func (u *projectTaskSectionUsecase) UndeleteAndKeepTasks(ctx context.Context, input model.UndeleteProjectTaskSectionAndKeepTasksInput) (*model.UndeleteProjectTaskSectionAndKeepTasksPayload, error) {
 	return u.projectTaskSectionRepository.UndeleteAndKeepTasks(ctx, input)
+}
+
+func (u *projectTaskSectionUsecase) UndeleteAndDeleteTasks(ctx context.Context, input model.UndeleteProjectTaskSectionAndDeleteTasksInput) (*model.UndeleteProjectTaskSectionAndDeleteTasksPayload, error) {
+	return u.projectTaskSectionRepository.UndeleteAndDeleteTasks(ctx, input)
 }
