@@ -96,6 +96,7 @@ extend type Subscription {
   projectTaskSectionDeletedAndKeepTasks(workspaceId: ID!, requestId: String!): DeleteProjectTaskSectionAndKeepTasksPayload!
   projectTaskSectionDeletedAndDeleteTasks(workspaceId: ID!, requestId: String!): DeleteProjectTaskSectionAndDeleteTasksPayload!
   projectTaskSectionUndeletedAndKeepTasks(workspaceId: ID!, requestId: String!): UndeleteProjectTaskSectionAndKeepTasksPayload!
+  projectTaskSectionUndeletedAndDeleteTasks(workspaceId: ID!, requestId: String!): UndeleteProjectTaskSectionAndDeleteTasksPayload!
 }
 
 extend type Query {

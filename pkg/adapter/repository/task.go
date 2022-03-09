@@ -564,14 +564,16 @@ func (r *taskRepository) UndeleteAll(ctx context.Context, input model.UndeleteAl
 }
 
 // WithTask eager-loads associations with task entity.
-func WithTask(taskQuery *ent.TaskQuery) {
-	taskQuery.WithTaskFeeds()
-	taskQuery.WithTaskFiles()
-	taskQuery.WithTaskFeedLikes()
-	taskQuery.WithTaskPriority()
-	taskQuery.WithSubTasks()
-	taskQuery.WithProjectTasks()
-	taskQuery.WithTaskTags()
-	taskQuery.WithTaskLikes()
-	taskQuery.WithTaskCollaborators()
+func WithTask(query *ent.TaskQuery) {
+	query.WithTaskFeeds()
+	query.WithTaskFiles()
+	query.WithTaskFeedLikes()
+	query.WithTaskPriority()
+	query.WithSubTasks()
+	query.WithProjectTasks(func(ptq *ent.ProjectTaskQuery) {
+		ptq.WithProject()
+	})
+	query.WithTaskTags()
+	query.WithTaskLikes()
+	query.WithTaskCollaborators()
 }

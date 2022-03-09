@@ -258,6 +258,13 @@ type ProjectTaskSectionUndeletedAndKeepTasks struct {
 	Ch          chan *model.UndeleteProjectTaskSectionAndKeepTasksPayload
 }
 
+// ProjectTaskSectionUndeletedAndDeleteTasks is a channel for subscription.
+type ProjectTaskSectionUndeletedAndDeleteTasks struct {
+	WorkspaceID model.ID
+	RequestID   string
+	Ch          chan *model.UndeleteProjectTaskSectionAndDeleteTasksPayload
+}
+
 // TaskUpdated is a channel for subscription.
 type TaskUpdated struct {
 	WorkspaceID model.ID
@@ -430,6 +437,7 @@ type Subscriptions struct {
 	ProjectTaskSectionDeletedAndKeepTasks      map[string]ProjectTaskSectionDeletedAndKeepTasks
 	ProjectTaskSectionDeletedAndDeleteTasks    map[string]ProjectTaskSectionDeletedAndDeleteTasks
 	ProjectTaskSectionUndeletedAndKeepTasks    map[string]ProjectTaskSectionUndeletedAndKeepTasks
+	ProjectTaskSectionUndeletedAndDeleteTasks  map[string]ProjectTaskSectionUndeletedAndDeleteTasks
 	ProjectTaskUpdated                         map[string]ProjectTaskUpdated
 	ProjectTeammateUpdated                     map[string]ProjectTeammateUpdated
 	ProjectUpdated                             map[string]ProjectUpdated
