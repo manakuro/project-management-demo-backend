@@ -77,6 +77,7 @@ func NewSchema(client *ent.Client, controller controller.Controller) graphql.Exe
 				TeammateTaskSectionDeletedAndDeleteTasks:   map[string]subscription.TeammateTaskSectionDeletedAndDeleteTasks{},
 				TeammateTaskSectionDeletedAndKeepTasks:     map[string]subscription.TeammateTaskSectionDeletedAndKeepTasks{},
 				TeammateTaskSectionUndeletedAndDeleteTasks: map[string]subscription.TeammateTaskSectionUndeletedAndDeleteTasks{},
+				TeammateTaskSectionUndeletedAndKeepTasks:   map[string]subscription.TeammateTaskSectionUndeletedAndKeepTasks{},
 				TeammateTaskSectionUpdated:                 map[string]subscription.TeammateTaskSectionUpdated{},
 				TeammateTaskTabStatusUpdated:               map[string]subscription.TeammateTaskTabStatusUpdated{},
 				TeammateTaskUpdated:                        map[string]subscription.TeammateTaskUpdated{},

@@ -385,8 +385,22 @@ func (r *teammateTaskSectionRepository) UndeleteAndDeleteTasks(ctx context.Conte
 		createdTeammateTasks[i] = t.Unwrap()
 	}
 
+	// Eager-loads associations with task.
+	teammateTaskSection, err := client.TeammateTaskSection.
+		Query().
+		WithTeammateTasks(func(ttq *ent.TeammateTaskQuery) {
+			ttq.WithTask(func(tq *ent.TaskQuery) {
+				WithTask(tq)
+			})
+		}).
+		Where(teammatetasksection.ID(createdTeammateTaskSection.ID)).
+		Only(ctx)
+	if err != nil {
+		return nil, model.NewDBError(err)
+	}
+
 	return &model.UndeleteTeammateTaskSectionAndDeleteTasksPayload{
-		TeammateTaskSection: createdTeammateTaskSection,
+		TeammateTaskSection: teammateTaskSection,
 		TeammateTasks:       createdTeammateTasks,
 	}, nil
 }

@@ -200,12 +200,20 @@ type TeammateTaskSectionDeletedAndDeleteTasks struct {
 	Ch          chan *model.DeleteTeammateTaskSectionAndDeleteTasksPayload
 }
 
+// TeammateTaskSectionUndeletedAndKeepTasks is a channel for subscription.
+type TeammateTaskSectionUndeletedAndKeepTasks struct {
+	TeammateID  model.ID
+	WorkspaceID model.ID
+	RequestID   string
+	Ch          chan *model.UndeleteTeammateTaskSectionAndKeepTasksPayload
+}
+
 // TeammateTaskSectionUndeletedAndDeleteTasks is a channel for subscription.
 type TeammateTaskSectionUndeletedAndDeleteTasks struct {
 	TeammateID  model.ID
 	WorkspaceID model.ID
 	RequestID   string
-	Ch          chan *model.UndeleteTeammateTaskSectionAndKeepTasksPayload
+	Ch          chan *model.UndeleteTeammateTaskSectionAndDeleteTasksPayload
 }
 
 // ProjectTaskSectionUpdated is a channel for subscription.
@@ -442,6 +450,7 @@ type Subscriptions struct {
 	TeammateTaskSectionDeletedAndKeepTasks     map[string]TeammateTaskSectionDeletedAndKeepTasks
 	TeammateTaskSectionDeletedAndDeleteTasks   map[string]TeammateTaskSectionDeletedAndDeleteTasks
 	TeammateTaskSectionUndeletedAndDeleteTasks map[string]TeammateTaskSectionUndeletedAndDeleteTasks
+	TeammateTaskSectionUndeletedAndKeepTasks   map[string]TeammateTaskSectionUndeletedAndKeepTasks
 	TeammateTaskSectionUpdated                 map[string]TeammateTaskSectionUpdated
 	TeammateTaskTabStatusUpdated               map[string]TeammateTaskTabStatusUpdated
 	TeammateTaskUpdated                        map[string]TeammateTaskUpdated

@@ -680,59 +680,60 @@ type ComplexityRoot struct {
 	}
 
 	Subscription struct {
-		ColorUpdated                             func(childComplexity int, id ulid.ID, requestID string) int
-		DeletedTaskCreated                       func(childComplexity int, workspaceID ulid.ID, requestID string) int
-		DeletedTaskUpdated                       func(childComplexity int, id ulid.ID, requestID string) int
-		FavoriteProjectCreated                   func(childComplexity int, teammateID ulid.ID, requestID string) int
-		FavoriteProjectIdsUpdated                func(childComplexity int, teammateID ulid.ID, requestID string) int
-		FavoriteWorkspaceIdsUpdated              func(childComplexity int, teammateID ulid.ID, requestID string) int
-		IconUpdated                              func(childComplexity int, id ulid.ID, requestID string) int
-		MeUpdated                                func(childComplexity int, id ulid.ID) int
-		ProjectBaseColorUpdated                  func(childComplexity int, id ulid.ID, requestID string) int
-		ProjectIconUpdated                       func(childComplexity int, id ulid.ID, requestID string) int
-		ProjectLightColorUpdated                 func(childComplexity int, id ulid.ID, requestID string) int
-		ProjectTaskColumnUpdated                 func(childComplexity int, id ulid.ID, requestID string) int
-		ProjectTaskCreated                       func(childComplexity int, workspaceID ulid.ID, requestID string) int
-		ProjectTaskListStatusUpdated             func(childComplexity int, id ulid.ID, requestID string) int
-		ProjectTaskSectionCreated                func(childComplexity int, workspaceID ulid.ID, requestID string) int
-		ProjectTaskSectionDeleted                func(childComplexity int, workspaceID ulid.ID, requestID string) int
-		ProjectTaskSectionDeletedAndDeleteTasks  func(childComplexity int, workspaceID ulid.ID, requestID string) int
-		ProjectTaskSectionDeletedAndKeepTasks    func(childComplexity int, workspaceID ulid.ID, requestID string) int
-		ProjectTaskSectionUpdated                func(childComplexity int, workspaceID ulid.ID, requestID string) int
-		ProjectTaskUpdated                       func(childComplexity int, workspaceID ulid.ID, requestID string) int
-		ProjectTeammateUpdated                   func(childComplexity int, id ulid.ID, requestID string) int
-		ProjectUpdated                           func(childComplexity int, workspaceID ulid.ID, requestID string) int
-		TagUpdated                               func(childComplexity int, id ulid.ID, requestID string) int
-		TaskCollaboratorsUpdated                 func(childComplexity int, taskID ulid.ID, requestID string) int
-		TaskDeleted                              func(childComplexity int, workspaceID ulid.ID, requestID string) int
-		TaskFeedCreated                          func(childComplexity int, workspaceID ulid.ID, requestID string) int
-		TaskFeedDeleted                          func(childComplexity int, workspaceID ulid.ID, requestID string) int
-		TaskFeedLikeCreated                      func(childComplexity int, workspaceID ulid.ID, requestID string) int
-		TaskFeedLikeDeleted                      func(childComplexity int, workspaceID ulid.ID, requestID string) int
-		TaskFeedUpdated                          func(childComplexity int, workspaceID ulid.ID, requestID string) int
-		TaskFileUpdated                          func(childComplexity int, id ulid.ID, requestID string) int
-		TaskLikeCreated                          func(childComplexity int, workspaceID ulid.ID, requestID string) int
-		TaskLikeDeleted                          func(childComplexity int, workspaceID ulid.ID, requestID string) int
-		TaskSectionUpdated                       func(childComplexity int, id ulid.ID, requestID string) int
-		TaskTagsUpdated                          func(childComplexity int, taskID ulid.ID, requestID string) int
-		TaskUndeleted                            func(childComplexity int, workspaceID ulid.ID, requestID string) int
-		TaskUpdated                              func(childComplexity int, workspaceID ulid.ID, requestID string) int
-		TeammateTaskColumnUpdated                func(childComplexity int, id ulid.ID, requestID string) int
-		TeammateTaskCreated                      func(childComplexity int, teammateID ulid.ID, workspaceID ulid.ID, requestID string) int
-		TeammateTaskDeleted                      func(childComplexity int, teammateID ulid.ID, workspaceID ulid.ID, requestID string) int
-		TeammateTaskListStatusUpdated            func(childComplexity int, id ulid.ID, requestID string) int
-		TeammateTaskSectionCreated               func(childComplexity int, teammateID ulid.ID, workspaceID ulid.ID, requestID string) int
-		TeammateTaskSectionDeleted               func(childComplexity int, teammateID ulid.ID, workspaceID ulid.ID, requestID string) int
-		TeammateTaskSectionDeletedAndDeleteTasks func(childComplexity int, teammateID ulid.ID, workspaceID ulid.ID, requestID string) int
-		TeammateTaskSectionDeletedAndKeepTasks   func(childComplexity int, teammateID ulid.ID, workspaceID ulid.ID, requestID string) int
-		TeammateTaskSectionUndeletedAndKeepTasks func(childComplexity int, teammateID ulid.ID, workspaceID ulid.ID, requestID string) int
-		TeammateTaskSectionUpdated               func(childComplexity int, teammateID ulid.ID, workspaceID ulid.ID, requestID string) int
-		TeammateTaskTabStatusUpdated             func(childComplexity int, id ulid.ID, requestID string) int
-		TeammateTaskUpdated                      func(childComplexity int, teammateID ulid.ID, workspaceID ulid.ID, requestID string) int
-		TeammateUpdated                          func(childComplexity int, id ulid.ID, requestID string) int
-		TestUserUpdated                          func(childComplexity int, id ulid.ID) int
-		WorkspaceTeammateUpdated                 func(childComplexity int, id ulid.ID, requestID string) int
-		WorkspaceUpdated                         func(childComplexity int, id ulid.ID, requestID string) int
+		ColorUpdated                               func(childComplexity int, id ulid.ID, requestID string) int
+		DeletedTaskCreated                         func(childComplexity int, workspaceID ulid.ID, requestID string) int
+		DeletedTaskUpdated                         func(childComplexity int, id ulid.ID, requestID string) int
+		FavoriteProjectCreated                     func(childComplexity int, teammateID ulid.ID, requestID string) int
+		FavoriteProjectIdsUpdated                  func(childComplexity int, teammateID ulid.ID, requestID string) int
+		FavoriteWorkspaceIdsUpdated                func(childComplexity int, teammateID ulid.ID, requestID string) int
+		IconUpdated                                func(childComplexity int, id ulid.ID, requestID string) int
+		MeUpdated                                  func(childComplexity int, id ulid.ID) int
+		ProjectBaseColorUpdated                    func(childComplexity int, id ulid.ID, requestID string) int
+		ProjectIconUpdated                         func(childComplexity int, id ulid.ID, requestID string) int
+		ProjectLightColorUpdated                   func(childComplexity int, id ulid.ID, requestID string) int
+		ProjectTaskColumnUpdated                   func(childComplexity int, id ulid.ID, requestID string) int
+		ProjectTaskCreated                         func(childComplexity int, workspaceID ulid.ID, requestID string) int
+		ProjectTaskListStatusUpdated               func(childComplexity int, id ulid.ID, requestID string) int
+		ProjectTaskSectionCreated                  func(childComplexity int, workspaceID ulid.ID, requestID string) int
+		ProjectTaskSectionDeleted                  func(childComplexity int, workspaceID ulid.ID, requestID string) int
+		ProjectTaskSectionDeletedAndDeleteTasks    func(childComplexity int, workspaceID ulid.ID, requestID string) int
+		ProjectTaskSectionDeletedAndKeepTasks      func(childComplexity int, workspaceID ulid.ID, requestID string) int
+		ProjectTaskSectionUpdated                  func(childComplexity int, workspaceID ulid.ID, requestID string) int
+		ProjectTaskUpdated                         func(childComplexity int, workspaceID ulid.ID, requestID string) int
+		ProjectTeammateUpdated                     func(childComplexity int, id ulid.ID, requestID string) int
+		ProjectUpdated                             func(childComplexity int, workspaceID ulid.ID, requestID string) int
+		TagUpdated                                 func(childComplexity int, id ulid.ID, requestID string) int
+		TaskCollaboratorsUpdated                   func(childComplexity int, taskID ulid.ID, requestID string) int
+		TaskDeleted                                func(childComplexity int, workspaceID ulid.ID, requestID string) int
+		TaskFeedCreated                            func(childComplexity int, workspaceID ulid.ID, requestID string) int
+		TaskFeedDeleted                            func(childComplexity int, workspaceID ulid.ID, requestID string) int
+		TaskFeedLikeCreated                        func(childComplexity int, workspaceID ulid.ID, requestID string) int
+		TaskFeedLikeDeleted                        func(childComplexity int, workspaceID ulid.ID, requestID string) int
+		TaskFeedUpdated                            func(childComplexity int, workspaceID ulid.ID, requestID string) int
+		TaskFileUpdated                            func(childComplexity int, id ulid.ID, requestID string) int
+		TaskLikeCreated                            func(childComplexity int, workspaceID ulid.ID, requestID string) int
+		TaskLikeDeleted                            func(childComplexity int, workspaceID ulid.ID, requestID string) int
+		TaskSectionUpdated                         func(childComplexity int, id ulid.ID, requestID string) int
+		TaskTagsUpdated                            func(childComplexity int, taskID ulid.ID, requestID string) int
+		TaskUndeleted                              func(childComplexity int, workspaceID ulid.ID, requestID string) int
+		TaskUpdated                                func(childComplexity int, workspaceID ulid.ID, requestID string) int
+		TeammateTaskColumnUpdated                  func(childComplexity int, id ulid.ID, requestID string) int
+		TeammateTaskCreated                        func(childComplexity int, teammateID ulid.ID, workspaceID ulid.ID, requestID string) int
+		TeammateTaskDeleted                        func(childComplexity int, teammateID ulid.ID, workspaceID ulid.ID, requestID string) int
+		TeammateTaskListStatusUpdated              func(childComplexity int, id ulid.ID, requestID string) int
+		TeammateTaskSectionCreated                 func(childComplexity int, teammateID ulid.ID, workspaceID ulid.ID, requestID string) int
+		TeammateTaskSectionDeleted                 func(childComplexity int, teammateID ulid.ID, workspaceID ulid.ID, requestID string) int
+		TeammateTaskSectionDeletedAndDeleteTasks   func(childComplexity int, teammateID ulid.ID, workspaceID ulid.ID, requestID string) int
+		TeammateTaskSectionDeletedAndKeepTasks     func(childComplexity int, teammateID ulid.ID, workspaceID ulid.ID, requestID string) int
+		TeammateTaskSectionUndeletedAndDeleteTasks func(childComplexity int, teammateID ulid.ID, workspaceID ulid.ID, requestID string) int
+		TeammateTaskSectionUndeletedAndKeepTasks   func(childComplexity int, teammateID ulid.ID, workspaceID ulid.ID, requestID string) int
+		TeammateTaskSectionUpdated                 func(childComplexity int, teammateID ulid.ID, workspaceID ulid.ID, requestID string) int
+		TeammateTaskTabStatusUpdated               func(childComplexity int, id ulid.ID, requestID string) int
+		TeammateTaskUpdated                        func(childComplexity int, teammateID ulid.ID, workspaceID ulid.ID, requestID string) int
+		TeammateUpdated                            func(childComplexity int, id ulid.ID, requestID string) int
+		TestUserUpdated                            func(childComplexity int, id ulid.ID) int
+		WorkspaceTeammateUpdated                   func(childComplexity int, id ulid.ID, requestID string) int
+		WorkspaceUpdated                           func(childComplexity int, id ulid.ID, requestID string) int
 	}
 
 	Tag struct {
@@ -1593,6 +1594,7 @@ type SubscriptionResolver interface {
 	TeammateTaskSectionDeletedAndKeepTasks(ctx context.Context, teammateID ulid.ID, workspaceID ulid.ID, requestID string) (<-chan *model.DeleteTeammateTaskSectionAndKeepTasksPayload, error)
 	TeammateTaskSectionDeletedAndDeleteTasks(ctx context.Context, teammateID ulid.ID, workspaceID ulid.ID, requestID string) (<-chan *model.DeleteTeammateTaskSectionAndDeleteTasksPayload, error)
 	TeammateTaskSectionUndeletedAndKeepTasks(ctx context.Context, teammateID ulid.ID, workspaceID ulid.ID, requestID string) (<-chan *model.UndeleteTeammateTaskSectionAndKeepTasksPayload, error)
+	TeammateTaskSectionUndeletedAndDeleteTasks(ctx context.Context, teammateID ulid.ID, workspaceID ulid.ID, requestID string) (<-chan *model.UndeleteTeammateTaskSectionAndDeleteTasksPayload, error)
 	TeammateTaskTabStatusUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.TeammateTaskTabStatus, error)
 	TestUserUpdated(ctx context.Context, id ulid.ID) (<-chan *ent.TestUser, error)
 	WorkspaceUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.Workspace, error)
@@ -5979,6 +5981,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Subscription.TeammateTaskSectionDeletedAndKeepTasks(childComplexity, args["teammateId"].(ulid.ID), args["workspaceId"].(ulid.ID), args["requestId"].(string)), true
+
+	case "Subscription.teammateTaskSectionUndeletedAndDeleteTasks":
+		if e.complexity.Subscription.TeammateTaskSectionUndeletedAndDeleteTasks == nil {
+			break
+		}
+
+		args, err := ec.field_Subscription_teammateTaskSectionUndeletedAndDeleteTasks_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Subscription.TeammateTaskSectionUndeletedAndDeleteTasks(childComplexity, args["teammateId"].(ulid.ID), args["workspaceId"].(ulid.ID), args["requestId"].(string)), true
 
 	case "Subscription.teammateTaskSectionUndeletedAndKeepTasks":
 		if e.complexity.Subscription.TeammateTaskSectionUndeletedAndKeepTasks == nil {
@@ -14150,6 +14164,7 @@ extend type Subscription {
   teammateTaskSectionDeletedAndKeepTasks(teammateId: ID!, workspaceId: ID!, requestId: String!): DeleteTeammateTaskSectionAndKeepTasksPayload!
   teammateTaskSectionDeletedAndDeleteTasks(teammateId: ID!, workspaceId: ID!, requestId: String!): DeleteTeammateTaskSectionAndDeleteTasksPayload!
   teammateTaskSectionUndeletedAndKeepTasks(teammateId: ID!, workspaceId: ID!, requestId: String!): UndeleteTeammateTaskSectionAndKeepTasksPayload!
+  teammateTaskSectionUndeletedAndDeleteTasks(teammateId: ID!, workspaceId: ID!, requestId: String!): UndeleteTeammateTaskSectionAndDeleteTasksPayload!
 }
 
 extend type Query {
@@ -19657,6 +19672,39 @@ func (ec *executionContext) field_Subscription_teammateTaskSectionDeletedAndKeep
 }
 
 func (ec *executionContext) field_Subscription_teammateTaskSectionDeleted_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 ulid.ID
+	if tmp, ok := rawArgs["teammateId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("teammateId"))
+		arg0, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["teammateId"] = arg0
+	var arg1 ulid.ID
+	if tmp, ok := rawArgs["workspaceId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceId"))
+		arg1, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["workspaceId"] = arg1
+	var arg2 string
+	if tmp, ok := rawArgs["requestId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("requestId"))
+		arg2, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["requestId"] = arg2
+	return args, nil
+}
+
+func (ec *executionContext) field_Subscription_teammateTaskSectionUndeletedAndDeleteTasks_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 ulid.ID
@@ -37597,6 +37645,58 @@ func (ec *executionContext) _Subscription_teammateTaskSectionUndeletedAndKeepTas
 			graphql.MarshalString(field.Alias).MarshalGQL(w)
 			w.Write([]byte{':'})
 			ec.marshalNUndeleteTeammateTaskSectionAndKeepTasksPayload2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐUndeleteTeammateTaskSectionAndKeepTasksPayload(ctx, field.Selections, res).MarshalGQL(w)
+			w.Write([]byte{'}'})
+		})
+	}
+}
+
+func (ec *executionContext) _Subscription_teammateTaskSectionUndeletedAndDeleteTasks(ctx context.Context, field graphql.CollectedField) (ret func() graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = nil
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Subscription",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Subscription_teammateTaskSectionUndeletedAndDeleteTasks_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return nil
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Subscription().TeammateTaskSectionUndeletedAndDeleteTasks(rctx, args["teammateId"].(ulid.ID), args["workspaceId"].(ulid.ID), args["requestId"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return nil
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return nil
+	}
+	return func() graphql.Marshaler {
+		res, ok := <-resTmp.(<-chan *model.UndeleteTeammateTaskSectionAndDeleteTasksPayload)
+		if !ok {
+			return nil
+		}
+		return graphql.WriterFunc(func(w io.Writer) {
+			w.Write([]byte{'{'})
+			graphql.MarshalString(field.Alias).MarshalGQL(w)
+			w.Write([]byte{':'})
+			ec.marshalNUndeleteTeammateTaskSectionAndDeleteTasksPayload2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐUndeleteTeammateTaskSectionAndDeleteTasksPayload(ctx, field.Selections, res).MarshalGQL(w)
 			w.Write([]byte{'}'})
 		})
 	}
@@ -82327,6 +82427,8 @@ func (ec *executionContext) _Subscription(ctx context.Context, sel ast.Selection
 		return ec._Subscription_teammateTaskSectionDeletedAndDeleteTasks(ctx, fields[0])
 	case "teammateTaskSectionUndeletedAndKeepTasks":
 		return ec._Subscription_teammateTaskSectionUndeletedAndKeepTasks(ctx, fields[0])
+	case "teammateTaskSectionUndeletedAndDeleteTasks":
+		return ec._Subscription_teammateTaskSectionUndeletedAndDeleteTasks(ctx, fields[0])
 	case "teammateTaskTabStatusUpdated":
 		return ec._Subscription_teammateTaskTabStatusUpdated(ctx, fields[0])
 	case "testUserUpdated":
