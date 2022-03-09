@@ -99,6 +99,7 @@ extend type Subscription {
   teammateTaskSectionDeleted(teammateId: ID!, workspaceId: ID!, requestId: String!): TeammateTaskSection!
   teammateTaskSectionDeletedAndKeepTasks(teammateId: ID!, workspaceId: ID!, requestId: String!): DeleteTeammateTaskSectionAndKeepTasksPayload!
   teammateTaskSectionDeletedAndDeleteTasks(teammateId: ID!, workspaceId: ID!, requestId: String!): DeleteTeammateTaskSectionAndDeleteTasksPayload!
+  teammateTaskSectionUndeletedAndKeepTasks(teammateId: ID!, workspaceId: ID!, requestId: String!): UndeleteTeammateTaskSectionAndKeepTasksPayload!
 }
 
 extend type Query {
