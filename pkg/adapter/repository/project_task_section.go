@@ -112,7 +112,7 @@ func (r *projectTaskSectionRepository) Delete(ctx context.Context, input model.D
 	return deleted, nil
 }
 
-func (r *projectTaskSectionRepository) DeleteProjectTaskSectionAndKeepTasks(ctx context.Context, input model.DeleteProjectTaskSectionAndKeepTasksInput) (*model.DeleteProjectTaskSectionAndKeepTasksPayload, error) {
+func (r *projectTaskSectionRepository) DeleteAndKeepTasks(ctx context.Context, input model.DeleteProjectTaskSectionAndKeepTasksInput) (*model.DeleteProjectTaskSectionAndKeepTasksPayload, error) {
 	client := WithTransactionalMutation(ctx)
 
 	deleted, err := client.ProjectTaskSection.
@@ -181,7 +181,7 @@ func (r *projectTaskSectionRepository) DeleteProjectTaskSectionAndKeepTasks(ctx 
 	}, nil
 }
 
-func (r *projectTaskSectionRepository) DeleteProjectTaskSectionAndDeleteTasks(ctx context.Context, input model.DeleteProjectTaskSectionAndDeleteTasksInput) (*model.DeleteProjectTaskSectionAndDeleteTasksPayload, error) {
+func (r *projectTaskSectionRepository) DeleteAndDeleteTasks(ctx context.Context, input model.DeleteProjectTaskSectionAndDeleteTasksInput) (*model.DeleteProjectTaskSectionAndDeleteTasksPayload, error) {
 	client := WithTransactionalMutation(ctx)
 
 	deleted, err := client.ProjectTaskSection.
@@ -236,6 +236,56 @@ func (r *projectTaskSectionRepository) DeleteProjectTaskSectionAndDeleteTasks(ct
 
 	return &model.DeleteProjectTaskSectionAndDeleteTasksPayload{
 		ProjectTaskSection: deleted,
+		ProjectTaskIDs:     projectTaskIDs,
+	}, nil
+}
+
+func (r *projectTaskSectionRepository) UndeleteAndKeepTasks(ctx context.Context, input model.UndeleteProjectTaskSectionAndKeepTasksInput) (*model.UndeleteProjectTaskSectionAndKeepTasksPayload, error) {
+	client := WithTransactionalMutation(ctx)
+
+	createdProjectTaskSection, err := client.ProjectTaskSection.
+		Create().
+		SetProjectID(input.ProjectID).
+		SetName(input.Name).
+		SetCreatedAt(*input.CreatedAt).
+		SetUpdatedAt(*input.UpdatedAt).
+		Save(ctx)
+
+	if err != nil {
+		return nil, model.NewDBError(err)
+	}
+
+	projectTasks, err := client.ProjectTask.
+		Query().
+		Where(projecttask.IDIn(input.KeptProjectTaskIDs...)).
+		All(ctx)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return nil, model.NewNotFoundError(err, input.KeptProjectTaskIDs)
+		}
+		return nil, model.NewDBError(err)
+	}
+	bulk := make([]*ent.ProjectTaskCreate, len(projectTasks))
+	for i, t := range projectTasks {
+		bulk[i] = client.ProjectTask.Create().
+			SetID(t.ID).
+			SetTaskID(t.TaskID).
+			SetProjectID(t.ProjectID).
+			SetProjectTaskSectionID(createdProjectTaskSection.ID).
+			SetCreatedAt(t.CreatedAt)
+	}
+	err = client.ProjectTask.CreateBulk(bulk...).OnConflict().UpdateNewValues().Exec(ctx)
+	if err != nil {
+		return nil, model.NewDBError(err)
+	}
+
+	projectTaskIDs := make([]model.ID, len(projectTasks))
+	for i, t := range projectTasks {
+		projectTaskIDs[i] = t.ID
+	}
+
+	return &model.UndeleteProjectTaskSectionAndKeepTasksPayload{
+		ProjectTaskSection: createdProjectTaskSection,
 		ProjectTaskIDs:     projectTaskIDs,
 	}, nil
 }

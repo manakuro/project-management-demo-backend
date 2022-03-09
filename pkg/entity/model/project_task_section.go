@@ -3,6 +3,7 @@ package model
 import (
 	"project-management-demo-backend/ent"
 	"project-management-demo-backend/ent/schema/ulid"
+	"time"
 )
 
 // ProjectTaskSection is the model entity for the ProjectTaskSection schema.
@@ -52,4 +53,21 @@ type DeleteProjectTaskSectionAndDeleteTasksInput struct {
 type DeleteProjectTaskSectionAndDeleteTasksPayload struct {
 	ProjectTaskSection *ProjectTaskSection
 	ProjectTaskIDs     []ulid.ID
+}
+
+// UndeleteProjectTaskSectionAndKeepTasksInput represents a mutation input.
+type UndeleteProjectTaskSectionAndKeepTasksInput struct {
+	Name               string
+	CreatedAt          *time.Time
+	UpdatedAt          *time.Time
+	ProjectID          ID
+	KeptProjectTaskIDs []ID
+	WorkspaceID        ID
+	RequestID          string
+}
+
+// UndeleteProjectTaskSectionAndKeepTasksPayload represents a mutation payload.
+type UndeleteProjectTaskSectionAndKeepTasksPayload struct {
+	ProjectTaskSection *ProjectTaskSection
+	ProjectTaskIDs     []ID
 }
