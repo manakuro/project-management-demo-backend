@@ -232,53 +232,53 @@ func (tfc *TaskFileCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (tfc *TaskFileCreate) check() error {
 	if _, ok := tfc.mutation.ProjectID(); !ok {
-		return &ValidationError{Name: "project_id", err: errors.New(`ent: missing required field "project_id"`)}
+		return &ValidationError{Name: "project_id", err: errors.New(`ent: missing required field "TaskFile.project_id"`)}
 	}
 	if _, ok := tfc.mutation.TaskID(); !ok {
-		return &ValidationError{Name: "task_id", err: errors.New(`ent: missing required field "task_id"`)}
+		return &ValidationError{Name: "task_id", err: errors.New(`ent: missing required field "TaskFile.task_id"`)}
 	}
 	if _, ok := tfc.mutation.TaskFeedID(); !ok {
-		return &ValidationError{Name: "task_feed_id", err: errors.New(`ent: missing required field "task_feed_id"`)}
+		return &ValidationError{Name: "task_feed_id", err: errors.New(`ent: missing required field "TaskFile.task_feed_id"`)}
 	}
 	if _, ok := tfc.mutation.FileTypeID(); !ok {
-		return &ValidationError{Name: "file_type_id", err: errors.New(`ent: missing required field "file_type_id"`)}
+		return &ValidationError{Name: "file_type_id", err: errors.New(`ent: missing required field "TaskFile.file_type_id"`)}
 	}
 	if _, ok := tfc.mutation.Name(); !ok {
-		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "name"`)}
+		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "TaskFile.name"`)}
 	}
 	if v, ok := tfc.mutation.Name(); ok {
 		if err := taskfile.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "name": %w`, err)}
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "TaskFile.name": %w`, err)}
 		}
 	}
 	if _, ok := tfc.mutation.Src(); !ok {
-		return &ValidationError{Name: "src", err: errors.New(`ent: missing required field "src"`)}
+		return &ValidationError{Name: "src", err: errors.New(`ent: missing required field "TaskFile.src"`)}
 	}
 	if v, ok := tfc.mutation.Src(); ok {
 		if err := taskfile.SrcValidator(v); err != nil {
-			return &ValidationError{Name: "src", err: fmt.Errorf(`ent: validator failed for field "src": %w`, err)}
+			return &ValidationError{Name: "src", err: fmt.Errorf(`ent: validator failed for field "TaskFile.src": %w`, err)}
 		}
 	}
 	if _, ok := tfc.mutation.Attached(); !ok {
-		return &ValidationError{Name: "attached", err: errors.New(`ent: missing required field "attached"`)}
+		return &ValidationError{Name: "attached", err: errors.New(`ent: missing required field "TaskFile.attached"`)}
 	}
 	if _, ok := tfc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "TaskFile.created_at"`)}
 	}
 	if _, ok := tfc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "TaskFile.updated_at"`)}
 	}
 	if _, ok := tfc.mutation.ProjectID(); !ok {
-		return &ValidationError{Name: "project", err: errors.New("ent: missing required edge \"project\"")}
+		return &ValidationError{Name: "project", err: errors.New(`ent: missing required edge "TaskFile.project"`)}
 	}
 	if _, ok := tfc.mutation.TaskID(); !ok {
-		return &ValidationError{Name: "task", err: errors.New("ent: missing required edge \"task\"")}
+		return &ValidationError{Name: "task", err: errors.New(`ent: missing required edge "TaskFile.task"`)}
 	}
 	if _, ok := tfc.mutation.TaskFeedID(); !ok {
-		return &ValidationError{Name: "taskFeed", err: errors.New("ent: missing required edge \"taskFeed\"")}
+		return &ValidationError{Name: "taskFeed", err: errors.New(`ent: missing required edge "TaskFile.taskFeed"`)}
 	}
 	if _, ok := tfc.mutation.FileTypeID(); !ok {
-		return &ValidationError{Name: "fileType", err: errors.New("ent: missing required edge \"fileType\"")}
+		return &ValidationError{Name: "fileType", err: errors.New(`ent: missing required edge "TaskFile.fileType"`)}
 	}
 	return nil
 }
@@ -292,7 +292,11 @@ func (tfc *TaskFileCreate) sqlSave(ctx context.Context) (*TaskFile, error) {
 		return nil, err
 	}
 	if _spec.ID.Value != nil {
-		_node.ID = _spec.ID.Value.(ulid.ID)
+		if id, ok := _spec.ID.Value.(*ulid.ID); ok {
+			_node.ID = *id
+		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
+			return nil, err
+		}
 	}
 	return _node, nil
 }
@@ -311,7 +315,7 @@ func (tfc *TaskFileCreate) createSpec() (*TaskFile, *sqlgraph.CreateSpec) {
 	_spec.OnConflict = tfc.conflict
 	if id, ok := tfc.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = id
+		_spec.ID.Value = &id
 	}
 	if value, ok := tfc.mutation.Name(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -595,7 +599,7 @@ func (u *TaskFileUpsert) UpdateUpdatedAt() *TaskFileUpsert {
 	return u
 }
 
-// UpdateNewValues updates the fields using the new values that were set on create except the ID field.
+// UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
 //	client.TaskFile.Create().
@@ -612,6 +616,12 @@ func (u *TaskFileUpsertOne) UpdateNewValues() *TaskFileUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
 		if _, exists := u.create.mutation.ID(); exists {
 			s.SetIgnore(taskfile.FieldID)
+		}
+		if _, exists := u.create.mutation.CreatedAt(); exists {
+			s.SetIgnore(taskfile.FieldCreatedAt)
+		}
+		if _, exists := u.create.mutation.UpdatedAt(); exists {
+			s.SetIgnore(taskfile.FieldUpdatedAt)
 		}
 	}))
 	return u
@@ -934,7 +944,7 @@ type TaskFileUpsertBulk struct {
 	create *TaskFileCreateBulk
 }
 
-// UpdateNewValues updates the fields using the new values that
+// UpdateNewValues updates the mutable fields using the new values that
 // were set on create. Using this option is equivalent to using:
 //
 //	client.TaskFile.Create().
@@ -953,6 +963,12 @@ func (u *TaskFileUpsertBulk) UpdateNewValues() *TaskFileUpsertBulk {
 			if _, exists := b.mutation.ID(); exists {
 				s.SetIgnore(taskfile.FieldID)
 				return
+			}
+			if _, exists := b.mutation.CreatedAt(); exists {
+				s.SetIgnore(taskfile.FieldCreatedAt)
+			}
+			if _, exists := b.mutation.UpdatedAt(); exists {
+				s.SetIgnore(taskfile.FieldUpdatedAt)
 			}
 		}
 	}))

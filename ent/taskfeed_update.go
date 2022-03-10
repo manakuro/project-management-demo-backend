@@ -241,10 +241,10 @@ func (tfu *TaskFeedUpdate) ExecX(ctx context.Context) {
 // check runs all checks and user-defined validators on the builder.
 func (tfu *TaskFeedUpdate) check() error {
 	if _, ok := tfu.mutation.TaskID(); tfu.mutation.TaskCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"task\"")
+		return errors.New(`ent: clearing a required unique edge "TaskFeed.task"`)
 	}
 	if _, ok := tfu.mutation.TeammateID(); tfu.mutation.TeammateCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"teammate\"")
+		return errors.New(`ent: clearing a required unique edge "TaskFeed.teammate"`)
 	}
 	return nil
 }
@@ -700,10 +700,10 @@ func (tfuo *TaskFeedUpdateOne) ExecX(ctx context.Context) {
 // check runs all checks and user-defined validators on the builder.
 func (tfuo *TaskFeedUpdateOne) check() error {
 	if _, ok := tfuo.mutation.TaskID(); tfuo.mutation.TaskCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"task\"")
+		return errors.New(`ent: clearing a required unique edge "TaskFeed.task"`)
 	}
 	if _, ok := tfuo.mutation.TeammateID(); tfuo.mutation.TeammateCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"teammate\"")
+		return errors.New(`ent: clearing a required unique edge "TaskFeed.teammate"`)
 	}
 	return nil
 }
@@ -721,7 +721,7 @@ func (tfuo *TaskFeedUpdateOne) sqlSave(ctx context.Context) (_node *TaskFeed, er
 	}
 	id, ok := tfuo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing TaskFeed.ID for update")}
+		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "TaskFeed.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := tfuo.fields; len(fields) > 0 {

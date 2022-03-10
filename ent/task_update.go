@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"project-management-demo-backend/ent/deletedtask"
 	"project-management-demo-backend/ent/predicate"
@@ -696,7 +697,7 @@ func (tu *TaskUpdate) ExecX(ctx context.Context) {
 func (tu *TaskUpdate) check() error {
 	if v, ok := tu.mutation.Name(); ok {
 		if err := task.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf("ent: validator failed for field \"name\": %w", err)}
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Task.name": %w`, err)}
 		}
 	}
 	return nil
@@ -2121,7 +2122,7 @@ func (tuo *TaskUpdateOne) ExecX(ctx context.Context) {
 func (tuo *TaskUpdateOne) check() error {
 	if v, ok := tuo.mutation.Name(); ok {
 		if err := task.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf("ent: validator failed for field \"name\": %w", err)}
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Task.name": %w`, err)}
 		}
 	}
 	return nil
@@ -2140,7 +2141,7 @@ func (tuo *TaskUpdateOne) sqlSave(ctx context.Context) (_node *Task, err error) 
 	}
 	id, ok := tuo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing Task.ID for update")}
+		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Task.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := tuo.fields; len(fields) > 0 {

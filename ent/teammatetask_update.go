@@ -168,16 +168,16 @@ func (ttu *TeammateTaskUpdate) ExecX(ctx context.Context) {
 // check runs all checks and user-defined validators on the builder.
 func (ttu *TeammateTaskUpdate) check() error {
 	if _, ok := ttu.mutation.TeammateID(); ttu.mutation.TeammateCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"teammate\"")
+		return errors.New(`ent: clearing a required unique edge "TeammateTask.teammate"`)
 	}
 	if _, ok := ttu.mutation.TaskID(); ttu.mutation.TaskCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"task\"")
+		return errors.New(`ent: clearing a required unique edge "TeammateTask.task"`)
 	}
 	if _, ok := ttu.mutation.TeammateTaskSectionID(); ttu.mutation.TeammateTaskSectionCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"teammateTaskSection\"")
+		return errors.New(`ent: clearing a required unique edge "TeammateTask.teammateTaskSection"`)
 	}
 	if _, ok := ttu.mutation.WorkspaceID(); ttu.mutation.WorkspaceCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"workspace\"")
+		return errors.New(`ent: clearing a required unique edge "TeammateTask.workspace"`)
 	}
 	return nil
 }
@@ -502,16 +502,16 @@ func (ttuo *TeammateTaskUpdateOne) ExecX(ctx context.Context) {
 // check runs all checks and user-defined validators on the builder.
 func (ttuo *TeammateTaskUpdateOne) check() error {
 	if _, ok := ttuo.mutation.TeammateID(); ttuo.mutation.TeammateCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"teammate\"")
+		return errors.New(`ent: clearing a required unique edge "TeammateTask.teammate"`)
 	}
 	if _, ok := ttuo.mutation.TaskID(); ttuo.mutation.TaskCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"task\"")
+		return errors.New(`ent: clearing a required unique edge "TeammateTask.task"`)
 	}
 	if _, ok := ttuo.mutation.TeammateTaskSectionID(); ttuo.mutation.TeammateTaskSectionCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"teammateTaskSection\"")
+		return errors.New(`ent: clearing a required unique edge "TeammateTask.teammateTaskSection"`)
 	}
 	if _, ok := ttuo.mutation.WorkspaceID(); ttuo.mutation.WorkspaceCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"workspace\"")
+		return errors.New(`ent: clearing a required unique edge "TeammateTask.workspace"`)
 	}
 	return nil
 }
@@ -529,7 +529,7 @@ func (ttuo *TeammateTaskUpdateOne) sqlSave(ctx context.Context) (_node *Teammate
 	}
 	id, ok := ttuo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing TeammateTask.ID for update")}
+		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "TeammateTask.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := ttuo.fields; len(fields) > 0 {

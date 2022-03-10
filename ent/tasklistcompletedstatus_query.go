@@ -157,7 +157,7 @@ func (tlcsq *TaskListCompletedStatusQuery) FirstIDX(ctx context.Context) ulid.ID
 }
 
 // Only returns a single TaskListCompletedStatus entity found by the query, ensuring it only returns one.
-// Returns a *NotSingularError when exactly one TaskListCompletedStatus entity is not found.
+// Returns a *NotSingularError when more than one TaskListCompletedStatus entity is found.
 // Returns a *NotFoundError when no TaskListCompletedStatus entities are found.
 func (tlcsq *TaskListCompletedStatusQuery) Only(ctx context.Context) (*TaskListCompletedStatus, error) {
 	nodes, err := tlcsq.Limit(2).All(ctx)
@@ -184,7 +184,7 @@ func (tlcsq *TaskListCompletedStatusQuery) OnlyX(ctx context.Context) *TaskListC
 }
 
 // OnlyID is like Only, but returns the only TaskListCompletedStatus ID in the query.
-// Returns a *NotSingularError when exactly one TaskListCompletedStatus ID is not found.
+// Returns a *NotSingularError when more than one TaskListCompletedStatus ID is found.
 // Returns a *NotFoundError when no entities are found.
 func (tlcsq *TaskListCompletedStatusQuery) OnlyID(ctx context.Context) (id ulid.ID, err error) {
 	var ids []ulid.ID
@@ -295,8 +295,9 @@ func (tlcsq *TaskListCompletedStatusQuery) Clone() *TaskListCompletedStatusQuery
 		withTeammateTaskListStatuses: tlcsq.withTeammateTaskListStatuses.Clone(),
 		withProjectTaskListStatuses:  tlcsq.withProjectTaskListStatuses.Clone(),
 		// clone intermediate query.
-		sql:  tlcsq.sql.Clone(),
-		path: tlcsq.path,
+		sql:    tlcsq.sql.Clone(),
+		path:   tlcsq.path,
+		unique: tlcsq.unique,
 	}
 }
 
@@ -467,6 +468,10 @@ func (tlcsq *TaskListCompletedStatusQuery) sqlAll(ctx context.Context) ([]*TaskL
 
 func (tlcsq *TaskListCompletedStatusQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := tlcsq.querySpec()
+	_spec.Node.Columns = tlcsq.fields
+	if len(tlcsq.fields) > 0 {
+		_spec.Unique = tlcsq.unique != nil && *tlcsq.unique
+	}
 	return sqlgraph.CountNodes(ctx, tlcsq.driver, _spec)
 }
 
@@ -537,6 +542,9 @@ func (tlcsq *TaskListCompletedStatusQuery) sqlQuery(ctx context.Context) *sql.Se
 	if tlcsq.sql != nil {
 		selector = tlcsq.sql
 		selector.Select(selector.Columns(columns...)...)
+	}
+	if tlcsq.unique != nil && *tlcsq.unique {
+		selector.Distinct()
 	}
 	for _, p := range tlcsq.predicates {
 		p(selector)
@@ -816,9 +824,7 @@ func (tlcsgb *TaskListCompletedStatusGroupBy) sqlQuery() *sql.Selector {
 		for _, f := range tlcsgb.fields {
 			columns = append(columns, selector.C(f))
 		}
-		for _, c := range aggregation {
-			columns = append(columns, c)
-		}
+		columns = append(columns, aggregation...)
 		selector.Select(columns...)
 	}
 	return selector.GroupBy(selector.Columns(tlcsgb.fields...)...)

@@ -428,34 +428,34 @@ func (tc *TeammateCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (tc *TeammateCreate) check() error {
 	if _, ok := tc.mutation.Name(); !ok {
-		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "name"`)}
+		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Teammate.name"`)}
 	}
 	if v, ok := tc.mutation.Name(); ok {
 		if err := teammate.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "name": %w`, err)}
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Teammate.name": %w`, err)}
 		}
 	}
 	if _, ok := tc.mutation.Image(); !ok {
-		return &ValidationError{Name: "image", err: errors.New(`ent: missing required field "image"`)}
+		return &ValidationError{Name: "image", err: errors.New(`ent: missing required field "Teammate.image"`)}
 	}
 	if v, ok := tc.mutation.Image(); ok {
 		if err := teammate.ImageValidator(v); err != nil {
-			return &ValidationError{Name: "image", err: fmt.Errorf(`ent: validator failed for field "image": %w`, err)}
+			return &ValidationError{Name: "image", err: fmt.Errorf(`ent: validator failed for field "Teammate.image": %w`, err)}
 		}
 	}
 	if _, ok := tc.mutation.Email(); !ok {
-		return &ValidationError{Name: "email", err: errors.New(`ent: missing required field "email"`)}
+		return &ValidationError{Name: "email", err: errors.New(`ent: missing required field "Teammate.email"`)}
 	}
 	if v, ok := tc.mutation.Email(); ok {
 		if err := teammate.EmailValidator(v); err != nil {
-			return &ValidationError{Name: "email", err: fmt.Errorf(`ent: validator failed for field "email": %w`, err)}
+			return &ValidationError{Name: "email", err: fmt.Errorf(`ent: validator failed for field "Teammate.email": %w`, err)}
 		}
 	}
 	if _, ok := tc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Teammate.created_at"`)}
 	}
 	if _, ok := tc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Teammate.updated_at"`)}
 	}
 	return nil
 }
@@ -469,7 +469,11 @@ func (tc *TeammateCreate) sqlSave(ctx context.Context) (*Teammate, error) {
 		return nil, err
 	}
 	if _spec.ID.Value != nil {
-		_node.ID = _spec.ID.Value.(ulid.ID)
+		if id, ok := _spec.ID.Value.(*ulid.ID); ok {
+			_node.ID = *id
+		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
+			return nil, err
+		}
 	}
 	return _node, nil
 }
@@ -488,7 +492,7 @@ func (tc *TeammateCreate) createSpec() (*Teammate, *sqlgraph.CreateSpec) {
 	_spec.OnConflict = tc.conflict
 	if id, ok := tc.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = id
+		_spec.ID.Value = &id
 	}
 	if value, ok := tc.mutation.Name(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -948,7 +952,7 @@ func (u *TeammateUpsert) UpdateUpdatedAt() *TeammateUpsert {
 	return u
 }
 
-// UpdateNewValues updates the fields using the new values that were set on create except the ID field.
+// UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
 //	client.Teammate.Create().
@@ -965,6 +969,12 @@ func (u *TeammateUpsertOne) UpdateNewValues() *TeammateUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
 		if _, exists := u.create.mutation.ID(); exists {
 			s.SetIgnore(teammate.FieldID)
+		}
+		if _, exists := u.create.mutation.CreatedAt(); exists {
+			s.SetIgnore(teammate.FieldCreatedAt)
+		}
+		if _, exists := u.create.mutation.UpdatedAt(); exists {
+			s.SetIgnore(teammate.FieldUpdatedAt)
 		}
 	}))
 	return u
@@ -1231,7 +1241,7 @@ type TeammateUpsertBulk struct {
 	create *TeammateCreateBulk
 }
 
-// UpdateNewValues updates the fields using the new values that
+// UpdateNewValues updates the mutable fields using the new values that
 // were set on create. Using this option is equivalent to using:
 //
 //	client.Teammate.Create().
@@ -1250,6 +1260,12 @@ func (u *TeammateUpsertBulk) UpdateNewValues() *TeammateUpsertBulk {
 			if _, exists := b.mutation.ID(); exists {
 				s.SetIgnore(teammate.FieldID)
 				return
+			}
+			if _, exists := b.mutation.CreatedAt(); exists {
+				s.SetIgnore(teammate.FieldCreatedAt)
+			}
+			if _, exists := b.mutation.UpdatedAt(); exists {
+				s.SetIgnore(teammate.FieldUpdatedAt)
 			}
 		}
 	}))

@@ -156,7 +156,7 @@ func (fwq *FavoriteWorkspaceQuery) FirstIDX(ctx context.Context) ulid.ID {
 }
 
 // Only returns a single FavoriteWorkspace entity found by the query, ensuring it only returns one.
-// Returns a *NotSingularError when exactly one FavoriteWorkspace entity is not found.
+// Returns a *NotSingularError when more than one FavoriteWorkspace entity is found.
 // Returns a *NotFoundError when no FavoriteWorkspace entities are found.
 func (fwq *FavoriteWorkspaceQuery) Only(ctx context.Context) (*FavoriteWorkspace, error) {
 	nodes, err := fwq.Limit(2).All(ctx)
@@ -183,7 +183,7 @@ func (fwq *FavoriteWorkspaceQuery) OnlyX(ctx context.Context) *FavoriteWorkspace
 }
 
 // OnlyID is like Only, but returns the only FavoriteWorkspace ID in the query.
-// Returns a *NotSingularError when exactly one FavoriteWorkspace ID is not found.
+// Returns a *NotSingularError when more than one FavoriteWorkspace ID is found.
 // Returns a *NotFoundError when no entities are found.
 func (fwq *FavoriteWorkspaceQuery) OnlyID(ctx context.Context) (id ulid.ID, err error) {
 	var ids []ulid.ID
@@ -294,8 +294,9 @@ func (fwq *FavoriteWorkspaceQuery) Clone() *FavoriteWorkspaceQuery {
 		withWorkspace: fwq.withWorkspace.Clone(),
 		withTeammate:  fwq.withTeammate.Clone(),
 		// clone intermediate query.
-		sql:  fwq.sql.Clone(),
-		path: fwq.path,
+		sql:    fwq.sql.Clone(),
+		path:   fwq.path,
+		unique: fwq.unique,
 	}
 }
 
@@ -468,6 +469,10 @@ func (fwq *FavoriteWorkspaceQuery) sqlAll(ctx context.Context) ([]*FavoriteWorks
 
 func (fwq *FavoriteWorkspaceQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := fwq.querySpec()
+	_spec.Node.Columns = fwq.fields
+	if len(fwq.fields) > 0 {
+		_spec.Unique = fwq.unique != nil && *fwq.unique
+	}
 	return sqlgraph.CountNodes(ctx, fwq.driver, _spec)
 }
 
@@ -538,6 +543,9 @@ func (fwq *FavoriteWorkspaceQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	if fwq.sql != nil {
 		selector = fwq.sql
 		selector.Select(selector.Columns(columns...)...)
+	}
+	if fwq.unique != nil && *fwq.unique {
+		selector.Distinct()
 	}
 	for _, p := range fwq.predicates {
 		p(selector)
@@ -817,9 +825,7 @@ func (fwgb *FavoriteWorkspaceGroupBy) sqlQuery() *sql.Selector {
 		for _, f := range fwgb.fields {
 			columns = append(columns, selector.C(f))
 		}
-		for _, c := range aggregation {
-			columns = append(columns, c)
-		}
+		columns = append(columns, aggregation...)
 		selector.Select(columns...)
 	}
 	return selector.GroupBy(selector.Columns(fwgb.fields...)...)

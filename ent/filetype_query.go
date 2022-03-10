@@ -133,7 +133,7 @@ func (ftq *FileTypeQuery) FirstIDX(ctx context.Context) ulid.ID {
 }
 
 // Only returns a single FileType entity found by the query, ensuring it only returns one.
-// Returns a *NotSingularError when exactly one FileType entity is not found.
+// Returns a *NotSingularError when more than one FileType entity is found.
 // Returns a *NotFoundError when no FileType entities are found.
 func (ftq *FileTypeQuery) Only(ctx context.Context) (*FileType, error) {
 	nodes, err := ftq.Limit(2).All(ctx)
@@ -160,7 +160,7 @@ func (ftq *FileTypeQuery) OnlyX(ctx context.Context) *FileType {
 }
 
 // OnlyID is like Only, but returns the only FileType ID in the query.
-// Returns a *NotSingularError when exactly one FileType ID is not found.
+// Returns a *NotSingularError when more than one FileType ID is found.
 // Returns a *NotFoundError when no entities are found.
 func (ftq *FileTypeQuery) OnlyID(ctx context.Context) (id ulid.ID, err error) {
 	var ids []ulid.ID
@@ -270,8 +270,9 @@ func (ftq *FileTypeQuery) Clone() *FileTypeQuery {
 		predicates:    append([]predicate.FileType{}, ftq.predicates...),
 		withTaskFiles: ftq.withTaskFiles.Clone(),
 		// clone intermediate query.
-		sql:  ftq.sql.Clone(),
-		path: ftq.path,
+		sql:    ftq.sql.Clone(),
+		path:   ftq.path,
+		unique: ftq.unique,
 	}
 }
 
@@ -405,6 +406,10 @@ func (ftq *FileTypeQuery) sqlAll(ctx context.Context) ([]*FileType, error) {
 
 func (ftq *FileTypeQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := ftq.querySpec()
+	_spec.Node.Columns = ftq.fields
+	if len(ftq.fields) > 0 {
+		_spec.Unique = ftq.unique != nil && *ftq.unique
+	}
 	return sqlgraph.CountNodes(ctx, ftq.driver, _spec)
 }
 
@@ -475,6 +480,9 @@ func (ftq *FileTypeQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	if ftq.sql != nil {
 		selector = ftq.sql
 		selector.Select(selector.Columns(columns...)...)
+	}
+	if ftq.unique != nil && *ftq.unique {
+		selector.Distinct()
 	}
 	for _, p := range ftq.predicates {
 		p(selector)
@@ -754,9 +762,7 @@ func (ftgb *FileTypeGroupBy) sqlQuery() *sql.Selector {
 		for _, f := range ftgb.fields {
 			columns = append(columns, selector.C(f))
 		}
-		for _, c := range aggregation {
-			columns = append(columns, c)
-		}
+		columns = append(columns, aggregation...)
 		selector.Select(columns...)
 	}
 	return selector.GroupBy(selector.Columns(ftgb.fields...)...)

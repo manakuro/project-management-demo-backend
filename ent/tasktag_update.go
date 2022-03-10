@@ -132,10 +132,10 @@ func (ttu *TaskTagUpdate) ExecX(ctx context.Context) {
 // check runs all checks and user-defined validators on the builder.
 func (ttu *TaskTagUpdate) check() error {
 	if _, ok := ttu.mutation.TaskID(); ttu.mutation.TaskCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"task\"")
+		return errors.New(`ent: clearing a required unique edge "TaskTag.task"`)
 	}
 	if _, ok := ttu.mutation.TagID(); ttu.mutation.TagCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"tag\"")
+		return errors.New(`ent: clearing a required unique edge "TaskTag.tag"`)
 	}
 	return nil
 }
@@ -356,10 +356,10 @@ func (ttuo *TaskTagUpdateOne) ExecX(ctx context.Context) {
 // check runs all checks and user-defined validators on the builder.
 func (ttuo *TaskTagUpdateOne) check() error {
 	if _, ok := ttuo.mutation.TaskID(); ttuo.mutation.TaskCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"task\"")
+		return errors.New(`ent: clearing a required unique edge "TaskTag.task"`)
 	}
 	if _, ok := ttuo.mutation.TagID(); ttuo.mutation.TagCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"tag\"")
+		return errors.New(`ent: clearing a required unique edge "TaskTag.tag"`)
 	}
 	return nil
 }
@@ -377,7 +377,7 @@ func (ttuo *TaskTagUpdateOne) sqlSave(ctx context.Context) (_node *TaskTag, err 
 	}
 	id, ok := ttuo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing TaskTag.ID for update")}
+		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "TaskTag.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := ttuo.fields; len(fields) > 0 {

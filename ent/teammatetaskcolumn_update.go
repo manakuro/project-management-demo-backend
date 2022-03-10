@@ -182,17 +182,17 @@ func (ttcu *TeammateTaskColumnUpdate) ExecX(ctx context.Context) {
 func (ttcu *TeammateTaskColumnUpdate) check() error {
 	if v, ok := ttcu.mutation.Width(); ok {
 		if err := teammatetaskcolumn.WidthValidator(v); err != nil {
-			return &ValidationError{Name: "width", err: fmt.Errorf("ent: validator failed for field \"width\": %w", err)}
+			return &ValidationError{Name: "width", err: fmt.Errorf(`ent: validator failed for field "TeammateTaskColumn.width": %w`, err)}
 		}
 	}
 	if _, ok := ttcu.mutation.TeammateID(); ttcu.mutation.TeammateCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"teammate\"")
+		return errors.New(`ent: clearing a required unique edge "TeammateTaskColumn.teammate"`)
 	}
 	if _, ok := ttcu.mutation.WorkspaceID(); ttcu.mutation.WorkspaceCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"workspace\"")
+		return errors.New(`ent: clearing a required unique edge "TeammateTaskColumn.workspace"`)
 	}
 	if _, ok := ttcu.mutation.TaskColumnID(); ttcu.mutation.TaskColumnCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"taskColumn\"")
+		return errors.New(`ent: clearing a required unique edge "TeammateTaskColumn.taskColumn"`)
 	}
 	return nil
 }
@@ -532,17 +532,17 @@ func (ttcuo *TeammateTaskColumnUpdateOne) ExecX(ctx context.Context) {
 func (ttcuo *TeammateTaskColumnUpdateOne) check() error {
 	if v, ok := ttcuo.mutation.Width(); ok {
 		if err := teammatetaskcolumn.WidthValidator(v); err != nil {
-			return &ValidationError{Name: "width", err: fmt.Errorf("ent: validator failed for field \"width\": %w", err)}
+			return &ValidationError{Name: "width", err: fmt.Errorf(`ent: validator failed for field "TeammateTaskColumn.width": %w`, err)}
 		}
 	}
 	if _, ok := ttcuo.mutation.TeammateID(); ttcuo.mutation.TeammateCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"teammate\"")
+		return errors.New(`ent: clearing a required unique edge "TeammateTaskColumn.teammate"`)
 	}
 	if _, ok := ttcuo.mutation.WorkspaceID(); ttcuo.mutation.WorkspaceCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"workspace\"")
+		return errors.New(`ent: clearing a required unique edge "TeammateTaskColumn.workspace"`)
 	}
 	if _, ok := ttcuo.mutation.TaskColumnID(); ttcuo.mutation.TaskColumnCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"taskColumn\"")
+		return errors.New(`ent: clearing a required unique edge "TeammateTaskColumn.taskColumn"`)
 	}
 	return nil
 }
@@ -560,7 +560,7 @@ func (ttcuo *TeammateTaskColumnUpdateOne) sqlSave(ctx context.Context) (_node *T
 	}
 	id, ok := ttcuo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing TeammateTaskColumn.ID for update")}
+		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "TeammateTaskColumn.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := ttcuo.fields; len(fields) > 0 {

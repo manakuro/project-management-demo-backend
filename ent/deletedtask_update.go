@@ -151,14 +151,14 @@ func (dtu *DeletedTaskUpdate) ExecX(ctx context.Context) {
 func (dtu *DeletedTaskUpdate) check() error {
 	if v, ok := dtu.mutation.TaskType(); ok {
 		if err := deletedtask.TaskTypeValidator(v); err != nil {
-			return &ValidationError{Name: "task_type", err: fmt.Errorf("ent: validator failed for field \"task_type\": %w", err)}
+			return &ValidationError{Name: "task_type", err: fmt.Errorf(`ent: validator failed for field "DeletedTask.task_type": %w`, err)}
 		}
 	}
 	if _, ok := dtu.mutation.TaskID(); dtu.mutation.TaskCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"task\"")
+		return errors.New(`ent: clearing a required unique edge "DeletedTask.task"`)
 	}
 	if _, ok := dtu.mutation.WorkspaceID(); dtu.mutation.WorkspaceCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"workspace\"")
+		return errors.New(`ent: clearing a required unique edge "DeletedTask.workspace"`)
 	}
 	return nil
 }
@@ -419,14 +419,14 @@ func (dtuo *DeletedTaskUpdateOne) ExecX(ctx context.Context) {
 func (dtuo *DeletedTaskUpdateOne) check() error {
 	if v, ok := dtuo.mutation.TaskType(); ok {
 		if err := deletedtask.TaskTypeValidator(v); err != nil {
-			return &ValidationError{Name: "task_type", err: fmt.Errorf("ent: validator failed for field \"task_type\": %w", err)}
+			return &ValidationError{Name: "task_type", err: fmt.Errorf(`ent: validator failed for field "DeletedTask.task_type": %w`, err)}
 		}
 	}
 	if _, ok := dtuo.mutation.TaskID(); dtuo.mutation.TaskCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"task\"")
+		return errors.New(`ent: clearing a required unique edge "DeletedTask.task"`)
 	}
 	if _, ok := dtuo.mutation.WorkspaceID(); dtuo.mutation.WorkspaceCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"workspace\"")
+		return errors.New(`ent: clearing a required unique edge "DeletedTask.workspace"`)
 	}
 	return nil
 }
@@ -444,7 +444,7 @@ func (dtuo *DeletedTaskUpdateOne) sqlSave(ctx context.Context) (_node *DeletedTa
 	}
 	id, ok := dtuo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing DeletedTask.ID for update")}
+		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "DeletedTask.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := dtuo.fields; len(fields) > 0 {

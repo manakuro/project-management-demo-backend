@@ -155,6 +155,17 @@ func (Teammate) Edges() []ent.Edge {
 	}
 }
 
+//
+//func (Teammate) Indexes() []ent.Index {
+//	return []ent.Index{
+//		index.Fields("email", "name").
+//			Annotations(
+//				entsql.IndexTypes(map[string]string{
+//					dialect.MySQL: "FULLTEXT",
+//				})),
+//	}
+//}
+
 // Mixin of the Teammate.
 func (Teammate) Mixin() []ent.Mixin {
 	return []ent.Mixin{

@@ -202,39 +202,39 @@ func (ptcc *ProjectTaskColumnCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (ptcc *ProjectTaskColumnCreate) check() error {
 	if _, ok := ptcc.mutation.ProjectID(); !ok {
-		return &ValidationError{Name: "project_id", err: errors.New(`ent: missing required field "project_id"`)}
+		return &ValidationError{Name: "project_id", err: errors.New(`ent: missing required field "ProjectTaskColumn.project_id"`)}
 	}
 	if _, ok := ptcc.mutation.TaskColumnID(); !ok {
-		return &ValidationError{Name: "task_column_id", err: errors.New(`ent: missing required field "task_column_id"`)}
+		return &ValidationError{Name: "task_column_id", err: errors.New(`ent: missing required field "ProjectTaskColumn.task_column_id"`)}
 	}
 	if _, ok := ptcc.mutation.Width(); !ok {
-		return &ValidationError{Name: "width", err: errors.New(`ent: missing required field "width"`)}
+		return &ValidationError{Name: "width", err: errors.New(`ent: missing required field "ProjectTaskColumn.width"`)}
 	}
 	if v, ok := ptcc.mutation.Width(); ok {
 		if err := projecttaskcolumn.WidthValidator(v); err != nil {
-			return &ValidationError{Name: "width", err: fmt.Errorf(`ent: validator failed for field "width": %w`, err)}
+			return &ValidationError{Name: "width", err: fmt.Errorf(`ent: validator failed for field "ProjectTaskColumn.width": %w`, err)}
 		}
 	}
 	if _, ok := ptcc.mutation.Disabled(); !ok {
-		return &ValidationError{Name: "disabled", err: errors.New(`ent: missing required field "disabled"`)}
+		return &ValidationError{Name: "disabled", err: errors.New(`ent: missing required field "ProjectTaskColumn.disabled"`)}
 	}
 	if _, ok := ptcc.mutation.Customizable(); !ok {
-		return &ValidationError{Name: "customizable", err: errors.New(`ent: missing required field "customizable"`)}
+		return &ValidationError{Name: "customizable", err: errors.New(`ent: missing required field "ProjectTaskColumn.customizable"`)}
 	}
 	if _, ok := ptcc.mutation.Order(); !ok {
-		return &ValidationError{Name: "order", err: errors.New(`ent: missing required field "order"`)}
+		return &ValidationError{Name: "order", err: errors.New(`ent: missing required field "ProjectTaskColumn.order"`)}
 	}
 	if _, ok := ptcc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "ProjectTaskColumn.created_at"`)}
 	}
 	if _, ok := ptcc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "ProjectTaskColumn.updated_at"`)}
 	}
 	if _, ok := ptcc.mutation.ProjectID(); !ok {
-		return &ValidationError{Name: "project", err: errors.New("ent: missing required edge \"project\"")}
+		return &ValidationError{Name: "project", err: errors.New(`ent: missing required edge "ProjectTaskColumn.project"`)}
 	}
 	if _, ok := ptcc.mutation.TaskColumnID(); !ok {
-		return &ValidationError{Name: "taskColumn", err: errors.New("ent: missing required edge \"taskColumn\"")}
+		return &ValidationError{Name: "taskColumn", err: errors.New(`ent: missing required edge "ProjectTaskColumn.taskColumn"`)}
 	}
 	return nil
 }
@@ -248,7 +248,11 @@ func (ptcc *ProjectTaskColumnCreate) sqlSave(ctx context.Context) (*ProjectTaskC
 		return nil, err
 	}
 	if _spec.ID.Value != nil {
-		_node.ID = _spec.ID.Value.(ulid.ID)
+		if id, ok := _spec.ID.Value.(*ulid.ID); ok {
+			_node.ID = *id
+		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
+			return nil, err
+		}
 	}
 	return _node, nil
 }
@@ -267,7 +271,7 @@ func (ptcc *ProjectTaskColumnCreate) createSpec() (*ProjectTaskColumn, *sqlgraph
 	_spec.OnConflict = ptcc.conflict
 	if id, ok := ptcc.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = id
+		_spec.ID.Value = &id
 	}
 	if value, ok := ptcc.mutation.Width(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -483,6 +487,12 @@ func (u *ProjectTaskColumnUpsert) UpdateOrder() *ProjectTaskColumnUpsert {
 	return u
 }
 
+// AddOrder adds v to the "order" field.
+func (u *ProjectTaskColumnUpsert) AddOrder(v int) *ProjectTaskColumnUpsert {
+	u.Add(projecttaskcolumn.FieldOrder, v)
+	return u
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (u *ProjectTaskColumnUpsert) SetCreatedAt(v time.Time) *ProjectTaskColumnUpsert {
 	u.Set(projecttaskcolumn.FieldCreatedAt, v)
@@ -507,7 +517,7 @@ func (u *ProjectTaskColumnUpsert) UpdateUpdatedAt() *ProjectTaskColumnUpsert {
 	return u
 }
 
-// UpdateNewValues updates the fields using the new values that were set on create except the ID field.
+// UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
 //	client.ProjectTaskColumn.Create().
@@ -524,6 +534,12 @@ func (u *ProjectTaskColumnUpsertOne) UpdateNewValues() *ProjectTaskColumnUpsertO
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
 		if _, exists := u.create.mutation.ID(); exists {
 			s.SetIgnore(projecttaskcolumn.FieldID)
+		}
+		if _, exists := u.create.mutation.CreatedAt(); exists {
+			s.SetIgnore(projecttaskcolumn.FieldCreatedAt)
+		}
+		if _, exists := u.create.mutation.UpdatedAt(); exists {
+			s.SetIgnore(projecttaskcolumn.FieldUpdatedAt)
 		}
 	}))
 	return u
@@ -631,6 +647,13 @@ func (u *ProjectTaskColumnUpsertOne) UpdateCustomizable() *ProjectTaskColumnUpse
 func (u *ProjectTaskColumnUpsertOne) SetOrder(v int) *ProjectTaskColumnUpsertOne {
 	return u.Update(func(s *ProjectTaskColumnUpsert) {
 		s.SetOrder(v)
+	})
+}
+
+// AddOrder adds v to the "order" field.
+func (u *ProjectTaskColumnUpsertOne) AddOrder(v int) *ProjectTaskColumnUpsertOne {
+	return u.Update(func(s *ProjectTaskColumnUpsert) {
+		s.AddOrder(v)
 	})
 }
 
@@ -832,7 +855,7 @@ type ProjectTaskColumnUpsertBulk struct {
 	create *ProjectTaskColumnCreateBulk
 }
 
-// UpdateNewValues updates the fields using the new values that
+// UpdateNewValues updates the mutable fields using the new values that
 // were set on create. Using this option is equivalent to using:
 //
 //	client.ProjectTaskColumn.Create().
@@ -851,6 +874,12 @@ func (u *ProjectTaskColumnUpsertBulk) UpdateNewValues() *ProjectTaskColumnUpsert
 			if _, exists := b.mutation.ID(); exists {
 				s.SetIgnore(projecttaskcolumn.FieldID)
 				return
+			}
+			if _, exists := b.mutation.CreatedAt(); exists {
+				s.SetIgnore(projecttaskcolumn.FieldCreatedAt)
+			}
+			if _, exists := b.mutation.UpdatedAt(); exists {
+				s.SetIgnore(projecttaskcolumn.FieldUpdatedAt)
 			}
 		}
 	}))
@@ -959,6 +988,13 @@ func (u *ProjectTaskColumnUpsertBulk) UpdateCustomizable() *ProjectTaskColumnUps
 func (u *ProjectTaskColumnUpsertBulk) SetOrder(v int) *ProjectTaskColumnUpsertBulk {
 	return u.Update(func(s *ProjectTaskColumnUpsert) {
 		s.SetOrder(v)
+	})
+}
+
+// AddOrder adds v to the "order" field.
+func (u *ProjectTaskColumnUpsertBulk) AddOrder(v int) *ProjectTaskColumnUpsertBulk {
+	return u.Update(func(s *ProjectTaskColumnUpsert) {
+		s.AddOrder(v)
 	})
 }
 

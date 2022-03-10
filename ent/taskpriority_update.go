@@ -164,16 +164,16 @@ func (tpu *TaskPriorityUpdate) ExecX(ctx context.Context) {
 func (tpu *TaskPriorityUpdate) check() error {
 	if v, ok := tpu.mutation.Name(); ok {
 		if err := taskpriority.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf("ent: validator failed for field \"name\": %w", err)}
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "TaskPriority.name": %w`, err)}
 		}
 	}
 	if v, ok := tpu.mutation.PriorityType(); ok {
 		if err := taskpriority.PriorityTypeValidator(v); err != nil {
-			return &ValidationError{Name: "priority_type", err: fmt.Errorf("ent: validator failed for field \"priority_type\": %w", err)}
+			return &ValidationError{Name: "priority_type", err: fmt.Errorf(`ent: validator failed for field "TaskPriority.priority_type": %w`, err)}
 		}
 	}
 	if _, ok := tpu.mutation.ColorID(); tpu.mutation.ColorCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"color\"")
+		return errors.New(`ent: clearing a required unique edge "TaskPriority.color"`)
 	}
 	return nil
 }
@@ -459,16 +459,16 @@ func (tpuo *TaskPriorityUpdateOne) ExecX(ctx context.Context) {
 func (tpuo *TaskPriorityUpdateOne) check() error {
 	if v, ok := tpuo.mutation.Name(); ok {
 		if err := taskpriority.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf("ent: validator failed for field \"name\": %w", err)}
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "TaskPriority.name": %w`, err)}
 		}
 	}
 	if v, ok := tpuo.mutation.PriorityType(); ok {
 		if err := taskpriority.PriorityTypeValidator(v); err != nil {
-			return &ValidationError{Name: "priority_type", err: fmt.Errorf("ent: validator failed for field \"priority_type\": %w", err)}
+			return &ValidationError{Name: "priority_type", err: fmt.Errorf(`ent: validator failed for field "TaskPriority.priority_type": %w`, err)}
 		}
 	}
 	if _, ok := tpuo.mutation.ColorID(); tpuo.mutation.ColorCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"color\"")
+		return errors.New(`ent: clearing a required unique edge "TaskPriority.color"`)
 	}
 	return nil
 }
@@ -486,7 +486,7 @@ func (tpuo *TaskPriorityUpdateOne) sqlSave(ctx context.Context) (_node *TaskPrio
 	}
 	id, ok := tpuo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing TaskPriority.ID for update")}
+		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "TaskPriority.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := tpuo.fields; len(fields) > 0 {

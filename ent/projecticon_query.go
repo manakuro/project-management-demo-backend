@@ -157,7 +157,7 @@ func (piq *ProjectIconQuery) FirstIDX(ctx context.Context) ulid.ID {
 }
 
 // Only returns a single ProjectIcon entity found by the query, ensuring it only returns one.
-// Returns a *NotSingularError when exactly one ProjectIcon entity is not found.
+// Returns a *NotSingularError when more than one ProjectIcon entity is found.
 // Returns a *NotFoundError when no ProjectIcon entities are found.
 func (piq *ProjectIconQuery) Only(ctx context.Context) (*ProjectIcon, error) {
 	nodes, err := piq.Limit(2).All(ctx)
@@ -184,7 +184,7 @@ func (piq *ProjectIconQuery) OnlyX(ctx context.Context) *ProjectIcon {
 }
 
 // OnlyID is like Only, but returns the only ProjectIcon ID in the query.
-// Returns a *NotSingularError when exactly one ProjectIcon ID is not found.
+// Returns a *NotSingularError when more than one ProjectIcon ID is found.
 // Returns a *NotFoundError when no entities are found.
 func (piq *ProjectIconQuery) OnlyID(ctx context.Context) (id ulid.ID, err error) {
 	var ids []ulid.ID
@@ -295,8 +295,9 @@ func (piq *ProjectIconQuery) Clone() *ProjectIconQuery {
 		withProjects: piq.withProjects.Clone(),
 		withIcon:     piq.withIcon.Clone(),
 		// clone intermediate query.
-		sql:  piq.sql.Clone(),
-		path: piq.path,
+		sql:    piq.sql.Clone(),
+		path:   piq.path,
+		unique: piq.unique,
 	}
 }
 
@@ -468,6 +469,10 @@ func (piq *ProjectIconQuery) sqlAll(ctx context.Context) ([]*ProjectIcon, error)
 
 func (piq *ProjectIconQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := piq.querySpec()
+	_spec.Node.Columns = piq.fields
+	if len(piq.fields) > 0 {
+		_spec.Unique = piq.unique != nil && *piq.unique
+	}
 	return sqlgraph.CountNodes(ctx, piq.driver, _spec)
 }
 
@@ -538,6 +543,9 @@ func (piq *ProjectIconQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	if piq.sql != nil {
 		selector = piq.sql
 		selector.Select(selector.Columns(columns...)...)
+	}
+	if piq.unique != nil && *piq.unique {
+		selector.Distinct()
 	}
 	for _, p := range piq.predicates {
 		p(selector)
@@ -817,9 +825,7 @@ func (pigb *ProjectIconGroupBy) sqlQuery() *sql.Selector {
 		for _, f := range pigb.fields {
 			columns = append(columns, selector.C(f))
 		}
-		for _, c := range aggregation {
-			columns = append(columns, c)
-		}
+		columns = append(columns, aggregation...)
 		selector.Select(columns...)
 	}
 	return selector.GroupBy(selector.Columns(pigb.fields...)...)

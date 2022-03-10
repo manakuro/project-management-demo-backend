@@ -157,7 +157,7 @@ func (plcq *ProjectLightColorQuery) FirstIDX(ctx context.Context) ulid.ID {
 }
 
 // Only returns a single ProjectLightColor entity found by the query, ensuring it only returns one.
-// Returns a *NotSingularError when exactly one ProjectLightColor entity is not found.
+// Returns a *NotSingularError when more than one ProjectLightColor entity is found.
 // Returns a *NotFoundError when no ProjectLightColor entities are found.
 func (plcq *ProjectLightColorQuery) Only(ctx context.Context) (*ProjectLightColor, error) {
 	nodes, err := plcq.Limit(2).All(ctx)
@@ -184,7 +184,7 @@ func (plcq *ProjectLightColorQuery) OnlyX(ctx context.Context) *ProjectLightColo
 }
 
 // OnlyID is like Only, but returns the only ProjectLightColor ID in the query.
-// Returns a *NotSingularError when exactly one ProjectLightColor ID is not found.
+// Returns a *NotSingularError when more than one ProjectLightColor ID is found.
 // Returns a *NotFoundError when no entities are found.
 func (plcq *ProjectLightColorQuery) OnlyID(ctx context.Context) (id ulid.ID, err error) {
 	var ids []ulid.ID
@@ -295,8 +295,9 @@ func (plcq *ProjectLightColorQuery) Clone() *ProjectLightColorQuery {
 		withProjects: plcq.withProjects.Clone(),
 		withColor:    plcq.withColor.Clone(),
 		// clone intermediate query.
-		sql:  plcq.sql.Clone(),
-		path: plcq.path,
+		sql:    plcq.sql.Clone(),
+		path:   plcq.path,
+		unique: plcq.unique,
 	}
 }
 
@@ -468,6 +469,10 @@ func (plcq *ProjectLightColorQuery) sqlAll(ctx context.Context) ([]*ProjectLight
 
 func (plcq *ProjectLightColorQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := plcq.querySpec()
+	_spec.Node.Columns = plcq.fields
+	if len(plcq.fields) > 0 {
+		_spec.Unique = plcq.unique != nil && *plcq.unique
+	}
 	return sqlgraph.CountNodes(ctx, plcq.driver, _spec)
 }
 
@@ -538,6 +543,9 @@ func (plcq *ProjectLightColorQuery) sqlQuery(ctx context.Context) *sql.Selector 
 	if plcq.sql != nil {
 		selector = plcq.sql
 		selector.Select(selector.Columns(columns...)...)
+	}
+	if plcq.unique != nil && *plcq.unique {
+		selector.Distinct()
 	}
 	for _, p := range plcq.predicates {
 		p(selector)
@@ -817,9 +825,7 @@ func (plcgb *ProjectLightColorGroupBy) sqlQuery() *sql.Selector {
 		for _, f := range plcgb.fields {
 			columns = append(columns, selector.C(f))
 		}
-		for _, c := range aggregation {
-			columns = append(columns, c)
-		}
+		columns = append(columns, aggregation...)
 		selector.Select(columns...)
 	}
 	return selector.GroupBy(selector.Columns(plcgb.fields...)...)

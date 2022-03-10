@@ -196,30 +196,30 @@ func (tttsc *TeammateTaskTabStatusCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (tttsc *TeammateTaskTabStatusCreate) check() error {
 	if _, ok := tttsc.mutation.WorkspaceID(); !ok {
-		return &ValidationError{Name: "workspace_id", err: errors.New(`ent: missing required field "workspace_id"`)}
+		return &ValidationError{Name: "workspace_id", err: errors.New(`ent: missing required field "TeammateTaskTabStatus.workspace_id"`)}
 	}
 	if _, ok := tttsc.mutation.TeammateID(); !ok {
-		return &ValidationError{Name: "teammate_id", err: errors.New(`ent: missing required field "teammate_id"`)}
+		return &ValidationError{Name: "teammate_id", err: errors.New(`ent: missing required field "TeammateTaskTabStatus.teammate_id"`)}
 	}
 	if _, ok := tttsc.mutation.StatusCode(); !ok {
-		return &ValidationError{Name: "status_code", err: errors.New(`ent: missing required field "status_code"`)}
+		return &ValidationError{Name: "status_code", err: errors.New(`ent: missing required field "TeammateTaskTabStatus.status_code"`)}
 	}
 	if v, ok := tttsc.mutation.StatusCode(); ok {
 		if err := teammatetasktabstatus.StatusCodeValidator(v); err != nil {
-			return &ValidationError{Name: "status_code", err: fmt.Errorf(`ent: validator failed for field "status_code": %w`, err)}
+			return &ValidationError{Name: "status_code", err: fmt.Errorf(`ent: validator failed for field "TeammateTaskTabStatus.status_code": %w`, err)}
 		}
 	}
 	if _, ok := tttsc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "TeammateTaskTabStatus.created_at"`)}
 	}
 	if _, ok := tttsc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "TeammateTaskTabStatus.updated_at"`)}
 	}
 	if _, ok := tttsc.mutation.WorkspaceID(); !ok {
-		return &ValidationError{Name: "workspace", err: errors.New("ent: missing required edge \"workspace\"")}
+		return &ValidationError{Name: "workspace", err: errors.New(`ent: missing required edge "TeammateTaskTabStatus.workspace"`)}
 	}
 	if _, ok := tttsc.mutation.TeammateID(); !ok {
-		return &ValidationError{Name: "teammate", err: errors.New("ent: missing required edge \"teammate\"")}
+		return &ValidationError{Name: "teammate", err: errors.New(`ent: missing required edge "TeammateTaskTabStatus.teammate"`)}
 	}
 	return nil
 }
@@ -233,7 +233,11 @@ func (tttsc *TeammateTaskTabStatusCreate) sqlSave(ctx context.Context) (*Teammat
 		return nil, err
 	}
 	if _spec.ID.Value != nil {
-		_node.ID = _spec.ID.Value.(ulid.ID)
+		if id, ok := _spec.ID.Value.(*ulid.ID); ok {
+			_node.ID = *id
+		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
+			return nil, err
+		}
 	}
 	return _node, nil
 }
@@ -252,7 +256,7 @@ func (tttsc *TeammateTaskTabStatusCreate) createSpec() (*TeammateTaskTabStatus, 
 	_spec.OnConflict = tttsc.conflict
 	if id, ok := tttsc.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = id
+		_spec.ID.Value = &id
 	}
 	if value, ok := tttsc.mutation.StatusCode(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -432,7 +436,7 @@ func (u *TeammateTaskTabStatusUpsert) UpdateUpdatedAt() *TeammateTaskTabStatusUp
 	return u
 }
 
-// UpdateNewValues updates the fields using the new values that were set on create except the ID field.
+// UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
 //	client.TeammateTaskTabStatus.Create().
@@ -449,6 +453,12 @@ func (u *TeammateTaskTabStatusUpsertOne) UpdateNewValues() *TeammateTaskTabStatu
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
 		if _, exists := u.create.mutation.ID(); exists {
 			s.SetIgnore(teammatetasktabstatus.FieldID)
+		}
+		if _, exists := u.create.mutation.CreatedAt(); exists {
+			s.SetIgnore(teammatetasktabstatus.FieldCreatedAt)
+		}
+		if _, exists := u.create.mutation.UpdatedAt(); exists {
+			s.SetIgnore(teammatetasktabstatus.FieldUpdatedAt)
 		}
 	}))
 	return u
@@ -715,7 +725,7 @@ type TeammateTaskTabStatusUpsertBulk struct {
 	create *TeammateTaskTabStatusCreateBulk
 }
 
-// UpdateNewValues updates the fields using the new values that
+// UpdateNewValues updates the mutable fields using the new values that
 // were set on create. Using this option is equivalent to using:
 //
 //	client.TeammateTaskTabStatus.Create().
@@ -734,6 +744,12 @@ func (u *TeammateTaskTabStatusUpsertBulk) UpdateNewValues() *TeammateTaskTabStat
 			if _, exists := b.mutation.ID(); exists {
 				s.SetIgnore(teammatetasktabstatus.FieldID)
 				return
+			}
+			if _, exists := b.mutation.CreatedAt(); exists {
+				s.SetIgnore(teammatetasktabstatus.FieldCreatedAt)
+			}
+			if _, exists := b.mutation.UpdatedAt(); exists {
+				s.SetIgnore(teammatetasktabstatus.FieldUpdatedAt)
 			}
 		}
 	}))

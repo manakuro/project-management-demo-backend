@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"project-management-demo-backend/ent/icon"
 	"project-management-demo-backend/ent/predicate"
@@ -145,12 +146,12 @@ func (iu *IconUpdate) ExecX(ctx context.Context) {
 func (iu *IconUpdate) check() error {
 	if v, ok := iu.mutation.Name(); ok {
 		if err := icon.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf("ent: validator failed for field \"name\": %w", err)}
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Icon.name": %w`, err)}
 		}
 	}
 	if v, ok := iu.mutation.Icon(); ok {
 		if err := icon.IconValidator(v); err != nil {
-			return &ValidationError{Name: "icon", err: fmt.Errorf("ent: validator failed for field \"icon\": %w", err)}
+			return &ValidationError{Name: "icon", err: fmt.Errorf(`ent: validator failed for field "Icon.icon": %w`, err)}
 		}
 	}
 	return nil
@@ -385,12 +386,12 @@ func (iuo *IconUpdateOne) ExecX(ctx context.Context) {
 func (iuo *IconUpdateOne) check() error {
 	if v, ok := iuo.mutation.Name(); ok {
 		if err := icon.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf("ent: validator failed for field \"name\": %w", err)}
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Icon.name": %w`, err)}
 		}
 	}
 	if v, ok := iuo.mutation.Icon(); ok {
 		if err := icon.IconValidator(v); err != nil {
-			return &ValidationError{Name: "icon", err: fmt.Errorf("ent: validator failed for field \"icon\": %w", err)}
+			return &ValidationError{Name: "icon", err: fmt.Errorf(`ent: validator failed for field "Icon.icon": %w`, err)}
 		}
 	}
 	return nil
@@ -409,7 +410,7 @@ func (iuo *IconUpdateOne) sqlSave(ctx context.Context) (_node *Icon, err error) 
 	}
 	id, ok := iuo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing Icon.ID for update")}
+		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Icon.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := iuo.fields; len(fields) > 0 {

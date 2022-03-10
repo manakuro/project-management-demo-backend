@@ -156,13 +156,13 @@ func (tflu *TaskFeedLikeUpdate) ExecX(ctx context.Context) {
 // check runs all checks and user-defined validators on the builder.
 func (tflu *TaskFeedLikeUpdate) check() error {
 	if _, ok := tflu.mutation.TaskID(); tflu.mutation.TaskCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"task\"")
+		return errors.New(`ent: clearing a required unique edge "TaskFeedLike.task"`)
 	}
 	if _, ok := tflu.mutation.TeammateID(); tflu.mutation.TeammateCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"teammate\"")
+		return errors.New(`ent: clearing a required unique edge "TaskFeedLike.teammate"`)
 	}
 	if _, ok := tflu.mutation.FeedID(); tflu.mutation.FeedCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"feed\"")
+		return errors.New(`ent: clearing a required unique edge "TaskFeedLike.feed"`)
 	}
 	return nil
 }
@@ -441,13 +441,13 @@ func (tfluo *TaskFeedLikeUpdateOne) ExecX(ctx context.Context) {
 // check runs all checks and user-defined validators on the builder.
 func (tfluo *TaskFeedLikeUpdateOne) check() error {
 	if _, ok := tfluo.mutation.TaskID(); tfluo.mutation.TaskCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"task\"")
+		return errors.New(`ent: clearing a required unique edge "TaskFeedLike.task"`)
 	}
 	if _, ok := tfluo.mutation.TeammateID(); tfluo.mutation.TeammateCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"teammate\"")
+		return errors.New(`ent: clearing a required unique edge "TaskFeedLike.teammate"`)
 	}
 	if _, ok := tfluo.mutation.FeedID(); tfluo.mutation.FeedCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"feed\"")
+		return errors.New(`ent: clearing a required unique edge "TaskFeedLike.feed"`)
 	}
 	return nil
 }
@@ -465,7 +465,7 @@ func (tfluo *TaskFeedLikeUpdateOne) sqlSave(ctx context.Context) (_node *TaskFee
 	}
 	id, ok := tfluo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing TaskFeedLike.ID for update")}
+		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "TaskFeedLike.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := tfluo.fields; len(fields) > 0 {

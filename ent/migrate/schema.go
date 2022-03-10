@@ -31,8 +31,8 @@ var (
 		{Name: "task_type", Type: field.TypeEnum, Enums: []string{"TEAMMATE", "PROJECT"}},
 		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
 		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
-		{Name: "task_id", Type: field.TypeString, Nullable: true},
-		{Name: "workspace_id", Type: field.TypeString, Nullable: true},
+		{Name: "task_id", Type: field.TypeString},
+		{Name: "workspace_id", Type: field.TypeString},
 	}
 	// DeletedTasksTable holds the schema information for the "deleted_tasks" table.
 	DeletedTasksTable = &schema.Table{
@@ -44,13 +44,13 @@ var (
 				Symbol:     "deleted_tasks_tasks_deletedTasksRef",
 				Columns:    []*schema.Column{DeletedTasksColumns[6]},
 				RefColumns: []*schema.Column{TasksColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "deleted_tasks_workspaces_deletedTasksRef",
 				Columns:    []*schema.Column{DeletedTasksColumns[7]},
 				RefColumns: []*schema.Column{WorkspacesColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 		},
 	}
@@ -59,8 +59,8 @@ var (
 		{Name: "id", Type: field.TypeString},
 		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
 		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
-		{Name: "project_id", Type: field.TypeString, Nullable: true},
-		{Name: "teammate_id", Type: field.TypeString, Nullable: true},
+		{Name: "project_id", Type: field.TypeString},
+		{Name: "teammate_id", Type: field.TypeString},
 	}
 	// FavoriteProjectsTable holds the schema information for the "favorite_projects" table.
 	FavoriteProjectsTable = &schema.Table{
@@ -72,13 +72,13 @@ var (
 				Symbol:     "favorite_projects_projects_favoriteProjects",
 				Columns:    []*schema.Column{FavoriteProjectsColumns[3]},
 				RefColumns: []*schema.Column{ProjectsColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "favorite_projects_teammates_favoriteProjects",
 				Columns:    []*schema.Column{FavoriteProjectsColumns[4]},
 				RefColumns: []*schema.Column{TeammatesColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 		},
 	}
@@ -87,8 +87,8 @@ var (
 		{Name: "id", Type: field.TypeString},
 		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
 		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
-		{Name: "teammate_id", Type: field.TypeString, Nullable: true},
-		{Name: "workspace_id", Type: field.TypeString, Nullable: true},
+		{Name: "teammate_id", Type: field.TypeString},
+		{Name: "workspace_id", Type: field.TypeString},
 	}
 	// FavoriteWorkspacesTable holds the schema information for the "favorite_workspaces" table.
 	FavoriteWorkspacesTable = &schema.Table{
@@ -100,13 +100,13 @@ var (
 				Symbol:     "favorite_workspaces_teammates_favoriteWorkspaces",
 				Columns:    []*schema.Column{FavoriteWorkspacesColumns[3]},
 				RefColumns: []*schema.Column{TeammatesColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "favorite_workspaces_workspaces_favoriteWorkspaces",
 				Columns:    []*schema.Column{FavoriteWorkspacesColumns[4]},
 				RefColumns: []*schema.Column{WorkspacesColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 		},
 	}
@@ -147,11 +147,11 @@ var (
 		{Name: "due_date", Type: field.TypeTime, Nullable: true, SchemaType: map[string]string{"mysql": "datetime"}},
 		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
 		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
-		{Name: "project_base_color_id", Type: field.TypeString, Nullable: true},
-		{Name: "project_icon_id", Type: field.TypeString, Nullable: true},
-		{Name: "project_light_color_id", Type: field.TypeString, Nullable: true},
-		{Name: "created_by", Type: field.TypeString, Nullable: true},
-		{Name: "workspace_id", Type: field.TypeString, Nullable: true},
+		{Name: "project_base_color_id", Type: field.TypeString},
+		{Name: "project_icon_id", Type: field.TypeString},
+		{Name: "project_light_color_id", Type: field.TypeString},
+		{Name: "created_by", Type: field.TypeString},
+		{Name: "workspace_id", Type: field.TypeString},
 	}
 	// ProjectsTable holds the schema information for the "projects" table.
 	ProjectsTable = &schema.Table{
@@ -163,31 +163,31 @@ var (
 				Symbol:     "projects_project_base_colors_projects",
 				Columns:    []*schema.Column{ProjectsColumns[7]},
 				RefColumns: []*schema.Column{ProjectBaseColorsColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "projects_project_icons_projects",
 				Columns:    []*schema.Column{ProjectsColumns[8]},
 				RefColumns: []*schema.Column{ProjectIconsColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "projects_project_light_colors_projects",
 				Columns:    []*schema.Column{ProjectsColumns[9]},
 				RefColumns: []*schema.Column{ProjectLightColorsColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "projects_teammates_projects",
 				Columns:    []*schema.Column{ProjectsColumns[10]},
 				RefColumns: []*schema.Column{TeammatesColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "projects_workspaces_projects",
 				Columns:    []*schema.Column{ProjectsColumns[11]},
 				RefColumns: []*schema.Column{WorkspacesColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 		},
 	}
@@ -196,7 +196,7 @@ var (
 		{Name: "id", Type: field.TypeString},
 		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
 		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
-		{Name: "color_id", Type: field.TypeString, Nullable: true},
+		{Name: "color_id", Type: field.TypeString},
 	}
 	// ProjectBaseColorsTable holds the schema information for the "project_base_colors" table.
 	ProjectBaseColorsTable = &schema.Table{
@@ -208,7 +208,7 @@ var (
 				Symbol:     "project_base_colors_colors_projectBaseColors",
 				Columns:    []*schema.Column{ProjectBaseColorsColumns[3]},
 				RefColumns: []*schema.Column{ColorsColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 		},
 	}
@@ -217,7 +217,7 @@ var (
 		{Name: "id", Type: field.TypeString},
 		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
 		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
-		{Name: "icon_id", Type: field.TypeString, Nullable: true},
+		{Name: "icon_id", Type: field.TypeString},
 	}
 	// ProjectIconsTable holds the schema information for the "project_icons" table.
 	ProjectIconsTable = &schema.Table{
@@ -229,7 +229,7 @@ var (
 				Symbol:     "project_icons_icons_projectIcons",
 				Columns:    []*schema.Column{ProjectIconsColumns[3]},
 				RefColumns: []*schema.Column{IconsColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 		},
 	}
@@ -238,7 +238,7 @@ var (
 		{Name: "id", Type: field.TypeString},
 		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
 		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
-		{Name: "color_id", Type: field.TypeString, Nullable: true},
+		{Name: "color_id", Type: field.TypeString},
 	}
 	// ProjectLightColorsTable holds the schema information for the "project_light_colors" table.
 	ProjectLightColorsTable = &schema.Table{
@@ -250,7 +250,7 @@ var (
 				Symbol:     "project_light_colors_colors_projectLightColors",
 				Columns:    []*schema.Column{ProjectLightColorsColumns[3]},
 				RefColumns: []*schema.Column{ColorsColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 		},
 	}
@@ -259,9 +259,9 @@ var (
 		{Name: "id", Type: field.TypeString},
 		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
 		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
-		{Name: "project_id", Type: field.TypeString, Nullable: true},
-		{Name: "project_task_section_id", Type: field.TypeString, Nullable: true},
-		{Name: "task_id", Type: field.TypeString, Nullable: true},
+		{Name: "project_id", Type: field.TypeString},
+		{Name: "project_task_section_id", Type: field.TypeString},
+		{Name: "task_id", Type: field.TypeString},
 	}
 	// ProjectTasksTable holds the schema information for the "project_tasks" table.
 	ProjectTasksTable = &schema.Table{
@@ -273,19 +273,19 @@ var (
 				Symbol:     "project_tasks_projects_projectTasks",
 				Columns:    []*schema.Column{ProjectTasksColumns[3]},
 				RefColumns: []*schema.Column{ProjectsColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "project_tasks_project_task_sections_projectTasks",
 				Columns:    []*schema.Column{ProjectTasksColumns[4]},
 				RefColumns: []*schema.Column{ProjectTaskSectionsColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "project_tasks_tasks_projectTasks",
 				Columns:    []*schema.Column{ProjectTasksColumns[5]},
 				RefColumns: []*schema.Column{TasksColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 		},
 	}
@@ -298,8 +298,8 @@ var (
 		{Name: "order", Type: field.TypeInt},
 		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
 		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
-		{Name: "project_id", Type: field.TypeString, Nullable: true},
-		{Name: "task_column_id", Type: field.TypeString, Nullable: true},
+		{Name: "project_id", Type: field.TypeString},
+		{Name: "task_column_id", Type: field.TypeString},
 	}
 	// ProjectTaskColumnsTable holds the schema information for the "project_task_columns" table.
 	ProjectTaskColumnsTable = &schema.Table{
@@ -311,13 +311,13 @@ var (
 				Symbol:     "project_task_columns_projects_projectTaskColumns",
 				Columns:    []*schema.Column{ProjectTaskColumnsColumns[7]},
 				RefColumns: []*schema.Column{ProjectsColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "project_task_columns_task_columns_projectTaskColumns",
 				Columns:    []*schema.Column{ProjectTaskColumnsColumns[8]},
 				RefColumns: []*schema.Column{TaskColumnsColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 		},
 	}
@@ -326,9 +326,9 @@ var (
 		{Name: "id", Type: field.TypeString},
 		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
 		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
-		{Name: "project_id", Type: field.TypeString, Nullable: true},
-		{Name: "task_list_completed_status_id", Type: field.TypeString, Nullable: true},
-		{Name: "task_list_sort_status_id", Type: field.TypeString, Nullable: true},
+		{Name: "project_id", Type: field.TypeString},
+		{Name: "task_list_completed_status_id", Type: field.TypeString},
+		{Name: "task_list_sort_status_id", Type: field.TypeString},
 	}
 	// ProjectTaskListStatusTable holds the schema information for the "project_task_list_status" table.
 	ProjectTaskListStatusTable = &schema.Table{
@@ -340,19 +340,19 @@ var (
 				Symbol:     "project_task_list_status_projects_projectTaskListStatuses",
 				Columns:    []*schema.Column{ProjectTaskListStatusColumns[3]},
 				RefColumns: []*schema.Column{ProjectsColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "project_task_list_status_task_list_completed_status_projectTaskListStatuses",
 				Columns:    []*schema.Column{ProjectTaskListStatusColumns[4]},
 				RefColumns: []*schema.Column{TaskListCompletedStatusColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "project_task_list_status_task_list_sort_status_projectTaskListStatuses",
 				Columns:    []*schema.Column{ProjectTaskListStatusColumns[5]},
 				RefColumns: []*schema.Column{TaskListSortStatusColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 		},
 	}
@@ -362,7 +362,7 @@ var (
 		{Name: "name", Type: field.TypeString, Size: 255},
 		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
 		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
-		{Name: "project_id", Type: field.TypeString, Nullable: true},
+		{Name: "project_id", Type: field.TypeString},
 	}
 	// ProjectTaskSectionsTable holds the schema information for the "project_task_sections" table.
 	ProjectTaskSectionsTable = &schema.Table{
@@ -374,7 +374,7 @@ var (
 				Symbol:     "project_task_sections_projects_projectTaskSections",
 				Columns:    []*schema.Column{ProjectTaskSectionsColumns[4]},
 				RefColumns: []*schema.Column{ProjectsColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 		},
 	}
@@ -385,8 +385,8 @@ var (
 		{Name: "is_owner", Type: field.TypeBool},
 		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
 		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
-		{Name: "project_id", Type: field.TypeString, Nullable: true},
-		{Name: "teammate_id", Type: field.TypeString, Nullable: true},
+		{Name: "project_id", Type: field.TypeString},
+		{Name: "teammate_id", Type: field.TypeString},
 	}
 	// ProjectTeammatesTable holds the schema information for the "project_teammates" table.
 	ProjectTeammatesTable = &schema.Table{
@@ -398,13 +398,13 @@ var (
 				Symbol:     "project_teammates_projects_projectTeammates",
 				Columns:    []*schema.Column{ProjectTeammatesColumns[5]},
 				RefColumns: []*schema.Column{ProjectsColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "project_teammates_teammates_projectTeammates",
 				Columns:    []*schema.Column{ProjectTeammatesColumns[6]},
 				RefColumns: []*schema.Column{TeammatesColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 		},
 	}
@@ -414,8 +414,8 @@ var (
 		{Name: "name", Type: field.TypeString, Size: 255},
 		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
 		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
-		{Name: "color_id", Type: field.TypeString, Nullable: true},
-		{Name: "workspace_id", Type: field.TypeString, Nullable: true},
+		{Name: "color_id", Type: field.TypeString},
+		{Name: "workspace_id", Type: field.TypeString},
 	}
 	// TagsTable holds the schema information for the "tags" table.
 	TagsTable = &schema.Table{
@@ -427,13 +427,13 @@ var (
 				Symbol:     "tags_colors_tags",
 				Columns:    []*schema.Column{TagsColumns[4]},
 				RefColumns: []*schema.Column{ColorsColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "tags_workspaces_tags",
 				Columns:    []*schema.Column{TagsColumns[5]},
 				RefColumns: []*schema.Column{WorkspacesColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 		},
 	}
@@ -485,8 +485,8 @@ var (
 		{Name: "id", Type: field.TypeString},
 		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
 		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
-		{Name: "task_id", Type: field.TypeString, Nullable: true},
-		{Name: "teammate_id", Type: field.TypeString, Nullable: true},
+		{Name: "task_id", Type: field.TypeString},
+		{Name: "teammate_id", Type: field.TypeString},
 	}
 	// TaskCollaboratorsTable holds the schema information for the "task_collaborators" table.
 	TaskCollaboratorsTable = &schema.Table{
@@ -498,13 +498,13 @@ var (
 				Symbol:     "task_collaborators_tasks_taskCollaborators",
 				Columns:    []*schema.Column{TaskCollaboratorsColumns[3]},
 				RefColumns: []*schema.Column{TasksColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "task_collaborators_teammates_taskCollaborators",
 				Columns:    []*schema.Column{TaskCollaboratorsColumns[4]},
 				RefColumns: []*schema.Column{TeammatesColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 		},
 	}
@@ -530,8 +530,8 @@ var (
 		{Name: "is_pinned", Type: field.TypeBool, Default: false},
 		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
 		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
-		{Name: "task_id", Type: field.TypeString, Nullable: true},
-		{Name: "teammate_id", Type: field.TypeString, Nullable: true},
+		{Name: "task_id", Type: field.TypeString},
+		{Name: "teammate_id", Type: field.TypeString},
 	}
 	// TaskFeedsTable holds the schema information for the "task_feeds" table.
 	TaskFeedsTable = &schema.Table{
@@ -543,13 +543,13 @@ var (
 				Symbol:     "task_feeds_tasks_taskFeeds",
 				Columns:    []*schema.Column{TaskFeedsColumns[6]},
 				RefColumns: []*schema.Column{TasksColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "task_feeds_teammates_taskFeeds",
 				Columns:    []*schema.Column{TaskFeedsColumns[7]},
 				RefColumns: []*schema.Column{TeammatesColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 		},
 	}
@@ -558,9 +558,9 @@ var (
 		{Name: "id", Type: field.TypeString},
 		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
 		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
-		{Name: "task_id", Type: field.TypeString, Nullable: true},
-		{Name: "task_feed_id", Type: field.TypeString, Nullable: true},
-		{Name: "teammate_id", Type: field.TypeString, Nullable: true},
+		{Name: "task_id", Type: field.TypeString},
+		{Name: "task_feed_id", Type: field.TypeString},
+		{Name: "teammate_id", Type: field.TypeString},
 	}
 	// TaskFeedLikesTable holds the schema information for the "task_feed_likes" table.
 	TaskFeedLikesTable = &schema.Table{
@@ -572,19 +572,19 @@ var (
 				Symbol:     "task_feed_likes_tasks_taskFeedLikes",
 				Columns:    []*schema.Column{TaskFeedLikesColumns[3]},
 				RefColumns: []*schema.Column{TasksColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "task_feed_likes_task_feeds_taskFeedLikes",
 				Columns:    []*schema.Column{TaskFeedLikesColumns[4]},
 				RefColumns: []*schema.Column{TaskFeedsColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "task_feed_likes_teammates_taskFeedLikes",
 				Columns:    []*schema.Column{TaskFeedLikesColumns[5]},
 				RefColumns: []*schema.Column{TeammatesColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 		},
 	}
@@ -596,10 +596,10 @@ var (
 		{Name: "attached", Type: field.TypeBool, Default: false},
 		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
 		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
-		{Name: "file_type_id", Type: field.TypeString, Nullable: true},
-		{Name: "project_id", Type: field.TypeString, Nullable: true},
-		{Name: "task_id", Type: field.TypeString, Nullable: true},
-		{Name: "task_feed_id", Type: field.TypeString, Nullable: true},
+		{Name: "file_type_id", Type: field.TypeString},
+		{Name: "project_id", Type: field.TypeString},
+		{Name: "task_id", Type: field.TypeString},
+		{Name: "task_feed_id", Type: field.TypeString},
 	}
 	// TaskFilesTable holds the schema information for the "task_files" table.
 	TaskFilesTable = &schema.Table{
@@ -611,25 +611,25 @@ var (
 				Symbol:     "task_files_file_types_taskFiles",
 				Columns:    []*schema.Column{TaskFilesColumns[6]},
 				RefColumns: []*schema.Column{FileTypesColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "task_files_projects_taskFiles",
 				Columns:    []*schema.Column{TaskFilesColumns[7]},
 				RefColumns: []*schema.Column{ProjectsColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "task_files_tasks_taskFiles",
 				Columns:    []*schema.Column{TaskFilesColumns[8]},
 				RefColumns: []*schema.Column{TasksColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "task_files_task_feeds_taskFiles",
 				Columns:    []*schema.Column{TaskFilesColumns[9]},
 				RefColumns: []*schema.Column{TaskFeedsColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 		},
 	}
@@ -638,9 +638,9 @@ var (
 		{Name: "id", Type: field.TypeString},
 		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
 		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
-		{Name: "task_id", Type: field.TypeString, Nullable: true},
-		{Name: "teammate_id", Type: field.TypeString, Nullable: true},
-		{Name: "workspace_id", Type: field.TypeString, Nullable: true},
+		{Name: "task_id", Type: field.TypeString},
+		{Name: "teammate_id", Type: field.TypeString},
+		{Name: "workspace_id", Type: field.TypeString},
 	}
 	// TaskLikesTable holds the schema information for the "task_likes" table.
 	TaskLikesTable = &schema.Table{
@@ -652,19 +652,19 @@ var (
 				Symbol:     "task_likes_tasks_taskLikes",
 				Columns:    []*schema.Column{TaskLikesColumns[3]},
 				RefColumns: []*schema.Column{TasksColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "task_likes_teammates_taskLikes",
 				Columns:    []*schema.Column{TaskLikesColumns[4]},
 				RefColumns: []*schema.Column{TeammatesColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "task_likes_workspaces_taskLikes",
 				Columns:    []*schema.Column{TaskLikesColumns[5]},
 				RefColumns: []*schema.Column{WorkspacesColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 		},
 	}
@@ -703,7 +703,7 @@ var (
 		{Name: "priority_type", Type: field.TypeEnum, Enums: []string{"LOW", "MEDIUM", "HIGH"}},
 		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
 		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
-		{Name: "color_id", Type: field.TypeString, Nullable: true},
+		{Name: "color_id", Type: field.TypeString},
 	}
 	// TaskPrioritiesTable holds the schema information for the "task_priorities" table.
 	TaskPrioritiesTable = &schema.Table{
@@ -715,7 +715,7 @@ var (
 				Symbol:     "task_priorities_colors_taskPriorities",
 				Columns:    []*schema.Column{TaskPrioritiesColumns[5]},
 				RefColumns: []*schema.Column{ColorsColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 		},
 	}
@@ -737,8 +737,8 @@ var (
 		{Name: "id", Type: field.TypeString},
 		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
 		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
-		{Name: "tag_id", Type: field.TypeString, Nullable: true},
-		{Name: "task_id", Type: field.TypeString, Nullable: true},
+		{Name: "tag_id", Type: field.TypeString},
+		{Name: "task_id", Type: field.TypeString},
 	}
 	// TaskTagsTable holds the schema information for the "task_tags" table.
 	TaskTagsTable = &schema.Table{
@@ -750,13 +750,13 @@ var (
 				Symbol:     "task_tags_tags_taskTags",
 				Columns:    []*schema.Column{TaskTagsColumns[3]},
 				RefColumns: []*schema.Column{TagsColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "task_tags_tasks_taskTags",
 				Columns:    []*schema.Column{TaskTagsColumns[4]},
 				RefColumns: []*schema.Column{TasksColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 		},
 	}
@@ -780,10 +780,10 @@ var (
 		{Name: "id", Type: field.TypeString},
 		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
 		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
-		{Name: "task_id", Type: field.TypeString, Nullable: true},
-		{Name: "teammate_id", Type: field.TypeString, Nullable: true},
-		{Name: "teammate_task_section_id", Type: field.TypeString, Nullable: true},
-		{Name: "workspace_id", Type: field.TypeString, Nullable: true},
+		{Name: "task_id", Type: field.TypeString},
+		{Name: "teammate_id", Type: field.TypeString},
+		{Name: "teammate_task_section_id", Type: field.TypeString},
+		{Name: "workspace_id", Type: field.TypeString},
 	}
 	// TeammateTasksTable holds the schema information for the "teammate_tasks" table.
 	TeammateTasksTable = &schema.Table{
@@ -795,25 +795,25 @@ var (
 				Symbol:     "teammate_tasks_tasks_teammateTasks",
 				Columns:    []*schema.Column{TeammateTasksColumns[3]},
 				RefColumns: []*schema.Column{TasksColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "teammate_tasks_teammates_teammateTasks",
 				Columns:    []*schema.Column{TeammateTasksColumns[4]},
 				RefColumns: []*schema.Column{TeammatesColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "teammate_tasks_teammate_task_sections_teammateTasks",
 				Columns:    []*schema.Column{TeammateTasksColumns[5]},
 				RefColumns: []*schema.Column{TeammateTaskSectionsColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "teammate_tasks_workspaces_teammateTasks",
 				Columns:    []*schema.Column{TeammateTasksColumns[6]},
 				RefColumns: []*schema.Column{WorkspacesColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 		},
 	}
@@ -826,9 +826,9 @@ var (
 		{Name: "order", Type: field.TypeInt},
 		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
 		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
-		{Name: "task_column_id", Type: field.TypeString, Nullable: true},
-		{Name: "teammate_id", Type: field.TypeString, Nullable: true},
-		{Name: "workspace_id", Type: field.TypeString, Nullable: true},
+		{Name: "task_column_id", Type: field.TypeString},
+		{Name: "teammate_id", Type: field.TypeString},
+		{Name: "workspace_id", Type: field.TypeString},
 	}
 	// TeammateTaskColumnsTable holds the schema information for the "teammate_task_columns" table.
 	TeammateTaskColumnsTable = &schema.Table{
@@ -840,19 +840,19 @@ var (
 				Symbol:     "teammate_task_columns_task_columns_teammateTaskColumns",
 				Columns:    []*schema.Column{TeammateTaskColumnsColumns[7]},
 				RefColumns: []*schema.Column{TaskColumnsColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "teammate_task_columns_teammates_teammateTaskColumns",
 				Columns:    []*schema.Column{TeammateTaskColumnsColumns[8]},
 				RefColumns: []*schema.Column{TeammatesColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "teammate_task_columns_workspaces_teammateTaskColumns",
 				Columns:    []*schema.Column{TeammateTaskColumnsColumns[9]},
 				RefColumns: []*schema.Column{WorkspacesColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 		},
 	}
@@ -861,10 +861,10 @@ var (
 		{Name: "id", Type: field.TypeString},
 		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
 		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
-		{Name: "task_list_completed_status_id", Type: field.TypeString, Nullable: true},
-		{Name: "task_list_sort_status_id", Type: field.TypeString, Nullable: true},
-		{Name: "teammate_id", Type: field.TypeString, Nullable: true},
-		{Name: "workspace_id", Type: field.TypeString, Nullable: true},
+		{Name: "task_list_completed_status_id", Type: field.TypeString},
+		{Name: "task_list_sort_status_id", Type: field.TypeString},
+		{Name: "teammate_id", Type: field.TypeString},
+		{Name: "workspace_id", Type: field.TypeString},
 	}
 	// TeammateTaskListStatusTable holds the schema information for the "teammate_task_list_status" table.
 	TeammateTaskListStatusTable = &schema.Table{
@@ -876,25 +876,25 @@ var (
 				Symbol:     "teammate_task_list_status_task_list_completed_status_teammateTaskListStatuses",
 				Columns:    []*schema.Column{TeammateTaskListStatusColumns[3]},
 				RefColumns: []*schema.Column{TaskListCompletedStatusColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "teammate_task_list_status_task_list_sort_status_teammateTaskListStatuses",
 				Columns:    []*schema.Column{TeammateTaskListStatusColumns[4]},
 				RefColumns: []*schema.Column{TaskListSortStatusColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "teammate_task_list_status_teammates_teammateTaskListStatuses",
 				Columns:    []*schema.Column{TeammateTaskListStatusColumns[5]},
 				RefColumns: []*schema.Column{TeammatesColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "teammate_task_list_status_workspaces_teammateTaskListStatuses",
 				Columns:    []*schema.Column{TeammateTaskListStatusColumns[6]},
 				RefColumns: []*schema.Column{WorkspacesColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 		},
 	}
@@ -905,8 +905,8 @@ var (
 		{Name: "assigned", Type: field.TypeBool},
 		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
 		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
-		{Name: "teammate_id", Type: field.TypeString, Nullable: true},
-		{Name: "workspace_id", Type: field.TypeString, Nullable: true},
+		{Name: "teammate_id", Type: field.TypeString},
+		{Name: "workspace_id", Type: field.TypeString},
 	}
 	// TeammateTaskSectionsTable holds the schema information for the "teammate_task_sections" table.
 	TeammateTaskSectionsTable = &schema.Table{
@@ -918,13 +918,13 @@ var (
 				Symbol:     "teammate_task_sections_teammates_teammateTaskSections",
 				Columns:    []*schema.Column{TeammateTaskSectionsColumns[5]},
 				RefColumns: []*schema.Column{TeammatesColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "teammate_task_sections_workspaces_teammateTaskSections",
 				Columns:    []*schema.Column{TeammateTaskSectionsColumns[6]},
 				RefColumns: []*schema.Column{WorkspacesColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 		},
 	}
@@ -934,8 +934,8 @@ var (
 		{Name: "status_code", Type: field.TypeEnum, Enums: []string{"LIST", "BOARD", "CALENDAR", "FILES"}, Default: "LIST"},
 		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
 		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
-		{Name: "teammate_id", Type: field.TypeString, Nullable: true},
-		{Name: "workspace_id", Type: field.TypeString, Nullable: true},
+		{Name: "teammate_id", Type: field.TypeString},
+		{Name: "workspace_id", Type: field.TypeString},
 	}
 	// TeammateTaskTabStatusTable holds the schema information for the "teammate_task_tab_status" table.
 	TeammateTaskTabStatusTable = &schema.Table{
@@ -947,13 +947,13 @@ var (
 				Symbol:     "teammate_task_tab_status_teammates_teammateTaskTabStatuses",
 				Columns:    []*schema.Column{TeammateTaskTabStatusColumns[4]},
 				RefColumns: []*schema.Column{TeammatesColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "teammate_task_tab_status_workspaces_teammateTaskTabStatuses",
 				Columns:    []*schema.Column{TeammateTaskTabStatusColumns[5]},
 				RefColumns: []*schema.Column{WorkspacesColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 		},
 	}
@@ -1019,7 +1019,7 @@ var (
 		{Name: "description", Type: field.TypeJSON},
 		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
 		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
-		{Name: "created_by", Type: field.TypeString, Nullable: true},
+		{Name: "created_by", Type: field.TypeString},
 	}
 	// WorkspacesTable holds the schema information for the "workspaces" table.
 	WorkspacesTable = &schema.Table{
@@ -1031,7 +1031,7 @@ var (
 				Symbol:     "workspaces_teammates_workspaces",
 				Columns:    []*schema.Column{WorkspacesColumns[5]},
 				RefColumns: []*schema.Column{TeammatesColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 		},
 	}
@@ -1042,8 +1042,8 @@ var (
 		{Name: "is_owner", Type: field.TypeBool},
 		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
 		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
-		{Name: "teammate_id", Type: field.TypeString, Nullable: true},
-		{Name: "workspace_id", Type: field.TypeString, Nullable: true},
+		{Name: "teammate_id", Type: field.TypeString},
+		{Name: "workspace_id", Type: field.TypeString},
 	}
 	// WorkspaceTeammatesTable holds the schema information for the "workspace_teammates" table.
 	WorkspaceTeammatesTable = &schema.Table{
@@ -1055,13 +1055,13 @@ var (
 				Symbol:     "workspace_teammates_teammates_workspaceTeammates",
 				Columns:    []*schema.Column{WorkspaceTeammatesColumns[5]},
 				RefColumns: []*schema.Column{TeammatesColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "workspace_teammates_workspaces_workspaceTeammates",
 				Columns:    []*schema.Column{WorkspaceTeammatesColumns[6]},
 				RefColumns: []*schema.Column{WorkspacesColumns[0]},
-				OnDelete:   schema.SetNull,
+				OnDelete:   schema.NoAction,
 			},
 		},
 	}

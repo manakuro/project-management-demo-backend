@@ -190,28 +190,28 @@ func (tlc *TaskLikeCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (tlc *TaskLikeCreate) check() error {
 	if _, ok := tlc.mutation.TaskID(); !ok {
-		return &ValidationError{Name: "task_id", err: errors.New(`ent: missing required field "task_id"`)}
+		return &ValidationError{Name: "task_id", err: errors.New(`ent: missing required field "TaskLike.task_id"`)}
 	}
 	if _, ok := tlc.mutation.TeammateID(); !ok {
-		return &ValidationError{Name: "teammate_id", err: errors.New(`ent: missing required field "teammate_id"`)}
+		return &ValidationError{Name: "teammate_id", err: errors.New(`ent: missing required field "TaskLike.teammate_id"`)}
 	}
 	if _, ok := tlc.mutation.WorkspaceID(); !ok {
-		return &ValidationError{Name: "workspace_id", err: errors.New(`ent: missing required field "workspace_id"`)}
+		return &ValidationError{Name: "workspace_id", err: errors.New(`ent: missing required field "TaskLike.workspace_id"`)}
 	}
 	if _, ok := tlc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "TaskLike.created_at"`)}
 	}
 	if _, ok := tlc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "TaskLike.updated_at"`)}
 	}
 	if _, ok := tlc.mutation.TaskID(); !ok {
-		return &ValidationError{Name: "task", err: errors.New("ent: missing required edge \"task\"")}
+		return &ValidationError{Name: "task", err: errors.New(`ent: missing required edge "TaskLike.task"`)}
 	}
 	if _, ok := tlc.mutation.TeammateID(); !ok {
-		return &ValidationError{Name: "teammate", err: errors.New("ent: missing required edge \"teammate\"")}
+		return &ValidationError{Name: "teammate", err: errors.New(`ent: missing required edge "TaskLike.teammate"`)}
 	}
 	if _, ok := tlc.mutation.WorkspaceID(); !ok {
-		return &ValidationError{Name: "workspace", err: errors.New("ent: missing required edge \"workspace\"")}
+		return &ValidationError{Name: "workspace", err: errors.New(`ent: missing required edge "TaskLike.workspace"`)}
 	}
 	return nil
 }
@@ -225,7 +225,11 @@ func (tlc *TaskLikeCreate) sqlSave(ctx context.Context) (*TaskLike, error) {
 		return nil, err
 	}
 	if _spec.ID.Value != nil {
-		_node.ID = _spec.ID.Value.(ulid.ID)
+		if id, ok := _spec.ID.Value.(*ulid.ID); ok {
+			_node.ID = *id
+		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
+			return nil, err
+		}
 	}
 	return _node, nil
 }
@@ -244,7 +248,7 @@ func (tlc *TaskLikeCreate) createSpec() (*TaskLike, *sqlgraph.CreateSpec) {
 	_spec.OnConflict = tlc.conflict
 	if id, ok := tlc.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = id
+		_spec.ID.Value = &id
 	}
 	if value, ok := tlc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -436,7 +440,7 @@ func (u *TaskLikeUpsert) UpdateUpdatedAt() *TaskLikeUpsert {
 	return u
 }
 
-// UpdateNewValues updates the fields using the new values that were set on create except the ID field.
+// UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
 //	client.TaskLike.Create().
@@ -453,6 +457,12 @@ func (u *TaskLikeUpsertOne) UpdateNewValues() *TaskLikeUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
 		if _, exists := u.create.mutation.ID(); exists {
 			s.SetIgnore(tasklike.FieldID)
+		}
+		if _, exists := u.create.mutation.CreatedAt(); exists {
+			s.SetIgnore(tasklike.FieldCreatedAt)
+		}
+		if _, exists := u.create.mutation.UpdatedAt(); exists {
+			s.SetIgnore(tasklike.FieldUpdatedAt)
 		}
 	}))
 	return u
@@ -719,7 +729,7 @@ type TaskLikeUpsertBulk struct {
 	create *TaskLikeCreateBulk
 }
 
-// UpdateNewValues updates the fields using the new values that
+// UpdateNewValues updates the mutable fields using the new values that
 // were set on create. Using this option is equivalent to using:
 //
 //	client.TaskLike.Create().
@@ -738,6 +748,12 @@ func (u *TaskLikeUpsertBulk) UpdateNewValues() *TaskLikeUpsertBulk {
 			if _, exists := b.mutation.ID(); exists {
 				s.SetIgnore(tasklike.FieldID)
 				return
+			}
+			if _, exists := b.mutation.CreatedAt(); exists {
+				s.SetIgnore(tasklike.FieldCreatedAt)
+			}
+			if _, exists := b.mutation.UpdatedAt(); exists {
+				s.SetIgnore(tasklike.FieldUpdatedAt)
 			}
 		}
 	}))

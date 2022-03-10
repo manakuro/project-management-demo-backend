@@ -180,7 +180,7 @@ func (ptlsq *ProjectTaskListStatusQuery) FirstIDX(ctx context.Context) ulid.ID {
 }
 
 // Only returns a single ProjectTaskListStatus entity found by the query, ensuring it only returns one.
-// Returns a *NotSingularError when exactly one ProjectTaskListStatus entity is not found.
+// Returns a *NotSingularError when more than one ProjectTaskListStatus entity is found.
 // Returns a *NotFoundError when no ProjectTaskListStatus entities are found.
 func (ptlsq *ProjectTaskListStatusQuery) Only(ctx context.Context) (*ProjectTaskListStatus, error) {
 	nodes, err := ptlsq.Limit(2).All(ctx)
@@ -207,7 +207,7 @@ func (ptlsq *ProjectTaskListStatusQuery) OnlyX(ctx context.Context) *ProjectTask
 }
 
 // OnlyID is like Only, but returns the only ProjectTaskListStatus ID in the query.
-// Returns a *NotSingularError when exactly one ProjectTaskListStatus ID is not found.
+// Returns a *NotSingularError when more than one ProjectTaskListStatus ID is found.
 // Returns a *NotFoundError when no entities are found.
 func (ptlsq *ProjectTaskListStatusQuery) OnlyID(ctx context.Context) (id ulid.ID, err error) {
 	var ids []ulid.ID
@@ -319,8 +319,9 @@ func (ptlsq *ProjectTaskListStatusQuery) Clone() *ProjectTaskListStatusQuery {
 		withTaskListCompletedStatus: ptlsq.withTaskListCompletedStatus.Clone(),
 		withTaskListSortStatus:      ptlsq.withTaskListSortStatus.Clone(),
 		// clone intermediate query.
-		sql:  ptlsq.sql.Clone(),
-		path: ptlsq.path,
+		sql:    ptlsq.sql.Clone(),
+		path:   ptlsq.path,
+		unique: ptlsq.unique,
 	}
 }
 
@@ -531,6 +532,10 @@ func (ptlsq *ProjectTaskListStatusQuery) sqlAll(ctx context.Context) ([]*Project
 
 func (ptlsq *ProjectTaskListStatusQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := ptlsq.querySpec()
+	_spec.Node.Columns = ptlsq.fields
+	if len(ptlsq.fields) > 0 {
+		_spec.Unique = ptlsq.unique != nil && *ptlsq.unique
+	}
 	return sqlgraph.CountNodes(ctx, ptlsq.driver, _spec)
 }
 
@@ -601,6 +606,9 @@ func (ptlsq *ProjectTaskListStatusQuery) sqlQuery(ctx context.Context) *sql.Sele
 	if ptlsq.sql != nil {
 		selector = ptlsq.sql
 		selector.Select(selector.Columns(columns...)...)
+	}
+	if ptlsq.unique != nil && *ptlsq.unique {
+		selector.Distinct()
 	}
 	for _, p := range ptlsq.predicates {
 		p(selector)
@@ -880,9 +888,7 @@ func (ptlsgb *ProjectTaskListStatusGroupBy) sqlQuery() *sql.Selector {
 		for _, f := range ptlsgb.fields {
 			columns = append(columns, selector.C(f))
 		}
-		for _, c := range aggregation {
-			columns = append(columns, c)
-		}
+		columns = append(columns, aggregation...)
 		selector.Select(columns...)
 	}
 	return selector.GroupBy(selector.Columns(ptlsgb.fields...)...)

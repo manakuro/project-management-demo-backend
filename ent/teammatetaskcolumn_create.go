@@ -214,45 +214,45 @@ func (ttcc *TeammateTaskColumnCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (ttcc *TeammateTaskColumnCreate) check() error {
 	if _, ok := ttcc.mutation.TeammateID(); !ok {
-		return &ValidationError{Name: "teammate_id", err: errors.New(`ent: missing required field "teammate_id"`)}
+		return &ValidationError{Name: "teammate_id", err: errors.New(`ent: missing required field "TeammateTaskColumn.teammate_id"`)}
 	}
 	if _, ok := ttcc.mutation.TaskColumnID(); !ok {
-		return &ValidationError{Name: "task_column_id", err: errors.New(`ent: missing required field "task_column_id"`)}
+		return &ValidationError{Name: "task_column_id", err: errors.New(`ent: missing required field "TeammateTaskColumn.task_column_id"`)}
 	}
 	if _, ok := ttcc.mutation.WorkspaceID(); !ok {
-		return &ValidationError{Name: "workspace_id", err: errors.New(`ent: missing required field "workspace_id"`)}
+		return &ValidationError{Name: "workspace_id", err: errors.New(`ent: missing required field "TeammateTaskColumn.workspace_id"`)}
 	}
 	if _, ok := ttcc.mutation.Width(); !ok {
-		return &ValidationError{Name: "width", err: errors.New(`ent: missing required field "width"`)}
+		return &ValidationError{Name: "width", err: errors.New(`ent: missing required field "TeammateTaskColumn.width"`)}
 	}
 	if v, ok := ttcc.mutation.Width(); ok {
 		if err := teammatetaskcolumn.WidthValidator(v); err != nil {
-			return &ValidationError{Name: "width", err: fmt.Errorf(`ent: validator failed for field "width": %w`, err)}
+			return &ValidationError{Name: "width", err: fmt.Errorf(`ent: validator failed for field "TeammateTaskColumn.width": %w`, err)}
 		}
 	}
 	if _, ok := ttcc.mutation.Disabled(); !ok {
-		return &ValidationError{Name: "disabled", err: errors.New(`ent: missing required field "disabled"`)}
+		return &ValidationError{Name: "disabled", err: errors.New(`ent: missing required field "TeammateTaskColumn.disabled"`)}
 	}
 	if _, ok := ttcc.mutation.Customizable(); !ok {
-		return &ValidationError{Name: "customizable", err: errors.New(`ent: missing required field "customizable"`)}
+		return &ValidationError{Name: "customizable", err: errors.New(`ent: missing required field "TeammateTaskColumn.customizable"`)}
 	}
 	if _, ok := ttcc.mutation.Order(); !ok {
-		return &ValidationError{Name: "order", err: errors.New(`ent: missing required field "order"`)}
+		return &ValidationError{Name: "order", err: errors.New(`ent: missing required field "TeammateTaskColumn.order"`)}
 	}
 	if _, ok := ttcc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "TeammateTaskColumn.created_at"`)}
 	}
 	if _, ok := ttcc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "TeammateTaskColumn.updated_at"`)}
 	}
 	if _, ok := ttcc.mutation.TeammateID(); !ok {
-		return &ValidationError{Name: "teammate", err: errors.New("ent: missing required edge \"teammate\"")}
+		return &ValidationError{Name: "teammate", err: errors.New(`ent: missing required edge "TeammateTaskColumn.teammate"`)}
 	}
 	if _, ok := ttcc.mutation.WorkspaceID(); !ok {
-		return &ValidationError{Name: "workspace", err: errors.New("ent: missing required edge \"workspace\"")}
+		return &ValidationError{Name: "workspace", err: errors.New(`ent: missing required edge "TeammateTaskColumn.workspace"`)}
 	}
 	if _, ok := ttcc.mutation.TaskColumnID(); !ok {
-		return &ValidationError{Name: "taskColumn", err: errors.New("ent: missing required edge \"taskColumn\"")}
+		return &ValidationError{Name: "taskColumn", err: errors.New(`ent: missing required edge "TeammateTaskColumn.taskColumn"`)}
 	}
 	return nil
 }
@@ -266,7 +266,11 @@ func (ttcc *TeammateTaskColumnCreate) sqlSave(ctx context.Context) (*TeammateTas
 		return nil, err
 	}
 	if _spec.ID.Value != nil {
-		_node.ID = _spec.ID.Value.(ulid.ID)
+		if id, ok := _spec.ID.Value.(*ulid.ID); ok {
+			_node.ID = *id
+		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
+			return nil, err
+		}
 	}
 	return _node, nil
 }
@@ -285,7 +289,7 @@ func (ttcc *TeammateTaskColumnCreate) createSpec() (*TeammateTaskColumn, *sqlgra
 	_spec.OnConflict = ttcc.conflict
 	if id, ok := ttcc.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = id
+		_spec.ID.Value = &id
 	}
 	if value, ok := ttcc.mutation.Width(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -533,6 +537,12 @@ func (u *TeammateTaskColumnUpsert) UpdateOrder() *TeammateTaskColumnUpsert {
 	return u
 }
 
+// AddOrder adds v to the "order" field.
+func (u *TeammateTaskColumnUpsert) AddOrder(v int) *TeammateTaskColumnUpsert {
+	u.Add(teammatetaskcolumn.FieldOrder, v)
+	return u
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (u *TeammateTaskColumnUpsert) SetCreatedAt(v time.Time) *TeammateTaskColumnUpsert {
 	u.Set(teammatetaskcolumn.FieldCreatedAt, v)
@@ -557,7 +567,7 @@ func (u *TeammateTaskColumnUpsert) UpdateUpdatedAt() *TeammateTaskColumnUpsert {
 	return u
 }
 
-// UpdateNewValues updates the fields using the new values that were set on create except the ID field.
+// UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
 //	client.TeammateTaskColumn.Create().
@@ -574,6 +584,12 @@ func (u *TeammateTaskColumnUpsertOne) UpdateNewValues() *TeammateTaskColumnUpser
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
 		if _, exists := u.create.mutation.ID(); exists {
 			s.SetIgnore(teammatetaskcolumn.FieldID)
+		}
+		if _, exists := u.create.mutation.CreatedAt(); exists {
+			s.SetIgnore(teammatetaskcolumn.FieldCreatedAt)
+		}
+		if _, exists := u.create.mutation.UpdatedAt(); exists {
+			s.SetIgnore(teammatetaskcolumn.FieldUpdatedAt)
 		}
 	}))
 	return u
@@ -695,6 +711,13 @@ func (u *TeammateTaskColumnUpsertOne) UpdateCustomizable() *TeammateTaskColumnUp
 func (u *TeammateTaskColumnUpsertOne) SetOrder(v int) *TeammateTaskColumnUpsertOne {
 	return u.Update(func(s *TeammateTaskColumnUpsert) {
 		s.SetOrder(v)
+	})
+}
+
+// AddOrder adds v to the "order" field.
+func (u *TeammateTaskColumnUpsertOne) AddOrder(v int) *TeammateTaskColumnUpsertOne {
+	return u.Update(func(s *TeammateTaskColumnUpsert) {
+		s.AddOrder(v)
 	})
 }
 
@@ -896,7 +919,7 @@ type TeammateTaskColumnUpsertBulk struct {
 	create *TeammateTaskColumnCreateBulk
 }
 
-// UpdateNewValues updates the fields using the new values that
+// UpdateNewValues updates the mutable fields using the new values that
 // were set on create. Using this option is equivalent to using:
 //
 //	client.TeammateTaskColumn.Create().
@@ -915,6 +938,12 @@ func (u *TeammateTaskColumnUpsertBulk) UpdateNewValues() *TeammateTaskColumnUpse
 			if _, exists := b.mutation.ID(); exists {
 				s.SetIgnore(teammatetaskcolumn.FieldID)
 				return
+			}
+			if _, exists := b.mutation.CreatedAt(); exists {
+				s.SetIgnore(teammatetaskcolumn.FieldCreatedAt)
+			}
+			if _, exists := b.mutation.UpdatedAt(); exists {
+				s.SetIgnore(teammatetaskcolumn.FieldUpdatedAt)
 			}
 		}
 	}))
@@ -1037,6 +1066,13 @@ func (u *TeammateTaskColumnUpsertBulk) UpdateCustomizable() *TeammateTaskColumnU
 func (u *TeammateTaskColumnUpsertBulk) SetOrder(v int) *TeammateTaskColumnUpsertBulk {
 	return u.Update(func(s *TeammateTaskColumnUpsert) {
 		s.SetOrder(v)
+	})
+}
+
+// AddOrder adds v to the "order" field.
+func (u *TeammateTaskColumnUpsertBulk) AddOrder(v int) *TeammateTaskColumnUpsertBulk {
+	return u.Update(func(s *TeammateTaskColumnUpsert) {
+		s.AddOrder(v)
 	})
 }
 

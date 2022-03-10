@@ -189,24 +189,24 @@ func (tuc *TestUserCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (tuc *TestUserCreate) check() error {
 	if _, ok := tuc.mutation.Name(); !ok {
-		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "name"`)}
+		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "TestUser.name"`)}
 	}
 	if v, ok := tuc.mutation.Name(); ok {
 		if err := testuser.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "name": %w`, err)}
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "TestUser.name": %w`, err)}
 		}
 	}
 	if _, ok := tuc.mutation.Age(); !ok {
-		return &ValidationError{Name: "age", err: errors.New(`ent: missing required field "age"`)}
+		return &ValidationError{Name: "age", err: errors.New(`ent: missing required field "TestUser.age"`)}
 	}
 	if _, ok := tuc.mutation.Profile(); !ok {
-		return &ValidationError{Name: "profile", err: errors.New(`ent: missing required field "profile"`)}
+		return &ValidationError{Name: "profile", err: errors.New(`ent: missing required field "TestUser.profile"`)}
 	}
 	if _, ok := tuc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "TestUser.created_at"`)}
 	}
 	if _, ok := tuc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "TestUser.updated_at"`)}
 	}
 	return nil
 }
@@ -220,7 +220,11 @@ func (tuc *TestUserCreate) sqlSave(ctx context.Context) (*TestUser, error) {
 		return nil, err
 	}
 	if _spec.ID.Value != nil {
-		_node.ID = _spec.ID.Value.(ulid.ID)
+		if id, ok := _spec.ID.Value.(*ulid.ID); ok {
+			_node.ID = *id
+		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
+			return nil, err
+		}
 	}
 	return _node, nil
 }
@@ -239,7 +243,7 @@ func (tuc *TestUserCreate) createSpec() (*TestUser, *sqlgraph.CreateSpec) {
 	_spec.OnConflict = tuc.conflict
 	if id, ok := tuc.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = id
+		_spec.ID.Value = &id
 	}
 	if value, ok := tuc.mutation.Name(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -378,6 +382,12 @@ func (u *TestUserUpsert) UpdateAge() *TestUserUpsert {
 	return u
 }
 
+// AddAge adds v to the "age" field.
+func (u *TestUserUpsert) AddAge(v int) *TestUserUpsert {
+	u.Add(testuser.FieldAge, v)
+	return u
+}
+
 // SetProfile sets the "profile" field.
 func (u *TestUserUpsert) SetProfile(v testuserprofile.TestUserProfile) *TestUserUpsert {
 	u.Set(testuser.FieldProfile, v)
@@ -414,7 +424,7 @@ func (u *TestUserUpsert) UpdateUpdatedAt() *TestUserUpsert {
 	return u
 }
 
-// UpdateNewValues updates the fields using the new values that were set on create except the ID field.
+// UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
 //	client.TestUser.Create().
@@ -431,6 +441,12 @@ func (u *TestUserUpsertOne) UpdateNewValues() *TestUserUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
 		if _, exists := u.create.mutation.ID(); exists {
 			s.SetIgnore(testuser.FieldID)
+		}
+		if _, exists := u.create.mutation.CreatedAt(); exists {
+			s.SetIgnore(testuser.FieldCreatedAt)
+		}
+		if _, exists := u.create.mutation.UpdatedAt(); exists {
+			s.SetIgnore(testuser.FieldUpdatedAt)
 		}
 	}))
 	return u
@@ -482,6 +498,13 @@ func (u *TestUserUpsertOne) UpdateName() *TestUserUpsertOne {
 func (u *TestUserUpsertOne) SetAge(v int) *TestUserUpsertOne {
 	return u.Update(func(s *TestUserUpsert) {
 		s.SetAge(v)
+	})
+}
+
+// AddAge adds v to the "age" field.
+func (u *TestUserUpsertOne) AddAge(v int) *TestUserUpsertOne {
+	return u.Update(func(s *TestUserUpsert) {
+		s.AddAge(v)
 	})
 }
 
@@ -697,7 +720,7 @@ type TestUserUpsertBulk struct {
 	create *TestUserCreateBulk
 }
 
-// UpdateNewValues updates the fields using the new values that
+// UpdateNewValues updates the mutable fields using the new values that
 // were set on create. Using this option is equivalent to using:
 //
 //	client.TestUser.Create().
@@ -716,6 +739,12 @@ func (u *TestUserUpsertBulk) UpdateNewValues() *TestUserUpsertBulk {
 			if _, exists := b.mutation.ID(); exists {
 				s.SetIgnore(testuser.FieldID)
 				return
+			}
+			if _, exists := b.mutation.CreatedAt(); exists {
+				s.SetIgnore(testuser.FieldCreatedAt)
+			}
+			if _, exists := b.mutation.UpdatedAt(); exists {
+				s.SetIgnore(testuser.FieldUpdatedAt)
 			}
 		}
 	}))
@@ -768,6 +797,13 @@ func (u *TestUserUpsertBulk) UpdateName() *TestUserUpsertBulk {
 func (u *TestUserUpsertBulk) SetAge(v int) *TestUserUpsertBulk {
 	return u.Update(func(s *TestUserUpsert) {
 		s.SetAge(v)
+	})
+}
+
+// AddAge adds v to the "age" field.
+func (u *TestUserUpsertBulk) AddAge(v int) *TestUserUpsertBulk {
+	return u.Update(func(s *TestUserUpsert) {
+		s.AddAge(v)
 	})
 }
 

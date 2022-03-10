@@ -147,14 +147,14 @@ func (tttsu *TeammateTaskTabStatusUpdate) ExecX(ctx context.Context) {
 func (tttsu *TeammateTaskTabStatusUpdate) check() error {
 	if v, ok := tttsu.mutation.StatusCode(); ok {
 		if err := teammatetasktabstatus.StatusCodeValidator(v); err != nil {
-			return &ValidationError{Name: "status_code", err: fmt.Errorf("ent: validator failed for field \"status_code\": %w", err)}
+			return &ValidationError{Name: "status_code", err: fmt.Errorf(`ent: validator failed for field "TeammateTaskTabStatus.status_code": %w`, err)}
 		}
 	}
 	if _, ok := tttsu.mutation.WorkspaceID(); tttsu.mutation.WorkspaceCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"workspace\"")
+		return errors.New(`ent: clearing a required unique edge "TeammateTaskTabStatus.workspace"`)
 	}
 	if _, ok := tttsu.mutation.TeammateID(); tttsu.mutation.TeammateCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"teammate\"")
+		return errors.New(`ent: clearing a required unique edge "TeammateTaskTabStatus.teammate"`)
 	}
 	return nil
 }
@@ -397,14 +397,14 @@ func (tttsuo *TeammateTaskTabStatusUpdateOne) ExecX(ctx context.Context) {
 func (tttsuo *TeammateTaskTabStatusUpdateOne) check() error {
 	if v, ok := tttsuo.mutation.StatusCode(); ok {
 		if err := teammatetasktabstatus.StatusCodeValidator(v); err != nil {
-			return &ValidationError{Name: "status_code", err: fmt.Errorf("ent: validator failed for field \"status_code\": %w", err)}
+			return &ValidationError{Name: "status_code", err: fmt.Errorf(`ent: validator failed for field "TeammateTaskTabStatus.status_code": %w`, err)}
 		}
 	}
 	if _, ok := tttsuo.mutation.WorkspaceID(); tttsuo.mutation.WorkspaceCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"workspace\"")
+		return errors.New(`ent: clearing a required unique edge "TeammateTaskTabStatus.workspace"`)
 	}
 	if _, ok := tttsuo.mutation.TeammateID(); tttsuo.mutation.TeammateCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"teammate\"")
+		return errors.New(`ent: clearing a required unique edge "TeammateTaskTabStatus.teammate"`)
 	}
 	return nil
 }
@@ -422,7 +422,7 @@ func (tttsuo *TeammateTaskTabStatusUpdateOne) sqlSave(ctx context.Context) (_nod
 	}
 	id, ok := tttsuo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing TeammateTaskTabStatus.ID for update")}
+		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "TeammateTaskTabStatus.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := tttsuo.fields; len(fields) > 0 {

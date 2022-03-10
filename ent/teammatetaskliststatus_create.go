@@ -202,34 +202,34 @@ func (ttlsc *TeammateTaskListStatusCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (ttlsc *TeammateTaskListStatusCreate) check() error {
 	if _, ok := ttlsc.mutation.WorkspaceID(); !ok {
-		return &ValidationError{Name: "workspace_id", err: errors.New(`ent: missing required field "workspace_id"`)}
+		return &ValidationError{Name: "workspace_id", err: errors.New(`ent: missing required field "TeammateTaskListStatus.workspace_id"`)}
 	}
 	if _, ok := ttlsc.mutation.TeammateID(); !ok {
-		return &ValidationError{Name: "teammate_id", err: errors.New(`ent: missing required field "teammate_id"`)}
+		return &ValidationError{Name: "teammate_id", err: errors.New(`ent: missing required field "TeammateTaskListStatus.teammate_id"`)}
 	}
 	if _, ok := ttlsc.mutation.TaskListCompletedStatusID(); !ok {
-		return &ValidationError{Name: "task_list_completed_status_id", err: errors.New(`ent: missing required field "task_list_completed_status_id"`)}
+		return &ValidationError{Name: "task_list_completed_status_id", err: errors.New(`ent: missing required field "TeammateTaskListStatus.task_list_completed_status_id"`)}
 	}
 	if _, ok := ttlsc.mutation.TaskListSortStatusID(); !ok {
-		return &ValidationError{Name: "task_list_sort_status_id", err: errors.New(`ent: missing required field "task_list_sort_status_id"`)}
+		return &ValidationError{Name: "task_list_sort_status_id", err: errors.New(`ent: missing required field "TeammateTaskListStatus.task_list_sort_status_id"`)}
 	}
 	if _, ok := ttlsc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "TeammateTaskListStatus.created_at"`)}
 	}
 	if _, ok := ttlsc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "TeammateTaskListStatus.updated_at"`)}
 	}
 	if _, ok := ttlsc.mutation.WorkspaceID(); !ok {
-		return &ValidationError{Name: "workspace", err: errors.New("ent: missing required edge \"workspace\"")}
+		return &ValidationError{Name: "workspace", err: errors.New(`ent: missing required edge "TeammateTaskListStatus.workspace"`)}
 	}
 	if _, ok := ttlsc.mutation.TeammateID(); !ok {
-		return &ValidationError{Name: "teammate", err: errors.New("ent: missing required edge \"teammate\"")}
+		return &ValidationError{Name: "teammate", err: errors.New(`ent: missing required edge "TeammateTaskListStatus.teammate"`)}
 	}
 	if _, ok := ttlsc.mutation.TaskListCompletedStatusID(); !ok {
-		return &ValidationError{Name: "taskListCompletedStatus", err: errors.New("ent: missing required edge \"taskListCompletedStatus\"")}
+		return &ValidationError{Name: "taskListCompletedStatus", err: errors.New(`ent: missing required edge "TeammateTaskListStatus.taskListCompletedStatus"`)}
 	}
 	if _, ok := ttlsc.mutation.TaskListSortStatusID(); !ok {
-		return &ValidationError{Name: "taskListSortStatus", err: errors.New("ent: missing required edge \"taskListSortStatus\"")}
+		return &ValidationError{Name: "taskListSortStatus", err: errors.New(`ent: missing required edge "TeammateTaskListStatus.taskListSortStatus"`)}
 	}
 	return nil
 }
@@ -243,7 +243,11 @@ func (ttlsc *TeammateTaskListStatusCreate) sqlSave(ctx context.Context) (*Teamma
 		return nil, err
 	}
 	if _spec.ID.Value != nil {
-		_node.ID = _spec.ID.Value.(ulid.ID)
+		if id, ok := _spec.ID.Value.(*ulid.ID); ok {
+			_node.ID = *id
+		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
+			return nil, err
+		}
 	}
 	return _node, nil
 }
@@ -262,7 +266,7 @@ func (ttlsc *TeammateTaskListStatusCreate) createSpec() (*TeammateTaskListStatus
 	_spec.OnConflict = ttlsc.conflict
 	if id, ok := ttlsc.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = id
+		_spec.ID.Value = &id
 	}
 	if value, ok := ttlsc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -486,7 +490,7 @@ func (u *TeammateTaskListStatusUpsert) UpdateUpdatedAt() *TeammateTaskListStatus
 	return u
 }
 
-// UpdateNewValues updates the fields using the new values that were set on create except the ID field.
+// UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
 //	client.TeammateTaskListStatus.Create().
@@ -503,6 +507,12 @@ func (u *TeammateTaskListStatusUpsertOne) UpdateNewValues() *TeammateTaskListSta
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
 		if _, exists := u.create.mutation.ID(); exists {
 			s.SetIgnore(teammatetaskliststatus.FieldID)
+		}
+		if _, exists := u.create.mutation.CreatedAt(); exists {
+			s.SetIgnore(teammatetaskliststatus.FieldCreatedAt)
+		}
+		if _, exists := u.create.mutation.UpdatedAt(); exists {
+			s.SetIgnore(teammatetaskliststatus.FieldUpdatedAt)
 		}
 	}))
 	return u
@@ -783,7 +793,7 @@ type TeammateTaskListStatusUpsertBulk struct {
 	create *TeammateTaskListStatusCreateBulk
 }
 
-// UpdateNewValues updates the fields using the new values that
+// UpdateNewValues updates the mutable fields using the new values that
 // were set on create. Using this option is equivalent to using:
 //
 //	client.TeammateTaskListStatus.Create().
@@ -802,6 +812,12 @@ func (u *TeammateTaskListStatusUpsertBulk) UpdateNewValues() *TeammateTaskListSt
 			if _, exists := b.mutation.ID(); exists {
 				s.SetIgnore(teammatetaskliststatus.FieldID)
 				return
+			}
+			if _, exists := b.mutation.CreatedAt(); exists {
+				s.SetIgnore(teammatetaskliststatus.FieldCreatedAt)
+			}
+			if _, exists := b.mutation.UpdatedAt(); exists {
+				s.SetIgnore(teammatetaskliststatus.FieldUpdatedAt)
 			}
 		}
 	}))

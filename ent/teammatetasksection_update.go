@@ -182,14 +182,14 @@ func (ttsu *TeammateTaskSectionUpdate) ExecX(ctx context.Context) {
 func (ttsu *TeammateTaskSectionUpdate) check() error {
 	if v, ok := ttsu.mutation.Name(); ok {
 		if err := teammatetasksection.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf("ent: validator failed for field \"name\": %w", err)}
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "TeammateTaskSection.name": %w`, err)}
 		}
 	}
 	if _, ok := ttsu.mutation.TeammateID(); ttsu.mutation.TeammateCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"teammate\"")
+		return errors.New(`ent: clearing a required unique edge "TeammateTaskSection.teammate"`)
 	}
 	if _, ok := ttsu.mutation.WorkspaceID(); ttsu.mutation.WorkspaceCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"workspace\"")
+		return errors.New(`ent: clearing a required unique edge "TeammateTaskSection.workspace"`)
 	}
 	return nil
 }
@@ -527,14 +527,14 @@ func (ttsuo *TeammateTaskSectionUpdateOne) ExecX(ctx context.Context) {
 func (ttsuo *TeammateTaskSectionUpdateOne) check() error {
 	if v, ok := ttsuo.mutation.Name(); ok {
 		if err := teammatetasksection.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf("ent: validator failed for field \"name\": %w", err)}
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "TeammateTaskSection.name": %w`, err)}
 		}
 	}
 	if _, ok := ttsuo.mutation.TeammateID(); ttsuo.mutation.TeammateCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"teammate\"")
+		return errors.New(`ent: clearing a required unique edge "TeammateTaskSection.teammate"`)
 	}
 	if _, ok := ttsuo.mutation.WorkspaceID(); ttsuo.mutation.WorkspaceCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"workspace\"")
+		return errors.New(`ent: clearing a required unique edge "TeammateTaskSection.workspace"`)
 	}
 	return nil
 }
@@ -552,7 +552,7 @@ func (ttsuo *TeammateTaskSectionUpdateOne) sqlSave(ctx context.Context) (_node *
 	}
 	id, ok := ttsuo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing TeammateTaskSection.ID for update")}
+		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "TeammateTaskSection.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := ttsuo.fields; len(fields) > 0 {

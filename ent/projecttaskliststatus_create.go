@@ -190,28 +190,28 @@ func (ptlsc *ProjectTaskListStatusCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (ptlsc *ProjectTaskListStatusCreate) check() error {
 	if _, ok := ptlsc.mutation.ProjectID(); !ok {
-		return &ValidationError{Name: "project_id", err: errors.New(`ent: missing required field "project_id"`)}
+		return &ValidationError{Name: "project_id", err: errors.New(`ent: missing required field "ProjectTaskListStatus.project_id"`)}
 	}
 	if _, ok := ptlsc.mutation.TaskListCompletedStatusID(); !ok {
-		return &ValidationError{Name: "task_list_completed_status_id", err: errors.New(`ent: missing required field "task_list_completed_status_id"`)}
+		return &ValidationError{Name: "task_list_completed_status_id", err: errors.New(`ent: missing required field "ProjectTaskListStatus.task_list_completed_status_id"`)}
 	}
 	if _, ok := ptlsc.mutation.TaskListSortStatusID(); !ok {
-		return &ValidationError{Name: "task_list_sort_status_id", err: errors.New(`ent: missing required field "task_list_sort_status_id"`)}
+		return &ValidationError{Name: "task_list_sort_status_id", err: errors.New(`ent: missing required field "ProjectTaskListStatus.task_list_sort_status_id"`)}
 	}
 	if _, ok := ptlsc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "ProjectTaskListStatus.created_at"`)}
 	}
 	if _, ok := ptlsc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "ProjectTaskListStatus.updated_at"`)}
 	}
 	if _, ok := ptlsc.mutation.ProjectID(); !ok {
-		return &ValidationError{Name: "project", err: errors.New("ent: missing required edge \"project\"")}
+		return &ValidationError{Name: "project", err: errors.New(`ent: missing required edge "ProjectTaskListStatus.project"`)}
 	}
 	if _, ok := ptlsc.mutation.TaskListCompletedStatusID(); !ok {
-		return &ValidationError{Name: "taskListCompletedStatus", err: errors.New("ent: missing required edge \"taskListCompletedStatus\"")}
+		return &ValidationError{Name: "taskListCompletedStatus", err: errors.New(`ent: missing required edge "ProjectTaskListStatus.taskListCompletedStatus"`)}
 	}
 	if _, ok := ptlsc.mutation.TaskListSortStatusID(); !ok {
-		return &ValidationError{Name: "taskListSortStatus", err: errors.New("ent: missing required edge \"taskListSortStatus\"")}
+		return &ValidationError{Name: "taskListSortStatus", err: errors.New(`ent: missing required edge "ProjectTaskListStatus.taskListSortStatus"`)}
 	}
 	return nil
 }
@@ -225,7 +225,11 @@ func (ptlsc *ProjectTaskListStatusCreate) sqlSave(ctx context.Context) (*Project
 		return nil, err
 	}
 	if _spec.ID.Value != nil {
-		_node.ID = _spec.ID.Value.(ulid.ID)
+		if id, ok := _spec.ID.Value.(*ulid.ID); ok {
+			_node.ID = *id
+		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
+			return nil, err
+		}
 	}
 	return _node, nil
 }
@@ -244,7 +248,7 @@ func (ptlsc *ProjectTaskListStatusCreate) createSpec() (*ProjectTaskListStatus, 
 	_spec.OnConflict = ptlsc.conflict
 	if id, ok := ptlsc.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = id
+		_spec.ID.Value = &id
 	}
 	if value, ok := ptlsc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -436,7 +440,7 @@ func (u *ProjectTaskListStatusUpsert) UpdateUpdatedAt() *ProjectTaskListStatusUp
 	return u
 }
 
-// UpdateNewValues updates the fields using the new values that were set on create except the ID field.
+// UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
 //	client.ProjectTaskListStatus.Create().
@@ -453,6 +457,12 @@ func (u *ProjectTaskListStatusUpsertOne) UpdateNewValues() *ProjectTaskListStatu
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
 		if _, exists := u.create.mutation.ID(); exists {
 			s.SetIgnore(projecttaskliststatus.FieldID)
+		}
+		if _, exists := u.create.mutation.CreatedAt(); exists {
+			s.SetIgnore(projecttaskliststatus.FieldCreatedAt)
+		}
+		if _, exists := u.create.mutation.UpdatedAt(); exists {
+			s.SetIgnore(projecttaskliststatus.FieldUpdatedAt)
 		}
 	}))
 	return u
@@ -719,7 +729,7 @@ type ProjectTaskListStatusUpsertBulk struct {
 	create *ProjectTaskListStatusCreateBulk
 }
 
-// UpdateNewValues updates the fields using the new values that
+// UpdateNewValues updates the mutable fields using the new values that
 // were set on create. Using this option is equivalent to using:
 //
 //	client.ProjectTaskListStatus.Create().
@@ -738,6 +748,12 @@ func (u *ProjectTaskListStatusUpsertBulk) UpdateNewValues() *ProjectTaskListStat
 			if _, exists := b.mutation.ID(); exists {
 				s.SetIgnore(projecttaskliststatus.FieldID)
 				return
+			}
+			if _, exists := b.mutation.CreatedAt(); exists {
+				s.SetIgnore(projecttaskliststatus.FieldCreatedAt)
+			}
+			if _, exists := b.mutation.UpdatedAt(); exists {
+				s.SetIgnore(projecttaskliststatus.FieldUpdatedAt)
 			}
 		}
 	}))

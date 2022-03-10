@@ -190,33 +190,33 @@ func (ptc *ProjectTeammateCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (ptc *ProjectTeammateCreate) check() error {
 	if _, ok := ptc.mutation.ProjectID(); !ok {
-		return &ValidationError{Name: "project_id", err: errors.New(`ent: missing required field "project_id"`)}
+		return &ValidationError{Name: "project_id", err: errors.New(`ent: missing required field "ProjectTeammate.project_id"`)}
 	}
 	if _, ok := ptc.mutation.TeammateID(); !ok {
-		return &ValidationError{Name: "teammate_id", err: errors.New(`ent: missing required field "teammate_id"`)}
+		return &ValidationError{Name: "teammate_id", err: errors.New(`ent: missing required field "ProjectTeammate.teammate_id"`)}
 	}
 	if _, ok := ptc.mutation.Role(); !ok {
-		return &ValidationError{Name: "role", err: errors.New(`ent: missing required field "role"`)}
+		return &ValidationError{Name: "role", err: errors.New(`ent: missing required field "ProjectTeammate.role"`)}
 	}
 	if v, ok := ptc.mutation.Role(); ok {
 		if err := projectteammate.RoleValidator(v); err != nil {
-			return &ValidationError{Name: "role", err: fmt.Errorf(`ent: validator failed for field "role": %w`, err)}
+			return &ValidationError{Name: "role", err: fmt.Errorf(`ent: validator failed for field "ProjectTeammate.role": %w`, err)}
 		}
 	}
 	if _, ok := ptc.mutation.IsOwner(); !ok {
-		return &ValidationError{Name: "is_owner", err: errors.New(`ent: missing required field "is_owner"`)}
+		return &ValidationError{Name: "is_owner", err: errors.New(`ent: missing required field "ProjectTeammate.is_owner"`)}
 	}
 	if _, ok := ptc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "ProjectTeammate.created_at"`)}
 	}
 	if _, ok := ptc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "ProjectTeammate.updated_at"`)}
 	}
 	if _, ok := ptc.mutation.ProjectID(); !ok {
-		return &ValidationError{Name: "project", err: errors.New("ent: missing required edge \"project\"")}
+		return &ValidationError{Name: "project", err: errors.New(`ent: missing required edge "ProjectTeammate.project"`)}
 	}
 	if _, ok := ptc.mutation.TeammateID(); !ok {
-		return &ValidationError{Name: "teammate", err: errors.New("ent: missing required edge \"teammate\"")}
+		return &ValidationError{Name: "teammate", err: errors.New(`ent: missing required edge "ProjectTeammate.teammate"`)}
 	}
 	return nil
 }
@@ -230,7 +230,11 @@ func (ptc *ProjectTeammateCreate) sqlSave(ctx context.Context) (*ProjectTeammate
 		return nil, err
 	}
 	if _spec.ID.Value != nil {
-		_node.ID = _spec.ID.Value.(ulid.ID)
+		if id, ok := _spec.ID.Value.(*ulid.ID); ok {
+			_node.ID = *id
+		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
+			return nil, err
+		}
 	}
 	return _node, nil
 }
@@ -249,7 +253,7 @@ func (ptc *ProjectTeammateCreate) createSpec() (*ProjectTeammate, *sqlgraph.Crea
 	_spec.OnConflict = ptc.conflict
 	if id, ok := ptc.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = id
+		_spec.ID.Value = &id
 	}
 	if value, ok := ptc.mutation.Role(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -449,7 +453,7 @@ func (u *ProjectTeammateUpsert) UpdateUpdatedAt() *ProjectTeammateUpsert {
 	return u
 }
 
-// UpdateNewValues updates the fields using the new values that were set on create except the ID field.
+// UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
 //	client.ProjectTeammate.Create().
@@ -466,6 +470,12 @@ func (u *ProjectTeammateUpsertOne) UpdateNewValues() *ProjectTeammateUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
 		if _, exists := u.create.mutation.ID(); exists {
 			s.SetIgnore(projectteammate.FieldID)
+		}
+		if _, exists := u.create.mutation.CreatedAt(); exists {
+			s.SetIgnore(projectteammate.FieldCreatedAt)
+		}
+		if _, exists := u.create.mutation.UpdatedAt(); exists {
+			s.SetIgnore(projectteammate.FieldUpdatedAt)
 		}
 	}))
 	return u
@@ -746,7 +756,7 @@ type ProjectTeammateUpsertBulk struct {
 	create *ProjectTeammateCreateBulk
 }
 
-// UpdateNewValues updates the fields using the new values that
+// UpdateNewValues updates the mutable fields using the new values that
 // were set on create. Using this option is equivalent to using:
 //
 //	client.ProjectTeammate.Create().
@@ -765,6 +775,12 @@ func (u *ProjectTeammateUpsertBulk) UpdateNewValues() *ProjectTeammateUpsertBulk
 			if _, exists := b.mutation.ID(); exists {
 				s.SetIgnore(projectteammate.FieldID)
 				return
+			}
+			if _, exists := b.mutation.CreatedAt(); exists {
+				s.SetIgnore(projectteammate.FieldCreatedAt)
+			}
+			if _, exists := b.mutation.UpdatedAt(); exists {
+				s.SetIgnore(projectteammate.FieldUpdatedAt)
 			}
 		}
 	}))

@@ -157,7 +157,7 @@ func (tlssq *TaskListSortStatusQuery) FirstIDX(ctx context.Context) ulid.ID {
 }
 
 // Only returns a single TaskListSortStatus entity found by the query, ensuring it only returns one.
-// Returns a *NotSingularError when exactly one TaskListSortStatus entity is not found.
+// Returns a *NotSingularError when more than one TaskListSortStatus entity is found.
 // Returns a *NotFoundError when no TaskListSortStatus entities are found.
 func (tlssq *TaskListSortStatusQuery) Only(ctx context.Context) (*TaskListSortStatus, error) {
 	nodes, err := tlssq.Limit(2).All(ctx)
@@ -184,7 +184,7 @@ func (tlssq *TaskListSortStatusQuery) OnlyX(ctx context.Context) *TaskListSortSt
 }
 
 // OnlyID is like Only, but returns the only TaskListSortStatus ID in the query.
-// Returns a *NotSingularError when exactly one TaskListSortStatus ID is not found.
+// Returns a *NotSingularError when more than one TaskListSortStatus ID is found.
 // Returns a *NotFoundError when no entities are found.
 func (tlssq *TaskListSortStatusQuery) OnlyID(ctx context.Context) (id ulid.ID, err error) {
 	var ids []ulid.ID
@@ -295,8 +295,9 @@ func (tlssq *TaskListSortStatusQuery) Clone() *TaskListSortStatusQuery {
 		withTeammateTaskListStatuses: tlssq.withTeammateTaskListStatuses.Clone(),
 		withProjectTaskListStatuses:  tlssq.withProjectTaskListStatuses.Clone(),
 		// clone intermediate query.
-		sql:  tlssq.sql.Clone(),
-		path: tlssq.path,
+		sql:    tlssq.sql.Clone(),
+		path:   tlssq.path,
+		unique: tlssq.unique,
 	}
 }
 
@@ -467,6 +468,10 @@ func (tlssq *TaskListSortStatusQuery) sqlAll(ctx context.Context) ([]*TaskListSo
 
 func (tlssq *TaskListSortStatusQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := tlssq.querySpec()
+	_spec.Node.Columns = tlssq.fields
+	if len(tlssq.fields) > 0 {
+		_spec.Unique = tlssq.unique != nil && *tlssq.unique
+	}
 	return sqlgraph.CountNodes(ctx, tlssq.driver, _spec)
 }
 
@@ -537,6 +542,9 @@ func (tlssq *TaskListSortStatusQuery) sqlQuery(ctx context.Context) *sql.Selecto
 	if tlssq.sql != nil {
 		selector = tlssq.sql
 		selector.Select(selector.Columns(columns...)...)
+	}
+	if tlssq.unique != nil && *tlssq.unique {
+		selector.Distinct()
 	}
 	for _, p := range tlssq.predicates {
 		p(selector)
@@ -816,9 +824,7 @@ func (tlssgb *TaskListSortStatusGroupBy) sqlQuery() *sql.Selector {
 		for _, f := range tlssgb.fields {
 			columns = append(columns, selector.C(f))
 		}
-		for _, c := range aggregation {
-			columns = append(columns, c)
-		}
+		columns = append(columns, aggregation...)
 		selector.Select(columns...)
 	}
 	return selector.GroupBy(selector.Columns(tlssgb.fields...)...)

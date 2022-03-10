@@ -180,7 +180,7 @@ func (ptq *ProjectTaskQuery) FirstIDX(ctx context.Context) ulid.ID {
 }
 
 // Only returns a single ProjectTask entity found by the query, ensuring it only returns one.
-// Returns a *NotSingularError when exactly one ProjectTask entity is not found.
+// Returns a *NotSingularError when more than one ProjectTask entity is found.
 // Returns a *NotFoundError when no ProjectTask entities are found.
 func (ptq *ProjectTaskQuery) Only(ctx context.Context) (*ProjectTask, error) {
 	nodes, err := ptq.Limit(2).All(ctx)
@@ -207,7 +207,7 @@ func (ptq *ProjectTaskQuery) OnlyX(ctx context.Context) *ProjectTask {
 }
 
 // OnlyID is like Only, but returns the only ProjectTask ID in the query.
-// Returns a *NotSingularError when exactly one ProjectTask ID is not found.
+// Returns a *NotSingularError when more than one ProjectTask ID is found.
 // Returns a *NotFoundError when no entities are found.
 func (ptq *ProjectTaskQuery) OnlyID(ctx context.Context) (id ulid.ID, err error) {
 	var ids []ulid.ID
@@ -319,8 +319,9 @@ func (ptq *ProjectTaskQuery) Clone() *ProjectTaskQuery {
 		withTask:               ptq.withTask.Clone(),
 		withProjectTaskSection: ptq.withProjectTaskSection.Clone(),
 		// clone intermediate query.
-		sql:  ptq.sql.Clone(),
-		path: ptq.path,
+		sql:    ptq.sql.Clone(),
+		path:   ptq.path,
+		unique: ptq.unique,
 	}
 }
 
@@ -531,6 +532,10 @@ func (ptq *ProjectTaskQuery) sqlAll(ctx context.Context) ([]*ProjectTask, error)
 
 func (ptq *ProjectTaskQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := ptq.querySpec()
+	_spec.Node.Columns = ptq.fields
+	if len(ptq.fields) > 0 {
+		_spec.Unique = ptq.unique != nil && *ptq.unique
+	}
 	return sqlgraph.CountNodes(ctx, ptq.driver, _spec)
 }
 
@@ -601,6 +606,9 @@ func (ptq *ProjectTaskQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	if ptq.sql != nil {
 		selector = ptq.sql
 		selector.Select(selector.Columns(columns...)...)
+	}
+	if ptq.unique != nil && *ptq.unique {
+		selector.Distinct()
 	}
 	for _, p := range ptq.predicates {
 		p(selector)
@@ -880,9 +888,7 @@ func (ptgb *ProjectTaskGroupBy) sqlQuery() *sql.Selector {
 		for _, f := range ptgb.fields {
 			columns = append(columns, selector.C(f))
 		}
-		for _, c := range aggregation {
-			columns = append(columns, c)
-		}
+		columns = append(columns, aggregation...)
 		selector.Select(columns...)
 	}
 	return selector.GroupBy(selector.Columns(ptgb.fields...)...)

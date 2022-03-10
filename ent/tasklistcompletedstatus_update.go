@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"project-management-demo-backend/ent/predicate"
 	"project-management-demo-backend/ent/projecttaskliststatus"
@@ -182,12 +183,12 @@ func (tlcsu *TaskListCompletedStatusUpdate) ExecX(ctx context.Context) {
 func (tlcsu *TaskListCompletedStatusUpdate) check() error {
 	if v, ok := tlcsu.mutation.Name(); ok {
 		if err := tasklistcompletedstatus.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf("ent: validator failed for field \"name\": %w", err)}
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "TaskListCompletedStatus.name": %w`, err)}
 		}
 	}
 	if v, ok := tlcsu.mutation.StatusCode(); ok {
 		if err := tasklistcompletedstatus.StatusCodeValidator(v); err != nil {
-			return &ValidationError{Name: "status_code", err: fmt.Errorf("ent: validator failed for field \"status_code\": %w", err)}
+			return &ValidationError{Name: "status_code", err: fmt.Errorf(`ent: validator failed for field "TaskListCompletedStatus.status_code": %w`, err)}
 		}
 	}
 	return nil
@@ -512,12 +513,12 @@ func (tlcsuo *TaskListCompletedStatusUpdateOne) ExecX(ctx context.Context) {
 func (tlcsuo *TaskListCompletedStatusUpdateOne) check() error {
 	if v, ok := tlcsuo.mutation.Name(); ok {
 		if err := tasklistcompletedstatus.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf("ent: validator failed for field \"name\": %w", err)}
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "TaskListCompletedStatus.name": %w`, err)}
 		}
 	}
 	if v, ok := tlcsuo.mutation.StatusCode(); ok {
 		if err := tasklistcompletedstatus.StatusCodeValidator(v); err != nil {
-			return &ValidationError{Name: "status_code", err: fmt.Errorf("ent: validator failed for field \"status_code\": %w", err)}
+			return &ValidationError{Name: "status_code", err: fmt.Errorf(`ent: validator failed for field "TaskListCompletedStatus.status_code": %w`, err)}
 		}
 	}
 	return nil
@@ -536,7 +537,7 @@ func (tlcsuo *TaskListCompletedStatusUpdateOne) sqlSave(ctx context.Context) (_n
 	}
 	id, ok := tlcsuo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing TaskListCompletedStatus.ID for update")}
+		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "TaskListCompletedStatus.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := tlcsuo.fields; len(fields) > 0 {

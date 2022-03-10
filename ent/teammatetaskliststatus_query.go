@@ -204,7 +204,7 @@ func (ttlsq *TeammateTaskListStatusQuery) FirstIDX(ctx context.Context) ulid.ID 
 }
 
 // Only returns a single TeammateTaskListStatus entity found by the query, ensuring it only returns one.
-// Returns a *NotSingularError when exactly one TeammateTaskListStatus entity is not found.
+// Returns a *NotSingularError when more than one TeammateTaskListStatus entity is found.
 // Returns a *NotFoundError when no TeammateTaskListStatus entities are found.
 func (ttlsq *TeammateTaskListStatusQuery) Only(ctx context.Context) (*TeammateTaskListStatus, error) {
 	nodes, err := ttlsq.Limit(2).All(ctx)
@@ -231,7 +231,7 @@ func (ttlsq *TeammateTaskListStatusQuery) OnlyX(ctx context.Context) *TeammateTa
 }
 
 // OnlyID is like Only, but returns the only TeammateTaskListStatus ID in the query.
-// Returns a *NotSingularError when exactly one TeammateTaskListStatus ID is not found.
+// Returns a *NotSingularError when more than one TeammateTaskListStatus ID is found.
 // Returns a *NotFoundError when no entities are found.
 func (ttlsq *TeammateTaskListStatusQuery) OnlyID(ctx context.Context) (id ulid.ID, err error) {
 	var ids []ulid.ID
@@ -344,8 +344,9 @@ func (ttlsq *TeammateTaskListStatusQuery) Clone() *TeammateTaskListStatusQuery {
 		withTaskListCompletedStatus: ttlsq.withTaskListCompletedStatus.Clone(),
 		withTaskListSortStatus:      ttlsq.withTaskListSortStatus.Clone(),
 		// clone intermediate query.
-		sql:  ttlsq.sql.Clone(),
-		path: ttlsq.path,
+		sql:    ttlsq.sql.Clone(),
+		path:   ttlsq.path,
+		unique: ttlsq.unique,
 	}
 }
 
@@ -594,6 +595,10 @@ func (ttlsq *TeammateTaskListStatusQuery) sqlAll(ctx context.Context) ([]*Teamma
 
 func (ttlsq *TeammateTaskListStatusQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := ttlsq.querySpec()
+	_spec.Node.Columns = ttlsq.fields
+	if len(ttlsq.fields) > 0 {
+		_spec.Unique = ttlsq.unique != nil && *ttlsq.unique
+	}
 	return sqlgraph.CountNodes(ctx, ttlsq.driver, _spec)
 }
 
@@ -664,6 +669,9 @@ func (ttlsq *TeammateTaskListStatusQuery) sqlQuery(ctx context.Context) *sql.Sel
 	if ttlsq.sql != nil {
 		selector = ttlsq.sql
 		selector.Select(selector.Columns(columns...)...)
+	}
+	if ttlsq.unique != nil && *ttlsq.unique {
+		selector.Distinct()
 	}
 	for _, p := range ttlsq.predicates {
 		p(selector)
@@ -943,9 +951,7 @@ func (ttlsgb *TeammateTaskListStatusGroupBy) sqlQuery() *sql.Selector {
 		for _, f := range ttlsgb.fields {
 			columns = append(columns, selector.C(f))
 		}
-		for _, c := range aggregation {
-			columns = append(columns, c)
-		}
+		columns = append(columns, aggregation...)
 		selector.Select(columns...)
 	}
 	return selector.GroupBy(selector.Columns(ttlsgb.fields...)...)

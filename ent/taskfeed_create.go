@@ -253,31 +253,31 @@ func (tfc *TaskFeedCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (tfc *TaskFeedCreate) check() error {
 	if _, ok := tfc.mutation.TaskID(); !ok {
-		return &ValidationError{Name: "task_id", err: errors.New(`ent: missing required field "task_id"`)}
+		return &ValidationError{Name: "task_id", err: errors.New(`ent: missing required field "TaskFeed.task_id"`)}
 	}
 	if _, ok := tfc.mutation.TeammateID(); !ok {
-		return &ValidationError{Name: "teammate_id", err: errors.New(`ent: missing required field "teammate_id"`)}
+		return &ValidationError{Name: "teammate_id", err: errors.New(`ent: missing required field "TaskFeed.teammate_id"`)}
 	}
 	if _, ok := tfc.mutation.Description(); !ok {
-		return &ValidationError{Name: "description", err: errors.New(`ent: missing required field "description"`)}
+		return &ValidationError{Name: "description", err: errors.New(`ent: missing required field "TaskFeed.description"`)}
 	}
 	if _, ok := tfc.mutation.IsFirst(); !ok {
-		return &ValidationError{Name: "is_first", err: errors.New(`ent: missing required field "is_first"`)}
+		return &ValidationError{Name: "is_first", err: errors.New(`ent: missing required field "TaskFeed.is_first"`)}
 	}
 	if _, ok := tfc.mutation.IsPinned(); !ok {
-		return &ValidationError{Name: "is_pinned", err: errors.New(`ent: missing required field "is_pinned"`)}
+		return &ValidationError{Name: "is_pinned", err: errors.New(`ent: missing required field "TaskFeed.is_pinned"`)}
 	}
 	if _, ok := tfc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "TaskFeed.created_at"`)}
 	}
 	if _, ok := tfc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "TaskFeed.updated_at"`)}
 	}
 	if _, ok := tfc.mutation.TaskID(); !ok {
-		return &ValidationError{Name: "task", err: errors.New("ent: missing required edge \"task\"")}
+		return &ValidationError{Name: "task", err: errors.New(`ent: missing required edge "TaskFeed.task"`)}
 	}
 	if _, ok := tfc.mutation.TeammateID(); !ok {
-		return &ValidationError{Name: "teammate", err: errors.New("ent: missing required edge \"teammate\"")}
+		return &ValidationError{Name: "teammate", err: errors.New(`ent: missing required edge "TaskFeed.teammate"`)}
 	}
 	return nil
 }
@@ -291,7 +291,11 @@ func (tfc *TaskFeedCreate) sqlSave(ctx context.Context) (*TaskFeed, error) {
 		return nil, err
 	}
 	if _spec.ID.Value != nil {
-		_node.ID = _spec.ID.Value.(ulid.ID)
+		if id, ok := _spec.ID.Value.(*ulid.ID); ok {
+			_node.ID = *id
+		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
+			return nil, err
+		}
 	}
 	return _node, nil
 }
@@ -310,7 +314,7 @@ func (tfc *TaskFeedCreate) createSpec() (*TaskFeed, *sqlgraph.CreateSpec) {
 	_spec.OnConflict = tfc.conflict
 	if id, ok := tfc.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = id
+		_spec.ID.Value = &id
 	}
 	if value, ok := tfc.mutation.Description(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -568,7 +572,7 @@ func (u *TaskFeedUpsert) UpdateUpdatedAt() *TaskFeedUpsert {
 	return u
 }
 
-// UpdateNewValues updates the fields using the new values that were set on create except the ID field.
+// UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
 //	client.TaskFeed.Create().
@@ -585,6 +589,12 @@ func (u *TaskFeedUpsertOne) UpdateNewValues() *TaskFeedUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
 		if _, exists := u.create.mutation.ID(); exists {
 			s.SetIgnore(taskfeed.FieldID)
+		}
+		if _, exists := u.create.mutation.CreatedAt(); exists {
+			s.SetIgnore(taskfeed.FieldCreatedAt)
+		}
+		if _, exists := u.create.mutation.UpdatedAt(); exists {
+			s.SetIgnore(taskfeed.FieldUpdatedAt)
 		}
 	}))
 	return u
@@ -879,7 +889,7 @@ type TaskFeedUpsertBulk struct {
 	create *TaskFeedCreateBulk
 }
 
-// UpdateNewValues updates the fields using the new values that
+// UpdateNewValues updates the mutable fields using the new values that
 // were set on create. Using this option is equivalent to using:
 //
 //	client.TaskFeed.Create().
@@ -898,6 +908,12 @@ func (u *TaskFeedUpsertBulk) UpdateNewValues() *TaskFeedUpsertBulk {
 			if _, exists := b.mutation.ID(); exists {
 				s.SetIgnore(taskfeed.FieldID)
 				return
+			}
+			if _, exists := b.mutation.CreatedAt(); exists {
+				s.SetIgnore(taskfeed.FieldCreatedAt)
+			}
+			if _, exists := b.mutation.UpdatedAt(); exists {
+				s.SetIgnore(taskfeed.FieldUpdatedAt)
 			}
 		}
 	}))

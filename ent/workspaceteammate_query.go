@@ -156,7 +156,7 @@ func (wtq *WorkspaceTeammateQuery) FirstIDX(ctx context.Context) ulid.ID {
 }
 
 // Only returns a single WorkspaceTeammate entity found by the query, ensuring it only returns one.
-// Returns a *NotSingularError when exactly one WorkspaceTeammate entity is not found.
+// Returns a *NotSingularError when more than one WorkspaceTeammate entity is found.
 // Returns a *NotFoundError when no WorkspaceTeammate entities are found.
 func (wtq *WorkspaceTeammateQuery) Only(ctx context.Context) (*WorkspaceTeammate, error) {
 	nodes, err := wtq.Limit(2).All(ctx)
@@ -183,7 +183,7 @@ func (wtq *WorkspaceTeammateQuery) OnlyX(ctx context.Context) *WorkspaceTeammate
 }
 
 // OnlyID is like Only, but returns the only WorkspaceTeammate ID in the query.
-// Returns a *NotSingularError when exactly one WorkspaceTeammate ID is not found.
+// Returns a *NotSingularError when more than one WorkspaceTeammate ID is found.
 // Returns a *NotFoundError when no entities are found.
 func (wtq *WorkspaceTeammateQuery) OnlyID(ctx context.Context) (id ulid.ID, err error) {
 	var ids []ulid.ID
@@ -294,8 +294,9 @@ func (wtq *WorkspaceTeammateQuery) Clone() *WorkspaceTeammateQuery {
 		withWorkspace: wtq.withWorkspace.Clone(),
 		withTeammate:  wtq.withTeammate.Clone(),
 		// clone intermediate query.
-		sql:  wtq.sql.Clone(),
-		path: wtq.path,
+		sql:    wtq.sql.Clone(),
+		path:   wtq.path,
+		unique: wtq.unique,
 	}
 }
 
@@ -468,6 +469,10 @@ func (wtq *WorkspaceTeammateQuery) sqlAll(ctx context.Context) ([]*WorkspaceTeam
 
 func (wtq *WorkspaceTeammateQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := wtq.querySpec()
+	_spec.Node.Columns = wtq.fields
+	if len(wtq.fields) > 0 {
+		_spec.Unique = wtq.unique != nil && *wtq.unique
+	}
 	return sqlgraph.CountNodes(ctx, wtq.driver, _spec)
 }
 
@@ -538,6 +543,9 @@ func (wtq *WorkspaceTeammateQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	if wtq.sql != nil {
 		selector = wtq.sql
 		selector.Select(selector.Columns(columns...)...)
+	}
+	if wtq.unique != nil && *wtq.unique {
+		selector.Distinct()
 	}
 	for _, p := range wtq.predicates {
 		p(selector)
@@ -817,9 +825,7 @@ func (wtgb *WorkspaceTeammateGroupBy) sqlQuery() *sql.Selector {
 		for _, f := range wtgb.fields {
 			columns = append(columns, selector.C(f))
 		}
-		for _, c := range aggregation {
-			columns = append(columns, c)
-		}
+		columns = append(columns, aggregation...)
 		selector.Select(columns...)
 	}
 	return selector.GroupBy(selector.Columns(wtgb.fields...)...)

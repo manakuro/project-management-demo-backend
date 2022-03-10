@@ -132,10 +132,10 @@ func (fwu *FavoriteWorkspaceUpdate) ExecX(ctx context.Context) {
 // check runs all checks and user-defined validators on the builder.
 func (fwu *FavoriteWorkspaceUpdate) check() error {
 	if _, ok := fwu.mutation.WorkspaceID(); fwu.mutation.WorkspaceCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"workspace\"")
+		return errors.New(`ent: clearing a required unique edge "FavoriteWorkspace.workspace"`)
 	}
 	if _, ok := fwu.mutation.TeammateID(); fwu.mutation.TeammateCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"teammate\"")
+		return errors.New(`ent: clearing a required unique edge "FavoriteWorkspace.teammate"`)
 	}
 	return nil
 }
@@ -356,10 +356,10 @@ func (fwuo *FavoriteWorkspaceUpdateOne) ExecX(ctx context.Context) {
 // check runs all checks and user-defined validators on the builder.
 func (fwuo *FavoriteWorkspaceUpdateOne) check() error {
 	if _, ok := fwuo.mutation.WorkspaceID(); fwuo.mutation.WorkspaceCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"workspace\"")
+		return errors.New(`ent: clearing a required unique edge "FavoriteWorkspace.workspace"`)
 	}
 	if _, ok := fwuo.mutation.TeammateID(); fwuo.mutation.TeammateCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"teammate\"")
+		return errors.New(`ent: clearing a required unique edge "FavoriteWorkspace.teammate"`)
 	}
 	return nil
 }
@@ -377,7 +377,7 @@ func (fwuo *FavoriteWorkspaceUpdateOne) sqlSave(ctx context.Context) (_node *Fav
 	}
 	id, ok := fwuo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing FavoriteWorkspace.ID for update")}
+		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "FavoriteWorkspace.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := fwuo.fields; len(fields) > 0 {

@@ -397,7 +397,7 @@ func (wq *WorkspaceQuery) FirstIDX(ctx context.Context) ulid.ID {
 }
 
 // Only returns a single Workspace entity found by the query, ensuring it only returns one.
-// Returns a *NotSingularError when exactly one Workspace entity is not found.
+// Returns a *NotSingularError when more than one Workspace entity is found.
 // Returns a *NotFoundError when no Workspace entities are found.
 func (wq *WorkspaceQuery) Only(ctx context.Context) (*Workspace, error) {
 	nodes, err := wq.Limit(2).All(ctx)
@@ -424,7 +424,7 @@ func (wq *WorkspaceQuery) OnlyX(ctx context.Context) *Workspace {
 }
 
 // OnlyID is like Only, but returns the only Workspace ID in the query.
-// Returns a *NotSingularError when exactly one Workspace ID is not found.
+// Returns a *NotSingularError when more than one Workspace ID is found.
 // Returns a *NotFoundError when no entities are found.
 func (wq *WorkspaceQuery) OnlyID(ctx context.Context) (id ulid.ID, err error) {
 	var ids []ulid.ID
@@ -545,8 +545,9 @@ func (wq *WorkspaceQuery) Clone() *WorkspaceQuery {
 		withTeammateTasks:            wq.withTeammateTasks.Clone(),
 		withDeletedTasksRef:          wq.withDeletedTasksRef.Clone(),
 		// clone intermediate query.
-		sql:  wq.sql.Clone(),
-		path: wq.path,
+		sql:    wq.sql.Clone(),
+		path:   wq.path,
+		unique: wq.unique,
 	}
 }
 
@@ -1088,6 +1089,10 @@ func (wq *WorkspaceQuery) sqlAll(ctx context.Context) ([]*Workspace, error) {
 
 func (wq *WorkspaceQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := wq.querySpec()
+	_spec.Node.Columns = wq.fields
+	if len(wq.fields) > 0 {
+		_spec.Unique = wq.unique != nil && *wq.unique
+	}
 	return sqlgraph.CountNodes(ctx, wq.driver, _spec)
 }
 
@@ -1158,6 +1163,9 @@ func (wq *WorkspaceQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	if wq.sql != nil {
 		selector = wq.sql
 		selector.Select(selector.Columns(columns...)...)
+	}
+	if wq.unique != nil && *wq.unique {
+		selector.Distinct()
 	}
 	for _, p := range wq.predicates {
 		p(selector)
@@ -1437,9 +1445,7 @@ func (wgb *WorkspaceGroupBy) sqlQuery() *sql.Selector {
 		for _, f := range wgb.fields {
 			columns = append(columns, selector.C(f))
 		}
-		for _, c := range aggregation {
-			columns = append(columns, c)
-		}
+		columns = append(columns, aggregation...)
 		selector.Select(columns...)
 	}
 	return selector.GroupBy(selector.Columns(wgb.fields...)...)

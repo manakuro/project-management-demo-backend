@@ -190,33 +190,33 @@ func (wtc *WorkspaceTeammateCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (wtc *WorkspaceTeammateCreate) check() error {
 	if _, ok := wtc.mutation.WorkspaceID(); !ok {
-		return &ValidationError{Name: "workspace_id", err: errors.New(`ent: missing required field "workspace_id"`)}
+		return &ValidationError{Name: "workspace_id", err: errors.New(`ent: missing required field "WorkspaceTeammate.workspace_id"`)}
 	}
 	if _, ok := wtc.mutation.TeammateID(); !ok {
-		return &ValidationError{Name: "teammate_id", err: errors.New(`ent: missing required field "teammate_id"`)}
+		return &ValidationError{Name: "teammate_id", err: errors.New(`ent: missing required field "WorkspaceTeammate.teammate_id"`)}
 	}
 	if _, ok := wtc.mutation.Role(); !ok {
-		return &ValidationError{Name: "role", err: errors.New(`ent: missing required field "role"`)}
+		return &ValidationError{Name: "role", err: errors.New(`ent: missing required field "WorkspaceTeammate.role"`)}
 	}
 	if v, ok := wtc.mutation.Role(); ok {
 		if err := workspaceteammate.RoleValidator(v); err != nil {
-			return &ValidationError{Name: "role", err: fmt.Errorf(`ent: validator failed for field "role": %w`, err)}
+			return &ValidationError{Name: "role", err: fmt.Errorf(`ent: validator failed for field "WorkspaceTeammate.role": %w`, err)}
 		}
 	}
 	if _, ok := wtc.mutation.IsOwner(); !ok {
-		return &ValidationError{Name: "is_owner", err: errors.New(`ent: missing required field "is_owner"`)}
+		return &ValidationError{Name: "is_owner", err: errors.New(`ent: missing required field "WorkspaceTeammate.is_owner"`)}
 	}
 	if _, ok := wtc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "WorkspaceTeammate.created_at"`)}
 	}
 	if _, ok := wtc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "WorkspaceTeammate.updated_at"`)}
 	}
 	if _, ok := wtc.mutation.WorkspaceID(); !ok {
-		return &ValidationError{Name: "workspace", err: errors.New("ent: missing required edge \"workspace\"")}
+		return &ValidationError{Name: "workspace", err: errors.New(`ent: missing required edge "WorkspaceTeammate.workspace"`)}
 	}
 	if _, ok := wtc.mutation.TeammateID(); !ok {
-		return &ValidationError{Name: "teammate", err: errors.New("ent: missing required edge \"teammate\"")}
+		return &ValidationError{Name: "teammate", err: errors.New(`ent: missing required edge "WorkspaceTeammate.teammate"`)}
 	}
 	return nil
 }
@@ -230,7 +230,11 @@ func (wtc *WorkspaceTeammateCreate) sqlSave(ctx context.Context) (*WorkspaceTeam
 		return nil, err
 	}
 	if _spec.ID.Value != nil {
-		_node.ID = _spec.ID.Value.(ulid.ID)
+		if id, ok := _spec.ID.Value.(*ulid.ID); ok {
+			_node.ID = *id
+		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
+			return nil, err
+		}
 	}
 	return _node, nil
 }
@@ -249,7 +253,7 @@ func (wtc *WorkspaceTeammateCreate) createSpec() (*WorkspaceTeammate, *sqlgraph.
 	_spec.OnConflict = wtc.conflict
 	if id, ok := wtc.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = id
+		_spec.ID.Value = &id
 	}
 	if value, ok := wtc.mutation.Role(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -449,7 +453,7 @@ func (u *WorkspaceTeammateUpsert) UpdateUpdatedAt() *WorkspaceTeammateUpsert {
 	return u
 }
 
-// UpdateNewValues updates the fields using the new values that were set on create except the ID field.
+// UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
 //	client.WorkspaceTeammate.Create().
@@ -466,6 +470,12 @@ func (u *WorkspaceTeammateUpsertOne) UpdateNewValues() *WorkspaceTeammateUpsertO
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
 		if _, exists := u.create.mutation.ID(); exists {
 			s.SetIgnore(workspaceteammate.FieldID)
+		}
+		if _, exists := u.create.mutation.CreatedAt(); exists {
+			s.SetIgnore(workspaceteammate.FieldCreatedAt)
+		}
+		if _, exists := u.create.mutation.UpdatedAt(); exists {
+			s.SetIgnore(workspaceteammate.FieldUpdatedAt)
 		}
 	}))
 	return u
@@ -746,7 +756,7 @@ type WorkspaceTeammateUpsertBulk struct {
 	create *WorkspaceTeammateCreateBulk
 }
 
-// UpdateNewValues updates the fields using the new values that
+// UpdateNewValues updates the mutable fields using the new values that
 // were set on create. Using this option is equivalent to using:
 //
 //	client.WorkspaceTeammate.Create().
@@ -765,6 +775,12 @@ func (u *WorkspaceTeammateUpsertBulk) UpdateNewValues() *WorkspaceTeammateUpsert
 			if _, exists := b.mutation.ID(); exists {
 				s.SetIgnore(workspaceteammate.FieldID)
 				return
+			}
+			if _, exists := b.mutation.CreatedAt(); exists {
+				s.SetIgnore(workspaceteammate.FieldCreatedAt)
+			}
+			if _, exists := b.mutation.UpdatedAt(); exists {
+				s.SetIgnore(workspaceteammate.FieldUpdatedAt)
 			}
 		}
 	}))

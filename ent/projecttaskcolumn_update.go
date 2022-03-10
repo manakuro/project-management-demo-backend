@@ -164,14 +164,14 @@ func (ptcu *ProjectTaskColumnUpdate) ExecX(ctx context.Context) {
 func (ptcu *ProjectTaskColumnUpdate) check() error {
 	if v, ok := ptcu.mutation.Width(); ok {
 		if err := projecttaskcolumn.WidthValidator(v); err != nil {
-			return &ValidationError{Name: "width", err: fmt.Errorf("ent: validator failed for field \"width\": %w", err)}
+			return &ValidationError{Name: "width", err: fmt.Errorf(`ent: validator failed for field "ProjectTaskColumn.width": %w`, err)}
 		}
 	}
 	if _, ok := ptcu.mutation.ProjectID(); ptcu.mutation.ProjectCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"project\"")
+		return errors.New(`ent: clearing a required unique edge "ProjectTaskColumn.project"`)
 	}
 	if _, ok := ptcu.mutation.TaskColumnID(); ptcu.mutation.TaskColumnCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"taskColumn\"")
+		return errors.New(`ent: clearing a required unique edge "ProjectTaskColumn.taskColumn"`)
 	}
 	return nil
 }
@@ -459,14 +459,14 @@ func (ptcuo *ProjectTaskColumnUpdateOne) ExecX(ctx context.Context) {
 func (ptcuo *ProjectTaskColumnUpdateOne) check() error {
 	if v, ok := ptcuo.mutation.Width(); ok {
 		if err := projecttaskcolumn.WidthValidator(v); err != nil {
-			return &ValidationError{Name: "width", err: fmt.Errorf("ent: validator failed for field \"width\": %w", err)}
+			return &ValidationError{Name: "width", err: fmt.Errorf(`ent: validator failed for field "ProjectTaskColumn.width": %w`, err)}
 		}
 	}
 	if _, ok := ptcuo.mutation.ProjectID(); ptcuo.mutation.ProjectCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"project\"")
+		return errors.New(`ent: clearing a required unique edge "ProjectTaskColumn.project"`)
 	}
 	if _, ok := ptcuo.mutation.TaskColumnID(); ptcuo.mutation.TaskColumnCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"taskColumn\"")
+		return errors.New(`ent: clearing a required unique edge "ProjectTaskColumn.taskColumn"`)
 	}
 	return nil
 }
@@ -484,7 +484,7 @@ func (ptcuo *ProjectTaskColumnUpdateOne) sqlSave(ctx context.Context) (_node *Pr
 	}
 	id, ok := ptcuo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing ProjectTaskColumn.ID for update")}
+		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "ProjectTaskColumn.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := ptcuo.fields; len(fields) > 0 {

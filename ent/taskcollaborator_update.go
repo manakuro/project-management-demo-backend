@@ -132,10 +132,10 @@ func (tcu *TaskCollaboratorUpdate) ExecX(ctx context.Context) {
 // check runs all checks and user-defined validators on the builder.
 func (tcu *TaskCollaboratorUpdate) check() error {
 	if _, ok := tcu.mutation.TaskID(); tcu.mutation.TaskCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"task\"")
+		return errors.New(`ent: clearing a required unique edge "TaskCollaborator.task"`)
 	}
 	if _, ok := tcu.mutation.TeammateID(); tcu.mutation.TeammateCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"teammate\"")
+		return errors.New(`ent: clearing a required unique edge "TaskCollaborator.teammate"`)
 	}
 	return nil
 }
@@ -356,10 +356,10 @@ func (tcuo *TaskCollaboratorUpdateOne) ExecX(ctx context.Context) {
 // check runs all checks and user-defined validators on the builder.
 func (tcuo *TaskCollaboratorUpdateOne) check() error {
 	if _, ok := tcuo.mutation.TaskID(); tcuo.mutation.TaskCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"task\"")
+		return errors.New(`ent: clearing a required unique edge "TaskCollaborator.task"`)
 	}
 	if _, ok := tcuo.mutation.TeammateID(); tcuo.mutation.TeammateCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"teammate\"")
+		return errors.New(`ent: clearing a required unique edge "TaskCollaborator.teammate"`)
 	}
 	return nil
 }
@@ -377,7 +377,7 @@ func (tcuo *TaskCollaboratorUpdateOne) sqlSave(ctx context.Context) (_node *Task
 	}
 	id, ok := tcuo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing TaskCollaborator.ID for update")}
+		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "TaskCollaborator.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := tcuo.fields; len(fields) > 0 {

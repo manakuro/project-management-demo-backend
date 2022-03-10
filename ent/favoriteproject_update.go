@@ -132,10 +132,10 @@ func (fpu *FavoriteProjectUpdate) ExecX(ctx context.Context) {
 // check runs all checks and user-defined validators on the builder.
 func (fpu *FavoriteProjectUpdate) check() error {
 	if _, ok := fpu.mutation.ProjectID(); fpu.mutation.ProjectCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"project\"")
+		return errors.New(`ent: clearing a required unique edge "FavoriteProject.project"`)
 	}
 	if _, ok := fpu.mutation.TeammateID(); fpu.mutation.TeammateCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"teammate\"")
+		return errors.New(`ent: clearing a required unique edge "FavoriteProject.teammate"`)
 	}
 	return nil
 }
@@ -356,10 +356,10 @@ func (fpuo *FavoriteProjectUpdateOne) ExecX(ctx context.Context) {
 // check runs all checks and user-defined validators on the builder.
 func (fpuo *FavoriteProjectUpdateOne) check() error {
 	if _, ok := fpuo.mutation.ProjectID(); fpuo.mutation.ProjectCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"project\"")
+		return errors.New(`ent: clearing a required unique edge "FavoriteProject.project"`)
 	}
 	if _, ok := fpuo.mutation.TeammateID(); fpuo.mutation.TeammateCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"teammate\"")
+		return errors.New(`ent: clearing a required unique edge "FavoriteProject.teammate"`)
 	}
 	return nil
 }
@@ -377,7 +377,7 @@ func (fpuo *FavoriteProjectUpdateOne) sqlSave(ctx context.Context) (_node *Favor
 	}
 	id, ok := fpuo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing FavoriteProject.ID for update")}
+		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "FavoriteProject.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := fpuo.fields; len(fields) > 0 {

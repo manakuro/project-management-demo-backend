@@ -198,26 +198,26 @@ func (tcc *TaskColumnCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (tcc *TaskColumnCreate) check() error {
 	if _, ok := tcc.mutation.Name(); !ok {
-		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "name"`)}
+		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "TaskColumn.name"`)}
 	}
 	if v, ok := tcc.mutation.Name(); ok {
 		if err := taskcolumn.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "name": %w`, err)}
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "TaskColumn.name": %w`, err)}
 		}
 	}
 	if _, ok := tcc.mutation.GetType(); !ok {
-		return &ValidationError{Name: "type", err: errors.New(`ent: missing required field "type"`)}
+		return &ValidationError{Name: "type", err: errors.New(`ent: missing required field "TaskColumn.type"`)}
 	}
 	if v, ok := tcc.mutation.GetType(); ok {
 		if err := taskcolumn.TypeValidator(v); err != nil {
-			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "type": %w`, err)}
+			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "TaskColumn.type": %w`, err)}
 		}
 	}
 	if _, ok := tcc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "TaskColumn.created_at"`)}
 	}
 	if _, ok := tcc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "TaskColumn.updated_at"`)}
 	}
 	return nil
 }
@@ -231,7 +231,11 @@ func (tcc *TaskColumnCreate) sqlSave(ctx context.Context) (*TaskColumn, error) {
 		return nil, err
 	}
 	if _spec.ID.Value != nil {
-		_node.ID = _spec.ID.Value.(ulid.ID)
+		if id, ok := _spec.ID.Value.(*ulid.ID); ok {
+			_node.ID = *id
+		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
+			return nil, err
+		}
 	}
 	return _node, nil
 }
@@ -250,7 +254,7 @@ func (tcc *TaskColumnCreate) createSpec() (*TaskColumn, *sqlgraph.CreateSpec) {
 	_spec.OnConflict = tcc.conflict
 	if id, ok := tcc.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = id
+		_spec.ID.Value = &id
 	}
 	if value, ok := tcc.mutation.Name(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -424,7 +428,7 @@ func (u *TaskColumnUpsert) UpdateUpdatedAt() *TaskColumnUpsert {
 	return u
 }
 
-// UpdateNewValues updates the fields using the new values that were set on create except the ID field.
+// UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
 //	client.TaskColumn.Create().
@@ -441,6 +445,12 @@ func (u *TaskColumnUpsertOne) UpdateNewValues() *TaskColumnUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
 		if _, exists := u.create.mutation.ID(); exists {
 			s.SetIgnore(taskcolumn.FieldID)
+		}
+		if _, exists := u.create.mutation.CreatedAt(); exists {
+			s.SetIgnore(taskcolumn.FieldCreatedAt)
+		}
+		if _, exists := u.create.mutation.UpdatedAt(); exists {
+			s.SetIgnore(taskcolumn.FieldUpdatedAt)
 		}
 	}))
 	return u
@@ -693,7 +703,7 @@ type TaskColumnUpsertBulk struct {
 	create *TaskColumnCreateBulk
 }
 
-// UpdateNewValues updates the fields using the new values that
+// UpdateNewValues updates the mutable fields using the new values that
 // were set on create. Using this option is equivalent to using:
 //
 //	client.TaskColumn.Create().
@@ -712,6 +722,12 @@ func (u *TaskColumnUpsertBulk) UpdateNewValues() *TaskColumnUpsertBulk {
 			if _, exists := b.mutation.ID(); exists {
 				s.SetIgnore(taskcolumn.FieldID)
 				return
+			}
+			if _, exists := b.mutation.CreatedAt(); exists {
+				s.SetIgnore(taskcolumn.FieldCreatedAt)
+			}
+			if _, exists := b.mutation.UpdatedAt(); exists {
+				s.SetIgnore(taskcolumn.FieldUpdatedAt)
 			}
 		}
 	}))

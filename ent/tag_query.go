@@ -181,7 +181,7 @@ func (tq *TagQuery) FirstIDX(ctx context.Context) ulid.ID {
 }
 
 // Only returns a single Tag entity found by the query, ensuring it only returns one.
-// Returns a *NotSingularError when exactly one Tag entity is not found.
+// Returns a *NotSingularError when more than one Tag entity is found.
 // Returns a *NotFoundError when no Tag entities are found.
 func (tq *TagQuery) Only(ctx context.Context) (*Tag, error) {
 	nodes, err := tq.Limit(2).All(ctx)
@@ -208,7 +208,7 @@ func (tq *TagQuery) OnlyX(ctx context.Context) *Tag {
 }
 
 // OnlyID is like Only, but returns the only Tag ID in the query.
-// Returns a *NotSingularError when exactly one Tag ID is not found.
+// Returns a *NotSingularError when more than one Tag ID is found.
 // Returns a *NotFoundError when no entities are found.
 func (tq *TagQuery) OnlyID(ctx context.Context) (id ulid.ID, err error) {
 	var ids []ulid.ID
@@ -320,8 +320,9 @@ func (tq *TagQuery) Clone() *TagQuery {
 		withColor:     tq.withColor.Clone(),
 		withTaskTags:  tq.withTaskTags.Clone(),
 		// clone intermediate query.
-		sql:  tq.sql.Clone(),
-		path: tq.path,
+		sql:    tq.sql.Clone(),
+		path:   tq.path,
+		unique: tq.unique,
 	}
 }
 
@@ -531,6 +532,10 @@ func (tq *TagQuery) sqlAll(ctx context.Context) ([]*Tag, error) {
 
 func (tq *TagQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := tq.querySpec()
+	_spec.Node.Columns = tq.fields
+	if len(tq.fields) > 0 {
+		_spec.Unique = tq.unique != nil && *tq.unique
+	}
 	return sqlgraph.CountNodes(ctx, tq.driver, _spec)
 }
 
@@ -601,6 +606,9 @@ func (tq *TagQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	if tq.sql != nil {
 		selector = tq.sql
 		selector.Select(selector.Columns(columns...)...)
+	}
+	if tq.unique != nil && *tq.unique {
+		selector.Distinct()
 	}
 	for _, p := range tq.predicates {
 		p(selector)
@@ -880,9 +888,7 @@ func (tgb *TagGroupBy) sqlQuery() *sql.Selector {
 		for _, f := range tgb.fields {
 			columns = append(columns, selector.C(f))
 		}
-		for _, c := range aggregation {
-			columns = append(columns, c)
-		}
+		columns = append(columns, aggregation...)
 		selector.Select(columns...)
 	}
 	return selector.GroupBy(selector.Columns(tgb.fields...)...)

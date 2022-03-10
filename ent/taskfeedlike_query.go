@@ -180,7 +180,7 @@ func (tflq *TaskFeedLikeQuery) FirstIDX(ctx context.Context) ulid.ID {
 }
 
 // Only returns a single TaskFeedLike entity found by the query, ensuring it only returns one.
-// Returns a *NotSingularError when exactly one TaskFeedLike entity is not found.
+// Returns a *NotSingularError when more than one TaskFeedLike entity is found.
 // Returns a *NotFoundError when no TaskFeedLike entities are found.
 func (tflq *TaskFeedLikeQuery) Only(ctx context.Context) (*TaskFeedLike, error) {
 	nodes, err := tflq.Limit(2).All(ctx)
@@ -207,7 +207,7 @@ func (tflq *TaskFeedLikeQuery) OnlyX(ctx context.Context) *TaskFeedLike {
 }
 
 // OnlyID is like Only, but returns the only TaskFeedLike ID in the query.
-// Returns a *NotSingularError when exactly one TaskFeedLike ID is not found.
+// Returns a *NotSingularError when more than one TaskFeedLike ID is found.
 // Returns a *NotFoundError when no entities are found.
 func (tflq *TaskFeedLikeQuery) OnlyID(ctx context.Context) (id ulid.ID, err error) {
 	var ids []ulid.ID
@@ -319,8 +319,9 @@ func (tflq *TaskFeedLikeQuery) Clone() *TaskFeedLikeQuery {
 		withTeammate: tflq.withTeammate.Clone(),
 		withFeed:     tflq.withFeed.Clone(),
 		// clone intermediate query.
-		sql:  tflq.sql.Clone(),
-		path: tflq.path,
+		sql:    tflq.sql.Clone(),
+		path:   tflq.path,
+		unique: tflq.unique,
 	}
 }
 
@@ -531,6 +532,10 @@ func (tflq *TaskFeedLikeQuery) sqlAll(ctx context.Context) ([]*TaskFeedLike, err
 
 func (tflq *TaskFeedLikeQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := tflq.querySpec()
+	_spec.Node.Columns = tflq.fields
+	if len(tflq.fields) > 0 {
+		_spec.Unique = tflq.unique != nil && *tflq.unique
+	}
 	return sqlgraph.CountNodes(ctx, tflq.driver, _spec)
 }
 
@@ -601,6 +606,9 @@ func (tflq *TaskFeedLikeQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	if tflq.sql != nil {
 		selector = tflq.sql
 		selector.Select(selector.Columns(columns...)...)
+	}
+	if tflq.unique != nil && *tflq.unique {
+		selector.Distinct()
 	}
 	for _, p := range tflq.predicates {
 		p(selector)
@@ -880,9 +888,7 @@ func (tflgb *TaskFeedLikeGroupBy) sqlQuery() *sql.Selector {
 		for _, f := range tflgb.fields {
 			columns = append(columns, selector.C(f))
 		}
-		for _, c := range aggregation {
-			columns = append(columns, c)
-		}
+		columns = append(columns, aggregation...)
 		selector.Select(columns...)
 	}
 	return selector.GroupBy(selector.Columns(tflgb.fields...)...)

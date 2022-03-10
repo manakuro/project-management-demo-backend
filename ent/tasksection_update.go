@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"project-management-demo-backend/ent/predicate"
 	"project-management-demo-backend/ent/tasksection"
@@ -101,7 +102,7 @@ func (tsu *TaskSectionUpdate) ExecX(ctx context.Context) {
 func (tsu *TaskSectionUpdate) check() error {
 	if v, ok := tsu.mutation.Name(); ok {
 		if err := tasksection.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf("ent: validator failed for field \"name\": %w", err)}
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "TaskSection.name": %w`, err)}
 		}
 	}
 	return nil
@@ -233,7 +234,7 @@ func (tsuo *TaskSectionUpdateOne) ExecX(ctx context.Context) {
 func (tsuo *TaskSectionUpdateOne) check() error {
 	if v, ok := tsuo.mutation.Name(); ok {
 		if err := tasksection.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf("ent: validator failed for field \"name\": %w", err)}
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "TaskSection.name": %w`, err)}
 		}
 	}
 	return nil
@@ -252,7 +253,7 @@ func (tsuo *TaskSectionUpdateOne) sqlSave(ctx context.Context) (_node *TaskSecti
 	}
 	id, ok := tsuo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing TaskSection.ID for update")}
+		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "TaskSection.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := tsuo.fields; len(fields) > 0 {
