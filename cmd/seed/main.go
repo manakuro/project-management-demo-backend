@@ -17,7 +17,8 @@ func main() {
 
 	ctx := context.Background()
 
-	//client.DisableSQLSafeUpdates()
+	client.DisableForeignKeyChecks()
+	client.DisableSQLSafeUpdates()
 
 	seed.Color(ctx, client)
 	seed.Icon(ctx, client)
@@ -61,11 +62,11 @@ func main() {
 	seed.TestUser(ctx, client)
 	seed.TestTodo(ctx, client)
 
-	//client.EnableSQLSafeUpdates()
+	client.EnableForeignKeyChecks()
 }
 
 func newDBClient() *ent.Client {
-	client, err := datastore.NewClient()
+	client, err := datastore.NewClient(datastore.NewClientOptions{})
 	if err != nil {
 		log.Fatalf("failed opening mysql client: %v", err)
 	}

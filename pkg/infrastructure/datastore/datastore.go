@@ -28,10 +28,18 @@ func New() string {
 	return mc.FormatDSN()
 }
 
+// NewClientOptions is an option for NewClient.
+type NewClientOptions struct {
+	Debug bool
+}
+
 // NewClient returns an orm client
-func NewClient() (*ent.Client, error) {
+func NewClient(options NewClientOptions) (*ent.Client, error) {
 	var entOptions []ent.Option
-	entOptions = append(entOptions, ent.Debug())
+
+	if options.Debug {
+		entOptions = append(entOptions, ent.Debug())
+	}
 
 	d := New()
 
