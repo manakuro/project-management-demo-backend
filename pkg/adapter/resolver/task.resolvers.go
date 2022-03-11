@@ -83,6 +83,15 @@ func (r *mutationResolver) UndeleteTask(ctx context.Context, input model.Undelet
 	return p, nil
 }
 
+func (r *mutationResolver) AssignTask(ctx context.Context, input model.AssignTaskInput) (*model.AssignTaskPayload, error) {
+	p, err := r.controller.Task.Assign(ctx, input)
+	if err != nil {
+		return nil, handler.HandleGraphQLError(ctx, err)
+	}
+
+	return p, nil
+}
+
 func (r *queryResolver) Task(ctx context.Context, where *ent.TaskWhereInput) (*ent.Task, error) {
 	t, err := r.controller.Task.Get(ctx, where)
 	if err != nil {

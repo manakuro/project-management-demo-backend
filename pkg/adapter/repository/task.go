@@ -2,12 +2,14 @@ package repository
 
 import (
 	"context"
+	"errors"
 	"project-management-demo-backend/ent"
 	"project-management-demo-backend/ent/deletedtask"
 	"project-management-demo-backend/ent/projecttask"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/task"
 	"project-management-demo-backend/ent/teammatetask"
+	"project-management-demo-backend/ent/teammatetasksection"
 	"project-management-demo-backend/pkg/entity/model"
 	ur "project-management-demo-backend/pkg/usecase/repository"
 )
@@ -92,6 +94,61 @@ func (r *taskRepository) Update(ctx context.Context, input model.UpdateTaskInput
 	}
 
 	return res, nil
+}
+
+func (r *taskRepository) Assign(ctx context.Context, input model.AssignTaskInput) (*model.AssignTaskPayload, error) {
+	client := WithTransactionalMutation(ctx)
+
+	updatedTask, err := client.Task.UpdateOneID(input.ID).SetAssigneeID(input.AssigneeID).Save(ctx)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return nil, model.NewNotFoundError(err, input)
+		}
+		return nil, model.NewDBError(err)
+	}
+
+	t, err := client.TeammateTask.Query().Where(teammatetask.TaskID(updatedTask.ID)).Only(ctx)
+	if err != nil && !ent.IsNotFound(err) {
+		return nil, model.NewDBError(err)
+	}
+
+	if t != nil {
+		return nil, model.NewValidationError(errors.New("this task has already been assigned"))
+	}
+
+	assignedTeammateTaskSection, err := client.
+		TeammateTaskSection.
+		Query().
+		Where(
+			teammatetasksection.TeammateID(input.AssigneeID),
+			teammatetasksection.Assigned(true),
+		).
+		Only(ctx)
+	if err != nil {
+		return nil, model.NewDBError(err)
+	}
+
+	t, err = client.TeammateTask.Create().
+		SetTaskID(input.ID).
+		SetTeammateID(input.AssigneeID).
+		SetTeammateTaskSectionID(assignedTeammateTaskSection.ID).
+		SetWorkspaceID(input.WorkspaceID).
+		Save(ctx)
+	if err != nil {
+		return nil, model.NewDBError(err)
+	}
+
+	teammateTask, err := client.TeammateTask.Query().WithTask(func(tq *ent.TaskQuery) {
+		WithTask(tq)
+	}).Where(teammatetask.ID(t.ID)).Only(ctx)
+	if err != nil {
+		return nil, model.NewDBError(err)
+	}
+
+	return &model.AssignTaskPayload{
+		Task:         updatedTask,
+		TeammateTask: teammateTask,
+	}, nil
 }
 
 func (r *taskRepository) Delete(ctx context.Context, input model.DeleteTaskInput) (*model.DeleteTaskPayload, error) {
