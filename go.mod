@@ -41,4 +41,5 @@ require (
 	golang.org/x/sys v0.0.0-20220310020820-b874c991c1a5 // indirect
 	golang.org/x/tools v0.1.9 // indirect
 	google.golang.org/api v0.62.0
+	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 )

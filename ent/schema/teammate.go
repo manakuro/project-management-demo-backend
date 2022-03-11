@@ -155,10 +155,11 @@ func (Teammate) Edges() []ent.Edge {
 	}
 }
 
-//
+// TODO: Use fulltext search.
+//// Indexes of the Teammate.
 //func (Teammate) Indexes() []ent.Index {
 //	return []ent.Index{
-//		index.Fields("email", "name").
+//		index.Fields("email").
 //			Annotations(
 //				entsql.IndexTypes(map[string]string{
 //					dialect.MySQL: "FULLTEXT",
