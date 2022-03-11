@@ -92,6 +92,15 @@ func (r *mutationResolver) AssignTask(ctx context.Context, input model.AssignTas
 	return p, nil
 }
 
+func (r *mutationResolver) UnassignTask(ctx context.Context, input model.UnassignTaskInput) (*model.UnassignTaskPayload, error) {
+	p, err := r.controller.Task.Unassign(ctx, input)
+	if err != nil {
+		return nil, handler.HandleGraphQLError(ctx, err)
+	}
+
+	return p, nil
+}
+
 func (r *queryResolver) Task(ctx context.Context, where *ent.TaskWhereInput) (*ent.Task, error) {
 	t, err := r.controller.Task.Get(ctx, where)
 	if err != nil {

@@ -90,3 +90,16 @@ type AssignTaskPayload struct {
 	Task         *Task
 	TeammateTask *TeammateTask
 }
+
+// UnassignTaskInput represents a mutation input.
+type UnassignTaskInput struct {
+	ID          ID
+	WorkspaceID ID
+	RequestID   string
+}
+
+// UnassignTaskPayload represents a mutation input.
+type UnassignTaskPayload struct {
+	Task           *Task
+	TeammateTaskID ID
+}

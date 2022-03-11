@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"errors"
 	"project-management-demo-backend/ent"
 	"project-management-demo-backend/ent/deletedtask"
 	"project-management-demo-backend/ent/projecttask"
@@ -111,9 +110,11 @@ func (r *taskRepository) Assign(ctx context.Context, input model.AssignTaskInput
 	if err != nil && !ent.IsNotFound(err) {
 		return nil, model.NewDBError(err)
 	}
-
 	if t != nil {
-		return nil, model.NewValidationError(errors.New("this task has already been assigned"))
+		_, derr := client.TeammateTask.Delete().Where(teammatetask.ID(t.ID)).Exec(ctx)
+		if derr != nil {
+			return nil, model.NewDBError(derr)
+		}
 	}
 
 	assignedTeammateTaskSection, err := client.
@@ -148,6 +149,36 @@ func (r *taskRepository) Assign(ctx context.Context, input model.AssignTaskInput
 	return &model.AssignTaskPayload{
 		Task:         updatedTask,
 		TeammateTask: teammateTask,
+	}, nil
+}
+
+func (r *taskRepository) Unassign(ctx context.Context, input model.UnassignTaskInput) (*model.UnassignTaskPayload, error) {
+	client := WithTransactionalMutation(ctx)
+
+	updatedTask, err := client.Task.UpdateOneID(input.ID).SetAssigneeID("").Save(ctx)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return nil, model.NewNotFoundError(err, input)
+		}
+		return nil, model.NewDBError(err)
+	}
+
+	teammateTask, err := client.TeammateTask.Query().Where(teammatetask.TaskID(updatedTask.ID)).Only(ctx)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return nil, model.NewNotFoundError(err, input)
+		}
+		return nil, model.NewDBError(err)
+	}
+
+	_, err = client.TeammateTask.Delete().Where(teammatetask.ID(teammateTask.ID)).Exec(ctx)
+	if err != nil {
+		return nil, model.NewDBError(err)
+	}
+
+	return &model.UnassignTaskPayload{
+		Task:           updatedTask,
+		TeammateTaskID: teammateTask.ID,
 	}, nil
 }
 
