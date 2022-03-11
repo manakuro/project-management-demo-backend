@@ -67,7 +67,9 @@ func (r *taskTagRepository) ListWithPagination(ctx context.Context, after *model
 }
 
 func (r *taskTagRepository) Create(ctx context.Context, input model.CreateTaskTagInput) (*model.TaskTag, error) {
-	res, err := r.client.
+	client := WithTransactionalMutation(ctx)
+
+	res, err := client.
 		TaskTag.
 		Create().
 		SetInput(input).
@@ -77,7 +79,16 @@ func (r *taskTagRepository) Create(ctx context.Context, input model.CreateTaskTa
 		return nil, model.NewDBError(err)
 	}
 
-	return res, nil
+	taskTag, err := client.TaskTag.Query().
+		Where(tasktag.ID(res.ID)).
+		WithTag(func(tq *ent.TagQuery) {
+			WithTag(tq)
+		}).Only(ctx)
+	if err != nil {
+		return nil, model.NewDBError(err)
+	}
+
+	return taskTag.Unwrap(), nil
 }
 
 func (r *taskTagRepository) Update(ctx context.Context, input model.UpdateTaskTagInput) (*model.TaskTag, error) {
