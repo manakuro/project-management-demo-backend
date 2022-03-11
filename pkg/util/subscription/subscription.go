@@ -293,6 +293,13 @@ type TaskAssigned struct {
 	Ch          chan *model.AssignTaskPayload
 }
 
+// TaskUnassigned is a channel for subscription.
+type TaskUnassigned struct {
+	WorkspaceID model.ID
+	RequestID   string
+	Ch          chan *model.UnassignTaskPayload
+}
+
 // TeammateTaskUpdated is a channel for subscription.
 type TeammateTaskUpdated struct {
 	TeammateID  model.ID
@@ -465,6 +472,7 @@ type Subscriptions struct {
 	TaskDeleted                                map[string]TaskDeleted
 	TaskUndeleted                              map[string]TaskUndeleted
 	TaskAssigned                               map[string]TaskAssigned
+	TaskUnassigned                             map[string]TaskUnassigned
 	TeammateTaskColumnUpdated                  map[string]TeammateTaskColumnUpdated
 	TeammateTaskCreated                        map[string]TeammateTaskCreated
 	TeammateTaskDeleted                        map[string]TeammateTaskDeleted
