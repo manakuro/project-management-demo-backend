@@ -194,32 +194,32 @@ func (tpc *TaskPriorityCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (tpc *TaskPriorityCreate) check() error {
 	if _, ok := tpc.mutation.ColorID(); !ok {
-		return &ValidationError{Name: "color_id", err: errors.New(`ent: missing required field "color_id"`)}
+		return &ValidationError{Name: "color_id", err: errors.New(`ent: missing required field "TaskPriority.color_id"`)}
 	}
 	if _, ok := tpc.mutation.Name(); !ok {
-		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "name"`)}
+		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "TaskPriority.name"`)}
 	}
 	if v, ok := tpc.mutation.Name(); ok {
 		if err := taskpriority.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "name": %w`, err)}
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "TaskPriority.name": %w`, err)}
 		}
 	}
 	if _, ok := tpc.mutation.PriorityType(); !ok {
-		return &ValidationError{Name: "priority_type", err: errors.New(`ent: missing required field "priority_type"`)}
+		return &ValidationError{Name: "priority_type", err: errors.New(`ent: missing required field "TaskPriority.priority_type"`)}
 	}
 	if v, ok := tpc.mutation.PriorityType(); ok {
 		if err := taskpriority.PriorityTypeValidator(v); err != nil {
-			return &ValidationError{Name: "priority_type", err: fmt.Errorf(`ent: validator failed for field "priority_type": %w`, err)}
+			return &ValidationError{Name: "priority_type", err: fmt.Errorf(`ent: validator failed for field "TaskPriority.priority_type": %w`, err)}
 		}
 	}
 	if _, ok := tpc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "TaskPriority.created_at"`)}
 	}
 	if _, ok := tpc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "TaskPriority.updated_at"`)}
 	}
 	if _, ok := tpc.mutation.ColorID(); !ok {
-		return &ValidationError{Name: "color", err: errors.New("ent: missing required edge \"color\"")}
+		return &ValidationError{Name: "color", err: errors.New(`ent: missing required edge "TaskPriority.color"`)}
 	}
 	return nil
 }
@@ -233,7 +233,11 @@ func (tpc *TaskPriorityCreate) sqlSave(ctx context.Context) (*TaskPriority, erro
 		return nil, err
 	}
 	if _spec.ID.Value != nil {
-		_node.ID = _spec.ID.Value.(ulid.ID)
+		if id, ok := _spec.ID.Value.(*ulid.ID); ok {
+			_node.ID = *id
+		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
+			return nil, err
+		}
 	}
 	return _node, nil
 }
@@ -252,7 +256,7 @@ func (tpc *TaskPriorityCreate) createSpec() (*TaskPriority, *sqlgraph.CreateSpec
 	_spec.OnConflict = tpc.conflict
 	if id, ok := tpc.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = id
+		_spec.ID.Value = &id
 	}
 	if value, ok := tpc.mutation.Name(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -439,7 +443,7 @@ func (u *TaskPriorityUpsert) UpdateUpdatedAt() *TaskPriorityUpsert {
 	return u
 }
 
-// UpdateNewValues updates the fields using the new values that were set on create except the ID field.
+// UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
 //	client.TaskPriority.Create().
@@ -456,6 +460,12 @@ func (u *TaskPriorityUpsertOne) UpdateNewValues() *TaskPriorityUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
 		if _, exists := u.create.mutation.ID(); exists {
 			s.SetIgnore(taskpriority.FieldID)
+		}
+		if _, exists := u.create.mutation.CreatedAt(); exists {
+			s.SetIgnore(taskpriority.FieldCreatedAt)
+		}
+		if _, exists := u.create.mutation.UpdatedAt(); exists {
+			s.SetIgnore(taskpriority.FieldUpdatedAt)
 		}
 	}))
 	return u
@@ -722,7 +732,7 @@ type TaskPriorityUpsertBulk struct {
 	create *TaskPriorityCreateBulk
 }
 
-// UpdateNewValues updates the fields using the new values that
+// UpdateNewValues updates the mutable fields using the new values that
 // were set on create. Using this option is equivalent to using:
 //
 //	client.TaskPriority.Create().
@@ -741,6 +751,12 @@ func (u *TaskPriorityUpsertBulk) UpdateNewValues() *TaskPriorityUpsertBulk {
 			if _, exists := b.mutation.ID(); exists {
 				s.SetIgnore(taskpriority.FieldID)
 				return
+			}
+			if _, exists := b.mutation.CreatedAt(); exists {
+				s.SetIgnore(taskpriority.FieldCreatedAt)
+			}
+			if _, exists := b.mutation.UpdatedAt(); exists {
+				s.SetIgnore(taskpriority.FieldUpdatedAt)
 			}
 		}
 	}))

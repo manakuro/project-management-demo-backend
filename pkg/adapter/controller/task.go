@@ -17,6 +17,8 @@ type Task interface {
 	DeleteAll(ctx context.Context, input model.DeleteAllTaskInput) (*model.DeleteAllTaskPayload, error)
 	Undelete(ctx context.Context, input model.UndeleteTaskInput) (*model.UndeleteTaskPayload, error)
 	UndeleteAll(ctx context.Context, input model.UndeleteAllTaskInput) (*model.UndeleteAllTaskPayload, error)
+	Assign(ctx context.Context, input model.AssignTaskInput) (*model.AssignTaskPayload, error)
+	Unassign(ctx context.Context, input model.UnassignTaskInput) (*model.UnassignTaskPayload, error)
 }
 
 type taskController struct {
@@ -64,4 +66,12 @@ func (c *taskController) Undelete(ctx context.Context, input model.UndeleteTaskI
 
 func (c *taskController) UndeleteAll(ctx context.Context, input model.UndeleteAllTaskInput) (*model.UndeleteAllTaskPayload, error) {
 	return c.taskUsecase.UndeleteAll(ctx, input)
+}
+
+func (c *taskController) Assign(ctx context.Context, input model.AssignTaskInput) (*model.AssignTaskPayload, error) {
+	return c.taskUsecase.Assign(ctx, input)
+}
+
+func (c *taskController) Unassign(ctx context.Context, input model.UnassignTaskInput) (*model.UnassignTaskPayload, error) {
+	return c.taskUsecase.Unassign(ctx, input)
 }

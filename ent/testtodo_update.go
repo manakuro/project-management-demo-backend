@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"project-management-demo-backend/ent/predicate"
 	"project-management-demo-backend/ent/schema/ulid"
@@ -285,7 +286,7 @@ func (ttu *TestTodoUpdate) ExecX(ctx context.Context) {
 func (ttu *TestTodoUpdate) check() error {
 	if v, ok := ttu.mutation.Status(); ok {
 		if err := testtodo.StatusValidator(v); err != nil {
-			return &ValidationError{Name: "status", err: fmt.Errorf("ent: validator failed for field \"status\": %w", err)}
+			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "TestTodo.status": %w`, err)}
 		}
 	}
 	return nil
@@ -763,7 +764,7 @@ func (ttuo *TestTodoUpdateOne) ExecX(ctx context.Context) {
 func (ttuo *TestTodoUpdateOne) check() error {
 	if v, ok := ttuo.mutation.Status(); ok {
 		if err := testtodo.StatusValidator(v); err != nil {
-			return &ValidationError{Name: "status", err: fmt.Errorf("ent: validator failed for field \"status\": %w", err)}
+			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "TestTodo.status": %w`, err)}
 		}
 	}
 	return nil
@@ -782,7 +783,7 @@ func (ttuo *TestTodoUpdateOne) sqlSave(ctx context.Context) (_node *TestTodo, er
 	}
 	id, ok := ttuo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing TestTodo.ID for update")}
+		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "TestTodo.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := ttuo.fields; len(fields) > 0 {

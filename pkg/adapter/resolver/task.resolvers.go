@@ -83,6 +83,40 @@ func (r *mutationResolver) UndeleteTask(ctx context.Context, input model.Undelet
 	return p, nil
 }
 
+func (r *mutationResolver) AssignTask(ctx context.Context, input model.AssignTaskInput) (*model.AssignTaskPayload, error) {
+	p, err := r.controller.Task.Assign(ctx, input)
+	if err != nil {
+		return nil, handler.HandleGraphQLError(ctx, err)
+	}
+
+	go func() {
+		for _, a := range r.subscriptions.TaskAssigned {
+			if a.WorkspaceID == input.WorkspaceID && a.RequestID != input.RequestID {
+				a.Ch <- p
+			}
+		}
+	}()
+
+	return p, nil
+}
+
+func (r *mutationResolver) UnassignTask(ctx context.Context, input model.UnassignTaskInput) (*model.UnassignTaskPayload, error) {
+	p, err := r.controller.Task.Unassign(ctx, input)
+	if err != nil {
+		return nil, handler.HandleGraphQLError(ctx, err)
+	}
+
+	go func() {
+		for _, u := range r.subscriptions.TaskUnassigned {
+			if u.WorkspaceID == input.WorkspaceID && u.RequestID != input.RequestID {
+				u.Ch <- p
+			}
+		}
+	}()
+
+	return p, nil
+}
+
 func (r *queryResolver) Task(ctx context.Context, where *ent.TaskWhereInput) (*ent.Task, error) {
 	t, err := r.controller.Task.Get(ctx, where)
 	if err != nil {
@@ -160,6 +194,50 @@ func (r *subscriptionResolver) TaskUndeleted(ctx context.Context, workspaceID ul
 		<-ctx.Done()
 		r.mutex.Lock()
 		delete(r.subscriptions.TaskUndeleted, key)
+		r.mutex.Unlock()
+	}()
+
+	return ch, nil
+}
+
+func (r *subscriptionResolver) TaskAssigned(ctx context.Context, workspaceID ulid.ID, requestID string) (<-chan *model.AssignTaskPayload, error) {
+	key := subscription.NewKey()
+	ch := make(chan *model.AssignTaskPayload, 1)
+
+	r.mutex.Lock()
+	r.subscriptions.TaskAssigned[key] = subscription.TaskAssigned{
+		WorkspaceID: workspaceID,
+		RequestID:   requestID,
+		Ch:          ch,
+	}
+	r.mutex.Unlock()
+
+	go func() {
+		<-ctx.Done()
+		r.mutex.Lock()
+		delete(r.subscriptions.TaskAssigned, key)
+		r.mutex.Unlock()
+	}()
+
+	return ch, nil
+}
+
+func (r *subscriptionResolver) TaskUnassigned(ctx context.Context, workspaceID ulid.ID, requestID string) (<-chan *model.UnassignTaskPayload, error) {
+	key := subscription.NewKey()
+	ch := make(chan *model.UnassignTaskPayload, 1)
+
+	r.mutex.Lock()
+	r.subscriptions.TaskUnassigned[key] = subscription.TaskUnassigned{
+		WorkspaceID: workspaceID,
+		RequestID:   requestID,
+		Ch:          ch,
+	}
+	r.mutex.Unlock()
+
+	go func() {
+		<-ctx.Done()
+		r.mutex.Lock()
+		delete(r.subscriptions.TaskUnassigned, key)
 		r.mutex.Unlock()
 	}()
 

@@ -158,11 +158,11 @@ func (ptsu *ProjectTaskSectionUpdate) ExecX(ctx context.Context) {
 func (ptsu *ProjectTaskSectionUpdate) check() error {
 	if v, ok := ptsu.mutation.Name(); ok {
 		if err := projecttasksection.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf("ent: validator failed for field \"name\": %w", err)}
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "ProjectTaskSection.name": %w`, err)}
 		}
 	}
 	if _, ok := ptsu.mutation.ProjectID(); ptsu.mutation.ProjectCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"project\"")
+		return errors.New(`ent: clearing a required unique edge "ProjectTaskSection.project"`)
 	}
 	return nil
 }
@@ -435,11 +435,11 @@ func (ptsuo *ProjectTaskSectionUpdateOne) ExecX(ctx context.Context) {
 func (ptsuo *ProjectTaskSectionUpdateOne) check() error {
 	if v, ok := ptsuo.mutation.Name(); ok {
 		if err := projecttasksection.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf("ent: validator failed for field \"name\": %w", err)}
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "ProjectTaskSection.name": %w`, err)}
 		}
 	}
 	if _, ok := ptsuo.mutation.ProjectID(); ptsuo.mutation.ProjectCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"project\"")
+		return errors.New(`ent: clearing a required unique edge "ProjectTaskSection.project"`)
 	}
 	return nil
 }
@@ -457,7 +457,7 @@ func (ptsuo *ProjectTaskSectionUpdateOne) sqlSave(ctx context.Context) (_node *P
 	}
 	id, ok := ptsuo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing ProjectTaskSection.ID for update")}
+		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "ProjectTaskSection.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := ptsuo.fields; len(fields) > 0 {

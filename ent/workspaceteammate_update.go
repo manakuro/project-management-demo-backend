@@ -145,14 +145,14 @@ func (wtu *WorkspaceTeammateUpdate) ExecX(ctx context.Context) {
 func (wtu *WorkspaceTeammateUpdate) check() error {
 	if v, ok := wtu.mutation.Role(); ok {
 		if err := workspaceteammate.RoleValidator(v); err != nil {
-			return &ValidationError{Name: "role", err: fmt.Errorf("ent: validator failed for field \"role\": %w", err)}
+			return &ValidationError{Name: "role", err: fmt.Errorf(`ent: validator failed for field "WorkspaceTeammate.role": %w`, err)}
 		}
 	}
 	if _, ok := wtu.mutation.WorkspaceID(); wtu.mutation.WorkspaceCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"workspace\"")
+		return errors.New(`ent: clearing a required unique edge "WorkspaceTeammate.workspace"`)
 	}
 	if _, ok := wtu.mutation.TeammateID(); wtu.mutation.TeammateCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"teammate\"")
+		return errors.New(`ent: clearing a required unique edge "WorkspaceTeammate.teammate"`)
 	}
 	return nil
 }
@@ -400,14 +400,14 @@ func (wtuo *WorkspaceTeammateUpdateOne) ExecX(ctx context.Context) {
 func (wtuo *WorkspaceTeammateUpdateOne) check() error {
 	if v, ok := wtuo.mutation.Role(); ok {
 		if err := workspaceteammate.RoleValidator(v); err != nil {
-			return &ValidationError{Name: "role", err: fmt.Errorf("ent: validator failed for field \"role\": %w", err)}
+			return &ValidationError{Name: "role", err: fmt.Errorf(`ent: validator failed for field "WorkspaceTeammate.role": %w`, err)}
 		}
 	}
 	if _, ok := wtuo.mutation.WorkspaceID(); wtuo.mutation.WorkspaceCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"workspace\"")
+		return errors.New(`ent: clearing a required unique edge "WorkspaceTeammate.workspace"`)
 	}
 	if _, ok := wtuo.mutation.TeammateID(); wtuo.mutation.TeammateCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"teammate\"")
+		return errors.New(`ent: clearing a required unique edge "WorkspaceTeammate.teammate"`)
 	}
 	return nil
 }
@@ -425,7 +425,7 @@ func (wtuo *WorkspaceTeammateUpdateOne) sqlSave(ctx context.Context) (_node *Wor
 	}
 	id, ok := wtuo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing WorkspaceTeammate.ID for update")}
+		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "WorkspaceTeammate.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := wtuo.fields; len(fields) > 0 {

@@ -150,13 +150,13 @@ func (tlu *TaskLikeUpdate) ExecX(ctx context.Context) {
 // check runs all checks and user-defined validators on the builder.
 func (tlu *TaskLikeUpdate) check() error {
 	if _, ok := tlu.mutation.TaskID(); tlu.mutation.TaskCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"task\"")
+		return errors.New(`ent: clearing a required unique edge "TaskLike.task"`)
 	}
 	if _, ok := tlu.mutation.TeammateID(); tlu.mutation.TeammateCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"teammate\"")
+		return errors.New(`ent: clearing a required unique edge "TaskLike.teammate"`)
 	}
 	if _, ok := tlu.mutation.WorkspaceID(); tlu.mutation.WorkspaceCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"workspace\"")
+		return errors.New(`ent: clearing a required unique edge "TaskLike.workspace"`)
 	}
 	return nil
 }
@@ -429,13 +429,13 @@ func (tluo *TaskLikeUpdateOne) ExecX(ctx context.Context) {
 // check runs all checks and user-defined validators on the builder.
 func (tluo *TaskLikeUpdateOne) check() error {
 	if _, ok := tluo.mutation.TaskID(); tluo.mutation.TaskCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"task\"")
+		return errors.New(`ent: clearing a required unique edge "TaskLike.task"`)
 	}
 	if _, ok := tluo.mutation.TeammateID(); tluo.mutation.TeammateCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"teammate\"")
+		return errors.New(`ent: clearing a required unique edge "TaskLike.teammate"`)
 	}
 	if _, ok := tluo.mutation.WorkspaceID(); tluo.mutation.WorkspaceCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"workspace\"")
+		return errors.New(`ent: clearing a required unique edge "TaskLike.workspace"`)
 	}
 	return nil
 }
@@ -453,7 +453,7 @@ func (tluo *TaskLikeUpdateOne) sqlSave(ctx context.Context) (_node *TaskLike, er
 	}
 	id, ok := tluo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing TaskLike.ID for update")}
+		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "TaskLike.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := tluo.fields; len(fields) > 0 {

@@ -296,27 +296,27 @@ func (ttc *TestTodoCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (ttc *TestTodoCreate) check() error {
 	if _, ok := ttc.mutation.CreatedBy(); !ok {
-		return &ValidationError{Name: "created_by", err: errors.New(`ent: missing required field "created_by"`)}
+		return &ValidationError{Name: "created_by", err: errors.New(`ent: missing required field "TestTodo.created_by"`)}
 	}
 	if _, ok := ttc.mutation.Name(); !ok {
-		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "name"`)}
+		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "TestTodo.name"`)}
 	}
 	if _, ok := ttc.mutation.Status(); !ok {
-		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "status"`)}
+		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "TestTodo.status"`)}
 	}
 	if v, ok := ttc.mutation.Status(); ok {
 		if err := testtodo.StatusValidator(v); err != nil {
-			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "status": %w`, err)}
+			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "TestTodo.status": %w`, err)}
 		}
 	}
 	if _, ok := ttc.mutation.Priority(); !ok {
-		return &ValidationError{Name: "priority", err: errors.New(`ent: missing required field "priority"`)}
+		return &ValidationError{Name: "priority", err: errors.New(`ent: missing required field "TestTodo.priority"`)}
 	}
 	if _, ok := ttc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "TestTodo.created_at"`)}
 	}
 	if _, ok := ttc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "TestTodo.updated_at"`)}
 	}
 	return nil
 }
@@ -330,7 +330,11 @@ func (ttc *TestTodoCreate) sqlSave(ctx context.Context) (*TestTodo, error) {
 		return nil, err
 	}
 	if _spec.ID.Value != nil {
-		_node.ID = _spec.ID.Value.(ulid.ID)
+		if id, ok := _spec.ID.Value.(*ulid.ID); ok {
+			_node.ID = *id
+		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
+			return nil, err
+		}
 	}
 	return _node, nil
 }
@@ -349,7 +353,7 @@ func (ttc *TestTodoCreate) createSpec() (*TestTodo, *sqlgraph.CreateSpec) {
 	_spec.OnConflict = ttc.conflict
 	if id, ok := ttc.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = id
+		_spec.ID.Value = &id
 	}
 	if value, ok := ttc.mutation.CreatedBy(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -604,6 +608,12 @@ func (u *TestTodoUpsert) UpdatePriority() *TestTodoUpsert {
 	return u
 }
 
+// AddPriority adds v to the "priority" field.
+func (u *TestTodoUpsert) AddPriority(v int) *TestTodoUpsert {
+	u.Add(testtodo.FieldPriority, v)
+	return u
+}
+
 // SetDueDate sets the "due_date" field.
 func (u *TestTodoUpsert) SetDueDate(v time.Time) *TestTodoUpsert {
 	u.Set(testtodo.FieldDueDate, v)
@@ -646,7 +656,7 @@ func (u *TestTodoUpsert) UpdateUpdatedAt() *TestTodoUpsert {
 	return u
 }
 
-// UpdateNewValues updates the fields using the new values that were set on create except the ID field.
+// UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
 //	client.TestTodo.Create().
@@ -663,6 +673,12 @@ func (u *TestTodoUpsertOne) UpdateNewValues() *TestTodoUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
 		if _, exists := u.create.mutation.ID(); exists {
 			s.SetIgnore(testtodo.FieldID)
+		}
+		if _, exists := u.create.mutation.CreatedAt(); exists {
+			s.SetIgnore(testtodo.FieldCreatedAt)
+		}
+		if _, exists := u.create.mutation.UpdatedAt(); exists {
+			s.SetIgnore(testtodo.FieldUpdatedAt)
 		}
 	}))
 	return u
@@ -784,6 +800,13 @@ func (u *TestTodoUpsertOne) UpdateStatus() *TestTodoUpsertOne {
 func (u *TestTodoUpsertOne) SetPriority(v int) *TestTodoUpsertOne {
 	return u.Update(func(s *TestTodoUpsert) {
 		s.SetPriority(v)
+	})
+}
+
+// AddPriority adds v to the "priority" field.
+func (u *TestTodoUpsertOne) AddPriority(v int) *TestTodoUpsertOne {
+	return u.Update(func(s *TestTodoUpsert) {
+		s.AddPriority(v)
 	})
 }
 
@@ -1006,7 +1029,7 @@ type TestTodoUpsertBulk struct {
 	create *TestTodoCreateBulk
 }
 
-// UpdateNewValues updates the fields using the new values that
+// UpdateNewValues updates the mutable fields using the new values that
 // were set on create. Using this option is equivalent to using:
 //
 //	client.TestTodo.Create().
@@ -1025,6 +1048,12 @@ func (u *TestTodoUpsertBulk) UpdateNewValues() *TestTodoUpsertBulk {
 			if _, exists := b.mutation.ID(); exists {
 				s.SetIgnore(testtodo.FieldID)
 				return
+			}
+			if _, exists := b.mutation.CreatedAt(); exists {
+				s.SetIgnore(testtodo.FieldCreatedAt)
+			}
+			if _, exists := b.mutation.UpdatedAt(); exists {
+				s.SetIgnore(testtodo.FieldUpdatedAt)
 			}
 		}
 	}))
@@ -1147,6 +1176,13 @@ func (u *TestTodoUpsertBulk) UpdateStatus() *TestTodoUpsertBulk {
 func (u *TestTodoUpsertBulk) SetPriority(v int) *TestTodoUpsertBulk {
 	return u.Update(func(s *TestTodoUpsert) {
 		s.SetPriority(v)
+	})
+}
+
+// AddPriority adds v to the "priority" field.
+func (u *TestTodoUpsertBulk) AddPriority(v int) *TestTodoUpsertBulk {
+	return u.Update(func(s *TestTodoUpsert) {
+		s.AddPriority(v)
 	})
 }
 

@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"project-management-demo-backend/ent/color"
 	"project-management-demo-backend/ent/predicate"
@@ -262,17 +263,17 @@ func (cu *ColorUpdate) ExecX(ctx context.Context) {
 func (cu *ColorUpdate) check() error {
 	if v, ok := cu.mutation.Name(); ok {
 		if err := color.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf("ent: validator failed for field \"name\": %w", err)}
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Color.name": %w`, err)}
 		}
 	}
 	if v, ok := cu.mutation.Color(); ok {
 		if err := color.ColorValidator(v); err != nil {
-			return &ValidationError{Name: "color", err: fmt.Errorf("ent: validator failed for field \"color\": %w", err)}
+			return &ValidationError{Name: "color", err: fmt.Errorf(`ent: validator failed for field "Color.color": %w`, err)}
 		}
 	}
 	if v, ok := cu.mutation.Hex(); ok {
 		if err := color.HexValidator(v); err != nil {
-			return &ValidationError{Name: "hex", err: fmt.Errorf("ent: validator failed for field \"hex\": %w", err)}
+			return &ValidationError{Name: "hex", err: fmt.Errorf(`ent: validator failed for field "Color.hex": %w`, err)}
 		}
 	}
 	return nil
@@ -790,17 +791,17 @@ func (cuo *ColorUpdateOne) ExecX(ctx context.Context) {
 func (cuo *ColorUpdateOne) check() error {
 	if v, ok := cuo.mutation.Name(); ok {
 		if err := color.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf("ent: validator failed for field \"name\": %w", err)}
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Color.name": %w`, err)}
 		}
 	}
 	if v, ok := cuo.mutation.Color(); ok {
 		if err := color.ColorValidator(v); err != nil {
-			return &ValidationError{Name: "color", err: fmt.Errorf("ent: validator failed for field \"color\": %w", err)}
+			return &ValidationError{Name: "color", err: fmt.Errorf(`ent: validator failed for field "Color.color": %w`, err)}
 		}
 	}
 	if v, ok := cuo.mutation.Hex(); ok {
 		if err := color.HexValidator(v); err != nil {
-			return &ValidationError{Name: "hex", err: fmt.Errorf("ent: validator failed for field \"hex\": %w", err)}
+			return &ValidationError{Name: "hex", err: fmt.Errorf(`ent: validator failed for field "Color.hex": %w`, err)}
 		}
 	}
 	return nil
@@ -819,7 +820,7 @@ func (cuo *ColorUpdateOne) sqlSave(ctx context.Context) (_node *Color, err error
 	}
 	id, ok := cuo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing Color.ID for update")}
+		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Color.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := cuo.fields; len(fields) > 0 {

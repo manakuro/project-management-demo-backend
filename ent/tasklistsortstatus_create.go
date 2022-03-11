@@ -198,26 +198,26 @@ func (tlssc *TaskListSortStatusCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (tlssc *TaskListSortStatusCreate) check() error {
 	if _, ok := tlssc.mutation.Name(); !ok {
-		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "name"`)}
+		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "TaskListSortStatus.name"`)}
 	}
 	if v, ok := tlssc.mutation.Name(); ok {
 		if err := tasklistsortstatus.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "name": %w`, err)}
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "TaskListSortStatus.name": %w`, err)}
 		}
 	}
 	if _, ok := tlssc.mutation.StatusCode(); !ok {
-		return &ValidationError{Name: "status_code", err: errors.New(`ent: missing required field "status_code"`)}
+		return &ValidationError{Name: "status_code", err: errors.New(`ent: missing required field "TaskListSortStatus.status_code"`)}
 	}
 	if v, ok := tlssc.mutation.StatusCode(); ok {
 		if err := tasklistsortstatus.StatusCodeValidator(v); err != nil {
-			return &ValidationError{Name: "status_code", err: fmt.Errorf(`ent: validator failed for field "status_code": %w`, err)}
+			return &ValidationError{Name: "status_code", err: fmt.Errorf(`ent: validator failed for field "TaskListSortStatus.status_code": %w`, err)}
 		}
 	}
 	if _, ok := tlssc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "TaskListSortStatus.created_at"`)}
 	}
 	if _, ok := tlssc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "TaskListSortStatus.updated_at"`)}
 	}
 	return nil
 }
@@ -231,7 +231,11 @@ func (tlssc *TaskListSortStatusCreate) sqlSave(ctx context.Context) (*TaskListSo
 		return nil, err
 	}
 	if _spec.ID.Value != nil {
-		_node.ID = _spec.ID.Value.(ulid.ID)
+		if id, ok := _spec.ID.Value.(*ulid.ID); ok {
+			_node.ID = *id
+		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
+			return nil, err
+		}
 	}
 	return _node, nil
 }
@@ -250,7 +254,7 @@ func (tlssc *TaskListSortStatusCreate) createSpec() (*TaskListSortStatus, *sqlgr
 	_spec.OnConflict = tlssc.conflict
 	if id, ok := tlssc.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = id
+		_spec.ID.Value = &id
 	}
 	if value, ok := tlssc.mutation.Name(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -424,7 +428,7 @@ func (u *TaskListSortStatusUpsert) UpdateUpdatedAt() *TaskListSortStatusUpsert {
 	return u
 }
 
-// UpdateNewValues updates the fields using the new values that were set on create except the ID field.
+// UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
 //	client.TaskListSortStatus.Create().
@@ -441,6 +445,12 @@ func (u *TaskListSortStatusUpsertOne) UpdateNewValues() *TaskListSortStatusUpser
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
 		if _, exists := u.create.mutation.ID(); exists {
 			s.SetIgnore(tasklistsortstatus.FieldID)
+		}
+		if _, exists := u.create.mutation.CreatedAt(); exists {
+			s.SetIgnore(tasklistsortstatus.FieldCreatedAt)
+		}
+		if _, exists := u.create.mutation.UpdatedAt(); exists {
+			s.SetIgnore(tasklistsortstatus.FieldUpdatedAt)
 		}
 	}))
 	return u
@@ -693,7 +703,7 @@ type TaskListSortStatusUpsertBulk struct {
 	create *TaskListSortStatusCreateBulk
 }
 
-// UpdateNewValues updates the fields using the new values that
+// UpdateNewValues updates the mutable fields using the new values that
 // were set on create. Using this option is equivalent to using:
 //
 //	client.TaskListSortStatus.Create().
@@ -712,6 +722,12 @@ func (u *TaskListSortStatusUpsertBulk) UpdateNewValues() *TaskListSortStatusUpse
 			if _, exists := b.mutation.ID(); exists {
 				s.SetIgnore(tasklistsortstatus.FieldID)
 				return
+			}
+			if _, exists := b.mutation.CreatedAt(); exists {
+				s.SetIgnore(tasklistsortstatus.FieldCreatedAt)
+			}
+			if _, exists := b.mutation.UpdatedAt(); exists {
+				s.SetIgnore(tasklistsortstatus.FieldUpdatedAt)
 			}
 		}
 	}))

@@ -541,11 +541,11 @@ func (wu *WorkspaceUpdate) ExecX(ctx context.Context) {
 func (wu *WorkspaceUpdate) check() error {
 	if v, ok := wu.mutation.Name(); ok {
 		if err := workspace.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf("ent: validator failed for field \"name\": %w", err)}
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Workspace.name": %w`, err)}
 		}
 	}
 	if _, ok := wu.mutation.TeammateID(); wu.mutation.TeammateCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"teammate\"")
+		return errors.New(`ent: clearing a required unique edge "Workspace.teammate"`)
 	}
 	return nil
 }
@@ -1737,11 +1737,11 @@ func (wuo *WorkspaceUpdateOne) ExecX(ctx context.Context) {
 func (wuo *WorkspaceUpdateOne) check() error {
 	if v, ok := wuo.mutation.Name(); ok {
 		if err := workspace.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf("ent: validator failed for field \"name\": %w", err)}
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Workspace.name": %w`, err)}
 		}
 	}
 	if _, ok := wuo.mutation.TeammateID(); wuo.mutation.TeammateCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"teammate\"")
+		return errors.New(`ent: clearing a required unique edge "Workspace.teammate"`)
 	}
 	return nil
 }
@@ -1759,7 +1759,7 @@ func (wuo *WorkspaceUpdateOne) sqlSave(ctx context.Context) (_node *Workspace, e
 	}
 	id, ok := wuo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing Workspace.ID for update")}
+		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Workspace.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := wuo.fields; len(fields) > 0 {

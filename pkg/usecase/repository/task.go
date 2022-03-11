@@ -16,4 +16,6 @@ type Task interface {
 	DeleteAll(ctx context.Context, input model.DeleteAllTaskInput) (*model.DeleteAllTaskPayload, error)
 	Undelete(ctx context.Context, input model.UndeleteTaskInput) (*model.UndeleteTaskPayload, error)
 	UndeleteAll(ctx context.Context, input model.UndeleteAllTaskInput) (*model.UndeleteAllTaskPayload, error)
+	Assign(ctx context.Context, input model.AssignTaskInput) (*model.AssignTaskPayload, error)
+	Unassign(ctx context.Context, input model.UnassignTaskInput) (*model.UnassignTaskPayload, error)
 }

@@ -117,10 +117,32 @@ type DeleteAllTaskPayload {
   deletedTasks: [DeletedTask!]!
 }
 
+input AssignTaskInput {
+  id: ID!
+  assigneeId: ID!
+  workspaceId: ID!
+  requestId: String!
+}
+type AssignTaskPayload {
+  task: Task!
+  teammateTask: TeammateTask!
+}
+input UnassignTaskInput {
+  id: ID!
+  workspaceId: ID!
+  requestId: String!
+}
+type UnassignTaskPayload {
+  task: Task!
+  teammateTaskId: ID!
+}
+
 extend type Subscription {
   taskUpdated(workspaceId: ID!, requestId: String!): Task!
   taskDeleted(workspaceId: ID!, requestId: String!): DeleteTaskPayload!
   taskUndeleted(workspaceId: ID!, requestId: String!): UndeleteTaskPayload!
+  taskAssigned(workspaceId: ID!, requestId: String!): AssignTaskPayload!
+  taskUnassigned(workspaceId: ID!, requestId: String!): UnassignTaskPayload!
 }
 
 extend type Query {
@@ -134,4 +156,6 @@ extend type Mutation {
   deleteTask(input: DeleteTaskInput!): DeleteTaskPayload!
   deleteAllTask(input: DeleteAllTaskInput!): DeleteAllTaskPayload!
   undeleteTask(input: UndeleteTaskInput!): UndeleteTaskPayload!
+  assignTask(input: AssignTaskInput!): AssignTaskPayload!
+  unassignTask(input: UnassignTaskInput!): UnassignTaskPayload!
 }

@@ -133,7 +133,7 @@ func (iq *IconQuery) FirstIDX(ctx context.Context) ulid.ID {
 }
 
 // Only returns a single Icon entity found by the query, ensuring it only returns one.
-// Returns a *NotSingularError when exactly one Icon entity is not found.
+// Returns a *NotSingularError when more than one Icon entity is found.
 // Returns a *NotFoundError when no Icon entities are found.
 func (iq *IconQuery) Only(ctx context.Context) (*Icon, error) {
 	nodes, err := iq.Limit(2).All(ctx)
@@ -160,7 +160,7 @@ func (iq *IconQuery) OnlyX(ctx context.Context) *Icon {
 }
 
 // OnlyID is like Only, but returns the only Icon ID in the query.
-// Returns a *NotSingularError when exactly one Icon ID is not found.
+// Returns a *NotSingularError when more than one Icon ID is found.
 // Returns a *NotFoundError when no entities are found.
 func (iq *IconQuery) OnlyID(ctx context.Context) (id ulid.ID, err error) {
 	var ids []ulid.ID
@@ -270,8 +270,9 @@ func (iq *IconQuery) Clone() *IconQuery {
 		predicates:       append([]predicate.Icon{}, iq.predicates...),
 		withProjectIcons: iq.withProjectIcons.Clone(),
 		// clone intermediate query.
-		sql:  iq.sql.Clone(),
-		path: iq.path,
+		sql:    iq.sql.Clone(),
+		path:   iq.path,
+		unique: iq.unique,
 	}
 }
 
@@ -405,6 +406,10 @@ func (iq *IconQuery) sqlAll(ctx context.Context) ([]*Icon, error) {
 
 func (iq *IconQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := iq.querySpec()
+	_spec.Node.Columns = iq.fields
+	if len(iq.fields) > 0 {
+		_spec.Unique = iq.unique != nil && *iq.unique
+	}
 	return sqlgraph.CountNodes(ctx, iq.driver, _spec)
 }
 
@@ -475,6 +480,9 @@ func (iq *IconQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	if iq.sql != nil {
 		selector = iq.sql
 		selector.Select(selector.Columns(columns...)...)
+	}
+	if iq.unique != nil && *iq.unique {
+		selector.Distinct()
 	}
 	for _, p := range iq.predicates {
 		p(selector)
@@ -754,9 +762,7 @@ func (igb *IconGroupBy) sqlQuery() *sql.Selector {
 		for _, f := range igb.fields {
 			columns = append(columns, selector.C(f))
 		}
-		for _, c := range aggregation {
-			columns = append(columns, c)
-		}
+		columns = append(columns, aggregation...)
 		selector.Select(columns...)
 	}
 	return selector.GroupBy(selector.Columns(igb.fields...)...)

@@ -145,14 +145,14 @@ func (ptu *ProjectTeammateUpdate) ExecX(ctx context.Context) {
 func (ptu *ProjectTeammateUpdate) check() error {
 	if v, ok := ptu.mutation.Role(); ok {
 		if err := projectteammate.RoleValidator(v); err != nil {
-			return &ValidationError{Name: "role", err: fmt.Errorf("ent: validator failed for field \"role\": %w", err)}
+			return &ValidationError{Name: "role", err: fmt.Errorf(`ent: validator failed for field "ProjectTeammate.role": %w`, err)}
 		}
 	}
 	if _, ok := ptu.mutation.ProjectID(); ptu.mutation.ProjectCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"project\"")
+		return errors.New(`ent: clearing a required unique edge "ProjectTeammate.project"`)
 	}
 	if _, ok := ptu.mutation.TeammateID(); ptu.mutation.TeammateCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"teammate\"")
+		return errors.New(`ent: clearing a required unique edge "ProjectTeammate.teammate"`)
 	}
 	return nil
 }
@@ -400,14 +400,14 @@ func (ptuo *ProjectTeammateUpdateOne) ExecX(ctx context.Context) {
 func (ptuo *ProjectTeammateUpdateOne) check() error {
 	if v, ok := ptuo.mutation.Role(); ok {
 		if err := projectteammate.RoleValidator(v); err != nil {
-			return &ValidationError{Name: "role", err: fmt.Errorf("ent: validator failed for field \"role\": %w", err)}
+			return &ValidationError{Name: "role", err: fmt.Errorf(`ent: validator failed for field "ProjectTeammate.role": %w`, err)}
 		}
 	}
 	if _, ok := ptuo.mutation.ProjectID(); ptuo.mutation.ProjectCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"project\"")
+		return errors.New(`ent: clearing a required unique edge "ProjectTeammate.project"`)
 	}
 	if _, ok := ptuo.mutation.TeammateID(); ptuo.mutation.TeammateCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"teammate\"")
+		return errors.New(`ent: clearing a required unique edge "ProjectTeammate.teammate"`)
 	}
 	return nil
 }
@@ -425,7 +425,7 @@ func (ptuo *ProjectTeammateUpdateOne) sqlSave(ctx context.Context) (_node *Proje
 	}
 	id, ok := ptuo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing ProjectTeammate.ID for update")}
+		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "ProjectTeammate.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := ptuo.fields; len(fields) > 0 {

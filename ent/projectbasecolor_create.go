@@ -182,16 +182,16 @@ func (pbcc *ProjectBaseColorCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (pbcc *ProjectBaseColorCreate) check() error {
 	if _, ok := pbcc.mutation.ColorID(); !ok {
-		return &ValidationError{Name: "color_id", err: errors.New(`ent: missing required field "color_id"`)}
+		return &ValidationError{Name: "color_id", err: errors.New(`ent: missing required field "ProjectBaseColor.color_id"`)}
 	}
 	if _, ok := pbcc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "ProjectBaseColor.created_at"`)}
 	}
 	if _, ok := pbcc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "ProjectBaseColor.updated_at"`)}
 	}
 	if _, ok := pbcc.mutation.ColorID(); !ok {
-		return &ValidationError{Name: "color", err: errors.New("ent: missing required edge \"color\"")}
+		return &ValidationError{Name: "color", err: errors.New(`ent: missing required edge "ProjectBaseColor.color"`)}
 	}
 	return nil
 }
@@ -205,7 +205,11 @@ func (pbcc *ProjectBaseColorCreate) sqlSave(ctx context.Context) (*ProjectBaseCo
 		return nil, err
 	}
 	if _spec.ID.Value != nil {
-		_node.ID = _spec.ID.Value.(ulid.ID)
+		if id, ok := _spec.ID.Value.(*ulid.ID); ok {
+			_node.ID = *id
+		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
+			return nil, err
+		}
 	}
 	return _node, nil
 }
@@ -224,7 +228,7 @@ func (pbcc *ProjectBaseColorCreate) createSpec() (*ProjectBaseColor, *sqlgraph.C
 	_spec.OnConflict = pbcc.conflict
 	if id, ok := pbcc.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = id
+		_spec.ID.Value = &id
 	}
 	if value, ok := pbcc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -371,7 +375,7 @@ func (u *ProjectBaseColorUpsert) UpdateUpdatedAt() *ProjectBaseColorUpsert {
 	return u
 }
 
-// UpdateNewValues updates the fields using the new values that were set on create except the ID field.
+// UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
 //	client.ProjectBaseColor.Create().
@@ -388,6 +392,12 @@ func (u *ProjectBaseColorUpsertOne) UpdateNewValues() *ProjectBaseColorUpsertOne
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
 		if _, exists := u.create.mutation.ID(); exists {
 			s.SetIgnore(projectbasecolor.FieldID)
+		}
+		if _, exists := u.create.mutation.CreatedAt(); exists {
+			s.SetIgnore(projectbasecolor.FieldCreatedAt)
+		}
+		if _, exists := u.create.mutation.UpdatedAt(); exists {
+			s.SetIgnore(projectbasecolor.FieldUpdatedAt)
 		}
 	}))
 	return u
@@ -626,7 +636,7 @@ type ProjectBaseColorUpsertBulk struct {
 	create *ProjectBaseColorCreateBulk
 }
 
-// UpdateNewValues updates the fields using the new values that
+// UpdateNewValues updates the mutable fields using the new values that
 // were set on create. Using this option is equivalent to using:
 //
 //	client.ProjectBaseColor.Create().
@@ -645,6 +655,12 @@ func (u *ProjectBaseColorUpsertBulk) UpdateNewValues() *ProjectBaseColorUpsertBu
 			if _, exists := b.mutation.ID(); exists {
 				s.SetIgnore(projectbasecolor.FieldID)
 				return
+			}
+			if _, exists := b.mutation.CreatedAt(); exists {
+				s.SetIgnore(projectbasecolor.FieldCreatedAt)
+			}
+			if _, exists := b.mutation.UpdatedAt(); exists {
+				s.SetIgnore(projectbasecolor.FieldUpdatedAt)
 			}
 		}
 	}))

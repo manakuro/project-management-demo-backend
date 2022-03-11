@@ -157,7 +157,7 @@ func (pbcq *ProjectBaseColorQuery) FirstIDX(ctx context.Context) ulid.ID {
 }
 
 // Only returns a single ProjectBaseColor entity found by the query, ensuring it only returns one.
-// Returns a *NotSingularError when exactly one ProjectBaseColor entity is not found.
+// Returns a *NotSingularError when more than one ProjectBaseColor entity is found.
 // Returns a *NotFoundError when no ProjectBaseColor entities are found.
 func (pbcq *ProjectBaseColorQuery) Only(ctx context.Context) (*ProjectBaseColor, error) {
 	nodes, err := pbcq.Limit(2).All(ctx)
@@ -184,7 +184,7 @@ func (pbcq *ProjectBaseColorQuery) OnlyX(ctx context.Context) *ProjectBaseColor 
 }
 
 // OnlyID is like Only, but returns the only ProjectBaseColor ID in the query.
-// Returns a *NotSingularError when exactly one ProjectBaseColor ID is not found.
+// Returns a *NotSingularError when more than one ProjectBaseColor ID is found.
 // Returns a *NotFoundError when no entities are found.
 func (pbcq *ProjectBaseColorQuery) OnlyID(ctx context.Context) (id ulid.ID, err error) {
 	var ids []ulid.ID
@@ -295,8 +295,9 @@ func (pbcq *ProjectBaseColorQuery) Clone() *ProjectBaseColorQuery {
 		withProjects: pbcq.withProjects.Clone(),
 		withColor:    pbcq.withColor.Clone(),
 		// clone intermediate query.
-		sql:  pbcq.sql.Clone(),
-		path: pbcq.path,
+		sql:    pbcq.sql.Clone(),
+		path:   pbcq.path,
+		unique: pbcq.unique,
 	}
 }
 
@@ -468,6 +469,10 @@ func (pbcq *ProjectBaseColorQuery) sqlAll(ctx context.Context) ([]*ProjectBaseCo
 
 func (pbcq *ProjectBaseColorQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := pbcq.querySpec()
+	_spec.Node.Columns = pbcq.fields
+	if len(pbcq.fields) > 0 {
+		_spec.Unique = pbcq.unique != nil && *pbcq.unique
+	}
 	return sqlgraph.CountNodes(ctx, pbcq.driver, _spec)
 }
 
@@ -538,6 +543,9 @@ func (pbcq *ProjectBaseColorQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	if pbcq.sql != nil {
 		selector = pbcq.sql
 		selector.Select(selector.Columns(columns...)...)
+	}
+	if pbcq.unique != nil && *pbcq.unique {
+		selector.Distinct()
 	}
 	for _, p := range pbcq.predicates {
 		p(selector)
@@ -817,9 +825,7 @@ func (pbcgb *ProjectBaseColorGroupBy) sqlQuery() *sql.Selector {
 		for _, f := range pbcgb.fields {
 			columns = append(columns, selector.C(f))
 		}
-		for _, c := range aggregation {
-			columns = append(columns, c)
-		}
+		columns = append(columns, aggregation...)
 		selector.Select(columns...)
 	}
 	return selector.GroupBy(selector.Columns(pbcgb.fields...)...)

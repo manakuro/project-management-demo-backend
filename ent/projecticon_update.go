@@ -151,7 +151,7 @@ func (piu *ProjectIconUpdate) ExecX(ctx context.Context) {
 // check runs all checks and user-defined validators on the builder.
 func (piu *ProjectIconUpdate) check() error {
 	if _, ok := piu.mutation.IconID(); piu.mutation.IconCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"icon\"")
+		return errors.New(`ent: clearing a required unique edge "ProjectIcon.icon"`)
 	}
 	return nil
 }
@@ -410,7 +410,7 @@ func (piuo *ProjectIconUpdateOne) ExecX(ctx context.Context) {
 // check runs all checks and user-defined validators on the builder.
 func (piuo *ProjectIconUpdateOne) check() error {
 	if _, ok := piuo.mutation.IconID(); piuo.mutation.IconCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"icon\"")
+		return errors.New(`ent: clearing a required unique edge "ProjectIcon.icon"`)
 	}
 	return nil
 }
@@ -428,7 +428,7 @@ func (piuo *ProjectIconUpdateOne) sqlSave(ctx context.Context) (_node *ProjectIc
 	}
 	id, ok := piuo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing ProjectIcon.ID for update")}
+		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "ProjectIcon.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := piuo.fields; len(fields) > 0 {

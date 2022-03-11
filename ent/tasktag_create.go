@@ -178,22 +178,22 @@ func (ttc *TaskTagCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (ttc *TaskTagCreate) check() error {
 	if _, ok := ttc.mutation.TaskID(); !ok {
-		return &ValidationError{Name: "task_id", err: errors.New(`ent: missing required field "task_id"`)}
+		return &ValidationError{Name: "task_id", err: errors.New(`ent: missing required field "TaskTag.task_id"`)}
 	}
 	if _, ok := ttc.mutation.TagID(); !ok {
-		return &ValidationError{Name: "tag_id", err: errors.New(`ent: missing required field "tag_id"`)}
+		return &ValidationError{Name: "tag_id", err: errors.New(`ent: missing required field "TaskTag.tag_id"`)}
 	}
 	if _, ok := ttc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "TaskTag.created_at"`)}
 	}
 	if _, ok := ttc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "TaskTag.updated_at"`)}
 	}
 	if _, ok := ttc.mutation.TaskID(); !ok {
-		return &ValidationError{Name: "task", err: errors.New("ent: missing required edge \"task\"")}
+		return &ValidationError{Name: "task", err: errors.New(`ent: missing required edge "TaskTag.task"`)}
 	}
 	if _, ok := ttc.mutation.TagID(); !ok {
-		return &ValidationError{Name: "tag", err: errors.New("ent: missing required edge \"tag\"")}
+		return &ValidationError{Name: "tag", err: errors.New(`ent: missing required edge "TaskTag.tag"`)}
 	}
 	return nil
 }
@@ -207,7 +207,11 @@ func (ttc *TaskTagCreate) sqlSave(ctx context.Context) (*TaskTag, error) {
 		return nil, err
 	}
 	if _spec.ID.Value != nil {
-		_node.ID = _spec.ID.Value.(ulid.ID)
+		if id, ok := _spec.ID.Value.(*ulid.ID); ok {
+			_node.ID = *id
+		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
+			return nil, err
+		}
 	}
 	return _node, nil
 }
@@ -226,7 +230,7 @@ func (ttc *TaskTagCreate) createSpec() (*TaskTag, *sqlgraph.CreateSpec) {
 	_spec.OnConflict = ttc.conflict
 	if id, ok := ttc.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = id
+		_spec.ID.Value = &id
 	}
 	if value, ok := ttc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -386,7 +390,7 @@ func (u *TaskTagUpsert) UpdateUpdatedAt() *TaskTagUpsert {
 	return u
 }
 
-// UpdateNewValues updates the fields using the new values that were set on create except the ID field.
+// UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
 //	client.TaskTag.Create().
@@ -403,6 +407,12 @@ func (u *TaskTagUpsertOne) UpdateNewValues() *TaskTagUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
 		if _, exists := u.create.mutation.ID(); exists {
 			s.SetIgnore(tasktag.FieldID)
+		}
+		if _, exists := u.create.mutation.CreatedAt(); exists {
+			s.SetIgnore(tasktag.FieldCreatedAt)
+		}
+		if _, exists := u.create.mutation.UpdatedAt(); exists {
+			s.SetIgnore(tasktag.FieldUpdatedAt)
 		}
 	}))
 	return u
@@ -655,7 +665,7 @@ type TaskTagUpsertBulk struct {
 	create *TaskTagCreateBulk
 }
 
-// UpdateNewValues updates the fields using the new values that
+// UpdateNewValues updates the mutable fields using the new values that
 // were set on create. Using this option is equivalent to using:
 //
 //	client.TaskTag.Create().
@@ -674,6 +684,12 @@ func (u *TaskTagUpsertBulk) UpdateNewValues() *TaskTagUpsertBulk {
 			if _, exists := b.mutation.ID(); exists {
 				s.SetIgnore(tasktag.FieldID)
 				return
+			}
+			if _, exists := b.mutation.CreatedAt(); exists {
+				s.SetIgnore(tasktag.FieldCreatedAt)
+			}
+			if _, exists := b.mutation.UpdatedAt(); exists {
+				s.SetIgnore(tasktag.FieldUpdatedAt)
 			}
 		}
 	}))

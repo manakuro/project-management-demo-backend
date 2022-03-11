@@ -156,7 +156,7 @@ func (fpq *FavoriteProjectQuery) FirstIDX(ctx context.Context) ulid.ID {
 }
 
 // Only returns a single FavoriteProject entity found by the query, ensuring it only returns one.
-// Returns a *NotSingularError when exactly one FavoriteProject entity is not found.
+// Returns a *NotSingularError when more than one FavoriteProject entity is found.
 // Returns a *NotFoundError when no FavoriteProject entities are found.
 func (fpq *FavoriteProjectQuery) Only(ctx context.Context) (*FavoriteProject, error) {
 	nodes, err := fpq.Limit(2).All(ctx)
@@ -183,7 +183,7 @@ func (fpq *FavoriteProjectQuery) OnlyX(ctx context.Context) *FavoriteProject {
 }
 
 // OnlyID is like Only, but returns the only FavoriteProject ID in the query.
-// Returns a *NotSingularError when exactly one FavoriteProject ID is not found.
+// Returns a *NotSingularError when more than one FavoriteProject ID is found.
 // Returns a *NotFoundError when no entities are found.
 func (fpq *FavoriteProjectQuery) OnlyID(ctx context.Context) (id ulid.ID, err error) {
 	var ids []ulid.ID
@@ -294,8 +294,9 @@ func (fpq *FavoriteProjectQuery) Clone() *FavoriteProjectQuery {
 		withProject:  fpq.withProject.Clone(),
 		withTeammate: fpq.withTeammate.Clone(),
 		// clone intermediate query.
-		sql:  fpq.sql.Clone(),
-		path: fpq.path,
+		sql:    fpq.sql.Clone(),
+		path:   fpq.path,
+		unique: fpq.unique,
 	}
 }
 
@@ -468,6 +469,10 @@ func (fpq *FavoriteProjectQuery) sqlAll(ctx context.Context) ([]*FavoriteProject
 
 func (fpq *FavoriteProjectQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := fpq.querySpec()
+	_spec.Node.Columns = fpq.fields
+	if len(fpq.fields) > 0 {
+		_spec.Unique = fpq.unique != nil && *fpq.unique
+	}
 	return sqlgraph.CountNodes(ctx, fpq.driver, _spec)
 }
 
@@ -538,6 +543,9 @@ func (fpq *FavoriteProjectQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	if fpq.sql != nil {
 		selector = fpq.sql
 		selector.Select(selector.Columns(columns...)...)
+	}
+	if fpq.unique != nil && *fpq.unique {
+		selector.Distinct()
 	}
 	for _, p := range fpq.predicates {
 		p(selector)
@@ -817,9 +825,7 @@ func (fpgb *FavoriteProjectGroupBy) sqlQuery() *sql.Selector {
 		for _, f := range fpgb.fields {
 			columns = append(columns, selector.C(f))
 		}
-		for _, c := range aggregation {
-			columns = append(columns, c)
-		}
+		columns = append(columns, aggregation...)
 		selector.Select(columns...)
 	}
 	return selector.GroupBy(selector.Columns(fpgb.fields...)...)

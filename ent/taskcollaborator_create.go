@@ -178,22 +178,22 @@ func (tcc *TaskCollaboratorCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (tcc *TaskCollaboratorCreate) check() error {
 	if _, ok := tcc.mutation.TaskID(); !ok {
-		return &ValidationError{Name: "task_id", err: errors.New(`ent: missing required field "task_id"`)}
+		return &ValidationError{Name: "task_id", err: errors.New(`ent: missing required field "TaskCollaborator.task_id"`)}
 	}
 	if _, ok := tcc.mutation.TeammateID(); !ok {
-		return &ValidationError{Name: "teammate_id", err: errors.New(`ent: missing required field "teammate_id"`)}
+		return &ValidationError{Name: "teammate_id", err: errors.New(`ent: missing required field "TaskCollaborator.teammate_id"`)}
 	}
 	if _, ok := tcc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "TaskCollaborator.created_at"`)}
 	}
 	if _, ok := tcc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "TaskCollaborator.updated_at"`)}
 	}
 	if _, ok := tcc.mutation.TaskID(); !ok {
-		return &ValidationError{Name: "task", err: errors.New("ent: missing required edge \"task\"")}
+		return &ValidationError{Name: "task", err: errors.New(`ent: missing required edge "TaskCollaborator.task"`)}
 	}
 	if _, ok := tcc.mutation.TeammateID(); !ok {
-		return &ValidationError{Name: "teammate", err: errors.New("ent: missing required edge \"teammate\"")}
+		return &ValidationError{Name: "teammate", err: errors.New(`ent: missing required edge "TaskCollaborator.teammate"`)}
 	}
 	return nil
 }
@@ -207,7 +207,11 @@ func (tcc *TaskCollaboratorCreate) sqlSave(ctx context.Context) (*TaskCollaborat
 		return nil, err
 	}
 	if _spec.ID.Value != nil {
-		_node.ID = _spec.ID.Value.(ulid.ID)
+		if id, ok := _spec.ID.Value.(*ulid.ID); ok {
+			_node.ID = *id
+		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
+			return nil, err
+		}
 	}
 	return _node, nil
 }
@@ -226,7 +230,7 @@ func (tcc *TaskCollaboratorCreate) createSpec() (*TaskCollaborator, *sqlgraph.Cr
 	_spec.OnConflict = tcc.conflict
 	if id, ok := tcc.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = id
+		_spec.ID.Value = &id
 	}
 	if value, ok := tcc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -386,7 +390,7 @@ func (u *TaskCollaboratorUpsert) UpdateUpdatedAt() *TaskCollaboratorUpsert {
 	return u
 }
 
-// UpdateNewValues updates the fields using the new values that were set on create except the ID field.
+// UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
 //	client.TaskCollaborator.Create().
@@ -403,6 +407,12 @@ func (u *TaskCollaboratorUpsertOne) UpdateNewValues() *TaskCollaboratorUpsertOne
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
 		if _, exists := u.create.mutation.ID(); exists {
 			s.SetIgnore(taskcollaborator.FieldID)
+		}
+		if _, exists := u.create.mutation.CreatedAt(); exists {
+			s.SetIgnore(taskcollaborator.FieldCreatedAt)
+		}
+		if _, exists := u.create.mutation.UpdatedAt(); exists {
+			s.SetIgnore(taskcollaborator.FieldUpdatedAt)
 		}
 	}))
 	return u
@@ -655,7 +665,7 @@ type TaskCollaboratorUpsertBulk struct {
 	create *TaskCollaboratorCreateBulk
 }
 
-// UpdateNewValues updates the fields using the new values that
+// UpdateNewValues updates the mutable fields using the new values that
 // were set on create. Using this option is equivalent to using:
 //
 //	client.TaskCollaborator.Create().
@@ -674,6 +684,12 @@ func (u *TaskCollaboratorUpsertBulk) UpdateNewValues() *TaskCollaboratorUpsertBu
 			if _, exists := b.mutation.ID(); exists {
 				s.SetIgnore(taskcollaborator.FieldID)
 				return
+			}
+			if _, exists := b.mutation.CreatedAt(); exists {
+				s.SetIgnore(taskcollaborator.FieldCreatedAt)
+			}
+			if _, exists := b.mutation.UpdatedAt(); exists {
+				s.SetIgnore(taskcollaborator.FieldUpdatedAt)
 			}
 		}
 	}))

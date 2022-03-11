@@ -176,8 +176,14 @@ func GetTaskByName(ctx context.Context, client *ent.Client, val string) *ent.Tas
 }
 
 // GetTeammateTaskSectionByName gets teammate task section data.
-func GetTeammateTaskSectionByName(ctx context.Context, client *ent.Client, val string) *ent.TeammateTaskSection {
-	res, err := client.TeammateTaskSection.Query().Where(teammatetasksection.NameEQ(val)).Only(ctx)
+func GetTeammateTaskSectionByName(ctx context.Context, client *ent.Client, name string, teammateID ulid.ID) *ent.TeammateTaskSection {
+	res, err := client.TeammateTaskSection.
+		Query().
+		Where(
+			teammatetasksection.NameEQ(name),
+			teammatetasksection.TeammateID(teammateID),
+		).
+		Only(ctx)
 	if err != nil {
 		log.Fatalf("GetTeammateTaskSectionByName: failed get data: %v", err)
 	}

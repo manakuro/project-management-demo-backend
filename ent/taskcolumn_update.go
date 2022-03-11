@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"project-management-demo-backend/ent/predicate"
 	"project-management-demo-backend/ent/projecttaskcolumn"
@@ -182,12 +183,12 @@ func (tcu *TaskColumnUpdate) ExecX(ctx context.Context) {
 func (tcu *TaskColumnUpdate) check() error {
 	if v, ok := tcu.mutation.Name(); ok {
 		if err := taskcolumn.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf("ent: validator failed for field \"name\": %w", err)}
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "TaskColumn.name": %w`, err)}
 		}
 	}
 	if v, ok := tcu.mutation.GetType(); ok {
 		if err := taskcolumn.TypeValidator(v); err != nil {
-			return &ValidationError{Name: "type", err: fmt.Errorf("ent: validator failed for field \"type\": %w", err)}
+			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "TaskColumn.type": %w`, err)}
 		}
 	}
 	return nil
@@ -512,12 +513,12 @@ func (tcuo *TaskColumnUpdateOne) ExecX(ctx context.Context) {
 func (tcuo *TaskColumnUpdateOne) check() error {
 	if v, ok := tcuo.mutation.Name(); ok {
 		if err := taskcolumn.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf("ent: validator failed for field \"name\": %w", err)}
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "TaskColumn.name": %w`, err)}
 		}
 	}
 	if v, ok := tcuo.mutation.GetType(); ok {
 		if err := taskcolumn.TypeValidator(v); err != nil {
-			return &ValidationError{Name: "type", err: fmt.Errorf("ent: validator failed for field \"type\": %w", err)}
+			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "TaskColumn.type": %w`, err)}
 		}
 	}
 	return nil
@@ -536,7 +537,7 @@ func (tcuo *TaskColumnUpdateOne) sqlSave(ctx context.Context) (_node *TaskColumn
 	}
 	id, ok := tcuo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing TaskColumn.ID for update")}
+		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "TaskColumn.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := tcuo.fields; len(fields) > 0 {

@@ -180,7 +180,7 @@ func (ttcq *TeammateTaskColumnQuery) FirstIDX(ctx context.Context) ulid.ID {
 }
 
 // Only returns a single TeammateTaskColumn entity found by the query, ensuring it only returns one.
-// Returns a *NotSingularError when exactly one TeammateTaskColumn entity is not found.
+// Returns a *NotSingularError when more than one TeammateTaskColumn entity is found.
 // Returns a *NotFoundError when no TeammateTaskColumn entities are found.
 func (ttcq *TeammateTaskColumnQuery) Only(ctx context.Context) (*TeammateTaskColumn, error) {
 	nodes, err := ttcq.Limit(2).All(ctx)
@@ -207,7 +207,7 @@ func (ttcq *TeammateTaskColumnQuery) OnlyX(ctx context.Context) *TeammateTaskCol
 }
 
 // OnlyID is like Only, but returns the only TeammateTaskColumn ID in the query.
-// Returns a *NotSingularError when exactly one TeammateTaskColumn ID is not found.
+// Returns a *NotSingularError when more than one TeammateTaskColumn ID is found.
 // Returns a *NotFoundError when no entities are found.
 func (ttcq *TeammateTaskColumnQuery) OnlyID(ctx context.Context) (id ulid.ID, err error) {
 	var ids []ulid.ID
@@ -319,8 +319,9 @@ func (ttcq *TeammateTaskColumnQuery) Clone() *TeammateTaskColumnQuery {
 		withWorkspace:  ttcq.withWorkspace.Clone(),
 		withTaskColumn: ttcq.withTaskColumn.Clone(),
 		// clone intermediate query.
-		sql:  ttcq.sql.Clone(),
-		path: ttcq.path,
+		sql:    ttcq.sql.Clone(),
+		path:   ttcq.path,
+		unique: ttcq.unique,
 	}
 }
 
@@ -531,6 +532,10 @@ func (ttcq *TeammateTaskColumnQuery) sqlAll(ctx context.Context) ([]*TeammateTas
 
 func (ttcq *TeammateTaskColumnQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := ttcq.querySpec()
+	_spec.Node.Columns = ttcq.fields
+	if len(ttcq.fields) > 0 {
+		_spec.Unique = ttcq.unique != nil && *ttcq.unique
+	}
 	return sqlgraph.CountNodes(ctx, ttcq.driver, _spec)
 }
 
@@ -601,6 +606,9 @@ func (ttcq *TeammateTaskColumnQuery) sqlQuery(ctx context.Context) *sql.Selector
 	if ttcq.sql != nil {
 		selector = ttcq.sql
 		selector.Select(selector.Columns(columns...)...)
+	}
+	if ttcq.unique != nil && *ttcq.unique {
+		selector.Distinct()
 	}
 	for _, p := range ttcq.predicates {
 		p(selector)
@@ -880,9 +888,7 @@ func (ttcgb *TeammateTaskColumnGroupBy) sqlQuery() *sql.Selector {
 		for _, f := range ttcgb.fields {
 			columns = append(columns, selector.C(f))
 		}
-		for _, c := range aggregation {
-			columns = append(columns, c)
-		}
+		columns = append(columns, aggregation...)
 		selector.Select(columns...)
 	}
 	return selector.GroupBy(selector.Columns(ttcgb.fields...)...)

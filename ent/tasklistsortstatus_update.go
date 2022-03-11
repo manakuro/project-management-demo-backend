@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"project-management-demo-backend/ent/predicate"
 	"project-management-demo-backend/ent/projecttaskliststatus"
@@ -182,12 +183,12 @@ func (tlssu *TaskListSortStatusUpdate) ExecX(ctx context.Context) {
 func (tlssu *TaskListSortStatusUpdate) check() error {
 	if v, ok := tlssu.mutation.Name(); ok {
 		if err := tasklistsortstatus.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf("ent: validator failed for field \"name\": %w", err)}
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "TaskListSortStatus.name": %w`, err)}
 		}
 	}
 	if v, ok := tlssu.mutation.StatusCode(); ok {
 		if err := tasklistsortstatus.StatusCodeValidator(v); err != nil {
-			return &ValidationError{Name: "status_code", err: fmt.Errorf("ent: validator failed for field \"status_code\": %w", err)}
+			return &ValidationError{Name: "status_code", err: fmt.Errorf(`ent: validator failed for field "TaskListSortStatus.status_code": %w`, err)}
 		}
 	}
 	return nil
@@ -512,12 +513,12 @@ func (tlssuo *TaskListSortStatusUpdateOne) ExecX(ctx context.Context) {
 func (tlssuo *TaskListSortStatusUpdateOne) check() error {
 	if v, ok := tlssuo.mutation.Name(); ok {
 		if err := tasklistsortstatus.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf("ent: validator failed for field \"name\": %w", err)}
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "TaskListSortStatus.name": %w`, err)}
 		}
 	}
 	if v, ok := tlssuo.mutation.StatusCode(); ok {
 		if err := tasklistsortstatus.StatusCodeValidator(v); err != nil {
-			return &ValidationError{Name: "status_code", err: fmt.Errorf("ent: validator failed for field \"status_code\": %w", err)}
+			return &ValidationError{Name: "status_code", err: fmt.Errorf(`ent: validator failed for field "TaskListSortStatus.status_code": %w`, err)}
 		}
 	}
 	return nil
@@ -536,7 +537,7 @@ func (tlssuo *TaskListSortStatusUpdateOne) sqlSave(ctx context.Context) (_node *
 	}
 	id, ok := tlssuo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing TaskListSortStatus.ID for update")}
+		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "TaskListSortStatus.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := tlssuo.fields; len(fields) > 0 {

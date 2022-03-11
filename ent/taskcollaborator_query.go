@@ -156,7 +156,7 @@ func (tcq *TaskCollaboratorQuery) FirstIDX(ctx context.Context) ulid.ID {
 }
 
 // Only returns a single TaskCollaborator entity found by the query, ensuring it only returns one.
-// Returns a *NotSingularError when exactly one TaskCollaborator entity is not found.
+// Returns a *NotSingularError when more than one TaskCollaborator entity is found.
 // Returns a *NotFoundError when no TaskCollaborator entities are found.
 func (tcq *TaskCollaboratorQuery) Only(ctx context.Context) (*TaskCollaborator, error) {
 	nodes, err := tcq.Limit(2).All(ctx)
@@ -183,7 +183,7 @@ func (tcq *TaskCollaboratorQuery) OnlyX(ctx context.Context) *TaskCollaborator {
 }
 
 // OnlyID is like Only, but returns the only TaskCollaborator ID in the query.
-// Returns a *NotSingularError when exactly one TaskCollaborator ID is not found.
+// Returns a *NotSingularError when more than one TaskCollaborator ID is found.
 // Returns a *NotFoundError when no entities are found.
 func (tcq *TaskCollaboratorQuery) OnlyID(ctx context.Context) (id ulid.ID, err error) {
 	var ids []ulid.ID
@@ -294,8 +294,9 @@ func (tcq *TaskCollaboratorQuery) Clone() *TaskCollaboratorQuery {
 		withTask:     tcq.withTask.Clone(),
 		withTeammate: tcq.withTeammate.Clone(),
 		// clone intermediate query.
-		sql:  tcq.sql.Clone(),
-		path: tcq.path,
+		sql:    tcq.sql.Clone(),
+		path:   tcq.path,
+		unique: tcq.unique,
 	}
 }
 
@@ -468,6 +469,10 @@ func (tcq *TaskCollaboratorQuery) sqlAll(ctx context.Context) ([]*TaskCollaborat
 
 func (tcq *TaskCollaboratorQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := tcq.querySpec()
+	_spec.Node.Columns = tcq.fields
+	if len(tcq.fields) > 0 {
+		_spec.Unique = tcq.unique != nil && *tcq.unique
+	}
 	return sqlgraph.CountNodes(ctx, tcq.driver, _spec)
 }
 
@@ -538,6 +543,9 @@ func (tcq *TaskCollaboratorQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	if tcq.sql != nil {
 		selector = tcq.sql
 		selector.Select(selector.Columns(columns...)...)
+	}
+	if tcq.unique != nil && *tcq.unique {
+		selector.Distinct()
 	}
 	for _, p := range tcq.predicates {
 		p(selector)
@@ -817,9 +825,7 @@ func (tcgb *TaskCollaboratorGroupBy) sqlQuery() *sql.Selector {
 		for _, f := range tcgb.fields {
 			columns = append(columns, selector.C(f))
 		}
-		for _, c := range aggregation {
-			columns = append(columns, c)
-		}
+		columns = append(columns, aggregation...)
 		selector.Select(columns...)
 	}
 	return selector.GroupBy(selector.Columns(tcgb.fields...)...)

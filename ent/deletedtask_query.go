@@ -156,7 +156,7 @@ func (dtq *DeletedTaskQuery) FirstIDX(ctx context.Context) ulid.ID {
 }
 
 // Only returns a single DeletedTask entity found by the query, ensuring it only returns one.
-// Returns a *NotSingularError when exactly one DeletedTask entity is not found.
+// Returns a *NotSingularError when more than one DeletedTask entity is found.
 // Returns a *NotFoundError when no DeletedTask entities are found.
 func (dtq *DeletedTaskQuery) Only(ctx context.Context) (*DeletedTask, error) {
 	nodes, err := dtq.Limit(2).All(ctx)
@@ -183,7 +183,7 @@ func (dtq *DeletedTaskQuery) OnlyX(ctx context.Context) *DeletedTask {
 }
 
 // OnlyID is like Only, but returns the only DeletedTask ID in the query.
-// Returns a *NotSingularError when exactly one DeletedTask ID is not found.
+// Returns a *NotSingularError when more than one DeletedTask ID is found.
 // Returns a *NotFoundError when no entities are found.
 func (dtq *DeletedTaskQuery) OnlyID(ctx context.Context) (id ulid.ID, err error) {
 	var ids []ulid.ID
@@ -294,8 +294,9 @@ func (dtq *DeletedTaskQuery) Clone() *DeletedTaskQuery {
 		withTask:      dtq.withTask.Clone(),
 		withWorkspace: dtq.withWorkspace.Clone(),
 		// clone intermediate query.
-		sql:  dtq.sql.Clone(),
-		path: dtq.path,
+		sql:    dtq.sql.Clone(),
+		path:   dtq.path,
+		unique: dtq.unique,
 	}
 }
 
@@ -468,6 +469,10 @@ func (dtq *DeletedTaskQuery) sqlAll(ctx context.Context) ([]*DeletedTask, error)
 
 func (dtq *DeletedTaskQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := dtq.querySpec()
+	_spec.Node.Columns = dtq.fields
+	if len(dtq.fields) > 0 {
+		_spec.Unique = dtq.unique != nil && *dtq.unique
+	}
 	return sqlgraph.CountNodes(ctx, dtq.driver, _spec)
 }
 
@@ -538,6 +543,9 @@ func (dtq *DeletedTaskQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	if dtq.sql != nil {
 		selector = dtq.sql
 		selector.Select(selector.Columns(columns...)...)
+	}
+	if dtq.unique != nil && *dtq.unique {
+		selector.Distinct()
 	}
 	for _, p := range dtq.predicates {
 		p(selector)
@@ -817,9 +825,7 @@ func (dtgb *DeletedTaskGroupBy) sqlQuery() *sql.Selector {
 		for _, f := range dtgb.fields {
 			columns = append(columns, selector.C(f))
 		}
-		for _, c := range aggregation {
-			columns = append(columns, c)
-		}
+		columns = append(columns, aggregation...)
 		selector.Select(columns...)
 	}
 	return selector.GroupBy(selector.Columns(dtgb.fields...)...)

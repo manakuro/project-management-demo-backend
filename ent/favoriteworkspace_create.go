@@ -178,22 +178,22 @@ func (fwc *FavoriteWorkspaceCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (fwc *FavoriteWorkspaceCreate) check() error {
 	if _, ok := fwc.mutation.WorkspaceID(); !ok {
-		return &ValidationError{Name: "workspace_id", err: errors.New(`ent: missing required field "workspace_id"`)}
+		return &ValidationError{Name: "workspace_id", err: errors.New(`ent: missing required field "FavoriteWorkspace.workspace_id"`)}
 	}
 	if _, ok := fwc.mutation.TeammateID(); !ok {
-		return &ValidationError{Name: "teammate_id", err: errors.New(`ent: missing required field "teammate_id"`)}
+		return &ValidationError{Name: "teammate_id", err: errors.New(`ent: missing required field "FavoriteWorkspace.teammate_id"`)}
 	}
 	if _, ok := fwc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "FavoriteWorkspace.created_at"`)}
 	}
 	if _, ok := fwc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "FavoriteWorkspace.updated_at"`)}
 	}
 	if _, ok := fwc.mutation.WorkspaceID(); !ok {
-		return &ValidationError{Name: "workspace", err: errors.New("ent: missing required edge \"workspace\"")}
+		return &ValidationError{Name: "workspace", err: errors.New(`ent: missing required edge "FavoriteWorkspace.workspace"`)}
 	}
 	if _, ok := fwc.mutation.TeammateID(); !ok {
-		return &ValidationError{Name: "teammate", err: errors.New("ent: missing required edge \"teammate\"")}
+		return &ValidationError{Name: "teammate", err: errors.New(`ent: missing required edge "FavoriteWorkspace.teammate"`)}
 	}
 	return nil
 }
@@ -207,7 +207,11 @@ func (fwc *FavoriteWorkspaceCreate) sqlSave(ctx context.Context) (*FavoriteWorks
 		return nil, err
 	}
 	if _spec.ID.Value != nil {
-		_node.ID = _spec.ID.Value.(ulid.ID)
+		if id, ok := _spec.ID.Value.(*ulid.ID); ok {
+			_node.ID = *id
+		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
+			return nil, err
+		}
 	}
 	return _node, nil
 }
@@ -226,7 +230,7 @@ func (fwc *FavoriteWorkspaceCreate) createSpec() (*FavoriteWorkspace, *sqlgraph.
 	_spec.OnConflict = fwc.conflict
 	if id, ok := fwc.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = id
+		_spec.ID.Value = &id
 	}
 	if value, ok := fwc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -386,7 +390,7 @@ func (u *FavoriteWorkspaceUpsert) UpdateUpdatedAt() *FavoriteWorkspaceUpsert {
 	return u
 }
 
-// UpdateNewValues updates the fields using the new values that were set on create except the ID field.
+// UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
 //	client.FavoriteWorkspace.Create().
@@ -403,6 +407,12 @@ func (u *FavoriteWorkspaceUpsertOne) UpdateNewValues() *FavoriteWorkspaceUpsertO
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
 		if _, exists := u.create.mutation.ID(); exists {
 			s.SetIgnore(favoriteworkspace.FieldID)
+		}
+		if _, exists := u.create.mutation.CreatedAt(); exists {
+			s.SetIgnore(favoriteworkspace.FieldCreatedAt)
+		}
+		if _, exists := u.create.mutation.UpdatedAt(); exists {
+			s.SetIgnore(favoriteworkspace.FieldUpdatedAt)
 		}
 	}))
 	return u
@@ -655,7 +665,7 @@ type FavoriteWorkspaceUpsertBulk struct {
 	create *FavoriteWorkspaceCreateBulk
 }
 
-// UpdateNewValues updates the fields using the new values that
+// UpdateNewValues updates the mutable fields using the new values that
 // were set on create. Using this option is equivalent to using:
 //
 //	client.FavoriteWorkspace.Create().
@@ -674,6 +684,12 @@ func (u *FavoriteWorkspaceUpsertBulk) UpdateNewValues() *FavoriteWorkspaceUpsert
 			if _, exists := b.mutation.ID(); exists {
 				s.SetIgnore(favoriteworkspace.FieldID)
 				return
+			}
+			if _, exists := b.mutation.CreatedAt(); exists {
+				s.SetIgnore(favoriteworkspace.FieldCreatedAt)
+			}
+			if _, exists := b.mutation.UpdatedAt(); exists {
+				s.SetIgnore(favoriteworkspace.FieldUpdatedAt)
 			}
 		}
 	}))

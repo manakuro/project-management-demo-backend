@@ -195,25 +195,25 @@ func (tfu *TaskFileUpdate) ExecX(ctx context.Context) {
 func (tfu *TaskFileUpdate) check() error {
 	if v, ok := tfu.mutation.Name(); ok {
 		if err := taskfile.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf("ent: validator failed for field \"name\": %w", err)}
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "TaskFile.name": %w`, err)}
 		}
 	}
 	if v, ok := tfu.mutation.Src(); ok {
 		if err := taskfile.SrcValidator(v); err != nil {
-			return &ValidationError{Name: "src", err: fmt.Errorf("ent: validator failed for field \"src\": %w", err)}
+			return &ValidationError{Name: "src", err: fmt.Errorf(`ent: validator failed for field "TaskFile.src": %w`, err)}
 		}
 	}
 	if _, ok := tfu.mutation.ProjectID(); tfu.mutation.ProjectCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"project\"")
+		return errors.New(`ent: clearing a required unique edge "TaskFile.project"`)
 	}
 	if _, ok := tfu.mutation.TaskID(); tfu.mutation.TaskCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"task\"")
+		return errors.New(`ent: clearing a required unique edge "TaskFile.task"`)
 	}
 	if _, ok := tfu.mutation.TaskFeedID(); tfu.mutation.TaskFeedCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"taskFeed\"")
+		return errors.New(`ent: clearing a required unique edge "TaskFile.taskFeed"`)
 	}
 	if _, ok := tfu.mutation.FileTypeID(); tfu.mutation.FileTypeCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"fileType\"")
+		return errors.New(`ent: clearing a required unique edge "TaskFile.fileType"`)
 	}
 	return nil
 }
@@ -586,25 +586,25 @@ func (tfuo *TaskFileUpdateOne) ExecX(ctx context.Context) {
 func (tfuo *TaskFileUpdateOne) check() error {
 	if v, ok := tfuo.mutation.Name(); ok {
 		if err := taskfile.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf("ent: validator failed for field \"name\": %w", err)}
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "TaskFile.name": %w`, err)}
 		}
 	}
 	if v, ok := tfuo.mutation.Src(); ok {
 		if err := taskfile.SrcValidator(v); err != nil {
-			return &ValidationError{Name: "src", err: fmt.Errorf("ent: validator failed for field \"src\": %w", err)}
+			return &ValidationError{Name: "src", err: fmt.Errorf(`ent: validator failed for field "TaskFile.src": %w`, err)}
 		}
 	}
 	if _, ok := tfuo.mutation.ProjectID(); tfuo.mutation.ProjectCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"project\"")
+		return errors.New(`ent: clearing a required unique edge "TaskFile.project"`)
 	}
 	if _, ok := tfuo.mutation.TaskID(); tfuo.mutation.TaskCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"task\"")
+		return errors.New(`ent: clearing a required unique edge "TaskFile.task"`)
 	}
 	if _, ok := tfuo.mutation.TaskFeedID(); tfuo.mutation.TaskFeedCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"taskFeed\"")
+		return errors.New(`ent: clearing a required unique edge "TaskFile.taskFeed"`)
 	}
 	if _, ok := tfuo.mutation.FileTypeID(); tfuo.mutation.FileTypeCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"fileType\"")
+		return errors.New(`ent: clearing a required unique edge "TaskFile.fileType"`)
 	}
 	return nil
 }
@@ -622,7 +622,7 @@ func (tfuo *TaskFileUpdateOne) sqlSave(ctx context.Context) (_node *TaskFile, er
 	}
 	id, ok := tfuo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing TaskFile.ID for update")}
+		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "TaskFile.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := tfuo.fields; len(fields) > 0 {

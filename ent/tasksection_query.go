@@ -107,7 +107,7 @@ func (tsq *TaskSectionQuery) FirstIDX(ctx context.Context) ulid.ID {
 }
 
 // Only returns a single TaskSection entity found by the query, ensuring it only returns one.
-// Returns a *NotSingularError when exactly one TaskSection entity is not found.
+// Returns a *NotSingularError when more than one TaskSection entity is found.
 // Returns a *NotFoundError when no TaskSection entities are found.
 func (tsq *TaskSectionQuery) Only(ctx context.Context) (*TaskSection, error) {
 	nodes, err := tsq.Limit(2).All(ctx)
@@ -134,7 +134,7 @@ func (tsq *TaskSectionQuery) OnlyX(ctx context.Context) *TaskSection {
 }
 
 // OnlyID is like Only, but returns the only TaskSection ID in the query.
-// Returns a *NotSingularError when exactly one TaskSection ID is not found.
+// Returns a *NotSingularError when more than one TaskSection ID is found.
 // Returns a *NotFoundError when no entities are found.
 func (tsq *TaskSectionQuery) OnlyID(ctx context.Context) (id ulid.ID, err error) {
 	var ids []ulid.ID
@@ -243,8 +243,9 @@ func (tsq *TaskSectionQuery) Clone() *TaskSectionQuery {
 		order:      append([]OrderFunc{}, tsq.order...),
 		predicates: append([]predicate.TaskSection{}, tsq.predicates...),
 		// clone intermediate query.
-		sql:  tsq.sql.Clone(),
-		path: tsq.path,
+		sql:    tsq.sql.Clone(),
+		path:   tsq.path,
+		unique: tsq.unique,
 	}
 }
 
@@ -337,6 +338,10 @@ func (tsq *TaskSectionQuery) sqlAll(ctx context.Context) ([]*TaskSection, error)
 
 func (tsq *TaskSectionQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := tsq.querySpec()
+	_spec.Node.Columns = tsq.fields
+	if len(tsq.fields) > 0 {
+		_spec.Unique = tsq.unique != nil && *tsq.unique
+	}
 	return sqlgraph.CountNodes(ctx, tsq.driver, _spec)
 }
 
@@ -407,6 +412,9 @@ func (tsq *TaskSectionQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	if tsq.sql != nil {
 		selector = tsq.sql
 		selector.Select(selector.Columns(columns...)...)
+	}
+	if tsq.unique != nil && *tsq.unique {
+		selector.Distinct()
 	}
 	for _, p := range tsq.predicates {
 		p(selector)
@@ -686,9 +694,7 @@ func (tsgb *TaskSectionGroupBy) sqlQuery() *sql.Selector {
 		for _, f := range tsgb.fields {
 			columns = append(columns, selector.C(f))
 		}
-		for _, c := range aggregation {
-			columns = append(columns, c)
-		}
+		columns = append(columns, aggregation...)
 		selector.Select(columns...)
 	}
 	return selector.GroupBy(selector.Columns(tsgb.fields...)...)

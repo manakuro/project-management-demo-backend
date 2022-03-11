@@ -41,6 +41,30 @@ func TeammateTaskSection(ctx context.Context, client *ent.Client) {
 			Name:        teammateTaskSectionFeed.today.Name,
 			Assigned:    teammateTaskSectionFeed.today.Assigned,
 		},
+		{
+			WorkspaceID: seedutil.GetWorkspace(ctx, client).ID,
+			TeammateID:  seedutil.GetTeammateByEmail(ctx, client, teammateFeed.dan.Email).ID,
+			Name:        teammateTaskSectionFeed.recentlyAssigned.Name,
+			Assigned:    teammateTaskSectionFeed.recentlyAssigned.Assigned,
+		},
+		{
+			WorkspaceID: seedutil.GetWorkspace(ctx, client).ID,
+			TeammateID:  seedutil.GetTeammateByEmail(ctx, client, teammateFeed.dan.Email).ID,
+			Name:        teammateTaskSectionFeed.today.Name,
+			Assigned:    teammateTaskSectionFeed.today.Assigned,
+		},
+		{
+			WorkspaceID: seedutil.GetWorkspace(ctx, client).ID,
+			TeammateID:  seedutil.GetTeammateByEmail(ctx, client, teammateFeed.kent.Email).ID,
+			Name:        teammateTaskSectionFeed.recentlyAssigned.Name,
+			Assigned:    teammateTaskSectionFeed.recentlyAssigned.Assigned,
+		},
+		{
+			WorkspaceID: seedutil.GetWorkspace(ctx, client).ID,
+			TeammateID:  seedutil.GetTeammateByEmail(ctx, client, teammateFeed.kent.Email).ID,
+			Name:        teammateTaskSectionFeed.today.Name,
+			Assigned:    teammateTaskSectionFeed.today.Assigned,
+		},
 	}
 	bulk := make([]*ent.TeammateTaskSectionCreate, len(ts))
 	for i, t := range ts {

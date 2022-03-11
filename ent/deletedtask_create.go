@@ -196,36 +196,36 @@ func (dtc *DeletedTaskCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (dtc *DeletedTaskCreate) check() error {
 	if _, ok := dtc.mutation.TaskID(); !ok {
-		return &ValidationError{Name: "task_id", err: errors.New(`ent: missing required field "task_id"`)}
+		return &ValidationError{Name: "task_id", err: errors.New(`ent: missing required field "DeletedTask.task_id"`)}
 	}
 	if _, ok := dtc.mutation.WorkspaceID(); !ok {
-		return &ValidationError{Name: "workspace_id", err: errors.New(`ent: missing required field "workspace_id"`)}
+		return &ValidationError{Name: "workspace_id", err: errors.New(`ent: missing required field "DeletedTask.workspace_id"`)}
 	}
 	if _, ok := dtc.mutation.TaskSectionID(); !ok {
-		return &ValidationError{Name: "task_section_id", err: errors.New(`ent: missing required field "task_section_id"`)}
+		return &ValidationError{Name: "task_section_id", err: errors.New(`ent: missing required field "DeletedTask.task_section_id"`)}
 	}
 	if _, ok := dtc.mutation.TaskJoinID(); !ok {
-		return &ValidationError{Name: "task_join_id", err: errors.New(`ent: missing required field "task_join_id"`)}
+		return &ValidationError{Name: "task_join_id", err: errors.New(`ent: missing required field "DeletedTask.task_join_id"`)}
 	}
 	if _, ok := dtc.mutation.TaskType(); !ok {
-		return &ValidationError{Name: "task_type", err: errors.New(`ent: missing required field "task_type"`)}
+		return &ValidationError{Name: "task_type", err: errors.New(`ent: missing required field "DeletedTask.task_type"`)}
 	}
 	if v, ok := dtc.mutation.TaskType(); ok {
 		if err := deletedtask.TaskTypeValidator(v); err != nil {
-			return &ValidationError{Name: "task_type", err: fmt.Errorf(`ent: validator failed for field "task_type": %w`, err)}
+			return &ValidationError{Name: "task_type", err: fmt.Errorf(`ent: validator failed for field "DeletedTask.task_type": %w`, err)}
 		}
 	}
 	if _, ok := dtc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "DeletedTask.created_at"`)}
 	}
 	if _, ok := dtc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "DeletedTask.updated_at"`)}
 	}
 	if _, ok := dtc.mutation.TaskID(); !ok {
-		return &ValidationError{Name: "task", err: errors.New("ent: missing required edge \"task\"")}
+		return &ValidationError{Name: "task", err: errors.New(`ent: missing required edge "DeletedTask.task"`)}
 	}
 	if _, ok := dtc.mutation.WorkspaceID(); !ok {
-		return &ValidationError{Name: "workspace", err: errors.New("ent: missing required edge \"workspace\"")}
+		return &ValidationError{Name: "workspace", err: errors.New(`ent: missing required edge "DeletedTask.workspace"`)}
 	}
 	return nil
 }
@@ -239,7 +239,11 @@ func (dtc *DeletedTaskCreate) sqlSave(ctx context.Context) (*DeletedTask, error)
 		return nil, err
 	}
 	if _spec.ID.Value != nil {
-		_node.ID = _spec.ID.Value.(ulid.ID)
+		if id, ok := _spec.ID.Value.(*ulid.ID); ok {
+			_node.ID = *id
+		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
+			return nil, err
+		}
 	}
 	return _node, nil
 }
@@ -258,7 +262,7 @@ func (dtc *DeletedTaskCreate) createSpec() (*DeletedTask, *sqlgraph.CreateSpec) 
 	_spec.OnConflict = dtc.conflict
 	if id, ok := dtc.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = id
+		_spec.ID.Value = &id
 	}
 	if value, ok := dtc.mutation.TaskSectionID(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -478,7 +482,7 @@ func (u *DeletedTaskUpsert) UpdateUpdatedAt() *DeletedTaskUpsert {
 	return u
 }
 
-// UpdateNewValues updates the fields using the new values that were set on create except the ID field.
+// UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
 //	client.DeletedTask.Create().
@@ -495,6 +499,12 @@ func (u *DeletedTaskUpsertOne) UpdateNewValues() *DeletedTaskUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
 		if _, exists := u.create.mutation.ID(); exists {
 			s.SetIgnore(deletedtask.FieldID)
+		}
+		if _, exists := u.create.mutation.CreatedAt(); exists {
+			s.SetIgnore(deletedtask.FieldCreatedAt)
+		}
+		if _, exists := u.create.mutation.UpdatedAt(); exists {
+			s.SetIgnore(deletedtask.FieldUpdatedAt)
 		}
 	}))
 	return u
@@ -789,7 +799,7 @@ type DeletedTaskUpsertBulk struct {
 	create *DeletedTaskCreateBulk
 }
 
-// UpdateNewValues updates the fields using the new values that
+// UpdateNewValues updates the mutable fields using the new values that
 // were set on create. Using this option is equivalent to using:
 //
 //	client.DeletedTask.Create().
@@ -808,6 +818,12 @@ func (u *DeletedTaskUpsertBulk) UpdateNewValues() *DeletedTaskUpsertBulk {
 			if _, exists := b.mutation.ID(); exists {
 				s.SetIgnore(deletedtask.FieldID)
 				return
+			}
+			if _, exists := b.mutation.CreatedAt(); exists {
+				s.SetIgnore(deletedtask.FieldCreatedAt)
+			}
+			if _, exists := b.mutation.UpdatedAt(); exists {
+				s.SetIgnore(deletedtask.FieldUpdatedAt)
 			}
 		}
 	}))

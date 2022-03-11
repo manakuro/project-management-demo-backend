@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"project-management-demo-backend/ent/filetype"
 	"project-management-demo-backend/ent/predicate"
@@ -145,12 +146,12 @@ func (ftu *FileTypeUpdate) ExecX(ctx context.Context) {
 func (ftu *FileTypeUpdate) check() error {
 	if v, ok := ftu.mutation.Name(); ok {
 		if err := filetype.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf("ent: validator failed for field \"name\": %w", err)}
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "FileType.name": %w`, err)}
 		}
 	}
 	if v, ok := ftu.mutation.TypeCode(); ok {
 		if err := filetype.TypeCodeValidator(v); err != nil {
-			return &ValidationError{Name: "type_code", err: fmt.Errorf("ent: validator failed for field \"type_code\": %w", err)}
+			return &ValidationError{Name: "type_code", err: fmt.Errorf(`ent: validator failed for field "FileType.type_code": %w`, err)}
 		}
 	}
 	return nil
@@ -385,12 +386,12 @@ func (ftuo *FileTypeUpdateOne) ExecX(ctx context.Context) {
 func (ftuo *FileTypeUpdateOne) check() error {
 	if v, ok := ftuo.mutation.Name(); ok {
 		if err := filetype.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf("ent: validator failed for field \"name\": %w", err)}
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "FileType.name": %w`, err)}
 		}
 	}
 	if v, ok := ftuo.mutation.TypeCode(); ok {
 		if err := filetype.TypeCodeValidator(v); err != nil {
-			return &ValidationError{Name: "type_code", err: fmt.Errorf("ent: validator failed for field \"type_code\": %w", err)}
+			return &ValidationError{Name: "type_code", err: fmt.Errorf(`ent: validator failed for field "FileType.type_code": %w`, err)}
 		}
 	}
 	return nil
@@ -409,7 +410,7 @@ func (ftuo *FileTypeUpdateOne) sqlSave(ctx context.Context) (_node *FileType, er
 	}
 	id, ok := ftuo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing FileType.ID for update")}
+		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "FileType.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := ftuo.fields; len(fields) > 0 {

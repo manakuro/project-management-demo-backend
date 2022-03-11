@@ -157,7 +157,7 @@ func (tpq *TaskPriorityQuery) FirstIDX(ctx context.Context) ulid.ID {
 }
 
 // Only returns a single TaskPriority entity found by the query, ensuring it only returns one.
-// Returns a *NotSingularError when exactly one TaskPriority entity is not found.
+// Returns a *NotSingularError when more than one TaskPriority entity is found.
 // Returns a *NotFoundError when no TaskPriority entities are found.
 func (tpq *TaskPriorityQuery) Only(ctx context.Context) (*TaskPriority, error) {
 	nodes, err := tpq.Limit(2).All(ctx)
@@ -184,7 +184,7 @@ func (tpq *TaskPriorityQuery) OnlyX(ctx context.Context) *TaskPriority {
 }
 
 // OnlyID is like Only, but returns the only TaskPriority ID in the query.
-// Returns a *NotSingularError when exactly one TaskPriority ID is not found.
+// Returns a *NotSingularError when more than one TaskPriority ID is found.
 // Returns a *NotFoundError when no entities are found.
 func (tpq *TaskPriorityQuery) OnlyID(ctx context.Context) (id ulid.ID, err error) {
 	var ids []ulid.ID
@@ -295,8 +295,9 @@ func (tpq *TaskPriorityQuery) Clone() *TaskPriorityQuery {
 		withColor:  tpq.withColor.Clone(),
 		withTasks:  tpq.withTasks.Clone(),
 		// clone intermediate query.
-		sql:  tpq.sql.Clone(),
-		path: tpq.path,
+		sql:    tpq.sql.Clone(),
+		path:   tpq.path,
+		unique: tpq.unique,
 	}
 }
 
@@ -468,6 +469,10 @@ func (tpq *TaskPriorityQuery) sqlAll(ctx context.Context) ([]*TaskPriority, erro
 
 func (tpq *TaskPriorityQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := tpq.querySpec()
+	_spec.Node.Columns = tpq.fields
+	if len(tpq.fields) > 0 {
+		_spec.Unique = tpq.unique != nil && *tpq.unique
+	}
 	return sqlgraph.CountNodes(ctx, tpq.driver, _spec)
 }
 
@@ -538,6 +543,9 @@ func (tpq *TaskPriorityQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	if tpq.sql != nil {
 		selector = tpq.sql
 		selector.Select(selector.Columns(columns...)...)
+	}
+	if tpq.unique != nil && *tpq.unique {
+		selector.Distinct()
 	}
 	for _, p := range tpq.predicates {
 		p(selector)
@@ -817,9 +825,7 @@ func (tpgb *TaskPriorityGroupBy) sqlQuery() *sql.Selector {
 		for _, f := range tpgb.fields {
 			columns = append(columns, selector.C(f))
 		}
-		for _, c := range aggregation {
-			columns = append(columns, c)
-		}
+		columns = append(columns, aggregation...)
 		selector.Select(columns...)
 	}
 	return selector.GroupBy(selector.Columns(tpgb.fields...)...)

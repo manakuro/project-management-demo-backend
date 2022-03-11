@@ -365,59 +365,59 @@ func (pc *ProjectCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (pc *ProjectCreate) check() error {
 	if _, ok := pc.mutation.WorkspaceID(); !ok {
-		return &ValidationError{Name: "workspace_id", err: errors.New(`ent: missing required field "workspace_id"`)}
+		return &ValidationError{Name: "workspace_id", err: errors.New(`ent: missing required field "Project.workspace_id"`)}
 	}
 	if _, ok := pc.mutation.ProjectBaseColorID(); !ok {
-		return &ValidationError{Name: "project_base_color_id", err: errors.New(`ent: missing required field "project_base_color_id"`)}
+		return &ValidationError{Name: "project_base_color_id", err: errors.New(`ent: missing required field "Project.project_base_color_id"`)}
 	}
 	if _, ok := pc.mutation.ProjectLightColorID(); !ok {
-		return &ValidationError{Name: "project_light_color_id", err: errors.New(`ent: missing required field "project_light_color_id"`)}
+		return &ValidationError{Name: "project_light_color_id", err: errors.New(`ent: missing required field "Project.project_light_color_id"`)}
 	}
 	if _, ok := pc.mutation.ProjectIconID(); !ok {
-		return &ValidationError{Name: "project_icon_id", err: errors.New(`ent: missing required field "project_icon_id"`)}
+		return &ValidationError{Name: "project_icon_id", err: errors.New(`ent: missing required field "Project.project_icon_id"`)}
 	}
 	if _, ok := pc.mutation.CreatedBy(); !ok {
-		return &ValidationError{Name: "created_by", err: errors.New(`ent: missing required field "created_by"`)}
+		return &ValidationError{Name: "created_by", err: errors.New(`ent: missing required field "Project.created_by"`)}
 	}
 	if _, ok := pc.mutation.Name(); !ok {
-		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "name"`)}
+		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Project.name"`)}
 	}
 	if v, ok := pc.mutation.Name(); ok {
 		if err := project.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "name": %w`, err)}
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Project.name": %w`, err)}
 		}
 	}
 	if _, ok := pc.mutation.Description(); !ok {
-		return &ValidationError{Name: "description", err: errors.New(`ent: missing required field "description"`)}
+		return &ValidationError{Name: "description", err: errors.New(`ent: missing required field "Project.description"`)}
 	}
 	if _, ok := pc.mutation.DescriptionTitle(); !ok {
-		return &ValidationError{Name: "description_title", err: errors.New(`ent: missing required field "description_title"`)}
+		return &ValidationError{Name: "description_title", err: errors.New(`ent: missing required field "Project.description_title"`)}
 	}
 	if v, ok := pc.mutation.DescriptionTitle(); ok {
 		if err := project.DescriptionTitleValidator(v); err != nil {
-			return &ValidationError{Name: "description_title", err: fmt.Errorf(`ent: validator failed for field "description_title": %w`, err)}
+			return &ValidationError{Name: "description_title", err: fmt.Errorf(`ent: validator failed for field "Project.description_title": %w`, err)}
 		}
 	}
 	if _, ok := pc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Project.created_at"`)}
 	}
 	if _, ok := pc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Project.updated_at"`)}
 	}
 	if _, ok := pc.mutation.WorkspaceID(); !ok {
-		return &ValidationError{Name: "workspace", err: errors.New("ent: missing required edge \"workspace\"")}
+		return &ValidationError{Name: "workspace", err: errors.New(`ent: missing required edge "Project.workspace"`)}
 	}
 	if _, ok := pc.mutation.ProjectBaseColorID(); !ok {
-		return &ValidationError{Name: "projectBaseColor", err: errors.New("ent: missing required edge \"projectBaseColor\"")}
+		return &ValidationError{Name: "projectBaseColor", err: errors.New(`ent: missing required edge "Project.projectBaseColor"`)}
 	}
 	if _, ok := pc.mutation.ProjectLightColorID(); !ok {
-		return &ValidationError{Name: "projectLightColor", err: errors.New("ent: missing required edge \"projectLightColor\"")}
+		return &ValidationError{Name: "projectLightColor", err: errors.New(`ent: missing required edge "Project.projectLightColor"`)}
 	}
 	if _, ok := pc.mutation.ProjectIconID(); !ok {
-		return &ValidationError{Name: "projectIcon", err: errors.New("ent: missing required edge \"projectIcon\"")}
+		return &ValidationError{Name: "projectIcon", err: errors.New(`ent: missing required edge "Project.projectIcon"`)}
 	}
 	if _, ok := pc.mutation.TeammateID(); !ok {
-		return &ValidationError{Name: "teammate", err: errors.New("ent: missing required edge \"teammate\"")}
+		return &ValidationError{Name: "teammate", err: errors.New(`ent: missing required edge "Project.teammate"`)}
 	}
 	return nil
 }
@@ -431,7 +431,11 @@ func (pc *ProjectCreate) sqlSave(ctx context.Context) (*Project, error) {
 		return nil, err
 	}
 	if _spec.ID.Value != nil {
-		_node.ID = _spec.ID.Value.(ulid.ID)
+		if id, ok := _spec.ID.Value.(*ulid.ID); ok {
+			_node.ID = *id
+		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
+			return nil, err
+		}
 	}
 	return _node, nil
 }
@@ -450,7 +454,7 @@ func (pc *ProjectCreate) createSpec() (*Project, *sqlgraph.CreateSpec) {
 	_spec.OnConflict = pc.conflict
 	if id, ok := pc.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = id
+		_spec.ID.Value = &id
 	}
 	if value, ok := pc.mutation.Name(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -925,7 +929,7 @@ func (u *ProjectUpsert) UpdateUpdatedAt() *ProjectUpsert {
 	return u
 }
 
-// UpdateNewValues updates the fields using the new values that were set on create except the ID field.
+// UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
 //	client.Project.Create().
@@ -942,6 +946,12 @@ func (u *ProjectUpsertOne) UpdateNewValues() *ProjectUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
 		if _, exists := u.create.mutation.ID(); exists {
 			s.SetIgnore(project.FieldID)
+		}
+		if _, exists := u.create.mutation.CreatedAt(); exists {
+			s.SetIgnore(project.FieldCreatedAt)
+		}
+		if _, exists := u.create.mutation.UpdatedAt(); exists {
+			s.SetIgnore(project.FieldUpdatedAt)
 		}
 	}))
 	return u
@@ -1299,7 +1309,7 @@ type ProjectUpsertBulk struct {
 	create *ProjectCreateBulk
 }
 
-// UpdateNewValues updates the fields using the new values that
+// UpdateNewValues updates the mutable fields using the new values that
 // were set on create. Using this option is equivalent to using:
 //
 //	client.Project.Create().
@@ -1318,6 +1328,12 @@ func (u *ProjectUpsertBulk) UpdateNewValues() *ProjectUpsertBulk {
 			if _, exists := b.mutation.ID(); exists {
 				s.SetIgnore(project.FieldID)
 				return
+			}
+			if _, exists := b.mutation.CreatedAt(); exists {
+				s.SetIgnore(project.FieldCreatedAt)
+			}
+			if _, exists := b.mutation.UpdatedAt(); exists {
+				s.SetIgnore(project.FieldUpdatedAt)
 			}
 		}
 	}))

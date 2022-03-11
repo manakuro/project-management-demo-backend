@@ -180,7 +180,7 @@ func (tlq *TaskLikeQuery) FirstIDX(ctx context.Context) ulid.ID {
 }
 
 // Only returns a single TaskLike entity found by the query, ensuring it only returns one.
-// Returns a *NotSingularError when exactly one TaskLike entity is not found.
+// Returns a *NotSingularError when more than one TaskLike entity is found.
 // Returns a *NotFoundError when no TaskLike entities are found.
 func (tlq *TaskLikeQuery) Only(ctx context.Context) (*TaskLike, error) {
 	nodes, err := tlq.Limit(2).All(ctx)
@@ -207,7 +207,7 @@ func (tlq *TaskLikeQuery) OnlyX(ctx context.Context) *TaskLike {
 }
 
 // OnlyID is like Only, but returns the only TaskLike ID in the query.
-// Returns a *NotSingularError when exactly one TaskLike ID is not found.
+// Returns a *NotSingularError when more than one TaskLike ID is found.
 // Returns a *NotFoundError when no entities are found.
 func (tlq *TaskLikeQuery) OnlyID(ctx context.Context) (id ulid.ID, err error) {
 	var ids []ulid.ID
@@ -319,8 +319,9 @@ func (tlq *TaskLikeQuery) Clone() *TaskLikeQuery {
 		withTeammate:  tlq.withTeammate.Clone(),
 		withWorkspace: tlq.withWorkspace.Clone(),
 		// clone intermediate query.
-		sql:  tlq.sql.Clone(),
-		path: tlq.path,
+		sql:    tlq.sql.Clone(),
+		path:   tlq.path,
+		unique: tlq.unique,
 	}
 }
 
@@ -531,6 +532,10 @@ func (tlq *TaskLikeQuery) sqlAll(ctx context.Context) ([]*TaskLike, error) {
 
 func (tlq *TaskLikeQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := tlq.querySpec()
+	_spec.Node.Columns = tlq.fields
+	if len(tlq.fields) > 0 {
+		_spec.Unique = tlq.unique != nil && *tlq.unique
+	}
 	return sqlgraph.CountNodes(ctx, tlq.driver, _spec)
 }
 
@@ -601,6 +606,9 @@ func (tlq *TaskLikeQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	if tlq.sql != nil {
 		selector = tlq.sql
 		selector.Select(selector.Columns(columns...)...)
+	}
+	if tlq.unique != nil && *tlq.unique {
+		selector.Distinct()
 	}
 	for _, p := range tlq.predicates {
 		p(selector)
@@ -880,9 +888,7 @@ func (tlgb *TaskLikeGroupBy) sqlQuery() *sql.Selector {
 		for _, f := range tlgb.fields {
 			columns = append(columns, selector.C(f))
 		}
-		for _, c := range aggregation {
-			columns = append(columns, c)
-		}
+		columns = append(columns, aggregation...)
 		selector.Select(columns...)
 	}
 	return selector.GroupBy(selector.Columns(tlgb.fields...)...)

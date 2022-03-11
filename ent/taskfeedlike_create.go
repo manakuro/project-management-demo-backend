@@ -196,28 +196,28 @@ func (tflc *TaskFeedLikeCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (tflc *TaskFeedLikeCreate) check() error {
 	if _, ok := tflc.mutation.TaskID(); !ok {
-		return &ValidationError{Name: "task_id", err: errors.New(`ent: missing required field "task_id"`)}
+		return &ValidationError{Name: "task_id", err: errors.New(`ent: missing required field "TaskFeedLike.task_id"`)}
 	}
 	if _, ok := tflc.mutation.TeammateID(); !ok {
-		return &ValidationError{Name: "teammate_id", err: errors.New(`ent: missing required field "teammate_id"`)}
+		return &ValidationError{Name: "teammate_id", err: errors.New(`ent: missing required field "TaskFeedLike.teammate_id"`)}
 	}
 	if _, ok := tflc.mutation.TaskFeedID(); !ok {
-		return &ValidationError{Name: "task_feed_id", err: errors.New(`ent: missing required field "task_feed_id"`)}
+		return &ValidationError{Name: "task_feed_id", err: errors.New(`ent: missing required field "TaskFeedLike.task_feed_id"`)}
 	}
 	if _, ok := tflc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "TaskFeedLike.created_at"`)}
 	}
 	if _, ok := tflc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "TaskFeedLike.updated_at"`)}
 	}
 	if _, ok := tflc.mutation.TaskID(); !ok {
-		return &ValidationError{Name: "task", err: errors.New("ent: missing required edge \"task\"")}
+		return &ValidationError{Name: "task", err: errors.New(`ent: missing required edge "TaskFeedLike.task"`)}
 	}
 	if _, ok := tflc.mutation.TeammateID(); !ok {
-		return &ValidationError{Name: "teammate", err: errors.New("ent: missing required edge \"teammate\"")}
+		return &ValidationError{Name: "teammate", err: errors.New(`ent: missing required edge "TaskFeedLike.teammate"`)}
 	}
 	if _, ok := tflc.mutation.FeedID(); !ok {
-		return &ValidationError{Name: "feed", err: errors.New("ent: missing required edge \"feed\"")}
+		return &ValidationError{Name: "feed", err: errors.New(`ent: missing required edge "TaskFeedLike.feed"`)}
 	}
 	return nil
 }
@@ -231,7 +231,11 @@ func (tflc *TaskFeedLikeCreate) sqlSave(ctx context.Context) (*TaskFeedLike, err
 		return nil, err
 	}
 	if _spec.ID.Value != nil {
-		_node.ID = _spec.ID.Value.(ulid.ID)
+		if id, ok := _spec.ID.Value.(*ulid.ID); ok {
+			_node.ID = *id
+		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
+			return nil, err
+		}
 	}
 	return _node, nil
 }
@@ -250,7 +254,7 @@ func (tflc *TaskFeedLikeCreate) createSpec() (*TaskFeedLike, *sqlgraph.CreateSpe
 	_spec.OnConflict = tflc.conflict
 	if id, ok := tflc.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = id
+		_spec.ID.Value = &id
 	}
 	if value, ok := tflc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -442,7 +446,7 @@ func (u *TaskFeedLikeUpsert) UpdateUpdatedAt() *TaskFeedLikeUpsert {
 	return u
 }
 
-// UpdateNewValues updates the fields using the new values that were set on create except the ID field.
+// UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
 //	client.TaskFeedLike.Create().
@@ -459,6 +463,12 @@ func (u *TaskFeedLikeUpsertOne) UpdateNewValues() *TaskFeedLikeUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
 		if _, exists := u.create.mutation.ID(); exists {
 			s.SetIgnore(taskfeedlike.FieldID)
+		}
+		if _, exists := u.create.mutation.CreatedAt(); exists {
+			s.SetIgnore(taskfeedlike.FieldCreatedAt)
+		}
+		if _, exists := u.create.mutation.UpdatedAt(); exists {
+			s.SetIgnore(taskfeedlike.FieldUpdatedAt)
 		}
 	}))
 	return u
@@ -725,7 +735,7 @@ type TaskFeedLikeUpsertBulk struct {
 	create *TaskFeedLikeCreateBulk
 }
 
-// UpdateNewValues updates the fields using the new values that
+// UpdateNewValues updates the mutable fields using the new values that
 // were set on create. Using this option is equivalent to using:
 //
 //	client.TaskFeedLike.Create().
@@ -744,6 +754,12 @@ func (u *TaskFeedLikeUpsertBulk) UpdateNewValues() *TaskFeedLikeUpsertBulk {
 			if _, exists := b.mutation.ID(); exists {
 				s.SetIgnore(taskfeedlike.FieldID)
 				return
+			}
+			if _, exists := b.mutation.CreatedAt(); exists {
+				s.SetIgnore(taskfeedlike.FieldCreatedAt)
+			}
+			if _, exists := b.mutation.UpdatedAt(); exists {
+				s.SetIgnore(taskfeedlike.FieldUpdatedAt)
 			}
 		}
 	}))

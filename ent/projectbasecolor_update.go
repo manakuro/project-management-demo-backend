@@ -151,7 +151,7 @@ func (pbcu *ProjectBaseColorUpdate) ExecX(ctx context.Context) {
 // check runs all checks and user-defined validators on the builder.
 func (pbcu *ProjectBaseColorUpdate) check() error {
 	if _, ok := pbcu.mutation.ColorID(); pbcu.mutation.ColorCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"color\"")
+		return errors.New(`ent: clearing a required unique edge "ProjectBaseColor.color"`)
 	}
 	return nil
 }
@@ -410,7 +410,7 @@ func (pbcuo *ProjectBaseColorUpdateOne) ExecX(ctx context.Context) {
 // check runs all checks and user-defined validators on the builder.
 func (pbcuo *ProjectBaseColorUpdateOne) check() error {
 	if _, ok := pbcuo.mutation.ColorID(); pbcuo.mutation.ColorCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"color\"")
+		return errors.New(`ent: clearing a required unique edge "ProjectBaseColor.color"`)
 	}
 	return nil
 }
@@ -428,7 +428,7 @@ func (pbcuo *ProjectBaseColorUpdateOne) sqlSave(ctx context.Context) (_node *Pro
 	}
 	id, ok := pbcuo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing ProjectBaseColor.ID for update")}
+		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "ProjectBaseColor.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := pbcuo.fields; len(fields) > 0 {

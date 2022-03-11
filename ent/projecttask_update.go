@@ -150,13 +150,13 @@ func (ptu *ProjectTaskUpdate) ExecX(ctx context.Context) {
 // check runs all checks and user-defined validators on the builder.
 func (ptu *ProjectTaskUpdate) check() error {
 	if _, ok := ptu.mutation.ProjectID(); ptu.mutation.ProjectCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"project\"")
+		return errors.New(`ent: clearing a required unique edge "ProjectTask.project"`)
 	}
 	if _, ok := ptu.mutation.TaskID(); ptu.mutation.TaskCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"task\"")
+		return errors.New(`ent: clearing a required unique edge "ProjectTask.task"`)
 	}
 	if _, ok := ptu.mutation.ProjectTaskSectionID(); ptu.mutation.ProjectTaskSectionCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"projectTaskSection\"")
+		return errors.New(`ent: clearing a required unique edge "ProjectTask.projectTaskSection"`)
 	}
 	return nil
 }
@@ -429,13 +429,13 @@ func (ptuo *ProjectTaskUpdateOne) ExecX(ctx context.Context) {
 // check runs all checks and user-defined validators on the builder.
 func (ptuo *ProjectTaskUpdateOne) check() error {
 	if _, ok := ptuo.mutation.ProjectID(); ptuo.mutation.ProjectCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"project\"")
+		return errors.New(`ent: clearing a required unique edge "ProjectTask.project"`)
 	}
 	if _, ok := ptuo.mutation.TaskID(); ptuo.mutation.TaskCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"task\"")
+		return errors.New(`ent: clearing a required unique edge "ProjectTask.task"`)
 	}
 	if _, ok := ptuo.mutation.ProjectTaskSectionID(); ptuo.mutation.ProjectTaskSectionCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"projectTaskSection\"")
+		return errors.New(`ent: clearing a required unique edge "ProjectTask.projectTaskSection"`)
 	}
 	return nil
 }
@@ -453,7 +453,7 @@ func (ptuo *ProjectTaskUpdateOne) sqlSave(ctx context.Context) (_node *ProjectTa
 	}
 	id, ok := ptuo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing ProjectTask.ID for update")}
+		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "ProjectTask.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := ptuo.fields; len(fields) > 0 {

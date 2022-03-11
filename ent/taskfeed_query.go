@@ -205,7 +205,7 @@ func (tfq *TaskFeedQuery) FirstIDX(ctx context.Context) ulid.ID {
 }
 
 // Only returns a single TaskFeed entity found by the query, ensuring it only returns one.
-// Returns a *NotSingularError when exactly one TaskFeed entity is not found.
+// Returns a *NotSingularError when more than one TaskFeed entity is found.
 // Returns a *NotFoundError when no TaskFeed entities are found.
 func (tfq *TaskFeedQuery) Only(ctx context.Context) (*TaskFeed, error) {
 	nodes, err := tfq.Limit(2).All(ctx)
@@ -232,7 +232,7 @@ func (tfq *TaskFeedQuery) OnlyX(ctx context.Context) *TaskFeed {
 }
 
 // OnlyID is like Only, but returns the only TaskFeed ID in the query.
-// Returns a *NotSingularError when exactly one TaskFeed ID is not found.
+// Returns a *NotSingularError when more than one TaskFeed ID is found.
 // Returns a *NotFoundError when no entities are found.
 func (tfq *TaskFeedQuery) OnlyID(ctx context.Context) (id ulid.ID, err error) {
 	var ids []ulid.ID
@@ -345,8 +345,9 @@ func (tfq *TaskFeedQuery) Clone() *TaskFeedQuery {
 		withTaskFeedLikes: tfq.withTaskFeedLikes.Clone(),
 		withTaskFiles:     tfq.withTaskFiles.Clone(),
 		// clone intermediate query.
-		sql:  tfq.sql.Clone(),
-		path: tfq.path,
+		sql:    tfq.sql.Clone(),
+		path:   tfq.path,
+		unique: tfq.unique,
 	}
 }
 
@@ -593,6 +594,10 @@ func (tfq *TaskFeedQuery) sqlAll(ctx context.Context) ([]*TaskFeed, error) {
 
 func (tfq *TaskFeedQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := tfq.querySpec()
+	_spec.Node.Columns = tfq.fields
+	if len(tfq.fields) > 0 {
+		_spec.Unique = tfq.unique != nil && *tfq.unique
+	}
 	return sqlgraph.CountNodes(ctx, tfq.driver, _spec)
 }
 
@@ -663,6 +668,9 @@ func (tfq *TaskFeedQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	if tfq.sql != nil {
 		selector = tfq.sql
 		selector.Select(selector.Columns(columns...)...)
+	}
+	if tfq.unique != nil && *tfq.unique {
+		selector.Distinct()
 	}
 	for _, p := range tfq.predicates {
 		p(selector)
@@ -942,9 +950,7 @@ func (tfgb *TaskFeedGroupBy) sqlQuery() *sql.Selector {
 		for _, f := range tfgb.fields {
 			columns = append(columns, selector.C(f))
 		}
-		for _, c := range aggregation {
-			columns = append(columns, c)
-		}
+		columns = append(columns, aggregation...)
 		selector.Select(columns...)
 	}
 	return selector.GroupBy(selector.Columns(tfgb.fields...)...)

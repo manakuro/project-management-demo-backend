@@ -21,6 +21,8 @@ type Task interface {
 	DeleteAll(ctx context.Context, input model.DeleteAllTaskInput) (*model.DeleteAllTaskPayload, error)
 	Undelete(ctx context.Context, input model.UndeleteTaskInput) (*model.UndeleteTaskPayload, error)
 	UndeleteAll(ctx context.Context, input model.UndeleteAllTaskInput) (*model.UndeleteAllTaskPayload, error)
+	Assign(ctx context.Context, input model.AssignTaskInput) (*model.AssignTaskPayload, error)
+	Unassign(ctx context.Context, input model.UnassignTaskInput) (*model.UnassignTaskPayload, error)
 }
 
 // NewTaskUsecase generates test user repository
@@ -62,4 +64,12 @@ func (u *taskUsecase) Undelete(ctx context.Context, input model.UndeleteTaskInpu
 
 func (u *taskUsecase) UndeleteAll(ctx context.Context, input model.UndeleteAllTaskInput) (*model.UndeleteAllTaskPayload, error) {
 	return u.taskRepository.UndeleteAll(ctx, input)
+}
+
+func (u *taskUsecase) Assign(ctx context.Context, input model.AssignTaskInput) (*model.AssignTaskPayload, error) {
+	return u.taskRepository.Assign(ctx, input)
+}
+
+func (u *taskUsecase) Unassign(ctx context.Context, input model.UnassignTaskInput) (*model.UnassignTaskPayload, error) {
+	return u.taskRepository.Unassign(ctx, input)
 }

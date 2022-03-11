@@ -492,28 +492,28 @@ func (pu *ProjectUpdate) ExecX(ctx context.Context) {
 func (pu *ProjectUpdate) check() error {
 	if v, ok := pu.mutation.Name(); ok {
 		if err := project.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf("ent: validator failed for field \"name\": %w", err)}
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Project.name": %w`, err)}
 		}
 	}
 	if v, ok := pu.mutation.DescriptionTitle(); ok {
 		if err := project.DescriptionTitleValidator(v); err != nil {
-			return &ValidationError{Name: "description_title", err: fmt.Errorf("ent: validator failed for field \"description_title\": %w", err)}
+			return &ValidationError{Name: "description_title", err: fmt.Errorf(`ent: validator failed for field "Project.description_title": %w`, err)}
 		}
 	}
 	if _, ok := pu.mutation.WorkspaceID(); pu.mutation.WorkspaceCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"workspace\"")
+		return errors.New(`ent: clearing a required unique edge "Project.workspace"`)
 	}
 	if _, ok := pu.mutation.ProjectBaseColorID(); pu.mutation.ProjectBaseColorCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"projectBaseColor\"")
+		return errors.New(`ent: clearing a required unique edge "Project.projectBaseColor"`)
 	}
 	if _, ok := pu.mutation.ProjectLightColorID(); pu.mutation.ProjectLightColorCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"projectLightColor\"")
+		return errors.New(`ent: clearing a required unique edge "Project.projectLightColor"`)
 	}
 	if _, ok := pu.mutation.ProjectIconID(); pu.mutation.ProjectIconCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"projectIcon\"")
+		return errors.New(`ent: clearing a required unique edge "Project.projectIcon"`)
 	}
 	if _, ok := pu.mutation.TeammateID(); pu.mutation.TeammateCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"teammate\"")
+		return errors.New(`ent: clearing a required unique edge "Project.teammate"`)
 	}
 	return nil
 }
@@ -1599,28 +1599,28 @@ func (puo *ProjectUpdateOne) ExecX(ctx context.Context) {
 func (puo *ProjectUpdateOne) check() error {
 	if v, ok := puo.mutation.Name(); ok {
 		if err := project.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf("ent: validator failed for field \"name\": %w", err)}
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Project.name": %w`, err)}
 		}
 	}
 	if v, ok := puo.mutation.DescriptionTitle(); ok {
 		if err := project.DescriptionTitleValidator(v); err != nil {
-			return &ValidationError{Name: "description_title", err: fmt.Errorf("ent: validator failed for field \"description_title\": %w", err)}
+			return &ValidationError{Name: "description_title", err: fmt.Errorf(`ent: validator failed for field "Project.description_title": %w`, err)}
 		}
 	}
 	if _, ok := puo.mutation.WorkspaceID(); puo.mutation.WorkspaceCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"workspace\"")
+		return errors.New(`ent: clearing a required unique edge "Project.workspace"`)
 	}
 	if _, ok := puo.mutation.ProjectBaseColorID(); puo.mutation.ProjectBaseColorCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"projectBaseColor\"")
+		return errors.New(`ent: clearing a required unique edge "Project.projectBaseColor"`)
 	}
 	if _, ok := puo.mutation.ProjectLightColorID(); puo.mutation.ProjectLightColorCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"projectLightColor\"")
+		return errors.New(`ent: clearing a required unique edge "Project.projectLightColor"`)
 	}
 	if _, ok := puo.mutation.ProjectIconID(); puo.mutation.ProjectIconCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"projectIcon\"")
+		return errors.New(`ent: clearing a required unique edge "Project.projectIcon"`)
 	}
 	if _, ok := puo.mutation.TeammateID(); puo.mutation.TeammateCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"teammate\"")
+		return errors.New(`ent: clearing a required unique edge "Project.teammate"`)
 	}
 	return nil
 }
@@ -1638,7 +1638,7 @@ func (puo *ProjectUpdateOne) sqlSave(ctx context.Context) (_node *Project, err e
 	}
 	id, ok := puo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing Project.ID for update")}
+		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Project.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := puo.fields; len(fields) > 0 {

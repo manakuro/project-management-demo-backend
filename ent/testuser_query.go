@@ -133,7 +133,7 @@ func (tuq *TestUserQuery) FirstIDX(ctx context.Context) ulid.ID {
 }
 
 // Only returns a single TestUser entity found by the query, ensuring it only returns one.
-// Returns a *NotSingularError when exactly one TestUser entity is not found.
+// Returns a *NotSingularError when more than one TestUser entity is found.
 // Returns a *NotFoundError when no TestUser entities are found.
 func (tuq *TestUserQuery) Only(ctx context.Context) (*TestUser, error) {
 	nodes, err := tuq.Limit(2).All(ctx)
@@ -160,7 +160,7 @@ func (tuq *TestUserQuery) OnlyX(ctx context.Context) *TestUser {
 }
 
 // OnlyID is like Only, but returns the only TestUser ID in the query.
-// Returns a *NotSingularError when exactly one TestUser ID is not found.
+// Returns a *NotSingularError when more than one TestUser ID is found.
 // Returns a *NotFoundError when no entities are found.
 func (tuq *TestUserQuery) OnlyID(ctx context.Context) (id ulid.ID, err error) {
 	var ids []ulid.ID
@@ -270,8 +270,9 @@ func (tuq *TestUserQuery) Clone() *TestUserQuery {
 		predicates:    append([]predicate.TestUser{}, tuq.predicates...),
 		withTestTodos: tuq.withTestTodos.Clone(),
 		// clone intermediate query.
-		sql:  tuq.sql.Clone(),
-		path: tuq.path,
+		sql:    tuq.sql.Clone(),
+		path:   tuq.path,
+		unique: tuq.unique,
 	}
 }
 
@@ -405,6 +406,10 @@ func (tuq *TestUserQuery) sqlAll(ctx context.Context) ([]*TestUser, error) {
 
 func (tuq *TestUserQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := tuq.querySpec()
+	_spec.Node.Columns = tuq.fields
+	if len(tuq.fields) > 0 {
+		_spec.Unique = tuq.unique != nil && *tuq.unique
+	}
 	return sqlgraph.CountNodes(ctx, tuq.driver, _spec)
 }
 
@@ -475,6 +480,9 @@ func (tuq *TestUserQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	if tuq.sql != nil {
 		selector = tuq.sql
 		selector.Select(selector.Columns(columns...)...)
+	}
+	if tuq.unique != nil && *tuq.unique {
+		selector.Distinct()
 	}
 	for _, p := range tuq.predicates {
 		p(selector)
@@ -754,9 +762,7 @@ func (tugb *TestUserGroupBy) sqlQuery() *sql.Selector {
 		for _, f := range tugb.fields {
 			columns = append(columns, selector.C(f))
 		}
-		for _, c := range aggregation {
-			columns = append(columns, c)
-		}
+		columns = append(columns, aggregation...)
 		selector.Select(columns...)
 	}
 	return selector.GroupBy(selector.Columns(tugb.fields...)...)

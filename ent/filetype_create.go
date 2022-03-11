@@ -182,26 +182,26 @@ func (ftc *FileTypeCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (ftc *FileTypeCreate) check() error {
 	if _, ok := ftc.mutation.Name(); !ok {
-		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "name"`)}
+		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "FileType.name"`)}
 	}
 	if v, ok := ftc.mutation.Name(); ok {
 		if err := filetype.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "name": %w`, err)}
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "FileType.name": %w`, err)}
 		}
 	}
 	if _, ok := ftc.mutation.TypeCode(); !ok {
-		return &ValidationError{Name: "type_code", err: errors.New(`ent: missing required field "type_code"`)}
+		return &ValidationError{Name: "type_code", err: errors.New(`ent: missing required field "FileType.type_code"`)}
 	}
 	if v, ok := ftc.mutation.TypeCode(); ok {
 		if err := filetype.TypeCodeValidator(v); err != nil {
-			return &ValidationError{Name: "type_code", err: fmt.Errorf(`ent: validator failed for field "type_code": %w`, err)}
+			return &ValidationError{Name: "type_code", err: fmt.Errorf(`ent: validator failed for field "FileType.type_code": %w`, err)}
 		}
 	}
 	if _, ok := ftc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "FileType.created_at"`)}
 	}
 	if _, ok := ftc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "FileType.updated_at"`)}
 	}
 	return nil
 }
@@ -215,7 +215,11 @@ func (ftc *FileTypeCreate) sqlSave(ctx context.Context) (*FileType, error) {
 		return nil, err
 	}
 	if _spec.ID.Value != nil {
-		_node.ID = _spec.ID.Value.(ulid.ID)
+		if id, ok := _spec.ID.Value.(*ulid.ID); ok {
+			_node.ID = *id
+		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
+			return nil, err
+		}
 	}
 	return _node, nil
 }
@@ -234,7 +238,7 @@ func (ftc *FileTypeCreate) createSpec() (*FileType, *sqlgraph.CreateSpec) {
 	_spec.OnConflict = ftc.conflict
 	if id, ok := ftc.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = id
+		_spec.ID.Value = &id
 	}
 	if value, ok := ftc.mutation.Name(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -389,7 +393,7 @@ func (u *FileTypeUpsert) UpdateUpdatedAt() *FileTypeUpsert {
 	return u
 }
 
-// UpdateNewValues updates the fields using the new values that were set on create except the ID field.
+// UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
 //	client.FileType.Create().
@@ -406,6 +410,12 @@ func (u *FileTypeUpsertOne) UpdateNewValues() *FileTypeUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
 		if _, exists := u.create.mutation.ID(); exists {
 			s.SetIgnore(filetype.FieldID)
+		}
+		if _, exists := u.create.mutation.CreatedAt(); exists {
+			s.SetIgnore(filetype.FieldCreatedAt)
+		}
+		if _, exists := u.create.mutation.UpdatedAt(); exists {
+			s.SetIgnore(filetype.FieldUpdatedAt)
 		}
 	}))
 	return u
@@ -658,7 +668,7 @@ type FileTypeUpsertBulk struct {
 	create *FileTypeCreateBulk
 }
 
-// UpdateNewValues updates the fields using the new values that
+// UpdateNewValues updates the mutable fields using the new values that
 // were set on create. Using this option is equivalent to using:
 //
 //	client.FileType.Create().
@@ -677,6 +687,12 @@ func (u *FileTypeUpsertBulk) UpdateNewValues() *FileTypeUpsertBulk {
 			if _, exists := b.mutation.ID(); exists {
 				s.SetIgnore(filetype.FieldID)
 				return
+			}
+			if _, exists := b.mutation.CreatedAt(); exists {
+				s.SetIgnore(filetype.FieldCreatedAt)
+			}
+			if _, exists := b.mutation.UpdatedAt(); exists {
+				s.SetIgnore(filetype.FieldUpdatedAt)
 			}
 		}
 	}))

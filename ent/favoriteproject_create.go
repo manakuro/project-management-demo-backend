@@ -178,22 +178,22 @@ func (fpc *FavoriteProjectCreate) defaults() {
 // check runs all checks and user-defined validators on the builder.
 func (fpc *FavoriteProjectCreate) check() error {
 	if _, ok := fpc.mutation.ProjectID(); !ok {
-		return &ValidationError{Name: "project_id", err: errors.New(`ent: missing required field "project_id"`)}
+		return &ValidationError{Name: "project_id", err: errors.New(`ent: missing required field "FavoriteProject.project_id"`)}
 	}
 	if _, ok := fpc.mutation.TeammateID(); !ok {
-		return &ValidationError{Name: "teammate_id", err: errors.New(`ent: missing required field "teammate_id"`)}
+		return &ValidationError{Name: "teammate_id", err: errors.New(`ent: missing required field "FavoriteProject.teammate_id"`)}
 	}
 	if _, ok := fpc.mutation.CreatedAt(); !ok {
-		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "created_at"`)}
+		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "FavoriteProject.created_at"`)}
 	}
 	if _, ok := fpc.mutation.UpdatedAt(); !ok {
-		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "updated_at"`)}
+		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "FavoriteProject.updated_at"`)}
 	}
 	if _, ok := fpc.mutation.ProjectID(); !ok {
-		return &ValidationError{Name: "project", err: errors.New("ent: missing required edge \"project\"")}
+		return &ValidationError{Name: "project", err: errors.New(`ent: missing required edge "FavoriteProject.project"`)}
 	}
 	if _, ok := fpc.mutation.TeammateID(); !ok {
-		return &ValidationError{Name: "teammate", err: errors.New("ent: missing required edge \"teammate\"")}
+		return &ValidationError{Name: "teammate", err: errors.New(`ent: missing required edge "FavoriteProject.teammate"`)}
 	}
 	return nil
 }
@@ -207,7 +207,11 @@ func (fpc *FavoriteProjectCreate) sqlSave(ctx context.Context) (*FavoriteProject
 		return nil, err
 	}
 	if _spec.ID.Value != nil {
-		_node.ID = _spec.ID.Value.(ulid.ID)
+		if id, ok := _spec.ID.Value.(*ulid.ID); ok {
+			_node.ID = *id
+		} else if err := _node.ID.Scan(_spec.ID.Value); err != nil {
+			return nil, err
+		}
 	}
 	return _node, nil
 }
@@ -226,7 +230,7 @@ func (fpc *FavoriteProjectCreate) createSpec() (*FavoriteProject, *sqlgraph.Crea
 	_spec.OnConflict = fpc.conflict
 	if id, ok := fpc.mutation.ID(); ok {
 		_node.ID = id
-		_spec.ID.Value = id
+		_spec.ID.Value = &id
 	}
 	if value, ok := fpc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -386,7 +390,7 @@ func (u *FavoriteProjectUpsert) UpdateUpdatedAt() *FavoriteProjectUpsert {
 	return u
 }
 
-// UpdateNewValues updates the fields using the new values that were set on create except the ID field.
+// UpdateNewValues updates the mutable fields using the new values that were set on create except the ID field.
 // Using this option is equivalent to using:
 //
 //	client.FavoriteProject.Create().
@@ -403,6 +407,12 @@ func (u *FavoriteProjectUpsertOne) UpdateNewValues() *FavoriteProjectUpsertOne {
 	u.create.conflict = append(u.create.conflict, sql.ResolveWith(func(s *sql.UpdateSet) {
 		if _, exists := u.create.mutation.ID(); exists {
 			s.SetIgnore(favoriteproject.FieldID)
+		}
+		if _, exists := u.create.mutation.CreatedAt(); exists {
+			s.SetIgnore(favoriteproject.FieldCreatedAt)
+		}
+		if _, exists := u.create.mutation.UpdatedAt(); exists {
+			s.SetIgnore(favoriteproject.FieldUpdatedAt)
 		}
 	}))
 	return u
@@ -655,7 +665,7 @@ type FavoriteProjectUpsertBulk struct {
 	create *FavoriteProjectCreateBulk
 }
 
-// UpdateNewValues updates the fields using the new values that
+// UpdateNewValues updates the mutable fields using the new values that
 // were set on create. Using this option is equivalent to using:
 //
 //	client.FavoriteProject.Create().
@@ -674,6 +684,12 @@ func (u *FavoriteProjectUpsertBulk) UpdateNewValues() *FavoriteProjectUpsertBulk
 			if _, exists := b.mutation.ID(); exists {
 				s.SetIgnore(favoriteproject.FieldID)
 				return
+			}
+			if _, exists := b.mutation.CreatedAt(); exists {
+				s.SetIgnore(favoriteproject.FieldCreatedAt)
+			}
+			if _, exists := b.mutation.UpdatedAt(); exists {
+				s.SetIgnore(favoriteproject.FieldUpdatedAt)
 			}
 		}
 	}))

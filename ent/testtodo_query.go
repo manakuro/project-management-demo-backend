@@ -179,7 +179,7 @@ func (ttq *TestTodoQuery) FirstIDX(ctx context.Context) ulid.ID {
 }
 
 // Only returns a single TestTodo entity found by the query, ensuring it only returns one.
-// Returns a *NotSingularError when exactly one TestTodo entity is not found.
+// Returns a *NotSingularError when more than one TestTodo entity is found.
 // Returns a *NotFoundError when no TestTodo entities are found.
 func (ttq *TestTodoQuery) Only(ctx context.Context) (*TestTodo, error) {
 	nodes, err := ttq.Limit(2).All(ctx)
@@ -206,7 +206,7 @@ func (ttq *TestTodoQuery) OnlyX(ctx context.Context) *TestTodo {
 }
 
 // OnlyID is like Only, but returns the only TestTodo ID in the query.
-// Returns a *NotSingularError when exactly one TestTodo ID is not found.
+// Returns a *NotSingularError when more than one TestTodo ID is found.
 // Returns a *NotFoundError when no entities are found.
 func (ttq *TestTodoQuery) OnlyID(ctx context.Context) (id ulid.ID, err error) {
 	var ids []ulid.ID
@@ -318,8 +318,9 @@ func (ttq *TestTodoQuery) Clone() *TestTodoQuery {
 		withParent:   ttq.withParent.Clone(),
 		withChildren: ttq.withChildren.Clone(),
 		// clone intermediate query.
-		sql:  ttq.sql.Clone(),
-		path: ttq.path,
+		sql:    ttq.sql.Clone(),
+		path:   ttq.path,
+		unique: ttq.unique,
 	}
 }
 
@@ -529,6 +530,10 @@ func (ttq *TestTodoQuery) sqlAll(ctx context.Context) ([]*TestTodo, error) {
 
 func (ttq *TestTodoQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := ttq.querySpec()
+	_spec.Node.Columns = ttq.fields
+	if len(ttq.fields) > 0 {
+		_spec.Unique = ttq.unique != nil && *ttq.unique
+	}
 	return sqlgraph.CountNodes(ctx, ttq.driver, _spec)
 }
 
@@ -599,6 +604,9 @@ func (ttq *TestTodoQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	if ttq.sql != nil {
 		selector = ttq.sql
 		selector.Select(selector.Columns(columns...)...)
+	}
+	if ttq.unique != nil && *ttq.unique {
+		selector.Distinct()
 	}
 	for _, p := range ttq.predicates {
 		p(selector)
@@ -878,9 +886,7 @@ func (ttgb *TestTodoGroupBy) sqlQuery() *sql.Selector {
 		for _, f := range ttgb.fields {
 			columns = append(columns, selector.C(f))
 		}
-		for _, c := range aggregation {
-			columns = append(columns, c)
-		}
+		columns = append(columns, aggregation...)
 		selector.Select(columns...)
 	}
 	return selector.GroupBy(selector.Columns(ttgb.fields...)...)

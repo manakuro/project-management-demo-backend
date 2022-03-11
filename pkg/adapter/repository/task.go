@@ -8,6 +8,7 @@ import (
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/task"
 	"project-management-demo-backend/ent/teammatetask"
+	"project-management-demo-backend/ent/teammatetasksection"
 	"project-management-demo-backend/pkg/entity/model"
 	ur "project-management-demo-backend/pkg/usecase/repository"
 )
@@ -92,6 +93,93 @@ func (r *taskRepository) Update(ctx context.Context, input model.UpdateTaskInput
 	}
 
 	return res, nil
+}
+
+func (r *taskRepository) Assign(ctx context.Context, input model.AssignTaskInput) (*model.AssignTaskPayload, error) {
+	client := WithTransactionalMutation(ctx)
+
+	updatedTask, err := client.Task.UpdateOneID(input.ID).SetAssigneeID(input.AssigneeID).Save(ctx)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return nil, model.NewNotFoundError(err, input)
+		}
+		return nil, model.NewDBError(err)
+	}
+
+	t, err := client.TeammateTask.Query().Where(teammatetask.TaskID(updatedTask.ID)).Only(ctx)
+	if err != nil && !ent.IsNotFound(err) {
+		return nil, model.NewDBError(err)
+	}
+	if t != nil {
+		_, derr := client.TeammateTask.Delete().Where(teammatetask.ID(t.ID)).Exec(ctx)
+		if derr != nil {
+			return nil, model.NewDBError(derr)
+		}
+	}
+
+	assignedTeammateTaskSection, err := client.
+		TeammateTaskSection.
+		Query().
+		Where(
+			teammatetasksection.TeammateID(input.AssigneeID),
+			teammatetasksection.Assigned(true),
+		).
+		Only(ctx)
+	if err != nil {
+		return nil, model.NewDBError(err)
+	}
+
+	t, err = client.TeammateTask.Create().
+		SetTaskID(input.ID).
+		SetTeammateID(input.AssigneeID).
+		SetTeammateTaskSectionID(assignedTeammateTaskSection.ID).
+		SetWorkspaceID(input.WorkspaceID).
+		Save(ctx)
+	if err != nil {
+		return nil, model.NewDBError(err)
+	}
+
+	teammateTask, err := client.TeammateTask.Query().WithTask(func(tq *ent.TaskQuery) {
+		WithTask(tq)
+	}).Where(teammatetask.ID(t.ID)).Only(ctx)
+	if err != nil {
+		return nil, model.NewDBError(err)
+	}
+
+	return &model.AssignTaskPayload{
+		Task:         updatedTask,
+		TeammateTask: teammateTask.Unwrap(),
+	}, nil
+}
+
+func (r *taskRepository) Unassign(ctx context.Context, input model.UnassignTaskInput) (*model.UnassignTaskPayload, error) {
+	client := WithTransactionalMutation(ctx)
+
+	updatedTask, err := client.Task.UpdateOneID(input.ID).SetAssigneeID("").Save(ctx)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return nil, model.NewNotFoundError(err, input)
+		}
+		return nil, model.NewDBError(err)
+	}
+
+	teammateTask, err := client.TeammateTask.Query().Where(teammatetask.TaskID(updatedTask.ID)).Only(ctx)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return nil, model.NewNotFoundError(err, input)
+		}
+		return nil, model.NewDBError(err)
+	}
+
+	_, err = client.TeammateTask.Delete().Where(teammatetask.ID(teammateTask.ID)).Exec(ctx)
+	if err != nil {
+		return nil, model.NewDBError(err)
+	}
+
+	return &model.UnassignTaskPayload{
+		Task:           updatedTask,
+		TeammateTaskID: teammateTask.ID,
+	}, nil
 }
 
 func (r *taskRepository) Delete(ctx context.Context, input model.DeleteTaskInput) (*model.DeleteTaskPayload, error) {
@@ -571,7 +659,9 @@ func WithTask(query *ent.TaskQuery) {
 	query.WithTaskPriority()
 	query.WithSubTasks()
 	query.WithProjectTasks(func(ptq *ent.ProjectTaskQuery) {
-		ptq.WithProject()
+		ptq.WithProject(func(pq *ent.ProjectQuery) {
+			pq.WithProjectTeammates()
+		})
 	})
 	query.WithTaskTags()
 	query.WithTaskLikes()

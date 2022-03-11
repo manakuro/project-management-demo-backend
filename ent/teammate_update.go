@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"project-management-demo-backend/ent/favoriteproject"
 	"project-management-demo-backend/ent/favoriteworkspace"
@@ -706,17 +707,17 @@ func (tu *TeammateUpdate) ExecX(ctx context.Context) {
 func (tu *TeammateUpdate) check() error {
 	if v, ok := tu.mutation.Name(); ok {
 		if err := teammate.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf("ent: validator failed for field \"name\": %w", err)}
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Teammate.name": %w`, err)}
 		}
 	}
 	if v, ok := tu.mutation.Image(); ok {
 		if err := teammate.ImageValidator(v); err != nil {
-			return &ValidationError{Name: "image", err: fmt.Errorf("ent: validator failed for field \"image\": %w", err)}
+			return &ValidationError{Name: "image", err: fmt.Errorf(`ent: validator failed for field "Teammate.image": %w`, err)}
 		}
 	}
 	if v, ok := tu.mutation.Email(); ok {
 		if err := teammate.EmailValidator(v); err != nil {
-			return &ValidationError{Name: "email", err: fmt.Errorf("ent: validator failed for field \"email\": %w", err)}
+			return &ValidationError{Name: "email", err: fmt.Errorf(`ent: validator failed for field "Teammate.email": %w`, err)}
 		}
 	}
 	return nil
@@ -2314,17 +2315,17 @@ func (tuo *TeammateUpdateOne) ExecX(ctx context.Context) {
 func (tuo *TeammateUpdateOne) check() error {
 	if v, ok := tuo.mutation.Name(); ok {
 		if err := teammate.NameValidator(v); err != nil {
-			return &ValidationError{Name: "name", err: fmt.Errorf("ent: validator failed for field \"name\": %w", err)}
+			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Teammate.name": %w`, err)}
 		}
 	}
 	if v, ok := tuo.mutation.Image(); ok {
 		if err := teammate.ImageValidator(v); err != nil {
-			return &ValidationError{Name: "image", err: fmt.Errorf("ent: validator failed for field \"image\": %w", err)}
+			return &ValidationError{Name: "image", err: fmt.Errorf(`ent: validator failed for field "Teammate.image": %w`, err)}
 		}
 	}
 	if v, ok := tuo.mutation.Email(); ok {
 		if err := teammate.EmailValidator(v); err != nil {
-			return &ValidationError{Name: "email", err: fmt.Errorf("ent: validator failed for field \"email\": %w", err)}
+			return &ValidationError{Name: "email", err: fmt.Errorf(`ent: validator failed for field "Teammate.email": %w`, err)}
 		}
 	}
 	return nil
@@ -2343,7 +2344,7 @@ func (tuo *TeammateUpdateOne) sqlSave(ctx context.Context) (_node *Teammate, err
 	}
 	id, ok := tuo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing Teammate.ID for update")}
+		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Teammate.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := tuo.fields; len(fields) > 0 {

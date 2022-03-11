@@ -150,13 +150,13 @@ func (ptlsu *ProjectTaskListStatusUpdate) ExecX(ctx context.Context) {
 // check runs all checks and user-defined validators on the builder.
 func (ptlsu *ProjectTaskListStatusUpdate) check() error {
 	if _, ok := ptlsu.mutation.ProjectID(); ptlsu.mutation.ProjectCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"project\"")
+		return errors.New(`ent: clearing a required unique edge "ProjectTaskListStatus.project"`)
 	}
 	if _, ok := ptlsu.mutation.TaskListCompletedStatusID(); ptlsu.mutation.TaskListCompletedStatusCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"taskListCompletedStatus\"")
+		return errors.New(`ent: clearing a required unique edge "ProjectTaskListStatus.taskListCompletedStatus"`)
 	}
 	if _, ok := ptlsu.mutation.TaskListSortStatusID(); ptlsu.mutation.TaskListSortStatusCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"taskListSortStatus\"")
+		return errors.New(`ent: clearing a required unique edge "ProjectTaskListStatus.taskListSortStatus"`)
 	}
 	return nil
 }
@@ -429,13 +429,13 @@ func (ptlsuo *ProjectTaskListStatusUpdateOne) ExecX(ctx context.Context) {
 // check runs all checks and user-defined validators on the builder.
 func (ptlsuo *ProjectTaskListStatusUpdateOne) check() error {
 	if _, ok := ptlsuo.mutation.ProjectID(); ptlsuo.mutation.ProjectCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"project\"")
+		return errors.New(`ent: clearing a required unique edge "ProjectTaskListStatus.project"`)
 	}
 	if _, ok := ptlsuo.mutation.TaskListCompletedStatusID(); ptlsuo.mutation.TaskListCompletedStatusCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"taskListCompletedStatus\"")
+		return errors.New(`ent: clearing a required unique edge "ProjectTaskListStatus.taskListCompletedStatus"`)
 	}
 	if _, ok := ptlsuo.mutation.TaskListSortStatusID(); ptlsuo.mutation.TaskListSortStatusCleared() && !ok {
-		return errors.New("ent: clearing a required unique edge \"taskListSortStatus\"")
+		return errors.New(`ent: clearing a required unique edge "ProjectTaskListStatus.taskListSortStatus"`)
 	}
 	return nil
 }
@@ -453,7 +453,7 @@ func (ptlsuo *ProjectTaskListStatusUpdateOne) sqlSave(ctx context.Context) (_nod
 	}
 	id, ok := ptlsuo.mutation.ID()
 	if !ok {
-		return nil, &ValidationError{Name: "ID", err: fmt.Errorf("missing ProjectTaskListStatus.ID for update")}
+		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "ProjectTaskListStatus.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
 	if fields := ptlsuo.fields; len(fields) > 0 {
