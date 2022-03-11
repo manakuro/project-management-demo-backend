@@ -148,7 +148,7 @@ func (r *taskRepository) Assign(ctx context.Context, input model.AssignTaskInput
 
 	return &model.AssignTaskPayload{
 		Task:         updatedTask,
-		TeammateTask: teammateTask,
+		TeammateTask: teammateTask.Unwrap(),
 	}, nil
 }
 
@@ -659,7 +659,9 @@ func WithTask(query *ent.TaskQuery) {
 	query.WithTaskPriority()
 	query.WithSubTasks()
 	query.WithProjectTasks(func(ptq *ent.ProjectTaskQuery) {
-		ptq.WithProject()
+		ptq.WithProject(func(pq *ent.ProjectQuery) {
+			pq.WithProjectTeammates()
+		})
 	})
 	query.WithTaskTags()
 	query.WithTaskLikes()

@@ -141,6 +141,7 @@ extend type Subscription {
   taskUpdated(workspaceId: ID!, requestId: String!): Task!
   taskDeleted(workspaceId: ID!, requestId: String!): DeleteTaskPayload!
   taskUndeleted(workspaceId: ID!, requestId: String!): UndeleteTaskPayload!
+  taskAssigned(workspaceId: ID!, requestId: String!): AssignTaskPayload!
 }
 
 extend type Query {

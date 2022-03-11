@@ -89,6 +89,14 @@ func (r *mutationResolver) AssignTask(ctx context.Context, input model.AssignTas
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
 
+	go func() {
+		for _, a := range r.subscriptions.TaskAssigned {
+			if a.WorkspaceID == input.WorkspaceID && a.RequestID != input.RequestID {
+				a.Ch <- p
+			}
+		}
+	}()
+
 	return p, nil
 }
 
@@ -178,6 +186,28 @@ func (r *subscriptionResolver) TaskUndeleted(ctx context.Context, workspaceID ul
 		<-ctx.Done()
 		r.mutex.Lock()
 		delete(r.subscriptions.TaskUndeleted, key)
+		r.mutex.Unlock()
+	}()
+
+	return ch, nil
+}
+
+func (r *subscriptionResolver) TaskAssigned(ctx context.Context, workspaceID ulid.ID, requestID string) (<-chan *model.AssignTaskPayload, error) {
+	key := subscription.NewKey()
+	ch := make(chan *model.AssignTaskPayload, 1)
+
+	r.mutex.Lock()
+	r.subscriptions.TaskAssigned[key] = subscription.TaskAssigned{
+		WorkspaceID: workspaceID,
+		RequestID:   requestID,
+		Ch:          ch,
+	}
+	r.mutex.Unlock()
+
+	go func() {
+		<-ctx.Done()
+		r.mutex.Lock()
+		delete(r.subscriptions.TaskAssigned, key)
 		r.mutex.Unlock()
 	}()
 
