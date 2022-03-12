@@ -13955,6 +13955,7 @@ type TaskTagEdge {
 input CreateTaskTagInput {
   taskId: ID!
   tagId: ID!
+  workspaceId: ID!
   requestId: String!
 }
 
@@ -13967,6 +13968,8 @@ input UpdateTaskTagInput {
 
 input DeleteTaskTagInput {
   id: ID!
+  workspaceId: ID!
+  requestId: String!
 }
 
 extend type Subscription {
@@ -52821,6 +52824,14 @@ func (ec *executionContext) unmarshalInputCreateTaskTagInput(ctx context.Context
 			if err != nil {
 				return it, err
 			}
+		case "workspaceId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceId"))
+			it.WorkspaceID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		case "requestId":
 			var err error
 
@@ -53760,6 +53771,22 @@ func (ec *executionContext) unmarshalInputDeleteTaskTagInput(ctx context.Context
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
 			it.ID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "workspaceId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceId"))
+			it.WorkspaceID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "requestId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("requestId"))
+			it.RequestID, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
