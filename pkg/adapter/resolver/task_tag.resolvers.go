@@ -5,7 +5,6 @@ package resolver
 
 import (
 	"context"
-	"fmt"
 	"project-management-demo-backend/ent"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/graph/generated"
@@ -47,18 +46,13 @@ func (r *mutationResolver) DeleteTaskTag(ctx context.Context, input model.Delete
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
 
-	var ts []*ent.TaskTag
-	for _, u := range r.subscriptions.TaskTagUpdated {
-		if u.TaskID == t.TaskID {
-			if ts == nil {
-				ts, err = r.controller.TaskTag.List(ctx, &ent.TaskTagWhereInput{TaskID: &t.TaskID})
-				if err != nil {
-					fmt.Println(err)
-				}
+	go func() {
+		for _, d := range r.subscriptions.TaskTagDeleted {
+			if d.WorkspaceID == input.WorkspaceID && d.RequestID != input.RequestID {
+				d.Ch <- t
 			}
-			u.Ch <- ts
 		}
-	}
+	}()
 
 	return t, nil
 }
@@ -119,6 +113,28 @@ func (r *subscriptionResolver) TaskTagCreated(ctx context.Context, workspaceID u
 		<-ctx.Done()
 		r.mutex.Lock()
 		delete(r.subscriptions.TaskTagCreated, key)
+		r.mutex.Unlock()
+	}()
+
+	return ch, nil
+}
+
+func (r *subscriptionResolver) TaskTagDeleted(ctx context.Context, workspaceID ulid.ID, requestID string) (<-chan *ent.TaskTag, error) {
+	key := subscription.NewKey()
+	ch := make(chan *ent.TaskTag, 1)
+
+	r.mutex.Lock()
+	r.subscriptions.TaskTagDeleted[key] = subscription.TaskTagDeleted{
+		WorkspaceID: workspaceID,
+		RequestID:   requestID,
+		Ch:          ch,
+	}
+	r.mutex.Unlock()
+
+	go func() {
+		<-ctx.Done()
+		r.mutex.Lock()
+		delete(r.subscriptions.TaskTagDeleted, key)
 		r.mutex.Unlock()
 	}()
 

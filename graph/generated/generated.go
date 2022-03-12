@@ -725,6 +725,7 @@ type ComplexityRoot struct {
 		TaskLikeDeleted                            func(childComplexity int, workspaceID ulid.ID, requestID string) int
 		TaskSectionUpdated                         func(childComplexity int, id ulid.ID, requestID string) int
 		TaskTagCreated                             func(childComplexity int, workspaceID ulid.ID, requestID string) int
+		TaskTagDeleted                             func(childComplexity int, workspaceID ulid.ID, requestID string) int
 		TaskTagsUpdated                            func(childComplexity int, taskID ulid.ID, requestID string) int
 		TaskUnassigned                             func(childComplexity int, workspaceID ulid.ID, requestID string) int
 		TaskUndeleted                              func(childComplexity int, workspaceID ulid.ID, requestID string) int
@@ -1606,6 +1607,7 @@ type SubscriptionResolver interface {
 	TaskSectionUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.TaskSection, error)
 	TaskTagsUpdated(ctx context.Context, taskID ulid.ID, requestID string) (<-chan []*ent.TaskTag, error)
 	TaskTagCreated(ctx context.Context, workspaceID ulid.ID, requestID string) (<-chan *ent.TaskTag, error)
+	TaskTagDeleted(ctx context.Context, workspaceID ulid.ID, requestID string) (<-chan *ent.TaskTag, error)
 	TeammateUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.Teammate, error)
 	TeammateTaskUpdated(ctx context.Context, teammateID ulid.ID, workspaceID ulid.ID, requestID string) (<-chan *ent.TeammateTask, error)
 	TeammateTaskCreated(ctx context.Context, teammateID ulid.ID, workspaceID ulid.ID, requestID string) (<-chan *ent.TeammateTask, error)
@@ -5959,6 +5961,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Subscription.TaskTagCreated(childComplexity, args["workspaceId"].(ulid.ID), args["requestId"].(string)), true
+
+	case "Subscription.taskTagDeleted":
+		if e.complexity.Subscription.TaskTagDeleted == nil {
+			break
+		}
+
+		args, err := ec.field_Subscription_taskTagDeleted_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Subscription.TaskTagDeleted(childComplexity, args["workspaceId"].(ulid.ID), args["requestId"].(string)), true
 
 	case "Subscription.taskTagsUpdated":
 		if e.complexity.Subscription.TaskTagsUpdated == nil {
@@ -13989,6 +14003,7 @@ input DeleteTaskTagInput {
 extend type Subscription {
   taskTagsUpdated(taskId: ID!, requestId: String!): [TaskTag!]!
   taskTagCreated(workspaceId: ID!, requestId: String!): TaskTag!
+  taskTagDeleted(workspaceId: ID!, requestId: String!): TaskTag!
 }
 
 extend type Query {
@@ -19655,6 +19670,30 @@ func (ec *executionContext) field_Subscription_taskSectionUpdated_args(ctx conte
 }
 
 func (ec *executionContext) field_Subscription_taskTagCreated_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 ulid.ID
+	if tmp, ok := rawArgs["workspaceId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceId"))
+		arg0, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["workspaceId"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["requestId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("requestId"))
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["requestId"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Subscription_taskTagDeleted_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 ulid.ID
@@ -37730,6 +37769,58 @@ func (ec *executionContext) _Subscription_taskTagCreated(ctx context.Context, fi
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Subscription().TaskTagCreated(rctx, args["workspaceId"].(ulid.ID), args["requestId"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return nil
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return nil
+	}
+	return func() graphql.Marshaler {
+		res, ok := <-resTmp.(<-chan *ent.TaskTag)
+		if !ok {
+			return nil
+		}
+		return graphql.WriterFunc(func(w io.Writer) {
+			w.Write([]byte{'{'})
+			graphql.MarshalString(field.Alias).MarshalGQL(w)
+			w.Write([]byte{':'})
+			ec.marshalNTaskTag2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskTag(ctx, field.Selections, res).MarshalGQL(w)
+			w.Write([]byte{'}'})
+		})
+	}
+}
+
+func (ec *executionContext) _Subscription_taskTagDeleted(ctx context.Context, field graphql.CollectedField) (ret func() graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = nil
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Subscription",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Subscription_taskTagDeleted_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return nil
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Subscription().TaskTagDeleted(rctx, args["workspaceId"].(ulid.ID), args["requestId"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -83365,6 +83456,8 @@ func (ec *executionContext) _Subscription(ctx context.Context, sel ast.Selection
 		return ec._Subscription_taskTagsUpdated(ctx, fields[0])
 	case "taskTagCreated":
 		return ec._Subscription_taskTagCreated(ctx, fields[0])
+	case "taskTagDeleted":
+		return ec._Subscription_taskTagDeleted(ctx, fields[0])
 	case "teammateUpdated":
 		return ec._Subscription_teammateUpdated(ctx, fields[0])
 	case "teammateTaskUpdated":
