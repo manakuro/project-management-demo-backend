@@ -366,6 +366,20 @@ type TaskTagUpdated struct {
 	Ch        chan []*model.TaskTag
 }
 
+// TaskTagCreated is a channel for subscription.
+type TaskTagCreated struct {
+	WorkspaceID model.ID
+	RequestID   string
+	Ch          chan *model.TaskTag
+}
+
+// TaskTagDeleted is a channel for subscription.
+type TaskTagDeleted struct {
+	WorkspaceID model.ID
+	RequestID   string
+	Ch          chan *model.TaskTag
+}
+
 // TaskCollaboratorUpdated is a channel for subscription.
 type TaskCollaboratorUpdated struct {
 	TaskID    model.ID
@@ -446,18 +460,20 @@ type Subscriptions struct {
 	ProjectTaskCreated                         map[string]ProjectTaskCreated
 	ProjectTaskListStatusUpdated               map[string]ProjectTaskListStatusUpdated
 	ProjectTaskSectionCreated                  map[string]ProjectTaskSectionCreated
-	ProjectTaskSectionUpdated                  map[string]ProjectTaskSectionUpdated
 	ProjectTaskSectionDeleted                  map[string]ProjectTaskSectionDeleted
-	ProjectTaskSectionDeletedAndKeepTasks      map[string]ProjectTaskSectionDeletedAndKeepTasks
 	ProjectTaskSectionDeletedAndDeleteTasks    map[string]ProjectTaskSectionDeletedAndDeleteTasks
-	ProjectTaskSectionUndeletedAndKeepTasks    map[string]ProjectTaskSectionUndeletedAndKeepTasks
+	ProjectTaskSectionDeletedAndKeepTasks      map[string]ProjectTaskSectionDeletedAndKeepTasks
 	ProjectTaskSectionUndeletedAndDeleteTasks  map[string]ProjectTaskSectionUndeletedAndDeleteTasks
+	ProjectTaskSectionUndeletedAndKeepTasks    map[string]ProjectTaskSectionUndeletedAndKeepTasks
+	ProjectTaskSectionUpdated                  map[string]ProjectTaskSectionUpdated
 	ProjectTaskUpdated                         map[string]ProjectTaskUpdated
 	ProjectTeammateUpdated                     map[string]ProjectTeammateUpdated
 	ProjectUpdated                             map[string]ProjectUpdated
 	TagUpdated                                 map[string]TagUpdated
+	TaskAssigned                               map[string]TaskAssigned
 	TaskCollaboratorUpdated                    map[string]TaskCollaboratorUpdated
 	TaskColumnUpdated                          map[string]TaskColumnUpdated
+	TaskDeleted                                map[string]TaskDeleted
 	TaskFeedCreated                            map[string]TaskFeedCreated
 	TaskFeedDeleted                            map[string]TaskFeedDeleted
 	TaskFeedLikeCreated                        map[string]TaskFeedLikeCreated
@@ -467,20 +483,20 @@ type Subscriptions struct {
 	TaskLikesCreated                           map[string]TaskLikesCreated
 	TaskLikesDeleted                           map[string]TaskLikesDeleted
 	TaskSectionUpdated                         map[string]TaskSectionUpdated
+	TaskTagCreated                             map[string]TaskTagCreated
+	TaskTagDeleted                             map[string]TaskTagDeleted
 	TaskTagUpdated                             map[string]TaskTagUpdated
-	TaskUpdated                                map[string]TaskUpdated
-	TaskDeleted                                map[string]TaskDeleted
-	TaskUndeleted                              map[string]TaskUndeleted
-	TaskAssigned                               map[string]TaskAssigned
 	TaskUnassigned                             map[string]TaskUnassigned
+	TaskUndeleted                              map[string]TaskUndeleted
+	TaskUpdated                                map[string]TaskUpdated
 	TeammateTaskColumnUpdated                  map[string]TeammateTaskColumnUpdated
 	TeammateTaskCreated                        map[string]TeammateTaskCreated
 	TeammateTaskDeleted                        map[string]TeammateTaskDeleted
 	TeammateTaskListStatusUpdated              map[string]TeammateTaskListStatusUpdated
 	TeammateTaskSectionCreated                 map[string]TeammateTaskSectionCreated
 	TeammateTaskSectionDeleted                 map[string]TeammateTaskSectionDeleted
-	TeammateTaskSectionDeletedAndKeepTasks     map[string]TeammateTaskSectionDeletedAndKeepTasks
 	TeammateTaskSectionDeletedAndDeleteTasks   map[string]TeammateTaskSectionDeletedAndDeleteTasks
+	TeammateTaskSectionDeletedAndKeepTasks     map[string]TeammateTaskSectionDeletedAndKeepTasks
 	TeammateTaskSectionUndeletedAndDeleteTasks map[string]TeammateTaskSectionUndeletedAndDeleteTasks
 	TeammateTaskSectionUndeletedAndKeepTasks   map[string]TeammateTaskSectionUndeletedAndKeepTasks
 	TeammateTaskSectionUpdated                 map[string]TeammateTaskSectionUpdated

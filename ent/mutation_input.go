@@ -2450,11 +2450,12 @@ func (u *TaskSectionUpdateOne) SetInput(i UpdateTaskSectionInput) *TaskSectionUp
 
 // CreateTaskTagInput represents a mutation input for creating tasktags.
 type CreateTaskTagInput struct {
-	CreatedAt *time.Time
-	UpdatedAt *time.Time
-	TaskID    ulid.ID
-	TagID     ulid.ID
-	RequestID string
+	CreatedAt   *time.Time
+	UpdatedAt   *time.Time
+	TaskID      ulid.ID
+	TagID       ulid.ID
+	WorkspaceID ulid.ID
+	RequestID   string
 }
 
 // Mutate applies the CreateTaskTagInput on the TaskTagCreate builder.
@@ -2477,12 +2478,13 @@ func (c *TaskTagCreate) SetInput(i CreateTaskTagInput) *TaskTagCreate {
 
 // UpdateTaskTagInput represents a mutation input for updating tasktags.
 type UpdateTaskTagInput struct {
-	ID        ulid.ID
-	TaskID    *ulid.ID
-	ClearTask bool
-	TagID     *ulid.ID
-	ClearTag  bool
-	RequestID string
+	ID          ulid.ID
+	TaskID      *ulid.ID
+	ClearTask   bool
+	TagID       *ulid.ID
+	ClearTag    bool
+	WorkspaceID ulid.ID
+	RequestID   string
 }
 
 // Mutate applies the UpdateTaskTagInput on the TaskTagMutation.

@@ -19,6 +19,7 @@ type TaskTagEdge {
 input CreateTaskTagInput {
   taskId: ID!
   tagId: ID!
+  workspaceId: ID!
   requestId: String!
 }
 
@@ -31,10 +32,14 @@ input UpdateTaskTagInput {
 
 input DeleteTaskTagInput {
   id: ID!
+  workspaceId: ID!
+  requestId: String!
 }
 
 extend type Subscription {
   taskTagsUpdated(taskId: ID!, requestId: String!): [TaskTag!]!
+  taskTagCreated(workspaceId: ID!, requestId: String!): TaskTag!
+  taskTagDeleted(workspaceId: ID!, requestId: String!): TaskTag!
 }
 
 extend type Query {

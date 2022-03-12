@@ -88,3 +88,8 @@ func (r *tagRepository) Update(ctx context.Context, input model.UpdateTagInput) 
 
 	return res, nil
 }
+
+// WithTag eager-loads associations with tag.
+func WithTag(query *ent.TagQuery) {
+	query.WithColor()
+}

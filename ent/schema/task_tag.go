@@ -67,6 +67,28 @@ func (TaskTag) Edges() []ent.Edge {
 	}
 }
 
+// Annotations of the TaskTag.
+func (TaskTag) Annotations() []schema.Annotation {
+	return []schema.Annotation{
+		schema.Annotation(
+			annotation.MutationInput{
+				Create: []annotation.MutationInputField{
+					{
+						Key:  "WorkspaceID",
+						Type: "ulid.ID",
+					},
+				},
+				Update: []annotation.MutationInputField{
+					{
+						Key:  "WorkspaceID",
+						Type: "ulid.ID",
+					},
+				},
+			},
+		),
+	}
+}
+
 // Mixin of the TaskTag.
 func (TaskTag) Mixin() []ent.Mixin {
 	return []ent.Mixin{

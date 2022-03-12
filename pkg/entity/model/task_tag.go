@@ -2,7 +2,6 @@ package model
 
 import (
 	"project-management-demo-backend/ent"
-	"project-management-demo-backend/ent/schema/ulid"
 )
 
 // TaskTag is the model entity for the TaskTag schema.
@@ -22,5 +21,7 @@ type UpdateTaskTagInput = ent.UpdateTaskTagInput
 
 // DeleteTaskTagInput represents a mutation input.
 type DeleteTaskTagInput struct {
-	ID ulid.ID
+	ID          ID
+	WorkspaceID ID
+	RequestID   string
 }
