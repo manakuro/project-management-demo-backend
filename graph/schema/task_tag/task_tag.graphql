@@ -38,6 +38,7 @@ input DeleteTaskTagInput {
 
 extend type Subscription {
   taskTagsUpdated(taskId: ID!, requestId: String!): [TaskTag!]!
+  taskTagCreated(workspaceId: ID!, requestId: String!): TaskTag!
 }
 
 extend type Query {

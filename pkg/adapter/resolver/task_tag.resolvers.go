@@ -21,19 +21,13 @@ func (r *mutationResolver) CreateTaskTag(ctx context.Context, input ent.CreateTa
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
 
-	var ts []*ent.TaskTag
-	for _, u := range r.subscriptions.TaskTagUpdated {
-		if u.TaskID == t.TaskID {
-			if ts == nil {
-				ts, err = r.controller.TaskTag.List(ctx, &ent.TaskTagWhereInput{TaskID: &t.TaskID})
-				if err != nil {
-					// TODO: Add error handling
-					fmt.Println(err)
-				}
+	go func() {
+		for _, c := range r.subscriptions.TaskTagCreated {
+			if c.WorkspaceID == input.WorkspaceID && c.RequestID != input.RequestID {
+				c.Ch <- t
 			}
-			u.Ch <- ts
 		}
-	}
+	}()
 
 	return t, nil
 }
@@ -103,6 +97,28 @@ func (r *subscriptionResolver) TaskTagsUpdated(ctx context.Context, taskID ulid.
 		<-ctx.Done()
 		r.mutex.Lock()
 		delete(r.subscriptions.TaskTagUpdated, key)
+		r.mutex.Unlock()
+	}()
+
+	return ch, nil
+}
+
+func (r *subscriptionResolver) TaskTagCreated(ctx context.Context, workspaceID ulid.ID, requestID string) (<-chan *ent.TaskTag, error) {
+	key := subscription.NewKey()
+	ch := make(chan *ent.TaskTag, 1)
+
+	r.mutex.Lock()
+	r.subscriptions.TaskTagCreated[key] = subscription.TaskTagCreated{
+		WorkspaceID: workspaceID,
+		RequestID:   requestID,
+		Ch:          ch,
+	}
+	r.mutex.Unlock()
+
+	go func() {
+		<-ctx.Done()
+		r.mutex.Lock()
+		delete(r.subscriptions.TaskTagCreated, key)
 		r.mutex.Unlock()
 	}()
 
