@@ -27,6 +27,12 @@ input CreateProjectTaskInput {
   taskParentId: ID
   requestId: String!
 }
+input CreateProjectTaskByTaskIDInput {
+  projectId: ID!
+  taskId: ID!
+  workspaceId: ID!
+  requestId: String!
+}
 
 input UpdateProjectTaskInput {
   id: ID!
@@ -49,5 +55,6 @@ extend type Query {
 
 extend type Mutation {
   createProjectTask(input: CreateProjectTaskInput!): ProjectTask!
+  createProjectTaskByTaskId(input: CreateProjectTaskByTaskIDInput!): ProjectTask!
   updateProjectTask(input: UpdateProjectTaskInput!): ProjectTask!
 }

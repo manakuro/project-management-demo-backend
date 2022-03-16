@@ -303,6 +303,7 @@ type ComplexityRoot struct {
 		CreateProjectIcon                         func(childComplexity int, input ent.CreateProjectIconInput) int
 		CreateProjectLightColor                   func(childComplexity int, input ent.CreateProjectLightColorInput) int
 		CreateProjectTask                         func(childComplexity int, input ent.CreateProjectTaskInput) int
+		CreateProjectTaskByTaskID                 func(childComplexity int, input model.CreateProjectTaskByTaskIDInput) int
 		CreateProjectTaskColumn                   func(childComplexity int, input ent.CreateProjectTaskColumnInput) int
 		CreateProjectTaskListStatus               func(childComplexity int, input ent.CreateProjectTaskListStatusInput) int
 		CreateProjectTaskSection                  func(childComplexity int, input ent.CreateProjectTaskSectionInput) int
@@ -1362,6 +1363,7 @@ type MutationResolver interface {
 	CreateProjectLightColor(ctx context.Context, input ent.CreateProjectLightColorInput) (*ent.ProjectLightColor, error)
 	UpdateProjectLightColor(ctx context.Context, input ent.UpdateProjectLightColorInput) (*ent.ProjectLightColor, error)
 	CreateProjectTask(ctx context.Context, input ent.CreateProjectTaskInput) (*ent.ProjectTask, error)
+	CreateProjectTaskByTaskID(ctx context.Context, input model.CreateProjectTaskByTaskIDInput) (*ent.ProjectTask, error)
 	UpdateProjectTask(ctx context.Context, input ent.UpdateProjectTaskInput) (*ent.ProjectTask, error)
 	CreateProjectTaskColumn(ctx context.Context, input ent.CreateProjectTaskColumnInput) (*ent.ProjectTaskColumn, error)
 	UpdateProjectTaskColumn(ctx context.Context, input ent.UpdateProjectTaskColumnInput) (*ent.ProjectTaskColumn, error)
@@ -2597,6 +2599,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.CreateProjectTask(childComplexity, args["input"].(ent.CreateProjectTaskInput)), true
+
+	case "Mutation.createProjectTaskByTaskId":
+		if e.complexity.Mutation.CreateProjectTaskByTaskID == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createProjectTaskByTaskId_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateProjectTaskByTaskID(childComplexity, args["input"].(model.CreateProjectTaskByTaskIDInput)), true
 
 	case "Mutation.createProjectTaskColumn":
 		if e.complexity.Mutation.CreateProjectTaskColumn == nil {
@@ -12915,6 +12929,12 @@ input CreateProjectTaskInput {
   taskParentId: ID
   requestId: String!
 }
+input CreateProjectTaskByTaskIDInput {
+  projectId: ID!
+  taskId: ID!
+  workspaceId: ID!
+  requestId: String!
+}
 
 input UpdateProjectTaskInput {
   id: ID!
@@ -12937,6 +12957,7 @@ extend type Query {
 
 extend type Mutation {
   createProjectTask(input: CreateProjectTaskInput!): ProjectTask!
+  createProjectTaskByTaskId(input: CreateProjectTaskByTaskIDInput!): ProjectTask!
   updateProjectTask(input: UpdateProjectTaskInput!): ProjectTask!
 }
 `, BuiltIn: false},
@@ -14792,6 +14813,21 @@ func (ec *executionContext) field_Mutation_createProjectLightColor_args(ctx cont
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNCreateProjectLightColorInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐCreateProjectLightColorInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_createProjectTaskByTaskId_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.CreateProjectTaskByTaskIDInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNCreateProjectTaskByTaskIDInput2projectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐCreateProjectTaskByTaskIDInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -24800,6 +24836,48 @@ func (ec *executionContext) _Mutation_createProjectTask(ctx context.Context, fie
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Mutation().CreateProjectTask(rctx, args["input"].(ent.CreateProjectTaskInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.ProjectTask)
+	fc.Result = res
+	return ec.marshalNProjectTask2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTask(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_createProjectTaskByTaskId(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_createProjectTaskByTaskId_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreateProjectTaskByTaskID(rctx, args["input"].(model.CreateProjectTaskByTaskIDInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -52133,6 +52211,53 @@ func (ec *executionContext) unmarshalInputCreateProjectLightColorInput(ctx conte
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("colorId"))
 			it.ColorID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "requestId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("requestId"))
+			it.RequestID, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputCreateProjectTaskByTaskIDInput(ctx context.Context, obj interface{}) (model.CreateProjectTaskByTaskIDInput, error) {
+	var it model.CreateProjectTaskByTaskIDInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "projectId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("projectId"))
+			it.ProjectID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskId"))
+			it.TaskID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "workspaceId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceId"))
+			it.WorkspaceID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -80492,6 +80617,11 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "createProjectTaskByTaskId":
+			out.Values[i] = ec._Mutation_createProjectTaskByTaskId(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		case "updateProjectTask":
 			out.Values[i] = ec._Mutation_updateProjectTask(ctx, field)
 			if out.Values[i] == graphql.Null {
@@ -87790,6 +87920,11 @@ func (ec *executionContext) unmarshalNCreateProjectInput2projectᚑmanagementᚑ
 
 func (ec *executionContext) unmarshalNCreateProjectLightColorInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐCreateProjectLightColorInput(ctx context.Context, v interface{}) (ent.CreateProjectLightColorInput, error) {
 	res, err := ec.unmarshalInputCreateProjectLightColorInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNCreateProjectTaskByTaskIDInput2projectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐCreateProjectTaskByTaskIDInput(ctx context.Context, v interface{}) (model.CreateProjectTaskByTaskIDInput, error) {
+	res, err := ec.unmarshalInputCreateProjectTaskByTaskIDInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 

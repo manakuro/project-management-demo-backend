@@ -9,6 +9,7 @@ import (
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/graph/generated"
 	"project-management-demo-backend/pkg/adapter/handler"
+	"project-management-demo-backend/pkg/entity/model"
 	"project-management-demo-backend/pkg/util/datetime"
 	"project-management-demo-backend/pkg/util/subscription"
 )
@@ -26,6 +27,15 @@ func (r *mutationResolver) CreateProjectTask(ctx context.Context, input ent.Crea
 			}
 		}
 	}()
+
+	return p, nil
+}
+
+func (r *mutationResolver) CreateProjectTaskByTaskID(ctx context.Context, input model.CreateProjectTaskByTaskIDInput) (*ent.ProjectTask, error) {
+	p, err := r.controller.ProjectTask.CreateByTaskID(ctx, input)
+	if err != nil {
+		return nil, handler.HandleGraphQLError(ctx, err)
+	}
 
 	return p, nil
 }

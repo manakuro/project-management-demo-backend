@@ -4,6 +4,7 @@ import (
 	"context"
 	"project-management-demo-backend/ent"
 	"project-management-demo-backend/ent/projecttask"
+	"project-management-demo-backend/ent/projecttasksection"
 	"project-management-demo-backend/pkg/entity/model"
 	ur "project-management-demo-backend/pkg/usecase/repository"
 )
@@ -100,6 +101,36 @@ func (r *projectTaskRepository) Create(ctx context.Context, input model.CreatePr
 	}
 
 	return res, nil
+}
+
+func (r *projectTaskRepository) CreateByTaskID(ctx context.Context, input model.CreateProjectTaskByTaskIDInput) (*model.ProjectTask, error) {
+	client := WithTransactionalMutation(ctx)
+
+	ps, err := client.ProjectTaskSection.
+		Query().
+		Where(projecttasksection.ProjectID(input.ProjectID)).
+		All(ctx)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return nil, model.NewNotFoundError(err, input)
+		}
+		return nil, model.NewDBError(err)
+	}
+
+	projectTaskSection := ps[0]
+
+	p, err := client.ProjectTask.
+		Create().
+		SetTaskID(input.TaskID).
+		SetProjectID(input.ProjectID).
+		SetProjectTaskSectionID(projectTaskSection.ID).
+		Save(ctx)
+
+	if err != nil {
+		return nil, model.NewDBError(err)
+	}
+
+	return p, nil
 }
 
 func (r *projectTaskRepository) Update(ctx context.Context, input model.UpdateProjectTaskInput) (*model.ProjectTask, error) {
