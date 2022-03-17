@@ -54,6 +54,14 @@ func (r *mutationResolver) DeleteTaskCollaborator(ctx context.Context, input mod
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
 
+	go func() {
+		for _, d := range r.subscriptions.TaskCollaboratorDeleted {
+			if d.WorkspaceID == input.WorkspaceID && d.RequestID != input.RequestID {
+				d.Ch <- t
+			}
+		}
+	}()
+
 	return t, nil
 }
 
@@ -113,6 +121,28 @@ func (r *subscriptionResolver) TaskCollaboratorCreated(ctx context.Context, work
 		<-ctx.Done()
 		r.mutex.Lock()
 		delete(r.subscriptions.TaskCollaboratorCreated, key)
+		r.mutex.Unlock()
+	}()
+
+	return ch, nil
+}
+
+func (r *subscriptionResolver) TaskCollaboratorDeleted(ctx context.Context, workspaceID ulid.ID, requestID string) (<-chan *ent.TaskCollaborator, error) {
+	key := subscription.NewKey()
+	ch := make(chan *ent.TaskCollaborator, 1)
+
+	r.mutex.Lock()
+	r.subscriptions.TaskCollaboratorDeleted[key] = subscription.TaskCollaboratorDeleted{
+		WorkspaceID: workspaceID,
+		RequestID:   requestID,
+		Ch:          ch,
+	}
+	r.mutex.Unlock()
+
+	go func() {
+		<-ctx.Done()
+		r.mutex.Lock()
+		delete(r.subscriptions.TaskCollaboratorDeleted, key)
 		r.mutex.Unlock()
 	}()
 
