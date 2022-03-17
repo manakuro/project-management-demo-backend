@@ -100,7 +100,13 @@ func (r *taskCollaboratorRepository) Update(ctx context.Context, input model.Upd
 }
 
 func (r *taskCollaboratorRepository) Delete(ctx context.Context, input model.DeleteTaskCollaboratorInput) (*model.TaskCollaborator, error) {
-	deleted, err := r.client.TaskCollaborator.Query().Where(taskcollaborator.IDEQ(input.ID)).Only(ctx)
+	client := WithTransactionalMutation(ctx)
+
+	deleted, err := client.TaskCollaborator.
+		Query().
+		Where(taskcollaborator.IDEQ(input.ID)).
+		Only(ctx)
+
 	if err != nil {
 		if ent.IsNotFound(err) {
 			return nil, model.NewNotFoundError(err, input.ID)
@@ -108,7 +114,7 @@ func (r *taskCollaboratorRepository) Delete(ctx context.Context, input model.Del
 		return nil, model.NewDBError(err)
 	}
 
-	err = r.client.TaskCollaborator.DeleteOneID(input.ID).Exec(ctx)
+	err = client.TaskCollaborator.DeleteOneID(input.ID).Exec(ctx)
 	if err != nil {
 		return nil, model.NewDBError(err)
 	}
