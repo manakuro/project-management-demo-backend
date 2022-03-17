@@ -13537,6 +13537,7 @@ type TaskCollaboratorEdge {
 input CreateTaskCollaboratorInput {
   taskId: ID!
   teammateId: ID!
+  workspaceId: ID!
   requestId: String!
 }
 
@@ -13544,11 +13545,14 @@ input UpdateTaskCollaboratorInput {
   id: ID!
   taskId: ID
   teammateId: ID
+  workspaceId: ID!
   requestId: String!
 }
 
 input DeleteTaskCollaboratorInput {
   id: ID!
+  workspaceId: ID!
+  requestId: String!
 }
 
 
@@ -52881,6 +52885,14 @@ func (ec *executionContext) unmarshalInputCreateTaskCollaboratorInput(ctx contex
 			if err != nil {
 				return it, err
 			}
+		case "workspaceId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceId"))
+			it.WorkspaceID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		case "requestId":
 			var err error
 
@@ -54197,6 +54209,22 @@ func (ec *executionContext) unmarshalInputDeleteTaskCollaboratorInput(ctx contex
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
 			it.ID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "workspaceId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceId"))
+			it.WorkspaceID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "requestId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("requestId"))
+			it.RequestID, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -76653,6 +76681,14 @@ func (ec *executionContext) unmarshalInputUpdateTaskCollaboratorInput(ctx contex
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("teammateId"))
 			it.TeammateID, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "workspaceId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceId"))
+			it.WorkspaceID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}

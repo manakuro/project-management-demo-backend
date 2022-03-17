@@ -19,6 +19,7 @@ type TaskCollaboratorEdge {
 input CreateTaskCollaboratorInput {
   taskId: ID!
   teammateId: ID!
+  workspaceId: ID!
   requestId: String!
 }
 
@@ -26,11 +27,14 @@ input UpdateTaskCollaboratorInput {
   id: ID!
   taskId: ID
   teammateId: ID
+  workspaceId: ID!
   requestId: String!
 }
 
 input DeleteTaskCollaboratorInput {
   id: ID!
+  workspaceId: ID!
+  requestId: String!
 }
 
 

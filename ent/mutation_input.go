@@ -1642,11 +1642,12 @@ func (u *TaskUpdateOne) SetInput(i UpdateTaskInput) *TaskUpdateOne {
 
 // CreateTaskCollaboratorInput represents a mutation input for creating taskcollaborators.
 type CreateTaskCollaboratorInput struct {
-	CreatedAt  *time.Time
-	UpdatedAt  *time.Time
-	TaskID     ulid.ID
-	TeammateID ulid.ID
-	RequestID  string
+	CreatedAt   *time.Time
+	UpdatedAt   *time.Time
+	TaskID      ulid.ID
+	TeammateID  ulid.ID
+	WorkspaceID ulid.ID
+	RequestID   string
 }
 
 // Mutate applies the CreateTaskCollaboratorInput on the TaskCollaboratorCreate builder.
@@ -1674,6 +1675,7 @@ type UpdateTaskCollaboratorInput struct {
 	ClearTask     bool
 	TeammateID    *ulid.ID
 	ClearTeammate bool
+	WorkspaceID   ulid.ID
 	RequestID     string
 }
 

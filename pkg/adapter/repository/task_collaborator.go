@@ -67,7 +67,9 @@ func (r *taskCollaboratorRepository) ListWithPagination(ctx context.Context, aft
 }
 
 func (r *taskCollaboratorRepository) Create(ctx context.Context, input model.CreateTaskCollaboratorInput) (*model.TaskCollaborator, error) {
-	res, err := r.client.
+	client := WithTransactionalMutation(ctx)
+
+	res, err := client.
 		TaskCollaborator.
 		Create().
 		SetInput(input).

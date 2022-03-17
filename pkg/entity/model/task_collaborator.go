@@ -2,7 +2,6 @@ package model
 
 import (
 	"project-management-demo-backend/ent"
-	"project-management-demo-backend/ent/schema/ulid"
 )
 
 // TaskCollaborator is the model entity for the TaskCollaborator schema.
@@ -22,6 +21,7 @@ type UpdateTaskCollaboratorInput = ent.UpdateTaskCollaboratorInput
 
 // DeleteTaskCollaboratorInput represents a mutation input.
 type DeleteTaskCollaboratorInput struct {
-	ID        ulid.ID
-	RequestID string
+	ID          ID
+	RequestID   string
+	WorkspaceID ID
 }

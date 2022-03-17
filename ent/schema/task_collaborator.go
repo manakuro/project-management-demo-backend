@@ -67,6 +67,28 @@ func (TaskCollaborator) Edges() []ent.Edge {
 	}
 }
 
+// Annotations of the TaskCollaborator.
+func (TaskCollaborator) Annotations() []schema.Annotation {
+	return []schema.Annotation{
+		schema.Annotation(
+			annotation.MutationInput{
+				Create: []annotation.MutationInputField{
+					{
+						Key:  "WorkspaceID",
+						Type: "ulid.ID",
+					},
+				},
+				Update: []annotation.MutationInputField{
+					{
+						Key:  "WorkspaceID",
+						Type: "ulid.ID",
+					},
+				},
+			},
+		),
+	}
+}
+
 // Mixin of the TaskCollaborator.
 func (TaskCollaborator) Mixin() []ent.Mixin {
 	return []ent.Mixin{
