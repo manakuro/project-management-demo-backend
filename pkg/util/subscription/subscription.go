@@ -396,9 +396,16 @@ type TaskTagDeleted struct {
 
 // TaskCollaboratorUpdated is a channel for subscription.
 type TaskCollaboratorUpdated struct {
-	TaskID    model.ID
-	RequestID string
-	Ch        chan []*model.TaskCollaborator
+	WorkspaceID model.ID
+	RequestID   string
+	Ch          chan *model.TaskCollaborator
+}
+
+// TaskCollaboratorCreated is a channel for subscription.
+type TaskCollaboratorCreated struct {
+	WorkspaceID model.ID
+	RequestID   string
+	Ch          chan *model.TaskCollaborator
 }
 
 // TaskFeedUpdated is a channel for subscription.
@@ -488,6 +495,7 @@ type Subscriptions struct {
 	TagUpdated                                 map[string]TagUpdated
 	TaskAssigned                               map[string]TaskAssigned
 	TaskCollaboratorUpdated                    map[string]TaskCollaboratorUpdated
+	TaskCollaboratorCreated                    map[string]TaskCollaboratorCreated
 	TaskColumnUpdated                          map[string]TaskColumnUpdated
 	TaskDeleted                                map[string]TaskDeleted
 	TaskFeedCreated                            map[string]TaskFeedCreated

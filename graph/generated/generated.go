@@ -717,7 +717,8 @@ type ComplexityRoot struct {
 		ProjectUpdated                             func(childComplexity int, workspaceID ulid.ID, requestID string) int
 		TagUpdated                                 func(childComplexity int, id ulid.ID, requestID string) int
 		TaskAssigned                               func(childComplexity int, workspaceID ulid.ID, requestID string) int
-		TaskCollaboratorsUpdated                   func(childComplexity int, taskID ulid.ID, requestID string) int
+		TaskCollaboratorCreated                    func(childComplexity int, workspaceID ulid.ID, requestID string) int
+		TaskCollaboratorUpdated                    func(childComplexity int, workspaceID ulid.ID, requestID string) int
 		TaskDeleted                                func(childComplexity int, workspaceID ulid.ID, requestID string) int
 		TaskFeedCreated                            func(childComplexity int, workspaceID ulid.ID, requestID string) int
 		TaskFeedDeleted                            func(childComplexity int, workspaceID ulid.ID, requestID string) int
@@ -1603,7 +1604,8 @@ type SubscriptionResolver interface {
 	TaskUndeleted(ctx context.Context, workspaceID ulid.ID, requestID string) (<-chan *model.UndeleteTaskPayload, error)
 	TaskAssigned(ctx context.Context, workspaceID ulid.ID, requestID string) (<-chan *model.AssignTaskPayload, error)
 	TaskUnassigned(ctx context.Context, workspaceID ulid.ID, requestID string) (<-chan *model.UnassignTaskPayload, error)
-	TaskCollaboratorsUpdated(ctx context.Context, taskID ulid.ID, requestID string) (<-chan []*ent.TaskCollaborator, error)
+	TaskCollaboratorUpdated(ctx context.Context, workspaceID ulid.ID, requestID string) (<-chan *ent.TaskCollaborator, error)
+	TaskCollaboratorCreated(ctx context.Context, workspaceID ulid.ID, requestID string) (<-chan *ent.TaskCollaborator, error)
 	TaskFeedUpdated(ctx context.Context, workspaceID ulid.ID, requestID string) (<-chan *ent.TaskFeed, error)
 	TaskFeedCreated(ctx context.Context, workspaceID ulid.ID, requestID string) (<-chan *ent.TaskFeed, error)
 	TaskFeedDeleted(ctx context.Context, workspaceID ulid.ID, requestID string) (<-chan *ent.TaskFeed, error)
@@ -5874,17 +5876,29 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Subscription.TaskAssigned(childComplexity, args["workspaceId"].(ulid.ID), args["requestId"].(string)), true
 
-	case "Subscription.taskCollaboratorsUpdated":
-		if e.complexity.Subscription.TaskCollaboratorsUpdated == nil {
+	case "Subscription.taskCollaboratorCreated":
+		if e.complexity.Subscription.TaskCollaboratorCreated == nil {
 			break
 		}
 
-		args, err := ec.field_Subscription_taskCollaboratorsUpdated_args(context.TODO(), rawArgs)
+		args, err := ec.field_Subscription_taskCollaboratorCreated_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Subscription.TaskCollaboratorsUpdated(childComplexity, args["taskId"].(ulid.ID), args["requestId"].(string)), true
+		return e.complexity.Subscription.TaskCollaboratorCreated(childComplexity, args["workspaceId"].(ulid.ID), args["requestId"].(string)), true
+
+	case "Subscription.taskCollaboratorUpdated":
+		if e.complexity.Subscription.TaskCollaboratorUpdated == nil {
+			break
+		}
+
+		args, err := ec.field_Subscription_taskCollaboratorUpdated_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Subscription.TaskCollaboratorUpdated(childComplexity, args["workspaceId"].(ulid.ID), args["requestId"].(string)), true
 
 	case "Subscription.taskDeleted":
 		if e.complexity.Subscription.TaskDeleted == nil {
@@ -13557,7 +13571,8 @@ input DeleteTaskCollaboratorInput {
 
 
 extend type Subscription {
-  taskCollaboratorsUpdated(taskId: ID!, requestId: String!): [TaskCollaborator!]!
+  taskCollaboratorUpdated(workspaceId: ID!, requestId: String!): TaskCollaborator!
+  taskCollaboratorCreated(workspaceId: ID!, requestId: String!): TaskCollaborator!
 }
 
 extend type Query {
@@ -19558,18 +19573,42 @@ func (ec *executionContext) field_Subscription_taskAssigned_args(ctx context.Con
 	return args, nil
 }
 
-func (ec *executionContext) field_Subscription_taskCollaboratorsUpdated_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Subscription_taskCollaboratorCreated_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 ulid.ID
-	if tmp, ok := rawArgs["taskId"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskId"))
+	if tmp, ok := rawArgs["workspaceId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceId"))
 		arg0, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["taskId"] = arg0
+	args["workspaceId"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["requestId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("requestId"))
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["requestId"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Subscription_taskCollaboratorUpdated_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 ulid.ID
+	if tmp, ok := rawArgs["workspaceId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceId"))
+		arg0, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["workspaceId"] = arg0
 	var arg1 string
 	if tmp, ok := rawArgs["requestId"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("requestId"))
@@ -37512,7 +37551,7 @@ func (ec *executionContext) _Subscription_taskUnassigned(ctx context.Context, fi
 	}
 }
 
-func (ec *executionContext) _Subscription_taskCollaboratorsUpdated(ctx context.Context, field graphql.CollectedField) (ret func() graphql.Marshaler) {
+func (ec *executionContext) _Subscription_taskCollaboratorUpdated(ctx context.Context, field graphql.CollectedField) (ret func() graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -37529,7 +37568,7 @@ func (ec *executionContext) _Subscription_taskCollaboratorsUpdated(ctx context.C
 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	rawArgs := field.ArgumentMap(ec.Variables)
-	args, err := ec.field_Subscription_taskCollaboratorsUpdated_args(ctx, rawArgs)
+	args, err := ec.field_Subscription_taskCollaboratorUpdated_args(ctx, rawArgs)
 	if err != nil {
 		ec.Error(ctx, err)
 		return nil
@@ -37537,7 +37576,7 @@ func (ec *executionContext) _Subscription_taskCollaboratorsUpdated(ctx context.C
 	fc.Args = args
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Subscription().TaskCollaboratorsUpdated(rctx, args["taskId"].(ulid.ID), args["requestId"].(string))
+		return ec.resolvers.Subscription().TaskCollaboratorUpdated(rctx, args["workspaceId"].(ulid.ID), args["requestId"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -37550,7 +37589,7 @@ func (ec *executionContext) _Subscription_taskCollaboratorsUpdated(ctx context.C
 		return nil
 	}
 	return func() graphql.Marshaler {
-		res, ok := <-resTmp.(<-chan []*ent.TaskCollaborator)
+		res, ok := <-resTmp.(<-chan *ent.TaskCollaborator)
 		if !ok {
 			return nil
 		}
@@ -37558,7 +37597,59 @@ func (ec *executionContext) _Subscription_taskCollaboratorsUpdated(ctx context.C
 			w.Write([]byte{'{'})
 			graphql.MarshalString(field.Alias).MarshalGQL(w)
 			w.Write([]byte{':'})
-			ec.marshalNTaskCollaborator2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskCollaboratorᚄ(ctx, field.Selections, res).MarshalGQL(w)
+			ec.marshalNTaskCollaborator2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskCollaborator(ctx, field.Selections, res).MarshalGQL(w)
+			w.Write([]byte{'}'})
+		})
+	}
+}
+
+func (ec *executionContext) _Subscription_taskCollaboratorCreated(ctx context.Context, field graphql.CollectedField) (ret func() graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = nil
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Subscription",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Subscription_taskCollaboratorCreated_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return nil
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Subscription().TaskCollaboratorCreated(rctx, args["workspaceId"].(ulid.ID), args["requestId"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return nil
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return nil
+	}
+	return func() graphql.Marshaler {
+		res, ok := <-resTmp.(<-chan *ent.TaskCollaborator)
+		if !ok {
+			return nil
+		}
+		return graphql.WriterFunc(func(w io.Writer) {
+			w.Write([]byte{'{'})
+			graphql.MarshalString(field.Alias).MarshalGQL(w)
+			w.Write([]byte{':'})
+			ec.marshalNTaskCollaborator2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskCollaborator(ctx, field.Selections, res).MarshalGQL(w)
 			w.Write([]byte{'}'})
 		})
 	}
@@ -83905,8 +83996,10 @@ func (ec *executionContext) _Subscription(ctx context.Context, sel ast.Selection
 		return ec._Subscription_taskAssigned(ctx, fields[0])
 	case "taskUnassigned":
 		return ec._Subscription_taskUnassigned(ctx, fields[0])
-	case "taskCollaboratorsUpdated":
-		return ec._Subscription_taskCollaboratorsUpdated(ctx, fields[0])
+	case "taskCollaboratorUpdated":
+		return ec._Subscription_taskCollaboratorUpdated(ctx, fields[0])
+	case "taskCollaboratorCreated":
+		return ec._Subscription_taskCollaboratorCreated(ctx, fields[0])
 	case "taskFeedUpdated":
 		return ec._Subscription_taskFeedUpdated(ctx, fields[0])
 	case "taskFeedCreated":

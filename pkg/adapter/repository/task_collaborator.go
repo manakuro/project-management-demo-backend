@@ -79,7 +79,16 @@ func (r *taskCollaboratorRepository) Create(ctx context.Context, input model.Cre
 		return nil, model.NewDBError(err)
 	}
 
-	return res, nil
+	q := client.TaskCollaborator.Query().Where(taskcollaborator.ID(res.ID))
+
+	WithTaskCollaborator(q)
+
+	taskCollaborator, err := q.Only(ctx)
+	if err != nil {
+		return nil, model.NewDBError(err)
+	}
+
+	return taskCollaborator, nil
 }
 
 func (r *taskCollaboratorRepository) Update(ctx context.Context, input model.UpdateTaskCollaboratorInput) (*model.TaskCollaborator, error) {
@@ -120,4 +129,9 @@ func (r *taskCollaboratorRepository) Delete(ctx context.Context, input model.Del
 	}
 
 	return deleted, nil
+}
+
+// WithTaskCollaborator eager-loads association with task collaborators.
+func WithTaskCollaborator(query *ent.TaskCollaboratorQuery) {
+	query.WithTeammate()
 }

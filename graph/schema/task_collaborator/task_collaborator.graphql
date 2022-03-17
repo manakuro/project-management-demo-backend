@@ -39,7 +39,8 @@ input DeleteTaskCollaboratorInput {
 
 
 extend type Subscription {
-  taskCollaboratorsUpdated(taskId: ID!, requestId: String!): [TaskCollaborator!]!
+  taskCollaboratorUpdated(workspaceId: ID!, requestId: String!): TaskCollaborator!
+  taskCollaboratorCreated(workspaceId: ID!, requestId: String!): TaskCollaborator!
 }
 
 extend type Query {
