@@ -52,6 +52,7 @@ extend type Subscription {
   projectTaskUpdated(workspaceId: ID!, requestId: String!): ProjectTask!
   projectTaskCreated(workspaceId: ID!, requestId: String!): ProjectTask!
   projectTaskCreatedByTaskId(workspaceId: ID!, requestId: String!): ProjectTask!
+  projectTaskDeleted(workspaceId: ID!, requestId: String!): ProjectTask!
 }
 
 extend type Query {

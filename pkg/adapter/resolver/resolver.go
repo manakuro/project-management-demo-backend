@@ -44,6 +44,7 @@ func NewSchema(client *ent.Client, controller controller.Controller) graphql.Exe
 				ProjectTaskColumnUpdated:                   map[string]subscription.ProjectTaskColumnUpdated{},
 				ProjectTaskCreated:                         map[string]subscription.ProjectTaskCreated{},
 				ProjectTaskCreatedByTaskID:                 map[string]subscription.ProjectTaskCreatedByTaskID{},
+				ProjectTaskDeleted:                         map[string]subscription.ProjectTaskDeleted{},
 				ProjectTaskListStatusUpdated:               map[string]subscription.ProjectTaskListStatusUpdated{},
 				ProjectTaskSectionCreated:                  map[string]subscription.ProjectTaskSectionCreated{},
 				ProjectTaskSectionDeleted:                  map[string]subscription.ProjectTaskSectionDeleted{},
