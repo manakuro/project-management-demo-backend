@@ -37,6 +37,14 @@ func (r *mutationResolver) CreateProjectTaskByTaskID(ctx context.Context, input 
 		return nil, handler.HandleGraphQLError(ctx, err)
 	}
 
+	go func() {
+		for _, c := range r.subscriptions.ProjectTaskCreatedByTaskID {
+			if c.WorkspaceID == input.WorkspaceID && c.RequestID != input.RequestID {
+				c.Ch <- p
+			}
+		}
+	}()
+
 	return p, nil
 }
 
@@ -129,6 +137,28 @@ func (r *subscriptionResolver) ProjectTaskCreated(ctx context.Context, workspace
 		<-ctx.Done()
 		r.mutex.Lock()
 		delete(r.subscriptions.ProjectTaskCreated, key)
+		r.mutex.Unlock()
+	}()
+
+	return ch, nil
+}
+
+func (r *subscriptionResolver) ProjectTaskCreatedByTaskID(ctx context.Context, workspaceID ulid.ID, requestID string) (<-chan *ent.ProjectTask, error) {
+	key := subscription.NewKey()
+	ch := make(chan *ent.ProjectTask)
+
+	r.mutex.Lock()
+	r.subscriptions.ProjectTaskCreatedByTaskID[key] = subscription.ProjectTaskCreatedByTaskID{
+		WorkspaceID: workspaceID,
+		RequestID:   requestID,
+		Ch:          ch,
+	}
+	r.mutex.Unlock()
+
+	go func() {
+		<-ctx.Done()
+		r.mutex.Lock()
+		delete(r.subscriptions.ProjectTaskCreatedByTaskID, key)
 		r.mutex.Unlock()
 	}()
 

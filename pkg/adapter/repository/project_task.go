@@ -130,7 +130,21 @@ func (r *projectTaskRepository) CreateByTaskID(ctx context.Context, input model.
 		return nil, model.NewDBError(err)
 	}
 
-	return p, nil
+	projectTask, err := client.ProjectTask.
+		Query().
+		WithProject(func(pq *ent.ProjectQuery) {
+			WithProject(pq)
+		}).
+		WithTask(func(tq *ent.TaskQuery) {
+			WithTask(tq)
+		}).
+		Where(projecttask.IDEQ(p.ID)).
+		Only(ctx)
+	if err != nil {
+		return nil, model.NewDBError(err)
+	}
+
+	return projectTask, nil
 }
 
 func (r *projectTaskRepository) Update(ctx context.Context, input model.UpdateProjectTaskInput) (*model.ProjectTask, error) {

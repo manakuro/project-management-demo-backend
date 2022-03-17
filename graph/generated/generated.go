@@ -702,6 +702,7 @@ type ComplexityRoot struct {
 		ProjectLightColorUpdated                   func(childComplexity int, id ulid.ID, requestID string) int
 		ProjectTaskColumnUpdated                   func(childComplexity int, id ulid.ID, requestID string) int
 		ProjectTaskCreated                         func(childComplexity int, workspaceID ulid.ID, requestID string) int
+		ProjectTaskCreatedByTaskID                 func(childComplexity int, workspaceID ulid.ID, requestID string) int
 		ProjectTaskListStatusUpdated               func(childComplexity int, id ulid.ID, requestID string) int
 		ProjectTaskSectionCreated                  func(childComplexity int, workspaceID ulid.ID, requestID string) int
 		ProjectTaskSectionDeleted                  func(childComplexity int, workspaceID ulid.ID, requestID string) int
@@ -1583,6 +1584,7 @@ type SubscriptionResolver interface {
 	ProjectLightColorUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.ProjectLightColor, error)
 	ProjectTaskUpdated(ctx context.Context, workspaceID ulid.ID, requestID string) (<-chan *ent.ProjectTask, error)
 	ProjectTaskCreated(ctx context.Context, workspaceID ulid.ID, requestID string) (<-chan *ent.ProjectTask, error)
+	ProjectTaskCreatedByTaskID(ctx context.Context, workspaceID ulid.ID, requestID string) (<-chan *ent.ProjectTask, error)
 	ProjectTaskColumnUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.ProjectTaskColumn, error)
 	ProjectTaskListStatusUpdated(ctx context.Context, id ulid.ID, requestID string) (<-chan *ent.ProjectTaskListStatus, error)
 	ProjectTaskSectionUpdated(ctx context.Context, workspaceID ulid.ID, requestID string) (<-chan *ent.ProjectTaskSection, error)
@@ -5689,6 +5691,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Subscription.ProjectTaskCreated(childComplexity, args["workspaceId"].(ulid.ID), args["requestId"].(string)), true
+
+	case "Subscription.projectTaskCreatedByTaskId":
+		if e.complexity.Subscription.ProjectTaskCreatedByTaskID == nil {
+			break
+		}
+
+		args, err := ec.field_Subscription_projectTaskCreatedByTaskId_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Subscription.ProjectTaskCreatedByTaskID(childComplexity, args["workspaceId"].(ulid.ID), args["requestId"].(string)), true
 
 	case "Subscription.projectTaskListStatusUpdated":
 		if e.complexity.Subscription.ProjectTaskListStatusUpdated == nil {
@@ -12967,6 +12981,7 @@ input DeleteProjectTaskInput {
 extend type Subscription {
   projectTaskUpdated(workspaceId: ID!, requestId: String!): ProjectTask!
   projectTaskCreated(workspaceId: ID!, requestId: String!): ProjectTask!
+  projectTaskCreatedByTaskId(workspaceId: ID!, requestId: String!): ProjectTask!
 }
 
 extend type Query {
@@ -19128,6 +19143,30 @@ func (ec *executionContext) field_Subscription_projectTaskColumnUpdated_args(ctx
 		}
 	}
 	args["id"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["requestId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("requestId"))
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["requestId"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Subscription_projectTaskCreatedByTaskId_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 ulid.ID
+	if tmp, ok := rawArgs["workspaceId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceId"))
+		arg0, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["workspaceId"] = arg0
 	var arg1 string
 	if tmp, ok := rawArgs["requestId"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("requestId"))
@@ -36468,6 +36507,58 @@ func (ec *executionContext) _Subscription_projectTaskCreated(ctx context.Context
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Subscription().ProjectTaskCreated(rctx, args["workspaceId"].(ulid.ID), args["requestId"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return nil
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return nil
+	}
+	return func() graphql.Marshaler {
+		res, ok := <-resTmp.(<-chan *ent.ProjectTask)
+		if !ok {
+			return nil
+		}
+		return graphql.WriterFunc(func(w io.Writer) {
+			w.Write([]byte{'{'})
+			graphql.MarshalString(field.Alias).MarshalGQL(w)
+			w.Write([]byte{':'})
+			ec.marshalNProjectTask2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTask(ctx, field.Selections, res).MarshalGQL(w)
+			w.Write([]byte{'}'})
+		})
+	}
+}
+
+func (ec *executionContext) _Subscription_projectTaskCreatedByTaskId(ctx context.Context, field graphql.CollectedField) (ret func() graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = nil
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Subscription",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Subscription_projectTaskCreatedByTaskId_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return nil
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Subscription().ProjectTaskCreatedByTaskID(rctx, args["workspaceId"].(ulid.ID), args["requestId"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -83651,6 +83742,8 @@ func (ec *executionContext) _Subscription(ctx context.Context, sel ast.Selection
 		return ec._Subscription_projectTaskUpdated(ctx, fields[0])
 	case "projectTaskCreated":
 		return ec._Subscription_projectTaskCreated(ctx, fields[0])
+	case "projectTaskCreatedByTaskId":
+		return ec._Subscription_projectTaskCreatedByTaskId(ctx, fields[0])
 	case "projectTaskColumnUpdated":
 		return ec._Subscription_projectTaskColumnUpdated(ctx, fields[0])
 	case "projectTaskListStatusUpdated":
