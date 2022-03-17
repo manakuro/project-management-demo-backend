@@ -335,6 +335,7 @@ type ComplexityRoot struct {
 		DeleteAllTask                             func(childComplexity int, input model.DeleteAllTaskInput) int
 		DeleteFavoriteProject                     func(childComplexity int, input model.DeleteFavoriteProjectInput) int
 		DeleteFavoriteWorkspace                   func(childComplexity int, input model.DeleteFavoriteWorkspaceInput) int
+		DeleteProjectTask                         func(childComplexity int, input model.DeleteProjectTaskInput) int
 		DeleteProjectTaskSection                  func(childComplexity int, input model.DeleteProjectTaskSectionInput) int
 		DeleteProjectTaskSectionAndDeleteTasks    func(childComplexity int, input model.DeleteProjectTaskSectionAndDeleteTasksInput) int
 		DeleteProjectTaskSectionAndKeepTasks      func(childComplexity int, input model.DeleteProjectTaskSectionAndKeepTasksInput) int
@@ -1365,6 +1366,7 @@ type MutationResolver interface {
 	CreateProjectTask(ctx context.Context, input ent.CreateProjectTaskInput) (*ent.ProjectTask, error)
 	CreateProjectTaskByTaskID(ctx context.Context, input model.CreateProjectTaskByTaskIDInput) (*ent.ProjectTask, error)
 	UpdateProjectTask(ctx context.Context, input ent.UpdateProjectTaskInput) (*ent.ProjectTask, error)
+	DeleteProjectTask(ctx context.Context, input model.DeleteProjectTaskInput) (*ent.ProjectTask, error)
 	CreateProjectTaskColumn(ctx context.Context, input ent.CreateProjectTaskColumnInput) (*ent.ProjectTaskColumn, error)
 	UpdateProjectTaskColumn(ctx context.Context, input ent.UpdateProjectTaskColumnInput) (*ent.ProjectTaskColumn, error)
 	CreateProjectTaskListStatus(ctx context.Context, input ent.CreateProjectTaskListStatusInput) (*ent.ProjectTaskListStatus, error)
@@ -2983,6 +2985,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.DeleteFavoriteWorkspace(childComplexity, args["input"].(model.DeleteFavoriteWorkspaceInput)), true
+
+	case "Mutation.deleteProjectTask":
+		if e.complexity.Mutation.DeleteProjectTask == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_deleteProjectTask_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.DeleteProjectTask(childComplexity, args["input"].(model.DeleteProjectTaskInput)), true
 
 	case "Mutation.deleteProjectTaskSection":
 		if e.complexity.Mutation.DeleteProjectTaskSection == nil {
@@ -12944,6 +12958,11 @@ input UpdateProjectTaskInput {
   projectTaskSectionId: ID
   requestId: String!
 }
+input DeleteProjectTaskInput {
+  id: ID!
+  workspaceId: ID!
+  requestId: String!
+}
 
 extend type Subscription {
   projectTaskUpdated(workspaceId: ID!, requestId: String!): ProjectTask!
@@ -12959,6 +12978,7 @@ extend type Mutation {
   createProjectTask(input: CreateProjectTaskInput!): ProjectTask!
   createProjectTaskByTaskId(input: CreateProjectTaskByTaskIDInput!): ProjectTask!
   updateProjectTask(input: UpdateProjectTaskInput!): ProjectTask!
+  deleteProjectTask(input: DeleteProjectTaskInput!): ProjectTask!
 }
 `, BuiltIn: false},
 	{Name: "graph/schema/project_task_column/project_task_column.graphql", Input: `type ProjectTaskColumn implements Node {
@@ -15368,6 +15388,21 @@ func (ec *executionContext) field_Mutation_deleteProjectTaskSection_args(ctx con
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNDeleteProjectTaskSectionInput2projectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐDeleteProjectTaskSectionInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_deleteProjectTask_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.DeleteProjectTaskInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNDeleteProjectTaskInput2projectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐDeleteProjectTaskInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -24920,6 +24955,48 @@ func (ec *executionContext) _Mutation_updateProjectTask(ctx context.Context, fie
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Mutation().UpdateProjectTask(rctx, args["input"].(ent.UpdateProjectTaskInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.ProjectTask)
+	fc.Result = res
+	return ec.marshalNProjectTask2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTask(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_deleteProjectTask(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_deleteProjectTask_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().DeleteProjectTask(rctx, args["input"].(model.DeleteProjectTaskInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -53768,6 +53845,45 @@ func (ec *executionContext) unmarshalInputDeleteFavoriteWorkspaceInput(ctx conte
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputDeleteProjectTaskInput(ctx context.Context, obj interface{}) (model.DeleteProjectTaskInput, error) {
+	var it model.DeleteProjectTaskInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			it.ID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "workspaceId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceId"))
+			it.WorkspaceID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "requestId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("requestId"))
+			it.RequestID, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputDeleteProjectTaskSectionAndDeleteTasksInput(ctx context.Context, obj interface{}) (model.DeleteProjectTaskSectionAndDeleteTasksInput, error) {
 	var it model.DeleteProjectTaskSectionAndDeleteTasksInput
 	asMap := map[string]interface{}{}
@@ -80627,6 +80743,11 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "deleteProjectTask":
+			out.Values[i] = ec._Mutation_deleteProjectTask(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		case "createProjectTaskColumn":
 			out.Values[i] = ec._Mutation_createProjectTaskColumn(ctx, field)
 			if out.Values[i] == graphql.Null {
@@ -88104,6 +88225,11 @@ func (ec *executionContext) unmarshalNDeleteFavoriteProjectInput2projectᚑmanag
 
 func (ec *executionContext) unmarshalNDeleteFavoriteWorkspaceInput2projectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐDeleteFavoriteWorkspaceInput(ctx context.Context, v interface{}) (model.DeleteFavoriteWorkspaceInput, error) {
 	res, err := ec.unmarshalInputDeleteFavoriteWorkspaceInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNDeleteProjectTaskInput2projectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐDeleteProjectTaskInput(ctx context.Context, v interface{}) (model.DeleteProjectTaskInput, error) {
+	res, err := ec.unmarshalInputDeleteProjectTaskInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 

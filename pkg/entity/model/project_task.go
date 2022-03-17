@@ -22,7 +22,9 @@ type UpdateProjectTaskInput = ent.UpdateProjectTaskInput
 
 // DeleteProjectTaskInput represents a mutation input.
 type DeleteProjectTaskInput struct {
-	ID ulid.ID
+	ID          ulid.ID
+	WorkspaceID ID
+	RequestID   string
 }
 
 // CreateProjectTaskByTaskIDInput represents a mutation input.

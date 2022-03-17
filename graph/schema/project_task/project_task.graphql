@@ -42,6 +42,11 @@ input UpdateProjectTaskInput {
   projectTaskSectionId: ID
   requestId: String!
 }
+input DeleteProjectTaskInput {
+  id: ID!
+  workspaceId: ID!
+  requestId: String!
+}
 
 extend type Subscription {
   projectTaskUpdated(workspaceId: ID!, requestId: String!): ProjectTask!
@@ -57,4 +62,5 @@ extend type Mutation {
   createProjectTask(input: CreateProjectTaskInput!): ProjectTask!
   createProjectTaskByTaskId(input: CreateProjectTaskByTaskIDInput!): ProjectTask!
   updateProjectTask(input: UpdateProjectTaskInput!): ProjectTask!
+  deleteProjectTask(input: DeleteProjectTaskInput!): ProjectTask!
 }

@@ -57,6 +57,15 @@ func (r *mutationResolver) UpdateProjectTask(ctx context.Context, input ent.Upda
 	return p, nil
 }
 
+func (r *mutationResolver) DeleteProjectTask(ctx context.Context, input model.DeleteProjectTaskInput) (*ent.ProjectTask, error) {
+	p, err := r.controller.ProjectTask.Delete(ctx, input)
+	if err != nil {
+		return nil, handler.HandleGraphQLError(ctx, err)
+	}
+
+	return p, nil
+}
+
 func (r *projectTaskResolver) CreatedAt(ctx context.Context, obj *ent.ProjectTask) (string, error) {
 	return datetime.FormatDate(obj.CreatedAt), nil
 }
