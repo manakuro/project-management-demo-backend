@@ -604,88 +604,89 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		Color                     func(childComplexity int, id ulid.ID) int
-		Colors                    func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ColorWhereInput) int
-		DeletedTask               func(childComplexity int, where *ent.DeletedTaskWhereInput) int
-		DeletedTasks              func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.DeletedTaskWhereInput) int
-		FavoriteProject           func(childComplexity int, where *ent.FavoriteProjectWhereInput) int
-		FavoriteProjectIds        func(childComplexity int, teammateID ulid.ID) int
-		FavoriteProjects          func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.FavoriteProjectWhereInput) int
-		FavoriteWorkspace         func(childComplexity int, where *ent.FavoriteWorkspaceWhereInput) int
-		FavoriteWorkspaceIds      func(childComplexity int, teammateID ulid.ID, workspaceID *ulid.ID) int
-		FavoriteWorkspaces        func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.FavoriteWorkspaceWhereInput) int
-		FileType                  func(childComplexity int, where *ent.FileTypeWhereInput) int
-		FileTypes                 func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.FileTypeWhereInput) int
-		Icon                      func(childComplexity int, id ulid.ID) int
-		Icons                     func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.IconWhereInput) int
-		Me                        func(childComplexity int) int
-		Node                      func(childComplexity int, id ulid.ID) int
-		Nodes                     func(childComplexity int, ids []ulid.ID) int
-		Project                   func(childComplexity int, where *ent.ProjectWhereInput) int
-		ProjectBaseColor          func(childComplexity int, where *ent.ProjectBaseColorWhereInput) int
-		ProjectBaseColors         func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectBaseColorWhereInput) int
-		ProjectIcon               func(childComplexity int, where *ent.ProjectIconWhereInput) int
-		ProjectIcons              func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectIconWhereInput) int
-		ProjectLightColor         func(childComplexity int, where *ent.ProjectLightColorWhereInput) int
-		ProjectLightColors        func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectLightColorWhereInput) int
-		ProjectTask               func(childComplexity int, where *ent.ProjectTaskWhereInput) int
-		ProjectTaskColumn         func(childComplexity int, where *ent.ProjectTaskColumnWhereInput) int
-		ProjectTaskColumns        func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectTaskColumnWhereInput) int
-		ProjectTaskListStatus     func(childComplexity int, where *ent.ProjectTaskListStatusWhereInput) int
-		ProjectTaskListStatuses   func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectTaskListStatusWhereInput) int
-		ProjectTaskSection        func(childComplexity int, where *ent.ProjectTaskSectionWhereInput) int
-		ProjectTaskSections       func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectTaskSectionWhereInput) int
-		ProjectTasks              func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectTaskWhereInput) int
-		ProjectTeammate           func(childComplexity int, where *ent.ProjectTeammateWhereInput) int
-		ProjectTeammates          func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectTeammateWhereInput) int
-		Projects                  func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectWhereInput) int
-		Tag                       func(childComplexity int, where *ent.TagWhereInput) int
-		Tags                      func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TagWhereInput) int
-		Task                      func(childComplexity int, where *ent.TaskWhereInput) int
-		TaskCollaborator          func(childComplexity int, where *ent.TaskCollaboratorWhereInput) int
-		TaskCollaborators         func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskCollaboratorWhereInput) int
-		TaskColumn                func(childComplexity int, where *ent.TaskColumnWhereInput) int
-		TaskColumns               func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskColumnWhereInput) int
-		TaskFeed                  func(childComplexity int, where *ent.TaskFeedWhereInput) int
-		TaskFeedLike              func(childComplexity int, where *ent.TaskFeedLikeWhereInput) int
-		TaskFeedLikes             func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskFeedLikeWhereInput) int
-		TaskFeeds                 func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskFeedWhereInput) int
-		TaskFile                  func(childComplexity int, where *ent.TaskFileWhereInput) int
-		TaskFiles                 func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskFileWhereInput) int
-		TaskLike                  func(childComplexity int, where *ent.TaskLikeWhereInput) int
-		TaskLikes                 func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskLikeWhereInput) int
-		TaskListCompletedStatus   func(childComplexity int, where *ent.TaskListCompletedStatusWhereInput) int
-		TaskListCompletedStatuses func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskListCompletedStatusWhereInput) int
-		TaskListSortStatus        func(childComplexity int, where *ent.TaskListSortStatusWhereInput) int
-		TaskListSortStatuses      func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskListSortStatusWhereInput) int
-		TaskPriorities            func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskPriorityWhereInput) int
-		TaskPriority              func(childComplexity int, where *ent.TaskPriorityWhereInput) int
-		TaskSection               func(childComplexity int, where *ent.TaskSectionWhereInput) int
-		TaskSections              func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskSectionWhereInput) int
-		TaskTag                   func(childComplexity int, where *ent.TaskTagWhereInput) int
-		TaskTags                  func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskTagWhereInput) int
-		Tasks                     func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskWhereInput) int
-		TasksDueSoon              func(childComplexity int, workspaceID ulid.ID, teammateID ulid.ID) int
-		Teammate                  func(childComplexity int, id ulid.ID) int
-		TeammateTask              func(childComplexity int, where *ent.TeammateTaskWhereInput) int
-		TeammateTaskColumn        func(childComplexity int, where *ent.TeammateTaskColumnWhereInput) int
-		TeammateTaskColumns       func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TeammateTaskColumnWhereInput) int
-		TeammateTaskListStatus    func(childComplexity int, where *ent.TeammateTaskListStatusWhereInput) int
-		TeammateTaskListStatuses  func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TeammateTaskListStatusWhereInput) int
-		TeammateTaskSection       func(childComplexity int, where *ent.TeammateTaskSectionWhereInput) int
-		TeammateTaskSections      func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TeammateTaskSectionWhereInput) int
-		TeammateTaskTabStatus     func(childComplexity int, where *ent.TeammateTaskTabStatusWhereInput) int
-		TeammateTaskTabStatuses   func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TeammateTaskTabStatusWhereInput) int
-		TeammateTasks             func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TeammateTaskWhereInput) int
-		Teammates                 func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TeammateWhereInput) int
-		TestTodo                  func(childComplexity int, where *ent.TestTodoWhereInput) int
-		TestTodos                 func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TestTodoWhereInput) int
-		TestUser                  func(childComplexity int, id ulid.ID, age *int) int
-		TestUsers                 func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TestUserWhereInput) int
-		Workspace                 func(childComplexity int, where *ent.WorkspaceWhereInput) int
-		WorkspaceTeammate         func(childComplexity int, where *ent.WorkspaceTeammateWhereInput) int
-		WorkspaceTeammates        func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.WorkspaceTeammateWhereInput) int
-		Workspaces                func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.WorkspaceWhereInput) int
+		Color                       func(childComplexity int, id ulid.ID) int
+		Colors                      func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ColorWhereInput) int
+		DeletedTask                 func(childComplexity int, where *ent.DeletedTaskWhereInput) int
+		DeletedTasks                func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.DeletedTaskWhereInput) int
+		FavoriteProject             func(childComplexity int, where *ent.FavoriteProjectWhereInput) int
+		FavoriteProjectIds          func(childComplexity int, teammateID ulid.ID) int
+		FavoriteProjects            func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.FavoriteProjectWhereInput) int
+		FavoriteWorkspace           func(childComplexity int, where *ent.FavoriteWorkspaceWhereInput) int
+		FavoriteWorkspaceIds        func(childComplexity int, teammateID ulid.ID, workspaceID *ulid.ID) int
+		FavoriteWorkspaces          func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.FavoriteWorkspaceWhereInput) int
+		FileType                    func(childComplexity int, where *ent.FileTypeWhereInput) int
+		FileTypes                   func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.FileTypeWhereInput) int
+		Icon                        func(childComplexity int, id ulid.ID) int
+		Icons                       func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.IconWhereInput) int
+		Me                          func(childComplexity int) int
+		Node                        func(childComplexity int, id ulid.ID) int
+		Nodes                       func(childComplexity int, ids []ulid.ID) int
+		Project                     func(childComplexity int, where *ent.ProjectWhereInput) int
+		ProjectBaseColor            func(childComplexity int, where *ent.ProjectBaseColorWhereInput) int
+		ProjectBaseColors           func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectBaseColorWhereInput) int
+		ProjectIcon                 func(childComplexity int, where *ent.ProjectIconWhereInput) int
+		ProjectIcons                func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectIconWhereInput) int
+		ProjectLightColor           func(childComplexity int, where *ent.ProjectLightColorWhereInput) int
+		ProjectLightColors          func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectLightColorWhereInput) int
+		ProjectTask                 func(childComplexity int, where *ent.ProjectTaskWhereInput) int
+		ProjectTaskColumn           func(childComplexity int, where *ent.ProjectTaskColumnWhereInput) int
+		ProjectTaskColumns          func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectTaskColumnWhereInput) int
+		ProjectTaskListStatus       func(childComplexity int, where *ent.ProjectTaskListStatusWhereInput) int
+		ProjectTaskListStatuses     func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectTaskListStatusWhereInput) int
+		ProjectTaskSection          func(childComplexity int, where *ent.ProjectTaskSectionWhereInput) int
+		ProjectTaskSections         func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectTaskSectionWhereInput) int
+		ProjectTaskSectionsByTaskID func(childComplexity int, taskID ulid.ID, where *ent.ProjectTaskSectionWhereInput) int
+		ProjectTasks                func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectTaskWhereInput) int
+		ProjectTeammate             func(childComplexity int, where *ent.ProjectTeammateWhereInput) int
+		ProjectTeammates            func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectTeammateWhereInput) int
+		Projects                    func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectWhereInput) int
+		Tag                         func(childComplexity int, where *ent.TagWhereInput) int
+		Tags                        func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TagWhereInput) int
+		Task                        func(childComplexity int, where *ent.TaskWhereInput) int
+		TaskCollaborator            func(childComplexity int, where *ent.TaskCollaboratorWhereInput) int
+		TaskCollaborators           func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskCollaboratorWhereInput) int
+		TaskColumn                  func(childComplexity int, where *ent.TaskColumnWhereInput) int
+		TaskColumns                 func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskColumnWhereInput) int
+		TaskFeed                    func(childComplexity int, where *ent.TaskFeedWhereInput) int
+		TaskFeedLike                func(childComplexity int, where *ent.TaskFeedLikeWhereInput) int
+		TaskFeedLikes               func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskFeedLikeWhereInput) int
+		TaskFeeds                   func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskFeedWhereInput) int
+		TaskFile                    func(childComplexity int, where *ent.TaskFileWhereInput) int
+		TaskFiles                   func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskFileWhereInput) int
+		TaskLike                    func(childComplexity int, where *ent.TaskLikeWhereInput) int
+		TaskLikes                   func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskLikeWhereInput) int
+		TaskListCompletedStatus     func(childComplexity int, where *ent.TaskListCompletedStatusWhereInput) int
+		TaskListCompletedStatuses   func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskListCompletedStatusWhereInput) int
+		TaskListSortStatus          func(childComplexity int, where *ent.TaskListSortStatusWhereInput) int
+		TaskListSortStatuses        func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskListSortStatusWhereInput) int
+		TaskPriorities              func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskPriorityWhereInput) int
+		TaskPriority                func(childComplexity int, where *ent.TaskPriorityWhereInput) int
+		TaskSection                 func(childComplexity int, where *ent.TaskSectionWhereInput) int
+		TaskSections                func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskSectionWhereInput) int
+		TaskTag                     func(childComplexity int, where *ent.TaskTagWhereInput) int
+		TaskTags                    func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskTagWhereInput) int
+		Tasks                       func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskWhereInput) int
+		TasksDueSoon                func(childComplexity int, workspaceID ulid.ID, teammateID ulid.ID) int
+		Teammate                    func(childComplexity int, id ulid.ID) int
+		TeammateTask                func(childComplexity int, where *ent.TeammateTaskWhereInput) int
+		TeammateTaskColumn          func(childComplexity int, where *ent.TeammateTaskColumnWhereInput) int
+		TeammateTaskColumns         func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TeammateTaskColumnWhereInput) int
+		TeammateTaskListStatus      func(childComplexity int, where *ent.TeammateTaskListStatusWhereInput) int
+		TeammateTaskListStatuses    func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TeammateTaskListStatusWhereInput) int
+		TeammateTaskSection         func(childComplexity int, where *ent.TeammateTaskSectionWhereInput) int
+		TeammateTaskSections        func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TeammateTaskSectionWhereInput) int
+		TeammateTaskTabStatus       func(childComplexity int, where *ent.TeammateTaskTabStatusWhereInput) int
+		TeammateTaskTabStatuses     func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TeammateTaskTabStatusWhereInput) int
+		TeammateTasks               func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TeammateTaskWhereInput) int
+		Teammates                   func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TeammateWhereInput) int
+		TestTodo                    func(childComplexity int, where *ent.TestTodoWhereInput) int
+		TestTodos                   func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TestTodoWhereInput) int
+		TestUser                    func(childComplexity int, id ulid.ID, age *int) int
+		TestUsers                   func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TestUserWhereInput) int
+		Workspace                   func(childComplexity int, where *ent.WorkspaceWhereInput) int
+		WorkspaceTeammate           func(childComplexity int, where *ent.WorkspaceTeammateWhereInput) int
+		WorkspaceTeammates          func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.WorkspaceTeammateWhereInput) int
+		Workspaces                  func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.WorkspaceWhereInput) int
 	}
 
 	Subscription struct {
@@ -1522,6 +1523,7 @@ type QueryResolver interface {
 	ProjectTaskListStatuses(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectTaskListStatusWhereInput) (*ent.ProjectTaskListStatusConnection, error)
 	ProjectTaskSection(ctx context.Context, where *ent.ProjectTaskSectionWhereInput) (*ent.ProjectTaskSection, error)
 	ProjectTaskSections(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectTaskSectionWhereInput) (*ent.ProjectTaskSectionConnection, error)
+	ProjectTaskSectionsByTaskID(ctx context.Context, taskID ulid.ID, where *ent.ProjectTaskSectionWhereInput) ([]*ent.ProjectTaskSection, error)
 	ProjectTeammate(ctx context.Context, where *ent.ProjectTeammateWhereInput) (*ent.ProjectTeammate, error)
 	ProjectTeammates(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectTeammateWhereInput) (*ent.ProjectTeammateConnection, error)
 	Tag(ctx context.Context, where *ent.TagWhereInput) (*ent.Tag, error)
@@ -4929,6 +4931,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.ProjectTaskSections(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["where"].(*ent.ProjectTaskSectionWhereInput)), true
+
+	case "Query.projectTaskSectionsByTaskId":
+		if e.complexity.Query.ProjectTaskSectionsByTaskID == nil {
+			break
+		}
+
+		args, err := ec.field_Query_projectTaskSectionsByTaskId_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.ProjectTaskSectionsByTaskID(childComplexity, args["taskId"].(ulid.ID), args["where"].(*ent.ProjectTaskSectionWhereInput)), true
 
 	case "Query.projectTasks":
 		if e.complexity.Query.ProjectTasks == nil {
@@ -13249,6 +13263,7 @@ extend type Subscription {
 extend type Query {
   projectTaskSection(where: ProjectTaskSectionWhereInput): ProjectTaskSection
   projectTaskSections(after: Cursor, first: Int, before: Cursor, last: Int, where: ProjectTaskSectionWhereInput): ProjectTaskSectionConnection
+  projectTaskSectionsByTaskId(taskId: ID!, where: ProjectTaskSectionWhereInput): [ProjectTaskSection!]!
 }
 
 extend type Mutation {
@@ -17122,6 +17137,30 @@ func (ec *executionContext) field_Query_projectTaskSection_args(ctx context.Cont
 		}
 	}
 	args["where"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_projectTaskSectionsByTaskId_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 ulid.ID
+	if tmp, ok := rawArgs["taskId"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskId"))
+		arg0, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["taskId"] = arg0
+	var arg1 *ent.ProjectTaskSectionWhereInput
+	if tmp, ok := rawArgs["where"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
+		arg1, err = ec.unmarshalOProjectTaskSectionWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTaskSectionWhereInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["where"] = arg1
 	return args, nil
 }
 
@@ -33939,6 +33978,48 @@ func (ec *executionContext) _Query_projectTaskSections(ctx context.Context, fiel
 	res := resTmp.(*ent.ProjectTaskSectionConnection)
 	fc.Result = res
 	return ec.marshalOProjectTaskSectionConnection2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTaskSectionConnection(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_projectTaskSectionsByTaskId(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_projectTaskSectionsByTaskId_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().ProjectTaskSectionsByTaskID(rctx, args["taskId"].(ulid.ID), args["where"].(*ent.ProjectTaskSectionWhereInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*ent.ProjectTaskSection)
+	fc.Result = res
+	return ec.marshalNProjectTaskSection2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTaskSectionᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_projectTeammate(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -83453,6 +83534,20 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 				res = ec._Query_projectTaskSections(ctx, field)
 				return res
 			})
+		case "projectTaskSectionsByTaskId":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_projectTaskSectionsByTaskId(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
 		case "projectTeammate":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
@@ -89350,6 +89445,50 @@ func (ec *executionContext) unmarshalNProjectTaskListStatusWhereInput2ᚖproject
 
 func (ec *executionContext) marshalNProjectTaskSection2projectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTaskSection(ctx context.Context, sel ast.SelectionSet, v ent.ProjectTaskSection) graphql.Marshaler {
 	return ec._ProjectTaskSection(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNProjectTaskSection2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTaskSectionᚄ(ctx context.Context, sel ast.SelectionSet, v []*ent.ProjectTaskSection) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNProjectTaskSection2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTaskSection(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
 }
 
 func (ec *executionContext) marshalNProjectTaskSection2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTaskSection(ctx context.Context, sel ast.SelectionSet, v *ent.ProjectTaskSection) graphql.Marshaler {

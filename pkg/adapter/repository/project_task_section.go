@@ -61,6 +61,35 @@ func (r *projectTaskSectionRepository) ListWithPagination(ctx context.Context, a
 	return res, nil
 }
 
+func (r *projectTaskSectionRepository) ListByTaskID(ctx context.Context, taskID model.ID, where *model.ProjectTaskSectionWhereInput) ([]*model.ProjectTaskSection, error) {
+	projectTask, err := r.client.ProjectTask.Query().Where(projecttask.TaskID(taskID)).Only(ctx)
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return nil, nil
+		}
+		return nil, model.NewDBError(err)
+	}
+
+	q := r.client.ProjectTaskSection.
+		Query().Where(projecttasksection.ProjectID(projectTask.ProjectID))
+
+	q, err = where.Filter(q)
+	if err != nil {
+		return nil, model.NewDBError(err)
+	}
+
+	q.WithProject(func(pq *ent.ProjectQuery) {
+		WithProject(pq)
+	})
+
+	projectTaskSections, err := q.All(ctx)
+	if err != nil {
+		return nil, model.NewDBError(err)
+	}
+
+	return projectTaskSections, nil
+}
+
 func (r *projectTaskSectionRepository) Create(ctx context.Context, input model.CreateProjectTaskSectionInput) (*model.ProjectTaskSection, error) {
 	res, err := r.client.
 		ProjectTaskSection.

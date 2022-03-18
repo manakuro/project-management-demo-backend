@@ -158,6 +158,15 @@ func (r *queryResolver) ProjectTaskSections(ctx context.Context, after *ent.Curs
 	return ps, nil
 }
 
+func (r *queryResolver) ProjectTaskSectionsByTaskID(ctx context.Context, taskID ulid.ID, where *ent.ProjectTaskSectionWhereInput) ([]*ent.ProjectTaskSection, error) {
+	p, err := r.controller.ProjectTaskSection.ListByTaskID(ctx, taskID, where)
+	if err != nil {
+		return nil, handler.HandleGraphQLError(ctx, err)
+	}
+
+	return p, nil
+}
+
 func (r *subscriptionResolver) ProjectTaskSectionUpdated(ctx context.Context, workspaceID ulid.ID, requestID string) (<-chan *ent.ProjectTaskSection, error) {
 	key := subscription.NewKey()
 	ch := make(chan *ent.ProjectTaskSection, 1)

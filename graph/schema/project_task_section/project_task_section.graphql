@@ -102,6 +102,7 @@ extend type Subscription {
 extend type Query {
   projectTaskSection(where: ProjectTaskSectionWhereInput): ProjectTaskSection
   projectTaskSections(after: Cursor, first: Int, before: Cursor, last: Int, where: ProjectTaskSectionWhereInput): ProjectTaskSectionConnection
+  projectTaskSectionsByTaskId(taskId: ID!, where: ProjectTaskSectionWhereInput): [ProjectTaskSection!]!
 }
 
 extend type Mutation {
