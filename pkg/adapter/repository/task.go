@@ -155,7 +155,7 @@ func (r *taskRepository) Assign(ctx context.Context, input model.AssignTaskInput
 func (r *taskRepository) Unassign(ctx context.Context, input model.UnassignTaskInput) (*model.UnassignTaskPayload, error) {
 	client := WithTransactionalMutation(ctx)
 
-	updatedTask, err := client.Task.UpdateOneID(input.ID).SetAssigneeID("").Save(ctx)
+	updatedTask, err := client.Task.UpdateOneID(input.ID).SetNillableAssigneeID(nil).Save(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
 			return nil, model.NewNotFoundError(err, input)
