@@ -5,7 +5,6 @@ package ent
 import (
 	"project-management-demo-backend/ent/deletedtask"
 	"project-management-demo-backend/ent/filetype"
-	"project-management-demo-backend/ent/schema/editor"
 	"project-management-demo-backend/ent/schema/testuserprofile"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/taskcolumn"
@@ -482,7 +481,7 @@ func (u *IconUpdateOne) SetInput(i UpdateIconInput) *IconUpdateOne {
 // CreateProjectInput represents a mutation input for creating projects.
 type CreateProjectInput struct {
 	Name                      string
-	Description               editor.Description
+	Description               map[string]interface{}
 	DescriptionTitle          string
 	DueDate                   *time.Time
 	CreatedAt                 *time.Time
@@ -554,7 +553,7 @@ func (c *ProjectCreate) SetInput(i CreateProjectInput) *ProjectCreate {
 type UpdateProjectInput struct {
 	ID                              ulid.ID
 	Name                            *string
-	Description                     *editor.Description
+	Description                     map[string]interface{}
 	DescriptionTitle                *string
 	DueDate                         *time.Time
 	ClearDueDate                    bool
@@ -591,7 +590,7 @@ func (i *UpdateProjectInput) Mutate(m *ProjectMutation) {
 		m.SetName(*v)
 	}
 	if v := i.Description; v != nil {
-		m.SetDescription(*v)
+		m.SetDescription(v)
 	}
 	if v := i.DescriptionTitle; v != nil {
 		m.SetDescriptionTitle(*v)
@@ -1376,7 +1375,7 @@ type CreateTaskInput struct {
 	Name                string
 	DueDate             *time.Time
 	DueTime             *time.Time
-	Description         editor.Description
+	Description         map[string]interface{}
 	CreatedAt           *time.Time
 	UpdatedAt           *time.Time
 	AssigneeID          *ulid.ID
@@ -1482,7 +1481,7 @@ type UpdateTaskInput struct {
 	ClearDueDate              bool
 	DueTime                   *time.Time
 	ClearDueTime              bool
-	Description               *editor.Description
+	Description               map[string]interface{}
 	AssigneeID                *ulid.ID
 	ClearTeammate             bool
 	TaskPriorityID            *ulid.ID
@@ -1546,7 +1545,7 @@ func (i *UpdateTaskInput) Mutate(m *TaskMutation) {
 		m.SetDueTime(*v)
 	}
 	if v := i.Description; v != nil {
-		m.SetDescription(*v)
+		m.SetDescription(v)
 	}
 	if i.ClearTeammate {
 		m.ClearTeammate()
@@ -1790,7 +1789,7 @@ func (u *TaskColumnUpdateOne) SetInput(i UpdateTaskColumnInput) *TaskColumnUpdat
 
 // CreateTaskFeedInput represents a mutation input for creating taskfeeds.
 type CreateTaskFeedInput struct {
-	Description     editor.Description
+	Description     map[string]interface{}
 	IsFirst         *bool
 	IsPinned        *bool
 	CreatedAt       *time.Time
@@ -1837,7 +1836,7 @@ func (c *TaskFeedCreate) SetInput(i CreateTaskFeedInput) *TaskFeedCreate {
 // UpdateTaskFeedInput represents a mutation input for updating taskfeeds.
 type UpdateTaskFeedInput struct {
 	ID                    ulid.ID
-	Description           *editor.Description
+	Description           map[string]interface{}
 	IsFirst               *bool
 	IsPinned              *bool
 	TaskID                *ulid.ID
@@ -1855,7 +1854,7 @@ type UpdateTaskFeedInput struct {
 // Mutate applies the UpdateTaskFeedInput on the TaskFeedMutation.
 func (i *UpdateTaskFeedInput) Mutate(m *TaskFeedMutation) {
 	if v := i.Description; v != nil {
-		m.SetDescription(*v)
+		m.SetDescription(v)
 	}
 	if v := i.IsFirst; v != nil {
 		m.SetIsFirst(*v)
@@ -3332,6 +3331,7 @@ type CreateTestUserInput struct {
 	Name        string
 	Age         int
 	Profile     testuserprofile.TestUserProfile
+	Description map[string]interface{}
 	CreatedAt   *time.Time
 	UpdatedAt   *time.Time
 	TestTodoIDs []ulid.ID
@@ -3343,6 +3343,7 @@ func (i *CreateTestUserInput) Mutate(m *TestUserCreate) {
 	m.SetName(i.Name)
 	m.SetAge(i.Age)
 	m.SetProfile(i.Profile)
+	m.SetDescription(i.Description)
 	if v := i.CreatedAt; v != nil {
 		m.SetCreatedAt(*v)
 	}
@@ -3366,6 +3367,7 @@ type UpdateTestUserInput struct {
 	Name              *string
 	Age               *int
 	Profile           *testuserprofile.TestUserProfile
+	Description       map[string]interface{}
 	AddTestTodoIDs    []ulid.ID
 	RemoveTestTodoIDs []ulid.ID
 	RequestID         string
@@ -3381,6 +3383,9 @@ func (i *UpdateTestUserInput) Mutate(m *TestUserMutation) {
 	}
 	if v := i.Profile; v != nil {
 		m.SetProfile(*v)
+	}
+	if v := i.Description; v != nil {
+		m.SetDescription(v)
 	}
 	if ids := i.AddTestTodoIDs; len(ids) > 0 {
 		m.AddTestTodoIDs(ids...)
@@ -3405,7 +3410,7 @@ func (u *TestUserUpdateOne) SetInput(i UpdateTestUserInput) *TestUserUpdateOne {
 // CreateWorkspaceInput represents a mutation input for creating workspaces.
 type CreateWorkspaceInput struct {
 	Name                       string
-	Description                editor.Description
+	Description                map[string]interface{}
 	CreatedAt                  *time.Time
 	UpdatedAt                  *time.Time
 	CreatedBy                  ulid.ID
@@ -3479,7 +3484,7 @@ func (c *WorkspaceCreate) SetInput(i CreateWorkspaceInput) *WorkspaceCreate {
 type UpdateWorkspaceInput struct {
 	ID                               ulid.ID
 	Name                             *string
-	Description                      *editor.Description
+	Description                      map[string]interface{}
 	CreatedBy                        *ulid.ID
 	ClearTeammate                    bool
 	AddProjectIDs                    []ulid.ID
@@ -3513,7 +3518,7 @@ func (i *UpdateWorkspaceInput) Mutate(m *WorkspaceMutation) {
 		m.SetName(*v)
 	}
 	if v := i.Description; v != nil {
-		m.SetDescription(*v)
+		m.SetDescription(v)
 	}
 	if i.ClearTeammate {
 		m.ClearTeammate()

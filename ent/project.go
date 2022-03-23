@@ -9,7 +9,6 @@ import (
 	"project-management-demo-backend/ent/projectbasecolor"
 	"project-management-demo-backend/ent/projecticon"
 	"project-management-demo-backend/ent/projectlightcolor"
-	"project-management-demo-backend/ent/schema/editor"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/workspace"
@@ -37,7 +36,7 @@ type Project struct {
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
 	// Description holds the value of the "description" field.
-	Description editor.Description `json:"description,omitempty"`
+	Description map[string]interface{} `json:"description,omitempty"`
 	// DescriptionTitle holds the value of the "description_title" field.
 	DescriptionTitle string `json:"description_title,omitempty"`
 	// DueDate holds the value of the "due_date" field.

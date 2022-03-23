@@ -17,7 +17,6 @@ import (
 	"project-management-demo-backend/ent/projecttaskliststatus"
 	"project-management-demo-backend/ent/projecttasksection"
 	"project-management-demo-backend/ent/projectteammate"
-	"project-management-demo-backend/ent/schema/editor"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/taskfile"
 	"project-management-demo-backend/ent/teammate"
@@ -79,8 +78,8 @@ func (pu *ProjectUpdate) SetName(s string) *ProjectUpdate {
 }
 
 // SetDescription sets the "description" field.
-func (pu *ProjectUpdate) SetDescription(e editor.Description) *ProjectUpdate {
-	pu.mutation.SetDescription(e)
+func (pu *ProjectUpdate) SetDescription(m map[string]interface{}) *ProjectUpdate {
+	pu.mutation.SetDescription(m)
 	return pu
 }
 
@@ -1179,8 +1178,8 @@ func (puo *ProjectUpdateOne) SetName(s string) *ProjectUpdateOne {
 }
 
 // SetDescription sets the "description" field.
-func (puo *ProjectUpdateOne) SetDescription(e editor.Description) *ProjectUpdateOne {
-	puo.mutation.SetDescription(e)
+func (puo *ProjectUpdateOne) SetDescription(m map[string]interface{}) *ProjectUpdateOne {
+	puo.mutation.SetDescription(m)
 	return puo
 }
 

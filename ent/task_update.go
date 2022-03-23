@@ -9,7 +9,6 @@ import (
 	"project-management-demo-backend/ent/deletedtask"
 	"project-management-demo-backend/ent/predicate"
 	"project-management-demo-backend/ent/projecttask"
-	"project-management-demo-backend/ent/schema/editor"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/task"
 	"project-management-demo-backend/ent/taskcollaborator"
@@ -202,8 +201,8 @@ func (tu *TaskUpdate) ClearDueTime() *TaskUpdate {
 }
 
 // SetDescription sets the "description" field.
-func (tu *TaskUpdate) SetDescription(e editor.Description) *TaskUpdate {
-	tu.mutation.SetDescription(e)
+func (tu *TaskUpdate) SetDescription(m map[string]interface{}) *TaskUpdate {
+	tu.mutation.SetDescription(m)
 	return tu
 }
 
@@ -1620,8 +1619,8 @@ func (tuo *TaskUpdateOne) ClearDueTime() *TaskUpdateOne {
 }
 
 // SetDescription sets the "description" field.
-func (tuo *TaskUpdateOne) SetDescription(e editor.Description) *TaskUpdateOne {
-	tuo.mutation.SetDescription(e)
+func (tuo *TaskUpdateOne) SetDescription(m map[string]interface{}) *TaskUpdateOne {
+	tuo.mutation.SetDescription(m)
 	return tuo
 }
 

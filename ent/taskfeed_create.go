@@ -6,7 +6,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"project-management-demo-backend/ent/schema/editor"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/task"
 	"project-management-demo-backend/ent/taskfeed"
@@ -42,8 +41,8 @@ func (tfc *TaskFeedCreate) SetTeammateID(u ulid.ID) *TaskFeedCreate {
 }
 
 // SetDescription sets the "description" field.
-func (tfc *TaskFeedCreate) SetDescription(e editor.Description) *TaskFeedCreate {
-	tfc.mutation.SetDescription(e)
+func (tfc *TaskFeedCreate) SetDescription(m map[string]interface{}) *TaskFeedCreate {
+	tfc.mutation.SetDescription(m)
 	return tfc
 }
 
@@ -513,7 +512,7 @@ func (u *TaskFeedUpsert) UpdateTeammateID() *TaskFeedUpsert {
 }
 
 // SetDescription sets the "description" field.
-func (u *TaskFeedUpsert) SetDescription(v editor.Description) *TaskFeedUpsert {
+func (u *TaskFeedUpsert) SetDescription(v map[string]interface{}) *TaskFeedUpsert {
 	u.Set(taskfeed.FieldDescription, v)
 	return u
 }
@@ -657,7 +656,7 @@ func (u *TaskFeedUpsertOne) UpdateTeammateID() *TaskFeedUpsertOne {
 }
 
 // SetDescription sets the "description" field.
-func (u *TaskFeedUpsertOne) SetDescription(v editor.Description) *TaskFeedUpsertOne {
+func (u *TaskFeedUpsertOne) SetDescription(v map[string]interface{}) *TaskFeedUpsertOne {
 	return u.Update(func(s *TaskFeedUpsert) {
 		s.SetDescription(v)
 	})
@@ -977,7 +976,7 @@ func (u *TaskFeedUpsertBulk) UpdateTeammateID() *TaskFeedUpsertBulk {
 }
 
 // SetDescription sets the "description" field.
-func (u *TaskFeedUpsertBulk) SetDescription(v editor.Description) *TaskFeedUpsertBulk {
+func (u *TaskFeedUpsertBulk) SetDescription(v map[string]interface{}) *TaskFeedUpsertBulk {
 	return u.Update(func(s *TaskFeedUpsert) {
 		s.SetDescription(v)
 	})

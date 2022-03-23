@@ -1,5 +1,7 @@
 scalar Time
 scalar Cursor
+scalar Map
+scalar Any
 
 interface Node {
     id: ID!

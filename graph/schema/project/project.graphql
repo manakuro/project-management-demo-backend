@@ -11,7 +11,7 @@ type Project implements Node {
   name: String!
   projectTeammates: [ProjectTeammate!]!
   teammateIds: [String!]!
-  description: EditorDescription!
+  description: Map!
   descriptionTitle: String!
   dueDate: String!
   createdAt: String!
@@ -34,7 +34,7 @@ input CreateProjectInput {
   projectIconId: ID
   createdBy: ID!
   name: String!
-  description: EditorDescriptionInput
+  description: Map
   descriptionTitle: String
   dueDate: Time
   requestId: String!
@@ -46,7 +46,7 @@ input UpdateProjectInput {
   projectIconId: ID
   createdBy: ID
   name: String
-  description: EditorDescriptionInput
+  description: Map
   descriptionTitle: String
   dueDate: Time
   requestId: String!

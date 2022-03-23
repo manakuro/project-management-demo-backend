@@ -1203,13 +1203,14 @@ type ComplexityRoot struct {
 	}
 
 	TestUser struct {
-		Age       func(childComplexity int) int
-		CreatedAt func(childComplexity int) int
-		ID        func(childComplexity int) int
-		Name      func(childComplexity int) int
-		Profile   func(childComplexity int) int
-		TestTodos func(childComplexity int) int
-		UpdatedAt func(childComplexity int) int
+		Age         func(childComplexity int) int
+		CreatedAt   func(childComplexity int) int
+		Description func(childComplexity int) int
+		ID          func(childComplexity int) int
+		Name        func(childComplexity int) int
+		Profile     func(childComplexity int) int
+		TestTodos   func(childComplexity int) int
+		UpdatedAt   func(childComplexity int) int
 	}
 
 	TestUserConnection struct {
@@ -8200,6 +8201,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.TestUser.CreatedAt(childComplexity), true
 
+	case "TestUser.description":
+		if e.complexity.TestUser.Description == nil {
+			break
+		}
+
+		return e.complexity.TestUser.Description(childComplexity), true
+
 	case "TestUser.id":
 		if e.complexity.TestUser.ID == nil {
 			break
@@ -12808,7 +12816,7 @@ extend type Mutation {
   name: String!
   projectTeammates: [ProjectTeammate!]!
   teammateIds: [String!]!
-  description: EditorDescription!
+  description: Map!
   descriptionTitle: String!
   dueDate: String!
   createdAt: String!
@@ -12831,7 +12839,7 @@ input CreateProjectInput {
   projectIconId: ID
   createdBy: ID!
   name: String!
-  description: EditorDescriptionInput
+  description: Map
   descriptionTitle: String
   dueDate: Time
   requestId: String!
@@ -12843,7 +12851,7 @@ input UpdateProjectInput {
   projectIconId: ID
   createdBy: ID
   name: String
-  description: EditorDescriptionInput
+  description: Map
   descriptionTitle: String
   dueDate: Time
   requestId: String!
@@ -13329,6 +13337,8 @@ extend type Mutation {
 `, BuiltIn: false},
 	{Name: "graph/schema/schema.graphql", Input: `scalar Time
 scalar Cursor
+scalar Map
+scalar Any
 
 interface Node {
     id: ID!
@@ -13400,7 +13410,7 @@ extend type Mutation {
 	{Name: "graph/schema/task/task.graphql", Input: `type Task implements Node {
   id: ID!
   name: String!
-  description: EditorDescription!
+  description: Map!
   taskParentId: ID!
   taskPriorityId: ID!
   taskPriority: TaskPriority
@@ -13434,7 +13444,7 @@ type TaskEdge {
 
 input CreateTaskInput {
   name: String!
-  description: EditorDescriptionInput
+  description: Map
   isNew: Boolean
   taskParentId: ID
   createdBy: ID!
@@ -13445,7 +13455,7 @@ input CreateTaskInput {
 input UpdateTaskInput {
   id: ID!
   name: String
-  description: EditorDescriptionInput
+  description: Map
   taskParentId: ID
   taskPriorityId: ID
   assigneeId: ID
@@ -13668,7 +13678,7 @@ extend type Mutation {
   id: ID!
   teammateId: ID!
   taskId: ID!
-  description: EditorDescription!
+  description: Map!
   isFirst: Boolean!
   isPinned: Boolean!
   createdAt: String!
@@ -13687,7 +13697,7 @@ type TaskFeedEdge {
 input CreateTaskFeedInput {
   taskId: ID!
   teammateId: ID!
-  description: EditorDescriptionInput!
+  description: Map!
   requestId: String!
   workspaceId: ID!
 }
@@ -13696,7 +13706,7 @@ input UpdateTaskFeedInput {
   id: ID!
   taskId: ID
   teammateId: ID
-  description: EditorDescriptionInput
+  description: Map
   isFirst: Boolean
   isPinned: Boolean
   requestId: String!
@@ -14625,6 +14635,7 @@ type TestUser implements Node {
   age: Int!
   testTodos: [TestTodo!]!
   profile: TestUserProfile!
+  description: Map
   createdAt: String!
   updatedAt: String!
 }
@@ -14642,11 +14653,13 @@ input CreateTestUserInput {
   name: String!
   age: Int!
   profile: TestUserProfileInput!
+  description: Map
 }
 input UpdateTestUserInput {
   id: ID!
   name: String
   age: Int
+  description: Map
 }
 
 extend type Query {
@@ -14668,7 +14681,7 @@ extend type Mutation {
   id: ID!
   createdBy: ID!
   name: String!
-  description: EditorDescription!
+  description: Map!
   projects: [Project!]!
   workspaceTeammates: [WorkspaceTeammate!]!
   createdAt: String!
@@ -14687,14 +14700,14 @@ type WorkspaceEdge {
 input CreateWorkspaceInput {
   name: String!
   createdBy: ID!
-  description: EditorDescriptionInput
+  description: Map
   requestId: String!
 }
 input UpdateWorkspaceInput {
   id: ID!
   name: String
   createdBy: ID
-  description: EditorDescriptionInput
+  description: Map
   requestId: String!
 }
 
@@ -29030,9 +29043,9 @@ func (ec *executionContext) _Project_description(ctx context.Context, field grap
 		}
 		return graphql.Null
 	}
-	res := resTmp.(editor.Description)
+	res := resTmp.(map[string]interface{})
 	fc.Result = res
-	return ec.marshalNEditorDescription2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋeditorᚐDescription(ctx, field.Selections, res)
+	return ec.marshalNMap2map(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Project_descriptionTitle(ctx context.Context, field graphql.CollectedField, obj *ent.Project) (ret graphql.Marshaler) {
@@ -39849,9 +39862,9 @@ func (ec *executionContext) _Task_description(ctx context.Context, field graphql
 		}
 		return graphql.Null
 	}
-	res := resTmp.(editor.Description)
+	res := resTmp.(map[string]interface{})
 	fc.Result = res
-	return ec.marshalNEditorDescription2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋeditorᚐDescription(ctx, field.Selections, res)
+	return ec.marshalNMap2map(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Task_taskParentId(ctx context.Context, field graphql.CollectedField, obj *ent.Task) (ret graphql.Marshaler) {
@@ -41575,9 +41588,9 @@ func (ec *executionContext) _TaskFeed_description(ctx context.Context, field gra
 		}
 		return graphql.Null
 	}
-	res := resTmp.(editor.Description)
+	res := resTmp.(map[string]interface{})
 	fc.Result = res
-	return ec.marshalNEditorDescription2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋeditorᚐDescription(ctx, field.Selections, res)
+	return ec.marshalNMap2map(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _TaskFeed_isFirst(ctx context.Context, field graphql.CollectedField, obj *ent.TaskFeed) (ret graphql.Marshaler) {
@@ -48679,6 +48692,38 @@ func (ec *executionContext) _TestUser_profile(ctx context.Context, field graphql
 	return ec.marshalNTestUserProfile2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋtestuserprofileᚐTestUserProfile(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _TestUser_description(ctx context.Context, field graphql.CollectedField, obj *ent.TestUser) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "TestUser",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Description, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(map[string]interface{})
+	fc.Result = res
+	return ec.marshalOMap2map(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _TestUser_createdAt(ctx context.Context, field graphql.CollectedField, obj *ent.TestUser) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -49758,9 +49803,9 @@ func (ec *executionContext) _Workspace_description(ctx context.Context, field gr
 		}
 		return graphql.Null
 	}
-	res := resTmp.(editor.Description)
+	res := resTmp.(map[string]interface{})
 	fc.Result = res
-	return ec.marshalNEditorDescription2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋeditorᚐDescription(ctx, field.Selections, res)
+	return ec.marshalNMap2map(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Workspace_projects(ctx context.Context, field graphql.CollectedField, obj *ent.Workspace) (ret graphql.Marshaler) {
@@ -52689,7 +52734,7 @@ func (ec *executionContext) unmarshalInputCreateProjectInput(ctx context.Context
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("description"))
-			it.Description, err = ec.unmarshalOEditorDescriptionInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋeditorᚐDescription(ctx, v)
+			it.Description, err = ec.unmarshalOMap2map(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -53230,7 +53275,7 @@ func (ec *executionContext) unmarshalInputCreateTaskFeedInput(ctx context.Contex
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("description"))
-			it.Description, err = ec.unmarshalNEditorDescriptionInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋeditorᚐDescription(ctx, v)
+			it.Description, err = ec.unmarshalNMap2map(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -53411,7 +53456,7 @@ func (ec *executionContext) unmarshalInputCreateTaskInput(ctx context.Context, o
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("description"))
-			it.Description, err = ec.unmarshalOEditorDescriptionInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋeditorᚐDescription(ctx, v)
+			it.Description, err = ec.unmarshalOMap2map(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -54077,6 +54122,14 @@ func (ec *executionContext) unmarshalInputCreateTestUserInput(ctx context.Contex
 			if err != nil {
 				return it, err
 			}
+		case "description":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("description"))
+			it.Description, err = ec.unmarshalOMap2map(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		}
 	}
 
@@ -54112,7 +54165,7 @@ func (ec *executionContext) unmarshalInputCreateWorkspaceInput(ctx context.Conte
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("description"))
-			it.Description, err = ec.unmarshalOEditorDescriptionInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋeditorᚐDescription(ctx, v)
+			it.Description, err = ec.unmarshalOMap2map(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -76487,7 +76540,7 @@ func (ec *executionContext) unmarshalInputUpdateProjectInput(ctx context.Context
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("description"))
-			it.Description, err = ec.unmarshalOEditorDescriptionInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋeditorᚐDescription(ctx, v)
+			it.Description, err = ec.unmarshalOMap2map(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -77037,7 +77090,7 @@ func (ec *executionContext) unmarshalInputUpdateTaskFeedInput(ctx context.Contex
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("description"))
-			it.Description, err = ec.unmarshalOEditorDescriptionInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋeditorᚐDescription(ctx, v)
+			it.Description, err = ec.unmarshalOMap2map(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -77258,7 +77311,7 @@ func (ec *executionContext) unmarshalInputUpdateTaskInput(ctx context.Context, o
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("description"))
-			it.Description, err = ec.unmarshalOEditorDescriptionInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋeditorᚐDescription(ctx, v)
+			it.Description, err = ec.unmarshalOMap2map(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -78255,6 +78308,14 @@ func (ec *executionContext) unmarshalInputUpdateTestUserInput(ctx context.Contex
 			if err != nil {
 				return it, err
 			}
+		case "description":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("description"))
+			it.Description, err = ec.unmarshalOMap2map(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		}
 	}
 
@@ -78298,7 +78359,7 @@ func (ec *executionContext) unmarshalInputUpdateWorkspaceInput(ctx context.Conte
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("description"))
-			it.Description, err = ec.unmarshalOEditorDescriptionInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋeditorᚐDescription(ctx, v)
+			it.Description, err = ec.unmarshalOMap2map(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -87471,6 +87532,8 @@ func (ec *executionContext) _TestUser(ctx context.Context, sel ast.SelectionSet,
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)
 			}
+		case "description":
+			out.Values[i] = ec._TestUser_description(ctx, field, obj)
 		case "createdAt":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
@@ -88944,10 +89007,6 @@ func (ec *executionContext) unmarshalNDeletedTaskWhereInput2ᚖprojectᚑmanagem
 	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) marshalNEditorDescription2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋeditorᚐDescription(ctx context.Context, sel ast.SelectionSet, v editor.Description) graphql.Marshaler {
-	return v
-}
-
 func (ec *executionContext) marshalNEditorDescriptionContent2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋeditorᚐDescriptionContent(ctx context.Context, sel ast.SelectionSet, v []editor.DescriptionContent) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
@@ -88984,12 +89043,6 @@ func (ec *executionContext) marshalNEditorDescriptionContent2ᚕprojectᚑmanage
 	wg.Wait()
 
 	return ret
-}
-
-func (ec *executionContext) unmarshalNEditorDescriptionInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋeditorᚐDescription(ctx context.Context, v interface{}) (editor.Description, error) {
-	var res editor.Description
-	err := res.UnmarshalGQL(v)
-	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) marshalNFavoriteProject2projectᚑmanagementᚑdemoᚑbackendᚋentᚐFavoriteProject(ctx context.Context, sel ast.SelectionSet, v ent.FavoriteProject) graphql.Marshaler {
@@ -89168,6 +89221,27 @@ func (ec *executionContext) marshalNInt2ᚖint(ctx context.Context, sel ast.Sele
 		return graphql.Null
 	}
 	res := graphql.MarshalInt(*v)
+	if res == graphql.Null {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+	}
+	return res
+}
+
+func (ec *executionContext) unmarshalNMap2map(ctx context.Context, v interface{}) (map[string]interface{}, error) {
+	res, err := graphql.UnmarshalMap(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNMap2map(ctx context.Context, sel ast.SelectionSet, v map[string]interface{}) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := graphql.MarshalMap(v)
 	if res == graphql.Null {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
 			ec.Errorf(ctx, "must not be null")
@@ -91675,21 +91749,6 @@ func (ec *executionContext) unmarshalOEditorDescriptionContentInput2ᚕproject�
 	return res, nil
 }
 
-func (ec *executionContext) unmarshalOEditorDescriptionInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋeditorᚐDescription(ctx context.Context, v interface{}) (editor.Description, error) {
-	var res editor.Description
-	err := res.UnmarshalGQL(v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) unmarshalOEditorDescriptionInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋeditorᚐDescription(ctx context.Context, v interface{}) (*editor.Description, error) {
-	if v == nil {
-		return nil, nil
-	}
-	var res = new(editor.Description)
-	err := res.UnmarshalGQL(v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
 func (ec *executionContext) marshalOFavoriteProject2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐFavoriteProject(ctx context.Context, sel ast.SelectionSet, v *ent.FavoriteProject) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
@@ -92285,6 +92344,21 @@ func (ec *executionContext) marshalOInt2ᚖint(ctx context.Context, sel ast.Sele
 		return graphql.Null
 	}
 	return graphql.MarshalInt(*v)
+}
+
+func (ec *executionContext) unmarshalOMap2map(ctx context.Context, v interface{}) (map[string]interface{}, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := graphql.UnmarshalMap(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOMap2map(ctx context.Context, sel ast.SelectionSet, v map[string]interface{}) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return graphql.MarshalMap(v)
 }
 
 func (ec *executionContext) marshalOMe2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐMe(ctx context.Context, sel ast.SelectionSet, v *model.Me) graphql.Marshaler {

@@ -5,7 +5,6 @@ package ent
 import (
 	"encoding/json"
 	"fmt"
-	"project-management-demo-backend/ent/schema/editor"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/task"
 	"project-management-demo-backend/ent/taskfeed"
@@ -26,7 +25,7 @@ type TaskFeed struct {
 	// TeammateID holds the value of the "teammate_id" field.
 	TeammateID ulid.ID `json:"teammate_id,omitempty"`
 	// Description holds the value of the "description" field.
-	Description editor.Description `json:"description,omitempty"`
+	Description map[string]interface{} `json:"description,omitempty"`
 	// IsFirst holds the value of the "is_first" field.
 	IsFirst bool `json:"is_first,omitempty"`
 	// IsPinned holds the value of the "is_pinned" field.

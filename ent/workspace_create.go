@@ -9,7 +9,6 @@ import (
 	"project-management-demo-backend/ent/deletedtask"
 	"project-management-demo-backend/ent/favoriteworkspace"
 	"project-management-demo-backend/ent/project"
-	"project-management-demo-backend/ent/schema/editor"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/tag"
 	"project-management-demo-backend/ent/tasklike"
@@ -50,8 +49,8 @@ func (wc *WorkspaceCreate) SetName(s string) *WorkspaceCreate {
 }
 
 // SetDescription sets the "description" field.
-func (wc *WorkspaceCreate) SetDescription(e editor.Description) *WorkspaceCreate {
-	wc.mutation.SetDescription(e)
+func (wc *WorkspaceCreate) SetDescription(m map[string]interface{}) *WorkspaceCreate {
+	wc.mutation.SetDescription(m)
 	return wc
 }
 
@@ -760,7 +759,7 @@ func (u *WorkspaceUpsert) UpdateName() *WorkspaceUpsert {
 }
 
 // SetDescription sets the "description" field.
-func (u *WorkspaceUpsert) SetDescription(v editor.Description) *WorkspaceUpsert {
+func (u *WorkspaceUpsert) SetDescription(v map[string]interface{}) *WorkspaceUpsert {
 	u.Set(workspace.FieldDescription, v)
 	return u
 }
@@ -880,7 +879,7 @@ func (u *WorkspaceUpsertOne) UpdateName() *WorkspaceUpsertOne {
 }
 
 // SetDescription sets the "description" field.
-func (u *WorkspaceUpsertOne) SetDescription(v editor.Description) *WorkspaceUpsertOne {
+func (u *WorkspaceUpsertOne) SetDescription(v map[string]interface{}) *WorkspaceUpsertOne {
 	return u.Update(func(s *WorkspaceUpsert) {
 		s.SetDescription(v)
 	})
@@ -1172,7 +1171,7 @@ func (u *WorkspaceUpsertBulk) UpdateName() *WorkspaceUpsertBulk {
 }
 
 // SetDescription sets the "description" field.
-func (u *WorkspaceUpsertBulk) SetDescription(v editor.Description) *WorkspaceUpsertBulk {
+func (u *WorkspaceUpsertBulk) SetDescription(v map[string]interface{}) *WorkspaceUpsertBulk {
 	return u.Update(func(s *WorkspaceUpsert) {
 		s.SetDescription(v)
 	})

@@ -3,7 +3,6 @@ package schema
 import (
 	"project-management-demo-backend/ent/annotation"
 	"project-management-demo-backend/ent/mixin"
-	"project-management-demo-backend/ent/schema/editor"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/pkg/const/globalid"
 
@@ -37,7 +36,12 @@ func (TaskFeedMixin) Fields() []ent.Field {
 			GoType(ulid.ID("")),
 		field.String("teammate_id").
 			GoType(ulid.ID("")),
-		field.JSON("description", editor.Description{}),
+		field.JSON("description", map[string]interface{}{}).
+			Annotations(
+				annotation.MutationInput{
+					SkipPtr: true,
+				},
+			),
 		field.Bool("is_first").
 			Default(false),
 		field.Bool("is_pinned").

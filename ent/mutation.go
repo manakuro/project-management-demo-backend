@@ -22,7 +22,6 @@ import (
 	"project-management-demo-backend/ent/projecttaskliststatus"
 	"project-management-demo-backend/ent/projecttasksection"
 	"project-management-demo-backend/ent/projectteammate"
-	"project-management-demo-backend/ent/schema/editor"
 	"project-management-demo-backend/ent/schema/testuserprofile"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/tag"
@@ -4028,7 +4027,7 @@ type ProjectMutation struct {
 	typ                            string
 	id                             *ulid.ID
 	name                           *string
-	description                    *editor.Description
+	description                    *map[string]interface{}
 	description_title              *string
 	due_date                       *time.Time
 	created_at                     *time.Time
@@ -4391,12 +4390,12 @@ func (m *ProjectMutation) ResetName() {
 }
 
 // SetDescription sets the "description" field.
-func (m *ProjectMutation) SetDescription(e editor.Description) {
-	m.description = &e
+func (m *ProjectMutation) SetDescription(value map[string]interface{}) {
+	m.description = &value
 }
 
 // Description returns the value of the "description" field in the mutation.
-func (m *ProjectMutation) Description() (r editor.Description, exists bool) {
+func (m *ProjectMutation) Description() (r map[string]interface{}, exists bool) {
 	v := m.description
 	if v == nil {
 		return
@@ -4407,7 +4406,7 @@ func (m *ProjectMutation) Description() (r editor.Description, exists bool) {
 // OldDescription returns the old "description" field's value of the Project entity.
 // If the Project object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ProjectMutation) OldDescription(ctx context.Context) (v editor.Description, err error) {
+func (m *ProjectMutation) OldDescription(ctx context.Context) (v map[string]interface{}, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldDescription is only allowed on UpdateOne operations")
 	}
@@ -5270,7 +5269,7 @@ func (m *ProjectMutation) SetField(name string, value ent.Value) error {
 		m.SetName(v)
 		return nil
 	case project.FieldDescription:
-		v, ok := value.(editor.Description)
+		v, ok := value.(map[string]interface{})
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -11638,7 +11637,7 @@ type TaskMutation struct {
 	name                     *string
 	due_date                 *time.Time
 	due_time                 *time.Time
-	description              *editor.Description
+	description              *map[string]interface{}
 	created_at               *time.Time
 	updated_at               *time.Time
 	clearedFields            map[string]struct{}
@@ -12226,12 +12225,12 @@ func (m *TaskMutation) ResetDueTime() {
 }
 
 // SetDescription sets the "description" field.
-func (m *TaskMutation) SetDescription(e editor.Description) {
-	m.description = &e
+func (m *TaskMutation) SetDescription(value map[string]interface{}) {
+	m.description = &value
 }
 
 // Description returns the value of the "description" field in the mutation.
-func (m *TaskMutation) Description() (r editor.Description, exists bool) {
+func (m *TaskMutation) Description() (r map[string]interface{}, exists bool) {
 	v := m.description
 	if v == nil {
 		return
@@ -12242,7 +12241,7 @@ func (m *TaskMutation) Description() (r editor.Description, exists bool) {
 // OldDescription returns the old "description" field's value of the Task entity.
 // If the Task object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *TaskMutation) OldDescription(ctx context.Context) (v editor.Description, err error) {
+func (m *TaskMutation) OldDescription(ctx context.Context) (v map[string]interface{}, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldDescription is only allowed on UpdateOne operations")
 	}
@@ -13185,7 +13184,7 @@ func (m *TaskMutation) SetField(name string, value ent.Value) error {
 		m.SetDueTime(v)
 		return nil
 	case task.FieldDescription:
-		v, ok := value.(editor.Description)
+		v, ok := value.(map[string]interface{})
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -14948,7 +14947,7 @@ type TaskFeedMutation struct {
 	op                   Op
 	typ                  string
 	id                   *ulid.ID
-	description          *editor.Description
+	description          *map[string]interface{}
 	is_first             *bool
 	is_pinned            *bool
 	created_at           *time.Time
@@ -15146,12 +15145,12 @@ func (m *TaskFeedMutation) ResetTeammateID() {
 }
 
 // SetDescription sets the "description" field.
-func (m *TaskFeedMutation) SetDescription(e editor.Description) {
-	m.description = &e
+func (m *TaskFeedMutation) SetDescription(value map[string]interface{}) {
+	m.description = &value
 }
 
 // Description returns the value of the "description" field in the mutation.
-func (m *TaskFeedMutation) Description() (r editor.Description, exists bool) {
+func (m *TaskFeedMutation) Description() (r map[string]interface{}, exists bool) {
 	v := m.description
 	if v == nil {
 		return
@@ -15162,7 +15161,7 @@ func (m *TaskFeedMutation) Description() (r editor.Description, exists bool) {
 // OldDescription returns the old "description" field's value of the TaskFeed entity.
 // If the TaskFeed object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *TaskFeedMutation) OldDescription(ctx context.Context) (v editor.Description, err error) {
+func (m *TaskFeedMutation) OldDescription(ctx context.Context) (v map[string]interface{}, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldDescription is only allowed on UpdateOne operations")
 	}
@@ -15595,7 +15594,7 @@ func (m *TaskFeedMutation) SetField(name string, value ent.Value) error {
 		m.SetTeammateID(v)
 		return nil
 	case taskfeed.FieldDescription:
-		v, ok := value.(editor.Description)
+		v, ok := value.(map[string]interface{})
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -27951,6 +27950,7 @@ type TestUserMutation struct {
 	age              *int
 	addage           *int
 	profile          *testuserprofile.TestUserProfile
+	description      *map[string]interface{}
 	created_at       *time.Time
 	updated_at       *time.Time
 	clearedFields    map[string]struct{}
@@ -28194,6 +28194,42 @@ func (m *TestUserMutation) ResetProfile() {
 	m.profile = nil
 }
 
+// SetDescription sets the "description" field.
+func (m *TestUserMutation) SetDescription(value map[string]interface{}) {
+	m.description = &value
+}
+
+// Description returns the value of the "description" field in the mutation.
+func (m *TestUserMutation) Description() (r map[string]interface{}, exists bool) {
+	v := m.description
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDescription returns the old "description" field's value of the TestUser entity.
+// If the TestUser object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TestUserMutation) OldDescription(ctx context.Context) (v map[string]interface{}, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDescription is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDescription requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDescription: %w", err)
+	}
+	return oldValue.Description, nil
+}
+
+// ResetDescription resets all changes to the "description" field.
+func (m *TestUserMutation) ResetDescription() {
+	m.description = nil
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (m *TestUserMutation) SetCreatedAt(t time.Time) {
 	m.created_at = &t
@@ -28339,7 +28375,7 @@ func (m *TestUserMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *TestUserMutation) Fields() []string {
-	fields := make([]string, 0, 5)
+	fields := make([]string, 0, 6)
 	if m.name != nil {
 		fields = append(fields, testuser.FieldName)
 	}
@@ -28348,6 +28384,9 @@ func (m *TestUserMutation) Fields() []string {
 	}
 	if m.profile != nil {
 		fields = append(fields, testuser.FieldProfile)
+	}
+	if m.description != nil {
+		fields = append(fields, testuser.FieldDescription)
 	}
 	if m.created_at != nil {
 		fields = append(fields, testuser.FieldCreatedAt)
@@ -28369,6 +28408,8 @@ func (m *TestUserMutation) Field(name string) (ent.Value, bool) {
 		return m.Age()
 	case testuser.FieldProfile:
 		return m.Profile()
+	case testuser.FieldDescription:
+		return m.Description()
 	case testuser.FieldCreatedAt:
 		return m.CreatedAt()
 	case testuser.FieldUpdatedAt:
@@ -28388,6 +28429,8 @@ func (m *TestUserMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldAge(ctx)
 	case testuser.FieldProfile:
 		return m.OldProfile(ctx)
+	case testuser.FieldDescription:
+		return m.OldDescription(ctx)
 	case testuser.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case testuser.FieldUpdatedAt:
@@ -28421,6 +28464,13 @@ func (m *TestUserMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetProfile(v)
+		return nil
+	case testuser.FieldDescription:
+		v, ok := value.(map[string]interface{})
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDescription(v)
 		return nil
 	case testuser.FieldCreatedAt:
 		v, ok := value.(time.Time)
@@ -28508,6 +28558,9 @@ func (m *TestUserMutation) ResetField(name string) error {
 		return nil
 	case testuser.FieldProfile:
 		m.ResetProfile()
+		return nil
+	case testuser.FieldDescription:
+		m.ResetDescription()
 		return nil
 	case testuser.FieldCreatedAt:
 		m.ResetCreatedAt()
@@ -28610,7 +28663,7 @@ type WorkspaceMutation struct {
 	typ                             string
 	id                              *ulid.ID
 	name                            *string
-	description                     *editor.Description
+	description                     *map[string]interface{}
 	created_at                      *time.Time
 	updated_at                      *time.Time
 	clearedFields                   map[string]struct{}
@@ -28831,12 +28884,12 @@ func (m *WorkspaceMutation) ResetName() {
 }
 
 // SetDescription sets the "description" field.
-func (m *WorkspaceMutation) SetDescription(e editor.Description) {
-	m.description = &e
+func (m *WorkspaceMutation) SetDescription(value map[string]interface{}) {
+	m.description = &value
 }
 
 // Description returns the value of the "description" field in the mutation.
-func (m *WorkspaceMutation) Description() (r editor.Description, exists bool) {
+func (m *WorkspaceMutation) Description() (r map[string]interface{}, exists bool) {
 	v := m.description
 	if v == nil {
 		return
@@ -28847,7 +28900,7 @@ func (m *WorkspaceMutation) Description() (r editor.Description, exists bool) {
 // OldDescription returns the old "description" field's value of the Workspace entity.
 // If the Workspace object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *WorkspaceMutation) OldDescription(ctx context.Context) (v editor.Description, err error) {
+func (m *WorkspaceMutation) OldDescription(ctx context.Context) (v map[string]interface{}, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldDescription is only allowed on UpdateOne operations")
 	}
@@ -29667,7 +29720,7 @@ func (m *WorkspaceMutation) SetField(name string, value ent.Value) error {
 		m.SetName(v)
 		return nil
 	case workspace.FieldDescription:
-		v, ok := value.(editor.Description)
+		v, ok := value.(map[string]interface{})
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}

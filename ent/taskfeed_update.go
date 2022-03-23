@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 	"project-management-demo-backend/ent/predicate"
-	"project-management-demo-backend/ent/schema/editor"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/task"
 	"project-management-demo-backend/ent/taskfeed"
@@ -46,8 +45,8 @@ func (tfu *TaskFeedUpdate) SetTeammateID(u ulid.ID) *TaskFeedUpdate {
 }
 
 // SetDescription sets the "description" field.
-func (tfu *TaskFeedUpdate) SetDescription(e editor.Description) *TaskFeedUpdate {
-	tfu.mutation.SetDescription(e)
+func (tfu *TaskFeedUpdate) SetDescription(m map[string]interface{}) *TaskFeedUpdate {
+	tfu.mutation.SetDescription(m)
 	return tfu
 }
 
@@ -498,8 +497,8 @@ func (tfuo *TaskFeedUpdateOne) SetTeammateID(u ulid.ID) *TaskFeedUpdateOne {
 }
 
 // SetDescription sets the "description" field.
-func (tfuo *TaskFeedUpdateOne) SetDescription(e editor.Description) *TaskFeedUpdateOne {
-	tfuo.mutation.SetDescription(e)
+func (tfuo *TaskFeedUpdateOne) SetDescription(m map[string]interface{}) *TaskFeedUpdateOne {
+	tfuo.mutation.SetDescription(m)
 	return tfuo
 }
 

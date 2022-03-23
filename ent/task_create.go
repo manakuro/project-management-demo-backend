@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"project-management-demo-backend/ent/deletedtask"
 	"project-management-demo-backend/ent/projecttask"
-	"project-management-demo-backend/ent/schema/editor"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/task"
 	"project-management-demo-backend/ent/taskcollaborator"
@@ -161,8 +160,8 @@ func (tc *TaskCreate) SetNillableDueTime(t *time.Time) *TaskCreate {
 }
 
 // SetDescription sets the "description" field.
-func (tc *TaskCreate) SetDescription(e editor.Description) *TaskCreate {
-	tc.mutation.SetDescription(e)
+func (tc *TaskCreate) SetDescription(m map[string]interface{}) *TaskCreate {
+	tc.mutation.SetDescription(m)
 	return tc
 }
 
@@ -1100,7 +1099,7 @@ func (u *TaskUpsert) ClearDueTime() *TaskUpsert {
 }
 
 // SetDescription sets the "description" field.
-func (u *TaskUpsert) SetDescription(v editor.Description) *TaskUpsert {
+func (u *TaskUpsert) SetDescription(v map[string]interface{}) *TaskUpsert {
 	u.Set(task.FieldDescription, v)
 	return u
 }
@@ -1374,7 +1373,7 @@ func (u *TaskUpsertOne) ClearDueTime() *TaskUpsertOne {
 }
 
 // SetDescription sets the "description" field.
-func (u *TaskUpsertOne) SetDescription(v editor.Description) *TaskUpsertOne {
+func (u *TaskUpsertOne) SetDescription(v map[string]interface{}) *TaskUpsertOne {
 	return u.Update(func(s *TaskUpsert) {
 		s.SetDescription(v)
 	})
@@ -1820,7 +1819,7 @@ func (u *TaskUpsertBulk) ClearDueTime() *TaskUpsertBulk {
 }
 
 // SetDescription sets the "description" field.
-func (u *TaskUpsertBulk) SetDescription(v editor.Description) *TaskUpsertBulk {
+func (u *TaskUpsertBulk) SetDescription(v map[string]interface{}) *TaskUpsertBulk {
 	return u.Update(func(s *TaskUpsert) {
 		s.SetDescription(v)
 	})

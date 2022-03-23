@@ -25,6 +25,8 @@ type TestUser struct {
 	Age int `json:"age,omitempty"`
 	// Profile holds the value of the "profile" field.
 	Profile testuserprofile.TestUserProfile `json:"profile,omitempty"`
+	// Description holds the value of the "description" field.
+	Description map[string]interface{} `json:"description,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -57,7 +59,7 @@ func (*TestUser) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case testuser.FieldProfile:
+		case testuser.FieldProfile, testuser.FieldDescription:
 			values[i] = new([]byte)
 		case testuser.FieldAge:
 			values[i] = new(sql.NullInt64)
@@ -106,6 +108,14 @@ func (tu *TestUser) assignValues(columns []string, values []interface{}) error {
 			} else if value != nil && len(*value) > 0 {
 				if err := json.Unmarshal(*value, &tu.Profile); err != nil {
 					return fmt.Errorf("unmarshal field profile: %w", err)
+				}
+			}
+		case testuser.FieldDescription:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field description", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &tu.Description); err != nil {
+					return fmt.Errorf("unmarshal field description: %w", err)
 				}
 			}
 		case testuser.FieldCreatedAt:
@@ -159,6 +169,8 @@ func (tu *TestUser) String() string {
 	builder.WriteString(fmt.Sprintf("%v", tu.Age))
 	builder.WriteString(", profile=")
 	builder.WriteString(fmt.Sprintf("%v", tu.Profile))
+	builder.WriteString(", description=")
+	builder.WriteString(fmt.Sprintf("%v", tu.Description))
 	builder.WriteString(", created_at=")
 	builder.WriteString(tu.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", updated_at=")

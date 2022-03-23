@@ -23,8 +23,9 @@ type MutationInputField struct {
 //	}
 //}
 type MutationInput struct {
-	Create []MutationInputField
-	Update []MutationInputField
+	Create  []MutationInputField
+	Update  []MutationInputField
+	SkipPtr bool
 }
 
 // Name implements the Annotation interface.

@@ -5,7 +5,6 @@ package ent
 import (
 	"encoding/json"
 	"fmt"
-	"project-management-demo-backend/ent/schema/editor"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/task"
 	"project-management-demo-backend/ent/taskpriority"
@@ -42,7 +41,7 @@ type Task struct {
 	// DueTime holds the value of the "due_time" field.
 	DueTime *time.Time `json:"due_time,omitempty"`
 	// Description holds the value of the "description" field.
-	Description editor.Description `json:"description,omitempty"`
+	Description map[string]interface{} `json:"description,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.

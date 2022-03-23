@@ -10,7 +10,6 @@ import (
 	"project-management-demo-backend/ent/favoriteworkspace"
 	"project-management-demo-backend/ent/predicate"
 	"project-management-demo-backend/ent/project"
-	"project-management-demo-backend/ent/schema/editor"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/tag"
 	"project-management-demo-backend/ent/tasklike"
@@ -54,8 +53,8 @@ func (wu *WorkspaceUpdate) SetName(s string) *WorkspaceUpdate {
 }
 
 // SetDescription sets the "description" field.
-func (wu *WorkspaceUpdate) SetDescription(e editor.Description) *WorkspaceUpdate {
-	wu.mutation.SetDescription(e)
+func (wu *WorkspaceUpdate) SetDescription(m map[string]interface{}) *WorkspaceUpdate {
+	wu.mutation.SetDescription(m)
 	return wu
 }
 
@@ -1243,8 +1242,8 @@ func (wuo *WorkspaceUpdateOne) SetName(s string) *WorkspaceUpdateOne {
 }
 
 // SetDescription sets the "description" field.
-func (wuo *WorkspaceUpdateOne) SetDescription(e editor.Description) *WorkspaceUpdateOne {
-	wuo.mutation.SetDescription(e)
+func (wuo *WorkspaceUpdateOne) SetDescription(m map[string]interface{}) *WorkspaceUpdateOne {
+	wuo.mutation.SetDescription(m)
 	return wuo
 }
 
