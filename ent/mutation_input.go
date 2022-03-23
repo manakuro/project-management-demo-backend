@@ -3332,6 +3332,7 @@ type CreateTestUserInput struct {
 	Name        string
 	Age         int
 	Profile     testuserprofile.TestUserProfile
+	Description map[string]interface{}
 	CreatedAt   *time.Time
 	UpdatedAt   *time.Time
 	TestTodoIDs []ulid.ID
@@ -3343,6 +3344,7 @@ func (i *CreateTestUserInput) Mutate(m *TestUserCreate) {
 	m.SetName(i.Name)
 	m.SetAge(i.Age)
 	m.SetProfile(i.Profile)
+	m.SetDescription(i.Description)
 	if v := i.CreatedAt; v != nil {
 		m.SetCreatedAt(*v)
 	}
@@ -3366,6 +3368,7 @@ type UpdateTestUserInput struct {
 	Name              *string
 	Age               *int
 	Profile           *testuserprofile.TestUserProfile
+	Description       map[string]interface{}
 	AddTestTodoIDs    []ulid.ID
 	RemoveTestTodoIDs []ulid.ID
 	RequestID         string
@@ -3381,6 +3384,9 @@ func (i *UpdateTestUserInput) Mutate(m *TestUserMutation) {
 	}
 	if v := i.Profile; v != nil {
 		m.SetProfile(*v)
+	}
+	if v := i.Description; v != nil {
+		m.SetDescription(v)
 	}
 	if ids := i.AddTestTodoIDs; len(ids) > 0 {
 		m.AddTestTodoIDs(ids...)

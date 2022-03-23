@@ -1203,13 +1203,14 @@ type ComplexityRoot struct {
 	}
 
 	TestUser struct {
-		Age       func(childComplexity int) int
-		CreatedAt func(childComplexity int) int
-		ID        func(childComplexity int) int
-		Name      func(childComplexity int) int
-		Profile   func(childComplexity int) int
-		TestTodos func(childComplexity int) int
-		UpdatedAt func(childComplexity int) int
+		Age         func(childComplexity int) int
+		CreatedAt   func(childComplexity int) int
+		Description func(childComplexity int) int
+		ID          func(childComplexity int) int
+		Name        func(childComplexity int) int
+		Profile     func(childComplexity int) int
+		TestTodos   func(childComplexity int) int
+		UpdatedAt   func(childComplexity int) int
 	}
 
 	TestUserConnection struct {
@@ -8200,6 +8201,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.TestUser.CreatedAt(childComplexity), true
 
+	case "TestUser.description":
+		if e.complexity.TestUser.Description == nil {
+			break
+		}
+
+		return e.complexity.TestUser.Description(childComplexity), true
+
 	case "TestUser.id":
 		if e.complexity.TestUser.ID == nil {
 			break
@@ -13329,6 +13337,8 @@ extend type Mutation {
 `, BuiltIn: false},
 	{Name: "graph/schema/schema.graphql", Input: `scalar Time
 scalar Cursor
+scalar Map
+scalar Any
 
 interface Node {
     id: ID!
@@ -14625,6 +14635,7 @@ type TestUser implements Node {
   age: Int!
   testTodos: [TestTodo!]!
   profile: TestUserProfile!
+  description: Map
   createdAt: String!
   updatedAt: String!
 }
@@ -14642,11 +14653,13 @@ input CreateTestUserInput {
   name: String!
   age: Int!
   profile: TestUserProfileInput!
+  description: Map
 }
 input UpdateTestUserInput {
   id: ID!
   name: String
   age: Int
+  description: Map
 }
 
 extend type Query {
@@ -48679,6 +48692,38 @@ func (ec *executionContext) _TestUser_profile(ctx context.Context, field graphql
 	return ec.marshalNTestUserProfile2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋtestuserprofileᚐTestUserProfile(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _TestUser_description(ctx context.Context, field graphql.CollectedField, obj *ent.TestUser) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "TestUser",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Description, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(map[string]interface{})
+	fc.Result = res
+	return ec.marshalOMap2map(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _TestUser_createdAt(ctx context.Context, field graphql.CollectedField, obj *ent.TestUser) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -54074,6 +54119,14 @@ func (ec *executionContext) unmarshalInputCreateTestUserInput(ctx context.Contex
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("profile"))
 			it.Profile, err = ec.unmarshalNTestUserProfileInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋtestuserprofileᚐTestUserProfile(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "description":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("description"))
+			it.Description, err = ec.unmarshalOMap2map(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -78255,6 +78308,14 @@ func (ec *executionContext) unmarshalInputUpdateTestUserInput(ctx context.Contex
 			if err != nil {
 				return it, err
 			}
+		case "description":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("description"))
+			it.Description, err = ec.unmarshalOMap2map(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		}
 	}
 
@@ -87471,6 +87532,8 @@ func (ec *executionContext) _TestUser(ctx context.Context, sel ast.SelectionSet,
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)
 			}
+		case "description":
+			out.Values[i] = ec._TestUser_description(ctx, field, obj)
 		case "createdAt":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
@@ -92285,6 +92348,21 @@ func (ec *executionContext) marshalOInt2ᚖint(ctx context.Context, sel ast.Sele
 		return graphql.Null
 	}
 	return graphql.MarshalInt(*v)
+}
+
+func (ec *executionContext) unmarshalOMap2map(ctx context.Context, v interface{}) (map[string]interface{}, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := graphql.UnmarshalMap(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOMap2map(ctx context.Context, sel ast.SelectionSet, v map[string]interface{}) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return graphql.MarshalMap(v)
 }
 
 func (ec *executionContext) marshalOMe2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐMe(ctx context.Context, sel ast.SelectionSet, v *model.Me) graphql.Marshaler {

@@ -27951,6 +27951,7 @@ type TestUserMutation struct {
 	age              *int
 	addage           *int
 	profile          *testuserprofile.TestUserProfile
+	description      *map[string]interface{}
 	created_at       *time.Time
 	updated_at       *time.Time
 	clearedFields    map[string]struct{}
@@ -28194,6 +28195,42 @@ func (m *TestUserMutation) ResetProfile() {
 	m.profile = nil
 }
 
+// SetDescription sets the "description" field.
+func (m *TestUserMutation) SetDescription(value map[string]interface{}) {
+	m.description = &value
+}
+
+// Description returns the value of the "description" field in the mutation.
+func (m *TestUserMutation) Description() (r map[string]interface{}, exists bool) {
+	v := m.description
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDescription returns the old "description" field's value of the TestUser entity.
+// If the TestUser object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *TestUserMutation) OldDescription(ctx context.Context) (v map[string]interface{}, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDescription is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDescription requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDescription: %w", err)
+	}
+	return oldValue.Description, nil
+}
+
+// ResetDescription resets all changes to the "description" field.
+func (m *TestUserMutation) ResetDescription() {
+	m.description = nil
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (m *TestUserMutation) SetCreatedAt(t time.Time) {
 	m.created_at = &t
@@ -28339,7 +28376,7 @@ func (m *TestUserMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *TestUserMutation) Fields() []string {
-	fields := make([]string, 0, 5)
+	fields := make([]string, 0, 6)
 	if m.name != nil {
 		fields = append(fields, testuser.FieldName)
 	}
@@ -28348,6 +28385,9 @@ func (m *TestUserMutation) Fields() []string {
 	}
 	if m.profile != nil {
 		fields = append(fields, testuser.FieldProfile)
+	}
+	if m.description != nil {
+		fields = append(fields, testuser.FieldDescription)
 	}
 	if m.created_at != nil {
 		fields = append(fields, testuser.FieldCreatedAt)
@@ -28369,6 +28409,8 @@ func (m *TestUserMutation) Field(name string) (ent.Value, bool) {
 		return m.Age()
 	case testuser.FieldProfile:
 		return m.Profile()
+	case testuser.FieldDescription:
+		return m.Description()
 	case testuser.FieldCreatedAt:
 		return m.CreatedAt()
 	case testuser.FieldUpdatedAt:
@@ -28388,6 +28430,8 @@ func (m *TestUserMutation) OldField(ctx context.Context, name string) (ent.Value
 		return m.OldAge(ctx)
 	case testuser.FieldProfile:
 		return m.OldProfile(ctx)
+	case testuser.FieldDescription:
+		return m.OldDescription(ctx)
 	case testuser.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case testuser.FieldUpdatedAt:
@@ -28421,6 +28465,13 @@ func (m *TestUserMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetProfile(v)
+		return nil
+	case testuser.FieldDescription:
+		v, ok := value.(map[string]interface{})
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDescription(v)
 		return nil
 	case testuser.FieldCreatedAt:
 		v, ok := value.(time.Time)
@@ -28508,6 +28559,9 @@ func (m *TestUserMutation) ResetField(name string) error {
 		return nil
 	case testuser.FieldProfile:
 		m.ResetProfile()
+		return nil
+	case testuser.FieldDescription:
+		m.ResetDescription()
 		return nil
 	case testuser.FieldCreatedAt:
 		m.ResetCreatedAt()

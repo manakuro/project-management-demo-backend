@@ -55,6 +55,12 @@ func (tuu *TestUserUpdate) SetProfile(tup testuserprofile.TestUserProfile) *Test
 	return tuu
 }
 
+// SetDescription sets the "description" field.
+func (tuu *TestUserUpdate) SetDescription(m map[string]interface{}) *TestUserUpdate {
+	tuu.mutation.SetDescription(m)
+	return tuu
+}
+
 // AddTestTodoIDs adds the "testTodos" edge to the TestTodo entity by IDs.
 func (tuu *TestUserUpdate) AddTestTodoIDs(ids ...ulid.ID) *TestUserUpdate {
 	tuu.mutation.AddTestTodoIDs(ids...)
@@ -212,6 +218,13 @@ func (tuu *TestUserUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: testuser.FieldProfile,
 		})
 	}
+	if value, ok := tuu.mutation.Description(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: testuser.FieldDescription,
+		})
+	}
 	if tuu.mutation.TestTodosCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
@@ -307,6 +320,12 @@ func (tuuo *TestUserUpdateOne) AddAge(i int) *TestUserUpdateOne {
 // SetProfile sets the "profile" field.
 func (tuuo *TestUserUpdateOne) SetProfile(tup testuserprofile.TestUserProfile) *TestUserUpdateOne {
 	tuuo.mutation.SetProfile(tup)
+	return tuuo
+}
+
+// SetDescription sets the "description" field.
+func (tuuo *TestUserUpdateOne) SetDescription(m map[string]interface{}) *TestUserUpdateOne {
+	tuuo.mutation.SetDescription(m)
 	return tuuo
 }
 
@@ -489,6 +508,13 @@ func (tuuo *TestUserUpdateOne) sqlSave(ctx context.Context) (_node *TestUser, er
 			Type:   field.TypeJSON,
 			Value:  value,
 			Column: testuser.FieldProfile,
+		})
+	}
+	if value, ok := tuuo.mutation.Description(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: testuser.FieldDescription,
 		})
 	}
 	if tuuo.mutation.TestTodosCleared() {

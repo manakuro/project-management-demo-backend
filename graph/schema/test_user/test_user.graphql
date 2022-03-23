@@ -34,6 +34,7 @@ type TestUser implements Node {
   age: Int!
   testTodos: [TestTodo!]!
   profile: TestUserProfile!
+  description: Map
   createdAt: String!
   updatedAt: String!
 }
@@ -51,11 +52,13 @@ input CreateTestUserInput {
   name: String!
   age: Int!
   profile: TestUserProfileInput!
+  description: Map
 }
 input UpdateTestUserInput {
   id: ID!
   name: String
   age: Int
+  description: Map
 }
 
 extend type Query {

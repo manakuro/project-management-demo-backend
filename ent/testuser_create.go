@@ -44,6 +44,12 @@ func (tuc *TestUserCreate) SetProfile(tup testuserprofile.TestUserProfile) *Test
 	return tuc
 }
 
+// SetDescription sets the "description" field.
+func (tuc *TestUserCreate) SetDescription(m map[string]interface{}) *TestUserCreate {
+	tuc.mutation.SetDescription(m)
+	return tuc
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (tuc *TestUserCreate) SetCreatedAt(t time.Time) *TestUserCreate {
 	tuc.mutation.SetCreatedAt(t)
@@ -202,6 +208,9 @@ func (tuc *TestUserCreate) check() error {
 	if _, ok := tuc.mutation.Profile(); !ok {
 		return &ValidationError{Name: "profile", err: errors.New(`ent: missing required field "TestUser.profile"`)}
 	}
+	if _, ok := tuc.mutation.Description(); !ok {
+		return &ValidationError{Name: "description", err: errors.New(`ent: missing required field "TestUser.description"`)}
+	}
 	if _, ok := tuc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "TestUser.created_at"`)}
 	}
@@ -268,6 +277,14 @@ func (tuc *TestUserCreate) createSpec() (*TestUser, *sqlgraph.CreateSpec) {
 			Column: testuser.FieldProfile,
 		})
 		_node.Profile = value
+	}
+	if value, ok := tuc.mutation.Description(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeJSON,
+			Value:  value,
+			Column: testuser.FieldDescription,
+		})
+		_node.Description = value
 	}
 	if value, ok := tuc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -400,6 +417,18 @@ func (u *TestUserUpsert) UpdateProfile() *TestUserUpsert {
 	return u
 }
 
+// SetDescription sets the "description" field.
+func (u *TestUserUpsert) SetDescription(v map[string]interface{}) *TestUserUpsert {
+	u.Set(testuser.FieldDescription, v)
+	return u
+}
+
+// UpdateDescription sets the "description" field to the value that was provided on create.
+func (u *TestUserUpsert) UpdateDescription() *TestUserUpsert {
+	u.SetExcluded(testuser.FieldDescription)
+	return u
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (u *TestUserUpsert) SetCreatedAt(v time.Time) *TestUserUpsert {
 	u.Set(testuser.FieldCreatedAt, v)
@@ -526,6 +555,20 @@ func (u *TestUserUpsertOne) SetProfile(v testuserprofile.TestUserProfile) *TestU
 func (u *TestUserUpsertOne) UpdateProfile() *TestUserUpsertOne {
 	return u.Update(func(s *TestUserUpsert) {
 		s.UpdateProfile()
+	})
+}
+
+// SetDescription sets the "description" field.
+func (u *TestUserUpsertOne) SetDescription(v map[string]interface{}) *TestUserUpsertOne {
+	return u.Update(func(s *TestUserUpsert) {
+		s.SetDescription(v)
+	})
+}
+
+// UpdateDescription sets the "description" field to the value that was provided on create.
+func (u *TestUserUpsertOne) UpdateDescription() *TestUserUpsertOne {
+	return u.Update(func(s *TestUserUpsert) {
+		s.UpdateDescription()
 	})
 }
 
@@ -825,6 +868,20 @@ func (u *TestUserUpsertBulk) SetProfile(v testuserprofile.TestUserProfile) *Test
 func (u *TestUserUpsertBulk) UpdateProfile() *TestUserUpsertBulk {
 	return u.Update(func(s *TestUserUpsert) {
 		s.UpdateProfile()
+	})
+}
+
+// SetDescription sets the "description" field.
+func (u *TestUserUpsertBulk) SetDescription(v map[string]interface{}) *TestUserUpsertBulk {
+	return u.Update(func(s *TestUserUpsert) {
+		s.SetDescription(v)
+	})
+}
+
+// UpdateDescription sets the "description" field to the value that was provided on create.
+func (u *TestUserUpsertBulk) UpdateDescription() *TestUserUpsertBulk {
+	return u.Update(func(s *TestUserUpsert) {
+		s.UpdateDescription()
 	})
 }
 

@@ -79,7 +79,7 @@
             {{ print "ID" }} {{ $n.ID.Type }}
         {{- range $f := $n.MutableFields }}
             {{- if not $f.IsEdgeField }}
-                {{ $f.StructField }} {{ if not $f.Type.RType.IsPtr }}*{{ end }}{{ $f.Type }}
+                {{ $f.StructField }} {{ if and (not $f.Type.RType.IsPtr) (not $f.Annotations.MutationInput.SkipPtr) }}*{{ end }}{{ $f.Type }}
                 {{- if $f.Optional }}
                     {{ print "Clear" $f.StructField }} bool
                 {{- end }}
@@ -113,7 +113,7 @@
                     }
                 {{- end }}
                 if v := i.{{ $f.StructField }}; v != nil {
-                m.{{ $f.MutationSet }}(*v)
+                m.{{ $f.MutationSet }}({{ if and (not $f.Type.RType.IsPtr) (not $f.Annotations.MutationInput.SkipPtr) }}*{{ end }}v)
                 }
             {{- end }}
         {{- end }}

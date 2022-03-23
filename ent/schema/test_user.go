@@ -1,6 +1,7 @@
 package schema
 
 import (
+	"project-management-demo-backend/ent/annotation"
 	"project-management-demo-backend/ent/mixin"
 	"project-management-demo-backend/ent/schema/testuserprofile"
 	"project-management-demo-backend/pkg/const/globalid"
@@ -32,6 +33,12 @@ func (TestUserMixin) Fields() []ent.Field {
 			MaxLen(255),
 		field.Int("age"),
 		field.JSON("profile", testuserprofile.TestUserProfile{}),
+		field.JSON("description", map[string]interface{}{}).
+			Annotations(
+				annotation.MutationInput{
+					SkipPtr: true,
+				},
+			),
 	}
 }
 
