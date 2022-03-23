@@ -1,7 +1,7 @@
 type Task implements Node {
   id: ID!
   name: String!
-  description: EditorDescription!
+  description: Map!
   taskParentId: ID!
   taskPriorityId: ID!
   taskPriority: TaskPriority
@@ -35,7 +35,7 @@ type TaskEdge {
 
 input CreateTaskInput {
   name: String!
-  description: EditorDescriptionInput
+  description: Map
   isNew: Boolean
   taskParentId: ID
   createdBy: ID!
@@ -46,7 +46,7 @@ input CreateTaskInput {
 input UpdateTaskInput {
   id: ID!
   name: String
-  description: EditorDescriptionInput
+  description: Map
   taskParentId: ID
   taskPriorityId: ID
   assigneeId: ID

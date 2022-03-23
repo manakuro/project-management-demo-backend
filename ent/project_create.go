@@ -16,7 +16,6 @@ import (
 	"project-management-demo-backend/ent/projecttaskliststatus"
 	"project-management-demo-backend/ent/projecttasksection"
 	"project-management-demo-backend/ent/projectteammate"
-	"project-management-demo-backend/ent/schema/editor"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/taskfile"
 	"project-management-demo-backend/ent/teammate"
@@ -74,8 +73,8 @@ func (pc *ProjectCreate) SetName(s string) *ProjectCreate {
 }
 
 // SetDescription sets the "description" field.
-func (pc *ProjectCreate) SetDescription(e editor.Description) *ProjectCreate {
-	pc.mutation.SetDescription(e)
+func (pc *ProjectCreate) SetDescription(m map[string]interface{}) *ProjectCreate {
+	pc.mutation.SetDescription(m)
 	return pc
 }
 
@@ -864,7 +863,7 @@ func (u *ProjectUpsert) UpdateName() *ProjectUpsert {
 }
 
 // SetDescription sets the "description" field.
-func (u *ProjectUpsert) SetDescription(v editor.Description) *ProjectUpsert {
+func (u *ProjectUpsert) SetDescription(v map[string]interface{}) *ProjectUpsert {
 	u.Set(project.FieldDescription, v)
 	return u
 }
@@ -1070,7 +1069,7 @@ func (u *ProjectUpsertOne) UpdateName() *ProjectUpsertOne {
 }
 
 // SetDescription sets the "description" field.
-func (u *ProjectUpsertOne) SetDescription(v editor.Description) *ProjectUpsertOne {
+func (u *ProjectUpsertOne) SetDescription(v map[string]interface{}) *ProjectUpsertOne {
 	return u.Update(func(s *ProjectUpsert) {
 		s.SetDescription(v)
 	})
@@ -1453,7 +1452,7 @@ func (u *ProjectUpsertBulk) UpdateName() *ProjectUpsertBulk {
 }
 
 // SetDescription sets the "description" field.
-func (u *ProjectUpsertBulk) SetDescription(v editor.Description) *ProjectUpsertBulk {
+func (u *ProjectUpsertBulk) SetDescription(v map[string]interface{}) *ProjectUpsertBulk {
 	return u.Update(func(s *ProjectUpsert) {
 		s.SetDescription(v)
 	})

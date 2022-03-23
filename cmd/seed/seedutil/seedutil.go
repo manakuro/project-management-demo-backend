@@ -13,7 +13,6 @@ import (
 	"project-management-demo-backend/ent/projecticon"
 	"project-management-demo-backend/ent/projectlightcolor"
 	"project-management-demo-backend/ent/projecttasksection"
-	"project-management-demo-backend/ent/schema/editor"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/tag"
 	"project-management-demo-backend/ent/task"
@@ -259,9 +258,19 @@ func AddDate(date int) *time.Time {
 	return &t
 }
 
+//// ParseDescription convert json to description object.
+//func ParseDescription(b []byte) editor.Description {
+//	var description editor.Description
+//	if err := json.Unmarshal(b, &description); err != nil {
+//		log.Fatalf("ParseDescription failed to encode json")
+//	}
+//
+//	return description
+//}
+
 // ParseDescription convert json to description object.
-func ParseDescription(b []byte) editor.Description {
-	var description editor.Description
+func ParseDescription(b []byte) map[string]interface{} {
+	description := make(map[string]interface{})
 	if err := json.Unmarshal(b, &description); err != nil {
 		log.Fatalf("ParseDescription failed to encode json")
 	}

@@ -16,8 +16,16 @@ type EditorDescriptionContentInput = editor.DescriptionContent // revive:disable
 type EditorDescriptionContentContentInput = editor.Content     // revive:disable-line:exported
 type EditorDescriptionContentContentAttrsInput = editor.Attrs  // revive:disable-line:exported
 
+//// DefaultEditorDescription returns default json value for editor.
+//func DefaultEditorDescription() EditorDescription {
+//	d := EditorDescription{}
+//	return d.DefaultValue()
+//}
+
 // DefaultEditorDescription returns default json value for editor.
-func DefaultEditorDescription() EditorDescription {
-	d := EditorDescription{}
-	return d.DefaultValue()
+func DefaultEditorDescription() map[string]interface{} {
+	return map[string]interface{}{
+		"type":    "doc",
+		"content": []string{},
+	}
 }

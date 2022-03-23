@@ -3,7 +3,6 @@ package schema
 import (
 	"project-management-demo-backend/ent/annotation"
 	"project-management-demo-backend/ent/mixin"
-	"project-management-demo-backend/ent/schema/editor"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/pkg/const/globalid"
 
@@ -38,7 +37,12 @@ func (WorkspaceMixin) Fields() []ent.Field {
 		field.String("name").
 			NotEmpty().
 			MaxLen(255),
-		field.JSON("description", editor.Description{}),
+		field.JSON("description", map[string]interface{}{}).
+			Annotations(
+				annotation.MutationInput{
+					SkipPtr: true,
+				},
+			),
 	}
 }
 

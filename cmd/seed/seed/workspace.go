@@ -2,10 +2,9 @@ package seed
 
 import (
 	"context"
-	"encoding/json"
 	"log"
+	"project-management-demo-backend/cmd/seed/seedutil"
 	"project-management-demo-backend/ent"
-	"project-management-demo-backend/ent/schema/editor"
 	"project-management-demo-backend/ent/teammate"
 )
 
@@ -35,20 +34,16 @@ func Workspace(ctx context.Context, client *ent.Client) {
     }
   ]
 }`)
-	var description editor.Description
-	if err = json.Unmarshal(b, &description); err != nil {
-		log.Fatalf("Workspace failed to encode json")
-	}
 
 	ts := []ent.CreateWorkspaceInput{
 		{
 			Name:        "My Workspace",
-			Description: description,
+			Description: seedutil.ParseDescription(b),
 			CreatedBy:   tm.ID,
 		},
 		{
 			Name:        "My Workspace 2",
-			Description: description,
+			Description: seedutil.ParseDescription(b),
 			CreatedBy:   tm.ID,
 		},
 	}

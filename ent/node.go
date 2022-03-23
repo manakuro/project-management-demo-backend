@@ -548,7 +548,7 @@ func (pr *Project) Node(ctx context.Context) (node *Node, err error) {
 		return nil, err
 	}
 	node.Fields[6] = &Field{
-		Type:  "editor.Description",
+		Type:  "map[string]interface {}",
 		Name:  "description",
 		Value: string(buf),
 	}
@@ -1444,7 +1444,7 @@ func (t *Task) Node(ctx context.Context) (node *Node, err error) {
 		return nil, err
 	}
 	node.Fields[10] = &Field{
-		Type:  "editor.Description",
+		Type:  "map[string]interface {}",
 		Name:  "description",
 		Value: string(buf),
 	}
@@ -1751,7 +1751,7 @@ func (tf *TaskFeed) Node(ctx context.Context) (node *Node, err error) {
 		return nil, err
 	}
 	node.Fields[2] = &Field{
-		Type:  "editor.Description",
+		Type:  "map[string]interface {}",
 		Name:  "description",
 		Value: string(buf),
 	}
@@ -3302,7 +3302,7 @@ func (w *Workspace) Node(ctx context.Context) (node *Node, err error) {
 		return nil, err
 	}
 	node.Fields[2] = &Field{
-		Type:  "editor.Description",
+		Type:  "map[string]interface {}",
 		Name:  "description",
 		Value: string(buf),
 	}

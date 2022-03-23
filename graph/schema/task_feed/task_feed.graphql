@@ -2,7 +2,7 @@ type TaskFeed implements Node {
   id: ID!
   teammateId: ID!
   taskId: ID!
-  description: EditorDescription!
+  description: Map!
   isFirst: Boolean!
   isPinned: Boolean!
   createdAt: String!
@@ -21,7 +21,7 @@ type TaskFeedEdge {
 input CreateTaskFeedInput {
   taskId: ID!
   teammateId: ID!
-  description: EditorDescriptionInput!
+  description: Map!
   requestId: String!
   workspaceId: ID!
 }
@@ -30,7 +30,7 @@ input UpdateTaskFeedInput {
   id: ID!
   taskId: ID
   teammateId: ID
-  description: EditorDescriptionInput
+  description: Map
   isFirst: Boolean
   isPinned: Boolean
   requestId: String!
