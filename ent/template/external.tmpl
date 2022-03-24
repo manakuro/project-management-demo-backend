@@ -10,6 +10,9 @@
 
     // DB provides sql.DB
     func (c *Client) DB() *sql.DB {
+    if c.debug {
+    return c.driver.(*dialect.DebugDriver).Driver.(*entsql.Driver).DB()
+    }
     return c.driver.(*entsql.Driver).DB()
     }
 
