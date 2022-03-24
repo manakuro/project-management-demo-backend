@@ -10,6 +10,7 @@ type Controller struct {
 	FileType                interface{ FileType }
 	Icon                    interface{ Icon }
 	Me                      interface{ Me }
+	Mention                 interface{ Mention }
 	Project                 interface{ Project }
 	ProjectBaseColor        interface{ ProjectBaseColor }
 	ProjectIcon             interface{ ProjectIcon }

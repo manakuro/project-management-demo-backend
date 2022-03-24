@@ -29,9 +29,7 @@ func main() {
 }
 
 func newDBClient() *ent.Client {
-	client, err := datastore.NewClient(datastore.NewClientOptions{
-		Debug: true,
-	})
+	client, err := datastore.NewClient(datastore.NewClientOptions{})
 	if err != nil {
 		log.Fatalf("failed opening mysql client: %v", err)
 	}
