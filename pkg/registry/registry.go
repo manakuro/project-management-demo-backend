@@ -31,6 +31,7 @@ func (r *registry) NewController() controller.Controller {
 		FileType:                r.NewFileTypeController(),
 		Icon:                    r.NewIconController(),
 		Me:                      r.NewMeController(),
+		Mention:                 r.NewMentionController(),
 		Project:                 r.NewProjectController(),
 		ProjectBaseColor:        r.NewProjectBaseColorController(),
 		ProjectIcon:             r.NewProjectIconController(),
