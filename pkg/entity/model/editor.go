@@ -25,7 +25,12 @@ type EditorDescriptionContentContentAttrsInput = editor.Attrs  // revive:disable
 // DefaultEditorDescription returns default json value for editor.
 func DefaultEditorDescription() map[string]interface{} {
 	return map[string]interface{}{
-		"type":    "doc",
-		"content": []string{},
+		"type": "doc",
+		"content": []map[string]interface{}{
+			{
+				"type":    "paragraph",
+				"content": nil,
+			},
+		},
 	}
 }

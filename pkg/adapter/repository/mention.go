@@ -108,7 +108,7 @@ func (r *mentionRepository) List(ctx context.Context, where model.MentionWhereIn
 				Union(projectSelector).
 				Union(projectTaskSelector).As("t1"),
 		).
-		Where(sql.Like(t1.C("text"), "%"+where.Query+"%")).
+		Where(sql.ContainsFold(t1.C("text"), where.Query)).
 		Limit(10)
 
 	limit := where.Limit
