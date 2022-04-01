@@ -42,8 +42,8 @@ const (
 	EdgeTeammate = "teammate"
 	// EdgeTaskPriority holds the string denoting the taskpriority edge name in mutations.
 	EdgeTaskPriority = "taskPriority"
-	// EdgeParent holds the string denoting the parent edge name in mutations.
-	EdgeParent = "parent"
+	// EdgeParentTask holds the string denoting the parenttask edge name in mutations.
+	EdgeParentTask = "parentTask"
 	// EdgeSubTasks holds the string denoting the subtasks edge name in mutations.
 	EdgeSubTasks = "subTasks"
 	// EdgeTeammateTasks holds the string denoting the teammatetasks edge name in mutations.
@@ -80,10 +80,10 @@ const (
 	TaskPriorityInverseTable = "task_priorities"
 	// TaskPriorityColumn is the table column denoting the taskPriority relation/edge.
 	TaskPriorityColumn = "task_priority_id"
-	// ParentTable is the table that holds the parent relation/edge.
-	ParentTable = "tasks"
-	// ParentColumn is the table column denoting the parent relation/edge.
-	ParentColumn = "task_parent_id"
+	// ParentTaskTable is the table that holds the parentTask relation/edge.
+	ParentTaskTable = "tasks"
+	// ParentTaskColumn is the table column denoting the parentTask relation/edge.
+	ParentTaskColumn = "task_parent_id"
 	// SubTasksTable is the table that holds the subTasks relation/edge.
 	SubTasksTable = "tasks"
 	// SubTasksColumn is the table column denoting the subTasks relation/edge.

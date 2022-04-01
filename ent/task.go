@@ -57,8 +57,8 @@ type TaskEdges struct {
 	Teammate *Teammate `json:"teammate,omitempty"`
 	// TaskPriority holds the value of the taskPriority edge.
 	TaskPriority *TaskPriority `json:"taskPriority,omitempty"`
-	// Parent holds the value of the parent edge.
-	Parent *Task `json:"parent,omitempty"`
+	// ParentTask holds the value of the parentTask edge.
+	ParentTask *Task `json:"parentTask,omitempty"`
 	// SubTasks holds the value of the subTasks edge.
 	SubTasks []*Task `json:"subTasks,omitempty"`
 	// TeammateTasks holds the value of the teammateTasks edge.
@@ -112,18 +112,18 @@ func (e TaskEdges) TaskPriorityOrErr() (*TaskPriority, error) {
 	return nil, &NotLoadedError{edge: "taskPriority"}
 }
 
-// ParentOrErr returns the Parent value or an error if the edge
+// ParentTaskOrErr returns the ParentTask value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e TaskEdges) ParentOrErr() (*Task, error) {
+func (e TaskEdges) ParentTaskOrErr() (*Task, error) {
 	if e.loadedTypes[2] {
-		if e.Parent == nil {
-			// The edge parent was loaded in eager-loading,
+		if e.ParentTask == nil {
+			// The edge parentTask was loaded in eager-loading,
 			// but was not found.
 			return nil, &NotFoundError{label: task.Label}
 		}
-		return e.Parent, nil
+		return e.ParentTask, nil
 	}
-	return nil, &NotLoadedError{edge: "parent"}
+	return nil, &NotLoadedError{edge: "parentTask"}
 }
 
 // SubTasksOrErr returns the SubTasks value or an error if the edge
@@ -350,9 +350,9 @@ func (t *Task) QueryTaskPriority() *TaskPriorityQuery {
 	return (&TaskClient{config: t.config}).QueryTaskPriority(t)
 }
 
-// QueryParent queries the "parent" edge of the Task entity.
-func (t *Task) QueryParent() *TaskQuery {
-	return (&TaskClient{config: t.config}).QueryParent(t)
+// QueryParentTask queries the "parentTask" edge of the Task entity.
+func (t *Task) QueryParentTask() *TaskQuery {
+	return (&TaskClient{config: t.config}).QueryParentTask(t)
 }
 
 // QuerySubTasks queries the "subTasks" edge of the Task entity.

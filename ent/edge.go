@@ -380,10 +380,10 @@ func (t *Task) TaskPriority(ctx context.Context) (*TaskPriority, error) {
 	return result, MaskNotFound(err)
 }
 
-func (t *Task) Parent(ctx context.Context) (*Task, error) {
-	result, err := t.Edges.ParentOrErr()
+func (t *Task) ParentTask(ctx context.Context) (*Task, error) {
+	result, err := t.Edges.ParentTaskOrErr()
 	if IsNotLoaded(err) {
-		result, err = t.QueryParent().Only(ctx)
+		result, err = t.QueryParentTask().Only(ctx)
 	}
 	return result, MaskNotFound(err)
 }

@@ -106,7 +106,7 @@ func (Task) Edges() []ent.Edge {
 			),
 		edge.To("subTasks", Task.Type).
 			Annotations(entgql.Bind()).
-			From("parent").
+			From("parentTask").
 			Field("task_parent_id").
 			Unique().
 			Annotations(entgql.Bind()).

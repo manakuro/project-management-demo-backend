@@ -13,6 +13,7 @@ type Task implements Node {
   dueDate: String!
   dueTime: String!
   subTasks: [Task!]!
+  parentTask: Task
   taskFiles: [TaskFile!]!
   taskFeeds: [TaskFeed!]!
   taskFeedLikes: [TaskFeedLike!]!
@@ -61,7 +62,7 @@ input UpdateTaskInput {
   clearDueDate: Boolean
   clearDueTime: Boolean
   clearTaskPriority: Boolean
-  clearParent: Boolean
+  clearParentTask: Boolean
   clearTeammate: Boolean
   removeSubTaskIDs: [ID!]
   addTeammateTaskIDs: [ID!]

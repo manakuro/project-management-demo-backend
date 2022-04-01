@@ -459,8 +459,8 @@ func (t *TaskQuery) collectField(ctx *graphql.OperationContext, field graphql.Co
 			t = t.WithDeletedTasksRef(func(query *DeletedTaskQuery) {
 				query.collectField(ctx, field)
 			})
-		case "parent":
-			t = t.WithParent(func(query *TaskQuery) {
+		case "parentTask":
+			t = t.WithParentTask(func(query *TaskQuery) {
 				query.collectField(ctx, field)
 			})
 		case "projectTasks":

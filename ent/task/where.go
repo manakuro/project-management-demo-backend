@@ -1301,25 +1301,25 @@ func HasTaskPriorityWith(preds ...predicate.TaskPriority) predicate.Task {
 	})
 }
 
-// HasParent applies the HasEdge predicate on the "parent" edge.
-func HasParent() predicate.Task {
+// HasParentTask applies the HasEdge predicate on the "parentTask" edge.
+func HasParentTask() predicate.Task {
 	return predicate.Task(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(ParentTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, ParentTable, ParentColumn),
+			sqlgraph.To(ParentTaskTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, ParentTaskTable, ParentTaskColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasParentWith applies the HasEdge predicate on the "parent" edge with a given conditions (other predicates).
-func HasParentWith(preds ...predicate.Task) predicate.Task {
+// HasParentTaskWith applies the HasEdge predicate on the "parentTask" edge with a given conditions (other predicates).
+func HasParentTaskWith(preds ...predicate.Task) predicate.Task {
 	return predicate.Task(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, ParentTable, ParentColumn),
+			sqlgraph.Edge(sqlgraph.M2O, true, ParentTaskTable, ParentTaskColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

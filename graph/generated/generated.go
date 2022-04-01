@@ -802,6 +802,7 @@ type ComplexityRoot struct {
 		ID                func(childComplexity int) int
 		IsNew             func(childComplexity int) int
 		Name              func(childComplexity int) int
+		ParentTask        func(childComplexity int) int
 		ProjectTasks      func(childComplexity int) int
 		SubTasks          func(childComplexity int) int
 		TaskCollaborators func(childComplexity int) int
@@ -6575,6 +6576,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Task.Name(childComplexity), true
 
+	case "Task.parentTask":
+		if e.complexity.Task.ParentTask == nil {
+			break
+		}
+
+		return e.complexity.Task.ParentTask(childComplexity), true
+
 	case "Task.projectTasks":
 		if e.complexity.Task.ProjectTasks == nil {
 			break
@@ -11557,9 +11565,9 @@ input TaskWhereInput {
   hasTaskPriority: Boolean
   hasTaskPriorityWith: [TaskPriorityWhereInput!]
   
-  """parent edge predicates"""
-  hasParent: Boolean
-  hasParentWith: [TaskWhereInput!]
+  """parentTask edge predicates"""
+  hasParentTask: Boolean
+  hasParentTaskWith: [TaskWhereInput!]
   
   """subTasks edge predicates"""
   hasSubTasks: Boolean
@@ -13533,6 +13541,7 @@ extend type Mutation {
   dueDate: String!
   dueTime: String!
   subTasks: [Task!]!
+  parentTask: Task
   taskFiles: [TaskFile!]!
   taskFeeds: [TaskFeed!]!
   taskFeedLikes: [TaskFeedLike!]!
@@ -13581,7 +13590,7 @@ input UpdateTaskInput {
   clearDueDate: Boolean
   clearDueTime: Boolean
   clearTaskPriority: Boolean
-  clearParent: Boolean
+  clearParentTask: Boolean
   clearTeammate: Boolean
   removeSubTaskIDs: [ID!]
   addTeammateTaskIDs: [ID!]
@@ -40730,6 +40739,38 @@ func (ec *executionContext) _Task_subTasks(ctx context.Context, field graphql.Co
 	res := resTmp.([]*ent.Task)
 	fc.Result = res
 	return ec.marshalNTask2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Task_parentTask(ctx context.Context, field graphql.CollectedField, obj *ent.Task) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Task",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ParentTask(ctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*ent.Task)
+	fc.Result = res
+	return ec.marshalOTask2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTask(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Task_taskFiles(ctx context.Context, field graphql.CollectedField, obj *ent.Task) (ret graphql.Marshaler) {
@@ -70595,19 +70636,19 @@ func (ec *executionContext) unmarshalInputTaskWhereInput(ctx context.Context, ob
 			if err != nil {
 				return it, err
 			}
-		case "hasParent":
+		case "hasParentTask":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasParent"))
-			it.HasParent, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasParentTask"))
+			it.HasParentTask, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
 			if err != nil {
 				return it, err
 			}
-		case "hasParentWith":
+		case "hasParentTaskWith":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasParentWith"))
-			it.HasParentWith, err = ec.unmarshalOTaskWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskWhereInputᚄ(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasParentTaskWith"))
+			it.HasParentTaskWith, err = ec.unmarshalOTaskWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskWhereInputᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -77949,11 +77990,11 @@ func (ec *executionContext) unmarshalInputUpdateTaskInput(ctx context.Context, o
 			if err != nil {
 				return it, err
 			}
-		case "clearParent":
+		case "clearParentTask":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("clearParent"))
-			it.ClearParent, err = ec.unmarshalOBoolean2bool(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("clearParentTask"))
+			it.ClearParentTask, err = ec.unmarshalOBoolean2bool(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -85183,6 +85224,17 @@ func (ec *executionContext) _Task(ctx context.Context, sel ast.SelectionSet, obj
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
+				return res
+			})
+		case "parentTask":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Task_parentTask(ctx, field, obj)
 				return res
 			})
 		case "taskFiles":

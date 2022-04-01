@@ -11645,8 +11645,8 @@ type TaskMutation struct {
 	clearedteammate          bool
 	taskPriority             *ulid.ID
 	clearedtaskPriority      bool
-	parent                   *ulid.ID
-	clearedparent            bool
+	parentTask               *ulid.ID
+	clearedparentTask        bool
 	subTasks                 map[ulid.ID]struct{}
 	removedsubTasks          map[ulid.ID]struct{}
 	clearedsubTasks          bool
@@ -11788,12 +11788,12 @@ func (m *TaskMutation) IDs(ctx context.Context) ([]ulid.ID, error) {
 
 // SetTaskParentID sets the "task_parent_id" field.
 func (m *TaskMutation) SetTaskParentID(u ulid.ID) {
-	m.parent = &u
+	m.parentTask = &u
 }
 
 // TaskParentID returns the value of the "task_parent_id" field in the mutation.
 func (m *TaskMutation) TaskParentID() (r ulid.ID, exists bool) {
-	v := m.parent
+	v := m.parentTask
 	if v == nil {
 		return
 	}
@@ -11819,7 +11819,7 @@ func (m *TaskMutation) OldTaskParentID(ctx context.Context) (v ulid.ID, err erro
 
 // ClearTaskParentID clears the value of the "task_parent_id" field.
 func (m *TaskMutation) ClearTaskParentID() {
-	m.parent = nil
+	m.parentTask = nil
 	m.clearedFields[task.FieldTaskParentID] = struct{}{}
 }
 
@@ -11831,7 +11831,7 @@ func (m *TaskMutation) TaskParentIDCleared() bool {
 
 // ResetTaskParentID resets all changes to the "task_parent_id" field.
 func (m *TaskMutation) ResetTaskParentID() {
-	m.parent = nil
+	m.parentTask = nil
 	delete(m.clearedFields, task.FieldTaskParentID)
 }
 
@@ -12397,43 +12397,43 @@ func (m *TaskMutation) ResetTaskPriority() {
 	m.clearedtaskPriority = false
 }
 
-// SetParentID sets the "parent" edge to the Task entity by id.
-func (m *TaskMutation) SetParentID(id ulid.ID) {
-	m.parent = &id
+// SetParentTaskID sets the "parentTask" edge to the Task entity by id.
+func (m *TaskMutation) SetParentTaskID(id ulid.ID) {
+	m.parentTask = &id
 }
 
-// ClearParent clears the "parent" edge to the Task entity.
-func (m *TaskMutation) ClearParent() {
-	m.clearedparent = true
+// ClearParentTask clears the "parentTask" edge to the Task entity.
+func (m *TaskMutation) ClearParentTask() {
+	m.clearedparentTask = true
 }
 
-// ParentCleared reports if the "parent" edge to the Task entity was cleared.
-func (m *TaskMutation) ParentCleared() bool {
-	return m.TaskParentIDCleared() || m.clearedparent
+// ParentTaskCleared reports if the "parentTask" edge to the Task entity was cleared.
+func (m *TaskMutation) ParentTaskCleared() bool {
+	return m.TaskParentIDCleared() || m.clearedparentTask
 }
 
-// ParentID returns the "parent" edge ID in the mutation.
-func (m *TaskMutation) ParentID() (id ulid.ID, exists bool) {
-	if m.parent != nil {
-		return *m.parent, true
+// ParentTaskID returns the "parentTask" edge ID in the mutation.
+func (m *TaskMutation) ParentTaskID() (id ulid.ID, exists bool) {
+	if m.parentTask != nil {
+		return *m.parentTask, true
 	}
 	return
 }
 
-// ParentIDs returns the "parent" edge IDs in the mutation.
+// ParentTaskIDs returns the "parentTask" edge IDs in the mutation.
 // Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// ParentID instead. It exists only for internal usage by the builders.
-func (m *TaskMutation) ParentIDs() (ids []ulid.ID) {
-	if id := m.parent; id != nil {
+// ParentTaskID instead. It exists only for internal usage by the builders.
+func (m *TaskMutation) ParentTaskIDs() (ids []ulid.ID) {
+	if id := m.parentTask; id != nil {
 		ids = append(ids, *id)
 	}
 	return
 }
 
-// ResetParent resets all changes to the "parent" edge.
-func (m *TaskMutation) ResetParent() {
-	m.parent = nil
-	m.clearedparent = false
+// ResetParentTask resets all changes to the "parentTask" edge.
+func (m *TaskMutation) ResetParentTask() {
+	m.parentTask = nil
+	m.clearedparentTask = false
 }
 
 // AddSubTaskIDs adds the "subTasks" edge to the Task entity by ids.
@@ -12996,7 +12996,7 @@ func (m *TaskMutation) Type() string {
 // AddedFields().
 func (m *TaskMutation) Fields() []string {
 	fields := make([]string, 0, 13)
-	if m.parent != nil {
+	if m.parentTask != nil {
 		fields = append(fields, task.FieldTaskParentID)
 	}
 	if m.taskPriority != nil {
@@ -13344,8 +13344,8 @@ func (m *TaskMutation) AddedEdges() []string {
 	if m.taskPriority != nil {
 		edges = append(edges, task.EdgeTaskPriority)
 	}
-	if m.parent != nil {
-		edges = append(edges, task.EdgeParent)
+	if m.parentTask != nil {
+		edges = append(edges, task.EdgeParentTask)
 	}
 	if m.subTasks != nil {
 		edges = append(edges, task.EdgeSubTasks)
@@ -13392,8 +13392,8 @@ func (m *TaskMutation) AddedIDs(name string) []ent.Value {
 		if id := m.taskPriority; id != nil {
 			return []ent.Value{*id}
 		}
-	case task.EdgeParent:
-		if id := m.parent; id != nil {
+	case task.EdgeParentTask:
+		if id := m.parentTask; id != nil {
 			return []ent.Value{*id}
 		}
 	case task.EdgeSubTasks:
@@ -13573,8 +13573,8 @@ func (m *TaskMutation) ClearedEdges() []string {
 	if m.clearedtaskPriority {
 		edges = append(edges, task.EdgeTaskPriority)
 	}
-	if m.clearedparent {
-		edges = append(edges, task.EdgeParent)
+	if m.clearedparentTask {
+		edges = append(edges, task.EdgeParentTask)
 	}
 	if m.clearedsubTasks {
 		edges = append(edges, task.EdgeSubTasks)
@@ -13617,8 +13617,8 @@ func (m *TaskMutation) EdgeCleared(name string) bool {
 		return m.clearedteammate
 	case task.EdgeTaskPriority:
 		return m.clearedtaskPriority
-	case task.EdgeParent:
-		return m.clearedparent
+	case task.EdgeParentTask:
+		return m.clearedparentTask
 	case task.EdgeSubTasks:
 		return m.clearedsubTasks
 	case task.EdgeTeammateTasks:
@@ -13653,8 +13653,8 @@ func (m *TaskMutation) ClearEdge(name string) error {
 	case task.EdgeTaskPriority:
 		m.ClearTaskPriority()
 		return nil
-	case task.EdgeParent:
-		m.ClearParent()
+	case task.EdgeParentTask:
+		m.ClearParentTask()
 		return nil
 	}
 	return fmt.Errorf("unknown Task unique edge %s", name)
@@ -13670,8 +13670,8 @@ func (m *TaskMutation) ResetEdge(name string) error {
 	case task.EdgeTaskPriority:
 		m.ResetTaskPriority()
 		return nil
-	case task.EdgeParent:
-		m.ResetParent()
+	case task.EdgeParentTask:
+		m.ResetParentTask()
 		return nil
 	case task.EdgeSubTasks:
 		m.ResetSubTasks()

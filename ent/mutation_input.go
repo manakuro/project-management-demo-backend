@@ -1428,7 +1428,7 @@ func (i *CreateTaskInput) Mutate(m *TaskCreate) {
 		m.SetTaskPriorityID(*v)
 	}
 	if v := i.TaskParentID; v != nil {
-		m.SetParentID(*v)
+		m.SetParentTaskID(*v)
 	}
 	if ids := i.SubTaskIDs; len(ids) > 0 {
 		m.AddSubTaskIDs(ids...)
@@ -1487,7 +1487,7 @@ type UpdateTaskInput struct {
 	TaskPriorityID            *ulid.ID
 	ClearTaskPriority         bool
 	TaskParentID              *ulid.ID
-	ClearParent               bool
+	ClearParentTask           bool
 	AddSubTaskIDs             []ulid.ID
 	RemoveSubTaskIDs          []ulid.ID
 	AddTeammateTaskIDs        []ulid.ID
@@ -1559,11 +1559,11 @@ func (i *UpdateTaskInput) Mutate(m *TaskMutation) {
 	if v := i.TaskPriorityID; v != nil {
 		m.SetTaskPriorityID(*v)
 	}
-	if i.ClearParent {
-		m.ClearParent()
+	if i.ClearParentTask {
+		m.ClearParentTask()
 	}
 	if v := i.TaskParentID; v != nil {
-		m.SetParentID(*v)
+		m.SetParentTaskID(*v)
 	}
 	if ids := i.AddSubTaskIDs; len(ids) > 0 {
 		m.AddSubTaskIDs(ids...)

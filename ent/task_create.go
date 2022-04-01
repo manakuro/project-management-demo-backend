@@ -231,23 +231,23 @@ func (tc *TaskCreate) SetTaskPriority(t *TaskPriority) *TaskCreate {
 	return tc.SetTaskPriorityID(t.ID)
 }
 
-// SetParentID sets the "parent" edge to the Task entity by ID.
-func (tc *TaskCreate) SetParentID(id ulid.ID) *TaskCreate {
-	tc.mutation.SetParentID(id)
+// SetParentTaskID sets the "parentTask" edge to the Task entity by ID.
+func (tc *TaskCreate) SetParentTaskID(id ulid.ID) *TaskCreate {
+	tc.mutation.SetParentTaskID(id)
 	return tc
 }
 
-// SetNillableParentID sets the "parent" edge to the Task entity by ID if the given value is not nil.
-func (tc *TaskCreate) SetNillableParentID(id *ulid.ID) *TaskCreate {
+// SetNillableParentTaskID sets the "parentTask" edge to the Task entity by ID if the given value is not nil.
+func (tc *TaskCreate) SetNillableParentTaskID(id *ulid.ID) *TaskCreate {
 	if id != nil {
-		tc = tc.SetParentID(*id)
+		tc = tc.SetParentTaskID(*id)
 	}
 	return tc
 }
 
-// SetParent sets the "parent" edge to the Task entity.
-func (tc *TaskCreate) SetParent(t *Task) *TaskCreate {
-	return tc.SetParentID(t.ID)
+// SetParentTask sets the "parentTask" edge to the Task entity.
+func (tc *TaskCreate) SetParentTask(t *Task) *TaskCreate {
+	return tc.SetParentTaskID(t.ID)
 }
 
 // AddSubTaskIDs adds the "subTasks" edge to the Task entity by IDs.
@@ -678,12 +678,12 @@ func (tc *TaskCreate) createSpec() (*Task, *sqlgraph.CreateSpec) {
 		_node.TaskPriorityID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := tc.mutation.ParentIDs(); len(nodes) > 0 {
+	if nodes := tc.mutation.ParentTaskIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   task.ParentTable,
-			Columns: []string{task.ParentColumn},
+			Table:   task.ParentTaskTable,
+			Columns: []string{task.ParentTaskColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{

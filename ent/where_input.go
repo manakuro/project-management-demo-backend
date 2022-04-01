@@ -6426,9 +6426,9 @@ type TaskWhereInput struct {
 	HasTaskPriority     *bool                     `json:"hasTaskPriority,omitempty"`
 	HasTaskPriorityWith []*TaskPriorityWhereInput `json:"hasTaskPriorityWith,omitempty"`
 
-	// "parent" edge predicates.
-	HasParent     *bool             `json:"hasParent,omitempty"`
-	HasParentWith []*TaskWhereInput `json:"hasParentWith,omitempty"`
+	// "parentTask" edge predicates.
+	HasParentTask     *bool             `json:"hasParentTask,omitempty"`
+	HasParentTaskWith []*TaskWhereInput `json:"hasParentTaskWith,omitempty"`
 
 	// "subTasks" edge predicates.
 	HasSubTasks     *bool             `json:"hasSubTasks,omitempty"`
@@ -6954,23 +6954,23 @@ func (i *TaskWhereInput) P() (predicate.Task, error) {
 		}
 		predicates = append(predicates, task.HasTaskPriorityWith(with...))
 	}
-	if i.HasParent != nil {
-		p := task.HasParent()
-		if !*i.HasParent {
+	if i.HasParentTask != nil {
+		p := task.HasParentTask()
+		if !*i.HasParentTask {
 			p = task.Not(p)
 		}
 		predicates = append(predicates, p)
 	}
-	if len(i.HasParentWith) > 0 {
-		with := make([]predicate.Task, 0, len(i.HasParentWith))
-		for _, w := range i.HasParentWith {
+	if len(i.HasParentTaskWith) > 0 {
+		with := make([]predicate.Task, 0, len(i.HasParentTaskWith))
+		for _, w := range i.HasParentTaskWith {
 			p, err := w.P()
 			if err != nil {
 				return nil, err
 			}
 			with = append(with, p)
 		}
-		predicates = append(predicates, task.HasParentWith(with...))
+		predicates = append(predicates, task.HasParentTaskWith(with...))
 	}
 	if i.HasSubTasks != nil {
 		p := task.HasSubTasks()
