@@ -34,7 +34,7 @@ type TaskEdge {
 }
 
 input CreateTaskInput {
-  name: String!
+  name: String
   description: Map
   isNew: Boolean
   taskParentId: ID

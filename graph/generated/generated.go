@@ -13554,7 +13554,7 @@ type TaskEdge {
 }
 
 input CreateTaskInput {
-  name: String!
+  name: String
   description: Map
   isNew: Boolean
   taskParentId: ID
@@ -53931,7 +53931,7 @@ func (ec *executionContext) unmarshalInputCreateTaskInput(ctx context.Context, o
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
-			it.Name, err = ec.unmarshalNString2string(ctx, v)
+			it.Name, err = ec.unmarshalOString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
