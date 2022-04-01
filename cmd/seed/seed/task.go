@@ -102,7 +102,7 @@ func Task(ctx context.Context, client *ent.Client) {
 		AssigneeID:     &teammate.ID,
 		CreatedBy:      teammate.ID,
 		TaskPriorityID: &seedutil.GetTaskPriorityByName(ctx, client, taskPriorityFeed.high.Name).ID,
-		Description:    seedutil.ParseDescription([]byte(`{"type": "doc", "content": []}`)),
+		Description:    seedutil.ParseDescription([]byte(`{"type": "doc", "content": [{ "type": "paragraph", "content": null }]}`)),
 	}).Save(ctx)
 	if err != nil {
 		log.Fatalf("Task failed to feed data: %v", err)
@@ -113,7 +113,7 @@ func Task(ctx context.Context, client *ent.Client) {
 		DueDate:        taskNoAssignedFeed.task2.DueDate,
 		CreatedBy:      teammate.ID,
 		TaskPriorityID: &seedutil.GetTaskPriorityByName(ctx, client, taskPriorityFeed.high.Name).ID,
-		Description:    seedutil.ParseDescription([]byte(`{"type": "doc", "content": []}`)),
+		Description:    seedutil.ParseDescription([]byte(`{"type": "doc", "content": [{ "type": "paragraph", "content": null }]}`)),
 	}).Save(ctx)
 	if err != nil {
 		log.Fatalf("Task failed to feed data: %v", err)
@@ -140,7 +140,7 @@ func Task(ctx context.Context, client *ent.Client) {
 			CreatedBy:      teammate.ID,
 			TaskParentID:   &assignedTask2.ID,
 			TaskPriorityID: taskPriorityMediumID,
-			Description:    seedutil.ParseDescription([]byte(`{"type": "doc", "content": []}`)),
+			Description:    seedutil.ParseDescription([]byte(`{"type": "doc", "content": [{ "type": "paragraph", "content": null }]}`)),
 		},
 		{
 			Name:           taskAssignedFeed.task2Subtask2.Name,
@@ -149,7 +149,7 @@ func Task(ctx context.Context, client *ent.Client) {
 			CreatedBy:      teammate.ID,
 			TaskParentID:   &assignedTask2.ID,
 			TaskPriorityID: taskPriorityMediumID,
-			Description:    seedutil.ParseDescription([]byte(`{"type": "doc", "content": []}`)),
+			Description:    seedutil.ParseDescription([]byte(`{"type": "doc", "content": [{ "type": "paragraph", "content": null }]}`)),
 		},
 		{
 			Name:           taskAssignedFeed.task2Subtask3.Name,
@@ -158,7 +158,7 @@ func Task(ctx context.Context, client *ent.Client) {
 			CreatedBy:      teammate.ID,
 			TaskParentID:   &assignedTask2.ID,
 			TaskPriorityID: taskPriorityMediumID,
-			Description:    seedutil.ParseDescription([]byte(`{"type": "doc", "content": []}`)),
+			Description:    seedutil.ParseDescription([]byte(`{"type": "doc", "content": [{ "type": "paragraph", "content": null }]}`)),
 		},
 
 		{
@@ -167,7 +167,7 @@ func Task(ctx context.Context, client *ent.Client) {
 			AssigneeID:     &teammate.ID,
 			CreatedBy:      teammate.ID,
 			TaskPriorityID: taskPriorityMediumID,
-			Description:    seedutil.ParseDescription([]byte(`{"type": "doc", "content": []}`)),
+			Description:    seedutil.ParseDescription([]byte(`{"type": "doc", "content": [{ "type": "paragraph", "content": null }]}`)),
 		},
 		{
 			Name:           taskAssignedFeed.task4.Name,
@@ -175,7 +175,7 @@ func Task(ctx context.Context, client *ent.Client) {
 			AssigneeID:     &teammate.ID,
 			CreatedBy:      teammate.ID,
 			TaskPriorityID: taskPriorityMediumID,
-			Description:    seedutil.ParseDescription([]byte(`{"type": "doc", "content": []}`)),
+			Description:    seedutil.ParseDescription([]byte(`{"type": "doc", "content": [{ "type": "paragraph", "content": null }]}`)),
 		},
 		{
 			Name:           taskAssignedFeed.task5.Name,
@@ -183,7 +183,7 @@ func Task(ctx context.Context, client *ent.Client) {
 			AssigneeID:     &teammate.ID,
 			CreatedBy:      teammate.ID,
 			TaskPriorityID: taskPriorityLowID,
-			Description:    seedutil.ParseDescription([]byte(`{"type": "doc", "content": []}`)),
+			Description:    seedutil.ParseDescription([]byte(`{"type": "doc", "content": [{ "type": "paragraph", "content": null }]}`)),
 		},
 		{
 			Name:           taskAssignedFeed.task6.Name,
@@ -191,7 +191,7 @@ func Task(ctx context.Context, client *ent.Client) {
 			AssigneeID:     &teammate.ID,
 			CreatedBy:      teammate.ID,
 			TaskPriorityID: taskPriorityLowID,
-			Description:    seedutil.ParseDescription([]byte(`{"type": "doc", "content": []}`)),
+			Description:    seedutil.ParseDescription([]byte(`{"type": "doc", "content": [{ "type": "paragraph", "content": null }]}`)),
 		},
 		{
 			Name:           taskAssignedFeed.task7.Name,
@@ -199,7 +199,7 @@ func Task(ctx context.Context, client *ent.Client) {
 			AssigneeID:     &teammate.ID,
 			CreatedBy:      teammate.ID,
 			TaskPriorityID: taskPriorityLowID,
-			Description:    seedutil.ParseDescription([]byte(`{"type": "doc", "content": []}`)),
+			Description:    seedutil.ParseDescription([]byte(`{"type": "doc", "content": [{ "type": "paragraph", "content": null }]}`)),
 		},
 		{
 			Name:           taskAssignedFeed.task8.Name,
@@ -209,7 +209,7 @@ func Task(ctx context.Context, client *ent.Client) {
 			CompletedAt:    seedutil.AddDate(-2),
 			CreatedBy:      teammate.ID,
 			TaskPriorityID: taskPriorityLowID,
-			Description:    seedutil.ParseDescription([]byte(`{"type": "doc", "content": []}`)),
+			Description:    seedutil.ParseDescription([]byte(`{"type": "doc", "content": [{ "type": "paragraph", "content": null }]}`)),
 		},
 		{
 			Name:           taskAssignedFeed.task9.Name,
@@ -219,7 +219,7 @@ func Task(ctx context.Context, client *ent.Client) {
 			CompletedAt:    seedutil.AddDate(-10),
 			CreatedBy:      teammate.ID,
 			TaskPriorityID: taskPriorityLowID,
-			Description:    seedutil.ParseDescription([]byte(`{"type": "doc", "content": []}`)),
+			Description:    seedutil.ParseDescription([]byte(`{"type": "doc", "content": [{ "type": "paragraph", "content": null }]}`)),
 		},
 		{
 			Name:           taskAssignedFeed.task10.Name,
@@ -229,7 +229,7 @@ func Task(ctx context.Context, client *ent.Client) {
 			CompletedAt:    seedutil.AddDate(-7),
 			CreatedBy:      teammate.ID,
 			TaskPriorityID: taskPriorityLowID,
-			Description:    seedutil.ParseDescription([]byte(`{"type": "doc", "content": []}`)),
+			Description:    seedutil.ParseDescription([]byte(`{"type": "doc", "content": [{ "type": "paragraph", "content": null }]}`)),
 		},
 
 		// No assigned feed
@@ -238,7 +238,7 @@ func Task(ctx context.Context, client *ent.Client) {
 			DueDate:        taskAssignedFeed.task2Subtask1.DueDate,
 			CreatedBy:      teammate.ID,
 			TaskPriorityID: taskPriorityMediumID,
-			Description:    seedutil.ParseDescription([]byte(`{"type": "doc", "content": []}`)),
+			Description:    seedutil.ParseDescription([]byte(`{"type": "doc", "content": [{ "type": "paragraph", "content": null }]}`)),
 		},
 		{
 			Name:           taskNoAssignedFeed.task2Subtask1.Name,
@@ -246,7 +246,7 @@ func Task(ctx context.Context, client *ent.Client) {
 			CreatedBy:      teammate.ID,
 			TaskParentID:   &noAssignedTask2.ID,
 			TaskPriorityID: taskPriorityMediumID,
-			Description:    seedutil.ParseDescription([]byte(`{"type": "doc", "content": []}`)),
+			Description:    seedutil.ParseDescription([]byte(`{"type": "doc", "content": [{ "type": "paragraph", "content": null }]}`)),
 		},
 		{
 			Name:           taskNoAssignedFeed.task2Subtask2.Name,
@@ -254,7 +254,7 @@ func Task(ctx context.Context, client *ent.Client) {
 			CreatedBy:      teammate.ID,
 			TaskParentID:   &noAssignedTask2.ID,
 			TaskPriorityID: taskPriorityMediumID,
-			Description:    seedutil.ParseDescription([]byte(`{"type": "doc", "content": []}`)),
+			Description:    seedutil.ParseDescription([]byte(`{"type": "doc", "content": [{ "type": "paragraph", "content": null }]}`)),
 		},
 		{
 			Name:           taskNoAssignedFeed.task2Subtask3.Name,
@@ -262,7 +262,7 @@ func Task(ctx context.Context, client *ent.Client) {
 			CreatedBy:      teammate.ID,
 			TaskParentID:   &noAssignedTask2.ID,
 			TaskPriorityID: taskPriorityMediumID,
-			Description:    seedutil.ParseDescription([]byte(`{"type": "doc", "content": []}`)),
+			Description:    seedutil.ParseDescription([]byte(`{"type": "doc", "content": [{ "type": "paragraph", "content": null }]}`)),
 		},
 
 		// Marketing - Planning
@@ -271,52 +271,52 @@ func Task(ctx context.Context, client *ent.Client) {
 			DueDate:        taskNoAssignedFeed.mTask1.DueDate,
 			CreatedBy:      teammate.ID,
 			TaskPriorityID: taskPriorityMediumID,
-			Description:    seedutil.ParseDescription([]byte(`{"type": "doc", "content": []}`)),
+			Description:    seedutil.ParseDescription([]byte(`{"type": "doc", "content": [{ "type": "paragraph", "content": null }]}`)),
 		},
 		{
 			Name:           taskNoAssignedFeed.mTask2.Name,
 			DueDate:        taskNoAssignedFeed.mTask2.DueDate,
 			CreatedBy:      teammate.ID,
 			TaskPriorityID: taskPriorityHighID,
-			Description:    seedutil.ParseDescription([]byte(`{"type": "doc", "content": []}`)),
+			Description:    seedutil.ParseDescription([]byte(`{"type": "doc", "content": [{ "type": "paragraph", "content": null }]}`)),
 		},
 		{
 			Name:           taskNoAssignedFeed.mTask3.Name,
 			DueDate:        taskNoAssignedFeed.mTask3.DueDate,
 			CreatedBy:      teammate.ID,
 			TaskPriorityID: taskPriorityHighID,
-			Description:    seedutil.ParseDescription([]byte(`{"type": "doc", "content": []}`)),
+			Description:    seedutil.ParseDescription([]byte(`{"type": "doc", "content": [{ "type": "paragraph", "content": null }]}`)),
 		},
 		{
 			Name:        taskNoAssignedFeed.mTask4.Name,
 			DueDate:     taskNoAssignedFeed.mTask4.DueDate,
 			CreatedBy:   teammate.ID,
-			Description: seedutil.ParseDescription([]byte(`{"type": "doc", "content": []}`)),
+			Description: seedutil.ParseDescription([]byte(`{"type": "doc", "content": [{ "type": "paragraph", "content": null }]}`)),
 		},
 		// Marketing - Upcoming
 		{
 			Name:        taskNoAssignedFeed.mTask5.Name,
 			DueDate:     taskNoAssignedFeed.mTask5.DueDate,
 			CreatedBy:   teammate.ID,
-			Description: seedutil.ParseDescription([]byte(`{"type": "doc", "content": []}`)),
+			Description: seedutil.ParseDescription([]byte(`{"type": "doc", "content": [{ "type": "paragraph", "content": null }]}`)),
 		},
 		{
 			Name:        taskNoAssignedFeed.mTask6.Name,
 			DueDate:     taskNoAssignedFeed.mTask6.DueDate,
 			CreatedBy:   teammate.ID,
-			Description: seedutil.ParseDescription([]byte(`{"type": "doc", "content": []}`)),
+			Description: seedutil.ParseDescription([]byte(`{"type": "doc", "content": [{ "type": "paragraph", "content": null }]}`)),
 		},
 		{
 			Name:        taskNoAssignedFeed.mTask7.Name,
 			DueDate:     taskNoAssignedFeed.mTask7.DueDate,
 			CreatedBy:   teammate.ID,
-			Description: seedutil.ParseDescription([]byte(`{"type": "doc", "content": []}`)),
+			Description: seedutil.ParseDescription([]byte(`{"type": "doc", "content": [{ "type": "paragraph", "content": null }]}`)),
 		},
 		{
 			Name:        taskNoAssignedFeed.mTask8.Name,
 			DueDate:     taskNoAssignedFeed.mTask8.DueDate,
 			CreatedBy:   teammate.ID,
-			Description: seedutil.ParseDescription([]byte(`{"type": "doc", "content": []}`)),
+			Description: seedutil.ParseDescription([]byte(`{"type": "doc", "content": [{ "type": "paragraph", "content": null }]}`)),
 		},
 		// Marketing - Content Development
 		{
@@ -324,19 +324,19 @@ func Task(ctx context.Context, client *ent.Client) {
 			DueDate:        taskNoAssignedFeed.mTask9.DueDate,
 			CreatedBy:      teammate.ID,
 			TaskPriorityID: taskPriorityHighID,
-			Description:    seedutil.ParseDescription([]byte(`{"type": "doc", "content": []}`)),
+			Description:    seedutil.ParseDescription([]byte(`{"type": "doc", "content": [{ "type": "paragraph", "content": null }]}`)),
 		},
 		{
 			Name:        taskNoAssignedFeed.mTask10.Name,
 			DueDate:     taskNoAssignedFeed.mTask10.DueDate,
 			CreatedBy:   teammate.ID,
-			Description: seedutil.ParseDescription([]byte(`{"type": "doc", "content": []}`)),
+			Description: seedutil.ParseDescription([]byte(`{"type": "doc", "content": [{ "type": "paragraph", "content": null }]}`)),
 		},
 		{
 			Name:        taskNoAssignedFeed.mTask11.Name,
 			DueDate:     taskNoAssignedFeed.mTask11.DueDate,
 			CreatedBy:   teammate.ID,
-			Description: seedutil.ParseDescription([]byte(`{"type": "doc", "content": []}`)),
+			Description: seedutil.ParseDescription([]byte(`{"type": "doc", "content": [{ "type": "paragraph", "content": null }]}`)),
 		},
 		// Marketing - Campaign Promotion
 		{
@@ -344,19 +344,19 @@ func Task(ctx context.Context, client *ent.Client) {
 			DueDate:        taskNoAssignedFeed.mTask12.DueDate,
 			CreatedBy:      teammate.ID,
 			TaskPriorityID: taskPriorityHighID,
-			Description:    seedutil.ParseDescription([]byte(`{"type": "doc", "content": []}`)),
+			Description:    seedutil.ParseDescription([]byte(`{"type": "doc", "content": [{ "type": "paragraph", "content": null }]}`)),
 		},
 		{
 			Name:        taskNoAssignedFeed.mTask13.Name,
 			DueDate:     taskNoAssignedFeed.mTask13.DueDate,
 			CreatedBy:   teammate.ID,
-			Description: seedutil.ParseDescription([]byte(`{"type": "doc", "content": []}`)),
+			Description: seedutil.ParseDescription([]byte(`{"type": "doc", "content": [{ "type": "paragraph", "content": null }]}`)),
 		},
 		{
 			Name:        taskNoAssignedFeed.mTask14.Name,
 			DueDate:     taskNoAssignedFeed.mTask14.DueDate,
 			CreatedBy:   teammate.ID,
-			Description: seedutil.ParseDescription([]byte(`{"type": "doc", "content": []}`)),
+			Description: seedutil.ParseDescription([]byte(`{"type": "doc", "content": [{ "type": "paragraph", "content": null }]}`)),
 		},
 	}
 	bulk := make([]*ent.TaskCreate, len(ts))
