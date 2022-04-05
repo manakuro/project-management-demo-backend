@@ -13,6 +13,7 @@ type ProjectTeammate interface {
 	ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ProjectTeammateWhereInput) (*model.ProjectTeammateConnection, error)
 	Create(ctx context.Context, input model.CreateProjectTeammateInput) (*model.ProjectTeammate, error)
 	Update(ctx context.Context, input model.UpdateProjectTeammateInput) (*model.ProjectTeammate, error)
+	UpdateOwner(ctx context.Context, input model.UpdateProjectTeammateOwnerInput) (*model.ProjectTeammate, error)
 }
 
 type projectTeammateController struct {
@@ -44,4 +45,8 @@ func (c *projectTeammateController) Create(ctx context.Context, input model.Crea
 
 func (c *projectTeammateController) Update(ctx context.Context, input model.UpdateProjectTeammateInput) (*model.ProjectTeammate, error) {
 	return c.projectTeammateUsecase.Update(ctx, input)
+}
+
+func (c *projectTeammateController) UpdateOwner(ctx context.Context, input model.UpdateProjectTeammateOwnerInput) (*model.ProjectTeammate, error) {
+	return c.projectTeammateUsecase.UpdateOwner(ctx, input)
 }

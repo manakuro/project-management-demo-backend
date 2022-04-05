@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"project-management-demo-backend/ent"
+	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/pkg/entity/model"
 	ur "project-management-demo-backend/pkg/usecase/repository"
 )
@@ -84,6 +85,26 @@ func (r *projectTeammateRepository) Update(ctx context.Context, input model.Upda
 			return nil, model.NewNotFoundError(err, input.ID)
 		}
 
+		return nil, model.NewDBError(err)
+	}
+
+	return res, nil
+}
+
+func (r *projectTeammateRepository) UpdateOwner(ctx context.Context, input model.UpdateProjectTeammateOwnerInput) (*model.ProjectTeammate, error) {
+	client := WithTransactionalMutation(ctx)
+
+	_, err := client.ProjectTeammate.
+		Update().
+		SetIsOwner(false).
+		Where(projectteammate.ProjectID(input.ProjectID)).
+		Save(ctx)
+	if err != nil {
+		return nil, model.NewDBError(err)
+	}
+
+	res, err := client.ProjectTeammate.UpdateOneID(input.ID).SetIsOwner(true).Save(ctx)
+	if err != nil {
 		return nil, model.NewDBError(err)
 	}
 

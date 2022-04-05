@@ -70,6 +70,28 @@ func (ProjectTeammate) Edges() []ent.Edge {
 	}
 }
 
+// Annotations of the ProjectTeammate.
+func (ProjectTeammate) Annotations() []schema.Annotation {
+	return []schema.Annotation{
+		schema.Annotation(
+			annotation.MutationInput{
+				Create: []annotation.MutationInputField{
+					{
+						Key:  "WorkspaceID",
+						Type: "ulid.ID",
+					},
+				},
+				Update: []annotation.MutationInputField{
+					{
+						Key:  "WorkspaceID",
+						Type: "ulid.ID",
+					},
+				},
+			},
+		),
+	}
+}
+
 // Mixin of the ProjectTeammate.
 func (ProjectTeammate) Mixin() []ent.Mixin {
 	return []ent.Mixin{

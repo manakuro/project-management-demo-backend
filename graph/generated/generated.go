@@ -382,6 +382,7 @@ type ComplexityRoot struct {
 		UpdateProjectTaskListStatus               func(childComplexity int, input ent.UpdateProjectTaskListStatusInput) int
 		UpdateProjectTaskSection                  func(childComplexity int, input ent.UpdateProjectTaskSectionInput) int
 		UpdateProjectTeammate                     func(childComplexity int, input ent.UpdateProjectTeammateInput) int
+		UpdateProjectTeammateOwner                func(childComplexity int, input model.UpdateProjectTeammateOwnerInput) int
 		UpdateTag                                 func(childComplexity int, input ent.UpdateTagInput) int
 		UpdateTask                                func(childComplexity int, input ent.UpdateTaskInput) int
 		UpdateTaskCollaborator                    func(childComplexity int, input ent.UpdateTaskCollaboratorInput) int
@@ -1400,6 +1401,7 @@ type MutationResolver interface {
 	UndeleteProjectTaskSectionAndDeleteTasks(ctx context.Context, input model.UndeleteProjectTaskSectionAndDeleteTasksInput) (*model.UndeleteProjectTaskSectionAndDeleteTasksPayload, error)
 	CreateProjectTeammate(ctx context.Context, input ent.CreateProjectTeammateInput) (*ent.ProjectTeammate, error)
 	UpdateProjectTeammate(ctx context.Context, input ent.UpdateProjectTeammateInput) (*ent.ProjectTeammate, error)
+	UpdateProjectTeammateOwner(ctx context.Context, input model.UpdateProjectTeammateOwnerInput) (*ent.ProjectTeammate, error)
 	CreateTag(ctx context.Context, input ent.CreateTagInput) (*ent.Tag, error)
 	UpdateTag(ctx context.Context, input ent.UpdateTagInput) (*ent.Tag, error)
 	CreateTask(ctx context.Context, input ent.CreateTaskInput) (*ent.Task, error)
@@ -3494,6 +3496,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.UpdateProjectTeammate(childComplexity, args["input"].(ent.UpdateProjectTeammateInput)), true
+
+	case "Mutation.updateProjectTeammateOwner":
+		if e.complexity.Mutation.UpdateProjectTeammateOwner == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateProjectTeammateOwner_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateProjectTeammateOwner(childComplexity, args["input"].(model.UpdateProjectTeammateOwnerInput)), true
 
 	case "Mutation.updateTag":
 		if e.complexity.Mutation.UpdateTag == nil {
@@ -13438,6 +13452,13 @@ input UpdateProjectTeammateInput {
   role: String
   isOwner: Boolean
   requestId: String!
+  workspaceId: ID!
+}
+input UpdateProjectTeammateOwnerInput {
+  id: ID!
+  projectId: ID!
+  requestId: String!
+  workspaceId: ID!
 }
 
 extend type Query {
@@ -13452,6 +13473,7 @@ extend type Subscription {
 extend type Mutation {
   createProjectTeammate(input: CreateProjectTeammateInput!): ProjectTeammate!
   updateProjectTeammate(input: UpdateProjectTeammateInput!): ProjectTeammate!
+  updateProjectTeammateOwner(input: UpdateProjectTeammateOwnerInput!): ProjectTeammate!
 }
 `, BuiltIn: false},
 	{Name: "graph/schema/schema.graphql", Input: `scalar Time
@@ -16050,6 +16072,21 @@ func (ec *executionContext) field_Mutation_updateProjectTask_args(ctx context.Co
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNUpdateProjectTaskInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐUpdateProjectTaskInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_updateProjectTeammateOwner_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.UpdateProjectTeammateOwnerInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNUpdateProjectTeammateOwnerInput2projectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐUpdateProjectTeammateOwnerInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -26205,6 +26242,48 @@ func (ec *executionContext) _Mutation_updateProjectTeammate(ctx context.Context,
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
 		return ec.resolvers.Mutation().UpdateProjectTeammate(rctx, args["input"].(ent.UpdateProjectTeammateInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.ProjectTeammate)
+	fc.Result = res
+	return ec.marshalNProjectTeammate2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTeammate(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_updateProjectTeammateOwner(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_updateProjectTeammateOwner_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdateProjectTeammateOwner(rctx, args["input"].(model.UpdateProjectTeammateOwnerInput))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -77477,6 +77556,61 @@ func (ec *executionContext) unmarshalInputUpdateProjectTeammateInput(ctx context
 			if err != nil {
 				return it, err
 			}
+		case "workspaceId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceId"))
+			it.WorkspaceID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputUpdateProjectTeammateOwnerInput(ctx context.Context, obj interface{}) (model.UpdateProjectTeammateOwnerInput, error) {
+	var it model.UpdateProjectTeammateOwnerInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			it.ID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "projectId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("projectId"))
+			it.ProjectID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "requestId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("requestId"))
+			it.RequestID, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "workspaceId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceId"))
+			it.WorkspaceID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		}
 	}
 
@@ -81982,6 +82116,11 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			}
 		case "updateProjectTeammate":
 			out.Values[i] = ec._Mutation_updateProjectTeammate(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "updateProjectTeammateOwner":
+			out.Values[i] = ec._Mutation_updateProjectTeammateOwner(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -91570,6 +91709,11 @@ func (ec *executionContext) unmarshalNUpdateProjectTaskSectionInput2projectᚑma
 
 func (ec *executionContext) unmarshalNUpdateProjectTeammateInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐUpdateProjectTeammateInput(ctx context.Context, v interface{}) (ent.UpdateProjectTeammateInput, error) {
 	res, err := ec.unmarshalInputUpdateProjectTeammateInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNUpdateProjectTeammateOwnerInput2projectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐUpdateProjectTeammateOwnerInput(ctx context.Context, v interface{}) (model.UpdateProjectTeammateOwnerInput, error) {
+	res, err := ec.unmarshalInputUpdateProjectTeammateOwnerInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 

@@ -1208,13 +1208,14 @@ func (u *ProjectTaskSectionUpdateOne) SetInput(i UpdateProjectTaskSectionInput) 
 
 // CreateProjectTeammateInput represents a mutation input for creating projectteammates.
 type CreateProjectTeammateInput struct {
-	Role       string
-	IsOwner    bool
-	CreatedAt  *time.Time
-	UpdatedAt  *time.Time
-	ProjectID  ulid.ID
-	TeammateID ulid.ID
-	RequestID  string
+	Role        string
+	IsOwner     bool
+	CreatedAt   *time.Time
+	UpdatedAt   *time.Time
+	ProjectID   ulid.ID
+	TeammateID  ulid.ID
+	WorkspaceID ulid.ID
+	RequestID   string
 }
 
 // Mutate applies the CreateProjectTeammateInput on the ProjectTeammateCreate builder.
@@ -1246,6 +1247,7 @@ type UpdateProjectTeammateInput struct {
 	ClearProject  bool
 	TeammateID    *ulid.ID
 	ClearTeammate bool
+	WorkspaceID   ulid.ID
 	RequestID     string
 }
 

@@ -17,6 +17,7 @@ type ProjectTeammate interface {
 	ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.ProjectTeammateWhereInput) (*model.ProjectTeammateConnection, error)
 	Create(ctx context.Context, input model.CreateProjectTeammateInput) (*model.ProjectTeammate, error)
 	Update(ctx context.Context, input model.UpdateProjectTeammateInput) (*model.ProjectTeammate, error)
+	UpdateOwner(ctx context.Context, input model.UpdateProjectTeammateOwnerInput) (*model.ProjectTeammate, error)
 }
 
 // NewProjectTeammateUsecase generates test user repository
@@ -42,4 +43,8 @@ func (u *projectTeammateUsecase) Create(ctx context.Context, input model.CreateP
 
 func (u *projectTeammateUsecase) Update(ctx context.Context, input model.UpdateProjectTeammateInput) (*model.ProjectTeammate, error) {
 	return u.projectTeammateRepository.Update(ctx, input)
+}
+
+func (u *projectTeammateUsecase) UpdateOwner(ctx context.Context, input model.UpdateProjectTeammateOwnerInput) (*model.ProjectTeammate, error) {
+	return u.projectTeammateRepository.UpdateOwner(ctx, input)
 }
