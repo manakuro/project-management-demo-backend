@@ -63,14 +63,17 @@ func ProjectTaskSection(ctx context.Context, client *ent.Client) {
 		{
 			ProjectID: appDevelopmentProject.ID,
 			Name:      projectTaskSectionFeedAppDevelopment.backlog.Name,
+			CreatedAt: seedutil.AddDate(-3),
 		},
 		{
 			ProjectID: appDevelopmentProject.ID,
 			Name:      projectTaskSectionFeedAppDevelopment.ready.Name,
+			CreatedAt: seedutil.AddDate(-2),
 		},
 		{
 			ProjectID: appDevelopmentProject.ID,
 			Name:      projectTaskSectionFeedAppDevelopment.inProgress.Name,
+			CreatedAt: seedutil.AddDate(-1),
 		},
 		{
 			ProjectID: appDevelopmentProject.ID,
@@ -81,14 +84,17 @@ func ProjectTaskSection(ctx context.Context, client *ent.Client) {
 		{
 			ProjectID: marketingProject.ID,
 			Name:      projectTaskSectionFeedMarketing.upcoming.Name,
+			CreatedAt: seedutil.AddDate(-3),
 		},
 		{
 			ProjectID: marketingProject.ID,
 			Name:      projectTaskSectionFeedMarketing.planning.Name,
+			CreatedAt: seedutil.AddDate(-2),
 		},
 		{
 			ProjectID: marketingProject.ID,
 			Name:      projectTaskSectionFeedMarketing.contentDevelopment.Name,
+			CreatedAt: seedutil.AddDate(-1),
 		},
 		{
 			ProjectID: marketingProject.ID,
@@ -99,14 +105,17 @@ func ProjectTaskSection(ctx context.Context, client *ent.Client) {
 		{
 			ProjectID: customerSuccessProject.ID,
 			Name:      projectTaskSectionFeedAppDevelopment.backlog.Name,
+			CreatedAt: seedutil.AddDate(-3),
 		},
 		{
 			ProjectID: customerSuccessProject.ID,
 			Name:      projectTaskSectionFeedAppDevelopment.ready.Name,
+			CreatedAt: seedutil.AddDate(-2),
 		},
 		{
 			ProjectID: customerSuccessProject.ID,
 			Name:      projectTaskSectionFeedAppDevelopment.inProgress.Name,
+			CreatedAt: seedutil.AddDate(-1),
 		},
 		{
 			ProjectID: customerSuccessProject.ID,
