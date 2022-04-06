@@ -12989,6 +12989,7 @@ input UpdateProjectInput {
   dueDate: Time
   requestId: String!
   workspaceId: ID!
+  clearDueDate: Boolean
 }
 
 extend type Query {
@@ -77215,6 +77216,14 @@ func (ec *executionContext) unmarshalInputUpdateProjectInput(ctx context.Context
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceId"))
 			it.WorkspaceID, err = ec.unmarshalNID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "clearDueDate":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("clearDueDate"))
+			it.ClearDueDate, err = ec.unmarshalOBoolean2bool(ctx, v)
 			if err != nil {
 				return it, err
 			}

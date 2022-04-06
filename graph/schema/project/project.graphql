@@ -51,6 +51,7 @@ input UpdateProjectInput {
   dueDate: Time
   requestId: String!
   workspaceId: ID!
+  clearDueDate: Boolean
 }
 
 extend type Query {
