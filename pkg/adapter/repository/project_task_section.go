@@ -235,11 +235,6 @@ func (r *projectTaskSectionRepository) DeleteAndDeleteTasks(ctx context.Context,
 		return nil, model.NewDBError(err)
 	}
 
-	err = client.ProjectTaskSection.DeleteOneID(deleted.ID).Exec(ctx)
-	if err != nil {
-		return nil, model.NewDBError(err)
-	}
-
 	taskIDs := make([]model.ID, len(projectTasks))
 	for i, t := range projectTasks {
 		taskIDs[i] = t.TaskID
@@ -256,6 +251,11 @@ func (r *projectTaskSectionRepository) DeleteAndDeleteTasks(ctx context.Context,
 	})
 	if err != nil {
 		return nil, err
+	}
+
+	err = client.ProjectTaskSection.DeleteOneID(deleted.ID).Exec(ctx)
+	if err != nil {
+		return nil, model.NewDBError(err)
 	}
 
 	projectTaskIDs := make([]model.ID, len(projectTasks))
