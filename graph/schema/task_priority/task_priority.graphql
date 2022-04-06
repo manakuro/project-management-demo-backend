@@ -7,7 +7,7 @@ enum TaskPriorityType {
 type TaskPriority implements Node {
   id: ID!
   name: String!
-  priorityType: TaskPriorityType
+  priorityType: TaskPriorityType!
   colorId: ID!
   color: Color!
   createdAt: String!

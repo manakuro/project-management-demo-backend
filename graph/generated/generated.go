@@ -14156,7 +14156,7 @@ extend type Mutation {
 type TaskPriority implements Node {
   id: ID!
   name: String!
-  priorityType: TaskPriorityType
+  priorityType: TaskPriorityType!
   colorId: ID!
   color: Color!
   createdAt: String!
@@ -44630,11 +44630,14 @@ func (ec *executionContext) _TaskPriority_priorityType(ctx context.Context, fiel
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
 	res := resTmp.(taskpriority.PriorityType)
 	fc.Result = res
-	return ec.marshalOTaskPriorityType2projectᚑmanagementᚑdemoᚑbackendᚋentᚋtaskpriorityᚐPriorityType(ctx, field.Selections, res)
+	return ec.marshalNTaskPriorityType2projectᚑmanagementᚑdemoᚑbackendᚋentᚋtaskpriorityᚐPriorityType(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _TaskPriority_colorId(ctx context.Context, field graphql.CollectedField, obj *ent.TaskPriority) (ret graphql.Marshaler) {
@@ -86715,6 +86718,9 @@ func (ec *executionContext) _TaskPriority(ctx context.Context, sel ast.Selection
 			}
 		case "priorityType":
 			out.Values[i] = ec._TaskPriority_priorityType(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
 		case "colorId":
 			out.Values[i] = ec._TaskPriority_colorId(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -95413,16 +95419,6 @@ func (ec *executionContext) marshalOTaskPriorityEdge2ᚖprojectᚑmanagementᚑd
 		return graphql.Null
 	}
 	return ec._TaskPriorityEdge(ctx, sel, v)
-}
-
-func (ec *executionContext) unmarshalOTaskPriorityType2projectᚑmanagementᚑdemoᚑbackendᚋentᚋtaskpriorityᚐPriorityType(ctx context.Context, v interface{}) (taskpriority.PriorityType, error) {
-	var res taskpriority.PriorityType
-	err := res.UnmarshalGQL(v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) marshalOTaskPriorityType2projectᚑmanagementᚑdemoᚑbackendᚋentᚋtaskpriorityᚐPriorityType(ctx context.Context, sel ast.SelectionSet, v taskpriority.PriorityType) graphql.Marshaler {
-	return v
 }
 
 func (ec *executionContext) unmarshalOTaskPriorityType2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋtaskpriorityᚐPriorityTypeᚄ(ctx context.Context, v interface{}) ([]taskpriority.PriorityType, error) {
