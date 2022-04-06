@@ -17,7 +17,8 @@ type TaskFeed interface {
 	ListWithPagination(ctx context.Context, after *model.Cursor, first *int, before *model.Cursor, last *int, where *model.TaskFeedWhereInput) (*model.TaskFeedConnection, error)
 	Create(ctx context.Context, input model.CreateTaskFeedInput) (*model.TaskFeed, error)
 	Update(ctx context.Context, input model.UpdateTaskFeedInput) (*model.TaskFeed, error)
-	Delete(ctx context.Context, input model.DeleteTaskFeedInput) (*model.TaskFeed, error)
+	Delete(ctx context.Context, input model.DeleteTaskFeedInput) (*model.DeleteTaskFeedInputPayload, error)
+	Undelete(ctx context.Context, input model.UndeleteTaskFeedInput) (*model.UndeleteTaskFeedInputPayload, error)
 }
 
 // NewTaskFeedUsecase generates a repository.
@@ -45,6 +46,10 @@ func (u *taskFeedUsecase) Update(ctx context.Context, input model.UpdateTaskFeed
 	return u.taskFeedRepository.Update(ctx, input)
 }
 
-func (u *taskFeedUsecase) Delete(ctx context.Context, input model.DeleteTaskFeedInput) (*model.TaskFeed, error) {
+func (u *taskFeedUsecase) Delete(ctx context.Context, input model.DeleteTaskFeedInput) (*model.DeleteTaskFeedInputPayload, error) {
 	return u.taskFeedRepository.Delete(ctx, input)
+}
+
+func (u *taskFeedUsecase) Undelete(ctx context.Context, input model.UndeleteTaskFeedInput) (*model.UndeleteTaskFeedInputPayload, error) {
+	return u.taskFeedRepository.Undelete(ctx, input)
 }

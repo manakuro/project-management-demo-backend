@@ -48,7 +48,7 @@ func (r *mutationResolver) UpdateTaskFeed(ctx context.Context, input ent.UpdateT
 	return t, nil
 }
 
-func (r *mutationResolver) DeleteTaskFeed(ctx context.Context, input model.DeleteTaskFeedInput) (*ent.TaskFeed, error) {
+func (r *mutationResolver) DeleteTaskFeed(ctx context.Context, input model.DeleteTaskFeedInput) (*model.DeleteTaskFeedInputPayload, error) {
 	t, err := r.controller.TaskFeed.Delete(ctx, input)
 	if err != nil {
 		return nil, handler.HandleGraphQLError(ctx, err)
@@ -63,6 +63,15 @@ func (r *mutationResolver) DeleteTaskFeed(ctx context.Context, input model.Delet
 	}()
 
 	return t, nil
+}
+
+func (r *mutationResolver) UndeleteTaskFeed(ctx context.Context, input model.UndeleteTaskFeedInput) (*model.UndeleteTaskFeedInputPayload, error) {
+	t, err := r.controller.TaskFeed.Undelete(ctx, input)
+	if err != nil {
+		return nil, handler.HandleGraphQLError(ctx, err)
+	}
+
+	return t, err
 }
 
 func (r *queryResolver) TaskFeed(ctx context.Context, where *ent.TaskFeedWhereInput) (*ent.TaskFeed, error) {
@@ -126,9 +135,9 @@ func (r *subscriptionResolver) TaskFeedCreated(ctx context.Context, workspaceID 
 	return ch, nil
 }
 
-func (r *subscriptionResolver) TaskFeedDeleted(ctx context.Context, workspaceID ulid.ID, requestID string) (<-chan *ent.TaskFeed, error) {
+func (r *subscriptionResolver) TaskFeedDeleted(ctx context.Context, workspaceID ulid.ID, requestID string) (<-chan *model.DeleteTaskFeedInputPayload, error) {
 	key := subscription.NewKey()
-	ch := make(chan *ent.TaskFeed, 1)
+	ch := make(chan *model.DeleteTaskFeedInputPayload, 1)
 
 	r.mutex.Lock()
 	r.subscriptions.TaskFeedDeleted[key] = subscription.TaskFeedDeleted{

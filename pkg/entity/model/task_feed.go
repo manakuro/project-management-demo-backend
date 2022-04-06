@@ -2,7 +2,6 @@ package model
 
 import (
 	"project-management-demo-backend/ent"
-	"project-management-demo-backend/ent/schema/ulid"
 )
 
 // TaskFeed is the model entity for the TaskFeed schema.
@@ -22,7 +21,39 @@ type UpdateTaskFeedInput = ent.UpdateTaskFeedInput
 
 // DeleteTaskFeedInput represents a mutation input.
 type DeleteTaskFeedInput struct {
-	ID          ulid.ID
+	ID          ID
 	RequestID   string
-	WorkspaceID ulid.ID
+	WorkspaceID ID
+}
+
+// DeleteTaskFeedInputPayload represents a mutation payload.
+type DeleteTaskFeedInputPayload struct {
+	TaskFeed      *TaskFeed
+	TaskFeedLikes []*TaskFeedLike
+	TaskFiles     []*TaskFile
+}
+
+// UndeleteTaskFeedInput represents a mutation input.
+type UndeleteTaskFeedInput struct {
+	TaskFeed      *UndeleteTaskFeedTaskFeedInput
+	TaskFeedLikes []*UndeleteTaskFeedTaskFeedLikeInput
+	TaskFiles     []*UndeleteTaskFeedTaskFileInput
+	RequestID     string
+	WorkspaceID   ID
+}
+
+// UndeleteTaskFeedTaskFeedInput represents a mutation input.
+type UndeleteTaskFeedTaskFeedInput = TaskFeed
+
+// UndeleteTaskFeedTaskFeedLikeInput represents a mutation input.
+type UndeleteTaskFeedTaskFeedLikeInput = TaskFeedLike
+
+// UndeleteTaskFeedTaskFileInput represents a mutation input.
+type UndeleteTaskFeedTaskFileInput = TaskFile
+
+// UndeleteTaskFeedInputPayload represents a mutation payload.
+type UndeleteTaskFeedInputPayload struct {
+	TaskFeed      *TaskFeed
+	TaskFeedLikes []*TaskFeedLike
+	TaskFiles     []*TaskFile
 }

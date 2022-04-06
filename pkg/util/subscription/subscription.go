@@ -433,7 +433,7 @@ type TaskFeedCreated struct {
 type TaskFeedDeleted struct {
 	WorkspaceID model.ID
 	RequestID   string
-	Ch          chan *model.TaskFeed
+	Ch          chan *model.DeleteTaskFeedInputPayload
 }
 
 // TaskFeedLikeCreated is a channel for subscription.
