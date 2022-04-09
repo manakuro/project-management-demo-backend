@@ -21,7 +21,7 @@ type UpdateProjectTeammateInput = ent.UpdateProjectTeammateInput
 
 // UpdateProjectTeammateOwnerInput represents a mutation input for updating owner.
 type UpdateProjectTeammateOwnerInput struct {
-	ID          ID
+	TeammateID  ID
 	ProjectID   ID
 	WorkspaceID ID
 	RequestID   string

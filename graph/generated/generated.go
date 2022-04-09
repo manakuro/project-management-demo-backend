@@ -13524,7 +13524,7 @@ input UpdateProjectTeammateInput {
   workspaceId: ID!
 }
 input UpdateProjectTeammateOwnerInput {
-  id: ID!
+  teammateId: ID!
   projectId: ID!
   requestId: String!
   workspaceId: ID!
@@ -78268,11 +78268,11 @@ func (ec *executionContext) unmarshalInputUpdateProjectTeammateOwnerInput(ctx co
 
 	for k, v := range asMap {
 		switch k {
-		case "id":
+		case "teammateId":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-			it.ID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("teammateId"))
+			it.TeammateID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}

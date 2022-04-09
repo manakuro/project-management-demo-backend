@@ -103,10 +103,46 @@ func (r *projectTeammateRepository) UpdateOwner(ctx context.Context, input model
 		return nil, model.NewDBError(err)
 	}
 
-	res, err := client.ProjectTeammate.UpdateOneID(input.ID).SetIsOwner(true).Save(ctx)
+	q := client.ProjectTeammate.
+		Query().
+		Where(
+			projectteammate.TeammateID(input.TeammateID),
+			projectteammate.ProjectID(input.ProjectID),
+		)
+
+	WithProjectTeammate(q)
+
+	projectTeammate, err := q.Only(ctx)
+
+	if err != nil && !ent.IsNotFound(err) {
+		return nil, model.NewDBError(err)
+	}
+
+	if projectTeammate == nil {
+		res, perr := client.ProjectTeammate.
+			Create().
+			SetProjectID(input.ProjectID).
+			SetTeammateID(input.TeammateID).
+			SetRole("").
+			SetIsOwner(true).
+			Save(ctx)
+
+		if perr != nil {
+			return nil, model.NewDBError(perr)
+		}
+		return res, perr
+	}
+
+	res, err := client.ProjectTeammate.UpdateOneID(projectTeammate.ID).SetIsOwner(true).Save(ctx)
+
 	if err != nil {
 		return nil, model.NewDBError(err)
 	}
 
 	return res, nil
+}
+
+// WithProjectTeammate eager-loads associations with project teammate entity.
+func WithProjectTeammate(query *ent.ProjectTeammateQuery) {
+	query.WithTeammate()
 }

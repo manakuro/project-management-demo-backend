@@ -36,7 +36,7 @@ input UpdateProjectTeammateInput {
   workspaceId: ID!
 }
 input UpdateProjectTeammateOwnerInput {
-  id: ID!
+  teammateId: ID!
   projectId: ID!
   requestId: String!
   workspaceId: ID!
