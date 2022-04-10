@@ -142,9 +142,14 @@ func (r *taskRepository) Assign(ctx context.Context, input model.AssignTaskInput
 		return nil, model.NewDBError(err)
 	}
 
-	teammateTask, err := client.TeammateTask.Query().WithTask(func(tq *ent.TaskQuery) {
-		WithTask(tq)
-	}).Where(teammatetask.ID(t.ID)).Only(ctx)
+	teammateTask, err := client.TeammateTask.
+		Query().
+		WithTask(func(tq *ent.TaskQuery) {
+			WithTask(tq)
+		}).
+		Where(teammatetask.ID(t.ID)).
+		Only(ctx)
+
 	if err != nil {
 		return nil, model.NewDBError(err)
 	}
@@ -669,4 +674,5 @@ func WithTask(query *ent.TaskQuery) {
 	query.WithTaskTags()
 	query.WithTaskLikes()
 	query.WithTaskCollaborators()
+	query.WithParentTask()
 }
