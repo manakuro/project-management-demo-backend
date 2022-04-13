@@ -91,5 +91,7 @@ func (r *projectRepository) Update(ctx context.Context, input model.UpdateProjec
 
 // WithProject eager-loads association with project.
 func WithProject(pq *ent.ProjectQuery) {
-	pq.WithProjectTeammates()
+	pq.WithProjectTeammates(func(ptq *ent.ProjectTeammateQuery) {
+		ptq.WithTeammate()
+	})
 }

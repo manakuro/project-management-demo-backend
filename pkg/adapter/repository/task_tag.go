@@ -129,3 +129,10 @@ func (r *taskTagRepository) Delete(ctx context.Context, input model.DeleteTaskTa
 
 	return deleted, nil
 }
+
+// WithTaskTag eager-loads associations with task tag entity.
+func WithTaskTag(query *ent.TaskTagQuery) {
+	query.WithTag(func(tq *ent.TagQuery) {
+		WithTag(tq)
+	})
+}

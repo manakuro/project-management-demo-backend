@@ -668,11 +668,37 @@ func WithTask(query *ent.TaskQuery) {
 	query.WithSubTasks()
 	query.WithProjectTasks(func(ptq *ent.ProjectTaskQuery) {
 		ptq.WithProject(func(pq *ent.ProjectQuery) {
-			pq.WithProjectTeammates()
+			WithProject(pq)
 		})
 	})
-	query.WithTaskTags()
+	query.WithTaskTags(func(ttq *ent.TaskTagQuery) {
+		WithTaskTag(ttq)
+	})
 	query.WithTaskLikes()
-	query.WithTaskCollaborators()
-	query.WithParentTask()
+	query.WithTaskCollaborators(func(tcq *ent.TaskCollaboratorQuery) {
+		WithTaskCollaborator(tcq)
+	})
+	query.WithParentTask(func(parentTaskQuery *ent.TaskQuery) {
+		WithParentTask(parentTaskQuery)
+	})
+}
+
+// WithParentTask eager-loads associations with task entity.
+func WithParentTask(query *ent.TaskQuery) {
+	query.WithTaskFeeds()
+	query.WithTaskFiles()
+	query.WithTaskFeedLikes()
+	query.WithTaskPriority()
+	query.WithProjectTasks(func(ptq *ent.ProjectTaskQuery) {
+		ptq.WithProject(func(pq *ent.ProjectQuery) {
+			WithProject(pq)
+		})
+	})
+	query.WithTaskTags(func(ttq *ent.TaskTagQuery) {
+		WithTaskTag(ttq)
+	})
+	query.WithTaskLikes()
+	query.WithTaskCollaborators(func(tcq *ent.TaskCollaboratorQuery) {
+		WithTaskCollaborator(tcq)
+	})
 }
