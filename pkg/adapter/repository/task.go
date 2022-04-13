@@ -194,7 +194,7 @@ func (r *taskRepository) Delete(ctx context.Context, input model.DeleteTaskInput
 	client := WithTransactionalMutation(ctx)
 
 	payload := &model.DeleteTaskPayload{
-		ProjectTask:  &model.ProjectTask{},
+		ProjectTasks: []*model.ProjectTask{},
 		TeammateTask: &model.TeammateTask{},
 		DeletedTasks: []*model.DeletedTask{},
 	}
@@ -246,55 +246,69 @@ func (r *taskRepository) Delete(ctx context.Context, input model.DeleteTaskInput
 		}
 	}
 
-	deletedProjectTask, err := client.ProjectTask.
+	deletedProjectTasks, err := client.ProjectTask.
 		Query().
 		WithTask().
 		Where(projecttask.TaskID(input.TaskID)).
-		Only(ctx)
+		All(ctx)
 	if err != nil && !ent.IsNotFound(err) {
 		return nil, model.NewDBError(err)
 	}
 
-	var deletedProjectTaskDeletedTask *model.DeletedTask
-	if deletedProjectTask != nil {
-		err = client.ProjectTask.DeleteOneID(deletedProjectTask.ID).Exec(ctx)
+	var deletedProjectTaskDeletedTasks []*model.DeletedTask
+	if len(deletedProjectTasks) > 0 {
+		deletedProjectTaskIDs := make([]model.ID, len(deletedProjectTasks))
+		for i, p := range deletedProjectTasks {
+			deletedProjectTaskIDs[i] = p.ID
+		}
+
+		_, err = client.ProjectTask.Delete().Where(projecttask.IDIn(deletedProjectTaskIDs...)).Exec(ctx)
 		if err != nil {
 			return nil, model.NewDBError(err)
 		}
 		if !deletedTask.IsNew {
-			d, derr := client.DeletedTask.
-				Create().
-				SetTaskID(input.TaskID).
-				SetWorkspaceID(input.WorkspaceID).
-				SetTaskType(deletedtask.TaskTypeProject).
-				SetTaskJoinID(deletedProjectTask.ProjectID).
-				SetTaskSectionID(deletedProjectTask.ProjectTaskSectionID).
-				Save(ctx)
+			bulk := make([]*ent.DeletedTaskCreate, len(deletedProjectTasks))
+			for i, p := range deletedProjectTasks {
+				bulk[i] = client.DeletedTask.Create().
+					SetTaskID(input.TaskID).
+					SetWorkspaceID(input.WorkspaceID).
+					SetTaskType(deletedtask.TaskTypeProject).
+					SetTaskJoinID(p.ProjectID).
+					SetTaskSectionID(p.ProjectTaskSectionID)
+			}
+			derr := client.DeletedTask.CreateBulk(bulk...).Exec(ctx)
 			if derr != nil {
 				return nil, model.NewDBError(derr)
 			}
+
 			// Restore the state in order to get an entity after a successful transaction.
-			d, derr = client.DeletedTask.Query().WithTask(func(tq *ent.TaskQuery) {
+			ds, derr := client.DeletedTask.Query().WithTask(func(tq *ent.TaskQuery) {
 				WithTask(tq)
-			}).Where(deletedtask.ID(d.ID)).Only(ctx)
+			}).Where(
+				deletedtask.TaskID(deletedTask.ID),
+				deletedtask.TaskTypeEQ(deletedtask.TaskTypeProject),
+			).All(ctx)
+
 			if derr != nil {
 				return nil, model.NewDBError(derr)
 			}
-			deletedProjectTaskDeletedTask = d.Unwrap()
+			for _, d := range ds {
+				deletedProjectTaskDeletedTasks = append(deletedProjectTaskDeletedTasks, d.Unwrap())
+			}
 		}
 	}
 
 	if deletedTeammateTask != nil {
 		payload.TeammateTask = deletedTeammateTask
 	}
-	if deletedProjectTask != nil {
-		payload.ProjectTask = deletedProjectTask
+	if len(deletedProjectTasks) > 0 {
+		payload.ProjectTasks = deletedProjectTasks
 	}
 	if deletedTeammateTaskDeletedTask != nil {
 		payload.DeletedTasks = append(payload.DeletedTasks, deletedTeammateTaskDeletedTask)
 	}
-	if deletedProjectTaskDeletedTask != nil {
-		payload.DeletedTasks = append(payload.DeletedTasks, deletedProjectTaskDeletedTask)
+	if deletedProjectTaskDeletedTasks != nil {
+		payload.DeletedTasks = append(payload.DeletedTasks, deletedProjectTaskDeletedTasks...)
 	}
 
 	return payload, nil
@@ -305,7 +319,7 @@ func (r *taskRepository) Undelete(ctx context.Context, input model.UndeleteTaskI
 
 	payload := &model.UndeleteTaskPayload{
 		TeammateTask: nil,
-		ProjectTask:  nil,
+		ProjectTasks: []*model.ProjectTask{},
 		DeletedTasks: []*model.DeletedTask{},
 	}
 
@@ -322,9 +336,8 @@ func (r *taskRepository) Undelete(ctx context.Context, input model.UndeleteTaskI
 		return nil, model.NewDBError(err)
 	}
 
-	// The task to be undeleted will be limited up to two records.
 	var undeletedTeammateTask *model.TeammateTask
-	var undeletedProjectTask *model.ProjectTask
+	var undeletedProjectTasks []*model.ProjectTask
 	for _, t := range deletedTasks {
 		if t.TaskType == deletedtask.TaskTypeTeammate {
 			undeletedTeammateTask, err = client.TeammateTask.Create().
@@ -338,14 +351,15 @@ func (r *taskRepository) Undelete(ctx context.Context, input model.UndeleteTaskI
 			}
 		}
 		if t.TaskType == deletedtask.TaskTypeProject {
-			undeletedProjectTask, err = client.ProjectTask.Create().
+			p, perr := client.ProjectTask.Create().
 				SetProjectID(t.TaskJoinID).
 				SetTaskID(t.TaskID).
 				SetProjectTaskSectionID(t.TaskSectionID).
 				Save(ctx)
-			if err != nil {
-				return nil, model.NewDBError(err)
+			if perr != nil {
+				return nil, model.NewDBError(perr)
 			}
+			undeletedProjectTasks = append(undeletedProjectTasks, p)
 		}
 	}
 
@@ -377,18 +391,28 @@ func (r *taskRepository) Undelete(ctx context.Context, input model.UndeleteTaskI
 		}
 		payload.TeammateTask = t.Unwrap()
 	}
-	if undeletedProjectTask != nil {
+	if undeletedProjectTasks != nil {
+		ids := make([]model.ID, len(undeletedProjectTasks))
+		for i, p := range undeletedProjectTasks {
+			ids[i] = p.ID
+		}
+
 		// Restore the state in order to query en entity after successful transaction.
-		t, terr := client.ProjectTask.
+		q := client.ProjectTask.
 			Query().
 			WithTask(func(tq *ent.TaskQuery) {
 				WithTask(tq)
-			}).
-			Where(projecttask.ID(undeletedProjectTask.ID)).Only(ctx)
+			})
+
+		WithProjectTask(q)
+
+		ps, terr := q.Where(projecttask.IDIn(ids...)).All(ctx)
 		if terr != nil {
 			return nil, model.NewDBError(err)
 		}
-		payload.ProjectTask = t.Unwrap()
+		for _, p := range ps {
+			payload.ProjectTasks = append(payload.ProjectTasks, p.Unwrap())
+		}
 	}
 
 	payload.DeletedTasks = deletedTasks
@@ -662,10 +686,16 @@ func (r *taskRepository) UndeleteAll(ctx context.Context, input model.UndeleteAl
 // WithTask eager-loads associations with task entity.
 func WithTask(query *ent.TaskQuery) {
 	query.WithTaskFeeds()
-	query.WithTaskFiles()
+	query.WithTaskFiles(func(tfq *ent.TaskFileQuery) {
+		WithTaskFiles(tfq)
+	})
 	query.WithTaskFeedLikes()
-	query.WithTaskPriority()
-	query.WithSubTasks()
+	query.WithTaskPriority(func(tpq *ent.TaskPriorityQuery) {
+		WithTaskPriority(tpq)
+	})
+	query.WithSubTasks(func(subTaskQuery *ent.TaskQuery) {
+		WithSubTask(subTaskQuery)
+	})
 	query.WithProjectTasks(func(ptq *ent.ProjectTaskQuery) {
 		ptq.WithProject(func(pq *ent.ProjectQuery) {
 			WithProject(pq)
@@ -683,12 +713,40 @@ func WithTask(query *ent.TaskQuery) {
 	})
 }
 
-// WithParentTask eager-loads associations with task entity.
+// WithParentTask eager-loads associations with task parent entity.
 func WithParentTask(query *ent.TaskQuery) {
 	query.WithTaskFeeds()
-	query.WithTaskFiles()
+	query.WithTaskFiles(func(tfq *ent.TaskFileQuery) {
+		WithTaskFiles(tfq)
+	})
 	query.WithTaskFeedLikes()
-	query.WithTaskPriority()
+	query.WithTaskPriority(func(tpq *ent.TaskPriorityQuery) {
+		WithTaskPriority(tpq)
+	})
+	query.WithProjectTasks(func(ptq *ent.ProjectTaskQuery) {
+		ptq.WithProject(func(pq *ent.ProjectQuery) {
+			WithProject(pq)
+		})
+	})
+	query.WithTaskTags(func(ttq *ent.TaskTagQuery) {
+		WithTaskTag(ttq)
+	})
+	query.WithTaskLikes()
+	query.WithTaskCollaborators(func(tcq *ent.TaskCollaboratorQuery) {
+		WithTaskCollaborator(tcq)
+	})
+}
+
+// WithSubTask eager-loads associations with sub task entity.
+func WithSubTask(query *ent.TaskQuery) {
+	query.WithTaskFeeds()
+	query.WithTaskFiles(func(tfq *ent.TaskFileQuery) {
+		WithTaskFiles(tfq)
+	})
+	query.WithTaskFeedLikes()
+	query.WithTaskPriority(func(tpq *ent.TaskPriorityQuery) {
+		WithTaskPriority(tpq)
+	})
 	query.WithProjectTasks(func(ptq *ent.ProjectTaskQuery) {
 		ptq.WithProject(func(pq *ent.ProjectQuery) {
 			WithProject(pq)

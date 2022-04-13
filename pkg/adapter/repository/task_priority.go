@@ -88,3 +88,8 @@ func (r *taskPriorityRepository) Update(ctx context.Context, input model.UpdateT
 
 	return res, nil
 }
+
+// WithTaskPriority eager-loads associations with task priority entity.
+func WithTaskPriority(query *ent.TaskPriorityQuery) {
+	query.WithColor()
+}

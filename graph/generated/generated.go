@@ -149,7 +149,7 @@ type ComplexityRoot struct {
 
 	DeleteTaskPayload struct {
 		DeletedTasks func(childComplexity int) int
-		ProjectTask  func(childComplexity int) int
+		ProjectTasks func(childComplexity int) int
 		TeammateTask func(childComplexity int) int
 	}
 
@@ -1286,7 +1286,7 @@ type ComplexityRoot struct {
 
 	UndeleteTaskPayload struct {
 		DeletedTasks func(childComplexity int) int
-		ProjectTask  func(childComplexity int) int
+		ProjectTasks func(childComplexity int) int
 		TeammateTask func(childComplexity int) int
 	}
 
@@ -1968,12 +1968,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.DeleteTaskPayload.DeletedTasks(childComplexity), true
 
-	case "DeleteTaskPayload.projectTask":
-		if e.complexity.DeleteTaskPayload.ProjectTask == nil {
+	case "DeleteTaskPayload.projectTasks":
+		if e.complexity.DeleteTaskPayload.ProjectTasks == nil {
 			break
 		}
 
-		return e.complexity.DeleteTaskPayload.ProjectTask(childComplexity), true
+		return e.complexity.DeleteTaskPayload.ProjectTasks(childComplexity), true
 
 	case "DeleteTaskPayload.teammateTask":
 		if e.complexity.DeleteTaskPayload.TeammateTask == nil {
@@ -8562,12 +8562,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.UndeleteTaskPayload.DeletedTasks(childComplexity), true
 
-	case "UndeleteTaskPayload.projectTask":
-		if e.complexity.UndeleteTaskPayload.ProjectTask == nil {
+	case "UndeleteTaskPayload.projectTasks":
+		if e.complexity.UndeleteTaskPayload.ProjectTasks == nil {
 			break
 		}
 
-		return e.complexity.UndeleteTaskPayload.ProjectTask(childComplexity), true
+		return e.complexity.UndeleteTaskPayload.ProjectTasks(childComplexity), true
 
 	case "UndeleteTaskPayload.teammateTask":
 		if e.complexity.UndeleteTaskPayload.TeammateTask == nil {
@@ -13711,7 +13711,7 @@ input DeleteTaskInput {
 }
 type DeleteTaskPayload {
   teammateTask: TeammateTask!
-  projectTask: ProjectTask!
+  projectTasks: [ProjectTask!]!
   deletedTasks: [DeletedTask!]!
 }
 
@@ -13722,7 +13722,7 @@ input UndeleteTaskInput {
 }
 type UndeleteTaskPayload {
   teammateTask: TeammateTask
-  projectTask: ProjectTask
+  projectTasks: [ProjectTask!]!
   deletedTasks: [DeletedTask!]!
 }
 
@@ -21835,7 +21835,7 @@ func (ec *executionContext) _DeleteTaskPayload_teammateTask(ctx context.Context,
 	return ec.marshalNTeammateTask2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTeammateTask(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _DeleteTaskPayload_projectTask(ctx context.Context, field graphql.CollectedField, obj *model.DeleteTaskPayload) (ret graphql.Marshaler) {
+func (ec *executionContext) _DeleteTaskPayload_projectTasks(ctx context.Context, field graphql.CollectedField, obj *model.DeleteTaskPayload) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -21853,7 +21853,7 @@ func (ec *executionContext) _DeleteTaskPayload_projectTask(ctx context.Context, 
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.ProjectTask, nil
+		return obj.ProjectTasks, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -21865,9 +21865,9 @@ func (ec *executionContext) _DeleteTaskPayload_projectTask(ctx context.Context, 
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*ent.ProjectTask)
+	res := resTmp.([]*ent.ProjectTask)
 	fc.Result = res
-	return ec.marshalNProjectTask2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTask(ctx, field.Selections, res)
+	return ec.marshalNProjectTask2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTaskᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _DeleteTaskPayload_deletedTasks(ctx context.Context, field graphql.CollectedField, obj *model.DeleteTaskPayload) (ret graphql.Marshaler) {
@@ -50455,7 +50455,7 @@ func (ec *executionContext) _UndeleteTaskPayload_teammateTask(ctx context.Contex
 	return ec.marshalOTeammateTask2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTeammateTask(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) _UndeleteTaskPayload_projectTask(ctx context.Context, field graphql.CollectedField, obj *model.UndeleteTaskPayload) (ret graphql.Marshaler) {
+func (ec *executionContext) _UndeleteTaskPayload_projectTasks(ctx context.Context, field graphql.CollectedField, obj *model.UndeleteTaskPayload) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
 			ec.Error(ctx, ec.Recover(ctx, r))
@@ -50473,18 +50473,21 @@ func (ec *executionContext) _UndeleteTaskPayload_projectTask(ctx context.Context
 	ctx = graphql.WithFieldContext(ctx, fc)
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.ProjectTask, nil
+		return obj.ProjectTasks, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
-	res := resTmp.(*ent.ProjectTask)
+	res := resTmp.([]*ent.ProjectTask)
 	fc.Result = res
-	return ec.marshalOProjectTask2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTask(ctx, field.Selections, res)
+	return ec.marshalNProjectTask2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐProjectTaskᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _UndeleteTaskPayload_deletedTasks(ctx context.Context, field graphql.CollectedField, obj *model.UndeleteTaskPayload) (ret graphql.Marshaler) {
@@ -81597,8 +81600,8 @@ func (ec *executionContext) _DeleteTaskPayload(ctx context.Context, sel ast.Sele
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "projectTask":
-			out.Values[i] = ec._DeleteTaskPayload_projectTask(ctx, field, obj)
+		case "projectTasks":
+			out.Values[i] = ec._DeleteTaskPayload_projectTasks(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -89410,8 +89413,11 @@ func (ec *executionContext) _UndeleteTaskPayload(ctx context.Context, sel ast.Se
 			out.Values[i] = graphql.MarshalString("UndeleteTaskPayload")
 		case "teammateTask":
 			out.Values[i] = ec._UndeleteTaskPayload_teammateTask(ctx, field, obj)
-		case "projectTask":
-			out.Values[i] = ec._UndeleteTaskPayload_projectTask(ctx, field, obj)
+		case "projectTasks":
+			out.Values[i] = ec._UndeleteTaskPayload_projectTasks(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		case "deletedTasks":
 			out.Values[i] = ec._UndeleteTaskPayload_deletedTasks(ctx, field, obj)
 			if out.Values[i] == graphql.Null {

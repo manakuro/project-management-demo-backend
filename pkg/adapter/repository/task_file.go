@@ -88,3 +88,8 @@ func (r *taskFileRepository) Update(ctx context.Context, input model.UpdateTaskF
 
 	return res, nil
 }
+
+// WithTaskFiles eager-loads association with task files collaborators.
+func WithTaskFiles(query *ent.TaskFileQuery) {
+	query.WithFileType()
+}

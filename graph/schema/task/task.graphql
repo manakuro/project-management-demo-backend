@@ -92,7 +92,7 @@ input DeleteTaskInput {
 }
 type DeleteTaskPayload {
   teammateTask: TeammateTask!
-  projectTask: ProjectTask!
+  projectTasks: [ProjectTask!]!
   deletedTasks: [DeletedTask!]!
 }
 
@@ -103,7 +103,7 @@ input UndeleteTaskInput {
 }
 type UndeleteTaskPayload {
   teammateTask: TeammateTask
-  projectTask: ProjectTask
+  projectTasks: [ProjectTask!]!
   deletedTasks: [DeletedTask!]!
 }
 
