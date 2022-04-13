@@ -3000,6 +3000,8 @@ type UpdateTeammateTaskListStatusInput struct {
 	ClearTaskListCompletedStatus bool
 	TaskListSortStatusID         *ulid.ID
 	ClearTaskListSortStatus      bool
+	TaskListSortStatusCode       *tasklistsortstatus.StatusCode
+	TaskListCompletedStatusCode  *tasklistcompletedstatus.StatusCode
 	RequestID                    string
 }
 

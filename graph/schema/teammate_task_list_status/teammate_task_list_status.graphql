@@ -31,10 +31,12 @@ input CreateTeammateTaskListStatusInput {
 
 input UpdateTeammateTaskListStatusInput {
   id: ID!
-  workspaceId: ID
   teammateId: ID
   taskListCompletedStatusId: ID
   taskListSortStatusId: ID
+  taskListSortStatusCode: TaskListSortStatusCode
+  taskListCompletedStatusCode: TaskListCompletedStatusCode
+  workspaceId: ID!
   requestId: String!
 }
 

@@ -14613,10 +14613,12 @@ input CreateTeammateTaskListStatusInput {
 
 input UpdateTeammateTaskListStatusInput {
   id: ID!
-  workspaceId: ID
   teammateId: ID
   taskListCompletedStatusId: ID
   taskListSortStatusId: ID
+  taskListSortStatusCode: TaskListSortStatusCode
+  taskListCompletedStatusCode: TaskListCompletedStatusCode
+  workspaceId: ID!
   requestId: String!
 }
 
@@ -79450,14 +79452,6 @@ func (ec *executionContext) unmarshalInputUpdateTeammateTaskListStatusInput(ctx 
 			if err != nil {
 				return it, err
 			}
-		case "workspaceId":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceId"))
-			it.WorkspaceID, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		case "teammateId":
 			var err error
 
@@ -79479,6 +79473,30 @@ func (ec *executionContext) unmarshalInputUpdateTeammateTaskListStatusInput(ctx 
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskListSortStatusId"))
 			it.TaskListSortStatusID, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskListSortStatusCode":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskListSortStatusCode"))
+			it.TaskListSortStatusCode, err = ec.unmarshalOTaskListSortStatusCode2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋtasklistsortstatusᚐStatusCode(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskListCompletedStatusCode":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskListCompletedStatusCode"))
+			it.TaskListCompletedStatusCode, err = ec.unmarshalOTaskListCompletedStatusCode2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋtasklistcompletedstatusᚐStatusCode(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "workspaceId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceId"))
+			it.WorkspaceID, err = ec.unmarshalNID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}

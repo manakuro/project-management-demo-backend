@@ -3,6 +3,8 @@ package repository
 import (
 	"context"
 	"project-management-demo-backend/ent"
+	"project-management-demo-backend/ent/tasklistcompletedstatus"
+	"project-management-demo-backend/ent/tasklistsortstatus"
 	"project-management-demo-backend/pkg/entity/model"
 	ur "project-management-demo-backend/pkg/usecase/repository"
 )
@@ -73,10 +75,41 @@ func (r *teammateTaskListStatusRepository) Create(ctx context.Context, input mod
 }
 
 func (r *teammateTaskListStatusRepository) Update(ctx context.Context, input model.UpdateTeammateTaskListStatusInput) (*model.TeammateTaskListStatus, error) {
-	res, err := r.client.
+	client := WithTransactionalMutation(ctx)
+
+	q := client.
 		TeammateTaskListStatus.UpdateOneID(input.ID).
-		SetInput(input).
-		Save(ctx)
+		SetInput(input)
+
+	if input.TaskListSortStatusCode != nil {
+		taskListSortStatus, terr := client.
+			TaskListSortStatus.
+			Query().
+			Where(tasklistsortstatus.StatusCodeEQ(*input.TaskListSortStatusCode)).
+			Only(ctx)
+
+		if terr != nil {
+			return nil, model.NewDBError(terr)
+		}
+
+		q.SetTaskListSortStatusID(taskListSortStatus.ID)
+	}
+
+	if input.TaskListCompletedStatusCode != nil {
+		taskListCompletedStatus, terr := client.
+			TaskListCompletedStatus.
+			Query().
+			Where(tasklistcompletedstatus.StatusCodeEQ(*input.TaskListCompletedStatusCode)).
+			Only(ctx)
+
+		if terr != nil {
+			return nil, model.NewDBError(terr)
+		}
+
+		q.SetTaskListCompletedStatusID(taskListCompletedStatus.ID)
+	}
+
+	res, err := q.Save(ctx)
 
 	if err != nil {
 		if ent.IsNotFound(err) {

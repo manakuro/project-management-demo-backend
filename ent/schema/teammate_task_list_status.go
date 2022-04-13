@@ -93,6 +93,24 @@ func (TeammateTaskListStatus) Edges() []ent.Edge {
 	}
 }
 
+// Annotations of the TeammateTaskListStatus.
+func (TeammateTaskListStatus) Annotations() []schema.Annotation {
+	return []schema.Annotation{
+		annotation.MutationInput{
+			Update: []annotation.MutationInputField{
+				{
+					Key:  "TaskListSortStatusCode",
+					Type: "*tasklistsortstatus.StatusCode",
+				},
+				{
+					Key:  "TaskListCompletedStatusCode",
+					Type: "*tasklistcompletedstatus.StatusCode",
+				},
+			},
+		},
+	}
+}
+
 // Mixin of the TeammateTaskListStatus.
 func (TeammateTaskListStatus) Mixin() []ent.Mixin {
 	return []ent.Mixin{
