@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"log"
 	"project-management-demo-backend/ent"
+	"project-management-demo-backend/ent/activitytype"
 	"project-management-demo-backend/ent/color"
 	"project-management-demo-backend/ent/filetype"
 	"project-management-demo-backend/ent/icon"
@@ -245,6 +246,16 @@ func GetFileType(ctx context.Context, client *ent.Client, val string) *ent.FileT
 
 	if err != nil {
 		log.Fatalf("GetFileType: failed get data: %v", err)
+	}
+
+	return res
+}
+
+// GetActivityType gets activity type data.
+func GetActivityType(ctx context.Context, client *ent.Client, val string) *ent.ActivityType {
+	res, err := client.ActivityType.Query().Where(activitytype.NameEQ(val)).Only(ctx)
+	if err != nil {
+		log.Fatalf("GetActivityType: failed to get data %v", err)
 	}
 
 	return res

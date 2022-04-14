@@ -59,6 +59,8 @@ func main() {
 	seed.ProjectTaskColumn(ctx, client)
 	seed.ProjectTaskListStatus(ctx, client)
 
+	seed.ActivityType(ctx, client)
+
 	seed.TestUser(ctx, client)
 	seed.TestTodo(ctx, client)
 
