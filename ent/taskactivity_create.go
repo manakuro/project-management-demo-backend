@@ -9,6 +9,7 @@ import (
 	"project-management-demo-backend/ent/activitytype"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/taskactivity"
+	"project-management-demo-backend/ent/taskactivitytask"
 	"project-management-demo-backend/ent/teammate"
 	"time"
 
@@ -88,6 +89,21 @@ func (tac *TaskActivityCreate) SetTeammate(t *Teammate) *TaskActivityCreate {
 // SetActivityType sets the "activityType" edge to the ActivityType entity.
 func (tac *TaskActivityCreate) SetActivityType(a *ActivityType) *TaskActivityCreate {
 	return tac.SetActivityTypeID(a.ID)
+}
+
+// AddTaskActivityTaskIDs adds the "taskActivityTasks" edge to the TaskActivityTask entity by IDs.
+func (tac *TaskActivityCreate) AddTaskActivityTaskIDs(ids ...ulid.ID) *TaskActivityCreate {
+	tac.mutation.AddTaskActivityTaskIDs(ids...)
+	return tac
+}
+
+// AddTaskActivityTasks adds the "taskActivityTasks" edges to the TaskActivityTask entity.
+func (tac *TaskActivityCreate) AddTaskActivityTasks(t ...*TaskActivityTask) *TaskActivityCreate {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return tac.AddTaskActivityTaskIDs(ids...)
 }
 
 // Mutation returns the TaskActivityMutation object of the builder.
@@ -286,6 +302,25 @@ func (tac *TaskActivityCreate) createSpec() (*TaskActivity, *sqlgraph.CreateSpec
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.ActivityTypeID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := tac.mutation.TaskActivityTasksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   taskactivity.TaskActivityTasksTable,
+			Columns: []string{taskactivity.TaskActivityTasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: taskactivitytask.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

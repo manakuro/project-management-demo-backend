@@ -29,6 +29,7 @@ import (
 	"project-management-demo-backend/ent/tag"
 	"project-management-demo-backend/ent/task"
 	"project-management-demo-backend/ent/taskactivity"
+	"project-management-demo-backend/ent/taskactivitytask"
 	"project-management-demo-backend/ent/taskcollaborator"
 	"project-management-demo-backend/ent/taskcolumn"
 	"project-management-demo-backend/ent/taskfeed"
@@ -99,6 +100,8 @@ type Client struct {
 	Task *TaskClient
 	// TaskActivity is the client for interacting with the TaskActivity builders.
 	TaskActivity *TaskActivityClient
+	// TaskActivityTask is the client for interacting with the TaskActivityTask builders.
+	TaskActivityTask *TaskActivityTaskClient
 	// TaskCollaborator is the client for interacting with the TaskCollaborator builders.
 	TaskCollaborator *TaskCollaboratorClient
 	// TaskColumn is the client for interacting with the TaskColumn builders.
@@ -173,6 +176,7 @@ func (c *Client) init() {
 	c.Tag = NewTagClient(c.config)
 	c.Task = NewTaskClient(c.config)
 	c.TaskActivity = NewTaskActivityClient(c.config)
+	c.TaskActivityTask = NewTaskActivityTaskClient(c.config)
 	c.TaskCollaborator = NewTaskCollaboratorClient(c.config)
 	c.TaskColumn = NewTaskColumnClient(c.config)
 	c.TaskFeed = NewTaskFeedClient(c.config)
@@ -246,6 +250,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Tag:                     NewTagClient(cfg),
 		Task:                    NewTaskClient(cfg),
 		TaskActivity:            NewTaskActivityClient(cfg),
+		TaskActivityTask:        NewTaskActivityTaskClient(cfg),
 		TaskCollaborator:        NewTaskCollaboratorClient(cfg),
 		TaskColumn:              NewTaskColumnClient(cfg),
 		TaskFeed:                NewTaskFeedClient(cfg),
@@ -305,6 +310,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Tag:                     NewTagClient(cfg),
 		Task:                    NewTaskClient(cfg),
 		TaskActivity:            NewTaskActivityClient(cfg),
+		TaskActivityTask:        NewTaskActivityTaskClient(cfg),
 		TaskCollaborator:        NewTaskCollaboratorClient(cfg),
 		TaskColumn:              NewTaskColumnClient(cfg),
 		TaskFeed:                NewTaskFeedClient(cfg),
@@ -374,6 +380,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.Tag.Use(hooks...)
 	c.Task.Use(hooks...)
 	c.TaskActivity.Use(hooks...)
+	c.TaskActivityTask.Use(hooks...)
 	c.TaskCollaborator.Use(hooks...)
 	c.TaskColumn.Use(hooks...)
 	c.TaskFeed.Use(hooks...)
@@ -2956,6 +2963,22 @@ func (c *TaskClient) QueryDeletedTasksRef(t *Task) *DeletedTaskQuery {
 	return query
 }
 
+// QueryTaskActivityTasks queries the taskActivityTasks edge of a Task.
+func (c *TaskClient) QueryTaskActivityTasks(t *Task) *TaskActivityTaskQuery {
+	query := &TaskActivityTaskQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := t.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(task.Table, task.FieldID, id),
+			sqlgraph.To(taskactivitytask.Table, taskactivitytask.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, task.TaskActivityTasksTable, task.TaskActivityTasksColumn),
+		)
+		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *TaskClient) Hooks() []Hook {
 	return c.hooks.Task
@@ -3078,9 +3101,147 @@ func (c *TaskActivityClient) QueryActivityType(ta *TaskActivity) *ActivityTypeQu
 	return query
 }
 
+// QueryTaskActivityTasks queries the taskActivityTasks edge of a TaskActivity.
+func (c *TaskActivityClient) QueryTaskActivityTasks(ta *TaskActivity) *TaskActivityTaskQuery {
+	query := &TaskActivityTaskQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := ta.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(taskactivity.Table, taskactivity.FieldID, id),
+			sqlgraph.To(taskactivitytask.Table, taskactivitytask.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, taskactivity.TaskActivityTasksTable, taskactivity.TaskActivityTasksColumn),
+		)
+		fromV = sqlgraph.Neighbors(ta.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *TaskActivityClient) Hooks() []Hook {
 	return c.hooks.TaskActivity
+}
+
+// TaskActivityTaskClient is a client for the TaskActivityTask schema.
+type TaskActivityTaskClient struct {
+	config
+}
+
+// NewTaskActivityTaskClient returns a client for the TaskActivityTask from the given config.
+func NewTaskActivityTaskClient(c config) *TaskActivityTaskClient {
+	return &TaskActivityTaskClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `taskactivitytask.Hooks(f(g(h())))`.
+func (c *TaskActivityTaskClient) Use(hooks ...Hook) {
+	c.hooks.TaskActivityTask = append(c.hooks.TaskActivityTask, hooks...)
+}
+
+// Create returns a create builder for TaskActivityTask.
+func (c *TaskActivityTaskClient) Create() *TaskActivityTaskCreate {
+	mutation := newTaskActivityTaskMutation(c.config, OpCreate)
+	return &TaskActivityTaskCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of TaskActivityTask entities.
+func (c *TaskActivityTaskClient) CreateBulk(builders ...*TaskActivityTaskCreate) *TaskActivityTaskCreateBulk {
+	return &TaskActivityTaskCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for TaskActivityTask.
+func (c *TaskActivityTaskClient) Update() *TaskActivityTaskUpdate {
+	mutation := newTaskActivityTaskMutation(c.config, OpUpdate)
+	return &TaskActivityTaskUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *TaskActivityTaskClient) UpdateOne(tat *TaskActivityTask) *TaskActivityTaskUpdateOne {
+	mutation := newTaskActivityTaskMutation(c.config, OpUpdateOne, withTaskActivityTask(tat))
+	return &TaskActivityTaskUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *TaskActivityTaskClient) UpdateOneID(id ulid.ID) *TaskActivityTaskUpdateOne {
+	mutation := newTaskActivityTaskMutation(c.config, OpUpdateOne, withTaskActivityTaskID(id))
+	return &TaskActivityTaskUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for TaskActivityTask.
+func (c *TaskActivityTaskClient) Delete() *TaskActivityTaskDelete {
+	mutation := newTaskActivityTaskMutation(c.config, OpDelete)
+	return &TaskActivityTaskDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *TaskActivityTaskClient) DeleteOne(tat *TaskActivityTask) *TaskActivityTaskDeleteOne {
+	return c.DeleteOneID(tat.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *TaskActivityTaskClient) DeleteOneID(id ulid.ID) *TaskActivityTaskDeleteOne {
+	builder := c.Delete().Where(taskactivitytask.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &TaskActivityTaskDeleteOne{builder}
+}
+
+// Query returns a query builder for TaskActivityTask.
+func (c *TaskActivityTaskClient) Query() *TaskActivityTaskQuery {
+	return &TaskActivityTaskQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a TaskActivityTask entity by its id.
+func (c *TaskActivityTaskClient) Get(ctx context.Context, id ulid.ID) (*TaskActivityTask, error) {
+	return c.Query().Where(taskactivitytask.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *TaskActivityTaskClient) GetX(ctx context.Context, id ulid.ID) *TaskActivityTask {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryTask queries the task edge of a TaskActivityTask.
+func (c *TaskActivityTaskClient) QueryTask(tat *TaskActivityTask) *TaskQuery {
+	query := &TaskQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := tat.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(taskactivitytask.Table, taskactivitytask.FieldID, id),
+			sqlgraph.To(task.Table, task.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, taskactivitytask.TaskTable, taskactivitytask.TaskColumn),
+		)
+		fromV = sqlgraph.Neighbors(tat.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryTaskActivity queries the taskActivity edge of a TaskActivityTask.
+func (c *TaskActivityTaskClient) QueryTaskActivity(tat *TaskActivityTask) *TaskActivityQuery {
+	query := &TaskActivityQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := tat.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(taskactivitytask.Table, taskactivitytask.FieldID, id),
+			sqlgraph.To(taskactivity.Table, taskactivity.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, taskactivitytask.TaskActivityTable, taskactivitytask.TaskActivityColumn),
+		)
+		fromV = sqlgraph.Neighbors(tat.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *TaskActivityTaskClient) Hooks() []Hook {
+	return c.hooks.TaskActivityTask
 }
 
 // TaskCollaboratorClient is a client for the TaskCollaborator schema.

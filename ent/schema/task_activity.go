@@ -62,6 +62,13 @@ func (TaskActivity) Edges() []ent.Edge {
 					annotation.Edge{FieldName: "activity_type_id"},
 				),
 			),
+		edge.To(taskActivityTasksRef, TaskActivityTask.Type).
+			Annotations(
+				entgql.Bind(),
+				schema.Annotation(
+					annotation.Edge{FieldName: "task_activity_task_id"},
+				),
+			),
 	}
 }
 

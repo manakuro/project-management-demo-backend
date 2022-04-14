@@ -562,6 +562,34 @@ func HasActivityTypeWith(preds ...predicate.ActivityType) predicate.TaskActivity
 	})
 }
 
+// HasTaskActivityTasks applies the HasEdge predicate on the "taskActivityTasks" edge.
+func HasTaskActivityTasks() predicate.TaskActivity {
+	return predicate.TaskActivity(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(TaskActivityTasksTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, TaskActivityTasksTable, TaskActivityTasksColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasTaskActivityTasksWith applies the HasEdge predicate on the "taskActivityTasks" edge with a given conditions (other predicates).
+func HasTaskActivityTasksWith(preds ...predicate.TaskActivityTask) predicate.TaskActivity {
+	return predicate.TaskActivity(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(TaskActivityTasksInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, TaskActivityTasksTable, TaskActivityTasksColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.TaskActivity) predicate.TaskActivity {
 	return predicate.TaskActivity(func(s *sql.Selector) {

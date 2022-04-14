@@ -10,6 +10,7 @@ import (
 	"project-management-demo-backend/ent/projecttask"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/task"
+	"project-management-demo-backend/ent/taskactivitytask"
 	"project-management-demo-backend/ent/taskcollaborator"
 	"project-management-demo-backend/ent/taskfeed"
 	"project-management-demo-backend/ent/taskfeedlike"
@@ -398,6 +399,21 @@ func (tc *TaskCreate) AddDeletedTasksRef(d ...*DeletedTask) *TaskCreate {
 		ids[i] = d[i].ID
 	}
 	return tc.AddDeletedTasksRefIDs(ids...)
+}
+
+// AddTaskActivityTaskIDs adds the "taskActivityTasks" edge to the TaskActivityTask entity by IDs.
+func (tc *TaskCreate) AddTaskActivityTaskIDs(ids ...ulid.ID) *TaskCreate {
+	tc.mutation.AddTaskActivityTaskIDs(ids...)
+	return tc
+}
+
+// AddTaskActivityTasks adds the "taskActivityTasks" edges to the TaskActivityTask entity.
+func (tc *TaskCreate) AddTaskActivityTasks(t ...*TaskActivityTask) *TaskCreate {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return tc.AddTaskActivityTaskIDs(ids...)
 }
 
 // Mutation returns the TaskMutation object of the builder.
@@ -880,6 +896,25 @@ func (tc *TaskCreate) createSpec() (*Task, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: deletedtask.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := tc.mutation.TaskActivityTasksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   task.TaskActivityTasksTable,
+			Columns: []string{task.TaskActivityTasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: taskactivitytask.FieldID,
 				},
 			},
 		}

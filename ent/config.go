@@ -43,6 +43,7 @@ type hooks struct {
 	Tag                     []ent.Hook
 	Task                    []ent.Hook
 	TaskActivity            []ent.Hook
+	TaskActivityTask        []ent.Hook
 	TaskCollaborator        []ent.Hook
 	TaskColumn              []ent.Hook
 	TaskFeed                []ent.Hook

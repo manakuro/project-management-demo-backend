@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"database/sql/driver"
 	"errors"
 	"fmt"
 	"math"
@@ -11,6 +12,7 @@ import (
 	"project-management-demo-backend/ent/predicate"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/taskactivity"
+	"project-management-demo-backend/ent/taskactivitytask"
 	"project-management-demo-backend/ent/teammate"
 
 	"entgo.io/ent/dialect/sql"
@@ -28,8 +30,9 @@ type TaskActivityQuery struct {
 	fields     []string
 	predicates []predicate.TaskActivity
 	// eager-loading edges.
-	withTeammate     *TeammateQuery
-	withActivityType *ActivityTypeQuery
+	withTeammate          *TeammateQuery
+	withActivityType      *ActivityTypeQuery
+	withTaskActivityTasks *TaskActivityTaskQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -103,6 +106,28 @@ func (taq *TaskActivityQuery) QueryActivityType() *ActivityTypeQuery {
 			sqlgraph.From(taskactivity.Table, taskactivity.FieldID, selector),
 			sqlgraph.To(activitytype.Table, activitytype.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, taskactivity.ActivityTypeTable, taskactivity.ActivityTypeColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(taq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryTaskActivityTasks chains the current query on the "taskActivityTasks" edge.
+func (taq *TaskActivityQuery) QueryTaskActivityTasks() *TaskActivityTaskQuery {
+	query := &TaskActivityTaskQuery{config: taq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := taq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := taq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(taskactivity.Table, taskactivity.FieldID, selector),
+			sqlgraph.To(taskactivitytask.Table, taskactivitytask.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, taskactivity.TaskActivityTasksTable, taskactivity.TaskActivityTasksColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(taq.driver.Dialect(), step)
 		return fromU, nil
@@ -286,13 +311,14 @@ func (taq *TaskActivityQuery) Clone() *TaskActivityQuery {
 		return nil
 	}
 	return &TaskActivityQuery{
-		config:           taq.config,
-		limit:            taq.limit,
-		offset:           taq.offset,
-		order:            append([]OrderFunc{}, taq.order...),
-		predicates:       append([]predicate.TaskActivity{}, taq.predicates...),
-		withTeammate:     taq.withTeammate.Clone(),
-		withActivityType: taq.withActivityType.Clone(),
+		config:                taq.config,
+		limit:                 taq.limit,
+		offset:                taq.offset,
+		order:                 append([]OrderFunc{}, taq.order...),
+		predicates:            append([]predicate.TaskActivity{}, taq.predicates...),
+		withTeammate:          taq.withTeammate.Clone(),
+		withActivityType:      taq.withActivityType.Clone(),
+		withTaskActivityTasks: taq.withTaskActivityTasks.Clone(),
 		// clone intermediate query.
 		sql:    taq.sql.Clone(),
 		path:   taq.path,
@@ -319,6 +345,17 @@ func (taq *TaskActivityQuery) WithActivityType(opts ...func(*ActivityTypeQuery))
 		opt(query)
 	}
 	taq.withActivityType = query
+	return taq
+}
+
+// WithTaskActivityTasks tells the query-builder to eager-load the nodes that are connected to
+// the "taskActivityTasks" edge. The optional arguments are used to configure the query builder of the edge.
+func (taq *TaskActivityQuery) WithTaskActivityTasks(opts ...func(*TaskActivityTaskQuery)) *TaskActivityQuery {
+	query := &TaskActivityTaskQuery{config: taq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	taq.withTaskActivityTasks = query
 	return taq
 }
 
@@ -387,9 +424,10 @@ func (taq *TaskActivityQuery) sqlAll(ctx context.Context) ([]*TaskActivity, erro
 	var (
 		nodes       = []*TaskActivity{}
 		_spec       = taq.querySpec()
-		loadedTypes = [2]bool{
+		loadedTypes = [3]bool{
 			taq.withTeammate != nil,
 			taq.withActivityType != nil,
+			taq.withTaskActivityTasks != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -461,6 +499,31 @@ func (taq *TaskActivityQuery) sqlAll(ctx context.Context) ([]*TaskActivity, erro
 			for i := range nodes {
 				nodes[i].Edges.ActivityType = n
 			}
+		}
+	}
+
+	if query := taq.withTaskActivityTasks; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[ulid.ID]*TaskActivity)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.TaskActivityTasks = []*TaskActivityTask{}
+		}
+		query.Where(predicate.TaskActivityTask(func(s *sql.Selector) {
+			s.Where(sql.InValues(taskactivity.TaskActivityTasksColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.TaskActivityID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "task_activity_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.TaskActivityTasks = append(node.Edges.TaskActivityTasks, n)
 		}
 	}
 

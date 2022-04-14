@@ -13,6 +13,7 @@ import (
 	"project-management-demo-backend/ent/projecttask"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/task"
+	"project-management-demo-backend/ent/taskactivitytask"
 	"project-management-demo-backend/ent/taskcollaborator"
 	"project-management-demo-backend/ent/taskfeed"
 	"project-management-demo-backend/ent/taskfeedlike"
@@ -51,6 +52,7 @@ type TaskQuery struct {
 	withTaskFeedLikes     *TaskFeedLikeQuery
 	withTaskFiles         *TaskFileQuery
 	withDeletedTasksRef   *DeletedTaskQuery
+	withTaskActivityTasks *TaskActivityTaskQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -373,6 +375,28 @@ func (tq *TaskQuery) QueryDeletedTasksRef() *DeletedTaskQuery {
 	return query
 }
 
+// QueryTaskActivityTasks chains the current query on the "taskActivityTasks" edge.
+func (tq *TaskQuery) QueryTaskActivityTasks() *TaskActivityTaskQuery {
+	query := &TaskActivityTaskQuery{config: tq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := tq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := tq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(task.Table, task.FieldID, selector),
+			sqlgraph.To(taskactivitytask.Table, taskactivitytask.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, task.TaskActivityTasksTable, task.TaskActivityTasksColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(tq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // First returns the first Task entity from the query.
 // Returns a *NotFoundError when no Task was found.
 func (tq *TaskQuery) First(ctx context.Context) (*Task, error) {
@@ -567,6 +591,7 @@ func (tq *TaskQuery) Clone() *TaskQuery {
 		withTaskFeedLikes:     tq.withTaskFeedLikes.Clone(),
 		withTaskFiles:         tq.withTaskFiles.Clone(),
 		withDeletedTasksRef:   tq.withDeletedTasksRef.Clone(),
+		withTaskActivityTasks: tq.withTaskActivityTasks.Clone(),
 		// clone intermediate query.
 		sql:    tq.sql.Clone(),
 		path:   tq.path,
@@ -717,6 +742,17 @@ func (tq *TaskQuery) WithDeletedTasksRef(opts ...func(*DeletedTaskQuery)) *TaskQ
 	return tq
 }
 
+// WithTaskActivityTasks tells the query-builder to eager-load the nodes that are connected to
+// the "taskActivityTasks" edge. The optional arguments are used to configure the query builder of the edge.
+func (tq *TaskQuery) WithTaskActivityTasks(opts ...func(*TaskActivityTaskQuery)) *TaskQuery {
+	query := &TaskActivityTaskQuery{config: tq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	tq.withTaskActivityTasks = query
+	return tq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -782,7 +818,7 @@ func (tq *TaskQuery) sqlAll(ctx context.Context) ([]*Task, error) {
 	var (
 		nodes       = []*Task{}
 		_spec       = tq.querySpec()
-		loadedTypes = [13]bool{
+		loadedTypes = [14]bool{
 			tq.withTeammate != nil,
 			tq.withTaskPriority != nil,
 			tq.withSubTasks != nil,
@@ -796,6 +832,7 @@ func (tq *TaskQuery) sqlAll(ctx context.Context) ([]*Task, error) {
 			tq.withTaskFeedLikes != nil,
 			tq.withTaskFiles != nil,
 			tq.withDeletedTasksRef != nil,
+			tq.withTaskActivityTasks != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -1143,6 +1180,31 @@ func (tq *TaskQuery) sqlAll(ctx context.Context) ([]*Task, error) {
 				return nil, fmt.Errorf(`unexpected foreign-key "task_id" returned %v for node %v`, fk, n.ID)
 			}
 			node.Edges.DeletedTasksRef = append(node.Edges.DeletedTasksRef, n)
+		}
+	}
+
+	if query := tq.withTaskActivityTasks; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[ulid.ID]*Task)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.TaskActivityTasks = []*TaskActivityTask{}
+		}
+		query.Where(predicate.TaskActivityTask(func(s *sql.Selector) {
+			s.Where(sql.InValues(task.TaskActivityTasksColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.TaskID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "task_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.TaskActivityTasks = append(node.Edges.TaskActivityTasks, n)
 		}
 	}
 

@@ -24,6 +24,7 @@ import (
 	"project-management-demo-backend/ent/tag"
 	"project-management-demo-backend/ent/task"
 	"project-management-demo-backend/ent/taskactivity"
+	"project-management-demo-backend/ent/taskactivitytask"
 	"project-management-demo-backend/ent/taskcollaborator"
 	"project-management-demo-backend/ent/taskcolumn"
 	"project-management-demo-backend/ent/taskfeed"
@@ -87,6 +88,7 @@ func columnChecker(table string) func(string) error {
 		tag.Table:                     tag.ValidColumn,
 		task.Table:                    task.ValidColumn,
 		taskactivity.Table:            taskactivity.ValidColumn,
+		taskactivitytask.Table:        taskactivitytask.ValidColumn,
 		taskcollaborator.Table:        taskcollaborator.ValidColumn,
 		taskcolumn.Table:              taskcolumn.ValidColumn,
 		taskfeed.Table:                taskfeed.ValidColumn,
