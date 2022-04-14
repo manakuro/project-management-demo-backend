@@ -42,6 +42,7 @@ type hooks struct {
 	ProjectTeammate         []ent.Hook
 	Tag                     []ent.Hook
 	Task                    []ent.Hook
+	TaskActivity            []ent.Hook
 	TaskCollaborator        []ent.Hook
 	TaskColumn              []ent.Hook
 	TaskFeed                []ent.Hook

@@ -17,6 +17,7 @@ import (
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/tag"
 	"project-management-demo-backend/ent/task"
+	"project-management-demo-backend/ent/taskactivity"
 	"project-management-demo-backend/ent/taskcolumn"
 	"project-management-demo-backend/ent/taskfeed"
 	"project-management-demo-backend/ent/tasklistcompletedstatus"
@@ -267,6 +268,16 @@ func AddDate(date int) *time.Time {
 	t = t.AddDate(0, 0, date)
 
 	return &t
+}
+
+// GetTaskActivity gets activity type data.
+func GetTaskActivity(ctx context.Context, client *ent.Client, id ulid.ID) *ent.TaskActivity {
+	res, err := client.TaskActivity.Query().Where(taskactivity.IDEQ(id)).Only(ctx)
+	if err != nil {
+		log.Fatalf("GetTaskActivity: failed to get data %v", err)
+	}
+
+	return res
 }
 
 //// ParseDescription convert json to description object.

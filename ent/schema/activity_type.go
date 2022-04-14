@@ -1,8 +1,13 @@
 package schema
 
 import (
+	"project-management-demo-backend/ent/annotation"
 	"project-management-demo-backend/ent/mixin"
 	"project-management-demo-backend/pkg/const/globalid"
+
+	"entgo.io/contrib/entgql"
+	"entgo.io/ent/schema"
+	"entgo.io/ent/schema/edge"
 
 	"entgo.io/ent"
 	"entgo.io/ent/schema/field"
@@ -35,7 +40,15 @@ func (ActivityTypeMixin) Fields() []ent.Field {
 
 // Edges of the ActivityType.
 func (ActivityType) Edges() []ent.Edge {
-	return nil
+	return []ent.Edge{
+		edge.To(taskActivitiesRef, TaskActivity.Type).
+			Annotations(
+				entgql.Bind(),
+				schema.Annotation(
+					annotation.Edge{FieldName: "task_activity_id"},
+				),
+			),
+	}
 }
 
 // Mixin of the ActivityType.

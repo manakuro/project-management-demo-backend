@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"project-management-demo-backend/ent/activitytype"
 	"project-management-demo-backend/ent/schema/ulid"
+	"project-management-demo-backend/ent/taskactivity"
 	"time"
 
 	"entgo.io/ent/dialect"
@@ -76,6 +77,21 @@ func (atc *ActivityTypeCreate) SetNillableID(u *ulid.ID) *ActivityTypeCreate {
 		atc.SetID(*u)
 	}
 	return atc
+}
+
+// AddTaskActivityIDs adds the "taskActivities" edge to the TaskActivity entity by IDs.
+func (atc *ActivityTypeCreate) AddTaskActivityIDs(ids ...ulid.ID) *ActivityTypeCreate {
+	atc.mutation.AddTaskActivityIDs(ids...)
+	return atc
+}
+
+// AddTaskActivities adds the "taskActivities" edges to the TaskActivity entity.
+func (atc *ActivityTypeCreate) AddTaskActivities(t ...*TaskActivity) *ActivityTypeCreate {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return atc.AddTaskActivityIDs(ids...)
 }
 
 // Mutation returns the ActivityTypeMutation object of the builder.
@@ -255,6 +271,25 @@ func (atc *ActivityTypeCreate) createSpec() (*ActivityType, *sqlgraph.CreateSpec
 			Column: activitytype.FieldUpdatedAt,
 		})
 		_node.UpdatedAt = value
+	}
+	if nodes := atc.mutation.TaskActivitiesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   activitytype.TaskActivitiesTable,
+			Columns: []string{activitytype.TaskActivitiesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: taskactivity.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }

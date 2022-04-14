@@ -17,6 +17,14 @@ func (at *ActivityTypeQuery) CollectFields(ctx context.Context, satisfies ...str
 }
 
 func (at *ActivityTypeQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *ActivityTypeQuery {
+	for _, field := range graphql.CollectFields(ctx, field.Selections, satisfies) {
+		switch field.Name {
+		case "taskActivities":
+			at = at.WithTaskActivities(func(query *TaskActivityQuery) {
+				query.collectField(ctx, field)
+			})
+		}
+	}
 	return at
 }
 
@@ -525,6 +533,30 @@ func (t *TaskQuery) collectField(ctx *graphql.OperationContext, field graphql.Co
 }
 
 // CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
+func (ta *TaskActivityQuery) CollectFields(ctx context.Context, satisfies ...string) *TaskActivityQuery {
+	if fc := graphql.GetFieldContext(ctx); fc != nil {
+		ta = ta.collectField(graphql.GetOperationContext(ctx), fc.Field, satisfies...)
+	}
+	return ta
+}
+
+func (ta *TaskActivityQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *TaskActivityQuery {
+	for _, field := range graphql.CollectFields(ctx, field.Selections, satisfies) {
+		switch field.Name {
+		case "activityType":
+			ta = ta.WithActivityType(func(query *ActivityTypeQuery) {
+				query.collectField(ctx, field)
+			})
+		case "teammate":
+			ta = ta.WithTeammate(func(query *TeammateQuery) {
+				query.collectField(ctx, field)
+			})
+		}
+	}
+	return ta
+}
+
+// CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
 func (tc *TaskCollaboratorQuery) CollectFields(ctx context.Context, satisfies ...string) *TaskCollaboratorQuery {
 	if fc := graphql.GetFieldContext(ctx); fc != nil {
 		tc = tc.collectField(graphql.GetOperationContext(ctx), fc.Field, satisfies...)
@@ -825,6 +857,10 @@ func (t *TeammateQuery) collectField(ctx *graphql.OperationContext, field graphq
 			})
 		case "projects":
 			t = t.WithProjects(func(query *ProjectQuery) {
+				query.collectField(ctx, field)
+			})
+		case "taskActivities":
+			t = t.WithTaskActivities(func(query *TaskActivityQuery) {
 				query.collectField(ctx, field)
 			})
 		case "taskCollaborators":

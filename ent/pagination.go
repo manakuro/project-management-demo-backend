@@ -27,6 +27,7 @@ import (
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/tag"
 	"project-management-demo-backend/ent/task"
+	"project-management-demo-backend/ent/taskactivity"
 	"project-management-demo-backend/ent/taskcollaborator"
 	"project-management-demo-backend/ent/taskcolumn"
 	"project-management-demo-backend/ent/taskfeed"
@@ -4354,6 +4355,233 @@ func (t *Task) ToEdge(order *TaskOrder) *TaskEdge {
 	return &TaskEdge{
 		Node:   t,
 		Cursor: order.Field.toCursor(t),
+	}
+}
+
+// TaskActivityEdge is the edge representation of TaskActivity.
+type TaskActivityEdge struct {
+	Node   *TaskActivity `json:"node"`
+	Cursor Cursor        `json:"cursor"`
+}
+
+// TaskActivityConnection is the connection containing edges to TaskActivity.
+type TaskActivityConnection struct {
+	Edges      []*TaskActivityEdge `json:"edges"`
+	PageInfo   PageInfo            `json:"pageInfo"`
+	TotalCount int                 `json:"totalCount"`
+}
+
+// TaskActivityPaginateOption enables pagination customization.
+type TaskActivityPaginateOption func(*taskActivityPager) error
+
+// WithTaskActivityOrder configures pagination ordering.
+func WithTaskActivityOrder(order *TaskActivityOrder) TaskActivityPaginateOption {
+	if order == nil {
+		order = DefaultTaskActivityOrder
+	}
+	o := *order
+	return func(pager *taskActivityPager) error {
+		if err := o.Direction.Validate(); err != nil {
+			return err
+		}
+		if o.Field == nil {
+			o.Field = DefaultTaskActivityOrder.Field
+		}
+		pager.order = &o
+		return nil
+	}
+}
+
+// WithTaskActivityFilter configures pagination filter.
+func WithTaskActivityFilter(filter func(*TaskActivityQuery) (*TaskActivityQuery, error)) TaskActivityPaginateOption {
+	return func(pager *taskActivityPager) error {
+		if filter == nil {
+			return errors.New("TaskActivityQuery filter cannot be nil")
+		}
+		pager.filter = filter
+		return nil
+	}
+}
+
+type taskActivityPager struct {
+	order  *TaskActivityOrder
+	filter func(*TaskActivityQuery) (*TaskActivityQuery, error)
+}
+
+func newTaskActivityPager(opts []TaskActivityPaginateOption) (*taskActivityPager, error) {
+	pager := &taskActivityPager{}
+	for _, opt := range opts {
+		if err := opt(pager); err != nil {
+			return nil, err
+		}
+	}
+	if pager.order == nil {
+		pager.order = DefaultTaskActivityOrder
+	}
+	return pager, nil
+}
+
+func (p *taskActivityPager) applyFilter(query *TaskActivityQuery) (*TaskActivityQuery, error) {
+	if p.filter != nil {
+		return p.filter(query)
+	}
+	return query, nil
+}
+
+func (p *taskActivityPager) toCursor(ta *TaskActivity) Cursor {
+	return p.order.Field.toCursor(ta)
+}
+
+func (p *taskActivityPager) applyCursors(query *TaskActivityQuery, after, before *Cursor) *TaskActivityQuery {
+	for _, predicate := range cursorsToPredicates(
+		p.order.Direction, after, before,
+		p.order.Field.field, DefaultTaskActivityOrder.Field.field,
+	) {
+		query = query.Where(predicate)
+	}
+	return query
+}
+
+func (p *taskActivityPager) applyOrder(query *TaskActivityQuery, reverse bool) *TaskActivityQuery {
+	direction := p.order.Direction
+	if reverse {
+		direction = direction.reverse()
+	}
+	query = query.Order(direction.orderFunc(p.order.Field.field))
+	if p.order.Field != DefaultTaskActivityOrder.Field {
+		query = query.Order(direction.orderFunc(DefaultTaskActivityOrder.Field.field))
+	}
+	return query
+}
+
+// Paginate executes the query and returns a relay based cursor connection to TaskActivity.
+func (ta *TaskActivityQuery) Paginate(
+	ctx context.Context, after *Cursor, first *int,
+	before *Cursor, last *int, opts ...TaskActivityPaginateOption,
+) (*TaskActivityConnection, error) {
+	if err := validateFirstLast(first, last); err != nil {
+		return nil, err
+	}
+	pager, err := newTaskActivityPager(opts)
+	if err != nil {
+		return nil, err
+	}
+
+	if ta, err = pager.applyFilter(ta); err != nil {
+		return nil, err
+	}
+
+	conn := &TaskActivityConnection{Edges: []*TaskActivityEdge{}}
+	if !hasCollectedField(ctx, edgesField) || first != nil && *first == 0 || last != nil && *last == 0 {
+		if hasCollectedField(ctx, totalCountField) ||
+			hasCollectedField(ctx, pageInfoField) {
+			count, err := ta.Count(ctx)
+			if err != nil {
+				return nil, err
+			}
+			conn.TotalCount = count
+			conn.PageInfo.HasNextPage = first != nil && count > 0
+			conn.PageInfo.HasPreviousPage = last != nil && count > 0
+		}
+		return conn, nil
+	}
+
+	if (after != nil || first != nil || before != nil || last != nil) && hasCollectedField(ctx, totalCountField) {
+		count, err := ta.Clone().Count(ctx)
+		if err != nil {
+			return nil, err
+		}
+		conn.TotalCount = count
+	}
+
+	ta = pager.applyCursors(ta, after, before)
+	ta = pager.applyOrder(ta, last != nil)
+	var limit int
+	if first != nil {
+		limit = *first + 1
+	} else if last != nil {
+		limit = *last + 1
+	}
+	if limit > 0 {
+		ta = ta.Limit(limit)
+	}
+
+	if field := getCollectedField(ctx, edgesField, nodeField); field != nil {
+		ta = ta.collectField(graphql.GetOperationContext(ctx), *field)
+	}
+
+	nodes, err := ta.All(ctx)
+	if err != nil || len(nodes) == 0 {
+		return conn, err
+	}
+
+	if len(nodes) == limit {
+		conn.PageInfo.HasNextPage = first != nil
+		conn.PageInfo.HasPreviousPage = last != nil
+		nodes = nodes[:len(nodes)-1]
+	}
+
+	var nodeAt func(int) *TaskActivity
+	if last != nil {
+		n := len(nodes) - 1
+		nodeAt = func(i int) *TaskActivity {
+			return nodes[n-i]
+		}
+	} else {
+		nodeAt = func(i int) *TaskActivity {
+			return nodes[i]
+		}
+	}
+
+	conn.Edges = make([]*TaskActivityEdge, len(nodes))
+	for i := range nodes {
+		node := nodeAt(i)
+		conn.Edges[i] = &TaskActivityEdge{
+			Node:   node,
+			Cursor: pager.toCursor(node),
+		}
+	}
+
+	conn.PageInfo.StartCursor = &conn.Edges[0].Cursor
+	conn.PageInfo.EndCursor = &conn.Edges[len(conn.Edges)-1].Cursor
+	if conn.TotalCount == 0 {
+		conn.TotalCount = len(nodes)
+	}
+
+	return conn, nil
+}
+
+// TaskActivityOrderField defines the ordering field of TaskActivity.
+type TaskActivityOrderField struct {
+	field    string
+	toCursor func(*TaskActivity) Cursor
+}
+
+// TaskActivityOrder defines the ordering of TaskActivity.
+type TaskActivityOrder struct {
+	Direction OrderDirection          `json:"direction"`
+	Field     *TaskActivityOrderField `json:"field"`
+}
+
+// DefaultTaskActivityOrder is the default ordering of TaskActivity.
+var DefaultTaskActivityOrder = &TaskActivityOrder{
+	Direction: OrderDirectionAsc,
+	Field: &TaskActivityOrderField{
+		field: taskactivity.FieldID,
+		toCursor: func(ta *TaskActivity) Cursor {
+			return Cursor{ID: ta.ID}
+		},
+	},
+}
+
+// ToEdge converts TaskActivity into TaskActivityEdge.
+func (ta *TaskActivity) ToEdge(order *TaskActivityOrder) *TaskActivityEdge {
+	if order == nil {
+		order = DefaultTaskActivityOrder
+	}
+	return &TaskActivityEdge{
+		Node:   ta,
+		Cursor: order.Field.toCursor(ta),
 	}
 }
 

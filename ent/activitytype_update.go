@@ -8,6 +8,8 @@ import (
 	"fmt"
 	"project-management-demo-backend/ent/activitytype"
 	"project-management-demo-backend/ent/predicate"
+	"project-management-demo-backend/ent/schema/ulid"
+	"project-management-demo-backend/ent/taskactivity"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -39,9 +41,45 @@ func (atu *ActivityTypeUpdate) SetTypeCode(ac activitytype.TypeCode) *ActivityTy
 	return atu
 }
 
+// AddTaskActivityIDs adds the "taskActivities" edge to the TaskActivity entity by IDs.
+func (atu *ActivityTypeUpdate) AddTaskActivityIDs(ids ...ulid.ID) *ActivityTypeUpdate {
+	atu.mutation.AddTaskActivityIDs(ids...)
+	return atu
+}
+
+// AddTaskActivities adds the "taskActivities" edges to the TaskActivity entity.
+func (atu *ActivityTypeUpdate) AddTaskActivities(t ...*TaskActivity) *ActivityTypeUpdate {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return atu.AddTaskActivityIDs(ids...)
+}
+
 // Mutation returns the ActivityTypeMutation object of the builder.
 func (atu *ActivityTypeUpdate) Mutation() *ActivityTypeMutation {
 	return atu.mutation
+}
+
+// ClearTaskActivities clears all "taskActivities" edges to the TaskActivity entity.
+func (atu *ActivityTypeUpdate) ClearTaskActivities() *ActivityTypeUpdate {
+	atu.mutation.ClearTaskActivities()
+	return atu
+}
+
+// RemoveTaskActivityIDs removes the "taskActivities" edge to TaskActivity entities by IDs.
+func (atu *ActivityTypeUpdate) RemoveTaskActivityIDs(ids ...ulid.ID) *ActivityTypeUpdate {
+	atu.mutation.RemoveTaskActivityIDs(ids...)
+	return atu
+}
+
+// RemoveTaskActivities removes "taskActivities" edges to TaskActivity entities.
+func (atu *ActivityTypeUpdate) RemoveTaskActivities(t ...*TaskActivity) *ActivityTypeUpdate {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return atu.RemoveTaskActivityIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -151,6 +189,60 @@ func (atu *ActivityTypeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Column: activitytype.FieldTypeCode,
 		})
 	}
+	if atu.mutation.TaskActivitiesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   activitytype.TaskActivitiesTable,
+			Columns: []string{activitytype.TaskActivitiesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: taskactivity.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := atu.mutation.RemovedTaskActivitiesIDs(); len(nodes) > 0 && !atu.mutation.TaskActivitiesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   activitytype.TaskActivitiesTable,
+			Columns: []string{activitytype.TaskActivitiesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: taskactivity.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := atu.mutation.TaskActivitiesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   activitytype.TaskActivitiesTable,
+			Columns: []string{activitytype.TaskActivitiesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: taskactivity.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, atu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{activitytype.Label}
@@ -182,9 +274,45 @@ func (atuo *ActivityTypeUpdateOne) SetTypeCode(ac activitytype.TypeCode) *Activi
 	return atuo
 }
 
+// AddTaskActivityIDs adds the "taskActivities" edge to the TaskActivity entity by IDs.
+func (atuo *ActivityTypeUpdateOne) AddTaskActivityIDs(ids ...ulid.ID) *ActivityTypeUpdateOne {
+	atuo.mutation.AddTaskActivityIDs(ids...)
+	return atuo
+}
+
+// AddTaskActivities adds the "taskActivities" edges to the TaskActivity entity.
+func (atuo *ActivityTypeUpdateOne) AddTaskActivities(t ...*TaskActivity) *ActivityTypeUpdateOne {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return atuo.AddTaskActivityIDs(ids...)
+}
+
 // Mutation returns the ActivityTypeMutation object of the builder.
 func (atuo *ActivityTypeUpdateOne) Mutation() *ActivityTypeMutation {
 	return atuo.mutation
+}
+
+// ClearTaskActivities clears all "taskActivities" edges to the TaskActivity entity.
+func (atuo *ActivityTypeUpdateOne) ClearTaskActivities() *ActivityTypeUpdateOne {
+	atuo.mutation.ClearTaskActivities()
+	return atuo
+}
+
+// RemoveTaskActivityIDs removes the "taskActivities" edge to TaskActivity entities by IDs.
+func (atuo *ActivityTypeUpdateOne) RemoveTaskActivityIDs(ids ...ulid.ID) *ActivityTypeUpdateOne {
+	atuo.mutation.RemoveTaskActivityIDs(ids...)
+	return atuo
+}
+
+// RemoveTaskActivities removes "taskActivities" edges to TaskActivity entities.
+func (atuo *ActivityTypeUpdateOne) RemoveTaskActivities(t ...*TaskActivity) *ActivityTypeUpdateOne {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return atuo.RemoveTaskActivityIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -317,6 +445,60 @@ func (atuo *ActivityTypeUpdateOne) sqlSave(ctx context.Context) (_node *Activity
 			Value:  value,
 			Column: activitytype.FieldTypeCode,
 		})
+	}
+	if atuo.mutation.TaskActivitiesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   activitytype.TaskActivitiesTable,
+			Columns: []string{activitytype.TaskActivitiesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: taskactivity.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := atuo.mutation.RemovedTaskActivitiesIDs(); len(nodes) > 0 && !atuo.mutation.TaskActivitiesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   activitytype.TaskActivitiesTable,
+			Columns: []string{activitytype.TaskActivitiesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: taskactivity.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := atuo.mutation.TaskActivitiesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   activitytype.TaskActivitiesTable,
+			Columns: []string{activitytype.TaskActivitiesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: taskactivity.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_node = &ActivityType{config: atuo.config}
 	_spec.Assign = _node.assignValues
