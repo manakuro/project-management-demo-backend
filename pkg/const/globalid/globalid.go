@@ -21,6 +21,7 @@ import (
 	"project-management-demo-backend/ent/projectteammate"
 	"project-management-demo-backend/ent/tag"
 	"project-management-demo-backend/ent/task"
+	"project-management-demo-backend/ent/taskactivity"
 	"project-management-demo-backend/ent/taskcollaborator"
 	"project-management-demo-backend/ent/taskcolumn"
 	"project-management-demo-backend/ent/taskfeed"
@@ -256,7 +257,7 @@ func New() GlobalIDs {
 		},
 		TaskActivity: field{
 			Prefix: "0BN",
-			Table:  activitytype.Table,
+			Table:  taskactivity.Table,
 		},
 	}
 }
