@@ -21,6 +21,9 @@ func NewProjectTaskRepository(client *ent.Client) ur.ProjectTask {
 func (r *projectTaskRepository) Get(ctx context.Context, where *model.ProjectTaskWhereInput) (*model.ProjectTask, error) {
 	q := r.client.ProjectTask.Query()
 
+	// Eager-loading with task explicitly.
+	WithProjectTask(q)
+
 	q, err := where.Filter(q)
 	if err != nil {
 		return nil, model.NewInvalidParamError(nil)

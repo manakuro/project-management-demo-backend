@@ -6426,13 +6426,13 @@ type TaskWhereInput struct {
 	HasTaskPriority     *bool                     `json:"hasTaskPriority,omitempty"`
 	HasTaskPriorityWith []*TaskPriorityWhereInput `json:"hasTaskPriorityWith,omitempty"`
 
-	// "parentTask" edge predicates.
-	HasParentTask     *bool             `json:"hasParentTask,omitempty"`
-	HasParentTaskWith []*TaskWhereInput `json:"hasParentTaskWith,omitempty"`
-
 	// "subTasks" edge predicates.
 	HasSubTasks     *bool             `json:"hasSubTasks,omitempty"`
 	HasSubTasksWith []*TaskWhereInput `json:"hasSubTasksWith,omitempty"`
+
+	// "parentTask" edge predicates.
+	HasParentTask     *bool             `json:"hasParentTask,omitempty"`
+	HasParentTaskWith []*TaskWhereInput `json:"hasParentTaskWith,omitempty"`
 
 	// "teammateTasks" edge predicates.
 	HasTeammateTasks     *bool                     `json:"hasTeammateTasks,omitempty"`
@@ -6954,24 +6954,6 @@ func (i *TaskWhereInput) P() (predicate.Task, error) {
 		}
 		predicates = append(predicates, task.HasTaskPriorityWith(with...))
 	}
-	if i.HasParentTask != nil {
-		p := task.HasParentTask()
-		if !*i.HasParentTask {
-			p = task.Not(p)
-		}
-		predicates = append(predicates, p)
-	}
-	if len(i.HasParentTaskWith) > 0 {
-		with := make([]predicate.Task, 0, len(i.HasParentTaskWith))
-		for _, w := range i.HasParentTaskWith {
-			p, err := w.P()
-			if err != nil {
-				return nil, err
-			}
-			with = append(with, p)
-		}
-		predicates = append(predicates, task.HasParentTaskWith(with...))
-	}
 	if i.HasSubTasks != nil {
 		p := task.HasSubTasks()
 		if !*i.HasSubTasks {
@@ -6989,6 +6971,24 @@ func (i *TaskWhereInput) P() (predicate.Task, error) {
 			with = append(with, p)
 		}
 		predicates = append(predicates, task.HasSubTasksWith(with...))
+	}
+	if i.HasParentTask != nil {
+		p := task.HasParentTask()
+		if !*i.HasParentTask {
+			p = task.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasParentTaskWith) > 0 {
+		with := make([]predicate.Task, 0, len(i.HasParentTaskWith))
+		for _, w := range i.HasParentTaskWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, task.HasParentTaskWith(with...))
 	}
 	if i.HasTeammateTasks != nil {
 		p := task.HasTeammateTasks()

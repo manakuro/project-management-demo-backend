@@ -231,6 +231,21 @@ func (tc *TaskCreate) SetTaskPriority(t *TaskPriority) *TaskCreate {
 	return tc.SetTaskPriorityID(t.ID)
 }
 
+// AddSubTaskIDs adds the "subTasks" edge to the Task entity by IDs.
+func (tc *TaskCreate) AddSubTaskIDs(ids ...ulid.ID) *TaskCreate {
+	tc.mutation.AddSubTaskIDs(ids...)
+	return tc
+}
+
+// AddSubTasks adds the "subTasks" edges to the Task entity.
+func (tc *TaskCreate) AddSubTasks(t ...*Task) *TaskCreate {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return tc.AddSubTaskIDs(ids...)
+}
+
 // SetParentTaskID sets the "parentTask" edge to the Task entity by ID.
 func (tc *TaskCreate) SetParentTaskID(id ulid.ID) *TaskCreate {
 	tc.mutation.SetParentTaskID(id)
@@ -248,21 +263,6 @@ func (tc *TaskCreate) SetNillableParentTaskID(id *ulid.ID) *TaskCreate {
 // SetParentTask sets the "parentTask" edge to the Task entity.
 func (tc *TaskCreate) SetParentTask(t *Task) *TaskCreate {
 	return tc.SetParentTaskID(t.ID)
-}
-
-// AddSubTaskIDs adds the "subTasks" edge to the Task entity by IDs.
-func (tc *TaskCreate) AddSubTaskIDs(ids ...ulid.ID) *TaskCreate {
-	tc.mutation.AddSubTaskIDs(ids...)
-	return tc
-}
-
-// AddSubTasks adds the "subTasks" edges to the Task entity.
-func (tc *TaskCreate) AddSubTasks(t ...*Task) *TaskCreate {
-	ids := make([]ulid.ID, len(t))
-	for i := range t {
-		ids[i] = t[i].ID
-	}
-	return tc.AddSubTaskIDs(ids...)
 }
 
 // AddTeammateTaskIDs adds the "teammateTasks" edge to the TeammateTask entity by IDs.
@@ -678,6 +678,25 @@ func (tc *TaskCreate) createSpec() (*Task, *sqlgraph.CreateSpec) {
 		_node.TaskPriorityID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
+	if nodes := tc.mutation.SubTasksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   task.SubTasksTable,
+			Columns: []string{task.SubTasksColumn},
+			Bidi:    true,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: task.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
 	if nodes := tc.mutation.ParentTaskIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -696,25 +715,6 @@ func (tc *TaskCreate) createSpec() (*Task, *sqlgraph.CreateSpec) {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.TaskParentID = nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := tc.mutation.SubTasksIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   task.SubTasksTable,
-			Columns: []string{task.SubTasksColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: task.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := tc.mutation.TeammateTasksIDs(); len(nodes) > 0 {

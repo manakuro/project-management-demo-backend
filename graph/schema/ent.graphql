@@ -2632,13 +2632,13 @@ input TaskWhereInput {
   hasTaskPriority: Boolean
   hasTaskPriorityWith: [TaskPriorityWhereInput!]
   
-  """parentTask edge predicates"""
-  hasParentTask: Boolean
-  hasParentTaskWith: [TaskWhereInput!]
-  
   """subTasks edge predicates"""
   hasSubTasks: Boolean
   hasSubTasksWith: [TaskWhereInput!]
+  
+  """parentTask edge predicates"""
+  hasParentTask: Boolean
+  hasParentTaskWith: [TaskWhereInput!]
   
   """teammateTasks edge predicates"""
   hasTeammateTasks: Boolean

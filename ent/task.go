@@ -57,10 +57,10 @@ type TaskEdges struct {
 	Teammate *Teammate `json:"teammate,omitempty"`
 	// TaskPriority holds the value of the taskPriority edge.
 	TaskPriority *TaskPriority `json:"taskPriority,omitempty"`
-	// ParentTask holds the value of the parentTask edge.
-	ParentTask *Task `json:"parentTask,omitempty"`
 	// SubTasks holds the value of the subTasks edge.
 	SubTasks []*Task `json:"subTasks,omitempty"`
+	// ParentTask holds the value of the parentTask edge.
+	ParentTask *Task `json:"parentTask,omitempty"`
 	// TeammateTasks holds the value of the teammateTasks edge.
 	TeammateTasks []*TeammateTask `json:"teammateTasks,omitempty"`
 	// ProjectTasks holds the value of the projectTasks edge.
@@ -112,10 +112,19 @@ func (e TaskEdges) TaskPriorityOrErr() (*TaskPriority, error) {
 	return nil, &NotLoadedError{edge: "taskPriority"}
 }
 
+// SubTasksOrErr returns the SubTasks value or an error if the edge
+// was not loaded in eager-loading.
+func (e TaskEdges) SubTasksOrErr() ([]*Task, error) {
+	if e.loadedTypes[2] {
+		return e.SubTasks, nil
+	}
+	return nil, &NotLoadedError{edge: "subTasks"}
+}
+
 // ParentTaskOrErr returns the ParentTask value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e TaskEdges) ParentTaskOrErr() (*Task, error) {
-	if e.loadedTypes[2] {
+	if e.loadedTypes[3] {
 		if e.ParentTask == nil {
 			// The edge parentTask was loaded in eager-loading,
 			// but was not found.
@@ -124,15 +133,6 @@ func (e TaskEdges) ParentTaskOrErr() (*Task, error) {
 		return e.ParentTask, nil
 	}
 	return nil, &NotLoadedError{edge: "parentTask"}
-}
-
-// SubTasksOrErr returns the SubTasks value or an error if the edge
-// was not loaded in eager-loading.
-func (e TaskEdges) SubTasksOrErr() ([]*Task, error) {
-	if e.loadedTypes[3] {
-		return e.SubTasks, nil
-	}
-	return nil, &NotLoadedError{edge: "subTasks"}
 }
 
 // TeammateTasksOrErr returns the TeammateTasks value or an error if the edge
@@ -350,14 +350,14 @@ func (t *Task) QueryTaskPriority() *TaskPriorityQuery {
 	return (&TaskClient{config: t.config}).QueryTaskPriority(t)
 }
 
-// QueryParentTask queries the "parentTask" edge of the Task entity.
-func (t *Task) QueryParentTask() *TaskQuery {
-	return (&TaskClient{config: t.config}).QueryParentTask(t)
-}
-
 // QuerySubTasks queries the "subTasks" edge of the Task entity.
 func (t *Task) QuerySubTasks() *TaskQuery {
 	return (&TaskClient{config: t.config}).QuerySubTasks(t)
+}
+
+// QueryParentTask queries the "parentTask" edge of the Task entity.
+func (t *Task) QueryParentTask() *TaskQuery {
+	return (&TaskClient{config: t.config}).QueryParentTask(t)
 }
 
 // QueryTeammateTasks queries the "teammateTasks" edge of the Task entity.

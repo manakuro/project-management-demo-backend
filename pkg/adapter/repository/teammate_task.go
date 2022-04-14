@@ -27,6 +27,12 @@ func (r *teammateTaskRepository) Get(ctx context.Context, where *model.TeammateT
 	q := r.client.TeammateTask.Query()
 
 	q, err := where.Filter(q)
+
+	// Eager-loading with task explicitly.
+	q.WithTask(func(tq *ent.TaskQuery) {
+		WithTask(tq)
+	})
+
 	if err != nil {
 		return nil, model.NewInvalidParamError(nil)
 	}

@@ -11645,11 +11645,11 @@ type TaskMutation struct {
 	clearedteammate          bool
 	taskPriority             *ulid.ID
 	clearedtaskPriority      bool
-	parentTask               *ulid.ID
-	clearedparentTask        bool
 	subTasks                 map[ulid.ID]struct{}
 	removedsubTasks          map[ulid.ID]struct{}
 	clearedsubTasks          bool
+	parentTask               *ulid.ID
+	clearedparentTask        bool
 	teammateTasks            map[ulid.ID]struct{}
 	removedteammateTasks     map[ulid.ID]struct{}
 	clearedteammateTasks     bool
@@ -12397,45 +12397,6 @@ func (m *TaskMutation) ResetTaskPriority() {
 	m.clearedtaskPriority = false
 }
 
-// SetParentTaskID sets the "parentTask" edge to the Task entity by id.
-func (m *TaskMutation) SetParentTaskID(id ulid.ID) {
-	m.parentTask = &id
-}
-
-// ClearParentTask clears the "parentTask" edge to the Task entity.
-func (m *TaskMutation) ClearParentTask() {
-	m.clearedparentTask = true
-}
-
-// ParentTaskCleared reports if the "parentTask" edge to the Task entity was cleared.
-func (m *TaskMutation) ParentTaskCleared() bool {
-	return m.TaskParentIDCleared() || m.clearedparentTask
-}
-
-// ParentTaskID returns the "parentTask" edge ID in the mutation.
-func (m *TaskMutation) ParentTaskID() (id ulid.ID, exists bool) {
-	if m.parentTask != nil {
-		return *m.parentTask, true
-	}
-	return
-}
-
-// ParentTaskIDs returns the "parentTask" edge IDs in the mutation.
-// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// ParentTaskID instead. It exists only for internal usage by the builders.
-func (m *TaskMutation) ParentTaskIDs() (ids []ulid.ID) {
-	if id := m.parentTask; id != nil {
-		ids = append(ids, *id)
-	}
-	return
-}
-
-// ResetParentTask resets all changes to the "parentTask" edge.
-func (m *TaskMutation) ResetParentTask() {
-	m.parentTask = nil
-	m.clearedparentTask = false
-}
-
 // AddSubTaskIDs adds the "subTasks" edge to the Task entity by ids.
 func (m *TaskMutation) AddSubTaskIDs(ids ...ulid.ID) {
 	if m.subTasks == nil {
@@ -12488,6 +12449,45 @@ func (m *TaskMutation) ResetSubTasks() {
 	m.subTasks = nil
 	m.clearedsubTasks = false
 	m.removedsubTasks = nil
+}
+
+// SetParentTaskID sets the "parentTask" edge to the Task entity by id.
+func (m *TaskMutation) SetParentTaskID(id ulid.ID) {
+	m.parentTask = &id
+}
+
+// ClearParentTask clears the "parentTask" edge to the Task entity.
+func (m *TaskMutation) ClearParentTask() {
+	m.clearedparentTask = true
+}
+
+// ParentTaskCleared reports if the "parentTask" edge to the Task entity was cleared.
+func (m *TaskMutation) ParentTaskCleared() bool {
+	return m.TaskParentIDCleared() || m.clearedparentTask
+}
+
+// ParentTaskID returns the "parentTask" edge ID in the mutation.
+func (m *TaskMutation) ParentTaskID() (id ulid.ID, exists bool) {
+	if m.parentTask != nil {
+		return *m.parentTask, true
+	}
+	return
+}
+
+// ParentTaskIDs returns the "parentTask" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// ParentTaskID instead. It exists only for internal usage by the builders.
+func (m *TaskMutation) ParentTaskIDs() (ids []ulid.ID) {
+	if id := m.parentTask; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetParentTask resets all changes to the "parentTask" edge.
+func (m *TaskMutation) ResetParentTask() {
+	m.parentTask = nil
+	m.clearedparentTask = false
 }
 
 // AddTeammateTaskIDs adds the "teammateTasks" edge to the TeammateTask entity by ids.
@@ -13344,11 +13344,11 @@ func (m *TaskMutation) AddedEdges() []string {
 	if m.taskPriority != nil {
 		edges = append(edges, task.EdgeTaskPriority)
 	}
-	if m.parentTask != nil {
-		edges = append(edges, task.EdgeParentTask)
-	}
 	if m.subTasks != nil {
 		edges = append(edges, task.EdgeSubTasks)
+	}
+	if m.parentTask != nil {
+		edges = append(edges, task.EdgeParentTask)
 	}
 	if m.teammateTasks != nil {
 		edges = append(edges, task.EdgeTeammateTasks)
@@ -13392,16 +13392,16 @@ func (m *TaskMutation) AddedIDs(name string) []ent.Value {
 		if id := m.taskPriority; id != nil {
 			return []ent.Value{*id}
 		}
-	case task.EdgeParentTask:
-		if id := m.parentTask; id != nil {
-			return []ent.Value{*id}
-		}
 	case task.EdgeSubTasks:
 		ids := make([]ent.Value, 0, len(m.subTasks))
 		for id := range m.subTasks {
 			ids = append(ids, id)
 		}
 		return ids
+	case task.EdgeParentTask:
+		if id := m.parentTask; id != nil {
+			return []ent.Value{*id}
+		}
 	case task.EdgeTeammateTasks:
 		ids := make([]ent.Value, 0, len(m.teammateTasks))
 		for id := range m.teammateTasks {
@@ -13573,11 +13573,11 @@ func (m *TaskMutation) ClearedEdges() []string {
 	if m.clearedtaskPriority {
 		edges = append(edges, task.EdgeTaskPriority)
 	}
-	if m.clearedparentTask {
-		edges = append(edges, task.EdgeParentTask)
-	}
 	if m.clearedsubTasks {
 		edges = append(edges, task.EdgeSubTasks)
+	}
+	if m.clearedparentTask {
+		edges = append(edges, task.EdgeParentTask)
 	}
 	if m.clearedteammateTasks {
 		edges = append(edges, task.EdgeTeammateTasks)
@@ -13617,10 +13617,10 @@ func (m *TaskMutation) EdgeCleared(name string) bool {
 		return m.clearedteammate
 	case task.EdgeTaskPriority:
 		return m.clearedtaskPriority
-	case task.EdgeParentTask:
-		return m.clearedparentTask
 	case task.EdgeSubTasks:
 		return m.clearedsubTasks
+	case task.EdgeParentTask:
+		return m.clearedparentTask
 	case task.EdgeTeammateTasks:
 		return m.clearedteammateTasks
 	case task.EdgeProjectTasks:
@@ -13670,11 +13670,11 @@ func (m *TaskMutation) ResetEdge(name string) error {
 	case task.EdgeTaskPriority:
 		m.ResetTaskPriority()
 		return nil
-	case task.EdgeParentTask:
-		m.ResetParentTask()
-		return nil
 	case task.EdgeSubTasks:
 		m.ResetSubTasks()
+		return nil
+	case task.EdgeParentTask:
+		m.ResetParentTask()
 		return nil
 	case task.EdgeTeammateTasks:
 		m.ResetTeammateTasks()

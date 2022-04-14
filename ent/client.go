@@ -2660,22 +2660,6 @@ func (c *TaskClient) QueryTaskPriority(t *Task) *TaskPriorityQuery {
 	return query
 }
 
-// QueryParentTask queries the parentTask edge of a Task.
-func (c *TaskClient) QueryParentTask(t *Task) *TaskQuery {
-	query := &TaskQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := t.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(task.Table, task.FieldID, id),
-			sqlgraph.To(task.Table, task.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, task.ParentTaskTable, task.ParentTaskColumn),
-		)
-		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
 // QuerySubTasks queries the subTasks edge of a Task.
 func (c *TaskClient) QuerySubTasks(t *Task) *TaskQuery {
 	query := &TaskQuery{config: c.config}
@@ -2685,6 +2669,22 @@ func (c *TaskClient) QuerySubTasks(t *Task) *TaskQuery {
 			sqlgraph.From(task.Table, task.FieldID, id),
 			sqlgraph.To(task.Table, task.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, task.SubTasksTable, task.SubTasksColumn),
+		)
+		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryParentTask queries the parentTask edge of a Task.
+func (c *TaskClient) QueryParentTask(t *Task) *TaskQuery {
+	query := &TaskQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := t.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(task.Table, task.FieldID, id),
+			sqlgraph.To(task.Table, task.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, task.ParentTaskTable, task.ParentTaskColumn),
 		)
 		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
 		return fromV, nil

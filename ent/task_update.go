@@ -230,6 +230,21 @@ func (tu *TaskUpdate) SetTaskPriority(t *TaskPriority) *TaskUpdate {
 	return tu.SetTaskPriorityID(t.ID)
 }
 
+// AddSubTaskIDs adds the "subTasks" edge to the Task entity by IDs.
+func (tu *TaskUpdate) AddSubTaskIDs(ids ...ulid.ID) *TaskUpdate {
+	tu.mutation.AddSubTaskIDs(ids...)
+	return tu
+}
+
+// AddSubTasks adds the "subTasks" edges to the Task entity.
+func (tu *TaskUpdate) AddSubTasks(t ...*Task) *TaskUpdate {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return tu.AddSubTaskIDs(ids...)
+}
+
 // SetParentTaskID sets the "parentTask" edge to the Task entity by ID.
 func (tu *TaskUpdate) SetParentTaskID(id ulid.ID) *TaskUpdate {
 	tu.mutation.SetParentTaskID(id)
@@ -247,21 +262,6 @@ func (tu *TaskUpdate) SetNillableParentTaskID(id *ulid.ID) *TaskUpdate {
 // SetParentTask sets the "parentTask" edge to the Task entity.
 func (tu *TaskUpdate) SetParentTask(t *Task) *TaskUpdate {
 	return tu.SetParentTaskID(t.ID)
-}
-
-// AddSubTaskIDs adds the "subTasks" edge to the Task entity by IDs.
-func (tu *TaskUpdate) AddSubTaskIDs(ids ...ulid.ID) *TaskUpdate {
-	tu.mutation.AddSubTaskIDs(ids...)
-	return tu
-}
-
-// AddSubTasks adds the "subTasks" edges to the Task entity.
-func (tu *TaskUpdate) AddSubTasks(t ...*Task) *TaskUpdate {
-	ids := make([]ulid.ID, len(t))
-	for i := range t {
-		ids[i] = t[i].ID
-	}
-	return tu.AddSubTaskIDs(ids...)
 }
 
 // AddTeammateTaskIDs adds the "teammateTasks" edge to the TeammateTask entity by IDs.
@@ -416,12 +416,6 @@ func (tu *TaskUpdate) ClearTaskPriority() *TaskUpdate {
 	return tu
 }
 
-// ClearParentTask clears the "parentTask" edge to the Task entity.
-func (tu *TaskUpdate) ClearParentTask() *TaskUpdate {
-	tu.mutation.ClearParentTask()
-	return tu
-}
-
 // ClearSubTasks clears all "subTasks" edges to the Task entity.
 func (tu *TaskUpdate) ClearSubTasks() *TaskUpdate {
 	tu.mutation.ClearSubTasks()
@@ -441,6 +435,12 @@ func (tu *TaskUpdate) RemoveSubTasks(t ...*Task) *TaskUpdate {
 		ids[i] = t[i].ID
 	}
 	return tu.RemoveSubTaskIDs(ids...)
+}
+
+// ClearParentTask clears the "parentTask" edge to the Task entity.
+func (tu *TaskUpdate) ClearParentTask() *TaskUpdate {
+	tu.mutation.ClearParentTask()
+	return tu
 }
 
 // ClearTeammateTasks clears all "teammateTasks" edges to the TeammateTask entity.
@@ -864,6 +864,60 @@ func (tu *TaskUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if tu.mutation.SubTasksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   task.SubTasksTable,
+			Columns: []string{task.SubTasksColumn},
+			Bidi:    true,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: task.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tu.mutation.RemovedSubTasksIDs(); len(nodes) > 0 && !tu.mutation.SubTasksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   task.SubTasksTable,
+			Columns: []string{task.SubTasksColumn},
+			Bidi:    true,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: task.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tu.mutation.SubTasksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   task.SubTasksTable,
+			Columns: []string{task.SubTasksColumn},
+			Bidi:    true,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: task.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if tu.mutation.ParentTaskCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -886,60 +940,6 @@ func (tu *TaskUpdate) sqlSave(ctx context.Context) (n int, err error) {
 			Inverse: true,
 			Table:   task.ParentTaskTable,
 			Columns: []string{task.ParentTaskColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: task.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if tu.mutation.SubTasksCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   task.SubTasksTable,
-			Columns: []string{task.SubTasksColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: task.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := tu.mutation.RemovedSubTasksIDs(); len(nodes) > 0 && !tu.mutation.SubTasksCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   task.SubTasksTable,
-			Columns: []string{task.SubTasksColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: task.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := tu.mutation.SubTasksIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   task.SubTasksTable,
-			Columns: []string{task.SubTasksColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
@@ -1648,6 +1648,21 @@ func (tuo *TaskUpdateOne) SetTaskPriority(t *TaskPriority) *TaskUpdateOne {
 	return tuo.SetTaskPriorityID(t.ID)
 }
 
+// AddSubTaskIDs adds the "subTasks" edge to the Task entity by IDs.
+func (tuo *TaskUpdateOne) AddSubTaskIDs(ids ...ulid.ID) *TaskUpdateOne {
+	tuo.mutation.AddSubTaskIDs(ids...)
+	return tuo
+}
+
+// AddSubTasks adds the "subTasks" edges to the Task entity.
+func (tuo *TaskUpdateOne) AddSubTasks(t ...*Task) *TaskUpdateOne {
+	ids := make([]ulid.ID, len(t))
+	for i := range t {
+		ids[i] = t[i].ID
+	}
+	return tuo.AddSubTaskIDs(ids...)
+}
+
 // SetParentTaskID sets the "parentTask" edge to the Task entity by ID.
 func (tuo *TaskUpdateOne) SetParentTaskID(id ulid.ID) *TaskUpdateOne {
 	tuo.mutation.SetParentTaskID(id)
@@ -1665,21 +1680,6 @@ func (tuo *TaskUpdateOne) SetNillableParentTaskID(id *ulid.ID) *TaskUpdateOne {
 // SetParentTask sets the "parentTask" edge to the Task entity.
 func (tuo *TaskUpdateOne) SetParentTask(t *Task) *TaskUpdateOne {
 	return tuo.SetParentTaskID(t.ID)
-}
-
-// AddSubTaskIDs adds the "subTasks" edge to the Task entity by IDs.
-func (tuo *TaskUpdateOne) AddSubTaskIDs(ids ...ulid.ID) *TaskUpdateOne {
-	tuo.mutation.AddSubTaskIDs(ids...)
-	return tuo
-}
-
-// AddSubTasks adds the "subTasks" edges to the Task entity.
-func (tuo *TaskUpdateOne) AddSubTasks(t ...*Task) *TaskUpdateOne {
-	ids := make([]ulid.ID, len(t))
-	for i := range t {
-		ids[i] = t[i].ID
-	}
-	return tuo.AddSubTaskIDs(ids...)
 }
 
 // AddTeammateTaskIDs adds the "teammateTasks" edge to the TeammateTask entity by IDs.
@@ -1834,12 +1834,6 @@ func (tuo *TaskUpdateOne) ClearTaskPriority() *TaskUpdateOne {
 	return tuo
 }
 
-// ClearParentTask clears the "parentTask" edge to the Task entity.
-func (tuo *TaskUpdateOne) ClearParentTask() *TaskUpdateOne {
-	tuo.mutation.ClearParentTask()
-	return tuo
-}
-
 // ClearSubTasks clears all "subTasks" edges to the Task entity.
 func (tuo *TaskUpdateOne) ClearSubTasks() *TaskUpdateOne {
 	tuo.mutation.ClearSubTasks()
@@ -1859,6 +1853,12 @@ func (tuo *TaskUpdateOne) RemoveSubTasks(t ...*Task) *TaskUpdateOne {
 		ids[i] = t[i].ID
 	}
 	return tuo.RemoveSubTaskIDs(ids...)
+}
+
+// ClearParentTask clears the "parentTask" edge to the Task entity.
+func (tuo *TaskUpdateOne) ClearParentTask() *TaskUpdateOne {
+	tuo.mutation.ClearParentTask()
+	return tuo
 }
 
 // ClearTeammateTasks clears all "teammateTasks" edges to the TeammateTask entity.
@@ -2306,6 +2306,60 @@ func (tuo *TaskUpdateOne) sqlSave(ctx context.Context) (_node *Task, err error) 
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if tuo.mutation.SubTasksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   task.SubTasksTable,
+			Columns: []string{task.SubTasksColumn},
+			Bidi:    true,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: task.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tuo.mutation.RemovedSubTasksIDs(); len(nodes) > 0 && !tuo.mutation.SubTasksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   task.SubTasksTable,
+			Columns: []string{task.SubTasksColumn},
+			Bidi:    true,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: task.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tuo.mutation.SubTasksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   task.SubTasksTable,
+			Columns: []string{task.SubTasksColumn},
+			Bidi:    true,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: task.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if tuo.mutation.ParentTaskCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
@@ -2328,60 +2382,6 @@ func (tuo *TaskUpdateOne) sqlSave(ctx context.Context) (_node *Task, err error) 
 			Inverse: true,
 			Table:   task.ParentTaskTable,
 			Columns: []string{task.ParentTaskColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: task.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if tuo.mutation.SubTasksCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   task.SubTasksTable,
-			Columns: []string{task.SubTasksColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: task.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := tuo.mutation.RemovedSubTasksIDs(); len(nodes) > 0 && !tuo.mutation.SubTasksCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   task.SubTasksTable,
-			Columns: []string{task.SubTasksColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: task.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := tuo.mutation.SubTasksIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   task.SubTasksTable,
-			Columns: []string{task.SubTasksColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{

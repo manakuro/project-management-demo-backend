@@ -11647,13 +11647,13 @@ input TaskWhereInput {
   hasTaskPriority: Boolean
   hasTaskPriorityWith: [TaskPriorityWhereInput!]
   
-  """parentTask edge predicates"""
-  hasParentTask: Boolean
-  hasParentTaskWith: [TaskWhereInput!]
-  
   """subTasks edge predicates"""
   hasSubTasks: Boolean
   hasSubTasksWith: [TaskWhereInput!]
+  
+  """parentTask edge predicates"""
+  hasParentTask: Boolean
+  hasParentTaskWith: [TaskWhereInput!]
   
   """teammateTasks edge predicates"""
   hasTeammateTasks: Boolean
@@ -71109,22 +71109,6 @@ func (ec *executionContext) unmarshalInputTaskWhereInput(ctx context.Context, ob
 			if err != nil {
 				return it, err
 			}
-		case "hasParentTask":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasParentTask"))
-			it.HasParentTask, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "hasParentTaskWith":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasParentTaskWith"))
-			it.HasParentTaskWith, err = ec.unmarshalOTaskWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskWhereInputᚄ(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		case "hasSubTasks":
 			var err error
 
@@ -71138,6 +71122,22 @@ func (ec *executionContext) unmarshalInputTaskWhereInput(ctx context.Context, ob
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasSubTasksWith"))
 			it.HasSubTasksWith, err = ec.unmarshalOTaskWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasParentTask":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasParentTask"))
+			it.HasParentTask, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasParentTaskWith":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasParentTaskWith"))
+			it.HasParentTaskWith, err = ec.unmarshalOTaskWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskWhereInputᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}

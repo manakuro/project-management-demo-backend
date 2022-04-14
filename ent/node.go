@@ -1486,9 +1486,9 @@ func (t *Task) Node(ctx context.Context) (node *Node, err error) {
 	}
 	node.Edges[2] = &Edge{
 		Type: "Task",
-		Name: "parentTask",
+		Name: "subTasks",
 	}
-	err = t.QueryParentTask().
+	err = t.QuerySubTasks().
 		Select(task.FieldID).
 		Scan(ctx, &node.Edges[2].IDs)
 	if err != nil {
@@ -1496,9 +1496,9 @@ func (t *Task) Node(ctx context.Context) (node *Node, err error) {
 	}
 	node.Edges[3] = &Edge{
 		Type: "Task",
-		Name: "subTasks",
+		Name: "parentTask",
 	}
-	err = t.QuerySubTasks().
+	err = t.QueryParentTask().
 		Select(task.FieldID).
 		Scan(ctx, &node.Edges[3].IDs)
 	if err != nil {
