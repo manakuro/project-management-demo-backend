@@ -18,12 +18,12 @@ var teammateFeed = struct {
 	},
 	dan: ent.CreateTeammateInput{
 		Name:  "Dan Abrahmov",
-		Image: "https://bit.ly/dan-abramov",
+		Image: "/images/dan.jpg",
 		Email: "dan.abrahmov@example.com",
 	},
 	kent: ent.CreateTeammateInput{
 		Name:  "Kent Dodds",
-		Image: "https://bit.ly/kent-c-dodds",
+		Image: "/images/kent.jpg",
 		Email: "kent.dodds@example.com",
 	},
 }
