@@ -23,6 +23,7 @@ func New(client *ent.Client) Registry {
 
 func (r *registry) NewController() controller.Controller {
 	return controller.Controller{
+		ActivityType:            r.NewActivityTypeController(),
 		Auth:                    r.NewAuthController(),
 		Color:                   r.NewColorController(),
 		DeletedTask:             r.NewDeletedTaskController(),

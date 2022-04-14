@@ -12,6 +12,8 @@ import (
 // Tx is a transactional client that is created by calling Client.Tx().
 type Tx struct {
 	config
+	// ActivityType is the client for interacting with the ActivityType builders.
+	ActivityType *ActivityTypeClient
 	// Color is the client for interacting with the Color builders.
 	Color *ColorClient
 	// DeletedTask is the client for interacting with the DeletedTask builders.
@@ -223,6 +225,7 @@ func (tx *Tx) Client() *Client {
 }
 
 func (tx *Tx) init() {
+	tx.ActivityType = NewActivityTypeClient(tx.config)
 	tx.Color = NewColorClient(tx.config)
 	tx.DeletedTask = NewDeletedTaskClient(tx.config)
 	tx.FavoriteProject = NewFavoriteProjectClient(tx.config)
@@ -270,7 +273,7 @@ func (tx *Tx) init() {
 // of them in order to commit or rollback the transaction.
 //
 // If a closed transaction is embedded in one of the generated entities, and the entity
-// applies a query, for example: Color.QueryXXX(), the query will be executed
+// applies a query, for example: ActivityType.QueryXXX(), the query will be executed
 // through the driver which created this transaction.
 //
 // Note that txDriver is not goroutine safe.

@@ -3,6 +3,7 @@
 package ent
 
 import (
+	"project-management-demo-backend/ent/activitytype"
 	"project-management-demo-backend/ent/deletedtask"
 	"project-management-demo-backend/ent/filetype"
 	"project-management-demo-backend/ent/schema/testuserprofile"
@@ -15,6 +16,63 @@ import (
 	"project-management-demo-backend/ent/testtodo"
 	"time"
 )
+
+// CreateActivityTypeInput represents a mutation input for creating activitytypes.
+type CreateActivityTypeInput struct {
+	Name      string
+	TypeCode  activitytype.TypeCode
+	CreatedAt *time.Time
+	UpdatedAt *time.Time
+	RequestID string
+}
+
+// Mutate applies the CreateActivityTypeInput on the ActivityTypeCreate builder.
+func (i *CreateActivityTypeInput) Mutate(m *ActivityTypeCreate) {
+	m.SetName(i.Name)
+	m.SetTypeCode(i.TypeCode)
+	if v := i.CreatedAt; v != nil {
+		m.SetCreatedAt(*v)
+	}
+	if v := i.UpdatedAt; v != nil {
+		m.SetUpdatedAt(*v)
+	}
+}
+
+// SetInput applies the change-set in the CreateActivityTypeInput on the create builder.
+func (c *ActivityTypeCreate) SetInput(i CreateActivityTypeInput) *ActivityTypeCreate {
+	i.Mutate(c)
+	return c
+}
+
+// UpdateActivityTypeInput represents a mutation input for updating activitytypes.
+type UpdateActivityTypeInput struct {
+	ID        ulid.ID
+	Name      *string
+	TypeCode  *activitytype.TypeCode
+	RequestID string
+}
+
+// Mutate applies the UpdateActivityTypeInput on the ActivityTypeMutation.
+func (i *UpdateActivityTypeInput) Mutate(m *ActivityTypeMutation) {
+	if v := i.Name; v != nil {
+		m.SetName(*v)
+	}
+	if v := i.TypeCode; v != nil {
+		m.SetTypeCode(*v)
+	}
+}
+
+// SetInput applies the change-set in the UpdateActivityTypeInput on the update builder.
+func (u *ActivityTypeUpdate) SetInput(i UpdateActivityTypeInput) *ActivityTypeUpdate {
+	i.Mutate(u.Mutation())
+	return u
+}
+
+// SetInput applies the change-set in the UpdateActivityTypeInput on the update-one builder.
+func (u *ActivityTypeUpdateOne) SetInput(i UpdateActivityTypeInput) *ActivityTypeUpdateOne {
+	i.Mutate(u.Mutation())
+	return u
+}
 
 // CreateColorInput represents a mutation input for creating colors.
 type CreateColorInput struct {

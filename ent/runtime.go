@@ -3,6 +3,7 @@
 package ent
 
 import (
+	"project-management-demo-backend/ent/activitytype"
 	"project-management-demo-backend/ent/color"
 	"project-management-demo-backend/ent/deletedtask"
 	"project-management-demo-backend/ent/favoriteproject"
@@ -50,6 +51,45 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	activitytypeMixin := schema.ActivityType{}.Mixin()
+	activitytypeMixinFields0 := activitytypeMixin[0].Fields()
+	_ = activitytypeMixinFields0
+	activitytypeMixinFields1 := activitytypeMixin[1].Fields()
+	_ = activitytypeMixinFields1
+	activitytypeMixinFields2 := activitytypeMixin[2].Fields()
+	_ = activitytypeMixinFields2
+	activitytypeFields := schema.ActivityType{}.Fields()
+	_ = activitytypeFields
+	// activitytypeDescName is the schema descriptor for name field.
+	activitytypeDescName := activitytypeMixinFields1[0].Descriptor()
+	// activitytype.NameValidator is a validator for the "name" field. It is called by the builders before save.
+	activitytype.NameValidator = func() func(string) error {
+		validators := activitytypeDescName.Validators
+		fns := [...]func(string) error{
+			validators[0].(func(string) error),
+			validators[1].(func(string) error),
+		}
+		return func(name string) error {
+			for _, fn := range fns {
+				if err := fn(name); err != nil {
+					return err
+				}
+			}
+			return nil
+		}
+	}()
+	// activitytypeDescCreatedAt is the schema descriptor for created_at field.
+	activitytypeDescCreatedAt := activitytypeMixinFields2[0].Descriptor()
+	// activitytype.DefaultCreatedAt holds the default value on creation for the created_at field.
+	activitytype.DefaultCreatedAt = activitytypeDescCreatedAt.Default.(func() time.Time)
+	// activitytypeDescUpdatedAt is the schema descriptor for updated_at field.
+	activitytypeDescUpdatedAt := activitytypeMixinFields2[1].Descriptor()
+	// activitytype.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	activitytype.DefaultUpdatedAt = activitytypeDescUpdatedAt.Default.(func() time.Time)
+	// activitytypeDescID is the schema descriptor for id field.
+	activitytypeDescID := activitytypeMixinFields0[0].Descriptor()
+	// activitytype.DefaultID holds the default value on creation for the id field.
+	activitytype.DefaultID = activitytypeDescID.Default.(func() ulid.ID)
 	colorMixin := schema.Color{}.Mixin()
 	colorMixinFields0 := colorMixin[0].Fields()
 	_ = colorMixinFields0

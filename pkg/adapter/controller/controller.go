@@ -2,6 +2,7 @@ package controller
 
 // Controller holds the controllers for the entire across application.
 type Controller struct {
+	ActivityType            interface{ ActivityType }
 	Auth                    interface{ Auth }
 	Color                   interface{ Color }
 	DeletedTask             interface{ DeletedTask }

@@ -8,6 +8,20 @@ import (
 )
 
 var (
+	// ActivityTypesColumns holds the columns for the "activity_types" table.
+	ActivityTypesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+		{Name: "name", Type: field.TypeString, Size: 255},
+		{Name: "type_code", Type: field.TypeEnum, Enums: []string{"TASK", "WORKSPACE"}},
+		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
+		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
+	}
+	// ActivityTypesTable holds the schema information for the "activity_types" table.
+	ActivityTypesTable = &schema.Table{
+		Name:       "activity_types",
+		Columns:    ActivityTypesColumns,
+		PrimaryKey: []*schema.Column{ActivityTypesColumns[0]},
+	}
 	// ColorsColumns holds the columns for the "colors" table.
 	ColorsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString},
@@ -1068,6 +1082,7 @@ var (
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
+		ActivityTypesTable,
 		ColorsTable,
 		DeletedTasksTable,
 		FavoriteProjectsTable,

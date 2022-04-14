@@ -3,6 +3,7 @@ package globalid
 import (
 	"fmt"
 	"log"
+	"project-management-demo-backend/ent/activitytype"
 	"project-management-demo-backend/ent/color"
 	"project-management-demo-backend/ent/deletedtask"
 	"project-management-demo-backend/ent/favoriteproject"
@@ -89,6 +90,7 @@ type GlobalIDs struct {
 	FileType                field
 	TaskFile                field
 	DeletedTask             field
+	ActivityType            field
 }
 
 // New generates a map object that is intended to be used as global identification for node interface query.
@@ -246,6 +248,10 @@ func New() GlobalIDs {
 		DeletedTask: field{
 			Prefix: "0BL",
 			Table:  deletedtask.Table,
+		},
+		ActivityType: field{
+			Prefix: "0BM",
+			Table:  activitytype.Table,
 		},
 	}
 }

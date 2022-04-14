@@ -6,6 +6,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"project-management-demo-backend/ent/activitytype"
 	"project-management-demo-backend/ent/color"
 	"project-management-demo-backend/ent/deletedtask"
 	"project-management-demo-backend/ent/favoriteproject"
@@ -76,6 +77,49 @@ type Edge struct {
 	Type string    `json:"type,omitempty"` // edge type.
 	Name string    `json:"name,omitempty"` // edge name.
 	IDs  []ulid.ID `json:"ids,omitempty"`  // node ids (where this edge point to).
+}
+
+func (at *ActivityType) Node(ctx context.Context) (node *Node, err error) {
+	node = &Node{
+		ID:     at.ID,
+		Type:   "ActivityType",
+		Fields: make([]*Field, 4),
+		Edges:  make([]*Edge, 0),
+	}
+	var buf []byte
+	if buf, err = json.Marshal(at.Name); err != nil {
+		return nil, err
+	}
+	node.Fields[0] = &Field{
+		Type:  "string",
+		Name:  "name",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(at.TypeCode); err != nil {
+		return nil, err
+	}
+	node.Fields[1] = &Field{
+		Type:  "activitytype.TypeCode",
+		Name:  "type_code",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(at.CreatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[2] = &Field{
+		Type:  "time.Time",
+		Name:  "created_at",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(at.UpdatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[3] = &Field{
+		Type:  "time.Time",
+		Name:  "updated_at",
+		Value: string(buf),
+	}
+	return node, nil
 }
 
 func (c *Color) Node(ctx context.Context) (node *Node, err error) {
@@ -3591,6 +3635,15 @@ func (c *Client) Noder(ctx context.Context, id ulid.ID, opts ...NodeOption) (_ N
 
 func (c *Client) noder(ctx context.Context, table string, id ulid.ID) (Noder, error) {
 	switch table {
+	case activitytype.Table:
+		n, err := c.ActivityType.Query().
+			Where(activitytype.ID(id)).
+			CollectFields(ctx, "ActivityType").
+			Only(ctx)
+		if err != nil {
+			return nil, err
+		}
+		return n, nil
 	case color.Table:
 		n, err := c.Color.Query().
 			Where(color.ID(id)).
@@ -4006,6 +4059,19 @@ func (c *Client) noders(ctx context.Context, table string, ids []ulid.ID) ([]Nod
 		idmap[id] = append(idmap[id], &noders[i])
 	}
 	switch table {
+	case activitytype.Table:
+		nodes, err := c.ActivityType.Query().
+			Where(activitytype.IDIn(ids...)).
+			CollectFields(ctx, "ActivityType").
+			All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, node := range nodes {
+			for _, noder := range idmap[node.ID] {
+				*noder = node
+			}
+		}
 	case color.Table:
 		nodes, err := c.Color.Query().
 			Where(color.IDIn(ids...)).

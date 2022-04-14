@@ -24,6 +24,7 @@ type config struct {
 
 // hooks per client, for fast access.
 type hooks struct {
+	ActivityType            []ent.Hook
 	Color                   []ent.Hook
 	DeletedTask             []ent.Hook
 	FavoriteProject         []ent.Hook
