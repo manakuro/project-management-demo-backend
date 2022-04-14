@@ -46,6 +46,7 @@ import (
 	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/ent/testuser"
 	"project-management-demo-backend/ent/workspace"
+	"project-management-demo-backend/ent/workspaceactivity"
 	"project-management-demo-backend/ent/workspaceteammate"
 	"time"
 )
@@ -110,6 +111,10 @@ type ActivityTypeWhereInput struct {
 	// "taskActivities" edge predicates.
 	HasTaskActivities     *bool                     `json:"hasTaskActivities,omitempty"`
 	HasTaskActivitiesWith []*TaskActivityWhereInput `json:"hasTaskActivitiesWith,omitempty"`
+
+	// "workspaceActivities" edge predicates.
+	HasWorkspaceActivities     *bool                          `json:"hasWorkspaceActivities,omitempty"`
+	HasWorkspaceActivitiesWith []*WorkspaceActivityWhereInput `json:"hasWorkspaceActivitiesWith,omitempty"`
 }
 
 // Filter applies the ActivityTypeWhereInput filter on the ActivityTypeQuery builder.
@@ -312,6 +317,24 @@ func (i *ActivityTypeWhereInput) P() (predicate.ActivityType, error) {
 			with = append(with, p)
 		}
 		predicates = append(predicates, activitytype.HasTaskActivitiesWith(with...))
+	}
+	if i.HasWorkspaceActivities != nil {
+		p := activitytype.HasWorkspaceActivities()
+		if !*i.HasWorkspaceActivities {
+			p = activitytype.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasWorkspaceActivitiesWith) > 0 {
+		with := make([]predicate.WorkspaceActivity, 0, len(i.HasWorkspaceActivitiesWith))
+		for _, w := range i.HasWorkspaceActivitiesWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, activitytype.HasWorkspaceActivitiesWith(with...))
 	}
 	switch len(predicates) {
 	case 0:
@@ -2653,6 +2676,10 @@ type ProjectWhereInput struct {
 	// "taskFiles" edge predicates.
 	HasTaskFiles     *bool                 `json:"hasTaskFiles,omitempty"`
 	HasTaskFilesWith []*TaskFileWhereInput `json:"hasTaskFilesWith,omitempty"`
+
+	// "workspaceActivities" edge predicates.
+	HasWorkspaceActivities     *bool                          `json:"hasWorkspaceActivities,omitempty"`
+	HasWorkspaceActivitiesWith []*WorkspaceActivityWhereInput `json:"hasWorkspaceActivitiesWith,omitempty"`
 }
 
 // Filter applies the ProjectWhereInput filter on the ProjectQuery builder.
@@ -3305,6 +3332,24 @@ func (i *ProjectWhereInput) P() (predicate.Project, error) {
 			with = append(with, p)
 		}
 		predicates = append(predicates, project.HasTaskFilesWith(with...))
+	}
+	if i.HasWorkspaceActivities != nil {
+		p := project.HasWorkspaceActivities()
+		if !*i.HasWorkspaceActivities {
+			p = project.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasWorkspaceActivitiesWith) > 0 {
+		with := make([]predicate.WorkspaceActivity, 0, len(i.HasWorkspaceActivitiesWith))
+		for _, w := range i.HasWorkspaceActivitiesWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, project.HasWorkspaceActivitiesWith(with...))
 	}
 	switch len(predicates) {
 	case 0:
@@ -12231,6 +12276,10 @@ type TeammateWhereInput struct {
 	// "taskActivities" edge predicates.
 	HasTaskActivities     *bool                     `json:"hasTaskActivities,omitempty"`
 	HasTaskActivitiesWith []*TaskActivityWhereInput `json:"hasTaskActivitiesWith,omitempty"`
+
+	// "workspaceActivities" edge predicates.
+	HasWorkspaceActivities     *bool                          `json:"hasWorkspaceActivities,omitempty"`
+	HasWorkspaceActivitiesWith []*WorkspaceActivityWhereInput `json:"hasWorkspaceActivitiesWith,omitempty"`
 }
 
 // Filter applies the TeammateWhereInput filter on the TeammateQuery builder.
@@ -12787,6 +12836,24 @@ func (i *TeammateWhereInput) P() (predicate.Teammate, error) {
 			with = append(with, p)
 		}
 		predicates = append(predicates, teammate.HasTaskActivitiesWith(with...))
+	}
+	if i.HasWorkspaceActivities != nil {
+		p := teammate.HasWorkspaceActivities()
+		if !*i.HasWorkspaceActivities {
+			p = teammate.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasWorkspaceActivitiesWith) > 0 {
+		with := make([]predicate.WorkspaceActivity, 0, len(i.HasWorkspaceActivitiesWith))
+		for _, w := range i.HasWorkspaceActivitiesWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, teammate.HasWorkspaceActivitiesWith(with...))
 	}
 	switch len(predicates) {
 	case 0:
@@ -16018,6 +16085,10 @@ type WorkspaceWhereInput struct {
 	// "deletedTasksRef" edge predicates.
 	HasDeletedTasksRef     *bool                    `json:"hasDeletedTasksRef,omitempty"`
 	HasDeletedTasksRefWith []*DeletedTaskWhereInput `json:"hasDeletedTasksRefWith,omitempty"`
+
+	// "workspaceActivities" edge predicates.
+	HasWorkspaceActivities     *bool                          `json:"hasWorkspaceActivities,omitempty"`
+	HasWorkspaceActivitiesWith []*WorkspaceActivityWhereInput `json:"hasWorkspaceActivitiesWith,omitempty"`
 }
 
 // Filter applies the WorkspaceWhereInput filter on the WorkspaceQuery builder.
@@ -16446,6 +16517,24 @@ func (i *WorkspaceWhereInput) P() (predicate.Workspace, error) {
 		}
 		predicates = append(predicates, workspace.HasDeletedTasksRefWith(with...))
 	}
+	if i.HasWorkspaceActivities != nil {
+		p := workspace.HasWorkspaceActivities()
+		if !*i.HasWorkspaceActivities {
+			p = workspace.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasWorkspaceActivitiesWith) > 0 {
+		with := make([]predicate.WorkspaceActivity, 0, len(i.HasWorkspaceActivitiesWith))
+		for _, w := range i.HasWorkspaceActivitiesWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, workspace.HasWorkspaceActivitiesWith(with...))
+	}
 	switch len(predicates) {
 	case 0:
 		return nil, fmt.Errorf("project-management-demo-backend/ent: empty predicate WorkspaceWhereInput")
@@ -16453,6 +16542,489 @@ func (i *WorkspaceWhereInput) P() (predicate.Workspace, error) {
 		return predicates[0], nil
 	default:
 		return workspace.And(predicates...), nil
+	}
+}
+
+// WorkspaceActivityWhereInput represents a where input for filtering WorkspaceActivity queries.
+type WorkspaceActivityWhereInput struct {
+	Not *WorkspaceActivityWhereInput   `json:"not,omitempty"`
+	Or  []*WorkspaceActivityWhereInput `json:"or,omitempty"`
+	And []*WorkspaceActivityWhereInput `json:"and,omitempty"`
+
+	// "id" field predicates.
+	ID      *ulid.ID  `json:"id,omitempty"`
+	IDNEQ   *ulid.ID  `json:"idNEQ,omitempty"`
+	IDIn    []ulid.ID `json:"idIn,omitempty"`
+	IDNotIn []ulid.ID `json:"idNotIn,omitempty"`
+	IDGT    *ulid.ID  `json:"idGT,omitempty"`
+	IDGTE   *ulid.ID  `json:"idGTE,omitempty"`
+	IDLT    *ulid.ID  `json:"idLT,omitempty"`
+	IDLTE   *ulid.ID  `json:"idLTE,omitempty"`
+
+	// "activity_type_id" field predicates.
+	ActivityTypeID             *ulid.ID  `json:"activityTypeID,omitempty"`
+	ActivityTypeIDNEQ          *ulid.ID  `json:"activityTypeIDNEQ,omitempty"`
+	ActivityTypeIDIn           []ulid.ID `json:"activityTypeIDIn,omitempty"`
+	ActivityTypeIDNotIn        []ulid.ID `json:"activityTypeIDNotIn,omitempty"`
+	ActivityTypeIDGT           *ulid.ID  `json:"activityTypeIDGT,omitempty"`
+	ActivityTypeIDGTE          *ulid.ID  `json:"activityTypeIDGTE,omitempty"`
+	ActivityTypeIDLT           *ulid.ID  `json:"activityTypeIDLT,omitempty"`
+	ActivityTypeIDLTE          *ulid.ID  `json:"activityTypeIDLTE,omitempty"`
+	ActivityTypeIDContains     *ulid.ID  `json:"activityTypeIDContains,omitempty"`
+	ActivityTypeIDHasPrefix    *ulid.ID  `json:"activityTypeIDHasPrefix,omitempty"`
+	ActivityTypeIDHasSuffix    *ulid.ID  `json:"activityTypeIDHasSuffix,omitempty"`
+	ActivityTypeIDEqualFold    *ulid.ID  `json:"activityTypeIDEqualFold,omitempty"`
+	ActivityTypeIDContainsFold *ulid.ID  `json:"activityTypeIDContainsFold,omitempty"`
+
+	// "workspace_id" field predicates.
+	WorkspaceID             *ulid.ID  `json:"workspaceID,omitempty"`
+	WorkspaceIDNEQ          *ulid.ID  `json:"workspaceIDNEQ,omitempty"`
+	WorkspaceIDIn           []ulid.ID `json:"workspaceIDIn,omitempty"`
+	WorkspaceIDNotIn        []ulid.ID `json:"workspaceIDNotIn,omitempty"`
+	WorkspaceIDGT           *ulid.ID  `json:"workspaceIDGT,omitempty"`
+	WorkspaceIDGTE          *ulid.ID  `json:"workspaceIDGTE,omitempty"`
+	WorkspaceIDLT           *ulid.ID  `json:"workspaceIDLT,omitempty"`
+	WorkspaceIDLTE          *ulid.ID  `json:"workspaceIDLTE,omitempty"`
+	WorkspaceIDContains     *ulid.ID  `json:"workspaceIDContains,omitempty"`
+	WorkspaceIDHasPrefix    *ulid.ID  `json:"workspaceIDHasPrefix,omitempty"`
+	WorkspaceIDHasSuffix    *ulid.ID  `json:"workspaceIDHasSuffix,omitempty"`
+	WorkspaceIDEqualFold    *ulid.ID  `json:"workspaceIDEqualFold,omitempty"`
+	WorkspaceIDContainsFold *ulid.ID  `json:"workspaceIDContainsFold,omitempty"`
+
+	// "project_id" field predicates.
+	ProjectID             *ulid.ID  `json:"projectID,omitempty"`
+	ProjectIDNEQ          *ulid.ID  `json:"projectIDNEQ,omitempty"`
+	ProjectIDIn           []ulid.ID `json:"projectIDIn,omitempty"`
+	ProjectIDNotIn        []ulid.ID `json:"projectIDNotIn,omitempty"`
+	ProjectIDGT           *ulid.ID  `json:"projectIDGT,omitempty"`
+	ProjectIDGTE          *ulid.ID  `json:"projectIDGTE,omitempty"`
+	ProjectIDLT           *ulid.ID  `json:"projectIDLT,omitempty"`
+	ProjectIDLTE          *ulid.ID  `json:"projectIDLTE,omitempty"`
+	ProjectIDContains     *ulid.ID  `json:"projectIDContains,omitempty"`
+	ProjectIDHasPrefix    *ulid.ID  `json:"projectIDHasPrefix,omitempty"`
+	ProjectIDHasSuffix    *ulid.ID  `json:"projectIDHasSuffix,omitempty"`
+	ProjectIDEqualFold    *ulid.ID  `json:"projectIDEqualFold,omitempty"`
+	ProjectIDContainsFold *ulid.ID  `json:"projectIDContainsFold,omitempty"`
+
+	// "teammate_id" field predicates.
+	TeammateID             *ulid.ID  `json:"teammateID,omitempty"`
+	TeammateIDNEQ          *ulid.ID  `json:"teammateIDNEQ,omitempty"`
+	TeammateIDIn           []ulid.ID `json:"teammateIDIn,omitempty"`
+	TeammateIDNotIn        []ulid.ID `json:"teammateIDNotIn,omitempty"`
+	TeammateIDGT           *ulid.ID  `json:"teammateIDGT,omitempty"`
+	TeammateIDGTE          *ulid.ID  `json:"teammateIDGTE,omitempty"`
+	TeammateIDLT           *ulid.ID  `json:"teammateIDLT,omitempty"`
+	TeammateIDLTE          *ulid.ID  `json:"teammateIDLTE,omitempty"`
+	TeammateIDContains     *ulid.ID  `json:"teammateIDContains,omitempty"`
+	TeammateIDHasPrefix    *ulid.ID  `json:"teammateIDHasPrefix,omitempty"`
+	TeammateIDHasSuffix    *ulid.ID  `json:"teammateIDHasSuffix,omitempty"`
+	TeammateIDEqualFold    *ulid.ID  `json:"teammateIDEqualFold,omitempty"`
+	TeammateIDContainsFold *ulid.ID  `json:"teammateIDContainsFold,omitempty"`
+
+	// "created_at" field predicates.
+	CreatedAt      *time.Time  `json:"createdAt,omitempty"`
+	CreatedAtNEQ   *time.Time  `json:"createdAtNEQ,omitempty"`
+	CreatedAtIn    []time.Time `json:"createdAtIn,omitempty"`
+	CreatedAtNotIn []time.Time `json:"createdAtNotIn,omitempty"`
+	CreatedAtGT    *time.Time  `json:"createdAtGT,omitempty"`
+	CreatedAtGTE   *time.Time  `json:"createdAtGTE,omitempty"`
+	CreatedAtLT    *time.Time  `json:"createdAtLT,omitempty"`
+	CreatedAtLTE   *time.Time  `json:"createdAtLTE,omitempty"`
+
+	// "updated_at" field predicates.
+	UpdatedAt      *time.Time  `json:"updatedAt,omitempty"`
+	UpdatedAtNEQ   *time.Time  `json:"updatedAtNEQ,omitempty"`
+	UpdatedAtIn    []time.Time `json:"updatedAtIn,omitempty"`
+	UpdatedAtNotIn []time.Time `json:"updatedAtNotIn,omitempty"`
+	UpdatedAtGT    *time.Time  `json:"updatedAtGT,omitempty"`
+	UpdatedAtGTE   *time.Time  `json:"updatedAtGTE,omitempty"`
+	UpdatedAtLT    *time.Time  `json:"updatedAtLT,omitempty"`
+	UpdatedAtLTE   *time.Time  `json:"updatedAtLTE,omitempty"`
+
+	// "activityType" edge predicates.
+	HasActivityType     *bool                     `json:"hasActivityType,omitempty"`
+	HasActivityTypeWith []*ActivityTypeWhereInput `json:"hasActivityTypeWith,omitempty"`
+
+	// "workspace" edge predicates.
+	HasWorkspace     *bool                  `json:"hasWorkspace,omitempty"`
+	HasWorkspaceWith []*WorkspaceWhereInput `json:"hasWorkspaceWith,omitempty"`
+
+	// "project" edge predicates.
+	HasProject     *bool                `json:"hasProject,omitempty"`
+	HasProjectWith []*ProjectWhereInput `json:"hasProjectWith,omitempty"`
+
+	// "teammate" edge predicates.
+	HasTeammate     *bool                 `json:"hasTeammate,omitempty"`
+	HasTeammateWith []*TeammateWhereInput `json:"hasTeammateWith,omitempty"`
+}
+
+// Filter applies the WorkspaceActivityWhereInput filter on the WorkspaceActivityQuery builder.
+func (i *WorkspaceActivityWhereInput) Filter(q *WorkspaceActivityQuery) (*WorkspaceActivityQuery, error) {
+	if i == nil {
+		return q, nil
+	}
+	p, err := i.P()
+	if err != nil {
+		return nil, err
+	}
+	return q.Where(p), nil
+}
+
+// P returns a predicate for filtering workspaceactivities.
+// An error is returned if the input is empty or invalid.
+func (i *WorkspaceActivityWhereInput) P() (predicate.WorkspaceActivity, error) {
+	var predicates []predicate.WorkspaceActivity
+	if i.Not != nil {
+		p, err := i.Not.P()
+		if err != nil {
+			return nil, err
+		}
+		predicates = append(predicates, workspaceactivity.Not(p))
+	}
+	switch n := len(i.Or); {
+	case n == 1:
+		p, err := i.Or[0].P()
+		if err != nil {
+			return nil, err
+		}
+		predicates = append(predicates, p)
+	case n > 1:
+		or := make([]predicate.WorkspaceActivity, 0, n)
+		for _, w := range i.Or {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			or = append(or, p)
+		}
+		predicates = append(predicates, workspaceactivity.Or(or...))
+	}
+	switch n := len(i.And); {
+	case n == 1:
+		p, err := i.And[0].P()
+		if err != nil {
+			return nil, err
+		}
+		predicates = append(predicates, p)
+	case n > 1:
+		and := make([]predicate.WorkspaceActivity, 0, n)
+		for _, w := range i.And {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			and = append(and, p)
+		}
+		predicates = append(predicates, workspaceactivity.And(and...))
+	}
+	if i.ID != nil {
+		predicates = append(predicates, workspaceactivity.IDEQ(*i.ID))
+	}
+	if i.IDNEQ != nil {
+		predicates = append(predicates, workspaceactivity.IDNEQ(*i.IDNEQ))
+	}
+	if len(i.IDIn) > 0 {
+		predicates = append(predicates, workspaceactivity.IDIn(i.IDIn...))
+	}
+	if len(i.IDNotIn) > 0 {
+		predicates = append(predicates, workspaceactivity.IDNotIn(i.IDNotIn...))
+	}
+	if i.IDGT != nil {
+		predicates = append(predicates, workspaceactivity.IDGT(*i.IDGT))
+	}
+	if i.IDGTE != nil {
+		predicates = append(predicates, workspaceactivity.IDGTE(*i.IDGTE))
+	}
+	if i.IDLT != nil {
+		predicates = append(predicates, workspaceactivity.IDLT(*i.IDLT))
+	}
+	if i.IDLTE != nil {
+		predicates = append(predicates, workspaceactivity.IDLTE(*i.IDLTE))
+	}
+	if i.ActivityTypeID != nil {
+		predicates = append(predicates, workspaceactivity.ActivityTypeIDEQ(*i.ActivityTypeID))
+	}
+	if i.ActivityTypeIDNEQ != nil {
+		predicates = append(predicates, workspaceactivity.ActivityTypeIDNEQ(*i.ActivityTypeIDNEQ))
+	}
+	if len(i.ActivityTypeIDIn) > 0 {
+		predicates = append(predicates, workspaceactivity.ActivityTypeIDIn(i.ActivityTypeIDIn...))
+	}
+	if len(i.ActivityTypeIDNotIn) > 0 {
+		predicates = append(predicates, workspaceactivity.ActivityTypeIDNotIn(i.ActivityTypeIDNotIn...))
+	}
+	if i.ActivityTypeIDGT != nil {
+		predicates = append(predicates, workspaceactivity.ActivityTypeIDGT(*i.ActivityTypeIDGT))
+	}
+	if i.ActivityTypeIDGTE != nil {
+		predicates = append(predicates, workspaceactivity.ActivityTypeIDGTE(*i.ActivityTypeIDGTE))
+	}
+	if i.ActivityTypeIDLT != nil {
+		predicates = append(predicates, workspaceactivity.ActivityTypeIDLT(*i.ActivityTypeIDLT))
+	}
+	if i.ActivityTypeIDLTE != nil {
+		predicates = append(predicates, workspaceactivity.ActivityTypeIDLTE(*i.ActivityTypeIDLTE))
+	}
+	if i.ActivityTypeIDContains != nil {
+		predicates = append(predicates, workspaceactivity.ActivityTypeIDContains(*i.ActivityTypeIDContains))
+	}
+	if i.ActivityTypeIDHasPrefix != nil {
+		predicates = append(predicates, workspaceactivity.ActivityTypeIDHasPrefix(*i.ActivityTypeIDHasPrefix))
+	}
+	if i.ActivityTypeIDHasSuffix != nil {
+		predicates = append(predicates, workspaceactivity.ActivityTypeIDHasSuffix(*i.ActivityTypeIDHasSuffix))
+	}
+	if i.ActivityTypeIDEqualFold != nil {
+		predicates = append(predicates, workspaceactivity.ActivityTypeIDEqualFold(*i.ActivityTypeIDEqualFold))
+	}
+	if i.ActivityTypeIDContainsFold != nil {
+		predicates = append(predicates, workspaceactivity.ActivityTypeIDContainsFold(*i.ActivityTypeIDContainsFold))
+	}
+	if i.WorkspaceID != nil {
+		predicates = append(predicates, workspaceactivity.WorkspaceIDEQ(*i.WorkspaceID))
+	}
+	if i.WorkspaceIDNEQ != nil {
+		predicates = append(predicates, workspaceactivity.WorkspaceIDNEQ(*i.WorkspaceIDNEQ))
+	}
+	if len(i.WorkspaceIDIn) > 0 {
+		predicates = append(predicates, workspaceactivity.WorkspaceIDIn(i.WorkspaceIDIn...))
+	}
+	if len(i.WorkspaceIDNotIn) > 0 {
+		predicates = append(predicates, workspaceactivity.WorkspaceIDNotIn(i.WorkspaceIDNotIn...))
+	}
+	if i.WorkspaceIDGT != nil {
+		predicates = append(predicates, workspaceactivity.WorkspaceIDGT(*i.WorkspaceIDGT))
+	}
+	if i.WorkspaceIDGTE != nil {
+		predicates = append(predicates, workspaceactivity.WorkspaceIDGTE(*i.WorkspaceIDGTE))
+	}
+	if i.WorkspaceIDLT != nil {
+		predicates = append(predicates, workspaceactivity.WorkspaceIDLT(*i.WorkspaceIDLT))
+	}
+	if i.WorkspaceIDLTE != nil {
+		predicates = append(predicates, workspaceactivity.WorkspaceIDLTE(*i.WorkspaceIDLTE))
+	}
+	if i.WorkspaceIDContains != nil {
+		predicates = append(predicates, workspaceactivity.WorkspaceIDContains(*i.WorkspaceIDContains))
+	}
+	if i.WorkspaceIDHasPrefix != nil {
+		predicates = append(predicates, workspaceactivity.WorkspaceIDHasPrefix(*i.WorkspaceIDHasPrefix))
+	}
+	if i.WorkspaceIDHasSuffix != nil {
+		predicates = append(predicates, workspaceactivity.WorkspaceIDHasSuffix(*i.WorkspaceIDHasSuffix))
+	}
+	if i.WorkspaceIDEqualFold != nil {
+		predicates = append(predicates, workspaceactivity.WorkspaceIDEqualFold(*i.WorkspaceIDEqualFold))
+	}
+	if i.WorkspaceIDContainsFold != nil {
+		predicates = append(predicates, workspaceactivity.WorkspaceIDContainsFold(*i.WorkspaceIDContainsFold))
+	}
+	if i.ProjectID != nil {
+		predicates = append(predicates, workspaceactivity.ProjectIDEQ(*i.ProjectID))
+	}
+	if i.ProjectIDNEQ != nil {
+		predicates = append(predicates, workspaceactivity.ProjectIDNEQ(*i.ProjectIDNEQ))
+	}
+	if len(i.ProjectIDIn) > 0 {
+		predicates = append(predicates, workspaceactivity.ProjectIDIn(i.ProjectIDIn...))
+	}
+	if len(i.ProjectIDNotIn) > 0 {
+		predicates = append(predicates, workspaceactivity.ProjectIDNotIn(i.ProjectIDNotIn...))
+	}
+	if i.ProjectIDGT != nil {
+		predicates = append(predicates, workspaceactivity.ProjectIDGT(*i.ProjectIDGT))
+	}
+	if i.ProjectIDGTE != nil {
+		predicates = append(predicates, workspaceactivity.ProjectIDGTE(*i.ProjectIDGTE))
+	}
+	if i.ProjectIDLT != nil {
+		predicates = append(predicates, workspaceactivity.ProjectIDLT(*i.ProjectIDLT))
+	}
+	if i.ProjectIDLTE != nil {
+		predicates = append(predicates, workspaceactivity.ProjectIDLTE(*i.ProjectIDLTE))
+	}
+	if i.ProjectIDContains != nil {
+		predicates = append(predicates, workspaceactivity.ProjectIDContains(*i.ProjectIDContains))
+	}
+	if i.ProjectIDHasPrefix != nil {
+		predicates = append(predicates, workspaceactivity.ProjectIDHasPrefix(*i.ProjectIDHasPrefix))
+	}
+	if i.ProjectIDHasSuffix != nil {
+		predicates = append(predicates, workspaceactivity.ProjectIDHasSuffix(*i.ProjectIDHasSuffix))
+	}
+	if i.ProjectIDEqualFold != nil {
+		predicates = append(predicates, workspaceactivity.ProjectIDEqualFold(*i.ProjectIDEqualFold))
+	}
+	if i.ProjectIDContainsFold != nil {
+		predicates = append(predicates, workspaceactivity.ProjectIDContainsFold(*i.ProjectIDContainsFold))
+	}
+	if i.TeammateID != nil {
+		predicates = append(predicates, workspaceactivity.TeammateIDEQ(*i.TeammateID))
+	}
+	if i.TeammateIDNEQ != nil {
+		predicates = append(predicates, workspaceactivity.TeammateIDNEQ(*i.TeammateIDNEQ))
+	}
+	if len(i.TeammateIDIn) > 0 {
+		predicates = append(predicates, workspaceactivity.TeammateIDIn(i.TeammateIDIn...))
+	}
+	if len(i.TeammateIDNotIn) > 0 {
+		predicates = append(predicates, workspaceactivity.TeammateIDNotIn(i.TeammateIDNotIn...))
+	}
+	if i.TeammateIDGT != nil {
+		predicates = append(predicates, workspaceactivity.TeammateIDGT(*i.TeammateIDGT))
+	}
+	if i.TeammateIDGTE != nil {
+		predicates = append(predicates, workspaceactivity.TeammateIDGTE(*i.TeammateIDGTE))
+	}
+	if i.TeammateIDLT != nil {
+		predicates = append(predicates, workspaceactivity.TeammateIDLT(*i.TeammateIDLT))
+	}
+	if i.TeammateIDLTE != nil {
+		predicates = append(predicates, workspaceactivity.TeammateIDLTE(*i.TeammateIDLTE))
+	}
+	if i.TeammateIDContains != nil {
+		predicates = append(predicates, workspaceactivity.TeammateIDContains(*i.TeammateIDContains))
+	}
+	if i.TeammateIDHasPrefix != nil {
+		predicates = append(predicates, workspaceactivity.TeammateIDHasPrefix(*i.TeammateIDHasPrefix))
+	}
+	if i.TeammateIDHasSuffix != nil {
+		predicates = append(predicates, workspaceactivity.TeammateIDHasSuffix(*i.TeammateIDHasSuffix))
+	}
+	if i.TeammateIDEqualFold != nil {
+		predicates = append(predicates, workspaceactivity.TeammateIDEqualFold(*i.TeammateIDEqualFold))
+	}
+	if i.TeammateIDContainsFold != nil {
+		predicates = append(predicates, workspaceactivity.TeammateIDContainsFold(*i.TeammateIDContainsFold))
+	}
+	if i.CreatedAt != nil {
+		predicates = append(predicates, workspaceactivity.CreatedAtEQ(*i.CreatedAt))
+	}
+	if i.CreatedAtNEQ != nil {
+		predicates = append(predicates, workspaceactivity.CreatedAtNEQ(*i.CreatedAtNEQ))
+	}
+	if len(i.CreatedAtIn) > 0 {
+		predicates = append(predicates, workspaceactivity.CreatedAtIn(i.CreatedAtIn...))
+	}
+	if len(i.CreatedAtNotIn) > 0 {
+		predicates = append(predicates, workspaceactivity.CreatedAtNotIn(i.CreatedAtNotIn...))
+	}
+	if i.CreatedAtGT != nil {
+		predicates = append(predicates, workspaceactivity.CreatedAtGT(*i.CreatedAtGT))
+	}
+	if i.CreatedAtGTE != nil {
+		predicates = append(predicates, workspaceactivity.CreatedAtGTE(*i.CreatedAtGTE))
+	}
+	if i.CreatedAtLT != nil {
+		predicates = append(predicates, workspaceactivity.CreatedAtLT(*i.CreatedAtLT))
+	}
+	if i.CreatedAtLTE != nil {
+		predicates = append(predicates, workspaceactivity.CreatedAtLTE(*i.CreatedAtLTE))
+	}
+	if i.UpdatedAt != nil {
+		predicates = append(predicates, workspaceactivity.UpdatedAtEQ(*i.UpdatedAt))
+	}
+	if i.UpdatedAtNEQ != nil {
+		predicates = append(predicates, workspaceactivity.UpdatedAtNEQ(*i.UpdatedAtNEQ))
+	}
+	if len(i.UpdatedAtIn) > 0 {
+		predicates = append(predicates, workspaceactivity.UpdatedAtIn(i.UpdatedAtIn...))
+	}
+	if len(i.UpdatedAtNotIn) > 0 {
+		predicates = append(predicates, workspaceactivity.UpdatedAtNotIn(i.UpdatedAtNotIn...))
+	}
+	if i.UpdatedAtGT != nil {
+		predicates = append(predicates, workspaceactivity.UpdatedAtGT(*i.UpdatedAtGT))
+	}
+	if i.UpdatedAtGTE != nil {
+		predicates = append(predicates, workspaceactivity.UpdatedAtGTE(*i.UpdatedAtGTE))
+	}
+	if i.UpdatedAtLT != nil {
+		predicates = append(predicates, workspaceactivity.UpdatedAtLT(*i.UpdatedAtLT))
+	}
+	if i.UpdatedAtLTE != nil {
+		predicates = append(predicates, workspaceactivity.UpdatedAtLTE(*i.UpdatedAtLTE))
+	}
+
+	if i.HasActivityType != nil {
+		p := workspaceactivity.HasActivityType()
+		if !*i.HasActivityType {
+			p = workspaceactivity.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasActivityTypeWith) > 0 {
+		with := make([]predicate.ActivityType, 0, len(i.HasActivityTypeWith))
+		for _, w := range i.HasActivityTypeWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, workspaceactivity.HasActivityTypeWith(with...))
+	}
+	if i.HasWorkspace != nil {
+		p := workspaceactivity.HasWorkspace()
+		if !*i.HasWorkspace {
+			p = workspaceactivity.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasWorkspaceWith) > 0 {
+		with := make([]predicate.Workspace, 0, len(i.HasWorkspaceWith))
+		for _, w := range i.HasWorkspaceWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, workspaceactivity.HasWorkspaceWith(with...))
+	}
+	if i.HasProject != nil {
+		p := workspaceactivity.HasProject()
+		if !*i.HasProject {
+			p = workspaceactivity.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasProjectWith) > 0 {
+		with := make([]predicate.Project, 0, len(i.HasProjectWith))
+		for _, w := range i.HasProjectWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, workspaceactivity.HasProjectWith(with...))
+	}
+	if i.HasTeammate != nil {
+		p := workspaceactivity.HasTeammate()
+		if !*i.HasTeammate {
+			p = workspaceactivity.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasTeammateWith) > 0 {
+		with := make([]predicate.Teammate, 0, len(i.HasTeammateWith))
+		for _, w := range i.HasTeammateWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, workspaceactivity.HasTeammateWith(with...))
+	}
+	switch len(predicates) {
+	case 0:
+		return nil, fmt.Errorf("project-management-demo-backend/ent: empty predicate WorkspaceActivityWhereInput")
+	case 1:
+		return predicates[0], nil
+	default:
+		return workspaceactivity.And(predicates...), nil
 	}
 }
 

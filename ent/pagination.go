@@ -49,6 +49,7 @@ import (
 	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/ent/testuser"
 	"project-management-demo-backend/ent/workspace"
+	"project-management-demo-backend/ent/workspaceactivity"
 	"project-management-demo-backend/ent/workspaceteammate"
 	"strconv"
 	"strings"
@@ -9350,6 +9351,233 @@ func (w *Workspace) ToEdge(order *WorkspaceOrder) *WorkspaceEdge {
 	return &WorkspaceEdge{
 		Node:   w,
 		Cursor: order.Field.toCursor(w),
+	}
+}
+
+// WorkspaceActivityEdge is the edge representation of WorkspaceActivity.
+type WorkspaceActivityEdge struct {
+	Node   *WorkspaceActivity `json:"node"`
+	Cursor Cursor             `json:"cursor"`
+}
+
+// WorkspaceActivityConnection is the connection containing edges to WorkspaceActivity.
+type WorkspaceActivityConnection struct {
+	Edges      []*WorkspaceActivityEdge `json:"edges"`
+	PageInfo   PageInfo                 `json:"pageInfo"`
+	TotalCount int                      `json:"totalCount"`
+}
+
+// WorkspaceActivityPaginateOption enables pagination customization.
+type WorkspaceActivityPaginateOption func(*workspaceActivityPager) error
+
+// WithWorkspaceActivityOrder configures pagination ordering.
+func WithWorkspaceActivityOrder(order *WorkspaceActivityOrder) WorkspaceActivityPaginateOption {
+	if order == nil {
+		order = DefaultWorkspaceActivityOrder
+	}
+	o := *order
+	return func(pager *workspaceActivityPager) error {
+		if err := o.Direction.Validate(); err != nil {
+			return err
+		}
+		if o.Field == nil {
+			o.Field = DefaultWorkspaceActivityOrder.Field
+		}
+		pager.order = &o
+		return nil
+	}
+}
+
+// WithWorkspaceActivityFilter configures pagination filter.
+func WithWorkspaceActivityFilter(filter func(*WorkspaceActivityQuery) (*WorkspaceActivityQuery, error)) WorkspaceActivityPaginateOption {
+	return func(pager *workspaceActivityPager) error {
+		if filter == nil {
+			return errors.New("WorkspaceActivityQuery filter cannot be nil")
+		}
+		pager.filter = filter
+		return nil
+	}
+}
+
+type workspaceActivityPager struct {
+	order  *WorkspaceActivityOrder
+	filter func(*WorkspaceActivityQuery) (*WorkspaceActivityQuery, error)
+}
+
+func newWorkspaceActivityPager(opts []WorkspaceActivityPaginateOption) (*workspaceActivityPager, error) {
+	pager := &workspaceActivityPager{}
+	for _, opt := range opts {
+		if err := opt(pager); err != nil {
+			return nil, err
+		}
+	}
+	if pager.order == nil {
+		pager.order = DefaultWorkspaceActivityOrder
+	}
+	return pager, nil
+}
+
+func (p *workspaceActivityPager) applyFilter(query *WorkspaceActivityQuery) (*WorkspaceActivityQuery, error) {
+	if p.filter != nil {
+		return p.filter(query)
+	}
+	return query, nil
+}
+
+func (p *workspaceActivityPager) toCursor(wa *WorkspaceActivity) Cursor {
+	return p.order.Field.toCursor(wa)
+}
+
+func (p *workspaceActivityPager) applyCursors(query *WorkspaceActivityQuery, after, before *Cursor) *WorkspaceActivityQuery {
+	for _, predicate := range cursorsToPredicates(
+		p.order.Direction, after, before,
+		p.order.Field.field, DefaultWorkspaceActivityOrder.Field.field,
+	) {
+		query = query.Where(predicate)
+	}
+	return query
+}
+
+func (p *workspaceActivityPager) applyOrder(query *WorkspaceActivityQuery, reverse bool) *WorkspaceActivityQuery {
+	direction := p.order.Direction
+	if reverse {
+		direction = direction.reverse()
+	}
+	query = query.Order(direction.orderFunc(p.order.Field.field))
+	if p.order.Field != DefaultWorkspaceActivityOrder.Field {
+		query = query.Order(direction.orderFunc(DefaultWorkspaceActivityOrder.Field.field))
+	}
+	return query
+}
+
+// Paginate executes the query and returns a relay based cursor connection to WorkspaceActivity.
+func (wa *WorkspaceActivityQuery) Paginate(
+	ctx context.Context, after *Cursor, first *int,
+	before *Cursor, last *int, opts ...WorkspaceActivityPaginateOption,
+) (*WorkspaceActivityConnection, error) {
+	if err := validateFirstLast(first, last); err != nil {
+		return nil, err
+	}
+	pager, err := newWorkspaceActivityPager(opts)
+	if err != nil {
+		return nil, err
+	}
+
+	if wa, err = pager.applyFilter(wa); err != nil {
+		return nil, err
+	}
+
+	conn := &WorkspaceActivityConnection{Edges: []*WorkspaceActivityEdge{}}
+	if !hasCollectedField(ctx, edgesField) || first != nil && *first == 0 || last != nil && *last == 0 {
+		if hasCollectedField(ctx, totalCountField) ||
+			hasCollectedField(ctx, pageInfoField) {
+			count, err := wa.Count(ctx)
+			if err != nil {
+				return nil, err
+			}
+			conn.TotalCount = count
+			conn.PageInfo.HasNextPage = first != nil && count > 0
+			conn.PageInfo.HasPreviousPage = last != nil && count > 0
+		}
+		return conn, nil
+	}
+
+	if (after != nil || first != nil || before != nil || last != nil) && hasCollectedField(ctx, totalCountField) {
+		count, err := wa.Clone().Count(ctx)
+		if err != nil {
+			return nil, err
+		}
+		conn.TotalCount = count
+	}
+
+	wa = pager.applyCursors(wa, after, before)
+	wa = pager.applyOrder(wa, last != nil)
+	var limit int
+	if first != nil {
+		limit = *first + 1
+	} else if last != nil {
+		limit = *last + 1
+	}
+	if limit > 0 {
+		wa = wa.Limit(limit)
+	}
+
+	if field := getCollectedField(ctx, edgesField, nodeField); field != nil {
+		wa = wa.collectField(graphql.GetOperationContext(ctx), *field)
+	}
+
+	nodes, err := wa.All(ctx)
+	if err != nil || len(nodes) == 0 {
+		return conn, err
+	}
+
+	if len(nodes) == limit {
+		conn.PageInfo.HasNextPage = first != nil
+		conn.PageInfo.HasPreviousPage = last != nil
+		nodes = nodes[:len(nodes)-1]
+	}
+
+	var nodeAt func(int) *WorkspaceActivity
+	if last != nil {
+		n := len(nodes) - 1
+		nodeAt = func(i int) *WorkspaceActivity {
+			return nodes[n-i]
+		}
+	} else {
+		nodeAt = func(i int) *WorkspaceActivity {
+			return nodes[i]
+		}
+	}
+
+	conn.Edges = make([]*WorkspaceActivityEdge, len(nodes))
+	for i := range nodes {
+		node := nodeAt(i)
+		conn.Edges[i] = &WorkspaceActivityEdge{
+			Node:   node,
+			Cursor: pager.toCursor(node),
+		}
+	}
+
+	conn.PageInfo.StartCursor = &conn.Edges[0].Cursor
+	conn.PageInfo.EndCursor = &conn.Edges[len(conn.Edges)-1].Cursor
+	if conn.TotalCount == 0 {
+		conn.TotalCount = len(nodes)
+	}
+
+	return conn, nil
+}
+
+// WorkspaceActivityOrderField defines the ordering field of WorkspaceActivity.
+type WorkspaceActivityOrderField struct {
+	field    string
+	toCursor func(*WorkspaceActivity) Cursor
+}
+
+// WorkspaceActivityOrder defines the ordering of WorkspaceActivity.
+type WorkspaceActivityOrder struct {
+	Direction OrderDirection               `json:"direction"`
+	Field     *WorkspaceActivityOrderField `json:"field"`
+}
+
+// DefaultWorkspaceActivityOrder is the default ordering of WorkspaceActivity.
+var DefaultWorkspaceActivityOrder = &WorkspaceActivityOrder{
+	Direction: OrderDirectionAsc,
+	Field: &WorkspaceActivityOrderField{
+		field: workspaceactivity.FieldID,
+		toCursor: func(wa *WorkspaceActivity) Cursor {
+			return Cursor{ID: wa.ID}
+		},
+	},
+}
+
+// ToEdge converts WorkspaceActivity into WorkspaceActivityEdge.
+func (wa *WorkspaceActivity) ToEdge(order *WorkspaceActivityOrder) *WorkspaceActivityEdge {
+	if order == nil {
+		order = DefaultWorkspaceActivityOrder
+	}
+	return &WorkspaceActivityEdge{
+		Node:   wa,
+		Cursor: order.Field.toCursor(wa),
 	}
 }
 

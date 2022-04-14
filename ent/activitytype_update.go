@@ -10,6 +10,7 @@ import (
 	"project-management-demo-backend/ent/predicate"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/taskactivity"
+	"project-management-demo-backend/ent/workspaceactivity"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -56,6 +57,21 @@ func (atu *ActivityTypeUpdate) AddTaskActivities(t ...*TaskActivity) *ActivityTy
 	return atu.AddTaskActivityIDs(ids...)
 }
 
+// AddWorkspaceActivityIDs adds the "workspaceActivities" edge to the WorkspaceActivity entity by IDs.
+func (atu *ActivityTypeUpdate) AddWorkspaceActivityIDs(ids ...ulid.ID) *ActivityTypeUpdate {
+	atu.mutation.AddWorkspaceActivityIDs(ids...)
+	return atu
+}
+
+// AddWorkspaceActivities adds the "workspaceActivities" edges to the WorkspaceActivity entity.
+func (atu *ActivityTypeUpdate) AddWorkspaceActivities(w ...*WorkspaceActivity) *ActivityTypeUpdate {
+	ids := make([]ulid.ID, len(w))
+	for i := range w {
+		ids[i] = w[i].ID
+	}
+	return atu.AddWorkspaceActivityIDs(ids...)
+}
+
 // Mutation returns the ActivityTypeMutation object of the builder.
 func (atu *ActivityTypeUpdate) Mutation() *ActivityTypeMutation {
 	return atu.mutation
@@ -80,6 +96,27 @@ func (atu *ActivityTypeUpdate) RemoveTaskActivities(t ...*TaskActivity) *Activit
 		ids[i] = t[i].ID
 	}
 	return atu.RemoveTaskActivityIDs(ids...)
+}
+
+// ClearWorkspaceActivities clears all "workspaceActivities" edges to the WorkspaceActivity entity.
+func (atu *ActivityTypeUpdate) ClearWorkspaceActivities() *ActivityTypeUpdate {
+	atu.mutation.ClearWorkspaceActivities()
+	return atu
+}
+
+// RemoveWorkspaceActivityIDs removes the "workspaceActivities" edge to WorkspaceActivity entities by IDs.
+func (atu *ActivityTypeUpdate) RemoveWorkspaceActivityIDs(ids ...ulid.ID) *ActivityTypeUpdate {
+	atu.mutation.RemoveWorkspaceActivityIDs(ids...)
+	return atu
+}
+
+// RemoveWorkspaceActivities removes "workspaceActivities" edges to WorkspaceActivity entities.
+func (atu *ActivityTypeUpdate) RemoveWorkspaceActivities(w ...*WorkspaceActivity) *ActivityTypeUpdate {
+	ids := make([]ulid.ID, len(w))
+	for i := range w {
+		ids[i] = w[i].ID
+	}
+	return atu.RemoveWorkspaceActivityIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -243,6 +280,60 @@ func (atu *ActivityTypeUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if atu.mutation.WorkspaceActivitiesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   activitytype.WorkspaceActivitiesTable,
+			Columns: []string{activitytype.WorkspaceActivitiesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: workspaceactivity.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := atu.mutation.RemovedWorkspaceActivitiesIDs(); len(nodes) > 0 && !atu.mutation.WorkspaceActivitiesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   activitytype.WorkspaceActivitiesTable,
+			Columns: []string{activitytype.WorkspaceActivitiesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: workspaceactivity.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := atu.mutation.WorkspaceActivitiesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   activitytype.WorkspaceActivitiesTable,
+			Columns: []string{activitytype.WorkspaceActivitiesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: workspaceactivity.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, atu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{activitytype.Label}
@@ -289,6 +380,21 @@ func (atuo *ActivityTypeUpdateOne) AddTaskActivities(t ...*TaskActivity) *Activi
 	return atuo.AddTaskActivityIDs(ids...)
 }
 
+// AddWorkspaceActivityIDs adds the "workspaceActivities" edge to the WorkspaceActivity entity by IDs.
+func (atuo *ActivityTypeUpdateOne) AddWorkspaceActivityIDs(ids ...ulid.ID) *ActivityTypeUpdateOne {
+	atuo.mutation.AddWorkspaceActivityIDs(ids...)
+	return atuo
+}
+
+// AddWorkspaceActivities adds the "workspaceActivities" edges to the WorkspaceActivity entity.
+func (atuo *ActivityTypeUpdateOne) AddWorkspaceActivities(w ...*WorkspaceActivity) *ActivityTypeUpdateOne {
+	ids := make([]ulid.ID, len(w))
+	for i := range w {
+		ids[i] = w[i].ID
+	}
+	return atuo.AddWorkspaceActivityIDs(ids...)
+}
+
 // Mutation returns the ActivityTypeMutation object of the builder.
 func (atuo *ActivityTypeUpdateOne) Mutation() *ActivityTypeMutation {
 	return atuo.mutation
@@ -313,6 +419,27 @@ func (atuo *ActivityTypeUpdateOne) RemoveTaskActivities(t ...*TaskActivity) *Act
 		ids[i] = t[i].ID
 	}
 	return atuo.RemoveTaskActivityIDs(ids...)
+}
+
+// ClearWorkspaceActivities clears all "workspaceActivities" edges to the WorkspaceActivity entity.
+func (atuo *ActivityTypeUpdateOne) ClearWorkspaceActivities() *ActivityTypeUpdateOne {
+	atuo.mutation.ClearWorkspaceActivities()
+	return atuo
+}
+
+// RemoveWorkspaceActivityIDs removes the "workspaceActivities" edge to WorkspaceActivity entities by IDs.
+func (atuo *ActivityTypeUpdateOne) RemoveWorkspaceActivityIDs(ids ...ulid.ID) *ActivityTypeUpdateOne {
+	atuo.mutation.RemoveWorkspaceActivityIDs(ids...)
+	return atuo
+}
+
+// RemoveWorkspaceActivities removes "workspaceActivities" edges to WorkspaceActivity entities.
+func (atuo *ActivityTypeUpdateOne) RemoveWorkspaceActivities(w ...*WorkspaceActivity) *ActivityTypeUpdateOne {
+	ids := make([]ulid.ID, len(w))
+	for i := range w {
+		ids[i] = w[i].ID
+	}
+	return atuo.RemoveWorkspaceActivityIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -492,6 +619,60 @@ func (atuo *ActivityTypeUpdateOne) sqlSave(ctx context.Context) (_node *Activity
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: taskactivity.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if atuo.mutation.WorkspaceActivitiesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   activitytype.WorkspaceActivitiesTable,
+			Columns: []string{activitytype.WorkspaceActivitiesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: workspaceactivity.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := atuo.mutation.RemovedWorkspaceActivitiesIDs(); len(nodes) > 0 && !atuo.mutation.WorkspaceActivitiesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   activitytype.WorkspaceActivitiesTable,
+			Columns: []string{activitytype.WorkspaceActivitiesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: workspaceactivity.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := atuo.mutation.WorkspaceActivitiesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   activitytype.WorkspaceActivitiesTable,
+			Columns: []string{activitytype.WorkspaceActivitiesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: workspaceactivity.FieldID,
 				},
 			},
 		}

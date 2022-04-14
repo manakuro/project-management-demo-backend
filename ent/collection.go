@@ -23,6 +23,10 @@ func (at *ActivityTypeQuery) collectField(ctx *graphql.OperationContext, field g
 			at = at.WithTaskActivities(func(query *TaskActivityQuery) {
 				query.collectField(ctx, field)
 			})
+		case "workspaceActivities":
+			at = at.WithWorkspaceActivities(func(query *WorkspaceActivityQuery) {
+				query.collectField(ctx, field)
+			})
 		}
 	}
 	return at
@@ -229,6 +233,10 @@ func (pr *ProjectQuery) collectField(ctx *graphql.OperationContext, field graphq
 			})
 		case "workspace":
 			pr = pr.WithWorkspace(func(query *WorkspaceQuery) {
+				query.collectField(ctx, field)
+			})
+		case "workspaceActivities":
+			pr = pr.WithWorkspaceActivities(func(query *WorkspaceActivityQuery) {
 				query.collectField(ctx, field)
 			})
 		}
@@ -935,6 +943,10 @@ func (t *TeammateQuery) collectField(ctx *graphql.OperationContext, field graphq
 			t = t.WithTeammateTasks(func(query *TeammateTaskQuery) {
 				query.collectField(ctx, field)
 			})
+		case "workspaceActivities":
+			t = t.WithWorkspaceActivities(func(query *WorkspaceActivityQuery) {
+				query.collectField(ctx, field)
+			})
 		case "workspaceTeammates":
 			t = t.WithWorkspaceTeammates(func(query *WorkspaceTeammateQuery) {
 				query.collectField(ctx, field)
@@ -1187,6 +1199,10 @@ func (w *WorkspaceQuery) collectField(ctx *graphql.OperationContext, field graph
 			w = w.WithTeammateTasks(func(query *TeammateTaskQuery) {
 				query.collectField(ctx, field)
 			})
+		case "workspaceActivities":
+			w = w.WithWorkspaceActivities(func(query *WorkspaceActivityQuery) {
+				query.collectField(ctx, field)
+			})
 		case "workspaceTeammates":
 			w = w.WithWorkspaceTeammates(func(query *WorkspaceTeammateQuery) {
 				query.collectField(ctx, field)
@@ -1194,6 +1210,38 @@ func (w *WorkspaceQuery) collectField(ctx *graphql.OperationContext, field graph
 		}
 	}
 	return w
+}
+
+// CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
+func (wa *WorkspaceActivityQuery) CollectFields(ctx context.Context, satisfies ...string) *WorkspaceActivityQuery {
+	if fc := graphql.GetFieldContext(ctx); fc != nil {
+		wa = wa.collectField(graphql.GetOperationContext(ctx), fc.Field, satisfies...)
+	}
+	return wa
+}
+
+func (wa *WorkspaceActivityQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *WorkspaceActivityQuery {
+	for _, field := range graphql.CollectFields(ctx, field.Selections, satisfies) {
+		switch field.Name {
+		case "activityType":
+			wa = wa.WithActivityType(func(query *ActivityTypeQuery) {
+				query.collectField(ctx, field)
+			})
+		case "project":
+			wa = wa.WithProject(func(query *ProjectQuery) {
+				query.collectField(ctx, field)
+			})
+		case "teammate":
+			wa = wa.WithTeammate(func(query *TeammateQuery) {
+				query.collectField(ctx, field)
+			})
+		case "workspace":
+			wa = wa.WithWorkspace(func(query *WorkspaceQuery) {
+				query.collectField(ctx, field)
+			})
+		}
+	}
+	return wa
 }
 
 // CollectFields tells the query-builder to eagerly load connected nodes by resolver context.

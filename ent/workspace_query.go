@@ -22,6 +22,7 @@ import (
 	"project-management-demo-backend/ent/teammatetasksection"
 	"project-management-demo-backend/ent/teammatetasktabstatus"
 	"project-management-demo-backend/ent/workspace"
+	"project-management-demo-backend/ent/workspaceactivity"
 	"project-management-demo-backend/ent/workspaceteammate"
 
 	"entgo.io/ent/dialect/sql"
@@ -51,6 +52,7 @@ type WorkspaceQuery struct {
 	withTeammateTaskColumns      *TeammateTaskColumnQuery
 	withTeammateTasks            *TeammateTaskQuery
 	withDeletedTasksRef          *DeletedTaskQuery
+	withWorkspaceActivities      *WorkspaceActivityQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -351,6 +353,28 @@ func (wq *WorkspaceQuery) QueryDeletedTasksRef() *DeletedTaskQuery {
 	return query
 }
 
+// QueryWorkspaceActivities chains the current query on the "workspaceActivities" edge.
+func (wq *WorkspaceQuery) QueryWorkspaceActivities() *WorkspaceActivityQuery {
+	query := &WorkspaceActivityQuery{config: wq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := wq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := wq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(workspace.Table, workspace.FieldID, selector),
+			sqlgraph.To(workspaceactivity.Table, workspaceactivity.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, workspace.WorkspaceActivitiesTable, workspace.WorkspaceActivitiesColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(wq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // First returns the first Workspace entity from the query.
 // Returns a *NotFoundError when no Workspace was found.
 func (wq *WorkspaceQuery) First(ctx context.Context) (*Workspace, error) {
@@ -544,6 +568,7 @@ func (wq *WorkspaceQuery) Clone() *WorkspaceQuery {
 		withTeammateTaskColumns:      wq.withTeammateTaskColumns.Clone(),
 		withTeammateTasks:            wq.withTeammateTasks.Clone(),
 		withDeletedTasksRef:          wq.withDeletedTasksRef.Clone(),
+		withWorkspaceActivities:      wq.withWorkspaceActivities.Clone(),
 		// clone intermediate query.
 		sql:    wq.sql.Clone(),
 		path:   wq.path,
@@ -683,6 +708,17 @@ func (wq *WorkspaceQuery) WithDeletedTasksRef(opts ...func(*DeletedTaskQuery)) *
 	return wq
 }
 
+// WithWorkspaceActivities tells the query-builder to eager-load the nodes that are connected to
+// the "workspaceActivities" edge. The optional arguments are used to configure the query builder of the edge.
+func (wq *WorkspaceQuery) WithWorkspaceActivities(opts ...func(*WorkspaceActivityQuery)) *WorkspaceQuery {
+	query := &WorkspaceActivityQuery{config: wq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	wq.withWorkspaceActivities = query
+	return wq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -748,7 +784,7 @@ func (wq *WorkspaceQuery) sqlAll(ctx context.Context) ([]*Workspace, error) {
 	var (
 		nodes       = []*Workspace{}
 		_spec       = wq.querySpec()
-		loadedTypes = [12]bool{
+		loadedTypes = [13]bool{
 			wq.withTeammate != nil,
 			wq.withProjects != nil,
 			wq.withWorkspaceTeammates != nil,
@@ -761,6 +797,7 @@ func (wq *WorkspaceQuery) sqlAll(ctx context.Context) ([]*Workspace, error) {
 			wq.withTeammateTaskColumns != nil,
 			wq.withTeammateTasks != nil,
 			wq.withDeletedTasksRef != nil,
+			wq.withWorkspaceActivities != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -1081,6 +1118,31 @@ func (wq *WorkspaceQuery) sqlAll(ctx context.Context) ([]*Workspace, error) {
 				return nil, fmt.Errorf(`unexpected foreign-key "workspace_id" returned %v for node %v`, fk, n.ID)
 			}
 			node.Edges.DeletedTasksRef = append(node.Edges.DeletedTasksRef, n)
+		}
+	}
+
+	if query := wq.withWorkspaceActivities; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[ulid.ID]*Workspace)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.WorkspaceActivities = []*WorkspaceActivity{}
+		}
+		query.Where(predicate.WorkspaceActivity(func(s *sql.Selector) {
+			s.Where(sql.InValues(workspace.WorkspaceActivitiesColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.WorkspaceID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "workspace_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.WorkspaceActivities = append(node.Edges.WorkspaceActivities, n)
 		}
 	}
 

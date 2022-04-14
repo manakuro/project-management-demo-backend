@@ -12,6 +12,14 @@ func (at *ActivityType) TaskActivities(ctx context.Context) ([]*TaskActivity, er
 	return result, err
 }
 
+func (at *ActivityType) WorkspaceActivities(ctx context.Context) ([]*WorkspaceActivity, error) {
+	result, err := at.Edges.WorkspaceActivitiesOrErr()
+	if IsNotLoaded(err) {
+		result, err = at.QueryWorkspaceActivities().All(ctx)
+	}
+	return result, err
+}
+
 func (c *Color) ProjectBaseColors(ctx context.Context) ([]*ProjectBaseColor, error) {
 	result, err := c.Edges.ProjectBaseColorsOrErr()
 	if IsNotLoaded(err) {
@@ -200,6 +208,14 @@ func (pr *Project) TaskFiles(ctx context.Context) ([]*TaskFile, error) {
 	result, err := pr.Edges.TaskFilesOrErr()
 	if IsNotLoaded(err) {
 		result, err = pr.QueryTaskFiles().All(ctx)
+	}
+	return result, err
+}
+
+func (pr *Project) WorkspaceActivities(ctx context.Context) ([]*WorkspaceActivity, error) {
+	result, err := pr.Edges.WorkspaceActivitiesOrErr()
+	if IsNotLoaded(err) {
+		result, err = pr.QueryWorkspaceActivities().All(ctx)
 	}
 	return result, err
 }
@@ -868,6 +884,14 @@ func (t *Teammate) TaskActivities(ctx context.Context) ([]*TaskActivity, error) 
 	return result, err
 }
 
+func (t *Teammate) WorkspaceActivities(ctx context.Context) ([]*WorkspaceActivity, error) {
+	result, err := t.Edges.WorkspaceActivitiesOrErr()
+	if IsNotLoaded(err) {
+		result, err = t.QueryWorkspaceActivities().All(ctx)
+	}
+	return result, err
+}
+
 func (tt *TeammateTask) Teammate(ctx context.Context) (*Teammate, error) {
 	result, err := tt.Edges.TeammateOrErr()
 	if IsNotLoaded(err) {
@@ -1120,6 +1144,46 @@ func (w *Workspace) DeletedTasksRef(ctx context.Context) ([]*DeletedTask, error)
 	result, err := w.Edges.DeletedTasksRefOrErr()
 	if IsNotLoaded(err) {
 		result, err = w.QueryDeletedTasksRef().All(ctx)
+	}
+	return result, err
+}
+
+func (w *Workspace) WorkspaceActivities(ctx context.Context) ([]*WorkspaceActivity, error) {
+	result, err := w.Edges.WorkspaceActivitiesOrErr()
+	if IsNotLoaded(err) {
+		result, err = w.QueryWorkspaceActivities().All(ctx)
+	}
+	return result, err
+}
+
+func (wa *WorkspaceActivity) ActivityType(ctx context.Context) (*ActivityType, error) {
+	result, err := wa.Edges.ActivityTypeOrErr()
+	if IsNotLoaded(err) {
+		result, err = wa.QueryActivityType().Only(ctx)
+	}
+	return result, err
+}
+
+func (wa *WorkspaceActivity) Workspace(ctx context.Context) (*Workspace, error) {
+	result, err := wa.Edges.WorkspaceOrErr()
+	if IsNotLoaded(err) {
+		result, err = wa.QueryWorkspace().Only(ctx)
+	}
+	return result, err
+}
+
+func (wa *WorkspaceActivity) Project(ctx context.Context) (*Project, error) {
+	result, err := wa.Edges.ProjectOrErr()
+	if IsNotLoaded(err) {
+		result, err = wa.QueryProject().Only(ctx)
+	}
+	return result, err
+}
+
+func (wa *WorkspaceActivity) Teammate(ctx context.Context) (*Teammate, error) {
+	result, err := wa.Edges.TeammateOrErr()
+	if IsNotLoaded(err) {
+		result, err = wa.QueryTeammate().Only(ctx)
 	}
 	return result, err
 }
