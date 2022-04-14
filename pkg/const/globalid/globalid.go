@@ -43,6 +43,7 @@ import (
 	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/ent/testuser"
 	"project-management-demo-backend/ent/workspace"
+	"project-management-demo-backend/ent/workspaceactivity"
 	"project-management-demo-backend/ent/workspaceteammate"
 	"reflect"
 )
@@ -268,7 +269,7 @@ func New() GlobalIDs {
 		},
 		WorkspaceActivity: field{
 			Prefix: "0BP",
-			Table:  taskactivitytask.Table,
+			Table:  workspaceactivity.Table,
 		},
 	}
 }
