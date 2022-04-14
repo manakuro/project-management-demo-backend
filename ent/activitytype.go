@@ -25,6 +25,27 @@ type ActivityType struct {
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
+	// Edges holds the relations/edges for other nodes in the graph.
+	// The values are being populated by the ActivityTypeQuery when eager-loading is set.
+	Edges ActivityTypeEdges `json:"edges"`
+}
+
+// ActivityTypeEdges holds the relations/edges for other nodes in the graph.
+type ActivityTypeEdges struct {
+	// TaskActivities holds the value of the taskActivities edge.
+	TaskActivities []*TaskActivity `json:"taskActivities,omitempty"`
+	// loadedTypes holds the information for reporting if a
+	// type was loaded (or requested) in eager-loading or not.
+	loadedTypes [1]bool
+}
+
+// TaskActivitiesOrErr returns the TaskActivities value or an error if the edge
+// was not loaded in eager-loading.
+func (e ActivityTypeEdges) TaskActivitiesOrErr() ([]*TaskActivity, error) {
+	if e.loadedTypes[0] {
+		return e.TaskActivities, nil
+	}
+	return nil, &NotLoadedError{edge: "taskActivities"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -86,6 +107,11 @@ func (at *ActivityType) assignValues(columns []string, values []interface{}) err
 		}
 	}
 	return nil
+}
+
+// QueryTaskActivities queries the "taskActivities" edge of the ActivityType entity.
+func (at *ActivityType) QueryTaskActivities() *TaskActivityQuery {
+	return (&ActivityTypeClient{config: at.config}).QueryTaskActivities(at)
 }
 
 // Update returns a builder for updating this ActivityType.

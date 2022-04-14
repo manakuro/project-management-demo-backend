@@ -24,6 +24,7 @@ import (
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/tag"
 	"project-management-demo-backend/ent/task"
+	"project-management-demo-backend/ent/taskactivity"
 	"project-management-demo-backend/ent/taskcollaborator"
 	"project-management-demo-backend/ent/taskcolumn"
 	"project-management-demo-backend/ent/taskfeed"
@@ -104,6 +105,10 @@ type ActivityTypeWhereInput struct {
 	UpdatedAtGTE   *time.Time  `json:"updatedAtGTE,omitempty"`
 	UpdatedAtLT    *time.Time  `json:"updatedAtLT,omitempty"`
 	UpdatedAtLTE   *time.Time  `json:"updatedAtLTE,omitempty"`
+
+	// "taskActivities" edge predicates.
+	HasTaskActivities     *bool                     `json:"hasTaskActivities,omitempty"`
+	HasTaskActivitiesWith []*TaskActivityWhereInput `json:"hasTaskActivitiesWith,omitempty"`
 }
 
 // Filter applies the ActivityTypeWhereInput filter on the ActivityTypeQuery builder.
@@ -289,6 +294,24 @@ func (i *ActivityTypeWhereInput) P() (predicate.ActivityType, error) {
 		predicates = append(predicates, activitytype.UpdatedAtLTE(*i.UpdatedAtLTE))
 	}
 
+	if i.HasTaskActivities != nil {
+		p := activitytype.HasTaskActivities()
+		if !*i.HasTaskActivities {
+			p = activitytype.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasTaskActivitiesWith) > 0 {
+		with := make([]predicate.TaskActivity, 0, len(i.HasTaskActivitiesWith))
+		for _, w := range i.HasTaskActivitiesWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, activitytype.HasTaskActivitiesWith(with...))
+	}
 	switch len(predicates) {
 	case 0:
 		return nil, fmt.Errorf("project-management-demo-backend/ent: empty predicate ActivityTypeWhereInput")
@@ -7414,6 +7437,337 @@ func (i *TaskWhereInput) P() (predicate.Task, error) {
 	}
 }
 
+// TaskActivityWhereInput represents a where input for filtering TaskActivity queries.
+type TaskActivityWhereInput struct {
+	Not *TaskActivityWhereInput   `json:"not,omitempty"`
+	Or  []*TaskActivityWhereInput `json:"or,omitempty"`
+	And []*TaskActivityWhereInput `json:"and,omitempty"`
+
+	// "id" field predicates.
+	ID      *ulid.ID  `json:"id,omitempty"`
+	IDNEQ   *ulid.ID  `json:"idNEQ,omitempty"`
+	IDIn    []ulid.ID `json:"idIn,omitempty"`
+	IDNotIn []ulid.ID `json:"idNotIn,omitempty"`
+	IDGT    *ulid.ID  `json:"idGT,omitempty"`
+	IDGTE   *ulid.ID  `json:"idGTE,omitempty"`
+	IDLT    *ulid.ID  `json:"idLT,omitempty"`
+	IDLTE   *ulid.ID  `json:"idLTE,omitempty"`
+
+	// "activity_id" field predicates.
+	ActivityID             *ulid.ID  `json:"activityID,omitempty"`
+	ActivityIDNEQ          *ulid.ID  `json:"activityIDNEQ,omitempty"`
+	ActivityIDIn           []ulid.ID `json:"activityIDIn,omitempty"`
+	ActivityIDNotIn        []ulid.ID `json:"activityIDNotIn,omitempty"`
+	ActivityIDGT           *ulid.ID  `json:"activityIDGT,omitempty"`
+	ActivityIDGTE          *ulid.ID  `json:"activityIDGTE,omitempty"`
+	ActivityIDLT           *ulid.ID  `json:"activityIDLT,omitempty"`
+	ActivityIDLTE          *ulid.ID  `json:"activityIDLTE,omitempty"`
+	ActivityIDContains     *ulid.ID  `json:"activityIDContains,omitempty"`
+	ActivityIDHasPrefix    *ulid.ID  `json:"activityIDHasPrefix,omitempty"`
+	ActivityIDHasSuffix    *ulid.ID  `json:"activityIDHasSuffix,omitempty"`
+	ActivityIDEqualFold    *ulid.ID  `json:"activityIDEqualFold,omitempty"`
+	ActivityIDContainsFold *ulid.ID  `json:"activityIDContainsFold,omitempty"`
+
+	// "teammate_id" field predicates.
+	TeammateID             *ulid.ID  `json:"teammateID,omitempty"`
+	TeammateIDNEQ          *ulid.ID  `json:"teammateIDNEQ,omitempty"`
+	TeammateIDIn           []ulid.ID `json:"teammateIDIn,omitempty"`
+	TeammateIDNotIn        []ulid.ID `json:"teammateIDNotIn,omitempty"`
+	TeammateIDGT           *ulid.ID  `json:"teammateIDGT,omitempty"`
+	TeammateIDGTE          *ulid.ID  `json:"teammateIDGTE,omitempty"`
+	TeammateIDLT           *ulid.ID  `json:"teammateIDLT,omitempty"`
+	TeammateIDLTE          *ulid.ID  `json:"teammateIDLTE,omitempty"`
+	TeammateIDContains     *ulid.ID  `json:"teammateIDContains,omitempty"`
+	TeammateIDHasPrefix    *ulid.ID  `json:"teammateIDHasPrefix,omitempty"`
+	TeammateIDHasSuffix    *ulid.ID  `json:"teammateIDHasSuffix,omitempty"`
+	TeammateIDEqualFold    *ulid.ID  `json:"teammateIDEqualFold,omitempty"`
+	TeammateIDContainsFold *ulid.ID  `json:"teammateIDContainsFold,omitempty"`
+
+	// "created_at" field predicates.
+	CreatedAt      *time.Time  `json:"createdAt,omitempty"`
+	CreatedAtNEQ   *time.Time  `json:"createdAtNEQ,omitempty"`
+	CreatedAtIn    []time.Time `json:"createdAtIn,omitempty"`
+	CreatedAtNotIn []time.Time `json:"createdAtNotIn,omitempty"`
+	CreatedAtGT    *time.Time  `json:"createdAtGT,omitempty"`
+	CreatedAtGTE   *time.Time  `json:"createdAtGTE,omitempty"`
+	CreatedAtLT    *time.Time  `json:"createdAtLT,omitempty"`
+	CreatedAtLTE   *time.Time  `json:"createdAtLTE,omitempty"`
+
+	// "updated_at" field predicates.
+	UpdatedAt      *time.Time  `json:"updatedAt,omitempty"`
+	UpdatedAtNEQ   *time.Time  `json:"updatedAtNEQ,omitempty"`
+	UpdatedAtIn    []time.Time `json:"updatedAtIn,omitempty"`
+	UpdatedAtNotIn []time.Time `json:"updatedAtNotIn,omitempty"`
+	UpdatedAtGT    *time.Time  `json:"updatedAtGT,omitempty"`
+	UpdatedAtGTE   *time.Time  `json:"updatedAtGTE,omitempty"`
+	UpdatedAtLT    *time.Time  `json:"updatedAtLT,omitempty"`
+	UpdatedAtLTE   *time.Time  `json:"updatedAtLTE,omitempty"`
+
+	// "teammate" edge predicates.
+	HasTeammate     *bool                 `json:"hasTeammate,omitempty"`
+	HasTeammateWith []*TeammateWhereInput `json:"hasTeammateWith,omitempty"`
+
+	// "activityType" edge predicates.
+	HasActivityType     *bool                     `json:"hasActivityType,omitempty"`
+	HasActivityTypeWith []*ActivityTypeWhereInput `json:"hasActivityTypeWith,omitempty"`
+}
+
+// Filter applies the TaskActivityWhereInput filter on the TaskActivityQuery builder.
+func (i *TaskActivityWhereInput) Filter(q *TaskActivityQuery) (*TaskActivityQuery, error) {
+	if i == nil {
+		return q, nil
+	}
+	p, err := i.P()
+	if err != nil {
+		return nil, err
+	}
+	return q.Where(p), nil
+}
+
+// P returns a predicate for filtering taskactivities.
+// An error is returned if the input is empty or invalid.
+func (i *TaskActivityWhereInput) P() (predicate.TaskActivity, error) {
+	var predicates []predicate.TaskActivity
+	if i.Not != nil {
+		p, err := i.Not.P()
+		if err != nil {
+			return nil, err
+		}
+		predicates = append(predicates, taskactivity.Not(p))
+	}
+	switch n := len(i.Or); {
+	case n == 1:
+		p, err := i.Or[0].P()
+		if err != nil {
+			return nil, err
+		}
+		predicates = append(predicates, p)
+	case n > 1:
+		or := make([]predicate.TaskActivity, 0, n)
+		for _, w := range i.Or {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			or = append(or, p)
+		}
+		predicates = append(predicates, taskactivity.Or(or...))
+	}
+	switch n := len(i.And); {
+	case n == 1:
+		p, err := i.And[0].P()
+		if err != nil {
+			return nil, err
+		}
+		predicates = append(predicates, p)
+	case n > 1:
+		and := make([]predicate.TaskActivity, 0, n)
+		for _, w := range i.And {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			and = append(and, p)
+		}
+		predicates = append(predicates, taskactivity.And(and...))
+	}
+	if i.ID != nil {
+		predicates = append(predicates, taskactivity.IDEQ(*i.ID))
+	}
+	if i.IDNEQ != nil {
+		predicates = append(predicates, taskactivity.IDNEQ(*i.IDNEQ))
+	}
+	if len(i.IDIn) > 0 {
+		predicates = append(predicates, taskactivity.IDIn(i.IDIn...))
+	}
+	if len(i.IDNotIn) > 0 {
+		predicates = append(predicates, taskactivity.IDNotIn(i.IDNotIn...))
+	}
+	if i.IDGT != nil {
+		predicates = append(predicates, taskactivity.IDGT(*i.IDGT))
+	}
+	if i.IDGTE != nil {
+		predicates = append(predicates, taskactivity.IDGTE(*i.IDGTE))
+	}
+	if i.IDLT != nil {
+		predicates = append(predicates, taskactivity.IDLT(*i.IDLT))
+	}
+	if i.IDLTE != nil {
+		predicates = append(predicates, taskactivity.IDLTE(*i.IDLTE))
+	}
+	if i.ActivityID != nil {
+		predicates = append(predicates, taskactivity.ActivityIDEQ(*i.ActivityID))
+	}
+	if i.ActivityIDNEQ != nil {
+		predicates = append(predicates, taskactivity.ActivityIDNEQ(*i.ActivityIDNEQ))
+	}
+	if len(i.ActivityIDIn) > 0 {
+		predicates = append(predicates, taskactivity.ActivityIDIn(i.ActivityIDIn...))
+	}
+	if len(i.ActivityIDNotIn) > 0 {
+		predicates = append(predicates, taskactivity.ActivityIDNotIn(i.ActivityIDNotIn...))
+	}
+	if i.ActivityIDGT != nil {
+		predicates = append(predicates, taskactivity.ActivityIDGT(*i.ActivityIDGT))
+	}
+	if i.ActivityIDGTE != nil {
+		predicates = append(predicates, taskactivity.ActivityIDGTE(*i.ActivityIDGTE))
+	}
+	if i.ActivityIDLT != nil {
+		predicates = append(predicates, taskactivity.ActivityIDLT(*i.ActivityIDLT))
+	}
+	if i.ActivityIDLTE != nil {
+		predicates = append(predicates, taskactivity.ActivityIDLTE(*i.ActivityIDLTE))
+	}
+	if i.ActivityIDContains != nil {
+		predicates = append(predicates, taskactivity.ActivityIDContains(*i.ActivityIDContains))
+	}
+	if i.ActivityIDHasPrefix != nil {
+		predicates = append(predicates, taskactivity.ActivityIDHasPrefix(*i.ActivityIDHasPrefix))
+	}
+	if i.ActivityIDHasSuffix != nil {
+		predicates = append(predicates, taskactivity.ActivityIDHasSuffix(*i.ActivityIDHasSuffix))
+	}
+	if i.ActivityIDEqualFold != nil {
+		predicates = append(predicates, taskactivity.ActivityIDEqualFold(*i.ActivityIDEqualFold))
+	}
+	if i.ActivityIDContainsFold != nil {
+		predicates = append(predicates, taskactivity.ActivityIDContainsFold(*i.ActivityIDContainsFold))
+	}
+	if i.TeammateID != nil {
+		predicates = append(predicates, taskactivity.TeammateIDEQ(*i.TeammateID))
+	}
+	if i.TeammateIDNEQ != nil {
+		predicates = append(predicates, taskactivity.TeammateIDNEQ(*i.TeammateIDNEQ))
+	}
+	if len(i.TeammateIDIn) > 0 {
+		predicates = append(predicates, taskactivity.TeammateIDIn(i.TeammateIDIn...))
+	}
+	if len(i.TeammateIDNotIn) > 0 {
+		predicates = append(predicates, taskactivity.TeammateIDNotIn(i.TeammateIDNotIn...))
+	}
+	if i.TeammateIDGT != nil {
+		predicates = append(predicates, taskactivity.TeammateIDGT(*i.TeammateIDGT))
+	}
+	if i.TeammateIDGTE != nil {
+		predicates = append(predicates, taskactivity.TeammateIDGTE(*i.TeammateIDGTE))
+	}
+	if i.TeammateIDLT != nil {
+		predicates = append(predicates, taskactivity.TeammateIDLT(*i.TeammateIDLT))
+	}
+	if i.TeammateIDLTE != nil {
+		predicates = append(predicates, taskactivity.TeammateIDLTE(*i.TeammateIDLTE))
+	}
+	if i.TeammateIDContains != nil {
+		predicates = append(predicates, taskactivity.TeammateIDContains(*i.TeammateIDContains))
+	}
+	if i.TeammateIDHasPrefix != nil {
+		predicates = append(predicates, taskactivity.TeammateIDHasPrefix(*i.TeammateIDHasPrefix))
+	}
+	if i.TeammateIDHasSuffix != nil {
+		predicates = append(predicates, taskactivity.TeammateIDHasSuffix(*i.TeammateIDHasSuffix))
+	}
+	if i.TeammateIDEqualFold != nil {
+		predicates = append(predicates, taskactivity.TeammateIDEqualFold(*i.TeammateIDEqualFold))
+	}
+	if i.TeammateIDContainsFold != nil {
+		predicates = append(predicates, taskactivity.TeammateIDContainsFold(*i.TeammateIDContainsFold))
+	}
+	if i.CreatedAt != nil {
+		predicates = append(predicates, taskactivity.CreatedAtEQ(*i.CreatedAt))
+	}
+	if i.CreatedAtNEQ != nil {
+		predicates = append(predicates, taskactivity.CreatedAtNEQ(*i.CreatedAtNEQ))
+	}
+	if len(i.CreatedAtIn) > 0 {
+		predicates = append(predicates, taskactivity.CreatedAtIn(i.CreatedAtIn...))
+	}
+	if len(i.CreatedAtNotIn) > 0 {
+		predicates = append(predicates, taskactivity.CreatedAtNotIn(i.CreatedAtNotIn...))
+	}
+	if i.CreatedAtGT != nil {
+		predicates = append(predicates, taskactivity.CreatedAtGT(*i.CreatedAtGT))
+	}
+	if i.CreatedAtGTE != nil {
+		predicates = append(predicates, taskactivity.CreatedAtGTE(*i.CreatedAtGTE))
+	}
+	if i.CreatedAtLT != nil {
+		predicates = append(predicates, taskactivity.CreatedAtLT(*i.CreatedAtLT))
+	}
+	if i.CreatedAtLTE != nil {
+		predicates = append(predicates, taskactivity.CreatedAtLTE(*i.CreatedAtLTE))
+	}
+	if i.UpdatedAt != nil {
+		predicates = append(predicates, taskactivity.UpdatedAtEQ(*i.UpdatedAt))
+	}
+	if i.UpdatedAtNEQ != nil {
+		predicates = append(predicates, taskactivity.UpdatedAtNEQ(*i.UpdatedAtNEQ))
+	}
+	if len(i.UpdatedAtIn) > 0 {
+		predicates = append(predicates, taskactivity.UpdatedAtIn(i.UpdatedAtIn...))
+	}
+	if len(i.UpdatedAtNotIn) > 0 {
+		predicates = append(predicates, taskactivity.UpdatedAtNotIn(i.UpdatedAtNotIn...))
+	}
+	if i.UpdatedAtGT != nil {
+		predicates = append(predicates, taskactivity.UpdatedAtGT(*i.UpdatedAtGT))
+	}
+	if i.UpdatedAtGTE != nil {
+		predicates = append(predicates, taskactivity.UpdatedAtGTE(*i.UpdatedAtGTE))
+	}
+	if i.UpdatedAtLT != nil {
+		predicates = append(predicates, taskactivity.UpdatedAtLT(*i.UpdatedAtLT))
+	}
+	if i.UpdatedAtLTE != nil {
+		predicates = append(predicates, taskactivity.UpdatedAtLTE(*i.UpdatedAtLTE))
+	}
+
+	if i.HasTeammate != nil {
+		p := taskactivity.HasTeammate()
+		if !*i.HasTeammate {
+			p = taskactivity.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasTeammateWith) > 0 {
+		with := make([]predicate.Teammate, 0, len(i.HasTeammateWith))
+		for _, w := range i.HasTeammateWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, taskactivity.HasTeammateWith(with...))
+	}
+	if i.HasActivityType != nil {
+		p := taskactivity.HasActivityType()
+		if !*i.HasActivityType {
+			p = taskactivity.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasActivityTypeWith) > 0 {
+		with := make([]predicate.ActivityType, 0, len(i.HasActivityTypeWith))
+		for _, w := range i.HasActivityTypeWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, taskactivity.HasActivityTypeWith(with...))
+	}
+	switch len(predicates) {
+	case 0:
+		return nil, fmt.Errorf("project-management-demo-backend/ent: empty predicate TaskActivityWhereInput")
+	case 1:
+		return predicates[0], nil
+	default:
+		return taskactivity.And(predicates...), nil
+	}
+}
+
 // TaskCollaboratorWhereInput represents a where input for filtering TaskCollaborator queries.
 type TaskCollaboratorWhereInput struct {
 	Not *TaskCollaboratorWhereInput   `json:"not,omitempty"`
@@ -11497,6 +11851,10 @@ type TeammateWhereInput struct {
 	// "taskFeedLikes" edge predicates.
 	HasTaskFeedLikes     *bool                     `json:"hasTaskFeedLikes,omitempty"`
 	HasTaskFeedLikesWith []*TaskFeedLikeWhereInput `json:"hasTaskFeedLikesWith,omitempty"`
+
+	// "taskActivities" edge predicates.
+	HasTaskActivities     *bool                     `json:"hasTaskActivities,omitempty"`
+	HasTaskActivitiesWith []*TaskActivityWhereInput `json:"hasTaskActivitiesWith,omitempty"`
 }
 
 // Filter applies the TeammateWhereInput filter on the TeammateQuery builder.
@@ -12035,6 +12393,24 @@ func (i *TeammateWhereInput) P() (predicate.Teammate, error) {
 			with = append(with, p)
 		}
 		predicates = append(predicates, teammate.HasTaskFeedLikesWith(with...))
+	}
+	if i.HasTaskActivities != nil {
+		p := teammate.HasTaskActivities()
+		if !*i.HasTaskActivities {
+			p = teammate.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasTaskActivitiesWith) > 0 {
+		with := make([]predicate.TaskActivity, 0, len(i.HasTaskActivitiesWith))
+		for _, w := range i.HasTaskActivitiesWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, teammate.HasTaskActivitiesWith(with...))
 	}
 	switch len(predicates) {
 	case 0:

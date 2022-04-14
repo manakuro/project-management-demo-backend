@@ -242,6 +242,19 @@ func (f TaskFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error)
 	return f(ctx, mv)
 }
 
+// The TaskActivityFunc type is an adapter to allow the use of ordinary
+// function as TaskActivity mutator.
+type TaskActivityFunc func(context.Context, *ent.TaskActivityMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f TaskActivityFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.TaskActivityMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.TaskActivityMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The TaskCollaboratorFunc type is an adapter to allow the use of ordinary
 // function as TaskCollaborator mutator.
 type TaskCollaboratorFunc func(context.Context, *ent.TaskCollaboratorMutation) (ent.Value, error)

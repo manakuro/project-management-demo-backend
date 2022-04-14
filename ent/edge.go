@@ -4,6 +4,14 @@ package ent
 
 import "context"
 
+func (at *ActivityType) TaskActivities(ctx context.Context) ([]*TaskActivity, error) {
+	result, err := at.Edges.TaskActivitiesOrErr()
+	if IsNotLoaded(err) {
+		result, err = at.QueryTaskActivities().All(ctx)
+	}
+	return result, err
+}
+
 func (c *Color) ProjectBaseColors(ctx context.Context) ([]*ProjectBaseColor, error) {
 	result, err := c.Edges.ProjectBaseColorsOrErr()
 	if IsNotLoaded(err) {
@@ -468,6 +476,22 @@ func (t *Task) DeletedTasksRef(ctx context.Context) ([]*DeletedTask, error) {
 	return result, err
 }
 
+func (ta *TaskActivity) Teammate(ctx context.Context) (*Teammate, error) {
+	result, err := ta.Edges.TeammateOrErr()
+	if IsNotLoaded(err) {
+		result, err = ta.QueryTeammate().Only(ctx)
+	}
+	return result, err
+}
+
+func (ta *TaskActivity) ActivityType(ctx context.Context) (*ActivityType, error) {
+	result, err := ta.Edges.ActivityTypeOrErr()
+	if IsNotLoaded(err) {
+		result, err = ta.QueryActivityType().Only(ctx)
+	}
+	return result, err
+}
+
 func (tc *TaskCollaborator) Task(ctx context.Context) (*Task, error) {
 	result, err := tc.Edges.TaskOrErr()
 	if IsNotLoaded(err) {
@@ -800,6 +824,14 @@ func (t *Teammate) TaskFeedLikes(ctx context.Context) ([]*TaskFeedLike, error) {
 	result, err := t.Edges.TaskFeedLikesOrErr()
 	if IsNotLoaded(err) {
 		result, err = t.QueryTaskFeedLikes().All(ctx)
+	}
+	return result, err
+}
+
+func (t *Teammate) TaskActivities(ctx context.Context) ([]*TaskActivity, error) {
+	result, err := t.Edges.TaskActivitiesOrErr()
+	if IsNotLoaded(err) {
+		result, err = t.QueryTaskActivities().All(ctx)
 	}
 	return result, err
 }

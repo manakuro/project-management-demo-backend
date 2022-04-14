@@ -4,12 +4,14 @@ package ent
 
 import (
 	"context"
+	"database/sql/driver"
 	"errors"
 	"fmt"
 	"math"
 	"project-management-demo-backend/ent/activitytype"
 	"project-management-demo-backend/ent/predicate"
 	"project-management-demo-backend/ent/schema/ulid"
+	"project-management-demo-backend/ent/taskactivity"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -25,6 +27,8 @@ type ActivityTypeQuery struct {
 	order      []OrderFunc
 	fields     []string
 	predicates []predicate.ActivityType
+	// eager-loading edges.
+	withTaskActivities *TaskActivityQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -59,6 +63,28 @@ func (atq *ActivityTypeQuery) Unique(unique bool) *ActivityTypeQuery {
 func (atq *ActivityTypeQuery) Order(o ...OrderFunc) *ActivityTypeQuery {
 	atq.order = append(atq.order, o...)
 	return atq
+}
+
+// QueryTaskActivities chains the current query on the "taskActivities" edge.
+func (atq *ActivityTypeQuery) QueryTaskActivities() *TaskActivityQuery {
+	query := &TaskActivityQuery{config: atq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := atq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := atq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(activitytype.Table, activitytype.FieldID, selector),
+			sqlgraph.To(taskactivity.Table, taskactivity.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, activitytype.TaskActivitiesTable, activitytype.TaskActivitiesColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(atq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // First returns the first ActivityType entity from the query.
@@ -237,16 +263,28 @@ func (atq *ActivityTypeQuery) Clone() *ActivityTypeQuery {
 		return nil
 	}
 	return &ActivityTypeQuery{
-		config:     atq.config,
-		limit:      atq.limit,
-		offset:     atq.offset,
-		order:      append([]OrderFunc{}, atq.order...),
-		predicates: append([]predicate.ActivityType{}, atq.predicates...),
+		config:             atq.config,
+		limit:              atq.limit,
+		offset:             atq.offset,
+		order:              append([]OrderFunc{}, atq.order...),
+		predicates:         append([]predicate.ActivityType{}, atq.predicates...),
+		withTaskActivities: atq.withTaskActivities.Clone(),
 		// clone intermediate query.
 		sql:    atq.sql.Clone(),
 		path:   atq.path,
 		unique: atq.unique,
 	}
+}
+
+// WithTaskActivities tells the query-builder to eager-load the nodes that are connected to
+// the "taskActivities" edge. The optional arguments are used to configure the query builder of the edge.
+func (atq *ActivityTypeQuery) WithTaskActivities(opts ...func(*TaskActivityQuery)) *ActivityTypeQuery {
+	query := &TaskActivityQuery{config: atq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	atq.withTaskActivities = query
+	return atq
 }
 
 // GroupBy is used to group vertices by one or more fields/columns.
@@ -312,8 +350,11 @@ func (atq *ActivityTypeQuery) prepareQuery(ctx context.Context) error {
 
 func (atq *ActivityTypeQuery) sqlAll(ctx context.Context) ([]*ActivityType, error) {
 	var (
-		nodes = []*ActivityType{}
-		_spec = atq.querySpec()
+		nodes       = []*ActivityType{}
+		_spec       = atq.querySpec()
+		loadedTypes = [1]bool{
+			atq.withTaskActivities != nil,
+		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
 		node := &ActivityType{config: atq.config}
@@ -325,6 +366,7 @@ func (atq *ActivityTypeQuery) sqlAll(ctx context.Context) ([]*ActivityType, erro
 			return fmt.Errorf("ent: Assign called without calling ScanValues")
 		}
 		node := nodes[len(nodes)-1]
+		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
 	if err := sqlgraph.QueryNodes(ctx, atq.driver, _spec); err != nil {
@@ -333,6 +375,32 @@ func (atq *ActivityTypeQuery) sqlAll(ctx context.Context) ([]*ActivityType, erro
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
+
+	if query := atq.withTaskActivities; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[ulid.ID]*ActivityType)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.TaskActivities = []*TaskActivity{}
+		}
+		query.Where(predicate.TaskActivity(func(s *sql.Selector) {
+			s.Where(sql.InValues(activitytype.TaskActivitiesColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.ActivityID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "activity_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.TaskActivities = append(node.Edges.TaskActivities, n)
+		}
+	}
+
 	return nodes, nil
 }
 

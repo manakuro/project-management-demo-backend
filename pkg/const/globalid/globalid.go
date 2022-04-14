@@ -91,6 +91,7 @@ type GlobalIDs struct {
 	TaskFile                field
 	DeletedTask             field
 	ActivityType            field
+	TaskActivity            field
 }
 
 // New generates a map object that is intended to be used as global identification for node interface query.
@@ -251,6 +252,10 @@ func New() GlobalIDs {
 		},
 		ActivityType: field{
 			Prefix: "0BM",
+			Table:  activitytype.Table,
+		},
+		TaskActivity: field{
+			Prefix: "0BN",
 			Table:  activitytype.Table,
 		},
 	}

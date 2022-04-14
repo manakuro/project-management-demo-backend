@@ -23,8 +23,17 @@ const (
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
 	FieldUpdatedAt = "updated_at"
+	// EdgeTaskActivities holds the string denoting the taskactivities edge name in mutations.
+	EdgeTaskActivities = "taskActivities"
 	// Table holds the table name of the activitytype in the database.
 	Table = "activity_types"
+	// TaskActivitiesTable is the table that holds the taskActivities relation/edge.
+	TaskActivitiesTable = "task_activities"
+	// TaskActivitiesInverseTable is the table name for the TaskActivity entity.
+	// It exists in this package in order to avoid circular dependency with the "taskactivity" package.
+	TaskActivitiesInverseTable = "task_activities"
+	// TaskActivitiesColumn is the table column denoting the taskActivities relation/edge.
+	TaskActivitiesColumn = "activity_id"
 )
 
 // Columns holds all SQL columns for activitytype fields.

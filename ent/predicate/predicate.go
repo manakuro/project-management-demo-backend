@@ -60,6 +60,9 @@ type Tag func(*sql.Selector)
 // Task is the predicate function for task builders.
 type Task func(*sql.Selector)
 
+// TaskActivity is the predicate function for taskactivity builders.
+type TaskActivity func(*sql.Selector)
+
 // TaskCollaborator is the predicate function for taskcollaborator builders.
 type TaskCollaborator func(*sql.Selector)
 
