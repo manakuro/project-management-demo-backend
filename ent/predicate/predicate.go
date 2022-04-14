@@ -6,6 +6,9 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
+// ActivityType is the predicate function for activitytype builders.
+type ActivityType func(*sql.Selector)
+
 // Color is the predicate function for color builders.
 type Color func(*sql.Selector)
 

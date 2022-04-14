@@ -10,6 +10,7 @@ import (
 	"project-management-demo-backend/ent/migrate"
 	"project-management-demo-backend/ent/schema/ulid"
 
+	"project-management-demo-backend/ent/activitytype"
 	"project-management-demo-backend/ent/color"
 	"project-management-demo-backend/ent/deletedtask"
 	"project-management-demo-backend/ent/favoriteproject"
@@ -59,6 +60,8 @@ type Client struct {
 	config
 	// Schema is the client for creating, migrating and dropping schema.
 	Schema *migrate.Schema
+	// ActivityType is the client for interacting with the ActivityType builders.
+	ActivityType *ActivityTypeClient
 	// Color is the client for interacting with the Color builders.
 	Color *ColorClient
 	// DeletedTask is the client for interacting with the DeletedTask builders.
@@ -148,6 +151,7 @@ func NewClient(opts ...Option) *Client {
 
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
+	c.ActivityType = NewActivityTypeClient(c.config)
 	c.Color = NewColorClient(c.config)
 	c.DeletedTask = NewDeletedTaskClient(c.config)
 	c.FavoriteProject = NewFavoriteProjectClient(c.config)
@@ -219,6 +223,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	return &Tx{
 		ctx:                     ctx,
 		config:                  cfg,
+		ActivityType:            NewActivityTypeClient(cfg),
 		Color:                   NewColorClient(cfg),
 		DeletedTask:             NewDeletedTaskClient(cfg),
 		FavoriteProject:         NewFavoriteProjectClient(cfg),
@@ -276,6 +281,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	return &Tx{
 		ctx:                     ctx,
 		config:                  cfg,
+		ActivityType:            NewActivityTypeClient(cfg),
 		Color:                   NewColorClient(cfg),
 		DeletedTask:             NewDeletedTaskClient(cfg),
 		FavoriteProject:         NewFavoriteProjectClient(cfg),
@@ -320,7 +326,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 // Debug returns a new debug-client. It's used to get verbose logging on specific operations.
 //
 //	client.Debug().
-//		Color.
+//		ActivityType.
 //		Query().
 //		Count(ctx)
 //
@@ -343,6 +349,7 @@ func (c *Client) Close() error {
 // Use adds the mutation hooks to all the entity clients.
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
+	c.ActivityType.Use(hooks...)
 	c.Color.Use(hooks...)
 	c.DeletedTask.Use(hooks...)
 	c.FavoriteProject.Use(hooks...)
@@ -381,6 +388,96 @@ func (c *Client) Use(hooks ...Hook) {
 	c.TestUser.Use(hooks...)
 	c.Workspace.Use(hooks...)
 	c.WorkspaceTeammate.Use(hooks...)
+}
+
+// ActivityTypeClient is a client for the ActivityType schema.
+type ActivityTypeClient struct {
+	config
+}
+
+// NewActivityTypeClient returns a client for the ActivityType from the given config.
+func NewActivityTypeClient(c config) *ActivityTypeClient {
+	return &ActivityTypeClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `activitytype.Hooks(f(g(h())))`.
+func (c *ActivityTypeClient) Use(hooks ...Hook) {
+	c.hooks.ActivityType = append(c.hooks.ActivityType, hooks...)
+}
+
+// Create returns a create builder for ActivityType.
+func (c *ActivityTypeClient) Create() *ActivityTypeCreate {
+	mutation := newActivityTypeMutation(c.config, OpCreate)
+	return &ActivityTypeCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of ActivityType entities.
+func (c *ActivityTypeClient) CreateBulk(builders ...*ActivityTypeCreate) *ActivityTypeCreateBulk {
+	return &ActivityTypeCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for ActivityType.
+func (c *ActivityTypeClient) Update() *ActivityTypeUpdate {
+	mutation := newActivityTypeMutation(c.config, OpUpdate)
+	return &ActivityTypeUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ActivityTypeClient) UpdateOne(at *ActivityType) *ActivityTypeUpdateOne {
+	mutation := newActivityTypeMutation(c.config, OpUpdateOne, withActivityType(at))
+	return &ActivityTypeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ActivityTypeClient) UpdateOneID(id ulid.ID) *ActivityTypeUpdateOne {
+	mutation := newActivityTypeMutation(c.config, OpUpdateOne, withActivityTypeID(id))
+	return &ActivityTypeUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for ActivityType.
+func (c *ActivityTypeClient) Delete() *ActivityTypeDelete {
+	mutation := newActivityTypeMutation(c.config, OpDelete)
+	return &ActivityTypeDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *ActivityTypeClient) DeleteOne(at *ActivityType) *ActivityTypeDeleteOne {
+	return c.DeleteOneID(at.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *ActivityTypeClient) DeleteOneID(id ulid.ID) *ActivityTypeDeleteOne {
+	builder := c.Delete().Where(activitytype.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ActivityTypeDeleteOne{builder}
+}
+
+// Query returns a query builder for ActivityType.
+func (c *ActivityTypeClient) Query() *ActivityTypeQuery {
+	return &ActivityTypeQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a ActivityType entity by its id.
+func (c *ActivityTypeClient) Get(ctx context.Context, id ulid.ID) (*ActivityType, error) {
+	return c.Query().Where(activitytype.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ActivityTypeClient) GetX(ctx context.Context, id ulid.ID) *ActivityType {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *ActivityTypeClient) Hooks() []Hook {
+	return c.hooks.ActivityType
 }
 
 // ColorClient is a client for the Color schema.

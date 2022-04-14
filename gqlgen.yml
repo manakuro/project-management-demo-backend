@@ -79,4 +79,7 @@ models:
   DeletedTaskType:
     model:
       - project-management-demo-backend/ent/deletedtask.TaskType
+  ActivityTypeCode:
+    model:
+      - project-management-demo-backend/ent/activitytype.TypeCode
 

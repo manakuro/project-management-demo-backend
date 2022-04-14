@@ -8,6 +8,19 @@ import (
 	"project-management-demo-backend/ent"
 )
 
+// The ActivityTypeFunc type is an adapter to allow the use of ordinary
+// function as ActivityType mutator.
+type ActivityTypeFunc func(context.Context, *ent.ActivityTypeMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ActivityTypeFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.ActivityTypeMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ActivityTypeMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The ColorFunc type is an adapter to allow the use of ordinary
 // function as Color mutator.
 type ColorFunc func(context.Context, *ent.ColorMutation) (ent.Value, error)

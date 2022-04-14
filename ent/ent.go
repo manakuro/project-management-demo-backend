@@ -5,6 +5,7 @@ package ent
 import (
 	"errors"
 	"fmt"
+	"project-management-demo-backend/ent/activitytype"
 	"project-management-demo-backend/ent/color"
 	"project-management-demo-backend/ent/deletedtask"
 	"project-management-demo-backend/ent/favoriteproject"
@@ -66,6 +67,7 @@ type OrderFunc func(*sql.Selector)
 // columnChecker returns a function indicates if the column exists in the given column.
 func columnChecker(table string) func(string) error {
 	checks := map[string]func(string) bool{
+		activitytype.Table:            activitytype.ValidColumn,
 		color.Table:                   color.ValidColumn,
 		deletedtask.Table:             deletedtask.ValidColumn,
 		favoriteproject.Table:         favoriteproject.ValidColumn,
