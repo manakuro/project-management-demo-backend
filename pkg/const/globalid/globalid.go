@@ -22,6 +22,7 @@ import (
 	"project-management-demo-backend/ent/tag"
 	"project-management-demo-backend/ent/task"
 	"project-management-demo-backend/ent/taskactivity"
+	"project-management-demo-backend/ent/taskactivitytask"
 	"project-management-demo-backend/ent/taskcollaborator"
 	"project-management-demo-backend/ent/taskcolumn"
 	"project-management-demo-backend/ent/taskfeed"
@@ -93,6 +94,7 @@ type GlobalIDs struct {
 	DeletedTask             field
 	ActivityType            field
 	TaskActivity            field
+	TaskActivityTask        field
 }
 
 // New generates a map object that is intended to be used as global identification for node interface query.
@@ -258,6 +260,10 @@ func New() GlobalIDs {
 		TaskActivity: field{
 			Prefix: "0BN",
 			Table:  taskactivity.Table,
+		},
+		TaskActivityTask: field{
+			Prefix: "0BO",
+			Table:  taskactivitytask.Table,
 		},
 	}
 }

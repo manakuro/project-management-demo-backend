@@ -38,9 +38,11 @@ type TaskActivityEdges struct {
 	Teammate *Teammate `json:"teammate,omitempty"`
 	// ActivityType holds the value of the activityType edge.
 	ActivityType *ActivityType `json:"activityType,omitempty"`
+	// TaskActivityTasks holds the value of the taskActivityTasks edge.
+	TaskActivityTasks []*TaskActivityTask `json:"taskActivityTasks,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [3]bool
 }
 
 // TeammateOrErr returns the Teammate value or an error if the edge
@@ -69,6 +71,15 @@ func (e TaskActivityEdges) ActivityTypeOrErr() (*ActivityType, error) {
 		return e.ActivityType, nil
 	}
 	return nil, &NotLoadedError{edge: "activityType"}
+}
+
+// TaskActivityTasksOrErr returns the TaskActivityTasks value or an error if the edge
+// was not loaded in eager-loading.
+func (e TaskActivityEdges) TaskActivityTasksOrErr() ([]*TaskActivityTask, error) {
+	if e.loadedTypes[2] {
+		return e.TaskActivityTasks, nil
+	}
+	return nil, &NotLoadedError{edge: "taskActivityTasks"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -138,6 +149,11 @@ func (ta *TaskActivity) QueryTeammate() *TeammateQuery {
 // QueryActivityType queries the "activityType" edge of the TaskActivity entity.
 func (ta *TaskActivity) QueryActivityType() *ActivityTypeQuery {
 	return (&TaskActivityClient{config: ta.config}).QueryActivityType(ta)
+}
+
+// QueryTaskActivityTasks queries the "taskActivityTasks" edge of the TaskActivity entity.
+func (ta *TaskActivity) QueryTaskActivityTasks() *TaskActivityTaskQuery {
+	return (&TaskActivityClient{config: ta.config}).QueryTaskActivityTasks(ta)
 }
 
 // Update returns a builder for updating this TaskActivity.

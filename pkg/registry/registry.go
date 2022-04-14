@@ -45,6 +45,7 @@ func (r *registry) NewController() controller.Controller {
 		Tag:                     r.NewTagController(),
 		Task:                    r.NewTaskController(),
 		TaskActivity:            r.NewTaskActivityController(),
+		TaskActivityTask:        r.NewTaskActivityTaskController(),
 		TaskCollaborator:        r.NewTaskCollaboratorController(),
 		TaskColumn:              r.NewTaskColumnController(),
 		TaskFeed:                r.NewTaskFeedController(),

@@ -24,6 +24,8 @@ const (
 	EdgeTeammate = "teammate"
 	// EdgeActivityType holds the string denoting the activitytype edge name in mutations.
 	EdgeActivityType = "activityType"
+	// EdgeTaskActivityTasks holds the string denoting the taskactivitytasks edge name in mutations.
+	EdgeTaskActivityTasks = "taskActivityTasks"
 	// Table holds the table name of the taskactivity in the database.
 	Table = "task_activities"
 	// TeammateTable is the table that holds the teammate relation/edge.
@@ -40,6 +42,13 @@ const (
 	ActivityTypeInverseTable = "activity_types"
 	// ActivityTypeColumn is the table column denoting the activityType relation/edge.
 	ActivityTypeColumn = "activity_type_id"
+	// TaskActivityTasksTable is the table that holds the taskActivityTasks relation/edge.
+	TaskActivityTasksTable = "task_activity_tasks"
+	// TaskActivityTasksInverseTable is the table name for the TaskActivityTask entity.
+	// It exists in this package in order to avoid circular dependency with the "taskactivitytask" package.
+	TaskActivityTasksInverseTable = "task_activity_tasks"
+	// TaskActivityTasksColumn is the table column denoting the taskActivityTasks relation/edge.
+	TaskActivityTasksColumn = "task_activity_id"
 )
 
 // Columns holds all SQL columns for taskactivity fields.

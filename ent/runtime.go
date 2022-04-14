@@ -24,6 +24,7 @@ import (
 	"project-management-demo-backend/ent/tag"
 	"project-management-demo-backend/ent/task"
 	"project-management-demo-backend/ent/taskactivity"
+	"project-management-demo-backend/ent/taskactivitytask"
 	"project-management-demo-backend/ent/taskcollaborator"
 	"project-management-demo-backend/ent/taskcolumn"
 	"project-management-demo-backend/ent/taskfeed"
@@ -637,6 +638,25 @@ func init() {
 	taskactivityDescID := taskactivityMixinFields0[0].Descriptor()
 	// taskactivity.DefaultID holds the default value on creation for the id field.
 	taskactivity.DefaultID = taskactivityDescID.Default.(func() ulid.ID)
+	taskactivitytaskMixin := schema.TaskActivityTask{}.Mixin()
+	taskactivitytaskMixinFields0 := taskactivitytaskMixin[0].Fields()
+	_ = taskactivitytaskMixinFields0
+	taskactivitytaskMixinFields2 := taskactivitytaskMixin[2].Fields()
+	_ = taskactivitytaskMixinFields2
+	taskactivitytaskFields := schema.TaskActivityTask{}.Fields()
+	_ = taskactivitytaskFields
+	// taskactivitytaskDescCreatedAt is the schema descriptor for created_at field.
+	taskactivitytaskDescCreatedAt := taskactivitytaskMixinFields2[0].Descriptor()
+	// taskactivitytask.DefaultCreatedAt holds the default value on creation for the created_at field.
+	taskactivitytask.DefaultCreatedAt = taskactivitytaskDescCreatedAt.Default.(func() time.Time)
+	// taskactivitytaskDescUpdatedAt is the schema descriptor for updated_at field.
+	taskactivitytaskDescUpdatedAt := taskactivitytaskMixinFields2[1].Descriptor()
+	// taskactivitytask.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	taskactivitytask.DefaultUpdatedAt = taskactivitytaskDescUpdatedAt.Default.(func() time.Time)
+	// taskactivitytaskDescID is the schema descriptor for id field.
+	taskactivitytaskDescID := taskactivitytaskMixinFields0[0].Descriptor()
+	// taskactivitytask.DefaultID holds the default value on creation for the id field.
+	taskactivitytask.DefaultID = taskactivitytaskDescID.Default.(func() ulid.ID)
 	taskcollaboratorMixin := schema.TaskCollaborator{}.Mixin()
 	taskcollaboratorMixinFields0 := taskcollaboratorMixin[0].Fields()
 	_ = taskcollaboratorMixinFields0

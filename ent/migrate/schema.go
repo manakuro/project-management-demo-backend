@@ -522,6 +522,34 @@ var (
 			},
 		},
 	}
+	// TaskActivityTasksColumns holds the columns for the "task_activity_tasks" table.
+	TaskActivityTasksColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
+		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
+		{Name: "task_id", Type: field.TypeString},
+		{Name: "task_activity_id", Type: field.TypeString},
+	}
+	// TaskActivityTasksTable holds the schema information for the "task_activity_tasks" table.
+	TaskActivityTasksTable = &schema.Table{
+		Name:       "task_activity_tasks",
+		Columns:    TaskActivityTasksColumns,
+		PrimaryKey: []*schema.Column{TaskActivityTasksColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "task_activity_tasks_tasks_taskActivityTasks",
+				Columns:    []*schema.Column{TaskActivityTasksColumns[3]},
+				RefColumns: []*schema.Column{TasksColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "task_activity_tasks_task_activities_taskActivityTasks",
+				Columns:    []*schema.Column{TaskActivityTasksColumns[4]},
+				RefColumns: []*schema.Column{TaskActivitiesColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
 	// TaskCollaboratorsColumns holds the columns for the "task_collaborators" table.
 	TaskCollaboratorsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString},
@@ -1129,6 +1157,7 @@ var (
 		TagsTable,
 		TasksTable,
 		TaskActivitiesTable,
+		TaskActivityTasksTable,
 		TaskCollaboratorsTable,
 		TaskColumnsTable,
 		TaskFeedsTable,
@@ -1186,6 +1215,8 @@ func init() {
 	TasksTable.ForeignKeys[2].RefTable = TeammatesTable
 	TaskActivitiesTable.ForeignKeys[0].RefTable = ActivityTypesTable
 	TaskActivitiesTable.ForeignKeys[1].RefTable = TeammatesTable
+	TaskActivityTasksTable.ForeignKeys[0].RefTable = TasksTable
+	TaskActivityTasksTable.ForeignKeys[1].RefTable = TaskActivitiesTable
 	TaskCollaboratorsTable.ForeignKeys[0].RefTable = TasksTable
 	TaskCollaboratorsTable.ForeignKeys[1].RefTable = TeammatesTable
 	TaskFeedsTable.ForeignKeys[0].RefTable = TasksTable

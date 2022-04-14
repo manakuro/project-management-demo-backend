@@ -24,6 +24,7 @@ type Controller struct {
 	Tag                     interface{ Tag }
 	Task                    interface{ Task }
 	TaskActivity            interface{ TaskActivity }
+	TaskActivityTask        interface{ TaskActivityTask }
 	TaskCollaborator        interface{ TaskCollaborator }
 	TaskColumn              interface{ TaskColumn }
 	TaskFeed                interface{ TaskFeed }

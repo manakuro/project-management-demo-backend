@@ -491,6 +491,10 @@ func (t *TaskQuery) collectField(ctx *graphql.OperationContext, field graphql.Co
 			t = t.WithSubTasks(func(query *TaskQuery) {
 				query.collectField(ctx, field)
 			})
+		case "taskActivityTasks":
+			t = t.WithTaskActivityTasks(func(query *TaskActivityTaskQuery) {
+				query.collectField(ctx, field)
+			})
 		case "taskCollaborators":
 			t = t.WithTaskCollaborators(func(query *TaskCollaboratorQuery) {
 				query.collectField(ctx, field)
@@ -547,6 +551,10 @@ func (ta *TaskActivityQuery) collectField(ctx *graphql.OperationContext, field g
 			ta = ta.WithActivityType(func(query *ActivityTypeQuery) {
 				query.collectField(ctx, field)
 			})
+		case "taskActivityTasks":
+			ta = ta.WithTaskActivityTasks(func(query *TaskActivityTaskQuery) {
+				query.collectField(ctx, field)
+			})
 		case "teammate":
 			ta = ta.WithTeammate(func(query *TeammateQuery) {
 				query.collectField(ctx, field)
@@ -554,6 +562,30 @@ func (ta *TaskActivityQuery) collectField(ctx *graphql.OperationContext, field g
 		}
 	}
 	return ta
+}
+
+// CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
+func (tat *TaskActivityTaskQuery) CollectFields(ctx context.Context, satisfies ...string) *TaskActivityTaskQuery {
+	if fc := graphql.GetFieldContext(ctx); fc != nil {
+		tat = tat.collectField(graphql.GetOperationContext(ctx), fc.Field, satisfies...)
+	}
+	return tat
+}
+
+func (tat *TaskActivityTaskQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *TaskActivityTaskQuery {
+	for _, field := range graphql.CollectFields(ctx, field.Selections, satisfies) {
+		switch field.Name {
+		case "task":
+			tat = tat.WithTask(func(query *TaskQuery) {
+				query.collectField(ctx, field)
+			})
+		case "taskActivity":
+			tat = tat.WithTaskActivity(func(query *TaskActivityQuery) {
+				query.collectField(ctx, field)
+			})
+		}
+	}
+	return tat
 }
 
 // CollectFields tells the query-builder to eagerly load connected nodes by resolver context.

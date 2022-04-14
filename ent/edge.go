@@ -476,6 +476,14 @@ func (t *Task) DeletedTasksRef(ctx context.Context) ([]*DeletedTask, error) {
 	return result, err
 }
 
+func (t *Task) TaskActivityTasks(ctx context.Context) ([]*TaskActivityTask, error) {
+	result, err := t.Edges.TaskActivityTasksOrErr()
+	if IsNotLoaded(err) {
+		result, err = t.QueryTaskActivityTasks().All(ctx)
+	}
+	return result, err
+}
+
 func (ta *TaskActivity) Teammate(ctx context.Context) (*Teammate, error) {
 	result, err := ta.Edges.TeammateOrErr()
 	if IsNotLoaded(err) {
@@ -488,6 +496,30 @@ func (ta *TaskActivity) ActivityType(ctx context.Context) (*ActivityType, error)
 	result, err := ta.Edges.ActivityTypeOrErr()
 	if IsNotLoaded(err) {
 		result, err = ta.QueryActivityType().Only(ctx)
+	}
+	return result, err
+}
+
+func (ta *TaskActivity) TaskActivityTasks(ctx context.Context) ([]*TaskActivityTask, error) {
+	result, err := ta.Edges.TaskActivityTasksOrErr()
+	if IsNotLoaded(err) {
+		result, err = ta.QueryTaskActivityTasks().All(ctx)
+	}
+	return result, err
+}
+
+func (tat *TaskActivityTask) Task(ctx context.Context) (*Task, error) {
+	result, err := tat.Edges.TaskOrErr()
+	if IsNotLoaded(err) {
+		result, err = tat.QueryTask().Only(ctx)
+	}
+	return result, err
+}
+
+func (tat *TaskActivityTask) TaskActivity(ctx context.Context) (*TaskActivity, error) {
+	result, err := tat.Edges.TaskActivityOrErr()
+	if IsNotLoaded(err) {
+		result, err = tat.QueryTaskActivity().Only(ctx)
 	}
 	return result, err
 }
