@@ -44,6 +44,7 @@ func (r *registry) NewController() controller.Controller {
 		ProjectTeammate:         r.NewProjectTeammateController(),
 		Tag:                     r.NewTagController(),
 		Task:                    r.NewTaskController(),
+		TaskActivity:            r.NewTaskActivityController(),
 		TaskCollaborator:        r.NewTaskCollaboratorController(),
 		TaskColumn:              r.NewTaskColumnController(),
 		TaskFeed:                r.NewTaskFeedController(),

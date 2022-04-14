@@ -12,8 +12,8 @@ const (
 	Label = "task_activity"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
-	// FieldActivityID holds the string denoting the activity_id field in the database.
-	FieldActivityID = "activity_id"
+	// FieldActivityTypeID holds the string denoting the activity_type_id field in the database.
+	FieldActivityTypeID = "activity_type_id"
 	// FieldTeammateID holds the string denoting the teammate_id field in the database.
 	FieldTeammateID = "teammate_id"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
@@ -39,13 +39,13 @@ const (
 	// It exists in this package in order to avoid circular dependency with the "activitytype" package.
 	ActivityTypeInverseTable = "activity_types"
 	// ActivityTypeColumn is the table column denoting the activityType relation/edge.
-	ActivityTypeColumn = "activity_id"
+	ActivityTypeColumn = "activity_type_id"
 )
 
 // Columns holds all SQL columns for taskactivity fields.
 var Columns = []string{
 	FieldID,
-	FieldActivityID,
+	FieldActivityTypeID,
 	FieldTeammateID,
 	FieldCreatedAt,
 	FieldUpdatedAt,

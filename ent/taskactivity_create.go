@@ -26,9 +26,9 @@ type TaskActivityCreate struct {
 	conflict []sql.ConflictOption
 }
 
-// SetActivityID sets the "activity_id" field.
-func (tac *TaskActivityCreate) SetActivityID(u ulid.ID) *TaskActivityCreate {
-	tac.mutation.SetActivityID(u)
+// SetActivityTypeID sets the "activity_type_id" field.
+func (tac *TaskActivityCreate) SetActivityTypeID(u ulid.ID) *TaskActivityCreate {
+	tac.mutation.SetActivityTypeID(u)
 	return tac
 }
 
@@ -83,12 +83,6 @@ func (tac *TaskActivityCreate) SetNillableID(u *ulid.ID) *TaskActivityCreate {
 // SetTeammate sets the "teammate" edge to the Teammate entity.
 func (tac *TaskActivityCreate) SetTeammate(t *Teammate) *TaskActivityCreate {
 	return tac.SetTeammateID(t.ID)
-}
-
-// SetActivityTypeID sets the "activityType" edge to the ActivityType entity by ID.
-func (tac *TaskActivityCreate) SetActivityTypeID(id ulid.ID) *TaskActivityCreate {
-	tac.mutation.SetActivityTypeID(id)
-	return tac
 }
 
 // SetActivityType sets the "activityType" edge to the ActivityType entity.
@@ -183,8 +177,8 @@ func (tac *TaskActivityCreate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (tac *TaskActivityCreate) check() error {
-	if _, ok := tac.mutation.ActivityID(); !ok {
-		return &ValidationError{Name: "activity_id", err: errors.New(`ent: missing required field "TaskActivity.activity_id"`)}
+	if _, ok := tac.mutation.ActivityTypeID(); !ok {
+		return &ValidationError{Name: "activity_type_id", err: errors.New(`ent: missing required field "TaskActivity.activity_type_id"`)}
 	}
 	if _, ok := tac.mutation.TeammateID(); !ok {
 		return &ValidationError{Name: "teammate_id", err: errors.New(`ent: missing required field "TaskActivity.teammate_id"`)}
@@ -291,7 +285,7 @@ func (tac *TaskActivityCreate) createSpec() (*TaskActivity, *sqlgraph.CreateSpec
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.ActivityID = nodes[0]
+		_node.ActivityTypeID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
@@ -301,7 +295,7 @@ func (tac *TaskActivityCreate) createSpec() (*TaskActivity, *sqlgraph.CreateSpec
 // of the `INSERT` statement. For example:
 //
 //	client.TaskActivity.Create().
-//		SetActivityID(v).
+//		SetActivityTypeID(v).
 //		OnConflict(
 //			// Update the row with the new values
 //			// the was proposed for insertion.
@@ -310,7 +304,7 @@ func (tac *TaskActivityCreate) createSpec() (*TaskActivity, *sqlgraph.CreateSpec
 //		// Override some of the fields with custom
 //		// update values.
 //		Update(func(u *ent.TaskActivityUpsert) {
-//			SetActivityID(v+v).
+//			SetActivityTypeID(v+v).
 //		}).
 //		Exec(ctx)
 //
@@ -348,15 +342,15 @@ type (
 	}
 )
 
-// SetActivityID sets the "activity_id" field.
-func (u *TaskActivityUpsert) SetActivityID(v ulid.ID) *TaskActivityUpsert {
-	u.Set(taskactivity.FieldActivityID, v)
+// SetActivityTypeID sets the "activity_type_id" field.
+func (u *TaskActivityUpsert) SetActivityTypeID(v ulid.ID) *TaskActivityUpsert {
+	u.Set(taskactivity.FieldActivityTypeID, v)
 	return u
 }
 
-// UpdateActivityID sets the "activity_id" field to the value that was provided on create.
-func (u *TaskActivityUpsert) UpdateActivityID() *TaskActivityUpsert {
-	u.SetExcluded(taskactivity.FieldActivityID)
+// UpdateActivityTypeID sets the "activity_type_id" field to the value that was provided on create.
+func (u *TaskActivityUpsert) UpdateActivityTypeID() *TaskActivityUpsert {
+	u.SetExcluded(taskactivity.FieldActivityTypeID)
 	return u
 }
 
@@ -452,17 +446,17 @@ func (u *TaskActivityUpsertOne) Update(set func(*TaskActivityUpsert)) *TaskActiv
 	return u
 }
 
-// SetActivityID sets the "activity_id" field.
-func (u *TaskActivityUpsertOne) SetActivityID(v ulid.ID) *TaskActivityUpsertOne {
+// SetActivityTypeID sets the "activity_type_id" field.
+func (u *TaskActivityUpsertOne) SetActivityTypeID(v ulid.ID) *TaskActivityUpsertOne {
 	return u.Update(func(s *TaskActivityUpsert) {
-		s.SetActivityID(v)
+		s.SetActivityTypeID(v)
 	})
 }
 
-// UpdateActivityID sets the "activity_id" field to the value that was provided on create.
-func (u *TaskActivityUpsertOne) UpdateActivityID() *TaskActivityUpsertOne {
+// UpdateActivityTypeID sets the "activity_type_id" field to the value that was provided on create.
+func (u *TaskActivityUpsertOne) UpdateActivityTypeID() *TaskActivityUpsertOne {
 	return u.Update(func(s *TaskActivityUpsert) {
-		s.UpdateActivityID()
+		s.UpdateActivityTypeID()
 	})
 }
 
@@ -640,7 +634,7 @@ func (tacb *TaskActivityCreateBulk) ExecX(ctx context.Context) {
 //		// Override some of the fields with custom
 //		// update values.
 //		Update(func(u *ent.TaskActivityUpsert) {
-//			SetActivityID(v+v).
+//			SetActivityTypeID(v+v).
 //		}).
 //		Exec(ctx)
 //
@@ -730,17 +724,17 @@ func (u *TaskActivityUpsertBulk) Update(set func(*TaskActivityUpsert)) *TaskActi
 	return u
 }
 
-// SetActivityID sets the "activity_id" field.
-func (u *TaskActivityUpsertBulk) SetActivityID(v ulid.ID) *TaskActivityUpsertBulk {
+// SetActivityTypeID sets the "activity_type_id" field.
+func (u *TaskActivityUpsertBulk) SetActivityTypeID(v ulid.ID) *TaskActivityUpsertBulk {
 	return u.Update(func(s *TaskActivityUpsert) {
-		s.SetActivityID(v)
+		s.SetActivityTypeID(v)
 	})
 }
 
-// UpdateActivityID sets the "activity_id" field to the value that was provided on create.
-func (u *TaskActivityUpsertBulk) UpdateActivityID() *TaskActivityUpsertBulk {
+// UpdateActivityTypeID sets the "activity_type_id" field to the value that was provided on create.
+func (u *TaskActivityUpsertBulk) UpdateActivityTypeID() *TaskActivityUpsertBulk {
 	return u.Update(func(s *TaskActivityUpsert) {
-		s.UpdateActivityID()
+		s.UpdateActivityTypeID()
 	})
 }
 

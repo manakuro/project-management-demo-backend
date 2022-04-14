@@ -94,10 +94,10 @@ func IDLTE(id ulid.ID) predicate.TaskActivity {
 	})
 }
 
-// ActivityID applies equality check predicate on the "activity_id" field. It's identical to ActivityIDEQ.
-func ActivityID(v ulid.ID) predicate.TaskActivity {
+// ActivityTypeID applies equality check predicate on the "activity_type_id" field. It's identical to ActivityTypeIDEQ.
+func ActivityTypeID(v ulid.ID) predicate.TaskActivity {
 	return predicate.TaskActivity(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldActivityID), v))
+		s.Where(sql.EQ(s.C(FieldActivityTypeID), v))
 	})
 }
 
@@ -122,22 +122,22 @@ func UpdatedAt(v time.Time) predicate.TaskActivity {
 	})
 }
 
-// ActivityIDEQ applies the EQ predicate on the "activity_id" field.
-func ActivityIDEQ(v ulid.ID) predicate.TaskActivity {
+// ActivityTypeIDEQ applies the EQ predicate on the "activity_type_id" field.
+func ActivityTypeIDEQ(v ulid.ID) predicate.TaskActivity {
 	return predicate.TaskActivity(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldActivityID), v))
+		s.Where(sql.EQ(s.C(FieldActivityTypeID), v))
 	})
 }
 
-// ActivityIDNEQ applies the NEQ predicate on the "activity_id" field.
-func ActivityIDNEQ(v ulid.ID) predicate.TaskActivity {
+// ActivityTypeIDNEQ applies the NEQ predicate on the "activity_type_id" field.
+func ActivityTypeIDNEQ(v ulid.ID) predicate.TaskActivity {
 	return predicate.TaskActivity(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldActivityID), v))
+		s.Where(sql.NEQ(s.C(FieldActivityTypeID), v))
 	})
 }
 
-// ActivityIDIn applies the In predicate on the "activity_id" field.
-func ActivityIDIn(vs ...ulid.ID) predicate.TaskActivity {
+// ActivityTypeIDIn applies the In predicate on the "activity_type_id" field.
+func ActivityTypeIDIn(vs ...ulid.ID) predicate.TaskActivity {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -149,12 +149,12 @@ func ActivityIDIn(vs ...ulid.ID) predicate.TaskActivity {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.In(s.C(FieldActivityID), v...))
+		s.Where(sql.In(s.C(FieldActivityTypeID), v...))
 	})
 }
 
-// ActivityIDNotIn applies the NotIn predicate on the "activity_id" field.
-func ActivityIDNotIn(vs ...ulid.ID) predicate.TaskActivity {
+// ActivityTypeIDNotIn applies the NotIn predicate on the "activity_type_id" field.
+func ActivityTypeIDNotIn(vs ...ulid.ID) predicate.TaskActivity {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -166,75 +166,75 @@ func ActivityIDNotIn(vs ...ulid.ID) predicate.TaskActivity {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.NotIn(s.C(FieldActivityID), v...))
+		s.Where(sql.NotIn(s.C(FieldActivityTypeID), v...))
 	})
 }
 
-// ActivityIDGT applies the GT predicate on the "activity_id" field.
-func ActivityIDGT(v ulid.ID) predicate.TaskActivity {
+// ActivityTypeIDGT applies the GT predicate on the "activity_type_id" field.
+func ActivityTypeIDGT(v ulid.ID) predicate.TaskActivity {
 	return predicate.TaskActivity(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldActivityID), v))
+		s.Where(sql.GT(s.C(FieldActivityTypeID), v))
 	})
 }
 
-// ActivityIDGTE applies the GTE predicate on the "activity_id" field.
-func ActivityIDGTE(v ulid.ID) predicate.TaskActivity {
+// ActivityTypeIDGTE applies the GTE predicate on the "activity_type_id" field.
+func ActivityTypeIDGTE(v ulid.ID) predicate.TaskActivity {
 	return predicate.TaskActivity(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldActivityID), v))
+		s.Where(sql.GTE(s.C(FieldActivityTypeID), v))
 	})
 }
 
-// ActivityIDLT applies the LT predicate on the "activity_id" field.
-func ActivityIDLT(v ulid.ID) predicate.TaskActivity {
+// ActivityTypeIDLT applies the LT predicate on the "activity_type_id" field.
+func ActivityTypeIDLT(v ulid.ID) predicate.TaskActivity {
 	return predicate.TaskActivity(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldActivityID), v))
+		s.Where(sql.LT(s.C(FieldActivityTypeID), v))
 	})
 }
 
-// ActivityIDLTE applies the LTE predicate on the "activity_id" field.
-func ActivityIDLTE(v ulid.ID) predicate.TaskActivity {
+// ActivityTypeIDLTE applies the LTE predicate on the "activity_type_id" field.
+func ActivityTypeIDLTE(v ulid.ID) predicate.TaskActivity {
 	return predicate.TaskActivity(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldActivityID), v))
+		s.Where(sql.LTE(s.C(FieldActivityTypeID), v))
 	})
 }
 
-// ActivityIDContains applies the Contains predicate on the "activity_id" field.
-func ActivityIDContains(v ulid.ID) predicate.TaskActivity {
+// ActivityTypeIDContains applies the Contains predicate on the "activity_type_id" field.
+func ActivityTypeIDContains(v ulid.ID) predicate.TaskActivity {
 	vc := string(v)
 	return predicate.TaskActivity(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldActivityID), vc))
+		s.Where(sql.Contains(s.C(FieldActivityTypeID), vc))
 	})
 }
 
-// ActivityIDHasPrefix applies the HasPrefix predicate on the "activity_id" field.
-func ActivityIDHasPrefix(v ulid.ID) predicate.TaskActivity {
+// ActivityTypeIDHasPrefix applies the HasPrefix predicate on the "activity_type_id" field.
+func ActivityTypeIDHasPrefix(v ulid.ID) predicate.TaskActivity {
 	vc := string(v)
 	return predicate.TaskActivity(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldActivityID), vc))
+		s.Where(sql.HasPrefix(s.C(FieldActivityTypeID), vc))
 	})
 }
 
-// ActivityIDHasSuffix applies the HasSuffix predicate on the "activity_id" field.
-func ActivityIDHasSuffix(v ulid.ID) predicate.TaskActivity {
+// ActivityTypeIDHasSuffix applies the HasSuffix predicate on the "activity_type_id" field.
+func ActivityTypeIDHasSuffix(v ulid.ID) predicate.TaskActivity {
 	vc := string(v)
 	return predicate.TaskActivity(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldActivityID), vc))
+		s.Where(sql.HasSuffix(s.C(FieldActivityTypeID), vc))
 	})
 }
 
-// ActivityIDEqualFold applies the EqualFold predicate on the "activity_id" field.
-func ActivityIDEqualFold(v ulid.ID) predicate.TaskActivity {
+// ActivityTypeIDEqualFold applies the EqualFold predicate on the "activity_type_id" field.
+func ActivityTypeIDEqualFold(v ulid.ID) predicate.TaskActivity {
 	vc := string(v)
 	return predicate.TaskActivity(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldActivityID), vc))
+		s.Where(sql.EqualFold(s.C(FieldActivityTypeID), vc))
 	})
 }
 
-// ActivityIDContainsFold applies the ContainsFold predicate on the "activity_id" field.
-func ActivityIDContainsFold(v ulid.ID) predicate.TaskActivity {
+// ActivityTypeIDContainsFold applies the ContainsFold predicate on the "activity_type_id" field.
+func ActivityTypeIDContainsFold(v ulid.ID) predicate.TaskActivity {
 	vc := string(v)
 	return predicate.TaskActivity(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldActivityID), vc))
+		s.Where(sql.ContainsFold(s.C(FieldActivityTypeID), vc))
 	})
 }
 

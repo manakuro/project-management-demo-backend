@@ -30,7 +30,7 @@ type TaskActivityMixin struct {
 // Fields of the TaskActivity.
 func (TaskActivityMixin) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("activity_id").
+		field.String("activity_type_id").
 			GoType(ulid.ID("")),
 		field.String("teammate_id").
 			GoType(ulid.ID("")),
@@ -53,13 +53,13 @@ func (TaskActivity) Edges() []ent.Edge {
 			),
 		edge.From("activityType", ActivityType.Type).
 			Ref(taskActivitiesRef).
-			Field("activity_id").
+			Field("activity_type_id").
 			Unique().
 			Required().
 			Annotations(
 				entgql.Bind(),
 				schema.Annotation(
-					annotation.Edge{FieldName: "activity_id"},
+					annotation.Edge{FieldName: "activity_type_id"},
 				),
 			),
 	}

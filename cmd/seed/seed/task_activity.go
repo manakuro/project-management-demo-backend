@@ -20,20 +20,20 @@ func TaskActivity(ctx context.Context, client *ent.Client) {
 
 	inputs := []ent.CreateTaskActivityInput{
 		{
-			TeammateID: teammateID,
-			ActivityID: activityTypeID,
+			TeammateID:     teammateID,
+			ActivityTypeID: activityTypeID,
 		},
 		{
-			TeammateID: teammateID,
-			ActivityID: activityTypeID,
+			TeammateID:     teammateID,
+			ActivityTypeID: activityTypeID,
 		},
 		{
-			TeammateID: teammateID,
-			ActivityID: activityTypeID,
+			TeammateID:     teammateID,
+			ActivityTypeID: activityTypeID,
 		},
 		{
-			TeammateID: teammateID,
-			ActivityID: activityTypeID,
+			TeammateID:     teammateID,
+			ActivityTypeID: activityTypeID,
 		},
 	}
 	bulk := make([]*ent.TaskActivityCreate, len(inputs))

@@ -392,10 +392,10 @@ func (atq *ActivityTypeQuery) sqlAll(ctx context.Context) ([]*ActivityType, erro
 			return nil, err
 		}
 		for _, n := range neighbors {
-			fk := n.ActivityID
+			fk := n.ActivityTypeID
 			node, ok := nodeids[fk]
 			if !ok {
-				return nil, fmt.Errorf(`unexpected foreign-key "activity_id" returned %v for node %v`, fk, n.ID)
+				return nil, fmt.Errorf(`unexpected foreign-key "activity_type_id" returned %v for node %v`, fk, n.ID)
 			}
 			node.Edges.TaskActivities = append(node.Edges.TaskActivities, n)
 		}

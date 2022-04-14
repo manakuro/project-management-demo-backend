@@ -19,8 +19,8 @@ type TaskActivity struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID ulid.ID `json:"id,omitempty"`
-	// ActivityID holds the value of the "activity_id" field.
-	ActivityID ulid.ID `json:"activity_id,omitempty"`
+	// ActivityTypeID holds the value of the "activity_type_id" field.
+	ActivityTypeID ulid.ID `json:"activity_type_id,omitempty"`
 	// TeammateID holds the value of the "teammate_id" field.
 	TeammateID ulid.ID `json:"teammate_id,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
@@ -78,7 +78,7 @@ func (*TaskActivity) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case taskactivity.FieldCreatedAt, taskactivity.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
-		case taskactivity.FieldID, taskactivity.FieldActivityID, taskactivity.FieldTeammateID:
+		case taskactivity.FieldID, taskactivity.FieldActivityTypeID, taskactivity.FieldTeammateID:
 			values[i] = new(ulid.ID)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type TaskActivity", columns[i])
@@ -101,11 +101,11 @@ func (ta *TaskActivity) assignValues(columns []string, values []interface{}) err
 			} else if value != nil {
 				ta.ID = *value
 			}
-		case taskactivity.FieldActivityID:
+		case taskactivity.FieldActivityTypeID:
 			if value, ok := values[i].(*ulid.ID); !ok {
-				return fmt.Errorf("unexpected type %T for field activity_id", values[i])
+				return fmt.Errorf("unexpected type %T for field activity_type_id", values[i])
 			} else if value != nil {
-				ta.ActivityID = *value
+				ta.ActivityTypeID = *value
 			}
 		case taskactivity.FieldTeammateID:
 			if value, ok := values[i].(*ulid.ID); !ok {
@@ -163,8 +163,8 @@ func (ta *TaskActivity) String() string {
 	var builder strings.Builder
 	builder.WriteString("TaskActivity(")
 	builder.WriteString(fmt.Sprintf("id=%v", ta.ID))
-	builder.WriteString(", activity_id=")
-	builder.WriteString(fmt.Sprintf("%v", ta.ActivityID))
+	builder.WriteString(", activity_type_id=")
+	builder.WriteString(fmt.Sprintf("%v", ta.ActivityTypeID))
 	builder.WriteString(", teammate_id=")
 	builder.WriteString(fmt.Sprintf("%v", ta.TeammateID))
 	builder.WriteString(", created_at=")

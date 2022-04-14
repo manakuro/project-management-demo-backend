@@ -30,9 +30,9 @@ func (tau *TaskActivityUpdate) Where(ps ...predicate.TaskActivity) *TaskActivity
 	return tau
 }
 
-// SetActivityID sets the "activity_id" field.
-func (tau *TaskActivityUpdate) SetActivityID(u ulid.ID) *TaskActivityUpdate {
-	tau.mutation.SetActivityID(u)
+// SetActivityTypeID sets the "activity_type_id" field.
+func (tau *TaskActivityUpdate) SetActivityTypeID(u ulid.ID) *TaskActivityUpdate {
+	tau.mutation.SetActivityTypeID(u)
 	return tau
 }
 
@@ -45,12 +45,6 @@ func (tau *TaskActivityUpdate) SetTeammateID(u ulid.ID) *TaskActivityUpdate {
 // SetTeammate sets the "teammate" edge to the Teammate entity.
 func (tau *TaskActivityUpdate) SetTeammate(t *Teammate) *TaskActivityUpdate {
 	return tau.SetTeammateID(t.ID)
-}
-
-// SetActivityTypeID sets the "activityType" edge to the ActivityType entity by ID.
-func (tau *TaskActivityUpdate) SetActivityTypeID(id ulid.ID) *TaskActivityUpdate {
-	tau.mutation.SetActivityTypeID(id)
-	return tau
 }
 
 // SetActivityType sets the "activityType" edge to the ActivityType entity.
@@ -253,9 +247,9 @@ type TaskActivityUpdateOne struct {
 	mutation *TaskActivityMutation
 }
 
-// SetActivityID sets the "activity_id" field.
-func (tauo *TaskActivityUpdateOne) SetActivityID(u ulid.ID) *TaskActivityUpdateOne {
-	tauo.mutation.SetActivityID(u)
+// SetActivityTypeID sets the "activity_type_id" field.
+func (tauo *TaskActivityUpdateOne) SetActivityTypeID(u ulid.ID) *TaskActivityUpdateOne {
+	tauo.mutation.SetActivityTypeID(u)
 	return tauo
 }
 
@@ -268,12 +262,6 @@ func (tauo *TaskActivityUpdateOne) SetTeammateID(u ulid.ID) *TaskActivityUpdateO
 // SetTeammate sets the "teammate" edge to the Teammate entity.
 func (tauo *TaskActivityUpdateOne) SetTeammate(t *Teammate) *TaskActivityUpdateOne {
 	return tauo.SetTeammateID(t.ID)
-}
-
-// SetActivityTypeID sets the "activityType" edge to the ActivityType entity by ID.
-func (tauo *TaskActivityUpdateOne) SetActivityTypeID(id ulid.ID) *TaskActivityUpdateOne {
-	tauo.mutation.SetActivityTypeID(id)
-	return tauo
 }
 
 // SetActivityType sets the "activityType" edge to the ActivityType entity.

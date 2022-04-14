@@ -499,7 +499,7 @@ var (
 		{Name: "id", Type: field.TypeString},
 		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
 		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
-		{Name: "activity_id", Type: field.TypeString},
+		{Name: "activity_type_id", Type: field.TypeString},
 		{Name: "teammate_id", Type: field.TypeString},
 	}
 	// TaskActivitiesTable holds the schema information for the "task_activities" table.

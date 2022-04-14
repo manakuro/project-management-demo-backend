@@ -33,7 +33,7 @@ const (
 	// It exists in this package in order to avoid circular dependency with the "taskactivity" package.
 	TaskActivitiesInverseTable = "task_activities"
 	// TaskActivitiesColumn is the table column denoting the taskActivities relation/edge.
-	TaskActivitiesColumn = "activity_id"
+	TaskActivitiesColumn = "activity_type_id"
 )
 
 // Columns holds all SQL columns for activitytype fields.

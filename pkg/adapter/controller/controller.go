@@ -23,6 +23,7 @@ type Controller struct {
 	ProjectTeammate         interface{ ProjectTeammate }
 	Tag                     interface{ Tag }
 	Task                    interface{ Task }
+	TaskActivity            interface{ TaskActivity }
 	TaskCollaborator        interface{ TaskCollaborator }
 	TaskColumn              interface{ TaskColumn }
 	TaskFeed                interface{ TaskFeed }

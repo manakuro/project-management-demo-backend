@@ -3838,20 +3838,20 @@ input TaskActivityWhereInput {
   and: [TaskActivityWhereInput!]
   or: [TaskActivityWhereInput!]
   
-  """activity_id field predicates"""
-  activityID: ID
-  activityIDNEQ: ID
-  activityIDIn: [ID!]
-  activityIDNotIn: [ID!]
-  activityIDGT: ID
-  activityIDGTE: ID
-  activityIDLT: ID
-  activityIDLTE: ID
-  activityIDContains: ID
-  activityIDHasPrefix: ID
-  activityIDHasSuffix: ID
-  activityIDEqualFold: ID
-  activityIDContainsFold: ID
+  """activity_type_id field predicates"""
+  activityTypeID: ID
+  activityTypeIDNEQ: ID
+  activityTypeIDIn: [ID!]
+  activityTypeIDNotIn: [ID!]
+  activityTypeIDGT: ID
+  activityTypeIDGTE: ID
+  activityTypeIDLT: ID
+  activityTypeIDLTE: ID
+  activityTypeIDContains: ID
+  activityTypeIDHasPrefix: ID
+  activityTypeIDHasSuffix: ID
+  activityTypeIDEqualFold: ID
+  activityTypeIDContainsFold: ID
   
   """teammate_id field predicates"""
   teammateID: ID

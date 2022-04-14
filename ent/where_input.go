@@ -7453,20 +7453,20 @@ type TaskActivityWhereInput struct {
 	IDLT    *ulid.ID  `json:"idLT,omitempty"`
 	IDLTE   *ulid.ID  `json:"idLTE,omitempty"`
 
-	// "activity_id" field predicates.
-	ActivityID             *ulid.ID  `json:"activityID,omitempty"`
-	ActivityIDNEQ          *ulid.ID  `json:"activityIDNEQ,omitempty"`
-	ActivityIDIn           []ulid.ID `json:"activityIDIn,omitempty"`
-	ActivityIDNotIn        []ulid.ID `json:"activityIDNotIn,omitempty"`
-	ActivityIDGT           *ulid.ID  `json:"activityIDGT,omitempty"`
-	ActivityIDGTE          *ulid.ID  `json:"activityIDGTE,omitempty"`
-	ActivityIDLT           *ulid.ID  `json:"activityIDLT,omitempty"`
-	ActivityIDLTE          *ulid.ID  `json:"activityIDLTE,omitempty"`
-	ActivityIDContains     *ulid.ID  `json:"activityIDContains,omitempty"`
-	ActivityIDHasPrefix    *ulid.ID  `json:"activityIDHasPrefix,omitempty"`
-	ActivityIDHasSuffix    *ulid.ID  `json:"activityIDHasSuffix,omitempty"`
-	ActivityIDEqualFold    *ulid.ID  `json:"activityIDEqualFold,omitempty"`
-	ActivityIDContainsFold *ulid.ID  `json:"activityIDContainsFold,omitempty"`
+	// "activity_type_id" field predicates.
+	ActivityTypeID             *ulid.ID  `json:"activityTypeID,omitempty"`
+	ActivityTypeIDNEQ          *ulid.ID  `json:"activityTypeIDNEQ,omitempty"`
+	ActivityTypeIDIn           []ulid.ID `json:"activityTypeIDIn,omitempty"`
+	ActivityTypeIDNotIn        []ulid.ID `json:"activityTypeIDNotIn,omitempty"`
+	ActivityTypeIDGT           *ulid.ID  `json:"activityTypeIDGT,omitempty"`
+	ActivityTypeIDGTE          *ulid.ID  `json:"activityTypeIDGTE,omitempty"`
+	ActivityTypeIDLT           *ulid.ID  `json:"activityTypeIDLT,omitempty"`
+	ActivityTypeIDLTE          *ulid.ID  `json:"activityTypeIDLTE,omitempty"`
+	ActivityTypeIDContains     *ulid.ID  `json:"activityTypeIDContains,omitempty"`
+	ActivityTypeIDHasPrefix    *ulid.ID  `json:"activityTypeIDHasPrefix,omitempty"`
+	ActivityTypeIDHasSuffix    *ulid.ID  `json:"activityTypeIDHasSuffix,omitempty"`
+	ActivityTypeIDEqualFold    *ulid.ID  `json:"activityTypeIDEqualFold,omitempty"`
+	ActivityTypeIDContainsFold *ulid.ID  `json:"activityTypeIDContainsFold,omitempty"`
 
 	// "teammate_id" field predicates.
 	TeammateID             *ulid.ID  `json:"teammateID,omitempty"`
@@ -7595,44 +7595,44 @@ func (i *TaskActivityWhereInput) P() (predicate.TaskActivity, error) {
 	if i.IDLTE != nil {
 		predicates = append(predicates, taskactivity.IDLTE(*i.IDLTE))
 	}
-	if i.ActivityID != nil {
-		predicates = append(predicates, taskactivity.ActivityIDEQ(*i.ActivityID))
+	if i.ActivityTypeID != nil {
+		predicates = append(predicates, taskactivity.ActivityTypeIDEQ(*i.ActivityTypeID))
 	}
-	if i.ActivityIDNEQ != nil {
-		predicates = append(predicates, taskactivity.ActivityIDNEQ(*i.ActivityIDNEQ))
+	if i.ActivityTypeIDNEQ != nil {
+		predicates = append(predicates, taskactivity.ActivityTypeIDNEQ(*i.ActivityTypeIDNEQ))
 	}
-	if len(i.ActivityIDIn) > 0 {
-		predicates = append(predicates, taskactivity.ActivityIDIn(i.ActivityIDIn...))
+	if len(i.ActivityTypeIDIn) > 0 {
+		predicates = append(predicates, taskactivity.ActivityTypeIDIn(i.ActivityTypeIDIn...))
 	}
-	if len(i.ActivityIDNotIn) > 0 {
-		predicates = append(predicates, taskactivity.ActivityIDNotIn(i.ActivityIDNotIn...))
+	if len(i.ActivityTypeIDNotIn) > 0 {
+		predicates = append(predicates, taskactivity.ActivityTypeIDNotIn(i.ActivityTypeIDNotIn...))
 	}
-	if i.ActivityIDGT != nil {
-		predicates = append(predicates, taskactivity.ActivityIDGT(*i.ActivityIDGT))
+	if i.ActivityTypeIDGT != nil {
+		predicates = append(predicates, taskactivity.ActivityTypeIDGT(*i.ActivityTypeIDGT))
 	}
-	if i.ActivityIDGTE != nil {
-		predicates = append(predicates, taskactivity.ActivityIDGTE(*i.ActivityIDGTE))
+	if i.ActivityTypeIDGTE != nil {
+		predicates = append(predicates, taskactivity.ActivityTypeIDGTE(*i.ActivityTypeIDGTE))
 	}
-	if i.ActivityIDLT != nil {
-		predicates = append(predicates, taskactivity.ActivityIDLT(*i.ActivityIDLT))
+	if i.ActivityTypeIDLT != nil {
+		predicates = append(predicates, taskactivity.ActivityTypeIDLT(*i.ActivityTypeIDLT))
 	}
-	if i.ActivityIDLTE != nil {
-		predicates = append(predicates, taskactivity.ActivityIDLTE(*i.ActivityIDLTE))
+	if i.ActivityTypeIDLTE != nil {
+		predicates = append(predicates, taskactivity.ActivityTypeIDLTE(*i.ActivityTypeIDLTE))
 	}
-	if i.ActivityIDContains != nil {
-		predicates = append(predicates, taskactivity.ActivityIDContains(*i.ActivityIDContains))
+	if i.ActivityTypeIDContains != nil {
+		predicates = append(predicates, taskactivity.ActivityTypeIDContains(*i.ActivityTypeIDContains))
 	}
-	if i.ActivityIDHasPrefix != nil {
-		predicates = append(predicates, taskactivity.ActivityIDHasPrefix(*i.ActivityIDHasPrefix))
+	if i.ActivityTypeIDHasPrefix != nil {
+		predicates = append(predicates, taskactivity.ActivityTypeIDHasPrefix(*i.ActivityTypeIDHasPrefix))
 	}
-	if i.ActivityIDHasSuffix != nil {
-		predicates = append(predicates, taskactivity.ActivityIDHasSuffix(*i.ActivityIDHasSuffix))
+	if i.ActivityTypeIDHasSuffix != nil {
+		predicates = append(predicates, taskactivity.ActivityTypeIDHasSuffix(*i.ActivityTypeIDHasSuffix))
 	}
-	if i.ActivityIDEqualFold != nil {
-		predicates = append(predicates, taskactivity.ActivityIDEqualFold(*i.ActivityIDEqualFold))
+	if i.ActivityTypeIDEqualFold != nil {
+		predicates = append(predicates, taskactivity.ActivityTypeIDEqualFold(*i.ActivityTypeIDEqualFold))
 	}
-	if i.ActivityIDContainsFold != nil {
-		predicates = append(predicates, taskactivity.ActivityIDContainsFold(*i.ActivityIDContainsFold))
+	if i.ActivityTypeIDContainsFold != nil {
+		predicates = append(predicates, taskactivity.ActivityTypeIDContainsFold(*i.ActivityTypeIDContainsFold))
 	}
 	if i.TeammateID != nil {
 		predicates = append(predicates, taskactivity.TeammateIDEQ(*i.TeammateID))

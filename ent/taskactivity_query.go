@@ -328,12 +328,12 @@ func (taq *TaskActivityQuery) WithActivityType(opts ...func(*ActivityTypeQuery))
 // Example:
 //
 //	var v []struct {
-//		ActivityID ulid.ID `json:"activity_id,omitempty"`
+//		ActivityTypeID ulid.ID `json:"activity_type_id,omitempty"`
 //		Count int `json:"count,omitempty"`
 //	}
 //
 //	client.TaskActivity.Query().
-//		GroupBy(taskactivity.FieldActivityID).
+//		GroupBy(taskactivity.FieldActivityTypeID).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
 //
@@ -355,11 +355,11 @@ func (taq *TaskActivityQuery) GroupBy(field string, fields ...string) *TaskActiv
 // Example:
 //
 //	var v []struct {
-//		ActivityID ulid.ID `json:"activity_id,omitempty"`
+//		ActivityTypeID ulid.ID `json:"activity_type_id,omitempty"`
 //	}
 //
 //	client.TaskActivity.Query().
-//		Select(taskactivity.FieldActivityID).
+//		Select(taskactivity.FieldActivityTypeID).
 //		Scan(ctx, &v)
 //
 func (taq *TaskActivityQuery) Select(fields ...string) *TaskActivitySelect {
@@ -442,7 +442,7 @@ func (taq *TaskActivityQuery) sqlAll(ctx context.Context) ([]*TaskActivity, erro
 		ids := make([]ulid.ID, 0, len(nodes))
 		nodeids := make(map[ulid.ID][]*TaskActivity)
 		for i := range nodes {
-			fk := nodes[i].ActivityID
+			fk := nodes[i].ActivityTypeID
 			if _, ok := nodeids[fk]; !ok {
 				ids = append(ids, fk)
 			}
@@ -456,7 +456,7 @@ func (taq *TaskActivityQuery) sqlAll(ctx context.Context) ([]*TaskActivity, erro
 		for _, n := range neighbors {
 			nodes, ok := nodeids[n.ID]
 			if !ok {
-				return nil, fmt.Errorf(`unexpected foreign-key "activity_id" returned %v`, n.ID)
+				return nil, fmt.Errorf(`unexpected foreign-key "activity_type_id" returned %v`, n.ID)
 			}
 			for i := range nodes {
 				nodes[i].Edges.ActivityType = n

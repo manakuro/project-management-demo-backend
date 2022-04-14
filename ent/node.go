@@ -1660,12 +1660,12 @@ func (ta *TaskActivity) Node(ctx context.Context) (node *Node, err error) {
 		Edges:  make([]*Edge, 2),
 	}
 	var buf []byte
-	if buf, err = json.Marshal(ta.ActivityID); err != nil {
+	if buf, err = json.Marshal(ta.ActivityTypeID); err != nil {
 		return nil, err
 	}
 	node.Fields[0] = &Field{
 		Type:  "ulid.ID",
-		Name:  "activity_id",
+		Name:  "activity_type_id",
 		Value: string(buf),
 	}
 	if buf, err = json.Marshal(ta.TeammateID); err != nil {

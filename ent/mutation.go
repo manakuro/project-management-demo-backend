@@ -14405,13 +14405,13 @@ func (m *TaskActivityMutation) IDs(ctx context.Context) ([]ulid.ID, error) {
 	}
 }
 
-// SetActivityID sets the "activity_id" field.
-func (m *TaskActivityMutation) SetActivityID(u ulid.ID) {
+// SetActivityTypeID sets the "activity_type_id" field.
+func (m *TaskActivityMutation) SetActivityTypeID(u ulid.ID) {
 	m.activityType = &u
 }
 
-// ActivityID returns the value of the "activity_id" field in the mutation.
-func (m *TaskActivityMutation) ActivityID() (r ulid.ID, exists bool) {
+// ActivityTypeID returns the value of the "activity_type_id" field in the mutation.
+func (m *TaskActivityMutation) ActivityTypeID() (r ulid.ID, exists bool) {
 	v := m.activityType
 	if v == nil {
 		return
@@ -14419,25 +14419,25 @@ func (m *TaskActivityMutation) ActivityID() (r ulid.ID, exists bool) {
 	return *v, true
 }
 
-// OldActivityID returns the old "activity_id" field's value of the TaskActivity entity.
+// OldActivityTypeID returns the old "activity_type_id" field's value of the TaskActivity entity.
 // If the TaskActivity object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *TaskActivityMutation) OldActivityID(ctx context.Context) (v ulid.ID, err error) {
+func (m *TaskActivityMutation) OldActivityTypeID(ctx context.Context) (v ulid.ID, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldActivityID is only allowed on UpdateOne operations")
+		return v, errors.New("OldActivityTypeID is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldActivityID requires an ID field in the mutation")
+		return v, errors.New("OldActivityTypeID requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldActivityID: %w", err)
+		return v, fmt.Errorf("querying old value for OldActivityTypeID: %w", err)
 	}
-	return oldValue.ActivityID, nil
+	return oldValue.ActivityTypeID, nil
 }
 
-// ResetActivityID resets all changes to the "activity_id" field.
-func (m *TaskActivityMutation) ResetActivityID() {
+// ResetActivityTypeID resets all changes to the "activity_type_id" field.
+func (m *TaskActivityMutation) ResetActivityTypeID() {
 	m.activityType = nil
 }
 
@@ -14575,11 +14575,6 @@ func (m *TaskActivityMutation) ResetTeammate() {
 	m.clearedteammate = false
 }
 
-// SetActivityTypeID sets the "activityType" edge to the ActivityType entity by id.
-func (m *TaskActivityMutation) SetActivityTypeID(id ulid.ID) {
-	m.activityType = &id
-}
-
 // ClearActivityType clears the "activityType" edge to the ActivityType entity.
 func (m *TaskActivityMutation) ClearActivityType() {
 	m.clearedactivityType = true
@@ -14588,14 +14583,6 @@ func (m *TaskActivityMutation) ClearActivityType() {
 // ActivityTypeCleared reports if the "activityType" edge to the ActivityType entity was cleared.
 func (m *TaskActivityMutation) ActivityTypeCleared() bool {
 	return m.clearedactivityType
-}
-
-// ActivityTypeID returns the "activityType" edge ID in the mutation.
-func (m *TaskActivityMutation) ActivityTypeID() (id ulid.ID, exists bool) {
-	if m.activityType != nil {
-		return *m.activityType, true
-	}
-	return
 }
 
 // ActivityTypeIDs returns the "activityType" edge IDs in the mutation.
@@ -14635,7 +14622,7 @@ func (m *TaskActivityMutation) Type() string {
 func (m *TaskActivityMutation) Fields() []string {
 	fields := make([]string, 0, 4)
 	if m.activityType != nil {
-		fields = append(fields, taskactivity.FieldActivityID)
+		fields = append(fields, taskactivity.FieldActivityTypeID)
 	}
 	if m.teammate != nil {
 		fields = append(fields, taskactivity.FieldTeammateID)
@@ -14654,8 +14641,8 @@ func (m *TaskActivityMutation) Fields() []string {
 // schema.
 func (m *TaskActivityMutation) Field(name string) (ent.Value, bool) {
 	switch name {
-	case taskactivity.FieldActivityID:
-		return m.ActivityID()
+	case taskactivity.FieldActivityTypeID:
+		return m.ActivityTypeID()
 	case taskactivity.FieldTeammateID:
 		return m.TeammateID()
 	case taskactivity.FieldCreatedAt:
@@ -14671,8 +14658,8 @@ func (m *TaskActivityMutation) Field(name string) (ent.Value, bool) {
 // database failed.
 func (m *TaskActivityMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
-	case taskactivity.FieldActivityID:
-		return m.OldActivityID(ctx)
+	case taskactivity.FieldActivityTypeID:
+		return m.OldActivityTypeID(ctx)
 	case taskactivity.FieldTeammateID:
 		return m.OldTeammateID(ctx)
 	case taskactivity.FieldCreatedAt:
@@ -14688,12 +14675,12 @@ func (m *TaskActivityMutation) OldField(ctx context.Context, name string) (ent.V
 // type.
 func (m *TaskActivityMutation) SetField(name string, value ent.Value) error {
 	switch name {
-	case taskactivity.FieldActivityID:
+	case taskactivity.FieldActivityTypeID:
 		v, ok := value.(ulid.ID)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetActivityID(v)
+		m.SetActivityTypeID(v)
 		return nil
 	case taskactivity.FieldTeammateID:
 		v, ok := value.(ulid.ID)
@@ -14765,8 +14752,8 @@ func (m *TaskActivityMutation) ClearField(name string) error {
 // It returns an error if the field is not defined in the schema.
 func (m *TaskActivityMutation) ResetField(name string) error {
 	switch name {
-	case taskactivity.FieldActivityID:
-		m.ResetActivityID()
+	case taskactivity.FieldActivityTypeID:
+		m.ResetActivityTypeID()
 		return nil
 	case taskactivity.FieldTeammateID:
 		m.ResetTeammateID()
