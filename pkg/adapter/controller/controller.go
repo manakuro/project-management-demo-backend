@@ -4,6 +4,7 @@ package controller
 type Controller struct {
 	Activity                interface{ Activity }
 	ActivityType            interface{ ActivityType }
+	ArchivedTaskActivity    interface{ ArchivedTaskActivity }
 	Auth                    interface{ Auth }
 	Color                   interface{ Color }
 	DeletedTask             interface{ DeletedTask }
