@@ -6,6 +6,7 @@ import (
 	"log"
 	"project-management-demo-backend/ent"
 	"project-management-demo-backend/ent/activitytype"
+	"project-management-demo-backend/ent/archivedtaskactivity"
 	"project-management-demo-backend/ent/color"
 	"project-management-demo-backend/ent/filetype"
 	"project-management-demo-backend/ent/icon"
@@ -276,6 +277,16 @@ func GetTaskActivity(ctx context.Context, client *ent.Client, id ulid.ID) *ent.T
 	res, err := client.TaskActivity.Query().Where(taskactivity.IDEQ(id)).Only(ctx)
 	if err != nil {
 		log.Fatalf("GetTaskActivity: failed to get data %v", err)
+	}
+
+	return res
+}
+
+// GetArchivedTaskActivity gets archived activity type data.
+func GetArchivedTaskActivity(ctx context.Context, client *ent.Client, id ulid.ID) *ent.ArchivedTaskActivity {
+	res, err := client.ArchivedTaskActivity.Query().Where(archivedtaskactivity.IDEQ(id)).Only(ctx)
+	if err != nil {
+		log.Fatalf("GetArchivedTaskActivity: failed to get data %v", err)
 	}
 
 	return res
