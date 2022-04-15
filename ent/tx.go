@@ -94,6 +94,8 @@ type Tx struct {
 	Workspace *WorkspaceClient
 	// WorkspaceActivity is the client for interacting with the WorkspaceActivity builders.
 	WorkspaceActivity *WorkspaceActivityClient
+	// WorkspaceActivityTask is the client for interacting with the WorkspaceActivityTask builders.
+	WorkspaceActivityTask *WorkspaceActivityTaskClient
 	// WorkspaceTeammate is the client for interacting with the WorkspaceTeammate builders.
 	WorkspaceTeammate *WorkspaceTeammateClient
 
@@ -272,6 +274,7 @@ func (tx *Tx) init() {
 	tx.TestUser = NewTestUserClient(tx.config)
 	tx.Workspace = NewWorkspaceClient(tx.config)
 	tx.WorkspaceActivity = NewWorkspaceActivityClient(tx.config)
+	tx.WorkspaceActivityTask = NewWorkspaceActivityTaskClient(tx.config)
 	tx.WorkspaceTeammate = NewWorkspaceTeammateClient(tx.config)
 }
 

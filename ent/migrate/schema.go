@@ -1148,6 +1148,34 @@ var (
 			},
 		},
 	}
+	// WorkspaceActivityTasksColumns holds the columns for the "workspace_activity_tasks" table.
+	WorkspaceActivityTasksColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
+		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
+		{Name: "task_id", Type: field.TypeString},
+		{Name: "workspace_activity_id", Type: field.TypeString},
+	}
+	// WorkspaceActivityTasksTable holds the schema information for the "workspace_activity_tasks" table.
+	WorkspaceActivityTasksTable = &schema.Table{
+		Name:       "workspace_activity_tasks",
+		Columns:    WorkspaceActivityTasksColumns,
+		PrimaryKey: []*schema.Column{WorkspaceActivityTasksColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "workspace_activity_tasks_tasks_workspaceActivityTasks",
+				Columns:    []*schema.Column{WorkspaceActivityTasksColumns[3]},
+				RefColumns: []*schema.Column{TasksColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "workspace_activity_tasks_workspace_activities_workspaceActivityTasks",
+				Columns:    []*schema.Column{WorkspaceActivityTasksColumns[4]},
+				RefColumns: []*schema.Column{WorkspaceActivitiesColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
 	// WorkspaceTeammatesColumns holds the columns for the "workspace_teammates" table.
 	WorkspaceTeammatesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString},
@@ -1221,6 +1249,7 @@ var (
 		TestUsersTable,
 		WorkspacesTable,
 		WorkspaceActivitiesTable,
+		WorkspaceActivityTasksTable,
 		WorkspaceTeammatesTable,
 	}
 )
@@ -1299,6 +1328,8 @@ func init() {
 	WorkspaceActivitiesTable.ForeignKeys[1].RefTable = ProjectsTable
 	WorkspaceActivitiesTable.ForeignKeys[2].RefTable = TeammatesTable
 	WorkspaceActivitiesTable.ForeignKeys[3].RefTable = WorkspacesTable
+	WorkspaceActivityTasksTable.ForeignKeys[0].RefTable = TasksTable
+	WorkspaceActivityTasksTable.ForeignKeys[1].RefTable = WorkspaceActivitiesTable
 	WorkspaceTeammatesTable.ForeignKeys[0].RefTable = TeammatesTable
 	WorkspaceTeammatesTable.ForeignKeys[1].RefTable = WorkspacesTable
 }

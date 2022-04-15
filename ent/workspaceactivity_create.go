@@ -12,6 +12,7 @@ import (
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/workspace"
 	"project-management-demo-backend/ent/workspaceactivity"
+	"project-management-demo-backend/ent/workspaceactivitytask"
 	"time"
 
 	"entgo.io/ent/dialect"
@@ -112,6 +113,21 @@ func (wac *WorkspaceActivityCreate) SetProject(p *Project) *WorkspaceActivityCre
 // SetTeammate sets the "teammate" edge to the Teammate entity.
 func (wac *WorkspaceActivityCreate) SetTeammate(t *Teammate) *WorkspaceActivityCreate {
 	return wac.SetTeammateID(t.ID)
+}
+
+// AddWorkspaceActivityTaskIDs adds the "workspaceActivityTasks" edge to the WorkspaceActivityTask entity by IDs.
+func (wac *WorkspaceActivityCreate) AddWorkspaceActivityTaskIDs(ids ...ulid.ID) *WorkspaceActivityCreate {
+	wac.mutation.AddWorkspaceActivityTaskIDs(ids...)
+	return wac
+}
+
+// AddWorkspaceActivityTasks adds the "workspaceActivityTasks" edges to the WorkspaceActivityTask entity.
+func (wac *WorkspaceActivityCreate) AddWorkspaceActivityTasks(w ...*WorkspaceActivityTask) *WorkspaceActivityCreate {
+	ids := make([]ulid.ID, len(w))
+	for i := range w {
+		ids[i] = w[i].ID
+	}
+	return wac.AddWorkspaceActivityTaskIDs(ids...)
 }
 
 // Mutation returns the WorkspaceActivityMutation object of the builder.
@@ -362,6 +378,25 @@ func (wac *WorkspaceActivityCreate) createSpec() (*WorkspaceActivity, *sqlgraph.
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.TeammateID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := wac.mutation.WorkspaceActivityTasksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   workspaceactivity.WorkspaceActivityTasksTable,
+			Columns: []string{workspaceactivity.WorkspaceActivityTasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: workspaceactivitytask.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

@@ -500,6 +500,14 @@ func (t *Task) TaskActivityTasks(ctx context.Context) ([]*TaskActivityTask, erro
 	return result, err
 }
 
+func (t *Task) WorkspaceActivityTasks(ctx context.Context) ([]*WorkspaceActivityTask, error) {
+	result, err := t.Edges.WorkspaceActivityTasksOrErr()
+	if IsNotLoaded(err) {
+		result, err = t.QueryWorkspaceActivityTasks().All(ctx)
+	}
+	return result, err
+}
+
 func (ta *TaskActivity) Teammate(ctx context.Context) (*Teammate, error) {
 	result, err := ta.Edges.TeammateOrErr()
 	if IsNotLoaded(err) {
@@ -1184,6 +1192,30 @@ func (wa *WorkspaceActivity) Teammate(ctx context.Context) (*Teammate, error) {
 	result, err := wa.Edges.TeammateOrErr()
 	if IsNotLoaded(err) {
 		result, err = wa.QueryTeammate().Only(ctx)
+	}
+	return result, err
+}
+
+func (wa *WorkspaceActivity) WorkspaceActivityTasks(ctx context.Context) ([]*WorkspaceActivityTask, error) {
+	result, err := wa.Edges.WorkspaceActivityTasksOrErr()
+	if IsNotLoaded(err) {
+		result, err = wa.QueryWorkspaceActivityTasks().All(ctx)
+	}
+	return result, err
+}
+
+func (wat *WorkspaceActivityTask) Task(ctx context.Context) (*Task, error) {
+	result, err := wat.Edges.TaskOrErr()
+	if IsNotLoaded(err) {
+		result, err = wat.QueryTask().Only(ctx)
+	}
+	return result, err
+}
+
+func (wat *WorkspaceActivityTask) WorkspaceActivity(ctx context.Context) (*WorkspaceActivity, error) {
+	result, err := wat.Edges.WorkspaceActivityOrErr()
+	if IsNotLoaded(err) {
+		result, err = wat.QueryWorkspaceActivity().Only(ctx)
 	}
 	return result, err
 }

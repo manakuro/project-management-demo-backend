@@ -182,6 +182,13 @@ func (Task) Edges() []ent.Edge {
 					annotation.Edge{FieldName: "task_activity_task_id"},
 				),
 			),
+		edge.To(workspaceActivityTasksRef, WorkspaceActivityTask.Type).
+			Annotations(
+				entgql.Bind(),
+				schema.Annotation(
+					annotation.Edge{FieldName: "workspace_activity_task_id"},
+				),
+			),
 	}
 }
 

@@ -46,6 +46,7 @@ import (
 	"project-management-demo-backend/ent/testuser"
 	"project-management-demo-backend/ent/workspace"
 	"project-management-demo-backend/ent/workspaceactivity"
+	"project-management-demo-backend/ent/workspaceactivitytask"
 	"project-management-demo-backend/ent/workspaceteammate"
 	"time"
 )
@@ -1315,6 +1316,25 @@ func init() {
 	workspaceactivityDescID := workspaceactivityMixinFields0[0].Descriptor()
 	// workspaceactivity.DefaultID holds the default value on creation for the id field.
 	workspaceactivity.DefaultID = workspaceactivityDescID.Default.(func() ulid.ID)
+	workspaceactivitytaskMixin := schema.WorkspaceActivityTask{}.Mixin()
+	workspaceactivitytaskMixinFields0 := workspaceactivitytaskMixin[0].Fields()
+	_ = workspaceactivitytaskMixinFields0
+	workspaceactivitytaskMixinFields2 := workspaceactivitytaskMixin[2].Fields()
+	_ = workspaceactivitytaskMixinFields2
+	workspaceactivitytaskFields := schema.WorkspaceActivityTask{}.Fields()
+	_ = workspaceactivitytaskFields
+	// workspaceactivitytaskDescCreatedAt is the schema descriptor for created_at field.
+	workspaceactivitytaskDescCreatedAt := workspaceactivitytaskMixinFields2[0].Descriptor()
+	// workspaceactivitytask.DefaultCreatedAt holds the default value on creation for the created_at field.
+	workspaceactivitytask.DefaultCreatedAt = workspaceactivitytaskDescCreatedAt.Default.(func() time.Time)
+	// workspaceactivitytaskDescUpdatedAt is the schema descriptor for updated_at field.
+	workspaceactivitytaskDescUpdatedAt := workspaceactivitytaskMixinFields2[1].Descriptor()
+	// workspaceactivitytask.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	workspaceactivitytask.DefaultUpdatedAt = workspaceactivitytaskDescUpdatedAt.Default.(func() time.Time)
+	// workspaceactivitytaskDescID is the schema descriptor for id field.
+	workspaceactivitytaskDescID := workspaceactivitytaskMixinFields0[0].Descriptor()
+	// workspaceactivitytask.DefaultID holds the default value on creation for the id field.
+	workspaceactivitytask.DefaultID = workspaceactivitytaskDescID.Default.(func() ulid.ID)
 	workspaceteammateMixin := schema.WorkspaceTeammate{}.Mixin()
 	workspaceteammateMixinFields0 := workspaceteammateMixin[0].Fields()
 	_ = workspaceteammateMixinFields0

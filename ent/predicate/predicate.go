@@ -129,5 +129,8 @@ type Workspace func(*sql.Selector)
 // WorkspaceActivity is the predicate function for workspaceactivity builders.
 type WorkspaceActivity func(*sql.Selector)
 
+// WorkspaceActivityTask is the predicate function for workspaceactivitytask builders.
+type WorkspaceActivityTask func(*sql.Selector)
+
 // WorkspaceTeammate is the predicate function for workspaceteammate builders.
 type WorkspaceTeammate func(*sql.Selector)

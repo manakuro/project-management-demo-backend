@@ -81,9 +81,11 @@ type TaskEdges struct {
 	DeletedTasksRef []*DeletedTask `json:"deletedTasksRef,omitempty"`
 	// TaskActivityTasks holds the value of the taskActivityTasks edge.
 	TaskActivityTasks []*TaskActivityTask `json:"taskActivityTasks,omitempty"`
+	// WorkspaceActivityTasks holds the value of the workspaceActivityTasks edge.
+	WorkspaceActivityTasks []*WorkspaceActivityTask `json:"workspaceActivityTasks,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [14]bool
+	loadedTypes [15]bool
 }
 
 // TeammateOrErr returns the Teammate value or an error if the edge
@@ -225,6 +227,15 @@ func (e TaskEdges) TaskActivityTasksOrErr() ([]*TaskActivityTask, error) {
 		return e.TaskActivityTasks, nil
 	}
 	return nil, &NotLoadedError{edge: "taskActivityTasks"}
+}
+
+// WorkspaceActivityTasksOrErr returns the WorkspaceActivityTasks value or an error if the edge
+// was not loaded in eager-loading.
+func (e TaskEdges) WorkspaceActivityTasksOrErr() ([]*WorkspaceActivityTask, error) {
+	if e.loadedTypes[14] {
+		return e.WorkspaceActivityTasks, nil
+	}
+	return nil, &NotLoadedError{edge: "workspaceActivityTasks"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -419,6 +430,11 @@ func (t *Task) QueryDeletedTasksRef() *DeletedTaskQuery {
 // QueryTaskActivityTasks queries the "taskActivityTasks" edge of the Task entity.
 func (t *Task) QueryTaskActivityTasks() *TaskActivityTaskQuery {
 	return (&TaskClient{config: t.config}).QueryTaskActivityTasks(t)
+}
+
+// QueryWorkspaceActivityTasks queries the "workspaceActivityTasks" edge of the Task entity.
+func (t *Task) QueryWorkspaceActivityTasks() *WorkspaceActivityTaskQuery {
+	return (&TaskClient{config: t.config}).QueryWorkspaceActivityTasks(t)
 }
 
 // Update returns a builder for updating this Task.
