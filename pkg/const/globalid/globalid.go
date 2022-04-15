@@ -6,6 +6,7 @@ import (
 	"project-management-demo-backend/ent/activitytype"
 	"project-management-demo-backend/ent/archivedtaskactivity"
 	"project-management-demo-backend/ent/archivedtaskactivitytask"
+	"project-management-demo-backend/ent/archivedworkspaceactivity"
 	"project-management-demo-backend/ent/color"
 	"project-management-demo-backend/ent/deletedtask"
 	"project-management-demo-backend/ent/favoriteproject"
@@ -291,8 +292,8 @@ func New() GlobalIDs {
 			Table:  archivedtaskactivitytask.Table,
 		},
 		ArchivedWorkspaceActivity: field{
-			Prefix: "0BS",
-			Table:  archivedtaskactivitytask.Table,
+			Prefix: "0BT",
+			Table:  archivedworkspaceactivity.Table,
 		},
 	}
 }
