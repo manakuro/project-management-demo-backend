@@ -178,6 +178,13 @@ func (Project) Edges() []ent.Edge {
 					annotation.Edge{FieldName: "workspace_activity_id"},
 				),
 			),
+		edge.To(archivedWorkspaceActivitiesRef, ArchivedWorkspaceActivity.Type).
+			Annotations(
+				entgql.Bind(),
+				schema.Annotation(
+					annotation.Edge{FieldName: "archived_workspace_activity_id"},
+				),
+			),
 	}
 }
 

@@ -60,6 +60,8 @@ const (
 	EdgeTaskFiles = "taskFiles"
 	// EdgeWorkspaceActivities holds the string denoting the workspaceactivities edge name in mutations.
 	EdgeWorkspaceActivities = "workspaceActivities"
+	// EdgeArchivedWorkspaceActivities holds the string denoting the archivedworkspaceactivities edge name in mutations.
+	EdgeArchivedWorkspaceActivities = "archivedWorkspaceActivities"
 	// Table holds the table name of the project in the database.
 	Table = "projects"
 	// WorkspaceTable is the table that holds the workspace relation/edge.
@@ -153,6 +155,13 @@ const (
 	WorkspaceActivitiesInverseTable = "workspace_activities"
 	// WorkspaceActivitiesColumn is the table column denoting the workspaceActivities relation/edge.
 	WorkspaceActivitiesColumn = "project_id"
+	// ArchivedWorkspaceActivitiesTable is the table that holds the archivedWorkspaceActivities relation/edge.
+	ArchivedWorkspaceActivitiesTable = "archived_workspace_activities"
+	// ArchivedWorkspaceActivitiesInverseTable is the table name for the ArchivedWorkspaceActivity entity.
+	// It exists in this package in order to avoid circular dependency with the "archivedworkspaceactivity" package.
+	ArchivedWorkspaceActivitiesInverseTable = "archived_workspace_activities"
+	// ArchivedWorkspaceActivitiesColumn is the table column denoting the archivedWorkspaceActivities relation/edge.
+	ArchivedWorkspaceActivitiesColumn = "project_id"
 )
 
 // Columns holds all SQL columns for project fields.

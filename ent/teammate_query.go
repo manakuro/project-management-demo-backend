@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"math"
 	"project-management-demo-backend/ent/archivedtaskactivity"
+	"project-management-demo-backend/ent/archivedworkspaceactivity"
 	"project-management-demo-backend/ent/favoriteproject"
 	"project-management-demo-backend/ent/favoriteworkspace"
 	"project-management-demo-backend/ent/predicate"
@@ -46,25 +47,26 @@ type TeammateQuery struct {
 	fields     []string
 	predicates []predicate.Teammate
 	// eager-loading edges.
-	withWorkspaces               *WorkspaceQuery
-	withProjects                 *ProjectQuery
-	withProjectTeammates         *ProjectTeammateQuery
-	withWorkspaceTeammates       *WorkspaceTeammateQuery
-	withFavoriteProjects         *FavoriteProjectQuery
-	withFavoriteWorkspaces       *FavoriteWorkspaceQuery
-	withTeammateTaskTabStatuses  *TeammateTaskTabStatusQuery
-	withTeammateTaskColumns      *TeammateTaskColumnQuery
-	withTeammateTaskListStatuses *TeammateTaskListStatusQuery
-	withTeammateTaskSections     *TeammateTaskSectionQuery
-	withTasks                    *TaskQuery
-	withTeammateTasks            *TeammateTaskQuery
-	withTaskLikes                *TaskLikeQuery
-	withTaskCollaborators        *TaskCollaboratorQuery
-	withTaskFeeds                *TaskFeedQuery
-	withTaskFeedLikes            *TaskFeedLikeQuery
-	withTaskActivities           *TaskActivityQuery
-	withWorkspaceActivities      *WorkspaceActivityQuery
-	withArchivedTaskActivities   *ArchivedTaskActivityQuery
+	withWorkspaces                  *WorkspaceQuery
+	withProjects                    *ProjectQuery
+	withProjectTeammates            *ProjectTeammateQuery
+	withWorkspaceTeammates          *WorkspaceTeammateQuery
+	withFavoriteProjects            *FavoriteProjectQuery
+	withFavoriteWorkspaces          *FavoriteWorkspaceQuery
+	withTeammateTaskTabStatuses     *TeammateTaskTabStatusQuery
+	withTeammateTaskColumns         *TeammateTaskColumnQuery
+	withTeammateTaskListStatuses    *TeammateTaskListStatusQuery
+	withTeammateTaskSections        *TeammateTaskSectionQuery
+	withTasks                       *TaskQuery
+	withTeammateTasks               *TeammateTaskQuery
+	withTaskLikes                   *TaskLikeQuery
+	withTaskCollaborators           *TaskCollaboratorQuery
+	withTaskFeeds                   *TaskFeedQuery
+	withTaskFeedLikes               *TaskFeedLikeQuery
+	withTaskActivities              *TaskActivityQuery
+	withWorkspaceActivities         *WorkspaceActivityQuery
+	withArchivedTaskActivities      *ArchivedTaskActivityQuery
+	withArchivedWorkspaceActivities *ArchivedWorkspaceActivityQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -519,6 +521,28 @@ func (tq *TeammateQuery) QueryArchivedTaskActivities() *ArchivedTaskActivityQuer
 	return query
 }
 
+// QueryArchivedWorkspaceActivities chains the current query on the "archivedWorkspaceActivities" edge.
+func (tq *TeammateQuery) QueryArchivedWorkspaceActivities() *ArchivedWorkspaceActivityQuery {
+	query := &ArchivedWorkspaceActivityQuery{config: tq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := tq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := tq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(teammate.Table, teammate.FieldID, selector),
+			sqlgraph.To(archivedworkspaceactivity.Table, archivedworkspaceactivity.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, teammate.ArchivedWorkspaceActivitiesTable, teammate.ArchivedWorkspaceActivitiesColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(tq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // First returns the first Teammate entity from the query.
 // Returns a *NotFoundError when no Teammate was found.
 func (tq *TeammateQuery) First(ctx context.Context) (*Teammate, error) {
@@ -695,30 +719,31 @@ func (tq *TeammateQuery) Clone() *TeammateQuery {
 		return nil
 	}
 	return &TeammateQuery{
-		config:                       tq.config,
-		limit:                        tq.limit,
-		offset:                       tq.offset,
-		order:                        append([]OrderFunc{}, tq.order...),
-		predicates:                   append([]predicate.Teammate{}, tq.predicates...),
-		withWorkspaces:               tq.withWorkspaces.Clone(),
-		withProjects:                 tq.withProjects.Clone(),
-		withProjectTeammates:         tq.withProjectTeammates.Clone(),
-		withWorkspaceTeammates:       tq.withWorkspaceTeammates.Clone(),
-		withFavoriteProjects:         tq.withFavoriteProjects.Clone(),
-		withFavoriteWorkspaces:       tq.withFavoriteWorkspaces.Clone(),
-		withTeammateTaskTabStatuses:  tq.withTeammateTaskTabStatuses.Clone(),
-		withTeammateTaskColumns:      tq.withTeammateTaskColumns.Clone(),
-		withTeammateTaskListStatuses: tq.withTeammateTaskListStatuses.Clone(),
-		withTeammateTaskSections:     tq.withTeammateTaskSections.Clone(),
-		withTasks:                    tq.withTasks.Clone(),
-		withTeammateTasks:            tq.withTeammateTasks.Clone(),
-		withTaskLikes:                tq.withTaskLikes.Clone(),
-		withTaskCollaborators:        tq.withTaskCollaborators.Clone(),
-		withTaskFeeds:                tq.withTaskFeeds.Clone(),
-		withTaskFeedLikes:            tq.withTaskFeedLikes.Clone(),
-		withTaskActivities:           tq.withTaskActivities.Clone(),
-		withWorkspaceActivities:      tq.withWorkspaceActivities.Clone(),
-		withArchivedTaskActivities:   tq.withArchivedTaskActivities.Clone(),
+		config:                          tq.config,
+		limit:                           tq.limit,
+		offset:                          tq.offset,
+		order:                           append([]OrderFunc{}, tq.order...),
+		predicates:                      append([]predicate.Teammate{}, tq.predicates...),
+		withWorkspaces:                  tq.withWorkspaces.Clone(),
+		withProjects:                    tq.withProjects.Clone(),
+		withProjectTeammates:            tq.withProjectTeammates.Clone(),
+		withWorkspaceTeammates:          tq.withWorkspaceTeammates.Clone(),
+		withFavoriteProjects:            tq.withFavoriteProjects.Clone(),
+		withFavoriteWorkspaces:          tq.withFavoriteWorkspaces.Clone(),
+		withTeammateTaskTabStatuses:     tq.withTeammateTaskTabStatuses.Clone(),
+		withTeammateTaskColumns:         tq.withTeammateTaskColumns.Clone(),
+		withTeammateTaskListStatuses:    tq.withTeammateTaskListStatuses.Clone(),
+		withTeammateTaskSections:        tq.withTeammateTaskSections.Clone(),
+		withTasks:                       tq.withTasks.Clone(),
+		withTeammateTasks:               tq.withTeammateTasks.Clone(),
+		withTaskLikes:                   tq.withTaskLikes.Clone(),
+		withTaskCollaborators:           tq.withTaskCollaborators.Clone(),
+		withTaskFeeds:                   tq.withTaskFeeds.Clone(),
+		withTaskFeedLikes:               tq.withTaskFeedLikes.Clone(),
+		withTaskActivities:              tq.withTaskActivities.Clone(),
+		withWorkspaceActivities:         tq.withWorkspaceActivities.Clone(),
+		withArchivedTaskActivities:      tq.withArchivedTaskActivities.Clone(),
+		withArchivedWorkspaceActivities: tq.withArchivedWorkspaceActivities.Clone(),
 		// clone intermediate query.
 		sql:    tq.sql.Clone(),
 		path:   tq.path,
@@ -935,6 +960,17 @@ func (tq *TeammateQuery) WithArchivedTaskActivities(opts ...func(*ArchivedTaskAc
 	return tq
 }
 
+// WithArchivedWorkspaceActivities tells the query-builder to eager-load the nodes that are connected to
+// the "archivedWorkspaceActivities" edge. The optional arguments are used to configure the query builder of the edge.
+func (tq *TeammateQuery) WithArchivedWorkspaceActivities(opts ...func(*ArchivedWorkspaceActivityQuery)) *TeammateQuery {
+	query := &ArchivedWorkspaceActivityQuery{config: tq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	tq.withArchivedWorkspaceActivities = query
+	return tq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -1000,7 +1036,7 @@ func (tq *TeammateQuery) sqlAll(ctx context.Context) ([]*Teammate, error) {
 	var (
 		nodes       = []*Teammate{}
 		_spec       = tq.querySpec()
-		loadedTypes = [19]bool{
+		loadedTypes = [20]bool{
 			tq.withWorkspaces != nil,
 			tq.withProjects != nil,
 			tq.withProjectTeammates != nil,
@@ -1020,6 +1056,7 @@ func (tq *TeammateQuery) sqlAll(ctx context.Context) ([]*Teammate, error) {
 			tq.withTaskActivities != nil,
 			tq.withWorkspaceActivities != nil,
 			tq.withArchivedTaskActivities != nil,
+			tq.withArchivedWorkspaceActivities != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -1514,6 +1551,31 @@ func (tq *TeammateQuery) sqlAll(ctx context.Context) ([]*Teammate, error) {
 				return nil, fmt.Errorf(`unexpected foreign-key "teammate_id" returned %v for node %v`, fk, n.ID)
 			}
 			node.Edges.ArchivedTaskActivities = append(node.Edges.ArchivedTaskActivities, n)
+		}
+	}
+
+	if query := tq.withArchivedWorkspaceActivities; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[ulid.ID]*Teammate)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.ArchivedWorkspaceActivities = []*ArchivedWorkspaceActivity{}
+		}
+		query.Where(predicate.ArchivedWorkspaceActivity(func(s *sql.Selector) {
+			s.Where(sql.InValues(teammate.ArchivedWorkspaceActivitiesColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.TeammateID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "teammate_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.ArchivedWorkspaceActivities = append(node.Edges.ArchivedWorkspaceActivities, n)
 		}
 	}
 

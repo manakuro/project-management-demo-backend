@@ -72,9 +72,11 @@ type TeammateEdges struct {
 	WorkspaceActivities []*WorkspaceActivity `json:"workspaceActivities,omitempty"`
 	// ArchivedTaskActivities holds the value of the archivedTaskActivities edge.
 	ArchivedTaskActivities []*ArchivedTaskActivity `json:"archivedTaskActivities,omitempty"`
+	// ArchivedWorkspaceActivities holds the value of the archivedWorkspaceActivities edge.
+	ArchivedWorkspaceActivities []*ArchivedWorkspaceActivity `json:"archivedWorkspaceActivities,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [19]bool
+	loadedTypes [20]bool
 }
 
 // WorkspacesOrErr returns the Workspaces value or an error if the edge
@@ -248,6 +250,15 @@ func (e TeammateEdges) ArchivedTaskActivitiesOrErr() ([]*ArchivedTaskActivity, e
 	return nil, &NotLoadedError{edge: "archivedTaskActivities"}
 }
 
+// ArchivedWorkspaceActivitiesOrErr returns the ArchivedWorkspaceActivities value or an error if the edge
+// was not loaded in eager-loading.
+func (e TeammateEdges) ArchivedWorkspaceActivitiesOrErr() ([]*ArchivedWorkspaceActivity, error) {
+	if e.loadedTypes[19] {
+		return e.ArchivedWorkspaceActivities, nil
+	}
+	return nil, &NotLoadedError{edge: "archivedWorkspaceActivities"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*Teammate) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
@@ -408,6 +419,11 @@ func (t *Teammate) QueryWorkspaceActivities() *WorkspaceActivityQuery {
 // QueryArchivedTaskActivities queries the "archivedTaskActivities" edge of the Teammate entity.
 func (t *Teammate) QueryArchivedTaskActivities() *ArchivedTaskActivityQuery {
 	return (&TeammateClient{config: t.config}).QueryArchivedTaskActivities(t)
+}
+
+// QueryArchivedWorkspaceActivities queries the "archivedWorkspaceActivities" edge of the Teammate entity.
+func (t *Teammate) QueryArchivedWorkspaceActivities() *ArchivedWorkspaceActivityQuery {
+	return (&TeammateClient{config: t.config}).QueryArchivedWorkspaceActivities(t)
 }
 
 // Update returns a builder for updating this Teammate.

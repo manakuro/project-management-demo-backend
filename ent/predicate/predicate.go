@@ -15,6 +15,9 @@ type ArchivedTaskActivity func(*sql.Selector)
 // ArchivedTaskActivityTask is the predicate function for archivedtaskactivitytask builders.
 type ArchivedTaskActivityTask func(*sql.Selector)
 
+// ArchivedWorkspaceActivity is the predicate function for archivedworkspaceactivity builders.
+type ArchivedWorkspaceActivity func(*sql.Selector)
+
 // Color is the predicate function for color builders.
 type Color func(*sql.Selector)
 

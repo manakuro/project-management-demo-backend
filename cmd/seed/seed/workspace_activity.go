@@ -9,7 +9,7 @@ import (
 
 var workspaceActivitySeed = make([]*ent.WorkspaceActivity, 3)
 
-// WorkspaceActivity generates task activity data.
+// WorkspaceActivity generates workspace activity data.
 func WorkspaceActivity(ctx context.Context, client *ent.Client) {
 	_, err := client.WorkspaceActivity.Delete().Exec(ctx)
 	if err != nil {

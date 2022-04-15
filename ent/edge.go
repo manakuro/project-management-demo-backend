@@ -28,6 +28,14 @@ func (at *ActivityType) ArchivedTaskActivities(ctx context.Context) ([]*Archived
 	return result, err
 }
 
+func (at *ActivityType) ArchivedWorkspaceActivities(ctx context.Context) ([]*ArchivedWorkspaceActivity, error) {
+	result, err := at.Edges.ArchivedWorkspaceActivitiesOrErr()
+	if IsNotLoaded(err) {
+		result, err = at.QueryArchivedWorkspaceActivities().All(ctx)
+	}
+	return result, err
+}
+
 func (ata *ArchivedTaskActivity) Teammate(ctx context.Context) (*Teammate, error) {
 	result, err := ata.Edges.TeammateOrErr()
 	if IsNotLoaded(err) {
@@ -72,6 +80,38 @@ func (atat *ArchivedTaskActivityTask) ArchivedTaskActivity(ctx context.Context) 
 	result, err := atat.Edges.ArchivedTaskActivityOrErr()
 	if IsNotLoaded(err) {
 		result, err = atat.QueryArchivedTaskActivity().Only(ctx)
+	}
+	return result, err
+}
+
+func (awa *ArchivedWorkspaceActivity) ActivityType(ctx context.Context) (*ActivityType, error) {
+	result, err := awa.Edges.ActivityTypeOrErr()
+	if IsNotLoaded(err) {
+		result, err = awa.QueryActivityType().Only(ctx)
+	}
+	return result, err
+}
+
+func (awa *ArchivedWorkspaceActivity) Workspace(ctx context.Context) (*Workspace, error) {
+	result, err := awa.Edges.WorkspaceOrErr()
+	if IsNotLoaded(err) {
+		result, err = awa.QueryWorkspace().Only(ctx)
+	}
+	return result, err
+}
+
+func (awa *ArchivedWorkspaceActivity) Project(ctx context.Context) (*Project, error) {
+	result, err := awa.Edges.ProjectOrErr()
+	if IsNotLoaded(err) {
+		result, err = awa.QueryProject().Only(ctx)
+	}
+	return result, err
+}
+
+func (awa *ArchivedWorkspaceActivity) Teammate(ctx context.Context) (*Teammate, error) {
+	result, err := awa.Edges.TeammateOrErr()
+	if IsNotLoaded(err) {
+		result, err = awa.QueryTeammate().Only(ctx)
 	}
 	return result, err
 }
@@ -272,6 +312,14 @@ func (pr *Project) WorkspaceActivities(ctx context.Context) ([]*WorkspaceActivit
 	result, err := pr.Edges.WorkspaceActivitiesOrErr()
 	if IsNotLoaded(err) {
 		result, err = pr.QueryWorkspaceActivities().All(ctx)
+	}
+	return result, err
+}
+
+func (pr *Project) ArchivedWorkspaceActivities(ctx context.Context) ([]*ArchivedWorkspaceActivity, error) {
+	result, err := pr.Edges.ArchivedWorkspaceActivitiesOrErr()
+	if IsNotLoaded(err) {
+		result, err = pr.QueryArchivedWorkspaceActivities().All(ctx)
 	}
 	return result, err
 }
@@ -980,6 +1028,14 @@ func (t *Teammate) ArchivedTaskActivities(ctx context.Context) ([]*ArchivedTaskA
 	return result, err
 }
 
+func (t *Teammate) ArchivedWorkspaceActivities(ctx context.Context) ([]*ArchivedWorkspaceActivity, error) {
+	result, err := t.Edges.ArchivedWorkspaceActivitiesOrErr()
+	if IsNotLoaded(err) {
+		result, err = t.QueryArchivedWorkspaceActivities().All(ctx)
+	}
+	return result, err
+}
+
 func (tt *TeammateTask) Teammate(ctx context.Context) (*Teammate, error) {
 	result, err := tt.Edges.TeammateOrErr()
 	if IsNotLoaded(err) {
@@ -1256,6 +1312,14 @@ func (w *Workspace) ArchivedTaskActivities(ctx context.Context) ([]*ArchivedTask
 	result, err := w.Edges.ArchivedTaskActivitiesOrErr()
 	if IsNotLoaded(err) {
 		result, err = w.QueryArchivedTaskActivities().All(ctx)
+	}
+	return result, err
+}
+
+func (w *Workspace) ArchivedWorkspaceActivities(ctx context.Context) ([]*ArchivedWorkspaceActivity, error) {
+	result, err := w.Edges.ArchivedWorkspaceActivitiesOrErr()
+	if IsNotLoaded(err) {
+		result, err = w.QueryArchivedWorkspaceActivities().All(ctx)
 	}
 	return result, err
 }

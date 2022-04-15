@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"project-management-demo-backend/ent/activitytype"
 	"project-management-demo-backend/ent/archivedtaskactivity"
+	"project-management-demo-backend/ent/archivedworkspaceactivity"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/taskactivity"
 	"project-management-demo-backend/ent/workspaceactivity"
@@ -124,6 +125,21 @@ func (atc *ActivityTypeCreate) AddArchivedTaskActivities(a ...*ArchivedTaskActiv
 		ids[i] = a[i].ID
 	}
 	return atc.AddArchivedTaskActivityIDs(ids...)
+}
+
+// AddArchivedWorkspaceActivityIDs adds the "archivedWorkspaceActivities" edge to the ArchivedWorkspaceActivity entity by IDs.
+func (atc *ActivityTypeCreate) AddArchivedWorkspaceActivityIDs(ids ...ulid.ID) *ActivityTypeCreate {
+	atc.mutation.AddArchivedWorkspaceActivityIDs(ids...)
+	return atc
+}
+
+// AddArchivedWorkspaceActivities adds the "archivedWorkspaceActivities" edges to the ArchivedWorkspaceActivity entity.
+func (atc *ActivityTypeCreate) AddArchivedWorkspaceActivities(a ...*ArchivedWorkspaceActivity) *ActivityTypeCreate {
+	ids := make([]ulid.ID, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return atc.AddArchivedWorkspaceActivityIDs(ids...)
 }
 
 // Mutation returns the ActivityTypeMutation object of the builder.
@@ -353,6 +369,25 @@ func (atc *ActivityTypeCreate) createSpec() (*ActivityType, *sqlgraph.CreateSpec
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: archivedtaskactivity.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := atc.mutation.ArchivedWorkspaceActivitiesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   activitytype.ArchivedWorkspaceActivitiesTable,
+			Columns: []string{activitytype.ArchivedWorkspaceActivitiesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: archivedworkspaceactivity.FieldID,
 				},
 			},
 		}
