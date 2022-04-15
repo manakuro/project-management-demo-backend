@@ -127,6 +127,34 @@ var (
 			},
 		},
 	}
+	// ArchivedWorkspaceActivityTasksColumns holds the columns for the "archived_workspace_activity_tasks" table.
+	ArchivedWorkspaceActivityTasksColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
+		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
+		{Name: "archived_workspace_activity_id", Type: field.TypeString},
+		{Name: "task_id", Type: field.TypeString},
+	}
+	// ArchivedWorkspaceActivityTasksTable holds the schema information for the "archived_workspace_activity_tasks" table.
+	ArchivedWorkspaceActivityTasksTable = &schema.Table{
+		Name:       "archived_workspace_activity_tasks",
+		Columns:    ArchivedWorkspaceActivityTasksColumns,
+		PrimaryKey: []*schema.Column{ArchivedWorkspaceActivityTasksColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "archived_workspace_activity_tasks_archived_workspace_activities_archivedWorkspaceActivityTasks",
+				Columns:    []*schema.Column{ArchivedWorkspaceActivityTasksColumns[3]},
+				RefColumns: []*schema.Column{ArchivedWorkspaceActivitiesColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "archived_workspace_activity_tasks_tasks_archivedWorkspaceActivityTasks",
+				Columns:    []*schema.Column{ArchivedWorkspaceActivityTasksColumns[4]},
+				RefColumns: []*schema.Column{TasksColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
 	// ColorsColumns holds the columns for the "colors" table.
 	ColorsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString},
@@ -1324,6 +1352,7 @@ var (
 		ArchivedTaskActivitiesTable,
 		ArchivedTaskActivityTasksTable,
 		ArchivedWorkspaceActivitiesTable,
+		ArchivedWorkspaceActivityTasksTable,
 		ColorsTable,
 		DeletedTasksTable,
 		FavoriteProjectsTable,
@@ -1379,6 +1408,8 @@ func init() {
 	ArchivedWorkspaceActivitiesTable.ForeignKeys[1].RefTable = ProjectsTable
 	ArchivedWorkspaceActivitiesTable.ForeignKeys[2].RefTable = TeammatesTable
 	ArchivedWorkspaceActivitiesTable.ForeignKeys[3].RefTable = WorkspacesTable
+	ArchivedWorkspaceActivityTasksTable.ForeignKeys[0].RefTable = ArchivedWorkspaceActivitiesTable
+	ArchivedWorkspaceActivityTasksTable.ForeignKeys[1].RefTable = TasksTable
 	DeletedTasksTable.ForeignKeys[0].RefTable = TasksTable
 	DeletedTasksTable.ForeignKeys[1].RefTable = WorkspacesTable
 	FavoriteProjectsTable.ForeignKeys[0].RefTable = ProjectsTable

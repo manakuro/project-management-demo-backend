@@ -116,6 +116,30 @@ func (awa *ArchivedWorkspaceActivity) Teammate(ctx context.Context) (*Teammate, 
 	return result, err
 }
 
+func (awa *ArchivedWorkspaceActivity) ArchivedWorkspaceActivityTasks(ctx context.Context) ([]*ArchivedWorkspaceActivityTask, error) {
+	result, err := awa.Edges.ArchivedWorkspaceActivityTasksOrErr()
+	if IsNotLoaded(err) {
+		result, err = awa.QueryArchivedWorkspaceActivityTasks().All(ctx)
+	}
+	return result, err
+}
+
+func (awat *ArchivedWorkspaceActivityTask) Task(ctx context.Context) (*Task, error) {
+	result, err := awat.Edges.TaskOrErr()
+	if IsNotLoaded(err) {
+		result, err = awat.QueryTask().Only(ctx)
+	}
+	return result, err
+}
+
+func (awat *ArchivedWorkspaceActivityTask) ArchivedWorkspaceActivity(ctx context.Context) (*ArchivedWorkspaceActivity, error) {
+	result, err := awat.Edges.ArchivedWorkspaceActivityOrErr()
+	if IsNotLoaded(err) {
+		result, err = awat.QueryArchivedWorkspaceActivity().Only(ctx)
+	}
+	return result, err
+}
+
 func (c *Color) ProjectBaseColors(ctx context.Context) ([]*ProjectBaseColor, error) {
 	result, err := c.Edges.ProjectBaseColorsOrErr()
 	if IsNotLoaded(err) {
@@ -616,6 +640,14 @@ func (t *Task) ArchivedTaskActivityTasks(ctx context.Context) ([]*ArchivedTaskAc
 	result, err := t.Edges.ArchivedTaskActivityTasksOrErr()
 	if IsNotLoaded(err) {
 		result, err = t.QueryArchivedTaskActivityTasks().All(ctx)
+	}
+	return result, err
+}
+
+func (t *Task) ArchivedWorkspaceActivityTasks(ctx context.Context) ([]*ArchivedWorkspaceActivityTask, error) {
+	result, err := t.Edges.ArchivedWorkspaceActivityTasksOrErr()
+	if IsNotLoaded(err) {
+		result, err = t.QueryArchivedWorkspaceActivityTasks().All(ctx)
 	}
 	return result, err
 }

@@ -14,6 +14,7 @@ import (
 	"project-management-demo-backend/ent/archivedtaskactivity"
 	"project-management-demo-backend/ent/archivedtaskactivitytask"
 	"project-management-demo-backend/ent/archivedworkspaceactivity"
+	"project-management-demo-backend/ent/archivedworkspaceactivitytask"
 	"project-management-demo-backend/ent/color"
 	"project-management-demo-backend/ent/deletedtask"
 	"project-management-demo-backend/ent/favoriteproject"
@@ -75,6 +76,8 @@ type Client struct {
 	ArchivedTaskActivityTask *ArchivedTaskActivityTaskClient
 	// ArchivedWorkspaceActivity is the client for interacting with the ArchivedWorkspaceActivity builders.
 	ArchivedWorkspaceActivity *ArchivedWorkspaceActivityClient
+	// ArchivedWorkspaceActivityTask is the client for interacting with the ArchivedWorkspaceActivityTask builders.
+	ArchivedWorkspaceActivityTask *ArchivedWorkspaceActivityTaskClient
 	// Color is the client for interacting with the Color builders.
 	Color *ColorClient
 	// DeletedTask is the client for interacting with the DeletedTask builders.
@@ -176,6 +179,7 @@ func (c *Client) init() {
 	c.ArchivedTaskActivity = NewArchivedTaskActivityClient(c.config)
 	c.ArchivedTaskActivityTask = NewArchivedTaskActivityTaskClient(c.config)
 	c.ArchivedWorkspaceActivity = NewArchivedWorkspaceActivityClient(c.config)
+	c.ArchivedWorkspaceActivityTask = NewArchivedWorkspaceActivityTaskClient(c.config)
 	c.Color = NewColorClient(c.config)
 	c.DeletedTask = NewDeletedTaskClient(c.config)
 	c.FavoriteProject = NewFavoriteProjectClient(c.config)
@@ -249,54 +253,55 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:                       ctx,
-		config:                    cfg,
-		ActivityType:              NewActivityTypeClient(cfg),
-		ArchivedTaskActivity:      NewArchivedTaskActivityClient(cfg),
-		ArchivedTaskActivityTask:  NewArchivedTaskActivityTaskClient(cfg),
-		ArchivedWorkspaceActivity: NewArchivedWorkspaceActivityClient(cfg),
-		Color:                     NewColorClient(cfg),
-		DeletedTask:               NewDeletedTaskClient(cfg),
-		FavoriteProject:           NewFavoriteProjectClient(cfg),
-		FavoriteWorkspace:         NewFavoriteWorkspaceClient(cfg),
-		FileType:                  NewFileTypeClient(cfg),
-		Icon:                      NewIconClient(cfg),
-		Project:                   NewProjectClient(cfg),
-		ProjectBaseColor:          NewProjectBaseColorClient(cfg),
-		ProjectIcon:               NewProjectIconClient(cfg),
-		ProjectLightColor:         NewProjectLightColorClient(cfg),
-		ProjectTask:               NewProjectTaskClient(cfg),
-		ProjectTaskColumn:         NewProjectTaskColumnClient(cfg),
-		ProjectTaskListStatus:     NewProjectTaskListStatusClient(cfg),
-		ProjectTaskSection:        NewProjectTaskSectionClient(cfg),
-		ProjectTeammate:           NewProjectTeammateClient(cfg),
-		Tag:                       NewTagClient(cfg),
-		Task:                      NewTaskClient(cfg),
-		TaskActivity:              NewTaskActivityClient(cfg),
-		TaskActivityTask:          NewTaskActivityTaskClient(cfg),
-		TaskCollaborator:          NewTaskCollaboratorClient(cfg),
-		TaskColumn:                NewTaskColumnClient(cfg),
-		TaskFeed:                  NewTaskFeedClient(cfg),
-		TaskFeedLike:              NewTaskFeedLikeClient(cfg),
-		TaskFile:                  NewTaskFileClient(cfg),
-		TaskLike:                  NewTaskLikeClient(cfg),
-		TaskListCompletedStatus:   NewTaskListCompletedStatusClient(cfg),
-		TaskListSortStatus:        NewTaskListSortStatusClient(cfg),
-		TaskPriority:              NewTaskPriorityClient(cfg),
-		TaskSection:               NewTaskSectionClient(cfg),
-		TaskTag:                   NewTaskTagClient(cfg),
-		Teammate:                  NewTeammateClient(cfg),
-		TeammateTask:              NewTeammateTaskClient(cfg),
-		TeammateTaskColumn:        NewTeammateTaskColumnClient(cfg),
-		TeammateTaskListStatus:    NewTeammateTaskListStatusClient(cfg),
-		TeammateTaskSection:       NewTeammateTaskSectionClient(cfg),
-		TeammateTaskTabStatus:     NewTeammateTaskTabStatusClient(cfg),
-		TestTodo:                  NewTestTodoClient(cfg),
-		TestUser:                  NewTestUserClient(cfg),
-		Workspace:                 NewWorkspaceClient(cfg),
-		WorkspaceActivity:         NewWorkspaceActivityClient(cfg),
-		WorkspaceActivityTask:     NewWorkspaceActivityTaskClient(cfg),
-		WorkspaceTeammate:         NewWorkspaceTeammateClient(cfg),
+		ctx:                           ctx,
+		config:                        cfg,
+		ActivityType:                  NewActivityTypeClient(cfg),
+		ArchivedTaskActivity:          NewArchivedTaskActivityClient(cfg),
+		ArchivedTaskActivityTask:      NewArchivedTaskActivityTaskClient(cfg),
+		ArchivedWorkspaceActivity:     NewArchivedWorkspaceActivityClient(cfg),
+		ArchivedWorkspaceActivityTask: NewArchivedWorkspaceActivityTaskClient(cfg),
+		Color:                         NewColorClient(cfg),
+		DeletedTask:                   NewDeletedTaskClient(cfg),
+		FavoriteProject:               NewFavoriteProjectClient(cfg),
+		FavoriteWorkspace:             NewFavoriteWorkspaceClient(cfg),
+		FileType:                      NewFileTypeClient(cfg),
+		Icon:                          NewIconClient(cfg),
+		Project:                       NewProjectClient(cfg),
+		ProjectBaseColor:              NewProjectBaseColorClient(cfg),
+		ProjectIcon:                   NewProjectIconClient(cfg),
+		ProjectLightColor:             NewProjectLightColorClient(cfg),
+		ProjectTask:                   NewProjectTaskClient(cfg),
+		ProjectTaskColumn:             NewProjectTaskColumnClient(cfg),
+		ProjectTaskListStatus:         NewProjectTaskListStatusClient(cfg),
+		ProjectTaskSection:            NewProjectTaskSectionClient(cfg),
+		ProjectTeammate:               NewProjectTeammateClient(cfg),
+		Tag:                           NewTagClient(cfg),
+		Task:                          NewTaskClient(cfg),
+		TaskActivity:                  NewTaskActivityClient(cfg),
+		TaskActivityTask:              NewTaskActivityTaskClient(cfg),
+		TaskCollaborator:              NewTaskCollaboratorClient(cfg),
+		TaskColumn:                    NewTaskColumnClient(cfg),
+		TaskFeed:                      NewTaskFeedClient(cfg),
+		TaskFeedLike:                  NewTaskFeedLikeClient(cfg),
+		TaskFile:                      NewTaskFileClient(cfg),
+		TaskLike:                      NewTaskLikeClient(cfg),
+		TaskListCompletedStatus:       NewTaskListCompletedStatusClient(cfg),
+		TaskListSortStatus:            NewTaskListSortStatusClient(cfg),
+		TaskPriority:                  NewTaskPriorityClient(cfg),
+		TaskSection:                   NewTaskSectionClient(cfg),
+		TaskTag:                       NewTaskTagClient(cfg),
+		Teammate:                      NewTeammateClient(cfg),
+		TeammateTask:                  NewTeammateTaskClient(cfg),
+		TeammateTaskColumn:            NewTeammateTaskColumnClient(cfg),
+		TeammateTaskListStatus:        NewTeammateTaskListStatusClient(cfg),
+		TeammateTaskSection:           NewTeammateTaskSectionClient(cfg),
+		TeammateTaskTabStatus:         NewTeammateTaskTabStatusClient(cfg),
+		TestTodo:                      NewTestTodoClient(cfg),
+		TestUser:                      NewTestUserClient(cfg),
+		Workspace:                     NewWorkspaceClient(cfg),
+		WorkspaceActivity:             NewWorkspaceActivityClient(cfg),
+		WorkspaceActivityTask:         NewWorkspaceActivityTaskClient(cfg),
+		WorkspaceTeammate:             NewWorkspaceTeammateClient(cfg),
 	}, nil
 }
 
@@ -314,54 +319,55 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:                       ctx,
-		config:                    cfg,
-		ActivityType:              NewActivityTypeClient(cfg),
-		ArchivedTaskActivity:      NewArchivedTaskActivityClient(cfg),
-		ArchivedTaskActivityTask:  NewArchivedTaskActivityTaskClient(cfg),
-		ArchivedWorkspaceActivity: NewArchivedWorkspaceActivityClient(cfg),
-		Color:                     NewColorClient(cfg),
-		DeletedTask:               NewDeletedTaskClient(cfg),
-		FavoriteProject:           NewFavoriteProjectClient(cfg),
-		FavoriteWorkspace:         NewFavoriteWorkspaceClient(cfg),
-		FileType:                  NewFileTypeClient(cfg),
-		Icon:                      NewIconClient(cfg),
-		Project:                   NewProjectClient(cfg),
-		ProjectBaseColor:          NewProjectBaseColorClient(cfg),
-		ProjectIcon:               NewProjectIconClient(cfg),
-		ProjectLightColor:         NewProjectLightColorClient(cfg),
-		ProjectTask:               NewProjectTaskClient(cfg),
-		ProjectTaskColumn:         NewProjectTaskColumnClient(cfg),
-		ProjectTaskListStatus:     NewProjectTaskListStatusClient(cfg),
-		ProjectTaskSection:        NewProjectTaskSectionClient(cfg),
-		ProjectTeammate:           NewProjectTeammateClient(cfg),
-		Tag:                       NewTagClient(cfg),
-		Task:                      NewTaskClient(cfg),
-		TaskActivity:              NewTaskActivityClient(cfg),
-		TaskActivityTask:          NewTaskActivityTaskClient(cfg),
-		TaskCollaborator:          NewTaskCollaboratorClient(cfg),
-		TaskColumn:                NewTaskColumnClient(cfg),
-		TaskFeed:                  NewTaskFeedClient(cfg),
-		TaskFeedLike:              NewTaskFeedLikeClient(cfg),
-		TaskFile:                  NewTaskFileClient(cfg),
-		TaskLike:                  NewTaskLikeClient(cfg),
-		TaskListCompletedStatus:   NewTaskListCompletedStatusClient(cfg),
-		TaskListSortStatus:        NewTaskListSortStatusClient(cfg),
-		TaskPriority:              NewTaskPriorityClient(cfg),
-		TaskSection:               NewTaskSectionClient(cfg),
-		TaskTag:                   NewTaskTagClient(cfg),
-		Teammate:                  NewTeammateClient(cfg),
-		TeammateTask:              NewTeammateTaskClient(cfg),
-		TeammateTaskColumn:        NewTeammateTaskColumnClient(cfg),
-		TeammateTaskListStatus:    NewTeammateTaskListStatusClient(cfg),
-		TeammateTaskSection:       NewTeammateTaskSectionClient(cfg),
-		TeammateTaskTabStatus:     NewTeammateTaskTabStatusClient(cfg),
-		TestTodo:                  NewTestTodoClient(cfg),
-		TestUser:                  NewTestUserClient(cfg),
-		Workspace:                 NewWorkspaceClient(cfg),
-		WorkspaceActivity:         NewWorkspaceActivityClient(cfg),
-		WorkspaceActivityTask:     NewWorkspaceActivityTaskClient(cfg),
-		WorkspaceTeammate:         NewWorkspaceTeammateClient(cfg),
+		ctx:                           ctx,
+		config:                        cfg,
+		ActivityType:                  NewActivityTypeClient(cfg),
+		ArchivedTaskActivity:          NewArchivedTaskActivityClient(cfg),
+		ArchivedTaskActivityTask:      NewArchivedTaskActivityTaskClient(cfg),
+		ArchivedWorkspaceActivity:     NewArchivedWorkspaceActivityClient(cfg),
+		ArchivedWorkspaceActivityTask: NewArchivedWorkspaceActivityTaskClient(cfg),
+		Color:                         NewColorClient(cfg),
+		DeletedTask:                   NewDeletedTaskClient(cfg),
+		FavoriteProject:               NewFavoriteProjectClient(cfg),
+		FavoriteWorkspace:             NewFavoriteWorkspaceClient(cfg),
+		FileType:                      NewFileTypeClient(cfg),
+		Icon:                          NewIconClient(cfg),
+		Project:                       NewProjectClient(cfg),
+		ProjectBaseColor:              NewProjectBaseColorClient(cfg),
+		ProjectIcon:                   NewProjectIconClient(cfg),
+		ProjectLightColor:             NewProjectLightColorClient(cfg),
+		ProjectTask:                   NewProjectTaskClient(cfg),
+		ProjectTaskColumn:             NewProjectTaskColumnClient(cfg),
+		ProjectTaskListStatus:         NewProjectTaskListStatusClient(cfg),
+		ProjectTaskSection:            NewProjectTaskSectionClient(cfg),
+		ProjectTeammate:               NewProjectTeammateClient(cfg),
+		Tag:                           NewTagClient(cfg),
+		Task:                          NewTaskClient(cfg),
+		TaskActivity:                  NewTaskActivityClient(cfg),
+		TaskActivityTask:              NewTaskActivityTaskClient(cfg),
+		TaskCollaborator:              NewTaskCollaboratorClient(cfg),
+		TaskColumn:                    NewTaskColumnClient(cfg),
+		TaskFeed:                      NewTaskFeedClient(cfg),
+		TaskFeedLike:                  NewTaskFeedLikeClient(cfg),
+		TaskFile:                      NewTaskFileClient(cfg),
+		TaskLike:                      NewTaskLikeClient(cfg),
+		TaskListCompletedStatus:       NewTaskListCompletedStatusClient(cfg),
+		TaskListSortStatus:            NewTaskListSortStatusClient(cfg),
+		TaskPriority:                  NewTaskPriorityClient(cfg),
+		TaskSection:                   NewTaskSectionClient(cfg),
+		TaskTag:                       NewTaskTagClient(cfg),
+		Teammate:                      NewTeammateClient(cfg),
+		TeammateTask:                  NewTeammateTaskClient(cfg),
+		TeammateTaskColumn:            NewTeammateTaskColumnClient(cfg),
+		TeammateTaskListStatus:        NewTeammateTaskListStatusClient(cfg),
+		TeammateTaskSection:           NewTeammateTaskSectionClient(cfg),
+		TeammateTaskTabStatus:         NewTeammateTaskTabStatusClient(cfg),
+		TestTodo:                      NewTestTodoClient(cfg),
+		TestUser:                      NewTestUserClient(cfg),
+		Workspace:                     NewWorkspaceClient(cfg),
+		WorkspaceActivity:             NewWorkspaceActivityClient(cfg),
+		WorkspaceActivityTask:         NewWorkspaceActivityTaskClient(cfg),
+		WorkspaceTeammate:             NewWorkspaceTeammateClient(cfg),
 	}, nil
 }
 
@@ -395,6 +401,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.ArchivedTaskActivity.Use(hooks...)
 	c.ArchivedTaskActivityTask.Use(hooks...)
 	c.ArchivedWorkspaceActivity.Use(hooks...)
+	c.ArchivedWorkspaceActivityTask.Use(hooks...)
 	c.Color.Use(hooks...)
 	c.DeletedTask.Use(hooks...)
 	c.FavoriteProject.Use(hooks...)
@@ -1018,9 +1025,147 @@ func (c *ArchivedWorkspaceActivityClient) QueryTeammate(awa *ArchivedWorkspaceAc
 	return query
 }
 
+// QueryArchivedWorkspaceActivityTasks queries the archivedWorkspaceActivityTasks edge of a ArchivedWorkspaceActivity.
+func (c *ArchivedWorkspaceActivityClient) QueryArchivedWorkspaceActivityTasks(awa *ArchivedWorkspaceActivity) *ArchivedWorkspaceActivityTaskQuery {
+	query := &ArchivedWorkspaceActivityTaskQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := awa.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(archivedworkspaceactivity.Table, archivedworkspaceactivity.FieldID, id),
+			sqlgraph.To(archivedworkspaceactivitytask.Table, archivedworkspaceactivitytask.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, archivedworkspaceactivity.ArchivedWorkspaceActivityTasksTable, archivedworkspaceactivity.ArchivedWorkspaceActivityTasksColumn),
+		)
+		fromV = sqlgraph.Neighbors(awa.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *ArchivedWorkspaceActivityClient) Hooks() []Hook {
 	return c.hooks.ArchivedWorkspaceActivity
+}
+
+// ArchivedWorkspaceActivityTaskClient is a client for the ArchivedWorkspaceActivityTask schema.
+type ArchivedWorkspaceActivityTaskClient struct {
+	config
+}
+
+// NewArchivedWorkspaceActivityTaskClient returns a client for the ArchivedWorkspaceActivityTask from the given config.
+func NewArchivedWorkspaceActivityTaskClient(c config) *ArchivedWorkspaceActivityTaskClient {
+	return &ArchivedWorkspaceActivityTaskClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `archivedworkspaceactivitytask.Hooks(f(g(h())))`.
+func (c *ArchivedWorkspaceActivityTaskClient) Use(hooks ...Hook) {
+	c.hooks.ArchivedWorkspaceActivityTask = append(c.hooks.ArchivedWorkspaceActivityTask, hooks...)
+}
+
+// Create returns a create builder for ArchivedWorkspaceActivityTask.
+func (c *ArchivedWorkspaceActivityTaskClient) Create() *ArchivedWorkspaceActivityTaskCreate {
+	mutation := newArchivedWorkspaceActivityTaskMutation(c.config, OpCreate)
+	return &ArchivedWorkspaceActivityTaskCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of ArchivedWorkspaceActivityTask entities.
+func (c *ArchivedWorkspaceActivityTaskClient) CreateBulk(builders ...*ArchivedWorkspaceActivityTaskCreate) *ArchivedWorkspaceActivityTaskCreateBulk {
+	return &ArchivedWorkspaceActivityTaskCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for ArchivedWorkspaceActivityTask.
+func (c *ArchivedWorkspaceActivityTaskClient) Update() *ArchivedWorkspaceActivityTaskUpdate {
+	mutation := newArchivedWorkspaceActivityTaskMutation(c.config, OpUpdate)
+	return &ArchivedWorkspaceActivityTaskUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ArchivedWorkspaceActivityTaskClient) UpdateOne(awat *ArchivedWorkspaceActivityTask) *ArchivedWorkspaceActivityTaskUpdateOne {
+	mutation := newArchivedWorkspaceActivityTaskMutation(c.config, OpUpdateOne, withArchivedWorkspaceActivityTask(awat))
+	return &ArchivedWorkspaceActivityTaskUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ArchivedWorkspaceActivityTaskClient) UpdateOneID(id ulid.ID) *ArchivedWorkspaceActivityTaskUpdateOne {
+	mutation := newArchivedWorkspaceActivityTaskMutation(c.config, OpUpdateOne, withArchivedWorkspaceActivityTaskID(id))
+	return &ArchivedWorkspaceActivityTaskUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for ArchivedWorkspaceActivityTask.
+func (c *ArchivedWorkspaceActivityTaskClient) Delete() *ArchivedWorkspaceActivityTaskDelete {
+	mutation := newArchivedWorkspaceActivityTaskMutation(c.config, OpDelete)
+	return &ArchivedWorkspaceActivityTaskDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *ArchivedWorkspaceActivityTaskClient) DeleteOne(awat *ArchivedWorkspaceActivityTask) *ArchivedWorkspaceActivityTaskDeleteOne {
+	return c.DeleteOneID(awat.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *ArchivedWorkspaceActivityTaskClient) DeleteOneID(id ulid.ID) *ArchivedWorkspaceActivityTaskDeleteOne {
+	builder := c.Delete().Where(archivedworkspaceactivitytask.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ArchivedWorkspaceActivityTaskDeleteOne{builder}
+}
+
+// Query returns a query builder for ArchivedWorkspaceActivityTask.
+func (c *ArchivedWorkspaceActivityTaskClient) Query() *ArchivedWorkspaceActivityTaskQuery {
+	return &ArchivedWorkspaceActivityTaskQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a ArchivedWorkspaceActivityTask entity by its id.
+func (c *ArchivedWorkspaceActivityTaskClient) Get(ctx context.Context, id ulid.ID) (*ArchivedWorkspaceActivityTask, error) {
+	return c.Query().Where(archivedworkspaceactivitytask.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ArchivedWorkspaceActivityTaskClient) GetX(ctx context.Context, id ulid.ID) *ArchivedWorkspaceActivityTask {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryTask queries the task edge of a ArchivedWorkspaceActivityTask.
+func (c *ArchivedWorkspaceActivityTaskClient) QueryTask(awat *ArchivedWorkspaceActivityTask) *TaskQuery {
+	query := &TaskQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := awat.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(archivedworkspaceactivitytask.Table, archivedworkspaceactivitytask.FieldID, id),
+			sqlgraph.To(task.Table, task.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, archivedworkspaceactivitytask.TaskTable, archivedworkspaceactivitytask.TaskColumn),
+		)
+		fromV = sqlgraph.Neighbors(awat.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryArchivedWorkspaceActivity queries the archivedWorkspaceActivity edge of a ArchivedWorkspaceActivityTask.
+func (c *ArchivedWorkspaceActivityTaskClient) QueryArchivedWorkspaceActivity(awat *ArchivedWorkspaceActivityTask) *ArchivedWorkspaceActivityQuery {
+	query := &ArchivedWorkspaceActivityQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := awat.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(archivedworkspaceactivitytask.Table, archivedworkspaceactivitytask.FieldID, id),
+			sqlgraph.To(archivedworkspaceactivity.Table, archivedworkspaceactivity.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, archivedworkspaceactivitytask.ArchivedWorkspaceActivityTable, archivedworkspaceactivitytask.ArchivedWorkspaceActivityColumn),
+		)
+		fromV = sqlgraph.Neighbors(awat.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *ArchivedWorkspaceActivityTaskClient) Hooks() []Hook {
+	return c.hooks.ArchivedWorkspaceActivityTask
 }
 
 // ColorClient is a client for the Color schema.
@@ -3549,6 +3694,22 @@ func (c *TaskClient) QueryArchivedTaskActivityTasks(t *Task) *ArchivedTaskActivi
 			sqlgraph.From(task.Table, task.FieldID, id),
 			sqlgraph.To(archivedtaskactivitytask.Table, archivedtaskactivitytask.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, task.ArchivedTaskActivityTasksTable, task.ArchivedTaskActivityTasksColumn),
+		)
+		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryArchivedWorkspaceActivityTasks queries the archivedWorkspaceActivityTasks edge of a Task.
+func (c *TaskClient) QueryArchivedWorkspaceActivityTasks(t *Task) *ArchivedWorkspaceActivityTaskQuery {
+	query := &ArchivedWorkspaceActivityTaskQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := t.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(task.Table, task.FieldID, id),
+			sqlgraph.To(archivedworkspaceactivitytask.Table, archivedworkspaceactivitytask.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, task.ArchivedWorkspaceActivityTasksTable, task.ArchivedWorkspaceActivityTasksColumn),
 		)
 		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
 		return fromV, nil

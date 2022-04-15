@@ -88,6 +88,13 @@ func (ArchivedWorkspaceActivity) Edges() []ent.Edge {
 					annotation.Edge{FieldName: "teammate_id"},
 				),
 			),
+		edge.To(archivedWorkspaceActivityTasksRef, ArchivedWorkspaceActivityTask.Type).
+			Annotations(
+				entgql.Bind(),
+				schema.Annotation(
+					annotation.Edge{FieldName: "archived_workspace_activity_task_id"},
+				),
+			),
 	}
 }
 

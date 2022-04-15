@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"project-management-demo-backend/ent/archivedtaskactivitytask"
+	"project-management-demo-backend/ent/archivedworkspaceactivitytask"
 	"project-management-demo-backend/ent/deletedtask"
 	"project-management-demo-backend/ent/projecttask"
 	"project-management-demo-backend/ent/schema/ulid"
@@ -446,6 +447,21 @@ func (tc *TaskCreate) AddArchivedTaskActivityTasks(a ...*ArchivedTaskActivityTas
 		ids[i] = a[i].ID
 	}
 	return tc.AddArchivedTaskActivityTaskIDs(ids...)
+}
+
+// AddArchivedWorkspaceActivityTaskIDs adds the "archivedWorkspaceActivityTasks" edge to the ArchivedWorkspaceActivityTask entity by IDs.
+func (tc *TaskCreate) AddArchivedWorkspaceActivityTaskIDs(ids ...ulid.ID) *TaskCreate {
+	tc.mutation.AddArchivedWorkspaceActivityTaskIDs(ids...)
+	return tc
+}
+
+// AddArchivedWorkspaceActivityTasks adds the "archivedWorkspaceActivityTasks" edges to the ArchivedWorkspaceActivityTask entity.
+func (tc *TaskCreate) AddArchivedWorkspaceActivityTasks(a ...*ArchivedWorkspaceActivityTask) *TaskCreate {
+	ids := make([]ulid.ID, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return tc.AddArchivedWorkspaceActivityTaskIDs(ids...)
 }
 
 // Mutation returns the TaskMutation object of the builder.
@@ -985,6 +1001,25 @@ func (tc *TaskCreate) createSpec() (*Task, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: archivedtaskactivitytask.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := tc.mutation.ArchivedWorkspaceActivityTasksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   task.ArchivedWorkspaceActivityTasksTable,
+			Columns: []string{task.ArchivedWorkspaceActivityTasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: archivedworkspaceactivitytask.FieldID,
 				},
 			},
 		}

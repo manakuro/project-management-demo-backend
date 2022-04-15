@@ -7,6 +7,7 @@ import (
 	"project-management-demo-backend/ent/archivedtaskactivity"
 	"project-management-demo-backend/ent/archivedtaskactivitytask"
 	"project-management-demo-backend/ent/archivedworkspaceactivity"
+	"project-management-demo-backend/ent/archivedworkspaceactivitytask"
 	"project-management-demo-backend/ent/color"
 	"project-management-demo-backend/ent/deletedtask"
 	"project-management-demo-backend/ent/favoriteproject"
@@ -59,52 +60,53 @@ type field struct {
 
 // GlobalIDs maps unique string to tables names.
 type GlobalIDs struct {
-	Color                     field
-	FavoriteProject           field
-	FavoriteWorkspace         field
-	Icon                      field
-	Project                   field
-	ProjectBaseColor          field
-	ProjectIcon               field
-	ProjectLightColor         field
-	ProjectTeammate           field
-	Teammate                  field
-	TestTodo                  field
-	TestUser                  field
-	Workspace                 field
-	WorkspaceTeammate         field
-	TeammateTaskTabStatus     field
-	TaskColumn                field
-	TeammateTaskColumn        field
-	ProjectTaskColumn         field
-	TaskSection               field
-	TaskListCompletedStatus   field
-	TaskListSortStatus        field
-	TeammateTaskListStatus    field
-	ProjectTaskListStatus     field
-	TeammateTaskSection       field
-	ProjectTaskSection        field
-	TaskPriority              field
-	Task                      field
-	TeammateTask              field
-	ProjectTask               field
-	TaskLike                  field
-	Tag                       field
-	TaskTag                   field
-	TaskCollaborator          field
-	TaskFeed                  field
-	TaskFeedLike              field
-	FileType                  field
-	TaskFile                  field
-	DeletedTask               field
-	ActivityType              field
-	TaskActivity              field
-	TaskActivityTask          field
-	WorkspaceActivity         field
-	WorkspaceActivityTask     field
-	ArchivedTaskActivity      field
-	ArchivedTaskActivityTask  field
-	ArchivedWorkspaceActivity field
+	Color                         field
+	FavoriteProject               field
+	FavoriteWorkspace             field
+	Icon                          field
+	Project                       field
+	ProjectBaseColor              field
+	ProjectIcon                   field
+	ProjectLightColor             field
+	ProjectTeammate               field
+	Teammate                      field
+	TestTodo                      field
+	TestUser                      field
+	Workspace                     field
+	WorkspaceTeammate             field
+	TeammateTaskTabStatus         field
+	TaskColumn                    field
+	TeammateTaskColumn            field
+	ProjectTaskColumn             field
+	TaskSection                   field
+	TaskListCompletedStatus       field
+	TaskListSortStatus            field
+	TeammateTaskListStatus        field
+	ProjectTaskListStatus         field
+	TeammateTaskSection           field
+	ProjectTaskSection            field
+	TaskPriority                  field
+	Task                          field
+	TeammateTask                  field
+	ProjectTask                   field
+	TaskLike                      field
+	Tag                           field
+	TaskTag                       field
+	TaskCollaborator              field
+	TaskFeed                      field
+	TaskFeedLike                  field
+	FileType                      field
+	TaskFile                      field
+	DeletedTask                   field
+	ActivityType                  field
+	TaskActivity                  field
+	TaskActivityTask              field
+	WorkspaceActivity             field
+	WorkspaceActivityTask         field
+	ArchivedTaskActivity          field
+	ArchivedTaskActivityTask      field
+	ArchivedWorkspaceActivity     field
+	ArchivedWorkspaceActivityTask field
 }
 
 // New generates a map object that is intended to be used as global identification for node interface query.
@@ -294,6 +296,10 @@ func New() GlobalIDs {
 		ArchivedWorkspaceActivity: field{
 			Prefix: "0BT",
 			Table:  archivedworkspaceactivity.Table,
+		},
+		ArchivedWorkspaceActivityTask: field{
+			Prefix: "0BU",
+			Table:  archivedworkspaceactivitytask.Table,
 		},
 	}
 }

@@ -4,11 +4,13 @@ package ent
 
 import (
 	"context"
+	"database/sql/driver"
 	"errors"
 	"fmt"
 	"math"
 	"project-management-demo-backend/ent/activitytype"
 	"project-management-demo-backend/ent/archivedworkspaceactivity"
+	"project-management-demo-backend/ent/archivedworkspaceactivitytask"
 	"project-management-demo-backend/ent/predicate"
 	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/schema/ulid"
@@ -30,10 +32,11 @@ type ArchivedWorkspaceActivityQuery struct {
 	fields     []string
 	predicates []predicate.ArchivedWorkspaceActivity
 	// eager-loading edges.
-	withActivityType *ActivityTypeQuery
-	withWorkspace    *WorkspaceQuery
-	withProject      *ProjectQuery
-	withTeammate     *TeammateQuery
+	withActivityType                   *ActivityTypeQuery
+	withWorkspace                      *WorkspaceQuery
+	withProject                        *ProjectQuery
+	withTeammate                       *TeammateQuery
+	withArchivedWorkspaceActivityTasks *ArchivedWorkspaceActivityTaskQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -151,6 +154,28 @@ func (awaq *ArchivedWorkspaceActivityQuery) QueryTeammate() *TeammateQuery {
 			sqlgraph.From(archivedworkspaceactivity.Table, archivedworkspaceactivity.FieldID, selector),
 			sqlgraph.To(teammate.Table, teammate.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, archivedworkspaceactivity.TeammateTable, archivedworkspaceactivity.TeammateColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(awaq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryArchivedWorkspaceActivityTasks chains the current query on the "archivedWorkspaceActivityTasks" edge.
+func (awaq *ArchivedWorkspaceActivityQuery) QueryArchivedWorkspaceActivityTasks() *ArchivedWorkspaceActivityTaskQuery {
+	query := &ArchivedWorkspaceActivityTaskQuery{config: awaq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := awaq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := awaq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(archivedworkspaceactivity.Table, archivedworkspaceactivity.FieldID, selector),
+			sqlgraph.To(archivedworkspaceactivitytask.Table, archivedworkspaceactivitytask.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, archivedworkspaceactivity.ArchivedWorkspaceActivityTasksTable, archivedworkspaceactivity.ArchivedWorkspaceActivityTasksColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(awaq.driver.Dialect(), step)
 		return fromU, nil
@@ -334,15 +359,16 @@ func (awaq *ArchivedWorkspaceActivityQuery) Clone() *ArchivedWorkspaceActivityQu
 		return nil
 	}
 	return &ArchivedWorkspaceActivityQuery{
-		config:           awaq.config,
-		limit:            awaq.limit,
-		offset:           awaq.offset,
-		order:            append([]OrderFunc{}, awaq.order...),
-		predicates:       append([]predicate.ArchivedWorkspaceActivity{}, awaq.predicates...),
-		withActivityType: awaq.withActivityType.Clone(),
-		withWorkspace:    awaq.withWorkspace.Clone(),
-		withProject:      awaq.withProject.Clone(),
-		withTeammate:     awaq.withTeammate.Clone(),
+		config:                             awaq.config,
+		limit:                              awaq.limit,
+		offset:                             awaq.offset,
+		order:                              append([]OrderFunc{}, awaq.order...),
+		predicates:                         append([]predicate.ArchivedWorkspaceActivity{}, awaq.predicates...),
+		withActivityType:                   awaq.withActivityType.Clone(),
+		withWorkspace:                      awaq.withWorkspace.Clone(),
+		withProject:                        awaq.withProject.Clone(),
+		withTeammate:                       awaq.withTeammate.Clone(),
+		withArchivedWorkspaceActivityTasks: awaq.withArchivedWorkspaceActivityTasks.Clone(),
 		// clone intermediate query.
 		sql:    awaq.sql.Clone(),
 		path:   awaq.path,
@@ -391,6 +417,17 @@ func (awaq *ArchivedWorkspaceActivityQuery) WithTeammate(opts ...func(*TeammateQ
 		opt(query)
 	}
 	awaq.withTeammate = query
+	return awaq
+}
+
+// WithArchivedWorkspaceActivityTasks tells the query-builder to eager-load the nodes that are connected to
+// the "archivedWorkspaceActivityTasks" edge. The optional arguments are used to configure the query builder of the edge.
+func (awaq *ArchivedWorkspaceActivityQuery) WithArchivedWorkspaceActivityTasks(opts ...func(*ArchivedWorkspaceActivityTaskQuery)) *ArchivedWorkspaceActivityQuery {
+	query := &ArchivedWorkspaceActivityTaskQuery{config: awaq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	awaq.withArchivedWorkspaceActivityTasks = query
 	return awaq
 }
 
@@ -459,11 +496,12 @@ func (awaq *ArchivedWorkspaceActivityQuery) sqlAll(ctx context.Context) ([]*Arch
 	var (
 		nodes       = []*ArchivedWorkspaceActivity{}
 		_spec       = awaq.querySpec()
-		loadedTypes = [4]bool{
+		loadedTypes = [5]bool{
 			awaq.withActivityType != nil,
 			awaq.withWorkspace != nil,
 			awaq.withProject != nil,
 			awaq.withTeammate != nil,
+			awaq.withArchivedWorkspaceActivityTasks != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -587,6 +625,31 @@ func (awaq *ArchivedWorkspaceActivityQuery) sqlAll(ctx context.Context) ([]*Arch
 			for i := range nodes {
 				nodes[i].Edges.Teammate = n
 			}
+		}
+	}
+
+	if query := awaq.withArchivedWorkspaceActivityTasks; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[ulid.ID]*ArchivedWorkspaceActivity)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.ArchivedWorkspaceActivityTasks = []*ArchivedWorkspaceActivityTask{}
+		}
+		query.Where(predicate.ArchivedWorkspaceActivityTask(func(s *sql.Selector) {
+			s.Where(sql.InValues(archivedworkspaceactivity.ArchivedWorkspaceActivityTasksColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.ArchivedWorkspaceActivityID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "archived_workspace_activity_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.ArchivedWorkspaceActivityTasks = append(node.Edges.ArchivedWorkspaceActivityTasks, n)
 		}
 	}
 

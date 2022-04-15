@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"project-management-demo-backend/ent/archivedtaskactivitytask"
+	"project-management-demo-backend/ent/archivedworkspaceactivitytask"
 	"project-management-demo-backend/ent/deletedtask"
 	"project-management-demo-backend/ent/predicate"
 	"project-management-demo-backend/ent/projecttask"
@@ -447,6 +448,21 @@ func (tu *TaskUpdate) AddArchivedTaskActivityTasks(a ...*ArchivedTaskActivityTas
 	return tu.AddArchivedTaskActivityTaskIDs(ids...)
 }
 
+// AddArchivedWorkspaceActivityTaskIDs adds the "archivedWorkspaceActivityTasks" edge to the ArchivedWorkspaceActivityTask entity by IDs.
+func (tu *TaskUpdate) AddArchivedWorkspaceActivityTaskIDs(ids ...ulid.ID) *TaskUpdate {
+	tu.mutation.AddArchivedWorkspaceActivityTaskIDs(ids...)
+	return tu
+}
+
+// AddArchivedWorkspaceActivityTasks adds the "archivedWorkspaceActivityTasks" edges to the ArchivedWorkspaceActivityTask entity.
+func (tu *TaskUpdate) AddArchivedWorkspaceActivityTasks(a ...*ArchivedWorkspaceActivityTask) *TaskUpdate {
+	ids := make([]ulid.ID, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return tu.AddArchivedWorkspaceActivityTaskIDs(ids...)
+}
+
 // Mutation returns the TaskMutation object of the builder.
 func (tu *TaskUpdate) Mutation() *TaskMutation {
 	return tu.mutation
@@ -741,6 +757,27 @@ func (tu *TaskUpdate) RemoveArchivedTaskActivityTasks(a ...*ArchivedTaskActivity
 		ids[i] = a[i].ID
 	}
 	return tu.RemoveArchivedTaskActivityTaskIDs(ids...)
+}
+
+// ClearArchivedWorkspaceActivityTasks clears all "archivedWorkspaceActivityTasks" edges to the ArchivedWorkspaceActivityTask entity.
+func (tu *TaskUpdate) ClearArchivedWorkspaceActivityTasks() *TaskUpdate {
+	tu.mutation.ClearArchivedWorkspaceActivityTasks()
+	return tu
+}
+
+// RemoveArchivedWorkspaceActivityTaskIDs removes the "archivedWorkspaceActivityTasks" edge to ArchivedWorkspaceActivityTask entities by IDs.
+func (tu *TaskUpdate) RemoveArchivedWorkspaceActivityTaskIDs(ids ...ulid.ID) *TaskUpdate {
+	tu.mutation.RemoveArchivedWorkspaceActivityTaskIDs(ids...)
+	return tu
+}
+
+// RemoveArchivedWorkspaceActivityTasks removes "archivedWorkspaceActivityTasks" edges to ArchivedWorkspaceActivityTask entities.
+func (tu *TaskUpdate) RemoveArchivedWorkspaceActivityTasks(a ...*ArchivedWorkspaceActivityTask) *TaskUpdate {
+	ids := make([]ulid.ID, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return tu.RemoveArchivedWorkspaceActivityTaskIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -1712,6 +1749,60 @@ func (tu *TaskUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if tu.mutation.ArchivedWorkspaceActivityTasksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   task.ArchivedWorkspaceActivityTasksTable,
+			Columns: []string{task.ArchivedWorkspaceActivityTasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: archivedworkspaceactivitytask.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tu.mutation.RemovedArchivedWorkspaceActivityTasksIDs(); len(nodes) > 0 && !tu.mutation.ArchivedWorkspaceActivityTasksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   task.ArchivedWorkspaceActivityTasksTable,
+			Columns: []string{task.ArchivedWorkspaceActivityTasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: archivedworkspaceactivitytask.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tu.mutation.ArchivedWorkspaceActivityTasksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   task.ArchivedWorkspaceActivityTasksTable,
+			Columns: []string{task.ArchivedWorkspaceActivityTasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: archivedworkspaceactivitytask.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, tu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{task.Label}
@@ -2135,6 +2226,21 @@ func (tuo *TaskUpdateOne) AddArchivedTaskActivityTasks(a ...*ArchivedTaskActivit
 	return tuo.AddArchivedTaskActivityTaskIDs(ids...)
 }
 
+// AddArchivedWorkspaceActivityTaskIDs adds the "archivedWorkspaceActivityTasks" edge to the ArchivedWorkspaceActivityTask entity by IDs.
+func (tuo *TaskUpdateOne) AddArchivedWorkspaceActivityTaskIDs(ids ...ulid.ID) *TaskUpdateOne {
+	tuo.mutation.AddArchivedWorkspaceActivityTaskIDs(ids...)
+	return tuo
+}
+
+// AddArchivedWorkspaceActivityTasks adds the "archivedWorkspaceActivityTasks" edges to the ArchivedWorkspaceActivityTask entity.
+func (tuo *TaskUpdateOne) AddArchivedWorkspaceActivityTasks(a ...*ArchivedWorkspaceActivityTask) *TaskUpdateOne {
+	ids := make([]ulid.ID, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return tuo.AddArchivedWorkspaceActivityTaskIDs(ids...)
+}
+
 // Mutation returns the TaskMutation object of the builder.
 func (tuo *TaskUpdateOne) Mutation() *TaskMutation {
 	return tuo.mutation
@@ -2429,6 +2535,27 @@ func (tuo *TaskUpdateOne) RemoveArchivedTaskActivityTasks(a ...*ArchivedTaskActi
 		ids[i] = a[i].ID
 	}
 	return tuo.RemoveArchivedTaskActivityTaskIDs(ids...)
+}
+
+// ClearArchivedWorkspaceActivityTasks clears all "archivedWorkspaceActivityTasks" edges to the ArchivedWorkspaceActivityTask entity.
+func (tuo *TaskUpdateOne) ClearArchivedWorkspaceActivityTasks() *TaskUpdateOne {
+	tuo.mutation.ClearArchivedWorkspaceActivityTasks()
+	return tuo
+}
+
+// RemoveArchivedWorkspaceActivityTaskIDs removes the "archivedWorkspaceActivityTasks" edge to ArchivedWorkspaceActivityTask entities by IDs.
+func (tuo *TaskUpdateOne) RemoveArchivedWorkspaceActivityTaskIDs(ids ...ulid.ID) *TaskUpdateOne {
+	tuo.mutation.RemoveArchivedWorkspaceActivityTaskIDs(ids...)
+	return tuo
+}
+
+// RemoveArchivedWorkspaceActivityTasks removes "archivedWorkspaceActivityTasks" edges to ArchivedWorkspaceActivityTask entities.
+func (tuo *TaskUpdateOne) RemoveArchivedWorkspaceActivityTasks(a ...*ArchivedWorkspaceActivityTask) *TaskUpdateOne {
+	ids := make([]ulid.ID, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return tuo.RemoveArchivedWorkspaceActivityTaskIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -3416,6 +3543,60 @@ func (tuo *TaskUpdateOne) sqlSave(ctx context.Context) (_node *Task, err error) 
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: archivedtaskactivitytask.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if tuo.mutation.ArchivedWorkspaceActivityTasksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   task.ArchivedWorkspaceActivityTasksTable,
+			Columns: []string{task.ArchivedWorkspaceActivityTasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: archivedworkspaceactivitytask.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tuo.mutation.RemovedArchivedWorkspaceActivityTasksIDs(); len(nodes) > 0 && !tuo.mutation.ArchivedWorkspaceActivityTasksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   task.ArchivedWorkspaceActivityTasksTable,
+			Columns: []string{task.ArchivedWorkspaceActivityTasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: archivedworkspaceactivitytask.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tuo.mutation.ArchivedWorkspaceActivityTasksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   task.ArchivedWorkspaceActivityTasksTable,
+			Columns: []string{task.ArchivedWorkspaceActivityTasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: archivedworkspaceactivitytask.FieldID,
 				},
 			},
 		}

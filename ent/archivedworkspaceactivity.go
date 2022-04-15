@@ -48,9 +48,11 @@ type ArchivedWorkspaceActivityEdges struct {
 	Project *Project `json:"project,omitempty"`
 	// Teammate holds the value of the teammate edge.
 	Teammate *Teammate `json:"teammate,omitempty"`
+	// ArchivedWorkspaceActivityTasks holds the value of the archivedWorkspaceActivityTasks edge.
+	ArchivedWorkspaceActivityTasks []*ArchivedWorkspaceActivityTask `json:"archivedWorkspaceActivityTasks,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [4]bool
+	loadedTypes [5]bool
 }
 
 // ActivityTypeOrErr returns the ActivityType value or an error if the edge
@@ -107,6 +109,15 @@ func (e ArchivedWorkspaceActivityEdges) TeammateOrErr() (*Teammate, error) {
 		return e.Teammate, nil
 	}
 	return nil, &NotLoadedError{edge: "teammate"}
+}
+
+// ArchivedWorkspaceActivityTasksOrErr returns the ArchivedWorkspaceActivityTasks value or an error if the edge
+// was not loaded in eager-loading.
+func (e ArchivedWorkspaceActivityEdges) ArchivedWorkspaceActivityTasksOrErr() ([]*ArchivedWorkspaceActivityTask, error) {
+	if e.loadedTypes[4] {
+		return e.ArchivedWorkspaceActivityTasks, nil
+	}
+	return nil, &NotLoadedError{edge: "archivedWorkspaceActivityTasks"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -198,6 +209,11 @@ func (awa *ArchivedWorkspaceActivity) QueryProject() *ProjectQuery {
 // QueryTeammate queries the "teammate" edge of the ArchivedWorkspaceActivity entity.
 func (awa *ArchivedWorkspaceActivity) QueryTeammate() *TeammateQuery {
 	return (&ArchivedWorkspaceActivityClient{config: awa.config}).QueryTeammate(awa)
+}
+
+// QueryArchivedWorkspaceActivityTasks queries the "archivedWorkspaceActivityTasks" edge of the ArchivedWorkspaceActivity entity.
+func (awa *ArchivedWorkspaceActivity) QueryArchivedWorkspaceActivityTasks() *ArchivedWorkspaceActivityTaskQuery {
+	return (&ArchivedWorkspaceActivityClient{config: awa.config}).QueryArchivedWorkspaceActivityTasks(awa)
 }
 
 // Update returns a builder for updating this ArchivedWorkspaceActivity.

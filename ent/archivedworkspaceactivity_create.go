@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"project-management-demo-backend/ent/activitytype"
 	"project-management-demo-backend/ent/archivedworkspaceactivity"
+	"project-management-demo-backend/ent/archivedworkspaceactivitytask"
 	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/teammate"
@@ -112,6 +113,21 @@ func (awac *ArchivedWorkspaceActivityCreate) SetProject(p *Project) *ArchivedWor
 // SetTeammate sets the "teammate" edge to the Teammate entity.
 func (awac *ArchivedWorkspaceActivityCreate) SetTeammate(t *Teammate) *ArchivedWorkspaceActivityCreate {
 	return awac.SetTeammateID(t.ID)
+}
+
+// AddArchivedWorkspaceActivityTaskIDs adds the "archivedWorkspaceActivityTasks" edge to the ArchivedWorkspaceActivityTask entity by IDs.
+func (awac *ArchivedWorkspaceActivityCreate) AddArchivedWorkspaceActivityTaskIDs(ids ...ulid.ID) *ArchivedWorkspaceActivityCreate {
+	awac.mutation.AddArchivedWorkspaceActivityTaskIDs(ids...)
+	return awac
+}
+
+// AddArchivedWorkspaceActivityTasks adds the "archivedWorkspaceActivityTasks" edges to the ArchivedWorkspaceActivityTask entity.
+func (awac *ArchivedWorkspaceActivityCreate) AddArchivedWorkspaceActivityTasks(a ...*ArchivedWorkspaceActivityTask) *ArchivedWorkspaceActivityCreate {
+	ids := make([]ulid.ID, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return awac.AddArchivedWorkspaceActivityTaskIDs(ids...)
 }
 
 // Mutation returns the ArchivedWorkspaceActivityMutation object of the builder.
@@ -362,6 +378,25 @@ func (awac *ArchivedWorkspaceActivityCreate) createSpec() (*ArchivedWorkspaceAct
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.TeammateID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := awac.mutation.ArchivedWorkspaceActivityTasksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   archivedworkspaceactivity.ArchivedWorkspaceActivityTasksTable,
+			Columns: []string{archivedworkspaceactivity.ArchivedWorkspaceActivityTasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: archivedworkspaceactivitytask.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec

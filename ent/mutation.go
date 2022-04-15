@@ -10,6 +10,7 @@ import (
 	"project-management-demo-backend/ent/archivedtaskactivity"
 	"project-management-demo-backend/ent/archivedtaskactivitytask"
 	"project-management-demo-backend/ent/archivedworkspaceactivity"
+	"project-management-demo-backend/ent/archivedworkspaceactivitytask"
 	"project-management-demo-backend/ent/color"
 	"project-management-demo-backend/ent/deletedtask"
 	"project-management-demo-backend/ent/favoriteproject"
@@ -70,52 +71,53 @@ const (
 	OpUpdateOne = ent.OpUpdateOne
 
 	// Node types.
-	TypeActivityType              = "ActivityType"
-	TypeArchivedTaskActivity      = "ArchivedTaskActivity"
-	TypeArchivedTaskActivityTask  = "ArchivedTaskActivityTask"
-	TypeArchivedWorkspaceActivity = "ArchivedWorkspaceActivity"
-	TypeColor                     = "Color"
-	TypeDeletedTask               = "DeletedTask"
-	TypeFavoriteProject           = "FavoriteProject"
-	TypeFavoriteWorkspace         = "FavoriteWorkspace"
-	TypeFileType                  = "FileType"
-	TypeIcon                      = "Icon"
-	TypeProject                   = "Project"
-	TypeProjectBaseColor          = "ProjectBaseColor"
-	TypeProjectIcon               = "ProjectIcon"
-	TypeProjectLightColor         = "ProjectLightColor"
-	TypeProjectTask               = "ProjectTask"
-	TypeProjectTaskColumn         = "ProjectTaskColumn"
-	TypeProjectTaskListStatus     = "ProjectTaskListStatus"
-	TypeProjectTaskSection        = "ProjectTaskSection"
-	TypeProjectTeammate           = "ProjectTeammate"
-	TypeTag                       = "Tag"
-	TypeTask                      = "Task"
-	TypeTaskActivity              = "TaskActivity"
-	TypeTaskActivityTask          = "TaskActivityTask"
-	TypeTaskCollaborator          = "TaskCollaborator"
-	TypeTaskColumn                = "TaskColumn"
-	TypeTaskFeed                  = "TaskFeed"
-	TypeTaskFeedLike              = "TaskFeedLike"
-	TypeTaskFile                  = "TaskFile"
-	TypeTaskLike                  = "TaskLike"
-	TypeTaskListCompletedStatus   = "TaskListCompletedStatus"
-	TypeTaskListSortStatus        = "TaskListSortStatus"
-	TypeTaskPriority              = "TaskPriority"
-	TypeTaskSection               = "TaskSection"
-	TypeTaskTag                   = "TaskTag"
-	TypeTeammate                  = "Teammate"
-	TypeTeammateTask              = "TeammateTask"
-	TypeTeammateTaskColumn        = "TeammateTaskColumn"
-	TypeTeammateTaskListStatus    = "TeammateTaskListStatus"
-	TypeTeammateTaskSection       = "TeammateTaskSection"
-	TypeTeammateTaskTabStatus     = "TeammateTaskTabStatus"
-	TypeTestTodo                  = "TestTodo"
-	TypeTestUser                  = "TestUser"
-	TypeWorkspace                 = "Workspace"
-	TypeWorkspaceActivity         = "WorkspaceActivity"
-	TypeWorkspaceActivityTask     = "WorkspaceActivityTask"
-	TypeWorkspaceTeammate         = "WorkspaceTeammate"
+	TypeActivityType                  = "ActivityType"
+	TypeArchivedTaskActivity          = "ArchivedTaskActivity"
+	TypeArchivedTaskActivityTask      = "ArchivedTaskActivityTask"
+	TypeArchivedWorkspaceActivity     = "ArchivedWorkspaceActivity"
+	TypeArchivedWorkspaceActivityTask = "ArchivedWorkspaceActivityTask"
+	TypeColor                         = "Color"
+	TypeDeletedTask                   = "DeletedTask"
+	TypeFavoriteProject               = "FavoriteProject"
+	TypeFavoriteWorkspace             = "FavoriteWorkspace"
+	TypeFileType                      = "FileType"
+	TypeIcon                          = "Icon"
+	TypeProject                       = "Project"
+	TypeProjectBaseColor              = "ProjectBaseColor"
+	TypeProjectIcon                   = "ProjectIcon"
+	TypeProjectLightColor             = "ProjectLightColor"
+	TypeProjectTask                   = "ProjectTask"
+	TypeProjectTaskColumn             = "ProjectTaskColumn"
+	TypeProjectTaskListStatus         = "ProjectTaskListStatus"
+	TypeProjectTaskSection            = "ProjectTaskSection"
+	TypeProjectTeammate               = "ProjectTeammate"
+	TypeTag                           = "Tag"
+	TypeTask                          = "Task"
+	TypeTaskActivity                  = "TaskActivity"
+	TypeTaskActivityTask              = "TaskActivityTask"
+	TypeTaskCollaborator              = "TaskCollaborator"
+	TypeTaskColumn                    = "TaskColumn"
+	TypeTaskFeed                      = "TaskFeed"
+	TypeTaskFeedLike                  = "TaskFeedLike"
+	TypeTaskFile                      = "TaskFile"
+	TypeTaskLike                      = "TaskLike"
+	TypeTaskListCompletedStatus       = "TaskListCompletedStatus"
+	TypeTaskListSortStatus            = "TaskListSortStatus"
+	TypeTaskPriority                  = "TaskPriority"
+	TypeTaskSection                   = "TaskSection"
+	TypeTaskTag                       = "TaskTag"
+	TypeTeammate                      = "Teammate"
+	TypeTeammateTask                  = "TeammateTask"
+	TypeTeammateTaskColumn            = "TeammateTaskColumn"
+	TypeTeammateTaskListStatus        = "TeammateTaskListStatus"
+	TypeTeammateTaskSection           = "TeammateTaskSection"
+	TypeTeammateTaskTabStatus         = "TeammateTaskTabStatus"
+	TypeTestTodo                      = "TestTodo"
+	TypeTestUser                      = "TestUser"
+	TypeWorkspace                     = "Workspace"
+	TypeWorkspaceActivity             = "WorkspaceActivity"
+	TypeWorkspaceActivityTask         = "WorkspaceActivityTask"
+	TypeWorkspaceTeammate             = "WorkspaceTeammate"
 )
 
 // ActivityTypeMutation represents an operation that mutates the ActivityType nodes in the graph.
@@ -2282,23 +2284,26 @@ func (m *ArchivedTaskActivityTaskMutation) ResetEdge(name string) error {
 // ArchivedWorkspaceActivityMutation represents an operation that mutates the ArchivedWorkspaceActivity nodes in the graph.
 type ArchivedWorkspaceActivityMutation struct {
 	config
-	op                  Op
-	typ                 string
-	id                  *ulid.ID
-	created_at          *time.Time
-	updated_at          *time.Time
-	clearedFields       map[string]struct{}
-	activityType        *ulid.ID
-	clearedactivityType bool
-	workspace           *ulid.ID
-	clearedworkspace    bool
-	project             *ulid.ID
-	clearedproject      bool
-	teammate            *ulid.ID
-	clearedteammate     bool
-	done                bool
-	oldValue            func(context.Context) (*ArchivedWorkspaceActivity, error)
-	predicates          []predicate.ArchivedWorkspaceActivity
+	op                                    Op
+	typ                                   string
+	id                                    *ulid.ID
+	created_at                            *time.Time
+	updated_at                            *time.Time
+	clearedFields                         map[string]struct{}
+	activityType                          *ulid.ID
+	clearedactivityType                   bool
+	workspace                             *ulid.ID
+	clearedworkspace                      bool
+	project                               *ulid.ID
+	clearedproject                        bool
+	teammate                              *ulid.ID
+	clearedteammate                       bool
+	archivedWorkspaceActivityTasks        map[ulid.ID]struct{}
+	removedarchivedWorkspaceActivityTasks map[ulid.ID]struct{}
+	clearedarchivedWorkspaceActivityTasks bool
+	done                                  bool
+	oldValue                              func(context.Context) (*ArchivedWorkspaceActivity, error)
+	predicates                            []predicate.ArchivedWorkspaceActivity
 }
 
 var _ ent.Mutation = (*ArchivedWorkspaceActivityMutation)(nil)
@@ -2725,6 +2730,60 @@ func (m *ArchivedWorkspaceActivityMutation) ResetTeammate() {
 	m.clearedteammate = false
 }
 
+// AddArchivedWorkspaceActivityTaskIDs adds the "archivedWorkspaceActivityTasks" edge to the ArchivedWorkspaceActivityTask entity by ids.
+func (m *ArchivedWorkspaceActivityMutation) AddArchivedWorkspaceActivityTaskIDs(ids ...ulid.ID) {
+	if m.archivedWorkspaceActivityTasks == nil {
+		m.archivedWorkspaceActivityTasks = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		m.archivedWorkspaceActivityTasks[ids[i]] = struct{}{}
+	}
+}
+
+// ClearArchivedWorkspaceActivityTasks clears the "archivedWorkspaceActivityTasks" edge to the ArchivedWorkspaceActivityTask entity.
+func (m *ArchivedWorkspaceActivityMutation) ClearArchivedWorkspaceActivityTasks() {
+	m.clearedarchivedWorkspaceActivityTasks = true
+}
+
+// ArchivedWorkspaceActivityTasksCleared reports if the "archivedWorkspaceActivityTasks" edge to the ArchivedWorkspaceActivityTask entity was cleared.
+func (m *ArchivedWorkspaceActivityMutation) ArchivedWorkspaceActivityTasksCleared() bool {
+	return m.clearedarchivedWorkspaceActivityTasks
+}
+
+// RemoveArchivedWorkspaceActivityTaskIDs removes the "archivedWorkspaceActivityTasks" edge to the ArchivedWorkspaceActivityTask entity by IDs.
+func (m *ArchivedWorkspaceActivityMutation) RemoveArchivedWorkspaceActivityTaskIDs(ids ...ulid.ID) {
+	if m.removedarchivedWorkspaceActivityTasks == nil {
+		m.removedarchivedWorkspaceActivityTasks = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		delete(m.archivedWorkspaceActivityTasks, ids[i])
+		m.removedarchivedWorkspaceActivityTasks[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedArchivedWorkspaceActivityTasks returns the removed IDs of the "archivedWorkspaceActivityTasks" edge to the ArchivedWorkspaceActivityTask entity.
+func (m *ArchivedWorkspaceActivityMutation) RemovedArchivedWorkspaceActivityTasksIDs() (ids []ulid.ID) {
+	for id := range m.removedarchivedWorkspaceActivityTasks {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ArchivedWorkspaceActivityTasksIDs returns the "archivedWorkspaceActivityTasks" edge IDs in the mutation.
+func (m *ArchivedWorkspaceActivityMutation) ArchivedWorkspaceActivityTasksIDs() (ids []ulid.ID) {
+	for id := range m.archivedWorkspaceActivityTasks {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetArchivedWorkspaceActivityTasks resets all changes to the "archivedWorkspaceActivityTasks" edge.
+func (m *ArchivedWorkspaceActivityMutation) ResetArchivedWorkspaceActivityTasks() {
+	m.archivedWorkspaceActivityTasks = nil
+	m.clearedarchivedWorkspaceActivityTasks = false
+	m.removedarchivedWorkspaceActivityTasks = nil
+}
+
 // Where appends a list predicates to the ArchivedWorkspaceActivityMutation builder.
 func (m *ArchivedWorkspaceActivityMutation) Where(ps ...predicate.ArchivedWorkspaceActivity) {
 	m.predicates = append(m.predicates, ps...)
@@ -2928,7 +2987,7 @@ func (m *ArchivedWorkspaceActivityMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *ArchivedWorkspaceActivityMutation) AddedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 5)
 	if m.activityType != nil {
 		edges = append(edges, archivedworkspaceactivity.EdgeActivityType)
 	}
@@ -2940,6 +2999,9 @@ func (m *ArchivedWorkspaceActivityMutation) AddedEdges() []string {
 	}
 	if m.teammate != nil {
 		edges = append(edges, archivedworkspaceactivity.EdgeTeammate)
+	}
+	if m.archivedWorkspaceActivityTasks != nil {
+		edges = append(edges, archivedworkspaceactivity.EdgeArchivedWorkspaceActivityTasks)
 	}
 	return edges
 }
@@ -2964,13 +3026,22 @@ func (m *ArchivedWorkspaceActivityMutation) AddedIDs(name string) []ent.Value {
 		if id := m.teammate; id != nil {
 			return []ent.Value{*id}
 		}
+	case archivedworkspaceactivity.EdgeArchivedWorkspaceActivityTasks:
+		ids := make([]ent.Value, 0, len(m.archivedWorkspaceActivityTasks))
+		for id := range m.archivedWorkspaceActivityTasks {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *ArchivedWorkspaceActivityMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 5)
+	if m.removedarchivedWorkspaceActivityTasks != nil {
+		edges = append(edges, archivedworkspaceactivity.EdgeArchivedWorkspaceActivityTasks)
+	}
 	return edges
 }
 
@@ -2978,13 +3049,19 @@ func (m *ArchivedWorkspaceActivityMutation) RemovedEdges() []string {
 // the given name in this mutation.
 func (m *ArchivedWorkspaceActivityMutation) RemovedIDs(name string) []ent.Value {
 	switch name {
+	case archivedworkspaceactivity.EdgeArchivedWorkspaceActivityTasks:
+		ids := make([]ent.Value, 0, len(m.removedarchivedWorkspaceActivityTasks))
+		for id := range m.removedarchivedWorkspaceActivityTasks {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *ArchivedWorkspaceActivityMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 5)
 	if m.clearedactivityType {
 		edges = append(edges, archivedworkspaceactivity.EdgeActivityType)
 	}
@@ -2996,6 +3073,9 @@ func (m *ArchivedWorkspaceActivityMutation) ClearedEdges() []string {
 	}
 	if m.clearedteammate {
 		edges = append(edges, archivedworkspaceactivity.EdgeTeammate)
+	}
+	if m.clearedarchivedWorkspaceActivityTasks {
+		edges = append(edges, archivedworkspaceactivity.EdgeArchivedWorkspaceActivityTasks)
 	}
 	return edges
 }
@@ -3012,6 +3092,8 @@ func (m *ArchivedWorkspaceActivityMutation) EdgeCleared(name string) bool {
 		return m.clearedproject
 	case archivedworkspaceactivity.EdgeTeammate:
 		return m.clearedteammate
+	case archivedworkspaceactivity.EdgeArchivedWorkspaceActivityTasks:
+		return m.clearedarchivedWorkspaceActivityTasks
 	}
 	return false
 }
@@ -3052,8 +3134,590 @@ func (m *ArchivedWorkspaceActivityMutation) ResetEdge(name string) error {
 	case archivedworkspaceactivity.EdgeTeammate:
 		m.ResetTeammate()
 		return nil
+	case archivedworkspaceactivity.EdgeArchivedWorkspaceActivityTasks:
+		m.ResetArchivedWorkspaceActivityTasks()
+		return nil
 	}
 	return fmt.Errorf("unknown ArchivedWorkspaceActivity edge %s", name)
+}
+
+// ArchivedWorkspaceActivityTaskMutation represents an operation that mutates the ArchivedWorkspaceActivityTask nodes in the graph.
+type ArchivedWorkspaceActivityTaskMutation struct {
+	config
+	op                               Op
+	typ                              string
+	id                               *ulid.ID
+	created_at                       *time.Time
+	updated_at                       *time.Time
+	clearedFields                    map[string]struct{}
+	task                             *ulid.ID
+	clearedtask                      bool
+	archivedWorkspaceActivity        *ulid.ID
+	clearedarchivedWorkspaceActivity bool
+	done                             bool
+	oldValue                         func(context.Context) (*ArchivedWorkspaceActivityTask, error)
+	predicates                       []predicate.ArchivedWorkspaceActivityTask
+}
+
+var _ ent.Mutation = (*ArchivedWorkspaceActivityTaskMutation)(nil)
+
+// archivedworkspaceactivitytaskOption allows management of the mutation configuration using functional options.
+type archivedworkspaceactivitytaskOption func(*ArchivedWorkspaceActivityTaskMutation)
+
+// newArchivedWorkspaceActivityTaskMutation creates new mutation for the ArchivedWorkspaceActivityTask entity.
+func newArchivedWorkspaceActivityTaskMutation(c config, op Op, opts ...archivedworkspaceactivitytaskOption) *ArchivedWorkspaceActivityTaskMutation {
+	m := &ArchivedWorkspaceActivityTaskMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeArchivedWorkspaceActivityTask,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withArchivedWorkspaceActivityTaskID sets the ID field of the mutation.
+func withArchivedWorkspaceActivityTaskID(id ulid.ID) archivedworkspaceactivitytaskOption {
+	return func(m *ArchivedWorkspaceActivityTaskMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *ArchivedWorkspaceActivityTask
+		)
+		m.oldValue = func(ctx context.Context) (*ArchivedWorkspaceActivityTask, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().ArchivedWorkspaceActivityTask.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withArchivedWorkspaceActivityTask sets the old ArchivedWorkspaceActivityTask of the mutation.
+func withArchivedWorkspaceActivityTask(node *ArchivedWorkspaceActivityTask) archivedworkspaceactivitytaskOption {
+	return func(m *ArchivedWorkspaceActivityTaskMutation) {
+		m.oldValue = func(context.Context) (*ArchivedWorkspaceActivityTask, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m ArchivedWorkspaceActivityTaskMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m ArchivedWorkspaceActivityTaskMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of ArchivedWorkspaceActivityTask entities.
+func (m *ArchivedWorkspaceActivityTaskMutation) SetID(id ulid.ID) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *ArchivedWorkspaceActivityTaskMutation) ID() (id ulid.ID, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *ArchivedWorkspaceActivityTaskMutation) IDs(ctx context.Context) ([]ulid.ID, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []ulid.ID{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().ArchivedWorkspaceActivityTask.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetArchivedWorkspaceActivityID sets the "archived_workspace_activity_id" field.
+func (m *ArchivedWorkspaceActivityTaskMutation) SetArchivedWorkspaceActivityID(u ulid.ID) {
+	m.archivedWorkspaceActivity = &u
+}
+
+// ArchivedWorkspaceActivityID returns the value of the "archived_workspace_activity_id" field in the mutation.
+func (m *ArchivedWorkspaceActivityTaskMutation) ArchivedWorkspaceActivityID() (r ulid.ID, exists bool) {
+	v := m.archivedWorkspaceActivity
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldArchivedWorkspaceActivityID returns the old "archived_workspace_activity_id" field's value of the ArchivedWorkspaceActivityTask entity.
+// If the ArchivedWorkspaceActivityTask object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ArchivedWorkspaceActivityTaskMutation) OldArchivedWorkspaceActivityID(ctx context.Context) (v ulid.ID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldArchivedWorkspaceActivityID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldArchivedWorkspaceActivityID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldArchivedWorkspaceActivityID: %w", err)
+	}
+	return oldValue.ArchivedWorkspaceActivityID, nil
+}
+
+// ResetArchivedWorkspaceActivityID resets all changes to the "archived_workspace_activity_id" field.
+func (m *ArchivedWorkspaceActivityTaskMutation) ResetArchivedWorkspaceActivityID() {
+	m.archivedWorkspaceActivity = nil
+}
+
+// SetTaskID sets the "task_id" field.
+func (m *ArchivedWorkspaceActivityTaskMutation) SetTaskID(u ulid.ID) {
+	m.task = &u
+}
+
+// TaskID returns the value of the "task_id" field in the mutation.
+func (m *ArchivedWorkspaceActivityTaskMutation) TaskID() (r ulid.ID, exists bool) {
+	v := m.task
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTaskID returns the old "task_id" field's value of the ArchivedWorkspaceActivityTask entity.
+// If the ArchivedWorkspaceActivityTask object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ArchivedWorkspaceActivityTaskMutation) OldTaskID(ctx context.Context) (v ulid.ID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTaskID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTaskID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTaskID: %w", err)
+	}
+	return oldValue.TaskID, nil
+}
+
+// ResetTaskID resets all changes to the "task_id" field.
+func (m *ArchivedWorkspaceActivityTaskMutation) ResetTaskID() {
+	m.task = nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *ArchivedWorkspaceActivityTaskMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *ArchivedWorkspaceActivityTaskMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the ArchivedWorkspaceActivityTask entity.
+// If the ArchivedWorkspaceActivityTask object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ArchivedWorkspaceActivityTaskMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *ArchivedWorkspaceActivityTaskMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *ArchivedWorkspaceActivityTaskMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *ArchivedWorkspaceActivityTaskMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the ArchivedWorkspaceActivityTask entity.
+// If the ArchivedWorkspaceActivityTask object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ArchivedWorkspaceActivityTaskMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *ArchivedWorkspaceActivityTaskMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// ClearTask clears the "task" edge to the Task entity.
+func (m *ArchivedWorkspaceActivityTaskMutation) ClearTask() {
+	m.clearedtask = true
+}
+
+// TaskCleared reports if the "task" edge to the Task entity was cleared.
+func (m *ArchivedWorkspaceActivityTaskMutation) TaskCleared() bool {
+	return m.clearedtask
+}
+
+// TaskIDs returns the "task" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// TaskID instead. It exists only for internal usage by the builders.
+func (m *ArchivedWorkspaceActivityTaskMutation) TaskIDs() (ids []ulid.ID) {
+	if id := m.task; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetTask resets all changes to the "task" edge.
+func (m *ArchivedWorkspaceActivityTaskMutation) ResetTask() {
+	m.task = nil
+	m.clearedtask = false
+}
+
+// ClearArchivedWorkspaceActivity clears the "archivedWorkspaceActivity" edge to the ArchivedWorkspaceActivity entity.
+func (m *ArchivedWorkspaceActivityTaskMutation) ClearArchivedWorkspaceActivity() {
+	m.clearedarchivedWorkspaceActivity = true
+}
+
+// ArchivedWorkspaceActivityCleared reports if the "archivedWorkspaceActivity" edge to the ArchivedWorkspaceActivity entity was cleared.
+func (m *ArchivedWorkspaceActivityTaskMutation) ArchivedWorkspaceActivityCleared() bool {
+	return m.clearedarchivedWorkspaceActivity
+}
+
+// ArchivedWorkspaceActivityIDs returns the "archivedWorkspaceActivity" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// ArchivedWorkspaceActivityID instead. It exists only for internal usage by the builders.
+func (m *ArchivedWorkspaceActivityTaskMutation) ArchivedWorkspaceActivityIDs() (ids []ulid.ID) {
+	if id := m.archivedWorkspaceActivity; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetArchivedWorkspaceActivity resets all changes to the "archivedWorkspaceActivity" edge.
+func (m *ArchivedWorkspaceActivityTaskMutation) ResetArchivedWorkspaceActivity() {
+	m.archivedWorkspaceActivity = nil
+	m.clearedarchivedWorkspaceActivity = false
+}
+
+// Where appends a list predicates to the ArchivedWorkspaceActivityTaskMutation builder.
+func (m *ArchivedWorkspaceActivityTaskMutation) Where(ps ...predicate.ArchivedWorkspaceActivityTask) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// Op returns the operation name.
+func (m *ArchivedWorkspaceActivityTaskMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (ArchivedWorkspaceActivityTask).
+func (m *ArchivedWorkspaceActivityTaskMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *ArchivedWorkspaceActivityTaskMutation) Fields() []string {
+	fields := make([]string, 0, 4)
+	if m.archivedWorkspaceActivity != nil {
+		fields = append(fields, archivedworkspaceactivitytask.FieldArchivedWorkspaceActivityID)
+	}
+	if m.task != nil {
+		fields = append(fields, archivedworkspaceactivitytask.FieldTaskID)
+	}
+	if m.created_at != nil {
+		fields = append(fields, archivedworkspaceactivitytask.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, archivedworkspaceactivitytask.FieldUpdatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *ArchivedWorkspaceActivityTaskMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case archivedworkspaceactivitytask.FieldArchivedWorkspaceActivityID:
+		return m.ArchivedWorkspaceActivityID()
+	case archivedworkspaceactivitytask.FieldTaskID:
+		return m.TaskID()
+	case archivedworkspaceactivitytask.FieldCreatedAt:
+		return m.CreatedAt()
+	case archivedworkspaceactivitytask.FieldUpdatedAt:
+		return m.UpdatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *ArchivedWorkspaceActivityTaskMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case archivedworkspaceactivitytask.FieldArchivedWorkspaceActivityID:
+		return m.OldArchivedWorkspaceActivityID(ctx)
+	case archivedworkspaceactivitytask.FieldTaskID:
+		return m.OldTaskID(ctx)
+	case archivedworkspaceactivitytask.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case archivedworkspaceactivitytask.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown ArchivedWorkspaceActivityTask field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ArchivedWorkspaceActivityTaskMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case archivedworkspaceactivitytask.FieldArchivedWorkspaceActivityID:
+		v, ok := value.(ulid.ID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetArchivedWorkspaceActivityID(v)
+		return nil
+	case archivedworkspaceactivitytask.FieldTaskID:
+		v, ok := value.(ulid.ID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTaskID(v)
+		return nil
+	case archivedworkspaceactivitytask.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case archivedworkspaceactivitytask.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown ArchivedWorkspaceActivityTask field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *ArchivedWorkspaceActivityTaskMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *ArchivedWorkspaceActivityTaskMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ArchivedWorkspaceActivityTaskMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown ArchivedWorkspaceActivityTask numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *ArchivedWorkspaceActivityTaskMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *ArchivedWorkspaceActivityTaskMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *ArchivedWorkspaceActivityTaskMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown ArchivedWorkspaceActivityTask nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *ArchivedWorkspaceActivityTaskMutation) ResetField(name string) error {
+	switch name {
+	case archivedworkspaceactivitytask.FieldArchivedWorkspaceActivityID:
+		m.ResetArchivedWorkspaceActivityID()
+		return nil
+	case archivedworkspaceactivitytask.FieldTaskID:
+		m.ResetTaskID()
+		return nil
+	case archivedworkspaceactivitytask.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case archivedworkspaceactivitytask.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown ArchivedWorkspaceActivityTask field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *ArchivedWorkspaceActivityTaskMutation) AddedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.task != nil {
+		edges = append(edges, archivedworkspaceactivitytask.EdgeTask)
+	}
+	if m.archivedWorkspaceActivity != nil {
+		edges = append(edges, archivedworkspaceactivitytask.EdgeArchivedWorkspaceActivity)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *ArchivedWorkspaceActivityTaskMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case archivedworkspaceactivitytask.EdgeTask:
+		if id := m.task; id != nil {
+			return []ent.Value{*id}
+		}
+	case archivedworkspaceactivitytask.EdgeArchivedWorkspaceActivity:
+		if id := m.archivedWorkspaceActivity; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *ArchivedWorkspaceActivityTaskMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 2)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *ArchivedWorkspaceActivityTaskMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *ArchivedWorkspaceActivityTaskMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.clearedtask {
+		edges = append(edges, archivedworkspaceactivitytask.EdgeTask)
+	}
+	if m.clearedarchivedWorkspaceActivity {
+		edges = append(edges, archivedworkspaceactivitytask.EdgeArchivedWorkspaceActivity)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *ArchivedWorkspaceActivityTaskMutation) EdgeCleared(name string) bool {
+	switch name {
+	case archivedworkspaceactivitytask.EdgeTask:
+		return m.clearedtask
+	case archivedworkspaceactivitytask.EdgeArchivedWorkspaceActivity:
+		return m.clearedarchivedWorkspaceActivity
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *ArchivedWorkspaceActivityTaskMutation) ClearEdge(name string) error {
+	switch name {
+	case archivedworkspaceactivitytask.EdgeTask:
+		m.ClearTask()
+		return nil
+	case archivedworkspaceactivitytask.EdgeArchivedWorkspaceActivity:
+		m.ClearArchivedWorkspaceActivity()
+		return nil
+	}
+	return fmt.Errorf("unknown ArchivedWorkspaceActivityTask unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *ArchivedWorkspaceActivityTaskMutation) ResetEdge(name string) error {
+	switch name {
+	case archivedworkspaceactivitytask.EdgeTask:
+		m.ResetTask()
+		return nil
+	case archivedworkspaceactivitytask.EdgeArchivedWorkspaceActivity:
+		m.ResetArchivedWorkspaceActivity()
+		return nil
+	}
+	return fmt.Errorf("unknown ArchivedWorkspaceActivityTask edge %s", name)
 }
 
 // ColorMutation represents an operation that mutates the Color nodes in the graph.
@@ -14747,68 +15411,71 @@ func (m *TagMutation) ResetEdge(name string) error {
 // TaskMutation represents an operation that mutates the Task nodes in the graph.
 type TaskMutation struct {
 	config
-	op                               Op
-	typ                              string
-	id                               *ulid.ID
-	created_by                       *ulid.ID
-	completed                        *bool
-	completed_at                     *time.Time
-	is_new                           *bool
-	name                             *string
-	due_date                         *time.Time
-	due_time                         *time.Time
-	description                      *map[string]interface{}
-	created_at                       *time.Time
-	updated_at                       *time.Time
-	clearedFields                    map[string]struct{}
-	teammate                         *ulid.ID
-	clearedteammate                  bool
-	taskPriority                     *ulid.ID
-	clearedtaskPriority              bool
-	subTasks                         map[ulid.ID]struct{}
-	removedsubTasks                  map[ulid.ID]struct{}
-	clearedsubTasks                  bool
-	parentTask                       *ulid.ID
-	clearedparentTask                bool
-	teammateTasks                    map[ulid.ID]struct{}
-	removedteammateTasks             map[ulid.ID]struct{}
-	clearedteammateTasks             bool
-	projectTasks                     map[ulid.ID]struct{}
-	removedprojectTasks              map[ulid.ID]struct{}
-	clearedprojectTasks              bool
-	taskLikes                        map[ulid.ID]struct{}
-	removedtaskLikes                 map[ulid.ID]struct{}
-	clearedtaskLikes                 bool
-	taskTags                         map[ulid.ID]struct{}
-	removedtaskTags                  map[ulid.ID]struct{}
-	clearedtaskTags                  bool
-	taskCollaborators                map[ulid.ID]struct{}
-	removedtaskCollaborators         map[ulid.ID]struct{}
-	clearedtaskCollaborators         bool
-	taskFeeds                        map[ulid.ID]struct{}
-	removedtaskFeeds                 map[ulid.ID]struct{}
-	clearedtaskFeeds                 bool
-	taskFeedLikes                    map[ulid.ID]struct{}
-	removedtaskFeedLikes             map[ulid.ID]struct{}
-	clearedtaskFeedLikes             bool
-	taskFiles                        map[ulid.ID]struct{}
-	removedtaskFiles                 map[ulid.ID]struct{}
-	clearedtaskFiles                 bool
-	deletedTasksRef                  map[ulid.ID]struct{}
-	removeddeletedTasksRef           map[ulid.ID]struct{}
-	cleareddeletedTasksRef           bool
-	taskActivityTasks                map[ulid.ID]struct{}
-	removedtaskActivityTasks         map[ulid.ID]struct{}
-	clearedtaskActivityTasks         bool
-	workspaceActivityTasks           map[ulid.ID]struct{}
-	removedworkspaceActivityTasks    map[ulid.ID]struct{}
-	clearedworkspaceActivityTasks    bool
-	archivedTaskActivityTasks        map[ulid.ID]struct{}
-	removedarchivedTaskActivityTasks map[ulid.ID]struct{}
-	clearedarchivedTaskActivityTasks bool
-	done                             bool
-	oldValue                         func(context.Context) (*Task, error)
-	predicates                       []predicate.Task
+	op                                    Op
+	typ                                   string
+	id                                    *ulid.ID
+	created_by                            *ulid.ID
+	completed                             *bool
+	completed_at                          *time.Time
+	is_new                                *bool
+	name                                  *string
+	due_date                              *time.Time
+	due_time                              *time.Time
+	description                           *map[string]interface{}
+	created_at                            *time.Time
+	updated_at                            *time.Time
+	clearedFields                         map[string]struct{}
+	teammate                              *ulid.ID
+	clearedteammate                       bool
+	taskPriority                          *ulid.ID
+	clearedtaskPriority                   bool
+	subTasks                              map[ulid.ID]struct{}
+	removedsubTasks                       map[ulid.ID]struct{}
+	clearedsubTasks                       bool
+	parentTask                            *ulid.ID
+	clearedparentTask                     bool
+	teammateTasks                         map[ulid.ID]struct{}
+	removedteammateTasks                  map[ulid.ID]struct{}
+	clearedteammateTasks                  bool
+	projectTasks                          map[ulid.ID]struct{}
+	removedprojectTasks                   map[ulid.ID]struct{}
+	clearedprojectTasks                   bool
+	taskLikes                             map[ulid.ID]struct{}
+	removedtaskLikes                      map[ulid.ID]struct{}
+	clearedtaskLikes                      bool
+	taskTags                              map[ulid.ID]struct{}
+	removedtaskTags                       map[ulid.ID]struct{}
+	clearedtaskTags                       bool
+	taskCollaborators                     map[ulid.ID]struct{}
+	removedtaskCollaborators              map[ulid.ID]struct{}
+	clearedtaskCollaborators              bool
+	taskFeeds                             map[ulid.ID]struct{}
+	removedtaskFeeds                      map[ulid.ID]struct{}
+	clearedtaskFeeds                      bool
+	taskFeedLikes                         map[ulid.ID]struct{}
+	removedtaskFeedLikes                  map[ulid.ID]struct{}
+	clearedtaskFeedLikes                  bool
+	taskFiles                             map[ulid.ID]struct{}
+	removedtaskFiles                      map[ulid.ID]struct{}
+	clearedtaskFiles                      bool
+	deletedTasksRef                       map[ulid.ID]struct{}
+	removeddeletedTasksRef                map[ulid.ID]struct{}
+	cleareddeletedTasksRef                bool
+	taskActivityTasks                     map[ulid.ID]struct{}
+	removedtaskActivityTasks              map[ulid.ID]struct{}
+	clearedtaskActivityTasks              bool
+	workspaceActivityTasks                map[ulid.ID]struct{}
+	removedworkspaceActivityTasks         map[ulid.ID]struct{}
+	clearedworkspaceActivityTasks         bool
+	archivedTaskActivityTasks             map[ulid.ID]struct{}
+	removedarchivedTaskActivityTasks      map[ulid.ID]struct{}
+	clearedarchivedTaskActivityTasks      bool
+	archivedWorkspaceActivityTasks        map[ulid.ID]struct{}
+	removedarchivedWorkspaceActivityTasks map[ulid.ID]struct{}
+	clearedarchivedWorkspaceActivityTasks bool
+	done                                  bool
+	oldValue                              func(context.Context) (*Task, error)
+	predicates                            []predicate.Task
 }
 
 var _ ent.Mutation = (*TaskMutation)(nil)
@@ -16267,6 +16934,60 @@ func (m *TaskMutation) ResetArchivedTaskActivityTasks() {
 	m.removedarchivedTaskActivityTasks = nil
 }
 
+// AddArchivedWorkspaceActivityTaskIDs adds the "archivedWorkspaceActivityTasks" edge to the ArchivedWorkspaceActivityTask entity by ids.
+func (m *TaskMutation) AddArchivedWorkspaceActivityTaskIDs(ids ...ulid.ID) {
+	if m.archivedWorkspaceActivityTasks == nil {
+		m.archivedWorkspaceActivityTasks = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		m.archivedWorkspaceActivityTasks[ids[i]] = struct{}{}
+	}
+}
+
+// ClearArchivedWorkspaceActivityTasks clears the "archivedWorkspaceActivityTasks" edge to the ArchivedWorkspaceActivityTask entity.
+func (m *TaskMutation) ClearArchivedWorkspaceActivityTasks() {
+	m.clearedarchivedWorkspaceActivityTasks = true
+}
+
+// ArchivedWorkspaceActivityTasksCleared reports if the "archivedWorkspaceActivityTasks" edge to the ArchivedWorkspaceActivityTask entity was cleared.
+func (m *TaskMutation) ArchivedWorkspaceActivityTasksCleared() bool {
+	return m.clearedarchivedWorkspaceActivityTasks
+}
+
+// RemoveArchivedWorkspaceActivityTaskIDs removes the "archivedWorkspaceActivityTasks" edge to the ArchivedWorkspaceActivityTask entity by IDs.
+func (m *TaskMutation) RemoveArchivedWorkspaceActivityTaskIDs(ids ...ulid.ID) {
+	if m.removedarchivedWorkspaceActivityTasks == nil {
+		m.removedarchivedWorkspaceActivityTasks = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		delete(m.archivedWorkspaceActivityTasks, ids[i])
+		m.removedarchivedWorkspaceActivityTasks[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedArchivedWorkspaceActivityTasks returns the removed IDs of the "archivedWorkspaceActivityTasks" edge to the ArchivedWorkspaceActivityTask entity.
+func (m *TaskMutation) RemovedArchivedWorkspaceActivityTasksIDs() (ids []ulid.ID) {
+	for id := range m.removedarchivedWorkspaceActivityTasks {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ArchivedWorkspaceActivityTasksIDs returns the "archivedWorkspaceActivityTasks" edge IDs in the mutation.
+func (m *TaskMutation) ArchivedWorkspaceActivityTasksIDs() (ids []ulid.ID) {
+	for id := range m.archivedWorkspaceActivityTasks {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetArchivedWorkspaceActivityTasks resets all changes to the "archivedWorkspaceActivityTasks" edge.
+func (m *TaskMutation) ResetArchivedWorkspaceActivityTasks() {
+	m.archivedWorkspaceActivityTasks = nil
+	m.clearedarchivedWorkspaceActivityTasks = false
+	m.removedarchivedWorkspaceActivityTasks = nil
+}
+
 // Where appends a list predicates to the TaskMutation builder.
 func (m *TaskMutation) Where(ps ...predicate.Task) {
 	m.predicates = append(m.predicates, ps...)
@@ -16628,7 +17349,7 @@ func (m *TaskMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *TaskMutation) AddedEdges() []string {
-	edges := make([]string, 0, 16)
+	edges := make([]string, 0, 17)
 	if m.teammate != nil {
 		edges = append(edges, task.EdgeTeammate)
 	}
@@ -16676,6 +17397,9 @@ func (m *TaskMutation) AddedEdges() []string {
 	}
 	if m.archivedTaskActivityTasks != nil {
 		edges = append(edges, task.EdgeArchivedTaskActivityTasks)
+	}
+	if m.archivedWorkspaceActivityTasks != nil {
+		edges = append(edges, task.EdgeArchivedWorkspaceActivityTasks)
 	}
 	return edges
 }
@@ -16774,13 +17498,19 @@ func (m *TaskMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case task.EdgeArchivedWorkspaceActivityTasks:
+		ids := make([]ent.Value, 0, len(m.archivedWorkspaceActivityTasks))
+		for id := range m.archivedWorkspaceActivityTasks {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *TaskMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 16)
+	edges := make([]string, 0, 17)
 	if m.removedsubTasks != nil {
 		edges = append(edges, task.EdgeSubTasks)
 	}
@@ -16819,6 +17549,9 @@ func (m *TaskMutation) RemovedEdges() []string {
 	}
 	if m.removedarchivedTaskActivityTasks != nil {
 		edges = append(edges, task.EdgeArchivedTaskActivityTasks)
+	}
+	if m.removedarchivedWorkspaceActivityTasks != nil {
+		edges = append(edges, task.EdgeArchivedWorkspaceActivityTasks)
 	}
 	return edges
 }
@@ -16905,13 +17638,19 @@ func (m *TaskMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case task.EdgeArchivedWorkspaceActivityTasks:
+		ids := make([]ent.Value, 0, len(m.removedarchivedWorkspaceActivityTasks))
+		for id := range m.removedarchivedWorkspaceActivityTasks {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *TaskMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 16)
+	edges := make([]string, 0, 17)
 	if m.clearedteammate {
 		edges = append(edges, task.EdgeTeammate)
 	}
@@ -16960,6 +17699,9 @@ func (m *TaskMutation) ClearedEdges() []string {
 	if m.clearedarchivedTaskActivityTasks {
 		edges = append(edges, task.EdgeArchivedTaskActivityTasks)
 	}
+	if m.clearedarchivedWorkspaceActivityTasks {
+		edges = append(edges, task.EdgeArchivedWorkspaceActivityTasks)
+	}
 	return edges
 }
 
@@ -16999,6 +17741,8 @@ func (m *TaskMutation) EdgeCleared(name string) bool {
 		return m.clearedworkspaceActivityTasks
 	case task.EdgeArchivedTaskActivityTasks:
 		return m.clearedarchivedTaskActivityTasks
+	case task.EdgeArchivedWorkspaceActivityTasks:
+		return m.clearedarchivedWorkspaceActivityTasks
 	}
 	return false
 }
@@ -17071,6 +17815,9 @@ func (m *TaskMutation) ResetEdge(name string) error {
 		return nil
 	case task.EdgeArchivedTaskActivityTasks:
 		m.ResetArchivedTaskActivityTasks()
+		return nil
+	case task.EdgeArchivedWorkspaceActivityTasks:
+		m.ResetArchivedWorkspaceActivityTasks()
 		return nil
 	}
 	return fmt.Errorf("unknown Task edge %s", name)
