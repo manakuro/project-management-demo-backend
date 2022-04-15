@@ -64,9 +64,11 @@ type WorkspaceEdges struct {
 	WorkspaceActivities []*WorkspaceActivity `json:"workspaceActivities,omitempty"`
 	// TaskActivities holds the value of the taskActivities edge.
 	TaskActivities []*TaskActivity `json:"taskActivities,omitempty"`
+	// ArchivedTaskActivities holds the value of the archivedTaskActivities edge.
+	ArchivedTaskActivities []*ArchivedTaskActivity `json:"archivedTaskActivities,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [14]bool
+	loadedTypes [15]bool
 }
 
 // TeammateOrErr returns the Teammate value or an error if the edge
@@ -198,6 +200,15 @@ func (e WorkspaceEdges) TaskActivitiesOrErr() ([]*TaskActivity, error) {
 		return e.TaskActivities, nil
 	}
 	return nil, &NotLoadedError{edge: "taskActivities"}
+}
+
+// ArchivedTaskActivitiesOrErr returns the ArchivedTaskActivities value or an error if the edge
+// was not loaded in eager-loading.
+func (e WorkspaceEdges) ArchivedTaskActivitiesOrErr() ([]*ArchivedTaskActivity, error) {
+	if e.loadedTypes[14] {
+		return e.ArchivedTaskActivities, nil
+	}
+	return nil, &NotLoadedError{edge: "archivedTaskActivities"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -339,6 +350,11 @@ func (w *Workspace) QueryWorkspaceActivities() *WorkspaceActivityQuery {
 // QueryTaskActivities queries the "taskActivities" edge of the Workspace entity.
 func (w *Workspace) QueryTaskActivities() *TaskActivityQuery {
 	return (&WorkspaceClient{config: w.config}).QueryTaskActivities(w)
+}
+
+// QueryArchivedTaskActivities queries the "archivedTaskActivities" edge of the Workspace entity.
+func (w *Workspace) QueryArchivedTaskActivities() *ArchivedTaskActivityQuery {
+	return (&WorkspaceClient{config: w.config}).QueryArchivedTaskActivities(w)
 }
 
 // Update returns a builder for updating this Workspace.

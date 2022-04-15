@@ -20,6 +20,38 @@ func (at *ActivityType) WorkspaceActivities(ctx context.Context) ([]*WorkspaceAc
 	return result, err
 }
 
+func (at *ActivityType) ArchivedTaskActivities(ctx context.Context) ([]*ArchivedTaskActivity, error) {
+	result, err := at.Edges.ArchivedTaskActivitiesOrErr()
+	if IsNotLoaded(err) {
+		result, err = at.QueryArchivedTaskActivities().All(ctx)
+	}
+	return result, err
+}
+
+func (ata *ArchivedTaskActivity) Teammate(ctx context.Context) (*Teammate, error) {
+	result, err := ata.Edges.TeammateOrErr()
+	if IsNotLoaded(err) {
+		result, err = ata.QueryTeammate().Only(ctx)
+	}
+	return result, err
+}
+
+func (ata *ArchivedTaskActivity) ActivityType(ctx context.Context) (*ActivityType, error) {
+	result, err := ata.Edges.ActivityTypeOrErr()
+	if IsNotLoaded(err) {
+		result, err = ata.QueryActivityType().Only(ctx)
+	}
+	return result, err
+}
+
+func (ata *ArchivedTaskActivity) Workspace(ctx context.Context) (*Workspace, error) {
+	result, err := ata.Edges.WorkspaceOrErr()
+	if IsNotLoaded(err) {
+		result, err = ata.QueryWorkspace().Only(ctx)
+	}
+	return result, err
+}
+
 func (c *Color) ProjectBaseColors(ctx context.Context) ([]*ProjectBaseColor, error) {
 	result, err := c.Edges.ProjectBaseColorsOrErr()
 	if IsNotLoaded(err) {
@@ -908,6 +940,14 @@ func (t *Teammate) WorkspaceActivities(ctx context.Context) ([]*WorkspaceActivit
 	return result, err
 }
 
+func (t *Teammate) ArchivedTaskActivities(ctx context.Context) ([]*ArchivedTaskActivity, error) {
+	result, err := t.Edges.ArchivedTaskActivitiesOrErr()
+	if IsNotLoaded(err) {
+		result, err = t.QueryArchivedTaskActivities().All(ctx)
+	}
+	return result, err
+}
+
 func (tt *TeammateTask) Teammate(ctx context.Context) (*Teammate, error) {
 	result, err := tt.Edges.TeammateOrErr()
 	if IsNotLoaded(err) {
@@ -1176,6 +1216,14 @@ func (w *Workspace) TaskActivities(ctx context.Context) ([]*TaskActivity, error)
 	result, err := w.Edges.TaskActivitiesOrErr()
 	if IsNotLoaded(err) {
 		result, err = w.QueryTaskActivities().All(ctx)
+	}
+	return result, err
+}
+
+func (w *Workspace) ArchivedTaskActivities(ctx context.Context) ([]*ArchivedTaskActivity, error) {
+	result, err := w.Edges.ArchivedTaskActivitiesOrErr()
+	if IsNotLoaded(err) {
+		result, err = w.QueryArchivedTaskActivities().All(ctx)
 	}
 	return result, err
 }

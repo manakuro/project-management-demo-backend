@@ -22,6 +22,41 @@ var (
 		Columns:    ActivityTypesColumns,
 		PrimaryKey: []*schema.Column{ActivityTypesColumns[0]},
 	}
+	// ArchivedTaskActivitiesColumns holds the columns for the "archived_task_activities" table.
+	ArchivedTaskActivitiesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
+		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
+		{Name: "activity_type_id", Type: field.TypeString},
+		{Name: "teammate_id", Type: field.TypeString},
+		{Name: "workspace_id", Type: field.TypeString},
+	}
+	// ArchivedTaskActivitiesTable holds the schema information for the "archived_task_activities" table.
+	ArchivedTaskActivitiesTable = &schema.Table{
+		Name:       "archived_task_activities",
+		Columns:    ArchivedTaskActivitiesColumns,
+		PrimaryKey: []*schema.Column{ArchivedTaskActivitiesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "archived_task_activities_activity_types_archivedTaskActivities",
+				Columns:    []*schema.Column{ArchivedTaskActivitiesColumns[3]},
+				RefColumns: []*schema.Column{ActivityTypesColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "archived_task_activities_teammates_archivedTaskActivities",
+				Columns:    []*schema.Column{ArchivedTaskActivitiesColumns[4]},
+				RefColumns: []*schema.Column{TeammatesColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "archived_task_activities_workspaces_archivedTaskActivities",
+				Columns:    []*schema.Column{ArchivedTaskActivitiesColumns[5]},
+				RefColumns: []*schema.Column{WorkspacesColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
 	// ColorsColumns holds the columns for the "colors" table.
 	ColorsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString},
@@ -1216,6 +1251,7 @@ var (
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		ActivityTypesTable,
+		ArchivedTaskActivitiesTable,
 		ColorsTable,
 		DeletedTasksTable,
 		FavoriteProjectsTable,
@@ -1262,6 +1298,9 @@ var (
 )
 
 func init() {
+	ArchivedTaskActivitiesTable.ForeignKeys[0].RefTable = ActivityTypesTable
+	ArchivedTaskActivitiesTable.ForeignKeys[1].RefTable = TeammatesTable
+	ArchivedTaskActivitiesTable.ForeignKeys[2].RefTable = WorkspacesTable
 	DeletedTasksTable.ForeignKeys[0].RefTable = TasksTable
 	DeletedTasksTable.ForeignKeys[1].RefTable = WorkspacesTable
 	FavoriteProjectsTable.ForeignKeys[0].RefTable = ProjectsTable

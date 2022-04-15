@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"project-management-demo-backend/ent/archivedtaskactivity"
 	"project-management-demo-backend/ent/favoriteproject"
 	"project-management-demo-backend/ent/favoriteworkspace"
 	"project-management-demo-backend/ent/project"
@@ -370,6 +371,21 @@ func (tc *TeammateCreate) AddWorkspaceActivities(w ...*WorkspaceActivity) *Teamm
 		ids[i] = w[i].ID
 	}
 	return tc.AddWorkspaceActivityIDs(ids...)
+}
+
+// AddArchivedTaskActivityIDs adds the "archivedTaskActivities" edge to the ArchivedTaskActivity entity by IDs.
+func (tc *TeammateCreate) AddArchivedTaskActivityIDs(ids ...ulid.ID) *TeammateCreate {
+	tc.mutation.AddArchivedTaskActivityIDs(ids...)
+	return tc
+}
+
+// AddArchivedTaskActivities adds the "archivedTaskActivities" edges to the ArchivedTaskActivity entity.
+func (tc *TeammateCreate) AddArchivedTaskActivities(a ...*ArchivedTaskActivity) *TeammateCreate {
+	ids := make([]ulid.ID, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return tc.AddArchivedTaskActivityIDs(ids...)
 }
 
 // Mutation returns the TeammateMutation object of the builder.
@@ -900,6 +916,25 @@ func (tc *TeammateCreate) createSpec() (*Teammate, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: workspaceactivity.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := tc.mutation.ArchivedTaskActivitiesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   teammate.ArchivedTaskActivitiesTable,
+			Columns: []string{teammate.ArchivedTaskActivitiesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: archivedtaskactivity.FieldID,
 				},
 			},
 		}
