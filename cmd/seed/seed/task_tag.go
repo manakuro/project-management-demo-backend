@@ -7,17 +7,17 @@ import (
 	"project-management-demo-backend/ent"
 )
 
-// TaskTag generates tasks data
+// TaskTag generates tasks tag data.
 func TaskTag(ctx context.Context, client *ent.Client) {
 	_, err := client.TaskTag.Delete().Exec(ctx)
 	if err != nil {
 		log.Fatalf("TaskTag failed to delete data: %v", err)
 	}
-	designTag := seedutil.GetTagByName(ctx, client, tagFeed.design.Name)
-	bugTag := seedutil.GetTagByName(ctx, client, tagFeed.bug.Name)
-	developmentTag := seedutil.GetTagByName(ctx, client, tagFeed.development.Name)
+	designTag := seedutil.GetTagByName(ctx, client, tagSeed.design.Name)
+	bugTag := seedutil.GetTagByName(ctx, client, tagSeed.bug.Name)
+	developmentTag := seedutil.GetTagByName(ctx, client, tagSeed.development.Name)
 
-	ts := []ent.CreateTaskTagInput{
+	inputs := []ent.CreateTaskTagInput{
 		{
 			TaskID: seedutil.GetTaskByName(ctx, client, taskAssignedFeed.task1.Name).ID,
 			TagID:  developmentTag.ID,
@@ -39,11 +39,11 @@ func TaskTag(ctx context.Context, client *ent.Client) {
 			TagID:  developmentTag.ID,
 		},
 	}
-	bulk := make([]*ent.TaskTagCreate, len(ts))
-	for i, t := range ts {
+	bulk := make([]*ent.TaskTagCreate, len(inputs))
+	for i, t := range inputs {
 		bulk[i] = client.TaskTag.Create().SetInput(t)
 	}
 	if _, err = client.TaskTag.CreateBulk(bulk...).Save(ctx); err != nil {
-		log.Fatalf("TaskTag failed to feed data: %v", err)
+		log.Fatalf("TaskTag failed to seed data: %v", err)
 	}
 }

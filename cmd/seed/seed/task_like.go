@@ -7,18 +7,18 @@ import (
 	"project-management-demo-backend/ent"
 )
 
-// TaskLike generates tasks data
+// TaskLike generates task like data.
 func TaskLike(ctx context.Context, client *ent.Client) {
 	_, err := client.TaskLike.Delete().Exec(ctx)
 	if err != nil {
 		log.Fatalf("TaskLike failed to delete data: %v", err)
 	}
-	manatoID := seedutil.GetTeammateByEmail(ctx, client, teammateFeed.manato.Email).ID
-	danID := seedutil.GetTeammateByEmail(ctx, client, teammateFeed.dan.Email).ID
-	kentID := seedutil.GetTeammateByEmail(ctx, client, teammateFeed.kent.Email).ID
+	manatoID := seedutil.GetTeammateByEmail(ctx, client, teammateSeed.manato.Email).ID
+	danID := seedutil.GetTeammateByEmail(ctx, client, teammateSeed.dan.Email).ID
+	kentID := seedutil.GetTeammateByEmail(ctx, client, teammateSeed.kent.Email).ID
 	workspace := seedutil.GetWorkspace(ctx, client)
 
-	ts := []ent.CreateTaskLikeInput{
+	inputs := []ent.CreateTaskLikeInput{
 		{
 			TeammateID:  manatoID,
 			TaskID:      seedutil.GetTaskByName(ctx, client, taskAssignedFeed.task1.Name).ID,
@@ -45,11 +45,11 @@ func TaskLike(ctx context.Context, client *ent.Client) {
 			WorkspaceID: workspace.ID,
 		},
 	}
-	bulk := make([]*ent.TaskLikeCreate, len(ts))
-	for i, t := range ts {
+	bulk := make([]*ent.TaskLikeCreate, len(inputs))
+	for i, t := range inputs {
 		bulk[i] = client.TaskLike.Create().SetInput(t)
 	}
 	if _, err = client.TaskLike.CreateBulk(bulk...).Save(ctx); err != nil {
-		log.Fatalf("TaskLike failed to feed data: %v", err)
+		log.Fatalf("TaskLike failed to seed data: %v", err)
 	}
 }

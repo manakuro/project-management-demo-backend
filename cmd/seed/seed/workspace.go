@@ -8,7 +8,7 @@ import (
 	"project-management-demo-backend/ent/teammate"
 )
 
-// Workspace generates workspace data
+// Workspace generates workspace data.
 func Workspace(ctx context.Context, client *ent.Client) {
 	_, err := client.Workspace.Delete().Exec(ctx)
 	if err != nil {
@@ -35,7 +35,7 @@ func Workspace(ctx context.Context, client *ent.Client) {
   ]
 }`)
 
-	ts := []ent.CreateWorkspaceInput{
+	inputs := []ent.CreateWorkspaceInput{
 		{
 			Name:        "My Workspace",
 			Description: seedutil.ParseDescription(b),
@@ -47,12 +47,12 @@ func Workspace(ctx context.Context, client *ent.Client) {
 			CreatedBy:   tm.ID,
 		},
 	}
-	bulk := make([]*ent.WorkspaceCreate, len(ts))
-	for i, t := range ts {
+	bulk := make([]*ent.WorkspaceCreate, len(inputs))
+	for i, t := range inputs {
 
 		bulk[i] = client.Workspace.Create().SetInput(t)
 	}
 	if _, err = client.Workspace.CreateBulk(bulk...).Save(ctx); err != nil {
-		log.Fatalf("Workspace failed to feed data: %v", err)
+		log.Fatalf("Workspace failed to seed data: %v", err)
 	}
 }

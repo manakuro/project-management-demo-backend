@@ -83,6 +83,6 @@ func TaskActivityTask(ctx context.Context, client *ent.Client) {
 		bulk[i] = client.TaskActivityTask.Create().SetInput(t)
 	}
 	if _, err = client.TaskActivityTask.CreateBulk(bulk...).Save(ctx); err != nil {
-		log.Fatalf("TaskActivityTask failed to feed data: %v", err)
+		log.Fatalf("TaskActivityTask failed to seed data: %v", err)
 	}
 }

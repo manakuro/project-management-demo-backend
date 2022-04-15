@@ -27,35 +27,35 @@ var taskPriorityFeed = struct {
 	},
 }
 
-// TaskPriority generates project light color data
+// TaskPriority generates project priority data.
 func TaskPriority(ctx context.Context, client *ent.Client) {
 	_, err := client.TaskPriority.Delete().Exec(ctx)
 	if err != nil {
 		log.Fatalf("TaskPriority failed to delete data: %v", err)
 	}
 
-	data := []ent.CreateTaskPriorityInput{
+	inputs := []ent.CreateTaskPriorityInput{
 		{
 			Name:         taskPriorityFeed.low.Name,
 			PriorityType: taskPriorityFeed.low.PriorityType,
-			ColorID:      seedutil.GetColor(ctx, client, colorFeed.green400.Color).ID,
+			ColorID:      seedutil.GetColor(ctx, client, colorSeed.green400.Color).ID,
 		},
 		{
 			Name:         taskPriorityFeed.medium.Name,
 			PriorityType: taskPriorityFeed.medium.PriorityType,
-			ColorID:      seedutil.GetColor(ctx, client, colorFeed.orange400.Color).ID,
+			ColorID:      seedutil.GetColor(ctx, client, colorSeed.orange400.Color).ID,
 		},
 		{
 			Name:         taskPriorityFeed.high.Name,
 			PriorityType: taskPriorityFeed.high.PriorityType,
-			ColorID:      seedutil.GetColor(ctx, client, colorFeed.red400.Color).ID,
+			ColorID:      seedutil.GetColor(ctx, client, colorSeed.red400.Color).ID,
 		},
 	}
-	bulk := make([]*ent.TaskPriorityCreate, len(data))
-	for i, t := range data {
+	bulk := make([]*ent.TaskPriorityCreate, len(inputs))
+	for i, t := range inputs {
 		bulk[i] = client.TaskPriority.Create().SetInput(t)
 	}
 	if _, err = client.TaskPriority.CreateBulk(bulk...).Save(ctx); err != nil {
-		log.Fatalf("TaskPriority failed to feed data: %v", err)
+		log.Fatalf("TaskPriority failed to seed data: %v", err)
 	}
 }

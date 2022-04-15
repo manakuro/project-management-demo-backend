@@ -27,14 +27,14 @@ var taskListSortStatusFeed = struct {
 	priority:     ent.CreateTaskListSortStatusInput{Name: "Priority", StatusCode: tasklistsortstatus.StatusCodePriority},
 }
 
-// TaskListSortStatus generates color data
+// TaskListSortStatus generates task list sort status data.
 func TaskListSortStatus(ctx context.Context, client *ent.Client) {
 	_, err := client.TaskListSortStatus.Delete().Exec(ctx)
 	if err != nil {
 		log.Fatalf("TaskListSortStatus failed to delete data: %v", err)
 	}
 
-	ts := []ent.CreateTaskListSortStatusInput{
+	inputs := []ent.CreateTaskListSortStatusInput{
 		taskListSortStatusFeed.none,
 		taskListSortStatusFeed.dueDate,
 		taskListSortStatusFeed.likes,
@@ -44,11 +44,11 @@ func TaskListSortStatus(ctx context.Context, client *ent.Client) {
 		taskListSortStatusFeed.creationTime,
 		taskListSortStatusFeed.priority,
 	}
-	bulk := make([]*ent.TaskListSortStatusCreate, len(ts))
-	for i, t := range ts {
+	bulk := make([]*ent.TaskListSortStatusCreate, len(inputs))
+	for i, t := range inputs {
 		bulk[i] = client.TaskListSortStatus.Create().SetInput(t)
 	}
 	if _, err = client.TaskListSortStatus.CreateBulk(bulk...).Save(ctx); err != nil {
-		log.Fatalf("TaskListSortStatus failed to feed data: %v", err)
+		log.Fatalf("TaskListSortStatus failed to seed data: %v", err)
 	}
 }

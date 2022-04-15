@@ -87,13 +87,13 @@ var taskNoAssignedFeed = struct {
 	mTask14: ent.CreateTaskInput{Name: "Interview Ticktocker"},
 }
 
-// Task generates tasks data
+// Task generates tasks data.
 func Task(ctx context.Context, client *ent.Client) {
 	_, err := client.Task.Delete().Exec(ctx)
 	if err != nil {
 		log.Fatalf("Task failed to delete data: %v", err)
 	}
-	teammate := seedutil.GetTeammateByEmail(ctx, client, teammateFeed.manato.Email)
+	teammate := seedutil.GetTeammateByEmail(ctx, client, teammateSeed.manato.Email)
 	completed := true
 
 	assignedTask2, err := client.Task.Create().SetInput(ent.CreateTaskInput{
@@ -105,7 +105,7 @@ func Task(ctx context.Context, client *ent.Client) {
 		Description:    seedutil.ParseDescription([]byte(`{"type": "doc", "content": [{ "type": "paragraph", "content": null }]}`)),
 	}).Save(ctx)
 	if err != nil {
-		log.Fatalf("Task failed to feed data: %v", err)
+		log.Fatalf("Task failed to seed data: %v", err)
 	}
 
 	noAssignedTask2, err := client.Task.Create().SetInput(ent.CreateTaskInput{
@@ -116,14 +116,14 @@ func Task(ctx context.Context, client *ent.Client) {
 		Description:    seedutil.ParseDescription([]byte(`{"type": "doc", "content": [{ "type": "paragraph", "content": null }]}`)),
 	}).Save(ctx)
 	if err != nil {
-		log.Fatalf("Task failed to feed data: %v", err)
+		log.Fatalf("Task failed to seed data: %v", err)
 	}
 
 	taskPriorityHighID := &seedutil.GetTaskPriorityByName(ctx, client, taskPriorityFeed.high.Name).ID
 	taskPriorityMediumID := &seedutil.GetTaskPriorityByName(ctx, client, taskPriorityFeed.medium.Name).ID
 	taskPriorityLowID := &seedutil.GetTaskPriorityByName(ctx, client, taskPriorityFeed.low.Name).ID
 
-	ts := []ent.CreateTaskInput{
+	inputs := []ent.CreateTaskInput{
 		{
 			Name:           taskAssignedFeed.task1.Name,
 			DueDate:        taskAssignedFeed.task1.DueDate,
@@ -232,7 +232,7 @@ func Task(ctx context.Context, client *ent.Client) {
 			Description:    seedutil.ParseDescription([]byte(`{"type": "doc", "content": [{ "type": "paragraph", "content": null }]}`)),
 		},
 
-		// No assigned feed
+		// No assigned seed
 		{
 			Name:           taskNoAssignedFeed.task1.Name,
 			DueDate:        taskAssignedFeed.task2Subtask1.DueDate,
@@ -359,11 +359,11 @@ func Task(ctx context.Context, client *ent.Client) {
 			Description: seedutil.ParseDescription([]byte(`{"type": "doc", "content": [{ "type": "paragraph", "content": null }]}`)),
 		},
 	}
-	bulk := make([]*ent.TaskCreate, len(ts))
-	for i, t := range ts {
+	bulk := make([]*ent.TaskCreate, len(inputs))
+	for i, t := range inputs {
 		bulk[i] = client.Task.Create().SetInput(t)
 	}
 	if _, err = client.Task.CreateBulk(bulk...).Save(ctx); err != nil {
-		log.Fatalf("Task failed to feed data: %v", err)
+		log.Fatalf("Task failed to seed data: %v", err)
 	}
 }

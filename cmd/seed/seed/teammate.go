@@ -6,7 +6,7 @@ import (
 	"project-management-demo-backend/ent"
 )
 
-var teammateFeed = struct {
+var teammateSeed = struct {
 	manato ent.CreateTeammateInput
 	dan    ent.CreateTeammateInput
 	kent   ent.CreateTeammateInput
@@ -28,23 +28,23 @@ var teammateFeed = struct {
 	},
 }
 
-// Teammate generates teammate data
+// Teammate generates teammate data.
 func Teammate(ctx context.Context, client *ent.Client) {
 	_, err := client.Teammate.Delete().Exec(ctx)
 	if err != nil {
 		log.Fatalf("Teammate failed to delete data: %v", err)
 	}
 
-	ts := []ent.CreateTeammateInput{
-		teammateFeed.manato,
-		teammateFeed.dan,
-		teammateFeed.kent,
+	inputs := []ent.CreateTeammateInput{
+		teammateSeed.manato,
+		teammateSeed.dan,
+		teammateSeed.kent,
 	}
-	bulk := make([]*ent.TeammateCreate, len(ts))
-	for i, t := range ts {
+	bulk := make([]*ent.TeammateCreate, len(inputs))
+	for i, t := range inputs {
 		bulk[i] = client.Teammate.Create().SetInput(t)
 	}
 	if _, err = client.Teammate.CreateBulk(bulk...).Save(ctx); err != nil {
-		log.Fatalf("Teammate failed to feed data: %v", err)
+		log.Fatalf("Teammate failed to seed data: %v", err)
 	}
 }

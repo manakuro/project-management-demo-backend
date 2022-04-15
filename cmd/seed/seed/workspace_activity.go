@@ -16,9 +16,9 @@ func WorkspaceActivity(ctx context.Context, client *ent.Client) {
 		log.Fatalf("WorkspaceActivity failed to delete data: %v", err)
 	}
 	activityTypeID := seedutil.GetActivityType(ctx, client, "Workspace").ID
-	teammateID := seedutil.GetTeammateByEmail(ctx, client, teammateFeed.manato.Email).ID
+	teammateID := seedutil.GetTeammateByEmail(ctx, client, teammateSeed.manato.Email).ID
 	workspaceID := seedutil.GetWorkspace(ctx, client).ID
-	projectID := seedutil.GetProjectByName(ctx, client, projectFeed.appDevelopment.name).ID
+	projectID := seedutil.GetProjectByName(ctx, client, projectSeed.appDevelopment.name).ID
 
 	inputs := []ent.CreateWorkspaceActivityInput{
 		{
@@ -39,12 +39,12 @@ func WorkspaceActivity(ctx context.Context, client *ent.Client) {
 		bulk[i] = client.WorkspaceActivity.Create().SetInput(t)
 	}
 	if _, err = client.WorkspaceActivity.CreateBulk(bulk...).Save(ctx); err != nil {
-		log.Fatalf("WorkspaceActivity failed to feed data: %v", err)
+		log.Fatalf("WorkspaceActivity failed to seed data: %v", err)
 	}
 
 	res, err := client.WorkspaceActivity.Query().All(ctx)
 	if err != nil {
-		log.Fatalf("WorkspaceActivity failed to feed data: %v", err)
+		log.Fatalf("WorkspaceActivity failed to seed data: %v", err)
 	}
 
 	for i, r := range res {

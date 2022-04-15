@@ -47,18 +47,18 @@ var projectTaskSectionFeedMarketing = struct {
 	},
 }
 
-// ProjectTaskSection generates project_projects data
+// ProjectTaskSection generates project task section data.
 func ProjectTaskSection(ctx context.Context, client *ent.Client) {
 	_, err := client.ProjectTaskSection.Delete().Exec(ctx)
 	if err != nil {
 		log.Fatalf("ProjectTaskSection failed to delete data: %v", err)
 	}
 
-	appDevelopmentProject := seedutil.GetProjectByName(ctx, client, projectFeed.appDevelopment.name)
-	marketingProject := seedutil.GetProjectByName(ctx, client, projectFeed.marketing.name)
-	customerSuccessProject := seedutil.GetProjectByName(ctx, client, projectFeed.customerSuccess.name)
+	appDevelopmentProject := seedutil.GetProjectByName(ctx, client, projectSeed.appDevelopment.name)
+	marketingProject := seedutil.GetProjectByName(ctx, client, projectSeed.marketing.name)
+	customerSuccessProject := seedutil.GetProjectByName(ctx, client, projectSeed.customerSuccess.name)
 
-	ts := []ent.CreateProjectTaskSectionInput{
+	inputs := []ent.CreateProjectTaskSectionInput{
 		// App Development
 		{
 			ProjectID: appDevelopmentProject.ID,
@@ -122,11 +122,11 @@ func ProjectTaskSection(ctx context.Context, client *ent.Client) {
 			Name:      projectTaskSectionFeedAppDevelopment.done.Name,
 		},
 	}
-	bulk := make([]*ent.ProjectTaskSectionCreate, len(ts))
-	for i, t := range ts {
+	bulk := make([]*ent.ProjectTaskSectionCreate, len(inputs))
+	for i, t := range inputs {
 		bulk[i] = client.ProjectTaskSection.Create().SetInput(t)
 	}
 	if _, err = client.ProjectTaskSection.CreateBulk(bulk...).Save(ctx); err != nil {
-		log.Fatalf("ProjectTaskSection failed to feed data: %v", err)
+		log.Fatalf("ProjectTaskSection failed to seed data: %v", err)
 	}
 }

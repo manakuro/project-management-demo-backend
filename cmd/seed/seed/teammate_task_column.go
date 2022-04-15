@@ -7,7 +7,7 @@ import (
 	"project-management-demo-backend/ent"
 )
 
-// TeammateTaskColumn generates project_teammates data
+// TeammateTaskColumn generates teammate task column data.
 func TeammateTaskColumn(ctx context.Context, client *ent.Client) {
 	_, err := client.TeammateTaskColumn.Delete().Exec(ctx)
 	if err != nil {
@@ -15,9 +15,9 @@ func TeammateTaskColumn(ctx context.Context, client *ent.Client) {
 	}
 
 	workspace := seedutil.GetWorkspace(ctx, client)
-	manato := seedutil.GetTeammateByEmail(ctx, client, teammateFeed.manato.Email)
+	manato := seedutil.GetTeammateByEmail(ctx, client, teammateSeed.manato.Email)
 
-	ts := []ent.CreateTeammateTaskColumnInput{
+	inputs := []ent.CreateTeammateTaskColumnInput{
 		{
 			TaskColumnID: seedutil.GetTaskColumnByName(ctx, client, taskColumnFeed.taskName.Name).ID,
 			TeammateID:   manato.ID,
@@ -55,11 +55,11 @@ func TeammateTaskColumn(ctx context.Context, client *ent.Client) {
 			Order:        4,
 		},
 	}
-	bulk := make([]*ent.TeammateTaskColumnCreate, len(ts))
-	for i, t := range ts {
+	bulk := make([]*ent.TeammateTaskColumnCreate, len(inputs))
+	for i, t := range inputs {
 		bulk[i] = client.TeammateTaskColumn.Create().SetInput(t)
 	}
 	if _, err = client.TeammateTaskColumn.CreateBulk(bulk...).Save(ctx); err != nil {
-		log.Fatalf("TeammateTaskColumn failed to feed data: %v", err)
+		log.Fatalf("TeammateTaskColumn failed to seed data: %v", err)
 	}
 }

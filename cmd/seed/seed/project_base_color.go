@@ -7,50 +7,50 @@ import (
 	"project-management-demo-backend/ent"
 )
 
-// ProjectBaseColor generates project base color data
+// ProjectBaseColor generates project base color data.
 func ProjectBaseColor(ctx context.Context, client *ent.Client) {
 	_, err := client.ProjectBaseColor.Delete().Exec(ctx)
 	if err != nil {
 		log.Fatalf("ProjectBaseColor failed to delete data: %v", err)
 	}
 
-	data := []ent.CreateProjectBaseColorInput{
+	inputs := []ent.CreateProjectBaseColorInput{
 		{
-			ColorID: seedutil.GetColor(ctx, client, colorFeed.gray400.Color).ID,
+			ColorID: seedutil.GetColor(ctx, client, colorSeed.gray400.Color).ID,
 		},
 		{
-			ColorID: seedutil.GetColor(ctx, client, colorFeed.red400.Color).ID,
+			ColorID: seedutil.GetColor(ctx, client, colorSeed.red400.Color).ID,
 		},
 		{
-			ColorID: seedutil.GetColor(ctx, client, colorFeed.orange400.Color).ID,
+			ColorID: seedutil.GetColor(ctx, client, colorSeed.orange400.Color).ID,
 		},
 		{
-			ColorID: seedutil.GetColor(ctx, client, colorFeed.yellow400.Color).ID,
+			ColorID: seedutil.GetColor(ctx, client, colorSeed.yellow400.Color).ID,
 		},
 		{
-			ColorID: seedutil.GetColor(ctx, client, colorFeed.green400.Color).ID,
+			ColorID: seedutil.GetColor(ctx, client, colorSeed.green400.Color).ID,
 		},
 		{
-			ColorID: seedutil.GetColor(ctx, client, colorFeed.teal400.Color).ID,
+			ColorID: seedutil.GetColor(ctx, client, colorSeed.teal400.Color).ID,
 		},
 		{
-			ColorID: seedutil.GetColor(ctx, client, colorFeed.blue400.Color).ID,
+			ColorID: seedutil.GetColor(ctx, client, colorSeed.blue400.Color).ID,
 		},
 		{
-			ColorID: seedutil.GetColor(ctx, client, colorFeed.cyan400.Color).ID,
+			ColorID: seedutil.GetColor(ctx, client, colorSeed.cyan400.Color).ID,
 		},
 		{
-			ColorID: seedutil.GetColor(ctx, client, colorFeed.purple400.Color).ID,
+			ColorID: seedutil.GetColor(ctx, client, colorSeed.purple400.Color).ID,
 		},
 		{
-			ColorID: seedutil.GetColor(ctx, client, colorFeed.pink400.Color).ID,
+			ColorID: seedutil.GetColor(ctx, client, colorSeed.pink400.Color).ID,
 		},
 	}
-	bulk := make([]*ent.ProjectBaseColorCreate, len(data))
-	for i, t := range data {
+	bulk := make([]*ent.ProjectBaseColorCreate, len(inputs))
+	for i, t := range inputs {
 		bulk[i] = client.ProjectBaseColor.Create().SetInput(t)
 	}
 	if _, err = client.ProjectBaseColor.CreateBulk(bulk...).Save(ctx); err != nil {
-		log.Fatalf("ProjectBaseColor failed to feed data: %v", err)
+		log.Fatalf("ProjectBaseColor failed to seed data: %v", err)
 	}
 }

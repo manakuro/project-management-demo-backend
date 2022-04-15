@@ -47,6 +47,6 @@ func WorkspaceActivityTask(ctx context.Context, client *ent.Client) {
 		bulk[i] = client.WorkspaceActivityTask.Create().SetInput(t)
 	}
 	if _, err = client.WorkspaceActivityTask.CreateBulk(bulk...).Save(ctx); err != nil {
-		log.Fatalf("WorkspaceActivityTask failed to feed data: %v", err)
+		log.Fatalf("WorkspaceActivityTask failed to seed data: %v", err)
 	}
 }

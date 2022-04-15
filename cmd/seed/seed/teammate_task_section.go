@@ -7,7 +7,7 @@ import (
 	"project-management-demo-backend/ent"
 )
 
-var teammateTaskSectionFeed = struct {
+var teammateTaskSectionSeed = struct {
 	recentlyAssigned ent.CreateTeammateTaskSectionInput
 	today            ent.CreateTeammateTaskSectionInput
 }{
@@ -21,56 +21,56 @@ var teammateTaskSectionFeed = struct {
 	},
 }
 
-// TeammateTaskSection generates project_teammates data
+// TeammateTaskSection generates teammate task section data.
 func TeammateTaskSection(ctx context.Context, client *ent.Client) {
 	_, err := client.TeammateTaskSection.Delete().Exec(ctx)
 	if err != nil {
 		log.Fatalf("TeammateTaskSection failed to delete data: %v", err)
 	}
 
-	ts := []ent.CreateTeammateTaskSectionInput{
+	inputs := []ent.CreateTeammateTaskSectionInput{
 		{
 			WorkspaceID: seedutil.GetWorkspace(ctx, client).ID,
-			TeammateID:  seedutil.GetTeammateByEmail(ctx, client, teammateFeed.manato.Email).ID,
-			Name:        teammateTaskSectionFeed.recentlyAssigned.Name,
-			Assigned:    teammateTaskSectionFeed.recentlyAssigned.Assigned,
+			TeammateID:  seedutil.GetTeammateByEmail(ctx, client, teammateSeed.manato.Email).ID,
+			Name:        teammateTaskSectionSeed.recentlyAssigned.Name,
+			Assigned:    teammateTaskSectionSeed.recentlyAssigned.Assigned,
 		},
 		{
 			WorkspaceID: seedutil.GetWorkspace(ctx, client).ID,
-			TeammateID:  seedutil.GetTeammateByEmail(ctx, client, teammateFeed.manato.Email).ID,
-			Name:        teammateTaskSectionFeed.today.Name,
-			Assigned:    teammateTaskSectionFeed.today.Assigned,
+			TeammateID:  seedutil.GetTeammateByEmail(ctx, client, teammateSeed.manato.Email).ID,
+			Name:        teammateTaskSectionSeed.today.Name,
+			Assigned:    teammateTaskSectionSeed.today.Assigned,
 		},
 		{
 			WorkspaceID: seedutil.GetWorkspace(ctx, client).ID,
-			TeammateID:  seedutil.GetTeammateByEmail(ctx, client, teammateFeed.dan.Email).ID,
-			Name:        teammateTaskSectionFeed.recentlyAssigned.Name,
-			Assigned:    teammateTaskSectionFeed.recentlyAssigned.Assigned,
+			TeammateID:  seedutil.GetTeammateByEmail(ctx, client, teammateSeed.dan.Email).ID,
+			Name:        teammateTaskSectionSeed.recentlyAssigned.Name,
+			Assigned:    teammateTaskSectionSeed.recentlyAssigned.Assigned,
 		},
 		{
 			WorkspaceID: seedutil.GetWorkspace(ctx, client).ID,
-			TeammateID:  seedutil.GetTeammateByEmail(ctx, client, teammateFeed.dan.Email).ID,
-			Name:        teammateTaskSectionFeed.today.Name,
-			Assigned:    teammateTaskSectionFeed.today.Assigned,
+			TeammateID:  seedutil.GetTeammateByEmail(ctx, client, teammateSeed.dan.Email).ID,
+			Name:        teammateTaskSectionSeed.today.Name,
+			Assigned:    teammateTaskSectionSeed.today.Assigned,
 		},
 		{
 			WorkspaceID: seedutil.GetWorkspace(ctx, client).ID,
-			TeammateID:  seedutil.GetTeammateByEmail(ctx, client, teammateFeed.kent.Email).ID,
-			Name:        teammateTaskSectionFeed.recentlyAssigned.Name,
-			Assigned:    teammateTaskSectionFeed.recentlyAssigned.Assigned,
+			TeammateID:  seedutil.GetTeammateByEmail(ctx, client, teammateSeed.kent.Email).ID,
+			Name:        teammateTaskSectionSeed.recentlyAssigned.Name,
+			Assigned:    teammateTaskSectionSeed.recentlyAssigned.Assigned,
 		},
 		{
 			WorkspaceID: seedutil.GetWorkspace(ctx, client).ID,
-			TeammateID:  seedutil.GetTeammateByEmail(ctx, client, teammateFeed.kent.Email).ID,
-			Name:        teammateTaskSectionFeed.today.Name,
-			Assigned:    teammateTaskSectionFeed.today.Assigned,
+			TeammateID:  seedutil.GetTeammateByEmail(ctx, client, teammateSeed.kent.Email).ID,
+			Name:        teammateTaskSectionSeed.today.Name,
+			Assigned:    teammateTaskSectionSeed.today.Assigned,
 		},
 	}
-	bulk := make([]*ent.TeammateTaskSectionCreate, len(ts))
-	for i, t := range ts {
+	bulk := make([]*ent.TeammateTaskSectionCreate, len(inputs))
+	for i, t := range inputs {
 		bulk[i] = client.TeammateTaskSection.Create().SetInput(t)
 	}
 	if _, err = client.TeammateTaskSection.CreateBulk(bulk...).Save(ctx); err != nil {
-		log.Fatalf("TeammateTaskSection failed to feed data: %v", err)
+		log.Fatalf("TeammateTaskSection failed to seed data: %v", err)
 	}
 }

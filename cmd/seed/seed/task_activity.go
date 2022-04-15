@@ -16,7 +16,7 @@ func TaskActivity(ctx context.Context, client *ent.Client) {
 		log.Fatalf("TaskActivity failed to delete data: %v", err)
 	}
 	activityTypeID := seedutil.GetActivityType(ctx, client, "Task").ID
-	teammateID := seedutil.GetTeammateByEmail(ctx, client, teammateFeed.manato.Email).ID
+	teammateID := seedutil.GetTeammateByEmail(ctx, client, teammateSeed.manato.Email).ID
 
 	inputs := []ent.CreateTaskActivityInput{
 		{
@@ -41,12 +41,12 @@ func TaskActivity(ctx context.Context, client *ent.Client) {
 		bulk[i] = client.TaskActivity.Create().SetInput(t)
 	}
 	if _, err = client.TaskActivity.CreateBulk(bulk...).Save(ctx); err != nil {
-		log.Fatalf("TaskActivity failed to feed data: %v", err)
+		log.Fatalf("TaskActivity failed to seed data: %v", err)
 	}
 
 	res, err := client.TaskActivity.Query().All(ctx)
 	if err != nil {
-		log.Fatalf("TaskActivity failed to feed data: %v", err)
+		log.Fatalf("TaskActivity failed to seed data: %v", err)
 	}
 
 	for i, r := range res {

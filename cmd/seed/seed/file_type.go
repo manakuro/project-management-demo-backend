@@ -7,7 +7,7 @@ import (
 	"project-management-demo-backend/ent/filetype"
 )
 
-var fileTypeFeed = struct {
+var fileTypeSeed = struct {
 	image ent.CreateFileTypeInput
 	pdf   ent.CreateFileTypeInput
 	text  ent.CreateFileTypeInput
@@ -17,23 +17,23 @@ var fileTypeFeed = struct {
 	text:  ent.CreateFileTypeInput{Name: "Text", TypeCode: filetype.TypeCodeText},
 }
 
-// FileType generates color data
+// FileType generates file type data.
 func FileType(ctx context.Context, client *ent.Client) {
 	_, err := client.FileType.Delete().Exec(ctx)
 	if err != nil {
 		log.Fatalf("FileType failed to delete data: %v", err)
 	}
 
-	data := []ent.CreateFileTypeInput{
-		fileTypeFeed.image,
-		fileTypeFeed.pdf,
-		fileTypeFeed.text,
+	inputs := []ent.CreateFileTypeInput{
+		fileTypeSeed.image,
+		fileTypeSeed.pdf,
+		fileTypeSeed.text,
 	}
-	bulk := make([]*ent.FileTypeCreate, len(data))
-	for i, t := range data {
+	bulk := make([]*ent.FileTypeCreate, len(inputs))
+	for i, t := range inputs {
 		bulk[i] = client.FileType.Create().SetInput(t)
 	}
 	if _, err = client.FileType.CreateBulk(bulk...).Save(ctx); err != nil {
-		log.Fatalf("FileType failed to feed data: %v", err)
+		log.Fatalf("FileType failed to seed data: %v", err)
 	}
 }

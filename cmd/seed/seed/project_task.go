@@ -7,16 +7,16 @@ import (
 	"project-management-demo-backend/ent"
 )
 
-// ProjectTask generates tasks data
+// ProjectTask generates project task data.
 func ProjectTask(ctx context.Context, client *ent.Client) {
 	_, err := client.ProjectTask.Delete().Exec(ctx)
 	if err != nil {
 		log.Fatalf("ProjectTask failed to delete data: %v", err)
 	}
 
-	appDevelopmentID := seedutil.GetProjectByName(ctx, client, projectFeed.appDevelopment.name).ID
-	marketingID := seedutil.GetProjectByName(ctx, client, projectFeed.marketing.name).ID
-	ts := []ent.CreateProjectTaskInput{
+	appDevelopmentID := seedutil.GetProjectByName(ctx, client, projectSeed.appDevelopment.name).ID
+	marketingID := seedutil.GetProjectByName(ctx, client, projectSeed.marketing.name).ID
+	inputs := []ent.CreateProjectTaskInput{
 		// App Development
 		{
 			ProjectID:            appDevelopmentID,
@@ -161,11 +161,11 @@ func ProjectTask(ctx context.Context, client *ent.Client) {
 			ProjectTaskSectionID: seedutil.GetProjectTaskSectionByName(ctx, client, marketingID, projectTaskSectionFeedMarketing.campaign.Name).ID,
 		},
 	}
-	bulk := make([]*ent.ProjectTaskCreate, len(ts))
-	for i, t := range ts {
+	bulk := make([]*ent.ProjectTaskCreate, len(inputs))
+	for i, t := range inputs {
 		bulk[i] = client.ProjectTask.Create().SetInput(t)
 	}
 	if _, err = client.ProjectTask.CreateBulk(bulk...).Save(ctx); err != nil {
-		log.Fatalf("ProjectTask failed to feed data: %v", err)
+		log.Fatalf("ProjectTask failed to seed data: %v", err)
 	}
 }

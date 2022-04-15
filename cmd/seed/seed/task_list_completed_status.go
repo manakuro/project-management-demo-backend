@@ -27,14 +27,14 @@ var taskListCompletedStatusFeed = struct {
 	all:                ent.CreateTaskListCompletedStatusInput{Name: "All", StatusCode: tasklistcompletedstatus.StatusCodeAll},
 }
 
-// TaskListCompletedStatus generates color data
+// TaskListCompletedStatus generates task list completed status data.
 func TaskListCompletedStatus(ctx context.Context, client *ent.Client) {
 	_, err := client.TaskListCompletedStatus.Delete().Exec(ctx)
 	if err != nil {
 		log.Fatalf("TaskListCompletedStatus failed to delete data: %v", err)
 	}
 
-	ts := []ent.CreateTaskListCompletedStatusInput{
+	inputs := []ent.CreateTaskListCompletedStatusInput{
 		taskListCompletedStatusFeed.incomplete,
 		taskListCompletedStatusFeed.completed,
 		taskListCompletedStatusFeed.completedToday,
@@ -44,11 +44,11 @@ func TaskListCompletedStatus(ctx context.Context, client *ent.Client) {
 		taskListCompletedStatusFeed.completed3Weeks,
 		taskListCompletedStatusFeed.all,
 	}
-	bulk := make([]*ent.TaskListCompletedStatusCreate, len(ts))
-	for i, t := range ts {
+	bulk := make([]*ent.TaskListCompletedStatusCreate, len(inputs))
+	for i, t := range inputs {
 		bulk[i] = client.TaskListCompletedStatus.Create().SetInput(t)
 	}
 	if _, err = client.TaskListCompletedStatus.CreateBulk(bulk...).Save(ctx); err != nil {
-		log.Fatalf("TaskListCompletedStatus failed to feed data: %v", err)
+		log.Fatalf("TaskListCompletedStatus failed to seed data: %v", err)
 	}
 }

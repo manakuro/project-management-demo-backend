@@ -171,14 +171,14 @@ var testUserFeed = struct {
 	},
 }
 
-// TestUser generates test user data
+// TestUser generates test user data.
 func TestUser(ctx context.Context, client *ent.Client) {
 	_, err := client.TestUser.Delete().Exec(ctx)
 	if err != nil {
 		log.Fatalf("TestUser failed to delete data: %v", err)
 	}
 
-	ts := []ent.CreateTestUserInput{
+	inputs := []ent.CreateTestUserInput{
 		testUserFeed.bob,
 		testUserFeed.ken,
 		testUserFeed.tom,
@@ -190,11 +190,11 @@ func TestUser(ctx context.Context, client *ent.Client) {
 		testUserFeed.jiro,
 		testUserFeed.ryu,
 	}
-	bulk := make([]*ent.TestUserCreate, len(ts))
-	for i, t := range ts {
+	bulk := make([]*ent.TestUserCreate, len(inputs))
+	for i, t := range inputs {
 		bulk[i] = client.TestUser.Create().SetInput(t)
 	}
 	if _, err = client.TestUser.CreateBulk(bulk...).Save(ctx); err != nil {
-		log.Fatalf("TestUser failed to feed data: %v", err)
+		log.Fatalf("TestUser failed to seed data: %v", err)
 	}
 }

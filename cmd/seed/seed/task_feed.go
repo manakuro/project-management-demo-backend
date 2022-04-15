@@ -7,17 +7,17 @@ import (
 	"project-management-demo-backend/ent"
 )
 
-// TaskFeed generates tasks data
+// TaskFeed generates task seed data.
 func TaskFeed(ctx context.Context, client *ent.Client) {
 	_, err := client.TaskFeed.Delete().Exec(ctx)
 	if err != nil {
 		log.Fatalf("TaskFeed failed to delete data: %v", err)
 	}
-	manatoID := seedutil.GetTeammateByEmail(ctx, client, teammateFeed.manato.Email).ID
+	manatoID := seedutil.GetTeammateByEmail(ctx, client, teammateSeed.manato.Email).ID
 
 	isFirstTrue := true
 
-	ts := []ent.CreateTaskFeedInput{
+	inputs := []ent.CreateTaskFeedInput{
 		// task 1
 		{
 			TaskID:      seedutil.GetTaskByName(ctx, client, taskAssignedFeed.task1.Name).ID,
@@ -244,11 +244,11 @@ func TaskFeed(ctx context.Context, client *ent.Client) {
 			Description: seedutil.ParseDescription([]byte(`{"type": "doc", "content": [{ "type": "paragraph", "content": null }]}`)),
 		},
 	}
-	bulk := make([]*ent.TaskFeedCreate, len(ts))
-	for i, t := range ts {
+	bulk := make([]*ent.TaskFeedCreate, len(inputs))
+	for i, t := range inputs {
 		bulk[i] = client.TaskFeed.Create().SetInput(t)
 	}
 	if _, err = client.TaskFeed.CreateBulk(bulk...).Save(ctx); err != nil {
-		log.Fatalf("TaskFeed failed to feed data: %v", err)
+		log.Fatalf("TaskFeed failed to seed data: %v", err)
 	}
 }

@@ -6,7 +6,7 @@ import (
 	"project-management-demo-backend/ent"
 )
 
-var iconFeed = struct {
+var iconSeed = struct {
 	play         ent.CreateIconInput
 	home         ent.CreateIconInput
 	moon         ent.CreateIconInput
@@ -50,40 +50,40 @@ var iconFeed = struct {
 	layout:       ent.CreateIconInput{Name: "layout", Icon: "layout"},
 }
 
-// Icon generates color data
+// Icon generates icon data.
 func Icon(ctx context.Context, client *ent.Client) {
 	_, err := client.Icon.Delete().Exec(ctx)
 	if err != nil {
 		log.Fatalf("Icon failed to delete data: %v", err)
 	}
 
-	data := []ent.CreateIconInput{
-		iconFeed.play,
-		iconFeed.home,
-		iconFeed.moon,
-		iconFeed.sun,
-		iconFeed.menu,
-		iconFeed.codeAlt,
-		iconFeed.rocket,
-		iconFeed.idCard,
-		iconFeed.trashAlt,
-		iconFeed.task,
-		iconFeed.bell,
-		iconFeed.notification,
-		iconFeed.barChart,
-		iconFeed.bookOpen,
-		iconFeed.layerPlus,
-		iconFeed.mobile,
-		iconFeed.movie,
-		iconFeed.shapePolygon,
-		iconFeed.spreadsheet,
-		iconFeed.layout,
+	inputs := []ent.CreateIconInput{
+		iconSeed.play,
+		iconSeed.home,
+		iconSeed.moon,
+		iconSeed.sun,
+		iconSeed.menu,
+		iconSeed.codeAlt,
+		iconSeed.rocket,
+		iconSeed.idCard,
+		iconSeed.trashAlt,
+		iconSeed.task,
+		iconSeed.bell,
+		iconSeed.notification,
+		iconSeed.barChart,
+		iconSeed.bookOpen,
+		iconSeed.layerPlus,
+		iconSeed.mobile,
+		iconSeed.movie,
+		iconSeed.shapePolygon,
+		iconSeed.spreadsheet,
+		iconSeed.layout,
 	}
-	bulk := make([]*ent.IconCreate, len(data))
-	for i, t := range data {
+	bulk := make([]*ent.IconCreate, len(inputs))
+	for i, t := range inputs {
 		bulk[i] = client.Icon.Create().SetInput(t)
 	}
 	if _, err = client.Icon.CreateBulk(bulk...).Save(ctx); err != nil {
-		log.Fatalf("Icon failed to feed data: %v", err)
+		log.Fatalf("Icon failed to seed data: %v", err)
 	}
 }

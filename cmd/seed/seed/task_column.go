@@ -27,14 +27,14 @@ var taskColumnFeed = struct {
 	custom:   ent.CreateTaskColumnInput{Name: "Custom", Type: taskcolumn.TypeCustom},
 }
 
-// TaskColumn generates color data
+// TaskColumn generates task column data.
 func TaskColumn(ctx context.Context, client *ent.Client) {
 	_, err := client.TaskColumn.Delete().Exec(ctx)
 	if err != nil {
 		log.Fatalf("TaskColumn failed to delete data: %v", err)
 	}
 
-	ts := []ent.CreateTaskColumnInput{
+	inputs := []ent.CreateTaskColumnInput{
 		taskColumnFeed.taskName,
 		taskColumnFeed.assignee,
 		taskColumnFeed.dueDate,
@@ -44,11 +44,11 @@ func TaskColumn(ctx context.Context, client *ent.Client) {
 		taskColumnFeed.tags,
 		taskColumnFeed.custom,
 	}
-	bulk := make([]*ent.TaskColumnCreate, len(ts))
-	for i, t := range ts {
+	bulk := make([]*ent.TaskColumnCreate, len(inputs))
+	for i, t := range inputs {
 		bulk[i] = client.TaskColumn.Create().SetInput(t)
 	}
 	if _, err = client.TaskColumn.CreateBulk(bulk...).Save(ctx); err != nil {
-		log.Fatalf("TaskColumn failed to feed data: %v", err)
+		log.Fatalf("TaskColumn failed to seed data: %v", err)
 	}
 }

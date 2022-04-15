@@ -7,7 +7,7 @@ import (
 	"project-management-demo-backend/ent"
 )
 
-var tagFeed = struct {
+var tagSeed = struct {
 	design      ent.CreateTagInput
 	development ent.CreateTagInput
 	bug         ent.CreateTagInput
@@ -17,7 +17,7 @@ var tagFeed = struct {
 	bug:         ent.CreateTagInput{Name: "Bug"},
 }
 
-// Tag generates project light color data
+// Tag generates tag data.
 func Tag(ctx context.Context, client *ent.Client) {
 	_, err := client.Tag.Delete().Exec(ctx)
 	if err != nil {
@@ -25,28 +25,28 @@ func Tag(ctx context.Context, client *ent.Client) {
 	}
 
 	workspace := seedutil.GetWorkspace(ctx, client)
-	data := []ent.CreateTagInput{
+	inputs := []ent.CreateTagInput{
 		{
 			WorkspaceID: workspace.ID,
-			ColorID:     seedutil.GetColor(ctx, client, colorFeed.gray400.Color).ID,
-			Name:        tagFeed.design.Name,
+			ColorID:     seedutil.GetColor(ctx, client, colorSeed.gray400.Color).ID,
+			Name:        tagSeed.design.Name,
 		},
 		{
 			WorkspaceID: workspace.ID,
-			ColorID:     seedutil.GetColor(ctx, client, colorFeed.orange400.Color).ID,
-			Name:        tagFeed.development.Name,
+			ColorID:     seedutil.GetColor(ctx, client, colorSeed.orange400.Color).ID,
+			Name:        tagSeed.development.Name,
 		},
 		{
 			WorkspaceID: workspace.ID,
-			ColorID:     seedutil.GetColor(ctx, client, colorFeed.red400.Color).ID,
-			Name:        tagFeed.bug.Name,
+			ColorID:     seedutil.GetColor(ctx, client, colorSeed.red400.Color).ID,
+			Name:        tagSeed.bug.Name,
 		},
 	}
-	bulk := make([]*ent.TagCreate, len(data))
-	for i, t := range data {
+	bulk := make([]*ent.TagCreate, len(inputs))
+	for i, t := range inputs {
 		bulk[i] = client.Tag.Create().SetInput(t)
 	}
 	if _, err = client.Tag.CreateBulk(bulk...).Save(ctx); err != nil {
-		log.Fatalf("Tag failed to feed data: %v", err)
+		log.Fatalf("Tag failed to seed data: %v", err)
 	}
 }

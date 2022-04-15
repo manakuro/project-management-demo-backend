@@ -7,7 +7,7 @@ import (
 	"project-management-demo-backend/ent/activitytype"
 )
 
-var activityTypeFeed = struct {
+var activityTypeSeed = struct {
 	task      ent.CreateActivityTypeInput
 	workspace ent.CreateActivityTypeInput
 }{
@@ -22,12 +22,12 @@ func ActivityType(ctx context.Context, client *ent.Client) {
 		log.Fatalf("ActivityType failed to delete data: %v", err)
 	}
 
-	data := []ent.CreateActivityTypeInput{
-		activityTypeFeed.task,
-		activityTypeFeed.workspace,
+	inputs := []ent.CreateActivityTypeInput{
+		activityTypeSeed.task,
+		activityTypeSeed.workspace,
 	}
-	bulk := make([]*ent.ActivityTypeCreate, len(data))
-	for i, t := range data {
+	bulk := make([]*ent.ActivityTypeCreate, len(inputs))
+	for i, t := range inputs {
 		bulk[i] = client.ActivityType.Create().SetInput(t)
 	}
 	if _, err = client.ActivityType.CreateBulk(bulk...).Save(ctx); err != nil {

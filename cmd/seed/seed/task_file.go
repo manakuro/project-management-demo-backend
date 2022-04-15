@@ -7,21 +7,21 @@ import (
 	"project-management-demo-backend/ent"
 )
 
-// TaskFile generates tasks data
+// TaskFile generates task file data.
 func TaskFile(ctx context.Context, client *ent.Client) {
 	_, err := client.TaskFile.Delete().Exec(ctx)
 	if err != nil {
 		log.Fatalf("TaskFile failed to delete data: %v", err)
 	}
-	appDevelopmentProject := seedutil.GetProjectByName(ctx, client, projectFeed.appDevelopment.name)
+	appDevelopmentProject := seedutil.GetProjectByName(ctx, client, projectSeed.appDevelopment.name)
 	task1 := seedutil.GetTaskByName(ctx, client, taskAssignedFeed.task1.Name)
 	feeds := seedutil.GetTaskFeeds(ctx, client, task1.ID)
 
-	imageFileType := seedutil.GetFileType(ctx, client, fileTypeFeed.image.Name)
-	pdfFileType := seedutil.GetFileType(ctx, client, fileTypeFeed.pdf.Name)
-	textFileType := seedutil.GetFileType(ctx, client, fileTypeFeed.text.Name)
+	imageFileType := seedutil.GetFileType(ctx, client, fileTypeSeed.image.Name)
+	pdfFileType := seedutil.GetFileType(ctx, client, fileTypeSeed.pdf.Name)
+	textFileType := seedutil.GetFileType(ctx, client, fileTypeSeed.text.Name)
 
-	ts := []ent.CreateTaskFileInput{
+	inputs := []ent.CreateTaskFileInput{
 		{
 			ProjectID:  appDevelopmentProject.ID,
 			TaskID:     task1.ID,
@@ -55,11 +55,11 @@ func TaskFile(ctx context.Context, client *ent.Client) {
 			Src:        "/files/test.js",
 		},
 	}
-	bulk := make([]*ent.TaskFileCreate, len(ts))
-	for i, t := range ts {
+	bulk := make([]*ent.TaskFileCreate, len(inputs))
+	for i, t := range inputs {
 		bulk[i] = client.TaskFile.Create().SetInput(t)
 	}
 	if _, err = client.TaskFile.CreateBulk(bulk...).Save(ctx); err != nil {
-		log.Fatalf("TaskFile failed to feed data: %v", err)
+		log.Fatalf("TaskFile failed to seed data: %v", err)
 	}
 }

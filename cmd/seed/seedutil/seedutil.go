@@ -223,7 +223,7 @@ func GetTagByName(ctx context.Context, client *ent.Client, val string) *ent.Tag 
 	return res
 }
 
-// GetTaskFeeds gets task feed data.
+// GetTaskFeeds gets task seed data.
 func GetTaskFeeds(ctx context.Context, client *ent.Client, taskID ulid.ID) []*ent.TaskFeed {
 	res, err := client.
 		TaskFeed.

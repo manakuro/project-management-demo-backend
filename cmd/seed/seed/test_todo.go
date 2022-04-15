@@ -7,7 +7,7 @@ import (
 	"project-management-demo-backend/ent"
 )
 
-// TestTodo generates test todo data
+// TestTodo generates test todo data.
 func TestTodo(ctx context.Context, client *ent.Client) {
 	_, err := client.TestTodo.Delete().Exec(ctx)
 	if err != nil {
@@ -19,7 +19,7 @@ func TestTodo(ctx context.Context, client *ent.Client) {
 		TestUserID: &id,
 	}).Save(ctx)
 	if err != nil {
-		log.Fatalf("TestTodo failed to feed data: %v", err)
+		log.Fatalf("TestTodo failed to seed data: %v", err)
 	}
 
 	c1, err := client.TestTodo.
@@ -31,7 +31,7 @@ func TestTodo(ctx context.Context, client *ent.Client) {
 		SetParent(parentTodo).
 		Save(ctx)
 	if err != nil {
-		log.Fatalf("TestTodo failed to feed data: %v", err)
+		log.Fatalf("TestTodo failed to seed data: %v", err)
 	}
 
 	_, err = client.TestTodo.
@@ -41,10 +41,10 @@ func TestTodo(ctx context.Context, client *ent.Client) {
 		SetCreatedBy(id).
 		Save(ctx)
 	if err != nil {
-		log.Fatalf("TestTodo failed to feed data: %v", err)
+		log.Fatalf("TestTodo failed to seed data: %v", err)
 	}
 
-	ts := []ent.CreateTestTodoInput{
+	inputs := []ent.CreateTestTodoInput{
 		{TestUserID: &id, ParentTodoID: &parentTodo.ID, CreatedBy: id},
 		{TestUserID: &id, ParentTodoID: &parentTodo.ID, CreatedBy: id},
 		{TestUserID: &id, ParentTodoID: &parentTodo.ID, CreatedBy: id},
@@ -58,11 +58,11 @@ func TestTodo(ctx context.Context, client *ent.Client) {
 		{TestUserID: &id, ParentTodoID: &parentTodo.ID, CreatedBy: id},
 		{TestUserID: &id, ParentTodoID: &parentTodo.ID, CreatedBy: id},
 	}
-	bulk := make([]*ent.TestTodoCreate, len(ts))
-	for i, t := range ts {
+	bulk := make([]*ent.TestTodoCreate, len(inputs))
+	for i, t := range inputs {
 		bulk[i] = client.TestTodo.Create().SetInput(t)
 	}
 	if _, err = client.TestTodo.CreateBulk(bulk...).Save(ctx); err != nil {
-		log.Fatalf("TestTodo failed to feed data: %v", err)
+		log.Fatalf("TestTodo failed to seed data: %v", err)
 	}
 }
