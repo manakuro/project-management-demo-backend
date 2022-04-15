@@ -8,6 +8,7 @@ import (
 	"project-management-demo-backend/ent/archivedtaskactivity"
 	"project-management-demo-backend/ent/archivedtaskactivitytask"
 	"project-management-demo-backend/ent/archivedworkspaceactivity"
+	"project-management-demo-backend/ent/archivedworkspaceactivitytask"
 	"project-management-demo-backend/ent/color"
 	"project-management-demo-backend/ent/deletedtask"
 	"project-management-demo-backend/ent/favoriteproject"
@@ -1265,6 +1266,10 @@ type ArchivedWorkspaceActivityWhereInput struct {
 	// "teammate" edge predicates.
 	HasTeammate     *bool                 `json:"hasTeammate,omitempty"`
 	HasTeammateWith []*TeammateWhereInput `json:"hasTeammateWith,omitempty"`
+
+	// "archivedWorkspaceActivityTasks" edge predicates.
+	HasArchivedWorkspaceActivityTasks     *bool                                      `json:"hasArchivedWorkspaceActivityTasks,omitempty"`
+	HasArchivedWorkspaceActivityTasksWith []*ArchivedWorkspaceActivityTaskWhereInput `json:"hasArchivedWorkspaceActivityTasksWith,omitempty"`
 }
 
 // Filter applies the ArchivedWorkspaceActivityWhereInput filter on the ArchivedWorkspaceActivityQuery builder.
@@ -1627,6 +1632,24 @@ func (i *ArchivedWorkspaceActivityWhereInput) P() (predicate.ArchivedWorkspaceAc
 		}
 		predicates = append(predicates, archivedworkspaceactivity.HasTeammateWith(with...))
 	}
+	if i.HasArchivedWorkspaceActivityTasks != nil {
+		p := archivedworkspaceactivity.HasArchivedWorkspaceActivityTasks()
+		if !*i.HasArchivedWorkspaceActivityTasks {
+			p = archivedworkspaceactivity.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasArchivedWorkspaceActivityTasksWith) > 0 {
+		with := make([]predicate.ArchivedWorkspaceActivityTask, 0, len(i.HasArchivedWorkspaceActivityTasksWith))
+		for _, w := range i.HasArchivedWorkspaceActivityTasksWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, archivedworkspaceactivity.HasArchivedWorkspaceActivityTasksWith(with...))
+	}
 	switch len(predicates) {
 	case 0:
 		return nil, fmt.Errorf("project-management-demo-backend/ent: empty predicate ArchivedWorkspaceActivityWhereInput")
@@ -1634,6 +1657,337 @@ func (i *ArchivedWorkspaceActivityWhereInput) P() (predicate.ArchivedWorkspaceAc
 		return predicates[0], nil
 	default:
 		return archivedworkspaceactivity.And(predicates...), nil
+	}
+}
+
+// ArchivedWorkspaceActivityTaskWhereInput represents a where input for filtering ArchivedWorkspaceActivityTask queries.
+type ArchivedWorkspaceActivityTaskWhereInput struct {
+	Not *ArchivedWorkspaceActivityTaskWhereInput   `json:"not,omitempty"`
+	Or  []*ArchivedWorkspaceActivityTaskWhereInput `json:"or,omitempty"`
+	And []*ArchivedWorkspaceActivityTaskWhereInput `json:"and,omitempty"`
+
+	// "id" field predicates.
+	ID      *ulid.ID  `json:"id,omitempty"`
+	IDNEQ   *ulid.ID  `json:"idNEQ,omitempty"`
+	IDIn    []ulid.ID `json:"idIn,omitempty"`
+	IDNotIn []ulid.ID `json:"idNotIn,omitempty"`
+	IDGT    *ulid.ID  `json:"idGT,omitempty"`
+	IDGTE   *ulid.ID  `json:"idGTE,omitempty"`
+	IDLT    *ulid.ID  `json:"idLT,omitempty"`
+	IDLTE   *ulid.ID  `json:"idLTE,omitempty"`
+
+	// "archived_workspace_activity_id" field predicates.
+	ArchivedWorkspaceActivityID             *ulid.ID  `json:"archivedWorkspaceActivityID,omitempty"`
+	ArchivedWorkspaceActivityIDNEQ          *ulid.ID  `json:"archivedWorkspaceActivityIDNEQ,omitempty"`
+	ArchivedWorkspaceActivityIDIn           []ulid.ID `json:"archivedWorkspaceActivityIDIn,omitempty"`
+	ArchivedWorkspaceActivityIDNotIn        []ulid.ID `json:"archivedWorkspaceActivityIDNotIn,omitempty"`
+	ArchivedWorkspaceActivityIDGT           *ulid.ID  `json:"archivedWorkspaceActivityIDGT,omitempty"`
+	ArchivedWorkspaceActivityIDGTE          *ulid.ID  `json:"archivedWorkspaceActivityIDGTE,omitempty"`
+	ArchivedWorkspaceActivityIDLT           *ulid.ID  `json:"archivedWorkspaceActivityIDLT,omitempty"`
+	ArchivedWorkspaceActivityIDLTE          *ulid.ID  `json:"archivedWorkspaceActivityIDLTE,omitempty"`
+	ArchivedWorkspaceActivityIDContains     *ulid.ID  `json:"archivedWorkspaceActivityIDContains,omitempty"`
+	ArchivedWorkspaceActivityIDHasPrefix    *ulid.ID  `json:"archivedWorkspaceActivityIDHasPrefix,omitempty"`
+	ArchivedWorkspaceActivityIDHasSuffix    *ulid.ID  `json:"archivedWorkspaceActivityIDHasSuffix,omitempty"`
+	ArchivedWorkspaceActivityIDEqualFold    *ulid.ID  `json:"archivedWorkspaceActivityIDEqualFold,omitempty"`
+	ArchivedWorkspaceActivityIDContainsFold *ulid.ID  `json:"archivedWorkspaceActivityIDContainsFold,omitempty"`
+
+	// "task_id" field predicates.
+	TaskID             *ulid.ID  `json:"taskID,omitempty"`
+	TaskIDNEQ          *ulid.ID  `json:"taskIDNEQ,omitempty"`
+	TaskIDIn           []ulid.ID `json:"taskIDIn,omitempty"`
+	TaskIDNotIn        []ulid.ID `json:"taskIDNotIn,omitempty"`
+	TaskIDGT           *ulid.ID  `json:"taskIDGT,omitempty"`
+	TaskIDGTE          *ulid.ID  `json:"taskIDGTE,omitempty"`
+	TaskIDLT           *ulid.ID  `json:"taskIDLT,omitempty"`
+	TaskIDLTE          *ulid.ID  `json:"taskIDLTE,omitempty"`
+	TaskIDContains     *ulid.ID  `json:"taskIDContains,omitempty"`
+	TaskIDHasPrefix    *ulid.ID  `json:"taskIDHasPrefix,omitempty"`
+	TaskIDHasSuffix    *ulid.ID  `json:"taskIDHasSuffix,omitempty"`
+	TaskIDEqualFold    *ulid.ID  `json:"taskIDEqualFold,omitempty"`
+	TaskIDContainsFold *ulid.ID  `json:"taskIDContainsFold,omitempty"`
+
+	// "created_at" field predicates.
+	CreatedAt      *time.Time  `json:"createdAt,omitempty"`
+	CreatedAtNEQ   *time.Time  `json:"createdAtNEQ,omitempty"`
+	CreatedAtIn    []time.Time `json:"createdAtIn,omitempty"`
+	CreatedAtNotIn []time.Time `json:"createdAtNotIn,omitempty"`
+	CreatedAtGT    *time.Time  `json:"createdAtGT,omitempty"`
+	CreatedAtGTE   *time.Time  `json:"createdAtGTE,omitempty"`
+	CreatedAtLT    *time.Time  `json:"createdAtLT,omitempty"`
+	CreatedAtLTE   *time.Time  `json:"createdAtLTE,omitempty"`
+
+	// "updated_at" field predicates.
+	UpdatedAt      *time.Time  `json:"updatedAt,omitempty"`
+	UpdatedAtNEQ   *time.Time  `json:"updatedAtNEQ,omitempty"`
+	UpdatedAtIn    []time.Time `json:"updatedAtIn,omitempty"`
+	UpdatedAtNotIn []time.Time `json:"updatedAtNotIn,omitempty"`
+	UpdatedAtGT    *time.Time  `json:"updatedAtGT,omitempty"`
+	UpdatedAtGTE   *time.Time  `json:"updatedAtGTE,omitempty"`
+	UpdatedAtLT    *time.Time  `json:"updatedAtLT,omitempty"`
+	UpdatedAtLTE   *time.Time  `json:"updatedAtLTE,omitempty"`
+
+	// "task" edge predicates.
+	HasTask     *bool             `json:"hasTask,omitempty"`
+	HasTaskWith []*TaskWhereInput `json:"hasTaskWith,omitempty"`
+
+	// "archivedWorkspaceActivity" edge predicates.
+	HasArchivedWorkspaceActivity     *bool                                  `json:"hasArchivedWorkspaceActivity,omitempty"`
+	HasArchivedWorkspaceActivityWith []*ArchivedWorkspaceActivityWhereInput `json:"hasArchivedWorkspaceActivityWith,omitempty"`
+}
+
+// Filter applies the ArchivedWorkspaceActivityTaskWhereInput filter on the ArchivedWorkspaceActivityTaskQuery builder.
+func (i *ArchivedWorkspaceActivityTaskWhereInput) Filter(q *ArchivedWorkspaceActivityTaskQuery) (*ArchivedWorkspaceActivityTaskQuery, error) {
+	if i == nil {
+		return q, nil
+	}
+	p, err := i.P()
+	if err != nil {
+		return nil, err
+	}
+	return q.Where(p), nil
+}
+
+// P returns a predicate for filtering archivedworkspaceactivitytasks.
+// An error is returned if the input is empty or invalid.
+func (i *ArchivedWorkspaceActivityTaskWhereInput) P() (predicate.ArchivedWorkspaceActivityTask, error) {
+	var predicates []predicate.ArchivedWorkspaceActivityTask
+	if i.Not != nil {
+		p, err := i.Not.P()
+		if err != nil {
+			return nil, err
+		}
+		predicates = append(predicates, archivedworkspaceactivitytask.Not(p))
+	}
+	switch n := len(i.Or); {
+	case n == 1:
+		p, err := i.Or[0].P()
+		if err != nil {
+			return nil, err
+		}
+		predicates = append(predicates, p)
+	case n > 1:
+		or := make([]predicate.ArchivedWorkspaceActivityTask, 0, n)
+		for _, w := range i.Or {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			or = append(or, p)
+		}
+		predicates = append(predicates, archivedworkspaceactivitytask.Or(or...))
+	}
+	switch n := len(i.And); {
+	case n == 1:
+		p, err := i.And[0].P()
+		if err != nil {
+			return nil, err
+		}
+		predicates = append(predicates, p)
+	case n > 1:
+		and := make([]predicate.ArchivedWorkspaceActivityTask, 0, n)
+		for _, w := range i.And {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			and = append(and, p)
+		}
+		predicates = append(predicates, archivedworkspaceactivitytask.And(and...))
+	}
+	if i.ID != nil {
+		predicates = append(predicates, archivedworkspaceactivitytask.IDEQ(*i.ID))
+	}
+	if i.IDNEQ != nil {
+		predicates = append(predicates, archivedworkspaceactivitytask.IDNEQ(*i.IDNEQ))
+	}
+	if len(i.IDIn) > 0 {
+		predicates = append(predicates, archivedworkspaceactivitytask.IDIn(i.IDIn...))
+	}
+	if len(i.IDNotIn) > 0 {
+		predicates = append(predicates, archivedworkspaceactivitytask.IDNotIn(i.IDNotIn...))
+	}
+	if i.IDGT != nil {
+		predicates = append(predicates, archivedworkspaceactivitytask.IDGT(*i.IDGT))
+	}
+	if i.IDGTE != nil {
+		predicates = append(predicates, archivedworkspaceactivitytask.IDGTE(*i.IDGTE))
+	}
+	if i.IDLT != nil {
+		predicates = append(predicates, archivedworkspaceactivitytask.IDLT(*i.IDLT))
+	}
+	if i.IDLTE != nil {
+		predicates = append(predicates, archivedworkspaceactivitytask.IDLTE(*i.IDLTE))
+	}
+	if i.ArchivedWorkspaceActivityID != nil {
+		predicates = append(predicates, archivedworkspaceactivitytask.ArchivedWorkspaceActivityIDEQ(*i.ArchivedWorkspaceActivityID))
+	}
+	if i.ArchivedWorkspaceActivityIDNEQ != nil {
+		predicates = append(predicates, archivedworkspaceactivitytask.ArchivedWorkspaceActivityIDNEQ(*i.ArchivedWorkspaceActivityIDNEQ))
+	}
+	if len(i.ArchivedWorkspaceActivityIDIn) > 0 {
+		predicates = append(predicates, archivedworkspaceactivitytask.ArchivedWorkspaceActivityIDIn(i.ArchivedWorkspaceActivityIDIn...))
+	}
+	if len(i.ArchivedWorkspaceActivityIDNotIn) > 0 {
+		predicates = append(predicates, archivedworkspaceactivitytask.ArchivedWorkspaceActivityIDNotIn(i.ArchivedWorkspaceActivityIDNotIn...))
+	}
+	if i.ArchivedWorkspaceActivityIDGT != nil {
+		predicates = append(predicates, archivedworkspaceactivitytask.ArchivedWorkspaceActivityIDGT(*i.ArchivedWorkspaceActivityIDGT))
+	}
+	if i.ArchivedWorkspaceActivityIDGTE != nil {
+		predicates = append(predicates, archivedworkspaceactivitytask.ArchivedWorkspaceActivityIDGTE(*i.ArchivedWorkspaceActivityIDGTE))
+	}
+	if i.ArchivedWorkspaceActivityIDLT != nil {
+		predicates = append(predicates, archivedworkspaceactivitytask.ArchivedWorkspaceActivityIDLT(*i.ArchivedWorkspaceActivityIDLT))
+	}
+	if i.ArchivedWorkspaceActivityIDLTE != nil {
+		predicates = append(predicates, archivedworkspaceactivitytask.ArchivedWorkspaceActivityIDLTE(*i.ArchivedWorkspaceActivityIDLTE))
+	}
+	if i.ArchivedWorkspaceActivityIDContains != nil {
+		predicates = append(predicates, archivedworkspaceactivitytask.ArchivedWorkspaceActivityIDContains(*i.ArchivedWorkspaceActivityIDContains))
+	}
+	if i.ArchivedWorkspaceActivityIDHasPrefix != nil {
+		predicates = append(predicates, archivedworkspaceactivitytask.ArchivedWorkspaceActivityIDHasPrefix(*i.ArchivedWorkspaceActivityIDHasPrefix))
+	}
+	if i.ArchivedWorkspaceActivityIDHasSuffix != nil {
+		predicates = append(predicates, archivedworkspaceactivitytask.ArchivedWorkspaceActivityIDHasSuffix(*i.ArchivedWorkspaceActivityIDHasSuffix))
+	}
+	if i.ArchivedWorkspaceActivityIDEqualFold != nil {
+		predicates = append(predicates, archivedworkspaceactivitytask.ArchivedWorkspaceActivityIDEqualFold(*i.ArchivedWorkspaceActivityIDEqualFold))
+	}
+	if i.ArchivedWorkspaceActivityIDContainsFold != nil {
+		predicates = append(predicates, archivedworkspaceactivitytask.ArchivedWorkspaceActivityIDContainsFold(*i.ArchivedWorkspaceActivityIDContainsFold))
+	}
+	if i.TaskID != nil {
+		predicates = append(predicates, archivedworkspaceactivitytask.TaskIDEQ(*i.TaskID))
+	}
+	if i.TaskIDNEQ != nil {
+		predicates = append(predicates, archivedworkspaceactivitytask.TaskIDNEQ(*i.TaskIDNEQ))
+	}
+	if len(i.TaskIDIn) > 0 {
+		predicates = append(predicates, archivedworkspaceactivitytask.TaskIDIn(i.TaskIDIn...))
+	}
+	if len(i.TaskIDNotIn) > 0 {
+		predicates = append(predicates, archivedworkspaceactivitytask.TaskIDNotIn(i.TaskIDNotIn...))
+	}
+	if i.TaskIDGT != nil {
+		predicates = append(predicates, archivedworkspaceactivitytask.TaskIDGT(*i.TaskIDGT))
+	}
+	if i.TaskIDGTE != nil {
+		predicates = append(predicates, archivedworkspaceactivitytask.TaskIDGTE(*i.TaskIDGTE))
+	}
+	if i.TaskIDLT != nil {
+		predicates = append(predicates, archivedworkspaceactivitytask.TaskIDLT(*i.TaskIDLT))
+	}
+	if i.TaskIDLTE != nil {
+		predicates = append(predicates, archivedworkspaceactivitytask.TaskIDLTE(*i.TaskIDLTE))
+	}
+	if i.TaskIDContains != nil {
+		predicates = append(predicates, archivedworkspaceactivitytask.TaskIDContains(*i.TaskIDContains))
+	}
+	if i.TaskIDHasPrefix != nil {
+		predicates = append(predicates, archivedworkspaceactivitytask.TaskIDHasPrefix(*i.TaskIDHasPrefix))
+	}
+	if i.TaskIDHasSuffix != nil {
+		predicates = append(predicates, archivedworkspaceactivitytask.TaskIDHasSuffix(*i.TaskIDHasSuffix))
+	}
+	if i.TaskIDEqualFold != nil {
+		predicates = append(predicates, archivedworkspaceactivitytask.TaskIDEqualFold(*i.TaskIDEqualFold))
+	}
+	if i.TaskIDContainsFold != nil {
+		predicates = append(predicates, archivedworkspaceactivitytask.TaskIDContainsFold(*i.TaskIDContainsFold))
+	}
+	if i.CreatedAt != nil {
+		predicates = append(predicates, archivedworkspaceactivitytask.CreatedAtEQ(*i.CreatedAt))
+	}
+	if i.CreatedAtNEQ != nil {
+		predicates = append(predicates, archivedworkspaceactivitytask.CreatedAtNEQ(*i.CreatedAtNEQ))
+	}
+	if len(i.CreatedAtIn) > 0 {
+		predicates = append(predicates, archivedworkspaceactivitytask.CreatedAtIn(i.CreatedAtIn...))
+	}
+	if len(i.CreatedAtNotIn) > 0 {
+		predicates = append(predicates, archivedworkspaceactivitytask.CreatedAtNotIn(i.CreatedAtNotIn...))
+	}
+	if i.CreatedAtGT != nil {
+		predicates = append(predicates, archivedworkspaceactivitytask.CreatedAtGT(*i.CreatedAtGT))
+	}
+	if i.CreatedAtGTE != nil {
+		predicates = append(predicates, archivedworkspaceactivitytask.CreatedAtGTE(*i.CreatedAtGTE))
+	}
+	if i.CreatedAtLT != nil {
+		predicates = append(predicates, archivedworkspaceactivitytask.CreatedAtLT(*i.CreatedAtLT))
+	}
+	if i.CreatedAtLTE != nil {
+		predicates = append(predicates, archivedworkspaceactivitytask.CreatedAtLTE(*i.CreatedAtLTE))
+	}
+	if i.UpdatedAt != nil {
+		predicates = append(predicates, archivedworkspaceactivitytask.UpdatedAtEQ(*i.UpdatedAt))
+	}
+	if i.UpdatedAtNEQ != nil {
+		predicates = append(predicates, archivedworkspaceactivitytask.UpdatedAtNEQ(*i.UpdatedAtNEQ))
+	}
+	if len(i.UpdatedAtIn) > 0 {
+		predicates = append(predicates, archivedworkspaceactivitytask.UpdatedAtIn(i.UpdatedAtIn...))
+	}
+	if len(i.UpdatedAtNotIn) > 0 {
+		predicates = append(predicates, archivedworkspaceactivitytask.UpdatedAtNotIn(i.UpdatedAtNotIn...))
+	}
+	if i.UpdatedAtGT != nil {
+		predicates = append(predicates, archivedworkspaceactivitytask.UpdatedAtGT(*i.UpdatedAtGT))
+	}
+	if i.UpdatedAtGTE != nil {
+		predicates = append(predicates, archivedworkspaceactivitytask.UpdatedAtGTE(*i.UpdatedAtGTE))
+	}
+	if i.UpdatedAtLT != nil {
+		predicates = append(predicates, archivedworkspaceactivitytask.UpdatedAtLT(*i.UpdatedAtLT))
+	}
+	if i.UpdatedAtLTE != nil {
+		predicates = append(predicates, archivedworkspaceactivitytask.UpdatedAtLTE(*i.UpdatedAtLTE))
+	}
+
+	if i.HasTask != nil {
+		p := archivedworkspaceactivitytask.HasTask()
+		if !*i.HasTask {
+			p = archivedworkspaceactivitytask.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasTaskWith) > 0 {
+		with := make([]predicate.Task, 0, len(i.HasTaskWith))
+		for _, w := range i.HasTaskWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, archivedworkspaceactivitytask.HasTaskWith(with...))
+	}
+	if i.HasArchivedWorkspaceActivity != nil {
+		p := archivedworkspaceactivitytask.HasArchivedWorkspaceActivity()
+		if !*i.HasArchivedWorkspaceActivity {
+			p = archivedworkspaceactivitytask.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasArchivedWorkspaceActivityWith) > 0 {
+		with := make([]predicate.ArchivedWorkspaceActivity, 0, len(i.HasArchivedWorkspaceActivityWith))
+		for _, w := range i.HasArchivedWorkspaceActivityWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, archivedworkspaceactivitytask.HasArchivedWorkspaceActivityWith(with...))
+	}
+	switch len(predicates) {
+	case 0:
+		return nil, fmt.Errorf("project-management-demo-backend/ent: empty predicate ArchivedWorkspaceActivityTaskWhereInput")
+	case 1:
+		return predicates[0], nil
+	default:
+		return archivedworkspaceactivitytask.And(predicates...), nil
 	}
 }
 
@@ -8115,6 +8469,10 @@ type TaskWhereInput struct {
 	// "archivedTaskActivityTasks" edge predicates.
 	HasArchivedTaskActivityTasks     *bool                                 `json:"hasArchivedTaskActivityTasks,omitempty"`
 	HasArchivedTaskActivityTasksWith []*ArchivedTaskActivityTaskWhereInput `json:"hasArchivedTaskActivityTasksWith,omitempty"`
+
+	// "archivedWorkspaceActivityTasks" edge predicates.
+	HasArchivedWorkspaceActivityTasks     *bool                                      `json:"hasArchivedWorkspaceActivityTasks,omitempty"`
+	HasArchivedWorkspaceActivityTasksWith []*ArchivedWorkspaceActivityTaskWhereInput `json:"hasArchivedWorkspaceActivityTasksWith,omitempty"`
 }
 
 // Filter applies the TaskWhereInput filter on the TaskQuery builder.
@@ -8851,6 +9209,24 @@ func (i *TaskWhereInput) P() (predicate.Task, error) {
 			with = append(with, p)
 		}
 		predicates = append(predicates, task.HasArchivedTaskActivityTasksWith(with...))
+	}
+	if i.HasArchivedWorkspaceActivityTasks != nil {
+		p := task.HasArchivedWorkspaceActivityTasks()
+		if !*i.HasArchivedWorkspaceActivityTasks {
+			p = task.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasArchivedWorkspaceActivityTasksWith) > 0 {
+		with := make([]predicate.ArchivedWorkspaceActivityTask, 0, len(i.HasArchivedWorkspaceActivityTasksWith))
+		for _, w := range i.HasArchivedWorkspaceActivityTasksWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, task.HasArchivedWorkspaceActivityTasksWith(with...))
 	}
 	switch len(predicates) {
 	case 0:

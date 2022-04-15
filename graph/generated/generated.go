@@ -56,6 +56,7 @@ type ResolverRoot interface {
 	ArchivedTaskActivity() ArchivedTaskActivityResolver
 	ArchivedTaskActivityTask() ArchivedTaskActivityTaskResolver
 	ArchivedWorkspaceActivity() ArchivedWorkspaceActivityResolver
+	ArchivedWorkspaceActivityTask() ArchivedWorkspaceActivityTaskResolver
 	Color() ColorResolver
 	DeletedTask() DeletedTaskResolver
 	FavoriteProject() FavoriteProjectResolver
@@ -175,17 +176,18 @@ type ComplexityRoot struct {
 	}
 
 	ArchivedWorkspaceActivity struct {
-		ActivityType   func(childComplexity int) int
-		ActivityTypeID func(childComplexity int) int
-		CreatedAt      func(childComplexity int) int
-		ID             func(childComplexity int) int
-		Project        func(childComplexity int) int
-		ProjectID      func(childComplexity int) int
-		Teammate       func(childComplexity int) int
-		TeammateID     func(childComplexity int) int
-		UpdatedAt      func(childComplexity int) int
-		Workspace      func(childComplexity int) int
-		WorkspaceID    func(childComplexity int) int
+		ActivityType                   func(childComplexity int) int
+		ActivityTypeID                 func(childComplexity int) int
+		ArchivedWorkspaceActivityTasks func(childComplexity int) int
+		CreatedAt                      func(childComplexity int) int
+		ID                             func(childComplexity int) int
+		Project                        func(childComplexity int) int
+		ProjectID                      func(childComplexity int) int
+		Teammate                       func(childComplexity int) int
+		TeammateID                     func(childComplexity int) int
+		UpdatedAt                      func(childComplexity int) int
+		Workspace                      func(childComplexity int) int
+		WorkspaceID                    func(childComplexity int) int
 	}
 
 	ArchivedWorkspaceActivityConnection struct {
@@ -195,6 +197,26 @@ type ComplexityRoot struct {
 	}
 
 	ArchivedWorkspaceActivityEdge struct {
+		Cursor func(childComplexity int) int
+		Node   func(childComplexity int) int
+	}
+
+	ArchivedWorkspaceActivityTask struct {
+		ArchivedWorkspaceActivityID func(childComplexity int) int
+		CreatedAt                   func(childComplexity int) int
+		ID                          func(childComplexity int) int
+		Task                        func(childComplexity int) int
+		TaskID                      func(childComplexity int) int
+		UpdatedAt                   func(childComplexity int) int
+	}
+
+	ArchivedWorkspaceActivityTaskConnection struct {
+		Edges      func(childComplexity int) int
+		PageInfo   func(childComplexity int) int
+		TotalCount func(childComplexity int) int
+	}
+
+	ArchivedWorkspaceActivityTaskEdge struct {
 		Cursor func(childComplexity int) int
 		Node   func(childComplexity int) int
 	}
@@ -415,6 +437,7 @@ type ComplexityRoot struct {
 		CreateArchivedTaskActivity                func(childComplexity int, input ent.CreateArchivedTaskActivityInput) int
 		CreateArchivedTaskActivityTask            func(childComplexity int, input ent.CreateArchivedTaskActivityTaskInput) int
 		CreateArchivedWorkspaceActivity           func(childComplexity int, input ent.CreateArchivedWorkspaceActivityInput) int
+		CreateArchivedWorkspaceActivityTask       func(childComplexity int, input ent.CreateArchivedWorkspaceActivityTaskInput) int
 		CreateColor                               func(childComplexity int, input ent.CreateColorInput) int
 		CreateDeletedTask                         func(childComplexity int, input ent.CreateDeletedTaskInput) int
 		CreateFavoriteProject                     func(childComplexity int, input ent.CreateFavoriteProjectInput) int
@@ -488,6 +511,7 @@ type ComplexityRoot struct {
 		UpdateArchivedTaskActivity                func(childComplexity int, input ent.UpdateArchivedTaskActivityInput) int
 		UpdateArchivedTaskActivityTask            func(childComplexity int, input ent.UpdateArchivedTaskActivityTaskInput) int
 		UpdateArchivedWorkspaceActivity           func(childComplexity int, input ent.UpdateArchivedWorkspaceActivityInput) int
+		UpdateArchivedWorkspaceActivityTask       func(childComplexity int, input ent.UpdateArchivedWorkspaceActivityTaskInput) int
 		UpdateColor                               func(childComplexity int, input ent.UpdateColorInput) int
 		UpdateDeletedTask                         func(childComplexity int, input ent.UpdateDeletedTaskInput) int
 		UpdateFileType                            func(childComplexity int, input ent.UpdateFileTypeInput) int
@@ -741,107 +765,109 @@ type ComplexityRoot struct {
 	}
 
 	Query struct {
-		Activities                  func(childComplexity int, where model.ActivityWhereInput) int
-		ActivityType                func(childComplexity int, where *ent.ActivityTypeWhereInput) int
-		ActivityTypes               func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ActivityTypeWhereInput) int
-		ArchivedTaskActivities      func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ArchivedTaskActivityWhereInput) int
-		ArchivedTaskActivity        func(childComplexity int, where *ent.ArchivedTaskActivityWhereInput) int
-		ArchivedTaskActivityTask    func(childComplexity int, where *ent.ArchivedTaskActivityTaskWhereInput) int
-		ArchivedTaskActivityTasks   func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ArchivedTaskActivityTaskWhereInput) int
-		ArchivedWorkspaceActivities func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ArchivedWorkspaceActivityWhereInput) int
-		ArchivedWorkspaceActivity   func(childComplexity int, where *ent.ArchivedWorkspaceActivityWhereInput) int
-		Color                       func(childComplexity int, id ulid.ID) int
-		Colors                      func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ColorWhereInput) int
-		DeletedTask                 func(childComplexity int, where *ent.DeletedTaskWhereInput) int
-		DeletedTasks                func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.DeletedTaskWhereInput) int
-		FavoriteProject             func(childComplexity int, where *ent.FavoriteProjectWhereInput) int
-		FavoriteProjectIds          func(childComplexity int, teammateID ulid.ID) int
-		FavoriteProjects            func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.FavoriteProjectWhereInput) int
-		FavoriteWorkspace           func(childComplexity int, where *ent.FavoriteWorkspaceWhereInput) int
-		FavoriteWorkspaceIds        func(childComplexity int, teammateID ulid.ID, workspaceID *ulid.ID) int
-		FavoriteWorkspaces          func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.FavoriteWorkspaceWhereInput) int
-		FileType                    func(childComplexity int, where *ent.FileTypeWhereInput) int
-		FileTypes                   func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.FileTypeWhereInput) int
-		Icon                        func(childComplexity int, id ulid.ID) int
-		Icons                       func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.IconWhereInput) int
-		Me                          func(childComplexity int) int
-		Mentions                    func(childComplexity int, where model.MentionWhereInput) int
-		Node                        func(childComplexity int, id ulid.ID) int
-		Nodes                       func(childComplexity int, ids []ulid.ID) int
-		Project                     func(childComplexity int, where *ent.ProjectWhereInput) int
-		ProjectBaseColor            func(childComplexity int, where *ent.ProjectBaseColorWhereInput) int
-		ProjectBaseColors           func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectBaseColorWhereInput) int
-		ProjectIcon                 func(childComplexity int, where *ent.ProjectIconWhereInput) int
-		ProjectIcons                func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectIconWhereInput) int
-		ProjectLightColor           func(childComplexity int, where *ent.ProjectLightColorWhereInput) int
-		ProjectLightColors          func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectLightColorWhereInput) int
-		ProjectTask                 func(childComplexity int, where *ent.ProjectTaskWhereInput) int
-		ProjectTaskColumn           func(childComplexity int, where *ent.ProjectTaskColumnWhereInput) int
-		ProjectTaskColumns          func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectTaskColumnWhereInput) int
-		ProjectTaskListStatus       func(childComplexity int, where *ent.ProjectTaskListStatusWhereInput) int
-		ProjectTaskListStatuses     func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectTaskListStatusWhereInput) int
-		ProjectTaskSection          func(childComplexity int, where *ent.ProjectTaskSectionWhereInput) int
-		ProjectTaskSections         func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectTaskSectionWhereInput) int
-		ProjectTaskSectionsByTaskID func(childComplexity int, taskID ulid.ID, where *ent.ProjectTaskSectionWhereInput) int
-		ProjectTasks                func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectTaskWhereInput) int
-		ProjectTeammate             func(childComplexity int, where *ent.ProjectTeammateWhereInput) int
-		ProjectTeammates            func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectTeammateWhereInput) int
-		Projects                    func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectWhereInput) int
-		Tag                         func(childComplexity int, where *ent.TagWhereInput) int
-		Tags                        func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TagWhereInput) int
-		Task                        func(childComplexity int, where *ent.TaskWhereInput) int
-		TaskActivities              func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskActivityWhereInput) int
-		TaskActivity                func(childComplexity int, where *ent.TaskActivityWhereInput) int
-		TaskActivityTask            func(childComplexity int, where *ent.TaskActivityTaskWhereInput) int
-		TaskActivityTasks           func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskActivityTaskWhereInput) int
-		TaskCollaborator            func(childComplexity int, where *ent.TaskCollaboratorWhereInput) int
-		TaskCollaborators           func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskCollaboratorWhereInput) int
-		TaskColumn                  func(childComplexity int, where *ent.TaskColumnWhereInput) int
-		TaskColumns                 func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskColumnWhereInput) int
-		TaskFeed                    func(childComplexity int, where *ent.TaskFeedWhereInput) int
-		TaskFeedLike                func(childComplexity int, where *ent.TaskFeedLikeWhereInput) int
-		TaskFeedLikes               func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskFeedLikeWhereInput) int
-		TaskFeeds                   func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskFeedWhereInput) int
-		TaskFile                    func(childComplexity int, where *ent.TaskFileWhereInput) int
-		TaskFiles                   func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskFileWhereInput) int
-		TaskLike                    func(childComplexity int, where *ent.TaskLikeWhereInput) int
-		TaskLikes                   func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskLikeWhereInput) int
-		TaskListCompletedStatus     func(childComplexity int, where *ent.TaskListCompletedStatusWhereInput) int
-		TaskListCompletedStatuses   func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskListCompletedStatusWhereInput) int
-		TaskListSortStatus          func(childComplexity int, where *ent.TaskListSortStatusWhereInput) int
-		TaskListSortStatuses        func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskListSortStatusWhereInput) int
-		TaskPriorities              func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskPriorityWhereInput) int
-		TaskPriority                func(childComplexity int, where *ent.TaskPriorityWhereInput) int
-		TaskSection                 func(childComplexity int, where *ent.TaskSectionWhereInput) int
-		TaskSections                func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskSectionWhereInput) int
-		TaskTag                     func(childComplexity int, where *ent.TaskTagWhereInput) int
-		TaskTags                    func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskTagWhereInput) int
-		Tasks                       func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskWhereInput) int
-		TasksDueSoon                func(childComplexity int, workspaceID ulid.ID, teammateID ulid.ID) int
-		Teammate                    func(childComplexity int, id ulid.ID) int
-		TeammateTask                func(childComplexity int, where *ent.TeammateTaskWhereInput) int
-		TeammateTaskColumn          func(childComplexity int, where *ent.TeammateTaskColumnWhereInput) int
-		TeammateTaskColumns         func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TeammateTaskColumnWhereInput) int
-		TeammateTaskListStatus      func(childComplexity int, where *ent.TeammateTaskListStatusWhereInput) int
-		TeammateTaskListStatuses    func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TeammateTaskListStatusWhereInput) int
-		TeammateTaskSection         func(childComplexity int, where *ent.TeammateTaskSectionWhereInput) int
-		TeammateTaskSections        func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TeammateTaskSectionWhereInput) int
-		TeammateTaskTabStatus       func(childComplexity int, where *ent.TeammateTaskTabStatusWhereInput) int
-		TeammateTaskTabStatuses     func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TeammateTaskTabStatusWhereInput) int
-		TeammateTasks               func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TeammateTaskWhereInput) int
-		Teammates                   func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TeammateWhereInput) int
-		TestTodo                    func(childComplexity int, where *ent.TestTodoWhereInput) int
-		TestTodos                   func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TestTodoWhereInput) int
-		TestUser                    func(childComplexity int, id ulid.ID, age *int) int
-		TestUsers                   func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TestUserWhereInput) int
-		Workspace                   func(childComplexity int, where *ent.WorkspaceWhereInput) int
-		WorkspaceActivities         func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.WorkspaceActivityWhereInput) int
-		WorkspaceActivity           func(childComplexity int, where *ent.WorkspaceActivityWhereInput) int
-		WorkspaceActivityTask       func(childComplexity int, where *ent.WorkspaceActivityTaskWhereInput) int
-		WorkspaceActivityTasks      func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.WorkspaceActivityTaskWhereInput) int
-		WorkspaceTeammate           func(childComplexity int, where *ent.WorkspaceTeammateWhereInput) int
-		WorkspaceTeammates          func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.WorkspaceTeammateWhereInput) int
-		Workspaces                  func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.WorkspaceWhereInput) int
+		Activities                     func(childComplexity int, where model.ActivityWhereInput) int
+		ActivityType                   func(childComplexity int, where *ent.ActivityTypeWhereInput) int
+		ActivityTypes                  func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ActivityTypeWhereInput) int
+		ArchivedTaskActivities         func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ArchivedTaskActivityWhereInput) int
+		ArchivedTaskActivity           func(childComplexity int, where *ent.ArchivedTaskActivityWhereInput) int
+		ArchivedTaskActivityTask       func(childComplexity int, where *ent.ArchivedTaskActivityTaskWhereInput) int
+		ArchivedTaskActivityTasks      func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ArchivedTaskActivityTaskWhereInput) int
+		ArchivedWorkspaceActivities    func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ArchivedWorkspaceActivityWhereInput) int
+		ArchivedWorkspaceActivity      func(childComplexity int, where *ent.ArchivedWorkspaceActivityWhereInput) int
+		ArchivedWorkspaceActivityTask  func(childComplexity int, where *ent.ArchivedWorkspaceActivityTaskWhereInput) int
+		ArchivedWorkspaceActivityTasks func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ArchivedWorkspaceActivityTaskWhereInput) int
+		Color                          func(childComplexity int, id ulid.ID) int
+		Colors                         func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ColorWhereInput) int
+		DeletedTask                    func(childComplexity int, where *ent.DeletedTaskWhereInput) int
+		DeletedTasks                   func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.DeletedTaskWhereInput) int
+		FavoriteProject                func(childComplexity int, where *ent.FavoriteProjectWhereInput) int
+		FavoriteProjectIds             func(childComplexity int, teammateID ulid.ID) int
+		FavoriteProjects               func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.FavoriteProjectWhereInput) int
+		FavoriteWorkspace              func(childComplexity int, where *ent.FavoriteWorkspaceWhereInput) int
+		FavoriteWorkspaceIds           func(childComplexity int, teammateID ulid.ID, workspaceID *ulid.ID) int
+		FavoriteWorkspaces             func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.FavoriteWorkspaceWhereInput) int
+		FileType                       func(childComplexity int, where *ent.FileTypeWhereInput) int
+		FileTypes                      func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.FileTypeWhereInput) int
+		Icon                           func(childComplexity int, id ulid.ID) int
+		Icons                          func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.IconWhereInput) int
+		Me                             func(childComplexity int) int
+		Mentions                       func(childComplexity int, where model.MentionWhereInput) int
+		Node                           func(childComplexity int, id ulid.ID) int
+		Nodes                          func(childComplexity int, ids []ulid.ID) int
+		Project                        func(childComplexity int, where *ent.ProjectWhereInput) int
+		ProjectBaseColor               func(childComplexity int, where *ent.ProjectBaseColorWhereInput) int
+		ProjectBaseColors              func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectBaseColorWhereInput) int
+		ProjectIcon                    func(childComplexity int, where *ent.ProjectIconWhereInput) int
+		ProjectIcons                   func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectIconWhereInput) int
+		ProjectLightColor              func(childComplexity int, where *ent.ProjectLightColorWhereInput) int
+		ProjectLightColors             func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectLightColorWhereInput) int
+		ProjectTask                    func(childComplexity int, where *ent.ProjectTaskWhereInput) int
+		ProjectTaskColumn              func(childComplexity int, where *ent.ProjectTaskColumnWhereInput) int
+		ProjectTaskColumns             func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectTaskColumnWhereInput) int
+		ProjectTaskListStatus          func(childComplexity int, where *ent.ProjectTaskListStatusWhereInput) int
+		ProjectTaskListStatuses        func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectTaskListStatusWhereInput) int
+		ProjectTaskSection             func(childComplexity int, where *ent.ProjectTaskSectionWhereInput) int
+		ProjectTaskSections            func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectTaskSectionWhereInput) int
+		ProjectTaskSectionsByTaskID    func(childComplexity int, taskID ulid.ID, where *ent.ProjectTaskSectionWhereInput) int
+		ProjectTasks                   func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectTaskWhereInput) int
+		ProjectTeammate                func(childComplexity int, where *ent.ProjectTeammateWhereInput) int
+		ProjectTeammates               func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectTeammateWhereInput) int
+		Projects                       func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ProjectWhereInput) int
+		Tag                            func(childComplexity int, where *ent.TagWhereInput) int
+		Tags                           func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TagWhereInput) int
+		Task                           func(childComplexity int, where *ent.TaskWhereInput) int
+		TaskActivities                 func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskActivityWhereInput) int
+		TaskActivity                   func(childComplexity int, where *ent.TaskActivityWhereInput) int
+		TaskActivityTask               func(childComplexity int, where *ent.TaskActivityTaskWhereInput) int
+		TaskActivityTasks              func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskActivityTaskWhereInput) int
+		TaskCollaborator               func(childComplexity int, where *ent.TaskCollaboratorWhereInput) int
+		TaskCollaborators              func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskCollaboratorWhereInput) int
+		TaskColumn                     func(childComplexity int, where *ent.TaskColumnWhereInput) int
+		TaskColumns                    func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskColumnWhereInput) int
+		TaskFeed                       func(childComplexity int, where *ent.TaskFeedWhereInput) int
+		TaskFeedLike                   func(childComplexity int, where *ent.TaskFeedLikeWhereInput) int
+		TaskFeedLikes                  func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskFeedLikeWhereInput) int
+		TaskFeeds                      func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskFeedWhereInput) int
+		TaskFile                       func(childComplexity int, where *ent.TaskFileWhereInput) int
+		TaskFiles                      func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskFileWhereInput) int
+		TaskLike                       func(childComplexity int, where *ent.TaskLikeWhereInput) int
+		TaskLikes                      func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskLikeWhereInput) int
+		TaskListCompletedStatus        func(childComplexity int, where *ent.TaskListCompletedStatusWhereInput) int
+		TaskListCompletedStatuses      func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskListCompletedStatusWhereInput) int
+		TaskListSortStatus             func(childComplexity int, where *ent.TaskListSortStatusWhereInput) int
+		TaskListSortStatuses           func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskListSortStatusWhereInput) int
+		TaskPriorities                 func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskPriorityWhereInput) int
+		TaskPriority                   func(childComplexity int, where *ent.TaskPriorityWhereInput) int
+		TaskSection                    func(childComplexity int, where *ent.TaskSectionWhereInput) int
+		TaskSections                   func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskSectionWhereInput) int
+		TaskTag                        func(childComplexity int, where *ent.TaskTagWhereInput) int
+		TaskTags                       func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskTagWhereInput) int
+		Tasks                          func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TaskWhereInput) int
+		TasksDueSoon                   func(childComplexity int, workspaceID ulid.ID, teammateID ulid.ID) int
+		Teammate                       func(childComplexity int, id ulid.ID) int
+		TeammateTask                   func(childComplexity int, where *ent.TeammateTaskWhereInput) int
+		TeammateTaskColumn             func(childComplexity int, where *ent.TeammateTaskColumnWhereInput) int
+		TeammateTaskColumns            func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TeammateTaskColumnWhereInput) int
+		TeammateTaskListStatus         func(childComplexity int, where *ent.TeammateTaskListStatusWhereInput) int
+		TeammateTaskListStatuses       func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TeammateTaskListStatusWhereInput) int
+		TeammateTaskSection            func(childComplexity int, where *ent.TeammateTaskSectionWhereInput) int
+		TeammateTaskSections           func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TeammateTaskSectionWhereInput) int
+		TeammateTaskTabStatus          func(childComplexity int, where *ent.TeammateTaskTabStatusWhereInput) int
+		TeammateTaskTabStatuses        func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TeammateTaskTabStatusWhereInput) int
+		TeammateTasks                  func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TeammateTaskWhereInput) int
+		Teammates                      func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TeammateWhereInput) int
+		TestTodo                       func(childComplexity int, where *ent.TestTodoWhereInput) int
+		TestTodos                      func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TestTodoWhereInput) int
+		TestUser                       func(childComplexity int, id ulid.ID, age *int) int
+		TestUsers                      func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.TestUserWhereInput) int
+		Workspace                      func(childComplexity int, where *ent.WorkspaceWhereInput) int
+		WorkspaceActivities            func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.WorkspaceActivityWhereInput) int
+		WorkspaceActivity              func(childComplexity int, where *ent.WorkspaceActivityWhereInput) int
+		WorkspaceActivityTask          func(childComplexity int, where *ent.WorkspaceActivityTaskWhereInput) int
+		WorkspaceActivityTasks         func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.WorkspaceActivityTaskWhereInput) int
+		WorkspaceTeammate              func(childComplexity int, where *ent.WorkspaceTeammateWhereInput) int
+		WorkspaceTeammates             func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.WorkspaceTeammateWhereInput) int
+		Workspaces                     func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.WorkspaceWhereInput) int
 	}
 
 	Subscription struct {
@@ -1586,6 +1612,10 @@ type ArchivedWorkspaceActivityResolver interface {
 	CreatedAt(ctx context.Context, obj *ent.ArchivedWorkspaceActivity) (string, error)
 	UpdatedAt(ctx context.Context, obj *ent.ArchivedWorkspaceActivity) (string, error)
 }
+type ArchivedWorkspaceActivityTaskResolver interface {
+	CreatedAt(ctx context.Context, obj *ent.ArchivedWorkspaceActivityTask) (string, error)
+	UpdatedAt(ctx context.Context, obj *ent.ArchivedWorkspaceActivityTask) (string, error)
+}
 type ColorResolver interface {
 	CreatedAt(ctx context.Context, obj *ent.Color) (string, error)
 	UpdatedAt(ctx context.Context, obj *ent.Color) (string, error)
@@ -1623,6 +1653,8 @@ type MutationResolver interface {
 	UpdateArchivedTaskActivityTask(ctx context.Context, input ent.UpdateArchivedTaskActivityTaskInput) (*ent.ArchivedTaskActivityTask, error)
 	CreateArchivedWorkspaceActivity(ctx context.Context, input ent.CreateArchivedWorkspaceActivityInput) (*ent.ArchivedWorkspaceActivity, error)
 	UpdateArchivedWorkspaceActivity(ctx context.Context, input ent.UpdateArchivedWorkspaceActivityInput) (*ent.ArchivedWorkspaceActivity, error)
+	CreateArchivedWorkspaceActivityTask(ctx context.Context, input ent.CreateArchivedWorkspaceActivityTaskInput) (*ent.ArchivedWorkspaceActivityTask, error)
+	UpdateArchivedWorkspaceActivityTask(ctx context.Context, input ent.UpdateArchivedWorkspaceActivityTaskInput) (*ent.ArchivedWorkspaceActivityTask, error)
 	CreateColor(ctx context.Context, input ent.CreateColorInput) (*ent.Color, error)
 	UpdateColor(ctx context.Context, input ent.UpdateColorInput) (*ent.Color, error)
 	CreateDeletedTask(ctx context.Context, input ent.CreateDeletedTaskInput) (*ent.DeletedTask, error)
@@ -1788,6 +1820,8 @@ type QueryResolver interface {
 	ArchivedTaskActivityTasks(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ArchivedTaskActivityTaskWhereInput) (*ent.ArchivedTaskActivityTaskConnection, error)
 	ArchivedWorkspaceActivity(ctx context.Context, where *ent.ArchivedWorkspaceActivityWhereInput) (*ent.ArchivedWorkspaceActivity, error)
 	ArchivedWorkspaceActivities(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ArchivedWorkspaceActivityWhereInput) (*ent.ArchivedWorkspaceActivityConnection, error)
+	ArchivedWorkspaceActivityTask(ctx context.Context, where *ent.ArchivedWorkspaceActivityTaskWhereInput) (*ent.ArchivedWorkspaceActivityTask, error)
+	ArchivedWorkspaceActivityTasks(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ArchivedWorkspaceActivityTaskWhereInput) (*ent.ArchivedWorkspaceActivityTaskConnection, error)
 	Color(ctx context.Context, id ulid.ID) (*ent.Color, error)
 	Colors(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ColorWhereInput) (*ent.ColorConnection, error)
 	DeletedTask(ctx context.Context, where *ent.DeletedTaskWhereInput) (*ent.DeletedTask, error)
@@ -2341,6 +2375,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.ArchivedWorkspaceActivity.ActivityTypeID(childComplexity), true
 
+	case "ArchivedWorkspaceActivity.archivedWorkspaceActivityTasks":
+		if e.complexity.ArchivedWorkspaceActivity.ArchivedWorkspaceActivityTasks == nil {
+			break
+		}
+
+		return e.complexity.ArchivedWorkspaceActivity.ArchivedWorkspaceActivityTasks(childComplexity), true
+
 	case "ArchivedWorkspaceActivity.createdAt":
 		if e.complexity.ArchivedWorkspaceActivity.CreatedAt == nil {
 			break
@@ -2438,6 +2479,83 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.ArchivedWorkspaceActivityEdge.Node(childComplexity), true
+
+	case "ArchivedWorkspaceActivityTask.archivedWorkspaceActivityId":
+		if e.complexity.ArchivedWorkspaceActivityTask.ArchivedWorkspaceActivityID == nil {
+			break
+		}
+
+		return e.complexity.ArchivedWorkspaceActivityTask.ArchivedWorkspaceActivityID(childComplexity), true
+
+	case "ArchivedWorkspaceActivityTask.createdAt":
+		if e.complexity.ArchivedWorkspaceActivityTask.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.ArchivedWorkspaceActivityTask.CreatedAt(childComplexity), true
+
+	case "ArchivedWorkspaceActivityTask.id":
+		if e.complexity.ArchivedWorkspaceActivityTask.ID == nil {
+			break
+		}
+
+		return e.complexity.ArchivedWorkspaceActivityTask.ID(childComplexity), true
+
+	case "ArchivedWorkspaceActivityTask.task":
+		if e.complexity.ArchivedWorkspaceActivityTask.Task == nil {
+			break
+		}
+
+		return e.complexity.ArchivedWorkspaceActivityTask.Task(childComplexity), true
+
+	case "ArchivedWorkspaceActivityTask.taskId":
+		if e.complexity.ArchivedWorkspaceActivityTask.TaskID == nil {
+			break
+		}
+
+		return e.complexity.ArchivedWorkspaceActivityTask.TaskID(childComplexity), true
+
+	case "ArchivedWorkspaceActivityTask.updatedAt":
+		if e.complexity.ArchivedWorkspaceActivityTask.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.ArchivedWorkspaceActivityTask.UpdatedAt(childComplexity), true
+
+	case "ArchivedWorkspaceActivityTaskConnection.edges":
+		if e.complexity.ArchivedWorkspaceActivityTaskConnection.Edges == nil {
+			break
+		}
+
+		return e.complexity.ArchivedWorkspaceActivityTaskConnection.Edges(childComplexity), true
+
+	case "ArchivedWorkspaceActivityTaskConnection.pageInfo":
+		if e.complexity.ArchivedWorkspaceActivityTaskConnection.PageInfo == nil {
+			break
+		}
+
+		return e.complexity.ArchivedWorkspaceActivityTaskConnection.PageInfo(childComplexity), true
+
+	case "ArchivedWorkspaceActivityTaskConnection.totalCount":
+		if e.complexity.ArchivedWorkspaceActivityTaskConnection.TotalCount == nil {
+			break
+		}
+
+		return e.complexity.ArchivedWorkspaceActivityTaskConnection.TotalCount(childComplexity), true
+
+	case "ArchivedWorkspaceActivityTaskEdge.cursor":
+		if e.complexity.ArchivedWorkspaceActivityTaskEdge.Cursor == nil {
+			break
+		}
+
+		return e.complexity.ArchivedWorkspaceActivityTaskEdge.Cursor(childComplexity), true
+
+	case "ArchivedWorkspaceActivityTaskEdge.node":
+		if e.complexity.ArchivedWorkspaceActivityTaskEdge.Node == nil {
+			break
+		}
+
+		return e.complexity.ArchivedWorkspaceActivityTaskEdge.Node(childComplexity), true
 
 	case "AssignTaskPayload.task":
 		if e.complexity.AssignTaskPayload.Task == nil {
@@ -3296,6 +3414,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.CreateArchivedWorkspaceActivity(childComplexity, args["input"].(ent.CreateArchivedWorkspaceActivityInput)), true
+
+	case "Mutation.createArchivedWorkspaceActivityTask":
+		if e.complexity.Mutation.CreateArchivedWorkspaceActivityTask == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createArchivedWorkspaceActivityTask_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateArchivedWorkspaceActivityTask(childComplexity, args["input"].(ent.CreateArchivedWorkspaceActivityTaskInput)), true
 
 	case "Mutation.createColor":
 		if e.complexity.Mutation.CreateColor == nil {
@@ -4172,6 +4302,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.UpdateArchivedWorkspaceActivity(childComplexity, args["input"].(ent.UpdateArchivedWorkspaceActivityInput)), true
+
+	case "Mutation.updateArchivedWorkspaceActivityTask":
+		if e.complexity.Mutation.UpdateArchivedWorkspaceActivityTask == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateArchivedWorkspaceActivityTask_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateArchivedWorkspaceActivityTask(childComplexity, args["input"].(ent.UpdateArchivedWorkspaceActivityTaskInput)), true
 
 	case "Mutation.updateColor":
 		if e.complexity.Mutation.UpdateColor == nil {
@@ -5657,6 +5799,30 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.ArchivedWorkspaceActivity(childComplexity, args["where"].(*ent.ArchivedWorkspaceActivityWhereInput)), true
+
+	case "Query.archivedWorkspaceActivityTask":
+		if e.complexity.Query.ArchivedWorkspaceActivityTask == nil {
+			break
+		}
+
+		args, err := ec.field_Query_archivedWorkspaceActivityTask_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.ArchivedWorkspaceActivityTask(childComplexity, args["where"].(*ent.ArchivedWorkspaceActivityTaskWhereInput)), true
+
+	case "Query.archivedWorkspaceActivityTasks":
+		if e.complexity.Query.ArchivedWorkspaceActivityTasks == nil {
+			break
+		}
+
+		args, err := ec.field_Query_archivedWorkspaceActivityTasks_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.ArchivedWorkspaceActivityTasks(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["where"].(*ent.ArchivedWorkspaceActivityTaskWhereInput)), true
 
 	case "Query.color":
 		if e.complexity.Query.Color == nil {
@@ -10423,7 +10589,7 @@ extend type Mutation {
   project: Project!
   teammateId: ID!
   teammate: Teammate!
-#  workspaceActivityTasks: [ArchivedWorkspaceActivityTask!]!
+  archivedWorkspaceActivityTasks: [ArchivedWorkspaceActivityTask!]!
   createdAt: String!
   updatedAt: String!
 }
@@ -10455,6 +10621,44 @@ extend type Query {
 extend type Mutation {
   createArchivedWorkspaceActivity(input: CreateArchivedWorkspaceActivityInput!): ArchivedWorkspaceActivity!
   updateArchivedWorkspaceActivity(input: UpdateArchivedWorkspaceActivityInput!): ArchivedWorkspaceActivity!
+}
+`, BuiltIn: false},
+	{Name: "graph/schema/archived_workspace_activity_task/archived_workspace_activity_task.graphql", Input: `type ArchivedWorkspaceActivityTask implements Node {
+  id: ID!
+  archivedWorkspaceActivityId: ID!
+  task: Task!
+  taskId: ID!
+  createdAt: String!
+  updatedAt: String!
+}
+type ArchivedWorkspaceActivityTaskConnection {
+  totalCount: Int!
+  pageInfo: PageInfo!
+  edges: [ArchivedWorkspaceActivityTaskEdge]
+}
+type ArchivedWorkspaceActivityTaskEdge {
+  node: ArchivedWorkspaceActivityTask
+  cursor: Cursor!
+}
+
+input CreateArchivedWorkspaceActivityTaskInput {
+  archivedWorkspaceActivityId: ID!
+  taskId: ID!
+}
+
+input UpdateArchivedWorkspaceActivityTaskInput {
+  id: ID!
+  taskId: ID
+}
+
+extend type Query {
+  archivedWorkspaceActivityTask(where: ArchivedWorkspaceActivityTaskWhereInput): ArchivedWorkspaceActivityTask
+  archivedWorkspaceActivityTasks(after: Cursor, first: Int, before: Cursor, last: Int, where: ArchivedWorkspaceActivityTaskWhereInput): ArchivedWorkspaceActivityTaskConnection
+}
+
+extend type Mutation {
+  createArchivedWorkspaceActivityTask(input: CreateArchivedWorkspaceActivityTaskInput!): ArchivedWorkspaceActivityTask!
+  updateArchivedWorkspaceActivityTask(input: UpdateArchivedWorkspaceActivityTaskInput!): ArchivedWorkspaceActivityTask!
 }
 `, BuiltIn: false},
 	{Name: "graph/schema/color/color.graphql", Input: `type Color implements Node {
@@ -13325,6 +13529,10 @@ input TaskWhereInput {
   """archivedTaskActivityTasks edge predicates"""
   hasArchivedTaskActivityTasks: Boolean
   hasArchivedTaskActivityTasksWith: [ArchivedTaskActivityTaskWhereInput!]
+  
+  """archivedWorkspaceActivityTasks edge predicates"""
+  hasArchivedWorkspaceActivityTasks: Boolean
+  hasArchivedWorkspaceActivityTasksWith: [ArchivedWorkspaceActivityTaskWhereInput!]
 }
 
 """
@@ -15157,6 +15365,88 @@ input ArchivedWorkspaceActivityWhereInput {
   """teammate edge predicates"""
   hasTeammate: Boolean
   hasTeammateWith: [TeammateWhereInput!]
+  
+  """archivedWorkspaceActivityTasks edge predicates"""
+  hasArchivedWorkspaceActivityTasks: Boolean
+  hasArchivedWorkspaceActivityTasksWith: [ArchivedWorkspaceActivityTaskWhereInput!]
+}
+
+"""
+ArchivedWorkspaceActivityTaskWhereInput is used for filtering ArchivedWorkspaceActivityTask objects.
+Input was generated by ent.
+"""
+input ArchivedWorkspaceActivityTaskWhereInput {
+  not: ArchivedWorkspaceActivityTaskWhereInput
+  and: [ArchivedWorkspaceActivityTaskWhereInput!]
+  or: [ArchivedWorkspaceActivityTaskWhereInput!]
+  
+  """archived_workspace_activity_id field predicates"""
+  archivedWorkspaceActivityID: ID
+  archivedWorkspaceActivityIDNEQ: ID
+  archivedWorkspaceActivityIDIn: [ID!]
+  archivedWorkspaceActivityIDNotIn: [ID!]
+  archivedWorkspaceActivityIDGT: ID
+  archivedWorkspaceActivityIDGTE: ID
+  archivedWorkspaceActivityIDLT: ID
+  archivedWorkspaceActivityIDLTE: ID
+  archivedWorkspaceActivityIDContains: ID
+  archivedWorkspaceActivityIDHasPrefix: ID
+  archivedWorkspaceActivityIDHasSuffix: ID
+  archivedWorkspaceActivityIDEqualFold: ID
+  archivedWorkspaceActivityIDContainsFold: ID
+  
+  """task_id field predicates"""
+  taskID: ID
+  taskIDNEQ: ID
+  taskIDIn: [ID!]
+  taskIDNotIn: [ID!]
+  taskIDGT: ID
+  taskIDGTE: ID
+  taskIDLT: ID
+  taskIDLTE: ID
+  taskIDContains: ID
+  taskIDHasPrefix: ID
+  taskIDHasSuffix: ID
+  taskIDEqualFold: ID
+  taskIDContainsFold: ID
+  
+  """created_at field predicates"""
+  createdAt: Time
+  createdAtNEQ: Time
+  createdAtIn: [Time!]
+  createdAtNotIn: [Time!]
+  createdAtGT: Time
+  createdAtGTE: Time
+  createdAtLT: Time
+  createdAtLTE: Time
+  
+  """updated_at field predicates"""
+  updatedAt: Time
+  updatedAtNEQ: Time
+  updatedAtIn: [Time!]
+  updatedAtNotIn: [Time!]
+  updatedAtGT: Time
+  updatedAtGTE: Time
+  updatedAtLT: Time
+  updatedAtLTE: Time
+  
+  """id field predicates"""
+  id: ID
+  idNEQ: ID
+  idIn: [ID!]
+  idNotIn: [ID!]
+  idGT: ID
+  idGTE: ID
+  idLT: ID
+  idLTE: ID
+  
+  """task edge predicates"""
+  hasTask: Boolean
+  hasTaskWith: [TaskWhereInput!]
+  
+  """archivedWorkspaceActivity edge predicates"""
+  hasArchivedWorkspaceActivity: Boolean
+  hasArchivedWorkspaceActivityWith: [ArchivedWorkspaceActivityWhereInput!]
 }
 `, BuiltIn: false},
 	{Name: "graph/schema/favorite_project/favorite_project.graphql", Input: `type FavoriteProject implements Node {
@@ -17649,6 +17939,21 @@ func (ec *executionContext) field_Mutation_createArchivedTaskActivity_args(ctx c
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_createArchivedWorkspaceActivityTask_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 ent.CreateArchivedWorkspaceActivityTaskInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNCreateArchivedWorkspaceActivityTaskInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐCreateArchivedWorkspaceActivityTaskInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_createArchivedWorkspaceActivity_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -18744,6 +19049,21 @@ func (ec *executionContext) field_Mutation_updateArchivedTaskActivity_args(ctx c
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_updateArchivedWorkspaceActivityTask_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 ent.UpdateArchivedWorkspaceActivityTaskInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNUpdateArchivedWorkspaceActivityTaskInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐUpdateArchivedWorkspaceActivityTaskInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_updateArchivedWorkspaceActivity_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -19675,6 +19995,72 @@ func (ec *executionContext) field_Query_archivedWorkspaceActivities_args(ctx con
 	if tmp, ok := rawArgs["where"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
 		arg4, err = ec.unmarshalOArchivedWorkspaceActivityWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐArchivedWorkspaceActivityWhereInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["where"] = arg4
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_archivedWorkspaceActivityTask_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *ent.ArchivedWorkspaceActivityTaskWhereInput
+	if tmp, ok := rawArgs["where"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
+		arg0, err = ec.unmarshalOArchivedWorkspaceActivityTaskWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐArchivedWorkspaceActivityTaskWhereInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["where"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_archivedWorkspaceActivityTasks_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *ent.Cursor
+	if tmp, ok := rawArgs["after"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
+		arg0, err = ec.unmarshalOCursor2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐCursor(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["after"] = arg0
+	var arg1 *int
+	if tmp, ok := rawArgs["first"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("first"))
+		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["first"] = arg1
+	var arg2 *ent.Cursor
+	if tmp, ok := rawArgs["before"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("before"))
+		arg2, err = ec.unmarshalOCursor2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐCursor(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["before"] = arg2
+	var arg3 *int
+	if tmp, ok := rawArgs["last"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("last"))
+		arg3, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["last"] = arg3
+	var arg4 *ent.ArchivedWorkspaceActivityTaskWhereInput
+	if tmp, ok := rawArgs["where"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
+		arg4, err = ec.unmarshalOArchivedWorkspaceActivityTaskWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐArchivedWorkspaceActivityTaskWhereInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -25814,6 +26200,41 @@ func (ec *executionContext) _ArchivedWorkspaceActivity_teammate(ctx context.Cont
 	return ec.marshalNTeammate2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTeammate(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _ArchivedWorkspaceActivity_archivedWorkspaceActivityTasks(ctx context.Context, field graphql.CollectedField, obj *ent.ArchivedWorkspaceActivity) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ArchivedWorkspaceActivity",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ArchivedWorkspaceActivityTasks(ctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*ent.ArchivedWorkspaceActivityTask)
+	fc.Result = res
+	return ec.marshalNArchivedWorkspaceActivityTask2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐArchivedWorkspaceActivityTaskᚄ(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _ArchivedWorkspaceActivity_createdAt(ctx context.Context, field graphql.CollectedField, obj *ent.ArchivedWorkspaceActivity) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -26027,6 +26448,385 @@ func (ec *executionContext) _ArchivedWorkspaceActivityEdge_cursor(ctx context.Co
 	}()
 	fc := &graphql.FieldContext{
 		Object:     "ArchivedWorkspaceActivityEdge",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Cursor, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(ent.Cursor)
+	fc.Result = res
+	return ec.marshalNCursor2projectᚑmanagementᚑdemoᚑbackendᚋentᚐCursor(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ArchivedWorkspaceActivityTask_id(ctx context.Context, field graphql.CollectedField, obj *ent.ArchivedWorkspaceActivityTask) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ArchivedWorkspaceActivityTask",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(ulid.ID)
+	fc.Result = res
+	return ec.marshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ArchivedWorkspaceActivityTask_archivedWorkspaceActivityId(ctx context.Context, field graphql.CollectedField, obj *ent.ArchivedWorkspaceActivityTask) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ArchivedWorkspaceActivityTask",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ArchivedWorkspaceActivityID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(ulid.ID)
+	fc.Result = res
+	return ec.marshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ArchivedWorkspaceActivityTask_task(ctx context.Context, field graphql.CollectedField, obj *ent.ArchivedWorkspaceActivityTask) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ArchivedWorkspaceActivityTask",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Task(ctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.Task)
+	fc.Result = res
+	return ec.marshalNTask2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTask(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ArchivedWorkspaceActivityTask_taskId(ctx context.Context, field graphql.CollectedField, obj *ent.ArchivedWorkspaceActivityTask) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ArchivedWorkspaceActivityTask",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TaskID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(ulid.ID)
+	fc.Result = res
+	return ec.marshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ArchivedWorkspaceActivityTask_createdAt(ctx context.Context, field graphql.CollectedField, obj *ent.ArchivedWorkspaceActivityTask) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ArchivedWorkspaceActivityTask",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.ArchivedWorkspaceActivityTask().CreatedAt(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ArchivedWorkspaceActivityTask_updatedAt(ctx context.Context, field graphql.CollectedField, obj *ent.ArchivedWorkspaceActivityTask) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ArchivedWorkspaceActivityTask",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.ArchivedWorkspaceActivityTask().UpdatedAt(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ArchivedWorkspaceActivityTaskConnection_totalCount(ctx context.Context, field graphql.CollectedField, obj *ent.ArchivedWorkspaceActivityTaskConnection) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ArchivedWorkspaceActivityTaskConnection",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TotalCount, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ArchivedWorkspaceActivityTaskConnection_pageInfo(ctx context.Context, field graphql.CollectedField, obj *ent.ArchivedWorkspaceActivityTaskConnection) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ArchivedWorkspaceActivityTaskConnection",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PageInfo, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(ent.PageInfo)
+	fc.Result = res
+	return ec.marshalNPageInfo2projectᚑmanagementᚑdemoᚑbackendᚋentᚐPageInfo(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ArchivedWorkspaceActivityTaskConnection_edges(ctx context.Context, field graphql.CollectedField, obj *ent.ArchivedWorkspaceActivityTaskConnection) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ArchivedWorkspaceActivityTaskConnection",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Edges, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*ent.ArchivedWorkspaceActivityTaskEdge)
+	fc.Result = res
+	return ec.marshalOArchivedWorkspaceActivityTaskEdge2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐArchivedWorkspaceActivityTaskEdge(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ArchivedWorkspaceActivityTaskEdge_node(ctx context.Context, field graphql.CollectedField, obj *ent.ArchivedWorkspaceActivityTaskEdge) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ArchivedWorkspaceActivityTaskEdge",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Node, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*ent.ArchivedWorkspaceActivityTask)
+	fc.Result = res
+	return ec.marshalOArchivedWorkspaceActivityTask2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐArchivedWorkspaceActivityTask(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ArchivedWorkspaceActivityTaskEdge_cursor(ctx context.Context, field graphql.CollectedField, obj *ent.ArchivedWorkspaceActivityTaskEdge) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ArchivedWorkspaceActivityTaskEdge",
 		Field:      field,
 		Args:       nil,
 		IsMethod:   false,
@@ -30317,6 +31117,90 @@ func (ec *executionContext) _Mutation_updateArchivedWorkspaceActivity(ctx contex
 	res := resTmp.(*ent.ArchivedWorkspaceActivity)
 	fc.Result = res
 	return ec.marshalNArchivedWorkspaceActivity2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐArchivedWorkspaceActivity(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_createArchivedWorkspaceActivityTask(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_createArchivedWorkspaceActivityTask_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreateArchivedWorkspaceActivityTask(rctx, args["input"].(ent.CreateArchivedWorkspaceActivityTaskInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.ArchivedWorkspaceActivityTask)
+	fc.Result = res
+	return ec.marshalNArchivedWorkspaceActivityTask2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐArchivedWorkspaceActivityTask(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_updateArchivedWorkspaceActivityTask(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_updateArchivedWorkspaceActivityTask_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdateArchivedWorkspaceActivityTask(rctx, args["input"].(ent.UpdateArchivedWorkspaceActivityTaskInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.ArchivedWorkspaceActivityTask)
+	fc.Result = res
+	return ec.marshalNArchivedWorkspaceActivityTask2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐArchivedWorkspaceActivityTask(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_createColor(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -39743,6 +40627,84 @@ func (ec *executionContext) _Query_archivedWorkspaceActivities(ctx context.Conte
 	res := resTmp.(*ent.ArchivedWorkspaceActivityConnection)
 	fc.Result = res
 	return ec.marshalOArchivedWorkspaceActivityConnection2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐArchivedWorkspaceActivityConnection(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_archivedWorkspaceActivityTask(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_archivedWorkspaceActivityTask_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().ArchivedWorkspaceActivityTask(rctx, args["where"].(*ent.ArchivedWorkspaceActivityTaskWhereInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*ent.ArchivedWorkspaceActivityTask)
+	fc.Result = res
+	return ec.marshalOArchivedWorkspaceActivityTask2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐArchivedWorkspaceActivityTask(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_archivedWorkspaceActivityTasks(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_archivedWorkspaceActivityTasks_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().ArchivedWorkspaceActivityTasks(rctx, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["where"].(*ent.ArchivedWorkspaceActivityTaskWhereInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*ent.ArchivedWorkspaceActivityTaskConnection)
+	fc.Result = res
+	return ec.marshalOArchivedWorkspaceActivityTaskConnection2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐArchivedWorkspaceActivityTaskConnection(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_color(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -62473,6 +63435,477 @@ func (ec *executionContext) unmarshalInputArchivedTaskActivityWhereInput(ctx con
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputArchivedWorkspaceActivityTaskWhereInput(ctx context.Context, obj interface{}) (ent.ArchivedWorkspaceActivityTaskWhereInput, error) {
+	var it ent.ArchivedWorkspaceActivityTaskWhereInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "not":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("not"))
+			it.Not, err = ec.unmarshalOArchivedWorkspaceActivityTaskWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐArchivedWorkspaceActivityTaskWhereInput(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "and":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("and"))
+			it.And, err = ec.unmarshalOArchivedWorkspaceActivityTaskWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐArchivedWorkspaceActivityTaskWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "or":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("or"))
+			it.Or, err = ec.unmarshalOArchivedWorkspaceActivityTaskWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐArchivedWorkspaceActivityTaskWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "archivedWorkspaceActivityID":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("archivedWorkspaceActivityID"))
+			it.ArchivedWorkspaceActivityID, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "archivedWorkspaceActivityIDNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("archivedWorkspaceActivityIDNEQ"))
+			it.ArchivedWorkspaceActivityIDNEQ, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "archivedWorkspaceActivityIDIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("archivedWorkspaceActivityIDIn"))
+			it.ArchivedWorkspaceActivityIDIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "archivedWorkspaceActivityIDNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("archivedWorkspaceActivityIDNotIn"))
+			it.ArchivedWorkspaceActivityIDNotIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "archivedWorkspaceActivityIDGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("archivedWorkspaceActivityIDGT"))
+			it.ArchivedWorkspaceActivityIDGT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "archivedWorkspaceActivityIDGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("archivedWorkspaceActivityIDGTE"))
+			it.ArchivedWorkspaceActivityIDGTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "archivedWorkspaceActivityIDLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("archivedWorkspaceActivityIDLT"))
+			it.ArchivedWorkspaceActivityIDLT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "archivedWorkspaceActivityIDLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("archivedWorkspaceActivityIDLTE"))
+			it.ArchivedWorkspaceActivityIDLTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "archivedWorkspaceActivityIDContains":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("archivedWorkspaceActivityIDContains"))
+			it.ArchivedWorkspaceActivityIDContains, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "archivedWorkspaceActivityIDHasPrefix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("archivedWorkspaceActivityIDHasPrefix"))
+			it.ArchivedWorkspaceActivityIDHasPrefix, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "archivedWorkspaceActivityIDHasSuffix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("archivedWorkspaceActivityIDHasSuffix"))
+			it.ArchivedWorkspaceActivityIDHasSuffix, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "archivedWorkspaceActivityIDEqualFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("archivedWorkspaceActivityIDEqualFold"))
+			it.ArchivedWorkspaceActivityIDEqualFold, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "archivedWorkspaceActivityIDContainsFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("archivedWorkspaceActivityIDContainsFold"))
+			it.ArchivedWorkspaceActivityIDContainsFold, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskID":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskID"))
+			it.TaskID, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskIDNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskIDNEQ"))
+			it.TaskIDNEQ, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskIDIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskIDIn"))
+			it.TaskIDIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskIDNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskIDNotIn"))
+			it.TaskIDNotIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskIDGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskIDGT"))
+			it.TaskIDGT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskIDGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskIDGTE"))
+			it.TaskIDGTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskIDLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskIDLT"))
+			it.TaskIDLT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskIDLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskIDLTE"))
+			it.TaskIDLTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskIDContains":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskIDContains"))
+			it.TaskIDContains, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskIDHasPrefix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskIDHasPrefix"))
+			it.TaskIDHasPrefix, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskIDHasSuffix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskIDHasSuffix"))
+			it.TaskIDHasSuffix, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskIDEqualFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskIDEqualFold"))
+			it.TaskIDEqualFold, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskIDContainsFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskIDContainsFold"))
+			it.TaskIDContainsFold, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAt":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAt"))
+			it.CreatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtNEQ"))
+			it.CreatedAtNEQ, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtIn"))
+			it.CreatedAtIn, err = ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtNotIn"))
+			it.CreatedAtNotIn, err = ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtGT"))
+			it.CreatedAtGT, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtGTE"))
+			it.CreatedAtGTE, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtLT"))
+			it.CreatedAtLT, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtLTE"))
+			it.CreatedAtLTE, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAt":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAt"))
+			it.UpdatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtNEQ"))
+			it.UpdatedAtNEQ, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtIn"))
+			it.UpdatedAtIn, err = ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtNotIn"))
+			it.UpdatedAtNotIn, err = ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtGT"))
+			it.UpdatedAtGT, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtGTE"))
+			it.UpdatedAtGTE, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtLT"))
+			it.UpdatedAtLT, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtLTE"))
+			it.UpdatedAtLTE, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			it.ID, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idNEQ"))
+			it.IDNEQ, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idIn"))
+			it.IDIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idNotIn"))
+			it.IDNotIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idGT"))
+			it.IDGT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idGTE"))
+			it.IDGTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idLT"))
+			it.IDLT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idLTE"))
+			it.IDLTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasTask":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasTask"))
+			it.HasTask, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasTaskWith":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasTaskWith"))
+			it.HasTaskWith, err = ec.unmarshalOTaskWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasArchivedWorkspaceActivity":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasArchivedWorkspaceActivity"))
+			it.HasArchivedWorkspaceActivity, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasArchivedWorkspaceActivityWith":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasArchivedWorkspaceActivityWith"))
+			it.HasArchivedWorkspaceActivityWith, err = ec.unmarshalOArchivedWorkspaceActivityWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐArchivedWorkspaceActivityWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputArchivedWorkspaceActivityWhereInput(ctx context.Context, obj interface{}) (ent.ArchivedWorkspaceActivityWhereInput, error) {
 	var it ent.ArchivedWorkspaceActivityWhereInput
 	asMap := map[string]interface{}{}
@@ -63175,6 +64608,22 @@ func (ec *executionContext) unmarshalInputArchivedWorkspaceActivityWhereInput(ct
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasTeammateWith"))
 			it.HasTeammateWith, err = ec.unmarshalOTeammateWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTeammateWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasArchivedWorkspaceActivityTasks":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasArchivedWorkspaceActivityTasks"))
+			it.HasArchivedWorkspaceActivityTasks, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasArchivedWorkspaceActivityTasksWith":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasArchivedWorkspaceActivityTasksWith"))
+			it.HasArchivedWorkspaceActivityTasksWith, err = ec.unmarshalOArchivedWorkspaceActivityTaskWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐArchivedWorkspaceActivityTaskWhereInputᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -63953,6 +65402,37 @@ func (ec *executionContext) unmarshalInputCreateArchivedWorkspaceActivityInput(c
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("teammateId"))
 			it.TeammateID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputCreateArchivedWorkspaceActivityTaskInput(ctx context.Context, obj interface{}) (ent.CreateArchivedWorkspaceActivityTaskInput, error) {
+	var it ent.CreateArchivedWorkspaceActivityTaskInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "archivedWorkspaceActivityId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("archivedWorkspaceActivityId"))
+			it.ArchivedWorkspaceActivityID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskId"))
+			it.TaskID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -83155,6 +84635,22 @@ func (ec *executionContext) unmarshalInputTaskWhereInput(ctx context.Context, ob
 			if err != nil {
 				return it, err
 			}
+		case "hasArchivedWorkspaceActivityTasks":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasArchivedWorkspaceActivityTasks"))
+			it.HasArchivedWorkspaceActivityTasks, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasArchivedWorkspaceActivityTasksWith":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasArchivedWorkspaceActivityTasksWith"))
+			it.HasArchivedWorkspaceActivityTasksWith, err = ec.unmarshalOArchivedWorkspaceActivityTaskWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐArchivedWorkspaceActivityTaskWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		}
 	}
 
@@ -89560,6 +91056,37 @@ func (ec *executionContext) unmarshalInputUpdateArchivedWorkspaceActivityInput(c
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputUpdateArchivedWorkspaceActivityTaskInput(ctx context.Context, obj interface{}) (ent.UpdateArchivedWorkspaceActivityTaskInput, error) {
+	var it ent.UpdateArchivedWorkspaceActivityTaskInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			it.ID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskId"))
+			it.TaskID, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputUpdateColorInput(ctx context.Context, obj interface{}) (ent.UpdateColorInput, error) {
 	var it ent.UpdateColorInput
 	asMap := map[string]interface{}{}
@@ -94541,6 +96068,11 @@ func (ec *executionContext) _Node(ctx context.Context, sel ast.SelectionSet, obj
 			return graphql.Null
 		}
 		return ec._ArchivedWorkspaceActivity(ctx, sel, obj)
+	case *ent.ArchivedWorkspaceActivityTask:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._ArchivedWorkspaceActivityTask(ctx, sel, obj)
 	case *ent.Color:
 		if obj == nil {
 			return graphql.Null
@@ -95319,6 +96851,20 @@ func (ec *executionContext) _ArchivedWorkspaceActivity(ctx context.Context, sel 
 				}
 				return res
 			})
+		case "archivedWorkspaceActivityTasks":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._ArchivedWorkspaceActivity_archivedWorkspaceActivityTasks(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
 		case "createdAt":
 			field := field
 			out.Concurrently(i, func() (res graphql.Marshaler) {
@@ -95407,6 +96953,148 @@ func (ec *executionContext) _ArchivedWorkspaceActivityEdge(ctx context.Context, 
 			out.Values[i] = ec._ArchivedWorkspaceActivityEdge_node(ctx, field, obj)
 		case "cursor":
 			out.Values[i] = ec._ArchivedWorkspaceActivityEdge_cursor(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var archivedWorkspaceActivityTaskImplementors = []string{"ArchivedWorkspaceActivityTask", "Node"}
+
+func (ec *executionContext) _ArchivedWorkspaceActivityTask(ctx context.Context, sel ast.SelectionSet, obj *ent.ArchivedWorkspaceActivityTask) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, archivedWorkspaceActivityTaskImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("ArchivedWorkspaceActivityTask")
+		case "id":
+			out.Values[i] = ec._ArchivedWorkspaceActivityTask_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "archivedWorkspaceActivityId":
+			out.Values[i] = ec._ArchivedWorkspaceActivityTask_archivedWorkspaceActivityId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "task":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._ArchivedWorkspaceActivityTask_task(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "taskId":
+			out.Values[i] = ec._ArchivedWorkspaceActivityTask_taskId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "createdAt":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._ArchivedWorkspaceActivityTask_createdAt(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "updatedAt":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._ArchivedWorkspaceActivityTask_updatedAt(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var archivedWorkspaceActivityTaskConnectionImplementors = []string{"ArchivedWorkspaceActivityTaskConnection"}
+
+func (ec *executionContext) _ArchivedWorkspaceActivityTaskConnection(ctx context.Context, sel ast.SelectionSet, obj *ent.ArchivedWorkspaceActivityTaskConnection) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, archivedWorkspaceActivityTaskConnectionImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("ArchivedWorkspaceActivityTaskConnection")
+		case "totalCount":
+			out.Values[i] = ec._ArchivedWorkspaceActivityTaskConnection_totalCount(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "pageInfo":
+			out.Values[i] = ec._ArchivedWorkspaceActivityTaskConnection_pageInfo(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "edges":
+			out.Values[i] = ec._ArchivedWorkspaceActivityTaskConnection_edges(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var archivedWorkspaceActivityTaskEdgeImplementors = []string{"ArchivedWorkspaceActivityTaskEdge"}
+
+func (ec *executionContext) _ArchivedWorkspaceActivityTaskEdge(ctx context.Context, sel ast.SelectionSet, obj *ent.ArchivedWorkspaceActivityTaskEdge) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, archivedWorkspaceActivityTaskEdgeImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("ArchivedWorkspaceActivityTaskEdge")
+		case "node":
+			out.Values[i] = ec._ArchivedWorkspaceActivityTaskEdge_node(ctx, field, obj)
+		case "cursor":
+			out.Values[i] = ec._ArchivedWorkspaceActivityTaskEdge_cursor(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -96858,6 +98546,16 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			}
 		case "updateArchivedWorkspaceActivity":
 			out.Values[i] = ec._Mutation_updateArchivedWorkspaceActivity(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "createArchivedWorkspaceActivityTask":
+			out.Values[i] = ec._Mutation_createArchivedWorkspaceActivityTask(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "updateArchivedWorkspaceActivityTask":
+			out.Values[i] = ec._Mutation_updateArchivedWorkspaceActivityTask(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -99099,6 +100797,28 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_archivedWorkspaceActivities(ctx, field)
+				return res
+			})
+		case "archivedWorkspaceActivityTask":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_archivedWorkspaceActivityTask(ctx, field)
+				return res
+			})
+		case "archivedWorkspaceActivityTasks":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_archivedWorkspaceActivityTasks(ctx, field)
 				return res
 			})
 		case "color":
@@ -105327,6 +107047,69 @@ func (ec *executionContext) marshalNArchivedWorkspaceActivity2ᚖprojectᚑmanag
 	return ec._ArchivedWorkspaceActivity(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalNArchivedWorkspaceActivityTask2projectᚑmanagementᚑdemoᚑbackendᚋentᚐArchivedWorkspaceActivityTask(ctx context.Context, sel ast.SelectionSet, v ent.ArchivedWorkspaceActivityTask) graphql.Marshaler {
+	return ec._ArchivedWorkspaceActivityTask(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNArchivedWorkspaceActivityTask2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐArchivedWorkspaceActivityTaskᚄ(ctx context.Context, sel ast.SelectionSet, v []*ent.ArchivedWorkspaceActivityTask) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNArchivedWorkspaceActivityTask2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐArchivedWorkspaceActivityTask(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNArchivedWorkspaceActivityTask2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐArchivedWorkspaceActivityTask(ctx context.Context, sel ast.SelectionSet, v *ent.ArchivedWorkspaceActivityTask) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._ArchivedWorkspaceActivityTask(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNArchivedWorkspaceActivityTaskWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐArchivedWorkspaceActivityTaskWhereInput(ctx context.Context, v interface{}) (*ent.ArchivedWorkspaceActivityTaskWhereInput, error) {
+	res, err := ec.unmarshalInputArchivedWorkspaceActivityTaskWhereInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNArchivedWorkspaceActivityWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐArchivedWorkspaceActivityWhereInput(ctx context.Context, v interface{}) (*ent.ArchivedWorkspaceActivityWhereInput, error) {
 	res, err := ec.unmarshalInputArchivedWorkspaceActivityWhereInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
@@ -105423,6 +107206,11 @@ func (ec *executionContext) unmarshalNCreateArchivedTaskActivityTaskInput2projec
 
 func (ec *executionContext) unmarshalNCreateArchivedWorkspaceActivityInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐCreateArchivedWorkspaceActivityInput(ctx context.Context, v interface{}) (ent.CreateArchivedWorkspaceActivityInput, error) {
 	res, err := ec.unmarshalInputCreateArchivedWorkspaceActivityInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNCreateArchivedWorkspaceActivityTaskInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐCreateArchivedWorkspaceActivityTaskInput(ctx context.Context, v interface{}) (ent.CreateArchivedWorkspaceActivityTaskInput, error) {
+	res, err := ec.unmarshalInputCreateArchivedWorkspaceActivityTaskInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
@@ -107926,6 +109714,11 @@ func (ec *executionContext) unmarshalNUpdateArchivedWorkspaceActivityInput2proje
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
+func (ec *executionContext) unmarshalNUpdateArchivedWorkspaceActivityTaskInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐUpdateArchivedWorkspaceActivityTaskInput(ctx context.Context, v interface{}) (ent.UpdateArchivedWorkspaceActivityTaskInput, error) {
+	res, err := ec.unmarshalInputUpdateArchivedWorkspaceActivityTaskInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNUpdateColorInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐUpdateColorInput(ctx context.Context, v interface{}) (ent.UpdateColorInput, error) {
 	res, err := ec.unmarshalInputUpdateColorInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -108991,6 +110784,100 @@ func (ec *executionContext) marshalOArchivedWorkspaceActivityEdge2ᚖprojectᚑm
 		return graphql.Null
 	}
 	return ec._ArchivedWorkspaceActivityEdge(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOArchivedWorkspaceActivityTask2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐArchivedWorkspaceActivityTask(ctx context.Context, sel ast.SelectionSet, v *ent.ArchivedWorkspaceActivityTask) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._ArchivedWorkspaceActivityTask(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOArchivedWorkspaceActivityTaskConnection2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐArchivedWorkspaceActivityTaskConnection(ctx context.Context, sel ast.SelectionSet, v *ent.ArchivedWorkspaceActivityTaskConnection) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._ArchivedWorkspaceActivityTaskConnection(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOArchivedWorkspaceActivityTaskEdge2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐArchivedWorkspaceActivityTaskEdge(ctx context.Context, sel ast.SelectionSet, v []*ent.ArchivedWorkspaceActivityTaskEdge) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalOArchivedWorkspaceActivityTaskEdge2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐArchivedWorkspaceActivityTaskEdge(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	return ret
+}
+
+func (ec *executionContext) marshalOArchivedWorkspaceActivityTaskEdge2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐArchivedWorkspaceActivityTaskEdge(ctx context.Context, sel ast.SelectionSet, v *ent.ArchivedWorkspaceActivityTaskEdge) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._ArchivedWorkspaceActivityTaskEdge(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalOArchivedWorkspaceActivityTaskWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐArchivedWorkspaceActivityTaskWhereInputᚄ(ctx context.Context, v interface{}) ([]*ent.ArchivedWorkspaceActivityTaskWhereInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var vSlice []interface{}
+	if v != nil {
+		if tmp1, ok := v.([]interface{}); ok {
+			vSlice = tmp1
+		} else {
+			vSlice = []interface{}{v}
+		}
+	}
+	var err error
+	res := make([]*ent.ArchivedWorkspaceActivityTaskWhereInput, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNArchivedWorkspaceActivityTaskWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐArchivedWorkspaceActivityTaskWhereInput(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) unmarshalOArchivedWorkspaceActivityTaskWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐArchivedWorkspaceActivityTaskWhereInput(ctx context.Context, v interface{}) (*ent.ArchivedWorkspaceActivityTaskWhereInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputArchivedWorkspaceActivityTaskWhereInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalOArchivedWorkspaceActivityWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐArchivedWorkspaceActivityWhereInputᚄ(ctx context.Context, v interface{}) ([]*ent.ArchivedWorkspaceActivityWhereInput, error) {

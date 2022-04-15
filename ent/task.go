@@ -85,9 +85,11 @@ type TaskEdges struct {
 	WorkspaceActivityTasks []*WorkspaceActivityTask `json:"workspaceActivityTasks,omitempty"`
 	// ArchivedTaskActivityTasks holds the value of the archivedTaskActivityTasks edge.
 	ArchivedTaskActivityTasks []*ArchivedTaskActivityTask `json:"archivedTaskActivityTasks,omitempty"`
+	// ArchivedWorkspaceActivityTasks holds the value of the archivedWorkspaceActivityTasks edge.
+	ArchivedWorkspaceActivityTasks []*ArchivedWorkspaceActivityTask `json:"archivedWorkspaceActivityTasks,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [16]bool
+	loadedTypes [17]bool
 }
 
 // TeammateOrErr returns the Teammate value or an error if the edge
@@ -247,6 +249,15 @@ func (e TaskEdges) ArchivedTaskActivityTasksOrErr() ([]*ArchivedTaskActivityTask
 		return e.ArchivedTaskActivityTasks, nil
 	}
 	return nil, &NotLoadedError{edge: "archivedTaskActivityTasks"}
+}
+
+// ArchivedWorkspaceActivityTasksOrErr returns the ArchivedWorkspaceActivityTasks value or an error if the edge
+// was not loaded in eager-loading.
+func (e TaskEdges) ArchivedWorkspaceActivityTasksOrErr() ([]*ArchivedWorkspaceActivityTask, error) {
+	if e.loadedTypes[16] {
+		return e.ArchivedWorkspaceActivityTasks, nil
+	}
+	return nil, &NotLoadedError{edge: "archivedWorkspaceActivityTasks"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -451,6 +462,11 @@ func (t *Task) QueryWorkspaceActivityTasks() *WorkspaceActivityTaskQuery {
 // QueryArchivedTaskActivityTasks queries the "archivedTaskActivityTasks" edge of the Task entity.
 func (t *Task) QueryArchivedTaskActivityTasks() *ArchivedTaskActivityTaskQuery {
 	return (&TaskClient{config: t.config}).QueryArchivedTaskActivityTasks(t)
+}
+
+// QueryArchivedWorkspaceActivityTasks queries the "archivedWorkspaceActivityTasks" edge of the Task entity.
+func (t *Task) QueryArchivedWorkspaceActivityTasks() *ArchivedWorkspaceActivityTaskQuery {
+	return (&TaskClient{config: t.config}).QueryArchivedWorkspaceActivityTasks(t)
 }
 
 // Update returns a builder for updating this Task.

@@ -12,6 +12,7 @@ import (
 	"project-management-demo-backend/ent/archivedtaskactivity"
 	"project-management-demo-backend/ent/archivedtaskactivitytask"
 	"project-management-demo-backend/ent/archivedworkspaceactivity"
+	"project-management-demo-backend/ent/archivedworkspaceactivitytask"
 	"project-management-demo-backend/ent/color"
 	"project-management-demo-backend/ent/deletedtask"
 	"project-management-demo-backend/ent/favoriteproject"
@@ -1183,6 +1184,233 @@ func (awa *ArchivedWorkspaceActivity) ToEdge(order *ArchivedWorkspaceActivityOrd
 	return &ArchivedWorkspaceActivityEdge{
 		Node:   awa,
 		Cursor: order.Field.toCursor(awa),
+	}
+}
+
+// ArchivedWorkspaceActivityTaskEdge is the edge representation of ArchivedWorkspaceActivityTask.
+type ArchivedWorkspaceActivityTaskEdge struct {
+	Node   *ArchivedWorkspaceActivityTask `json:"node"`
+	Cursor Cursor                         `json:"cursor"`
+}
+
+// ArchivedWorkspaceActivityTaskConnection is the connection containing edges to ArchivedWorkspaceActivityTask.
+type ArchivedWorkspaceActivityTaskConnection struct {
+	Edges      []*ArchivedWorkspaceActivityTaskEdge `json:"edges"`
+	PageInfo   PageInfo                             `json:"pageInfo"`
+	TotalCount int                                  `json:"totalCount"`
+}
+
+// ArchivedWorkspaceActivityTaskPaginateOption enables pagination customization.
+type ArchivedWorkspaceActivityTaskPaginateOption func(*archivedWorkspaceActivityTaskPager) error
+
+// WithArchivedWorkspaceActivityTaskOrder configures pagination ordering.
+func WithArchivedWorkspaceActivityTaskOrder(order *ArchivedWorkspaceActivityTaskOrder) ArchivedWorkspaceActivityTaskPaginateOption {
+	if order == nil {
+		order = DefaultArchivedWorkspaceActivityTaskOrder
+	}
+	o := *order
+	return func(pager *archivedWorkspaceActivityTaskPager) error {
+		if err := o.Direction.Validate(); err != nil {
+			return err
+		}
+		if o.Field == nil {
+			o.Field = DefaultArchivedWorkspaceActivityTaskOrder.Field
+		}
+		pager.order = &o
+		return nil
+	}
+}
+
+// WithArchivedWorkspaceActivityTaskFilter configures pagination filter.
+func WithArchivedWorkspaceActivityTaskFilter(filter func(*ArchivedWorkspaceActivityTaskQuery) (*ArchivedWorkspaceActivityTaskQuery, error)) ArchivedWorkspaceActivityTaskPaginateOption {
+	return func(pager *archivedWorkspaceActivityTaskPager) error {
+		if filter == nil {
+			return errors.New("ArchivedWorkspaceActivityTaskQuery filter cannot be nil")
+		}
+		pager.filter = filter
+		return nil
+	}
+}
+
+type archivedWorkspaceActivityTaskPager struct {
+	order  *ArchivedWorkspaceActivityTaskOrder
+	filter func(*ArchivedWorkspaceActivityTaskQuery) (*ArchivedWorkspaceActivityTaskQuery, error)
+}
+
+func newArchivedWorkspaceActivityTaskPager(opts []ArchivedWorkspaceActivityTaskPaginateOption) (*archivedWorkspaceActivityTaskPager, error) {
+	pager := &archivedWorkspaceActivityTaskPager{}
+	for _, opt := range opts {
+		if err := opt(pager); err != nil {
+			return nil, err
+		}
+	}
+	if pager.order == nil {
+		pager.order = DefaultArchivedWorkspaceActivityTaskOrder
+	}
+	return pager, nil
+}
+
+func (p *archivedWorkspaceActivityTaskPager) applyFilter(query *ArchivedWorkspaceActivityTaskQuery) (*ArchivedWorkspaceActivityTaskQuery, error) {
+	if p.filter != nil {
+		return p.filter(query)
+	}
+	return query, nil
+}
+
+func (p *archivedWorkspaceActivityTaskPager) toCursor(awat *ArchivedWorkspaceActivityTask) Cursor {
+	return p.order.Field.toCursor(awat)
+}
+
+func (p *archivedWorkspaceActivityTaskPager) applyCursors(query *ArchivedWorkspaceActivityTaskQuery, after, before *Cursor) *ArchivedWorkspaceActivityTaskQuery {
+	for _, predicate := range cursorsToPredicates(
+		p.order.Direction, after, before,
+		p.order.Field.field, DefaultArchivedWorkspaceActivityTaskOrder.Field.field,
+	) {
+		query = query.Where(predicate)
+	}
+	return query
+}
+
+func (p *archivedWorkspaceActivityTaskPager) applyOrder(query *ArchivedWorkspaceActivityTaskQuery, reverse bool) *ArchivedWorkspaceActivityTaskQuery {
+	direction := p.order.Direction
+	if reverse {
+		direction = direction.reverse()
+	}
+	query = query.Order(direction.orderFunc(p.order.Field.field))
+	if p.order.Field != DefaultArchivedWorkspaceActivityTaskOrder.Field {
+		query = query.Order(direction.orderFunc(DefaultArchivedWorkspaceActivityTaskOrder.Field.field))
+	}
+	return query
+}
+
+// Paginate executes the query and returns a relay based cursor connection to ArchivedWorkspaceActivityTask.
+func (awat *ArchivedWorkspaceActivityTaskQuery) Paginate(
+	ctx context.Context, after *Cursor, first *int,
+	before *Cursor, last *int, opts ...ArchivedWorkspaceActivityTaskPaginateOption,
+) (*ArchivedWorkspaceActivityTaskConnection, error) {
+	if err := validateFirstLast(first, last); err != nil {
+		return nil, err
+	}
+	pager, err := newArchivedWorkspaceActivityTaskPager(opts)
+	if err != nil {
+		return nil, err
+	}
+
+	if awat, err = pager.applyFilter(awat); err != nil {
+		return nil, err
+	}
+
+	conn := &ArchivedWorkspaceActivityTaskConnection{Edges: []*ArchivedWorkspaceActivityTaskEdge{}}
+	if !hasCollectedField(ctx, edgesField) || first != nil && *first == 0 || last != nil && *last == 0 {
+		if hasCollectedField(ctx, totalCountField) ||
+			hasCollectedField(ctx, pageInfoField) {
+			count, err := awat.Count(ctx)
+			if err != nil {
+				return nil, err
+			}
+			conn.TotalCount = count
+			conn.PageInfo.HasNextPage = first != nil && count > 0
+			conn.PageInfo.HasPreviousPage = last != nil && count > 0
+		}
+		return conn, nil
+	}
+
+	if (after != nil || first != nil || before != nil || last != nil) && hasCollectedField(ctx, totalCountField) {
+		count, err := awat.Clone().Count(ctx)
+		if err != nil {
+			return nil, err
+		}
+		conn.TotalCount = count
+	}
+
+	awat = pager.applyCursors(awat, after, before)
+	awat = pager.applyOrder(awat, last != nil)
+	var limit int
+	if first != nil {
+		limit = *first + 1
+	} else if last != nil {
+		limit = *last + 1
+	}
+	if limit > 0 {
+		awat = awat.Limit(limit)
+	}
+
+	if field := getCollectedField(ctx, edgesField, nodeField); field != nil {
+		awat = awat.collectField(graphql.GetOperationContext(ctx), *field)
+	}
+
+	nodes, err := awat.All(ctx)
+	if err != nil || len(nodes) == 0 {
+		return conn, err
+	}
+
+	if len(nodes) == limit {
+		conn.PageInfo.HasNextPage = first != nil
+		conn.PageInfo.HasPreviousPage = last != nil
+		nodes = nodes[:len(nodes)-1]
+	}
+
+	var nodeAt func(int) *ArchivedWorkspaceActivityTask
+	if last != nil {
+		n := len(nodes) - 1
+		nodeAt = func(i int) *ArchivedWorkspaceActivityTask {
+			return nodes[n-i]
+		}
+	} else {
+		nodeAt = func(i int) *ArchivedWorkspaceActivityTask {
+			return nodes[i]
+		}
+	}
+
+	conn.Edges = make([]*ArchivedWorkspaceActivityTaskEdge, len(nodes))
+	for i := range nodes {
+		node := nodeAt(i)
+		conn.Edges[i] = &ArchivedWorkspaceActivityTaskEdge{
+			Node:   node,
+			Cursor: pager.toCursor(node),
+		}
+	}
+
+	conn.PageInfo.StartCursor = &conn.Edges[0].Cursor
+	conn.PageInfo.EndCursor = &conn.Edges[len(conn.Edges)-1].Cursor
+	if conn.TotalCount == 0 {
+		conn.TotalCount = len(nodes)
+	}
+
+	return conn, nil
+}
+
+// ArchivedWorkspaceActivityTaskOrderField defines the ordering field of ArchivedWorkspaceActivityTask.
+type ArchivedWorkspaceActivityTaskOrderField struct {
+	field    string
+	toCursor func(*ArchivedWorkspaceActivityTask) Cursor
+}
+
+// ArchivedWorkspaceActivityTaskOrder defines the ordering of ArchivedWorkspaceActivityTask.
+type ArchivedWorkspaceActivityTaskOrder struct {
+	Direction OrderDirection                           `json:"direction"`
+	Field     *ArchivedWorkspaceActivityTaskOrderField `json:"field"`
+}
+
+// DefaultArchivedWorkspaceActivityTaskOrder is the default ordering of ArchivedWorkspaceActivityTask.
+var DefaultArchivedWorkspaceActivityTaskOrder = &ArchivedWorkspaceActivityTaskOrder{
+	Direction: OrderDirectionAsc,
+	Field: &ArchivedWorkspaceActivityTaskOrderField{
+		field: archivedworkspaceactivitytask.FieldID,
+		toCursor: func(awat *ArchivedWorkspaceActivityTask) Cursor {
+			return Cursor{ID: awat.ID}
+		},
+	},
+}
+
+// ToEdge converts ArchivedWorkspaceActivityTask into ArchivedWorkspaceActivityTaskEdge.
+func (awat *ArchivedWorkspaceActivityTask) ToEdge(order *ArchivedWorkspaceActivityTaskOrder) *ArchivedWorkspaceActivityTaskEdge {
+	if order == nil {
+		order = DefaultArchivedWorkspaceActivityTaskOrder
+	}
+	return &ArchivedWorkspaceActivityTaskEdge{
+		Node:   awat,
+		Cursor: order.Field.toCursor(awat),
 	}
 }
 

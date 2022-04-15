@@ -8,7 +8,7 @@ type ArchivedWorkspaceActivity implements Node {
   project: Project!
   teammateId: ID!
   teammate: Teammate!
-#  workspaceActivityTasks: [ArchivedWorkspaceActivityTask!]!
+  archivedWorkspaceActivityTasks: [ArchivedWorkspaceActivityTask!]!
   createdAt: String!
   updatedAt: String!
 }
