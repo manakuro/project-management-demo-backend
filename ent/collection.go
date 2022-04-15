@@ -51,6 +51,10 @@ func (ata *ArchivedTaskActivityQuery) collectField(ctx *graphql.OperationContext
 			ata = ata.WithActivityType(func(query *ActivityTypeQuery) {
 				query.collectField(ctx, field)
 			})
+		case "archivedTaskActivityTasks":
+			ata = ata.WithArchivedTaskActivityTasks(func(query *ArchivedTaskActivityTaskQuery) {
+				query.collectField(ctx, field)
+			})
 		case "teammate":
 			ata = ata.WithTeammate(func(query *TeammateQuery) {
 				query.collectField(ctx, field)
@@ -62,6 +66,30 @@ func (ata *ArchivedTaskActivityQuery) collectField(ctx *graphql.OperationContext
 		}
 	}
 	return ata
+}
+
+// CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
+func (atat *ArchivedTaskActivityTaskQuery) CollectFields(ctx context.Context, satisfies ...string) *ArchivedTaskActivityTaskQuery {
+	if fc := graphql.GetFieldContext(ctx); fc != nil {
+		atat = atat.collectField(graphql.GetOperationContext(ctx), fc.Field, satisfies...)
+	}
+	return atat
+}
+
+func (atat *ArchivedTaskActivityTaskQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *ArchivedTaskActivityTaskQuery {
+	for _, field := range graphql.CollectFields(ctx, field.Selections, satisfies) {
+		switch field.Name {
+		case "archivedTaskActivity":
+			atat = atat.WithArchivedTaskActivity(func(query *ArchivedTaskActivityQuery) {
+				query.collectField(ctx, field)
+			})
+		case "task":
+			atat = atat.WithTask(func(query *TaskQuery) {
+				query.collectField(ctx, field)
+			})
+		}
+	}
+	return atat
 }
 
 // CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
@@ -515,6 +543,10 @@ func (t *TaskQuery) CollectFields(ctx context.Context, satisfies ...string) *Tas
 func (t *TaskQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *TaskQuery {
 	for _, field := range graphql.CollectFields(ctx, field.Selections, satisfies) {
 		switch field.Name {
+		case "archivedTaskActivityTasks":
+			t = t.WithArchivedTaskActivityTasks(func(query *ArchivedTaskActivityTaskQuery) {
+				query.collectField(ctx, field)
+			})
 		case "deletedTasksRef":
 			t = t.WithDeletedTasksRef(func(query *DeletedTaskQuery) {
 				query.collectField(ctx, field)

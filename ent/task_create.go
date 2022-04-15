@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"project-management-demo-backend/ent/archivedtaskactivitytask"
 	"project-management-demo-backend/ent/deletedtask"
 	"project-management-demo-backend/ent/projecttask"
 	"project-management-demo-backend/ent/schema/ulid"
@@ -430,6 +431,21 @@ func (tc *TaskCreate) AddWorkspaceActivityTasks(w ...*WorkspaceActivityTask) *Ta
 		ids[i] = w[i].ID
 	}
 	return tc.AddWorkspaceActivityTaskIDs(ids...)
+}
+
+// AddArchivedTaskActivityTaskIDs adds the "archivedTaskActivityTasks" edge to the ArchivedTaskActivityTask entity by IDs.
+func (tc *TaskCreate) AddArchivedTaskActivityTaskIDs(ids ...ulid.ID) *TaskCreate {
+	tc.mutation.AddArchivedTaskActivityTaskIDs(ids...)
+	return tc
+}
+
+// AddArchivedTaskActivityTasks adds the "archivedTaskActivityTasks" edges to the ArchivedTaskActivityTask entity.
+func (tc *TaskCreate) AddArchivedTaskActivityTasks(a ...*ArchivedTaskActivityTask) *TaskCreate {
+	ids := make([]ulid.ID, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return tc.AddArchivedTaskActivityTaskIDs(ids...)
 }
 
 // Mutation returns the TaskMutation object of the builder.
@@ -950,6 +966,25 @@ func (tc *TaskCreate) createSpec() (*Task, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: workspaceactivitytask.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := tc.mutation.ArchivedTaskActivityTasksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   task.ArchivedTaskActivityTasksTable,
+			Columns: []string{task.ArchivedTaskActivityTasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: archivedtaskactivitytask.FieldID,
 				},
 			},
 		}

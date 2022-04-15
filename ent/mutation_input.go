@@ -112,12 +112,13 @@ func (u *ActivityTypeUpdateOne) SetInput(i UpdateActivityTypeInput) *ActivityTyp
 
 // CreateArchivedTaskActivityInput represents a mutation input for creating archivedtaskactivities.
 type CreateArchivedTaskActivityInput struct {
-	CreatedAt      *time.Time
-	UpdatedAt      *time.Time
-	TeammateID     ulid.ID
-	ActivityTypeID ulid.ID
-	WorkspaceID    ulid.ID
-	RequestID      string
+	CreatedAt                   *time.Time
+	UpdatedAt                   *time.Time
+	TeammateID                  ulid.ID
+	ActivityTypeID              ulid.ID
+	WorkspaceID                 ulid.ID
+	ArchivedTaskActivityTaskIDs []ulid.ID
+	RequestID                   string
 }
 
 // Mutate applies the CreateArchivedTaskActivityInput on the ArchivedTaskActivityCreate builder.
@@ -131,6 +132,9 @@ func (i *CreateArchivedTaskActivityInput) Mutate(m *ArchivedTaskActivityCreate) 
 	m.SetTeammateID(i.TeammateID)
 	m.SetActivityTypeID(i.ActivityTypeID)
 	m.SetWorkspaceID(i.WorkspaceID)
+	if ids := i.ArchivedTaskActivityTaskIDs; len(ids) > 0 {
+		m.AddArchivedTaskActivityTaskIDs(ids...)
+	}
 }
 
 // SetInput applies the change-set in the CreateArchivedTaskActivityInput on the create builder.
@@ -141,14 +145,16 @@ func (c *ArchivedTaskActivityCreate) SetInput(i CreateArchivedTaskActivityInput)
 
 // UpdateArchivedTaskActivityInput represents a mutation input for updating archivedtaskactivities.
 type UpdateArchivedTaskActivityInput struct {
-	ID                ulid.ID
-	TeammateID        *ulid.ID
-	ClearTeammate     bool
-	ActivityTypeID    *ulid.ID
-	ClearActivityType bool
-	WorkspaceID       *ulid.ID
-	ClearWorkspace    bool
-	RequestID         string
+	ID                                ulid.ID
+	TeammateID                        *ulid.ID
+	ClearTeammate                     bool
+	ActivityTypeID                    *ulid.ID
+	ClearActivityType                 bool
+	WorkspaceID                       *ulid.ID
+	ClearWorkspace                    bool
+	AddArchivedTaskActivityTaskIDs    []ulid.ID
+	RemoveArchivedTaskActivityTaskIDs []ulid.ID
+	RequestID                         string
 }
 
 // Mutate applies the UpdateArchivedTaskActivityInput on the ArchivedTaskActivityMutation.
@@ -171,6 +177,12 @@ func (i *UpdateArchivedTaskActivityInput) Mutate(m *ArchivedTaskActivityMutation
 	if v := i.WorkspaceID; v != nil {
 		m.SetWorkspaceID(*v)
 	}
+	if ids := i.AddArchivedTaskActivityTaskIDs; len(ids) > 0 {
+		m.AddArchivedTaskActivityTaskIDs(ids...)
+	}
+	if ids := i.RemoveArchivedTaskActivityTaskIDs; len(ids) > 0 {
+		m.RemoveArchivedTaskActivityTaskIDs(ids...)
+	}
 }
 
 // SetInput applies the change-set in the UpdateArchivedTaskActivityInput on the update builder.
@@ -181,6 +193,71 @@ func (u *ArchivedTaskActivityUpdate) SetInput(i UpdateArchivedTaskActivityInput)
 
 // SetInput applies the change-set in the UpdateArchivedTaskActivityInput on the update-one builder.
 func (u *ArchivedTaskActivityUpdateOne) SetInput(i UpdateArchivedTaskActivityInput) *ArchivedTaskActivityUpdateOne {
+	i.Mutate(u.Mutation())
+	return u
+}
+
+// CreateArchivedTaskActivityTaskInput represents a mutation input for creating archivedtaskactivitytasks.
+type CreateArchivedTaskActivityTaskInput struct {
+	CreatedAt              *time.Time
+	UpdatedAt              *time.Time
+	TaskID                 ulid.ID
+	ArchivedTaskActivityID ulid.ID
+	RequestID              string
+}
+
+// Mutate applies the CreateArchivedTaskActivityTaskInput on the ArchivedTaskActivityTaskCreate builder.
+func (i *CreateArchivedTaskActivityTaskInput) Mutate(m *ArchivedTaskActivityTaskCreate) {
+	if v := i.CreatedAt; v != nil {
+		m.SetCreatedAt(*v)
+	}
+	if v := i.UpdatedAt; v != nil {
+		m.SetUpdatedAt(*v)
+	}
+	m.SetTaskID(i.TaskID)
+	m.SetArchivedTaskActivityID(i.ArchivedTaskActivityID)
+}
+
+// SetInput applies the change-set in the CreateArchivedTaskActivityTaskInput on the create builder.
+func (c *ArchivedTaskActivityTaskCreate) SetInput(i CreateArchivedTaskActivityTaskInput) *ArchivedTaskActivityTaskCreate {
+	i.Mutate(c)
+	return c
+}
+
+// UpdateArchivedTaskActivityTaskInput represents a mutation input for updating archivedtaskactivitytasks.
+type UpdateArchivedTaskActivityTaskInput struct {
+	ID                        ulid.ID
+	TaskID                    *ulid.ID
+	ClearTask                 bool
+	ArchivedTaskActivityID    *ulid.ID
+	ClearArchivedTaskActivity bool
+	RequestID                 string
+}
+
+// Mutate applies the UpdateArchivedTaskActivityTaskInput on the ArchivedTaskActivityTaskMutation.
+func (i *UpdateArchivedTaskActivityTaskInput) Mutate(m *ArchivedTaskActivityTaskMutation) {
+	if i.ClearTask {
+		m.ClearTask()
+	}
+	if v := i.TaskID; v != nil {
+		m.SetTaskID(*v)
+	}
+	if i.ClearArchivedTaskActivity {
+		m.ClearArchivedTaskActivity()
+	}
+	if v := i.ArchivedTaskActivityID; v != nil {
+		m.SetArchivedTaskActivityID(*v)
+	}
+}
+
+// SetInput applies the change-set in the UpdateArchivedTaskActivityTaskInput on the update builder.
+func (u *ArchivedTaskActivityTaskUpdate) SetInput(i UpdateArchivedTaskActivityTaskInput) *ArchivedTaskActivityTaskUpdate {
+	i.Mutate(u.Mutation())
+	return u
+}
+
+// SetInput applies the change-set in the UpdateArchivedTaskActivityTaskInput on the update-one builder.
+func (u *ArchivedTaskActivityTaskUpdateOne) SetInput(i UpdateArchivedTaskActivityTaskInput) *ArchivedTaskActivityTaskUpdateOne {
 	i.Mutate(u.Mutation())
 	return u
 }
@@ -1551,33 +1628,34 @@ func (u *TagUpdateOne) SetInput(i UpdateTagInput) *TagUpdateOne {
 
 // CreateTaskInput represents a mutation input for creating tasks.
 type CreateTaskInput struct {
-	CreatedBy                ulid.ID
-	Completed                *bool
-	CompletedAt              *time.Time
-	IsNew                    *bool
-	Name                     string
-	DueDate                  *time.Time
-	DueTime                  *time.Time
-	Description              map[string]interface{}
-	CreatedAt                *time.Time
-	UpdatedAt                *time.Time
-	AssigneeID               *ulid.ID
-	TaskPriorityID           *ulid.ID
-	SubTaskIDs               []ulid.ID
-	TaskParentID             *ulid.ID
-	TeammateTaskIDs          []ulid.ID
-	ProjectTaskIDs           []ulid.ID
-	TaskLikeIDs              []ulid.ID
-	TaskTagIDs               []ulid.ID
-	TaskCollaboratorIDs      []ulid.ID
-	TaskFeedIDs              []ulid.ID
-	TaskFeedLikeIDs          []ulid.ID
-	TaskFileIDs              []ulid.ID
-	DeletedTasksRefIDs       []ulid.ID
-	TaskActivityTaskIDs      []ulid.ID
-	WorkspaceActivityTaskIDs []ulid.ID
-	WorkspaceID              ulid.ID
-	RequestID                string
+	CreatedBy                   ulid.ID
+	Completed                   *bool
+	CompletedAt                 *time.Time
+	IsNew                       *bool
+	Name                        string
+	DueDate                     *time.Time
+	DueTime                     *time.Time
+	Description                 map[string]interface{}
+	CreatedAt                   *time.Time
+	UpdatedAt                   *time.Time
+	AssigneeID                  *ulid.ID
+	TaskPriorityID              *ulid.ID
+	SubTaskIDs                  []ulid.ID
+	TaskParentID                *ulid.ID
+	TeammateTaskIDs             []ulid.ID
+	ProjectTaskIDs              []ulid.ID
+	TaskLikeIDs                 []ulid.ID
+	TaskTagIDs                  []ulid.ID
+	TaskCollaboratorIDs         []ulid.ID
+	TaskFeedIDs                 []ulid.ID
+	TaskFeedLikeIDs             []ulid.ID
+	TaskFileIDs                 []ulid.ID
+	DeletedTasksRefIDs          []ulid.ID
+	TaskActivityTaskIDs         []ulid.ID
+	WorkspaceActivityTaskIDs    []ulid.ID
+	ArchivedTaskActivityTaskIDs []ulid.ID
+	WorkspaceID                 ulid.ID
+	RequestID                   string
 }
 
 // Mutate applies the CreateTaskInput on the TaskCreate builder.
@@ -1651,6 +1729,9 @@ func (i *CreateTaskInput) Mutate(m *TaskCreate) {
 	if ids := i.WorkspaceActivityTaskIDs; len(ids) > 0 {
 		m.AddWorkspaceActivityTaskIDs(ids...)
 	}
+	if ids := i.ArchivedTaskActivityTaskIDs; len(ids) > 0 {
+		m.AddArchivedTaskActivityTaskIDs(ids...)
+	}
 }
 
 // SetInput applies the change-set in the CreateTaskInput on the create builder.
@@ -1661,50 +1742,52 @@ func (c *TaskCreate) SetInput(i CreateTaskInput) *TaskCreate {
 
 // UpdateTaskInput represents a mutation input for updating tasks.
 type UpdateTaskInput struct {
-	ID                             ulid.ID
-	CreatedBy                      *ulid.ID
-	Completed                      *bool
-	CompletedAt                    *time.Time
-	ClearCompletedAt               bool
-	IsNew                          *bool
-	Name                           *string
-	DueDate                        *time.Time
-	ClearDueDate                   bool
-	DueTime                        *time.Time
-	ClearDueTime                   bool
-	Description                    map[string]interface{}
-	AssigneeID                     *ulid.ID
-	ClearTeammate                  bool
-	TaskPriorityID                 *ulid.ID
-	ClearTaskPriority              bool
-	AddSubTaskIDs                  []ulid.ID
-	RemoveSubTaskIDs               []ulid.ID
-	TaskParentID                   *ulid.ID
-	ClearParentTask                bool
-	AddTeammateTaskIDs             []ulid.ID
-	RemoveTeammateTaskIDs          []ulid.ID
-	AddProjectTaskIDs              []ulid.ID
-	RemoveProjectTaskIDs           []ulid.ID
-	AddTaskLikeIDs                 []ulid.ID
-	RemoveTaskLikeIDs              []ulid.ID
-	AddTaskTagIDs                  []ulid.ID
-	RemoveTaskTagIDs               []ulid.ID
-	AddTaskCollaboratorIDs         []ulid.ID
-	RemoveTaskCollaboratorIDs      []ulid.ID
-	AddTaskFeedIDs                 []ulid.ID
-	RemoveTaskFeedIDs              []ulid.ID
-	AddTaskFeedLikeIDs             []ulid.ID
-	RemoveTaskFeedLikeIDs          []ulid.ID
-	AddTaskFileIDs                 []ulid.ID
-	RemoveTaskFileIDs              []ulid.ID
-	AddDeletedTasksRefIDs          []ulid.ID
-	RemoveDeletedTasksRefIDs       []ulid.ID
-	AddTaskActivityTaskIDs         []ulid.ID
-	RemoveTaskActivityTaskIDs      []ulid.ID
-	AddWorkspaceActivityTaskIDs    []ulid.ID
-	RemoveWorkspaceActivityTaskIDs []ulid.ID
-	WorkspaceID                    ulid.ID
-	RequestID                      string
+	ID                                ulid.ID
+	CreatedBy                         *ulid.ID
+	Completed                         *bool
+	CompletedAt                       *time.Time
+	ClearCompletedAt                  bool
+	IsNew                             *bool
+	Name                              *string
+	DueDate                           *time.Time
+	ClearDueDate                      bool
+	DueTime                           *time.Time
+	ClearDueTime                      bool
+	Description                       map[string]interface{}
+	AssigneeID                        *ulid.ID
+	ClearTeammate                     bool
+	TaskPriorityID                    *ulid.ID
+	ClearTaskPriority                 bool
+	AddSubTaskIDs                     []ulid.ID
+	RemoveSubTaskIDs                  []ulid.ID
+	TaskParentID                      *ulid.ID
+	ClearParentTask                   bool
+	AddTeammateTaskIDs                []ulid.ID
+	RemoveTeammateTaskIDs             []ulid.ID
+	AddProjectTaskIDs                 []ulid.ID
+	RemoveProjectTaskIDs              []ulid.ID
+	AddTaskLikeIDs                    []ulid.ID
+	RemoveTaskLikeIDs                 []ulid.ID
+	AddTaskTagIDs                     []ulid.ID
+	RemoveTaskTagIDs                  []ulid.ID
+	AddTaskCollaboratorIDs            []ulid.ID
+	RemoveTaskCollaboratorIDs         []ulid.ID
+	AddTaskFeedIDs                    []ulid.ID
+	RemoveTaskFeedIDs                 []ulid.ID
+	AddTaskFeedLikeIDs                []ulid.ID
+	RemoveTaskFeedLikeIDs             []ulid.ID
+	AddTaskFileIDs                    []ulid.ID
+	RemoveTaskFileIDs                 []ulid.ID
+	AddDeletedTasksRefIDs             []ulid.ID
+	RemoveDeletedTasksRefIDs          []ulid.ID
+	AddTaskActivityTaskIDs            []ulid.ID
+	RemoveTaskActivityTaskIDs         []ulid.ID
+	AddWorkspaceActivityTaskIDs       []ulid.ID
+	RemoveWorkspaceActivityTaskIDs    []ulid.ID
+	AddArchivedTaskActivityTaskIDs    []ulid.ID
+	RemoveArchivedTaskActivityTaskIDs []ulid.ID
+	WorkspaceID                       ulid.ID
+	RequestID                         string
 }
 
 // Mutate applies the UpdateTaskInput on the TaskMutation.
@@ -1831,6 +1914,12 @@ func (i *UpdateTaskInput) Mutate(m *TaskMutation) {
 	}
 	if ids := i.RemoveWorkspaceActivityTaskIDs; len(ids) > 0 {
 		m.RemoveWorkspaceActivityTaskIDs(ids...)
+	}
+	if ids := i.AddArchivedTaskActivityTaskIDs; len(ids) > 0 {
+		m.AddArchivedTaskActivityTaskIDs(ids...)
+	}
+	if ids := i.RemoveArchivedTaskActivityTaskIDs; len(ids) > 0 {
+		m.RemoveArchivedTaskActivityTaskIDs(ids...)
 	}
 }
 

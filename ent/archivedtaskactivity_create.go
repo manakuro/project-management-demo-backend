@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"project-management-demo-backend/ent/activitytype"
 	"project-management-demo-backend/ent/archivedtaskactivity"
+	"project-management-demo-backend/ent/archivedtaskactivitytask"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/workspace"
@@ -100,6 +101,21 @@ func (atac *ArchivedTaskActivityCreate) SetActivityType(a *ActivityType) *Archiv
 // SetWorkspace sets the "workspace" edge to the Workspace entity.
 func (atac *ArchivedTaskActivityCreate) SetWorkspace(w *Workspace) *ArchivedTaskActivityCreate {
 	return atac.SetWorkspaceID(w.ID)
+}
+
+// AddArchivedTaskActivityTaskIDs adds the "archivedTaskActivityTasks" edge to the ArchivedTaskActivityTask entity by IDs.
+func (atac *ArchivedTaskActivityCreate) AddArchivedTaskActivityTaskIDs(ids ...ulid.ID) *ArchivedTaskActivityCreate {
+	atac.mutation.AddArchivedTaskActivityTaskIDs(ids...)
+	return atac
+}
+
+// AddArchivedTaskActivityTasks adds the "archivedTaskActivityTasks" edges to the ArchivedTaskActivityTask entity.
+func (atac *ArchivedTaskActivityCreate) AddArchivedTaskActivityTasks(a ...*ArchivedTaskActivityTask) *ArchivedTaskActivityCreate {
+	ids := make([]ulid.ID, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return atac.AddArchivedTaskActivityTaskIDs(ids...)
 }
 
 // Mutation returns the ArchivedTaskActivityMutation object of the builder.
@@ -324,6 +340,25 @@ func (atac *ArchivedTaskActivityCreate) createSpec() (*ArchivedTaskActivity, *sq
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.WorkspaceID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := atac.mutation.ArchivedTaskActivityTasksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   archivedtaskactivity.ArchivedTaskActivityTasksTable,
+			Columns: []string{archivedtaskactivity.ArchivedTaskActivityTasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: archivedtaskactivitytask.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
