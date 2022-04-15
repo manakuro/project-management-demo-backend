@@ -501,6 +501,7 @@ var (
 		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
 		{Name: "activity_type_id", Type: field.TypeString},
 		{Name: "teammate_id", Type: field.TypeString},
+		{Name: "workspace_id", Type: field.TypeString},
 	}
 	// TaskActivitiesTable holds the schema information for the "task_activities" table.
 	TaskActivitiesTable = &schema.Table{
@@ -518,6 +519,12 @@ var (
 				Symbol:     "task_activities_teammates_taskActivities",
 				Columns:    []*schema.Column{TaskActivitiesColumns[4]},
 				RefColumns: []*schema.Column{TeammatesColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "task_activities_workspaces_taskActivities",
+				Columns:    []*schema.Column{TaskActivitiesColumns[5]},
+				RefColumns: []*schema.Column{WorkspacesColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 		},
@@ -1287,6 +1294,7 @@ func init() {
 	TasksTable.ForeignKeys[2].RefTable = TeammatesTable
 	TaskActivitiesTable.ForeignKeys[0].RefTable = ActivityTypesTable
 	TaskActivitiesTable.ForeignKeys[1].RefTable = TeammatesTable
+	TaskActivitiesTable.ForeignKeys[2].RefTable = WorkspacesTable
 	TaskActivityTasksTable.ForeignKeys[0].RefTable = TasksTable
 	TaskActivityTasksTable.ForeignKeys[1].RefTable = TaskActivitiesTable
 	TaskCollaboratorsTable.ForeignKeys[0].RefTable = TasksTable

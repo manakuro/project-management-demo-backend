@@ -11,6 +11,7 @@ import (
 	"project-management-demo-backend/ent/taskactivity"
 	"project-management-demo-backend/ent/taskactivitytask"
 	"project-management-demo-backend/ent/teammate"
+	"project-management-demo-backend/ent/workspace"
 	"time"
 
 	"entgo.io/ent/dialect"
@@ -36,6 +37,12 @@ func (tac *TaskActivityCreate) SetActivityTypeID(u ulid.ID) *TaskActivityCreate 
 // SetTeammateID sets the "teammate_id" field.
 func (tac *TaskActivityCreate) SetTeammateID(u ulid.ID) *TaskActivityCreate {
 	tac.mutation.SetTeammateID(u)
+	return tac
+}
+
+// SetWorkspaceID sets the "workspace_id" field.
+func (tac *TaskActivityCreate) SetWorkspaceID(u ulid.ID) *TaskActivityCreate {
+	tac.mutation.SetWorkspaceID(u)
 	return tac
 }
 
@@ -89,6 +96,11 @@ func (tac *TaskActivityCreate) SetTeammate(t *Teammate) *TaskActivityCreate {
 // SetActivityType sets the "activityType" edge to the ActivityType entity.
 func (tac *TaskActivityCreate) SetActivityType(a *ActivityType) *TaskActivityCreate {
 	return tac.SetActivityTypeID(a.ID)
+}
+
+// SetWorkspace sets the "workspace" edge to the Workspace entity.
+func (tac *TaskActivityCreate) SetWorkspace(w *Workspace) *TaskActivityCreate {
+	return tac.SetWorkspaceID(w.ID)
 }
 
 // AddTaskActivityTaskIDs adds the "taskActivityTasks" edge to the TaskActivityTask entity by IDs.
@@ -199,6 +211,9 @@ func (tac *TaskActivityCreate) check() error {
 	if _, ok := tac.mutation.TeammateID(); !ok {
 		return &ValidationError{Name: "teammate_id", err: errors.New(`ent: missing required field "TaskActivity.teammate_id"`)}
 	}
+	if _, ok := tac.mutation.WorkspaceID(); !ok {
+		return &ValidationError{Name: "workspace_id", err: errors.New(`ent: missing required field "TaskActivity.workspace_id"`)}
+	}
 	if _, ok := tac.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "TaskActivity.created_at"`)}
 	}
@@ -210,6 +225,9 @@ func (tac *TaskActivityCreate) check() error {
 	}
 	if _, ok := tac.mutation.ActivityTypeID(); !ok {
 		return &ValidationError{Name: "activityType", err: errors.New(`ent: missing required edge "TaskActivity.activityType"`)}
+	}
+	if _, ok := tac.mutation.WorkspaceID(); !ok {
+		return &ValidationError{Name: "workspace", err: errors.New(`ent: missing required edge "TaskActivity.workspace"`)}
 	}
 	return nil
 }
@@ -302,6 +320,26 @@ func (tac *TaskActivityCreate) createSpec() (*TaskActivity, *sqlgraph.CreateSpec
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.ActivityTypeID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := tac.mutation.WorkspaceIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   taskactivity.WorkspaceTable,
+			Columns: []string{taskactivity.WorkspaceColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: workspace.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.WorkspaceID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := tac.mutation.TaskActivityTasksIDs(); len(nodes) > 0 {
@@ -398,6 +436,18 @@ func (u *TaskActivityUpsert) SetTeammateID(v ulid.ID) *TaskActivityUpsert {
 // UpdateTeammateID sets the "teammate_id" field to the value that was provided on create.
 func (u *TaskActivityUpsert) UpdateTeammateID() *TaskActivityUpsert {
 	u.SetExcluded(taskactivity.FieldTeammateID)
+	return u
+}
+
+// SetWorkspaceID sets the "workspace_id" field.
+func (u *TaskActivityUpsert) SetWorkspaceID(v ulid.ID) *TaskActivityUpsert {
+	u.Set(taskactivity.FieldWorkspaceID, v)
+	return u
+}
+
+// UpdateWorkspaceID sets the "workspace_id" field to the value that was provided on create.
+func (u *TaskActivityUpsert) UpdateWorkspaceID() *TaskActivityUpsert {
+	u.SetExcluded(taskactivity.FieldWorkspaceID)
 	return u
 }
 
@@ -506,6 +556,20 @@ func (u *TaskActivityUpsertOne) SetTeammateID(v ulid.ID) *TaskActivityUpsertOne 
 func (u *TaskActivityUpsertOne) UpdateTeammateID() *TaskActivityUpsertOne {
 	return u.Update(func(s *TaskActivityUpsert) {
 		s.UpdateTeammateID()
+	})
+}
+
+// SetWorkspaceID sets the "workspace_id" field.
+func (u *TaskActivityUpsertOne) SetWorkspaceID(v ulid.ID) *TaskActivityUpsertOne {
+	return u.Update(func(s *TaskActivityUpsert) {
+		s.SetWorkspaceID(v)
+	})
+}
+
+// UpdateWorkspaceID sets the "workspace_id" field to the value that was provided on create.
+func (u *TaskActivityUpsertOne) UpdateWorkspaceID() *TaskActivityUpsertOne {
+	return u.Update(func(s *TaskActivityUpsert) {
+		s.UpdateWorkspaceID()
 	})
 }
 
@@ -784,6 +848,20 @@ func (u *TaskActivityUpsertBulk) SetTeammateID(v ulid.ID) *TaskActivityUpsertBul
 func (u *TaskActivityUpsertBulk) UpdateTeammateID() *TaskActivityUpsertBulk {
 	return u.Update(func(s *TaskActivityUpsert) {
 		s.UpdateTeammateID()
+	})
+}
+
+// SetWorkspaceID sets the "workspace_id" field.
+func (u *TaskActivityUpsertBulk) SetWorkspaceID(v ulid.ID) *TaskActivityUpsertBulk {
+	return u.Update(func(s *TaskActivityUpsert) {
+		s.SetWorkspaceID(v)
+	})
+}
+
+// UpdateWorkspaceID sets the "workspace_id" field to the value that was provided on create.
+func (u *TaskActivityUpsertBulk) UpdateWorkspaceID() *TaskActivityUpsertBulk {
+	return u.Update(func(s *TaskActivityUpsert) {
+		s.UpdateWorkspaceID()
 	})
 }
 

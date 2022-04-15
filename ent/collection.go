@@ -571,6 +571,10 @@ func (ta *TaskActivityQuery) collectField(ctx *graphql.OperationContext, field g
 			ta = ta.WithTeammate(func(query *TeammateQuery) {
 				query.collectField(ctx, field)
 			})
+		case "workspace":
+			ta = ta.WithWorkspace(func(query *WorkspaceQuery) {
+				query.collectField(ctx, field)
+			})
 		}
 	}
 	return ta
@@ -1173,6 +1177,10 @@ func (w *WorkspaceQuery) collectField(ctx *graphql.OperationContext, field graph
 			})
 		case "tags":
 			w = w.WithTags(func(query *TagQuery) {
+				query.collectField(ctx, field)
+			})
+		case "taskActivities":
+			w = w.WithTaskActivities(func(query *TaskActivityQuery) {
 				query.collectField(ctx, field)
 			})
 		case "taskLikes":

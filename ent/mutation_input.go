@@ -1765,6 +1765,7 @@ type CreateTaskActivityInput struct {
 	UpdatedAt           *time.Time
 	TeammateID          ulid.ID
 	ActivityTypeID      ulid.ID
+	WorkspaceID         ulid.ID
 	TaskActivityTaskIDs []ulid.ID
 	RequestID           string
 }
@@ -1779,6 +1780,7 @@ func (i *CreateTaskActivityInput) Mutate(m *TaskActivityCreate) {
 	}
 	m.SetTeammateID(i.TeammateID)
 	m.SetActivityTypeID(i.ActivityTypeID)
+	m.SetWorkspaceID(i.WorkspaceID)
 	if ids := i.TaskActivityTaskIDs; len(ids) > 0 {
 		m.AddTaskActivityTaskIDs(ids...)
 	}
@@ -1797,6 +1799,8 @@ type UpdateTaskActivityInput struct {
 	ClearTeammate             bool
 	ActivityTypeID            *ulid.ID
 	ClearActivityType         bool
+	WorkspaceID               *ulid.ID
+	ClearWorkspace            bool
 	AddTaskActivityTaskIDs    []ulid.ID
 	RemoveTaskActivityTaskIDs []ulid.ID
 	RequestID                 string
@@ -1815,6 +1819,12 @@ func (i *UpdateTaskActivityInput) Mutate(m *TaskActivityMutation) {
 	}
 	if v := i.ActivityTypeID; v != nil {
 		m.SetActivityTypeID(*v)
+	}
+	if i.ClearWorkspace {
+		m.ClearWorkspace()
+	}
+	if v := i.WorkspaceID; v != nil {
+		m.SetWorkspaceID(*v)
 	}
 	if ids := i.AddTaskActivityTaskIDs; len(ids) > 0 {
 		m.AddTaskActivityTaskIDs(ids...)
@@ -3714,6 +3724,7 @@ type CreateWorkspaceInput struct {
 	TeammateTaskIDs            []ulid.ID
 	DeletedTasksRefIDs         []ulid.ID
 	WorkspaceActivityIDs       []ulid.ID
+	TaskActivityIDs            []ulid.ID
 	RequestID                  string
 }
 
@@ -3764,6 +3775,9 @@ func (i *CreateWorkspaceInput) Mutate(m *WorkspaceCreate) {
 	if ids := i.WorkspaceActivityIDs; len(ids) > 0 {
 		m.AddWorkspaceActivityIDs(ids...)
 	}
+	if ids := i.TaskActivityIDs; len(ids) > 0 {
+		m.AddTaskActivityIDs(ids...)
+	}
 }
 
 // SetInput applies the change-set in the CreateWorkspaceInput on the create builder.
@@ -3803,6 +3817,8 @@ type UpdateWorkspaceInput struct {
 	RemoveDeletedTasksRefIDs         []ulid.ID
 	AddWorkspaceActivityIDs          []ulid.ID
 	RemoveWorkspaceActivityIDs       []ulid.ID
+	AddTaskActivityIDs               []ulid.ID
+	RemoveTaskActivityIDs            []ulid.ID
 	RequestID                        string
 }
 
@@ -3891,6 +3907,12 @@ func (i *UpdateWorkspaceInput) Mutate(m *WorkspaceMutation) {
 	}
 	if ids := i.RemoveWorkspaceActivityIDs; len(ids) > 0 {
 		m.RemoveWorkspaceActivityIDs(ids...)
+	}
+	if ids := i.AddTaskActivityIDs; len(ids) > 0 {
+		m.AddTaskActivityIDs(ids...)
+	}
+	if ids := i.RemoveTaskActivityIDs; len(ids) > 0 {
+		m.RemoveTaskActivityIDs(ids...)
 	}
 }
 

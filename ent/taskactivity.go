@@ -8,6 +8,7 @@ import (
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/taskactivity"
 	"project-management-demo-backend/ent/teammate"
+	"project-management-demo-backend/ent/workspace"
 	"strings"
 	"time"
 
@@ -23,6 +24,8 @@ type TaskActivity struct {
 	ActivityTypeID ulid.ID `json:"activity_type_id,omitempty"`
 	// TeammateID holds the value of the "teammate_id" field.
 	TeammateID ulid.ID `json:"teammate_id,omitempty"`
+	// WorkspaceID holds the value of the "workspace_id" field.
+	WorkspaceID ulid.ID `json:"workspace_id,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -38,11 +41,13 @@ type TaskActivityEdges struct {
 	Teammate *Teammate `json:"teammate,omitempty"`
 	// ActivityType holds the value of the activityType edge.
 	ActivityType *ActivityType `json:"activityType,omitempty"`
+	// Workspace holds the value of the workspace edge.
+	Workspace *Workspace `json:"workspace,omitempty"`
 	// TaskActivityTasks holds the value of the taskActivityTasks edge.
 	TaskActivityTasks []*TaskActivityTask `json:"taskActivityTasks,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [3]bool
+	loadedTypes [4]bool
 }
 
 // TeammateOrErr returns the Teammate value or an error if the edge
@@ -73,10 +78,24 @@ func (e TaskActivityEdges) ActivityTypeOrErr() (*ActivityType, error) {
 	return nil, &NotLoadedError{edge: "activityType"}
 }
 
+// WorkspaceOrErr returns the Workspace value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e TaskActivityEdges) WorkspaceOrErr() (*Workspace, error) {
+	if e.loadedTypes[2] {
+		if e.Workspace == nil {
+			// The edge workspace was loaded in eager-loading,
+			// but was not found.
+			return nil, &NotFoundError{label: workspace.Label}
+		}
+		return e.Workspace, nil
+	}
+	return nil, &NotLoadedError{edge: "workspace"}
+}
+
 // TaskActivityTasksOrErr returns the TaskActivityTasks value or an error if the edge
 // was not loaded in eager-loading.
 func (e TaskActivityEdges) TaskActivityTasksOrErr() ([]*TaskActivityTask, error) {
-	if e.loadedTypes[2] {
+	if e.loadedTypes[3] {
 		return e.TaskActivityTasks, nil
 	}
 	return nil, &NotLoadedError{edge: "taskActivityTasks"}
@@ -89,7 +108,7 @@ func (*TaskActivity) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case taskactivity.FieldCreatedAt, taskactivity.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
-		case taskactivity.FieldID, taskactivity.FieldActivityTypeID, taskactivity.FieldTeammateID:
+		case taskactivity.FieldID, taskactivity.FieldActivityTypeID, taskactivity.FieldTeammateID, taskactivity.FieldWorkspaceID:
 			values[i] = new(ulid.ID)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type TaskActivity", columns[i])
@@ -124,6 +143,12 @@ func (ta *TaskActivity) assignValues(columns []string, values []interface{}) err
 			} else if value != nil {
 				ta.TeammateID = *value
 			}
+		case taskactivity.FieldWorkspaceID:
+			if value, ok := values[i].(*ulid.ID); !ok {
+				return fmt.Errorf("unexpected type %T for field workspace_id", values[i])
+			} else if value != nil {
+				ta.WorkspaceID = *value
+			}
 		case taskactivity.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
@@ -149,6 +174,11 @@ func (ta *TaskActivity) QueryTeammate() *TeammateQuery {
 // QueryActivityType queries the "activityType" edge of the TaskActivity entity.
 func (ta *TaskActivity) QueryActivityType() *ActivityTypeQuery {
 	return (&TaskActivityClient{config: ta.config}).QueryActivityType(ta)
+}
+
+// QueryWorkspace queries the "workspace" edge of the TaskActivity entity.
+func (ta *TaskActivity) QueryWorkspace() *WorkspaceQuery {
+	return (&TaskActivityClient{config: ta.config}).QueryWorkspace(ta)
 }
 
 // QueryTaskActivityTasks queries the "taskActivityTasks" edge of the TaskActivity entity.
@@ -183,6 +213,8 @@ func (ta *TaskActivity) String() string {
 	builder.WriteString(fmt.Sprintf("%v", ta.ActivityTypeID))
 	builder.WriteString(", teammate_id=")
 	builder.WriteString(fmt.Sprintf("%v", ta.TeammateID))
+	builder.WriteString(", workspace_id=")
+	builder.WriteString(fmt.Sprintf("%v", ta.WorkspaceID))
 	builder.WriteString(", created_at=")
 	builder.WriteString(ta.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", updated_at=")

@@ -16,6 +16,8 @@ const (
 	FieldActivityTypeID = "activity_type_id"
 	// FieldTeammateID holds the string denoting the teammate_id field in the database.
 	FieldTeammateID = "teammate_id"
+	// FieldWorkspaceID holds the string denoting the workspace_id field in the database.
+	FieldWorkspaceID = "workspace_id"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
@@ -24,6 +26,8 @@ const (
 	EdgeTeammate = "teammate"
 	// EdgeActivityType holds the string denoting the activitytype edge name in mutations.
 	EdgeActivityType = "activityType"
+	// EdgeWorkspace holds the string denoting the workspace edge name in mutations.
+	EdgeWorkspace = "workspace"
 	// EdgeTaskActivityTasks holds the string denoting the taskactivitytasks edge name in mutations.
 	EdgeTaskActivityTasks = "taskActivityTasks"
 	// Table holds the table name of the taskactivity in the database.
@@ -42,6 +46,13 @@ const (
 	ActivityTypeInverseTable = "activity_types"
 	// ActivityTypeColumn is the table column denoting the activityType relation/edge.
 	ActivityTypeColumn = "activity_type_id"
+	// WorkspaceTable is the table that holds the workspace relation/edge.
+	WorkspaceTable = "task_activities"
+	// WorkspaceInverseTable is the table name for the Workspace entity.
+	// It exists in this package in order to avoid circular dependency with the "workspace" package.
+	WorkspaceInverseTable = "workspaces"
+	// WorkspaceColumn is the table column denoting the workspace relation/edge.
+	WorkspaceColumn = "workspace_id"
 	// TaskActivityTasksTable is the table that holds the taskActivityTasks relation/edge.
 	TaskActivityTasksTable = "task_activity_tasks"
 	// TaskActivityTasksInverseTable is the table name for the TaskActivityTask entity.
@@ -56,6 +67,7 @@ var Columns = []string{
 	FieldID,
 	FieldActivityTypeID,
 	FieldTeammateID,
+	FieldWorkspaceID,
 	FieldCreatedAt,
 	FieldUpdatedAt,
 }

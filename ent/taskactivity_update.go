@@ -12,6 +12,7 @@ import (
 	"project-management-demo-backend/ent/taskactivity"
 	"project-management-demo-backend/ent/taskactivitytask"
 	"project-management-demo-backend/ent/teammate"
+	"project-management-demo-backend/ent/workspace"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -43,6 +44,12 @@ func (tau *TaskActivityUpdate) SetTeammateID(u ulid.ID) *TaskActivityUpdate {
 	return tau
 }
 
+// SetWorkspaceID sets the "workspace_id" field.
+func (tau *TaskActivityUpdate) SetWorkspaceID(u ulid.ID) *TaskActivityUpdate {
+	tau.mutation.SetWorkspaceID(u)
+	return tau
+}
+
 // SetTeammate sets the "teammate" edge to the Teammate entity.
 func (tau *TaskActivityUpdate) SetTeammate(t *Teammate) *TaskActivityUpdate {
 	return tau.SetTeammateID(t.ID)
@@ -51,6 +58,11 @@ func (tau *TaskActivityUpdate) SetTeammate(t *Teammate) *TaskActivityUpdate {
 // SetActivityType sets the "activityType" edge to the ActivityType entity.
 func (tau *TaskActivityUpdate) SetActivityType(a *ActivityType) *TaskActivityUpdate {
 	return tau.SetActivityTypeID(a.ID)
+}
+
+// SetWorkspace sets the "workspace" edge to the Workspace entity.
+func (tau *TaskActivityUpdate) SetWorkspace(w *Workspace) *TaskActivityUpdate {
+	return tau.SetWorkspaceID(w.ID)
 }
 
 // AddTaskActivityTaskIDs adds the "taskActivityTasks" edge to the TaskActivityTask entity by IDs.
@@ -82,6 +94,12 @@ func (tau *TaskActivityUpdate) ClearTeammate() *TaskActivityUpdate {
 // ClearActivityType clears the "activityType" edge to the ActivityType entity.
 func (tau *TaskActivityUpdate) ClearActivityType() *TaskActivityUpdate {
 	tau.mutation.ClearActivityType()
+	return tau
+}
+
+// ClearWorkspace clears the "workspace" edge to the Workspace entity.
+func (tau *TaskActivityUpdate) ClearWorkspace() *TaskActivityUpdate {
+	tau.mutation.ClearWorkspace()
 	return tau
 }
 
@@ -174,6 +192,9 @@ func (tau *TaskActivityUpdate) check() error {
 	if _, ok := tau.mutation.ActivityTypeID(); tau.mutation.ActivityTypeCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "TaskActivity.activityType"`)
 	}
+	if _, ok := tau.mutation.WorkspaceID(); tau.mutation.WorkspaceCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "TaskActivity.workspace"`)
+	}
 	return nil
 }
 
@@ -257,6 +278,41 @@ func (tau *TaskActivityUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: activitytype.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if tau.mutation.WorkspaceCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   taskactivity.WorkspaceTable,
+			Columns: []string{taskactivity.WorkspaceColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: workspace.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tau.mutation.WorkspaceIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   taskactivity.WorkspaceTable,
+			Columns: []string{taskactivity.WorkspaceColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: workspace.FieldID,
 				},
 			},
 		}
@@ -350,6 +406,12 @@ func (tauo *TaskActivityUpdateOne) SetTeammateID(u ulid.ID) *TaskActivityUpdateO
 	return tauo
 }
 
+// SetWorkspaceID sets the "workspace_id" field.
+func (tauo *TaskActivityUpdateOne) SetWorkspaceID(u ulid.ID) *TaskActivityUpdateOne {
+	tauo.mutation.SetWorkspaceID(u)
+	return tauo
+}
+
 // SetTeammate sets the "teammate" edge to the Teammate entity.
 func (tauo *TaskActivityUpdateOne) SetTeammate(t *Teammate) *TaskActivityUpdateOne {
 	return tauo.SetTeammateID(t.ID)
@@ -358,6 +420,11 @@ func (tauo *TaskActivityUpdateOne) SetTeammate(t *Teammate) *TaskActivityUpdateO
 // SetActivityType sets the "activityType" edge to the ActivityType entity.
 func (tauo *TaskActivityUpdateOne) SetActivityType(a *ActivityType) *TaskActivityUpdateOne {
 	return tauo.SetActivityTypeID(a.ID)
+}
+
+// SetWorkspace sets the "workspace" edge to the Workspace entity.
+func (tauo *TaskActivityUpdateOne) SetWorkspace(w *Workspace) *TaskActivityUpdateOne {
+	return tauo.SetWorkspaceID(w.ID)
 }
 
 // AddTaskActivityTaskIDs adds the "taskActivityTasks" edge to the TaskActivityTask entity by IDs.
@@ -389,6 +456,12 @@ func (tauo *TaskActivityUpdateOne) ClearTeammate() *TaskActivityUpdateOne {
 // ClearActivityType clears the "activityType" edge to the ActivityType entity.
 func (tauo *TaskActivityUpdateOne) ClearActivityType() *TaskActivityUpdateOne {
 	tauo.mutation.ClearActivityType()
+	return tauo
+}
+
+// ClearWorkspace clears the "workspace" edge to the Workspace entity.
+func (tauo *TaskActivityUpdateOne) ClearWorkspace() *TaskActivityUpdateOne {
+	tauo.mutation.ClearWorkspace()
 	return tauo
 }
 
@@ -487,6 +560,9 @@ func (tauo *TaskActivityUpdateOne) check() error {
 	}
 	if _, ok := tauo.mutation.ActivityTypeID(); tauo.mutation.ActivityTypeCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "TaskActivity.activityType"`)
+	}
+	if _, ok := tauo.mutation.WorkspaceID(); tauo.mutation.WorkspaceCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "TaskActivity.workspace"`)
 	}
 	return nil
 }
@@ -588,6 +664,41 @@ func (tauo *TaskActivityUpdateOne) sqlSave(ctx context.Context) (_node *TaskActi
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: activitytype.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if tauo.mutation.WorkspaceCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   taskactivity.WorkspaceTable,
+			Columns: []string{taskactivity.WorkspaceColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: workspace.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tauo.mutation.WorkspaceIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   taskactivity.WorkspaceTable,
+			Columns: []string{taskactivity.WorkspaceColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: workspace.FieldID,
 				},
 			},
 		}

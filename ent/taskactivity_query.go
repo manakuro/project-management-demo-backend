@@ -14,6 +14,7 @@ import (
 	"project-management-demo-backend/ent/taskactivity"
 	"project-management-demo-backend/ent/taskactivitytask"
 	"project-management-demo-backend/ent/teammate"
+	"project-management-demo-backend/ent/workspace"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -32,6 +33,7 @@ type TaskActivityQuery struct {
 	// eager-loading edges.
 	withTeammate          *TeammateQuery
 	withActivityType      *ActivityTypeQuery
+	withWorkspace         *WorkspaceQuery
 	withTaskActivityTasks *TaskActivityTaskQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
@@ -106,6 +108,28 @@ func (taq *TaskActivityQuery) QueryActivityType() *ActivityTypeQuery {
 			sqlgraph.From(taskactivity.Table, taskactivity.FieldID, selector),
 			sqlgraph.To(activitytype.Table, activitytype.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, taskactivity.ActivityTypeTable, taskactivity.ActivityTypeColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(taq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryWorkspace chains the current query on the "workspace" edge.
+func (taq *TaskActivityQuery) QueryWorkspace() *WorkspaceQuery {
+	query := &WorkspaceQuery{config: taq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := taq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := taq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(taskactivity.Table, taskactivity.FieldID, selector),
+			sqlgraph.To(workspace.Table, workspace.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, taskactivity.WorkspaceTable, taskactivity.WorkspaceColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(taq.driver.Dialect(), step)
 		return fromU, nil
@@ -318,6 +342,7 @@ func (taq *TaskActivityQuery) Clone() *TaskActivityQuery {
 		predicates:            append([]predicate.TaskActivity{}, taq.predicates...),
 		withTeammate:          taq.withTeammate.Clone(),
 		withActivityType:      taq.withActivityType.Clone(),
+		withWorkspace:         taq.withWorkspace.Clone(),
 		withTaskActivityTasks: taq.withTaskActivityTasks.Clone(),
 		// clone intermediate query.
 		sql:    taq.sql.Clone(),
@@ -345,6 +370,17 @@ func (taq *TaskActivityQuery) WithActivityType(opts ...func(*ActivityTypeQuery))
 		opt(query)
 	}
 	taq.withActivityType = query
+	return taq
+}
+
+// WithWorkspace tells the query-builder to eager-load the nodes that are connected to
+// the "workspace" edge. The optional arguments are used to configure the query builder of the edge.
+func (taq *TaskActivityQuery) WithWorkspace(opts ...func(*WorkspaceQuery)) *TaskActivityQuery {
+	query := &WorkspaceQuery{config: taq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	taq.withWorkspace = query
 	return taq
 }
 
@@ -424,9 +460,10 @@ func (taq *TaskActivityQuery) sqlAll(ctx context.Context) ([]*TaskActivity, erro
 	var (
 		nodes       = []*TaskActivity{}
 		_spec       = taq.querySpec()
-		loadedTypes = [3]bool{
+		loadedTypes = [4]bool{
 			taq.withTeammate != nil,
 			taq.withActivityType != nil,
+			taq.withWorkspace != nil,
 			taq.withTaskActivityTasks != nil,
 		}
 	)
@@ -498,6 +535,32 @@ func (taq *TaskActivityQuery) sqlAll(ctx context.Context) ([]*TaskActivity, erro
 			}
 			for i := range nodes {
 				nodes[i].Edges.ActivityType = n
+			}
+		}
+	}
+
+	if query := taq.withWorkspace; query != nil {
+		ids := make([]ulid.ID, 0, len(nodes))
+		nodeids := make(map[ulid.ID][]*TaskActivity)
+		for i := range nodes {
+			fk := nodes[i].WorkspaceID
+			if _, ok := nodeids[fk]; !ok {
+				ids = append(ids, fk)
+			}
+			nodeids[fk] = append(nodeids[fk], nodes[i])
+		}
+		query.Where(workspace.IDIn(ids...))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			nodes, ok := nodeids[n.ID]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "workspace_id" returned %v`, n.ID)
+			}
+			for i := range nodes {
+				nodes[i].Edges.Workspace = n
 			}
 		}
 	}

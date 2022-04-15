@@ -7574,6 +7574,21 @@ type TaskActivityWhereInput struct {
 	TeammateIDEqualFold    *ulid.ID  `json:"teammateIDEqualFold,omitempty"`
 	TeammateIDContainsFold *ulid.ID  `json:"teammateIDContainsFold,omitempty"`
 
+	// "workspace_id" field predicates.
+	WorkspaceID             *ulid.ID  `json:"workspaceID,omitempty"`
+	WorkspaceIDNEQ          *ulid.ID  `json:"workspaceIDNEQ,omitempty"`
+	WorkspaceIDIn           []ulid.ID `json:"workspaceIDIn,omitempty"`
+	WorkspaceIDNotIn        []ulid.ID `json:"workspaceIDNotIn,omitempty"`
+	WorkspaceIDGT           *ulid.ID  `json:"workspaceIDGT,omitempty"`
+	WorkspaceIDGTE          *ulid.ID  `json:"workspaceIDGTE,omitempty"`
+	WorkspaceIDLT           *ulid.ID  `json:"workspaceIDLT,omitempty"`
+	WorkspaceIDLTE          *ulid.ID  `json:"workspaceIDLTE,omitempty"`
+	WorkspaceIDContains     *ulid.ID  `json:"workspaceIDContains,omitempty"`
+	WorkspaceIDHasPrefix    *ulid.ID  `json:"workspaceIDHasPrefix,omitempty"`
+	WorkspaceIDHasSuffix    *ulid.ID  `json:"workspaceIDHasSuffix,omitempty"`
+	WorkspaceIDEqualFold    *ulid.ID  `json:"workspaceIDEqualFold,omitempty"`
+	WorkspaceIDContainsFold *ulid.ID  `json:"workspaceIDContainsFold,omitempty"`
+
 	// "created_at" field predicates.
 	CreatedAt      *time.Time  `json:"createdAt,omitempty"`
 	CreatedAtNEQ   *time.Time  `json:"createdAtNEQ,omitempty"`
@@ -7601,6 +7616,10 @@ type TaskActivityWhereInput struct {
 	// "activityType" edge predicates.
 	HasActivityType     *bool                     `json:"hasActivityType,omitempty"`
 	HasActivityTypeWith []*ActivityTypeWhereInput `json:"hasActivityTypeWith,omitempty"`
+
+	// "workspace" edge predicates.
+	HasWorkspace     *bool                  `json:"hasWorkspace,omitempty"`
+	HasWorkspaceWith []*WorkspaceWhereInput `json:"hasWorkspaceWith,omitempty"`
 
 	// "taskActivityTasks" edge predicates.
 	HasTaskActivityTasks     *bool                         `json:"hasTaskActivityTasks,omitempty"`
@@ -7768,6 +7787,45 @@ func (i *TaskActivityWhereInput) P() (predicate.TaskActivity, error) {
 	if i.TeammateIDContainsFold != nil {
 		predicates = append(predicates, taskactivity.TeammateIDContainsFold(*i.TeammateIDContainsFold))
 	}
+	if i.WorkspaceID != nil {
+		predicates = append(predicates, taskactivity.WorkspaceIDEQ(*i.WorkspaceID))
+	}
+	if i.WorkspaceIDNEQ != nil {
+		predicates = append(predicates, taskactivity.WorkspaceIDNEQ(*i.WorkspaceIDNEQ))
+	}
+	if len(i.WorkspaceIDIn) > 0 {
+		predicates = append(predicates, taskactivity.WorkspaceIDIn(i.WorkspaceIDIn...))
+	}
+	if len(i.WorkspaceIDNotIn) > 0 {
+		predicates = append(predicates, taskactivity.WorkspaceIDNotIn(i.WorkspaceIDNotIn...))
+	}
+	if i.WorkspaceIDGT != nil {
+		predicates = append(predicates, taskactivity.WorkspaceIDGT(*i.WorkspaceIDGT))
+	}
+	if i.WorkspaceIDGTE != nil {
+		predicates = append(predicates, taskactivity.WorkspaceIDGTE(*i.WorkspaceIDGTE))
+	}
+	if i.WorkspaceIDLT != nil {
+		predicates = append(predicates, taskactivity.WorkspaceIDLT(*i.WorkspaceIDLT))
+	}
+	if i.WorkspaceIDLTE != nil {
+		predicates = append(predicates, taskactivity.WorkspaceIDLTE(*i.WorkspaceIDLTE))
+	}
+	if i.WorkspaceIDContains != nil {
+		predicates = append(predicates, taskactivity.WorkspaceIDContains(*i.WorkspaceIDContains))
+	}
+	if i.WorkspaceIDHasPrefix != nil {
+		predicates = append(predicates, taskactivity.WorkspaceIDHasPrefix(*i.WorkspaceIDHasPrefix))
+	}
+	if i.WorkspaceIDHasSuffix != nil {
+		predicates = append(predicates, taskactivity.WorkspaceIDHasSuffix(*i.WorkspaceIDHasSuffix))
+	}
+	if i.WorkspaceIDEqualFold != nil {
+		predicates = append(predicates, taskactivity.WorkspaceIDEqualFold(*i.WorkspaceIDEqualFold))
+	}
+	if i.WorkspaceIDContainsFold != nil {
+		predicates = append(predicates, taskactivity.WorkspaceIDContainsFold(*i.WorkspaceIDContainsFold))
+	}
 	if i.CreatedAt != nil {
 		predicates = append(predicates, taskactivity.CreatedAtEQ(*i.CreatedAt))
 	}
@@ -7852,6 +7910,24 @@ func (i *TaskActivityWhereInput) P() (predicate.TaskActivity, error) {
 			with = append(with, p)
 		}
 		predicates = append(predicates, taskactivity.HasActivityTypeWith(with...))
+	}
+	if i.HasWorkspace != nil {
+		p := taskactivity.HasWorkspace()
+		if !*i.HasWorkspace {
+			p = taskactivity.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasWorkspaceWith) > 0 {
+		with := make([]predicate.Workspace, 0, len(i.HasWorkspaceWith))
+		for _, w := range i.HasWorkspaceWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, taskactivity.HasWorkspaceWith(with...))
 	}
 	if i.HasTaskActivityTasks != nil {
 		p := taskactivity.HasTaskActivityTasks()
@@ -16112,6 +16188,10 @@ type WorkspaceWhereInput struct {
 	// "workspaceActivities" edge predicates.
 	HasWorkspaceActivities     *bool                          `json:"hasWorkspaceActivities,omitempty"`
 	HasWorkspaceActivitiesWith []*WorkspaceActivityWhereInput `json:"hasWorkspaceActivitiesWith,omitempty"`
+
+	// "taskActivities" edge predicates.
+	HasTaskActivities     *bool                     `json:"hasTaskActivities,omitempty"`
+	HasTaskActivitiesWith []*TaskActivityWhereInput `json:"hasTaskActivitiesWith,omitempty"`
 }
 
 // Filter applies the WorkspaceWhereInput filter on the WorkspaceQuery builder.
@@ -16557,6 +16637,24 @@ func (i *WorkspaceWhereInput) P() (predicate.Workspace, error) {
 			with = append(with, p)
 		}
 		predicates = append(predicates, workspace.HasWorkspaceActivitiesWith(with...))
+	}
+	if i.HasTaskActivities != nil {
+		p := workspace.HasTaskActivities()
+		if !*i.HasTaskActivities {
+			p = workspace.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasTaskActivitiesWith) > 0 {
+		with := make([]predicate.TaskActivity, 0, len(i.HasTaskActivitiesWith))
+		for _, w := range i.HasTaskActivitiesWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, workspace.HasTaskActivitiesWith(with...))
 	}
 	switch len(predicates) {
 	case 0:

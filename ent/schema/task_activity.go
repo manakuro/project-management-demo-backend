@@ -34,6 +34,8 @@ func (TaskActivityMixin) Fields() []ent.Field {
 			GoType(ulid.ID("")),
 		field.String("teammate_id").
 			GoType(ulid.ID("")),
+		field.String("workspace_id").
+			GoType(ulid.ID("")),
 	}
 }
 
@@ -60,6 +62,17 @@ func (TaskActivity) Edges() []ent.Edge {
 				entgql.Bind(),
 				schema.Annotation(
 					annotation.Edge{FieldName: "activity_type_id"},
+				),
+			),
+		edge.From("workspace", Workspace.Type).
+			Ref(taskActivitiesRef).
+			Field("workspace_id").
+			Unique().
+			Required().
+			Annotations(
+				entgql.Bind(),
+				schema.Annotation(
+					annotation.Edge{FieldName: "workspace_id"},
 				),
 			),
 		edge.To(taskActivityTasksRef, TaskActivityTask.Type).

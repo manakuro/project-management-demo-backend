@@ -524,6 +524,14 @@ func (ta *TaskActivity) ActivityType(ctx context.Context) (*ActivityType, error)
 	return result, err
 }
 
+func (ta *TaskActivity) Workspace(ctx context.Context) (*Workspace, error) {
+	result, err := ta.Edges.WorkspaceOrErr()
+	if IsNotLoaded(err) {
+		result, err = ta.QueryWorkspace().Only(ctx)
+	}
+	return result, err
+}
+
 func (ta *TaskActivity) TaskActivityTasks(ctx context.Context) ([]*TaskActivityTask, error) {
 	result, err := ta.Edges.TaskActivityTasksOrErr()
 	if IsNotLoaded(err) {
@@ -1160,6 +1168,14 @@ func (w *Workspace) WorkspaceActivities(ctx context.Context) ([]*WorkspaceActivi
 	result, err := w.Edges.WorkspaceActivitiesOrErr()
 	if IsNotLoaded(err) {
 		result, err = w.QueryWorkspaceActivities().All(ctx)
+	}
+	return result, err
+}
+
+func (w *Workspace) TaskActivities(ctx context.Context) ([]*TaskActivity, error) {
+	result, err := w.Edges.TaskActivitiesOrErr()
+	if IsNotLoaded(err) {
+		result, err = w.QueryTaskActivities().All(ctx)
 	}
 	return result, err
 }

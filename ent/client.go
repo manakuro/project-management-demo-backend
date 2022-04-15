@@ -3163,6 +3163,22 @@ func (c *TaskActivityClient) QueryActivityType(ta *TaskActivity) *ActivityTypeQu
 	return query
 }
 
+// QueryWorkspace queries the workspace edge of a TaskActivity.
+func (c *TaskActivityClient) QueryWorkspace(ta *TaskActivity) *WorkspaceQuery {
+	query := &WorkspaceQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := ta.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(taskactivity.Table, taskactivity.FieldID, id),
+			sqlgraph.To(workspace.Table, workspace.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, taskactivity.WorkspaceTable, taskactivity.WorkspaceColumn),
+		)
+		fromV = sqlgraph.Neighbors(ta.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // QueryTaskActivityTasks queries the taskActivityTasks edge of a TaskActivity.
 func (c *TaskActivityClient) QueryTaskActivityTasks(ta *TaskActivity) *TaskActivityTaskQuery {
 	query := &TaskActivityTaskQuery{config: c.config}
@@ -6326,6 +6342,22 @@ func (c *WorkspaceClient) QueryWorkspaceActivities(w *Workspace) *WorkspaceActiv
 			sqlgraph.From(workspace.Table, workspace.FieldID, id),
 			sqlgraph.To(workspaceactivity.Table, workspaceactivity.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, workspace.WorkspaceActivitiesTable, workspace.WorkspaceActivitiesColumn),
+		)
+		fromV = sqlgraph.Neighbors(w.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryTaskActivities queries the taskActivities edge of a Workspace.
+func (c *WorkspaceClient) QueryTaskActivities(w *Workspace) *TaskActivityQuery {
+	query := &TaskActivityQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := w.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(workspace.Table, workspace.FieldID, id),
+			sqlgraph.To(taskactivity.Table, taskactivity.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, workspace.TaskActivitiesTable, workspace.TaskActivitiesColumn),
 		)
 		fromV = sqlgraph.Neighbors(w.driver.Dialect(), step)
 		return fromV, nil

@@ -488,6 +488,10 @@ input WorkspaceWhereInput {
   """workspaceActivities edge predicates"""
   hasWorkspaceActivities: Boolean
   hasWorkspaceActivitiesWith: [WorkspaceActivityWhereInput!]
+  
+  """taskActivities edge predicates"""
+  hasTaskActivities: Boolean
+  hasTaskActivitiesWith: [TaskActivityWhereInput!]
 }
 
 """
@@ -3892,6 +3896,21 @@ input TaskActivityWhereInput {
   teammateIDEqualFold: ID
   teammateIDContainsFold: ID
   
+  """workspace_id field predicates"""
+  workspaceID: ID
+  workspaceIDNEQ: ID
+  workspaceIDIn: [ID!]
+  workspaceIDNotIn: [ID!]
+  workspaceIDGT: ID
+  workspaceIDGTE: ID
+  workspaceIDLT: ID
+  workspaceIDLTE: ID
+  workspaceIDContains: ID
+  workspaceIDHasPrefix: ID
+  workspaceIDHasSuffix: ID
+  workspaceIDEqualFold: ID
+  workspaceIDContainsFold: ID
+  
   """created_at field predicates"""
   createdAt: Time
   createdAtNEQ: Time
@@ -3929,6 +3948,10 @@ input TaskActivityWhereInput {
   """activityType edge predicates"""
   hasActivityType: Boolean
   hasActivityTypeWith: [ActivityTypeWhereInput!]
+  
+  """workspace edge predicates"""
+  hasWorkspace: Boolean
+  hasWorkspaceWith: [WorkspaceWhereInput!]
   
   """taskActivityTasks edge predicates"""
   hasTaskActivityTasks: Boolean

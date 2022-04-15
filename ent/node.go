@@ -1699,8 +1699,8 @@ func (ta *TaskActivity) Node(ctx context.Context) (node *Node, err error) {
 	node = &Node{
 		ID:     ta.ID,
 		Type:   "TaskActivity",
-		Fields: make([]*Field, 4),
-		Edges:  make([]*Edge, 3),
+		Fields: make([]*Field, 5),
+		Edges:  make([]*Edge, 4),
 	}
 	var buf []byte
 	if buf, err = json.Marshal(ta.ActivityTypeID); err != nil {
@@ -1719,10 +1719,18 @@ func (ta *TaskActivity) Node(ctx context.Context) (node *Node, err error) {
 		Name:  "teammate_id",
 		Value: string(buf),
 	}
-	if buf, err = json.Marshal(ta.CreatedAt); err != nil {
+	if buf, err = json.Marshal(ta.WorkspaceID); err != nil {
 		return nil, err
 	}
 	node.Fields[2] = &Field{
+		Type:  "ulid.ID",
+		Name:  "workspace_id",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(ta.CreatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[3] = &Field{
 		Type:  "time.Time",
 		Name:  "created_at",
 		Value: string(buf),
@@ -1730,7 +1738,7 @@ func (ta *TaskActivity) Node(ctx context.Context) (node *Node, err error) {
 	if buf, err = json.Marshal(ta.UpdatedAt); err != nil {
 		return nil, err
 	}
-	node.Fields[3] = &Field{
+	node.Fields[4] = &Field{
 		Type:  "time.Time",
 		Name:  "updated_at",
 		Value: string(buf),
@@ -1756,12 +1764,22 @@ func (ta *TaskActivity) Node(ctx context.Context) (node *Node, err error) {
 		return nil, err
 	}
 	node.Edges[2] = &Edge{
+		Type: "Workspace",
+		Name: "workspace",
+	}
+	err = ta.QueryWorkspace().
+		Select(workspace.FieldID).
+		Scan(ctx, &node.Edges[2].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[3] = &Edge{
 		Type: "TaskActivityTask",
 		Name: "taskActivityTasks",
 	}
 	err = ta.QueryTaskActivityTasks().
 		Select(taskactivitytask.FieldID).
-		Scan(ctx, &node.Edges[2].IDs)
+		Scan(ctx, &node.Edges[3].IDs)
 	if err != nil {
 		return nil, err
 	}
@@ -3533,7 +3551,7 @@ func (w *Workspace) Node(ctx context.Context) (node *Node, err error) {
 		ID:     w.ID,
 		Type:   "Workspace",
 		Fields: make([]*Field, 5),
-		Edges:  make([]*Edge, 13),
+		Edges:  make([]*Edge, 14),
 	}
 	var buf []byte
 	if buf, err = json.Marshal(w.CreatedBy); err != nil {
@@ -3703,6 +3721,16 @@ func (w *Workspace) Node(ctx context.Context) (node *Node, err error) {
 	err = w.QueryWorkspaceActivities().
 		Select(workspaceactivity.FieldID).
 		Scan(ctx, &node.Edges[12].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[13] = &Edge{
+		Type: "TaskActivity",
+		Name: "taskActivities",
+	}
+	err = w.QueryTaskActivities().
+		Select(taskactivity.FieldID).
+		Scan(ctx, &node.Edges[13].IDs)
 	if err != nil {
 		return nil, err
 	}
