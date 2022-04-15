@@ -7,6 +7,7 @@ import (
 	"project-management-demo-backend/ent"
 	"project-management-demo-backend/ent/activitytype"
 	"project-management-demo-backend/ent/archivedtaskactivity"
+	"project-management-demo-backend/ent/archivedworkspaceactivity"
 	"project-management-demo-backend/ent/color"
 	"project-management-demo-backend/ent/filetype"
 	"project-management-demo-backend/ent/icon"
@@ -295,6 +296,16 @@ func GetArchivedTaskActivity(ctx context.Context, client *ent.Client, id ulid.ID
 // GetWorkspaceActivity gets workspace activity data.
 func GetWorkspaceActivity(ctx context.Context, client *ent.Client, id ulid.ID) *ent.WorkspaceActivity {
 	res, err := client.WorkspaceActivity.Query().Where(workspaceactivity.IDEQ(id)).Only(ctx)
+	if err != nil {
+		log.Fatalf("GetWorkspaceActivity: failed to get data %v", err)
+	}
+
+	return res
+}
+
+// GetArchivedWorkspaceActivity gets archived workspace activity data.
+func GetArchivedWorkspaceActivity(ctx context.Context, client *ent.Client, id ulid.ID) *ent.ArchivedWorkspaceActivity {
+	res, err := client.ArchivedWorkspaceActivity.Query().Where(archivedworkspaceactivity.IDEQ(id)).Only(ctx)
 	if err != nil {
 		log.Fatalf("GetWorkspaceActivity: failed to get data %v", err)
 	}
