@@ -36,9 +36,11 @@ type ActivityTypeEdges struct {
 	TaskActivities []*TaskActivity `json:"taskActivities,omitempty"`
 	// WorkspaceActivities holds the value of the workspaceActivities edge.
 	WorkspaceActivities []*WorkspaceActivity `json:"workspaceActivities,omitempty"`
+	// ArchivedTaskActivities holds the value of the archivedTaskActivities edge.
+	ArchivedTaskActivities []*ArchivedTaskActivity `json:"archivedTaskActivities,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
+	loadedTypes [3]bool
 }
 
 // TaskActivitiesOrErr returns the TaskActivities value or an error if the edge
@@ -57,6 +59,15 @@ func (e ActivityTypeEdges) WorkspaceActivitiesOrErr() ([]*WorkspaceActivity, err
 		return e.WorkspaceActivities, nil
 	}
 	return nil, &NotLoadedError{edge: "workspaceActivities"}
+}
+
+// ArchivedTaskActivitiesOrErr returns the ArchivedTaskActivities value or an error if the edge
+// was not loaded in eager-loading.
+func (e ActivityTypeEdges) ArchivedTaskActivitiesOrErr() ([]*ArchivedTaskActivity, error) {
+	if e.loadedTypes[2] {
+		return e.ArchivedTaskActivities, nil
+	}
+	return nil, &NotLoadedError{edge: "archivedTaskActivities"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -128,6 +139,11 @@ func (at *ActivityType) QueryTaskActivities() *TaskActivityQuery {
 // QueryWorkspaceActivities queries the "workspaceActivities" edge of the ActivityType entity.
 func (at *ActivityType) QueryWorkspaceActivities() *WorkspaceActivityQuery {
 	return (&ActivityTypeClient{config: at.config}).QueryWorkspaceActivities(at)
+}
+
+// QueryArchivedTaskActivities queries the "archivedTaskActivities" edge of the ActivityType entity.
+func (at *ActivityType) QueryArchivedTaskActivities() *ArchivedTaskActivityQuery {
+	return (&ActivityTypeClient{config: at.config}).QueryArchivedTaskActivities(at)
 }
 
 // Update returns a builder for updating this ActivityType.

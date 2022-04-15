@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"project-management-demo-backend/ent/activitytype"
+	"project-management-demo-backend/ent/archivedtaskactivity"
 	"project-management-demo-backend/ent/color"
 	"project-management-demo-backend/ent/deletedtask"
 	"project-management-demo-backend/ent/favoriteproject"
@@ -99,6 +100,7 @@ type GlobalIDs struct {
 	TaskActivityTask        field
 	WorkspaceActivity       field
 	WorkspaceActivityTask   field
+	ArchivedTaskActivity    field
 }
 
 // New generates a map object that is intended to be used as global identification for node interface query.
@@ -276,6 +278,10 @@ func New() GlobalIDs {
 		WorkspaceActivityTask: field{
 			Prefix: "0BQ",
 			Table:  workspaceactivitytask.Table,
+		},
+		ArchivedTaskActivity: field{
+			Prefix: "0BR",
+			Table:  archivedtaskactivity.Table,
 		},
 	}
 }

@@ -11,6 +11,7 @@ import (
 	"project-management-demo-backend/ent/schema/ulid"
 
 	"project-management-demo-backend/ent/activitytype"
+	"project-management-demo-backend/ent/archivedtaskactivity"
 	"project-management-demo-backend/ent/color"
 	"project-management-demo-backend/ent/deletedtask"
 	"project-management-demo-backend/ent/favoriteproject"
@@ -66,6 +67,8 @@ type Client struct {
 	Schema *migrate.Schema
 	// ActivityType is the client for interacting with the ActivityType builders.
 	ActivityType *ActivityTypeClient
+	// ArchivedTaskActivity is the client for interacting with the ArchivedTaskActivity builders.
+	ArchivedTaskActivity *ArchivedTaskActivityClient
 	// Color is the client for interacting with the Color builders.
 	Color *ColorClient
 	// DeletedTask is the client for interacting with the DeletedTask builders.
@@ -164,6 +167,7 @@ func NewClient(opts ...Option) *Client {
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.ActivityType = NewActivityTypeClient(c.config)
+	c.ArchivedTaskActivity = NewArchivedTaskActivityClient(c.config)
 	c.Color = NewColorClient(c.config)
 	c.DeletedTask = NewDeletedTaskClient(c.config)
 	c.FavoriteProject = NewFavoriteProjectClient(c.config)
@@ -240,6 +244,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		ctx:                     ctx,
 		config:                  cfg,
 		ActivityType:            NewActivityTypeClient(cfg),
+		ArchivedTaskActivity:    NewArchivedTaskActivityClient(cfg),
 		Color:                   NewColorClient(cfg),
 		DeletedTask:             NewDeletedTaskClient(cfg),
 		FavoriteProject:         NewFavoriteProjectClient(cfg),
@@ -302,6 +307,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		ctx:                     ctx,
 		config:                  cfg,
 		ActivityType:            NewActivityTypeClient(cfg),
+		ArchivedTaskActivity:    NewArchivedTaskActivityClient(cfg),
 		Color:                   NewColorClient(cfg),
 		DeletedTask:             NewDeletedTaskClient(cfg),
 		FavoriteProject:         NewFavoriteProjectClient(cfg),
@@ -374,6 +380,7 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	c.ActivityType.Use(hooks...)
+	c.ArchivedTaskActivity.Use(hooks...)
 	c.Color.Use(hooks...)
 	c.DeletedTask.Use(hooks...)
 	c.FavoriteProject.Use(hooks...)
@@ -535,9 +542,163 @@ func (c *ActivityTypeClient) QueryWorkspaceActivities(at *ActivityType) *Workspa
 	return query
 }
 
+// QueryArchivedTaskActivities queries the archivedTaskActivities edge of a ActivityType.
+func (c *ActivityTypeClient) QueryArchivedTaskActivities(at *ActivityType) *ArchivedTaskActivityQuery {
+	query := &ArchivedTaskActivityQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := at.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(activitytype.Table, activitytype.FieldID, id),
+			sqlgraph.To(archivedtaskactivity.Table, archivedtaskactivity.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, activitytype.ArchivedTaskActivitiesTable, activitytype.ArchivedTaskActivitiesColumn),
+		)
+		fromV = sqlgraph.Neighbors(at.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *ActivityTypeClient) Hooks() []Hook {
 	return c.hooks.ActivityType
+}
+
+// ArchivedTaskActivityClient is a client for the ArchivedTaskActivity schema.
+type ArchivedTaskActivityClient struct {
+	config
+}
+
+// NewArchivedTaskActivityClient returns a client for the ArchivedTaskActivity from the given config.
+func NewArchivedTaskActivityClient(c config) *ArchivedTaskActivityClient {
+	return &ArchivedTaskActivityClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `archivedtaskactivity.Hooks(f(g(h())))`.
+func (c *ArchivedTaskActivityClient) Use(hooks ...Hook) {
+	c.hooks.ArchivedTaskActivity = append(c.hooks.ArchivedTaskActivity, hooks...)
+}
+
+// Create returns a create builder for ArchivedTaskActivity.
+func (c *ArchivedTaskActivityClient) Create() *ArchivedTaskActivityCreate {
+	mutation := newArchivedTaskActivityMutation(c.config, OpCreate)
+	return &ArchivedTaskActivityCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of ArchivedTaskActivity entities.
+func (c *ArchivedTaskActivityClient) CreateBulk(builders ...*ArchivedTaskActivityCreate) *ArchivedTaskActivityCreateBulk {
+	return &ArchivedTaskActivityCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for ArchivedTaskActivity.
+func (c *ArchivedTaskActivityClient) Update() *ArchivedTaskActivityUpdate {
+	mutation := newArchivedTaskActivityMutation(c.config, OpUpdate)
+	return &ArchivedTaskActivityUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ArchivedTaskActivityClient) UpdateOne(ata *ArchivedTaskActivity) *ArchivedTaskActivityUpdateOne {
+	mutation := newArchivedTaskActivityMutation(c.config, OpUpdateOne, withArchivedTaskActivity(ata))
+	return &ArchivedTaskActivityUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ArchivedTaskActivityClient) UpdateOneID(id ulid.ID) *ArchivedTaskActivityUpdateOne {
+	mutation := newArchivedTaskActivityMutation(c.config, OpUpdateOne, withArchivedTaskActivityID(id))
+	return &ArchivedTaskActivityUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for ArchivedTaskActivity.
+func (c *ArchivedTaskActivityClient) Delete() *ArchivedTaskActivityDelete {
+	mutation := newArchivedTaskActivityMutation(c.config, OpDelete)
+	return &ArchivedTaskActivityDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *ArchivedTaskActivityClient) DeleteOne(ata *ArchivedTaskActivity) *ArchivedTaskActivityDeleteOne {
+	return c.DeleteOneID(ata.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *ArchivedTaskActivityClient) DeleteOneID(id ulid.ID) *ArchivedTaskActivityDeleteOne {
+	builder := c.Delete().Where(archivedtaskactivity.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ArchivedTaskActivityDeleteOne{builder}
+}
+
+// Query returns a query builder for ArchivedTaskActivity.
+func (c *ArchivedTaskActivityClient) Query() *ArchivedTaskActivityQuery {
+	return &ArchivedTaskActivityQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a ArchivedTaskActivity entity by its id.
+func (c *ArchivedTaskActivityClient) Get(ctx context.Context, id ulid.ID) (*ArchivedTaskActivity, error) {
+	return c.Query().Where(archivedtaskactivity.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ArchivedTaskActivityClient) GetX(ctx context.Context, id ulid.ID) *ArchivedTaskActivity {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryTeammate queries the teammate edge of a ArchivedTaskActivity.
+func (c *ArchivedTaskActivityClient) QueryTeammate(ata *ArchivedTaskActivity) *TeammateQuery {
+	query := &TeammateQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := ata.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(archivedtaskactivity.Table, archivedtaskactivity.FieldID, id),
+			sqlgraph.To(teammate.Table, teammate.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, archivedtaskactivity.TeammateTable, archivedtaskactivity.TeammateColumn),
+		)
+		fromV = sqlgraph.Neighbors(ata.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryActivityType queries the activityType edge of a ArchivedTaskActivity.
+func (c *ArchivedTaskActivityClient) QueryActivityType(ata *ArchivedTaskActivity) *ActivityTypeQuery {
+	query := &ActivityTypeQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := ata.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(archivedtaskactivity.Table, archivedtaskactivity.FieldID, id),
+			sqlgraph.To(activitytype.Table, activitytype.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, archivedtaskactivity.ActivityTypeTable, archivedtaskactivity.ActivityTypeColumn),
+		)
+		fromV = sqlgraph.Neighbors(ata.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryWorkspace queries the workspace edge of a ArchivedTaskActivity.
+func (c *ArchivedTaskActivityClient) QueryWorkspace(ata *ArchivedTaskActivity) *WorkspaceQuery {
+	query := &WorkspaceQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := ata.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(archivedtaskactivity.Table, archivedtaskactivity.FieldID, id),
+			sqlgraph.To(workspace.Table, workspace.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, archivedtaskactivity.WorkspaceTable, archivedtaskactivity.WorkspaceColumn),
+		)
+		fromV = sqlgraph.Neighbors(ata.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *ArchivedTaskActivityClient) Hooks() []Hook {
+	return c.hooks.ArchivedTaskActivity
 }
 
 // ColorClient is a client for the Color schema.
@@ -5101,6 +5262,22 @@ func (c *TeammateClient) QueryWorkspaceActivities(t *Teammate) *WorkspaceActivit
 	return query
 }
 
+// QueryArchivedTaskActivities queries the archivedTaskActivities edge of a Teammate.
+func (c *TeammateClient) QueryArchivedTaskActivities(t *Teammate) *ArchivedTaskActivityQuery {
+	query := &ArchivedTaskActivityQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := t.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(teammate.Table, teammate.FieldID, id),
+			sqlgraph.To(archivedtaskactivity.Table, archivedtaskactivity.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, teammate.ArchivedTaskActivitiesTable, teammate.ArchivedTaskActivitiesColumn),
+		)
+		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *TeammateClient) Hooks() []Hook {
 	return c.hooks.Teammate
@@ -6358,6 +6535,22 @@ func (c *WorkspaceClient) QueryTaskActivities(w *Workspace) *TaskActivityQuery {
 			sqlgraph.From(workspace.Table, workspace.FieldID, id),
 			sqlgraph.To(taskactivity.Table, taskactivity.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, workspace.TaskActivitiesTable, workspace.TaskActivitiesColumn),
+		)
+		fromV = sqlgraph.Neighbors(w.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryArchivedTaskActivities queries the archivedTaskActivities edge of a Workspace.
+func (c *WorkspaceClient) QueryArchivedTaskActivities(w *Workspace) *ArchivedTaskActivityQuery {
+	query := &ArchivedTaskActivityQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := w.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(workspace.Table, workspace.FieldID, id),
+			sqlgraph.To(archivedtaskactivity.Table, archivedtaskactivity.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, workspace.ArchivedTaskActivitiesTable, workspace.ArchivedTaskActivitiesColumn),
 		)
 		fromV = sqlgraph.Neighbors(w.driver.Dialect(), step)
 		return fromV, nil

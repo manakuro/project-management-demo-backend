@@ -27,6 +27,8 @@ const (
 	EdgeTaskActivities = "taskActivities"
 	// EdgeWorkspaceActivities holds the string denoting the workspaceactivities edge name in mutations.
 	EdgeWorkspaceActivities = "workspaceActivities"
+	// EdgeArchivedTaskActivities holds the string denoting the archivedtaskactivities edge name in mutations.
+	EdgeArchivedTaskActivities = "archivedTaskActivities"
 	// Table holds the table name of the activitytype in the database.
 	Table = "activity_types"
 	// TaskActivitiesTable is the table that holds the taskActivities relation/edge.
@@ -43,6 +45,13 @@ const (
 	WorkspaceActivitiesInverseTable = "workspace_activities"
 	// WorkspaceActivitiesColumn is the table column denoting the workspaceActivities relation/edge.
 	WorkspaceActivitiesColumn = "activity_type_id"
+	// ArchivedTaskActivitiesTable is the table that holds the archivedTaskActivities relation/edge.
+	ArchivedTaskActivitiesTable = "archived_task_activities"
+	// ArchivedTaskActivitiesInverseTable is the table name for the ArchivedTaskActivity entity.
+	// It exists in this package in order to avoid circular dependency with the "archivedtaskactivity" package.
+	ArchivedTaskActivitiesInverseTable = "archived_task_activities"
+	// ArchivedTaskActivitiesColumn is the table column denoting the archivedTaskActivities relation/edge.
+	ArchivedTaskActivitiesColumn = "activity_type_id"
 )
 
 // Columns holds all SQL columns for activitytype fields.

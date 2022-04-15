@@ -14,6 +14,8 @@ type Tx struct {
 	config
 	// ActivityType is the client for interacting with the ActivityType builders.
 	ActivityType *ActivityTypeClient
+	// ArchivedTaskActivity is the client for interacting with the ArchivedTaskActivity builders.
+	ArchivedTaskActivity *ArchivedTaskActivityClient
 	// Color is the client for interacting with the Color builders.
 	Color *ColorClient
 	// DeletedTask is the client for interacting with the DeletedTask builders.
@@ -234,6 +236,7 @@ func (tx *Tx) Client() *Client {
 
 func (tx *Tx) init() {
 	tx.ActivityType = NewActivityTypeClient(tx.config)
+	tx.ArchivedTaskActivity = NewArchivedTaskActivityClient(tx.config)
 	tx.Color = NewColorClient(tx.config)
 	tx.DeletedTask = NewDeletedTaskClient(tx.config)
 	tx.FavoriteProject = NewFavoriteProjectClient(tx.config)

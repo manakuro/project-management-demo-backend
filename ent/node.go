@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"project-management-demo-backend/ent/activitytype"
+	"project-management-demo-backend/ent/archivedtaskactivity"
 	"project-management-demo-backend/ent/color"
 	"project-management-demo-backend/ent/deletedtask"
 	"project-management-demo-backend/ent/favoriteproject"
@@ -88,7 +89,7 @@ func (at *ActivityType) Node(ctx context.Context) (node *Node, err error) {
 		ID:     at.ID,
 		Type:   "ActivityType",
 		Fields: make([]*Field, 4),
-		Edges:  make([]*Edge, 2),
+		Edges:  make([]*Edge, 3),
 	}
 	var buf []byte
 	if buf, err = json.Marshal(at.Name); err != nil {
@@ -140,6 +141,97 @@ func (at *ActivityType) Node(ctx context.Context) (node *Node, err error) {
 	err = at.QueryWorkspaceActivities().
 		Select(workspaceactivity.FieldID).
 		Scan(ctx, &node.Edges[1].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[2] = &Edge{
+		Type: "ArchivedTaskActivity",
+		Name: "archivedTaskActivities",
+	}
+	err = at.QueryArchivedTaskActivities().
+		Select(archivedtaskactivity.FieldID).
+		Scan(ctx, &node.Edges[2].IDs)
+	if err != nil {
+		return nil, err
+	}
+	return node, nil
+}
+
+func (ata *ArchivedTaskActivity) Node(ctx context.Context) (node *Node, err error) {
+	node = &Node{
+		ID:     ata.ID,
+		Type:   "ArchivedTaskActivity",
+		Fields: make([]*Field, 5),
+		Edges:  make([]*Edge, 3),
+	}
+	var buf []byte
+	if buf, err = json.Marshal(ata.ActivityTypeID); err != nil {
+		return nil, err
+	}
+	node.Fields[0] = &Field{
+		Type:  "ulid.ID",
+		Name:  "activity_type_id",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(ata.TeammateID); err != nil {
+		return nil, err
+	}
+	node.Fields[1] = &Field{
+		Type:  "ulid.ID",
+		Name:  "teammate_id",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(ata.WorkspaceID); err != nil {
+		return nil, err
+	}
+	node.Fields[2] = &Field{
+		Type:  "ulid.ID",
+		Name:  "workspace_id",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(ata.CreatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[3] = &Field{
+		Type:  "time.Time",
+		Name:  "created_at",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(ata.UpdatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[4] = &Field{
+		Type:  "time.Time",
+		Name:  "updated_at",
+		Value: string(buf),
+	}
+	node.Edges[0] = &Edge{
+		Type: "Teammate",
+		Name: "teammate",
+	}
+	err = ata.QueryTeammate().
+		Select(teammate.FieldID).
+		Scan(ctx, &node.Edges[0].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[1] = &Edge{
+		Type: "ActivityType",
+		Name: "activityType",
+	}
+	err = ata.QueryActivityType().
+		Select(activitytype.FieldID).
+		Scan(ctx, &node.Edges[1].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[2] = &Edge{
+		Type: "Workspace",
+		Name: "workspace",
+	}
+	err = ata.QueryWorkspace().
+		Select(workspace.FieldID).
+		Scan(ctx, &node.Edges[2].IDs)
 	if err != nil {
 		return nil, err
 	}
@@ -2667,7 +2759,7 @@ func (t *Teammate) Node(ctx context.Context) (node *Node, err error) {
 		ID:     t.ID,
 		Type:   "Teammate",
 		Fields: make([]*Field, 5),
-		Edges:  make([]*Edge, 18),
+		Edges:  make([]*Edge, 19),
 	}
 	var buf []byte
 	if buf, err = json.Marshal(t.Name); err != nil {
@@ -2887,6 +2979,16 @@ func (t *Teammate) Node(ctx context.Context) (node *Node, err error) {
 	err = t.QueryWorkspaceActivities().
 		Select(workspaceactivity.FieldID).
 		Scan(ctx, &node.Edges[17].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[18] = &Edge{
+		Type: "ArchivedTaskActivity",
+		Name: "archivedTaskActivities",
+	}
+	err = t.QueryArchivedTaskActivities().
+		Select(archivedtaskactivity.FieldID).
+		Scan(ctx, &node.Edges[18].IDs)
 	if err != nil {
 		return nil, err
 	}
@@ -3551,7 +3653,7 @@ func (w *Workspace) Node(ctx context.Context) (node *Node, err error) {
 		ID:     w.ID,
 		Type:   "Workspace",
 		Fields: make([]*Field, 5),
-		Edges:  make([]*Edge, 14),
+		Edges:  make([]*Edge, 15),
 	}
 	var buf []byte
 	if buf, err = json.Marshal(w.CreatedBy); err != nil {
@@ -3731,6 +3833,16 @@ func (w *Workspace) Node(ctx context.Context) (node *Node, err error) {
 	err = w.QueryTaskActivities().
 		Select(taskactivity.FieldID).
 		Scan(ctx, &node.Edges[13].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[14] = &Edge{
+		Type: "ArchivedTaskActivity",
+		Name: "archivedTaskActivities",
+	}
+	err = w.QueryArchivedTaskActivities().
+		Select(archivedtaskactivity.FieldID).
+		Scan(ctx, &node.Edges[14].IDs)
 	if err != nil {
 		return nil, err
 	}
@@ -4059,6 +4171,15 @@ func (c *Client) noder(ctx context.Context, table string, id ulid.ID) (Noder, er
 		n, err := c.ActivityType.Query().
 			Where(activitytype.ID(id)).
 			CollectFields(ctx, "ActivityType").
+			Only(ctx)
+		if err != nil {
+			return nil, err
+		}
+		return n, nil
+	case archivedtaskactivity.Table:
+		n, err := c.ArchivedTaskActivity.Query().
+			Where(archivedtaskactivity.ID(id)).
+			CollectFields(ctx, "ArchivedTaskActivity").
 			Only(ctx)
 		if err != nil {
 			return nil, err
@@ -4519,6 +4640,19 @@ func (c *Client) noders(ctx context.Context, table string, ids []ulid.ID) ([]Nod
 		nodes, err := c.ActivityType.Query().
 			Where(activitytype.IDIn(ids...)).
 			CollectFields(ctx, "ActivityType").
+			All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, node := range nodes {
+			for _, noder := range idmap[node.ID] {
+				*noder = node
+			}
+		}
+	case archivedtaskactivity.Table:
+		nodes, err := c.ArchivedTaskActivity.Query().
+			Where(archivedtaskactivity.IDIn(ids...)).
+			CollectFields(ctx, "ArchivedTaskActivity").
 			All(ctx)
 		if err != nil {
 			return nil, err

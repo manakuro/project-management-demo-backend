@@ -1118,6 +1118,34 @@ func HasWorkspaceActivitiesWith(preds ...predicate.WorkspaceActivity) predicate.
 	})
 }
 
+// HasArchivedTaskActivities applies the HasEdge predicate on the "archivedTaskActivities" edge.
+func HasArchivedTaskActivities() predicate.Teammate {
+	return predicate.Teammate(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(ArchivedTaskActivitiesTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ArchivedTaskActivitiesTable, ArchivedTaskActivitiesColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasArchivedTaskActivitiesWith applies the HasEdge predicate on the "archivedTaskActivities" edge with a given conditions (other predicates).
+func HasArchivedTaskActivitiesWith(preds ...predicate.ArchivedTaskActivity) predicate.Teammate {
+	return predicate.Teammate(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(ArchivedTaskActivitiesInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, ArchivedTaskActivitiesTable, ArchivedTaskActivitiesColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Teammate) predicate.Teammate {
 	return predicate.Teammate(func(s *sql.Selector) {

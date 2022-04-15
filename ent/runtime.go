@@ -4,6 +4,7 @@ package ent
 
 import (
 	"project-management-demo-backend/ent/activitytype"
+	"project-management-demo-backend/ent/archivedtaskactivity"
 	"project-management-demo-backend/ent/color"
 	"project-management-demo-backend/ent/deletedtask"
 	"project-management-demo-backend/ent/favoriteproject"
@@ -94,6 +95,25 @@ func init() {
 	activitytypeDescID := activitytypeMixinFields0[0].Descriptor()
 	// activitytype.DefaultID holds the default value on creation for the id field.
 	activitytype.DefaultID = activitytypeDescID.Default.(func() ulid.ID)
+	archivedtaskactivityMixin := schema.ArchivedTaskActivity{}.Mixin()
+	archivedtaskactivityMixinFields0 := archivedtaskactivityMixin[0].Fields()
+	_ = archivedtaskactivityMixinFields0
+	archivedtaskactivityMixinFields2 := archivedtaskactivityMixin[2].Fields()
+	_ = archivedtaskactivityMixinFields2
+	archivedtaskactivityFields := schema.ArchivedTaskActivity{}.Fields()
+	_ = archivedtaskactivityFields
+	// archivedtaskactivityDescCreatedAt is the schema descriptor for created_at field.
+	archivedtaskactivityDescCreatedAt := archivedtaskactivityMixinFields2[0].Descriptor()
+	// archivedtaskactivity.DefaultCreatedAt holds the default value on creation for the created_at field.
+	archivedtaskactivity.DefaultCreatedAt = archivedtaskactivityDescCreatedAt.Default.(func() time.Time)
+	// archivedtaskactivityDescUpdatedAt is the schema descriptor for updated_at field.
+	archivedtaskactivityDescUpdatedAt := archivedtaskactivityMixinFields2[1].Descriptor()
+	// archivedtaskactivity.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	archivedtaskactivity.DefaultUpdatedAt = archivedtaskactivityDescUpdatedAt.Default.(func() time.Time)
+	// archivedtaskactivityDescID is the schema descriptor for id field.
+	archivedtaskactivityDescID := archivedtaskactivityMixinFields0[0].Descriptor()
+	// archivedtaskactivity.DefaultID holds the default value on creation for the id field.
+	archivedtaskactivity.DefaultID = archivedtaskactivityDescID.Default.(func() ulid.ID)
 	colorMixin := schema.Color{}.Mixin()
 	colorMixinFields0 := colorMixin[0].Fields()
 	_ = colorMixinFields0

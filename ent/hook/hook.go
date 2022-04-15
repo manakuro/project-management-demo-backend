@@ -21,6 +21,19 @@ func (f ActivityTypeFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value
 	return f(ctx, mv)
 }
 
+// The ArchivedTaskActivityFunc type is an adapter to allow the use of ordinary
+// function as ArchivedTaskActivity mutator.
+type ArchivedTaskActivityFunc func(context.Context, *ent.ArchivedTaskActivityMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ArchivedTaskActivityFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.ArchivedTaskActivityMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ArchivedTaskActivityMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The ColorFunc type is an adapter to allow the use of ordinary
 // function as Color mutator.
 type ColorFunc func(context.Context, *ent.ColorMutation) (ent.Value, error)

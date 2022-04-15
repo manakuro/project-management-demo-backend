@@ -65,6 +65,8 @@ func main() {
 	seed.WorkspaceActivity(ctx, client)
 	seed.WorkspaceActivityTask(ctx, client)
 
+	seed.ArchivedTaskActivity(ctx, client)
+
 	seed.TestUser(ctx, client)
 	seed.TestTodo(ctx, client)
 

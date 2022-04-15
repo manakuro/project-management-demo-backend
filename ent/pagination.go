@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"io"
 	"project-management-demo-backend/ent/activitytype"
+	"project-management-demo-backend/ent/archivedtaskactivity"
 	"project-management-demo-backend/ent/color"
 	"project-management-demo-backend/ent/deletedtask"
 	"project-management-demo-backend/ent/favoriteproject"
@@ -499,6 +500,233 @@ func (at *ActivityType) ToEdge(order *ActivityTypeOrder) *ActivityTypeEdge {
 	return &ActivityTypeEdge{
 		Node:   at,
 		Cursor: order.Field.toCursor(at),
+	}
+}
+
+// ArchivedTaskActivityEdge is the edge representation of ArchivedTaskActivity.
+type ArchivedTaskActivityEdge struct {
+	Node   *ArchivedTaskActivity `json:"node"`
+	Cursor Cursor                `json:"cursor"`
+}
+
+// ArchivedTaskActivityConnection is the connection containing edges to ArchivedTaskActivity.
+type ArchivedTaskActivityConnection struct {
+	Edges      []*ArchivedTaskActivityEdge `json:"edges"`
+	PageInfo   PageInfo                    `json:"pageInfo"`
+	TotalCount int                         `json:"totalCount"`
+}
+
+// ArchivedTaskActivityPaginateOption enables pagination customization.
+type ArchivedTaskActivityPaginateOption func(*archivedTaskActivityPager) error
+
+// WithArchivedTaskActivityOrder configures pagination ordering.
+func WithArchivedTaskActivityOrder(order *ArchivedTaskActivityOrder) ArchivedTaskActivityPaginateOption {
+	if order == nil {
+		order = DefaultArchivedTaskActivityOrder
+	}
+	o := *order
+	return func(pager *archivedTaskActivityPager) error {
+		if err := o.Direction.Validate(); err != nil {
+			return err
+		}
+		if o.Field == nil {
+			o.Field = DefaultArchivedTaskActivityOrder.Field
+		}
+		pager.order = &o
+		return nil
+	}
+}
+
+// WithArchivedTaskActivityFilter configures pagination filter.
+func WithArchivedTaskActivityFilter(filter func(*ArchivedTaskActivityQuery) (*ArchivedTaskActivityQuery, error)) ArchivedTaskActivityPaginateOption {
+	return func(pager *archivedTaskActivityPager) error {
+		if filter == nil {
+			return errors.New("ArchivedTaskActivityQuery filter cannot be nil")
+		}
+		pager.filter = filter
+		return nil
+	}
+}
+
+type archivedTaskActivityPager struct {
+	order  *ArchivedTaskActivityOrder
+	filter func(*ArchivedTaskActivityQuery) (*ArchivedTaskActivityQuery, error)
+}
+
+func newArchivedTaskActivityPager(opts []ArchivedTaskActivityPaginateOption) (*archivedTaskActivityPager, error) {
+	pager := &archivedTaskActivityPager{}
+	for _, opt := range opts {
+		if err := opt(pager); err != nil {
+			return nil, err
+		}
+	}
+	if pager.order == nil {
+		pager.order = DefaultArchivedTaskActivityOrder
+	}
+	return pager, nil
+}
+
+func (p *archivedTaskActivityPager) applyFilter(query *ArchivedTaskActivityQuery) (*ArchivedTaskActivityQuery, error) {
+	if p.filter != nil {
+		return p.filter(query)
+	}
+	return query, nil
+}
+
+func (p *archivedTaskActivityPager) toCursor(ata *ArchivedTaskActivity) Cursor {
+	return p.order.Field.toCursor(ata)
+}
+
+func (p *archivedTaskActivityPager) applyCursors(query *ArchivedTaskActivityQuery, after, before *Cursor) *ArchivedTaskActivityQuery {
+	for _, predicate := range cursorsToPredicates(
+		p.order.Direction, after, before,
+		p.order.Field.field, DefaultArchivedTaskActivityOrder.Field.field,
+	) {
+		query = query.Where(predicate)
+	}
+	return query
+}
+
+func (p *archivedTaskActivityPager) applyOrder(query *ArchivedTaskActivityQuery, reverse bool) *ArchivedTaskActivityQuery {
+	direction := p.order.Direction
+	if reverse {
+		direction = direction.reverse()
+	}
+	query = query.Order(direction.orderFunc(p.order.Field.field))
+	if p.order.Field != DefaultArchivedTaskActivityOrder.Field {
+		query = query.Order(direction.orderFunc(DefaultArchivedTaskActivityOrder.Field.field))
+	}
+	return query
+}
+
+// Paginate executes the query and returns a relay based cursor connection to ArchivedTaskActivity.
+func (ata *ArchivedTaskActivityQuery) Paginate(
+	ctx context.Context, after *Cursor, first *int,
+	before *Cursor, last *int, opts ...ArchivedTaskActivityPaginateOption,
+) (*ArchivedTaskActivityConnection, error) {
+	if err := validateFirstLast(first, last); err != nil {
+		return nil, err
+	}
+	pager, err := newArchivedTaskActivityPager(opts)
+	if err != nil {
+		return nil, err
+	}
+
+	if ata, err = pager.applyFilter(ata); err != nil {
+		return nil, err
+	}
+
+	conn := &ArchivedTaskActivityConnection{Edges: []*ArchivedTaskActivityEdge{}}
+	if !hasCollectedField(ctx, edgesField) || first != nil && *first == 0 || last != nil && *last == 0 {
+		if hasCollectedField(ctx, totalCountField) ||
+			hasCollectedField(ctx, pageInfoField) {
+			count, err := ata.Count(ctx)
+			if err != nil {
+				return nil, err
+			}
+			conn.TotalCount = count
+			conn.PageInfo.HasNextPage = first != nil && count > 0
+			conn.PageInfo.HasPreviousPage = last != nil && count > 0
+		}
+		return conn, nil
+	}
+
+	if (after != nil || first != nil || before != nil || last != nil) && hasCollectedField(ctx, totalCountField) {
+		count, err := ata.Clone().Count(ctx)
+		if err != nil {
+			return nil, err
+		}
+		conn.TotalCount = count
+	}
+
+	ata = pager.applyCursors(ata, after, before)
+	ata = pager.applyOrder(ata, last != nil)
+	var limit int
+	if first != nil {
+		limit = *first + 1
+	} else if last != nil {
+		limit = *last + 1
+	}
+	if limit > 0 {
+		ata = ata.Limit(limit)
+	}
+
+	if field := getCollectedField(ctx, edgesField, nodeField); field != nil {
+		ata = ata.collectField(graphql.GetOperationContext(ctx), *field)
+	}
+
+	nodes, err := ata.All(ctx)
+	if err != nil || len(nodes) == 0 {
+		return conn, err
+	}
+
+	if len(nodes) == limit {
+		conn.PageInfo.HasNextPage = first != nil
+		conn.PageInfo.HasPreviousPage = last != nil
+		nodes = nodes[:len(nodes)-1]
+	}
+
+	var nodeAt func(int) *ArchivedTaskActivity
+	if last != nil {
+		n := len(nodes) - 1
+		nodeAt = func(i int) *ArchivedTaskActivity {
+			return nodes[n-i]
+		}
+	} else {
+		nodeAt = func(i int) *ArchivedTaskActivity {
+			return nodes[i]
+		}
+	}
+
+	conn.Edges = make([]*ArchivedTaskActivityEdge, len(nodes))
+	for i := range nodes {
+		node := nodeAt(i)
+		conn.Edges[i] = &ArchivedTaskActivityEdge{
+			Node:   node,
+			Cursor: pager.toCursor(node),
+		}
+	}
+
+	conn.PageInfo.StartCursor = &conn.Edges[0].Cursor
+	conn.PageInfo.EndCursor = &conn.Edges[len(conn.Edges)-1].Cursor
+	if conn.TotalCount == 0 {
+		conn.TotalCount = len(nodes)
+	}
+
+	return conn, nil
+}
+
+// ArchivedTaskActivityOrderField defines the ordering field of ArchivedTaskActivity.
+type ArchivedTaskActivityOrderField struct {
+	field    string
+	toCursor func(*ArchivedTaskActivity) Cursor
+}
+
+// ArchivedTaskActivityOrder defines the ordering of ArchivedTaskActivity.
+type ArchivedTaskActivityOrder struct {
+	Direction OrderDirection                  `json:"direction"`
+	Field     *ArchivedTaskActivityOrderField `json:"field"`
+}
+
+// DefaultArchivedTaskActivityOrder is the default ordering of ArchivedTaskActivity.
+var DefaultArchivedTaskActivityOrder = &ArchivedTaskActivityOrder{
+	Direction: OrderDirectionAsc,
+	Field: &ArchivedTaskActivityOrderField{
+		field: archivedtaskactivity.FieldID,
+		toCursor: func(ata *ArchivedTaskActivity) Cursor {
+			return Cursor{ID: ata.ID}
+		},
+	},
+}
+
+// ToEdge converts ArchivedTaskActivity into ArchivedTaskActivityEdge.
+func (ata *ArchivedTaskActivity) ToEdge(order *ArchivedTaskActivityOrder) *ArchivedTaskActivityEdge {
+	if order == nil {
+		order = DefaultArchivedTaskActivityOrder
+	}
+	return &ArchivedTaskActivityEdge{
+		Node:   ata,
+		Cursor: order.Field.toCursor(ata),
 	}
 }
 

@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"math"
 	"project-management-demo-backend/ent/activitytype"
+	"project-management-demo-backend/ent/archivedtaskactivity"
 	"project-management-demo-backend/ent/predicate"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/taskactivity"
@@ -29,8 +30,9 @@ type ActivityTypeQuery struct {
 	fields     []string
 	predicates []predicate.ActivityType
 	// eager-loading edges.
-	withTaskActivities      *TaskActivityQuery
-	withWorkspaceActivities *WorkspaceActivityQuery
+	withTaskActivities         *TaskActivityQuery
+	withWorkspaceActivities    *WorkspaceActivityQuery
+	withArchivedTaskActivities *ArchivedTaskActivityQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -104,6 +106,28 @@ func (atq *ActivityTypeQuery) QueryWorkspaceActivities() *WorkspaceActivityQuery
 			sqlgraph.From(activitytype.Table, activitytype.FieldID, selector),
 			sqlgraph.To(workspaceactivity.Table, workspaceactivity.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, activitytype.WorkspaceActivitiesTable, activitytype.WorkspaceActivitiesColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(atq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryArchivedTaskActivities chains the current query on the "archivedTaskActivities" edge.
+func (atq *ActivityTypeQuery) QueryArchivedTaskActivities() *ArchivedTaskActivityQuery {
+	query := &ArchivedTaskActivityQuery{config: atq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := atq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := atq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(activitytype.Table, activitytype.FieldID, selector),
+			sqlgraph.To(archivedtaskactivity.Table, archivedtaskactivity.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, activitytype.ArchivedTaskActivitiesTable, activitytype.ArchivedTaskActivitiesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(atq.driver.Dialect(), step)
 		return fromU, nil
@@ -287,13 +311,14 @@ func (atq *ActivityTypeQuery) Clone() *ActivityTypeQuery {
 		return nil
 	}
 	return &ActivityTypeQuery{
-		config:                  atq.config,
-		limit:                   atq.limit,
-		offset:                  atq.offset,
-		order:                   append([]OrderFunc{}, atq.order...),
-		predicates:              append([]predicate.ActivityType{}, atq.predicates...),
-		withTaskActivities:      atq.withTaskActivities.Clone(),
-		withWorkspaceActivities: atq.withWorkspaceActivities.Clone(),
+		config:                     atq.config,
+		limit:                      atq.limit,
+		offset:                     atq.offset,
+		order:                      append([]OrderFunc{}, atq.order...),
+		predicates:                 append([]predicate.ActivityType{}, atq.predicates...),
+		withTaskActivities:         atq.withTaskActivities.Clone(),
+		withWorkspaceActivities:    atq.withWorkspaceActivities.Clone(),
+		withArchivedTaskActivities: atq.withArchivedTaskActivities.Clone(),
 		// clone intermediate query.
 		sql:    atq.sql.Clone(),
 		path:   atq.path,
@@ -320,6 +345,17 @@ func (atq *ActivityTypeQuery) WithWorkspaceActivities(opts ...func(*WorkspaceAct
 		opt(query)
 	}
 	atq.withWorkspaceActivities = query
+	return atq
+}
+
+// WithArchivedTaskActivities tells the query-builder to eager-load the nodes that are connected to
+// the "archivedTaskActivities" edge. The optional arguments are used to configure the query builder of the edge.
+func (atq *ActivityTypeQuery) WithArchivedTaskActivities(opts ...func(*ArchivedTaskActivityQuery)) *ActivityTypeQuery {
+	query := &ArchivedTaskActivityQuery{config: atq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	atq.withArchivedTaskActivities = query
 	return atq
 }
 
@@ -388,9 +424,10 @@ func (atq *ActivityTypeQuery) sqlAll(ctx context.Context) ([]*ActivityType, erro
 	var (
 		nodes       = []*ActivityType{}
 		_spec       = atq.querySpec()
-		loadedTypes = [2]bool{
+		loadedTypes = [3]bool{
 			atq.withTaskActivities != nil,
 			atq.withWorkspaceActivities != nil,
+			atq.withArchivedTaskActivities != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -460,6 +497,31 @@ func (atq *ActivityTypeQuery) sqlAll(ctx context.Context) ([]*ActivityType, erro
 				return nil, fmt.Errorf(`unexpected foreign-key "activity_type_id" returned %v for node %v`, fk, n.ID)
 			}
 			node.Edges.WorkspaceActivities = append(node.Edges.WorkspaceActivities, n)
+		}
+	}
+
+	if query := atq.withArchivedTaskActivities; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[ulid.ID]*ActivityType)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.ArchivedTaskActivities = []*ArchivedTaskActivity{}
+		}
+		query.Where(predicate.ArchivedTaskActivity(func(s *sql.Selector) {
+			s.Where(sql.InValues(activitytype.ArchivedTaskActivitiesColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.ActivityTypeID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "activity_type_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.ArchivedTaskActivities = append(node.Edges.ArchivedTaskActivities, n)
 		}
 	}
 

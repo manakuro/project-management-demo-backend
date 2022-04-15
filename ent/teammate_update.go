@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"project-management-demo-backend/ent/archivedtaskactivity"
 	"project-management-demo-backend/ent/favoriteproject"
 	"project-management-demo-backend/ent/favoriteworkspace"
 	"project-management-demo-backend/ent/predicate"
@@ -332,6 +333,21 @@ func (tu *TeammateUpdate) AddWorkspaceActivities(w ...*WorkspaceActivity) *Teamm
 		ids[i] = w[i].ID
 	}
 	return tu.AddWorkspaceActivityIDs(ids...)
+}
+
+// AddArchivedTaskActivityIDs adds the "archivedTaskActivities" edge to the ArchivedTaskActivity entity by IDs.
+func (tu *TeammateUpdate) AddArchivedTaskActivityIDs(ids ...ulid.ID) *TeammateUpdate {
+	tu.mutation.AddArchivedTaskActivityIDs(ids...)
+	return tu
+}
+
+// AddArchivedTaskActivities adds the "archivedTaskActivities" edges to the ArchivedTaskActivity entity.
+func (tu *TeammateUpdate) AddArchivedTaskActivities(a ...*ArchivedTaskActivity) *TeammateUpdate {
+	ids := make([]ulid.ID, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return tu.AddArchivedTaskActivityIDs(ids...)
 }
 
 // Mutation returns the TeammateMutation object of the builder.
@@ -715,6 +731,27 @@ func (tu *TeammateUpdate) RemoveWorkspaceActivities(w ...*WorkspaceActivity) *Te
 		ids[i] = w[i].ID
 	}
 	return tu.RemoveWorkspaceActivityIDs(ids...)
+}
+
+// ClearArchivedTaskActivities clears all "archivedTaskActivities" edges to the ArchivedTaskActivity entity.
+func (tu *TeammateUpdate) ClearArchivedTaskActivities() *TeammateUpdate {
+	tu.mutation.ClearArchivedTaskActivities()
+	return tu
+}
+
+// RemoveArchivedTaskActivityIDs removes the "archivedTaskActivities" edge to ArchivedTaskActivity entities by IDs.
+func (tu *TeammateUpdate) RemoveArchivedTaskActivityIDs(ids ...ulid.ID) *TeammateUpdate {
+	tu.mutation.RemoveArchivedTaskActivityIDs(ids...)
+	return tu
+}
+
+// RemoveArchivedTaskActivities removes "archivedTaskActivities" edges to ArchivedTaskActivity entities.
+func (tu *TeammateUpdate) RemoveArchivedTaskActivities(a ...*ArchivedTaskActivity) *TeammateUpdate {
+	ids := make([]ulid.ID, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return tu.RemoveArchivedTaskActivityIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -1808,6 +1845,60 @@ func (tu *TeammateUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if tu.mutation.ArchivedTaskActivitiesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   teammate.ArchivedTaskActivitiesTable,
+			Columns: []string{teammate.ArchivedTaskActivitiesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: archivedtaskactivity.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tu.mutation.RemovedArchivedTaskActivitiesIDs(); len(nodes) > 0 && !tu.mutation.ArchivedTaskActivitiesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   teammate.ArchivedTaskActivitiesTable,
+			Columns: []string{teammate.ArchivedTaskActivitiesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: archivedtaskactivity.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tu.mutation.ArchivedTaskActivitiesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   teammate.ArchivedTaskActivitiesTable,
+			Columns: []string{teammate.ArchivedTaskActivitiesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: archivedtaskactivity.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, tu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{teammate.Label}
@@ -2113,6 +2204,21 @@ func (tuo *TeammateUpdateOne) AddWorkspaceActivities(w ...*WorkspaceActivity) *T
 		ids[i] = w[i].ID
 	}
 	return tuo.AddWorkspaceActivityIDs(ids...)
+}
+
+// AddArchivedTaskActivityIDs adds the "archivedTaskActivities" edge to the ArchivedTaskActivity entity by IDs.
+func (tuo *TeammateUpdateOne) AddArchivedTaskActivityIDs(ids ...ulid.ID) *TeammateUpdateOne {
+	tuo.mutation.AddArchivedTaskActivityIDs(ids...)
+	return tuo
+}
+
+// AddArchivedTaskActivities adds the "archivedTaskActivities" edges to the ArchivedTaskActivity entity.
+func (tuo *TeammateUpdateOne) AddArchivedTaskActivities(a ...*ArchivedTaskActivity) *TeammateUpdateOne {
+	ids := make([]ulid.ID, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return tuo.AddArchivedTaskActivityIDs(ids...)
 }
 
 // Mutation returns the TeammateMutation object of the builder.
@@ -2496,6 +2602,27 @@ func (tuo *TeammateUpdateOne) RemoveWorkspaceActivities(w ...*WorkspaceActivity)
 		ids[i] = w[i].ID
 	}
 	return tuo.RemoveWorkspaceActivityIDs(ids...)
+}
+
+// ClearArchivedTaskActivities clears all "archivedTaskActivities" edges to the ArchivedTaskActivity entity.
+func (tuo *TeammateUpdateOne) ClearArchivedTaskActivities() *TeammateUpdateOne {
+	tuo.mutation.ClearArchivedTaskActivities()
+	return tuo
+}
+
+// RemoveArchivedTaskActivityIDs removes the "archivedTaskActivities" edge to ArchivedTaskActivity entities by IDs.
+func (tuo *TeammateUpdateOne) RemoveArchivedTaskActivityIDs(ids ...ulid.ID) *TeammateUpdateOne {
+	tuo.mutation.RemoveArchivedTaskActivityIDs(ids...)
+	return tuo
+}
+
+// RemoveArchivedTaskActivities removes "archivedTaskActivities" edges to ArchivedTaskActivity entities.
+func (tuo *TeammateUpdateOne) RemoveArchivedTaskActivities(a ...*ArchivedTaskActivity) *TeammateUpdateOne {
+	ids := make([]ulid.ID, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return tuo.RemoveArchivedTaskActivityIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -3605,6 +3732,60 @@ func (tuo *TeammateUpdateOne) sqlSave(ctx context.Context) (_node *Teammate, err
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: workspaceactivity.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if tuo.mutation.ArchivedTaskActivitiesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   teammate.ArchivedTaskActivitiesTable,
+			Columns: []string{teammate.ArchivedTaskActivitiesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: archivedtaskactivity.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tuo.mutation.RemovedArchivedTaskActivitiesIDs(); len(nodes) > 0 && !tuo.mutation.ArchivedTaskActivitiesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   teammate.ArchivedTaskActivitiesTable,
+			Columns: []string{teammate.ArchivedTaskActivitiesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: archivedtaskactivity.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tuo.mutation.ArchivedTaskActivitiesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   teammate.ArchivedTaskActivitiesTable,
+			Columns: []string{teammate.ArchivedTaskActivitiesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: archivedtaskactivity.FieldID,
 				},
 			},
 		}
