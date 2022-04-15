@@ -48,6 +48,7 @@ import (
 	"project-management-demo-backend/ent/testuser"
 	"project-management-demo-backend/ent/workspace"
 	"project-management-demo-backend/ent/workspaceactivity"
+	"project-management-demo-backend/ent/workspaceactivitytask"
 	"project-management-demo-backend/ent/workspaceteammate"
 
 	"entgo.io/contrib/entgql"
@@ -1434,7 +1435,7 @@ func (t *Task) Node(ctx context.Context) (node *Node, err error) {
 		ID:     t.ID,
 		Type:   "Task",
 		Fields: make([]*Field, 13),
-		Edges:  make([]*Edge, 14),
+		Edges:  make([]*Edge, 15),
 	}
 	var buf []byte
 	if buf, err = json.Marshal(t.TaskParentID); err != nil {
@@ -1678,6 +1679,16 @@ func (t *Task) Node(ctx context.Context) (node *Node, err error) {
 	err = t.QueryTaskActivityTasks().
 		Select(taskactivitytask.FieldID).
 		Scan(ctx, &node.Edges[13].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[14] = &Edge{
+		Type: "WorkspaceActivityTask",
+		Name: "workspaceActivityTasks",
+	}
+	err = t.QueryWorkspaceActivityTasks().
+		Select(workspaceactivitytask.FieldID).
+		Scan(ctx, &node.Edges[14].IDs)
 	if err != nil {
 		return nil, err
 	}
@@ -3703,7 +3714,7 @@ func (wa *WorkspaceActivity) Node(ctx context.Context) (node *Node, err error) {
 		ID:     wa.ID,
 		Type:   "WorkspaceActivity",
 		Fields: make([]*Field, 6),
-		Edges:  make([]*Edge, 4),
+		Edges:  make([]*Edge, 5),
 	}
 	var buf []byte
 	if buf, err = json.Marshal(wa.ActivityTypeID); err != nil {
@@ -3791,6 +3802,79 @@ func (wa *WorkspaceActivity) Node(ctx context.Context) (node *Node, err error) {
 	err = wa.QueryTeammate().
 		Select(teammate.FieldID).
 		Scan(ctx, &node.Edges[3].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[4] = &Edge{
+		Type: "WorkspaceActivityTask",
+		Name: "workspaceActivityTasks",
+	}
+	err = wa.QueryWorkspaceActivityTasks().
+		Select(workspaceactivitytask.FieldID).
+		Scan(ctx, &node.Edges[4].IDs)
+	if err != nil {
+		return nil, err
+	}
+	return node, nil
+}
+
+func (wat *WorkspaceActivityTask) Node(ctx context.Context) (node *Node, err error) {
+	node = &Node{
+		ID:     wat.ID,
+		Type:   "WorkspaceActivityTask",
+		Fields: make([]*Field, 4),
+		Edges:  make([]*Edge, 2),
+	}
+	var buf []byte
+	if buf, err = json.Marshal(wat.WorkspaceActivityID); err != nil {
+		return nil, err
+	}
+	node.Fields[0] = &Field{
+		Type:  "ulid.ID",
+		Name:  "workspace_activity_id",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(wat.TaskID); err != nil {
+		return nil, err
+	}
+	node.Fields[1] = &Field{
+		Type:  "ulid.ID",
+		Name:  "task_id",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(wat.CreatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[2] = &Field{
+		Type:  "time.Time",
+		Name:  "created_at",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(wat.UpdatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[3] = &Field{
+		Type:  "time.Time",
+		Name:  "updated_at",
+		Value: string(buf),
+	}
+	node.Edges[0] = &Edge{
+		Type: "Task",
+		Name: "task",
+	}
+	err = wat.QueryTask().
+		Select(task.FieldID).
+		Scan(ctx, &node.Edges[0].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[1] = &Edge{
+		Type: "WorkspaceActivity",
+		Name: "workspaceActivity",
+	}
+	err = wat.QueryWorkspaceActivity().
+		Select(workspaceactivity.FieldID).
+		Scan(ctx, &node.Edges[1].IDs)
 	if err != nil {
 		return nil, err
 	}
@@ -4307,6 +4391,15 @@ func (c *Client) noder(ctx context.Context, table string, id ulid.ID) (Noder, er
 		n, err := c.WorkspaceActivity.Query().
 			Where(workspaceactivity.ID(id)).
 			CollectFields(ctx, "WorkspaceActivity").
+			Only(ctx)
+		if err != nil {
+			return nil, err
+		}
+		return n, nil
+	case workspaceactivitytask.Table:
+		n, err := c.WorkspaceActivityTask.Query().
+			Where(workspaceactivitytask.ID(id)).
+			CollectFields(ctx, "WorkspaceActivityTask").
 			Only(ctx)
 		if err != nil {
 			return nil, err
@@ -4918,6 +5011,19 @@ func (c *Client) noders(ctx context.Context, table string, ids []ulid.ID) ([]Nod
 		nodes, err := c.WorkspaceActivity.Query().
 			Where(workspaceactivity.IDIn(ids...)).
 			CollectFields(ctx, "WorkspaceActivity").
+			All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, node := range nodes {
+			for _, noder := range idmap[node.ID] {
+				*noder = node
+			}
+		}
+	case workspaceactivitytask.Table:
+		nodes, err := c.WorkspaceActivityTask.Query().
+			Where(workspaceactivitytask.IDIn(ids...)).
+			CollectFields(ctx, "WorkspaceActivityTask").
 			All(ctx)
 		if err != nil {
 			return nil, err

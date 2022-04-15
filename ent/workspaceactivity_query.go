@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"database/sql/driver"
 	"errors"
 	"fmt"
 	"math"
@@ -14,6 +15,7 @@ import (
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/workspace"
 	"project-management-demo-backend/ent/workspaceactivity"
+	"project-management-demo-backend/ent/workspaceactivitytask"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -30,10 +32,11 @@ type WorkspaceActivityQuery struct {
 	fields     []string
 	predicates []predicate.WorkspaceActivity
 	// eager-loading edges.
-	withActivityType *ActivityTypeQuery
-	withWorkspace    *WorkspaceQuery
-	withProject      *ProjectQuery
-	withTeammate     *TeammateQuery
+	withActivityType           *ActivityTypeQuery
+	withWorkspace              *WorkspaceQuery
+	withProject                *ProjectQuery
+	withTeammate               *TeammateQuery
+	withWorkspaceActivityTasks *WorkspaceActivityTaskQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -151,6 +154,28 @@ func (waq *WorkspaceActivityQuery) QueryTeammate() *TeammateQuery {
 			sqlgraph.From(workspaceactivity.Table, workspaceactivity.FieldID, selector),
 			sqlgraph.To(teammate.Table, teammate.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, workspaceactivity.TeammateTable, workspaceactivity.TeammateColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(waq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryWorkspaceActivityTasks chains the current query on the "workspaceActivityTasks" edge.
+func (waq *WorkspaceActivityQuery) QueryWorkspaceActivityTasks() *WorkspaceActivityTaskQuery {
+	query := &WorkspaceActivityTaskQuery{config: waq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := waq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := waq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(workspaceactivity.Table, workspaceactivity.FieldID, selector),
+			sqlgraph.To(workspaceactivitytask.Table, workspaceactivitytask.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, workspaceactivity.WorkspaceActivityTasksTable, workspaceactivity.WorkspaceActivityTasksColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(waq.driver.Dialect(), step)
 		return fromU, nil
@@ -334,15 +359,16 @@ func (waq *WorkspaceActivityQuery) Clone() *WorkspaceActivityQuery {
 		return nil
 	}
 	return &WorkspaceActivityQuery{
-		config:           waq.config,
-		limit:            waq.limit,
-		offset:           waq.offset,
-		order:            append([]OrderFunc{}, waq.order...),
-		predicates:       append([]predicate.WorkspaceActivity{}, waq.predicates...),
-		withActivityType: waq.withActivityType.Clone(),
-		withWorkspace:    waq.withWorkspace.Clone(),
-		withProject:      waq.withProject.Clone(),
-		withTeammate:     waq.withTeammate.Clone(),
+		config:                     waq.config,
+		limit:                      waq.limit,
+		offset:                     waq.offset,
+		order:                      append([]OrderFunc{}, waq.order...),
+		predicates:                 append([]predicate.WorkspaceActivity{}, waq.predicates...),
+		withActivityType:           waq.withActivityType.Clone(),
+		withWorkspace:              waq.withWorkspace.Clone(),
+		withProject:                waq.withProject.Clone(),
+		withTeammate:               waq.withTeammate.Clone(),
+		withWorkspaceActivityTasks: waq.withWorkspaceActivityTasks.Clone(),
 		// clone intermediate query.
 		sql:    waq.sql.Clone(),
 		path:   waq.path,
@@ -391,6 +417,17 @@ func (waq *WorkspaceActivityQuery) WithTeammate(opts ...func(*TeammateQuery)) *W
 		opt(query)
 	}
 	waq.withTeammate = query
+	return waq
+}
+
+// WithWorkspaceActivityTasks tells the query-builder to eager-load the nodes that are connected to
+// the "workspaceActivityTasks" edge. The optional arguments are used to configure the query builder of the edge.
+func (waq *WorkspaceActivityQuery) WithWorkspaceActivityTasks(opts ...func(*WorkspaceActivityTaskQuery)) *WorkspaceActivityQuery {
+	query := &WorkspaceActivityTaskQuery{config: waq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	waq.withWorkspaceActivityTasks = query
 	return waq
 }
 
@@ -459,11 +496,12 @@ func (waq *WorkspaceActivityQuery) sqlAll(ctx context.Context) ([]*WorkspaceActi
 	var (
 		nodes       = []*WorkspaceActivity{}
 		_spec       = waq.querySpec()
-		loadedTypes = [4]bool{
+		loadedTypes = [5]bool{
 			waq.withActivityType != nil,
 			waq.withWorkspace != nil,
 			waq.withProject != nil,
 			waq.withTeammate != nil,
+			waq.withWorkspaceActivityTasks != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -587,6 +625,31 @@ func (waq *WorkspaceActivityQuery) sqlAll(ctx context.Context) ([]*WorkspaceActi
 			for i := range nodes {
 				nodes[i].Edges.Teammate = n
 			}
+		}
+	}
+
+	if query := waq.withWorkspaceActivityTasks; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[ulid.ID]*WorkspaceActivity)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.WorkspaceActivityTasks = []*WorkspaceActivityTask{}
+		}
+		query.Where(predicate.WorkspaceActivityTask(func(s *sql.Selector) {
+			s.Where(sql.InValues(workspaceactivity.WorkspaceActivityTasksColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.WorkspaceActivityID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "workspace_activity_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.WorkspaceActivityTasks = append(node.Edges.WorkspaceActivityTasks, n)
 		}
 	}
 

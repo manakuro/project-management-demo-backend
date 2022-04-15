@@ -88,6 +88,13 @@ func (WorkspaceActivity) Edges() []ent.Edge {
 					annotation.Edge{FieldName: "teammate_id"},
 				),
 			),
+		edge.To(workspaceActivityTasksRef, WorkspaceActivityTask.Type).
+			Annotations(
+				entgql.Bind(),
+				schema.Annotation(
+					annotation.Edge{FieldName: "workspace_activity_task_id"},
+				),
+			),
 	}
 }
 

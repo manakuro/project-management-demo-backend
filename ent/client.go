@@ -51,6 +51,7 @@ import (
 	"project-management-demo-backend/ent/testuser"
 	"project-management-demo-backend/ent/workspace"
 	"project-management-demo-backend/ent/workspaceactivity"
+	"project-management-demo-backend/ent/workspaceactivitytask"
 	"project-management-demo-backend/ent/workspaceteammate"
 
 	"entgo.io/ent/dialect"
@@ -145,6 +146,8 @@ type Client struct {
 	Workspace *WorkspaceClient
 	// WorkspaceActivity is the client for interacting with the WorkspaceActivity builders.
 	WorkspaceActivity *WorkspaceActivityClient
+	// WorkspaceActivityTask is the client for interacting with the WorkspaceActivityTask builders.
+	WorkspaceActivityTask *WorkspaceActivityTaskClient
 	// WorkspaceTeammate is the client for interacting with the WorkspaceTeammate builders.
 	WorkspaceTeammate *WorkspaceTeammateClient
 }
@@ -201,6 +204,7 @@ func (c *Client) init() {
 	c.TestUser = NewTestUserClient(c.config)
 	c.Workspace = NewWorkspaceClient(c.config)
 	c.WorkspaceActivity = NewWorkspaceActivityClient(c.config)
+	c.WorkspaceActivityTask = NewWorkspaceActivityTaskClient(c.config)
 	c.WorkspaceTeammate = NewWorkspaceTeammateClient(c.config)
 }
 
@@ -276,6 +280,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		TestUser:                NewTestUserClient(cfg),
 		Workspace:               NewWorkspaceClient(cfg),
 		WorkspaceActivity:       NewWorkspaceActivityClient(cfg),
+		WorkspaceActivityTask:   NewWorkspaceActivityTaskClient(cfg),
 		WorkspaceTeammate:       NewWorkspaceTeammateClient(cfg),
 	}, nil
 }
@@ -337,6 +342,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		TestUser:                NewTestUserClient(cfg),
 		Workspace:               NewWorkspaceClient(cfg),
 		WorkspaceActivity:       NewWorkspaceActivityClient(cfg),
+		WorkspaceActivityTask:   NewWorkspaceActivityTaskClient(cfg),
 		WorkspaceTeammate:       NewWorkspaceTeammateClient(cfg),
 	}, nil
 }
@@ -408,6 +414,7 @@ func (c *Client) Use(hooks ...Hook) {
 	c.TestUser.Use(hooks...)
 	c.Workspace.Use(hooks...)
 	c.WorkspaceActivity.Use(hooks...)
+	c.WorkspaceActivityTask.Use(hooks...)
 	c.WorkspaceTeammate.Use(hooks...)
 }
 
@@ -3011,6 +3018,22 @@ func (c *TaskClient) QueryTaskActivityTasks(t *Task) *TaskActivityTaskQuery {
 			sqlgraph.From(task.Table, task.FieldID, id),
 			sqlgraph.To(taskactivitytask.Table, taskactivitytask.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, task.TaskActivityTasksTable, task.TaskActivityTasksColumn),
+		)
+		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryWorkspaceActivityTasks queries the workspaceActivityTasks edge of a Task.
+func (c *TaskClient) QueryWorkspaceActivityTasks(t *Task) *WorkspaceActivityTaskQuery {
+	query := &WorkspaceActivityTaskQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := t.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(task.Table, task.FieldID, id),
+			sqlgraph.To(workspaceactivitytask.Table, workspaceactivitytask.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, task.WorkspaceActivityTasksTable, task.WorkspaceActivityTasksColumn),
 		)
 		fromV = sqlgraph.Neighbors(t.driver.Dialect(), step)
 		return fromV, nil
@@ -6464,9 +6487,147 @@ func (c *WorkspaceActivityClient) QueryTeammate(wa *WorkspaceActivity) *Teammate
 	return query
 }
 
+// QueryWorkspaceActivityTasks queries the workspaceActivityTasks edge of a WorkspaceActivity.
+func (c *WorkspaceActivityClient) QueryWorkspaceActivityTasks(wa *WorkspaceActivity) *WorkspaceActivityTaskQuery {
+	query := &WorkspaceActivityTaskQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := wa.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(workspaceactivity.Table, workspaceactivity.FieldID, id),
+			sqlgraph.To(workspaceactivitytask.Table, workspaceactivitytask.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, workspaceactivity.WorkspaceActivityTasksTable, workspaceactivity.WorkspaceActivityTasksColumn),
+		)
+		fromV = sqlgraph.Neighbors(wa.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *WorkspaceActivityClient) Hooks() []Hook {
 	return c.hooks.WorkspaceActivity
+}
+
+// WorkspaceActivityTaskClient is a client for the WorkspaceActivityTask schema.
+type WorkspaceActivityTaskClient struct {
+	config
+}
+
+// NewWorkspaceActivityTaskClient returns a client for the WorkspaceActivityTask from the given config.
+func NewWorkspaceActivityTaskClient(c config) *WorkspaceActivityTaskClient {
+	return &WorkspaceActivityTaskClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `workspaceactivitytask.Hooks(f(g(h())))`.
+func (c *WorkspaceActivityTaskClient) Use(hooks ...Hook) {
+	c.hooks.WorkspaceActivityTask = append(c.hooks.WorkspaceActivityTask, hooks...)
+}
+
+// Create returns a create builder for WorkspaceActivityTask.
+func (c *WorkspaceActivityTaskClient) Create() *WorkspaceActivityTaskCreate {
+	mutation := newWorkspaceActivityTaskMutation(c.config, OpCreate)
+	return &WorkspaceActivityTaskCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of WorkspaceActivityTask entities.
+func (c *WorkspaceActivityTaskClient) CreateBulk(builders ...*WorkspaceActivityTaskCreate) *WorkspaceActivityTaskCreateBulk {
+	return &WorkspaceActivityTaskCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for WorkspaceActivityTask.
+func (c *WorkspaceActivityTaskClient) Update() *WorkspaceActivityTaskUpdate {
+	mutation := newWorkspaceActivityTaskMutation(c.config, OpUpdate)
+	return &WorkspaceActivityTaskUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *WorkspaceActivityTaskClient) UpdateOne(wat *WorkspaceActivityTask) *WorkspaceActivityTaskUpdateOne {
+	mutation := newWorkspaceActivityTaskMutation(c.config, OpUpdateOne, withWorkspaceActivityTask(wat))
+	return &WorkspaceActivityTaskUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *WorkspaceActivityTaskClient) UpdateOneID(id ulid.ID) *WorkspaceActivityTaskUpdateOne {
+	mutation := newWorkspaceActivityTaskMutation(c.config, OpUpdateOne, withWorkspaceActivityTaskID(id))
+	return &WorkspaceActivityTaskUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for WorkspaceActivityTask.
+func (c *WorkspaceActivityTaskClient) Delete() *WorkspaceActivityTaskDelete {
+	mutation := newWorkspaceActivityTaskMutation(c.config, OpDelete)
+	return &WorkspaceActivityTaskDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a delete builder for the given entity.
+func (c *WorkspaceActivityTaskClient) DeleteOne(wat *WorkspaceActivityTask) *WorkspaceActivityTaskDeleteOne {
+	return c.DeleteOneID(wat.ID)
+}
+
+// DeleteOneID returns a delete builder for the given id.
+func (c *WorkspaceActivityTaskClient) DeleteOneID(id ulid.ID) *WorkspaceActivityTaskDeleteOne {
+	builder := c.Delete().Where(workspaceactivitytask.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &WorkspaceActivityTaskDeleteOne{builder}
+}
+
+// Query returns a query builder for WorkspaceActivityTask.
+func (c *WorkspaceActivityTaskClient) Query() *WorkspaceActivityTaskQuery {
+	return &WorkspaceActivityTaskQuery{
+		config: c.config,
+	}
+}
+
+// Get returns a WorkspaceActivityTask entity by its id.
+func (c *WorkspaceActivityTaskClient) Get(ctx context.Context, id ulid.ID) (*WorkspaceActivityTask, error) {
+	return c.Query().Where(workspaceactivitytask.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *WorkspaceActivityTaskClient) GetX(ctx context.Context, id ulid.ID) *WorkspaceActivityTask {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryTask queries the task edge of a WorkspaceActivityTask.
+func (c *WorkspaceActivityTaskClient) QueryTask(wat *WorkspaceActivityTask) *TaskQuery {
+	query := &TaskQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := wat.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(workspaceactivitytask.Table, workspaceactivitytask.FieldID, id),
+			sqlgraph.To(task.Table, task.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, workspaceactivitytask.TaskTable, workspaceactivitytask.TaskColumn),
+		)
+		fromV = sqlgraph.Neighbors(wat.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryWorkspaceActivity queries the workspaceActivity edge of a WorkspaceActivityTask.
+func (c *WorkspaceActivityTaskClient) QueryWorkspaceActivity(wat *WorkspaceActivityTask) *WorkspaceActivityQuery {
+	query := &WorkspaceActivityQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := wat.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(workspaceactivitytask.Table, workspaceactivitytask.FieldID, id),
+			sqlgraph.To(workspaceactivity.Table, workspaceactivity.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, workspaceactivitytask.WorkspaceActivityTable, workspaceactivitytask.WorkspaceActivityColumn),
+		)
+		fromV = sqlgraph.Neighbors(wat.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *WorkspaceActivityTaskClient) Hooks() []Hook {
+	return c.hooks.WorkspaceActivityTask
 }
 
 // WorkspaceTeammateClient is a client for the WorkspaceTeammate schema.

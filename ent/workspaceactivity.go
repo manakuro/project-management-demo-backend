@@ -48,9 +48,11 @@ type WorkspaceActivityEdges struct {
 	Project *Project `json:"project,omitempty"`
 	// Teammate holds the value of the teammate edge.
 	Teammate *Teammate `json:"teammate,omitempty"`
+	// WorkspaceActivityTasks holds the value of the workspaceActivityTasks edge.
+	WorkspaceActivityTasks []*WorkspaceActivityTask `json:"workspaceActivityTasks,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [4]bool
+	loadedTypes [5]bool
 }
 
 // ActivityTypeOrErr returns the ActivityType value or an error if the edge
@@ -107,6 +109,15 @@ func (e WorkspaceActivityEdges) TeammateOrErr() (*Teammate, error) {
 		return e.Teammate, nil
 	}
 	return nil, &NotLoadedError{edge: "teammate"}
+}
+
+// WorkspaceActivityTasksOrErr returns the WorkspaceActivityTasks value or an error if the edge
+// was not loaded in eager-loading.
+func (e WorkspaceActivityEdges) WorkspaceActivityTasksOrErr() ([]*WorkspaceActivityTask, error) {
+	if e.loadedTypes[4] {
+		return e.WorkspaceActivityTasks, nil
+	}
+	return nil, &NotLoadedError{edge: "workspaceActivityTasks"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -198,6 +209,11 @@ func (wa *WorkspaceActivity) QueryProject() *ProjectQuery {
 // QueryTeammate queries the "teammate" edge of the WorkspaceActivity entity.
 func (wa *WorkspaceActivity) QueryTeammate() *TeammateQuery {
 	return (&WorkspaceActivityClient{config: wa.config}).QueryTeammate(wa)
+}
+
+// QueryWorkspaceActivityTasks queries the "workspaceActivityTasks" edge of the WorkspaceActivity entity.
+func (wa *WorkspaceActivity) QueryWorkspaceActivityTasks() *WorkspaceActivityTaskQuery {
+	return (&WorkspaceActivityClient{config: wa.config}).QueryWorkspaceActivityTasks(wa)
 }
 
 // Update returns a builder for updating this WorkspaceActivity.
