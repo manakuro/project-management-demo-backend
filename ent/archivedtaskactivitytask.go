@@ -4,10 +4,10 @@ package ent
 
 import (
 	"fmt"
+	"project-management-demo-backend/ent/archivedtaskactivity"
 	"project-management-demo-backend/ent/archivedtaskactivitytask"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/task"
-	"project-management-demo-backend/ent/taskactivity"
 	"strings"
 	"time"
 
@@ -19,8 +19,8 @@ type ArchivedTaskActivityTask struct {
 	config `json:"-"`
 	// ID of the ent.
 	ID ulid.ID `json:"id,omitempty"`
-	// TaskActivityID holds the value of the "task_activity_id" field.
-	TaskActivityID ulid.ID `json:"task_activity_id,omitempty"`
+	// ArchivedTaskActivityID holds the value of the "archived_task_activity_id" field.
+	ArchivedTaskActivityID ulid.ID `json:"archived_task_activity_id,omitempty"`
 	// TaskID holds the value of the "task_id" field.
 	TaskID ulid.ID `json:"task_id,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
@@ -36,8 +36,8 @@ type ArchivedTaskActivityTask struct {
 type ArchivedTaskActivityTaskEdges struct {
 	// Task holds the value of the task edge.
 	Task *Task `json:"task,omitempty"`
-	// TaskActivity holds the value of the taskActivity edge.
-	TaskActivity *TaskActivity `json:"taskActivity,omitempty"`
+	// ArchivedTaskActivity holds the value of the archivedTaskActivity edge.
+	ArchivedTaskActivity *ArchivedTaskActivity `json:"archivedTaskActivity,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
 	loadedTypes [2]bool
@@ -57,18 +57,18 @@ func (e ArchivedTaskActivityTaskEdges) TaskOrErr() (*Task, error) {
 	return nil, &NotLoadedError{edge: "task"}
 }
 
-// TaskActivityOrErr returns the TaskActivity value or an error if the edge
+// ArchivedTaskActivityOrErr returns the ArchivedTaskActivity value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
-func (e ArchivedTaskActivityTaskEdges) TaskActivityOrErr() (*TaskActivity, error) {
+func (e ArchivedTaskActivityTaskEdges) ArchivedTaskActivityOrErr() (*ArchivedTaskActivity, error) {
 	if e.loadedTypes[1] {
-		if e.TaskActivity == nil {
-			// The edge taskActivity was loaded in eager-loading,
+		if e.ArchivedTaskActivity == nil {
+			// The edge archivedTaskActivity was loaded in eager-loading,
 			// but was not found.
-			return nil, &NotFoundError{label: taskactivity.Label}
+			return nil, &NotFoundError{label: archivedtaskactivity.Label}
 		}
-		return e.TaskActivity, nil
+		return e.ArchivedTaskActivity, nil
 	}
-	return nil, &NotLoadedError{edge: "taskActivity"}
+	return nil, &NotLoadedError{edge: "archivedTaskActivity"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -78,7 +78,7 @@ func (*ArchivedTaskActivityTask) scanValues(columns []string) ([]interface{}, er
 		switch columns[i] {
 		case archivedtaskactivitytask.FieldCreatedAt, archivedtaskactivitytask.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
-		case archivedtaskactivitytask.FieldID, archivedtaskactivitytask.FieldTaskActivityID, archivedtaskactivitytask.FieldTaskID:
+		case archivedtaskactivitytask.FieldID, archivedtaskactivitytask.FieldArchivedTaskActivityID, archivedtaskactivitytask.FieldTaskID:
 			values[i] = new(ulid.ID)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type ArchivedTaskActivityTask", columns[i])
@@ -101,11 +101,11 @@ func (atat *ArchivedTaskActivityTask) assignValues(columns []string, values []in
 			} else if value != nil {
 				atat.ID = *value
 			}
-		case archivedtaskactivitytask.FieldTaskActivityID:
+		case archivedtaskactivitytask.FieldArchivedTaskActivityID:
 			if value, ok := values[i].(*ulid.ID); !ok {
-				return fmt.Errorf("unexpected type %T for field task_activity_id", values[i])
+				return fmt.Errorf("unexpected type %T for field archived_task_activity_id", values[i])
 			} else if value != nil {
-				atat.TaskActivityID = *value
+				atat.ArchivedTaskActivityID = *value
 			}
 		case archivedtaskactivitytask.FieldTaskID:
 			if value, ok := values[i].(*ulid.ID); !ok {
@@ -135,9 +135,9 @@ func (atat *ArchivedTaskActivityTask) QueryTask() *TaskQuery {
 	return (&ArchivedTaskActivityTaskClient{config: atat.config}).QueryTask(atat)
 }
 
-// QueryTaskActivity queries the "taskActivity" edge of the ArchivedTaskActivityTask entity.
-func (atat *ArchivedTaskActivityTask) QueryTaskActivity() *TaskActivityQuery {
-	return (&ArchivedTaskActivityTaskClient{config: atat.config}).QueryTaskActivity(atat)
+// QueryArchivedTaskActivity queries the "archivedTaskActivity" edge of the ArchivedTaskActivityTask entity.
+func (atat *ArchivedTaskActivityTask) QueryArchivedTaskActivity() *ArchivedTaskActivityQuery {
+	return (&ArchivedTaskActivityTaskClient{config: atat.config}).QueryArchivedTaskActivity(atat)
 }
 
 // Update returns a builder for updating this ArchivedTaskActivityTask.
@@ -163,8 +163,8 @@ func (atat *ArchivedTaskActivityTask) String() string {
 	var builder strings.Builder
 	builder.WriteString("ArchivedTaskActivityTask(")
 	builder.WriteString(fmt.Sprintf("id=%v", atat.ID))
-	builder.WriteString(", task_activity_id=")
-	builder.WriteString(fmt.Sprintf("%v", atat.TaskActivityID))
+	builder.WriteString(", archived_task_activity_id=")
+	builder.WriteString(fmt.Sprintf("%v", atat.ArchivedTaskActivityID))
 	builder.WriteString(", task_id=")
 	builder.WriteString(fmt.Sprintf("%v", atat.TaskID))
 	builder.WriteString(", created_at=")

@@ -463,6 +463,10 @@ type ArchivedTaskActivityWhereInput struct {
 	// "workspace" edge predicates.
 	HasWorkspace     *bool                  `json:"hasWorkspace,omitempty"`
 	HasWorkspaceWith []*WorkspaceWhereInput `json:"hasWorkspaceWith,omitempty"`
+
+	// "archivedTaskActivityTasks" edge predicates.
+	HasArchivedTaskActivityTasks     *bool                                 `json:"hasArchivedTaskActivityTasks,omitempty"`
+	HasArchivedTaskActivityTasksWith []*ArchivedTaskActivityTaskWhereInput `json:"hasArchivedTaskActivityTasksWith,omitempty"`
 }
 
 // Filter applies the ArchivedTaskActivityWhereInput filter on the ArchivedTaskActivityQuery builder.
@@ -768,6 +772,24 @@ func (i *ArchivedTaskActivityWhereInput) P() (predicate.ArchivedTaskActivity, er
 		}
 		predicates = append(predicates, archivedtaskactivity.HasWorkspaceWith(with...))
 	}
+	if i.HasArchivedTaskActivityTasks != nil {
+		p := archivedtaskactivity.HasArchivedTaskActivityTasks()
+		if !*i.HasArchivedTaskActivityTasks {
+			p = archivedtaskactivity.Not(p)
+		}
+		predicates = append(predicates, p)
+	}
+	if len(i.HasArchivedTaskActivityTasksWith) > 0 {
+		with := make([]predicate.ArchivedTaskActivityTask, 0, len(i.HasArchivedTaskActivityTasksWith))
+		for _, w := range i.HasArchivedTaskActivityTasksWith {
+			p, err := w.P()
+			if err != nil {
+				return nil, err
+			}
+			with = append(with, p)
+		}
+		predicates = append(predicates, archivedtaskactivity.HasArchivedTaskActivityTasksWith(with...))
+	}
 	switch len(predicates) {
 	case 0:
 		return nil, fmt.Errorf("project-management-demo-backend/ent: empty predicate ArchivedTaskActivityWhereInput")
@@ -794,20 +816,20 @@ type ArchivedTaskActivityTaskWhereInput struct {
 	IDLT    *ulid.ID  `json:"idLT,omitempty"`
 	IDLTE   *ulid.ID  `json:"idLTE,omitempty"`
 
-	// "task_activity_id" field predicates.
-	TaskActivityID             *ulid.ID  `json:"taskActivityID,omitempty"`
-	TaskActivityIDNEQ          *ulid.ID  `json:"taskActivityIDNEQ,omitempty"`
-	TaskActivityIDIn           []ulid.ID `json:"taskActivityIDIn,omitempty"`
-	TaskActivityIDNotIn        []ulid.ID `json:"taskActivityIDNotIn,omitempty"`
-	TaskActivityIDGT           *ulid.ID  `json:"taskActivityIDGT,omitempty"`
-	TaskActivityIDGTE          *ulid.ID  `json:"taskActivityIDGTE,omitempty"`
-	TaskActivityIDLT           *ulid.ID  `json:"taskActivityIDLT,omitempty"`
-	TaskActivityIDLTE          *ulid.ID  `json:"taskActivityIDLTE,omitempty"`
-	TaskActivityIDContains     *ulid.ID  `json:"taskActivityIDContains,omitempty"`
-	TaskActivityIDHasPrefix    *ulid.ID  `json:"taskActivityIDHasPrefix,omitempty"`
-	TaskActivityIDHasSuffix    *ulid.ID  `json:"taskActivityIDHasSuffix,omitempty"`
-	TaskActivityIDEqualFold    *ulid.ID  `json:"taskActivityIDEqualFold,omitempty"`
-	TaskActivityIDContainsFold *ulid.ID  `json:"taskActivityIDContainsFold,omitempty"`
+	// "archived_task_activity_id" field predicates.
+	ArchivedTaskActivityID             *ulid.ID  `json:"archivedTaskActivityID,omitempty"`
+	ArchivedTaskActivityIDNEQ          *ulid.ID  `json:"archivedTaskActivityIDNEQ,omitempty"`
+	ArchivedTaskActivityIDIn           []ulid.ID `json:"archivedTaskActivityIDIn,omitempty"`
+	ArchivedTaskActivityIDNotIn        []ulid.ID `json:"archivedTaskActivityIDNotIn,omitempty"`
+	ArchivedTaskActivityIDGT           *ulid.ID  `json:"archivedTaskActivityIDGT,omitempty"`
+	ArchivedTaskActivityIDGTE          *ulid.ID  `json:"archivedTaskActivityIDGTE,omitempty"`
+	ArchivedTaskActivityIDLT           *ulid.ID  `json:"archivedTaskActivityIDLT,omitempty"`
+	ArchivedTaskActivityIDLTE          *ulid.ID  `json:"archivedTaskActivityIDLTE,omitempty"`
+	ArchivedTaskActivityIDContains     *ulid.ID  `json:"archivedTaskActivityIDContains,omitempty"`
+	ArchivedTaskActivityIDHasPrefix    *ulid.ID  `json:"archivedTaskActivityIDHasPrefix,omitempty"`
+	ArchivedTaskActivityIDHasSuffix    *ulid.ID  `json:"archivedTaskActivityIDHasSuffix,omitempty"`
+	ArchivedTaskActivityIDEqualFold    *ulid.ID  `json:"archivedTaskActivityIDEqualFold,omitempty"`
+	ArchivedTaskActivityIDContainsFold *ulid.ID  `json:"archivedTaskActivityIDContainsFold,omitempty"`
 
 	// "task_id" field predicates.
 	TaskID             *ulid.ID  `json:"taskID,omitempty"`
@@ -848,9 +870,9 @@ type ArchivedTaskActivityTaskWhereInput struct {
 	HasTask     *bool             `json:"hasTask,omitempty"`
 	HasTaskWith []*TaskWhereInput `json:"hasTaskWith,omitempty"`
 
-	// "taskActivity" edge predicates.
-	HasTaskActivity     *bool                     `json:"hasTaskActivity,omitempty"`
-	HasTaskActivityWith []*TaskActivityWhereInput `json:"hasTaskActivityWith,omitempty"`
+	// "archivedTaskActivity" edge predicates.
+	HasArchivedTaskActivity     *bool                             `json:"hasArchivedTaskActivity,omitempty"`
+	HasArchivedTaskActivityWith []*ArchivedTaskActivityWhereInput `json:"hasArchivedTaskActivityWith,omitempty"`
 }
 
 // Filter applies the ArchivedTaskActivityTaskWhereInput filter on the ArchivedTaskActivityTaskQuery builder.
@@ -936,44 +958,44 @@ func (i *ArchivedTaskActivityTaskWhereInput) P() (predicate.ArchivedTaskActivity
 	if i.IDLTE != nil {
 		predicates = append(predicates, archivedtaskactivitytask.IDLTE(*i.IDLTE))
 	}
-	if i.TaskActivityID != nil {
-		predicates = append(predicates, archivedtaskactivitytask.TaskActivityIDEQ(*i.TaskActivityID))
+	if i.ArchivedTaskActivityID != nil {
+		predicates = append(predicates, archivedtaskactivitytask.ArchivedTaskActivityIDEQ(*i.ArchivedTaskActivityID))
 	}
-	if i.TaskActivityIDNEQ != nil {
-		predicates = append(predicates, archivedtaskactivitytask.TaskActivityIDNEQ(*i.TaskActivityIDNEQ))
+	if i.ArchivedTaskActivityIDNEQ != nil {
+		predicates = append(predicates, archivedtaskactivitytask.ArchivedTaskActivityIDNEQ(*i.ArchivedTaskActivityIDNEQ))
 	}
-	if len(i.TaskActivityIDIn) > 0 {
-		predicates = append(predicates, archivedtaskactivitytask.TaskActivityIDIn(i.TaskActivityIDIn...))
+	if len(i.ArchivedTaskActivityIDIn) > 0 {
+		predicates = append(predicates, archivedtaskactivitytask.ArchivedTaskActivityIDIn(i.ArchivedTaskActivityIDIn...))
 	}
-	if len(i.TaskActivityIDNotIn) > 0 {
-		predicates = append(predicates, archivedtaskactivitytask.TaskActivityIDNotIn(i.TaskActivityIDNotIn...))
+	if len(i.ArchivedTaskActivityIDNotIn) > 0 {
+		predicates = append(predicates, archivedtaskactivitytask.ArchivedTaskActivityIDNotIn(i.ArchivedTaskActivityIDNotIn...))
 	}
-	if i.TaskActivityIDGT != nil {
-		predicates = append(predicates, archivedtaskactivitytask.TaskActivityIDGT(*i.TaskActivityIDGT))
+	if i.ArchivedTaskActivityIDGT != nil {
+		predicates = append(predicates, archivedtaskactivitytask.ArchivedTaskActivityIDGT(*i.ArchivedTaskActivityIDGT))
 	}
-	if i.TaskActivityIDGTE != nil {
-		predicates = append(predicates, archivedtaskactivitytask.TaskActivityIDGTE(*i.TaskActivityIDGTE))
+	if i.ArchivedTaskActivityIDGTE != nil {
+		predicates = append(predicates, archivedtaskactivitytask.ArchivedTaskActivityIDGTE(*i.ArchivedTaskActivityIDGTE))
 	}
-	if i.TaskActivityIDLT != nil {
-		predicates = append(predicates, archivedtaskactivitytask.TaskActivityIDLT(*i.TaskActivityIDLT))
+	if i.ArchivedTaskActivityIDLT != nil {
+		predicates = append(predicates, archivedtaskactivitytask.ArchivedTaskActivityIDLT(*i.ArchivedTaskActivityIDLT))
 	}
-	if i.TaskActivityIDLTE != nil {
-		predicates = append(predicates, archivedtaskactivitytask.TaskActivityIDLTE(*i.TaskActivityIDLTE))
+	if i.ArchivedTaskActivityIDLTE != nil {
+		predicates = append(predicates, archivedtaskactivitytask.ArchivedTaskActivityIDLTE(*i.ArchivedTaskActivityIDLTE))
 	}
-	if i.TaskActivityIDContains != nil {
-		predicates = append(predicates, archivedtaskactivitytask.TaskActivityIDContains(*i.TaskActivityIDContains))
+	if i.ArchivedTaskActivityIDContains != nil {
+		predicates = append(predicates, archivedtaskactivitytask.ArchivedTaskActivityIDContains(*i.ArchivedTaskActivityIDContains))
 	}
-	if i.TaskActivityIDHasPrefix != nil {
-		predicates = append(predicates, archivedtaskactivitytask.TaskActivityIDHasPrefix(*i.TaskActivityIDHasPrefix))
+	if i.ArchivedTaskActivityIDHasPrefix != nil {
+		predicates = append(predicates, archivedtaskactivitytask.ArchivedTaskActivityIDHasPrefix(*i.ArchivedTaskActivityIDHasPrefix))
 	}
-	if i.TaskActivityIDHasSuffix != nil {
-		predicates = append(predicates, archivedtaskactivitytask.TaskActivityIDHasSuffix(*i.TaskActivityIDHasSuffix))
+	if i.ArchivedTaskActivityIDHasSuffix != nil {
+		predicates = append(predicates, archivedtaskactivitytask.ArchivedTaskActivityIDHasSuffix(*i.ArchivedTaskActivityIDHasSuffix))
 	}
-	if i.TaskActivityIDEqualFold != nil {
-		predicates = append(predicates, archivedtaskactivitytask.TaskActivityIDEqualFold(*i.TaskActivityIDEqualFold))
+	if i.ArchivedTaskActivityIDEqualFold != nil {
+		predicates = append(predicates, archivedtaskactivitytask.ArchivedTaskActivityIDEqualFold(*i.ArchivedTaskActivityIDEqualFold))
 	}
-	if i.TaskActivityIDContainsFold != nil {
-		predicates = append(predicates, archivedtaskactivitytask.TaskActivityIDContainsFold(*i.TaskActivityIDContainsFold))
+	if i.ArchivedTaskActivityIDContainsFold != nil {
+		predicates = append(predicates, archivedtaskactivitytask.ArchivedTaskActivityIDContainsFold(*i.ArchivedTaskActivityIDContainsFold))
 	}
 	if i.TaskID != nil {
 		predicates = append(predicates, archivedtaskactivitytask.TaskIDEQ(*i.TaskID))
@@ -1081,23 +1103,23 @@ func (i *ArchivedTaskActivityTaskWhereInput) P() (predicate.ArchivedTaskActivity
 		}
 		predicates = append(predicates, archivedtaskactivitytask.HasTaskWith(with...))
 	}
-	if i.HasTaskActivity != nil {
-		p := archivedtaskactivitytask.HasTaskActivity()
-		if !*i.HasTaskActivity {
+	if i.HasArchivedTaskActivity != nil {
+		p := archivedtaskactivitytask.HasArchivedTaskActivity()
+		if !*i.HasArchivedTaskActivity {
 			p = archivedtaskactivitytask.Not(p)
 		}
 		predicates = append(predicates, p)
 	}
-	if len(i.HasTaskActivityWith) > 0 {
-		with := make([]predicate.TaskActivity, 0, len(i.HasTaskActivityWith))
-		for _, w := range i.HasTaskActivityWith {
+	if len(i.HasArchivedTaskActivityWith) > 0 {
+		with := make([]predicate.ArchivedTaskActivity, 0, len(i.HasArchivedTaskActivityWith))
+		for _, w := range i.HasArchivedTaskActivityWith {
 			p, err := w.P()
 			if err != nil {
 				return nil, err
 			}
 			with = append(with, p)
 		}
-		predicates = append(predicates, archivedtaskactivitytask.HasTaskActivityWith(with...))
+		predicates = append(predicates, archivedtaskactivitytask.HasArchivedTaskActivityWith(with...))
 	}
 	switch len(predicates) {
 	case 0:
@@ -8408,10 +8430,6 @@ type TaskActivityWhereInput struct {
 	// "taskActivityTasks" edge predicates.
 	HasTaskActivityTasks     *bool                         `json:"hasTaskActivityTasks,omitempty"`
 	HasTaskActivityTasksWith []*TaskActivityTaskWhereInput `json:"hasTaskActivityTasksWith,omitempty"`
-
-	// "archivedTaskActivityTasks" edge predicates.
-	HasArchivedTaskActivityTasks     *bool                                 `json:"hasArchivedTaskActivityTasks,omitempty"`
-	HasArchivedTaskActivityTasksWith []*ArchivedTaskActivityTaskWhereInput `json:"hasArchivedTaskActivityTasksWith,omitempty"`
 }
 
 // Filter applies the TaskActivityWhereInput filter on the TaskActivityQuery builder.
@@ -8734,24 +8752,6 @@ func (i *TaskActivityWhereInput) P() (predicate.TaskActivity, error) {
 			with = append(with, p)
 		}
 		predicates = append(predicates, taskactivity.HasTaskActivityTasksWith(with...))
-	}
-	if i.HasArchivedTaskActivityTasks != nil {
-		p := taskactivity.HasArchivedTaskActivityTasks()
-		if !*i.HasArchivedTaskActivityTasks {
-			p = taskactivity.Not(p)
-		}
-		predicates = append(predicates, p)
-	}
-	if len(i.HasArchivedTaskActivityTasksWith) > 0 {
-		with := make([]predicate.ArchivedTaskActivityTask, 0, len(i.HasArchivedTaskActivityTasksWith))
-		for _, w := range i.HasArchivedTaskActivityTasksWith {
-			p, err := w.P()
-			if err != nil {
-				return nil, err
-			}
-			with = append(with, p)
-		}
-		predicates = append(predicates, taskactivity.HasArchivedTaskActivityTasksWith(with...))
 	}
 	switch len(predicates) {
 	case 0:

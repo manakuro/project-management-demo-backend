@@ -12,8 +12,8 @@ const (
 	Label = "archived_task_activity_task"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
-	// FieldTaskActivityID holds the string denoting the task_activity_id field in the database.
-	FieldTaskActivityID = "task_activity_id"
+	// FieldArchivedTaskActivityID holds the string denoting the archived_task_activity_id field in the database.
+	FieldArchivedTaskActivityID = "archived_task_activity_id"
 	// FieldTaskID holds the string denoting the task_id field in the database.
 	FieldTaskID = "task_id"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
@@ -22,8 +22,8 @@ const (
 	FieldUpdatedAt = "updated_at"
 	// EdgeTask holds the string denoting the task edge name in mutations.
 	EdgeTask = "task"
-	// EdgeTaskActivity holds the string denoting the taskactivity edge name in mutations.
-	EdgeTaskActivity = "taskActivity"
+	// EdgeArchivedTaskActivity holds the string denoting the archivedtaskactivity edge name in mutations.
+	EdgeArchivedTaskActivity = "archivedTaskActivity"
 	// Table holds the table name of the archivedtaskactivitytask in the database.
 	Table = "archived_task_activity_tasks"
 	// TaskTable is the table that holds the task relation/edge.
@@ -33,19 +33,19 @@ const (
 	TaskInverseTable = "tasks"
 	// TaskColumn is the table column denoting the task relation/edge.
 	TaskColumn = "task_id"
-	// TaskActivityTable is the table that holds the taskActivity relation/edge.
-	TaskActivityTable = "archived_task_activity_tasks"
-	// TaskActivityInverseTable is the table name for the TaskActivity entity.
-	// It exists in this package in order to avoid circular dependency with the "taskactivity" package.
-	TaskActivityInverseTable = "task_activities"
-	// TaskActivityColumn is the table column denoting the taskActivity relation/edge.
-	TaskActivityColumn = "task_activity_id"
+	// ArchivedTaskActivityTable is the table that holds the archivedTaskActivity relation/edge.
+	ArchivedTaskActivityTable = "archived_task_activity_tasks"
+	// ArchivedTaskActivityInverseTable is the table name for the ArchivedTaskActivity entity.
+	// It exists in this package in order to avoid circular dependency with the "archivedtaskactivity" package.
+	ArchivedTaskActivityInverseTable = "archived_task_activities"
+	// ArchivedTaskActivityColumn is the table column denoting the archivedTaskActivity relation/edge.
+	ArchivedTaskActivityColumn = "archived_task_activity_id"
 )
 
 // Columns holds all SQL columns for archivedtaskactivitytask fields.
 var Columns = []string{
 	FieldID,
-	FieldTaskActivityID,
+	FieldArchivedTaskActivityID,
 	FieldTaskID,
 	FieldCreatedAt,
 	FieldUpdatedAt,

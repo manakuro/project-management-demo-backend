@@ -62,8 +62,8 @@ var (
 		{Name: "id", Type: field.TypeString},
 		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
 		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
+		{Name: "archived_task_activity_id", Type: field.TypeString},
 		{Name: "task_id", Type: field.TypeString},
-		{Name: "task_activity_id", Type: field.TypeString},
 	}
 	// ArchivedTaskActivityTasksTable holds the schema information for the "archived_task_activity_tasks" table.
 	ArchivedTaskActivityTasksTable = &schema.Table{
@@ -72,15 +72,15 @@ var (
 		PrimaryKey: []*schema.Column{ArchivedTaskActivityTasksColumns[0]},
 		ForeignKeys: []*schema.ForeignKey{
 			{
-				Symbol:     "archived_task_activity_tasks_tasks_archivedTaskActivityTasks",
+				Symbol:     "archived_task_activity_tasks_archived_task_activities_archivedTaskActivityTasks",
 				Columns:    []*schema.Column{ArchivedTaskActivityTasksColumns[3]},
-				RefColumns: []*schema.Column{TasksColumns[0]},
+				RefColumns: []*schema.Column{ArchivedTaskActivitiesColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
-				Symbol:     "archived_task_activity_tasks_task_activities_archivedTaskActivityTasks",
+				Symbol:     "archived_task_activity_tasks_tasks_archivedTaskActivityTasks",
 				Columns:    []*schema.Column{ArchivedTaskActivityTasksColumns[4]},
-				RefColumns: []*schema.Column{TaskActivitiesColumns[0]},
+				RefColumns: []*schema.Column{TasksColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 		},
@@ -1330,8 +1330,8 @@ func init() {
 	ArchivedTaskActivitiesTable.ForeignKeys[0].RefTable = ActivityTypesTable
 	ArchivedTaskActivitiesTable.ForeignKeys[1].RefTable = TeammatesTable
 	ArchivedTaskActivitiesTable.ForeignKeys[2].RefTable = WorkspacesTable
-	ArchivedTaskActivityTasksTable.ForeignKeys[0].RefTable = TasksTable
-	ArchivedTaskActivityTasksTable.ForeignKeys[1].RefTable = TaskActivitiesTable
+	ArchivedTaskActivityTasksTable.ForeignKeys[0].RefTable = ArchivedTaskActivitiesTable
+	ArchivedTaskActivityTasksTable.ForeignKeys[1].RefTable = TasksTable
 	DeletedTasksTable.ForeignKeys[0].RefTable = TasksTable
 	DeletedTasksTable.ForeignKeys[1].RefTable = WorkspacesTable
 	FavoriteProjectsTable.ForeignKeys[0].RefTable = ProjectsTable

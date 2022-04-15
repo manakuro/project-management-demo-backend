@@ -703,6 +703,22 @@ func (c *ArchivedTaskActivityClient) QueryWorkspace(ata *ArchivedTaskActivity) *
 	return query
 }
 
+// QueryArchivedTaskActivityTasks queries the archivedTaskActivityTasks edge of a ArchivedTaskActivity.
+func (c *ArchivedTaskActivityClient) QueryArchivedTaskActivityTasks(ata *ArchivedTaskActivity) *ArchivedTaskActivityTaskQuery {
+	query := &ArchivedTaskActivityTaskQuery{config: c.config}
+	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
+		id := ata.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(archivedtaskactivity.Table, archivedtaskactivity.FieldID, id),
+			sqlgraph.To(archivedtaskactivitytask.Table, archivedtaskactivitytask.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, archivedtaskactivity.ArchivedTaskActivityTasksTable, archivedtaskactivity.ArchivedTaskActivityTasksColumn),
+		)
+		fromV = sqlgraph.Neighbors(ata.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *ArchivedTaskActivityClient) Hooks() []Hook {
 	return c.hooks.ArchivedTaskActivity
@@ -809,15 +825,15 @@ func (c *ArchivedTaskActivityTaskClient) QueryTask(atat *ArchivedTaskActivityTas
 	return query
 }
 
-// QueryTaskActivity queries the taskActivity edge of a ArchivedTaskActivityTask.
-func (c *ArchivedTaskActivityTaskClient) QueryTaskActivity(atat *ArchivedTaskActivityTask) *TaskActivityQuery {
-	query := &TaskActivityQuery{config: c.config}
+// QueryArchivedTaskActivity queries the archivedTaskActivity edge of a ArchivedTaskActivityTask.
+func (c *ArchivedTaskActivityTaskClient) QueryArchivedTaskActivity(atat *ArchivedTaskActivityTask) *ArchivedTaskActivityQuery {
+	query := &ArchivedTaskActivityQuery{config: c.config}
 	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
 		id := atat.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(archivedtaskactivitytask.Table, archivedtaskactivitytask.FieldID, id),
-			sqlgraph.To(taskactivity.Table, taskactivity.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, archivedtaskactivitytask.TaskActivityTable, archivedtaskactivitytask.TaskActivityColumn),
+			sqlgraph.To(archivedtaskactivity.Table, archivedtaskactivity.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, archivedtaskactivitytask.ArchivedTaskActivityTable, archivedtaskactivitytask.ArchivedTaskActivityColumn),
 		)
 		fromV = sqlgraph.Neighbors(atat.driver.Dialect(), step)
 		return fromV, nil
@@ -3494,22 +3510,6 @@ func (c *TaskActivityClient) QueryTaskActivityTasks(ta *TaskActivity) *TaskActiv
 			sqlgraph.From(taskactivity.Table, taskactivity.FieldID, id),
 			sqlgraph.To(taskactivitytask.Table, taskactivitytask.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, taskactivity.TaskActivityTasksTable, taskactivity.TaskActivityTasksColumn),
-		)
-		fromV = sqlgraph.Neighbors(ta.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryArchivedTaskActivityTasks queries the archivedTaskActivityTasks edge of a TaskActivity.
-func (c *TaskActivityClient) QueryArchivedTaskActivityTasks(ta *TaskActivity) *ArchivedTaskActivityTaskQuery {
-	query := &ArchivedTaskActivityTaskQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := ta.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(taskactivity.Table, taskactivity.FieldID, id),
-			sqlgraph.To(archivedtaskactivitytask.Table, archivedtaskactivitytask.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, taskactivity.ArchivedTaskActivityTasksTable, taskactivity.ArchivedTaskActivityTasksColumn),
 		)
 		fromV = sqlgraph.Neighbors(ta.driver.Dialect(), step)
 		return fromV, nil

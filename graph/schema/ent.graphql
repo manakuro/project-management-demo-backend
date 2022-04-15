@@ -3972,10 +3972,6 @@ input TaskActivityWhereInput {
   """taskActivityTasks edge predicates"""
   hasTaskActivityTasks: Boolean
   hasTaskActivityTasksWith: [TaskActivityTaskWhereInput!]
-  
-  """archivedTaskActivityTasks edge predicates"""
-  hasArchivedTaskActivityTasks: Boolean
-  hasArchivedTaskActivityTasksWith: [ArchivedTaskActivityTaskWhereInput!]
 }
 
 """
@@ -4349,6 +4345,10 @@ input ArchivedTaskActivityWhereInput {
   """workspace edge predicates"""
   hasWorkspace: Boolean
   hasWorkspaceWith: [WorkspaceWhereInput!]
+  
+  """archivedTaskActivityTasks edge predicates"""
+  hasArchivedTaskActivityTasks: Boolean
+  hasArchivedTaskActivityTasksWith: [ArchivedTaskActivityTaskWhereInput!]
 }
 
 """
@@ -4360,20 +4360,20 @@ input ArchivedTaskActivityTaskWhereInput {
   and: [ArchivedTaskActivityTaskWhereInput!]
   or: [ArchivedTaskActivityTaskWhereInput!]
   
-  """task_activity_id field predicates"""
-  taskActivityID: ID
-  taskActivityIDNEQ: ID
-  taskActivityIDIn: [ID!]
-  taskActivityIDNotIn: [ID!]
-  taskActivityIDGT: ID
-  taskActivityIDGTE: ID
-  taskActivityIDLT: ID
-  taskActivityIDLTE: ID
-  taskActivityIDContains: ID
-  taskActivityIDHasPrefix: ID
-  taskActivityIDHasSuffix: ID
-  taskActivityIDEqualFold: ID
-  taskActivityIDContainsFold: ID
+  """archived_task_activity_id field predicates"""
+  archivedTaskActivityID: ID
+  archivedTaskActivityIDNEQ: ID
+  archivedTaskActivityIDIn: [ID!]
+  archivedTaskActivityIDNotIn: [ID!]
+  archivedTaskActivityIDGT: ID
+  archivedTaskActivityIDGTE: ID
+  archivedTaskActivityIDLT: ID
+  archivedTaskActivityIDLTE: ID
+  archivedTaskActivityIDContains: ID
+  archivedTaskActivityIDHasPrefix: ID
+  archivedTaskActivityIDHasSuffix: ID
+  archivedTaskActivityIDEqualFold: ID
+  archivedTaskActivityIDContainsFold: ID
   
   """task_id field predicates"""
   taskID: ID
@@ -4424,7 +4424,7 @@ input ArchivedTaskActivityTaskWhereInput {
   hasTask: Boolean
   hasTaskWith: [TaskWhereInput!]
   
-  """taskActivity edge predicates"""
-  hasTaskActivity: Boolean
-  hasTaskActivityWith: [TaskActivityWhereInput!]
+  """archivedTaskActivity edge predicates"""
+  hasArchivedTaskActivity: Boolean
+  hasArchivedTaskActivityWith: [ArchivedTaskActivityWhereInput!]
 }

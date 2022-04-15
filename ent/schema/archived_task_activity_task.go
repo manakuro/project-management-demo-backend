@@ -30,7 +30,7 @@ type ArchivedTaskActivityTaskMixin struct {
 // Fields of the ArchivedTaskActivityTask.
 func (ArchivedTaskActivityTaskMixin) Fields() []ent.Field {
 	return []ent.Field{
-		field.String("task_activity_id").
+		field.String("archived_task_activity_id").
 			GoType(ulid.ID("")),
 		field.String("task_id").
 			GoType(ulid.ID("")),
@@ -51,15 +51,15 @@ func (ArchivedTaskActivityTask) Edges() []ent.Edge {
 					annotation.Edge{FieldName: "task_id"},
 				),
 			),
-		edge.From("taskActivity", TaskActivity.Type).
+		edge.From("archivedTaskActivity", ArchivedTaskActivity.Type).
 			Ref(archivedTaskActivityTasksRef).
-			Field("task_activity_id").
+			Field("archived_task_activity_id").
 			Unique().
 			Required().
 			Annotations(
 				entgql.Bind(),
 				schema.Annotation(
-					annotation.Edge{FieldName: "task_activity_id"},
+					annotation.Edge{FieldName: "archived_task_activity_id"},
 				),
 			),
 	}

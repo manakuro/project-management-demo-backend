@@ -20,8 +20,8 @@ func ArchivedTaskActivityTask(ctx context.Context, client *ent.Client) {
 	inputs := []ent.CreateArchivedTaskActivityTaskInput{
 		// archivedTaskActivity 1
 		{
-			TaskActivityID: archivedTaskActivity1ID,
-			TaskID:         task10ID,
+			ArchivedTaskActivityID: archivedTaskActivity1ID,
+			TaskID:                 task10ID,
 		},
 	}
 	bulk := make([]*ent.ArchivedTaskActivityTaskCreate, len(inputs))

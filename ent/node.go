@@ -163,7 +163,7 @@ func (ata *ArchivedTaskActivity) Node(ctx context.Context) (node *Node, err erro
 		ID:     ata.ID,
 		Type:   "ArchivedTaskActivity",
 		Fields: make([]*Field, 5),
-		Edges:  make([]*Edge, 3),
+		Edges:  make([]*Edge, 4),
 	}
 	var buf []byte
 	if buf, err = json.Marshal(ata.ActivityTypeID); err != nil {
@@ -236,6 +236,16 @@ func (ata *ArchivedTaskActivity) Node(ctx context.Context) (node *Node, err erro
 	if err != nil {
 		return nil, err
 	}
+	node.Edges[3] = &Edge{
+		Type: "ArchivedTaskActivityTask",
+		Name: "archivedTaskActivityTasks",
+	}
+	err = ata.QueryArchivedTaskActivityTasks().
+		Select(archivedtaskactivitytask.FieldID).
+		Scan(ctx, &node.Edges[3].IDs)
+	if err != nil {
+		return nil, err
+	}
 	return node, nil
 }
 
@@ -247,12 +257,12 @@ func (atat *ArchivedTaskActivityTask) Node(ctx context.Context) (node *Node, err
 		Edges:  make([]*Edge, 2),
 	}
 	var buf []byte
-	if buf, err = json.Marshal(atat.TaskActivityID); err != nil {
+	if buf, err = json.Marshal(atat.ArchivedTaskActivityID); err != nil {
 		return nil, err
 	}
 	node.Fields[0] = &Field{
 		Type:  "ulid.ID",
-		Name:  "task_activity_id",
+		Name:  "archived_task_activity_id",
 		Value: string(buf),
 	}
 	if buf, err = json.Marshal(atat.TaskID); err != nil {
@@ -290,11 +300,11 @@ func (atat *ArchivedTaskActivityTask) Node(ctx context.Context) (node *Node, err
 		return nil, err
 	}
 	node.Edges[1] = &Edge{
-		Type: "TaskActivity",
-		Name: "taskActivity",
+		Type: "ArchivedTaskActivity",
+		Name: "archivedTaskActivity",
 	}
-	err = atat.QueryTaskActivity().
-		Select(taskactivity.FieldID).
+	err = atat.QueryArchivedTaskActivity().
+		Select(archivedtaskactivity.FieldID).
 		Scan(ctx, &node.Edges[1].IDs)
 	if err != nil {
 		return nil, err
@@ -1866,7 +1876,7 @@ func (ta *TaskActivity) Node(ctx context.Context) (node *Node, err error) {
 		ID:     ta.ID,
 		Type:   "TaskActivity",
 		Fields: make([]*Field, 5),
-		Edges:  make([]*Edge, 5),
+		Edges:  make([]*Edge, 4),
 	}
 	var buf []byte
 	if buf, err = json.Marshal(ta.ActivityTypeID); err != nil {
@@ -1946,16 +1956,6 @@ func (ta *TaskActivity) Node(ctx context.Context) (node *Node, err error) {
 	err = ta.QueryTaskActivityTasks().
 		Select(taskactivitytask.FieldID).
 		Scan(ctx, &node.Edges[3].IDs)
-	if err != nil {
-		return nil, err
-	}
-	node.Edges[4] = &Edge{
-		Type: "ArchivedTaskActivityTask",
-		Name: "archivedTaskActivityTasks",
-	}
-	err = ta.QueryArchivedTaskActivityTasks().
-		Select(archivedtaskactivitytask.FieldID).
-		Scan(ctx, &node.Edges[4].IDs)
 	if err != nil {
 		return nil, err
 	}

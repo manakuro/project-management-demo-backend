@@ -51,6 +51,10 @@ func (ata *ArchivedTaskActivityQuery) collectField(ctx *graphql.OperationContext
 			ata = ata.WithActivityType(func(query *ActivityTypeQuery) {
 				query.collectField(ctx, field)
 			})
+		case "archivedTaskActivityTasks":
+			ata = ata.WithArchivedTaskActivityTasks(func(query *ArchivedTaskActivityTaskQuery) {
+				query.collectField(ctx, field)
+			})
 		case "teammate":
 			ata = ata.WithTeammate(func(query *TeammateQuery) {
 				query.collectField(ctx, field)
@@ -75,12 +79,12 @@ func (atat *ArchivedTaskActivityTaskQuery) CollectFields(ctx context.Context, sa
 func (atat *ArchivedTaskActivityTaskQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *ArchivedTaskActivityTaskQuery {
 	for _, field := range graphql.CollectFields(ctx, field.Selections, satisfies) {
 		switch field.Name {
-		case "task":
-			atat = atat.WithTask(func(query *TaskQuery) {
+		case "archivedTaskActivity":
+			atat = atat.WithArchivedTaskActivity(func(query *ArchivedTaskActivityQuery) {
 				query.collectField(ctx, field)
 			})
-		case "taskActivity":
-			atat = atat.WithTaskActivity(func(query *TaskActivityQuery) {
+		case "task":
+			atat = atat.WithTask(func(query *TaskQuery) {
 				query.collectField(ctx, field)
 			})
 		}
@@ -621,10 +625,6 @@ func (ta *TaskActivityQuery) collectField(ctx *graphql.OperationContext, field g
 		switch field.Name {
 		case "activityType":
 			ta = ta.WithActivityType(func(query *ActivityTypeQuery) {
-				query.collectField(ctx, field)
-			})
-		case "archivedTaskActivityTasks":
-			ta = ta.WithArchivedTaskActivityTasks(func(query *ArchivedTaskActivityTaskQuery) {
 				query.collectField(ctx, field)
 			})
 		case "taskActivityTasks":

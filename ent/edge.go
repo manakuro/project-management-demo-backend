@@ -52,6 +52,14 @@ func (ata *ArchivedTaskActivity) Workspace(ctx context.Context) (*Workspace, err
 	return result, err
 }
 
+func (ata *ArchivedTaskActivity) ArchivedTaskActivityTasks(ctx context.Context) ([]*ArchivedTaskActivityTask, error) {
+	result, err := ata.Edges.ArchivedTaskActivityTasksOrErr()
+	if IsNotLoaded(err) {
+		result, err = ata.QueryArchivedTaskActivityTasks().All(ctx)
+	}
+	return result, err
+}
+
 func (atat *ArchivedTaskActivityTask) Task(ctx context.Context) (*Task, error) {
 	result, err := atat.Edges.TaskOrErr()
 	if IsNotLoaded(err) {
@@ -60,10 +68,10 @@ func (atat *ArchivedTaskActivityTask) Task(ctx context.Context) (*Task, error) {
 	return result, err
 }
 
-func (atat *ArchivedTaskActivityTask) TaskActivity(ctx context.Context) (*TaskActivity, error) {
-	result, err := atat.Edges.TaskActivityOrErr()
+func (atat *ArchivedTaskActivityTask) ArchivedTaskActivity(ctx context.Context) (*ArchivedTaskActivity, error) {
+	result, err := atat.Edges.ArchivedTaskActivityOrErr()
 	if IsNotLoaded(err) {
-		result, err = atat.QueryTaskActivity().Only(ctx)
+		result, err = atat.QueryArchivedTaskActivity().Only(ctx)
 	}
 	return result, err
 }
@@ -592,14 +600,6 @@ func (ta *TaskActivity) TaskActivityTasks(ctx context.Context) ([]*TaskActivityT
 	result, err := ta.Edges.TaskActivityTasksOrErr()
 	if IsNotLoaded(err) {
 		result, err = ta.QueryTaskActivityTasks().All(ctx)
-	}
-	return result, err
-}
-
-func (ta *TaskActivity) ArchivedTaskActivityTasks(ctx context.Context) ([]*ArchivedTaskActivityTask, error) {
-	result, err := ta.Edges.ArchivedTaskActivityTasksOrErr()
-	if IsNotLoaded(err) {
-		result, err = ta.QueryArchivedTaskActivityTasks().All(ctx)
 	}
 	return result, err
 }

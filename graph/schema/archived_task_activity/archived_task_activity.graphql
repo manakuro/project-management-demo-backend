@@ -2,6 +2,7 @@ type ArchivedTaskActivity implements Node {
   id: ID!
   activityTypeId: ID!
   activityType: ActivityType!
+  archivedTaskActivityTasks: [ArchivedTaskActivityTask!]!
   teammateId: ID!
   createdAt: String!
   updatedAt: String!

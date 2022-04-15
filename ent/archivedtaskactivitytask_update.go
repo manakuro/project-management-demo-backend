@@ -6,11 +6,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"project-management-demo-backend/ent/archivedtaskactivity"
 	"project-management-demo-backend/ent/archivedtaskactivitytask"
 	"project-management-demo-backend/ent/predicate"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/task"
-	"project-management-demo-backend/ent/taskactivity"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -30,9 +30,9 @@ func (atatu *ArchivedTaskActivityTaskUpdate) Where(ps ...predicate.ArchivedTaskA
 	return atatu
 }
 
-// SetTaskActivityID sets the "task_activity_id" field.
-func (atatu *ArchivedTaskActivityTaskUpdate) SetTaskActivityID(u ulid.ID) *ArchivedTaskActivityTaskUpdate {
-	atatu.mutation.SetTaskActivityID(u)
+// SetArchivedTaskActivityID sets the "archived_task_activity_id" field.
+func (atatu *ArchivedTaskActivityTaskUpdate) SetArchivedTaskActivityID(u ulid.ID) *ArchivedTaskActivityTaskUpdate {
+	atatu.mutation.SetArchivedTaskActivityID(u)
 	return atatu
 }
 
@@ -47,9 +47,9 @@ func (atatu *ArchivedTaskActivityTaskUpdate) SetTask(t *Task) *ArchivedTaskActiv
 	return atatu.SetTaskID(t.ID)
 }
 
-// SetTaskActivity sets the "taskActivity" edge to the TaskActivity entity.
-func (atatu *ArchivedTaskActivityTaskUpdate) SetTaskActivity(t *TaskActivity) *ArchivedTaskActivityTaskUpdate {
-	return atatu.SetTaskActivityID(t.ID)
+// SetArchivedTaskActivity sets the "archivedTaskActivity" edge to the ArchivedTaskActivity entity.
+func (atatu *ArchivedTaskActivityTaskUpdate) SetArchivedTaskActivity(a *ArchivedTaskActivity) *ArchivedTaskActivityTaskUpdate {
+	return atatu.SetArchivedTaskActivityID(a.ID)
 }
 
 // Mutation returns the ArchivedTaskActivityTaskMutation object of the builder.
@@ -63,9 +63,9 @@ func (atatu *ArchivedTaskActivityTaskUpdate) ClearTask() *ArchivedTaskActivityTa
 	return atatu
 }
 
-// ClearTaskActivity clears the "taskActivity" edge to the TaskActivity entity.
-func (atatu *ArchivedTaskActivityTaskUpdate) ClearTaskActivity() *ArchivedTaskActivityTaskUpdate {
-	atatu.mutation.ClearTaskActivity()
+// ClearArchivedTaskActivity clears the "archivedTaskActivity" edge to the ArchivedTaskActivity entity.
+func (atatu *ArchivedTaskActivityTaskUpdate) ClearArchivedTaskActivity() *ArchivedTaskActivityTaskUpdate {
+	atatu.mutation.ClearArchivedTaskActivity()
 	return atatu
 }
 
@@ -134,8 +134,8 @@ func (atatu *ArchivedTaskActivityTaskUpdate) check() error {
 	if _, ok := atatu.mutation.TaskID(); atatu.mutation.TaskCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "ArchivedTaskActivityTask.task"`)
 	}
-	if _, ok := atatu.mutation.TaskActivityID(); atatu.mutation.TaskActivityCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "ArchivedTaskActivityTask.taskActivity"`)
+	if _, ok := atatu.mutation.ArchivedTaskActivityID(); atatu.mutation.ArchivedTaskActivityCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "ArchivedTaskActivityTask.archivedTaskActivity"`)
 	}
 	return nil
 }
@@ -193,33 +193,33 @@ func (atatu *ArchivedTaskActivityTaskUpdate) sqlSave(ctx context.Context) (n int
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if atatu.mutation.TaskActivityCleared() {
+	if atatu.mutation.ArchivedTaskActivityCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   archivedtaskactivitytask.TaskActivityTable,
-			Columns: []string{archivedtaskactivitytask.TaskActivityColumn},
+			Table:   archivedtaskactivitytask.ArchivedTaskActivityTable,
+			Columns: []string{archivedtaskactivitytask.ArchivedTaskActivityColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
-					Column: taskactivity.FieldID,
+					Column: archivedtaskactivity.FieldID,
 				},
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := atatu.mutation.TaskActivityIDs(); len(nodes) > 0 {
+	if nodes := atatu.mutation.ArchivedTaskActivityIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   archivedtaskactivitytask.TaskActivityTable,
-			Columns: []string{archivedtaskactivitytask.TaskActivityColumn},
+			Table:   archivedtaskactivitytask.ArchivedTaskActivityTable,
+			Columns: []string{archivedtaskactivitytask.ArchivedTaskActivityColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
-					Column: taskactivity.FieldID,
+					Column: archivedtaskactivity.FieldID,
 				},
 			},
 		}
@@ -247,9 +247,9 @@ type ArchivedTaskActivityTaskUpdateOne struct {
 	mutation *ArchivedTaskActivityTaskMutation
 }
 
-// SetTaskActivityID sets the "task_activity_id" field.
-func (atatuo *ArchivedTaskActivityTaskUpdateOne) SetTaskActivityID(u ulid.ID) *ArchivedTaskActivityTaskUpdateOne {
-	atatuo.mutation.SetTaskActivityID(u)
+// SetArchivedTaskActivityID sets the "archived_task_activity_id" field.
+func (atatuo *ArchivedTaskActivityTaskUpdateOne) SetArchivedTaskActivityID(u ulid.ID) *ArchivedTaskActivityTaskUpdateOne {
+	atatuo.mutation.SetArchivedTaskActivityID(u)
 	return atatuo
 }
 
@@ -264,9 +264,9 @@ func (atatuo *ArchivedTaskActivityTaskUpdateOne) SetTask(t *Task) *ArchivedTaskA
 	return atatuo.SetTaskID(t.ID)
 }
 
-// SetTaskActivity sets the "taskActivity" edge to the TaskActivity entity.
-func (atatuo *ArchivedTaskActivityTaskUpdateOne) SetTaskActivity(t *TaskActivity) *ArchivedTaskActivityTaskUpdateOne {
-	return atatuo.SetTaskActivityID(t.ID)
+// SetArchivedTaskActivity sets the "archivedTaskActivity" edge to the ArchivedTaskActivity entity.
+func (atatuo *ArchivedTaskActivityTaskUpdateOne) SetArchivedTaskActivity(a *ArchivedTaskActivity) *ArchivedTaskActivityTaskUpdateOne {
+	return atatuo.SetArchivedTaskActivityID(a.ID)
 }
 
 // Mutation returns the ArchivedTaskActivityTaskMutation object of the builder.
@@ -280,9 +280,9 @@ func (atatuo *ArchivedTaskActivityTaskUpdateOne) ClearTask() *ArchivedTaskActivi
 	return atatuo
 }
 
-// ClearTaskActivity clears the "taskActivity" edge to the TaskActivity entity.
-func (atatuo *ArchivedTaskActivityTaskUpdateOne) ClearTaskActivity() *ArchivedTaskActivityTaskUpdateOne {
-	atatuo.mutation.ClearTaskActivity()
+// ClearArchivedTaskActivity clears the "archivedTaskActivity" edge to the ArchivedTaskActivity entity.
+func (atatuo *ArchivedTaskActivityTaskUpdateOne) ClearArchivedTaskActivity() *ArchivedTaskActivityTaskUpdateOne {
+	atatuo.mutation.ClearArchivedTaskActivity()
 	return atatuo
 }
 
@@ -358,8 +358,8 @@ func (atatuo *ArchivedTaskActivityTaskUpdateOne) check() error {
 	if _, ok := atatuo.mutation.TaskID(); atatuo.mutation.TaskCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "ArchivedTaskActivityTask.task"`)
 	}
-	if _, ok := atatuo.mutation.TaskActivityID(); atatuo.mutation.TaskActivityCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "ArchivedTaskActivityTask.taskActivity"`)
+	if _, ok := atatuo.mutation.ArchivedTaskActivityID(); atatuo.mutation.ArchivedTaskActivityCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "ArchivedTaskActivityTask.archivedTaskActivity"`)
 	}
 	return nil
 }
@@ -434,33 +434,33 @@ func (atatuo *ArchivedTaskActivityTaskUpdateOne) sqlSave(ctx context.Context) (_
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if atatuo.mutation.TaskActivityCleared() {
+	if atatuo.mutation.ArchivedTaskActivityCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   archivedtaskactivitytask.TaskActivityTable,
-			Columns: []string{archivedtaskactivitytask.TaskActivityColumn},
+			Table:   archivedtaskactivitytask.ArchivedTaskActivityTable,
+			Columns: []string{archivedtaskactivitytask.ArchivedTaskActivityColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
-					Column: taskactivity.FieldID,
+					Column: archivedtaskactivity.FieldID,
 				},
 			},
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := atatuo.mutation.TaskActivityIDs(); len(nodes) > 0 {
+	if nodes := atatuo.mutation.ArchivedTaskActivityIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   archivedtaskactivitytask.TaskActivityTable,
-			Columns: []string{archivedtaskactivitytask.TaskActivityColumn},
+			Table:   archivedtaskactivitytask.ArchivedTaskActivityTable,
+			Columns: []string{archivedtaskactivitytask.ArchivedTaskActivityColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
-					Column: taskactivity.FieldID,
+					Column: archivedtaskactivity.FieldID,
 				},
 			},
 		}

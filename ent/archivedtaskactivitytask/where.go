@@ -94,10 +94,10 @@ func IDLTE(id ulid.ID) predicate.ArchivedTaskActivityTask {
 	})
 }
 
-// TaskActivityID applies equality check predicate on the "task_activity_id" field. It's identical to TaskActivityIDEQ.
-func TaskActivityID(v ulid.ID) predicate.ArchivedTaskActivityTask {
+// ArchivedTaskActivityID applies equality check predicate on the "archived_task_activity_id" field. It's identical to ArchivedTaskActivityIDEQ.
+func ArchivedTaskActivityID(v ulid.ID) predicate.ArchivedTaskActivityTask {
 	return predicate.ArchivedTaskActivityTask(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldTaskActivityID), v))
+		s.Where(sql.EQ(s.C(FieldArchivedTaskActivityID), v))
 	})
 }
 
@@ -122,22 +122,22 @@ func UpdatedAt(v time.Time) predicate.ArchivedTaskActivityTask {
 	})
 }
 
-// TaskActivityIDEQ applies the EQ predicate on the "task_activity_id" field.
-func TaskActivityIDEQ(v ulid.ID) predicate.ArchivedTaskActivityTask {
+// ArchivedTaskActivityIDEQ applies the EQ predicate on the "archived_task_activity_id" field.
+func ArchivedTaskActivityIDEQ(v ulid.ID) predicate.ArchivedTaskActivityTask {
 	return predicate.ArchivedTaskActivityTask(func(s *sql.Selector) {
-		s.Where(sql.EQ(s.C(FieldTaskActivityID), v))
+		s.Where(sql.EQ(s.C(FieldArchivedTaskActivityID), v))
 	})
 }
 
-// TaskActivityIDNEQ applies the NEQ predicate on the "task_activity_id" field.
-func TaskActivityIDNEQ(v ulid.ID) predicate.ArchivedTaskActivityTask {
+// ArchivedTaskActivityIDNEQ applies the NEQ predicate on the "archived_task_activity_id" field.
+func ArchivedTaskActivityIDNEQ(v ulid.ID) predicate.ArchivedTaskActivityTask {
 	return predicate.ArchivedTaskActivityTask(func(s *sql.Selector) {
-		s.Where(sql.NEQ(s.C(FieldTaskActivityID), v))
+		s.Where(sql.NEQ(s.C(FieldArchivedTaskActivityID), v))
 	})
 }
 
-// TaskActivityIDIn applies the In predicate on the "task_activity_id" field.
-func TaskActivityIDIn(vs ...ulid.ID) predicate.ArchivedTaskActivityTask {
+// ArchivedTaskActivityIDIn applies the In predicate on the "archived_task_activity_id" field.
+func ArchivedTaskActivityIDIn(vs ...ulid.ID) predicate.ArchivedTaskActivityTask {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -149,12 +149,12 @@ func TaskActivityIDIn(vs ...ulid.ID) predicate.ArchivedTaskActivityTask {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.In(s.C(FieldTaskActivityID), v...))
+		s.Where(sql.In(s.C(FieldArchivedTaskActivityID), v...))
 	})
 }
 
-// TaskActivityIDNotIn applies the NotIn predicate on the "task_activity_id" field.
-func TaskActivityIDNotIn(vs ...ulid.ID) predicate.ArchivedTaskActivityTask {
+// ArchivedTaskActivityIDNotIn applies the NotIn predicate on the "archived_task_activity_id" field.
+func ArchivedTaskActivityIDNotIn(vs ...ulid.ID) predicate.ArchivedTaskActivityTask {
 	v := make([]interface{}, len(vs))
 	for i := range v {
 		v[i] = vs[i]
@@ -166,75 +166,75 @@ func TaskActivityIDNotIn(vs ...ulid.ID) predicate.ArchivedTaskActivityTask {
 			s.Where(sql.False())
 			return
 		}
-		s.Where(sql.NotIn(s.C(FieldTaskActivityID), v...))
+		s.Where(sql.NotIn(s.C(FieldArchivedTaskActivityID), v...))
 	})
 }
 
-// TaskActivityIDGT applies the GT predicate on the "task_activity_id" field.
-func TaskActivityIDGT(v ulid.ID) predicate.ArchivedTaskActivityTask {
+// ArchivedTaskActivityIDGT applies the GT predicate on the "archived_task_activity_id" field.
+func ArchivedTaskActivityIDGT(v ulid.ID) predicate.ArchivedTaskActivityTask {
 	return predicate.ArchivedTaskActivityTask(func(s *sql.Selector) {
-		s.Where(sql.GT(s.C(FieldTaskActivityID), v))
+		s.Where(sql.GT(s.C(FieldArchivedTaskActivityID), v))
 	})
 }
 
-// TaskActivityIDGTE applies the GTE predicate on the "task_activity_id" field.
-func TaskActivityIDGTE(v ulid.ID) predicate.ArchivedTaskActivityTask {
+// ArchivedTaskActivityIDGTE applies the GTE predicate on the "archived_task_activity_id" field.
+func ArchivedTaskActivityIDGTE(v ulid.ID) predicate.ArchivedTaskActivityTask {
 	return predicate.ArchivedTaskActivityTask(func(s *sql.Selector) {
-		s.Where(sql.GTE(s.C(FieldTaskActivityID), v))
+		s.Where(sql.GTE(s.C(FieldArchivedTaskActivityID), v))
 	})
 }
 
-// TaskActivityIDLT applies the LT predicate on the "task_activity_id" field.
-func TaskActivityIDLT(v ulid.ID) predicate.ArchivedTaskActivityTask {
+// ArchivedTaskActivityIDLT applies the LT predicate on the "archived_task_activity_id" field.
+func ArchivedTaskActivityIDLT(v ulid.ID) predicate.ArchivedTaskActivityTask {
 	return predicate.ArchivedTaskActivityTask(func(s *sql.Selector) {
-		s.Where(sql.LT(s.C(FieldTaskActivityID), v))
+		s.Where(sql.LT(s.C(FieldArchivedTaskActivityID), v))
 	})
 }
 
-// TaskActivityIDLTE applies the LTE predicate on the "task_activity_id" field.
-func TaskActivityIDLTE(v ulid.ID) predicate.ArchivedTaskActivityTask {
+// ArchivedTaskActivityIDLTE applies the LTE predicate on the "archived_task_activity_id" field.
+func ArchivedTaskActivityIDLTE(v ulid.ID) predicate.ArchivedTaskActivityTask {
 	return predicate.ArchivedTaskActivityTask(func(s *sql.Selector) {
-		s.Where(sql.LTE(s.C(FieldTaskActivityID), v))
+		s.Where(sql.LTE(s.C(FieldArchivedTaskActivityID), v))
 	})
 }
 
-// TaskActivityIDContains applies the Contains predicate on the "task_activity_id" field.
-func TaskActivityIDContains(v ulid.ID) predicate.ArchivedTaskActivityTask {
+// ArchivedTaskActivityIDContains applies the Contains predicate on the "archived_task_activity_id" field.
+func ArchivedTaskActivityIDContains(v ulid.ID) predicate.ArchivedTaskActivityTask {
 	vc := string(v)
 	return predicate.ArchivedTaskActivityTask(func(s *sql.Selector) {
-		s.Where(sql.Contains(s.C(FieldTaskActivityID), vc))
+		s.Where(sql.Contains(s.C(FieldArchivedTaskActivityID), vc))
 	})
 }
 
-// TaskActivityIDHasPrefix applies the HasPrefix predicate on the "task_activity_id" field.
-func TaskActivityIDHasPrefix(v ulid.ID) predicate.ArchivedTaskActivityTask {
+// ArchivedTaskActivityIDHasPrefix applies the HasPrefix predicate on the "archived_task_activity_id" field.
+func ArchivedTaskActivityIDHasPrefix(v ulid.ID) predicate.ArchivedTaskActivityTask {
 	vc := string(v)
 	return predicate.ArchivedTaskActivityTask(func(s *sql.Selector) {
-		s.Where(sql.HasPrefix(s.C(FieldTaskActivityID), vc))
+		s.Where(sql.HasPrefix(s.C(FieldArchivedTaskActivityID), vc))
 	})
 }
 
-// TaskActivityIDHasSuffix applies the HasSuffix predicate on the "task_activity_id" field.
-func TaskActivityIDHasSuffix(v ulid.ID) predicate.ArchivedTaskActivityTask {
+// ArchivedTaskActivityIDHasSuffix applies the HasSuffix predicate on the "archived_task_activity_id" field.
+func ArchivedTaskActivityIDHasSuffix(v ulid.ID) predicate.ArchivedTaskActivityTask {
 	vc := string(v)
 	return predicate.ArchivedTaskActivityTask(func(s *sql.Selector) {
-		s.Where(sql.HasSuffix(s.C(FieldTaskActivityID), vc))
+		s.Where(sql.HasSuffix(s.C(FieldArchivedTaskActivityID), vc))
 	})
 }
 
-// TaskActivityIDEqualFold applies the EqualFold predicate on the "task_activity_id" field.
-func TaskActivityIDEqualFold(v ulid.ID) predicate.ArchivedTaskActivityTask {
+// ArchivedTaskActivityIDEqualFold applies the EqualFold predicate on the "archived_task_activity_id" field.
+func ArchivedTaskActivityIDEqualFold(v ulid.ID) predicate.ArchivedTaskActivityTask {
 	vc := string(v)
 	return predicate.ArchivedTaskActivityTask(func(s *sql.Selector) {
-		s.Where(sql.EqualFold(s.C(FieldTaskActivityID), vc))
+		s.Where(sql.EqualFold(s.C(FieldArchivedTaskActivityID), vc))
 	})
 }
 
-// TaskActivityIDContainsFold applies the ContainsFold predicate on the "task_activity_id" field.
-func TaskActivityIDContainsFold(v ulid.ID) predicate.ArchivedTaskActivityTask {
+// ArchivedTaskActivityIDContainsFold applies the ContainsFold predicate on the "archived_task_activity_id" field.
+func ArchivedTaskActivityIDContainsFold(v ulid.ID) predicate.ArchivedTaskActivityTask {
 	vc := string(v)
 	return predicate.ArchivedTaskActivityTask(func(s *sql.Selector) {
-		s.Where(sql.ContainsFold(s.C(FieldTaskActivityID), vc))
+		s.Where(sql.ContainsFold(s.C(FieldArchivedTaskActivityID), vc))
 	})
 }
 
@@ -534,25 +534,25 @@ func HasTaskWith(preds ...predicate.Task) predicate.ArchivedTaskActivityTask {
 	})
 }
 
-// HasTaskActivity applies the HasEdge predicate on the "taskActivity" edge.
-func HasTaskActivity() predicate.ArchivedTaskActivityTask {
+// HasArchivedTaskActivity applies the HasEdge predicate on the "archivedTaskActivity" edge.
+func HasArchivedTaskActivity() predicate.ArchivedTaskActivityTask {
 	return predicate.ArchivedTaskActivityTask(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(TaskActivityTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, TaskActivityTable, TaskActivityColumn),
+			sqlgraph.To(ArchivedTaskActivityTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, ArchivedTaskActivityTable, ArchivedTaskActivityColumn),
 		)
 		sqlgraph.HasNeighbors(s, step)
 	})
 }
 
-// HasTaskActivityWith applies the HasEdge predicate on the "taskActivity" edge with a given conditions (other predicates).
-func HasTaskActivityWith(preds ...predicate.TaskActivity) predicate.ArchivedTaskActivityTask {
+// HasArchivedTaskActivityWith applies the HasEdge predicate on the "archivedTaskActivity" edge with a given conditions (other predicates).
+func HasArchivedTaskActivityWith(preds ...predicate.ArchivedTaskActivity) predicate.ArchivedTaskActivityTask {
 	return predicate.ArchivedTaskActivityTask(func(s *sql.Selector) {
 		step := sqlgraph.NewStep(
 			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(TaskActivityInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, TaskActivityTable, TaskActivityColumn),
+			sqlgraph.To(ArchivedTaskActivityInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, ArchivedTaskActivityTable, ArchivedTaskActivityColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

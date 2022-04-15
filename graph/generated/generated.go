@@ -54,6 +54,7 @@ type ResolverRoot interface {
 	Activity() ActivityResolver
 	ActivityType() ActivityTypeResolver
 	ArchivedTaskActivity() ArchivedTaskActivityResolver
+	ArchivedTaskActivityTask() ArchivedTaskActivityTaskResolver
 	Color() ColorResolver
 	DeletedTask() DeletedTaskResolver
 	FavoriteProject() FavoriteProjectResolver
@@ -132,12 +133,13 @@ type ComplexityRoot struct {
 	}
 
 	ArchivedTaskActivity struct {
-		ActivityType   func(childComplexity int) int
-		ActivityTypeID func(childComplexity int) int
-		CreatedAt      func(childComplexity int) int
-		ID             func(childComplexity int) int
-		TeammateID     func(childComplexity int) int
-		UpdatedAt      func(childComplexity int) int
+		ActivityType              func(childComplexity int) int
+		ActivityTypeID            func(childComplexity int) int
+		ArchivedTaskActivityTasks func(childComplexity int) int
+		CreatedAt                 func(childComplexity int) int
+		ID                        func(childComplexity int) int
+		TeammateID                func(childComplexity int) int
+		UpdatedAt                 func(childComplexity int) int
 	}
 
 	ArchivedTaskActivityConnection struct {
@@ -147,6 +149,26 @@ type ComplexityRoot struct {
 	}
 
 	ArchivedTaskActivityEdge struct {
+		Cursor func(childComplexity int) int
+		Node   func(childComplexity int) int
+	}
+
+	ArchivedTaskActivityTask struct {
+		ArchivedTaskActivityID func(childComplexity int) int
+		CreatedAt              func(childComplexity int) int
+		ID                     func(childComplexity int) int
+		Task                   func(childComplexity int) int
+		TaskID                 func(childComplexity int) int
+		UpdatedAt              func(childComplexity int) int
+	}
+
+	ArchivedTaskActivityTaskConnection struct {
+		Edges      func(childComplexity int) int
+		PageInfo   func(childComplexity int) int
+		TotalCount func(childComplexity int) int
+	}
+
+	ArchivedTaskActivityTaskEdge struct {
 		Cursor func(childComplexity int) int
 		Node   func(childComplexity int) int
 	}
@@ -365,6 +387,7 @@ type ComplexityRoot struct {
 		AssignTask                                func(childComplexity int, input model.AssignTaskInput) int
 		CreateActivityType                        func(childComplexity int, input ent.CreateActivityTypeInput) int
 		CreateArchivedTaskActivity                func(childComplexity int, input ent.CreateArchivedTaskActivityInput) int
+		CreateArchivedTaskActivityTask            func(childComplexity int, input ent.CreateArchivedTaskActivityTaskInput) int
 		CreateColor                               func(childComplexity int, input ent.CreateColorInput) int
 		CreateDeletedTask                         func(childComplexity int, input ent.CreateDeletedTaskInput) int
 		CreateFavoriteProject                     func(childComplexity int, input ent.CreateFavoriteProjectInput) int
@@ -436,6 +459,7 @@ type ComplexityRoot struct {
 		UndeleteTeammateTaskSectionAndKeepTasks   func(childComplexity int, input model.UndeleteTeammateTaskSectionAndKeepTasksInput) int
 		UpdateActivityType                        func(childComplexity int, input ent.UpdateActivityTypeInput) int
 		UpdateArchivedTaskActivity                func(childComplexity int, input ent.UpdateArchivedTaskActivityInput) int
+		UpdateArchivedTaskActivityTask            func(childComplexity int, input ent.UpdateArchivedTaskActivityTaskInput) int
 		UpdateColor                               func(childComplexity int, input ent.UpdateColorInput) int
 		UpdateDeletedTask                         func(childComplexity int, input ent.UpdateDeletedTaskInput) int
 		UpdateFileType                            func(childComplexity int, input ent.UpdateFileTypeInput) int
@@ -694,6 +718,8 @@ type ComplexityRoot struct {
 		ActivityTypes               func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ActivityTypeWhereInput) int
 		ArchivedTaskActivities      func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ArchivedTaskActivityWhereInput) int
 		ArchivedTaskActivity        func(childComplexity int, where *ent.ArchivedTaskActivityWhereInput) int
+		ArchivedTaskActivityTask    func(childComplexity int, where *ent.ArchivedTaskActivityTaskWhereInput) int
+		ArchivedTaskActivityTasks   func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ArchivedTaskActivityTaskWhereInput) int
 		Color                       func(childComplexity int, id ulid.ID) int
 		Colors                      func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ColorWhereInput) int
 		DeletedTask                 func(childComplexity int, where *ent.DeletedTaskWhereInput) int
@@ -1522,6 +1548,10 @@ type ArchivedTaskActivityResolver interface {
 	CreatedAt(ctx context.Context, obj *ent.ArchivedTaskActivity) (string, error)
 	UpdatedAt(ctx context.Context, obj *ent.ArchivedTaskActivity) (string, error)
 }
+type ArchivedTaskActivityTaskResolver interface {
+	CreatedAt(ctx context.Context, obj *ent.ArchivedTaskActivityTask) (string, error)
+	UpdatedAt(ctx context.Context, obj *ent.ArchivedTaskActivityTask) (string, error)
+}
 type ColorResolver interface {
 	CreatedAt(ctx context.Context, obj *ent.Color) (string, error)
 	UpdatedAt(ctx context.Context, obj *ent.Color) (string, error)
@@ -1555,6 +1585,8 @@ type MutationResolver interface {
 	UpdateActivityType(ctx context.Context, input ent.UpdateActivityTypeInput) (*ent.ActivityType, error)
 	CreateArchivedTaskActivity(ctx context.Context, input ent.CreateArchivedTaskActivityInput) (*ent.ArchivedTaskActivity, error)
 	UpdateArchivedTaskActivity(ctx context.Context, input ent.UpdateArchivedTaskActivityInput) (*ent.ArchivedTaskActivity, error)
+	CreateArchivedTaskActivityTask(ctx context.Context, input ent.CreateArchivedTaskActivityTaskInput) (*ent.ArchivedTaskActivityTask, error)
+	UpdateArchivedTaskActivityTask(ctx context.Context, input ent.UpdateArchivedTaskActivityTaskInput) (*ent.ArchivedTaskActivityTask, error)
 	CreateColor(ctx context.Context, input ent.CreateColorInput) (*ent.Color, error)
 	UpdateColor(ctx context.Context, input ent.UpdateColorInput) (*ent.Color, error)
 	CreateDeletedTask(ctx context.Context, input ent.CreateDeletedTaskInput) (*ent.DeletedTask, error)
@@ -1716,6 +1748,8 @@ type QueryResolver interface {
 	ActivityTypes(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ActivityTypeWhereInput) (*ent.ActivityTypeConnection, error)
 	ArchivedTaskActivity(ctx context.Context, where *ent.ArchivedTaskActivityWhereInput) (*ent.ArchivedTaskActivity, error)
 	ArchivedTaskActivities(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ArchivedTaskActivityWhereInput) (*ent.ArchivedTaskActivityConnection, error)
+	ArchivedTaskActivityTask(ctx context.Context, where *ent.ArchivedTaskActivityTaskWhereInput) (*ent.ArchivedTaskActivityTask, error)
+	ArchivedTaskActivityTasks(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ArchivedTaskActivityTaskWhereInput) (*ent.ArchivedTaskActivityTaskConnection, error)
 	Color(ctx context.Context, id ulid.ID) (*ent.Color, error)
 	Colors(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ColorWhereInput) (*ent.ColorConnection, error)
 	DeletedTask(ctx context.Context, where *ent.DeletedTaskWhereInput) (*ent.DeletedTask, error)
@@ -2108,6 +2142,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.ArchivedTaskActivity.ActivityTypeID(childComplexity), true
 
+	case "ArchivedTaskActivity.archivedTaskActivityTasks":
+		if e.complexity.ArchivedTaskActivity.ArchivedTaskActivityTasks == nil {
+			break
+		}
+
+		return e.complexity.ArchivedTaskActivity.ArchivedTaskActivityTasks(childComplexity), true
+
 	case "ArchivedTaskActivity.createdAt":
 		if e.complexity.ArchivedTaskActivity.CreatedAt == nil {
 			break
@@ -2170,6 +2211,83 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.ArchivedTaskActivityEdge.Node(childComplexity), true
+
+	case "ArchivedTaskActivityTask.archivedTaskActivityId":
+		if e.complexity.ArchivedTaskActivityTask.ArchivedTaskActivityID == nil {
+			break
+		}
+
+		return e.complexity.ArchivedTaskActivityTask.ArchivedTaskActivityID(childComplexity), true
+
+	case "ArchivedTaskActivityTask.createdAt":
+		if e.complexity.ArchivedTaskActivityTask.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.ArchivedTaskActivityTask.CreatedAt(childComplexity), true
+
+	case "ArchivedTaskActivityTask.id":
+		if e.complexity.ArchivedTaskActivityTask.ID == nil {
+			break
+		}
+
+		return e.complexity.ArchivedTaskActivityTask.ID(childComplexity), true
+
+	case "ArchivedTaskActivityTask.task":
+		if e.complexity.ArchivedTaskActivityTask.Task == nil {
+			break
+		}
+
+		return e.complexity.ArchivedTaskActivityTask.Task(childComplexity), true
+
+	case "ArchivedTaskActivityTask.taskId":
+		if e.complexity.ArchivedTaskActivityTask.TaskID == nil {
+			break
+		}
+
+		return e.complexity.ArchivedTaskActivityTask.TaskID(childComplexity), true
+
+	case "ArchivedTaskActivityTask.updatedAt":
+		if e.complexity.ArchivedTaskActivityTask.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.ArchivedTaskActivityTask.UpdatedAt(childComplexity), true
+
+	case "ArchivedTaskActivityTaskConnection.edges":
+		if e.complexity.ArchivedTaskActivityTaskConnection.Edges == nil {
+			break
+		}
+
+		return e.complexity.ArchivedTaskActivityTaskConnection.Edges(childComplexity), true
+
+	case "ArchivedTaskActivityTaskConnection.pageInfo":
+		if e.complexity.ArchivedTaskActivityTaskConnection.PageInfo == nil {
+			break
+		}
+
+		return e.complexity.ArchivedTaskActivityTaskConnection.PageInfo(childComplexity), true
+
+	case "ArchivedTaskActivityTaskConnection.totalCount":
+		if e.complexity.ArchivedTaskActivityTaskConnection.TotalCount == nil {
+			break
+		}
+
+		return e.complexity.ArchivedTaskActivityTaskConnection.TotalCount(childComplexity), true
+
+	case "ArchivedTaskActivityTaskEdge.cursor":
+		if e.complexity.ArchivedTaskActivityTaskEdge.Cursor == nil {
+			break
+		}
+
+		return e.complexity.ArchivedTaskActivityTaskEdge.Cursor(childComplexity), true
+
+	case "ArchivedTaskActivityTaskEdge.node":
+		if e.complexity.ArchivedTaskActivityTaskEdge.Node == nil {
+			break
+		}
+
+		return e.complexity.ArchivedTaskActivityTaskEdge.Node(childComplexity), true
 
 	case "AssignTaskPayload.task":
 		if e.complexity.AssignTaskPayload.Task == nil {
@@ -3004,6 +3122,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.CreateArchivedTaskActivity(childComplexity, args["input"].(ent.CreateArchivedTaskActivityInput)), true
+
+	case "Mutation.createArchivedTaskActivityTask":
+		if e.complexity.Mutation.CreateArchivedTaskActivityTask == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createArchivedTaskActivityTask_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateArchivedTaskActivityTask(childComplexity, args["input"].(ent.CreateArchivedTaskActivityTaskInput)), true
 
 	case "Mutation.createColor":
 		if e.complexity.Mutation.CreateColor == nil {
@@ -3856,6 +3986,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.UpdateArchivedTaskActivity(childComplexity, args["input"].(ent.UpdateArchivedTaskActivityInput)), true
+
+	case "Mutation.updateArchivedTaskActivityTask":
+		if e.complexity.Mutation.UpdateArchivedTaskActivityTask == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_updateArchivedTaskActivityTask_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UpdateArchivedTaskActivityTask(childComplexity, args["input"].(ent.UpdateArchivedTaskActivityTaskInput)), true
 
 	case "Mutation.updateColor":
 		if e.complexity.Mutation.UpdateColor == nil {
@@ -5293,6 +5435,30 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.ArchivedTaskActivity(childComplexity, args["where"].(*ent.ArchivedTaskActivityWhereInput)), true
+
+	case "Query.archivedTaskActivityTask":
+		if e.complexity.Query.ArchivedTaskActivityTask == nil {
+			break
+		}
+
+		args, err := ec.field_Query_archivedTaskActivityTask_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.ArchivedTaskActivityTask(childComplexity, args["where"].(*ent.ArchivedTaskActivityTaskWhereInput)), true
+
+	case "Query.archivedTaskActivityTasks":
+		if e.complexity.Query.ArchivedTaskActivityTasks == nil {
+			break
+		}
+
+		args, err := ec.field_Query_archivedTaskActivityTasks_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.ArchivedTaskActivityTasks(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["where"].(*ent.ArchivedTaskActivityTaskWhereInput)), true
 
 	case "Query.color":
 		if e.complexity.Query.Color == nil {
@@ -9976,6 +10142,7 @@ extend type Mutation {
   id: ID!
   activityTypeId: ID!
   activityType: ActivityType!
+  archivedTaskActivityTasks: [ArchivedTaskActivityTask!]!
   teammateId: ID!
   createdAt: String!
   updatedAt: String!
@@ -10008,6 +10175,44 @@ extend type Query {
 extend type Mutation {
   createArchivedTaskActivity(input: CreateArchivedTaskActivityInput!): ArchivedTaskActivity!
   updateArchivedTaskActivity(input: UpdateArchivedTaskActivityInput!): ArchivedTaskActivity!
+}
+`, BuiltIn: false},
+	{Name: "graph/schema/archived_task_activity_task/archived_task_activity_task.graphql", Input: `type ArchivedTaskActivityTask implements Node {
+  id: ID!
+  archivedTaskActivityId: ID!
+  task: Task!
+  taskId: ID!
+  createdAt: String!
+  updatedAt: String!
+}
+type ArchivedTaskActivityTaskConnection {
+  totalCount: Int!
+  pageInfo: PageInfo!
+  edges: [ArchivedTaskActivityTaskEdge]
+}
+type ArchivedTaskActivityTaskEdge {
+  node: ArchivedTaskActivityTask
+  cursor: Cursor!
+}
+
+input CreateArchivedTaskActivityTaskInput {
+  archivedTaskActivityId: ID!
+  taskId: ID!
+}
+
+input UpdateArchivedTaskActivityTaskInput {
+  id: ID!
+  taskId: ID
+}
+
+extend type Query {
+  archivedTaskActivityTask(where: ArchivedTaskActivityTaskWhereInput): ArchivedTaskActivityTask
+  archivedTaskActivityTasks(after: Cursor, first: Int, before: Cursor, last: Int, where: ArchivedTaskActivityTaskWhereInput): ArchivedTaskActivityTaskConnection
+}
+
+extend type Mutation {
+  createArchivedTaskActivityTask(input: CreateArchivedTaskActivityTaskInput!): ArchivedTaskActivityTask!
+  updateArchivedTaskActivityTask(input: UpdateArchivedTaskActivityTaskInput!): ArchivedTaskActivityTask!
 }
 `, BuiltIn: false},
 	{Name: "graph/schema/color/color.graphql", Input: `type Color implements Node {
@@ -12862,6 +13067,10 @@ input TaskWhereInput {
   """workspaceActivityTasks edge predicates"""
   hasWorkspaceActivityTasks: Boolean
   hasWorkspaceActivityTasksWith: [WorkspaceActivityTaskWhereInput!]
+  
+  """archivedTaskActivityTasks edge predicates"""
+  hasArchivedTaskActivityTasks: Boolean
+  hasArchivedTaskActivityTasksWith: [ArchivedTaskActivityTaskWhereInput!]
 }
 
 """
@@ -14492,6 +14701,88 @@ input ArchivedTaskActivityWhereInput {
   """workspace edge predicates"""
   hasWorkspace: Boolean
   hasWorkspaceWith: [WorkspaceWhereInput!]
+  
+  """archivedTaskActivityTasks edge predicates"""
+  hasArchivedTaskActivityTasks: Boolean
+  hasArchivedTaskActivityTasksWith: [ArchivedTaskActivityTaskWhereInput!]
+}
+
+"""
+ArchivedTaskActivityTaskWhereInput is used for filtering ArchivedTaskActivityTask objects.
+Input was generated by ent.
+"""
+input ArchivedTaskActivityTaskWhereInput {
+  not: ArchivedTaskActivityTaskWhereInput
+  and: [ArchivedTaskActivityTaskWhereInput!]
+  or: [ArchivedTaskActivityTaskWhereInput!]
+  
+  """archived_task_activity_id field predicates"""
+  archivedTaskActivityID: ID
+  archivedTaskActivityIDNEQ: ID
+  archivedTaskActivityIDIn: [ID!]
+  archivedTaskActivityIDNotIn: [ID!]
+  archivedTaskActivityIDGT: ID
+  archivedTaskActivityIDGTE: ID
+  archivedTaskActivityIDLT: ID
+  archivedTaskActivityIDLTE: ID
+  archivedTaskActivityIDContains: ID
+  archivedTaskActivityIDHasPrefix: ID
+  archivedTaskActivityIDHasSuffix: ID
+  archivedTaskActivityIDEqualFold: ID
+  archivedTaskActivityIDContainsFold: ID
+  
+  """task_id field predicates"""
+  taskID: ID
+  taskIDNEQ: ID
+  taskIDIn: [ID!]
+  taskIDNotIn: [ID!]
+  taskIDGT: ID
+  taskIDGTE: ID
+  taskIDLT: ID
+  taskIDLTE: ID
+  taskIDContains: ID
+  taskIDHasPrefix: ID
+  taskIDHasSuffix: ID
+  taskIDEqualFold: ID
+  taskIDContainsFold: ID
+  
+  """created_at field predicates"""
+  createdAt: Time
+  createdAtNEQ: Time
+  createdAtIn: [Time!]
+  createdAtNotIn: [Time!]
+  createdAtGT: Time
+  createdAtGTE: Time
+  createdAtLT: Time
+  createdAtLTE: Time
+  
+  """updated_at field predicates"""
+  updatedAt: Time
+  updatedAtNEQ: Time
+  updatedAtIn: [Time!]
+  updatedAtNotIn: [Time!]
+  updatedAtGT: Time
+  updatedAtGTE: Time
+  updatedAtLT: Time
+  updatedAtLTE: Time
+  
+  """id field predicates"""
+  id: ID
+  idNEQ: ID
+  idIn: [ID!]
+  idNotIn: [ID!]
+  idGT: ID
+  idGTE: ID
+  idLT: ID
+  idLTE: ID
+  
+  """task edge predicates"""
+  hasTask: Boolean
+  hasTaskWith: [TaskWhereInput!]
+  
+  """archivedTaskActivity edge predicates"""
+  hasArchivedTaskActivity: Boolean
+  hasArchivedTaskActivityWith: [ArchivedTaskActivityWhereInput!]
 }
 `, BuiltIn: false},
 	{Name: "graph/schema/favorite_project/favorite_project.graphql", Input: `type FavoriteProject implements Node {
@@ -16954,6 +17245,21 @@ func (ec *executionContext) field_Mutation_createActivityType_args(ctx context.C
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_createArchivedTaskActivityTask_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 ent.CreateArchivedTaskActivityTaskInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNCreateArchivedTaskActivityTaskInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐCreateArchivedTaskActivityTaskInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_createArchivedTaskActivity_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -18019,6 +18325,21 @@ func (ec *executionContext) field_Mutation_updateActivityType_args(ctx context.C
 	return args, nil
 }
 
+func (ec *executionContext) field_Mutation_updateArchivedTaskActivityTask_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 ent.UpdateArchivedTaskActivityTaskInput
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalNUpdateArchivedTaskActivityTaskInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐUpdateArchivedTaskActivityTaskInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Mutation_updateArchivedTaskActivity_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -18818,6 +19139,72 @@ func (ec *executionContext) field_Query_archivedTaskActivities_args(ctx context.
 	if tmp, ok := rawArgs["where"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
 		arg4, err = ec.unmarshalOArchivedTaskActivityWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐArchivedTaskActivityWhereInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["where"] = arg4
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_archivedTaskActivityTask_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *ent.ArchivedTaskActivityTaskWhereInput
+	if tmp, ok := rawArgs["where"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
+		arg0, err = ec.unmarshalOArchivedTaskActivityTaskWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐArchivedTaskActivityTaskWhereInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["where"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_archivedTaskActivityTasks_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *ent.Cursor
+	if tmp, ok := rawArgs["after"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("after"))
+		arg0, err = ec.unmarshalOCursor2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐCursor(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["after"] = arg0
+	var arg1 *int
+	if tmp, ok := rawArgs["first"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("first"))
+		arg1, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["first"] = arg1
+	var arg2 *ent.Cursor
+	if tmp, ok := rawArgs["before"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("before"))
+		arg2, err = ec.unmarshalOCursor2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐCursor(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["before"] = arg2
+	var arg3 *int
+	if tmp, ok := rawArgs["last"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("last"))
+		arg3, err = ec.unmarshalOInt2ᚖint(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["last"] = arg3
+	var arg4 *ent.ArchivedTaskActivityTaskWhereInput
+	if tmp, ok := rawArgs["where"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
+		arg4, err = ec.unmarshalOArchivedTaskActivityTaskWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐArchivedTaskActivityTaskWhereInput(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -23954,6 +24341,41 @@ func (ec *executionContext) _ArchivedTaskActivity_activityType(ctx context.Conte
 	return ec.marshalNActivityType2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐActivityType(ctx, field.Selections, res)
 }
 
+func (ec *executionContext) _ArchivedTaskActivity_archivedTaskActivityTasks(ctx context.Context, field graphql.CollectedField, obj *ent.ArchivedTaskActivity) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ArchivedTaskActivity",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ArchivedTaskActivityTasks(ctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*ent.ArchivedTaskActivityTask)
+	fc.Result = res
+	return ec.marshalNArchivedTaskActivityTask2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐArchivedTaskActivityTaskᚄ(ctx, field.Selections, res)
+}
+
 func (ec *executionContext) _ArchivedTaskActivity_teammateId(ctx context.Context, field graphql.CollectedField, obj *ent.ArchivedTaskActivity) (ret graphql.Marshaler) {
 	defer func() {
 		if r := recover(); r != nil {
@@ -24202,6 +24624,385 @@ func (ec *executionContext) _ArchivedTaskActivityEdge_cursor(ctx context.Context
 	}()
 	fc := &graphql.FieldContext{
 		Object:     "ArchivedTaskActivityEdge",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Cursor, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(ent.Cursor)
+	fc.Result = res
+	return ec.marshalNCursor2projectᚑmanagementᚑdemoᚑbackendᚋentᚐCursor(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ArchivedTaskActivityTask_id(ctx context.Context, field graphql.CollectedField, obj *ent.ArchivedTaskActivityTask) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ArchivedTaskActivityTask",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(ulid.ID)
+	fc.Result = res
+	return ec.marshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ArchivedTaskActivityTask_archivedTaskActivityId(ctx context.Context, field graphql.CollectedField, obj *ent.ArchivedTaskActivityTask) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ArchivedTaskActivityTask",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ArchivedTaskActivityID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(ulid.ID)
+	fc.Result = res
+	return ec.marshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ArchivedTaskActivityTask_task(ctx context.Context, field graphql.CollectedField, obj *ent.ArchivedTaskActivityTask) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ArchivedTaskActivityTask",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Task(ctx)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.Task)
+	fc.Result = res
+	return ec.marshalNTask2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTask(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ArchivedTaskActivityTask_taskId(ctx context.Context, field graphql.CollectedField, obj *ent.ArchivedTaskActivityTask) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ArchivedTaskActivityTask",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TaskID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(ulid.ID)
+	fc.Result = res
+	return ec.marshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ArchivedTaskActivityTask_createdAt(ctx context.Context, field graphql.CollectedField, obj *ent.ArchivedTaskActivityTask) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ArchivedTaskActivityTask",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.ArchivedTaskActivityTask().CreatedAt(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ArchivedTaskActivityTask_updatedAt(ctx context.Context, field graphql.CollectedField, obj *ent.ArchivedTaskActivityTask) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ArchivedTaskActivityTask",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.ArchivedTaskActivityTask().UpdatedAt(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ArchivedTaskActivityTaskConnection_totalCount(ctx context.Context, field graphql.CollectedField, obj *ent.ArchivedTaskActivityTaskConnection) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ArchivedTaskActivityTaskConnection",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.TotalCount, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(int)
+	fc.Result = res
+	return ec.marshalNInt2int(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ArchivedTaskActivityTaskConnection_pageInfo(ctx context.Context, field graphql.CollectedField, obj *ent.ArchivedTaskActivityTaskConnection) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ArchivedTaskActivityTaskConnection",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.PageInfo, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(ent.PageInfo)
+	fc.Result = res
+	return ec.marshalNPageInfo2projectᚑmanagementᚑdemoᚑbackendᚋentᚐPageInfo(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ArchivedTaskActivityTaskConnection_edges(ctx context.Context, field graphql.CollectedField, obj *ent.ArchivedTaskActivityTaskConnection) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ArchivedTaskActivityTaskConnection",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Edges, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*ent.ArchivedTaskActivityTaskEdge)
+	fc.Result = res
+	return ec.marshalOArchivedTaskActivityTaskEdge2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐArchivedTaskActivityTaskEdge(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ArchivedTaskActivityTaskEdge_node(ctx context.Context, field graphql.CollectedField, obj *ent.ArchivedTaskActivityTaskEdge) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ArchivedTaskActivityTaskEdge",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Node, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*ent.ArchivedTaskActivityTask)
+	fc.Result = res
+	return ec.marshalOArchivedTaskActivityTask2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐArchivedTaskActivityTask(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ArchivedTaskActivityTaskEdge_cursor(ctx context.Context, field graphql.CollectedField, obj *ent.ArchivedTaskActivityTaskEdge) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ArchivedTaskActivityTaskEdge",
 		Field:      field,
 		Args:       nil,
 		IsMethod:   false,
@@ -28324,6 +29125,90 @@ func (ec *executionContext) _Mutation_updateArchivedTaskActivity(ctx context.Con
 	res := resTmp.(*ent.ArchivedTaskActivity)
 	fc.Result = res
 	return ec.marshalNArchivedTaskActivity2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐArchivedTaskActivity(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_createArchivedTaskActivityTask(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_createArchivedTaskActivityTask_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreateArchivedTaskActivityTask(rctx, args["input"].(ent.CreateArchivedTaskActivityTaskInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.ArchivedTaskActivityTask)
+	fc.Result = res
+	return ec.marshalNArchivedTaskActivityTask2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐArchivedTaskActivityTask(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Mutation_updateArchivedTaskActivityTask(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Mutation_updateArchivedTaskActivityTask_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UpdateArchivedTaskActivityTask(rctx, args["input"].(ent.UpdateArchivedTaskActivityTaskInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*ent.ArchivedTaskActivityTask)
+	fc.Result = res
+	return ec.marshalNArchivedTaskActivityTask2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐArchivedTaskActivityTask(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Mutation_createColor(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -37594,6 +38479,84 @@ func (ec *executionContext) _Query_archivedTaskActivities(ctx context.Context, f
 	res := resTmp.(*ent.ArchivedTaskActivityConnection)
 	fc.Result = res
 	return ec.marshalOArchivedTaskActivityConnection2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐArchivedTaskActivityConnection(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_archivedTaskActivityTask(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_archivedTaskActivityTask_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().ArchivedTaskActivityTask(rctx, args["where"].(*ent.ArchivedTaskActivityTaskWhereInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*ent.ArchivedTaskActivityTask)
+	fc.Result = res
+	return ec.marshalOArchivedTaskActivityTask2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐArchivedTaskActivityTask(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_archivedTaskActivityTasks(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_archivedTaskActivityTasks_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().ArchivedTaskActivityTasks(rctx, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["where"].(*ent.ArchivedTaskActivityTaskWhereInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*ent.ArchivedTaskActivityTaskConnection)
+	fc.Result = res
+	return ec.marshalOArchivedTaskActivityTaskConnection2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐArchivedTaskActivityTaskConnection(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_color(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -59230,6 +60193,477 @@ func (ec *executionContext) unmarshalInputActivityWhereInput(ctx context.Context
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputArchivedTaskActivityTaskWhereInput(ctx context.Context, obj interface{}) (ent.ArchivedTaskActivityTaskWhereInput, error) {
+	var it ent.ArchivedTaskActivityTaskWhereInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "not":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("not"))
+			it.Not, err = ec.unmarshalOArchivedTaskActivityTaskWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐArchivedTaskActivityTaskWhereInput(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "and":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("and"))
+			it.And, err = ec.unmarshalOArchivedTaskActivityTaskWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐArchivedTaskActivityTaskWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "or":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("or"))
+			it.Or, err = ec.unmarshalOArchivedTaskActivityTaskWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐArchivedTaskActivityTaskWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "archivedTaskActivityID":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("archivedTaskActivityID"))
+			it.ArchivedTaskActivityID, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "archivedTaskActivityIDNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("archivedTaskActivityIDNEQ"))
+			it.ArchivedTaskActivityIDNEQ, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "archivedTaskActivityIDIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("archivedTaskActivityIDIn"))
+			it.ArchivedTaskActivityIDIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "archivedTaskActivityIDNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("archivedTaskActivityIDNotIn"))
+			it.ArchivedTaskActivityIDNotIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "archivedTaskActivityIDGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("archivedTaskActivityIDGT"))
+			it.ArchivedTaskActivityIDGT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "archivedTaskActivityIDGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("archivedTaskActivityIDGTE"))
+			it.ArchivedTaskActivityIDGTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "archivedTaskActivityIDLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("archivedTaskActivityIDLT"))
+			it.ArchivedTaskActivityIDLT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "archivedTaskActivityIDLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("archivedTaskActivityIDLTE"))
+			it.ArchivedTaskActivityIDLTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "archivedTaskActivityIDContains":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("archivedTaskActivityIDContains"))
+			it.ArchivedTaskActivityIDContains, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "archivedTaskActivityIDHasPrefix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("archivedTaskActivityIDHasPrefix"))
+			it.ArchivedTaskActivityIDHasPrefix, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "archivedTaskActivityIDHasSuffix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("archivedTaskActivityIDHasSuffix"))
+			it.ArchivedTaskActivityIDHasSuffix, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "archivedTaskActivityIDEqualFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("archivedTaskActivityIDEqualFold"))
+			it.ArchivedTaskActivityIDEqualFold, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "archivedTaskActivityIDContainsFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("archivedTaskActivityIDContainsFold"))
+			it.ArchivedTaskActivityIDContainsFold, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskID":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskID"))
+			it.TaskID, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskIDNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskIDNEQ"))
+			it.TaskIDNEQ, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskIDIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskIDIn"))
+			it.TaskIDIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskIDNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskIDNotIn"))
+			it.TaskIDNotIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskIDGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskIDGT"))
+			it.TaskIDGT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskIDGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskIDGTE"))
+			it.TaskIDGTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskIDLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskIDLT"))
+			it.TaskIDLT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskIDLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskIDLTE"))
+			it.TaskIDLTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskIDContains":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskIDContains"))
+			it.TaskIDContains, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskIDHasPrefix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskIDHasPrefix"))
+			it.TaskIDHasPrefix, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskIDHasSuffix":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskIDHasSuffix"))
+			it.TaskIDHasSuffix, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskIDEqualFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskIDEqualFold"))
+			it.TaskIDEqualFold, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskIDContainsFold":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskIDContainsFold"))
+			it.TaskIDContainsFold, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAt":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAt"))
+			it.CreatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtNEQ"))
+			it.CreatedAtNEQ, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtIn"))
+			it.CreatedAtIn, err = ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtNotIn"))
+			it.CreatedAtNotIn, err = ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtGT"))
+			it.CreatedAtGT, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtGTE"))
+			it.CreatedAtGTE, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtLT"))
+			it.CreatedAtLT, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "createdAtLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("createdAtLTE"))
+			it.CreatedAtLTE, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAt":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAt"))
+			it.UpdatedAt, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtNEQ"))
+			it.UpdatedAtNEQ, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtIn"))
+			it.UpdatedAtIn, err = ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtNotIn"))
+			it.UpdatedAtNotIn, err = ec.unmarshalOTime2ᚕtimeᚐTimeᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtGT"))
+			it.UpdatedAtGT, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtGTE"))
+			it.UpdatedAtGTE, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtLT"))
+			it.UpdatedAtLT, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "updatedAtLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updatedAtLTE"))
+			it.UpdatedAtLTE, err = ec.unmarshalOTime2ᚖtimeᚐTime(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			it.ID, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idNEQ":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idNEQ"))
+			it.IDNEQ, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idIn"))
+			it.IDIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idNotIn":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idNotIn"))
+			it.IDNotIn, err = ec.unmarshalOID2ᚕprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐIDᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idGT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idGT"))
+			it.IDGT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idGTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idGTE"))
+			it.IDGTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idLT":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idLT"))
+			it.IDLT, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "idLTE":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("idLTE"))
+			it.IDLTE, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasTask":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasTask"))
+			it.HasTask, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasTaskWith":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasTaskWith"))
+			it.HasTaskWith, err = ec.unmarshalOTaskWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐTaskWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasArchivedTaskActivity":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasArchivedTaskActivity"))
+			it.HasArchivedTaskActivity, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasArchivedTaskActivityWith":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasArchivedTaskActivityWith"))
+			it.HasArchivedTaskActivityWith, err = ec.unmarshalOArchivedTaskActivityWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐArchivedTaskActivityWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputArchivedTaskActivityWhereInput(ctx context.Context, obj interface{}) (ent.ArchivedTaskActivityWhereInput, error) {
 	var it ent.ArchivedTaskActivityWhereInput
 	asMap := map[string]interface{}{}
@@ -59812,6 +61246,22 @@ func (ec *executionContext) unmarshalInputArchivedTaskActivityWhereInput(ctx con
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasWorkspaceWith"))
 			it.HasWorkspaceWith, err = ec.unmarshalOWorkspaceWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐWorkspaceWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasArchivedTaskActivityTasks":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasArchivedTaskActivityTasks"))
+			it.HasArchivedTaskActivityTasks, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasArchivedTaskActivityTasksWith":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasArchivedTaskActivityTasksWith"))
+			it.HasArchivedTaskActivityTasksWith, err = ec.unmarshalOArchivedTaskActivityTaskWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐArchivedTaskActivityTaskWhereInputᚄ(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -60528,6 +61978,37 @@ func (ec *executionContext) unmarshalInputCreateArchivedTaskActivityInput(ctx co
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("teammateId"))
 			it.TeammateID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputCreateArchivedTaskActivityTaskInput(ctx context.Context, obj interface{}) (ent.CreateArchivedTaskActivityTaskInput, error) {
+	var it ent.CreateArchivedTaskActivityTaskInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "archivedTaskActivityId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("archivedTaskActivityId"))
+			it.ArchivedTaskActivityID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskId"))
+			it.TaskID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -79698,6 +81179,22 @@ func (ec *executionContext) unmarshalInputTaskWhereInput(ctx context.Context, ob
 			if err != nil {
 				return it, err
 			}
+		case "hasArchivedTaskActivityTasks":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasArchivedTaskActivityTasks"))
+			it.HasArchivedTaskActivityTasks, err = ec.unmarshalOBoolean2ᚖbool(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "hasArchivedTaskActivityTasksWith":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("hasArchivedTaskActivityTasksWith"))
+			it.HasArchivedTaskActivityTasksWith, err = ec.unmarshalOArchivedTaskActivityTaskWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐArchivedTaskActivityTaskWhereInputᚄ(ctx, v)
+			if err != nil {
+				return it, err
+			}
 		}
 	}
 
@@ -86025,6 +87522,37 @@ func (ec *executionContext) unmarshalInputUpdateArchivedTaskActivityInput(ctx co
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputUpdateArchivedTaskActivityTaskInput(ctx context.Context, obj interface{}) (ent.UpdateArchivedTaskActivityTaskInput, error) {
+	var it ent.UpdateArchivedTaskActivityTaskInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "id":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+			it.ID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "taskId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("taskId"))
+			it.TaskID, err = ec.unmarshalOID2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputUpdateColorInput(ctx context.Context, obj interface{}) (ent.UpdateColorInput, error) {
 	var it ent.UpdateColorInput
 	asMap := map[string]interface{}{}
@@ -90980,6 +92508,11 @@ func (ec *executionContext) _Node(ctx context.Context, sel ast.SelectionSet, obj
 			return graphql.Null
 		}
 		return ec._ArchivedTaskActivity(ctx, sel, obj)
+	case *ent.ArchivedTaskActivityTask:
+		if obj == nil {
+			return graphql.Null
+		}
+		return ec._ArchivedTaskActivityTask(ctx, sel, obj)
 	case *ent.Color:
 		if obj == nil {
 			return graphql.Null
@@ -91403,6 +92936,20 @@ func (ec *executionContext) _ArchivedTaskActivity(ctx context.Context, sel ast.S
 				}
 				return res
 			})
+		case "archivedTaskActivityTasks":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._ArchivedTaskActivity_archivedTaskActivityTasks(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
 		case "teammateId":
 			out.Values[i] = ec._ArchivedTaskActivity_teammateId(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
@@ -91496,6 +93043,148 @@ func (ec *executionContext) _ArchivedTaskActivityEdge(ctx context.Context, sel a
 			out.Values[i] = ec._ArchivedTaskActivityEdge_node(ctx, field, obj)
 		case "cursor":
 			out.Values[i] = ec._ArchivedTaskActivityEdge_cursor(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var archivedTaskActivityTaskImplementors = []string{"ArchivedTaskActivityTask", "Node"}
+
+func (ec *executionContext) _ArchivedTaskActivityTask(ctx context.Context, sel ast.SelectionSet, obj *ent.ArchivedTaskActivityTask) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, archivedTaskActivityTaskImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("ArchivedTaskActivityTask")
+		case "id":
+			out.Values[i] = ec._ArchivedTaskActivityTask_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "archivedTaskActivityId":
+			out.Values[i] = ec._ArchivedTaskActivityTask_archivedTaskActivityId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "task":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._ArchivedTaskActivityTask_task(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "taskId":
+			out.Values[i] = ec._ArchivedTaskActivityTask_taskId(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "createdAt":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._ArchivedTaskActivityTask_createdAt(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		case "updatedAt":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._ArchivedTaskActivityTask_updatedAt(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var archivedTaskActivityTaskConnectionImplementors = []string{"ArchivedTaskActivityTaskConnection"}
+
+func (ec *executionContext) _ArchivedTaskActivityTaskConnection(ctx context.Context, sel ast.SelectionSet, obj *ent.ArchivedTaskActivityTaskConnection) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, archivedTaskActivityTaskConnectionImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("ArchivedTaskActivityTaskConnection")
+		case "totalCount":
+			out.Values[i] = ec._ArchivedTaskActivityTaskConnection_totalCount(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "pageInfo":
+			out.Values[i] = ec._ArchivedTaskActivityTaskConnection_pageInfo(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "edges":
+			out.Values[i] = ec._ArchivedTaskActivityTaskConnection_edges(ctx, field, obj)
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var archivedTaskActivityTaskEdgeImplementors = []string{"ArchivedTaskActivityTaskEdge"}
+
+func (ec *executionContext) _ArchivedTaskActivityTaskEdge(ctx context.Context, sel ast.SelectionSet, obj *ent.ArchivedTaskActivityTaskEdge) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, archivedTaskActivityTaskEdgeImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("ArchivedTaskActivityTaskEdge")
+		case "node":
+			out.Values[i] = ec._ArchivedTaskActivityTaskEdge_node(ctx, field, obj)
+		case "cursor":
+			out.Values[i] = ec._ArchivedTaskActivityTaskEdge_cursor(ctx, field, obj)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -92927,6 +94616,16 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			}
 		case "updateArchivedTaskActivity":
 			out.Values[i] = ec._Mutation_updateArchivedTaskActivity(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "createArchivedTaskActivityTask":
+			out.Values[i] = ec._Mutation_createArchivedTaskActivityTask(ctx, field)
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "updateArchivedTaskActivityTask":
+			out.Values[i] = ec._Mutation_updateArchivedTaskActivityTask(ctx, field)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
@@ -95124,6 +96823,28 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_archivedTaskActivities(ctx, field)
+				return res
+			})
+		case "archivedTaskActivityTask":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_archivedTaskActivityTask(ctx, field)
+				return res
+			})
+		case "archivedTaskActivityTasks":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_archivedTaskActivityTasks(ctx, field)
 				return res
 			})
 		case "color":
@@ -101270,6 +102991,69 @@ func (ec *executionContext) marshalNArchivedTaskActivity2ᚖprojectᚑmanagement
 	return ec._ArchivedTaskActivity(ctx, sel, v)
 }
 
+func (ec *executionContext) marshalNArchivedTaskActivityTask2projectᚑmanagementᚑdemoᚑbackendᚋentᚐArchivedTaskActivityTask(ctx context.Context, sel ast.SelectionSet, v ent.ArchivedTaskActivityTask) graphql.Marshaler {
+	return ec._ArchivedTaskActivityTask(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNArchivedTaskActivityTask2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐArchivedTaskActivityTaskᚄ(ctx context.Context, sel ast.SelectionSet, v []*ent.ArchivedTaskActivityTask) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNArchivedTaskActivityTask2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐArchivedTaskActivityTask(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNArchivedTaskActivityTask2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐArchivedTaskActivityTask(ctx context.Context, sel ast.SelectionSet, v *ent.ArchivedTaskActivityTask) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._ArchivedTaskActivityTask(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNArchivedTaskActivityTaskWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐArchivedTaskActivityTaskWhereInput(ctx context.Context, v interface{}) (*ent.ArchivedTaskActivityTaskWhereInput, error) {
+	res, err := ec.unmarshalInputArchivedTaskActivityTaskWhereInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNArchivedTaskActivityWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐArchivedTaskActivityWhereInput(ctx context.Context, v interface{}) (*ent.ArchivedTaskActivityWhereInput, error) {
 	res, err := ec.unmarshalInputArchivedTaskActivityWhereInput(ctx, v)
 	return &res, graphql.ErrorOnPath(ctx, err)
@@ -101356,6 +103140,11 @@ func (ec *executionContext) unmarshalNCreateActivityTypeInput2projectᚑmanageme
 
 func (ec *executionContext) unmarshalNCreateArchivedTaskActivityInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐCreateArchivedTaskActivityInput(ctx context.Context, v interface{}) (ent.CreateArchivedTaskActivityInput, error) {
 	res, err := ec.unmarshalInputCreateArchivedTaskActivityInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNCreateArchivedTaskActivityTaskInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐCreateArchivedTaskActivityTaskInput(ctx context.Context, v interface{}) (ent.CreateArchivedTaskActivityTaskInput, error) {
+	res, err := ec.unmarshalInputCreateArchivedTaskActivityTaskInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
@@ -103849,6 +105638,11 @@ func (ec *executionContext) unmarshalNUpdateArchivedTaskActivityInput2projectᚑ
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
+func (ec *executionContext) unmarshalNUpdateArchivedTaskActivityTaskInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐUpdateArchivedTaskActivityTaskInput(ctx context.Context, v interface{}) (ent.UpdateArchivedTaskActivityTaskInput, error) {
+	res, err := ec.unmarshalInputUpdateArchivedTaskActivityTaskInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNUpdateColorInput2projectᚑmanagementᚑdemoᚑbackendᚋentᚐUpdateColorInput(ctx context.Context, v interface{}) (ent.UpdateColorInput, error) {
 	res, err := ec.unmarshalInputUpdateColorInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -104726,6 +106520,100 @@ func (ec *executionContext) marshalOArchivedTaskActivityEdge2ᚖprojectᚑmanage
 		return graphql.Null
 	}
 	return ec._ArchivedTaskActivityEdge(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOArchivedTaskActivityTask2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐArchivedTaskActivityTask(ctx context.Context, sel ast.SelectionSet, v *ent.ArchivedTaskActivityTask) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._ArchivedTaskActivityTask(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOArchivedTaskActivityTaskConnection2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐArchivedTaskActivityTaskConnection(ctx context.Context, sel ast.SelectionSet, v *ent.ArchivedTaskActivityTaskConnection) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._ArchivedTaskActivityTaskConnection(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalOArchivedTaskActivityTaskEdge2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐArchivedTaskActivityTaskEdge(ctx context.Context, sel ast.SelectionSet, v []*ent.ArchivedTaskActivityTaskEdge) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalOArchivedTaskActivityTaskEdge2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐArchivedTaskActivityTaskEdge(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	return ret
+}
+
+func (ec *executionContext) marshalOArchivedTaskActivityTaskEdge2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐArchivedTaskActivityTaskEdge(ctx context.Context, sel ast.SelectionSet, v *ent.ArchivedTaskActivityTaskEdge) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._ArchivedTaskActivityTaskEdge(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalOArchivedTaskActivityTaskWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐArchivedTaskActivityTaskWhereInputᚄ(ctx context.Context, v interface{}) ([]*ent.ArchivedTaskActivityTaskWhereInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	var vSlice []interface{}
+	if v != nil {
+		if tmp1, ok := v.([]interface{}); ok {
+			vSlice = tmp1
+		} else {
+			vSlice = []interface{}{v}
+		}
+	}
+	var err error
+	res := make([]*ent.ArchivedTaskActivityTaskWhereInput, len(vSlice))
+	for i := range vSlice {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
+		res[i], err = ec.unmarshalNArchivedTaskActivityTaskWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐArchivedTaskActivityTaskWhereInput(ctx, vSlice[i])
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
+}
+
+func (ec *executionContext) unmarshalOArchivedTaskActivityTaskWhereInput2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐArchivedTaskActivityTaskWhereInput(ctx context.Context, v interface{}) (*ent.ArchivedTaskActivityTaskWhereInput, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputArchivedTaskActivityTaskWhereInput(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalOArchivedTaskActivityWhereInput2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐArchivedTaskActivityWhereInputᚄ(ctx context.Context, v interface{}) ([]*ent.ArchivedTaskActivityWhereInput, error) {

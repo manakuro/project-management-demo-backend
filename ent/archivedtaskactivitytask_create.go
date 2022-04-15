@@ -6,10 +6,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"project-management-demo-backend/ent/archivedtaskactivity"
 	"project-management-demo-backend/ent/archivedtaskactivitytask"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/task"
-	"project-management-demo-backend/ent/taskactivity"
 	"time"
 
 	"entgo.io/ent/dialect"
@@ -26,9 +26,9 @@ type ArchivedTaskActivityTaskCreate struct {
 	conflict []sql.ConflictOption
 }
 
-// SetTaskActivityID sets the "task_activity_id" field.
-func (atatc *ArchivedTaskActivityTaskCreate) SetTaskActivityID(u ulid.ID) *ArchivedTaskActivityTaskCreate {
-	atatc.mutation.SetTaskActivityID(u)
+// SetArchivedTaskActivityID sets the "archived_task_activity_id" field.
+func (atatc *ArchivedTaskActivityTaskCreate) SetArchivedTaskActivityID(u ulid.ID) *ArchivedTaskActivityTaskCreate {
+	atatc.mutation.SetArchivedTaskActivityID(u)
 	return atatc
 }
 
@@ -85,9 +85,9 @@ func (atatc *ArchivedTaskActivityTaskCreate) SetTask(t *Task) *ArchivedTaskActiv
 	return atatc.SetTaskID(t.ID)
 }
 
-// SetTaskActivity sets the "taskActivity" edge to the TaskActivity entity.
-func (atatc *ArchivedTaskActivityTaskCreate) SetTaskActivity(t *TaskActivity) *ArchivedTaskActivityTaskCreate {
-	return atatc.SetTaskActivityID(t.ID)
+// SetArchivedTaskActivity sets the "archivedTaskActivity" edge to the ArchivedTaskActivity entity.
+func (atatc *ArchivedTaskActivityTaskCreate) SetArchivedTaskActivity(a *ArchivedTaskActivity) *ArchivedTaskActivityTaskCreate {
+	return atatc.SetArchivedTaskActivityID(a.ID)
 }
 
 // Mutation returns the ArchivedTaskActivityTaskMutation object of the builder.
@@ -177,8 +177,8 @@ func (atatc *ArchivedTaskActivityTaskCreate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (atatc *ArchivedTaskActivityTaskCreate) check() error {
-	if _, ok := atatc.mutation.TaskActivityID(); !ok {
-		return &ValidationError{Name: "task_activity_id", err: errors.New(`ent: missing required field "ArchivedTaskActivityTask.task_activity_id"`)}
+	if _, ok := atatc.mutation.ArchivedTaskActivityID(); !ok {
+		return &ValidationError{Name: "archived_task_activity_id", err: errors.New(`ent: missing required field "ArchivedTaskActivityTask.archived_task_activity_id"`)}
 	}
 	if _, ok := atatc.mutation.TaskID(); !ok {
 		return &ValidationError{Name: "task_id", err: errors.New(`ent: missing required field "ArchivedTaskActivityTask.task_id"`)}
@@ -192,8 +192,8 @@ func (atatc *ArchivedTaskActivityTaskCreate) check() error {
 	if _, ok := atatc.mutation.TaskID(); !ok {
 		return &ValidationError{Name: "task", err: errors.New(`ent: missing required edge "ArchivedTaskActivityTask.task"`)}
 	}
-	if _, ok := atatc.mutation.TaskActivityID(); !ok {
-		return &ValidationError{Name: "taskActivity", err: errors.New(`ent: missing required edge "ArchivedTaskActivityTask.taskActivity"`)}
+	if _, ok := atatc.mutation.ArchivedTaskActivityID(); !ok {
+		return &ValidationError{Name: "archivedTaskActivity", err: errors.New(`ent: missing required edge "ArchivedTaskActivityTask.archivedTaskActivity"`)}
 	}
 	return nil
 }
@@ -268,24 +268,24 @@ func (atatc *ArchivedTaskActivityTaskCreate) createSpec() (*ArchivedTaskActivity
 		_node.TaskID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := atatc.mutation.TaskActivityIDs(); len(nodes) > 0 {
+	if nodes := atatc.mutation.ArchivedTaskActivityIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
-			Table:   archivedtaskactivitytask.TaskActivityTable,
-			Columns: []string{archivedtaskactivitytask.TaskActivityColumn},
+			Table:   archivedtaskactivitytask.ArchivedTaskActivityTable,
+			Columns: []string{archivedtaskactivitytask.ArchivedTaskActivityColumn},
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
-					Column: taskactivity.FieldID,
+					Column: archivedtaskactivity.FieldID,
 				},
 			},
 		}
 		for _, k := range nodes {
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
-		_node.TaskActivityID = nodes[0]
+		_node.ArchivedTaskActivityID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
@@ -295,7 +295,7 @@ func (atatc *ArchivedTaskActivityTaskCreate) createSpec() (*ArchivedTaskActivity
 // of the `INSERT` statement. For example:
 //
 //	client.ArchivedTaskActivityTask.Create().
-//		SetTaskActivityID(v).
+//		SetArchivedTaskActivityID(v).
 //		OnConflict(
 //			// Update the row with the new values
 //			// the was proposed for insertion.
@@ -304,7 +304,7 @@ func (atatc *ArchivedTaskActivityTaskCreate) createSpec() (*ArchivedTaskActivity
 //		// Override some of the fields with custom
 //		// update values.
 //		Update(func(u *ent.ArchivedTaskActivityTaskUpsert) {
-//			SetTaskActivityID(v+v).
+//			SetArchivedTaskActivityID(v+v).
 //		}).
 //		Exec(ctx)
 //
@@ -342,15 +342,15 @@ type (
 	}
 )
 
-// SetTaskActivityID sets the "task_activity_id" field.
-func (u *ArchivedTaskActivityTaskUpsert) SetTaskActivityID(v ulid.ID) *ArchivedTaskActivityTaskUpsert {
-	u.Set(archivedtaskactivitytask.FieldTaskActivityID, v)
+// SetArchivedTaskActivityID sets the "archived_task_activity_id" field.
+func (u *ArchivedTaskActivityTaskUpsert) SetArchivedTaskActivityID(v ulid.ID) *ArchivedTaskActivityTaskUpsert {
+	u.Set(archivedtaskactivitytask.FieldArchivedTaskActivityID, v)
 	return u
 }
 
-// UpdateTaskActivityID sets the "task_activity_id" field to the value that was provided on create.
-func (u *ArchivedTaskActivityTaskUpsert) UpdateTaskActivityID() *ArchivedTaskActivityTaskUpsert {
-	u.SetExcluded(archivedtaskactivitytask.FieldTaskActivityID)
+// UpdateArchivedTaskActivityID sets the "archived_task_activity_id" field to the value that was provided on create.
+func (u *ArchivedTaskActivityTaskUpsert) UpdateArchivedTaskActivityID() *ArchivedTaskActivityTaskUpsert {
+	u.SetExcluded(archivedtaskactivitytask.FieldArchivedTaskActivityID)
 	return u
 }
 
@@ -446,17 +446,17 @@ func (u *ArchivedTaskActivityTaskUpsertOne) Update(set func(*ArchivedTaskActivit
 	return u
 }
 
-// SetTaskActivityID sets the "task_activity_id" field.
-func (u *ArchivedTaskActivityTaskUpsertOne) SetTaskActivityID(v ulid.ID) *ArchivedTaskActivityTaskUpsertOne {
+// SetArchivedTaskActivityID sets the "archived_task_activity_id" field.
+func (u *ArchivedTaskActivityTaskUpsertOne) SetArchivedTaskActivityID(v ulid.ID) *ArchivedTaskActivityTaskUpsertOne {
 	return u.Update(func(s *ArchivedTaskActivityTaskUpsert) {
-		s.SetTaskActivityID(v)
+		s.SetArchivedTaskActivityID(v)
 	})
 }
 
-// UpdateTaskActivityID sets the "task_activity_id" field to the value that was provided on create.
-func (u *ArchivedTaskActivityTaskUpsertOne) UpdateTaskActivityID() *ArchivedTaskActivityTaskUpsertOne {
+// UpdateArchivedTaskActivityID sets the "archived_task_activity_id" field to the value that was provided on create.
+func (u *ArchivedTaskActivityTaskUpsertOne) UpdateArchivedTaskActivityID() *ArchivedTaskActivityTaskUpsertOne {
 	return u.Update(func(s *ArchivedTaskActivityTaskUpsert) {
-		s.UpdateTaskActivityID()
+		s.UpdateArchivedTaskActivityID()
 	})
 }
 
@@ -634,7 +634,7 @@ func (atatcb *ArchivedTaskActivityTaskCreateBulk) ExecX(ctx context.Context) {
 //		// Override some of the fields with custom
 //		// update values.
 //		Update(func(u *ent.ArchivedTaskActivityTaskUpsert) {
-//			SetTaskActivityID(v+v).
+//			SetArchivedTaskActivityID(v+v).
 //		}).
 //		Exec(ctx)
 //
@@ -724,17 +724,17 @@ func (u *ArchivedTaskActivityTaskUpsertBulk) Update(set func(*ArchivedTaskActivi
 	return u
 }
 
-// SetTaskActivityID sets the "task_activity_id" field.
-func (u *ArchivedTaskActivityTaskUpsertBulk) SetTaskActivityID(v ulid.ID) *ArchivedTaskActivityTaskUpsertBulk {
+// SetArchivedTaskActivityID sets the "archived_task_activity_id" field.
+func (u *ArchivedTaskActivityTaskUpsertBulk) SetArchivedTaskActivityID(v ulid.ID) *ArchivedTaskActivityTaskUpsertBulk {
 	return u.Update(func(s *ArchivedTaskActivityTaskUpsert) {
-		s.SetTaskActivityID(v)
+		s.SetArchivedTaskActivityID(v)
 	})
 }
 
-// UpdateTaskActivityID sets the "task_activity_id" field to the value that was provided on create.
-func (u *ArchivedTaskActivityTaskUpsertBulk) UpdateTaskActivityID() *ArchivedTaskActivityTaskUpsertBulk {
+// UpdateArchivedTaskActivityID sets the "archived_task_activity_id" field to the value that was provided on create.
+func (u *ArchivedTaskActivityTaskUpsertBulk) UpdateArchivedTaskActivityID() *ArchivedTaskActivityTaskUpsertBulk {
 	return u.Update(func(s *ArchivedTaskActivityTaskUpsert) {
-		s.UpdateTaskActivityID()
+		s.UpdateArchivedTaskActivityID()
 	})
 }
 
