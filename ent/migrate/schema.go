@@ -85,6 +85,48 @@ var (
 			},
 		},
 	}
+	// ArchivedWorkspaceActivitiesColumns holds the columns for the "archived_workspace_activities" table.
+	ArchivedWorkspaceActivitiesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
+		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
+		{Name: "activity_type_id", Type: field.TypeString},
+		{Name: "project_id", Type: field.TypeString},
+		{Name: "teammate_id", Type: field.TypeString},
+		{Name: "workspace_id", Type: field.TypeString},
+	}
+	// ArchivedWorkspaceActivitiesTable holds the schema information for the "archived_workspace_activities" table.
+	ArchivedWorkspaceActivitiesTable = &schema.Table{
+		Name:       "archived_workspace_activities",
+		Columns:    ArchivedWorkspaceActivitiesColumns,
+		PrimaryKey: []*schema.Column{ArchivedWorkspaceActivitiesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "archived_workspace_activities_activity_types_archivedWorkspaceActivities",
+				Columns:    []*schema.Column{ArchivedWorkspaceActivitiesColumns[3]},
+				RefColumns: []*schema.Column{ActivityTypesColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "archived_workspace_activities_projects_archivedWorkspaceActivities",
+				Columns:    []*schema.Column{ArchivedWorkspaceActivitiesColumns[4]},
+				RefColumns: []*schema.Column{ProjectsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "archived_workspace_activities_teammates_archivedWorkspaceActivities",
+				Columns:    []*schema.Column{ArchivedWorkspaceActivitiesColumns[5]},
+				RefColumns: []*schema.Column{TeammatesColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "archived_workspace_activities_workspaces_archivedWorkspaceActivities",
+				Columns:    []*schema.Column{ArchivedWorkspaceActivitiesColumns[6]},
+				RefColumns: []*schema.Column{WorkspacesColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
 	// ColorsColumns holds the columns for the "colors" table.
 	ColorsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString},
@@ -1281,6 +1323,7 @@ var (
 		ActivityTypesTable,
 		ArchivedTaskActivitiesTable,
 		ArchivedTaskActivityTasksTable,
+		ArchivedWorkspaceActivitiesTable,
 		ColorsTable,
 		DeletedTasksTable,
 		FavoriteProjectsTable,
@@ -1332,6 +1375,10 @@ func init() {
 	ArchivedTaskActivitiesTable.ForeignKeys[2].RefTable = WorkspacesTable
 	ArchivedTaskActivityTasksTable.ForeignKeys[0].RefTable = ArchivedTaskActivitiesTable
 	ArchivedTaskActivityTasksTable.ForeignKeys[1].RefTable = TasksTable
+	ArchivedWorkspaceActivitiesTable.ForeignKeys[0].RefTable = ActivityTypesTable
+	ArchivedWorkspaceActivitiesTable.ForeignKeys[1].RefTable = ProjectsTable
+	ArchivedWorkspaceActivitiesTable.ForeignKeys[2].RefTable = TeammatesTable
+	ArchivedWorkspaceActivitiesTable.ForeignKeys[3].RefTable = WorkspacesTable
 	DeletedTasksTable.ForeignKeys[0].RefTable = TasksTable
 	DeletedTasksTable.ForeignKeys[1].RefTable = WorkspacesTable
 	FavoriteProjectsTable.ForeignKeys[0].RefTable = ProjectsTable

@@ -66,9 +66,11 @@ type WorkspaceEdges struct {
 	TaskActivities []*TaskActivity `json:"taskActivities,omitempty"`
 	// ArchivedTaskActivities holds the value of the archivedTaskActivities edge.
 	ArchivedTaskActivities []*ArchivedTaskActivity `json:"archivedTaskActivities,omitempty"`
+	// ArchivedWorkspaceActivities holds the value of the archivedWorkspaceActivities edge.
+	ArchivedWorkspaceActivities []*ArchivedWorkspaceActivity `json:"archivedWorkspaceActivities,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [15]bool
+	loadedTypes [16]bool
 }
 
 // TeammateOrErr returns the Teammate value or an error if the edge
@@ -209,6 +211,15 @@ func (e WorkspaceEdges) ArchivedTaskActivitiesOrErr() ([]*ArchivedTaskActivity, 
 		return e.ArchivedTaskActivities, nil
 	}
 	return nil, &NotLoadedError{edge: "archivedTaskActivities"}
+}
+
+// ArchivedWorkspaceActivitiesOrErr returns the ArchivedWorkspaceActivities value or an error if the edge
+// was not loaded in eager-loading.
+func (e WorkspaceEdges) ArchivedWorkspaceActivitiesOrErr() ([]*ArchivedWorkspaceActivity, error) {
+	if e.loadedTypes[15] {
+		return e.ArchivedWorkspaceActivities, nil
+	}
+	return nil, &NotLoadedError{edge: "archivedWorkspaceActivities"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -355,6 +366,11 @@ func (w *Workspace) QueryTaskActivities() *TaskActivityQuery {
 // QueryArchivedTaskActivities queries the "archivedTaskActivities" edge of the Workspace entity.
 func (w *Workspace) QueryArchivedTaskActivities() *ArchivedTaskActivityQuery {
 	return (&WorkspaceClient{config: w.config}).QueryArchivedTaskActivities(w)
+}
+
+// QueryArchivedWorkspaceActivities queries the "archivedWorkspaceActivities" edge of the Workspace entity.
+func (w *Workspace) QueryArchivedWorkspaceActivities() *ArchivedWorkspaceActivityQuery {
+	return (&WorkspaceClient{config: w.config}).QueryArchivedWorkspaceActivities(w)
 }
 
 // Update returns a builder for updating this Workspace.

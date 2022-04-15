@@ -23,6 +23,10 @@ func (at *ActivityTypeQuery) collectField(ctx *graphql.OperationContext, field g
 			at = at.WithArchivedTaskActivities(func(query *ArchivedTaskActivityQuery) {
 				query.collectField(ctx, field)
 			})
+		case "archivedWorkspaceActivities":
+			at = at.WithArchivedWorkspaceActivities(func(query *ArchivedWorkspaceActivityQuery) {
+				query.collectField(ctx, field)
+			})
 		case "taskActivities":
 			at = at.WithTaskActivities(func(query *TaskActivityQuery) {
 				query.collectField(ctx, field)
@@ -90,6 +94,38 @@ func (atat *ArchivedTaskActivityTaskQuery) collectField(ctx *graphql.OperationCo
 		}
 	}
 	return atat
+}
+
+// CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
+func (awa *ArchivedWorkspaceActivityQuery) CollectFields(ctx context.Context, satisfies ...string) *ArchivedWorkspaceActivityQuery {
+	if fc := graphql.GetFieldContext(ctx); fc != nil {
+		awa = awa.collectField(graphql.GetOperationContext(ctx), fc.Field, satisfies...)
+	}
+	return awa
+}
+
+func (awa *ArchivedWorkspaceActivityQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *ArchivedWorkspaceActivityQuery {
+	for _, field := range graphql.CollectFields(ctx, field.Selections, satisfies) {
+		switch field.Name {
+		case "activityType":
+			awa = awa.WithActivityType(func(query *ActivityTypeQuery) {
+				query.collectField(ctx, field)
+			})
+		case "project":
+			awa = awa.WithProject(func(query *ProjectQuery) {
+				query.collectField(ctx, field)
+			})
+		case "teammate":
+			awa = awa.WithTeammate(func(query *TeammateQuery) {
+				query.collectField(ctx, field)
+			})
+		case "workspace":
+			awa = awa.WithWorkspace(func(query *WorkspaceQuery) {
+				query.collectField(ctx, field)
+			})
+		}
+	}
+	return awa
 }
 
 // CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
@@ -247,6 +283,10 @@ func (pr *ProjectQuery) CollectFields(ctx context.Context, satisfies ...string) 
 func (pr *ProjectQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *ProjectQuery {
 	for _, field := range graphql.CollectFields(ctx, field.Selections, satisfies) {
 		switch field.Name {
+		case "archivedWorkspaceActivities":
+			pr = pr.WithArchivedWorkspaceActivities(func(query *ArchivedWorkspaceActivityQuery) {
+				query.collectField(ctx, field)
+			})
 		case "favoriteProjects":
 			pr = pr.WithFavoriteProjects(func(query *FavoriteProjectQuery) {
 				query.collectField(ctx, field)
@@ -959,6 +999,10 @@ func (t *TeammateQuery) collectField(ctx *graphql.OperationContext, field graphq
 			t = t.WithArchivedTaskActivities(func(query *ArchivedTaskActivityQuery) {
 				query.collectField(ctx, field)
 			})
+		case "archivedWorkspaceActivities":
+			t = t.WithArchivedWorkspaceActivities(func(query *ArchivedWorkspaceActivityQuery) {
+				query.collectField(ctx, field)
+			})
 		case "favoriteProjects":
 			t = t.WithFavoriteProjects(func(query *FavoriteProjectQuery) {
 				query.collectField(ctx, field)
@@ -1237,6 +1281,10 @@ func (w *WorkspaceQuery) collectField(ctx *graphql.OperationContext, field graph
 		switch field.Name {
 		case "archivedTaskActivities":
 			w = w.WithArchivedTaskActivities(func(query *ArchivedTaskActivityQuery) {
+				query.collectField(ctx, field)
+			})
+		case "archivedWorkspaceActivities":
+			w = w.WithArchivedWorkspaceActivities(func(query *ArchivedWorkspaceActivityQuery) {
 				query.collectField(ctx, field)
 			})
 		case "deletedTasksRef":

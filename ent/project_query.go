@@ -8,6 +8,7 @@ import (
 	"errors"
 	"fmt"
 	"math"
+	"project-management-demo-backend/ent/archivedworkspaceactivity"
 	"project-management-demo-backend/ent/favoriteproject"
 	"project-management-demo-backend/ent/predicate"
 	"project-management-demo-backend/ent/project"
@@ -40,19 +41,20 @@ type ProjectQuery struct {
 	fields     []string
 	predicates []predicate.Project
 	// eager-loading edges.
-	withWorkspace               *WorkspaceQuery
-	withProjectBaseColor        *ProjectBaseColorQuery
-	withProjectLightColor       *ProjectLightColorQuery
-	withProjectIcon             *ProjectIconQuery
-	withTeammate                *TeammateQuery
-	withProjectTeammates        *ProjectTeammateQuery
-	withFavoriteProjects        *FavoriteProjectQuery
-	withProjectTaskColumns      *ProjectTaskColumnQuery
-	withProjectTaskListStatuses *ProjectTaskListStatusQuery
-	withProjectTaskSections     *ProjectTaskSectionQuery
-	withProjectTasks            *ProjectTaskQuery
-	withTaskFiles               *TaskFileQuery
-	withWorkspaceActivities     *WorkspaceActivityQuery
+	withWorkspace                   *WorkspaceQuery
+	withProjectBaseColor            *ProjectBaseColorQuery
+	withProjectLightColor           *ProjectLightColorQuery
+	withProjectIcon                 *ProjectIconQuery
+	withTeammate                    *TeammateQuery
+	withProjectTeammates            *ProjectTeammateQuery
+	withFavoriteProjects            *FavoriteProjectQuery
+	withProjectTaskColumns          *ProjectTaskColumnQuery
+	withProjectTaskListStatuses     *ProjectTaskListStatusQuery
+	withProjectTaskSections         *ProjectTaskSectionQuery
+	withProjectTasks                *ProjectTaskQuery
+	withTaskFiles                   *TaskFileQuery
+	withWorkspaceActivities         *WorkspaceActivityQuery
+	withArchivedWorkspaceActivities *ArchivedWorkspaceActivityQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -375,6 +377,28 @@ func (pq *ProjectQuery) QueryWorkspaceActivities() *WorkspaceActivityQuery {
 	return query
 }
 
+// QueryArchivedWorkspaceActivities chains the current query on the "archivedWorkspaceActivities" edge.
+func (pq *ProjectQuery) QueryArchivedWorkspaceActivities() *ArchivedWorkspaceActivityQuery {
+	query := &ArchivedWorkspaceActivityQuery{config: pq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := pq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := pq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(project.Table, project.FieldID, selector),
+			sqlgraph.To(archivedworkspaceactivity.Table, archivedworkspaceactivity.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, project.ArchivedWorkspaceActivitiesTable, project.ArchivedWorkspaceActivitiesColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // First returns the first Project entity from the query.
 // Returns a *NotFoundError when no Project was found.
 func (pq *ProjectQuery) First(ctx context.Context) (*Project, error) {
@@ -551,24 +575,25 @@ func (pq *ProjectQuery) Clone() *ProjectQuery {
 		return nil
 	}
 	return &ProjectQuery{
-		config:                      pq.config,
-		limit:                       pq.limit,
-		offset:                      pq.offset,
-		order:                       append([]OrderFunc{}, pq.order...),
-		predicates:                  append([]predicate.Project{}, pq.predicates...),
-		withWorkspace:               pq.withWorkspace.Clone(),
-		withProjectBaseColor:        pq.withProjectBaseColor.Clone(),
-		withProjectLightColor:       pq.withProjectLightColor.Clone(),
-		withProjectIcon:             pq.withProjectIcon.Clone(),
-		withTeammate:                pq.withTeammate.Clone(),
-		withProjectTeammates:        pq.withProjectTeammates.Clone(),
-		withFavoriteProjects:        pq.withFavoriteProjects.Clone(),
-		withProjectTaskColumns:      pq.withProjectTaskColumns.Clone(),
-		withProjectTaskListStatuses: pq.withProjectTaskListStatuses.Clone(),
-		withProjectTaskSections:     pq.withProjectTaskSections.Clone(),
-		withProjectTasks:            pq.withProjectTasks.Clone(),
-		withTaskFiles:               pq.withTaskFiles.Clone(),
-		withWorkspaceActivities:     pq.withWorkspaceActivities.Clone(),
+		config:                          pq.config,
+		limit:                           pq.limit,
+		offset:                          pq.offset,
+		order:                           append([]OrderFunc{}, pq.order...),
+		predicates:                      append([]predicate.Project{}, pq.predicates...),
+		withWorkspace:                   pq.withWorkspace.Clone(),
+		withProjectBaseColor:            pq.withProjectBaseColor.Clone(),
+		withProjectLightColor:           pq.withProjectLightColor.Clone(),
+		withProjectIcon:                 pq.withProjectIcon.Clone(),
+		withTeammate:                    pq.withTeammate.Clone(),
+		withProjectTeammates:            pq.withProjectTeammates.Clone(),
+		withFavoriteProjects:            pq.withFavoriteProjects.Clone(),
+		withProjectTaskColumns:          pq.withProjectTaskColumns.Clone(),
+		withProjectTaskListStatuses:     pq.withProjectTaskListStatuses.Clone(),
+		withProjectTaskSections:         pq.withProjectTaskSections.Clone(),
+		withProjectTasks:                pq.withProjectTasks.Clone(),
+		withTaskFiles:                   pq.withTaskFiles.Clone(),
+		withWorkspaceActivities:         pq.withWorkspaceActivities.Clone(),
+		withArchivedWorkspaceActivities: pq.withArchivedWorkspaceActivities.Clone(),
 		// clone intermediate query.
 		sql:    pq.sql.Clone(),
 		path:   pq.path,
@@ -719,6 +744,17 @@ func (pq *ProjectQuery) WithWorkspaceActivities(opts ...func(*WorkspaceActivityQ
 	return pq
 }
 
+// WithArchivedWorkspaceActivities tells the query-builder to eager-load the nodes that are connected to
+// the "archivedWorkspaceActivities" edge. The optional arguments are used to configure the query builder of the edge.
+func (pq *ProjectQuery) WithArchivedWorkspaceActivities(opts ...func(*ArchivedWorkspaceActivityQuery)) *ProjectQuery {
+	query := &ArchivedWorkspaceActivityQuery{config: pq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	pq.withArchivedWorkspaceActivities = query
+	return pq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -784,7 +820,7 @@ func (pq *ProjectQuery) sqlAll(ctx context.Context) ([]*Project, error) {
 	var (
 		nodes       = []*Project{}
 		_spec       = pq.querySpec()
-		loadedTypes = [13]bool{
+		loadedTypes = [14]bool{
 			pq.withWorkspace != nil,
 			pq.withProjectBaseColor != nil,
 			pq.withProjectLightColor != nil,
@@ -798,6 +834,7 @@ func (pq *ProjectQuery) sqlAll(ctx context.Context) ([]*Project, error) {
 			pq.withProjectTasks != nil,
 			pq.withTaskFiles != nil,
 			pq.withWorkspaceActivities != nil,
+			pq.withArchivedWorkspaceActivities != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -1147,6 +1184,31 @@ func (pq *ProjectQuery) sqlAll(ctx context.Context) ([]*Project, error) {
 				return nil, fmt.Errorf(`unexpected foreign-key "project_id" returned %v for node %v`, fk, n.ID)
 			}
 			node.Edges.WorkspaceActivities = append(node.Edges.WorkspaceActivities, n)
+		}
+	}
+
+	if query := pq.withArchivedWorkspaceActivities; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[ulid.ID]*Project)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.ArchivedWorkspaceActivities = []*ArchivedWorkspaceActivity{}
+		}
+		query.Where(predicate.ArchivedWorkspaceActivity(func(s *sql.Selector) {
+			s.Where(sql.InValues(project.ArchivedWorkspaceActivitiesColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.ProjectID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "project_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.ArchivedWorkspaceActivities = append(node.Edges.ArchivedWorkspaceActivities, n)
 		}
 	}
 

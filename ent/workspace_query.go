@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"math"
 	"project-management-demo-backend/ent/archivedtaskactivity"
+	"project-management-demo-backend/ent/archivedworkspaceactivity"
 	"project-management-demo-backend/ent/deletedtask"
 	"project-management-demo-backend/ent/favoriteworkspace"
 	"project-management-demo-backend/ent/predicate"
@@ -42,21 +43,22 @@ type WorkspaceQuery struct {
 	fields     []string
 	predicates []predicate.Workspace
 	// eager-loading edges.
-	withTeammate                 *TeammateQuery
-	withProjects                 *ProjectQuery
-	withWorkspaceTeammates       *WorkspaceTeammateQuery
-	withFavoriteWorkspaces       *FavoriteWorkspaceQuery
-	withTeammateTaskTabStatuses  *TeammateTaskTabStatusQuery
-	withTeammateTaskListStatuses *TeammateTaskListStatusQuery
-	withTeammateTaskSections     *TeammateTaskSectionQuery
-	withTaskLikes                *TaskLikeQuery
-	withTags                     *TagQuery
-	withTeammateTaskColumns      *TeammateTaskColumnQuery
-	withTeammateTasks            *TeammateTaskQuery
-	withDeletedTasksRef          *DeletedTaskQuery
-	withWorkspaceActivities      *WorkspaceActivityQuery
-	withTaskActivities           *TaskActivityQuery
-	withArchivedTaskActivities   *ArchivedTaskActivityQuery
+	withTeammate                    *TeammateQuery
+	withProjects                    *ProjectQuery
+	withWorkspaceTeammates          *WorkspaceTeammateQuery
+	withFavoriteWorkspaces          *FavoriteWorkspaceQuery
+	withTeammateTaskTabStatuses     *TeammateTaskTabStatusQuery
+	withTeammateTaskListStatuses    *TeammateTaskListStatusQuery
+	withTeammateTaskSections        *TeammateTaskSectionQuery
+	withTaskLikes                   *TaskLikeQuery
+	withTags                        *TagQuery
+	withTeammateTaskColumns         *TeammateTaskColumnQuery
+	withTeammateTasks               *TeammateTaskQuery
+	withDeletedTasksRef             *DeletedTaskQuery
+	withWorkspaceActivities         *WorkspaceActivityQuery
+	withTaskActivities              *TaskActivityQuery
+	withArchivedTaskActivities      *ArchivedTaskActivityQuery
+	withArchivedWorkspaceActivities *ArchivedWorkspaceActivityQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -423,6 +425,28 @@ func (wq *WorkspaceQuery) QueryArchivedTaskActivities() *ArchivedTaskActivityQue
 	return query
 }
 
+// QueryArchivedWorkspaceActivities chains the current query on the "archivedWorkspaceActivities" edge.
+func (wq *WorkspaceQuery) QueryArchivedWorkspaceActivities() *ArchivedWorkspaceActivityQuery {
+	query := &ArchivedWorkspaceActivityQuery{config: wq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := wq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := wq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(workspace.Table, workspace.FieldID, selector),
+			sqlgraph.To(archivedworkspaceactivity.Table, archivedworkspaceactivity.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, workspace.ArchivedWorkspaceActivitiesTable, workspace.ArchivedWorkspaceActivitiesColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(wq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // First returns the first Workspace entity from the query.
 // Returns a *NotFoundError when no Workspace was found.
 func (wq *WorkspaceQuery) First(ctx context.Context) (*Workspace, error) {
@@ -599,26 +623,27 @@ func (wq *WorkspaceQuery) Clone() *WorkspaceQuery {
 		return nil
 	}
 	return &WorkspaceQuery{
-		config:                       wq.config,
-		limit:                        wq.limit,
-		offset:                       wq.offset,
-		order:                        append([]OrderFunc{}, wq.order...),
-		predicates:                   append([]predicate.Workspace{}, wq.predicates...),
-		withTeammate:                 wq.withTeammate.Clone(),
-		withProjects:                 wq.withProjects.Clone(),
-		withWorkspaceTeammates:       wq.withWorkspaceTeammates.Clone(),
-		withFavoriteWorkspaces:       wq.withFavoriteWorkspaces.Clone(),
-		withTeammateTaskTabStatuses:  wq.withTeammateTaskTabStatuses.Clone(),
-		withTeammateTaskListStatuses: wq.withTeammateTaskListStatuses.Clone(),
-		withTeammateTaskSections:     wq.withTeammateTaskSections.Clone(),
-		withTaskLikes:                wq.withTaskLikes.Clone(),
-		withTags:                     wq.withTags.Clone(),
-		withTeammateTaskColumns:      wq.withTeammateTaskColumns.Clone(),
-		withTeammateTasks:            wq.withTeammateTasks.Clone(),
-		withDeletedTasksRef:          wq.withDeletedTasksRef.Clone(),
-		withWorkspaceActivities:      wq.withWorkspaceActivities.Clone(),
-		withTaskActivities:           wq.withTaskActivities.Clone(),
-		withArchivedTaskActivities:   wq.withArchivedTaskActivities.Clone(),
+		config:                          wq.config,
+		limit:                           wq.limit,
+		offset:                          wq.offset,
+		order:                           append([]OrderFunc{}, wq.order...),
+		predicates:                      append([]predicate.Workspace{}, wq.predicates...),
+		withTeammate:                    wq.withTeammate.Clone(),
+		withProjects:                    wq.withProjects.Clone(),
+		withWorkspaceTeammates:          wq.withWorkspaceTeammates.Clone(),
+		withFavoriteWorkspaces:          wq.withFavoriteWorkspaces.Clone(),
+		withTeammateTaskTabStatuses:     wq.withTeammateTaskTabStatuses.Clone(),
+		withTeammateTaskListStatuses:    wq.withTeammateTaskListStatuses.Clone(),
+		withTeammateTaskSections:        wq.withTeammateTaskSections.Clone(),
+		withTaskLikes:                   wq.withTaskLikes.Clone(),
+		withTags:                        wq.withTags.Clone(),
+		withTeammateTaskColumns:         wq.withTeammateTaskColumns.Clone(),
+		withTeammateTasks:               wq.withTeammateTasks.Clone(),
+		withDeletedTasksRef:             wq.withDeletedTasksRef.Clone(),
+		withWorkspaceActivities:         wq.withWorkspaceActivities.Clone(),
+		withTaskActivities:              wq.withTaskActivities.Clone(),
+		withArchivedTaskActivities:      wq.withArchivedTaskActivities.Clone(),
+		withArchivedWorkspaceActivities: wq.withArchivedWorkspaceActivities.Clone(),
 		// clone intermediate query.
 		sql:    wq.sql.Clone(),
 		path:   wq.path,
@@ -791,6 +816,17 @@ func (wq *WorkspaceQuery) WithArchivedTaskActivities(opts ...func(*ArchivedTaskA
 	return wq
 }
 
+// WithArchivedWorkspaceActivities tells the query-builder to eager-load the nodes that are connected to
+// the "archivedWorkspaceActivities" edge. The optional arguments are used to configure the query builder of the edge.
+func (wq *WorkspaceQuery) WithArchivedWorkspaceActivities(opts ...func(*ArchivedWorkspaceActivityQuery)) *WorkspaceQuery {
+	query := &ArchivedWorkspaceActivityQuery{config: wq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	wq.withArchivedWorkspaceActivities = query
+	return wq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -856,7 +892,7 @@ func (wq *WorkspaceQuery) sqlAll(ctx context.Context) ([]*Workspace, error) {
 	var (
 		nodes       = []*Workspace{}
 		_spec       = wq.querySpec()
-		loadedTypes = [15]bool{
+		loadedTypes = [16]bool{
 			wq.withTeammate != nil,
 			wq.withProjects != nil,
 			wq.withWorkspaceTeammates != nil,
@@ -872,6 +908,7 @@ func (wq *WorkspaceQuery) sqlAll(ctx context.Context) ([]*Workspace, error) {
 			wq.withWorkspaceActivities != nil,
 			wq.withTaskActivities != nil,
 			wq.withArchivedTaskActivities != nil,
+			wq.withArchivedWorkspaceActivities != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -1267,6 +1304,31 @@ func (wq *WorkspaceQuery) sqlAll(ctx context.Context) ([]*Workspace, error) {
 				return nil, fmt.Errorf(`unexpected foreign-key "workspace_id" returned %v for node %v`, fk, n.ID)
 			}
 			node.Edges.ArchivedTaskActivities = append(node.Edges.ArchivedTaskActivities, n)
+		}
+	}
+
+	if query := wq.withArchivedWorkspaceActivities; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[ulid.ID]*Workspace)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.ArchivedWorkspaceActivities = []*ArchivedWorkspaceActivity{}
+		}
+		query.Where(predicate.ArchivedWorkspaceActivity(func(s *sql.Selector) {
+			s.Where(sql.InValues(workspace.ArchivedWorkspaceActivitiesColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.WorkspaceID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "workspace_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.ArchivedWorkspaceActivities = append(node.Edges.ArchivedWorkspaceActivities, n)
 		}
 	}
 

@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"project-management-demo-backend/ent/archivedworkspaceactivity"
 	"project-management-demo-backend/ent/favoriteproject"
 	"project-management-demo-backend/ent/predicate"
 	"project-management-demo-backend/ent/project"
@@ -261,6 +262,21 @@ func (pu *ProjectUpdate) AddWorkspaceActivities(w ...*WorkspaceActivity) *Projec
 	return pu.AddWorkspaceActivityIDs(ids...)
 }
 
+// AddArchivedWorkspaceActivityIDs adds the "archivedWorkspaceActivities" edge to the ArchivedWorkspaceActivity entity by IDs.
+func (pu *ProjectUpdate) AddArchivedWorkspaceActivityIDs(ids ...ulid.ID) *ProjectUpdate {
+	pu.mutation.AddArchivedWorkspaceActivityIDs(ids...)
+	return pu
+}
+
+// AddArchivedWorkspaceActivities adds the "archivedWorkspaceActivities" edges to the ArchivedWorkspaceActivity entity.
+func (pu *ProjectUpdate) AddArchivedWorkspaceActivities(a ...*ArchivedWorkspaceActivity) *ProjectUpdate {
+	ids := make([]ulid.ID, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return pu.AddArchivedWorkspaceActivityIDs(ids...)
+}
+
 // Mutation returns the ProjectMutation object of the builder.
 func (pu *ProjectUpdate) Mutation() *ProjectMutation {
 	return pu.mutation
@@ -462,6 +478,27 @@ func (pu *ProjectUpdate) RemoveWorkspaceActivities(w ...*WorkspaceActivity) *Pro
 		ids[i] = w[i].ID
 	}
 	return pu.RemoveWorkspaceActivityIDs(ids...)
+}
+
+// ClearArchivedWorkspaceActivities clears all "archivedWorkspaceActivities" edges to the ArchivedWorkspaceActivity entity.
+func (pu *ProjectUpdate) ClearArchivedWorkspaceActivities() *ProjectUpdate {
+	pu.mutation.ClearArchivedWorkspaceActivities()
+	return pu
+}
+
+// RemoveArchivedWorkspaceActivityIDs removes the "archivedWorkspaceActivities" edge to ArchivedWorkspaceActivity entities by IDs.
+func (pu *ProjectUpdate) RemoveArchivedWorkspaceActivityIDs(ids ...ulid.ID) *ProjectUpdate {
+	pu.mutation.RemoveArchivedWorkspaceActivityIDs(ids...)
+	return pu
+}
+
+// RemoveArchivedWorkspaceActivities removes "archivedWorkspaceActivities" edges to ArchivedWorkspaceActivity entities.
+func (pu *ProjectUpdate) RemoveArchivedWorkspaceActivities(a ...*ArchivedWorkspaceActivity) *ProjectUpdate {
+	ids := make([]ulid.ID, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return pu.RemoveArchivedWorkspaceActivityIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -1213,6 +1250,60 @@ func (pu *ProjectUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if pu.mutation.ArchivedWorkspaceActivitiesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   project.ArchivedWorkspaceActivitiesTable,
+			Columns: []string{project.ArchivedWorkspaceActivitiesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: archivedworkspaceactivity.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.RemovedArchivedWorkspaceActivitiesIDs(); len(nodes) > 0 && !pu.mutation.ArchivedWorkspaceActivitiesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   project.ArchivedWorkspaceActivitiesTable,
+			Columns: []string{project.ArchivedWorkspaceActivitiesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: archivedworkspaceactivity.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.ArchivedWorkspaceActivitiesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   project.ArchivedWorkspaceActivitiesTable,
+			Columns: []string{project.ArchivedWorkspaceActivitiesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: archivedworkspaceactivity.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, pu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{project.Label}
@@ -1451,6 +1542,21 @@ func (puo *ProjectUpdateOne) AddWorkspaceActivities(w ...*WorkspaceActivity) *Pr
 	return puo.AddWorkspaceActivityIDs(ids...)
 }
 
+// AddArchivedWorkspaceActivityIDs adds the "archivedWorkspaceActivities" edge to the ArchivedWorkspaceActivity entity by IDs.
+func (puo *ProjectUpdateOne) AddArchivedWorkspaceActivityIDs(ids ...ulid.ID) *ProjectUpdateOne {
+	puo.mutation.AddArchivedWorkspaceActivityIDs(ids...)
+	return puo
+}
+
+// AddArchivedWorkspaceActivities adds the "archivedWorkspaceActivities" edges to the ArchivedWorkspaceActivity entity.
+func (puo *ProjectUpdateOne) AddArchivedWorkspaceActivities(a ...*ArchivedWorkspaceActivity) *ProjectUpdateOne {
+	ids := make([]ulid.ID, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return puo.AddArchivedWorkspaceActivityIDs(ids...)
+}
+
 // Mutation returns the ProjectMutation object of the builder.
 func (puo *ProjectUpdateOne) Mutation() *ProjectMutation {
 	return puo.mutation
@@ -1652,6 +1758,27 @@ func (puo *ProjectUpdateOne) RemoveWorkspaceActivities(w ...*WorkspaceActivity) 
 		ids[i] = w[i].ID
 	}
 	return puo.RemoveWorkspaceActivityIDs(ids...)
+}
+
+// ClearArchivedWorkspaceActivities clears all "archivedWorkspaceActivities" edges to the ArchivedWorkspaceActivity entity.
+func (puo *ProjectUpdateOne) ClearArchivedWorkspaceActivities() *ProjectUpdateOne {
+	puo.mutation.ClearArchivedWorkspaceActivities()
+	return puo
+}
+
+// RemoveArchivedWorkspaceActivityIDs removes the "archivedWorkspaceActivities" edge to ArchivedWorkspaceActivity entities by IDs.
+func (puo *ProjectUpdateOne) RemoveArchivedWorkspaceActivityIDs(ids ...ulid.ID) *ProjectUpdateOne {
+	puo.mutation.RemoveArchivedWorkspaceActivityIDs(ids...)
+	return puo
+}
+
+// RemoveArchivedWorkspaceActivities removes "archivedWorkspaceActivities" edges to ArchivedWorkspaceActivity entities.
+func (puo *ProjectUpdateOne) RemoveArchivedWorkspaceActivities(a ...*ArchivedWorkspaceActivity) *ProjectUpdateOne {
+	ids := make([]ulid.ID, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return puo.RemoveArchivedWorkspaceActivityIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -2419,6 +2546,60 @@ func (puo *ProjectUpdateOne) sqlSave(ctx context.Context) (_node *Project, err e
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: workspaceactivity.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if puo.mutation.ArchivedWorkspaceActivitiesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   project.ArchivedWorkspaceActivitiesTable,
+			Columns: []string{project.ArchivedWorkspaceActivitiesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: archivedworkspaceactivity.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.RemovedArchivedWorkspaceActivitiesIDs(); len(nodes) > 0 && !puo.mutation.ArchivedWorkspaceActivitiesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   project.ArchivedWorkspaceActivitiesTable,
+			Columns: []string{project.ArchivedWorkspaceActivitiesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: archivedworkspaceactivity.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.ArchivedWorkspaceActivitiesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   project.ArchivedWorkspaceActivitiesTable,
+			Columns: []string{project.ArchivedWorkspaceActivitiesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: archivedworkspaceactivity.FieldID,
 				},
 			},
 		}

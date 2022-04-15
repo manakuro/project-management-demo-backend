@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"project-management-demo-backend/ent/archivedtaskactivity"
+	"project-management-demo-backend/ent/archivedworkspaceactivity"
 	"project-management-demo-backend/ent/favoriteproject"
 	"project-management-demo-backend/ent/favoriteworkspace"
 	"project-management-demo-backend/ent/project"
@@ -386,6 +387,21 @@ func (tc *TeammateCreate) AddArchivedTaskActivities(a ...*ArchivedTaskActivity) 
 		ids[i] = a[i].ID
 	}
 	return tc.AddArchivedTaskActivityIDs(ids...)
+}
+
+// AddArchivedWorkspaceActivityIDs adds the "archivedWorkspaceActivities" edge to the ArchivedWorkspaceActivity entity by IDs.
+func (tc *TeammateCreate) AddArchivedWorkspaceActivityIDs(ids ...ulid.ID) *TeammateCreate {
+	tc.mutation.AddArchivedWorkspaceActivityIDs(ids...)
+	return tc
+}
+
+// AddArchivedWorkspaceActivities adds the "archivedWorkspaceActivities" edges to the ArchivedWorkspaceActivity entity.
+func (tc *TeammateCreate) AddArchivedWorkspaceActivities(a ...*ArchivedWorkspaceActivity) *TeammateCreate {
+	ids := make([]ulid.ID, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return tc.AddArchivedWorkspaceActivityIDs(ids...)
 }
 
 // Mutation returns the TeammateMutation object of the builder.
@@ -935,6 +951,25 @@ func (tc *TeammateCreate) createSpec() (*Teammate, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: archivedtaskactivity.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := tc.mutation.ArchivedWorkspaceActivitiesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   teammate.ArchivedWorkspaceActivitiesTable,
+			Columns: []string{teammate.ArchivedWorkspaceActivitiesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: archivedworkspaceactivity.FieldID,
 				},
 			},
 		}
