@@ -8,6 +8,7 @@ type WorkspaceActivity implements Node {
   project: Project!
   teammateId: ID!
   teammate: Teammate!
+  workspaceActivityTasks: [WorkspaceActivityTask!]!
   createdAt: String!
   updatedAt: String!
 }

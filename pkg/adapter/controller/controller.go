@@ -46,5 +46,6 @@ type Controller struct {
 	TestUser                interface{ TestUser }
 	Workspace               interface{ Workspace }
 	WorkspaceActivity       interface{ WorkspaceActivity }
+	WorkspaceActivityTask   interface{ WorkspaceActivityTask }
 	WorkspaceTeammate       interface{ WorkspaceTeammate }
 }

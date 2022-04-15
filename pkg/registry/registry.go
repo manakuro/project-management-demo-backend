@@ -67,6 +67,7 @@ func (r *registry) NewController() controller.Controller {
 		TestUser:                r.NewTestUserController(),
 		Workspace:               r.NewWorkspaceController(),
 		WorkspaceActivity:       r.NewWorkspaceActivityController(),
+		WorkspaceActivityTask:   r.NewWorkspaceActivityTaskController(),
 		WorkspaceTeammate:       r.NewWorkspaceTeammateController(),
 	}
 }
