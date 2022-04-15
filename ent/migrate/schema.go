@@ -1106,6 +1106,48 @@ var (
 			},
 		},
 	}
+	// WorkspaceActivitiesColumns holds the columns for the "workspace_activities" table.
+	WorkspaceActivitiesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
+		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
+		{Name: "activity_type_id", Type: field.TypeString},
+		{Name: "project_id", Type: field.TypeString},
+		{Name: "teammate_id", Type: field.TypeString},
+		{Name: "workspace_id", Type: field.TypeString},
+	}
+	// WorkspaceActivitiesTable holds the schema information for the "workspace_activities" table.
+	WorkspaceActivitiesTable = &schema.Table{
+		Name:       "workspace_activities",
+		Columns:    WorkspaceActivitiesColumns,
+		PrimaryKey: []*schema.Column{WorkspaceActivitiesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "workspace_activities_activity_types_workspaceActivities",
+				Columns:    []*schema.Column{WorkspaceActivitiesColumns[3]},
+				RefColumns: []*schema.Column{ActivityTypesColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "workspace_activities_projects_workspaceActivities",
+				Columns:    []*schema.Column{WorkspaceActivitiesColumns[4]},
+				RefColumns: []*schema.Column{ProjectsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "workspace_activities_teammates_workspaceActivities",
+				Columns:    []*schema.Column{WorkspaceActivitiesColumns[5]},
+				RefColumns: []*schema.Column{TeammatesColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "workspace_activities_workspaces_workspaceActivities",
+				Columns:    []*schema.Column{WorkspaceActivitiesColumns[6]},
+				RefColumns: []*schema.Column{WorkspacesColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
 	// WorkspaceTeammatesColumns holds the columns for the "workspace_teammates" table.
 	WorkspaceTeammatesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString},
@@ -1178,6 +1220,7 @@ var (
 		TestTodosTable,
 		TestUsersTable,
 		WorkspacesTable,
+		WorkspaceActivitiesTable,
 		WorkspaceTeammatesTable,
 	}
 )
@@ -1252,6 +1295,10 @@ func init() {
 	TestTodosTable.ForeignKeys[0].RefTable = TestTodosTable
 	TestTodosTable.ForeignKeys[1].RefTable = TestUsersTable
 	WorkspacesTable.ForeignKeys[0].RefTable = TeammatesTable
+	WorkspaceActivitiesTable.ForeignKeys[0].RefTable = ActivityTypesTable
+	WorkspaceActivitiesTable.ForeignKeys[1].RefTable = ProjectsTable
+	WorkspaceActivitiesTable.ForeignKeys[2].RefTable = TeammatesTable
+	WorkspaceActivitiesTable.ForeignKeys[3].RefTable = WorkspacesTable
 	WorkspaceTeammatesTable.ForeignKeys[0].RefTable = TeammatesTable
 	WorkspaceTeammatesTable.ForeignKeys[1].RefTable = WorkspacesTable
 }

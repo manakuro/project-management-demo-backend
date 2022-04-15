@@ -27,6 +27,7 @@ import (
 	"project-management-demo-backend/ent/teammatetasksection"
 	"project-management-demo-backend/ent/testuser"
 	"project-management-demo-backend/ent/workspace"
+	"project-management-demo-backend/ent/workspaceactivity"
 	"time"
 )
 
@@ -280,15 +281,15 @@ func GetTaskActivity(ctx context.Context, client *ent.Client, id ulid.ID) *ent.T
 	return res
 }
 
-//// ParseDescription convert json to description object.
-//func ParseDescription(b []byte) editor.Description {
-//	var description editor.Description
-//	if err := json.Unmarshal(b, &description); err != nil {
-//		log.Fatalf("ParseDescription failed to encode json")
-//	}
-//
-//	return description
-//}
+// GetWorkspaceActivity gets workspace activity data.
+func GetWorkspaceActivity(ctx context.Context, client *ent.Client, id ulid.ID) *ent.WorkspaceActivity {
+	res, err := client.WorkspaceActivity.Query().Where(workspaceactivity.IDEQ(id)).Only(ctx)
+	if err != nil {
+		log.Fatalf("GetWorkspaceActivity: failed to get data %v", err)
+	}
+
+	return res
+}
 
 // ParseDescription convert json to description object.
 func ParseDescription(b []byte) map[string]interface{} {

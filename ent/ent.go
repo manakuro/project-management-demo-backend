@@ -45,6 +45,7 @@ import (
 	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/ent/testuser"
 	"project-management-demo-backend/ent/workspace"
+	"project-management-demo-backend/ent/workspaceactivity"
 	"project-management-demo-backend/ent/workspaceteammate"
 
 	"entgo.io/ent"
@@ -109,6 +110,7 @@ func columnChecker(table string) func(string) error {
 		testtodo.Table:                testtodo.ValidColumn,
 		testuser.Table:                testuser.ValidColumn,
 		workspace.Table:               workspace.ValidColumn,
+		workspaceactivity.Table:       workspaceactivity.ValidColumn,
 		workspaceteammate.Table:       workspaceteammate.ValidColumn,
 	}
 	check, ok := checks[table]

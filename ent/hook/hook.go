@@ -528,6 +528,19 @@ func (f WorkspaceFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, e
 	return f(ctx, mv)
 }
 
+// The WorkspaceActivityFunc type is an adapter to allow the use of ordinary
+// function as WorkspaceActivity mutator.
+type WorkspaceActivityFunc func(context.Context, *ent.WorkspaceActivityMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f WorkspaceActivityFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.WorkspaceActivityMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.WorkspaceActivityMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The WorkspaceTeammateFunc type is an adapter to allow the use of ordinary
 // function as WorkspaceTeammate mutator.
 type WorkspaceTeammateFunc func(context.Context, *ent.WorkspaceTeammateMutation) (ent.Value, error)

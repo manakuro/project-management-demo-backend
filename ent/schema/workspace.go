@@ -131,6 +131,13 @@ func (Workspace) Edges() []ent.Edge {
 					annotation.Edge{FieldName: "deleted_task_id"},
 				),
 			),
+		edge.To(workspaceActivitiesRef, WorkspaceActivity.Type).
+			Annotations(
+				entgql.Bind(),
+				schema.Annotation(
+					annotation.Edge{FieldName: "workspace_activity_id"},
+				),
+			),
 	}
 }
 

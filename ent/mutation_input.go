@@ -19,12 +19,13 @@ import (
 
 // CreateActivityTypeInput represents a mutation input for creating activitytypes.
 type CreateActivityTypeInput struct {
-	Name            string
-	TypeCode        activitytype.TypeCode
-	CreatedAt       *time.Time
-	UpdatedAt       *time.Time
-	TaskActivityIDs []ulid.ID
-	RequestID       string
+	Name                 string
+	TypeCode             activitytype.TypeCode
+	CreatedAt            *time.Time
+	UpdatedAt            *time.Time
+	TaskActivityIDs      []ulid.ID
+	WorkspaceActivityIDs []ulid.ID
+	RequestID            string
 }
 
 // Mutate applies the CreateActivityTypeInput on the ActivityTypeCreate builder.
@@ -40,6 +41,9 @@ func (i *CreateActivityTypeInput) Mutate(m *ActivityTypeCreate) {
 	if ids := i.TaskActivityIDs; len(ids) > 0 {
 		m.AddTaskActivityIDs(ids...)
 	}
+	if ids := i.WorkspaceActivityIDs; len(ids) > 0 {
+		m.AddWorkspaceActivityIDs(ids...)
+	}
 }
 
 // SetInput applies the change-set in the CreateActivityTypeInput on the create builder.
@@ -50,12 +54,14 @@ func (c *ActivityTypeCreate) SetInput(i CreateActivityTypeInput) *ActivityTypeCr
 
 // UpdateActivityTypeInput represents a mutation input for updating activitytypes.
 type UpdateActivityTypeInput struct {
-	ID                    ulid.ID
-	Name                  *string
-	TypeCode              *activitytype.TypeCode
-	AddTaskActivityIDs    []ulid.ID
-	RemoveTaskActivityIDs []ulid.ID
-	RequestID             string
+	ID                         ulid.ID
+	Name                       *string
+	TypeCode                   *activitytype.TypeCode
+	AddTaskActivityIDs         []ulid.ID
+	RemoveTaskActivityIDs      []ulid.ID
+	AddWorkspaceActivityIDs    []ulid.ID
+	RemoveWorkspaceActivityIDs []ulid.ID
+	RequestID                  string
 }
 
 // Mutate applies the UpdateActivityTypeInput on the ActivityTypeMutation.
@@ -71,6 +77,12 @@ func (i *UpdateActivityTypeInput) Mutate(m *ActivityTypeMutation) {
 	}
 	if ids := i.RemoveTaskActivityIDs; len(ids) > 0 {
 		m.RemoveTaskActivityIDs(ids...)
+	}
+	if ids := i.AddWorkspaceActivityIDs; len(ids) > 0 {
+		m.AddWorkspaceActivityIDs(ids...)
+	}
+	if ids := i.RemoveWorkspaceActivityIDs; len(ids) > 0 {
+		m.RemoveWorkspaceActivityIDs(ids...)
 	}
 }
 
@@ -568,6 +580,7 @@ type CreateProjectInput struct {
 	ProjectTaskSectionIDs     []ulid.ID
 	ProjectTaskIDs            []ulid.ID
 	TaskFileIDs               []ulid.ID
+	WorkspaceActivityIDs      []ulid.ID
 	RequestID                 string
 }
 
@@ -611,6 +624,9 @@ func (i *CreateProjectInput) Mutate(m *ProjectCreate) {
 	if ids := i.TaskFileIDs; len(ids) > 0 {
 		m.AddTaskFileIDs(ids...)
 	}
+	if ids := i.WorkspaceActivityIDs; len(ids) > 0 {
+		m.AddWorkspaceActivityIDs(ids...)
+	}
 }
 
 // SetInput applies the change-set in the CreateProjectInput on the create builder.
@@ -651,6 +667,8 @@ type UpdateProjectInput struct {
 	RemoveProjectTaskIDs            []ulid.ID
 	AddTaskFileIDs                  []ulid.ID
 	RemoveTaskFileIDs               []ulid.ID
+	AddWorkspaceActivityIDs         []ulid.ID
+	RemoveWorkspaceActivityIDs      []ulid.ID
 	RequestID                       string
 }
 
@@ -742,6 +760,12 @@ func (i *UpdateProjectInput) Mutate(m *ProjectMutation) {
 	}
 	if ids := i.RemoveTaskFileIDs; len(ids) > 0 {
 		m.RemoveTaskFileIDs(ids...)
+	}
+	if ids := i.AddWorkspaceActivityIDs; len(ids) > 0 {
+		m.AddWorkspaceActivityIDs(ids...)
+	}
+	if ids := i.RemoveWorkspaceActivityIDs; len(ids) > 0 {
+		m.RemoveWorkspaceActivityIDs(ids...)
 	}
 }
 
@@ -2766,6 +2790,7 @@ type CreateTeammateInput struct {
 	TaskFeedIDs                []ulid.ID
 	TaskFeedLikeIDs            []ulid.ID
 	TaskActivityIDs            []ulid.ID
+	WorkspaceActivityIDs       []ulid.ID
 	RequestID                  string
 }
 
@@ -2831,6 +2856,9 @@ func (i *CreateTeammateInput) Mutate(m *TeammateCreate) {
 	if ids := i.TaskActivityIDs; len(ids) > 0 {
 		m.AddTaskActivityIDs(ids...)
 	}
+	if ids := i.WorkspaceActivityIDs; len(ids) > 0 {
+		m.AddWorkspaceActivityIDs(ids...)
+	}
 }
 
 // SetInput applies the change-set in the CreateTeammateInput on the create builder.
@@ -2879,6 +2907,8 @@ type UpdateTeammateInput struct {
 	RemoveTaskFeedLikeIDs            []ulid.ID
 	AddTaskActivityIDs               []ulid.ID
 	RemoveTaskActivityIDs            []ulid.ID
+	AddWorkspaceActivityIDs          []ulid.ID
+	RemoveWorkspaceActivityIDs       []ulid.ID
 	RequestID                        string
 }
 
@@ -2994,6 +3024,12 @@ func (i *UpdateTeammateInput) Mutate(m *TeammateMutation) {
 	}
 	if ids := i.RemoveTaskActivityIDs; len(ids) > 0 {
 		m.RemoveTaskActivityIDs(ids...)
+	}
+	if ids := i.AddWorkspaceActivityIDs; len(ids) > 0 {
+		m.AddWorkspaceActivityIDs(ids...)
+	}
+	if ids := i.RemoveWorkspaceActivityIDs; len(ids) > 0 {
+		m.RemoveWorkspaceActivityIDs(ids...)
 	}
 }
 
@@ -3665,6 +3701,7 @@ type CreateWorkspaceInput struct {
 	TeammateTaskColumnIDs      []ulid.ID
 	TeammateTaskIDs            []ulid.ID
 	DeletedTasksRefIDs         []ulid.ID
+	WorkspaceActivityIDs       []ulid.ID
 	RequestID                  string
 }
 
@@ -3712,6 +3749,9 @@ func (i *CreateWorkspaceInput) Mutate(m *WorkspaceCreate) {
 	if ids := i.DeletedTasksRefIDs; len(ids) > 0 {
 		m.AddDeletedTasksRefIDs(ids...)
 	}
+	if ids := i.WorkspaceActivityIDs; len(ids) > 0 {
+		m.AddWorkspaceActivityIDs(ids...)
+	}
 }
 
 // SetInput applies the change-set in the CreateWorkspaceInput on the create builder.
@@ -3749,6 +3789,8 @@ type UpdateWorkspaceInput struct {
 	RemoveTeammateTaskIDs            []ulid.ID
 	AddDeletedTasksRefIDs            []ulid.ID
 	RemoveDeletedTasksRefIDs         []ulid.ID
+	AddWorkspaceActivityIDs          []ulid.ID
+	RemoveWorkspaceActivityIDs       []ulid.ID
 	RequestID                        string
 }
 
@@ -3832,6 +3874,12 @@ func (i *UpdateWorkspaceInput) Mutate(m *WorkspaceMutation) {
 	if ids := i.RemoveDeletedTasksRefIDs; len(ids) > 0 {
 		m.RemoveDeletedTasksRefIDs(ids...)
 	}
+	if ids := i.AddWorkspaceActivityIDs; len(ids) > 0 {
+		m.AddWorkspaceActivityIDs(ids...)
+	}
+	if ids := i.RemoveWorkspaceActivityIDs; len(ids) > 0 {
+		m.RemoveWorkspaceActivityIDs(ids...)
+	}
 }
 
 // SetInput applies the change-set in the UpdateWorkspaceInput on the update builder.
@@ -3842,6 +3890,91 @@ func (u *WorkspaceUpdate) SetInput(i UpdateWorkspaceInput) *WorkspaceUpdate {
 
 // SetInput applies the change-set in the UpdateWorkspaceInput on the update-one builder.
 func (u *WorkspaceUpdateOne) SetInput(i UpdateWorkspaceInput) *WorkspaceUpdateOne {
+	i.Mutate(u.Mutation())
+	return u
+}
+
+// CreateWorkspaceActivityInput represents a mutation input for creating workspaceactivities.
+type CreateWorkspaceActivityInput struct {
+	CreatedAt      *time.Time
+	UpdatedAt      *time.Time
+	ActivityTypeID ulid.ID
+	WorkspaceID    ulid.ID
+	ProjectID      ulid.ID
+	TeammateID     ulid.ID
+	RequestID      string
+}
+
+// Mutate applies the CreateWorkspaceActivityInput on the WorkspaceActivityCreate builder.
+func (i *CreateWorkspaceActivityInput) Mutate(m *WorkspaceActivityCreate) {
+	if v := i.CreatedAt; v != nil {
+		m.SetCreatedAt(*v)
+	}
+	if v := i.UpdatedAt; v != nil {
+		m.SetUpdatedAt(*v)
+	}
+	m.SetActivityTypeID(i.ActivityTypeID)
+	m.SetWorkspaceID(i.WorkspaceID)
+	m.SetProjectID(i.ProjectID)
+	m.SetTeammateID(i.TeammateID)
+}
+
+// SetInput applies the change-set in the CreateWorkspaceActivityInput on the create builder.
+func (c *WorkspaceActivityCreate) SetInput(i CreateWorkspaceActivityInput) *WorkspaceActivityCreate {
+	i.Mutate(c)
+	return c
+}
+
+// UpdateWorkspaceActivityInput represents a mutation input for updating workspaceactivities.
+type UpdateWorkspaceActivityInput struct {
+	ID                ulid.ID
+	ActivityTypeID    *ulid.ID
+	ClearActivityType bool
+	WorkspaceID       *ulid.ID
+	ClearWorkspace    bool
+	ProjectID         *ulid.ID
+	ClearProject      bool
+	TeammateID        *ulid.ID
+	ClearTeammate     bool
+	RequestID         string
+}
+
+// Mutate applies the UpdateWorkspaceActivityInput on the WorkspaceActivityMutation.
+func (i *UpdateWorkspaceActivityInput) Mutate(m *WorkspaceActivityMutation) {
+	if i.ClearActivityType {
+		m.ClearActivityType()
+	}
+	if v := i.ActivityTypeID; v != nil {
+		m.SetActivityTypeID(*v)
+	}
+	if i.ClearWorkspace {
+		m.ClearWorkspace()
+	}
+	if v := i.WorkspaceID; v != nil {
+		m.SetWorkspaceID(*v)
+	}
+	if i.ClearProject {
+		m.ClearProject()
+	}
+	if v := i.ProjectID; v != nil {
+		m.SetProjectID(*v)
+	}
+	if i.ClearTeammate {
+		m.ClearTeammate()
+	}
+	if v := i.TeammateID; v != nil {
+		m.SetTeammateID(*v)
+	}
+}
+
+// SetInput applies the change-set in the UpdateWorkspaceActivityInput on the update builder.
+func (u *WorkspaceActivityUpdate) SetInput(i UpdateWorkspaceActivityInput) *WorkspaceActivityUpdate {
+	i.Mutate(u.Mutation())
+	return u
+}
+
+// SetInput applies the change-set in the UpdateWorkspaceActivityInput on the update-one builder.
+func (u *WorkspaceActivityUpdateOne) SetInput(i UpdateWorkspaceActivityInput) *WorkspaceActivityUpdateOne {
 	i.Mutate(u.Mutation())
 	return u
 }

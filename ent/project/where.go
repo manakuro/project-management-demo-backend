@@ -1544,6 +1544,34 @@ func HasTaskFilesWith(preds ...predicate.TaskFile) predicate.Project {
 	})
 }
 
+// HasWorkspaceActivities applies the HasEdge predicate on the "workspaceActivities" edge.
+func HasWorkspaceActivities() predicate.Project {
+	return predicate.Project(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(WorkspaceActivitiesTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, WorkspaceActivitiesTable, WorkspaceActivitiesColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasWorkspaceActivitiesWith applies the HasEdge predicate on the "workspaceActivities" edge with a given conditions (other predicates).
+func HasWorkspaceActivitiesWith(preds ...predicate.WorkspaceActivity) predicate.Project {
+	return predicate.Project(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(WorkspaceActivitiesInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, WorkspaceActivitiesTable, WorkspaceActivitiesColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Project) predicate.Project {
 	return predicate.Project(func(s *sql.Selector) {

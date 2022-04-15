@@ -64,6 +64,7 @@ type hooks struct {
 	TestTodo                []ent.Hook
 	TestUser                []ent.Hook
 	Workspace               []ent.Hook
+	WorkspaceActivity       []ent.Hook
 	WorkspaceTeammate       []ent.Hook
 }
 

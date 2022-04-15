@@ -45,6 +45,7 @@ import (
 	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/ent/testuser"
 	"project-management-demo-backend/ent/workspace"
+	"project-management-demo-backend/ent/workspaceactivity"
 	"project-management-demo-backend/ent/workspaceteammate"
 	"time"
 )
@@ -1295,6 +1296,25 @@ func init() {
 	workspaceDescID := workspaceMixinFields0[0].Descriptor()
 	// workspace.DefaultID holds the default value on creation for the id field.
 	workspace.DefaultID = workspaceDescID.Default.(func() ulid.ID)
+	workspaceactivityMixin := schema.WorkspaceActivity{}.Mixin()
+	workspaceactivityMixinFields0 := workspaceactivityMixin[0].Fields()
+	_ = workspaceactivityMixinFields0
+	workspaceactivityMixinFields2 := workspaceactivityMixin[2].Fields()
+	_ = workspaceactivityMixinFields2
+	workspaceactivityFields := schema.WorkspaceActivity{}.Fields()
+	_ = workspaceactivityFields
+	// workspaceactivityDescCreatedAt is the schema descriptor for created_at field.
+	workspaceactivityDescCreatedAt := workspaceactivityMixinFields2[0].Descriptor()
+	// workspaceactivity.DefaultCreatedAt holds the default value on creation for the created_at field.
+	workspaceactivity.DefaultCreatedAt = workspaceactivityDescCreatedAt.Default.(func() time.Time)
+	// workspaceactivityDescUpdatedAt is the schema descriptor for updated_at field.
+	workspaceactivityDescUpdatedAt := workspaceactivityMixinFields2[1].Descriptor()
+	// workspaceactivity.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	workspaceactivity.DefaultUpdatedAt = workspaceactivityDescUpdatedAt.Default.(func() time.Time)
+	// workspaceactivityDescID is the schema descriptor for id field.
+	workspaceactivityDescID := workspaceactivityMixinFields0[0].Descriptor()
+	// workspaceactivity.DefaultID holds the default value on creation for the id field.
+	workspaceactivity.DefaultID = workspaceactivityDescID.Default.(func() ulid.ID)
 	workspaceteammateMixin := schema.WorkspaceTeammate{}.Mixin()
 	workspaceteammateMixinFields0 := workspaceteammateMixin[0].Fields()
 	_ = workspaceteammateMixinFields0

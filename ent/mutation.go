@@ -49,6 +49,7 @@ import (
 	"project-management-demo-backend/ent/testtodo"
 	"project-management-demo-backend/ent/testuser"
 	"project-management-demo-backend/ent/workspace"
+	"project-management-demo-backend/ent/workspaceactivity"
 	"project-management-demo-backend/ent/workspaceteammate"
 	"sync"
 	"time"
@@ -105,26 +106,30 @@ const (
 	TypeTestTodo                = "TestTodo"
 	TypeTestUser                = "TestUser"
 	TypeWorkspace               = "Workspace"
+	TypeWorkspaceActivity       = "WorkspaceActivity"
 	TypeWorkspaceTeammate       = "WorkspaceTeammate"
 )
 
 // ActivityTypeMutation represents an operation that mutates the ActivityType nodes in the graph.
 type ActivityTypeMutation struct {
 	config
-	op                    Op
-	typ                   string
-	id                    *ulid.ID
-	name                  *string
-	type_code             *activitytype.TypeCode
-	created_at            *time.Time
-	updated_at            *time.Time
-	clearedFields         map[string]struct{}
-	taskActivities        map[ulid.ID]struct{}
-	removedtaskActivities map[ulid.ID]struct{}
-	clearedtaskActivities bool
-	done                  bool
-	oldValue              func(context.Context) (*ActivityType, error)
-	predicates            []predicate.ActivityType
+	op                         Op
+	typ                        string
+	id                         *ulid.ID
+	name                       *string
+	type_code                  *activitytype.TypeCode
+	created_at                 *time.Time
+	updated_at                 *time.Time
+	clearedFields              map[string]struct{}
+	taskActivities             map[ulid.ID]struct{}
+	removedtaskActivities      map[ulid.ID]struct{}
+	clearedtaskActivities      bool
+	workspaceActivities        map[ulid.ID]struct{}
+	removedworkspaceActivities map[ulid.ID]struct{}
+	clearedworkspaceActivities bool
+	done                       bool
+	oldValue                   func(context.Context) (*ActivityType, error)
+	predicates                 []predicate.ActivityType
 }
 
 var _ ent.Mutation = (*ActivityTypeMutation)(nil)
@@ -429,6 +434,60 @@ func (m *ActivityTypeMutation) ResetTaskActivities() {
 	m.removedtaskActivities = nil
 }
 
+// AddWorkspaceActivityIDs adds the "workspaceActivities" edge to the WorkspaceActivity entity by ids.
+func (m *ActivityTypeMutation) AddWorkspaceActivityIDs(ids ...ulid.ID) {
+	if m.workspaceActivities == nil {
+		m.workspaceActivities = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		m.workspaceActivities[ids[i]] = struct{}{}
+	}
+}
+
+// ClearWorkspaceActivities clears the "workspaceActivities" edge to the WorkspaceActivity entity.
+func (m *ActivityTypeMutation) ClearWorkspaceActivities() {
+	m.clearedworkspaceActivities = true
+}
+
+// WorkspaceActivitiesCleared reports if the "workspaceActivities" edge to the WorkspaceActivity entity was cleared.
+func (m *ActivityTypeMutation) WorkspaceActivitiesCleared() bool {
+	return m.clearedworkspaceActivities
+}
+
+// RemoveWorkspaceActivityIDs removes the "workspaceActivities" edge to the WorkspaceActivity entity by IDs.
+func (m *ActivityTypeMutation) RemoveWorkspaceActivityIDs(ids ...ulid.ID) {
+	if m.removedworkspaceActivities == nil {
+		m.removedworkspaceActivities = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		delete(m.workspaceActivities, ids[i])
+		m.removedworkspaceActivities[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedWorkspaceActivities returns the removed IDs of the "workspaceActivities" edge to the WorkspaceActivity entity.
+func (m *ActivityTypeMutation) RemovedWorkspaceActivitiesIDs() (ids []ulid.ID) {
+	for id := range m.removedworkspaceActivities {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// WorkspaceActivitiesIDs returns the "workspaceActivities" edge IDs in the mutation.
+func (m *ActivityTypeMutation) WorkspaceActivitiesIDs() (ids []ulid.ID) {
+	for id := range m.workspaceActivities {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetWorkspaceActivities resets all changes to the "workspaceActivities" edge.
+func (m *ActivityTypeMutation) ResetWorkspaceActivities() {
+	m.workspaceActivities = nil
+	m.clearedworkspaceActivities = false
+	m.removedworkspaceActivities = nil
+}
+
 // Where appends a list predicates to the ActivityTypeMutation builder.
 func (m *ActivityTypeMutation) Where(ps ...predicate.ActivityType) {
 	m.predicates = append(m.predicates, ps...)
@@ -598,9 +657,12 @@ func (m *ActivityTypeMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *ActivityTypeMutation) AddedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.taskActivities != nil {
 		edges = append(edges, activitytype.EdgeTaskActivities)
+	}
+	if m.workspaceActivities != nil {
+		edges = append(edges, activitytype.EdgeWorkspaceActivities)
 	}
 	return edges
 }
@@ -615,15 +677,24 @@ func (m *ActivityTypeMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case activitytype.EdgeWorkspaceActivities:
+		ids := make([]ent.Value, 0, len(m.workspaceActivities))
+		for id := range m.workspaceActivities {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *ActivityTypeMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.removedtaskActivities != nil {
 		edges = append(edges, activitytype.EdgeTaskActivities)
+	}
+	if m.removedworkspaceActivities != nil {
+		edges = append(edges, activitytype.EdgeWorkspaceActivities)
 	}
 	return edges
 }
@@ -638,15 +709,24 @@ func (m *ActivityTypeMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case activitytype.EdgeWorkspaceActivities:
+		ids := make([]ent.Value, 0, len(m.removedworkspaceActivities))
+		for id := range m.removedworkspaceActivities {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *ActivityTypeMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 2)
 	if m.clearedtaskActivities {
 		edges = append(edges, activitytype.EdgeTaskActivities)
+	}
+	if m.clearedworkspaceActivities {
+		edges = append(edges, activitytype.EdgeWorkspaceActivities)
 	}
 	return edges
 }
@@ -657,6 +737,8 @@ func (m *ActivityTypeMutation) EdgeCleared(name string) bool {
 	switch name {
 	case activitytype.EdgeTaskActivities:
 		return m.clearedtaskActivities
+	case activitytype.EdgeWorkspaceActivities:
+		return m.clearedworkspaceActivities
 	}
 	return false
 }
@@ -675,6 +757,9 @@ func (m *ActivityTypeMutation) ResetEdge(name string) error {
 	switch name {
 	case activitytype.EdgeTaskActivities:
 		m.ResetTaskActivities()
+		return nil
+	case activitytype.EdgeWorkspaceActivities:
+		m.ResetWorkspaceActivities()
 		return nil
 	}
 	return fmt.Errorf("unknown ActivityType edge %s", name)
@@ -4642,6 +4727,9 @@ type ProjectMutation struct {
 	taskFiles                      map[ulid.ID]struct{}
 	removedtaskFiles               map[ulid.ID]struct{}
 	clearedtaskFiles               bool
+	workspaceActivities            map[ulid.ID]struct{}
+	removedworkspaceActivities     map[ulid.ID]struct{}
+	clearedworkspaceActivities     bool
 	done                           bool
 	oldValue                       func(context.Context) (*Project, error)
 	predicates                     []predicate.Project
@@ -5681,6 +5769,60 @@ func (m *ProjectMutation) ResetTaskFiles() {
 	m.removedtaskFiles = nil
 }
 
+// AddWorkspaceActivityIDs adds the "workspaceActivities" edge to the WorkspaceActivity entity by ids.
+func (m *ProjectMutation) AddWorkspaceActivityIDs(ids ...ulid.ID) {
+	if m.workspaceActivities == nil {
+		m.workspaceActivities = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		m.workspaceActivities[ids[i]] = struct{}{}
+	}
+}
+
+// ClearWorkspaceActivities clears the "workspaceActivities" edge to the WorkspaceActivity entity.
+func (m *ProjectMutation) ClearWorkspaceActivities() {
+	m.clearedworkspaceActivities = true
+}
+
+// WorkspaceActivitiesCleared reports if the "workspaceActivities" edge to the WorkspaceActivity entity was cleared.
+func (m *ProjectMutation) WorkspaceActivitiesCleared() bool {
+	return m.clearedworkspaceActivities
+}
+
+// RemoveWorkspaceActivityIDs removes the "workspaceActivities" edge to the WorkspaceActivity entity by IDs.
+func (m *ProjectMutation) RemoveWorkspaceActivityIDs(ids ...ulid.ID) {
+	if m.removedworkspaceActivities == nil {
+		m.removedworkspaceActivities = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		delete(m.workspaceActivities, ids[i])
+		m.removedworkspaceActivities[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedWorkspaceActivities returns the removed IDs of the "workspaceActivities" edge to the WorkspaceActivity entity.
+func (m *ProjectMutation) RemovedWorkspaceActivitiesIDs() (ids []ulid.ID) {
+	for id := range m.removedworkspaceActivities {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// WorkspaceActivitiesIDs returns the "workspaceActivities" edge IDs in the mutation.
+func (m *ProjectMutation) WorkspaceActivitiesIDs() (ids []ulid.ID) {
+	for id := range m.workspaceActivities {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetWorkspaceActivities resets all changes to the "workspaceActivities" edge.
+func (m *ProjectMutation) ResetWorkspaceActivities() {
+	m.workspaceActivities = nil
+	m.clearedworkspaceActivities = false
+	m.removedworkspaceActivities = nil
+}
+
 // Where appends a list predicates to the ProjectMutation builder.
 func (m *ProjectMutation) Where(ps ...predicate.Project) {
 	m.predicates = append(m.predicates, ps...)
@@ -5978,7 +6120,7 @@ func (m *ProjectMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *ProjectMutation) AddedEdges() []string {
-	edges := make([]string, 0, 12)
+	edges := make([]string, 0, 13)
 	if m.workspace != nil {
 		edges = append(edges, project.EdgeWorkspace)
 	}
@@ -6014,6 +6156,9 @@ func (m *ProjectMutation) AddedEdges() []string {
 	}
 	if m.taskFiles != nil {
 		edges = append(edges, project.EdgeTaskFiles)
+	}
+	if m.workspaceActivities != nil {
+		edges = append(edges, project.EdgeWorkspaceActivities)
 	}
 	return edges
 }
@@ -6084,13 +6229,19 @@ func (m *ProjectMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case project.EdgeWorkspaceActivities:
+		ids := make([]ent.Value, 0, len(m.workspaceActivities))
+		for id := range m.workspaceActivities {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *ProjectMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 12)
+	edges := make([]string, 0, 13)
 	if m.removedprojectTeammates != nil {
 		edges = append(edges, project.EdgeProjectTeammates)
 	}
@@ -6111,6 +6262,9 @@ func (m *ProjectMutation) RemovedEdges() []string {
 	}
 	if m.removedtaskFiles != nil {
 		edges = append(edges, project.EdgeTaskFiles)
+	}
+	if m.removedworkspaceActivities != nil {
+		edges = append(edges, project.EdgeWorkspaceActivities)
 	}
 	return edges
 }
@@ -6161,13 +6315,19 @@ func (m *ProjectMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case project.EdgeWorkspaceActivities:
+		ids := make([]ent.Value, 0, len(m.removedworkspaceActivities))
+		for id := range m.removedworkspaceActivities {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *ProjectMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 12)
+	edges := make([]string, 0, 13)
 	if m.clearedworkspace {
 		edges = append(edges, project.EdgeWorkspace)
 	}
@@ -6204,6 +6364,9 @@ func (m *ProjectMutation) ClearedEdges() []string {
 	if m.clearedtaskFiles {
 		edges = append(edges, project.EdgeTaskFiles)
 	}
+	if m.clearedworkspaceActivities {
+		edges = append(edges, project.EdgeWorkspaceActivities)
+	}
 	return edges
 }
 
@@ -6235,6 +6398,8 @@ func (m *ProjectMutation) EdgeCleared(name string) bool {
 		return m.clearedprojectTasks
 	case project.EdgeTaskFiles:
 		return m.clearedtaskFiles
+	case project.EdgeWorkspaceActivities:
+		return m.clearedworkspaceActivities
 	}
 	return false
 }
@@ -6301,6 +6466,9 @@ func (m *ProjectMutation) ResetEdge(name string) error {
 		return nil
 	case project.EdgeTaskFiles:
 		m.ResetTaskFiles()
+		return nil
+	case project.EdgeWorkspaceActivities:
+		m.ResetWorkspaceActivities()
 		return nil
 	}
 	return fmt.Errorf("unknown Project edge %s", name)
@@ -23106,6 +23274,9 @@ type TeammateMutation struct {
 	taskActivities                  map[ulid.ID]struct{}
 	removedtaskActivities           map[ulid.ID]struct{}
 	clearedtaskActivities           bool
+	workspaceActivities             map[ulid.ID]struct{}
+	removedworkspaceActivities      map[ulid.ID]struct{}
+	clearedworkspaceActivities      bool
 	done                            bool
 	oldValue                        func(context.Context) (*Teammate, error)
 	predicates                      []predicate.Teammate
@@ -24313,6 +24484,60 @@ func (m *TeammateMutation) ResetTaskActivities() {
 	m.removedtaskActivities = nil
 }
 
+// AddWorkspaceActivityIDs adds the "workspaceActivities" edge to the WorkspaceActivity entity by ids.
+func (m *TeammateMutation) AddWorkspaceActivityIDs(ids ...ulid.ID) {
+	if m.workspaceActivities == nil {
+		m.workspaceActivities = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		m.workspaceActivities[ids[i]] = struct{}{}
+	}
+}
+
+// ClearWorkspaceActivities clears the "workspaceActivities" edge to the WorkspaceActivity entity.
+func (m *TeammateMutation) ClearWorkspaceActivities() {
+	m.clearedworkspaceActivities = true
+}
+
+// WorkspaceActivitiesCleared reports if the "workspaceActivities" edge to the WorkspaceActivity entity was cleared.
+func (m *TeammateMutation) WorkspaceActivitiesCleared() bool {
+	return m.clearedworkspaceActivities
+}
+
+// RemoveWorkspaceActivityIDs removes the "workspaceActivities" edge to the WorkspaceActivity entity by IDs.
+func (m *TeammateMutation) RemoveWorkspaceActivityIDs(ids ...ulid.ID) {
+	if m.removedworkspaceActivities == nil {
+		m.removedworkspaceActivities = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		delete(m.workspaceActivities, ids[i])
+		m.removedworkspaceActivities[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedWorkspaceActivities returns the removed IDs of the "workspaceActivities" edge to the WorkspaceActivity entity.
+func (m *TeammateMutation) RemovedWorkspaceActivitiesIDs() (ids []ulid.ID) {
+	for id := range m.removedworkspaceActivities {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// WorkspaceActivitiesIDs returns the "workspaceActivities" edge IDs in the mutation.
+func (m *TeammateMutation) WorkspaceActivitiesIDs() (ids []ulid.ID) {
+	for id := range m.workspaceActivities {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetWorkspaceActivities resets all changes to the "workspaceActivities" edge.
+func (m *TeammateMutation) ResetWorkspaceActivities() {
+	m.workspaceActivities = nil
+	m.clearedworkspaceActivities = false
+	m.removedworkspaceActivities = nil
+}
+
 // Where appends a list predicates to the TeammateMutation builder.
 func (m *TeammateMutation) Where(ps ...predicate.Teammate) {
 	m.predicates = append(m.predicates, ps...)
@@ -24499,7 +24724,7 @@ func (m *TeammateMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *TeammateMutation) AddedEdges() []string {
-	edges := make([]string, 0, 17)
+	edges := make([]string, 0, 18)
 	if m.workspaces != nil {
 		edges = append(edges, teammate.EdgeWorkspaces)
 	}
@@ -24550,6 +24775,9 @@ func (m *TeammateMutation) AddedEdges() []string {
 	}
 	if m.taskActivities != nil {
 		edges = append(edges, teammate.EdgeTaskActivities)
+	}
+	if m.workspaceActivities != nil {
+		edges = append(edges, teammate.EdgeWorkspaceActivities)
 	}
 	return edges
 }
@@ -24660,13 +24888,19 @@ func (m *TeammateMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case teammate.EdgeWorkspaceActivities:
+		ids := make([]ent.Value, 0, len(m.workspaceActivities))
+		for id := range m.workspaceActivities {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *TeammateMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 17)
+	edges := make([]string, 0, 18)
 	if m.removedworkspaces != nil {
 		edges = append(edges, teammate.EdgeWorkspaces)
 	}
@@ -24717,6 +24951,9 @@ func (m *TeammateMutation) RemovedEdges() []string {
 	}
 	if m.removedtaskActivities != nil {
 		edges = append(edges, teammate.EdgeTaskActivities)
+	}
+	if m.removedworkspaceActivities != nil {
+		edges = append(edges, teammate.EdgeWorkspaceActivities)
 	}
 	return edges
 }
@@ -24827,13 +25064,19 @@ func (m *TeammateMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case teammate.EdgeWorkspaceActivities:
+		ids := make([]ent.Value, 0, len(m.removedworkspaceActivities))
+		for id := range m.removedworkspaceActivities {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *TeammateMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 17)
+	edges := make([]string, 0, 18)
 	if m.clearedworkspaces {
 		edges = append(edges, teammate.EdgeWorkspaces)
 	}
@@ -24885,6 +25128,9 @@ func (m *TeammateMutation) ClearedEdges() []string {
 	if m.clearedtaskActivities {
 		edges = append(edges, teammate.EdgeTaskActivities)
 	}
+	if m.clearedworkspaceActivities {
+		edges = append(edges, teammate.EdgeWorkspaceActivities)
+	}
 	return edges
 }
 
@@ -24926,6 +25172,8 @@ func (m *TeammateMutation) EdgeCleared(name string) bool {
 		return m.clearedtaskFeedLikes
 	case teammate.EdgeTaskActivities:
 		return m.clearedtaskActivities
+	case teammate.EdgeWorkspaceActivities:
+		return m.clearedworkspaceActivities
 	}
 	return false
 }
@@ -24992,6 +25240,9 @@ func (m *TeammateMutation) ResetEdge(name string) error {
 		return nil
 	case teammate.EdgeTaskActivities:
 		m.ResetTaskActivities()
+		return nil
+	case teammate.EdgeWorkspaceActivities:
+		m.ResetWorkspaceActivities()
 		return nil
 	}
 	return fmt.Errorf("unknown Teammate edge %s", name)
@@ -30687,6 +30938,9 @@ type WorkspaceMutation struct {
 	deletedTasksRef                 map[ulid.ID]struct{}
 	removeddeletedTasksRef          map[ulid.ID]struct{}
 	cleareddeletedTasksRef          bool
+	workspaceActivities             map[ulid.ID]struct{}
+	removedworkspaceActivities      map[ulid.ID]struct{}
+	clearedworkspaceActivities      bool
 	done                            bool
 	oldValue                        func(context.Context) (*Workspace, error)
 	predicates                      []predicate.Workspace
@@ -31609,6 +31863,60 @@ func (m *WorkspaceMutation) ResetDeletedTasksRef() {
 	m.removeddeletedTasksRef = nil
 }
 
+// AddWorkspaceActivityIDs adds the "workspaceActivities" edge to the WorkspaceActivity entity by ids.
+func (m *WorkspaceMutation) AddWorkspaceActivityIDs(ids ...ulid.ID) {
+	if m.workspaceActivities == nil {
+		m.workspaceActivities = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		m.workspaceActivities[ids[i]] = struct{}{}
+	}
+}
+
+// ClearWorkspaceActivities clears the "workspaceActivities" edge to the WorkspaceActivity entity.
+func (m *WorkspaceMutation) ClearWorkspaceActivities() {
+	m.clearedworkspaceActivities = true
+}
+
+// WorkspaceActivitiesCleared reports if the "workspaceActivities" edge to the WorkspaceActivity entity was cleared.
+func (m *WorkspaceMutation) WorkspaceActivitiesCleared() bool {
+	return m.clearedworkspaceActivities
+}
+
+// RemoveWorkspaceActivityIDs removes the "workspaceActivities" edge to the WorkspaceActivity entity by IDs.
+func (m *WorkspaceMutation) RemoveWorkspaceActivityIDs(ids ...ulid.ID) {
+	if m.removedworkspaceActivities == nil {
+		m.removedworkspaceActivities = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		delete(m.workspaceActivities, ids[i])
+		m.removedworkspaceActivities[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedWorkspaceActivities returns the removed IDs of the "workspaceActivities" edge to the WorkspaceActivity entity.
+func (m *WorkspaceMutation) RemovedWorkspaceActivitiesIDs() (ids []ulid.ID) {
+	for id := range m.removedworkspaceActivities {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// WorkspaceActivitiesIDs returns the "workspaceActivities" edge IDs in the mutation.
+func (m *WorkspaceMutation) WorkspaceActivitiesIDs() (ids []ulid.ID) {
+	for id := range m.workspaceActivities {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetWorkspaceActivities resets all changes to the "workspaceActivities" edge.
+func (m *WorkspaceMutation) ResetWorkspaceActivities() {
+	m.workspaceActivities = nil
+	m.clearedworkspaceActivities = false
+	m.removedworkspaceActivities = nil
+}
+
 // Where appends a list predicates to the WorkspaceMutation builder.
 func (m *WorkspaceMutation) Where(ps ...predicate.Workspace) {
 	m.predicates = append(m.predicates, ps...)
@@ -31795,7 +32103,7 @@ func (m *WorkspaceMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *WorkspaceMutation) AddedEdges() []string {
-	edges := make([]string, 0, 12)
+	edges := make([]string, 0, 13)
 	if m.teammate != nil {
 		edges = append(edges, workspace.EdgeTeammate)
 	}
@@ -31831,6 +32139,9 @@ func (m *WorkspaceMutation) AddedEdges() []string {
 	}
 	if m.deletedTasksRef != nil {
 		edges = append(edges, workspace.EdgeDeletedTasksRef)
+	}
+	if m.workspaceActivities != nil {
+		edges = append(edges, workspace.EdgeWorkspaceActivities)
 	}
 	return edges
 }
@@ -31909,13 +32220,19 @@ func (m *WorkspaceMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case workspace.EdgeWorkspaceActivities:
+		ids := make([]ent.Value, 0, len(m.workspaceActivities))
+		for id := range m.workspaceActivities {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *WorkspaceMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 12)
+	edges := make([]string, 0, 13)
 	if m.removedprojects != nil {
 		edges = append(edges, workspace.EdgeProjects)
 	}
@@ -31948,6 +32265,9 @@ func (m *WorkspaceMutation) RemovedEdges() []string {
 	}
 	if m.removeddeletedTasksRef != nil {
 		edges = append(edges, workspace.EdgeDeletedTasksRef)
+	}
+	if m.removedworkspaceActivities != nil {
+		edges = append(edges, workspace.EdgeWorkspaceActivities)
 	}
 	return edges
 }
@@ -32022,13 +32342,19 @@ func (m *WorkspaceMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case workspace.EdgeWorkspaceActivities:
+		ids := make([]ent.Value, 0, len(m.removedworkspaceActivities))
+		for id := range m.removedworkspaceActivities {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *WorkspaceMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 12)
+	edges := make([]string, 0, 13)
 	if m.clearedteammate {
 		edges = append(edges, workspace.EdgeTeammate)
 	}
@@ -32065,6 +32391,9 @@ func (m *WorkspaceMutation) ClearedEdges() []string {
 	if m.cleareddeletedTasksRef {
 		edges = append(edges, workspace.EdgeDeletedTasksRef)
 	}
+	if m.clearedworkspaceActivities {
+		edges = append(edges, workspace.EdgeWorkspaceActivities)
+	}
 	return edges
 }
 
@@ -32096,6 +32425,8 @@ func (m *WorkspaceMutation) EdgeCleared(name string) bool {
 		return m.clearedteammateTasks
 	case workspace.EdgeDeletedTasksRef:
 		return m.cleareddeletedTasksRef
+	case workspace.EdgeWorkspaceActivities:
+		return m.clearedworkspaceActivities
 	}
 	return false
 }
@@ -32151,8 +32482,788 @@ func (m *WorkspaceMutation) ResetEdge(name string) error {
 	case workspace.EdgeDeletedTasksRef:
 		m.ResetDeletedTasksRef()
 		return nil
+	case workspace.EdgeWorkspaceActivities:
+		m.ResetWorkspaceActivities()
+		return nil
 	}
 	return fmt.Errorf("unknown Workspace edge %s", name)
+}
+
+// WorkspaceActivityMutation represents an operation that mutates the WorkspaceActivity nodes in the graph.
+type WorkspaceActivityMutation struct {
+	config
+	op                  Op
+	typ                 string
+	id                  *ulid.ID
+	created_at          *time.Time
+	updated_at          *time.Time
+	clearedFields       map[string]struct{}
+	activityType        *ulid.ID
+	clearedactivityType bool
+	workspace           *ulid.ID
+	clearedworkspace    bool
+	project             *ulid.ID
+	clearedproject      bool
+	teammate            *ulid.ID
+	clearedteammate     bool
+	done                bool
+	oldValue            func(context.Context) (*WorkspaceActivity, error)
+	predicates          []predicate.WorkspaceActivity
+}
+
+var _ ent.Mutation = (*WorkspaceActivityMutation)(nil)
+
+// workspaceactivityOption allows management of the mutation configuration using functional options.
+type workspaceactivityOption func(*WorkspaceActivityMutation)
+
+// newWorkspaceActivityMutation creates new mutation for the WorkspaceActivity entity.
+func newWorkspaceActivityMutation(c config, op Op, opts ...workspaceactivityOption) *WorkspaceActivityMutation {
+	m := &WorkspaceActivityMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeWorkspaceActivity,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withWorkspaceActivityID sets the ID field of the mutation.
+func withWorkspaceActivityID(id ulid.ID) workspaceactivityOption {
+	return func(m *WorkspaceActivityMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *WorkspaceActivity
+		)
+		m.oldValue = func(ctx context.Context) (*WorkspaceActivity, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().WorkspaceActivity.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withWorkspaceActivity sets the old WorkspaceActivity of the mutation.
+func withWorkspaceActivity(node *WorkspaceActivity) workspaceactivityOption {
+	return func(m *WorkspaceActivityMutation) {
+		m.oldValue = func(context.Context) (*WorkspaceActivity, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m WorkspaceActivityMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m WorkspaceActivityMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of WorkspaceActivity entities.
+func (m *WorkspaceActivityMutation) SetID(id ulid.ID) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *WorkspaceActivityMutation) ID() (id ulid.ID, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *WorkspaceActivityMutation) IDs(ctx context.Context) ([]ulid.ID, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []ulid.ID{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().WorkspaceActivity.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetActivityTypeID sets the "activity_type_id" field.
+func (m *WorkspaceActivityMutation) SetActivityTypeID(u ulid.ID) {
+	m.activityType = &u
+}
+
+// ActivityTypeID returns the value of the "activity_type_id" field in the mutation.
+func (m *WorkspaceActivityMutation) ActivityTypeID() (r ulid.ID, exists bool) {
+	v := m.activityType
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldActivityTypeID returns the old "activity_type_id" field's value of the WorkspaceActivity entity.
+// If the WorkspaceActivity object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WorkspaceActivityMutation) OldActivityTypeID(ctx context.Context) (v ulid.ID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldActivityTypeID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldActivityTypeID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldActivityTypeID: %w", err)
+	}
+	return oldValue.ActivityTypeID, nil
+}
+
+// ResetActivityTypeID resets all changes to the "activity_type_id" field.
+func (m *WorkspaceActivityMutation) ResetActivityTypeID() {
+	m.activityType = nil
+}
+
+// SetWorkspaceID sets the "workspace_id" field.
+func (m *WorkspaceActivityMutation) SetWorkspaceID(u ulid.ID) {
+	m.workspace = &u
+}
+
+// WorkspaceID returns the value of the "workspace_id" field in the mutation.
+func (m *WorkspaceActivityMutation) WorkspaceID() (r ulid.ID, exists bool) {
+	v := m.workspace
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldWorkspaceID returns the old "workspace_id" field's value of the WorkspaceActivity entity.
+// If the WorkspaceActivity object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WorkspaceActivityMutation) OldWorkspaceID(ctx context.Context) (v ulid.ID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldWorkspaceID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldWorkspaceID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldWorkspaceID: %w", err)
+	}
+	return oldValue.WorkspaceID, nil
+}
+
+// ResetWorkspaceID resets all changes to the "workspace_id" field.
+func (m *WorkspaceActivityMutation) ResetWorkspaceID() {
+	m.workspace = nil
+}
+
+// SetProjectID sets the "project_id" field.
+func (m *WorkspaceActivityMutation) SetProjectID(u ulid.ID) {
+	m.project = &u
+}
+
+// ProjectID returns the value of the "project_id" field in the mutation.
+func (m *WorkspaceActivityMutation) ProjectID() (r ulid.ID, exists bool) {
+	v := m.project
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldProjectID returns the old "project_id" field's value of the WorkspaceActivity entity.
+// If the WorkspaceActivity object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WorkspaceActivityMutation) OldProjectID(ctx context.Context) (v ulid.ID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldProjectID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldProjectID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldProjectID: %w", err)
+	}
+	return oldValue.ProjectID, nil
+}
+
+// ResetProjectID resets all changes to the "project_id" field.
+func (m *WorkspaceActivityMutation) ResetProjectID() {
+	m.project = nil
+}
+
+// SetTeammateID sets the "teammate_id" field.
+func (m *WorkspaceActivityMutation) SetTeammateID(u ulid.ID) {
+	m.teammate = &u
+}
+
+// TeammateID returns the value of the "teammate_id" field in the mutation.
+func (m *WorkspaceActivityMutation) TeammateID() (r ulid.ID, exists bool) {
+	v := m.teammate
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTeammateID returns the old "teammate_id" field's value of the WorkspaceActivity entity.
+// If the WorkspaceActivity object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WorkspaceActivityMutation) OldTeammateID(ctx context.Context) (v ulid.ID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTeammateID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTeammateID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTeammateID: %w", err)
+	}
+	return oldValue.TeammateID, nil
+}
+
+// ResetTeammateID resets all changes to the "teammate_id" field.
+func (m *WorkspaceActivityMutation) ResetTeammateID() {
+	m.teammate = nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *WorkspaceActivityMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *WorkspaceActivityMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the WorkspaceActivity entity.
+// If the WorkspaceActivity object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WorkspaceActivityMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *WorkspaceActivityMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *WorkspaceActivityMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *WorkspaceActivityMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the WorkspaceActivity entity.
+// If the WorkspaceActivity object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *WorkspaceActivityMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *WorkspaceActivityMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// ClearActivityType clears the "activityType" edge to the ActivityType entity.
+func (m *WorkspaceActivityMutation) ClearActivityType() {
+	m.clearedactivityType = true
+}
+
+// ActivityTypeCleared reports if the "activityType" edge to the ActivityType entity was cleared.
+func (m *WorkspaceActivityMutation) ActivityTypeCleared() bool {
+	return m.clearedactivityType
+}
+
+// ActivityTypeIDs returns the "activityType" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// ActivityTypeID instead. It exists only for internal usage by the builders.
+func (m *WorkspaceActivityMutation) ActivityTypeIDs() (ids []ulid.ID) {
+	if id := m.activityType; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetActivityType resets all changes to the "activityType" edge.
+func (m *WorkspaceActivityMutation) ResetActivityType() {
+	m.activityType = nil
+	m.clearedactivityType = false
+}
+
+// ClearWorkspace clears the "workspace" edge to the Workspace entity.
+func (m *WorkspaceActivityMutation) ClearWorkspace() {
+	m.clearedworkspace = true
+}
+
+// WorkspaceCleared reports if the "workspace" edge to the Workspace entity was cleared.
+func (m *WorkspaceActivityMutation) WorkspaceCleared() bool {
+	return m.clearedworkspace
+}
+
+// WorkspaceIDs returns the "workspace" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// WorkspaceID instead. It exists only for internal usage by the builders.
+func (m *WorkspaceActivityMutation) WorkspaceIDs() (ids []ulid.ID) {
+	if id := m.workspace; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetWorkspace resets all changes to the "workspace" edge.
+func (m *WorkspaceActivityMutation) ResetWorkspace() {
+	m.workspace = nil
+	m.clearedworkspace = false
+}
+
+// ClearProject clears the "project" edge to the Project entity.
+func (m *WorkspaceActivityMutation) ClearProject() {
+	m.clearedproject = true
+}
+
+// ProjectCleared reports if the "project" edge to the Project entity was cleared.
+func (m *WorkspaceActivityMutation) ProjectCleared() bool {
+	return m.clearedproject
+}
+
+// ProjectIDs returns the "project" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// ProjectID instead. It exists only for internal usage by the builders.
+func (m *WorkspaceActivityMutation) ProjectIDs() (ids []ulid.ID) {
+	if id := m.project; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetProject resets all changes to the "project" edge.
+func (m *WorkspaceActivityMutation) ResetProject() {
+	m.project = nil
+	m.clearedproject = false
+}
+
+// ClearTeammate clears the "teammate" edge to the Teammate entity.
+func (m *WorkspaceActivityMutation) ClearTeammate() {
+	m.clearedteammate = true
+}
+
+// TeammateCleared reports if the "teammate" edge to the Teammate entity was cleared.
+func (m *WorkspaceActivityMutation) TeammateCleared() bool {
+	return m.clearedteammate
+}
+
+// TeammateIDs returns the "teammate" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// TeammateID instead. It exists only for internal usage by the builders.
+func (m *WorkspaceActivityMutation) TeammateIDs() (ids []ulid.ID) {
+	if id := m.teammate; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetTeammate resets all changes to the "teammate" edge.
+func (m *WorkspaceActivityMutation) ResetTeammate() {
+	m.teammate = nil
+	m.clearedteammate = false
+}
+
+// Where appends a list predicates to the WorkspaceActivityMutation builder.
+func (m *WorkspaceActivityMutation) Where(ps ...predicate.WorkspaceActivity) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// Op returns the operation name.
+func (m *WorkspaceActivityMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (WorkspaceActivity).
+func (m *WorkspaceActivityMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *WorkspaceActivityMutation) Fields() []string {
+	fields := make([]string, 0, 6)
+	if m.activityType != nil {
+		fields = append(fields, workspaceactivity.FieldActivityTypeID)
+	}
+	if m.workspace != nil {
+		fields = append(fields, workspaceactivity.FieldWorkspaceID)
+	}
+	if m.project != nil {
+		fields = append(fields, workspaceactivity.FieldProjectID)
+	}
+	if m.teammate != nil {
+		fields = append(fields, workspaceactivity.FieldTeammateID)
+	}
+	if m.created_at != nil {
+		fields = append(fields, workspaceactivity.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, workspaceactivity.FieldUpdatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *WorkspaceActivityMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case workspaceactivity.FieldActivityTypeID:
+		return m.ActivityTypeID()
+	case workspaceactivity.FieldWorkspaceID:
+		return m.WorkspaceID()
+	case workspaceactivity.FieldProjectID:
+		return m.ProjectID()
+	case workspaceactivity.FieldTeammateID:
+		return m.TeammateID()
+	case workspaceactivity.FieldCreatedAt:
+		return m.CreatedAt()
+	case workspaceactivity.FieldUpdatedAt:
+		return m.UpdatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *WorkspaceActivityMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case workspaceactivity.FieldActivityTypeID:
+		return m.OldActivityTypeID(ctx)
+	case workspaceactivity.FieldWorkspaceID:
+		return m.OldWorkspaceID(ctx)
+	case workspaceactivity.FieldProjectID:
+		return m.OldProjectID(ctx)
+	case workspaceactivity.FieldTeammateID:
+		return m.OldTeammateID(ctx)
+	case workspaceactivity.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case workspaceactivity.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown WorkspaceActivity field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *WorkspaceActivityMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case workspaceactivity.FieldActivityTypeID:
+		v, ok := value.(ulid.ID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetActivityTypeID(v)
+		return nil
+	case workspaceactivity.FieldWorkspaceID:
+		v, ok := value.(ulid.ID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetWorkspaceID(v)
+		return nil
+	case workspaceactivity.FieldProjectID:
+		v, ok := value.(ulid.ID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetProjectID(v)
+		return nil
+	case workspaceactivity.FieldTeammateID:
+		v, ok := value.(ulid.ID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTeammateID(v)
+		return nil
+	case workspaceactivity.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case workspaceactivity.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown WorkspaceActivity field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *WorkspaceActivityMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *WorkspaceActivityMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *WorkspaceActivityMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown WorkspaceActivity numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *WorkspaceActivityMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *WorkspaceActivityMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *WorkspaceActivityMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown WorkspaceActivity nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *WorkspaceActivityMutation) ResetField(name string) error {
+	switch name {
+	case workspaceactivity.FieldActivityTypeID:
+		m.ResetActivityTypeID()
+		return nil
+	case workspaceactivity.FieldWorkspaceID:
+		m.ResetWorkspaceID()
+		return nil
+	case workspaceactivity.FieldProjectID:
+		m.ResetProjectID()
+		return nil
+	case workspaceactivity.FieldTeammateID:
+		m.ResetTeammateID()
+		return nil
+	case workspaceactivity.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case workspaceactivity.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown WorkspaceActivity field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *WorkspaceActivityMutation) AddedEdges() []string {
+	edges := make([]string, 0, 4)
+	if m.activityType != nil {
+		edges = append(edges, workspaceactivity.EdgeActivityType)
+	}
+	if m.workspace != nil {
+		edges = append(edges, workspaceactivity.EdgeWorkspace)
+	}
+	if m.project != nil {
+		edges = append(edges, workspaceactivity.EdgeProject)
+	}
+	if m.teammate != nil {
+		edges = append(edges, workspaceactivity.EdgeTeammate)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *WorkspaceActivityMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case workspaceactivity.EdgeActivityType:
+		if id := m.activityType; id != nil {
+			return []ent.Value{*id}
+		}
+	case workspaceactivity.EdgeWorkspace:
+		if id := m.workspace; id != nil {
+			return []ent.Value{*id}
+		}
+	case workspaceactivity.EdgeProject:
+		if id := m.project; id != nil {
+			return []ent.Value{*id}
+		}
+	case workspaceactivity.EdgeTeammate:
+		if id := m.teammate; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *WorkspaceActivityMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 4)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *WorkspaceActivityMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *WorkspaceActivityMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 4)
+	if m.clearedactivityType {
+		edges = append(edges, workspaceactivity.EdgeActivityType)
+	}
+	if m.clearedworkspace {
+		edges = append(edges, workspaceactivity.EdgeWorkspace)
+	}
+	if m.clearedproject {
+		edges = append(edges, workspaceactivity.EdgeProject)
+	}
+	if m.clearedteammate {
+		edges = append(edges, workspaceactivity.EdgeTeammate)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *WorkspaceActivityMutation) EdgeCleared(name string) bool {
+	switch name {
+	case workspaceactivity.EdgeActivityType:
+		return m.clearedactivityType
+	case workspaceactivity.EdgeWorkspace:
+		return m.clearedworkspace
+	case workspaceactivity.EdgeProject:
+		return m.clearedproject
+	case workspaceactivity.EdgeTeammate:
+		return m.clearedteammate
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *WorkspaceActivityMutation) ClearEdge(name string) error {
+	switch name {
+	case workspaceactivity.EdgeActivityType:
+		m.ClearActivityType()
+		return nil
+	case workspaceactivity.EdgeWorkspace:
+		m.ClearWorkspace()
+		return nil
+	case workspaceactivity.EdgeProject:
+		m.ClearProject()
+		return nil
+	case workspaceactivity.EdgeTeammate:
+		m.ClearTeammate()
+		return nil
+	}
+	return fmt.Errorf("unknown WorkspaceActivity unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *WorkspaceActivityMutation) ResetEdge(name string) error {
+	switch name {
+	case workspaceactivity.EdgeActivityType:
+		m.ResetActivityType()
+		return nil
+	case workspaceactivity.EdgeWorkspace:
+		m.ResetWorkspace()
+		return nil
+	case workspaceactivity.EdgeProject:
+		m.ResetProject()
+		return nil
+	case workspaceactivity.EdgeTeammate:
+		m.ResetTeammate()
+		return nil
+	}
+	return fmt.Errorf("unknown WorkspaceActivity edge %s", name)
 }
 
 // WorkspaceTeammateMutation represents an operation that mutates the WorkspaceTeammate nodes in the graph.
