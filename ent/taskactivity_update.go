@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"project-management-demo-backend/ent/activitytype"
+	"project-management-demo-backend/ent/archivedtaskactivitytask"
 	"project-management-demo-backend/ent/predicate"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/taskactivity"
@@ -80,6 +81,21 @@ func (tau *TaskActivityUpdate) AddTaskActivityTasks(t ...*TaskActivityTask) *Tas
 	return tau.AddTaskActivityTaskIDs(ids...)
 }
 
+// AddArchivedTaskActivityTaskIDs adds the "archivedTaskActivityTasks" edge to the ArchivedTaskActivityTask entity by IDs.
+func (tau *TaskActivityUpdate) AddArchivedTaskActivityTaskIDs(ids ...ulid.ID) *TaskActivityUpdate {
+	tau.mutation.AddArchivedTaskActivityTaskIDs(ids...)
+	return tau
+}
+
+// AddArchivedTaskActivityTasks adds the "archivedTaskActivityTasks" edges to the ArchivedTaskActivityTask entity.
+func (tau *TaskActivityUpdate) AddArchivedTaskActivityTasks(a ...*ArchivedTaskActivityTask) *TaskActivityUpdate {
+	ids := make([]ulid.ID, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return tau.AddArchivedTaskActivityTaskIDs(ids...)
+}
+
 // Mutation returns the TaskActivityMutation object of the builder.
 func (tau *TaskActivityUpdate) Mutation() *TaskActivityMutation {
 	return tau.mutation
@@ -122,6 +138,27 @@ func (tau *TaskActivityUpdate) RemoveTaskActivityTasks(t ...*TaskActivityTask) *
 		ids[i] = t[i].ID
 	}
 	return tau.RemoveTaskActivityTaskIDs(ids...)
+}
+
+// ClearArchivedTaskActivityTasks clears all "archivedTaskActivityTasks" edges to the ArchivedTaskActivityTask entity.
+func (tau *TaskActivityUpdate) ClearArchivedTaskActivityTasks() *TaskActivityUpdate {
+	tau.mutation.ClearArchivedTaskActivityTasks()
+	return tau
+}
+
+// RemoveArchivedTaskActivityTaskIDs removes the "archivedTaskActivityTasks" edge to ArchivedTaskActivityTask entities by IDs.
+func (tau *TaskActivityUpdate) RemoveArchivedTaskActivityTaskIDs(ids ...ulid.ID) *TaskActivityUpdate {
+	tau.mutation.RemoveArchivedTaskActivityTaskIDs(ids...)
+	return tau
+}
+
+// RemoveArchivedTaskActivityTasks removes "archivedTaskActivityTasks" edges to ArchivedTaskActivityTask entities.
+func (tau *TaskActivityUpdate) RemoveArchivedTaskActivityTasks(a ...*ArchivedTaskActivityTask) *TaskActivityUpdate {
+	ids := make([]ulid.ID, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return tau.RemoveArchivedTaskActivityTaskIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -375,6 +412,60 @@ func (tau *TaskActivityUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if tau.mutation.ArchivedTaskActivityTasksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   taskactivity.ArchivedTaskActivityTasksTable,
+			Columns: []string{taskactivity.ArchivedTaskActivityTasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: archivedtaskactivitytask.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tau.mutation.RemovedArchivedTaskActivityTasksIDs(); len(nodes) > 0 && !tau.mutation.ArchivedTaskActivityTasksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   taskactivity.ArchivedTaskActivityTasksTable,
+			Columns: []string{taskactivity.ArchivedTaskActivityTasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: archivedtaskactivitytask.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tau.mutation.ArchivedTaskActivityTasksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   taskactivity.ArchivedTaskActivityTasksTable,
+			Columns: []string{taskactivity.ArchivedTaskActivityTasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: archivedtaskactivitytask.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, tau.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{taskactivity.Label}
@@ -442,6 +533,21 @@ func (tauo *TaskActivityUpdateOne) AddTaskActivityTasks(t ...*TaskActivityTask) 
 	return tauo.AddTaskActivityTaskIDs(ids...)
 }
 
+// AddArchivedTaskActivityTaskIDs adds the "archivedTaskActivityTasks" edge to the ArchivedTaskActivityTask entity by IDs.
+func (tauo *TaskActivityUpdateOne) AddArchivedTaskActivityTaskIDs(ids ...ulid.ID) *TaskActivityUpdateOne {
+	tauo.mutation.AddArchivedTaskActivityTaskIDs(ids...)
+	return tauo
+}
+
+// AddArchivedTaskActivityTasks adds the "archivedTaskActivityTasks" edges to the ArchivedTaskActivityTask entity.
+func (tauo *TaskActivityUpdateOne) AddArchivedTaskActivityTasks(a ...*ArchivedTaskActivityTask) *TaskActivityUpdateOne {
+	ids := make([]ulid.ID, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return tauo.AddArchivedTaskActivityTaskIDs(ids...)
+}
+
 // Mutation returns the TaskActivityMutation object of the builder.
 func (tauo *TaskActivityUpdateOne) Mutation() *TaskActivityMutation {
 	return tauo.mutation
@@ -484,6 +590,27 @@ func (tauo *TaskActivityUpdateOne) RemoveTaskActivityTasks(t ...*TaskActivityTas
 		ids[i] = t[i].ID
 	}
 	return tauo.RemoveTaskActivityTaskIDs(ids...)
+}
+
+// ClearArchivedTaskActivityTasks clears all "archivedTaskActivityTasks" edges to the ArchivedTaskActivityTask entity.
+func (tauo *TaskActivityUpdateOne) ClearArchivedTaskActivityTasks() *TaskActivityUpdateOne {
+	tauo.mutation.ClearArchivedTaskActivityTasks()
+	return tauo
+}
+
+// RemoveArchivedTaskActivityTaskIDs removes the "archivedTaskActivityTasks" edge to ArchivedTaskActivityTask entities by IDs.
+func (tauo *TaskActivityUpdateOne) RemoveArchivedTaskActivityTaskIDs(ids ...ulid.ID) *TaskActivityUpdateOne {
+	tauo.mutation.RemoveArchivedTaskActivityTaskIDs(ids...)
+	return tauo
+}
+
+// RemoveArchivedTaskActivityTasks removes "archivedTaskActivityTasks" edges to ArchivedTaskActivityTask entities.
+func (tauo *TaskActivityUpdateOne) RemoveArchivedTaskActivityTasks(a ...*ArchivedTaskActivityTask) *TaskActivityUpdateOne {
+	ids := make([]ulid.ID, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return tauo.RemoveArchivedTaskActivityTaskIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -753,6 +880,60 @@ func (tauo *TaskActivityUpdateOne) sqlSave(ctx context.Context) (_node *TaskActi
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: taskactivitytask.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if tauo.mutation.ArchivedTaskActivityTasksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   taskactivity.ArchivedTaskActivityTasksTable,
+			Columns: []string{taskactivity.ArchivedTaskActivityTasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: archivedtaskactivitytask.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tauo.mutation.RemovedArchivedTaskActivityTasksIDs(); len(nodes) > 0 && !tauo.mutation.ArchivedTaskActivityTasksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   taskactivity.ArchivedTaskActivityTasksTable,
+			Columns: []string{taskactivity.ArchivedTaskActivityTasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: archivedtaskactivitytask.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tauo.mutation.ArchivedTaskActivityTasksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   taskactivity.ArchivedTaskActivityTasksTable,
+			Columns: []string{taskactivity.ArchivedTaskActivityTasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: archivedtaskactivitytask.FieldID,
 				},
 			},
 		}

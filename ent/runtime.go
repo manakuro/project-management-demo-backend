@@ -5,6 +5,7 @@ package ent
 import (
 	"project-management-demo-backend/ent/activitytype"
 	"project-management-demo-backend/ent/archivedtaskactivity"
+	"project-management-demo-backend/ent/archivedtaskactivitytask"
 	"project-management-demo-backend/ent/color"
 	"project-management-demo-backend/ent/deletedtask"
 	"project-management-demo-backend/ent/favoriteproject"
@@ -114,6 +115,25 @@ func init() {
 	archivedtaskactivityDescID := archivedtaskactivityMixinFields0[0].Descriptor()
 	// archivedtaskactivity.DefaultID holds the default value on creation for the id field.
 	archivedtaskactivity.DefaultID = archivedtaskactivityDescID.Default.(func() ulid.ID)
+	archivedtaskactivitytaskMixin := schema.ArchivedTaskActivityTask{}.Mixin()
+	archivedtaskactivitytaskMixinFields0 := archivedtaskactivitytaskMixin[0].Fields()
+	_ = archivedtaskactivitytaskMixinFields0
+	archivedtaskactivitytaskMixinFields2 := archivedtaskactivitytaskMixin[2].Fields()
+	_ = archivedtaskactivitytaskMixinFields2
+	archivedtaskactivitytaskFields := schema.ArchivedTaskActivityTask{}.Fields()
+	_ = archivedtaskactivitytaskFields
+	// archivedtaskactivitytaskDescCreatedAt is the schema descriptor for created_at field.
+	archivedtaskactivitytaskDescCreatedAt := archivedtaskactivitytaskMixinFields2[0].Descriptor()
+	// archivedtaskactivitytask.DefaultCreatedAt holds the default value on creation for the created_at field.
+	archivedtaskactivitytask.DefaultCreatedAt = archivedtaskactivitytaskDescCreatedAt.Default.(func() time.Time)
+	// archivedtaskactivitytaskDescUpdatedAt is the schema descriptor for updated_at field.
+	archivedtaskactivitytaskDescUpdatedAt := archivedtaskactivitytaskMixinFields2[1].Descriptor()
+	// archivedtaskactivitytask.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	archivedtaskactivitytask.DefaultUpdatedAt = archivedtaskactivitytaskDescUpdatedAt.Default.(func() time.Time)
+	// archivedtaskactivitytaskDescID is the schema descriptor for id field.
+	archivedtaskactivitytaskDescID := archivedtaskactivitytaskMixinFields0[0].Descriptor()
+	// archivedtaskactivitytask.DefaultID holds the default value on creation for the id field.
+	archivedtaskactivitytask.DefaultID = archivedtaskactivitytaskDescID.Default.(func() ulid.ID)
 	colorMixin := schema.Color{}.Mixin()
 	colorMixinFields0 := colorMixin[0].Fields()
 	_ = colorMixinFields0

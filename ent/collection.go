@@ -65,6 +65,30 @@ func (ata *ArchivedTaskActivityQuery) collectField(ctx *graphql.OperationContext
 }
 
 // CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
+func (atat *ArchivedTaskActivityTaskQuery) CollectFields(ctx context.Context, satisfies ...string) *ArchivedTaskActivityTaskQuery {
+	if fc := graphql.GetFieldContext(ctx); fc != nil {
+		atat = atat.collectField(graphql.GetOperationContext(ctx), fc.Field, satisfies...)
+	}
+	return atat
+}
+
+func (atat *ArchivedTaskActivityTaskQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *ArchivedTaskActivityTaskQuery {
+	for _, field := range graphql.CollectFields(ctx, field.Selections, satisfies) {
+		switch field.Name {
+		case "task":
+			atat = atat.WithTask(func(query *TaskQuery) {
+				query.collectField(ctx, field)
+			})
+		case "taskActivity":
+			atat = atat.WithTaskActivity(func(query *TaskActivityQuery) {
+				query.collectField(ctx, field)
+			})
+		}
+	}
+	return atat
+}
+
+// CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
 func (c *ColorQuery) CollectFields(ctx context.Context, satisfies ...string) *ColorQuery {
 	if fc := graphql.GetFieldContext(ctx); fc != nil {
 		c = c.collectField(graphql.GetOperationContext(ctx), fc.Field, satisfies...)
@@ -515,6 +539,10 @@ func (t *TaskQuery) CollectFields(ctx context.Context, satisfies ...string) *Tas
 func (t *TaskQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *TaskQuery {
 	for _, field := range graphql.CollectFields(ctx, field.Selections, satisfies) {
 		switch field.Name {
+		case "archivedTaskActivityTasks":
+			t = t.WithArchivedTaskActivityTasks(func(query *ArchivedTaskActivityTaskQuery) {
+				query.collectField(ctx, field)
+			})
 		case "deletedTasksRef":
 			t = t.WithDeletedTasksRef(func(query *DeletedTaskQuery) {
 				query.collectField(ctx, field)
@@ -593,6 +621,10 @@ func (ta *TaskActivityQuery) collectField(ctx *graphql.OperationContext, field g
 		switch field.Name {
 		case "activityType":
 			ta = ta.WithActivityType(func(query *ActivityTypeQuery) {
+				query.collectField(ctx, field)
+			})
+		case "archivedTaskActivityTasks":
+			ta = ta.WithArchivedTaskActivityTasks(func(query *ArchivedTaskActivityTaskQuery) {
 				query.collectField(ctx, field)
 			})
 		case "taskActivityTasks":

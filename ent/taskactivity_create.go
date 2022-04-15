@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"project-management-demo-backend/ent/activitytype"
+	"project-management-demo-backend/ent/archivedtaskactivitytask"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/taskactivity"
 	"project-management-demo-backend/ent/taskactivitytask"
@@ -116,6 +117,21 @@ func (tac *TaskActivityCreate) AddTaskActivityTasks(t ...*TaskActivityTask) *Tas
 		ids[i] = t[i].ID
 	}
 	return tac.AddTaskActivityTaskIDs(ids...)
+}
+
+// AddArchivedTaskActivityTaskIDs adds the "archivedTaskActivityTasks" edge to the ArchivedTaskActivityTask entity by IDs.
+func (tac *TaskActivityCreate) AddArchivedTaskActivityTaskIDs(ids ...ulid.ID) *TaskActivityCreate {
+	tac.mutation.AddArchivedTaskActivityTaskIDs(ids...)
+	return tac
+}
+
+// AddArchivedTaskActivityTasks adds the "archivedTaskActivityTasks" edges to the ArchivedTaskActivityTask entity.
+func (tac *TaskActivityCreate) AddArchivedTaskActivityTasks(a ...*ArchivedTaskActivityTask) *TaskActivityCreate {
+	ids := make([]ulid.ID, len(a))
+	for i := range a {
+		ids[i] = a[i].ID
+	}
+	return tac.AddArchivedTaskActivityTaskIDs(ids...)
 }
 
 // Mutation returns the TaskActivityMutation object of the builder.
@@ -353,6 +369,25 @@ func (tac *TaskActivityCreate) createSpec() (*TaskActivity, *sqlgraph.CreateSpec
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: taskactivitytask.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := tac.mutation.ArchivedTaskActivityTasksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   taskactivity.ArchivedTaskActivityTasksTable,
+			Columns: []string{taskactivity.ArchivedTaskActivityTasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: archivedtaskactivitytask.FieldID,
 				},
 			},
 		}
