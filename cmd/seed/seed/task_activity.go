@@ -17,23 +17,28 @@ func TaskActivity(ctx context.Context, client *ent.Client) {
 	}
 	activityTypeID := seedutil.GetActivityType(ctx, client, "Task").ID
 	teammateID := seedutil.GetTeammateByEmail(ctx, client, teammateSeed.manato.Email).ID
+	workspaceID := seedutil.GetWorkspace(ctx, client).ID
 
 	inputs := []ent.CreateTaskActivityInput{
 		{
 			TeammateID:     teammateID,
 			ActivityTypeID: activityTypeID,
+			WorkspaceID:    workspaceID,
 		},
 		{
 			TeammateID:     teammateID,
 			ActivityTypeID: activityTypeID,
+			WorkspaceID:    workspaceID,
 		},
 		{
 			TeammateID:     teammateID,
 			ActivityTypeID: activityTypeID,
+			WorkspaceID:    workspaceID,
 		},
 		{
 			TeammateID:     teammateID,
 			ActivityTypeID: activityTypeID,
+			WorkspaceID:    workspaceID,
 		},
 	}
 	bulk := make([]*ent.TaskActivityCreate, len(inputs))
