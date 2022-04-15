@@ -26,12 +26,16 @@ func WorkspaceActivity(ctx context.Context, client *ent.Client) {
 			ActivityTypeID: activityTypeID,
 			ProjectID:      projectID,
 			WorkspaceID:    workspaceID,
+			CreatedAt:      seedutil.AddDate(-1),
+			UpdatedAt:      seedutil.AddDate(-1),
 		},
 		{
 			TeammateID:     teammateID,
 			ActivityTypeID: activityTypeID,
 			ProjectID:      projectID,
 			WorkspaceID:    workspaceID,
+			CreatedAt:      seedutil.AddDate(-1),
+			UpdatedAt:      seedutil.AddDate(-1),
 		},
 	}
 	bulk := make([]*ent.WorkspaceActivityCreate, len(inputs))
