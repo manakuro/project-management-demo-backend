@@ -30,7 +30,6 @@ func TaskActivityTask(ctx context.Context, client *ent.Client) {
 	task7ID := seedutil.GetTaskByName(ctx, client, taskAssignedFeed.task7.Name).ID
 	task8ID := seedutil.GetTaskByName(ctx, client, taskAssignedFeed.task8.Name).ID
 	task9ID := seedutil.GetTaskByName(ctx, client, taskAssignedFeed.task9.Name).ID
-	task10ID := seedutil.GetTaskByName(ctx, client, taskAssignedFeed.task10.Name).ID
 
 	inputs := []ent.CreateTaskActivityTaskInput{
 		// taskActivity 1
@@ -72,10 +71,6 @@ func TaskActivityTask(ctx context.Context, client *ent.Client) {
 		{
 			TaskActivityID: taskActivity4ID,
 			TaskID:         task9ID,
-		},
-		{
-			TaskActivityID: taskActivity4ID,
-			TaskID:         task10ID,
 		},
 	}
 	bulk := make([]*ent.TaskActivityTaskCreate, len(inputs))
