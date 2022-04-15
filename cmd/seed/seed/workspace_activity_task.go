@@ -21,6 +21,9 @@ func WorkspaceActivityTask(ctx context.Context, client *ent.Client) {
 	workspaceActivity2ID := seedutil.GetWorkspaceActivity(ctx, client, workspaceActivitySeed[1].ID).ID
 	task3ID := seedutil.GetTaskByName(ctx, client, taskAssignedFeed.task3.Name).ID
 
+	workspaceActivity3ID := seedutil.GetWorkspaceActivity(ctx, client, workspaceActivitySeed[2].ID).ID
+	task4ID := seedutil.GetTaskByName(ctx, client, taskAssignedFeed.task4.Name).ID
+
 	inputs := []ent.CreateWorkspaceActivityTaskInput{
 		// workspaceActivity 1
 		{
@@ -31,15 +34,16 @@ func WorkspaceActivityTask(ctx context.Context, client *ent.Client) {
 			WorkspaceActivityID: workspaceActivity1ID,
 			TaskID:              task2ID,
 		},
-
 		// workspaceActivity 2
 		{
 			WorkspaceActivityID: workspaceActivity2ID,
-			TaskID:              task1ID,
-		},
-		{
-			WorkspaceActivityID: workspaceActivity1ID,
 			TaskID:              task3ID,
+		},
+
+		// workspaceActivity 3
+		{
+			WorkspaceActivityID: workspaceActivity3ID,
+			TaskID:              task4ID,
 		},
 	}
 	bulk := make([]*ent.WorkspaceActivityTaskCreate, len(inputs))

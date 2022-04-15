@@ -7,7 +7,7 @@ import (
 	"project-management-demo-backend/ent"
 )
 
-var workspaceActivitySeed = make([]*ent.WorkspaceActivity, 2)
+var workspaceActivitySeed = make([]*ent.WorkspaceActivity, 3)
 
 // WorkspaceActivity generates task activity data.
 func WorkspaceActivity(ctx context.Context, client *ent.Client) {
@@ -35,7 +35,15 @@ func WorkspaceActivity(ctx context.Context, client *ent.Client) {
 			ProjectID:      projectID,
 			WorkspaceID:    workspaceID,
 			CreatedAt:      seedutil.AddDate(-1),
-			UpdatedAt:      seedutil.AddDate(-1),
+			UpdatedAt:      seedutil.AddDate(-3),
+		},
+		{
+			TeammateID:     teammateID,
+			ActivityTypeID: activityTypeID,
+			ProjectID:      projectID,
+			WorkspaceID:    workspaceID,
+			CreatedAt:      seedutil.AddDate(-1),
+			UpdatedAt:      seedutil.AddDate(-7),
 		},
 	}
 	bulk := make([]*ent.WorkspaceActivityCreate, len(inputs))
