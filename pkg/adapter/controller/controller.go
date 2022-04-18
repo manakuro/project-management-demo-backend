@@ -4,6 +4,7 @@ package controller
 type Controller struct {
 	Activity                      interface{ Activity }
 	ActivityType                  interface{ ActivityType }
+	ArchivedActivity              interface{ ArchivedActivity }
 	ArchivedTaskActivity          interface{ ArchivedTaskActivity }
 	ArchivedTaskActivityTask      interface{ ArchivedTaskActivityTask }
 	ArchivedWorkspaceActivity     interface{ ArchivedWorkspaceActivity }

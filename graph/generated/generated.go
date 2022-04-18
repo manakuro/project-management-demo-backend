@@ -53,6 +53,7 @@ type Config struct {
 type ResolverRoot interface {
 	Activity() ActivityResolver
 	ActivityType() ActivityTypeResolver
+	ArchivedActivity() ArchivedActivityResolver
 	ArchivedTaskActivity() ArchivedTaskActivityResolver
 	ArchivedTaskActivityTask() ArchivedTaskActivityTaskResolver
 	ArchivedWorkspaceActivity() ArchivedWorkspaceActivityResolver
@@ -132,6 +133,12 @@ type ComplexityRoot struct {
 	ActivityTypeEdge struct {
 		Cursor func(childComplexity int) int
 		Node   func(childComplexity int) int
+	}
+
+	ArchivedActivity struct {
+		ID        func(childComplexity int) int
+		Type      func(childComplexity int) int
+		UpdatedAt func(childComplexity int) int
 	}
 
 	ArchivedTaskActivity struct {
@@ -768,6 +775,7 @@ type ComplexityRoot struct {
 		Activities                     func(childComplexity int, where model.ActivityWhereInput) int
 		ActivityType                   func(childComplexity int, where *ent.ActivityTypeWhereInput) int
 		ActivityTypes                  func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ActivityTypeWhereInput) int
+		ArchivedActivities             func(childComplexity int, where model.ArchivedActivityWhereInput) int
 		ArchivedTaskActivities         func(childComplexity int, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ArchivedTaskActivityWhereInput) int
 		ArchivedTaskActivity           func(childComplexity int, where *ent.ArchivedTaskActivityWhereInput) int
 		ArchivedTaskActivityTask       func(childComplexity int, where *ent.ArchivedTaskActivityTaskWhereInput) int
@@ -1600,6 +1608,9 @@ type ActivityTypeResolver interface {
 	CreatedAt(ctx context.Context, obj *ent.ActivityType) (string, error)
 	UpdatedAt(ctx context.Context, obj *ent.ActivityType) (string, error)
 }
+type ArchivedActivityResolver interface {
+	UpdatedAt(ctx context.Context, obj *model.ArchivedActivity) (string, error)
+}
 type ArchivedTaskActivityResolver interface {
 	CreatedAt(ctx context.Context, obj *ent.ArchivedTaskActivity) (string, error)
 	UpdatedAt(ctx context.Context, obj *ent.ArchivedTaskActivity) (string, error)
@@ -1814,6 +1825,7 @@ type QueryResolver interface {
 	Activities(ctx context.Context, where model.ActivityWhereInput) ([]*model.Activity, error)
 	ActivityType(ctx context.Context, where *ent.ActivityTypeWhereInput) (*ent.ActivityType, error)
 	ActivityTypes(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ActivityTypeWhereInput) (*ent.ActivityTypeConnection, error)
+	ArchivedActivities(ctx context.Context, where model.ArchivedActivityWhereInput) ([]*model.ArchivedActivity, error)
 	ArchivedTaskActivity(ctx context.Context, where *ent.ArchivedTaskActivityWhereInput) (*ent.ArchivedTaskActivity, error)
 	ArchivedTaskActivities(ctx context.Context, after *ent.Cursor, first *int, before *ent.Cursor, last *int, where *ent.ArchivedTaskActivityWhereInput) (*ent.ArchivedTaskActivityConnection, error)
 	ArchivedTaskActivityTask(ctx context.Context, where *ent.ArchivedTaskActivityTaskWhereInput) (*ent.ArchivedTaskActivityTask, error)
@@ -2199,6 +2211,27 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.ActivityTypeEdge.Node(childComplexity), true
+
+	case "ArchivedActivity.id":
+		if e.complexity.ArchivedActivity.ID == nil {
+			break
+		}
+
+		return e.complexity.ArchivedActivity.ID(childComplexity), true
+
+	case "ArchivedActivity.type":
+		if e.complexity.ArchivedActivity.Type == nil {
+			break
+		}
+
+		return e.complexity.ArchivedActivity.Type(childComplexity), true
+
+	case "ArchivedActivity.updatedAt":
+		if e.complexity.ArchivedActivity.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.ArchivedActivity.UpdatedAt(childComplexity), true
 
 	case "ArchivedTaskActivity.activityType":
 		if e.complexity.ArchivedTaskActivity.ActivityType == nil {
@@ -5727,6 +5760,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.ActivityTypes(childComplexity, args["after"].(*ent.Cursor), args["first"].(*int), args["before"].(*ent.Cursor), args["last"].(*int), args["where"].(*ent.ActivityTypeWhereInput)), true
+
+	case "Query.archivedActivities":
+		if e.complexity.Query.ArchivedActivities == nil {
+			break
+		}
+
+		args, err := ec.field_Query_archivedActivities_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.ArchivedActivities(childComplexity, args["where"].(model.ArchivedActivityWhereInput)), true
 
 	case "Query.archivedTaskActivities":
 		if e.complexity.Query.ArchivedTaskActivities == nil {
@@ -10500,6 +10545,20 @@ extend type Query {
 extend type Mutation {
   createActivityType(input: CreateActivityTypeInput!): ActivityType!
   updateActivityType(input: UpdateActivityTypeInput!): ActivityType!
+}
+`, BuiltIn: false},
+	{Name: "graph/schema/archived_activity/archived_activity.graphql", Input: `type ArchivedActivity {
+    id: ID!
+    type: String!
+    updatedAt: String!
+}
+
+input ArchivedActivityWhereInput {
+    workspaceId: ID!
+}
+
+extend type Query {
+    archivedActivities(where: ArchivedActivityWhereInput!): [ArchivedActivity!]!
 }
 `, BuiltIn: false},
 	{Name: "graph/schema/archived_task_activity/archived_task_activity.graphql", Input: `type ArchivedTaskActivity implements Node {
@@ -19820,6 +19879,21 @@ func (ec *executionContext) field_Query_activityTypes_args(ctx context.Context, 
 	return args, nil
 }
 
+func (ec *executionContext) field_Query_archivedActivities_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 model.ArchivedActivityWhereInput
+	if tmp, ok := rawArgs["where"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("where"))
+		arg0, err = ec.unmarshalNArchivedActivityWhereInput2projectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐArchivedActivityWhereInput(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["where"] = arg0
+	return args, nil
+}
+
 func (ec *executionContext) field_Query_archivedTaskActivities_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -25090,6 +25164,111 @@ func (ec *executionContext) _ActivityTypeEdge_cursor(ctx context.Context, field 
 	res := resTmp.(ent.Cursor)
 	fc.Result = res
 	return ec.marshalNCursor2projectᚑmanagementᚑdemoᚑbackendᚋentᚐCursor(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ArchivedActivity_id(ctx context.Context, field graphql.CollectedField, obj *model.ArchivedActivity) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ArchivedActivity",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(ulid.ID)
+	fc.Result = res
+	return ec.marshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ArchivedActivity_type(ctx context.Context, field graphql.CollectedField, obj *model.ArchivedActivity) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ArchivedActivity",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   false,
+		IsResolver: false,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Type, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _ArchivedActivity_updatedAt(ctx context.Context, field graphql.CollectedField, obj *model.ArchivedActivity) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "ArchivedActivity",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.ArchivedActivity().UpdatedAt(rctx, obj)
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _ArchivedTaskActivity_id(ctx context.Context, field graphql.CollectedField, obj *ent.ArchivedTaskActivity) (ret graphql.Marshaler) {
@@ -40393,6 +40572,48 @@ func (ec *executionContext) _Query_activityTypes(ctx context.Context, field grap
 	res := resTmp.(*ent.ActivityTypeConnection)
 	fc.Result = res
 	return ec.marshalOActivityTypeConnection2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋentᚐActivityTypeConnection(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) _Query_archivedActivities(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	fc := &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		Args:       nil,
+		IsMethod:   true,
+		IsResolver: true,
+	}
+
+	ctx = graphql.WithFieldContext(ctx, fc)
+	rawArgs := field.ArgumentMap(ec.Variables)
+	args, err := ec.field_Query_archivedActivities_args(ctx, rawArgs)
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	fc.Args = args
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().ArchivedActivities(rctx, args["where"].(model.ArchivedActivityWhereInput))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.ArchivedActivity)
+	fc.Result = res
+	return ec.marshalNArchivedActivity2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐArchivedActivityᚄ(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) _Query_archivedTaskActivity(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
@@ -62336,6 +62557,29 @@ func (ec *executionContext) unmarshalInputActivityTypeWhereInput(ctx context.Con
 
 func (ec *executionContext) unmarshalInputActivityWhereInput(ctx context.Context, obj interface{}) (model.ActivityWhereInput, error) {
 	var it model.ActivityWhereInput
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	for k, v := range asMap {
+		switch k {
+		case "workspaceId":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("workspaceId"))
+			it.WorkspaceID, err = ec.unmarshalNID2projectᚑmanagementᚑdemoᚑbackendᚋentᚋschemaᚋulidᚐID(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputArchivedActivityWhereInput(ctx context.Context, obj interface{}) (model.ArchivedActivityWhereInput, error) {
+	var it model.ArchivedActivityWhereInput
 	asMap := map[string]interface{}{}
 	for k, v := range obj.(map[string]interface{}) {
 		asMap[k] = v
@@ -96461,6 +96705,52 @@ func (ec *executionContext) _ActivityTypeEdge(ctx context.Context, sel ast.Selec
 	return out
 }
 
+var archivedActivityImplementors = []string{"ArchivedActivity"}
+
+func (ec *executionContext) _ArchivedActivity(ctx context.Context, sel ast.SelectionSet, obj *model.ArchivedActivity) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, archivedActivityImplementors)
+
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("ArchivedActivity")
+		case "id":
+			out.Values[i] = ec._ArchivedActivity_id(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "type":
+			out.Values[i] = ec._ArchivedActivity_type(ctx, field, obj)
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "updatedAt":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._ArchivedActivity_updatedAt(ctx, field, obj)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			})
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var archivedTaskActivityImplementors = []string{"ArchivedTaskActivity", "Node"}
 
 func (ec *executionContext) _ArchivedTaskActivity(ctx context.Context, sel ast.SelectionSet, obj *ent.ArchivedTaskActivity) graphql.Marshaler {
@@ -100731,6 +101021,20 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_activityTypes(ctx, field)
+				return res
+			})
+		case "archivedActivities":
+			field := field
+			out.Concurrently(i, func() (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_archivedActivities(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
 				return res
 			})
 		case "archivedTaskActivity":
@@ -106948,6 +107252,65 @@ func (ec *executionContext) unmarshalNActivityTypeWhereInput2ᚖprojectᚑmanage
 
 func (ec *executionContext) unmarshalNActivityWhereInput2projectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐActivityWhereInput(ctx context.Context, v interface{}) (model.ActivityWhereInput, error) {
 	res, err := ec.unmarshalInputActivityWhereInput(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNArchivedActivity2ᚕᚖprojectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐArchivedActivityᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.ArchivedActivity) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNArchivedActivity2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐArchivedActivity(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNArchivedActivity2ᚖprojectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐArchivedActivity(ctx context.Context, sel ast.SelectionSet, v *model.ArchivedActivity) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	return ec._ArchivedActivity(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNArchivedActivityWhereInput2projectᚑmanagementᚑdemoᚑbackendᚋpkgᚋentityᚋmodelᚐArchivedActivityWhereInput(ctx context.Context, v interface{}) (model.ArchivedActivityWhereInput, error) {
+	res, err := ec.unmarshalInputArchivedActivityWhereInput(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 

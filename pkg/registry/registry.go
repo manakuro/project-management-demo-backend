@@ -25,6 +25,7 @@ func (r *registry) NewController() controller.Controller {
 	return controller.Controller{
 		Activity:                      r.NewActivityController(),
 		ActivityType:                  r.NewActivityTypeController(),
+		ArchivedActivity:              r.NewArchivedActivityController(),
 		ArchivedTaskActivity:          r.NewArchivedTaskActivityController(),
 		ArchivedTaskActivityTask:      r.NewArchivedTaskActivityTaskController(),
 		ArchivedWorkspaceActivity:     r.NewArchivedWorkspaceActivityController(),
