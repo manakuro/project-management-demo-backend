@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"project-management-demo-backend/ent/archivedworkspaceactivity"
+	"project-management-demo-backend/ent/deletedprojecttask"
 	"project-management-demo-backend/ent/favoriteproject"
 	"project-management-demo-backend/ent/predicate"
 	"project-management-demo-backend/ent/project"
@@ -277,6 +278,21 @@ func (pu *ProjectUpdate) AddArchivedWorkspaceActivities(a ...*ArchivedWorkspaceA
 	return pu.AddArchivedWorkspaceActivityIDs(ids...)
 }
 
+// AddDeletedProjectTaskIDs adds the "deletedProjectTasks" edge to the DeletedProjectTask entity by IDs.
+func (pu *ProjectUpdate) AddDeletedProjectTaskIDs(ids ...ulid.ID) *ProjectUpdate {
+	pu.mutation.AddDeletedProjectTaskIDs(ids...)
+	return pu
+}
+
+// AddDeletedProjectTasks adds the "deletedProjectTasks" edges to the DeletedProjectTask entity.
+func (pu *ProjectUpdate) AddDeletedProjectTasks(d ...*DeletedProjectTask) *ProjectUpdate {
+	ids := make([]ulid.ID, len(d))
+	for i := range d {
+		ids[i] = d[i].ID
+	}
+	return pu.AddDeletedProjectTaskIDs(ids...)
+}
+
 // Mutation returns the ProjectMutation object of the builder.
 func (pu *ProjectUpdate) Mutation() *ProjectMutation {
 	return pu.mutation
@@ -499,6 +515,27 @@ func (pu *ProjectUpdate) RemoveArchivedWorkspaceActivities(a ...*ArchivedWorkspa
 		ids[i] = a[i].ID
 	}
 	return pu.RemoveArchivedWorkspaceActivityIDs(ids...)
+}
+
+// ClearDeletedProjectTasks clears all "deletedProjectTasks" edges to the DeletedProjectTask entity.
+func (pu *ProjectUpdate) ClearDeletedProjectTasks() *ProjectUpdate {
+	pu.mutation.ClearDeletedProjectTasks()
+	return pu
+}
+
+// RemoveDeletedProjectTaskIDs removes the "deletedProjectTasks" edge to DeletedProjectTask entities by IDs.
+func (pu *ProjectUpdate) RemoveDeletedProjectTaskIDs(ids ...ulid.ID) *ProjectUpdate {
+	pu.mutation.RemoveDeletedProjectTaskIDs(ids...)
+	return pu
+}
+
+// RemoveDeletedProjectTasks removes "deletedProjectTasks" edges to DeletedProjectTask entities.
+func (pu *ProjectUpdate) RemoveDeletedProjectTasks(d ...*DeletedProjectTask) *ProjectUpdate {
+	ids := make([]ulid.ID, len(d))
+	for i := range d {
+		ids[i] = d[i].ID
+	}
+	return pu.RemoveDeletedProjectTaskIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -1304,6 +1341,60 @@ func (pu *ProjectUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if pu.mutation.DeletedProjectTasksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   project.DeletedProjectTasksTable,
+			Columns: []string{project.DeletedProjectTasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: deletedprojecttask.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.RemovedDeletedProjectTasksIDs(); len(nodes) > 0 && !pu.mutation.DeletedProjectTasksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   project.DeletedProjectTasksTable,
+			Columns: []string{project.DeletedProjectTasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: deletedprojecttask.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := pu.mutation.DeletedProjectTasksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   project.DeletedProjectTasksTable,
+			Columns: []string{project.DeletedProjectTasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: deletedprojecttask.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, pu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{project.Label}
@@ -1557,6 +1648,21 @@ func (puo *ProjectUpdateOne) AddArchivedWorkspaceActivities(a ...*ArchivedWorksp
 	return puo.AddArchivedWorkspaceActivityIDs(ids...)
 }
 
+// AddDeletedProjectTaskIDs adds the "deletedProjectTasks" edge to the DeletedProjectTask entity by IDs.
+func (puo *ProjectUpdateOne) AddDeletedProjectTaskIDs(ids ...ulid.ID) *ProjectUpdateOne {
+	puo.mutation.AddDeletedProjectTaskIDs(ids...)
+	return puo
+}
+
+// AddDeletedProjectTasks adds the "deletedProjectTasks" edges to the DeletedProjectTask entity.
+func (puo *ProjectUpdateOne) AddDeletedProjectTasks(d ...*DeletedProjectTask) *ProjectUpdateOne {
+	ids := make([]ulid.ID, len(d))
+	for i := range d {
+		ids[i] = d[i].ID
+	}
+	return puo.AddDeletedProjectTaskIDs(ids...)
+}
+
 // Mutation returns the ProjectMutation object of the builder.
 func (puo *ProjectUpdateOne) Mutation() *ProjectMutation {
 	return puo.mutation
@@ -1779,6 +1885,27 @@ func (puo *ProjectUpdateOne) RemoveArchivedWorkspaceActivities(a ...*ArchivedWor
 		ids[i] = a[i].ID
 	}
 	return puo.RemoveArchivedWorkspaceActivityIDs(ids...)
+}
+
+// ClearDeletedProjectTasks clears all "deletedProjectTasks" edges to the DeletedProjectTask entity.
+func (puo *ProjectUpdateOne) ClearDeletedProjectTasks() *ProjectUpdateOne {
+	puo.mutation.ClearDeletedProjectTasks()
+	return puo
+}
+
+// RemoveDeletedProjectTaskIDs removes the "deletedProjectTasks" edge to DeletedProjectTask entities by IDs.
+func (puo *ProjectUpdateOne) RemoveDeletedProjectTaskIDs(ids ...ulid.ID) *ProjectUpdateOne {
+	puo.mutation.RemoveDeletedProjectTaskIDs(ids...)
+	return puo
+}
+
+// RemoveDeletedProjectTasks removes "deletedProjectTasks" edges to DeletedProjectTask entities.
+func (puo *ProjectUpdateOne) RemoveDeletedProjectTasks(d ...*DeletedProjectTask) *ProjectUpdateOne {
+	ids := make([]ulid.ID, len(d))
+	for i := range d {
+		ids[i] = d[i].ID
+	}
+	return puo.RemoveDeletedProjectTaskIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -2600,6 +2727,60 @@ func (puo *ProjectUpdateOne) sqlSave(ctx context.Context) (_node *Project, err e
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: archivedworkspaceactivity.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if puo.mutation.DeletedProjectTasksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   project.DeletedProjectTasksTable,
+			Columns: []string{project.DeletedProjectTasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: deletedprojecttask.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.RemovedDeletedProjectTasksIDs(); len(nodes) > 0 && !puo.mutation.DeletedProjectTasksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   project.DeletedProjectTasksTable,
+			Columns: []string{project.DeletedProjectTasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: deletedprojecttask.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := puo.mutation.DeletedProjectTasksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   project.DeletedProjectTasksTable,
+			Columns: []string{project.DeletedProjectTasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: deletedprojecttask.FieldID,
 				},
 			},
 		}

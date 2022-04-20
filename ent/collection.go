@@ -189,6 +189,34 @@ func (c *ColorQuery) collectField(ctx *graphql.OperationContext, field graphql.C
 }
 
 // CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
+func (dpt *DeletedProjectTaskQuery) CollectFields(ctx context.Context, satisfies ...string) *DeletedProjectTaskQuery {
+	if fc := graphql.GetFieldContext(ctx); fc != nil {
+		dpt = dpt.collectField(graphql.GetOperationContext(ctx), fc.Field, satisfies...)
+	}
+	return dpt
+}
+
+func (dpt *DeletedProjectTaskQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *DeletedProjectTaskQuery {
+	for _, field := range graphql.CollectFields(ctx, field.Selections, satisfies) {
+		switch field.Name {
+		case "project":
+			dpt = dpt.WithProject(func(query *ProjectQuery) {
+				query.collectField(ctx, field)
+			})
+		case "projectTaskSection":
+			dpt = dpt.WithProjectTaskSection(func(query *ProjectTaskSectionQuery) {
+				query.collectField(ctx, field)
+			})
+		case "task":
+			dpt = dpt.WithTask(func(query *TaskQuery) {
+				query.collectField(ctx, field)
+			})
+		}
+	}
+	return dpt
+}
+
+// CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
 func (dt *DeletedTaskQuery) CollectFields(ctx context.Context, satisfies ...string) *DeletedTaskQuery {
 	if fc := graphql.GetFieldContext(ctx); fc != nil {
 		dt = dt.collectField(graphql.GetOperationContext(ctx), fc.Field, satisfies...)
@@ -345,6 +373,10 @@ func (pr *ProjectQuery) collectField(ctx *graphql.OperationContext, field graphq
 		switch field.Name {
 		case "archivedWorkspaceActivities":
 			pr = pr.WithArchivedWorkspaceActivities(func(query *ArchivedWorkspaceActivityQuery) {
+				query.collectField(ctx, field)
+			})
+		case "deletedProjectTasks":
+			pr = pr.WithDeletedProjectTasks(func(query *DeletedProjectTaskQuery) {
 				query.collectField(ctx, field)
 			})
 		case "favoriteProjects":
@@ -567,6 +599,10 @@ func (pts *ProjectTaskSectionQuery) CollectFields(ctx context.Context, satisfies
 func (pts *ProjectTaskSectionQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *ProjectTaskSectionQuery {
 	for _, field := range graphql.CollectFields(ctx, field.Selections, satisfies) {
 		switch field.Name {
+		case "deletedProjectTasks":
+			pts = pts.WithDeletedProjectTasks(func(query *DeletedProjectTaskQuery) {
+				query.collectField(ctx, field)
+			})
 		case "project":
 			pts = pts.WithProject(func(query *ProjectQuery) {
 				query.collectField(ctx, field)
@@ -649,6 +685,10 @@ func (t *TaskQuery) collectField(ctx *graphql.OperationContext, field graphql.Co
 			})
 		case "archivedWorkspaceActivityTasks":
 			t = t.WithArchivedWorkspaceActivityTasks(func(query *ArchivedWorkspaceActivityTaskQuery) {
+				query.collectField(ctx, field)
+			})
+		case "deletedProjectTasks":
+			t = t.WithDeletedProjectTasks(func(query *DeletedProjectTaskQuery) {
 				query.collectField(ctx, field)
 			})
 		case "deletedTasksRef":

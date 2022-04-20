@@ -9,6 +9,7 @@ import (
 	"fmt"
 	"math"
 	"project-management-demo-backend/ent/archivedworkspaceactivity"
+	"project-management-demo-backend/ent/deletedprojecttask"
 	"project-management-demo-backend/ent/favoriteproject"
 	"project-management-demo-backend/ent/predicate"
 	"project-management-demo-backend/ent/project"
@@ -55,6 +56,7 @@ type ProjectQuery struct {
 	withTaskFiles                   *TaskFileQuery
 	withWorkspaceActivities         *WorkspaceActivityQuery
 	withArchivedWorkspaceActivities *ArchivedWorkspaceActivityQuery
+	withDeletedProjectTasks         *DeletedProjectTaskQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -399,6 +401,28 @@ func (pq *ProjectQuery) QueryArchivedWorkspaceActivities() *ArchivedWorkspaceAct
 	return query
 }
 
+// QueryDeletedProjectTasks chains the current query on the "deletedProjectTasks" edge.
+func (pq *ProjectQuery) QueryDeletedProjectTasks() *DeletedProjectTaskQuery {
+	query := &DeletedProjectTaskQuery{config: pq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := pq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := pq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(project.Table, project.FieldID, selector),
+			sqlgraph.To(deletedprojecttask.Table, deletedprojecttask.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, project.DeletedProjectTasksTable, project.DeletedProjectTasksColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(pq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // First returns the first Project entity from the query.
 // Returns a *NotFoundError when no Project was found.
 func (pq *ProjectQuery) First(ctx context.Context) (*Project, error) {
@@ -594,6 +618,7 @@ func (pq *ProjectQuery) Clone() *ProjectQuery {
 		withTaskFiles:                   pq.withTaskFiles.Clone(),
 		withWorkspaceActivities:         pq.withWorkspaceActivities.Clone(),
 		withArchivedWorkspaceActivities: pq.withArchivedWorkspaceActivities.Clone(),
+		withDeletedProjectTasks:         pq.withDeletedProjectTasks.Clone(),
 		// clone intermediate query.
 		sql:    pq.sql.Clone(),
 		path:   pq.path,
@@ -755,6 +780,17 @@ func (pq *ProjectQuery) WithArchivedWorkspaceActivities(opts ...func(*ArchivedWo
 	return pq
 }
 
+// WithDeletedProjectTasks tells the query-builder to eager-load the nodes that are connected to
+// the "deletedProjectTasks" edge. The optional arguments are used to configure the query builder of the edge.
+func (pq *ProjectQuery) WithDeletedProjectTasks(opts ...func(*DeletedProjectTaskQuery)) *ProjectQuery {
+	query := &DeletedProjectTaskQuery{config: pq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	pq.withDeletedProjectTasks = query
+	return pq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -820,7 +856,7 @@ func (pq *ProjectQuery) sqlAll(ctx context.Context) ([]*Project, error) {
 	var (
 		nodes       = []*Project{}
 		_spec       = pq.querySpec()
-		loadedTypes = [14]bool{
+		loadedTypes = [15]bool{
 			pq.withWorkspace != nil,
 			pq.withProjectBaseColor != nil,
 			pq.withProjectLightColor != nil,
@@ -835,6 +871,7 @@ func (pq *ProjectQuery) sqlAll(ctx context.Context) ([]*Project, error) {
 			pq.withTaskFiles != nil,
 			pq.withWorkspaceActivities != nil,
 			pq.withArchivedWorkspaceActivities != nil,
+			pq.withDeletedProjectTasks != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -1209,6 +1246,31 @@ func (pq *ProjectQuery) sqlAll(ctx context.Context) ([]*Project, error) {
 				return nil, fmt.Errorf(`unexpected foreign-key "project_id" returned %v for node %v`, fk, n.ID)
 			}
 			node.Edges.ArchivedWorkspaceActivities = append(node.Edges.ArchivedWorkspaceActivities, n)
+		}
+	}
+
+	if query := pq.withDeletedProjectTasks; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[ulid.ID]*Project)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.DeletedProjectTasks = []*DeletedProjectTask{}
+		}
+		query.Where(predicate.DeletedProjectTask(func(s *sql.Selector) {
+			s.Where(sql.InValues(project.DeletedProjectTasksColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.ProjectID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "project_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.DeletedProjectTasks = append(node.Edges.DeletedProjectTasks, n)
 		}
 	}
 

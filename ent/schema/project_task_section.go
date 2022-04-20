@@ -60,6 +60,13 @@ func (ProjectTaskSection) Edges() []ent.Edge {
 					annotation.Edge{FieldName: "project_task_id"},
 				),
 			),
+		edge.To(deletedProjectTasksRef, DeletedProjectTask.Type).
+			Annotations(
+				entgql.Bind(),
+				schema.Annotation(
+					annotation.Edge{FieldName: "deleted_project_task_id"},
+				),
+			),
 	}
 }
 

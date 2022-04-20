@@ -185,6 +185,13 @@ func (Project) Edges() []ent.Edge {
 					annotation.Edge{FieldName: "archived_workspace_activity_id"},
 				),
 			),
+		edge.To(deletedProjectTasksRef, DeletedProjectTask.Type).
+			Annotations(
+				entgql.Bind(),
+				schema.Annotation(
+					annotation.Edge{FieldName: "deleted_project_task_id"},
+				),
+			),
 	}
 }
 

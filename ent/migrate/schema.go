@@ -170,6 +170,43 @@ var (
 		Columns:    ColorsColumns,
 		PrimaryKey: []*schema.Column{ColorsColumns[0]},
 	}
+	// DeletedProjectTasksColumns holds the columns for the "deleted_project_tasks" table.
+	DeletedProjectTasksColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+		{Name: "project_task_created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime"}},
+		{Name: "project_task_updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime"}},
+		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
+		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
+		{Name: "project_id", Type: field.TypeString},
+		{Name: "project_task_section_id", Type: field.TypeString},
+		{Name: "task_id", Type: field.TypeString},
+	}
+	// DeletedProjectTasksTable holds the schema information for the "deleted_project_tasks" table.
+	DeletedProjectTasksTable = &schema.Table{
+		Name:       "deleted_project_tasks",
+		Columns:    DeletedProjectTasksColumns,
+		PrimaryKey: []*schema.Column{DeletedProjectTasksColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "deleted_project_tasks_projects_deletedProjectTasks",
+				Columns:    []*schema.Column{DeletedProjectTasksColumns[5]},
+				RefColumns: []*schema.Column{ProjectsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "deleted_project_tasks_project_task_sections_deletedProjectTasks",
+				Columns:    []*schema.Column{DeletedProjectTasksColumns[6]},
+				RefColumns: []*schema.Column{ProjectTaskSectionsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "deleted_project_tasks_tasks_deletedProjectTasks",
+				Columns:    []*schema.Column{DeletedProjectTasksColumns[7]},
+				RefColumns: []*schema.Column{TasksColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
 	// DeletedTasksColumns holds the columns for the "deleted_tasks" table.
 	DeletedTasksColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString},
@@ -1396,6 +1433,7 @@ var (
 		ArchivedWorkspaceActivitiesTable,
 		ArchivedWorkspaceActivityTasksTable,
 		ColorsTable,
+		DeletedProjectTasksTable,
 		DeletedTasksTable,
 		DeletedTeammateTasksTable,
 		FavoriteProjectsTable,
@@ -1453,6 +1491,9 @@ func init() {
 	ArchivedWorkspaceActivitiesTable.ForeignKeys[3].RefTable = WorkspacesTable
 	ArchivedWorkspaceActivityTasksTable.ForeignKeys[0].RefTable = ArchivedWorkspaceActivitiesTable
 	ArchivedWorkspaceActivityTasksTable.ForeignKeys[1].RefTable = TasksTable
+	DeletedProjectTasksTable.ForeignKeys[0].RefTable = ProjectsTable
+	DeletedProjectTasksTable.ForeignKeys[1].RefTable = ProjectTaskSectionsTable
+	DeletedProjectTasksTable.ForeignKeys[2].RefTable = TasksTable
 	DeletedTasksTable.ForeignKeys[0].RefTable = TasksTable
 	DeletedTasksTable.ForeignKeys[1].RefTable = WorkspacesTable
 	DeletedTeammateTasksTable.ForeignKeys[0].RefTable = TasksTable

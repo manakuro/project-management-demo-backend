@@ -62,6 +62,8 @@ const (
 	EdgeWorkspaceActivities = "workspaceActivities"
 	// EdgeArchivedWorkspaceActivities holds the string denoting the archivedworkspaceactivities edge name in mutations.
 	EdgeArchivedWorkspaceActivities = "archivedWorkspaceActivities"
+	// EdgeDeletedProjectTasks holds the string denoting the deletedprojecttasks edge name in mutations.
+	EdgeDeletedProjectTasks = "deletedProjectTasks"
 	// Table holds the table name of the project in the database.
 	Table = "projects"
 	// WorkspaceTable is the table that holds the workspace relation/edge.
@@ -162,6 +164,13 @@ const (
 	ArchivedWorkspaceActivitiesInverseTable = "archived_workspace_activities"
 	// ArchivedWorkspaceActivitiesColumn is the table column denoting the archivedWorkspaceActivities relation/edge.
 	ArchivedWorkspaceActivitiesColumn = "project_id"
+	// DeletedProjectTasksTable is the table that holds the deletedProjectTasks relation/edge.
+	DeletedProjectTasksTable = "deleted_project_tasks"
+	// DeletedProjectTasksInverseTable is the table name for the DeletedProjectTask entity.
+	// It exists in this package in order to avoid circular dependency with the "deletedprojecttask" package.
+	DeletedProjectTasksInverseTable = "deleted_project_tasks"
+	// DeletedProjectTasksColumn is the table column denoting the deletedProjectTasks relation/edge.
+	DeletedProjectTasksColumn = "project_id"
 )
 
 // Columns holds all SQL columns for project fields.

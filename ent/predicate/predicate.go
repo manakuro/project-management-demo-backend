@@ -24,6 +24,9 @@ type ArchivedWorkspaceActivityTask func(*sql.Selector)
 // Color is the predicate function for color builders.
 type Color func(*sql.Selector)
 
+// DeletedProjectTask is the predicate function for deletedprojecttask builders.
+type DeletedProjectTask func(*sql.Selector)
+
 // DeletedTask is the predicate function for deletedtask builders.
 type DeletedTask func(*sql.Selector)
 

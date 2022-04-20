@@ -9,6 +9,7 @@ import (
 	"project-management-demo-backend/ent/archivedworkspaceactivity"
 	"project-management-demo-backend/ent/archivedworkspaceactivitytask"
 	"project-management-demo-backend/ent/color"
+	"project-management-demo-backend/ent/deletedprojecttask"
 	"project-management-demo-backend/ent/deletedtask"
 	"project-management-demo-backend/ent/deletedteammatetask"
 	"project-management-demo-backend/ent/favoriteproject"
@@ -250,6 +251,25 @@ func init() {
 	colorDescID := colorMixinFields0[0].Descriptor()
 	// color.DefaultID holds the default value on creation for the id field.
 	color.DefaultID = colorDescID.Default.(func() ulid.ID)
+	deletedprojecttaskMixin := schema.DeletedProjectTask{}.Mixin()
+	deletedprojecttaskMixinFields0 := deletedprojecttaskMixin[0].Fields()
+	_ = deletedprojecttaskMixinFields0
+	deletedprojecttaskMixinFields2 := deletedprojecttaskMixin[2].Fields()
+	_ = deletedprojecttaskMixinFields2
+	deletedprojecttaskFields := schema.DeletedProjectTask{}.Fields()
+	_ = deletedprojecttaskFields
+	// deletedprojecttaskDescCreatedAt is the schema descriptor for created_at field.
+	deletedprojecttaskDescCreatedAt := deletedprojecttaskMixinFields2[0].Descriptor()
+	// deletedprojecttask.DefaultCreatedAt holds the default value on creation for the created_at field.
+	deletedprojecttask.DefaultCreatedAt = deletedprojecttaskDescCreatedAt.Default.(func() time.Time)
+	// deletedprojecttaskDescUpdatedAt is the schema descriptor for updated_at field.
+	deletedprojecttaskDescUpdatedAt := deletedprojecttaskMixinFields2[1].Descriptor()
+	// deletedprojecttask.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	deletedprojecttask.DefaultUpdatedAt = deletedprojecttaskDescUpdatedAt.Default.(func() time.Time)
+	// deletedprojecttaskDescID is the schema descriptor for id field.
+	deletedprojecttaskDescID := deletedprojecttaskMixinFields0[0].Descriptor()
+	// deletedprojecttask.DefaultID holds the default value on creation for the id field.
+	deletedprojecttask.DefaultID = deletedprojecttaskDescID.Default.(func() ulid.ID)
 	deletedtaskMixin := schema.DeletedTask{}.Mixin()
 	deletedtaskMixinFields0 := deletedtaskMixin[0].Fields()
 	_ = deletedtaskMixinFields0
