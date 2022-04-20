@@ -6132,6 +6132,8 @@ type DeletedTeammateTaskMutation struct {
 	op                         Op
 	typ                        string
 	id                         *ulid.ID
+	teammate_task_created_at   *time.Time
+	teammate_task_updated_at   *time.Time
 	created_at                 *time.Time
 	updated_at                 *time.Time
 	clearedFields              map[string]struct{}
@@ -6396,6 +6398,78 @@ func (m *DeletedTeammateTaskMutation) ResetWorkspaceID() {
 	m.workspace = nil
 }
 
+// SetTeammateTaskCreatedAt sets the "teammate_task_created_at" field.
+func (m *DeletedTeammateTaskMutation) SetTeammateTaskCreatedAt(t time.Time) {
+	m.teammate_task_created_at = &t
+}
+
+// TeammateTaskCreatedAt returns the value of the "teammate_task_created_at" field in the mutation.
+func (m *DeletedTeammateTaskMutation) TeammateTaskCreatedAt() (r time.Time, exists bool) {
+	v := m.teammate_task_created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTeammateTaskCreatedAt returns the old "teammate_task_created_at" field's value of the DeletedTeammateTask entity.
+// If the DeletedTeammateTask object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DeletedTeammateTaskMutation) OldTeammateTaskCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTeammateTaskCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTeammateTaskCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTeammateTaskCreatedAt: %w", err)
+	}
+	return oldValue.TeammateTaskCreatedAt, nil
+}
+
+// ResetTeammateTaskCreatedAt resets all changes to the "teammate_task_created_at" field.
+func (m *DeletedTeammateTaskMutation) ResetTeammateTaskCreatedAt() {
+	m.teammate_task_created_at = nil
+}
+
+// SetTeammateTaskUpdatedAt sets the "teammate_task_updated_at" field.
+func (m *DeletedTeammateTaskMutation) SetTeammateTaskUpdatedAt(t time.Time) {
+	m.teammate_task_updated_at = &t
+}
+
+// TeammateTaskUpdatedAt returns the value of the "teammate_task_updated_at" field in the mutation.
+func (m *DeletedTeammateTaskMutation) TeammateTaskUpdatedAt() (r time.Time, exists bool) {
+	v := m.teammate_task_updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTeammateTaskUpdatedAt returns the old "teammate_task_updated_at" field's value of the DeletedTeammateTask entity.
+// If the DeletedTeammateTask object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DeletedTeammateTaskMutation) OldTeammateTaskUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTeammateTaskUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTeammateTaskUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTeammateTaskUpdatedAt: %w", err)
+	}
+	return oldValue.TeammateTaskUpdatedAt, nil
+}
+
+// ResetTeammateTaskUpdatedAt resets all changes to the "teammate_task_updated_at" field.
+func (m *DeletedTeammateTaskMutation) ResetTeammateTaskUpdatedAt() {
+	m.teammate_task_updated_at = nil
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (m *DeletedTeammateTaskMutation) SetCreatedAt(t time.Time) {
 	m.created_at = &t
@@ -6591,7 +6665,7 @@ func (m *DeletedTeammateTaskMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *DeletedTeammateTaskMutation) Fields() []string {
-	fields := make([]string, 0, 6)
+	fields := make([]string, 0, 8)
 	if m.teammate != nil {
 		fields = append(fields, deletedteammatetask.FieldTeammateID)
 	}
@@ -6603,6 +6677,12 @@ func (m *DeletedTeammateTaskMutation) Fields() []string {
 	}
 	if m.workspace != nil {
 		fields = append(fields, deletedteammatetask.FieldWorkspaceID)
+	}
+	if m.teammate_task_created_at != nil {
+		fields = append(fields, deletedteammatetask.FieldTeammateTaskCreatedAt)
+	}
+	if m.teammate_task_updated_at != nil {
+		fields = append(fields, deletedteammatetask.FieldTeammateTaskUpdatedAt)
 	}
 	if m.created_at != nil {
 		fields = append(fields, deletedteammatetask.FieldCreatedAt)
@@ -6626,6 +6706,10 @@ func (m *DeletedTeammateTaskMutation) Field(name string) (ent.Value, bool) {
 		return m.TeammateTaskSectionID()
 	case deletedteammatetask.FieldWorkspaceID:
 		return m.WorkspaceID()
+	case deletedteammatetask.FieldTeammateTaskCreatedAt:
+		return m.TeammateTaskCreatedAt()
+	case deletedteammatetask.FieldTeammateTaskUpdatedAt:
+		return m.TeammateTaskUpdatedAt()
 	case deletedteammatetask.FieldCreatedAt:
 		return m.CreatedAt()
 	case deletedteammatetask.FieldUpdatedAt:
@@ -6647,6 +6731,10 @@ func (m *DeletedTeammateTaskMutation) OldField(ctx context.Context, name string)
 		return m.OldTeammateTaskSectionID(ctx)
 	case deletedteammatetask.FieldWorkspaceID:
 		return m.OldWorkspaceID(ctx)
+	case deletedteammatetask.FieldTeammateTaskCreatedAt:
+		return m.OldTeammateTaskCreatedAt(ctx)
+	case deletedteammatetask.FieldTeammateTaskUpdatedAt:
+		return m.OldTeammateTaskUpdatedAt(ctx)
 	case deletedteammatetask.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case deletedteammatetask.FieldUpdatedAt:
@@ -6687,6 +6775,20 @@ func (m *DeletedTeammateTaskMutation) SetField(name string, value ent.Value) err
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetWorkspaceID(v)
+		return nil
+	case deletedteammatetask.FieldTeammateTaskCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTeammateTaskCreatedAt(v)
+		return nil
+	case deletedteammatetask.FieldTeammateTaskUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTeammateTaskUpdatedAt(v)
 		return nil
 	case deletedteammatetask.FieldCreatedAt:
 		v, ok := value.(time.Time)
@@ -6762,6 +6864,12 @@ func (m *DeletedTeammateTaskMutation) ResetField(name string) error {
 		return nil
 	case deletedteammatetask.FieldWorkspaceID:
 		m.ResetWorkspaceID()
+		return nil
+	case deletedteammatetask.FieldTeammateTaskCreatedAt:
+		m.ResetTeammateTaskCreatedAt()
+		return nil
+	case deletedteammatetask.FieldTeammateTaskUpdatedAt:
+		m.ResetTeammateTaskUpdatedAt()
 		return nil
 	case deletedteammatetask.FieldCreatedAt:
 		m.ResetCreatedAt()

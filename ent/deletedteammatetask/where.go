@@ -122,6 +122,20 @@ func WorkspaceID(v ulid.ID) predicate.DeletedTeammateTask {
 	})
 }
 
+// TeammateTaskCreatedAt applies equality check predicate on the "teammate_task_created_at" field. It's identical to TeammateTaskCreatedAtEQ.
+func TeammateTaskCreatedAt(v time.Time) predicate.DeletedTeammateTask {
+	return predicate.DeletedTeammateTask(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldTeammateTaskCreatedAt), v))
+	})
+}
+
+// TeammateTaskUpdatedAt applies equality check predicate on the "teammate_task_updated_at" field. It's identical to TeammateTaskUpdatedAtEQ.
+func TeammateTaskUpdatedAt(v time.Time) predicate.DeletedTeammateTask {
+	return predicate.DeletedTeammateTask(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldTeammateTaskUpdatedAt), v))
+	})
+}
+
 // CreatedAt applies equality check predicate on the "created_at" field. It's identical to CreatedAtEQ.
 func CreatedAt(v time.Time) predicate.DeletedTeammateTask {
 	return predicate.DeletedTeammateTask(func(s *sql.Selector) {
@@ -597,6 +611,158 @@ func WorkspaceIDContainsFold(v ulid.ID) predicate.DeletedTeammateTask {
 	vc := string(v)
 	return predicate.DeletedTeammateTask(func(s *sql.Selector) {
 		s.Where(sql.ContainsFold(s.C(FieldWorkspaceID), vc))
+	})
+}
+
+// TeammateTaskCreatedAtEQ applies the EQ predicate on the "teammate_task_created_at" field.
+func TeammateTaskCreatedAtEQ(v time.Time) predicate.DeletedTeammateTask {
+	return predicate.DeletedTeammateTask(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldTeammateTaskCreatedAt), v))
+	})
+}
+
+// TeammateTaskCreatedAtNEQ applies the NEQ predicate on the "teammate_task_created_at" field.
+func TeammateTaskCreatedAtNEQ(v time.Time) predicate.DeletedTeammateTask {
+	return predicate.DeletedTeammateTask(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldTeammateTaskCreatedAt), v))
+	})
+}
+
+// TeammateTaskCreatedAtIn applies the In predicate on the "teammate_task_created_at" field.
+func TeammateTaskCreatedAtIn(vs ...time.Time) predicate.DeletedTeammateTask {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.DeletedTeammateTask(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldTeammateTaskCreatedAt), v...))
+	})
+}
+
+// TeammateTaskCreatedAtNotIn applies the NotIn predicate on the "teammate_task_created_at" field.
+func TeammateTaskCreatedAtNotIn(vs ...time.Time) predicate.DeletedTeammateTask {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.DeletedTeammateTask(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldTeammateTaskCreatedAt), v...))
+	})
+}
+
+// TeammateTaskCreatedAtGT applies the GT predicate on the "teammate_task_created_at" field.
+func TeammateTaskCreatedAtGT(v time.Time) predicate.DeletedTeammateTask {
+	return predicate.DeletedTeammateTask(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldTeammateTaskCreatedAt), v))
+	})
+}
+
+// TeammateTaskCreatedAtGTE applies the GTE predicate on the "teammate_task_created_at" field.
+func TeammateTaskCreatedAtGTE(v time.Time) predicate.DeletedTeammateTask {
+	return predicate.DeletedTeammateTask(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldTeammateTaskCreatedAt), v))
+	})
+}
+
+// TeammateTaskCreatedAtLT applies the LT predicate on the "teammate_task_created_at" field.
+func TeammateTaskCreatedAtLT(v time.Time) predicate.DeletedTeammateTask {
+	return predicate.DeletedTeammateTask(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldTeammateTaskCreatedAt), v))
+	})
+}
+
+// TeammateTaskCreatedAtLTE applies the LTE predicate on the "teammate_task_created_at" field.
+func TeammateTaskCreatedAtLTE(v time.Time) predicate.DeletedTeammateTask {
+	return predicate.DeletedTeammateTask(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldTeammateTaskCreatedAt), v))
+	})
+}
+
+// TeammateTaskUpdatedAtEQ applies the EQ predicate on the "teammate_task_updated_at" field.
+func TeammateTaskUpdatedAtEQ(v time.Time) predicate.DeletedTeammateTask {
+	return predicate.DeletedTeammateTask(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldTeammateTaskUpdatedAt), v))
+	})
+}
+
+// TeammateTaskUpdatedAtNEQ applies the NEQ predicate on the "teammate_task_updated_at" field.
+func TeammateTaskUpdatedAtNEQ(v time.Time) predicate.DeletedTeammateTask {
+	return predicate.DeletedTeammateTask(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldTeammateTaskUpdatedAt), v))
+	})
+}
+
+// TeammateTaskUpdatedAtIn applies the In predicate on the "teammate_task_updated_at" field.
+func TeammateTaskUpdatedAtIn(vs ...time.Time) predicate.DeletedTeammateTask {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.DeletedTeammateTask(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldTeammateTaskUpdatedAt), v...))
+	})
+}
+
+// TeammateTaskUpdatedAtNotIn applies the NotIn predicate on the "teammate_task_updated_at" field.
+func TeammateTaskUpdatedAtNotIn(vs ...time.Time) predicate.DeletedTeammateTask {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.DeletedTeammateTask(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldTeammateTaskUpdatedAt), v...))
+	})
+}
+
+// TeammateTaskUpdatedAtGT applies the GT predicate on the "teammate_task_updated_at" field.
+func TeammateTaskUpdatedAtGT(v time.Time) predicate.DeletedTeammateTask {
+	return predicate.DeletedTeammateTask(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldTeammateTaskUpdatedAt), v))
+	})
+}
+
+// TeammateTaskUpdatedAtGTE applies the GTE predicate on the "teammate_task_updated_at" field.
+func TeammateTaskUpdatedAtGTE(v time.Time) predicate.DeletedTeammateTask {
+	return predicate.DeletedTeammateTask(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldTeammateTaskUpdatedAt), v))
+	})
+}
+
+// TeammateTaskUpdatedAtLT applies the LT predicate on the "teammate_task_updated_at" field.
+func TeammateTaskUpdatedAtLT(v time.Time) predicate.DeletedTeammateTask {
+	return predicate.DeletedTeammateTask(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldTeammateTaskUpdatedAt), v))
+	})
+}
+
+// TeammateTaskUpdatedAtLTE applies the LTE predicate on the "teammate_task_updated_at" field.
+func TeammateTaskUpdatedAtLTE(v time.Time) predicate.DeletedTeammateTask {
+	return predicate.DeletedTeammateTask(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldTeammateTaskUpdatedAt), v))
 	})
 }
 

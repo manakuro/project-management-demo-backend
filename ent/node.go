@@ -777,7 +777,7 @@ func (dtt *DeletedTeammateTask) Node(ctx context.Context) (node *Node, err error
 	node = &Node{
 		ID:     dtt.ID,
 		Type:   "DeletedTeammateTask",
-		Fields: make([]*Field, 6),
+		Fields: make([]*Field, 8),
 		Edges:  make([]*Edge, 4),
 	}
 	var buf []byte
@@ -813,10 +813,26 @@ func (dtt *DeletedTeammateTask) Node(ctx context.Context) (node *Node, err error
 		Name:  "workspace_id",
 		Value: string(buf),
 	}
-	if buf, err = json.Marshal(dtt.CreatedAt); err != nil {
+	if buf, err = json.Marshal(dtt.TeammateTaskCreatedAt); err != nil {
 		return nil, err
 	}
 	node.Fields[4] = &Field{
+		Type:  "time.Time",
+		Name:  "teammate_task_created_at",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(dtt.TeammateTaskUpdatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[5] = &Field{
+		Type:  "time.Time",
+		Name:  "teammate_task_updated_at",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(dtt.CreatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[6] = &Field{
 		Type:  "time.Time",
 		Name:  "created_at",
 		Value: string(buf),
@@ -824,7 +840,7 @@ func (dtt *DeletedTeammateTask) Node(ctx context.Context) (node *Node, err error
 	if buf, err = json.Marshal(dtt.UpdatedAt); err != nil {
 		return nil, err
 	}
-	node.Fields[5] = &Field{
+	node.Fields[7] = &Field{
 		Type:  "time.Time",
 		Name:  "updated_at",
 		Value: string(buf),

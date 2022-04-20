@@ -6,6 +6,8 @@ import (
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/pkg/const/globalid"
 
+	"entgo.io/ent/dialect"
+
 	"entgo.io/contrib/entgql"
 
 	"entgo.io/ent/schema"
@@ -40,6 +42,14 @@ func (DeletedTeammateTaskMixin) Fields() []ent.Field {
 			GoType(ulid.ID("")),
 		field.String("workspace_id").
 			GoType(ulid.ID("")),
+		field.Time("teammate_task_created_at").
+			SchemaType(map[string]string{
+				dialect.MySQL: "datetime",
+			}),
+		field.Time("teammate_task_updated_at").
+			SchemaType(map[string]string{
+				dialect.MySQL: "datetime",
+			}),
 	}
 }
 

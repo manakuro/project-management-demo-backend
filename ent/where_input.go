@@ -3430,6 +3430,26 @@ type DeletedTeammateTaskWhereInput struct {
 	WorkspaceIDEqualFold    *ulid.ID  `json:"workspaceIDEqualFold,omitempty"`
 	WorkspaceIDContainsFold *ulid.ID  `json:"workspaceIDContainsFold,omitempty"`
 
+	// "teammate_task_created_at" field predicates.
+	TeammateTaskCreatedAt      *time.Time  `json:"teammateTaskCreatedAt,omitempty"`
+	TeammateTaskCreatedAtNEQ   *time.Time  `json:"teammateTaskCreatedAtNEQ,omitempty"`
+	TeammateTaskCreatedAtIn    []time.Time `json:"teammateTaskCreatedAtIn,omitempty"`
+	TeammateTaskCreatedAtNotIn []time.Time `json:"teammateTaskCreatedAtNotIn,omitempty"`
+	TeammateTaskCreatedAtGT    *time.Time  `json:"teammateTaskCreatedAtGT,omitempty"`
+	TeammateTaskCreatedAtGTE   *time.Time  `json:"teammateTaskCreatedAtGTE,omitempty"`
+	TeammateTaskCreatedAtLT    *time.Time  `json:"teammateTaskCreatedAtLT,omitempty"`
+	TeammateTaskCreatedAtLTE   *time.Time  `json:"teammateTaskCreatedAtLTE,omitempty"`
+
+	// "teammate_task_updated_at" field predicates.
+	TeammateTaskUpdatedAt      *time.Time  `json:"teammateTaskUpdatedAt,omitempty"`
+	TeammateTaskUpdatedAtNEQ   *time.Time  `json:"teammateTaskUpdatedAtNEQ,omitempty"`
+	TeammateTaskUpdatedAtIn    []time.Time `json:"teammateTaskUpdatedAtIn,omitempty"`
+	TeammateTaskUpdatedAtNotIn []time.Time `json:"teammateTaskUpdatedAtNotIn,omitempty"`
+	TeammateTaskUpdatedAtGT    *time.Time  `json:"teammateTaskUpdatedAtGT,omitempty"`
+	TeammateTaskUpdatedAtGTE   *time.Time  `json:"teammateTaskUpdatedAtGTE,omitempty"`
+	TeammateTaskUpdatedAtLT    *time.Time  `json:"teammateTaskUpdatedAtLT,omitempty"`
+	TeammateTaskUpdatedAtLTE   *time.Time  `json:"teammateTaskUpdatedAtLTE,omitempty"`
+
 	// "created_at" field predicates.
 	CreatedAt      *time.Time  `json:"createdAt,omitempty"`
 	CreatedAtNEQ   *time.Time  `json:"createdAtNEQ,omitempty"`
@@ -3705,6 +3725,54 @@ func (i *DeletedTeammateTaskWhereInput) P() (predicate.DeletedTeammateTask, erro
 	}
 	if i.WorkspaceIDContainsFold != nil {
 		predicates = append(predicates, deletedteammatetask.WorkspaceIDContainsFold(*i.WorkspaceIDContainsFold))
+	}
+	if i.TeammateTaskCreatedAt != nil {
+		predicates = append(predicates, deletedteammatetask.TeammateTaskCreatedAtEQ(*i.TeammateTaskCreatedAt))
+	}
+	if i.TeammateTaskCreatedAtNEQ != nil {
+		predicates = append(predicates, deletedteammatetask.TeammateTaskCreatedAtNEQ(*i.TeammateTaskCreatedAtNEQ))
+	}
+	if len(i.TeammateTaskCreatedAtIn) > 0 {
+		predicates = append(predicates, deletedteammatetask.TeammateTaskCreatedAtIn(i.TeammateTaskCreatedAtIn...))
+	}
+	if len(i.TeammateTaskCreatedAtNotIn) > 0 {
+		predicates = append(predicates, deletedteammatetask.TeammateTaskCreatedAtNotIn(i.TeammateTaskCreatedAtNotIn...))
+	}
+	if i.TeammateTaskCreatedAtGT != nil {
+		predicates = append(predicates, deletedteammatetask.TeammateTaskCreatedAtGT(*i.TeammateTaskCreatedAtGT))
+	}
+	if i.TeammateTaskCreatedAtGTE != nil {
+		predicates = append(predicates, deletedteammatetask.TeammateTaskCreatedAtGTE(*i.TeammateTaskCreatedAtGTE))
+	}
+	if i.TeammateTaskCreatedAtLT != nil {
+		predicates = append(predicates, deletedteammatetask.TeammateTaskCreatedAtLT(*i.TeammateTaskCreatedAtLT))
+	}
+	if i.TeammateTaskCreatedAtLTE != nil {
+		predicates = append(predicates, deletedteammatetask.TeammateTaskCreatedAtLTE(*i.TeammateTaskCreatedAtLTE))
+	}
+	if i.TeammateTaskUpdatedAt != nil {
+		predicates = append(predicates, deletedteammatetask.TeammateTaskUpdatedAtEQ(*i.TeammateTaskUpdatedAt))
+	}
+	if i.TeammateTaskUpdatedAtNEQ != nil {
+		predicates = append(predicates, deletedteammatetask.TeammateTaskUpdatedAtNEQ(*i.TeammateTaskUpdatedAtNEQ))
+	}
+	if len(i.TeammateTaskUpdatedAtIn) > 0 {
+		predicates = append(predicates, deletedteammatetask.TeammateTaskUpdatedAtIn(i.TeammateTaskUpdatedAtIn...))
+	}
+	if len(i.TeammateTaskUpdatedAtNotIn) > 0 {
+		predicates = append(predicates, deletedteammatetask.TeammateTaskUpdatedAtNotIn(i.TeammateTaskUpdatedAtNotIn...))
+	}
+	if i.TeammateTaskUpdatedAtGT != nil {
+		predicates = append(predicates, deletedteammatetask.TeammateTaskUpdatedAtGT(*i.TeammateTaskUpdatedAtGT))
+	}
+	if i.TeammateTaskUpdatedAtGTE != nil {
+		predicates = append(predicates, deletedteammatetask.TeammateTaskUpdatedAtGTE(*i.TeammateTaskUpdatedAtGTE))
+	}
+	if i.TeammateTaskUpdatedAtLT != nil {
+		predicates = append(predicates, deletedteammatetask.TeammateTaskUpdatedAtLT(*i.TeammateTaskUpdatedAtLT))
+	}
+	if i.TeammateTaskUpdatedAtLTE != nil {
+		predicates = append(predicates, deletedteammatetask.TeammateTaskUpdatedAtLTE(*i.TeammateTaskUpdatedAtLTE))
 	}
 	if i.CreatedAt != nil {
 		predicates = append(predicates, deletedteammatetask.CreatedAtEQ(*i.CreatedAt))

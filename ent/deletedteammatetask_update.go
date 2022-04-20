@@ -13,6 +13,7 @@ import (
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/teammatetasksection"
 	"project-management-demo-backend/ent/workspace"
+	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
@@ -53,6 +54,18 @@ func (dttu *DeletedTeammateTaskUpdate) SetTeammateTaskSectionID(u ulid.ID) *Dele
 // SetWorkspaceID sets the "workspace_id" field.
 func (dttu *DeletedTeammateTaskUpdate) SetWorkspaceID(u ulid.ID) *DeletedTeammateTaskUpdate {
 	dttu.mutation.SetWorkspaceID(u)
+	return dttu
+}
+
+// SetTeammateTaskCreatedAt sets the "teammate_task_created_at" field.
+func (dttu *DeletedTeammateTaskUpdate) SetTeammateTaskCreatedAt(t time.Time) *DeletedTeammateTaskUpdate {
+	dttu.mutation.SetTeammateTaskCreatedAt(t)
+	return dttu
+}
+
+// SetTeammateTaskUpdatedAt sets the "teammate_task_updated_at" field.
+func (dttu *DeletedTeammateTaskUpdate) SetTeammateTaskUpdatedAt(t time.Time) *DeletedTeammateTaskUpdate {
+	dttu.mutation.SetTeammateTaskUpdatedAt(t)
 	return dttu
 }
 
@@ -199,6 +212,20 @@ func (dttu *DeletedTeammateTaskUpdate) sqlSave(ctx context.Context) (n int, err 
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := dttu.mutation.TeammateTaskCreatedAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: deletedteammatetask.FieldTeammateTaskCreatedAt,
+		})
+	}
+	if value, ok := dttu.mutation.TeammateTaskUpdatedAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: deletedteammatetask.FieldTeammateTaskUpdatedAt,
+		})
 	}
 	if dttu.mutation.TeammateCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -383,6 +410,18 @@ func (dttuo *DeletedTeammateTaskUpdateOne) SetWorkspaceID(u ulid.ID) *DeletedTea
 	return dttuo
 }
 
+// SetTeammateTaskCreatedAt sets the "teammate_task_created_at" field.
+func (dttuo *DeletedTeammateTaskUpdateOne) SetTeammateTaskCreatedAt(t time.Time) *DeletedTeammateTaskUpdateOne {
+	dttuo.mutation.SetTeammateTaskCreatedAt(t)
+	return dttuo
+}
+
+// SetTeammateTaskUpdatedAt sets the "teammate_task_updated_at" field.
+func (dttuo *DeletedTeammateTaskUpdateOne) SetTeammateTaskUpdatedAt(t time.Time) *DeletedTeammateTaskUpdateOne {
+	dttuo.mutation.SetTeammateTaskUpdatedAt(t)
+	return dttuo
+}
+
 // SetTeammate sets the "teammate" edge to the Teammate entity.
 func (dttuo *DeletedTeammateTaskUpdateOne) SetTeammate(t *Teammate) *DeletedTeammateTaskUpdateOne {
 	return dttuo.SetTeammateID(t.ID)
@@ -550,6 +589,20 @@ func (dttuo *DeletedTeammateTaskUpdateOne) sqlSave(ctx context.Context) (_node *
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := dttuo.mutation.TeammateTaskCreatedAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: deletedteammatetask.FieldTeammateTaskCreatedAt,
+		})
+	}
+	if value, ok := dttuo.mutation.TeammateTaskUpdatedAt(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: deletedteammatetask.FieldTeammateTaskUpdatedAt,
+		})
 	}
 	if dttuo.mutation.TeammateCleared() {
 		edge := &sqlgraph.EdgeSpec{

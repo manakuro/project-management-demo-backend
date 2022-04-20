@@ -52,6 +52,18 @@ func (dttc *DeletedTeammateTaskCreate) SetWorkspaceID(u ulid.ID) *DeletedTeammat
 	return dttc
 }
 
+// SetTeammateTaskCreatedAt sets the "teammate_task_created_at" field.
+func (dttc *DeletedTeammateTaskCreate) SetTeammateTaskCreatedAt(t time.Time) *DeletedTeammateTaskCreate {
+	dttc.mutation.SetTeammateTaskCreatedAt(t)
+	return dttc
+}
+
+// SetTeammateTaskUpdatedAt sets the "teammate_task_updated_at" field.
+func (dttc *DeletedTeammateTaskCreate) SetTeammateTaskUpdatedAt(t time.Time) *DeletedTeammateTaskCreate {
+	dttc.mutation.SetTeammateTaskUpdatedAt(t)
+	return dttc
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (dttc *DeletedTeammateTaskCreate) SetCreatedAt(t time.Time) *DeletedTeammateTaskCreate {
 	dttc.mutation.SetCreatedAt(t)
@@ -213,6 +225,12 @@ func (dttc *DeletedTeammateTaskCreate) check() error {
 	if _, ok := dttc.mutation.WorkspaceID(); !ok {
 		return &ValidationError{Name: "workspace_id", err: errors.New(`ent: missing required field "DeletedTeammateTask.workspace_id"`)}
 	}
+	if _, ok := dttc.mutation.TeammateTaskCreatedAt(); !ok {
+		return &ValidationError{Name: "teammate_task_created_at", err: errors.New(`ent: missing required field "DeletedTeammateTask.teammate_task_created_at"`)}
+	}
+	if _, ok := dttc.mutation.TeammateTaskUpdatedAt(); !ok {
+		return &ValidationError{Name: "teammate_task_updated_at", err: errors.New(`ent: missing required field "DeletedTeammateTask.teammate_task_updated_at"`)}
+	}
 	if _, ok := dttc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "DeletedTeammateTask.created_at"`)}
 	}
@@ -267,6 +285,22 @@ func (dttc *DeletedTeammateTaskCreate) createSpec() (*DeletedTeammateTask, *sqlg
 	if id, ok := dttc.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = &id
+	}
+	if value, ok := dttc.mutation.TeammateTaskCreatedAt(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: deletedteammatetask.FieldTeammateTaskCreatedAt,
+		})
+		_node.TeammateTaskCreatedAt = value
+	}
+	if value, ok := dttc.mutation.TeammateTaskUpdatedAt(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeTime,
+			Value:  value,
+			Column: deletedteammatetask.FieldTeammateTaskUpdatedAt,
+		})
+		_node.TeammateTaskUpdatedAt = value
 	}
 	if value, ok := dttc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -466,6 +500,30 @@ func (u *DeletedTeammateTaskUpsert) UpdateWorkspaceID() *DeletedTeammateTaskUpse
 	return u
 }
 
+// SetTeammateTaskCreatedAt sets the "teammate_task_created_at" field.
+func (u *DeletedTeammateTaskUpsert) SetTeammateTaskCreatedAt(v time.Time) *DeletedTeammateTaskUpsert {
+	u.Set(deletedteammatetask.FieldTeammateTaskCreatedAt, v)
+	return u
+}
+
+// UpdateTeammateTaskCreatedAt sets the "teammate_task_created_at" field to the value that was provided on create.
+func (u *DeletedTeammateTaskUpsert) UpdateTeammateTaskCreatedAt() *DeletedTeammateTaskUpsert {
+	u.SetExcluded(deletedteammatetask.FieldTeammateTaskCreatedAt)
+	return u
+}
+
+// SetTeammateTaskUpdatedAt sets the "teammate_task_updated_at" field.
+func (u *DeletedTeammateTaskUpsert) SetTeammateTaskUpdatedAt(v time.Time) *DeletedTeammateTaskUpsert {
+	u.Set(deletedteammatetask.FieldTeammateTaskUpdatedAt, v)
+	return u
+}
+
+// UpdateTeammateTaskUpdatedAt sets the "teammate_task_updated_at" field to the value that was provided on create.
+func (u *DeletedTeammateTaskUpsert) UpdateTeammateTaskUpdatedAt() *DeletedTeammateTaskUpsert {
+	u.SetExcluded(deletedteammatetask.FieldTeammateTaskUpdatedAt)
+	return u
+}
+
 // SetCreatedAt sets the "created_at" field.
 func (u *DeletedTeammateTaskUpsert) SetCreatedAt(v time.Time) *DeletedTeammateTaskUpsert {
 	u.Set(deletedteammatetask.FieldCreatedAt, v)
@@ -599,6 +657,34 @@ func (u *DeletedTeammateTaskUpsertOne) SetWorkspaceID(v ulid.ID) *DeletedTeammat
 func (u *DeletedTeammateTaskUpsertOne) UpdateWorkspaceID() *DeletedTeammateTaskUpsertOne {
 	return u.Update(func(s *DeletedTeammateTaskUpsert) {
 		s.UpdateWorkspaceID()
+	})
+}
+
+// SetTeammateTaskCreatedAt sets the "teammate_task_created_at" field.
+func (u *DeletedTeammateTaskUpsertOne) SetTeammateTaskCreatedAt(v time.Time) *DeletedTeammateTaskUpsertOne {
+	return u.Update(func(s *DeletedTeammateTaskUpsert) {
+		s.SetTeammateTaskCreatedAt(v)
+	})
+}
+
+// UpdateTeammateTaskCreatedAt sets the "teammate_task_created_at" field to the value that was provided on create.
+func (u *DeletedTeammateTaskUpsertOne) UpdateTeammateTaskCreatedAt() *DeletedTeammateTaskUpsertOne {
+	return u.Update(func(s *DeletedTeammateTaskUpsert) {
+		s.UpdateTeammateTaskCreatedAt()
+	})
+}
+
+// SetTeammateTaskUpdatedAt sets the "teammate_task_updated_at" field.
+func (u *DeletedTeammateTaskUpsertOne) SetTeammateTaskUpdatedAt(v time.Time) *DeletedTeammateTaskUpsertOne {
+	return u.Update(func(s *DeletedTeammateTaskUpsert) {
+		s.SetTeammateTaskUpdatedAt(v)
+	})
+}
+
+// UpdateTeammateTaskUpdatedAt sets the "teammate_task_updated_at" field to the value that was provided on create.
+func (u *DeletedTeammateTaskUpsertOne) UpdateTeammateTaskUpdatedAt() *DeletedTeammateTaskUpsertOne {
+	return u.Update(func(s *DeletedTeammateTaskUpsert) {
+		s.UpdateTeammateTaskUpdatedAt()
 	})
 }
 
@@ -905,6 +991,34 @@ func (u *DeletedTeammateTaskUpsertBulk) SetWorkspaceID(v ulid.ID) *DeletedTeamma
 func (u *DeletedTeammateTaskUpsertBulk) UpdateWorkspaceID() *DeletedTeammateTaskUpsertBulk {
 	return u.Update(func(s *DeletedTeammateTaskUpsert) {
 		s.UpdateWorkspaceID()
+	})
+}
+
+// SetTeammateTaskCreatedAt sets the "teammate_task_created_at" field.
+func (u *DeletedTeammateTaskUpsertBulk) SetTeammateTaskCreatedAt(v time.Time) *DeletedTeammateTaskUpsertBulk {
+	return u.Update(func(s *DeletedTeammateTaskUpsert) {
+		s.SetTeammateTaskCreatedAt(v)
+	})
+}
+
+// UpdateTeammateTaskCreatedAt sets the "teammate_task_created_at" field to the value that was provided on create.
+func (u *DeletedTeammateTaskUpsertBulk) UpdateTeammateTaskCreatedAt() *DeletedTeammateTaskUpsertBulk {
+	return u.Update(func(s *DeletedTeammateTaskUpsert) {
+		s.UpdateTeammateTaskCreatedAt()
+	})
+}
+
+// SetTeammateTaskUpdatedAt sets the "teammate_task_updated_at" field.
+func (u *DeletedTeammateTaskUpsertBulk) SetTeammateTaskUpdatedAt(v time.Time) *DeletedTeammateTaskUpsertBulk {
+	return u.Update(func(s *DeletedTeammateTaskUpsert) {
+		s.SetTeammateTaskUpdatedAt(v)
+	})
+}
+
+// UpdateTeammateTaskUpdatedAt sets the "teammate_task_updated_at" field to the value that was provided on create.
+func (u *DeletedTeammateTaskUpsertBulk) UpdateTeammateTaskUpdatedAt() *DeletedTeammateTaskUpsertBulk {
+	return u.Update(func(s *DeletedTeammateTaskUpsert) {
+		s.UpdateTeammateTaskUpdatedAt()
 	})
 }
 

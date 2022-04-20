@@ -719,6 +719,8 @@ func (u *DeletedTaskUpdateOne) SetInput(i UpdateDeletedTaskInput) *DeletedTaskUp
 
 // CreateDeletedTeammateTaskInput represents a mutation input for creating deletedteammatetasks.
 type CreateDeletedTeammateTaskInput struct {
+	TeammateTaskCreatedAt time.Time
+	TeammateTaskUpdatedAt time.Time
 	CreatedAt             *time.Time
 	UpdatedAt             *time.Time
 	TeammateID            ulid.ID
@@ -730,6 +732,8 @@ type CreateDeletedTeammateTaskInput struct {
 
 // Mutate applies the CreateDeletedTeammateTaskInput on the DeletedTeammateTaskCreate builder.
 func (i *CreateDeletedTeammateTaskInput) Mutate(m *DeletedTeammateTaskCreate) {
+	m.SetTeammateTaskCreatedAt(i.TeammateTaskCreatedAt)
+	m.SetTeammateTaskUpdatedAt(i.TeammateTaskUpdatedAt)
 	if v := i.CreatedAt; v != nil {
 		m.SetCreatedAt(*v)
 	}
@@ -751,6 +755,8 @@ func (c *DeletedTeammateTaskCreate) SetInput(i CreateDeletedTeammateTaskInput) *
 // UpdateDeletedTeammateTaskInput represents a mutation input for updating deletedteammatetasks.
 type UpdateDeletedTeammateTaskInput struct {
 	ID                       ulid.ID
+	TeammateTaskCreatedAt    *time.Time
+	TeammateTaskUpdatedAt    *time.Time
 	TeammateID               *ulid.ID
 	ClearTeammate            bool
 	TaskID                   *ulid.ID
@@ -764,6 +770,12 @@ type UpdateDeletedTeammateTaskInput struct {
 
 // Mutate applies the UpdateDeletedTeammateTaskInput on the DeletedTeammateTaskMutation.
 func (i *UpdateDeletedTeammateTaskInput) Mutate(m *DeletedTeammateTaskMutation) {
+	if v := i.TeammateTaskCreatedAt; v != nil {
+		m.SetTeammateTaskCreatedAt(*v)
+	}
+	if v := i.TeammateTaskUpdatedAt; v != nil {
+		m.SetTeammateTaskUpdatedAt(*v)
+	}
 	if i.ClearTeammate {
 		m.ClearTeammate()
 	}

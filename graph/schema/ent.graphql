@@ -4744,6 +4744,26 @@ input DeletedTeammateTaskWhereInput {
   workspaceIDEqualFold: ID
   workspaceIDContainsFold: ID
   
+  """teammate_task_created_at field predicates"""
+  teammateTaskCreatedAt: Time
+  teammateTaskCreatedAtNEQ: Time
+  teammateTaskCreatedAtIn: [Time!]
+  teammateTaskCreatedAtNotIn: [Time!]
+  teammateTaskCreatedAtGT: Time
+  teammateTaskCreatedAtGTE: Time
+  teammateTaskCreatedAtLT: Time
+  teammateTaskCreatedAtLTE: Time
+  
+  """teammate_task_updated_at field predicates"""
+  teammateTaskUpdatedAt: Time
+  teammateTaskUpdatedAtNEQ: Time
+  teammateTaskUpdatedAtIn: [Time!]
+  teammateTaskUpdatedAtNotIn: [Time!]
+  teammateTaskUpdatedAtGT: Time
+  teammateTaskUpdatedAtGTE: Time
+  teammateTaskUpdatedAtLT: Time
+  teammateTaskUpdatedAtLTE: Time
+  
   """created_at field predicates"""
   createdAt: Time
   createdAtNEQ: Time

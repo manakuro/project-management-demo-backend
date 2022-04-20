@@ -241,6 +241,8 @@ var (
 	// DeletedTeammateTasksColumns holds the columns for the "deleted_teammate_tasks" table.
 	DeletedTeammateTasksColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString},
+		{Name: "teammate_task_created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime"}},
+		{Name: "teammate_task_updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime"}},
 		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
 		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
 		{Name: "task_id", Type: field.TypeString},
@@ -256,25 +258,25 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "deleted_teammate_tasks_tasks_deletedTeammateTasks",
-				Columns:    []*schema.Column{DeletedTeammateTasksColumns[3]},
+				Columns:    []*schema.Column{DeletedTeammateTasksColumns[5]},
 				RefColumns: []*schema.Column{TasksColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "deleted_teammate_tasks_teammates_deletedTeammateTasks",
-				Columns:    []*schema.Column{DeletedTeammateTasksColumns[4]},
+				Columns:    []*schema.Column{DeletedTeammateTasksColumns[6]},
 				RefColumns: []*schema.Column{TeammatesColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "deleted_teammate_tasks_teammate_task_sections_deletedTeammateTasks",
-				Columns:    []*schema.Column{DeletedTeammateTasksColumns[5]},
+				Columns:    []*schema.Column{DeletedTeammateTasksColumns[7]},
 				RefColumns: []*schema.Column{TeammateTaskSectionsColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "deleted_teammate_tasks_workspaces_deletedTeammateTasks",
-				Columns:    []*schema.Column{DeletedTeammateTasksColumns[6]},
+				Columns:    []*schema.Column{DeletedTeammateTasksColumns[8]},
 				RefColumns: []*schema.Column{WorkspacesColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
