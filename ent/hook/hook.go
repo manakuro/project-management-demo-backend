@@ -99,6 +99,19 @@ func (f DeletedTaskFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value,
 	return f(ctx, mv)
 }
 
+// The DeletedTeammateTaskFunc type is an adapter to allow the use of ordinary
+// function as DeletedTeammateTask mutator.
+type DeletedTeammateTaskFunc func(context.Context, *ent.DeletedTeammateTaskMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f DeletedTeammateTaskFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.DeletedTeammateTaskMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.DeletedTeammateTaskMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The FavoriteProjectFunc type is an adapter to allow the use of ordinary
 // function as FavoriteProject mutator.
 type FavoriteProjectFunc func(context.Context, *ent.FavoriteProjectMutation) (ent.Value, error)

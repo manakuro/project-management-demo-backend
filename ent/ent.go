@@ -12,6 +12,7 @@ import (
 	"project-management-demo-backend/ent/archivedworkspaceactivitytask"
 	"project-management-demo-backend/ent/color"
 	"project-management-demo-backend/ent/deletedtask"
+	"project-management-demo-backend/ent/deletedteammatetask"
 	"project-management-demo-backend/ent/favoriteproject"
 	"project-management-demo-backend/ent/favoriteworkspace"
 	"project-management-demo-backend/ent/filetype"
@@ -82,6 +83,7 @@ func columnChecker(table string) func(string) error {
 		archivedworkspaceactivitytask.Table: archivedworkspaceactivitytask.ValidColumn,
 		color.Table:                         color.ValidColumn,
 		deletedtask.Table:                   deletedtask.ValidColumn,
+		deletedteammatetask.Table:           deletedteammatetask.ValidColumn,
 		favoriteproject.Table:               favoriteproject.ValidColumn,
 		favoriteworkspace.Table:             favoriteworkspace.ValidColumn,
 		filetype.Table:                      filetype.ValidColumn,

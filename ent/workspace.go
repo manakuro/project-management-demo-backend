@@ -68,9 +68,11 @@ type WorkspaceEdges struct {
 	ArchivedTaskActivities []*ArchivedTaskActivity `json:"archivedTaskActivities,omitempty"`
 	// ArchivedWorkspaceActivities holds the value of the archivedWorkspaceActivities edge.
 	ArchivedWorkspaceActivities []*ArchivedWorkspaceActivity `json:"archivedWorkspaceActivities,omitempty"`
+	// DeletedTeammateTasks holds the value of the deletedTeammateTasks edge.
+	DeletedTeammateTasks []*DeletedTeammateTask `json:"deletedTeammateTasks,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [16]bool
+	loadedTypes [17]bool
 }
 
 // TeammateOrErr returns the Teammate value or an error if the edge
@@ -222,6 +224,15 @@ func (e WorkspaceEdges) ArchivedWorkspaceActivitiesOrErr() ([]*ArchivedWorkspace
 	return nil, &NotLoadedError{edge: "archivedWorkspaceActivities"}
 }
 
+// DeletedTeammateTasksOrErr returns the DeletedTeammateTasks value or an error if the edge
+// was not loaded in eager-loading.
+func (e WorkspaceEdges) DeletedTeammateTasksOrErr() ([]*DeletedTeammateTask, error) {
+	if e.loadedTypes[16] {
+		return e.DeletedTeammateTasks, nil
+	}
+	return nil, &NotLoadedError{edge: "deletedTeammateTasks"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*Workspace) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
@@ -371,6 +382,11 @@ func (w *Workspace) QueryArchivedTaskActivities() *ArchivedTaskActivityQuery {
 // QueryArchivedWorkspaceActivities queries the "archivedWorkspaceActivities" edge of the Workspace entity.
 func (w *Workspace) QueryArchivedWorkspaceActivities() *ArchivedWorkspaceActivityQuery {
 	return (&WorkspaceClient{config: w.config}).QueryArchivedWorkspaceActivities(w)
+}
+
+// QueryDeletedTeammateTasks queries the "deletedTeammateTasks" edge of the Workspace entity.
+func (w *Workspace) QueryDeletedTeammateTasks() *DeletedTeammateTaskQuery {
+	return (&WorkspaceClient{config: w.config}).QueryDeletedTeammateTasks(w)
 }
 
 // Update returns a builder for updating this Workspace.

@@ -188,6 +188,38 @@ func (dt *DeletedTask) Workspace(ctx context.Context) (*Workspace, error) {
 	return result, err
 }
 
+func (dtt *DeletedTeammateTask) Teammate(ctx context.Context) (*Teammate, error) {
+	result, err := dtt.Edges.TeammateOrErr()
+	if IsNotLoaded(err) {
+		result, err = dtt.QueryTeammate().Only(ctx)
+	}
+	return result, err
+}
+
+func (dtt *DeletedTeammateTask) Task(ctx context.Context) (*Task, error) {
+	result, err := dtt.Edges.TaskOrErr()
+	if IsNotLoaded(err) {
+		result, err = dtt.QueryTask().Only(ctx)
+	}
+	return result, err
+}
+
+func (dtt *DeletedTeammateTask) TeammateTaskSection(ctx context.Context) (*TeammateTaskSection, error) {
+	result, err := dtt.Edges.TeammateTaskSectionOrErr()
+	if IsNotLoaded(err) {
+		result, err = dtt.QueryTeammateTaskSection().Only(ctx)
+	}
+	return result, err
+}
+
+func (dtt *DeletedTeammateTask) Workspace(ctx context.Context) (*Workspace, error) {
+	result, err := dtt.Edges.WorkspaceOrErr()
+	if IsNotLoaded(err) {
+		result, err = dtt.QueryWorkspace().Only(ctx)
+	}
+	return result, err
+}
+
 func (fp *FavoriteProject) Project(ctx context.Context) (*Project, error) {
 	result, err := fp.Edges.ProjectOrErr()
 	if IsNotLoaded(err) {
@@ -652,6 +684,14 @@ func (t *Task) ArchivedWorkspaceActivityTasks(ctx context.Context) ([]*ArchivedW
 	return result, err
 }
 
+func (t *Task) DeletedTeammateTasks(ctx context.Context) ([]*DeletedTeammateTask, error) {
+	result, err := t.Edges.DeletedTeammateTasksOrErr()
+	if IsNotLoaded(err) {
+		result, err = t.QueryDeletedTeammateTasks().All(ctx)
+	}
+	return result, err
+}
+
 func (ta *TaskActivity) Teammate(ctx context.Context) (*Teammate, error) {
 	result, err := ta.Edges.TeammateOrErr()
 	if IsNotLoaded(err) {
@@ -1068,6 +1108,14 @@ func (t *Teammate) ArchivedWorkspaceActivities(ctx context.Context) ([]*Archived
 	return result, err
 }
 
+func (t *Teammate) DeletedTeammateTasks(ctx context.Context) ([]*DeletedTeammateTask, error) {
+	result, err := t.Edges.DeletedTeammateTasksOrErr()
+	if IsNotLoaded(err) {
+		result, err = t.QueryDeletedTeammateTasks().All(ctx)
+	}
+	return result, err
+}
+
 func (tt *TeammateTask) Teammate(ctx context.Context) (*Teammate, error) {
 	result, err := tt.Edges.TeammateOrErr()
 	if IsNotLoaded(err) {
@@ -1176,6 +1224,14 @@ func (tts *TeammateTaskSection) TeammateTasks(ctx context.Context) ([]*TeammateT
 	result, err := tts.Edges.TeammateTasksOrErr()
 	if IsNotLoaded(err) {
 		result, err = tts.QueryTeammateTasks().All(ctx)
+	}
+	return result, err
+}
+
+func (tts *TeammateTaskSection) DeletedTeammateTasks(ctx context.Context) ([]*DeletedTeammateTask, error) {
+	result, err := tts.Edges.DeletedTeammateTasksOrErr()
+	if IsNotLoaded(err) {
+		result, err = tts.QueryDeletedTeammateTasks().All(ctx)
 	}
 	return result, err
 }
@@ -1352,6 +1408,14 @@ func (w *Workspace) ArchivedWorkspaceActivities(ctx context.Context) ([]*Archive
 	result, err := w.Edges.ArchivedWorkspaceActivitiesOrErr()
 	if IsNotLoaded(err) {
 		result, err = w.QueryArchivedWorkspaceActivities().All(ctx)
+	}
+	return result, err
+}
+
+func (w *Workspace) DeletedTeammateTasks(ctx context.Context) ([]*DeletedTeammateTask, error) {
+	result, err := w.Edges.DeletedTeammateTasksOrErr()
+	if IsNotLoaded(err) {
+		result, err = w.QueryDeletedTeammateTasks().All(ctx)
 	}
 	return result, err
 }

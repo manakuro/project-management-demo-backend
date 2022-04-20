@@ -15,6 +15,7 @@ import (
 	"project-management-demo-backend/ent/archivedworkspaceactivitytask"
 	"project-management-demo-backend/ent/color"
 	"project-management-demo-backend/ent/deletedtask"
+	"project-management-demo-backend/ent/deletedteammatetask"
 	"project-management-demo-backend/ent/favoriteproject"
 	"project-management-demo-backend/ent/favoriteworkspace"
 	"project-management-demo-backend/ent/filetype"
@@ -1865,6 +1866,233 @@ func (dt *DeletedTask) ToEdge(order *DeletedTaskOrder) *DeletedTaskEdge {
 	return &DeletedTaskEdge{
 		Node:   dt,
 		Cursor: order.Field.toCursor(dt),
+	}
+}
+
+// DeletedTeammateTaskEdge is the edge representation of DeletedTeammateTask.
+type DeletedTeammateTaskEdge struct {
+	Node   *DeletedTeammateTask `json:"node"`
+	Cursor Cursor               `json:"cursor"`
+}
+
+// DeletedTeammateTaskConnection is the connection containing edges to DeletedTeammateTask.
+type DeletedTeammateTaskConnection struct {
+	Edges      []*DeletedTeammateTaskEdge `json:"edges"`
+	PageInfo   PageInfo                   `json:"pageInfo"`
+	TotalCount int                        `json:"totalCount"`
+}
+
+// DeletedTeammateTaskPaginateOption enables pagination customization.
+type DeletedTeammateTaskPaginateOption func(*deletedTeammateTaskPager) error
+
+// WithDeletedTeammateTaskOrder configures pagination ordering.
+func WithDeletedTeammateTaskOrder(order *DeletedTeammateTaskOrder) DeletedTeammateTaskPaginateOption {
+	if order == nil {
+		order = DefaultDeletedTeammateTaskOrder
+	}
+	o := *order
+	return func(pager *deletedTeammateTaskPager) error {
+		if err := o.Direction.Validate(); err != nil {
+			return err
+		}
+		if o.Field == nil {
+			o.Field = DefaultDeletedTeammateTaskOrder.Field
+		}
+		pager.order = &o
+		return nil
+	}
+}
+
+// WithDeletedTeammateTaskFilter configures pagination filter.
+func WithDeletedTeammateTaskFilter(filter func(*DeletedTeammateTaskQuery) (*DeletedTeammateTaskQuery, error)) DeletedTeammateTaskPaginateOption {
+	return func(pager *deletedTeammateTaskPager) error {
+		if filter == nil {
+			return errors.New("DeletedTeammateTaskQuery filter cannot be nil")
+		}
+		pager.filter = filter
+		return nil
+	}
+}
+
+type deletedTeammateTaskPager struct {
+	order  *DeletedTeammateTaskOrder
+	filter func(*DeletedTeammateTaskQuery) (*DeletedTeammateTaskQuery, error)
+}
+
+func newDeletedTeammateTaskPager(opts []DeletedTeammateTaskPaginateOption) (*deletedTeammateTaskPager, error) {
+	pager := &deletedTeammateTaskPager{}
+	for _, opt := range opts {
+		if err := opt(pager); err != nil {
+			return nil, err
+		}
+	}
+	if pager.order == nil {
+		pager.order = DefaultDeletedTeammateTaskOrder
+	}
+	return pager, nil
+}
+
+func (p *deletedTeammateTaskPager) applyFilter(query *DeletedTeammateTaskQuery) (*DeletedTeammateTaskQuery, error) {
+	if p.filter != nil {
+		return p.filter(query)
+	}
+	return query, nil
+}
+
+func (p *deletedTeammateTaskPager) toCursor(dtt *DeletedTeammateTask) Cursor {
+	return p.order.Field.toCursor(dtt)
+}
+
+func (p *deletedTeammateTaskPager) applyCursors(query *DeletedTeammateTaskQuery, after, before *Cursor) *DeletedTeammateTaskQuery {
+	for _, predicate := range cursorsToPredicates(
+		p.order.Direction, after, before,
+		p.order.Field.field, DefaultDeletedTeammateTaskOrder.Field.field,
+	) {
+		query = query.Where(predicate)
+	}
+	return query
+}
+
+func (p *deletedTeammateTaskPager) applyOrder(query *DeletedTeammateTaskQuery, reverse bool) *DeletedTeammateTaskQuery {
+	direction := p.order.Direction
+	if reverse {
+		direction = direction.reverse()
+	}
+	query = query.Order(direction.orderFunc(p.order.Field.field))
+	if p.order.Field != DefaultDeletedTeammateTaskOrder.Field {
+		query = query.Order(direction.orderFunc(DefaultDeletedTeammateTaskOrder.Field.field))
+	}
+	return query
+}
+
+// Paginate executes the query and returns a relay based cursor connection to DeletedTeammateTask.
+func (dtt *DeletedTeammateTaskQuery) Paginate(
+	ctx context.Context, after *Cursor, first *int,
+	before *Cursor, last *int, opts ...DeletedTeammateTaskPaginateOption,
+) (*DeletedTeammateTaskConnection, error) {
+	if err := validateFirstLast(first, last); err != nil {
+		return nil, err
+	}
+	pager, err := newDeletedTeammateTaskPager(opts)
+	if err != nil {
+		return nil, err
+	}
+
+	if dtt, err = pager.applyFilter(dtt); err != nil {
+		return nil, err
+	}
+
+	conn := &DeletedTeammateTaskConnection{Edges: []*DeletedTeammateTaskEdge{}}
+	if !hasCollectedField(ctx, edgesField) || first != nil && *first == 0 || last != nil && *last == 0 {
+		if hasCollectedField(ctx, totalCountField) ||
+			hasCollectedField(ctx, pageInfoField) {
+			count, err := dtt.Count(ctx)
+			if err != nil {
+				return nil, err
+			}
+			conn.TotalCount = count
+			conn.PageInfo.HasNextPage = first != nil && count > 0
+			conn.PageInfo.HasPreviousPage = last != nil && count > 0
+		}
+		return conn, nil
+	}
+
+	if (after != nil || first != nil || before != nil || last != nil) && hasCollectedField(ctx, totalCountField) {
+		count, err := dtt.Clone().Count(ctx)
+		if err != nil {
+			return nil, err
+		}
+		conn.TotalCount = count
+	}
+
+	dtt = pager.applyCursors(dtt, after, before)
+	dtt = pager.applyOrder(dtt, last != nil)
+	var limit int
+	if first != nil {
+		limit = *first + 1
+	} else if last != nil {
+		limit = *last + 1
+	}
+	if limit > 0 {
+		dtt = dtt.Limit(limit)
+	}
+
+	if field := getCollectedField(ctx, edgesField, nodeField); field != nil {
+		dtt = dtt.collectField(graphql.GetOperationContext(ctx), *field)
+	}
+
+	nodes, err := dtt.All(ctx)
+	if err != nil || len(nodes) == 0 {
+		return conn, err
+	}
+
+	if len(nodes) == limit {
+		conn.PageInfo.HasNextPage = first != nil
+		conn.PageInfo.HasPreviousPage = last != nil
+		nodes = nodes[:len(nodes)-1]
+	}
+
+	var nodeAt func(int) *DeletedTeammateTask
+	if last != nil {
+		n := len(nodes) - 1
+		nodeAt = func(i int) *DeletedTeammateTask {
+			return nodes[n-i]
+		}
+	} else {
+		nodeAt = func(i int) *DeletedTeammateTask {
+			return nodes[i]
+		}
+	}
+
+	conn.Edges = make([]*DeletedTeammateTaskEdge, len(nodes))
+	for i := range nodes {
+		node := nodeAt(i)
+		conn.Edges[i] = &DeletedTeammateTaskEdge{
+			Node:   node,
+			Cursor: pager.toCursor(node),
+		}
+	}
+
+	conn.PageInfo.StartCursor = &conn.Edges[0].Cursor
+	conn.PageInfo.EndCursor = &conn.Edges[len(conn.Edges)-1].Cursor
+	if conn.TotalCount == 0 {
+		conn.TotalCount = len(nodes)
+	}
+
+	return conn, nil
+}
+
+// DeletedTeammateTaskOrderField defines the ordering field of DeletedTeammateTask.
+type DeletedTeammateTaskOrderField struct {
+	field    string
+	toCursor func(*DeletedTeammateTask) Cursor
+}
+
+// DeletedTeammateTaskOrder defines the ordering of DeletedTeammateTask.
+type DeletedTeammateTaskOrder struct {
+	Direction OrderDirection                 `json:"direction"`
+	Field     *DeletedTeammateTaskOrderField `json:"field"`
+}
+
+// DefaultDeletedTeammateTaskOrder is the default ordering of DeletedTeammateTask.
+var DefaultDeletedTeammateTaskOrder = &DeletedTeammateTaskOrder{
+	Direction: OrderDirectionAsc,
+	Field: &DeletedTeammateTaskOrderField{
+		field: deletedteammatetask.FieldID,
+		toCursor: func(dtt *DeletedTeammateTask) Cursor {
+			return Cursor{ID: dtt.ID}
+		},
+	},
+}
+
+// ToEdge converts DeletedTeammateTask into DeletedTeammateTaskEdge.
+func (dtt *DeletedTeammateTask) ToEdge(order *DeletedTeammateTaskOrder) *DeletedTeammateTaskEdge {
+	if order == nil {
+		order = DefaultDeletedTeammateTaskOrder
+	}
+	return &DeletedTeammateTaskEdge{
+		Node:   dtt,
+		Cursor: order.Field.toCursor(dtt),
 	}
 }
 

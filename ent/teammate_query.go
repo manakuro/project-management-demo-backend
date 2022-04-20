@@ -10,6 +10,7 @@ import (
 	"math"
 	"project-management-demo-backend/ent/archivedtaskactivity"
 	"project-management-demo-backend/ent/archivedworkspaceactivity"
+	"project-management-demo-backend/ent/deletedteammatetask"
 	"project-management-demo-backend/ent/favoriteproject"
 	"project-management-demo-backend/ent/favoriteworkspace"
 	"project-management-demo-backend/ent/predicate"
@@ -67,6 +68,7 @@ type TeammateQuery struct {
 	withWorkspaceActivities         *WorkspaceActivityQuery
 	withArchivedTaskActivities      *ArchivedTaskActivityQuery
 	withArchivedWorkspaceActivities *ArchivedWorkspaceActivityQuery
+	withDeletedTeammateTasks        *DeletedTeammateTaskQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -543,6 +545,28 @@ func (tq *TeammateQuery) QueryArchivedWorkspaceActivities() *ArchivedWorkspaceAc
 	return query
 }
 
+// QueryDeletedTeammateTasks chains the current query on the "deletedTeammateTasks" edge.
+func (tq *TeammateQuery) QueryDeletedTeammateTasks() *DeletedTeammateTaskQuery {
+	query := &DeletedTeammateTaskQuery{config: tq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := tq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := tq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(teammate.Table, teammate.FieldID, selector),
+			sqlgraph.To(deletedteammatetask.Table, deletedteammatetask.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, teammate.DeletedTeammateTasksTable, teammate.DeletedTeammateTasksColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(tq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // First returns the first Teammate entity from the query.
 // Returns a *NotFoundError when no Teammate was found.
 func (tq *TeammateQuery) First(ctx context.Context) (*Teammate, error) {
@@ -744,6 +768,7 @@ func (tq *TeammateQuery) Clone() *TeammateQuery {
 		withWorkspaceActivities:         tq.withWorkspaceActivities.Clone(),
 		withArchivedTaskActivities:      tq.withArchivedTaskActivities.Clone(),
 		withArchivedWorkspaceActivities: tq.withArchivedWorkspaceActivities.Clone(),
+		withDeletedTeammateTasks:        tq.withDeletedTeammateTasks.Clone(),
 		// clone intermediate query.
 		sql:    tq.sql.Clone(),
 		path:   tq.path,
@@ -971,6 +996,17 @@ func (tq *TeammateQuery) WithArchivedWorkspaceActivities(opts ...func(*ArchivedW
 	return tq
 }
 
+// WithDeletedTeammateTasks tells the query-builder to eager-load the nodes that are connected to
+// the "deletedTeammateTasks" edge. The optional arguments are used to configure the query builder of the edge.
+func (tq *TeammateQuery) WithDeletedTeammateTasks(opts ...func(*DeletedTeammateTaskQuery)) *TeammateQuery {
+	query := &DeletedTeammateTaskQuery{config: tq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	tq.withDeletedTeammateTasks = query
+	return tq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -1036,7 +1072,7 @@ func (tq *TeammateQuery) sqlAll(ctx context.Context) ([]*Teammate, error) {
 	var (
 		nodes       = []*Teammate{}
 		_spec       = tq.querySpec()
-		loadedTypes = [20]bool{
+		loadedTypes = [21]bool{
 			tq.withWorkspaces != nil,
 			tq.withProjects != nil,
 			tq.withProjectTeammates != nil,
@@ -1057,6 +1093,7 @@ func (tq *TeammateQuery) sqlAll(ctx context.Context) ([]*Teammate, error) {
 			tq.withWorkspaceActivities != nil,
 			tq.withArchivedTaskActivities != nil,
 			tq.withArchivedWorkspaceActivities != nil,
+			tq.withDeletedTeammateTasks != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -1576,6 +1613,31 @@ func (tq *TeammateQuery) sqlAll(ctx context.Context) ([]*Teammate, error) {
 				return nil, fmt.Errorf(`unexpected foreign-key "teammate_id" returned %v for node %v`, fk, n.ID)
 			}
 			node.Edges.ArchivedWorkspaceActivities = append(node.Edges.ArchivedWorkspaceActivities, n)
+		}
+	}
+
+	if query := tq.withDeletedTeammateTasks; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[ulid.ID]*Teammate)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.DeletedTeammateTasks = []*DeletedTeammateTask{}
+		}
+		query.Where(predicate.DeletedTeammateTask(func(s *sql.Selector) {
+			s.Where(sql.InValues(teammate.DeletedTeammateTasksColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.TeammateID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "teammate_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.DeletedTeammateTasks = append(node.Edges.DeletedTeammateTasks, n)
 		}
 	}
 

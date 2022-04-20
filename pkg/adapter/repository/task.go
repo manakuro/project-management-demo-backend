@@ -737,7 +737,7 @@ func WithParentTask(query *ent.TaskQuery) {
 	})
 }
 
-// WithSubTask eager-loads associations with sub task entity.
+// WithSubTask eager-loads associations with subtask entity.
 func WithSubTask(query *ent.TaskQuery) {
 	query.WithTaskFeeds()
 	query.WithTaskFiles(func(tfq *ent.TaskFileQuery) {

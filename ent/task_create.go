@@ -9,6 +9,7 @@ import (
 	"project-management-demo-backend/ent/archivedtaskactivitytask"
 	"project-management-demo-backend/ent/archivedworkspaceactivitytask"
 	"project-management-demo-backend/ent/deletedtask"
+	"project-management-demo-backend/ent/deletedteammatetask"
 	"project-management-demo-backend/ent/projecttask"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/task"
@@ -462,6 +463,21 @@ func (tc *TaskCreate) AddArchivedWorkspaceActivityTasks(a ...*ArchivedWorkspaceA
 		ids[i] = a[i].ID
 	}
 	return tc.AddArchivedWorkspaceActivityTaskIDs(ids...)
+}
+
+// AddDeletedTeammateTaskIDs adds the "deletedTeammateTasks" edge to the DeletedTeammateTask entity by IDs.
+func (tc *TaskCreate) AddDeletedTeammateTaskIDs(ids ...ulid.ID) *TaskCreate {
+	tc.mutation.AddDeletedTeammateTaskIDs(ids...)
+	return tc
+}
+
+// AddDeletedTeammateTasks adds the "deletedTeammateTasks" edges to the DeletedTeammateTask entity.
+func (tc *TaskCreate) AddDeletedTeammateTasks(d ...*DeletedTeammateTask) *TaskCreate {
+	ids := make([]ulid.ID, len(d))
+	for i := range d {
+		ids[i] = d[i].ID
+	}
+	return tc.AddDeletedTeammateTaskIDs(ids...)
 }
 
 // Mutation returns the TaskMutation object of the builder.
@@ -1020,6 +1036,25 @@ func (tc *TaskCreate) createSpec() (*Task, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: archivedworkspaceactivitytask.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := tc.mutation.DeletedTeammateTasksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   task.DeletedTeammateTasksTable,
+			Columns: []string{task.DeletedTeammateTasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: deletedteammatetask.FieldID,
 				},
 			},
 		}

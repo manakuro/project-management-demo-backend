@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"project-management-demo-backend/ent/deletedteammatetask"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/teammate"
 	"project-management-demo-backend/ent/teammatetask"
@@ -116,6 +117,21 @@ func (ttsc *TeammateTaskSectionCreate) AddTeammateTasks(t ...*TeammateTask) *Tea
 		ids[i] = t[i].ID
 	}
 	return ttsc.AddTeammateTaskIDs(ids...)
+}
+
+// AddDeletedTeammateTaskIDs adds the "deletedTeammateTasks" edge to the DeletedTeammateTask entity by IDs.
+func (ttsc *TeammateTaskSectionCreate) AddDeletedTeammateTaskIDs(ids ...ulid.ID) *TeammateTaskSectionCreate {
+	ttsc.mutation.AddDeletedTeammateTaskIDs(ids...)
+	return ttsc
+}
+
+// AddDeletedTeammateTasks adds the "deletedTeammateTasks" edges to the DeletedTeammateTask entity.
+func (ttsc *TeammateTaskSectionCreate) AddDeletedTeammateTasks(d ...*DeletedTeammateTask) *TeammateTaskSectionCreate {
+	ids := make([]ulid.ID, len(d))
+	for i := range d {
+		ids[i] = d[i].ID
+	}
+	return ttsc.AddDeletedTeammateTaskIDs(ids...)
 }
 
 // Mutation returns the TeammateTaskSectionMutation object of the builder.
@@ -354,6 +370,25 @@ func (ttsc *TeammateTaskSectionCreate) createSpec() (*TeammateTaskSection, *sqlg
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: teammatetask.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := ttsc.mutation.DeletedTeammateTasksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   teammatetasksection.DeletedTeammateTasksTable,
+			Columns: []string{teammatetasksection.DeletedTeammateTasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: deletedteammatetask.FieldID,
 				},
 			},
 		}

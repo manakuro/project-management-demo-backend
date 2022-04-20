@@ -201,6 +201,48 @@ var (
 			},
 		},
 	}
+	// DeletedTeammateTasksColumns holds the columns for the "deleted_teammate_tasks" table.
+	DeletedTeammateTasksColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
+		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
+		{Name: "task_id", Type: field.TypeString},
+		{Name: "teammate_id", Type: field.TypeString},
+		{Name: "teammate_task_section_id", Type: field.TypeString},
+		{Name: "workspace_id", Type: field.TypeString},
+	}
+	// DeletedTeammateTasksTable holds the schema information for the "deleted_teammate_tasks" table.
+	DeletedTeammateTasksTable = &schema.Table{
+		Name:       "deleted_teammate_tasks",
+		Columns:    DeletedTeammateTasksColumns,
+		PrimaryKey: []*schema.Column{DeletedTeammateTasksColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "deleted_teammate_tasks_tasks_deletedTeammateTasks",
+				Columns:    []*schema.Column{DeletedTeammateTasksColumns[3]},
+				RefColumns: []*schema.Column{TasksColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "deleted_teammate_tasks_teammates_deletedTeammateTasks",
+				Columns:    []*schema.Column{DeletedTeammateTasksColumns[4]},
+				RefColumns: []*schema.Column{TeammatesColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "deleted_teammate_tasks_teammate_task_sections_deletedTeammateTasks",
+				Columns:    []*schema.Column{DeletedTeammateTasksColumns[5]},
+				RefColumns: []*schema.Column{TeammateTaskSectionsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "deleted_teammate_tasks_workspaces_deletedTeammateTasks",
+				Columns:    []*schema.Column{DeletedTeammateTasksColumns[6]},
+				RefColumns: []*schema.Column{WorkspacesColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
 	// FavoriteProjectsColumns holds the columns for the "favorite_projects" table.
 	FavoriteProjectsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString},
@@ -1355,6 +1397,7 @@ var (
 		ArchivedWorkspaceActivityTasksTable,
 		ColorsTable,
 		DeletedTasksTable,
+		DeletedTeammateTasksTable,
 		FavoriteProjectsTable,
 		FavoriteWorkspacesTable,
 		FileTypesTable,
@@ -1412,6 +1455,10 @@ func init() {
 	ArchivedWorkspaceActivityTasksTable.ForeignKeys[1].RefTable = TasksTable
 	DeletedTasksTable.ForeignKeys[0].RefTable = TasksTable
 	DeletedTasksTable.ForeignKeys[1].RefTable = WorkspacesTable
+	DeletedTeammateTasksTable.ForeignKeys[0].RefTable = TasksTable
+	DeletedTeammateTasksTable.ForeignKeys[1].RefTable = TeammatesTable
+	DeletedTeammateTasksTable.ForeignKeys[2].RefTable = TeammateTaskSectionsTable
+	DeletedTeammateTasksTable.ForeignKeys[3].RefTable = WorkspacesTable
 	FavoriteProjectsTable.ForeignKeys[0].RefTable = ProjectsTable
 	FavoriteProjectsTable.ForeignKeys[1].RefTable = TeammatesTable
 	FavoriteWorkspacesTable.ForeignKeys[0].RefTable = TeammatesTable

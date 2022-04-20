@@ -10,6 +10,7 @@ import (
 	"project-management-demo-backend/ent/archivedworkspaceactivitytask"
 	"project-management-demo-backend/ent/color"
 	"project-management-demo-backend/ent/deletedtask"
+	"project-management-demo-backend/ent/deletedteammatetask"
 	"project-management-demo-backend/ent/favoriteproject"
 	"project-management-demo-backend/ent/favoriteworkspace"
 	"project-management-demo-backend/ent/filetype"
@@ -107,6 +108,7 @@ type GlobalIDs struct {
 	ArchivedTaskActivityTask      field
 	ArchivedWorkspaceActivity     field
 	ArchivedWorkspaceActivityTask field
+	DeletedTeammateTask           field
 }
 
 // New generates a map object that is intended to be used as global identification for node interface query.
@@ -300,6 +302,10 @@ func New() GlobalIDs {
 		ArchivedWorkspaceActivityTask: field{
 			Prefix: "0BU",
 			Table:  archivedworkspaceactivitytask.Table,
+		},
+		DeletedTeammateTask: field{
+			Prefix: "0BV",
+			Table:  deletedteammatetask.Table,
 		},
 	}
 }

@@ -213,6 +213,38 @@ func (dt *DeletedTaskQuery) collectField(ctx *graphql.OperationContext, field gr
 }
 
 // CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
+func (dtt *DeletedTeammateTaskQuery) CollectFields(ctx context.Context, satisfies ...string) *DeletedTeammateTaskQuery {
+	if fc := graphql.GetFieldContext(ctx); fc != nil {
+		dtt = dtt.collectField(graphql.GetOperationContext(ctx), fc.Field, satisfies...)
+	}
+	return dtt
+}
+
+func (dtt *DeletedTeammateTaskQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *DeletedTeammateTaskQuery {
+	for _, field := range graphql.CollectFields(ctx, field.Selections, satisfies) {
+		switch field.Name {
+		case "task":
+			dtt = dtt.WithTask(func(query *TaskQuery) {
+				query.collectField(ctx, field)
+			})
+		case "teammate":
+			dtt = dtt.WithTeammate(func(query *TeammateQuery) {
+				query.collectField(ctx, field)
+			})
+		case "teammateTaskSection":
+			dtt = dtt.WithTeammateTaskSection(func(query *TeammateTaskSectionQuery) {
+				query.collectField(ctx, field)
+			})
+		case "workspace":
+			dtt = dtt.WithWorkspace(func(query *WorkspaceQuery) {
+				query.collectField(ctx, field)
+			})
+		}
+	}
+	return dtt
+}
+
+// CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
 func (fp *FavoriteProjectQuery) CollectFields(ctx context.Context, satisfies ...string) *FavoriteProjectQuery {
 	if fc := graphql.GetFieldContext(ctx); fc != nil {
 		fp = fp.collectField(graphql.GetOperationContext(ctx), fc.Field, satisfies...)
@@ -621,6 +653,10 @@ func (t *TaskQuery) collectField(ctx *graphql.OperationContext, field graphql.Co
 			})
 		case "deletedTasksRef":
 			t = t.WithDeletedTasksRef(func(query *DeletedTaskQuery) {
+				query.collectField(ctx, field)
+			})
+		case "deletedTeammateTasks":
+			t = t.WithDeletedTeammateTasks(func(query *DeletedTeammateTaskQuery) {
 				query.collectField(ctx, field)
 			})
 		case "parentTask":
@@ -1035,6 +1071,10 @@ func (t *TeammateQuery) collectField(ctx *graphql.OperationContext, field graphq
 			t = t.WithArchivedWorkspaceActivities(func(query *ArchivedWorkspaceActivityQuery) {
 				query.collectField(ctx, field)
 			})
+		case "deletedTeammateTasks":
+			t = t.WithDeletedTeammateTasks(func(query *DeletedTeammateTaskQuery) {
+				query.collectField(ctx, field)
+			})
 		case "favoriteProjects":
 			t = t.WithFavoriteProjects(func(query *FavoriteProjectQuery) {
 				query.collectField(ctx, field)
@@ -1215,6 +1255,10 @@ func (tts *TeammateTaskSectionQuery) CollectFields(ctx context.Context, satisfie
 func (tts *TeammateTaskSectionQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *TeammateTaskSectionQuery {
 	for _, field := range graphql.CollectFields(ctx, field.Selections, satisfies) {
 		switch field.Name {
+		case "deletedTeammateTasks":
+			tts = tts.WithDeletedTeammateTasks(func(query *DeletedTeammateTaskQuery) {
+				query.collectField(ctx, field)
+			})
 		case "teammate":
 			tts = tts.WithTeammate(func(query *TeammateQuery) {
 				query.collectField(ctx, field)
@@ -1321,6 +1365,10 @@ func (w *WorkspaceQuery) collectField(ctx *graphql.OperationContext, field graph
 			})
 		case "deletedTasksRef":
 			w = w.WithDeletedTasksRef(func(query *DeletedTaskQuery) {
+				query.collectField(ctx, field)
+			})
+		case "deletedTeammateTasks":
+			w = w.WithDeletedTeammateTasks(func(query *DeletedTeammateTaskQuery) {
 				query.collectField(ctx, field)
 			})
 		case "favoriteWorkspaces":

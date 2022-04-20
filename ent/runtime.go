@@ -10,6 +10,7 @@ import (
 	"project-management-demo-backend/ent/archivedworkspaceactivitytask"
 	"project-management-demo-backend/ent/color"
 	"project-management-demo-backend/ent/deletedtask"
+	"project-management-demo-backend/ent/deletedteammatetask"
 	"project-management-demo-backend/ent/favoriteproject"
 	"project-management-demo-backend/ent/favoriteworkspace"
 	"project-management-demo-backend/ent/filetype"
@@ -268,6 +269,25 @@ func init() {
 	deletedtaskDescID := deletedtaskMixinFields0[0].Descriptor()
 	// deletedtask.DefaultID holds the default value on creation for the id field.
 	deletedtask.DefaultID = deletedtaskDescID.Default.(func() ulid.ID)
+	deletedteammatetaskMixin := schema.DeletedTeammateTask{}.Mixin()
+	deletedteammatetaskMixinFields0 := deletedteammatetaskMixin[0].Fields()
+	_ = deletedteammatetaskMixinFields0
+	deletedteammatetaskMixinFields2 := deletedteammatetaskMixin[2].Fields()
+	_ = deletedteammatetaskMixinFields2
+	deletedteammatetaskFields := schema.DeletedTeammateTask{}.Fields()
+	_ = deletedteammatetaskFields
+	// deletedteammatetaskDescCreatedAt is the schema descriptor for created_at field.
+	deletedteammatetaskDescCreatedAt := deletedteammatetaskMixinFields2[0].Descriptor()
+	// deletedteammatetask.DefaultCreatedAt holds the default value on creation for the created_at field.
+	deletedteammatetask.DefaultCreatedAt = deletedteammatetaskDescCreatedAt.Default.(func() time.Time)
+	// deletedteammatetaskDescUpdatedAt is the schema descriptor for updated_at field.
+	deletedteammatetaskDescUpdatedAt := deletedteammatetaskMixinFields2[1].Descriptor()
+	// deletedteammatetask.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	deletedteammatetask.DefaultUpdatedAt = deletedteammatetaskDescUpdatedAt.Default.(func() time.Time)
+	// deletedteammatetaskDescID is the schema descriptor for id field.
+	deletedteammatetaskDescID := deletedteammatetaskMixinFields0[0].Descriptor()
+	// deletedteammatetask.DefaultID holds the default value on creation for the id field.
+	deletedteammatetask.DefaultID = deletedteammatetaskDescID.Default.(func() ulid.ID)
 	favoriteprojectMixin := schema.FavoriteProject{}.Mixin()
 	favoriteprojectMixinFields0 := favoriteprojectMixin[0].Fields()
 	_ = favoriteprojectMixinFields0

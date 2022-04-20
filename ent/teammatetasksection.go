@@ -44,9 +44,11 @@ type TeammateTaskSectionEdges struct {
 	Workspace *Workspace `json:"workspace,omitempty"`
 	// TeammateTasks holds the value of the teammateTasks edge.
 	TeammateTasks []*TeammateTask `json:"teammateTasks,omitempty"`
+	// DeletedTeammateTasks holds the value of the deletedTeammateTasks edge.
+	DeletedTeammateTasks []*DeletedTeammateTask `json:"deletedTeammateTasks,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [3]bool
+	loadedTypes [4]bool
 }
 
 // TeammateOrErr returns the Teammate value or an error if the edge
@@ -84,6 +86,15 @@ func (e TeammateTaskSectionEdges) TeammateTasksOrErr() ([]*TeammateTask, error) 
 		return e.TeammateTasks, nil
 	}
 	return nil, &NotLoadedError{edge: "teammateTasks"}
+}
+
+// DeletedTeammateTasksOrErr returns the DeletedTeammateTasks value or an error if the edge
+// was not loaded in eager-loading.
+func (e TeammateTaskSectionEdges) DeletedTeammateTasksOrErr() ([]*DeletedTeammateTask, error) {
+	if e.loadedTypes[3] {
+		return e.DeletedTeammateTasks, nil
+	}
+	return nil, &NotLoadedError{edge: "deletedTeammateTasks"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -174,6 +185,11 @@ func (tts *TeammateTaskSection) QueryWorkspace() *WorkspaceQuery {
 // QueryTeammateTasks queries the "teammateTasks" edge of the TeammateTaskSection entity.
 func (tts *TeammateTaskSection) QueryTeammateTasks() *TeammateTaskQuery {
 	return (&TeammateTaskSectionClient{config: tts.config}).QueryTeammateTasks(tts)
+}
+
+// QueryDeletedTeammateTasks queries the "deletedTeammateTasks" edge of the TeammateTaskSection entity.
+func (tts *TeammateTaskSection) QueryDeletedTeammateTasks() *DeletedTeammateTaskQuery {
+	return (&TeammateTaskSectionClient{config: tts.config}).QueryDeletedTeammateTasks(tts)
 }
 
 // Update returns a builder for updating this TeammateTaskSection.
