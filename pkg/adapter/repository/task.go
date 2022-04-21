@@ -601,11 +601,11 @@ func (r *taskRepository) DeleteAll(ctx context.Context, input model.DeleteAllTas
 	}
 
 	if len(teammateTasks) > 0 {
-		teammateTaskDeletedTaskIDs := make([]ulid.ID, len(teammateTasks))
+		ids := make([]ulid.ID, len(teammateTasks))
 		for i, t := range teammateTasks {
-			teammateTaskDeletedTaskIDs[i] = t.ID
+			ids[i] = t.ID
 		}
-		_, err = client.TeammateTask.Delete().Where(teammatetask.IDIn(teammateTaskDeletedTaskIDs...)).Exec(ctx)
+		_, err = client.TeammateTask.Delete().Where(teammatetask.IDIn(ids...)).Exec(ctx)
 		if err != nil {
 			return nil, model.NewDBError(err)
 		}
@@ -637,11 +637,11 @@ func (r *taskRepository) DeleteAll(ctx context.Context, input model.DeleteAllTas
 	}
 
 	if deletedProjectTasks != nil {
-		deletedProjectTaskDeletedTaskIDs := make([]ulid.ID, len(deletedProjectTasks))
+		ids := make([]ulid.ID, len(deletedProjectTasks))
 		for i, t := range deletedProjectTasks {
-			deletedProjectTaskDeletedTaskIDs[i] = t.ID
+			ids[i] = t.ID
 		}
-		_, err = client.ProjectTask.Delete().Where(projecttask.IDIn(deletedProjectTaskDeletedTaskIDs...)).Exec(ctx)
+		_, err = client.ProjectTask.Delete().Where(projecttask.IDIn(ids...)).Exec(ctx)
 		if err != nil {
 			return nil, model.NewDBError(err)
 		}
@@ -657,6 +657,62 @@ func (r *taskRepository) DeleteAll(ctx context.Context, input model.DeleteAllTas
 				SetProjectTaskUpdatedAt(d.UpdatedAt)
 		}
 		derr := client.DeletedProjectTask.CreateBulk(bulk...).Exec(ctx)
+		if derr != nil {
+			return nil, model.NewDBError(derr)
+		}
+	}
+
+	taskActivityTasks, err := client.TaskActivityTask.Query().Where(taskactivitytask.TaskIDIn(taskIDs...)).All(ctx)
+	if err != nil && !ent.IsNotFound(err) {
+		return nil, model.NewDBError(err)
+	}
+	if len(taskActivityTasks) > 0 {
+		ids := make([]model.ID, len(taskActivityTasks))
+		for i, p := range taskActivityTasks {
+			ids[i] = p.ID
+		}
+		_, err = client.TaskActivityTask.Delete().Where(taskactivitytask.IDIn(ids...)).Exec(ctx)
+		if err != nil {
+			return nil, model.NewDBError(err)
+		}
+		bulk := make([]*ent.DeletedTaskActivityTaskCreate, len(taskActivityTasks))
+		for i, t := range taskActivityTasks {
+			bulk[i] = client.DeletedTaskActivityTask.Create().
+				SetTaskID(t.TaskID).
+				SetTaskActivityTaskCreatedAt(t.CreatedAt).
+				SetTaskActivityTaskUpdatedAt(t.UpdatedAt).
+				SetTaskActivityID(t.TaskActivityID).
+				SetTaskActivityTaskID(t.ID)
+		}
+		derr := client.DeletedTaskActivityTask.CreateBulk(bulk...).Exec(ctx)
+		if derr != nil {
+			return nil, model.NewDBError(derr)
+		}
+	}
+
+	workspaceActivityTasks, err := client.WorkspaceActivityTask.Query().Where(workspaceactivitytask.TaskIDIn(taskIDs...)).All(ctx)
+	if err != nil && !ent.IsNotFound(err) {
+		return nil, model.NewDBError(err)
+	}
+	if len(workspaceActivityTasks) > 0 {
+		ids := make([]model.ID, len(workspaceActivityTasks))
+		for i, p := range workspaceActivityTasks {
+			ids[i] = p.ID
+		}
+		_, err = client.WorkspaceActivityTask.Delete().Where(workspaceactivitytask.IDIn(ids...)).Exec(ctx)
+		if err != nil {
+			return nil, model.NewDBError(err)
+		}
+		bulk := make([]*ent.DeletedWorkspaceActivityTaskCreate, len(workspaceActivityTasks))
+		for i, t := range workspaceActivityTasks {
+			bulk[i] = client.DeletedWorkspaceActivityTask.Create().
+				SetTaskID(t.TaskID).
+				SetWorkspaceActivityTaskCreatedAt(t.CreatedAt).
+				SetWorkspaceActivityTaskUpdatedAt(t.UpdatedAt).
+				SetWorkspaceActivityID(t.WorkspaceActivityID).
+				SetWorkspaceActivityTaskID(t.ID)
+		}
+		derr := client.DeletedWorkspaceActivityTask.CreateBulk(bulk...).Exec(ctx)
 		if derr != nil {
 			return nil, model.NewDBError(derr)
 		}
@@ -777,6 +833,72 @@ func (r *taskRepository) UndeleteAll(ctx context.Context, input model.UndeleteAl
 		_, perr = client.DeletedProjectTask.Delete().Where(deletedprojecttask.IDIn(ids...)).Exec(ctx)
 		if perr != nil {
 			return nil, model.NewDBError(perr)
+		}
+	}
+
+	deletedTaskActivityTasks, err := client.DeletedTaskActivityTask.
+		Query().
+		Where(deletedtaskactivitytask.TaskIDIn(taskIDs...)).
+		All(ctx)
+	if err != nil && !ent.IsNotFound(err) {
+		return nil, model.NewDBError(err)
+	}
+	if len(deletedTaskActivityTasks) > 0 {
+		bulk := make([]*ent.TaskActivityTaskCreate, len(deletedTaskActivityTasks))
+		for i, d := range deletedTaskActivityTasks {
+			bulk[i] = client.TaskActivityTask.Create().
+				SetID(d.TaskActivityTaskID).
+				SetTaskID(d.TaskID).
+				SetCreatedAt(d.TaskActivityTaskCreatedAt).
+				SetUpdatedAt(d.TaskActivityTaskUpdatedAt).
+				SetTaskActivityID(d.TaskActivityID)
+
+		}
+		_, derr := client.TaskActivityTask.CreateBulk(bulk...).Save(ctx)
+		if derr != nil {
+			return nil, model.NewDBError(derr)
+		}
+
+		ids := make([]model.ID, len(deletedTaskActivityTasks))
+		for i, d := range deletedTaskActivityTasks {
+			ids[i] = d.ID
+		}
+		_, derr = client.DeletedTaskActivityTask.Delete().Where(deletedtaskactivitytask.IDIn(ids...)).Exec(ctx)
+		if derr != nil {
+			return nil, model.NewDBError(derr)
+		}
+	}
+
+	deletedWorkspaceActivityTasks, err := client.DeletedWorkspaceActivityTask.
+		Query().
+		Where(deletedworkspaceactivitytask.TaskIDIn(taskIDs...)).
+		All(ctx)
+	if err != nil && !ent.IsNotFound(err) {
+		return nil, model.NewDBError(err)
+	}
+	if len(deletedWorkspaceActivityTasks) > 0 {
+		bulk := make([]*ent.WorkspaceActivityTaskCreate, len(deletedWorkspaceActivityTasks))
+		for i, d := range deletedWorkspaceActivityTasks {
+			bulk[i] = client.WorkspaceActivityTask.Create().
+				SetID(d.WorkspaceActivityTaskID).
+				SetTaskID(d.TaskID).
+				SetCreatedAt(d.WorkspaceActivityTaskCreatedAt).
+				SetUpdatedAt(d.WorkspaceActivityTaskUpdatedAt).
+				SetWorkspaceActivityID(d.WorkspaceActivityID)
+
+		}
+		_, derr := client.WorkspaceActivityTask.CreateBulk(bulk...).Save(ctx)
+		if derr != nil {
+			return nil, model.NewDBError(derr)
+		}
+
+		ids := make([]model.ID, len(deletedWorkspaceActivityTasks))
+		for i, d := range deletedWorkspaceActivityTasks {
+			ids[i] = d.ID
+		}
+		_, derr = client.DeletedWorkspaceActivityTask.Delete().Where(deletedworkspaceactivitytask.IDIn(ids...)).Exec(ctx)
+		if derr != nil {
+			return nil, model.NewDBError(derr)
 		}
 	}
 
