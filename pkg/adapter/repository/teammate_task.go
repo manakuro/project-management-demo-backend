@@ -6,6 +6,7 @@ import (
 	"project-management-demo-backend/ent/task"
 	"project-management-demo-backend/ent/teammatetask"
 	"project-management-demo-backend/ent/teammatetasksection"
+	"project-management-demo-backend/pkg/adapter/repository/respositoryutil"
 	"project-management-demo-backend/pkg/entity/model"
 	ur "project-management-demo-backend/pkg/usecase/repository"
 	"project-management-demo-backend/pkg/util/datetime"
@@ -28,7 +29,7 @@ func (r *teammateTaskRepository) Get(ctx context.Context, where *model.TeammateT
 
 	// Eager-loading with task explicitly.
 	q.WithTask(func(tq *ent.TaskQuery) {
-		WithTask(tq)
+		respositoryutil.WithTask(tq)
 	})
 
 	if err != nil {

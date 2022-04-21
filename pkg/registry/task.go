@@ -2,12 +2,12 @@ package registry
 
 import (
 	"project-management-demo-backend/pkg/adapter/controller"
-	"project-management-demo-backend/pkg/adapter/repository"
+	"project-management-demo-backend/pkg/adapter/repository/taskrepository"
 	"project-management-demo-backend/pkg/usecase/usecase"
 )
 
 func (r *registry) NewTaskController() controller.Task {
-	repo := repository.NewTaskRepository(r.client)
+	repo := taskrepository.New(r.client)
 	u := usecase.NewTaskUsecase(repo)
 
 	return controller.NewTaskController(u)

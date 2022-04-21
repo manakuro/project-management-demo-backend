@@ -6,6 +6,8 @@ import (
 	"project-management-demo-backend/ent/deletedtask"
 	"project-management-demo-backend/ent/teammatetask"
 	"project-management-demo-backend/ent/teammatetasksection"
+	"project-management-demo-backend/pkg/adapter/repository/respositoryutil"
+	"project-management-demo-backend/pkg/adapter/repository/taskrepository"
 	"project-management-demo-backend/pkg/entity/model"
 	ur "project-management-demo-backend/pkg/usecase/repository"
 )
@@ -219,9 +221,7 @@ func (r *teammateTaskSectionRepository) DeleteAndDeleteTasks(ctx context.Context
 	}
 
 	// TODO: Task repository can be called in usecase/usecase package
-	taskRepo := taskRepository{
-		client: r.client,
-	}
+	taskRepo := taskrepository.New(r.client)
 	p, err := taskRepo.DeleteAll(ctx, model.DeleteAllTaskInput{
 		TaskIDs:     taskIDs,
 		WorkspaceID: input.WorkspaceID,
@@ -333,9 +333,7 @@ func (r *teammateTaskSectionRepository) UndeleteAndDeleteTasks(ctx context.Conte
 	}
 
 	// TODO: Task repository can be called in usecase/usecase package
-	taskRepo := taskRepository{
-		client: r.client,
-	}
+	taskRepo := taskrepository.New(r.client)
 
 	p, rerr := taskRepo.UndeleteAll(ctx, model.UndeleteAllTaskInput{
 		TaskIDs:               taskIDs,
@@ -387,7 +385,7 @@ func (r *teammateTaskSectionRepository) UndeleteAndDeleteTasks(ctx context.Conte
 		Query().
 		WithTeammateTasks(func(ttq *ent.TeammateTaskQuery) {
 			ttq.WithTask(func(tq *ent.TaskQuery) {
-				WithTask(tq)
+				respositoryutil.WithTask(tq)
 			})
 		}).
 		Where(teammatetasksection.ID(createdTeammateTaskSection.ID)).

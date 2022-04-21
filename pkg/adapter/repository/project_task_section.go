@@ -6,6 +6,8 @@ import (
 	"project-management-demo-backend/ent/deletedtask"
 	"project-management-demo-backend/ent/projecttask"
 	"project-management-demo-backend/ent/projecttasksection"
+	"project-management-demo-backend/pkg/adapter/repository/respositoryutil"
+	"project-management-demo-backend/pkg/adapter/repository/taskrepository"
 	"project-management-demo-backend/pkg/entity/model"
 	ur "project-management-demo-backend/pkg/usecase/repository"
 )
@@ -244,9 +246,8 @@ func (r *projectTaskSectionRepository) DeleteAndDeleteTasks(ctx context.Context,
 	}
 
 	// TODO: Task repository can be called in usecase/usecase package
-	taskRepo := taskRepository{
-		client: r.client,
-	}
+	taskRepo := taskrepository.New(r.client)
+
 	_, err = taskRepo.DeleteAll(ctx, model.DeleteAllTaskInput{
 		TaskIDs:     taskIDs,
 		WorkspaceID: input.WorkspaceID,
@@ -355,9 +356,7 @@ func (r *projectTaskSectionRepository) UndeleteAndDeleteTasks(ctx context.Contex
 	}
 
 	// TODO: Task repository can be called in usecase/usecase package
-	taskRepo := taskRepository{
-		client: r.client,
-	}
+	taskRepo := taskrepository.New(r.client)
 
 	p, rerr := taskRepo.UndeleteAll(ctx, model.UndeleteAllTaskInput{
 		TaskIDs:              taskIDs,
@@ -406,7 +405,7 @@ func (r *projectTaskSectionRepository) UndeleteAndDeleteTasks(ctx context.Contex
 	// Eager-loads associations with task.
 	projectTaskSection, err := client.ProjectTaskSection.Query().
 		WithProjectTasks(func(ptq *ent.ProjectTaskQuery) {
-			WithProjectTask(ptq)
+			respositoryutil.WithProjectTask(ptq)
 		}).
 		Where(projecttasksection.ID(createdProjectTaskSection.ID)).
 		Only(ctx)

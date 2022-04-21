@@ -5,6 +5,7 @@ import (
 	"project-management-demo-backend/ent"
 	"project-management-demo-backend/ent/projecttask"
 	"project-management-demo-backend/ent/projecttasksection"
+	"project-management-demo-backend/pkg/adapter/repository/respositoryutil"
 	"project-management-demo-backend/pkg/entity/model"
 	ur "project-management-demo-backend/pkg/usecase/repository"
 )
@@ -22,7 +23,7 @@ func (r *projectTaskRepository) Get(ctx context.Context, where *model.ProjectTas
 	q := r.client.ProjectTask.Query()
 
 	// Eager-loading with task explicitly.
-	WithProjectTask(q)
+	respositoryutil.WithProjectTask(q)
 
 	q, err := where.Filter(q)
 	if err != nil {
@@ -137,7 +138,7 @@ func (r *projectTaskRepository) CreateByTaskID(ctx context.Context, input model.
 		Query().
 		Where(projecttask.IDEQ(p.ID))
 
-	WithProjectTask(pq)
+	respositoryutil.WithProjectTask(pq)
 
 	projectTask, err := pq.Only(ctx)
 	if err != nil {
@@ -185,14 +186,4 @@ func (r *projectTaskRepository) Delete(ctx context.Context, input model.DeletePr
 	}
 
 	return deleted, nil
-}
-
-// WithProjectTask eager-loads association with project task.
-func WithProjectTask(query *ent.ProjectTaskQuery) {
-	query.WithTask(func(tq *ent.TaskQuery) {
-		WithTask(tq)
-	})
-	query.WithProject(func(pq *ent.ProjectQuery) {
-		WithProject(pq)
-	})
 }
