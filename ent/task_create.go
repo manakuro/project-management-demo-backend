@@ -10,7 +10,9 @@ import (
 	"project-management-demo-backend/ent/archivedworkspaceactivitytask"
 	"project-management-demo-backend/ent/deletedprojecttask"
 	"project-management-demo-backend/ent/deletedtask"
+	"project-management-demo-backend/ent/deletedtaskactivitytask"
 	"project-management-demo-backend/ent/deletedteammatetask"
+	"project-management-demo-backend/ent/deletedworkspaceactivitytask"
 	"project-management-demo-backend/ent/projecttask"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/task"
@@ -494,6 +496,36 @@ func (tc *TaskCreate) AddDeletedProjectTasks(d ...*DeletedProjectTask) *TaskCrea
 		ids[i] = d[i].ID
 	}
 	return tc.AddDeletedProjectTaskIDs(ids...)
+}
+
+// AddDeletedTaskActivityTaskIDs adds the "deletedTaskActivityTasks" edge to the DeletedTaskActivityTask entity by IDs.
+func (tc *TaskCreate) AddDeletedTaskActivityTaskIDs(ids ...ulid.ID) *TaskCreate {
+	tc.mutation.AddDeletedTaskActivityTaskIDs(ids...)
+	return tc
+}
+
+// AddDeletedTaskActivityTasks adds the "deletedTaskActivityTasks" edges to the DeletedTaskActivityTask entity.
+func (tc *TaskCreate) AddDeletedTaskActivityTasks(d ...*DeletedTaskActivityTask) *TaskCreate {
+	ids := make([]ulid.ID, len(d))
+	for i := range d {
+		ids[i] = d[i].ID
+	}
+	return tc.AddDeletedTaskActivityTaskIDs(ids...)
+}
+
+// AddDeletedWorkspaceActivityTaskIDs adds the "deletedWorkspaceActivityTasks" edge to the DeletedWorkspaceActivityTask entity by IDs.
+func (tc *TaskCreate) AddDeletedWorkspaceActivityTaskIDs(ids ...ulid.ID) *TaskCreate {
+	tc.mutation.AddDeletedWorkspaceActivityTaskIDs(ids...)
+	return tc
+}
+
+// AddDeletedWorkspaceActivityTasks adds the "deletedWorkspaceActivityTasks" edges to the DeletedWorkspaceActivityTask entity.
+func (tc *TaskCreate) AddDeletedWorkspaceActivityTasks(d ...*DeletedWorkspaceActivityTask) *TaskCreate {
+	ids := make([]ulid.ID, len(d))
+	for i := range d {
+		ids[i] = d[i].ID
+	}
+	return tc.AddDeletedWorkspaceActivityTaskIDs(ids...)
 }
 
 // Mutation returns the TaskMutation object of the builder.
@@ -1090,6 +1122,44 @@ func (tc *TaskCreate) createSpec() (*Task, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: deletedprojecttask.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := tc.mutation.DeletedTaskActivityTasksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   task.DeletedTaskActivityTasksTable,
+			Columns: []string{task.DeletedTaskActivityTasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: deletedtaskactivitytask.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := tc.mutation.DeletedWorkspaceActivityTasksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   task.DeletedWorkspaceActivityTasksTable,
+			Columns: []string{task.DeletedWorkspaceActivityTasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: deletedworkspaceactivitytask.FieldID,
 				},
 			},
 		}

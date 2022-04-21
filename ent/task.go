@@ -91,9 +91,13 @@ type TaskEdges struct {
 	DeletedTeammateTasks []*DeletedTeammateTask `json:"deletedTeammateTasks,omitempty"`
 	// DeletedProjectTasks holds the value of the deletedProjectTasks edge.
 	DeletedProjectTasks []*DeletedProjectTask `json:"deletedProjectTasks,omitempty"`
+	// DeletedTaskActivityTasks holds the value of the deletedTaskActivityTasks edge.
+	DeletedTaskActivityTasks []*DeletedTaskActivityTask `json:"deletedTaskActivityTasks,omitempty"`
+	// DeletedWorkspaceActivityTasks holds the value of the deletedWorkspaceActivityTasks edge.
+	DeletedWorkspaceActivityTasks []*DeletedWorkspaceActivityTask `json:"deletedWorkspaceActivityTasks,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [19]bool
+	loadedTypes [21]bool
 }
 
 // TeammateOrErr returns the Teammate value or an error if the edge
@@ -280,6 +284,24 @@ func (e TaskEdges) DeletedProjectTasksOrErr() ([]*DeletedProjectTask, error) {
 		return e.DeletedProjectTasks, nil
 	}
 	return nil, &NotLoadedError{edge: "deletedProjectTasks"}
+}
+
+// DeletedTaskActivityTasksOrErr returns the DeletedTaskActivityTasks value or an error if the edge
+// was not loaded in eager-loading.
+func (e TaskEdges) DeletedTaskActivityTasksOrErr() ([]*DeletedTaskActivityTask, error) {
+	if e.loadedTypes[19] {
+		return e.DeletedTaskActivityTasks, nil
+	}
+	return nil, &NotLoadedError{edge: "deletedTaskActivityTasks"}
+}
+
+// DeletedWorkspaceActivityTasksOrErr returns the DeletedWorkspaceActivityTasks value or an error if the edge
+// was not loaded in eager-loading.
+func (e TaskEdges) DeletedWorkspaceActivityTasksOrErr() ([]*DeletedWorkspaceActivityTask, error) {
+	if e.loadedTypes[20] {
+		return e.DeletedWorkspaceActivityTasks, nil
+	}
+	return nil, &NotLoadedError{edge: "deletedWorkspaceActivityTasks"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -499,6 +521,16 @@ func (t *Task) QueryDeletedTeammateTasks() *DeletedTeammateTaskQuery {
 // QueryDeletedProjectTasks queries the "deletedProjectTasks" edge of the Task entity.
 func (t *Task) QueryDeletedProjectTasks() *DeletedProjectTaskQuery {
 	return (&TaskClient{config: t.config}).QueryDeletedProjectTasks(t)
+}
+
+// QueryDeletedTaskActivityTasks queries the "deletedTaskActivityTasks" edge of the Task entity.
+func (t *Task) QueryDeletedTaskActivityTasks() *DeletedTaskActivityTaskQuery {
+	return (&TaskClient{config: t.config}).QueryDeletedTaskActivityTasks(t)
+}
+
+// QueryDeletedWorkspaceActivityTasks queries the "deletedWorkspaceActivityTasks" edge of the Task entity.
+func (t *Task) QueryDeletedWorkspaceActivityTasks() *DeletedWorkspaceActivityTaskQuery {
+	return (&TaskClient{config: t.config}).QueryDeletedWorkspaceActivityTasks(t)
 }
 
 // Update returns a builder for updating this Task.

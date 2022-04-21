@@ -14,7 +14,9 @@ import (
 	"project-management-demo-backend/ent/color"
 	"project-management-demo-backend/ent/deletedprojecttask"
 	"project-management-demo-backend/ent/deletedtask"
+	"project-management-demo-backend/ent/deletedtaskactivitytask"
 	"project-management-demo-backend/ent/deletedteammatetask"
+	"project-management-demo-backend/ent/deletedworkspaceactivitytask"
 	"project-management-demo-backend/ent/favoriteproject"
 	"project-management-demo-backend/ent/favoriteworkspace"
 	"project-management-demo-backend/ent/filetype"
@@ -747,6 +749,83 @@ func (dt *DeletedTask) Node(ctx context.Context) (node *Node, err error) {
 	return node, nil
 }
 
+func (dtat *DeletedTaskActivityTask) Node(ctx context.Context) (node *Node, err error) {
+	node = &Node{
+		ID:     dtat.ID,
+		Type:   "DeletedTaskActivityTask",
+		Fields: make([]*Field, 7),
+		Edges:  make([]*Edge, 1),
+	}
+	var buf []byte
+	if buf, err = json.Marshal(dtat.TaskActivityID); err != nil {
+		return nil, err
+	}
+	node.Fields[0] = &Field{
+		Type:  "ulid.ID",
+		Name:  "task_activity_id",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(dtat.TaskID); err != nil {
+		return nil, err
+	}
+	node.Fields[1] = &Field{
+		Type:  "ulid.ID",
+		Name:  "task_id",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(dtat.TaskActivityTaskID); err != nil {
+		return nil, err
+	}
+	node.Fields[2] = &Field{
+		Type:  "ulid.ID",
+		Name:  "task_activity_task_id",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(dtat.TaskActivityTaskCreatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[3] = &Field{
+		Type:  "time.Time",
+		Name:  "task_activity_task_created_at",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(dtat.TaskActivityTaskUpdatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[4] = &Field{
+		Type:  "time.Time",
+		Name:  "task_activity_task_updated_at",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(dtat.CreatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[5] = &Field{
+		Type:  "time.Time",
+		Name:  "created_at",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(dtat.UpdatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[6] = &Field{
+		Type:  "time.Time",
+		Name:  "updated_at",
+		Value: string(buf),
+	}
+	node.Edges[0] = &Edge{
+		Type: "Task",
+		Name: "task",
+	}
+	err = dtat.QueryTask().
+		Select(task.FieldID).
+		Scan(ctx, &node.Edges[0].IDs)
+	if err != nil {
+		return nil, err
+	}
+	return node, nil
+}
+
 func (dtt *DeletedTeammateTask) Node(ctx context.Context) (node *Node, err error) {
 	node = &Node{
 		ID:     dtt.ID,
@@ -854,6 +933,83 @@ func (dtt *DeletedTeammateTask) Node(ctx context.Context) (node *Node, err error
 	err = dtt.QueryWorkspace().
 		Select(workspace.FieldID).
 		Scan(ctx, &node.Edges[2].IDs)
+	if err != nil {
+		return nil, err
+	}
+	return node, nil
+}
+
+func (dwat *DeletedWorkspaceActivityTask) Node(ctx context.Context) (node *Node, err error) {
+	node = &Node{
+		ID:     dwat.ID,
+		Type:   "DeletedWorkspaceActivityTask",
+		Fields: make([]*Field, 7),
+		Edges:  make([]*Edge, 1),
+	}
+	var buf []byte
+	if buf, err = json.Marshal(dwat.WorkspaceActivityID); err != nil {
+		return nil, err
+	}
+	node.Fields[0] = &Field{
+		Type:  "ulid.ID",
+		Name:  "workspace_activity_id",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(dwat.TaskID); err != nil {
+		return nil, err
+	}
+	node.Fields[1] = &Field{
+		Type:  "ulid.ID",
+		Name:  "task_id",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(dwat.WorkspaceActivityTaskID); err != nil {
+		return nil, err
+	}
+	node.Fields[2] = &Field{
+		Type:  "ulid.ID",
+		Name:  "workspace_activity_task_id",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(dwat.WorkspaceActivityTaskCreatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[3] = &Field{
+		Type:  "time.Time",
+		Name:  "workspace_activity_task_created_at",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(dwat.WorkspaceActivityTaskUpdatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[4] = &Field{
+		Type:  "time.Time",
+		Name:  "workspace_activity_task_updated_at",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(dwat.CreatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[5] = &Field{
+		Type:  "time.Time",
+		Name:  "created_at",
+		Value: string(buf),
+	}
+	if buf, err = json.Marshal(dwat.UpdatedAt); err != nil {
+		return nil, err
+	}
+	node.Fields[6] = &Field{
+		Type:  "time.Time",
+		Name:  "updated_at",
+		Value: string(buf),
+	}
+	node.Edges[0] = &Edge{
+		Type: "Task",
+		Name: "task",
+	}
+	err = dwat.QueryTask().
+		Select(task.FieldID).
+		Scan(ctx, &node.Edges[0].IDs)
 	if err != nil {
 		return nil, err
 	}
@@ -1991,7 +2147,7 @@ func (t *Task) Node(ctx context.Context) (node *Node, err error) {
 		ID:     t.ID,
 		Type:   "Task",
 		Fields: make([]*Field, 13),
-		Edges:  make([]*Edge, 19),
+		Edges:  make([]*Edge, 21),
 	}
 	var buf []byte
 	if buf, err = json.Marshal(t.TaskParentID); err != nil {
@@ -2285,6 +2441,26 @@ func (t *Task) Node(ctx context.Context) (node *Node, err error) {
 	err = t.QueryDeletedProjectTasks().
 		Select(deletedprojecttask.FieldID).
 		Scan(ctx, &node.Edges[18].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[19] = &Edge{
+		Type: "DeletedTaskActivityTask",
+		Name: "deletedTaskActivityTasks",
+	}
+	err = t.QueryDeletedTaskActivityTasks().
+		Select(deletedtaskactivitytask.FieldID).
+		Scan(ctx, &node.Edges[19].IDs)
+	if err != nil {
+		return nil, err
+	}
+	node.Edges[20] = &Edge{
+		Type: "DeletedWorkspaceActivityTask",
+		Name: "deletedWorkspaceActivityTasks",
+	}
+	err = t.QueryDeletedWorkspaceActivityTasks().
+		Select(deletedworkspaceactivitytask.FieldID).
+		Scan(ctx, &node.Edges[20].IDs)
 	if err != nil {
 		return nil, err
 	}
@@ -4783,10 +4959,28 @@ func (c *Client) noder(ctx context.Context, table string, id ulid.ID) (Noder, er
 			return nil, err
 		}
 		return n, nil
+	case deletedtaskactivitytask.Table:
+		n, err := c.DeletedTaskActivityTask.Query().
+			Where(deletedtaskactivitytask.ID(id)).
+			CollectFields(ctx, "DeletedTaskActivityTask").
+			Only(ctx)
+		if err != nil {
+			return nil, err
+		}
+		return n, nil
 	case deletedteammatetask.Table:
 		n, err := c.DeletedTeammateTask.Query().
 			Where(deletedteammatetask.ID(id)).
 			CollectFields(ctx, "DeletedTeammateTask").
+			Only(ctx)
+		if err != nil {
+			return nil, err
+		}
+		return n, nil
+	case deletedworkspaceactivitytask.Table:
+		n, err := c.DeletedWorkspaceActivityTask.Query().
+			Where(deletedworkspaceactivitytask.ID(id)).
+			CollectFields(ctx, "DeletedWorkspaceActivityTask").
 			Only(ctx)
 		if err != nil {
 			return nil, err
@@ -5329,10 +5523,36 @@ func (c *Client) noders(ctx context.Context, table string, ids []ulid.ID) ([]Nod
 				*noder = node
 			}
 		}
+	case deletedtaskactivitytask.Table:
+		nodes, err := c.DeletedTaskActivityTask.Query().
+			Where(deletedtaskactivitytask.IDIn(ids...)).
+			CollectFields(ctx, "DeletedTaskActivityTask").
+			All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, node := range nodes {
+			for _, noder := range idmap[node.ID] {
+				*noder = node
+			}
+		}
 	case deletedteammatetask.Table:
 		nodes, err := c.DeletedTeammateTask.Query().
 			Where(deletedteammatetask.IDIn(ids...)).
 			CollectFields(ctx, "DeletedTeammateTask").
+			All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, node := range nodes {
+			for _, noder := range idmap[node.ID] {
+				*noder = node
+			}
+		}
+	case deletedworkspaceactivitytask.Table:
+		nodes, err := c.DeletedWorkspaceActivityTask.Query().
+			Where(deletedworkspaceactivitytask.IDIn(ids...)).
+			CollectFields(ctx, "DeletedWorkspaceActivityTask").
 			All(ctx)
 		if err != nil {
 			return nil, err

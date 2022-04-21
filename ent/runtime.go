@@ -11,7 +11,9 @@ import (
 	"project-management-demo-backend/ent/color"
 	"project-management-demo-backend/ent/deletedprojecttask"
 	"project-management-demo-backend/ent/deletedtask"
+	"project-management-demo-backend/ent/deletedtaskactivitytask"
 	"project-management-demo-backend/ent/deletedteammatetask"
+	"project-management-demo-backend/ent/deletedworkspaceactivitytask"
 	"project-management-demo-backend/ent/favoriteproject"
 	"project-management-demo-backend/ent/favoriteworkspace"
 	"project-management-demo-backend/ent/filetype"
@@ -289,6 +291,25 @@ func init() {
 	deletedtaskDescID := deletedtaskMixinFields0[0].Descriptor()
 	// deletedtask.DefaultID holds the default value on creation for the id field.
 	deletedtask.DefaultID = deletedtaskDescID.Default.(func() ulid.ID)
+	deletedtaskactivitytaskMixin := schema.DeletedTaskActivityTask{}.Mixin()
+	deletedtaskactivitytaskMixinFields0 := deletedtaskactivitytaskMixin[0].Fields()
+	_ = deletedtaskactivitytaskMixinFields0
+	deletedtaskactivitytaskMixinFields2 := deletedtaskactivitytaskMixin[2].Fields()
+	_ = deletedtaskactivitytaskMixinFields2
+	deletedtaskactivitytaskFields := schema.DeletedTaskActivityTask{}.Fields()
+	_ = deletedtaskactivitytaskFields
+	// deletedtaskactivitytaskDescCreatedAt is the schema descriptor for created_at field.
+	deletedtaskactivitytaskDescCreatedAt := deletedtaskactivitytaskMixinFields2[0].Descriptor()
+	// deletedtaskactivitytask.DefaultCreatedAt holds the default value on creation for the created_at field.
+	deletedtaskactivitytask.DefaultCreatedAt = deletedtaskactivitytaskDescCreatedAt.Default.(func() time.Time)
+	// deletedtaskactivitytaskDescUpdatedAt is the schema descriptor for updated_at field.
+	deletedtaskactivitytaskDescUpdatedAt := deletedtaskactivitytaskMixinFields2[1].Descriptor()
+	// deletedtaskactivitytask.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	deletedtaskactivitytask.DefaultUpdatedAt = deletedtaskactivitytaskDescUpdatedAt.Default.(func() time.Time)
+	// deletedtaskactivitytaskDescID is the schema descriptor for id field.
+	deletedtaskactivitytaskDescID := deletedtaskactivitytaskMixinFields0[0].Descriptor()
+	// deletedtaskactivitytask.DefaultID holds the default value on creation for the id field.
+	deletedtaskactivitytask.DefaultID = deletedtaskactivitytaskDescID.Default.(func() ulid.ID)
 	deletedteammatetaskMixin := schema.DeletedTeammateTask{}.Mixin()
 	deletedteammatetaskMixinFields0 := deletedteammatetaskMixin[0].Fields()
 	_ = deletedteammatetaskMixinFields0
@@ -308,6 +329,25 @@ func init() {
 	deletedteammatetaskDescID := deletedteammatetaskMixinFields0[0].Descriptor()
 	// deletedteammatetask.DefaultID holds the default value on creation for the id field.
 	deletedteammatetask.DefaultID = deletedteammatetaskDescID.Default.(func() ulid.ID)
+	deletedworkspaceactivitytaskMixin := schema.DeletedWorkspaceActivityTask{}.Mixin()
+	deletedworkspaceactivitytaskMixinFields0 := deletedworkspaceactivitytaskMixin[0].Fields()
+	_ = deletedworkspaceactivitytaskMixinFields0
+	deletedworkspaceactivitytaskMixinFields2 := deletedworkspaceactivitytaskMixin[2].Fields()
+	_ = deletedworkspaceactivitytaskMixinFields2
+	deletedworkspaceactivitytaskFields := schema.DeletedWorkspaceActivityTask{}.Fields()
+	_ = deletedworkspaceactivitytaskFields
+	// deletedworkspaceactivitytaskDescCreatedAt is the schema descriptor for created_at field.
+	deletedworkspaceactivitytaskDescCreatedAt := deletedworkspaceactivitytaskMixinFields2[0].Descriptor()
+	// deletedworkspaceactivitytask.DefaultCreatedAt holds the default value on creation for the created_at field.
+	deletedworkspaceactivitytask.DefaultCreatedAt = deletedworkspaceactivitytaskDescCreatedAt.Default.(func() time.Time)
+	// deletedworkspaceactivitytaskDescUpdatedAt is the schema descriptor for updated_at field.
+	deletedworkspaceactivitytaskDescUpdatedAt := deletedworkspaceactivitytaskMixinFields2[1].Descriptor()
+	// deletedworkspaceactivitytask.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	deletedworkspaceactivitytask.DefaultUpdatedAt = deletedworkspaceactivitytaskDescUpdatedAt.Default.(func() time.Time)
+	// deletedworkspaceactivitytaskDescID is the schema descriptor for id field.
+	deletedworkspaceactivitytaskDescID := deletedworkspaceactivitytaskMixinFields0[0].Descriptor()
+	// deletedworkspaceactivitytask.DefaultID holds the default value on creation for the id field.
+	deletedworkspaceactivitytask.DefaultID = deletedworkspaceactivitytaskDescID.Default.(func() ulid.ID)
 	favoriteprojectMixin := schema.FavoriteProject{}.Mixin()
 	favoriteprojectMixinFields0 := favoriteprojectMixin[0].Fields()
 	_ = favoriteprojectMixinFields0

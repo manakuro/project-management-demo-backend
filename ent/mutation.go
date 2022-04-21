@@ -14,7 +14,9 @@ import (
 	"project-management-demo-backend/ent/color"
 	"project-management-demo-backend/ent/deletedprojecttask"
 	"project-management-demo-backend/ent/deletedtask"
+	"project-management-demo-backend/ent/deletedtaskactivitytask"
 	"project-management-demo-backend/ent/deletedteammatetask"
+	"project-management-demo-backend/ent/deletedworkspaceactivitytask"
 	"project-management-demo-backend/ent/favoriteproject"
 	"project-management-demo-backend/ent/favoriteworkspace"
 	"project-management-demo-backend/ent/filetype"
@@ -81,7 +83,9 @@ const (
 	TypeColor                         = "Color"
 	TypeDeletedProjectTask            = "DeletedProjectTask"
 	TypeDeletedTask                   = "DeletedTask"
+	TypeDeletedTaskActivityTask       = "DeletedTaskActivityTask"
 	TypeDeletedTeammateTask           = "DeletedTeammateTask"
+	TypeDeletedWorkspaceActivityTask  = "DeletedWorkspaceActivityTask"
 	TypeFavoriteProject               = "FavoriteProject"
 	TypeFavoriteWorkspace             = "FavoriteWorkspace"
 	TypeFileType                      = "FileType"
@@ -5973,6 +5977,702 @@ func (m *DeletedTaskMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown DeletedTask edge %s", name)
 }
 
+// DeletedTaskActivityTaskMutation represents an operation that mutates the DeletedTaskActivityTask nodes in the graph.
+type DeletedTaskActivityTaskMutation struct {
+	config
+	op                            Op
+	typ                           string
+	id                            *ulid.ID
+	task_activity_id              *ulid.ID
+	task_activity_task_id         *ulid.ID
+	task_activity_task_created_at *time.Time
+	task_activity_task_updated_at *time.Time
+	created_at                    *time.Time
+	updated_at                    *time.Time
+	clearedFields                 map[string]struct{}
+	task                          *ulid.ID
+	clearedtask                   bool
+	done                          bool
+	oldValue                      func(context.Context) (*DeletedTaskActivityTask, error)
+	predicates                    []predicate.DeletedTaskActivityTask
+}
+
+var _ ent.Mutation = (*DeletedTaskActivityTaskMutation)(nil)
+
+// deletedtaskactivitytaskOption allows management of the mutation configuration using functional options.
+type deletedtaskactivitytaskOption func(*DeletedTaskActivityTaskMutation)
+
+// newDeletedTaskActivityTaskMutation creates new mutation for the DeletedTaskActivityTask entity.
+func newDeletedTaskActivityTaskMutation(c config, op Op, opts ...deletedtaskactivitytaskOption) *DeletedTaskActivityTaskMutation {
+	m := &DeletedTaskActivityTaskMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeDeletedTaskActivityTask,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withDeletedTaskActivityTaskID sets the ID field of the mutation.
+func withDeletedTaskActivityTaskID(id ulid.ID) deletedtaskactivitytaskOption {
+	return func(m *DeletedTaskActivityTaskMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *DeletedTaskActivityTask
+		)
+		m.oldValue = func(ctx context.Context) (*DeletedTaskActivityTask, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().DeletedTaskActivityTask.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withDeletedTaskActivityTask sets the old DeletedTaskActivityTask of the mutation.
+func withDeletedTaskActivityTask(node *DeletedTaskActivityTask) deletedtaskactivitytaskOption {
+	return func(m *DeletedTaskActivityTaskMutation) {
+		m.oldValue = func(context.Context) (*DeletedTaskActivityTask, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m DeletedTaskActivityTaskMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m DeletedTaskActivityTaskMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of DeletedTaskActivityTask entities.
+func (m *DeletedTaskActivityTaskMutation) SetID(id ulid.ID) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *DeletedTaskActivityTaskMutation) ID() (id ulid.ID, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *DeletedTaskActivityTaskMutation) IDs(ctx context.Context) ([]ulid.ID, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []ulid.ID{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().DeletedTaskActivityTask.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetTaskActivityID sets the "task_activity_id" field.
+func (m *DeletedTaskActivityTaskMutation) SetTaskActivityID(u ulid.ID) {
+	m.task_activity_id = &u
+}
+
+// TaskActivityID returns the value of the "task_activity_id" field in the mutation.
+func (m *DeletedTaskActivityTaskMutation) TaskActivityID() (r ulid.ID, exists bool) {
+	v := m.task_activity_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTaskActivityID returns the old "task_activity_id" field's value of the DeletedTaskActivityTask entity.
+// If the DeletedTaskActivityTask object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DeletedTaskActivityTaskMutation) OldTaskActivityID(ctx context.Context) (v ulid.ID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTaskActivityID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTaskActivityID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTaskActivityID: %w", err)
+	}
+	return oldValue.TaskActivityID, nil
+}
+
+// ResetTaskActivityID resets all changes to the "task_activity_id" field.
+func (m *DeletedTaskActivityTaskMutation) ResetTaskActivityID() {
+	m.task_activity_id = nil
+}
+
+// SetTaskID sets the "task_id" field.
+func (m *DeletedTaskActivityTaskMutation) SetTaskID(u ulid.ID) {
+	m.task = &u
+}
+
+// TaskID returns the value of the "task_id" field in the mutation.
+func (m *DeletedTaskActivityTaskMutation) TaskID() (r ulid.ID, exists bool) {
+	v := m.task
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTaskID returns the old "task_id" field's value of the DeletedTaskActivityTask entity.
+// If the DeletedTaskActivityTask object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DeletedTaskActivityTaskMutation) OldTaskID(ctx context.Context) (v ulid.ID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTaskID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTaskID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTaskID: %w", err)
+	}
+	return oldValue.TaskID, nil
+}
+
+// ResetTaskID resets all changes to the "task_id" field.
+func (m *DeletedTaskActivityTaskMutation) ResetTaskID() {
+	m.task = nil
+}
+
+// SetTaskActivityTaskID sets the "task_activity_task_id" field.
+func (m *DeletedTaskActivityTaskMutation) SetTaskActivityTaskID(u ulid.ID) {
+	m.task_activity_task_id = &u
+}
+
+// TaskActivityTaskID returns the value of the "task_activity_task_id" field in the mutation.
+func (m *DeletedTaskActivityTaskMutation) TaskActivityTaskID() (r ulid.ID, exists bool) {
+	v := m.task_activity_task_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTaskActivityTaskID returns the old "task_activity_task_id" field's value of the DeletedTaskActivityTask entity.
+// If the DeletedTaskActivityTask object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DeletedTaskActivityTaskMutation) OldTaskActivityTaskID(ctx context.Context) (v ulid.ID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTaskActivityTaskID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTaskActivityTaskID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTaskActivityTaskID: %w", err)
+	}
+	return oldValue.TaskActivityTaskID, nil
+}
+
+// ResetTaskActivityTaskID resets all changes to the "task_activity_task_id" field.
+func (m *DeletedTaskActivityTaskMutation) ResetTaskActivityTaskID() {
+	m.task_activity_task_id = nil
+}
+
+// SetTaskActivityTaskCreatedAt sets the "task_activity_task_created_at" field.
+func (m *DeletedTaskActivityTaskMutation) SetTaskActivityTaskCreatedAt(t time.Time) {
+	m.task_activity_task_created_at = &t
+}
+
+// TaskActivityTaskCreatedAt returns the value of the "task_activity_task_created_at" field in the mutation.
+func (m *DeletedTaskActivityTaskMutation) TaskActivityTaskCreatedAt() (r time.Time, exists bool) {
+	v := m.task_activity_task_created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTaskActivityTaskCreatedAt returns the old "task_activity_task_created_at" field's value of the DeletedTaskActivityTask entity.
+// If the DeletedTaskActivityTask object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DeletedTaskActivityTaskMutation) OldTaskActivityTaskCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTaskActivityTaskCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTaskActivityTaskCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTaskActivityTaskCreatedAt: %w", err)
+	}
+	return oldValue.TaskActivityTaskCreatedAt, nil
+}
+
+// ResetTaskActivityTaskCreatedAt resets all changes to the "task_activity_task_created_at" field.
+func (m *DeletedTaskActivityTaskMutation) ResetTaskActivityTaskCreatedAt() {
+	m.task_activity_task_created_at = nil
+}
+
+// SetTaskActivityTaskUpdatedAt sets the "task_activity_task_updated_at" field.
+func (m *DeletedTaskActivityTaskMutation) SetTaskActivityTaskUpdatedAt(t time.Time) {
+	m.task_activity_task_updated_at = &t
+}
+
+// TaskActivityTaskUpdatedAt returns the value of the "task_activity_task_updated_at" field in the mutation.
+func (m *DeletedTaskActivityTaskMutation) TaskActivityTaskUpdatedAt() (r time.Time, exists bool) {
+	v := m.task_activity_task_updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTaskActivityTaskUpdatedAt returns the old "task_activity_task_updated_at" field's value of the DeletedTaskActivityTask entity.
+// If the DeletedTaskActivityTask object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DeletedTaskActivityTaskMutation) OldTaskActivityTaskUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTaskActivityTaskUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTaskActivityTaskUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTaskActivityTaskUpdatedAt: %w", err)
+	}
+	return oldValue.TaskActivityTaskUpdatedAt, nil
+}
+
+// ResetTaskActivityTaskUpdatedAt resets all changes to the "task_activity_task_updated_at" field.
+func (m *DeletedTaskActivityTaskMutation) ResetTaskActivityTaskUpdatedAt() {
+	m.task_activity_task_updated_at = nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *DeletedTaskActivityTaskMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *DeletedTaskActivityTaskMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the DeletedTaskActivityTask entity.
+// If the DeletedTaskActivityTask object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DeletedTaskActivityTaskMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *DeletedTaskActivityTaskMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *DeletedTaskActivityTaskMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *DeletedTaskActivityTaskMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the DeletedTaskActivityTask entity.
+// If the DeletedTaskActivityTask object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DeletedTaskActivityTaskMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *DeletedTaskActivityTaskMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// ClearTask clears the "task" edge to the Task entity.
+func (m *DeletedTaskActivityTaskMutation) ClearTask() {
+	m.clearedtask = true
+}
+
+// TaskCleared reports if the "task" edge to the Task entity was cleared.
+func (m *DeletedTaskActivityTaskMutation) TaskCleared() bool {
+	return m.clearedtask
+}
+
+// TaskIDs returns the "task" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// TaskID instead. It exists only for internal usage by the builders.
+func (m *DeletedTaskActivityTaskMutation) TaskIDs() (ids []ulid.ID) {
+	if id := m.task; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetTask resets all changes to the "task" edge.
+func (m *DeletedTaskActivityTaskMutation) ResetTask() {
+	m.task = nil
+	m.clearedtask = false
+}
+
+// Where appends a list predicates to the DeletedTaskActivityTaskMutation builder.
+func (m *DeletedTaskActivityTaskMutation) Where(ps ...predicate.DeletedTaskActivityTask) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// Op returns the operation name.
+func (m *DeletedTaskActivityTaskMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (DeletedTaskActivityTask).
+func (m *DeletedTaskActivityTaskMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *DeletedTaskActivityTaskMutation) Fields() []string {
+	fields := make([]string, 0, 7)
+	if m.task_activity_id != nil {
+		fields = append(fields, deletedtaskactivitytask.FieldTaskActivityID)
+	}
+	if m.task != nil {
+		fields = append(fields, deletedtaskactivitytask.FieldTaskID)
+	}
+	if m.task_activity_task_id != nil {
+		fields = append(fields, deletedtaskactivitytask.FieldTaskActivityTaskID)
+	}
+	if m.task_activity_task_created_at != nil {
+		fields = append(fields, deletedtaskactivitytask.FieldTaskActivityTaskCreatedAt)
+	}
+	if m.task_activity_task_updated_at != nil {
+		fields = append(fields, deletedtaskactivitytask.FieldTaskActivityTaskUpdatedAt)
+	}
+	if m.created_at != nil {
+		fields = append(fields, deletedtaskactivitytask.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, deletedtaskactivitytask.FieldUpdatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *DeletedTaskActivityTaskMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case deletedtaskactivitytask.FieldTaskActivityID:
+		return m.TaskActivityID()
+	case deletedtaskactivitytask.FieldTaskID:
+		return m.TaskID()
+	case deletedtaskactivitytask.FieldTaskActivityTaskID:
+		return m.TaskActivityTaskID()
+	case deletedtaskactivitytask.FieldTaskActivityTaskCreatedAt:
+		return m.TaskActivityTaskCreatedAt()
+	case deletedtaskactivitytask.FieldTaskActivityTaskUpdatedAt:
+		return m.TaskActivityTaskUpdatedAt()
+	case deletedtaskactivitytask.FieldCreatedAt:
+		return m.CreatedAt()
+	case deletedtaskactivitytask.FieldUpdatedAt:
+		return m.UpdatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *DeletedTaskActivityTaskMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case deletedtaskactivitytask.FieldTaskActivityID:
+		return m.OldTaskActivityID(ctx)
+	case deletedtaskactivitytask.FieldTaskID:
+		return m.OldTaskID(ctx)
+	case deletedtaskactivitytask.FieldTaskActivityTaskID:
+		return m.OldTaskActivityTaskID(ctx)
+	case deletedtaskactivitytask.FieldTaskActivityTaskCreatedAt:
+		return m.OldTaskActivityTaskCreatedAt(ctx)
+	case deletedtaskactivitytask.FieldTaskActivityTaskUpdatedAt:
+		return m.OldTaskActivityTaskUpdatedAt(ctx)
+	case deletedtaskactivitytask.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case deletedtaskactivitytask.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown DeletedTaskActivityTask field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *DeletedTaskActivityTaskMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case deletedtaskactivitytask.FieldTaskActivityID:
+		v, ok := value.(ulid.ID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTaskActivityID(v)
+		return nil
+	case deletedtaskactivitytask.FieldTaskID:
+		v, ok := value.(ulid.ID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTaskID(v)
+		return nil
+	case deletedtaskactivitytask.FieldTaskActivityTaskID:
+		v, ok := value.(ulid.ID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTaskActivityTaskID(v)
+		return nil
+	case deletedtaskactivitytask.FieldTaskActivityTaskCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTaskActivityTaskCreatedAt(v)
+		return nil
+	case deletedtaskactivitytask.FieldTaskActivityTaskUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTaskActivityTaskUpdatedAt(v)
+		return nil
+	case deletedtaskactivitytask.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case deletedtaskactivitytask.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown DeletedTaskActivityTask field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *DeletedTaskActivityTaskMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *DeletedTaskActivityTaskMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *DeletedTaskActivityTaskMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown DeletedTaskActivityTask numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *DeletedTaskActivityTaskMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *DeletedTaskActivityTaskMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *DeletedTaskActivityTaskMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown DeletedTaskActivityTask nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *DeletedTaskActivityTaskMutation) ResetField(name string) error {
+	switch name {
+	case deletedtaskactivitytask.FieldTaskActivityID:
+		m.ResetTaskActivityID()
+		return nil
+	case deletedtaskactivitytask.FieldTaskID:
+		m.ResetTaskID()
+		return nil
+	case deletedtaskactivitytask.FieldTaskActivityTaskID:
+		m.ResetTaskActivityTaskID()
+		return nil
+	case deletedtaskactivitytask.FieldTaskActivityTaskCreatedAt:
+		m.ResetTaskActivityTaskCreatedAt()
+		return nil
+	case deletedtaskactivitytask.FieldTaskActivityTaskUpdatedAt:
+		m.ResetTaskActivityTaskUpdatedAt()
+		return nil
+	case deletedtaskactivitytask.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case deletedtaskactivitytask.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown DeletedTaskActivityTask field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *DeletedTaskActivityTaskMutation) AddedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.task != nil {
+		edges = append(edges, deletedtaskactivitytask.EdgeTask)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *DeletedTaskActivityTaskMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case deletedtaskactivitytask.EdgeTask:
+		if id := m.task; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *DeletedTaskActivityTaskMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 1)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *DeletedTaskActivityTaskMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *DeletedTaskActivityTaskMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.clearedtask {
+		edges = append(edges, deletedtaskactivitytask.EdgeTask)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *DeletedTaskActivityTaskMutation) EdgeCleared(name string) bool {
+	switch name {
+	case deletedtaskactivitytask.EdgeTask:
+		return m.clearedtask
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *DeletedTaskActivityTaskMutation) ClearEdge(name string) error {
+	switch name {
+	case deletedtaskactivitytask.EdgeTask:
+		m.ClearTask()
+		return nil
+	}
+	return fmt.Errorf("unknown DeletedTaskActivityTask unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *DeletedTaskActivityTaskMutation) ResetEdge(name string) error {
+	switch name {
+	case deletedtaskactivitytask.EdgeTask:
+		m.ResetTask()
+		return nil
+	}
+	return fmt.Errorf("unknown DeletedTaskActivityTask edge %s", name)
+}
+
 // DeletedTeammateTaskMutation represents an operation that mutates the DeletedTeammateTask nodes in the graph.
 type DeletedTeammateTaskMutation struct {
 	config
@@ -6865,6 +7565,702 @@ func (m *DeletedTeammateTaskMutation) ResetEdge(name string) error {
 		return nil
 	}
 	return fmt.Errorf("unknown DeletedTeammateTask edge %s", name)
+}
+
+// DeletedWorkspaceActivityTaskMutation represents an operation that mutates the DeletedWorkspaceActivityTask nodes in the graph.
+type DeletedWorkspaceActivityTaskMutation struct {
+	config
+	op                                 Op
+	typ                                string
+	id                                 *ulid.ID
+	workspace_activity_id              *ulid.ID
+	workspace_activity_task_id         *ulid.ID
+	workspace_activity_task_created_at *time.Time
+	workspace_activity_task_updated_at *time.Time
+	created_at                         *time.Time
+	updated_at                         *time.Time
+	clearedFields                      map[string]struct{}
+	task                               *ulid.ID
+	clearedtask                        bool
+	done                               bool
+	oldValue                           func(context.Context) (*DeletedWorkspaceActivityTask, error)
+	predicates                         []predicate.DeletedWorkspaceActivityTask
+}
+
+var _ ent.Mutation = (*DeletedWorkspaceActivityTaskMutation)(nil)
+
+// deletedworkspaceactivitytaskOption allows management of the mutation configuration using functional options.
+type deletedworkspaceactivitytaskOption func(*DeletedWorkspaceActivityTaskMutation)
+
+// newDeletedWorkspaceActivityTaskMutation creates new mutation for the DeletedWorkspaceActivityTask entity.
+func newDeletedWorkspaceActivityTaskMutation(c config, op Op, opts ...deletedworkspaceactivitytaskOption) *DeletedWorkspaceActivityTaskMutation {
+	m := &DeletedWorkspaceActivityTaskMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeDeletedWorkspaceActivityTask,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withDeletedWorkspaceActivityTaskID sets the ID field of the mutation.
+func withDeletedWorkspaceActivityTaskID(id ulid.ID) deletedworkspaceactivitytaskOption {
+	return func(m *DeletedWorkspaceActivityTaskMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *DeletedWorkspaceActivityTask
+		)
+		m.oldValue = func(ctx context.Context) (*DeletedWorkspaceActivityTask, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().DeletedWorkspaceActivityTask.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withDeletedWorkspaceActivityTask sets the old DeletedWorkspaceActivityTask of the mutation.
+func withDeletedWorkspaceActivityTask(node *DeletedWorkspaceActivityTask) deletedworkspaceactivitytaskOption {
+	return func(m *DeletedWorkspaceActivityTaskMutation) {
+		m.oldValue = func(context.Context) (*DeletedWorkspaceActivityTask, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m DeletedWorkspaceActivityTaskMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m DeletedWorkspaceActivityTaskMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of DeletedWorkspaceActivityTask entities.
+func (m *DeletedWorkspaceActivityTaskMutation) SetID(id ulid.ID) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *DeletedWorkspaceActivityTaskMutation) ID() (id ulid.ID, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *DeletedWorkspaceActivityTaskMutation) IDs(ctx context.Context) ([]ulid.ID, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []ulid.ID{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().DeletedWorkspaceActivityTask.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetWorkspaceActivityID sets the "workspace_activity_id" field.
+func (m *DeletedWorkspaceActivityTaskMutation) SetWorkspaceActivityID(u ulid.ID) {
+	m.workspace_activity_id = &u
+}
+
+// WorkspaceActivityID returns the value of the "workspace_activity_id" field in the mutation.
+func (m *DeletedWorkspaceActivityTaskMutation) WorkspaceActivityID() (r ulid.ID, exists bool) {
+	v := m.workspace_activity_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldWorkspaceActivityID returns the old "workspace_activity_id" field's value of the DeletedWorkspaceActivityTask entity.
+// If the DeletedWorkspaceActivityTask object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DeletedWorkspaceActivityTaskMutation) OldWorkspaceActivityID(ctx context.Context) (v ulid.ID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldWorkspaceActivityID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldWorkspaceActivityID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldWorkspaceActivityID: %w", err)
+	}
+	return oldValue.WorkspaceActivityID, nil
+}
+
+// ResetWorkspaceActivityID resets all changes to the "workspace_activity_id" field.
+func (m *DeletedWorkspaceActivityTaskMutation) ResetWorkspaceActivityID() {
+	m.workspace_activity_id = nil
+}
+
+// SetTaskID sets the "task_id" field.
+func (m *DeletedWorkspaceActivityTaskMutation) SetTaskID(u ulid.ID) {
+	m.task = &u
+}
+
+// TaskID returns the value of the "task_id" field in the mutation.
+func (m *DeletedWorkspaceActivityTaskMutation) TaskID() (r ulid.ID, exists bool) {
+	v := m.task
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTaskID returns the old "task_id" field's value of the DeletedWorkspaceActivityTask entity.
+// If the DeletedWorkspaceActivityTask object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DeletedWorkspaceActivityTaskMutation) OldTaskID(ctx context.Context) (v ulid.ID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTaskID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTaskID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTaskID: %w", err)
+	}
+	return oldValue.TaskID, nil
+}
+
+// ResetTaskID resets all changes to the "task_id" field.
+func (m *DeletedWorkspaceActivityTaskMutation) ResetTaskID() {
+	m.task = nil
+}
+
+// SetWorkspaceActivityTaskID sets the "workspace_activity_task_id" field.
+func (m *DeletedWorkspaceActivityTaskMutation) SetWorkspaceActivityTaskID(u ulid.ID) {
+	m.workspace_activity_task_id = &u
+}
+
+// WorkspaceActivityTaskID returns the value of the "workspace_activity_task_id" field in the mutation.
+func (m *DeletedWorkspaceActivityTaskMutation) WorkspaceActivityTaskID() (r ulid.ID, exists bool) {
+	v := m.workspace_activity_task_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldWorkspaceActivityTaskID returns the old "workspace_activity_task_id" field's value of the DeletedWorkspaceActivityTask entity.
+// If the DeletedWorkspaceActivityTask object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DeletedWorkspaceActivityTaskMutation) OldWorkspaceActivityTaskID(ctx context.Context) (v ulid.ID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldWorkspaceActivityTaskID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldWorkspaceActivityTaskID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldWorkspaceActivityTaskID: %w", err)
+	}
+	return oldValue.WorkspaceActivityTaskID, nil
+}
+
+// ResetWorkspaceActivityTaskID resets all changes to the "workspace_activity_task_id" field.
+func (m *DeletedWorkspaceActivityTaskMutation) ResetWorkspaceActivityTaskID() {
+	m.workspace_activity_task_id = nil
+}
+
+// SetWorkspaceActivityTaskCreatedAt sets the "workspace_activity_task_created_at" field.
+func (m *DeletedWorkspaceActivityTaskMutation) SetWorkspaceActivityTaskCreatedAt(t time.Time) {
+	m.workspace_activity_task_created_at = &t
+}
+
+// WorkspaceActivityTaskCreatedAt returns the value of the "workspace_activity_task_created_at" field in the mutation.
+func (m *DeletedWorkspaceActivityTaskMutation) WorkspaceActivityTaskCreatedAt() (r time.Time, exists bool) {
+	v := m.workspace_activity_task_created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldWorkspaceActivityTaskCreatedAt returns the old "workspace_activity_task_created_at" field's value of the DeletedWorkspaceActivityTask entity.
+// If the DeletedWorkspaceActivityTask object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DeletedWorkspaceActivityTaskMutation) OldWorkspaceActivityTaskCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldWorkspaceActivityTaskCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldWorkspaceActivityTaskCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldWorkspaceActivityTaskCreatedAt: %w", err)
+	}
+	return oldValue.WorkspaceActivityTaskCreatedAt, nil
+}
+
+// ResetWorkspaceActivityTaskCreatedAt resets all changes to the "workspace_activity_task_created_at" field.
+func (m *DeletedWorkspaceActivityTaskMutation) ResetWorkspaceActivityTaskCreatedAt() {
+	m.workspace_activity_task_created_at = nil
+}
+
+// SetWorkspaceActivityTaskUpdatedAt sets the "workspace_activity_task_updated_at" field.
+func (m *DeletedWorkspaceActivityTaskMutation) SetWorkspaceActivityTaskUpdatedAt(t time.Time) {
+	m.workspace_activity_task_updated_at = &t
+}
+
+// WorkspaceActivityTaskUpdatedAt returns the value of the "workspace_activity_task_updated_at" field in the mutation.
+func (m *DeletedWorkspaceActivityTaskMutation) WorkspaceActivityTaskUpdatedAt() (r time.Time, exists bool) {
+	v := m.workspace_activity_task_updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldWorkspaceActivityTaskUpdatedAt returns the old "workspace_activity_task_updated_at" field's value of the DeletedWorkspaceActivityTask entity.
+// If the DeletedWorkspaceActivityTask object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DeletedWorkspaceActivityTaskMutation) OldWorkspaceActivityTaskUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldWorkspaceActivityTaskUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldWorkspaceActivityTaskUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldWorkspaceActivityTaskUpdatedAt: %w", err)
+	}
+	return oldValue.WorkspaceActivityTaskUpdatedAt, nil
+}
+
+// ResetWorkspaceActivityTaskUpdatedAt resets all changes to the "workspace_activity_task_updated_at" field.
+func (m *DeletedWorkspaceActivityTaskMutation) ResetWorkspaceActivityTaskUpdatedAt() {
+	m.workspace_activity_task_updated_at = nil
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *DeletedWorkspaceActivityTaskMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *DeletedWorkspaceActivityTaskMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the DeletedWorkspaceActivityTask entity.
+// If the DeletedWorkspaceActivityTask object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DeletedWorkspaceActivityTaskMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *DeletedWorkspaceActivityTaskMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *DeletedWorkspaceActivityTaskMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *DeletedWorkspaceActivityTaskMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the DeletedWorkspaceActivityTask entity.
+// If the DeletedWorkspaceActivityTask object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DeletedWorkspaceActivityTaskMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *DeletedWorkspaceActivityTaskMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// ClearTask clears the "task" edge to the Task entity.
+func (m *DeletedWorkspaceActivityTaskMutation) ClearTask() {
+	m.clearedtask = true
+}
+
+// TaskCleared reports if the "task" edge to the Task entity was cleared.
+func (m *DeletedWorkspaceActivityTaskMutation) TaskCleared() bool {
+	return m.clearedtask
+}
+
+// TaskIDs returns the "task" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// TaskID instead. It exists only for internal usage by the builders.
+func (m *DeletedWorkspaceActivityTaskMutation) TaskIDs() (ids []ulid.ID) {
+	if id := m.task; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetTask resets all changes to the "task" edge.
+func (m *DeletedWorkspaceActivityTaskMutation) ResetTask() {
+	m.task = nil
+	m.clearedtask = false
+}
+
+// Where appends a list predicates to the DeletedWorkspaceActivityTaskMutation builder.
+func (m *DeletedWorkspaceActivityTaskMutation) Where(ps ...predicate.DeletedWorkspaceActivityTask) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// Op returns the operation name.
+func (m *DeletedWorkspaceActivityTaskMutation) Op() Op {
+	return m.op
+}
+
+// Type returns the node type of this mutation (DeletedWorkspaceActivityTask).
+func (m *DeletedWorkspaceActivityTaskMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *DeletedWorkspaceActivityTaskMutation) Fields() []string {
+	fields := make([]string, 0, 7)
+	if m.workspace_activity_id != nil {
+		fields = append(fields, deletedworkspaceactivitytask.FieldWorkspaceActivityID)
+	}
+	if m.task != nil {
+		fields = append(fields, deletedworkspaceactivitytask.FieldTaskID)
+	}
+	if m.workspace_activity_task_id != nil {
+		fields = append(fields, deletedworkspaceactivitytask.FieldWorkspaceActivityTaskID)
+	}
+	if m.workspace_activity_task_created_at != nil {
+		fields = append(fields, deletedworkspaceactivitytask.FieldWorkspaceActivityTaskCreatedAt)
+	}
+	if m.workspace_activity_task_updated_at != nil {
+		fields = append(fields, deletedworkspaceactivitytask.FieldWorkspaceActivityTaskUpdatedAt)
+	}
+	if m.created_at != nil {
+		fields = append(fields, deletedworkspaceactivitytask.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, deletedworkspaceactivitytask.FieldUpdatedAt)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *DeletedWorkspaceActivityTaskMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case deletedworkspaceactivitytask.FieldWorkspaceActivityID:
+		return m.WorkspaceActivityID()
+	case deletedworkspaceactivitytask.FieldTaskID:
+		return m.TaskID()
+	case deletedworkspaceactivitytask.FieldWorkspaceActivityTaskID:
+		return m.WorkspaceActivityTaskID()
+	case deletedworkspaceactivitytask.FieldWorkspaceActivityTaskCreatedAt:
+		return m.WorkspaceActivityTaskCreatedAt()
+	case deletedworkspaceactivitytask.FieldWorkspaceActivityTaskUpdatedAt:
+		return m.WorkspaceActivityTaskUpdatedAt()
+	case deletedworkspaceactivitytask.FieldCreatedAt:
+		return m.CreatedAt()
+	case deletedworkspaceactivitytask.FieldUpdatedAt:
+		return m.UpdatedAt()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *DeletedWorkspaceActivityTaskMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case deletedworkspaceactivitytask.FieldWorkspaceActivityID:
+		return m.OldWorkspaceActivityID(ctx)
+	case deletedworkspaceactivitytask.FieldTaskID:
+		return m.OldTaskID(ctx)
+	case deletedworkspaceactivitytask.FieldWorkspaceActivityTaskID:
+		return m.OldWorkspaceActivityTaskID(ctx)
+	case deletedworkspaceactivitytask.FieldWorkspaceActivityTaskCreatedAt:
+		return m.OldWorkspaceActivityTaskCreatedAt(ctx)
+	case deletedworkspaceactivitytask.FieldWorkspaceActivityTaskUpdatedAt:
+		return m.OldWorkspaceActivityTaskUpdatedAt(ctx)
+	case deletedworkspaceactivitytask.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case deletedworkspaceactivitytask.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	}
+	return nil, fmt.Errorf("unknown DeletedWorkspaceActivityTask field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *DeletedWorkspaceActivityTaskMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case deletedworkspaceactivitytask.FieldWorkspaceActivityID:
+		v, ok := value.(ulid.ID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetWorkspaceActivityID(v)
+		return nil
+	case deletedworkspaceactivitytask.FieldTaskID:
+		v, ok := value.(ulid.ID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTaskID(v)
+		return nil
+	case deletedworkspaceactivitytask.FieldWorkspaceActivityTaskID:
+		v, ok := value.(ulid.ID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetWorkspaceActivityTaskID(v)
+		return nil
+	case deletedworkspaceactivitytask.FieldWorkspaceActivityTaskCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetWorkspaceActivityTaskCreatedAt(v)
+		return nil
+	case deletedworkspaceactivitytask.FieldWorkspaceActivityTaskUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetWorkspaceActivityTaskUpdatedAt(v)
+		return nil
+	case deletedworkspaceactivitytask.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case deletedworkspaceactivitytask.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	}
+	return fmt.Errorf("unknown DeletedWorkspaceActivityTask field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *DeletedWorkspaceActivityTaskMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *DeletedWorkspaceActivityTaskMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *DeletedWorkspaceActivityTaskMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown DeletedWorkspaceActivityTask numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *DeletedWorkspaceActivityTaskMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *DeletedWorkspaceActivityTaskMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *DeletedWorkspaceActivityTaskMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown DeletedWorkspaceActivityTask nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *DeletedWorkspaceActivityTaskMutation) ResetField(name string) error {
+	switch name {
+	case deletedworkspaceactivitytask.FieldWorkspaceActivityID:
+		m.ResetWorkspaceActivityID()
+		return nil
+	case deletedworkspaceactivitytask.FieldTaskID:
+		m.ResetTaskID()
+		return nil
+	case deletedworkspaceactivitytask.FieldWorkspaceActivityTaskID:
+		m.ResetWorkspaceActivityTaskID()
+		return nil
+	case deletedworkspaceactivitytask.FieldWorkspaceActivityTaskCreatedAt:
+		m.ResetWorkspaceActivityTaskCreatedAt()
+		return nil
+	case deletedworkspaceactivitytask.FieldWorkspaceActivityTaskUpdatedAt:
+		m.ResetWorkspaceActivityTaskUpdatedAt()
+		return nil
+	case deletedworkspaceactivitytask.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case deletedworkspaceactivitytask.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	}
+	return fmt.Errorf("unknown DeletedWorkspaceActivityTask field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *DeletedWorkspaceActivityTaskMutation) AddedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.task != nil {
+		edges = append(edges, deletedworkspaceactivitytask.EdgeTask)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *DeletedWorkspaceActivityTaskMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case deletedworkspaceactivitytask.EdgeTask:
+		if id := m.task; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *DeletedWorkspaceActivityTaskMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 1)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *DeletedWorkspaceActivityTaskMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *DeletedWorkspaceActivityTaskMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.clearedtask {
+		edges = append(edges, deletedworkspaceactivitytask.EdgeTask)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *DeletedWorkspaceActivityTaskMutation) EdgeCleared(name string) bool {
+	switch name {
+	case deletedworkspaceactivitytask.EdgeTask:
+		return m.clearedtask
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *DeletedWorkspaceActivityTaskMutation) ClearEdge(name string) error {
+	switch name {
+	case deletedworkspaceactivitytask.EdgeTask:
+		m.ClearTask()
+		return nil
+	}
+	return fmt.Errorf("unknown DeletedWorkspaceActivityTask unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *DeletedWorkspaceActivityTaskMutation) ResetEdge(name string) error {
+	switch name {
+	case deletedworkspaceactivitytask.EdgeTask:
+		m.ResetTask()
+		return nil
+	}
+	return fmt.Errorf("unknown DeletedWorkspaceActivityTask edge %s", name)
 }
 
 // FavoriteProjectMutation represents an operation that mutates the FavoriteProject nodes in the graph.
@@ -17093,6 +18489,12 @@ type TaskMutation struct {
 	deletedProjectTasks                   map[ulid.ID]struct{}
 	removeddeletedProjectTasks            map[ulid.ID]struct{}
 	cleareddeletedProjectTasks            bool
+	deletedTaskActivityTasks              map[ulid.ID]struct{}
+	removeddeletedTaskActivityTasks       map[ulid.ID]struct{}
+	cleareddeletedTaskActivityTasks       bool
+	deletedWorkspaceActivityTasks         map[ulid.ID]struct{}
+	removeddeletedWorkspaceActivityTasks  map[ulid.ID]struct{}
+	cleareddeletedWorkspaceActivityTasks  bool
 	done                                  bool
 	oldValue                              func(context.Context) (*Task, error)
 	predicates                            []predicate.Task
@@ -18716,6 +20118,114 @@ func (m *TaskMutation) ResetDeletedProjectTasks() {
 	m.removeddeletedProjectTasks = nil
 }
 
+// AddDeletedTaskActivityTaskIDs adds the "deletedTaskActivityTasks" edge to the DeletedTaskActivityTask entity by ids.
+func (m *TaskMutation) AddDeletedTaskActivityTaskIDs(ids ...ulid.ID) {
+	if m.deletedTaskActivityTasks == nil {
+		m.deletedTaskActivityTasks = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		m.deletedTaskActivityTasks[ids[i]] = struct{}{}
+	}
+}
+
+// ClearDeletedTaskActivityTasks clears the "deletedTaskActivityTasks" edge to the DeletedTaskActivityTask entity.
+func (m *TaskMutation) ClearDeletedTaskActivityTasks() {
+	m.cleareddeletedTaskActivityTasks = true
+}
+
+// DeletedTaskActivityTasksCleared reports if the "deletedTaskActivityTasks" edge to the DeletedTaskActivityTask entity was cleared.
+func (m *TaskMutation) DeletedTaskActivityTasksCleared() bool {
+	return m.cleareddeletedTaskActivityTasks
+}
+
+// RemoveDeletedTaskActivityTaskIDs removes the "deletedTaskActivityTasks" edge to the DeletedTaskActivityTask entity by IDs.
+func (m *TaskMutation) RemoveDeletedTaskActivityTaskIDs(ids ...ulid.ID) {
+	if m.removeddeletedTaskActivityTasks == nil {
+		m.removeddeletedTaskActivityTasks = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		delete(m.deletedTaskActivityTasks, ids[i])
+		m.removeddeletedTaskActivityTasks[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedDeletedTaskActivityTasks returns the removed IDs of the "deletedTaskActivityTasks" edge to the DeletedTaskActivityTask entity.
+func (m *TaskMutation) RemovedDeletedTaskActivityTasksIDs() (ids []ulid.ID) {
+	for id := range m.removeddeletedTaskActivityTasks {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// DeletedTaskActivityTasksIDs returns the "deletedTaskActivityTasks" edge IDs in the mutation.
+func (m *TaskMutation) DeletedTaskActivityTasksIDs() (ids []ulid.ID) {
+	for id := range m.deletedTaskActivityTasks {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetDeletedTaskActivityTasks resets all changes to the "deletedTaskActivityTasks" edge.
+func (m *TaskMutation) ResetDeletedTaskActivityTasks() {
+	m.deletedTaskActivityTasks = nil
+	m.cleareddeletedTaskActivityTasks = false
+	m.removeddeletedTaskActivityTasks = nil
+}
+
+// AddDeletedWorkspaceActivityTaskIDs adds the "deletedWorkspaceActivityTasks" edge to the DeletedWorkspaceActivityTask entity by ids.
+func (m *TaskMutation) AddDeletedWorkspaceActivityTaskIDs(ids ...ulid.ID) {
+	if m.deletedWorkspaceActivityTasks == nil {
+		m.deletedWorkspaceActivityTasks = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		m.deletedWorkspaceActivityTasks[ids[i]] = struct{}{}
+	}
+}
+
+// ClearDeletedWorkspaceActivityTasks clears the "deletedWorkspaceActivityTasks" edge to the DeletedWorkspaceActivityTask entity.
+func (m *TaskMutation) ClearDeletedWorkspaceActivityTasks() {
+	m.cleareddeletedWorkspaceActivityTasks = true
+}
+
+// DeletedWorkspaceActivityTasksCleared reports if the "deletedWorkspaceActivityTasks" edge to the DeletedWorkspaceActivityTask entity was cleared.
+func (m *TaskMutation) DeletedWorkspaceActivityTasksCleared() bool {
+	return m.cleareddeletedWorkspaceActivityTasks
+}
+
+// RemoveDeletedWorkspaceActivityTaskIDs removes the "deletedWorkspaceActivityTasks" edge to the DeletedWorkspaceActivityTask entity by IDs.
+func (m *TaskMutation) RemoveDeletedWorkspaceActivityTaskIDs(ids ...ulid.ID) {
+	if m.removeddeletedWorkspaceActivityTasks == nil {
+		m.removeddeletedWorkspaceActivityTasks = make(map[ulid.ID]struct{})
+	}
+	for i := range ids {
+		delete(m.deletedWorkspaceActivityTasks, ids[i])
+		m.removeddeletedWorkspaceActivityTasks[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedDeletedWorkspaceActivityTasks returns the removed IDs of the "deletedWorkspaceActivityTasks" edge to the DeletedWorkspaceActivityTask entity.
+func (m *TaskMutation) RemovedDeletedWorkspaceActivityTasksIDs() (ids []ulid.ID) {
+	for id := range m.removeddeletedWorkspaceActivityTasks {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// DeletedWorkspaceActivityTasksIDs returns the "deletedWorkspaceActivityTasks" edge IDs in the mutation.
+func (m *TaskMutation) DeletedWorkspaceActivityTasksIDs() (ids []ulid.ID) {
+	for id := range m.deletedWorkspaceActivityTasks {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetDeletedWorkspaceActivityTasks resets all changes to the "deletedWorkspaceActivityTasks" edge.
+func (m *TaskMutation) ResetDeletedWorkspaceActivityTasks() {
+	m.deletedWorkspaceActivityTasks = nil
+	m.cleareddeletedWorkspaceActivityTasks = false
+	m.removeddeletedWorkspaceActivityTasks = nil
+}
+
 // Where appends a list predicates to the TaskMutation builder.
 func (m *TaskMutation) Where(ps ...predicate.Task) {
 	m.predicates = append(m.predicates, ps...)
@@ -19077,7 +20587,7 @@ func (m *TaskMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *TaskMutation) AddedEdges() []string {
-	edges := make([]string, 0, 19)
+	edges := make([]string, 0, 21)
 	if m.teammate != nil {
 		edges = append(edges, task.EdgeTeammate)
 	}
@@ -19134,6 +20644,12 @@ func (m *TaskMutation) AddedEdges() []string {
 	}
 	if m.deletedProjectTasks != nil {
 		edges = append(edges, task.EdgeDeletedProjectTasks)
+	}
+	if m.deletedTaskActivityTasks != nil {
+		edges = append(edges, task.EdgeDeletedTaskActivityTasks)
+	}
+	if m.deletedWorkspaceActivityTasks != nil {
+		edges = append(edges, task.EdgeDeletedWorkspaceActivityTasks)
 	}
 	return edges
 }
@@ -19250,13 +20766,25 @@ func (m *TaskMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case task.EdgeDeletedTaskActivityTasks:
+		ids := make([]ent.Value, 0, len(m.deletedTaskActivityTasks))
+		for id := range m.deletedTaskActivityTasks {
+			ids = append(ids, id)
+		}
+		return ids
+	case task.EdgeDeletedWorkspaceActivityTasks:
+		ids := make([]ent.Value, 0, len(m.deletedWorkspaceActivityTasks))
+		for id := range m.deletedWorkspaceActivityTasks {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *TaskMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 19)
+	edges := make([]string, 0, 21)
 	if m.removedsubTasks != nil {
 		edges = append(edges, task.EdgeSubTasks)
 	}
@@ -19304,6 +20832,12 @@ func (m *TaskMutation) RemovedEdges() []string {
 	}
 	if m.removeddeletedProjectTasks != nil {
 		edges = append(edges, task.EdgeDeletedProjectTasks)
+	}
+	if m.removeddeletedTaskActivityTasks != nil {
+		edges = append(edges, task.EdgeDeletedTaskActivityTasks)
+	}
+	if m.removeddeletedWorkspaceActivityTasks != nil {
+		edges = append(edges, task.EdgeDeletedWorkspaceActivityTasks)
 	}
 	return edges
 }
@@ -19408,13 +20942,25 @@ func (m *TaskMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case task.EdgeDeletedTaskActivityTasks:
+		ids := make([]ent.Value, 0, len(m.removeddeletedTaskActivityTasks))
+		for id := range m.removeddeletedTaskActivityTasks {
+			ids = append(ids, id)
+		}
+		return ids
+	case task.EdgeDeletedWorkspaceActivityTasks:
+		ids := make([]ent.Value, 0, len(m.removeddeletedWorkspaceActivityTasks))
+		for id := range m.removeddeletedWorkspaceActivityTasks {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *TaskMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 19)
+	edges := make([]string, 0, 21)
 	if m.clearedteammate {
 		edges = append(edges, task.EdgeTeammate)
 	}
@@ -19472,6 +21018,12 @@ func (m *TaskMutation) ClearedEdges() []string {
 	if m.cleareddeletedProjectTasks {
 		edges = append(edges, task.EdgeDeletedProjectTasks)
 	}
+	if m.cleareddeletedTaskActivityTasks {
+		edges = append(edges, task.EdgeDeletedTaskActivityTasks)
+	}
+	if m.cleareddeletedWorkspaceActivityTasks {
+		edges = append(edges, task.EdgeDeletedWorkspaceActivityTasks)
+	}
 	return edges
 }
 
@@ -19517,6 +21069,10 @@ func (m *TaskMutation) EdgeCleared(name string) bool {
 		return m.cleareddeletedTeammateTasks
 	case task.EdgeDeletedProjectTasks:
 		return m.cleareddeletedProjectTasks
+	case task.EdgeDeletedTaskActivityTasks:
+		return m.cleareddeletedTaskActivityTasks
+	case task.EdgeDeletedWorkspaceActivityTasks:
+		return m.cleareddeletedWorkspaceActivityTasks
 	}
 	return false
 }
@@ -19598,6 +21154,12 @@ func (m *TaskMutation) ResetEdge(name string) error {
 		return nil
 	case task.EdgeDeletedProjectTasks:
 		m.ResetDeletedProjectTasks()
+		return nil
+	case task.EdgeDeletedTaskActivityTasks:
+		m.ResetDeletedTaskActivityTasks()
+		return nil
+	case task.EdgeDeletedWorkspaceActivityTasks:
+		m.ResetDeletedWorkspaceActivityTasks()
 		return nil
 	}
 	return fmt.Errorf("unknown Task edge %s", name)

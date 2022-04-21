@@ -700,6 +700,85 @@ func (u *DeletedTaskUpdateOne) SetInput(i UpdateDeletedTaskInput) *DeletedTaskUp
 	return u
 }
 
+// CreateDeletedTaskActivityTaskInput represents a mutation input for creating deletedtaskactivitytasks.
+type CreateDeletedTaskActivityTaskInput struct {
+	TaskActivityID            ulid.ID
+	TaskActivityTaskID        ulid.ID
+	TaskActivityTaskCreatedAt time.Time
+	TaskActivityTaskUpdatedAt time.Time
+	CreatedAt                 *time.Time
+	UpdatedAt                 *time.Time
+	TaskID                    ulid.ID
+	RequestID                 string
+}
+
+// Mutate applies the CreateDeletedTaskActivityTaskInput on the DeletedTaskActivityTaskCreate builder.
+func (i *CreateDeletedTaskActivityTaskInput) Mutate(m *DeletedTaskActivityTaskCreate) {
+	m.SetTaskActivityID(i.TaskActivityID)
+	m.SetTaskActivityTaskID(i.TaskActivityTaskID)
+	m.SetTaskActivityTaskCreatedAt(i.TaskActivityTaskCreatedAt)
+	m.SetTaskActivityTaskUpdatedAt(i.TaskActivityTaskUpdatedAt)
+	if v := i.CreatedAt; v != nil {
+		m.SetCreatedAt(*v)
+	}
+	if v := i.UpdatedAt; v != nil {
+		m.SetUpdatedAt(*v)
+	}
+	m.SetTaskID(i.TaskID)
+}
+
+// SetInput applies the change-set in the CreateDeletedTaskActivityTaskInput on the create builder.
+func (c *DeletedTaskActivityTaskCreate) SetInput(i CreateDeletedTaskActivityTaskInput) *DeletedTaskActivityTaskCreate {
+	i.Mutate(c)
+	return c
+}
+
+// UpdateDeletedTaskActivityTaskInput represents a mutation input for updating deletedtaskactivitytasks.
+type UpdateDeletedTaskActivityTaskInput struct {
+	ID                        ulid.ID
+	TaskActivityID            *ulid.ID
+	TaskActivityTaskID        *ulid.ID
+	TaskActivityTaskCreatedAt *time.Time
+	TaskActivityTaskUpdatedAt *time.Time
+	TaskID                    *ulid.ID
+	ClearTask                 bool
+	RequestID                 string
+}
+
+// Mutate applies the UpdateDeletedTaskActivityTaskInput on the DeletedTaskActivityTaskMutation.
+func (i *UpdateDeletedTaskActivityTaskInput) Mutate(m *DeletedTaskActivityTaskMutation) {
+	if v := i.TaskActivityID; v != nil {
+		m.SetTaskActivityID(*v)
+	}
+	if v := i.TaskActivityTaskID; v != nil {
+		m.SetTaskActivityTaskID(*v)
+	}
+	if v := i.TaskActivityTaskCreatedAt; v != nil {
+		m.SetTaskActivityTaskCreatedAt(*v)
+	}
+	if v := i.TaskActivityTaskUpdatedAt; v != nil {
+		m.SetTaskActivityTaskUpdatedAt(*v)
+	}
+	if i.ClearTask {
+		m.ClearTask()
+	}
+	if v := i.TaskID; v != nil {
+		m.SetTaskID(*v)
+	}
+}
+
+// SetInput applies the change-set in the UpdateDeletedTaskActivityTaskInput on the update builder.
+func (u *DeletedTaskActivityTaskUpdate) SetInput(i UpdateDeletedTaskActivityTaskInput) *DeletedTaskActivityTaskUpdate {
+	i.Mutate(u.Mutation())
+	return u
+}
+
+// SetInput applies the change-set in the UpdateDeletedTaskActivityTaskInput on the update-one builder.
+func (u *DeletedTaskActivityTaskUpdateOne) SetInput(i UpdateDeletedTaskActivityTaskInput) *DeletedTaskActivityTaskUpdateOne {
+	i.Mutate(u.Mutation())
+	return u
+}
+
 // CreateDeletedTeammateTaskInput represents a mutation input for creating deletedteammatetasks.
 type CreateDeletedTeammateTaskInput struct {
 	TeammateTaskSectionID ulid.ID
@@ -795,6 +874,85 @@ func (u *DeletedTeammateTaskUpdate) SetInput(i UpdateDeletedTeammateTaskInput) *
 
 // SetInput applies the change-set in the UpdateDeletedTeammateTaskInput on the update-one builder.
 func (u *DeletedTeammateTaskUpdateOne) SetInput(i UpdateDeletedTeammateTaskInput) *DeletedTeammateTaskUpdateOne {
+	i.Mutate(u.Mutation())
+	return u
+}
+
+// CreateDeletedWorkspaceActivityTaskInput represents a mutation input for creating deletedworkspaceactivitytasks.
+type CreateDeletedWorkspaceActivityTaskInput struct {
+	WorkspaceActivityID            ulid.ID
+	WorkspaceActivityTaskID        ulid.ID
+	WorkspaceActivityTaskCreatedAt time.Time
+	WorkspaceActivityTaskUpdatedAt time.Time
+	CreatedAt                      *time.Time
+	UpdatedAt                      *time.Time
+	TaskID                         ulid.ID
+	RequestID                      string
+}
+
+// Mutate applies the CreateDeletedWorkspaceActivityTaskInput on the DeletedWorkspaceActivityTaskCreate builder.
+func (i *CreateDeletedWorkspaceActivityTaskInput) Mutate(m *DeletedWorkspaceActivityTaskCreate) {
+	m.SetWorkspaceActivityID(i.WorkspaceActivityID)
+	m.SetWorkspaceActivityTaskID(i.WorkspaceActivityTaskID)
+	m.SetWorkspaceActivityTaskCreatedAt(i.WorkspaceActivityTaskCreatedAt)
+	m.SetWorkspaceActivityTaskUpdatedAt(i.WorkspaceActivityTaskUpdatedAt)
+	if v := i.CreatedAt; v != nil {
+		m.SetCreatedAt(*v)
+	}
+	if v := i.UpdatedAt; v != nil {
+		m.SetUpdatedAt(*v)
+	}
+	m.SetTaskID(i.TaskID)
+}
+
+// SetInput applies the change-set in the CreateDeletedWorkspaceActivityTaskInput on the create builder.
+func (c *DeletedWorkspaceActivityTaskCreate) SetInput(i CreateDeletedWorkspaceActivityTaskInput) *DeletedWorkspaceActivityTaskCreate {
+	i.Mutate(c)
+	return c
+}
+
+// UpdateDeletedWorkspaceActivityTaskInput represents a mutation input for updating deletedworkspaceactivitytasks.
+type UpdateDeletedWorkspaceActivityTaskInput struct {
+	ID                             ulid.ID
+	WorkspaceActivityID            *ulid.ID
+	WorkspaceActivityTaskID        *ulid.ID
+	WorkspaceActivityTaskCreatedAt *time.Time
+	WorkspaceActivityTaskUpdatedAt *time.Time
+	TaskID                         *ulid.ID
+	ClearTask                      bool
+	RequestID                      string
+}
+
+// Mutate applies the UpdateDeletedWorkspaceActivityTaskInput on the DeletedWorkspaceActivityTaskMutation.
+func (i *UpdateDeletedWorkspaceActivityTaskInput) Mutate(m *DeletedWorkspaceActivityTaskMutation) {
+	if v := i.WorkspaceActivityID; v != nil {
+		m.SetWorkspaceActivityID(*v)
+	}
+	if v := i.WorkspaceActivityTaskID; v != nil {
+		m.SetWorkspaceActivityTaskID(*v)
+	}
+	if v := i.WorkspaceActivityTaskCreatedAt; v != nil {
+		m.SetWorkspaceActivityTaskCreatedAt(*v)
+	}
+	if v := i.WorkspaceActivityTaskUpdatedAt; v != nil {
+		m.SetWorkspaceActivityTaskUpdatedAt(*v)
+	}
+	if i.ClearTask {
+		m.ClearTask()
+	}
+	if v := i.TaskID; v != nil {
+		m.SetTaskID(*v)
+	}
+}
+
+// SetInput applies the change-set in the UpdateDeletedWorkspaceActivityTaskInput on the update builder.
+func (u *DeletedWorkspaceActivityTaskUpdate) SetInput(i UpdateDeletedWorkspaceActivityTaskInput) *DeletedWorkspaceActivityTaskUpdate {
+	i.Mutate(u.Mutation())
+	return u
+}
+
+// SetInput applies the change-set in the UpdateDeletedWorkspaceActivityTaskInput on the update-one builder.
+func (u *DeletedWorkspaceActivityTaskUpdateOne) SetInput(i UpdateDeletedWorkspaceActivityTaskInput) *DeletedWorkspaceActivityTaskUpdateOne {
 	i.Mutate(u.Mutation())
 	return u
 }
@@ -2024,6 +2182,8 @@ type CreateTaskInput struct {
 	ArchivedWorkspaceActivityTaskIDs []ulid.ID
 	DeletedTeammateTaskIDs           []ulid.ID
 	DeletedProjectTaskIDs            []ulid.ID
+	DeletedTaskActivityTaskIDs       []ulid.ID
+	DeletedWorkspaceActivityTaskIDs  []ulid.ID
 	WorkspaceID                      ulid.ID
 	RequestID                        string
 }
@@ -2111,6 +2271,12 @@ func (i *CreateTaskInput) Mutate(m *TaskCreate) {
 	if ids := i.DeletedProjectTaskIDs; len(ids) > 0 {
 		m.AddDeletedProjectTaskIDs(ids...)
 	}
+	if ids := i.DeletedTaskActivityTaskIDs; len(ids) > 0 {
+		m.AddDeletedTaskActivityTaskIDs(ids...)
+	}
+	if ids := i.DeletedWorkspaceActivityTaskIDs; len(ids) > 0 {
+		m.AddDeletedWorkspaceActivityTaskIDs(ids...)
+	}
 }
 
 // SetInput applies the change-set in the CreateTaskInput on the create builder.
@@ -2171,6 +2337,10 @@ type UpdateTaskInput struct {
 	RemoveDeletedTeammateTaskIDs           []ulid.ID
 	AddDeletedProjectTaskIDs               []ulid.ID
 	RemoveDeletedProjectTaskIDs            []ulid.ID
+	AddDeletedTaskActivityTaskIDs          []ulid.ID
+	RemoveDeletedTaskActivityTaskIDs       []ulid.ID
+	AddDeletedWorkspaceActivityTaskIDs     []ulid.ID
+	RemoveDeletedWorkspaceActivityTaskIDs  []ulid.ID
 	WorkspaceID                            ulid.ID
 	RequestID                              string
 }
@@ -2323,6 +2493,18 @@ func (i *UpdateTaskInput) Mutate(m *TaskMutation) {
 	}
 	if ids := i.RemoveDeletedProjectTaskIDs; len(ids) > 0 {
 		m.RemoveDeletedProjectTaskIDs(ids...)
+	}
+	if ids := i.AddDeletedTaskActivityTaskIDs; len(ids) > 0 {
+		m.AddDeletedTaskActivityTaskIDs(ids...)
+	}
+	if ids := i.RemoveDeletedTaskActivityTaskIDs; len(ids) > 0 {
+		m.RemoveDeletedTaskActivityTaskIDs(ids...)
+	}
+	if ids := i.AddDeletedWorkspaceActivityTaskIDs; len(ids) > 0 {
+		m.AddDeletedWorkspaceActivityTaskIDs(ids...)
+	}
+	if ids := i.RemoveDeletedWorkspaceActivityTaskIDs; len(ids) > 0 {
+		m.RemoveDeletedWorkspaceActivityTaskIDs(ids...)
 	}
 }
 

@@ -217,6 +217,20 @@ func (Task) Edges() []ent.Edge {
 					annotation.Edge{FieldName: "deleted_project_task_id"},
 				),
 			),
+		edge.To(deletedTaskActivityTasksRef, DeletedTaskActivityTask.Type).
+			Annotations(
+				entgql.Bind(),
+				schema.Annotation(
+					annotation.Edge{FieldName: "deleted_task_activity_task_id"},
+				),
+			),
+		edge.To(deletedWorkspaceActivityTasksRef, DeletedWorkspaceActivityTask.Type).
+			Annotations(
+				entgql.Bind(),
+				schema.Annotation(
+					annotation.Edge{FieldName: "deleted_workspace_activity_task_id"},
+				),
+			),
 	}
 }
 

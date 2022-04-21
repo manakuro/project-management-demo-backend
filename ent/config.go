@@ -32,7 +32,9 @@ type hooks struct {
 	Color                         []ent.Hook
 	DeletedProjectTask            []ent.Hook
 	DeletedTask                   []ent.Hook
+	DeletedTaskActivityTask       []ent.Hook
 	DeletedTeammateTask           []ent.Hook
+	DeletedWorkspaceActivityTask  []ent.Hook
 	FavoriteProject               []ent.Hook
 	FavoriteWorkspace             []ent.Hook
 	FileType                      []ent.Hook

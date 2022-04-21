@@ -76,6 +76,10 @@ const (
 	EdgeDeletedTeammateTasks = "deletedTeammateTasks"
 	// EdgeDeletedProjectTasks holds the string denoting the deletedprojecttasks edge name in mutations.
 	EdgeDeletedProjectTasks = "deletedProjectTasks"
+	// EdgeDeletedTaskActivityTasks holds the string denoting the deletedtaskactivitytasks edge name in mutations.
+	EdgeDeletedTaskActivityTasks = "deletedTaskActivityTasks"
+	// EdgeDeletedWorkspaceActivityTasks holds the string denoting the deletedworkspaceactivitytasks edge name in mutations.
+	EdgeDeletedWorkspaceActivityTasks = "deletedWorkspaceActivityTasks"
 	// Table holds the table name of the task in the database.
 	Table = "tasks"
 	// TeammateTable is the table that holds the teammate relation/edge.
@@ -205,6 +209,20 @@ const (
 	DeletedProjectTasksInverseTable = "deleted_project_tasks"
 	// DeletedProjectTasksColumn is the table column denoting the deletedProjectTasks relation/edge.
 	DeletedProjectTasksColumn = "task_id"
+	// DeletedTaskActivityTasksTable is the table that holds the deletedTaskActivityTasks relation/edge.
+	DeletedTaskActivityTasksTable = "deleted_task_activity_tasks"
+	// DeletedTaskActivityTasksInverseTable is the table name for the DeletedTaskActivityTask entity.
+	// It exists in this package in order to avoid circular dependency with the "deletedtaskactivitytask" package.
+	DeletedTaskActivityTasksInverseTable = "deleted_task_activity_tasks"
+	// DeletedTaskActivityTasksColumn is the table column denoting the deletedTaskActivityTasks relation/edge.
+	DeletedTaskActivityTasksColumn = "task_id"
+	// DeletedWorkspaceActivityTasksTable is the table that holds the deletedWorkspaceActivityTasks relation/edge.
+	DeletedWorkspaceActivityTasksTable = "deleted_workspace_activity_tasks"
+	// DeletedWorkspaceActivityTasksInverseTable is the table name for the DeletedWorkspaceActivityTask entity.
+	// It exists in this package in order to avoid circular dependency with the "deletedworkspaceactivitytask" package.
+	DeletedWorkspaceActivityTasksInverseTable = "deleted_workspace_activity_tasks"
+	// DeletedWorkspaceActivityTasksColumn is the table column denoting the deletedWorkspaceActivityTasks relation/edge.
+	DeletedWorkspaceActivityTasksColumn = "task_id"
 )
 
 // Columns holds all SQL columns for task fields.

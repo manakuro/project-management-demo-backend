@@ -10,7 +10,9 @@ import (
 	"project-management-demo-backend/ent/archivedworkspaceactivitytask"
 	"project-management-demo-backend/ent/deletedprojecttask"
 	"project-management-demo-backend/ent/deletedtask"
+	"project-management-demo-backend/ent/deletedtaskactivitytask"
 	"project-management-demo-backend/ent/deletedteammatetask"
+	"project-management-demo-backend/ent/deletedworkspaceactivitytask"
 	"project-management-demo-backend/ent/predicate"
 	"project-management-demo-backend/ent/projecttask"
 	"project-management-demo-backend/ent/schema/ulid"
@@ -495,6 +497,36 @@ func (tu *TaskUpdate) AddDeletedProjectTasks(d ...*DeletedProjectTask) *TaskUpda
 	return tu.AddDeletedProjectTaskIDs(ids...)
 }
 
+// AddDeletedTaskActivityTaskIDs adds the "deletedTaskActivityTasks" edge to the DeletedTaskActivityTask entity by IDs.
+func (tu *TaskUpdate) AddDeletedTaskActivityTaskIDs(ids ...ulid.ID) *TaskUpdate {
+	tu.mutation.AddDeletedTaskActivityTaskIDs(ids...)
+	return tu
+}
+
+// AddDeletedTaskActivityTasks adds the "deletedTaskActivityTasks" edges to the DeletedTaskActivityTask entity.
+func (tu *TaskUpdate) AddDeletedTaskActivityTasks(d ...*DeletedTaskActivityTask) *TaskUpdate {
+	ids := make([]ulid.ID, len(d))
+	for i := range d {
+		ids[i] = d[i].ID
+	}
+	return tu.AddDeletedTaskActivityTaskIDs(ids...)
+}
+
+// AddDeletedWorkspaceActivityTaskIDs adds the "deletedWorkspaceActivityTasks" edge to the DeletedWorkspaceActivityTask entity by IDs.
+func (tu *TaskUpdate) AddDeletedWorkspaceActivityTaskIDs(ids ...ulid.ID) *TaskUpdate {
+	tu.mutation.AddDeletedWorkspaceActivityTaskIDs(ids...)
+	return tu
+}
+
+// AddDeletedWorkspaceActivityTasks adds the "deletedWorkspaceActivityTasks" edges to the DeletedWorkspaceActivityTask entity.
+func (tu *TaskUpdate) AddDeletedWorkspaceActivityTasks(d ...*DeletedWorkspaceActivityTask) *TaskUpdate {
+	ids := make([]ulid.ID, len(d))
+	for i := range d {
+		ids[i] = d[i].ID
+	}
+	return tu.AddDeletedWorkspaceActivityTaskIDs(ids...)
+}
+
 // Mutation returns the TaskMutation object of the builder.
 func (tu *TaskUpdate) Mutation() *TaskMutation {
 	return tu.mutation
@@ -852,6 +884,48 @@ func (tu *TaskUpdate) RemoveDeletedProjectTasks(d ...*DeletedProjectTask) *TaskU
 		ids[i] = d[i].ID
 	}
 	return tu.RemoveDeletedProjectTaskIDs(ids...)
+}
+
+// ClearDeletedTaskActivityTasks clears all "deletedTaskActivityTasks" edges to the DeletedTaskActivityTask entity.
+func (tu *TaskUpdate) ClearDeletedTaskActivityTasks() *TaskUpdate {
+	tu.mutation.ClearDeletedTaskActivityTasks()
+	return tu
+}
+
+// RemoveDeletedTaskActivityTaskIDs removes the "deletedTaskActivityTasks" edge to DeletedTaskActivityTask entities by IDs.
+func (tu *TaskUpdate) RemoveDeletedTaskActivityTaskIDs(ids ...ulid.ID) *TaskUpdate {
+	tu.mutation.RemoveDeletedTaskActivityTaskIDs(ids...)
+	return tu
+}
+
+// RemoveDeletedTaskActivityTasks removes "deletedTaskActivityTasks" edges to DeletedTaskActivityTask entities.
+func (tu *TaskUpdate) RemoveDeletedTaskActivityTasks(d ...*DeletedTaskActivityTask) *TaskUpdate {
+	ids := make([]ulid.ID, len(d))
+	for i := range d {
+		ids[i] = d[i].ID
+	}
+	return tu.RemoveDeletedTaskActivityTaskIDs(ids...)
+}
+
+// ClearDeletedWorkspaceActivityTasks clears all "deletedWorkspaceActivityTasks" edges to the DeletedWorkspaceActivityTask entity.
+func (tu *TaskUpdate) ClearDeletedWorkspaceActivityTasks() *TaskUpdate {
+	tu.mutation.ClearDeletedWorkspaceActivityTasks()
+	return tu
+}
+
+// RemoveDeletedWorkspaceActivityTaskIDs removes the "deletedWorkspaceActivityTasks" edge to DeletedWorkspaceActivityTask entities by IDs.
+func (tu *TaskUpdate) RemoveDeletedWorkspaceActivityTaskIDs(ids ...ulid.ID) *TaskUpdate {
+	tu.mutation.RemoveDeletedWorkspaceActivityTaskIDs(ids...)
+	return tu
+}
+
+// RemoveDeletedWorkspaceActivityTasks removes "deletedWorkspaceActivityTasks" edges to DeletedWorkspaceActivityTask entities.
+func (tu *TaskUpdate) RemoveDeletedWorkspaceActivityTasks(d ...*DeletedWorkspaceActivityTask) *TaskUpdate {
+	ids := make([]ulid.ID, len(d))
+	for i := range d {
+		ids[i] = d[i].ID
+	}
+	return tu.RemoveDeletedWorkspaceActivityTaskIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -1985,6 +2059,114 @@ func (tu *TaskUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if tu.mutation.DeletedTaskActivityTasksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   task.DeletedTaskActivityTasksTable,
+			Columns: []string{task.DeletedTaskActivityTasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: deletedtaskactivitytask.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tu.mutation.RemovedDeletedTaskActivityTasksIDs(); len(nodes) > 0 && !tu.mutation.DeletedTaskActivityTasksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   task.DeletedTaskActivityTasksTable,
+			Columns: []string{task.DeletedTaskActivityTasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: deletedtaskactivitytask.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tu.mutation.DeletedTaskActivityTasksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   task.DeletedTaskActivityTasksTable,
+			Columns: []string{task.DeletedTaskActivityTasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: deletedtaskactivitytask.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if tu.mutation.DeletedWorkspaceActivityTasksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   task.DeletedWorkspaceActivityTasksTable,
+			Columns: []string{task.DeletedWorkspaceActivityTasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: deletedworkspaceactivitytask.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tu.mutation.RemovedDeletedWorkspaceActivityTasksIDs(); len(nodes) > 0 && !tu.mutation.DeletedWorkspaceActivityTasksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   task.DeletedWorkspaceActivityTasksTable,
+			Columns: []string{task.DeletedWorkspaceActivityTasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: deletedworkspaceactivitytask.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tu.mutation.DeletedWorkspaceActivityTasksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   task.DeletedWorkspaceActivityTasksTable,
+			Columns: []string{task.DeletedWorkspaceActivityTasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: deletedworkspaceactivitytask.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, tu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{task.Label}
@@ -2453,6 +2635,36 @@ func (tuo *TaskUpdateOne) AddDeletedProjectTasks(d ...*DeletedProjectTask) *Task
 	return tuo.AddDeletedProjectTaskIDs(ids...)
 }
 
+// AddDeletedTaskActivityTaskIDs adds the "deletedTaskActivityTasks" edge to the DeletedTaskActivityTask entity by IDs.
+func (tuo *TaskUpdateOne) AddDeletedTaskActivityTaskIDs(ids ...ulid.ID) *TaskUpdateOne {
+	tuo.mutation.AddDeletedTaskActivityTaskIDs(ids...)
+	return tuo
+}
+
+// AddDeletedTaskActivityTasks adds the "deletedTaskActivityTasks" edges to the DeletedTaskActivityTask entity.
+func (tuo *TaskUpdateOne) AddDeletedTaskActivityTasks(d ...*DeletedTaskActivityTask) *TaskUpdateOne {
+	ids := make([]ulid.ID, len(d))
+	for i := range d {
+		ids[i] = d[i].ID
+	}
+	return tuo.AddDeletedTaskActivityTaskIDs(ids...)
+}
+
+// AddDeletedWorkspaceActivityTaskIDs adds the "deletedWorkspaceActivityTasks" edge to the DeletedWorkspaceActivityTask entity by IDs.
+func (tuo *TaskUpdateOne) AddDeletedWorkspaceActivityTaskIDs(ids ...ulid.ID) *TaskUpdateOne {
+	tuo.mutation.AddDeletedWorkspaceActivityTaskIDs(ids...)
+	return tuo
+}
+
+// AddDeletedWorkspaceActivityTasks adds the "deletedWorkspaceActivityTasks" edges to the DeletedWorkspaceActivityTask entity.
+func (tuo *TaskUpdateOne) AddDeletedWorkspaceActivityTasks(d ...*DeletedWorkspaceActivityTask) *TaskUpdateOne {
+	ids := make([]ulid.ID, len(d))
+	for i := range d {
+		ids[i] = d[i].ID
+	}
+	return tuo.AddDeletedWorkspaceActivityTaskIDs(ids...)
+}
+
 // Mutation returns the TaskMutation object of the builder.
 func (tuo *TaskUpdateOne) Mutation() *TaskMutation {
 	return tuo.mutation
@@ -2810,6 +3022,48 @@ func (tuo *TaskUpdateOne) RemoveDeletedProjectTasks(d ...*DeletedProjectTask) *T
 		ids[i] = d[i].ID
 	}
 	return tuo.RemoveDeletedProjectTaskIDs(ids...)
+}
+
+// ClearDeletedTaskActivityTasks clears all "deletedTaskActivityTasks" edges to the DeletedTaskActivityTask entity.
+func (tuo *TaskUpdateOne) ClearDeletedTaskActivityTasks() *TaskUpdateOne {
+	tuo.mutation.ClearDeletedTaskActivityTasks()
+	return tuo
+}
+
+// RemoveDeletedTaskActivityTaskIDs removes the "deletedTaskActivityTasks" edge to DeletedTaskActivityTask entities by IDs.
+func (tuo *TaskUpdateOne) RemoveDeletedTaskActivityTaskIDs(ids ...ulid.ID) *TaskUpdateOne {
+	tuo.mutation.RemoveDeletedTaskActivityTaskIDs(ids...)
+	return tuo
+}
+
+// RemoveDeletedTaskActivityTasks removes "deletedTaskActivityTasks" edges to DeletedTaskActivityTask entities.
+func (tuo *TaskUpdateOne) RemoveDeletedTaskActivityTasks(d ...*DeletedTaskActivityTask) *TaskUpdateOne {
+	ids := make([]ulid.ID, len(d))
+	for i := range d {
+		ids[i] = d[i].ID
+	}
+	return tuo.RemoveDeletedTaskActivityTaskIDs(ids...)
+}
+
+// ClearDeletedWorkspaceActivityTasks clears all "deletedWorkspaceActivityTasks" edges to the DeletedWorkspaceActivityTask entity.
+func (tuo *TaskUpdateOne) ClearDeletedWorkspaceActivityTasks() *TaskUpdateOne {
+	tuo.mutation.ClearDeletedWorkspaceActivityTasks()
+	return tuo
+}
+
+// RemoveDeletedWorkspaceActivityTaskIDs removes the "deletedWorkspaceActivityTasks" edge to DeletedWorkspaceActivityTask entities by IDs.
+func (tuo *TaskUpdateOne) RemoveDeletedWorkspaceActivityTaskIDs(ids ...ulid.ID) *TaskUpdateOne {
+	tuo.mutation.RemoveDeletedWorkspaceActivityTaskIDs(ids...)
+	return tuo
+}
+
+// RemoveDeletedWorkspaceActivityTasks removes "deletedWorkspaceActivityTasks" edges to DeletedWorkspaceActivityTask entities.
+func (tuo *TaskUpdateOne) RemoveDeletedWorkspaceActivityTasks(d ...*DeletedWorkspaceActivityTask) *TaskUpdateOne {
+	ids := make([]ulid.ID, len(d))
+	for i := range d {
+		ids[i] = d[i].ID
+	}
+	return tuo.RemoveDeletedWorkspaceActivityTaskIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -3959,6 +4213,114 @@ func (tuo *TaskUpdateOne) sqlSave(ctx context.Context) (_node *Task, err error) 
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: deletedprojecttask.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if tuo.mutation.DeletedTaskActivityTasksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   task.DeletedTaskActivityTasksTable,
+			Columns: []string{task.DeletedTaskActivityTasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: deletedtaskactivitytask.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tuo.mutation.RemovedDeletedTaskActivityTasksIDs(); len(nodes) > 0 && !tuo.mutation.DeletedTaskActivityTasksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   task.DeletedTaskActivityTasksTable,
+			Columns: []string{task.DeletedTaskActivityTasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: deletedtaskactivitytask.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tuo.mutation.DeletedTaskActivityTasksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   task.DeletedTaskActivityTasksTable,
+			Columns: []string{task.DeletedTaskActivityTasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: deletedtaskactivitytask.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if tuo.mutation.DeletedWorkspaceActivityTasksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   task.DeletedWorkspaceActivityTasksTable,
+			Columns: []string{task.DeletedWorkspaceActivityTasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: deletedworkspaceactivitytask.FieldID,
+				},
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tuo.mutation.RemovedDeletedWorkspaceActivityTasksIDs(); len(nodes) > 0 && !tuo.mutation.DeletedWorkspaceActivityTasksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   task.DeletedWorkspaceActivityTasksTable,
+			Columns: []string{task.DeletedWorkspaceActivityTasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: deletedworkspaceactivitytask.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := tuo.mutation.DeletedWorkspaceActivityTasksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   task.DeletedWorkspaceActivityTasksTable,
+			Columns: []string{task.DeletedWorkspaceActivityTasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: deletedworkspaceactivitytask.FieldID,
 				},
 			},
 		}

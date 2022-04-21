@@ -1777,6 +1777,62 @@ func HasDeletedProjectTasksWith(preds ...predicate.DeletedProjectTask) predicate
 	})
 }
 
+// HasDeletedTaskActivityTasks applies the HasEdge predicate on the "deletedTaskActivityTasks" edge.
+func HasDeletedTaskActivityTasks() predicate.Task {
+	return predicate.Task(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(DeletedTaskActivityTasksTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, DeletedTaskActivityTasksTable, DeletedTaskActivityTasksColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasDeletedTaskActivityTasksWith applies the HasEdge predicate on the "deletedTaskActivityTasks" edge with a given conditions (other predicates).
+func HasDeletedTaskActivityTasksWith(preds ...predicate.DeletedTaskActivityTask) predicate.Task {
+	return predicate.Task(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(DeletedTaskActivityTasksInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, DeletedTaskActivityTasksTable, DeletedTaskActivityTasksColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasDeletedWorkspaceActivityTasks applies the HasEdge predicate on the "deletedWorkspaceActivityTasks" edge.
+func HasDeletedWorkspaceActivityTasks() predicate.Task {
+	return predicate.Task(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(DeletedWorkspaceActivityTasksTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, DeletedWorkspaceActivityTasksTable, DeletedWorkspaceActivityTasksColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasDeletedWorkspaceActivityTasksWith applies the HasEdge predicate on the "deletedWorkspaceActivityTasks" edge with a given conditions (other predicates).
+func HasDeletedWorkspaceActivityTasksWith(preds ...predicate.DeletedWorkspaceActivityTask) predicate.Task {
+	return predicate.Task(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.To(DeletedWorkspaceActivityTasksInverseTable, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, DeletedWorkspaceActivityTasksTable, DeletedWorkspaceActivityTasksColumn),
+		)
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Task) predicate.Task {
 	return predicate.Task(func(s *sql.Selector) {

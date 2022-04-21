@@ -237,6 +237,26 @@ func (dt *DeletedTaskQuery) collectField(ctx *graphql.OperationContext, field gr
 }
 
 // CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
+func (dtat *DeletedTaskActivityTaskQuery) CollectFields(ctx context.Context, satisfies ...string) *DeletedTaskActivityTaskQuery {
+	if fc := graphql.GetFieldContext(ctx); fc != nil {
+		dtat = dtat.collectField(graphql.GetOperationContext(ctx), fc.Field, satisfies...)
+	}
+	return dtat
+}
+
+func (dtat *DeletedTaskActivityTaskQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *DeletedTaskActivityTaskQuery {
+	for _, field := range graphql.CollectFields(ctx, field.Selections, satisfies) {
+		switch field.Name {
+		case "task":
+			dtat = dtat.WithTask(func(query *TaskQuery) {
+				query.collectField(ctx, field)
+			})
+		}
+	}
+	return dtat
+}
+
+// CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
 func (dtt *DeletedTeammateTaskQuery) CollectFields(ctx context.Context, satisfies ...string) *DeletedTeammateTaskQuery {
 	if fc := graphql.GetFieldContext(ctx); fc != nil {
 		dtt = dtt.collectField(graphql.GetOperationContext(ctx), fc.Field, satisfies...)
@@ -262,6 +282,26 @@ func (dtt *DeletedTeammateTaskQuery) collectField(ctx *graphql.OperationContext,
 		}
 	}
 	return dtt
+}
+
+// CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
+func (dwat *DeletedWorkspaceActivityTaskQuery) CollectFields(ctx context.Context, satisfies ...string) *DeletedWorkspaceActivityTaskQuery {
+	if fc := graphql.GetFieldContext(ctx); fc != nil {
+		dwat = dwat.collectField(graphql.GetOperationContext(ctx), fc.Field, satisfies...)
+	}
+	return dwat
+}
+
+func (dwat *DeletedWorkspaceActivityTaskQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *DeletedWorkspaceActivityTaskQuery {
+	for _, field := range graphql.CollectFields(ctx, field.Selections, satisfies) {
+		switch field.Name {
+		case "task":
+			dwat = dwat.WithTask(func(query *TaskQuery) {
+				query.collectField(ctx, field)
+			})
+		}
+	}
+	return dwat
 }
 
 // CollectFields tells the query-builder to eagerly load connected nodes by resolver context.
@@ -679,12 +719,20 @@ func (t *TaskQuery) collectField(ctx *graphql.OperationContext, field graphql.Co
 			t = t.WithDeletedProjectTasks(func(query *DeletedProjectTaskQuery) {
 				query.collectField(ctx, field)
 			})
+		case "deletedTaskActivityTasks":
+			t = t.WithDeletedTaskActivityTasks(func(query *DeletedTaskActivityTaskQuery) {
+				query.collectField(ctx, field)
+			})
 		case "deletedTasksRef":
 			t = t.WithDeletedTasksRef(func(query *DeletedTaskQuery) {
 				query.collectField(ctx, field)
 			})
 		case "deletedTeammateTasks":
 			t = t.WithDeletedTeammateTasks(func(query *DeletedTeammateTaskQuery) {
+				query.collectField(ctx, field)
+			})
+		case "deletedWorkspaceActivityTasks":
+			t = t.WithDeletedWorkspaceActivityTasks(func(query *DeletedWorkspaceActivityTaskQuery) {
 				query.collectField(ctx, field)
 			})
 		case "parentTask":

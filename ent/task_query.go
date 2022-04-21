@@ -12,7 +12,9 @@ import (
 	"project-management-demo-backend/ent/archivedworkspaceactivitytask"
 	"project-management-demo-backend/ent/deletedprojecttask"
 	"project-management-demo-backend/ent/deletedtask"
+	"project-management-demo-backend/ent/deletedtaskactivitytask"
 	"project-management-demo-backend/ent/deletedteammatetask"
+	"project-management-demo-backend/ent/deletedworkspaceactivitytask"
 	"project-management-demo-backend/ent/predicate"
 	"project-management-demo-backend/ent/projecttask"
 	"project-management-demo-backend/ent/schema/ulid"
@@ -63,6 +65,8 @@ type TaskQuery struct {
 	withArchivedWorkspaceActivityTasks *ArchivedWorkspaceActivityTaskQuery
 	withDeletedTeammateTasks           *DeletedTeammateTaskQuery
 	withDeletedProjectTasks            *DeletedProjectTaskQuery
+	withDeletedTaskActivityTasks       *DeletedTaskActivityTaskQuery
+	withDeletedWorkspaceActivityTasks  *DeletedWorkspaceActivityTaskQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -517,6 +521,50 @@ func (tq *TaskQuery) QueryDeletedProjectTasks() *DeletedProjectTaskQuery {
 	return query
 }
 
+// QueryDeletedTaskActivityTasks chains the current query on the "deletedTaskActivityTasks" edge.
+func (tq *TaskQuery) QueryDeletedTaskActivityTasks() *DeletedTaskActivityTaskQuery {
+	query := &DeletedTaskActivityTaskQuery{config: tq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := tq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := tq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(task.Table, task.FieldID, selector),
+			sqlgraph.To(deletedtaskactivitytask.Table, deletedtaskactivitytask.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, task.DeletedTaskActivityTasksTable, task.DeletedTaskActivityTasksColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(tq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryDeletedWorkspaceActivityTasks chains the current query on the "deletedWorkspaceActivityTasks" edge.
+func (tq *TaskQuery) QueryDeletedWorkspaceActivityTasks() *DeletedWorkspaceActivityTaskQuery {
+	query := &DeletedWorkspaceActivityTaskQuery{config: tq.config}
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := tq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := tq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(task.Table, task.FieldID, selector),
+			sqlgraph.To(deletedworkspaceactivitytask.Table, deletedworkspaceactivitytask.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, task.DeletedWorkspaceActivityTasksTable, task.DeletedWorkspaceActivityTasksColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(tq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
 // First returns the first Task entity from the query.
 // Returns a *NotFoundError when no Task was found.
 func (tq *TaskQuery) First(ctx context.Context) (*Task, error) {
@@ -717,6 +765,8 @@ func (tq *TaskQuery) Clone() *TaskQuery {
 		withArchivedWorkspaceActivityTasks: tq.withArchivedWorkspaceActivityTasks.Clone(),
 		withDeletedTeammateTasks:           tq.withDeletedTeammateTasks.Clone(),
 		withDeletedProjectTasks:            tq.withDeletedProjectTasks.Clone(),
+		withDeletedTaskActivityTasks:       tq.withDeletedTaskActivityTasks.Clone(),
+		withDeletedWorkspaceActivityTasks:  tq.withDeletedWorkspaceActivityTasks.Clone(),
 		// clone intermediate query.
 		sql:    tq.sql.Clone(),
 		path:   tq.path,
@@ -933,6 +983,28 @@ func (tq *TaskQuery) WithDeletedProjectTasks(opts ...func(*DeletedProjectTaskQue
 	return tq
 }
 
+// WithDeletedTaskActivityTasks tells the query-builder to eager-load the nodes that are connected to
+// the "deletedTaskActivityTasks" edge. The optional arguments are used to configure the query builder of the edge.
+func (tq *TaskQuery) WithDeletedTaskActivityTasks(opts ...func(*DeletedTaskActivityTaskQuery)) *TaskQuery {
+	query := &DeletedTaskActivityTaskQuery{config: tq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	tq.withDeletedTaskActivityTasks = query
+	return tq
+}
+
+// WithDeletedWorkspaceActivityTasks tells the query-builder to eager-load the nodes that are connected to
+// the "deletedWorkspaceActivityTasks" edge. The optional arguments are used to configure the query builder of the edge.
+func (tq *TaskQuery) WithDeletedWorkspaceActivityTasks(opts ...func(*DeletedWorkspaceActivityTaskQuery)) *TaskQuery {
+	query := &DeletedWorkspaceActivityTaskQuery{config: tq.config}
+	for _, opt := range opts {
+		opt(query)
+	}
+	tq.withDeletedWorkspaceActivityTasks = query
+	return tq
+}
+
 // GroupBy is used to group vertices by one or more fields/columns.
 // It is often used with aggregate functions, like: count, max, mean, min, sum.
 //
@@ -998,7 +1070,7 @@ func (tq *TaskQuery) sqlAll(ctx context.Context) ([]*Task, error) {
 	var (
 		nodes       = []*Task{}
 		_spec       = tq.querySpec()
-		loadedTypes = [19]bool{
+		loadedTypes = [21]bool{
 			tq.withTeammate != nil,
 			tq.withTaskPriority != nil,
 			tq.withSubTasks != nil,
@@ -1018,6 +1090,8 @@ func (tq *TaskQuery) sqlAll(ctx context.Context) ([]*Task, error) {
 			tq.withArchivedWorkspaceActivityTasks != nil,
 			tq.withDeletedTeammateTasks != nil,
 			tq.withDeletedProjectTasks != nil,
+			tq.withDeletedTaskActivityTasks != nil,
+			tq.withDeletedWorkspaceActivityTasks != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -1515,6 +1589,56 @@ func (tq *TaskQuery) sqlAll(ctx context.Context) ([]*Task, error) {
 				return nil, fmt.Errorf(`unexpected foreign-key "task_id" returned %v for node %v`, fk, n.ID)
 			}
 			node.Edges.DeletedProjectTasks = append(node.Edges.DeletedProjectTasks, n)
+		}
+	}
+
+	if query := tq.withDeletedTaskActivityTasks; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[ulid.ID]*Task)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.DeletedTaskActivityTasks = []*DeletedTaskActivityTask{}
+		}
+		query.Where(predicate.DeletedTaskActivityTask(func(s *sql.Selector) {
+			s.Where(sql.InValues(task.DeletedTaskActivityTasksColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.TaskID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "task_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.DeletedTaskActivityTasks = append(node.Edges.DeletedTaskActivityTasks, n)
+		}
+	}
+
+	if query := tq.withDeletedWorkspaceActivityTasks; query != nil {
+		fks := make([]driver.Value, 0, len(nodes))
+		nodeids := make(map[ulid.ID]*Task)
+		for i := range nodes {
+			fks = append(fks, nodes[i].ID)
+			nodeids[nodes[i].ID] = nodes[i]
+			nodes[i].Edges.DeletedWorkspaceActivityTasks = []*DeletedWorkspaceActivityTask{}
+		}
+		query.Where(predicate.DeletedWorkspaceActivityTask(func(s *sql.Selector) {
+			s.Where(sql.InValues(task.DeletedWorkspaceActivityTasksColumn, fks...))
+		}))
+		neighbors, err := query.All(ctx)
+		if err != nil {
+			return nil, err
+		}
+		for _, n := range neighbors {
+			fk := n.TaskID
+			node, ok := nodeids[fk]
+			if !ok {
+				return nil, fmt.Errorf(`unexpected foreign-key "task_id" returned %v for node %v`, fk, n.ID)
+			}
+			node.Edges.DeletedWorkspaceActivityTasks = append(node.Edges.DeletedWorkspaceActivityTasks, n)
 		}
 	}
 
