@@ -1,28 +1,17 @@
-package repository
+package activityrepository
 
 import (
 	"context"
 	"log"
-	"project-management-demo-backend/ent"
 	"project-management-demo-backend/ent/activitytype"
 	"project-management-demo-backend/ent/taskactivity"
 	"project-management-demo-backend/ent/taskactivitytask"
 	"project-management-demo-backend/ent/workspaceactivity"
 	"project-management-demo-backend/ent/workspaceactivitytask"
 	"project-management-demo-backend/pkg/entity/model"
-	ur "project-management-demo-backend/pkg/usecase/repository"
 
 	"entgo.io/ent/dialect/sql"
 )
-
-type activityRepository struct {
-	client *ent.Client
-}
-
-// NewActivityRepository generates teammate repository
-func NewActivityRepository(client *ent.Client) ur.Activity {
-	return &activityRepository{client: client}
-}
 
 func (r *activityRepository) List(ctx context.Context, where model.ActivityWhereInput) ([]*model.Activity, error) {
 	db := r.client.DB()

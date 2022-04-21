@@ -1,26 +1,15 @@
-package repository
+package archivedactivityrepository
 
 import (
 	"context"
 	"log"
-	"project-management-demo-backend/ent"
 	"project-management-demo-backend/ent/activitytype"
 	"project-management-demo-backend/ent/archivedtaskactivity"
 	"project-management-demo-backend/ent/archivedworkspaceactivity"
 	"project-management-demo-backend/pkg/entity/model"
-	ur "project-management-demo-backend/pkg/usecase/repository"
 
 	"entgo.io/ent/dialect/sql"
 )
-
-type archivedActivityRepository struct {
-	client *ent.Client
-}
-
-// NewArchivedActivityRepository generates teammate repository
-func NewArchivedActivityRepository(client *ent.Client) ur.ArchivedActivity {
-	return &archivedActivityRepository{client: client}
-}
 
 func (r *archivedActivityRepository) List(ctx context.Context, where model.ArchivedActivityWhereInput) ([]*model.ArchivedActivity, error) {
 	db := r.client.DB()

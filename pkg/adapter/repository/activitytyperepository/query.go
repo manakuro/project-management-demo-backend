@@ -1,20 +1,10 @@
-package repository
+package activitytyperepository
 
 import (
 	"context"
 	"project-management-demo-backend/ent"
 	"project-management-demo-backend/pkg/entity/model"
-	ur "project-management-demo-backend/pkg/usecase/repository"
 )
-
-type activityTypeRepository struct {
-	client *ent.Client
-}
-
-// NewActivityTypeRepository generates activityType repository
-func NewActivityTypeRepository(client *ent.Client) ur.ActivityType {
-	return &activityTypeRepository{client: client}
-}
 
 func (r *activityTypeRepository) Get(ctx context.Context, where *model.ActivityTypeWhereInput) (*model.ActivityType, error) {
 	q := r.client.ActivityType.Query()
@@ -55,36 +45,5 @@ func (r *activityTypeRepository) ListWithPagination(ctx context.Context, after *
 	if err != nil {
 		return nil, model.NewDBError(err)
 	}
-	return res, nil
-}
-
-func (r *activityTypeRepository) Create(ctx context.Context, input model.CreateActivityTypeInput) (*model.ActivityType, error) {
-	res, err := r.client.
-		ActivityType.
-		Create().
-		SetInput(input).
-		Save(ctx)
-
-	if err != nil {
-		return nil, model.NewDBError(err)
-	}
-
-	return res, nil
-}
-
-func (r *activityTypeRepository) Update(ctx context.Context, input model.UpdateActivityTypeInput) (*model.ActivityType, error) {
-	res, err := r.client.
-		ActivityType.UpdateOneID(input.ID).
-		SetInput(input).
-		Save(ctx)
-
-	if err != nil {
-		if ent.IsNotFound(err) {
-			return nil, model.NewNotFoundError(err, input.ID)
-		}
-
-		return nil, model.NewDBError(err)
-	}
-
 	return res, nil
 }
