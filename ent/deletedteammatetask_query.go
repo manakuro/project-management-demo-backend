@@ -12,7 +12,6 @@ import (
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/task"
 	"project-management-demo-backend/ent/teammate"
-	"project-management-demo-backend/ent/teammatetasksection"
 	"project-management-demo-backend/ent/workspace"
 
 	"entgo.io/ent/dialect/sql"
@@ -30,10 +29,9 @@ type DeletedTeammateTaskQuery struct {
 	fields     []string
 	predicates []predicate.DeletedTeammateTask
 	// eager-loading edges.
-	withTeammate            *TeammateQuery
-	withTask                *TaskQuery
-	withTeammateTaskSection *TeammateTaskSectionQuery
-	withWorkspace           *WorkspaceQuery
+	withTeammate  *TeammateQuery
+	withTask      *TaskQuery
+	withWorkspace *WorkspaceQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -107,28 +105,6 @@ func (dttq *DeletedTeammateTaskQuery) QueryTask() *TaskQuery {
 			sqlgraph.From(deletedteammatetask.Table, deletedteammatetask.FieldID, selector),
 			sqlgraph.To(task.Table, task.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, deletedteammatetask.TaskTable, deletedteammatetask.TaskColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(dttq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryTeammateTaskSection chains the current query on the "teammateTaskSection" edge.
-func (dttq *DeletedTeammateTaskQuery) QueryTeammateTaskSection() *TeammateTaskSectionQuery {
-	query := &TeammateTaskSectionQuery{config: dttq.config}
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := dttq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := dttq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(deletedteammatetask.Table, deletedteammatetask.FieldID, selector),
-			sqlgraph.To(teammatetasksection.Table, teammatetasksection.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, deletedteammatetask.TeammateTaskSectionTable, deletedteammatetask.TeammateTaskSectionColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(dttq.driver.Dialect(), step)
 		return fromU, nil
@@ -334,15 +310,14 @@ func (dttq *DeletedTeammateTaskQuery) Clone() *DeletedTeammateTaskQuery {
 		return nil
 	}
 	return &DeletedTeammateTaskQuery{
-		config:                  dttq.config,
-		limit:                   dttq.limit,
-		offset:                  dttq.offset,
-		order:                   append([]OrderFunc{}, dttq.order...),
-		predicates:              append([]predicate.DeletedTeammateTask{}, dttq.predicates...),
-		withTeammate:            dttq.withTeammate.Clone(),
-		withTask:                dttq.withTask.Clone(),
-		withTeammateTaskSection: dttq.withTeammateTaskSection.Clone(),
-		withWorkspace:           dttq.withWorkspace.Clone(),
+		config:        dttq.config,
+		limit:         dttq.limit,
+		offset:        dttq.offset,
+		order:         append([]OrderFunc{}, dttq.order...),
+		predicates:    append([]predicate.DeletedTeammateTask{}, dttq.predicates...),
+		withTeammate:  dttq.withTeammate.Clone(),
+		withTask:      dttq.withTask.Clone(),
+		withWorkspace: dttq.withWorkspace.Clone(),
 		// clone intermediate query.
 		sql:    dttq.sql.Clone(),
 		path:   dttq.path,
@@ -369,17 +344,6 @@ func (dttq *DeletedTeammateTaskQuery) WithTask(opts ...func(*TaskQuery)) *Delete
 		opt(query)
 	}
 	dttq.withTask = query
-	return dttq
-}
-
-// WithTeammateTaskSection tells the query-builder to eager-load the nodes that are connected to
-// the "teammateTaskSection" edge. The optional arguments are used to configure the query builder of the edge.
-func (dttq *DeletedTeammateTaskQuery) WithTeammateTaskSection(opts ...func(*TeammateTaskSectionQuery)) *DeletedTeammateTaskQuery {
-	query := &TeammateTaskSectionQuery{config: dttq.config}
-	for _, opt := range opts {
-		opt(query)
-	}
-	dttq.withTeammateTaskSection = query
 	return dttq
 }
 
@@ -459,10 +423,9 @@ func (dttq *DeletedTeammateTaskQuery) sqlAll(ctx context.Context) ([]*DeletedTea
 	var (
 		nodes       = []*DeletedTeammateTask{}
 		_spec       = dttq.querySpec()
-		loadedTypes = [4]bool{
+		loadedTypes = [3]bool{
 			dttq.withTeammate != nil,
 			dttq.withTask != nil,
-			dttq.withTeammateTaskSection != nil,
 			dttq.withWorkspace != nil,
 		}
 	)
@@ -534,32 +497,6 @@ func (dttq *DeletedTeammateTaskQuery) sqlAll(ctx context.Context) ([]*DeletedTea
 			}
 			for i := range nodes {
 				nodes[i].Edges.Task = n
-			}
-		}
-	}
-
-	if query := dttq.withTeammateTaskSection; query != nil {
-		ids := make([]ulid.ID, 0, len(nodes))
-		nodeids := make(map[ulid.ID][]*DeletedTeammateTask)
-		for i := range nodes {
-			fk := nodes[i].TeammateTaskSectionID
-			if _, ok := nodeids[fk]; !ok {
-				ids = append(ids, fk)
-			}
-			nodeids[fk] = append(nodeids[fk], nodes[i])
-		}
-		query.Where(teammatetasksection.IDIn(ids...))
-		neighbors, err := query.All(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, n := range neighbors {
-			nodes, ok := nodeids[n.ID]
-			if !ok {
-				return nil, fmt.Errorf(`unexpected foreign-key "teammate_task_section_id" returned %v`, n.ID)
-			}
-			for i := range nodes {
-				nodes[i].Edges.TeammateTaskSection = n
 			}
 		}
 	}

@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"project-management-demo-backend/ent/deletedprojecttask"
 	"project-management-demo-backend/ent/project"
-	"project-management-demo-backend/ent/projecttasksection"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/task"
 	"strings"
@@ -26,6 +25,8 @@ type DeletedProjectTask struct {
 	TaskID ulid.ID `json:"task_id,omitempty"`
 	// ProjectTaskSectionID holds the value of the "project_task_section_id" field.
 	ProjectTaskSectionID ulid.ID `json:"project_task_section_id,omitempty"`
+	// ProjectTaskID holds the value of the "project_task_id" field.
+	ProjectTaskID ulid.ID `json:"project_task_id,omitempty"`
 	// ProjectTaskCreatedAt holds the value of the "project_task_created_at" field.
 	ProjectTaskCreatedAt time.Time `json:"project_task_created_at,omitempty"`
 	// ProjectTaskUpdatedAt holds the value of the "project_task_updated_at" field.
@@ -45,11 +46,9 @@ type DeletedProjectTaskEdges struct {
 	Project *Project `json:"project,omitempty"`
 	// Task holds the value of the task edge.
 	Task *Task `json:"task,omitempty"`
-	// ProjectTaskSection holds the value of the projectTaskSection edge.
-	ProjectTaskSection *ProjectTaskSection `json:"projectTaskSection,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [3]bool
+	loadedTypes [2]bool
 }
 
 // ProjectOrErr returns the Project value or an error if the edge
@@ -80,20 +79,6 @@ func (e DeletedProjectTaskEdges) TaskOrErr() (*Task, error) {
 	return nil, &NotLoadedError{edge: "task"}
 }
 
-// ProjectTaskSectionOrErr returns the ProjectTaskSection value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e DeletedProjectTaskEdges) ProjectTaskSectionOrErr() (*ProjectTaskSection, error) {
-	if e.loadedTypes[2] {
-		if e.ProjectTaskSection == nil {
-			// The edge projectTaskSection was loaded in eager-loading,
-			// but was not found.
-			return nil, &NotFoundError{label: projecttasksection.Label}
-		}
-		return e.ProjectTaskSection, nil
-	}
-	return nil, &NotLoadedError{edge: "projectTaskSection"}
-}
-
 // scanValues returns the types for scanning values from sql.Rows.
 func (*DeletedProjectTask) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
@@ -101,7 +86,7 @@ func (*DeletedProjectTask) scanValues(columns []string) ([]interface{}, error) {
 		switch columns[i] {
 		case deletedprojecttask.FieldProjectTaskCreatedAt, deletedprojecttask.FieldProjectTaskUpdatedAt, deletedprojecttask.FieldCreatedAt, deletedprojecttask.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
-		case deletedprojecttask.FieldID, deletedprojecttask.FieldProjectID, deletedprojecttask.FieldTaskID, deletedprojecttask.FieldProjectTaskSectionID:
+		case deletedprojecttask.FieldID, deletedprojecttask.FieldProjectID, deletedprojecttask.FieldTaskID, deletedprojecttask.FieldProjectTaskSectionID, deletedprojecttask.FieldProjectTaskID:
 			values[i] = new(ulid.ID)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type DeletedProjectTask", columns[i])
@@ -142,6 +127,12 @@ func (dpt *DeletedProjectTask) assignValues(columns []string, values []interface
 			} else if value != nil {
 				dpt.ProjectTaskSectionID = *value
 			}
+		case deletedprojecttask.FieldProjectTaskID:
+			if value, ok := values[i].(*ulid.ID); !ok {
+				return fmt.Errorf("unexpected type %T for field project_task_id", values[i])
+			} else if value != nil {
+				dpt.ProjectTaskID = *value
+			}
 		case deletedprojecttask.FieldProjectTaskCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field project_task_created_at", values[i])
@@ -181,11 +172,6 @@ func (dpt *DeletedProjectTask) QueryTask() *TaskQuery {
 	return (&DeletedProjectTaskClient{config: dpt.config}).QueryTask(dpt)
 }
 
-// QueryProjectTaskSection queries the "projectTaskSection" edge of the DeletedProjectTask entity.
-func (dpt *DeletedProjectTask) QueryProjectTaskSection() *ProjectTaskSectionQuery {
-	return (&DeletedProjectTaskClient{config: dpt.config}).QueryProjectTaskSection(dpt)
-}
-
 // Update returns a builder for updating this DeletedProjectTask.
 // Note that you need to call DeletedProjectTask.Unwrap() before calling this method if this DeletedProjectTask
 // was returned from a transaction, and the transaction was committed or rolled back.
@@ -215,6 +201,8 @@ func (dpt *DeletedProjectTask) String() string {
 	builder.WriteString(fmt.Sprintf("%v", dpt.TaskID))
 	builder.WriteString(", project_task_section_id=")
 	builder.WriteString(fmt.Sprintf("%v", dpt.ProjectTaskSectionID))
+	builder.WriteString(", project_task_id=")
+	builder.WriteString(fmt.Sprintf("%v", dpt.ProjectTaskID))
 	builder.WriteString(", project_task_created_at=")
 	builder.WriteString(dpt.ProjectTaskCreatedAt.Format(time.ANSIC))
 	builder.WriteString(", project_task_updated_at=")

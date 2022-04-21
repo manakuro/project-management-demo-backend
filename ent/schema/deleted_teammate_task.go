@@ -39,9 +39,17 @@ func (DeletedTeammateTaskMixin) Fields() []ent.Field {
 		field.String("task_id").
 			GoType(ulid.ID("")),
 		field.String("teammate_task_section_id").
-			GoType(ulid.ID("")),
+			GoType(ulid.ID("")).
+			Annotations(
+				annotation.WhereInput{Type: "ID"},
+			),
 		field.String("workspace_id").
 			GoType(ulid.ID("")),
+		field.String("teammate_task_id").
+			GoType(ulid.ID("")).
+			Annotations(
+				annotation.WhereInput{Type: "ID"},
+			),
 		field.Time("teammate_task_created_at").
 			SchemaType(map[string]string{
 				dialect.MySQL: "datetime",
@@ -76,17 +84,6 @@ func (DeletedTeammateTask) Edges() []ent.Edge {
 				entgql.Bind(),
 				schema.Annotation(
 					annotation.Edge{FieldName: "task_id"},
-				),
-			),
-		edge.From("teammateTaskSection", TeammateTaskSection.Type).
-			Ref(deletedTeammateTasksRef).
-			Field("teammate_task_section_id").
-			Unique().
-			Required().
-			Annotations(
-				entgql.Bind(),
-				schema.Annotation(
-					annotation.Edge{FieldName: "teammate_task_section_id"},
 				),
 			),
 		edge.From("workspace", Workspace.Type).

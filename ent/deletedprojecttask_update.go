@@ -9,7 +9,6 @@ import (
 	"project-management-demo-backend/ent/deletedprojecttask"
 	"project-management-demo-backend/ent/predicate"
 	"project-management-demo-backend/ent/project"
-	"project-management-demo-backend/ent/projecttasksection"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/task"
 	"time"
@@ -50,6 +49,12 @@ func (dptu *DeletedProjectTaskUpdate) SetProjectTaskSectionID(u ulid.ID) *Delete
 	return dptu
 }
 
+// SetProjectTaskID sets the "project_task_id" field.
+func (dptu *DeletedProjectTaskUpdate) SetProjectTaskID(u ulid.ID) *DeletedProjectTaskUpdate {
+	dptu.mutation.SetProjectTaskID(u)
+	return dptu
+}
+
 // SetProjectTaskCreatedAt sets the "project_task_created_at" field.
 func (dptu *DeletedProjectTaskUpdate) SetProjectTaskCreatedAt(t time.Time) *DeletedProjectTaskUpdate {
 	dptu.mutation.SetProjectTaskCreatedAt(t)
@@ -72,11 +77,6 @@ func (dptu *DeletedProjectTaskUpdate) SetTask(t *Task) *DeletedProjectTaskUpdate
 	return dptu.SetTaskID(t.ID)
 }
 
-// SetProjectTaskSection sets the "projectTaskSection" edge to the ProjectTaskSection entity.
-func (dptu *DeletedProjectTaskUpdate) SetProjectTaskSection(p *ProjectTaskSection) *DeletedProjectTaskUpdate {
-	return dptu.SetProjectTaskSectionID(p.ID)
-}
-
 // Mutation returns the DeletedProjectTaskMutation object of the builder.
 func (dptu *DeletedProjectTaskUpdate) Mutation() *DeletedProjectTaskMutation {
 	return dptu.mutation
@@ -91,12 +91,6 @@ func (dptu *DeletedProjectTaskUpdate) ClearProject() *DeletedProjectTaskUpdate {
 // ClearTask clears the "task" edge to the Task entity.
 func (dptu *DeletedProjectTaskUpdate) ClearTask() *DeletedProjectTaskUpdate {
 	dptu.mutation.ClearTask()
-	return dptu
-}
-
-// ClearProjectTaskSection clears the "projectTaskSection" edge to the ProjectTaskSection entity.
-func (dptu *DeletedProjectTaskUpdate) ClearProjectTaskSection() *DeletedProjectTaskUpdate {
-	dptu.mutation.ClearProjectTaskSection()
 	return dptu
 }
 
@@ -168,9 +162,6 @@ func (dptu *DeletedProjectTaskUpdate) check() error {
 	if _, ok := dptu.mutation.TaskID(); dptu.mutation.TaskCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "DeletedProjectTask.task"`)
 	}
-	if _, ok := dptu.mutation.ProjectTaskSectionID(); dptu.mutation.ProjectTaskSectionCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "DeletedProjectTask.projectTaskSection"`)
-	}
 	return nil
 }
 
@@ -191,6 +182,20 @@ func (dptu *DeletedProjectTaskUpdate) sqlSave(ctx context.Context) (n int, err e
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := dptu.mutation.ProjectTaskSectionID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: deletedprojecttask.FieldProjectTaskSectionID,
+		})
+	}
+	if value, ok := dptu.mutation.ProjectTaskID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: deletedprojecttask.FieldProjectTaskID,
+		})
 	}
 	if value, ok := dptu.mutation.ProjectTaskCreatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
@@ -276,41 +281,6 @@ func (dptu *DeletedProjectTaskUpdate) sqlSave(ctx context.Context) (n int, err e
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if dptu.mutation.ProjectTaskSectionCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   deletedprojecttask.ProjectTaskSectionTable,
-			Columns: []string{deletedprojecttask.ProjectTaskSectionColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: projecttasksection.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := dptu.mutation.ProjectTaskSectionIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   deletedprojecttask.ProjectTaskSectionTable,
-			Columns: []string{deletedprojecttask.ProjectTaskSectionColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: projecttasksection.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
 	if n, err = sqlgraph.UpdateNodes(ctx, dptu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{deletedprojecttask.Label}
@@ -348,6 +318,12 @@ func (dptuo *DeletedProjectTaskUpdateOne) SetProjectTaskSectionID(u ulid.ID) *De
 	return dptuo
 }
 
+// SetProjectTaskID sets the "project_task_id" field.
+func (dptuo *DeletedProjectTaskUpdateOne) SetProjectTaskID(u ulid.ID) *DeletedProjectTaskUpdateOne {
+	dptuo.mutation.SetProjectTaskID(u)
+	return dptuo
+}
+
 // SetProjectTaskCreatedAt sets the "project_task_created_at" field.
 func (dptuo *DeletedProjectTaskUpdateOne) SetProjectTaskCreatedAt(t time.Time) *DeletedProjectTaskUpdateOne {
 	dptuo.mutation.SetProjectTaskCreatedAt(t)
@@ -370,11 +346,6 @@ func (dptuo *DeletedProjectTaskUpdateOne) SetTask(t *Task) *DeletedProjectTaskUp
 	return dptuo.SetTaskID(t.ID)
 }
 
-// SetProjectTaskSection sets the "projectTaskSection" edge to the ProjectTaskSection entity.
-func (dptuo *DeletedProjectTaskUpdateOne) SetProjectTaskSection(p *ProjectTaskSection) *DeletedProjectTaskUpdateOne {
-	return dptuo.SetProjectTaskSectionID(p.ID)
-}
-
 // Mutation returns the DeletedProjectTaskMutation object of the builder.
 func (dptuo *DeletedProjectTaskUpdateOne) Mutation() *DeletedProjectTaskMutation {
 	return dptuo.mutation
@@ -389,12 +360,6 @@ func (dptuo *DeletedProjectTaskUpdateOne) ClearProject() *DeletedProjectTaskUpda
 // ClearTask clears the "task" edge to the Task entity.
 func (dptuo *DeletedProjectTaskUpdateOne) ClearTask() *DeletedProjectTaskUpdateOne {
 	dptuo.mutation.ClearTask()
-	return dptuo
-}
-
-// ClearProjectTaskSection clears the "projectTaskSection" edge to the ProjectTaskSection entity.
-func (dptuo *DeletedProjectTaskUpdateOne) ClearProjectTaskSection() *DeletedProjectTaskUpdateOne {
-	dptuo.mutation.ClearProjectTaskSection()
 	return dptuo
 }
 
@@ -473,9 +438,6 @@ func (dptuo *DeletedProjectTaskUpdateOne) check() error {
 	if _, ok := dptuo.mutation.TaskID(); dptuo.mutation.TaskCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "DeletedProjectTask.task"`)
 	}
-	if _, ok := dptuo.mutation.ProjectTaskSectionID(); dptuo.mutation.ProjectTaskSectionCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "DeletedProjectTask.projectTaskSection"`)
-	}
 	return nil
 }
 
@@ -513,6 +475,20 @@ func (dptuo *DeletedProjectTaskUpdateOne) sqlSave(ctx context.Context) (_node *D
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := dptuo.mutation.ProjectTaskSectionID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: deletedprojecttask.FieldProjectTaskSectionID,
+		})
+	}
+	if value, ok := dptuo.mutation.ProjectTaskID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: deletedprojecttask.FieldProjectTaskID,
+		})
 	}
 	if value, ok := dptuo.mutation.ProjectTaskCreatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
@@ -590,41 +566,6 @@ func (dptuo *DeletedProjectTaskUpdateOne) sqlSave(ctx context.Context) (_node *D
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: task.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if dptuo.mutation.ProjectTaskSectionCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   deletedprojecttask.ProjectTaskSectionTable,
-			Columns: []string{deletedprojecttask.ProjectTaskSectionColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: projecttasksection.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := dptuo.mutation.ProjectTaskSectionIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   deletedprojecttask.ProjectTaskSectionTable,
-			Columns: []string{deletedprojecttask.ProjectTaskSectionColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: projecttasksection.FieldID,
 				},
 			},
 		}

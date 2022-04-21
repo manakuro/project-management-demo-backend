@@ -18,6 +18,8 @@ const (
 	FieldTaskID = "task_id"
 	// FieldProjectTaskSectionID holds the string denoting the project_task_section_id field in the database.
 	FieldProjectTaskSectionID = "project_task_section_id"
+	// FieldProjectTaskID holds the string denoting the project_task_id field in the database.
+	FieldProjectTaskID = "project_task_id"
 	// FieldProjectTaskCreatedAt holds the string denoting the project_task_created_at field in the database.
 	FieldProjectTaskCreatedAt = "project_task_created_at"
 	// FieldProjectTaskUpdatedAt holds the string denoting the project_task_updated_at field in the database.
@@ -30,8 +32,6 @@ const (
 	EdgeProject = "project"
 	// EdgeTask holds the string denoting the task edge name in mutations.
 	EdgeTask = "task"
-	// EdgeProjectTaskSection holds the string denoting the projecttasksection edge name in mutations.
-	EdgeProjectTaskSection = "projectTaskSection"
 	// Table holds the table name of the deletedprojecttask in the database.
 	Table = "deleted_project_tasks"
 	// ProjectTable is the table that holds the project relation/edge.
@@ -48,13 +48,6 @@ const (
 	TaskInverseTable = "tasks"
 	// TaskColumn is the table column denoting the task relation/edge.
 	TaskColumn = "task_id"
-	// ProjectTaskSectionTable is the table that holds the projectTaskSection relation/edge.
-	ProjectTaskSectionTable = "deleted_project_tasks"
-	// ProjectTaskSectionInverseTable is the table name for the ProjectTaskSection entity.
-	// It exists in this package in order to avoid circular dependency with the "projecttasksection" package.
-	ProjectTaskSectionInverseTable = "project_task_sections"
-	// ProjectTaskSectionColumn is the table column denoting the projectTaskSection relation/edge.
-	ProjectTaskSectionColumn = "project_task_section_id"
 )
 
 // Columns holds all SQL columns for deletedprojecttask fields.
@@ -63,6 +56,7 @@ var Columns = []string{
 	FieldProjectID,
 	FieldTaskID,
 	FieldProjectTaskSectionID,
+	FieldProjectTaskID,
 	FieldProjectTaskCreatedAt,
 	FieldProjectTaskUpdatedAt,
 	FieldCreatedAt,

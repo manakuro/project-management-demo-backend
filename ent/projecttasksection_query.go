@@ -8,7 +8,6 @@ import (
 	"errors"
 	"fmt"
 	"math"
-	"project-management-demo-backend/ent/deletedprojecttask"
 	"project-management-demo-backend/ent/predicate"
 	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/projecttask"
@@ -30,9 +29,8 @@ type ProjectTaskSectionQuery struct {
 	fields     []string
 	predicates []predicate.ProjectTaskSection
 	// eager-loading edges.
-	withProject             *ProjectQuery
-	withProjectTasks        *ProjectTaskQuery
-	withDeletedProjectTasks *DeletedProjectTaskQuery
+	withProject      *ProjectQuery
+	withProjectTasks *ProjectTaskQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -106,28 +104,6 @@ func (ptsq *ProjectTaskSectionQuery) QueryProjectTasks() *ProjectTaskQuery {
 			sqlgraph.From(projecttasksection.Table, projecttasksection.FieldID, selector),
 			sqlgraph.To(projecttask.Table, projecttask.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, projecttasksection.ProjectTasksTable, projecttasksection.ProjectTasksColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(ptsq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryDeletedProjectTasks chains the current query on the "deletedProjectTasks" edge.
-func (ptsq *ProjectTaskSectionQuery) QueryDeletedProjectTasks() *DeletedProjectTaskQuery {
-	query := &DeletedProjectTaskQuery{config: ptsq.config}
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := ptsq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := ptsq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(projecttasksection.Table, projecttasksection.FieldID, selector),
-			sqlgraph.To(deletedprojecttask.Table, deletedprojecttask.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, projecttasksection.DeletedProjectTasksTable, projecttasksection.DeletedProjectTasksColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(ptsq.driver.Dialect(), step)
 		return fromU, nil
@@ -311,14 +287,13 @@ func (ptsq *ProjectTaskSectionQuery) Clone() *ProjectTaskSectionQuery {
 		return nil
 	}
 	return &ProjectTaskSectionQuery{
-		config:                  ptsq.config,
-		limit:                   ptsq.limit,
-		offset:                  ptsq.offset,
-		order:                   append([]OrderFunc{}, ptsq.order...),
-		predicates:              append([]predicate.ProjectTaskSection{}, ptsq.predicates...),
-		withProject:             ptsq.withProject.Clone(),
-		withProjectTasks:        ptsq.withProjectTasks.Clone(),
-		withDeletedProjectTasks: ptsq.withDeletedProjectTasks.Clone(),
+		config:           ptsq.config,
+		limit:            ptsq.limit,
+		offset:           ptsq.offset,
+		order:            append([]OrderFunc{}, ptsq.order...),
+		predicates:       append([]predicate.ProjectTaskSection{}, ptsq.predicates...),
+		withProject:      ptsq.withProject.Clone(),
+		withProjectTasks: ptsq.withProjectTasks.Clone(),
 		// clone intermediate query.
 		sql:    ptsq.sql.Clone(),
 		path:   ptsq.path,
@@ -345,17 +320,6 @@ func (ptsq *ProjectTaskSectionQuery) WithProjectTasks(opts ...func(*ProjectTaskQ
 		opt(query)
 	}
 	ptsq.withProjectTasks = query
-	return ptsq
-}
-
-// WithDeletedProjectTasks tells the query-builder to eager-load the nodes that are connected to
-// the "deletedProjectTasks" edge. The optional arguments are used to configure the query builder of the edge.
-func (ptsq *ProjectTaskSectionQuery) WithDeletedProjectTasks(opts ...func(*DeletedProjectTaskQuery)) *ProjectTaskSectionQuery {
-	query := &DeletedProjectTaskQuery{config: ptsq.config}
-	for _, opt := range opts {
-		opt(query)
-	}
-	ptsq.withDeletedProjectTasks = query
 	return ptsq
 }
 
@@ -424,10 +388,9 @@ func (ptsq *ProjectTaskSectionQuery) sqlAll(ctx context.Context) ([]*ProjectTask
 	var (
 		nodes       = []*ProjectTaskSection{}
 		_spec       = ptsq.querySpec()
-		loadedTypes = [3]bool{
+		loadedTypes = [2]bool{
 			ptsq.withProject != nil,
 			ptsq.withProjectTasks != nil,
-			ptsq.withDeletedProjectTasks != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -498,31 +461,6 @@ func (ptsq *ProjectTaskSectionQuery) sqlAll(ctx context.Context) ([]*ProjectTask
 				return nil, fmt.Errorf(`unexpected foreign-key "project_task_section_id" returned %v for node %v`, fk, n.ID)
 			}
 			node.Edges.ProjectTasks = append(node.Edges.ProjectTasks, n)
-		}
-	}
-
-	if query := ptsq.withDeletedProjectTasks; query != nil {
-		fks := make([]driver.Value, 0, len(nodes))
-		nodeids := make(map[ulid.ID]*ProjectTaskSection)
-		for i := range nodes {
-			fks = append(fks, nodes[i].ID)
-			nodeids[nodes[i].ID] = nodes[i]
-			nodes[i].Edges.DeletedProjectTasks = []*DeletedProjectTask{}
-		}
-		query.Where(predicate.DeletedProjectTask(func(s *sql.Selector) {
-			s.Where(sql.InValues(projecttasksection.DeletedProjectTasksColumn, fks...))
-		}))
-		neighbors, err := query.All(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, n := range neighbors {
-			fk := n.ProjectTaskSectionID
-			node, ok := nodeids[fk]
-			if !ok {
-				return nil, fmt.Errorf(`unexpected foreign-key "project_task_section_id" returned %v for node %v`, fk, n.ID)
-			}
-			node.Edges.DeletedProjectTasks = append(node.Edges.DeletedProjectTasks, n)
 		}
 	}
 

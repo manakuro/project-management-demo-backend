@@ -39,7 +39,15 @@ func (DeletedProjectTaskMixin) Fields() []ent.Field {
 		field.String("task_id").
 			GoType(ulid.ID("")),
 		field.String("project_task_section_id").
-			GoType(ulid.ID("")),
+			GoType(ulid.ID("")).
+			Annotations(
+				annotation.WhereInput{Type: "ID"},
+			),
+		field.String("project_task_id").
+			GoType(ulid.ID("")).
+			Annotations(
+				annotation.WhereInput{Type: "ID"},
+			),
 		field.Time("project_task_created_at").
 			SchemaType(map[string]string{
 				dialect.MySQL: "datetime",
@@ -74,17 +82,6 @@ func (DeletedProjectTask) Edges() []ent.Edge {
 				entgql.Bind(),
 				schema.Annotation(
 					annotation.Edge{FieldName: "task_id"},
-				),
-			),
-		edge.From("projectTaskSection", ProjectTaskSection.Type).
-			Ref(deletedProjectTasksRef).
-			Field("project_task_section_id").
-			Unique().
-			Required().
-			Annotations(
-				entgql.Bind(),
-				schema.Annotation(
-					annotation.Edge{FieldName: "project_task_section_id"},
 				),
 			),
 	}

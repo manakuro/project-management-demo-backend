@@ -3,8 +3,6 @@ package repository
 import (
 	"context"
 	"project-management-demo-backend/ent"
-	"project-management-demo-backend/ent/deletedtask"
-	"project-management-demo-backend/ent/projecttask"
 	"project-management-demo-backend/ent/task"
 	"project-management-demo-backend/ent/teammatetask"
 	"project-management-demo-backend/ent/teammatetasksection"
@@ -173,61 +171,9 @@ func (r *teammateTaskRepository) Delete(ctx context.Context, input model.DeleteT
 		return nil, model.NewDBError(err)
 	}
 
-	deletedTask, err := deleted.Task(ctx)
-	if err != nil {
-		return nil, model.NewDBError(err)
-	}
-
 	err = client.TeammateTask.DeleteOneID(input.ID).Exec(ctx)
 	if err != nil {
 		return nil, model.NewDBError(err)
-	}
-
-	if deletedTask.IsNew {
-		return deleted, nil
-	}
-
-	_, err = client.DeletedTask.
-		Create().
-		SetTaskID(input.TaskID).
-		SetWorkspaceID(input.WorkspaceID).
-		SetTaskType(deletedtask.TaskTypeTeammate).
-		SetTaskJoinID(deleted.TeammateID).
-		SetTaskSectionID(deleted.TeammateTaskSectionID).
-		Save(ctx)
-	if err != nil {
-		return nil, model.NewDBError(err)
-	}
-
-	deletedProjectTask, err := client.ProjectTask.
-		Query().
-		WithTask().
-		Where(projecttask.TaskID(input.TaskID)).
-		Only(ctx)
-
-	if err != nil {
-		if ent.IsNotFound(err) {
-			return deleted, nil
-		}
-		return nil, model.NewDBError(err)
-	}
-
-	if deletedProjectTask != nil {
-		err = client.ProjectTask.DeleteOneID(deletedProjectTask.ID).Exec(ctx)
-		if err != nil {
-			return nil, model.NewDBError(err)
-		}
-		_, err = r.client.DeletedTask.
-			Create().
-			SetTaskID(input.TaskID).
-			SetWorkspaceID(input.WorkspaceID).
-			SetTaskType(deletedtask.TaskTypeProject).
-			SetTaskJoinID(deletedProjectTask.ProjectID).
-			SetTaskSectionID(deletedProjectTask.ProjectTaskSectionID).
-			Save(ctx)
-		if err != nil {
-			return nil, model.NewDBError(err)
-		}
 	}
 
 	return deleted, nil

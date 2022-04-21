@@ -2348,10 +2348,6 @@ input TeammateTaskSectionWhereInput {
   """teammateTasks edge predicates"""
   hasTeammateTasks: Boolean
   hasTeammateTasksWith: [TeammateTaskWhereInput!]
-  
-  """deletedTeammateTasks edge predicates"""
-  hasDeletedTeammateTasks: Boolean
-  hasDeletedTeammateTasksWith: [DeletedTeammateTaskWhereInput!]
 }
 
 """
@@ -2430,10 +2426,6 @@ input ProjectTaskSectionWhereInput {
   """projectTasks edge predicates"""
   hasProjectTasks: Boolean
   hasProjectTasksWith: [ProjectTaskWhereInput!]
-  
-  """deletedProjectTasks edge predicates"""
-  hasDeletedProjectTasks: Boolean
-  hasDeletedProjectTasksWith: [DeletedProjectTaskWhereInput!]
 }
 
 """
@@ -3769,42 +3761,6 @@ input DeletedTaskWhereInput {
   workspaceIDEqualFold: ID
   workspaceIDContainsFold: ID
   
-  """task_section_id field predicates"""
-  taskSectionID: ID
-  taskSectionIDNEQ: ID
-  taskSectionIDIn: [ID!]
-  taskSectionIDNotIn: [ID!]
-  taskSectionIDGT: ID
-  taskSectionIDGTE: ID
-  taskSectionIDLT: ID
-  taskSectionIDLTE: ID
-  taskSectionIDContains: ID
-  taskSectionIDHasPrefix: ID
-  taskSectionIDHasSuffix: ID
-  taskSectionIDEqualFold: ID
-  taskSectionIDContainsFold: ID
-  
-  """task_join_id field predicates"""
-  taskJoinID: ID
-  taskJoinIDNEQ: ID
-  taskJoinIDIn: [ID!]
-  taskJoinIDNotIn: [ID!]
-  taskJoinIDGT: ID
-  taskJoinIDGTE: ID
-  taskJoinIDLT: ID
-  taskJoinIDLTE: ID
-  taskJoinIDContains: ID
-  taskJoinIDHasPrefix: ID
-  taskJoinIDHasSuffix: ID
-  taskJoinIDEqualFold: ID
-  taskJoinIDContainsFold: ID
-  
-  """task_type field predicates"""
-  taskType: DeletedTaskType
-  taskTypeNEQ: DeletedTaskType
-  taskTypeIn: [DeletedTaskType!]
-  taskTypeNotIn: [DeletedTaskType!]
-  
   """created_at field predicates"""
   createdAt: Time
   createdAtNEQ: Time
@@ -4744,6 +4700,21 @@ input DeletedTeammateTaskWhereInput {
   workspaceIDEqualFold: ID
   workspaceIDContainsFold: ID
   
+  """teammate_task_id field predicates"""
+  teammateTaskID: ID
+  teammateTaskIDNEQ: ID
+  teammateTaskIDIn: [ID!]
+  teammateTaskIDNotIn: [ID!]
+  teammateTaskIDGT: ID
+  teammateTaskIDGTE: ID
+  teammateTaskIDLT: ID
+  teammateTaskIDLTE: ID
+  teammateTaskIDContains: ID
+  teammateTaskIDHasPrefix: ID
+  teammateTaskIDHasSuffix: ID
+  teammateTaskIDEqualFold: ID
+  teammateTaskIDContainsFold: ID
+  
   """teammate_task_created_at field predicates"""
   teammateTaskCreatedAt: Time
   teammateTaskCreatedAtNEQ: Time
@@ -4801,10 +4772,6 @@ input DeletedTeammateTaskWhereInput {
   """task edge predicates"""
   hasTask: Boolean
   hasTaskWith: [TaskWhereInput!]
-  
-  """teammateTaskSection edge predicates"""
-  hasTeammateTaskSection: Boolean
-  hasTeammateTaskSectionWith: [TeammateTaskSectionWhereInput!]
   
   """workspace edge predicates"""
   hasWorkspace: Boolean
@@ -4865,6 +4832,21 @@ input DeletedProjectTaskWhereInput {
   projectTaskSectionIDEqualFold: ID
   projectTaskSectionIDContainsFold: ID
   
+  """project_task_id field predicates"""
+  projectTaskID: ID
+  projectTaskIDNEQ: ID
+  projectTaskIDIn: [ID!]
+  projectTaskIDNotIn: [ID!]
+  projectTaskIDGT: ID
+  projectTaskIDGTE: ID
+  projectTaskIDLT: ID
+  projectTaskIDLTE: ID
+  projectTaskIDContains: ID
+  projectTaskIDHasPrefix: ID
+  projectTaskIDHasSuffix: ID
+  projectTaskIDEqualFold: ID
+  projectTaskIDContainsFold: ID
+  
   """project_task_created_at field predicates"""
   projectTaskCreatedAt: Time
   projectTaskCreatedAtNEQ: Time
@@ -4922,8 +4904,4 @@ input DeletedProjectTaskWhereInput {
   """task edge predicates"""
   hasTask: Boolean
   hasTaskWith: [TaskWhereInput!]
-  
-  """projectTaskSection edge predicates"""
-  hasProjectTaskSection: Boolean
-  hasProjectTaskSectionWith: [ProjectTaskSectionWhereInput!]
 }

@@ -4,7 +4,6 @@ package ent
 
 import (
 	"project-management-demo-backend/ent/activitytype"
-	"project-management-demo-backend/ent/deletedtask"
 	"project-management-demo-backend/ent/filetype"
 	"project-management-demo-backend/ent/schema/testuserprofile"
 	"project-management-demo-backend/ent/schema/ulid"
@@ -549,18 +548,21 @@ func (u *ColorUpdateOne) SetInput(i UpdateColorInput) *ColorUpdateOne {
 
 // CreateDeletedProjectTaskInput represents a mutation input for creating deletedprojecttasks.
 type CreateDeletedProjectTaskInput struct {
+	ProjectTaskSectionID ulid.ID
+	ProjectTaskID        ulid.ID
 	ProjectTaskCreatedAt time.Time
 	ProjectTaskUpdatedAt time.Time
 	CreatedAt            *time.Time
 	UpdatedAt            *time.Time
 	ProjectID            ulid.ID
 	TaskID               ulid.ID
-	ProjectTaskSectionID ulid.ID
 	RequestID            string
 }
 
 // Mutate applies the CreateDeletedProjectTaskInput on the DeletedProjectTaskCreate builder.
 func (i *CreateDeletedProjectTaskInput) Mutate(m *DeletedProjectTaskCreate) {
+	m.SetProjectTaskSectionID(i.ProjectTaskSectionID)
+	m.SetProjectTaskID(i.ProjectTaskID)
 	m.SetProjectTaskCreatedAt(i.ProjectTaskCreatedAt)
 	m.SetProjectTaskUpdatedAt(i.ProjectTaskUpdatedAt)
 	if v := i.CreatedAt; v != nil {
@@ -571,7 +573,6 @@ func (i *CreateDeletedProjectTaskInput) Mutate(m *DeletedProjectTaskCreate) {
 	}
 	m.SetProjectID(i.ProjectID)
 	m.SetTaskID(i.TaskID)
-	m.SetProjectTaskSectionID(i.ProjectTaskSectionID)
 }
 
 // SetInput applies the change-set in the CreateDeletedProjectTaskInput on the create builder.
@@ -582,20 +583,26 @@ func (c *DeletedProjectTaskCreate) SetInput(i CreateDeletedProjectTaskInput) *De
 
 // UpdateDeletedProjectTaskInput represents a mutation input for updating deletedprojecttasks.
 type UpdateDeletedProjectTaskInput struct {
-	ID                      ulid.ID
-	ProjectTaskCreatedAt    *time.Time
-	ProjectTaskUpdatedAt    *time.Time
-	ProjectID               *ulid.ID
-	ClearProject            bool
-	TaskID                  *ulid.ID
-	ClearTask               bool
-	ProjectTaskSectionID    *ulid.ID
-	ClearProjectTaskSection bool
-	RequestID               string
+	ID                   ulid.ID
+	ProjectTaskSectionID *ulid.ID
+	ProjectTaskID        *ulid.ID
+	ProjectTaskCreatedAt *time.Time
+	ProjectTaskUpdatedAt *time.Time
+	ProjectID            *ulid.ID
+	ClearProject         bool
+	TaskID               *ulid.ID
+	ClearTask            bool
+	RequestID            string
 }
 
 // Mutate applies the UpdateDeletedProjectTaskInput on the DeletedProjectTaskMutation.
 func (i *UpdateDeletedProjectTaskInput) Mutate(m *DeletedProjectTaskMutation) {
+	if v := i.ProjectTaskSectionID; v != nil {
+		m.SetProjectTaskSectionID(*v)
+	}
+	if v := i.ProjectTaskID; v != nil {
+		m.SetProjectTaskID(*v)
+	}
 	if v := i.ProjectTaskCreatedAt; v != nil {
 		m.SetProjectTaskCreatedAt(*v)
 	}
@@ -614,12 +621,6 @@ func (i *UpdateDeletedProjectTaskInput) Mutate(m *DeletedProjectTaskMutation) {
 	if v := i.TaskID; v != nil {
 		m.SetTaskID(*v)
 	}
-	if i.ClearProjectTaskSection {
-		m.ClearProjectTaskSection()
-	}
-	if v := i.ProjectTaskSectionID; v != nil {
-		m.SetProjectTaskSectionID(*v)
-	}
 }
 
 // SetInput applies the change-set in the UpdateDeletedProjectTaskInput on the update builder.
@@ -636,21 +637,15 @@ func (u *DeletedProjectTaskUpdateOne) SetInput(i UpdateDeletedProjectTaskInput) 
 
 // CreateDeletedTaskInput represents a mutation input for creating deletedtasks.
 type CreateDeletedTaskInput struct {
-	TaskSectionID ulid.ID
-	TaskJoinID    ulid.ID
-	TaskType      deletedtask.TaskType
-	CreatedAt     *time.Time
-	UpdatedAt     *time.Time
-	TaskID        ulid.ID
-	WorkspaceID   ulid.ID
-	RequestID     string
+	CreatedAt   *time.Time
+	UpdatedAt   *time.Time
+	TaskID      ulid.ID
+	WorkspaceID ulid.ID
+	RequestID   string
 }
 
 // Mutate applies the CreateDeletedTaskInput on the DeletedTaskCreate builder.
 func (i *CreateDeletedTaskInput) Mutate(m *DeletedTaskCreate) {
-	m.SetTaskSectionID(i.TaskSectionID)
-	m.SetTaskJoinID(i.TaskJoinID)
-	m.SetTaskType(i.TaskType)
 	if v := i.CreatedAt; v != nil {
 		m.SetCreatedAt(*v)
 	}
@@ -670,9 +665,6 @@ func (c *DeletedTaskCreate) SetInput(i CreateDeletedTaskInput) *DeletedTaskCreat
 // UpdateDeletedTaskInput represents a mutation input for updating deletedtasks.
 type UpdateDeletedTaskInput struct {
 	ID             ulid.ID
-	TaskSectionID  *ulid.ID
-	TaskJoinID     *ulid.ID
-	TaskType       *deletedtask.TaskType
 	TaskID         *ulid.ID
 	ClearTask      bool
 	WorkspaceID    *ulid.ID
@@ -682,15 +674,6 @@ type UpdateDeletedTaskInput struct {
 
 // Mutate applies the UpdateDeletedTaskInput on the DeletedTaskMutation.
 func (i *UpdateDeletedTaskInput) Mutate(m *DeletedTaskMutation) {
-	if v := i.TaskSectionID; v != nil {
-		m.SetTaskSectionID(*v)
-	}
-	if v := i.TaskJoinID; v != nil {
-		m.SetTaskJoinID(*v)
-	}
-	if v := i.TaskType; v != nil {
-		m.SetTaskType(*v)
-	}
 	if i.ClearTask {
 		m.ClearTask()
 	}
@@ -719,19 +702,22 @@ func (u *DeletedTaskUpdateOne) SetInput(i UpdateDeletedTaskInput) *DeletedTaskUp
 
 // CreateDeletedTeammateTaskInput represents a mutation input for creating deletedteammatetasks.
 type CreateDeletedTeammateTaskInput struct {
+	TeammateTaskSectionID ulid.ID
+	TeammateTaskID        ulid.ID
 	TeammateTaskCreatedAt time.Time
 	TeammateTaskUpdatedAt time.Time
 	CreatedAt             *time.Time
 	UpdatedAt             *time.Time
 	TeammateID            ulid.ID
 	TaskID                ulid.ID
-	TeammateTaskSectionID ulid.ID
 	WorkspaceID           ulid.ID
 	RequestID             string
 }
 
 // Mutate applies the CreateDeletedTeammateTaskInput on the DeletedTeammateTaskCreate builder.
 func (i *CreateDeletedTeammateTaskInput) Mutate(m *DeletedTeammateTaskCreate) {
+	m.SetTeammateTaskSectionID(i.TeammateTaskSectionID)
+	m.SetTeammateTaskID(i.TeammateTaskID)
 	m.SetTeammateTaskCreatedAt(i.TeammateTaskCreatedAt)
 	m.SetTeammateTaskUpdatedAt(i.TeammateTaskUpdatedAt)
 	if v := i.CreatedAt; v != nil {
@@ -742,7 +728,6 @@ func (i *CreateDeletedTeammateTaskInput) Mutate(m *DeletedTeammateTaskCreate) {
 	}
 	m.SetTeammateID(i.TeammateID)
 	m.SetTaskID(i.TaskID)
-	m.SetTeammateTaskSectionID(i.TeammateTaskSectionID)
 	m.SetWorkspaceID(i.WorkspaceID)
 }
 
@@ -754,22 +739,28 @@ func (c *DeletedTeammateTaskCreate) SetInput(i CreateDeletedTeammateTaskInput) *
 
 // UpdateDeletedTeammateTaskInput represents a mutation input for updating deletedteammatetasks.
 type UpdateDeletedTeammateTaskInput struct {
-	ID                       ulid.ID
-	TeammateTaskCreatedAt    *time.Time
-	TeammateTaskUpdatedAt    *time.Time
-	TeammateID               *ulid.ID
-	ClearTeammate            bool
-	TaskID                   *ulid.ID
-	ClearTask                bool
-	TeammateTaskSectionID    *ulid.ID
-	ClearTeammateTaskSection bool
-	WorkspaceID              *ulid.ID
-	ClearWorkspace           bool
-	RequestID                string
+	ID                    ulid.ID
+	TeammateTaskSectionID *ulid.ID
+	TeammateTaskID        *ulid.ID
+	TeammateTaskCreatedAt *time.Time
+	TeammateTaskUpdatedAt *time.Time
+	TeammateID            *ulid.ID
+	ClearTeammate         bool
+	TaskID                *ulid.ID
+	ClearTask             bool
+	WorkspaceID           *ulid.ID
+	ClearWorkspace        bool
+	RequestID             string
 }
 
 // Mutate applies the UpdateDeletedTeammateTaskInput on the DeletedTeammateTaskMutation.
 func (i *UpdateDeletedTeammateTaskInput) Mutate(m *DeletedTeammateTaskMutation) {
+	if v := i.TeammateTaskSectionID; v != nil {
+		m.SetTeammateTaskSectionID(*v)
+	}
+	if v := i.TeammateTaskID; v != nil {
+		m.SetTeammateTaskID(*v)
+	}
 	if v := i.TeammateTaskCreatedAt; v != nil {
 		m.SetTeammateTaskCreatedAt(*v)
 	}
@@ -787,12 +778,6 @@ func (i *UpdateDeletedTeammateTaskInput) Mutate(m *DeletedTeammateTaskMutation) 
 	}
 	if v := i.TaskID; v != nil {
 		m.SetTaskID(*v)
-	}
-	if i.ClearTeammateTaskSection {
-		m.ClearTeammateTaskSection()
-	}
-	if v := i.TeammateTaskSectionID; v != nil {
-		m.SetTeammateTaskSectionID(*v)
 	}
 	if i.ClearWorkspace {
 		m.ClearWorkspace()
@@ -1773,14 +1758,13 @@ func (u *ProjectTaskListStatusUpdateOne) SetInput(i UpdateProjectTaskListStatusI
 
 // CreateProjectTaskSectionInput represents a mutation input for creating projecttasksections.
 type CreateProjectTaskSectionInput struct {
-	Name                  string
-	CreatedAt             *time.Time
-	UpdatedAt             *time.Time
-	ProjectID             ulid.ID
-	ProjectTaskIDs        []ulid.ID
-	DeletedProjectTaskIDs []ulid.ID
-	WorkspaceID           ulid.ID
-	RequestID             string
+	Name           string
+	CreatedAt      *time.Time
+	UpdatedAt      *time.Time
+	ProjectID      ulid.ID
+	ProjectTaskIDs []ulid.ID
+	WorkspaceID    ulid.ID
+	RequestID      string
 }
 
 // Mutate applies the CreateProjectTaskSectionInput on the ProjectTaskSectionCreate builder.
@@ -1796,9 +1780,6 @@ func (i *CreateProjectTaskSectionInput) Mutate(m *ProjectTaskSectionCreate) {
 	if ids := i.ProjectTaskIDs; len(ids) > 0 {
 		m.AddProjectTaskIDs(ids...)
 	}
-	if ids := i.DeletedProjectTaskIDs; len(ids) > 0 {
-		m.AddDeletedProjectTaskIDs(ids...)
-	}
 }
 
 // SetInput applies the change-set in the CreateProjectTaskSectionInput on the create builder.
@@ -1809,16 +1790,14 @@ func (c *ProjectTaskSectionCreate) SetInput(i CreateProjectTaskSectionInput) *Pr
 
 // UpdateProjectTaskSectionInput represents a mutation input for updating projecttasksections.
 type UpdateProjectTaskSectionInput struct {
-	ID                          ulid.ID
-	Name                        *string
-	ProjectID                   *ulid.ID
-	ClearProject                bool
-	AddProjectTaskIDs           []ulid.ID
-	RemoveProjectTaskIDs        []ulid.ID
-	AddDeletedProjectTaskIDs    []ulid.ID
-	RemoveDeletedProjectTaskIDs []ulid.ID
-	WorkspaceID                 ulid.ID
-	RequestID                   string
+	ID                   ulid.ID
+	Name                 *string
+	ProjectID            *ulid.ID
+	ClearProject         bool
+	AddProjectTaskIDs    []ulid.ID
+	RemoveProjectTaskIDs []ulid.ID
+	WorkspaceID          ulid.ID
+	RequestID            string
 }
 
 // Mutate applies the UpdateProjectTaskSectionInput on the ProjectTaskSectionMutation.
@@ -1837,12 +1816,6 @@ func (i *UpdateProjectTaskSectionInput) Mutate(m *ProjectTaskSectionMutation) {
 	}
 	if ids := i.RemoveProjectTaskIDs; len(ids) > 0 {
 		m.RemoveProjectTaskIDs(ids...)
-	}
-	if ids := i.AddDeletedProjectTaskIDs; len(ids) > 0 {
-		m.AddDeletedProjectTaskIDs(ids...)
-	}
-	if ids := i.RemoveDeletedProjectTaskIDs; len(ids) > 0 {
-		m.RemoveDeletedProjectTaskIDs(ids...)
 	}
 }
 
@@ -3983,15 +3956,14 @@ func (u *TeammateTaskListStatusUpdateOne) SetInput(i UpdateTeammateTaskListStatu
 
 // CreateTeammateTaskSectionInput represents a mutation input for creating teammatetasksections.
 type CreateTeammateTaskSectionInput struct {
-	Name                   string
-	Assigned               bool
-	CreatedAt              *time.Time
-	UpdatedAt              *time.Time
-	TeammateID             ulid.ID
-	WorkspaceID            ulid.ID
-	TeammateTaskIDs        []ulid.ID
-	DeletedTeammateTaskIDs []ulid.ID
-	RequestID              string
+	Name            string
+	Assigned        bool
+	CreatedAt       *time.Time
+	UpdatedAt       *time.Time
+	TeammateID      ulid.ID
+	WorkspaceID     ulid.ID
+	TeammateTaskIDs []ulid.ID
+	RequestID       string
 }
 
 // Mutate applies the CreateTeammateTaskSectionInput on the TeammateTaskSectionCreate builder.
@@ -4009,9 +3981,6 @@ func (i *CreateTeammateTaskSectionInput) Mutate(m *TeammateTaskSectionCreate) {
 	if ids := i.TeammateTaskIDs; len(ids) > 0 {
 		m.AddTeammateTaskIDs(ids...)
 	}
-	if ids := i.DeletedTeammateTaskIDs; len(ids) > 0 {
-		m.AddDeletedTeammateTaskIDs(ids...)
-	}
 }
 
 // SetInput applies the change-set in the CreateTeammateTaskSectionInput on the create builder.
@@ -4022,18 +3991,16 @@ func (c *TeammateTaskSectionCreate) SetInput(i CreateTeammateTaskSectionInput) *
 
 // UpdateTeammateTaskSectionInput represents a mutation input for updating teammatetasksections.
 type UpdateTeammateTaskSectionInput struct {
-	ID                           ulid.ID
-	Name                         *string
-	Assigned                     *bool
-	TeammateID                   *ulid.ID
-	ClearTeammate                bool
-	WorkspaceID                  *ulid.ID
-	ClearWorkspace               bool
-	AddTeammateTaskIDs           []ulid.ID
-	RemoveTeammateTaskIDs        []ulid.ID
-	AddDeletedTeammateTaskIDs    []ulid.ID
-	RemoveDeletedTeammateTaskIDs []ulid.ID
-	RequestID                    string
+	ID                    ulid.ID
+	Name                  *string
+	Assigned              *bool
+	TeammateID            *ulid.ID
+	ClearTeammate         bool
+	WorkspaceID           *ulid.ID
+	ClearWorkspace        bool
+	AddTeammateTaskIDs    []ulid.ID
+	RemoveTeammateTaskIDs []ulid.ID
+	RequestID             string
 }
 
 // Mutate applies the UpdateTeammateTaskSectionInput on the TeammateTaskSectionMutation.
@@ -4061,12 +4028,6 @@ func (i *UpdateTeammateTaskSectionInput) Mutate(m *TeammateTaskSectionMutation) 
 	}
 	if ids := i.RemoveTeammateTaskIDs; len(ids) > 0 {
 		m.RemoveTeammateTaskIDs(ids...)
-	}
-	if ids := i.AddDeletedTeammateTaskIDs; len(ids) > 0 {
-		m.AddDeletedTeammateTaskIDs(ids...)
-	}
-	if ids := i.RemoveDeletedTeammateTaskIDs; len(ids) > 0 {
-		m.RemoveDeletedTeammateTaskIDs(ids...)
 	}
 }
 

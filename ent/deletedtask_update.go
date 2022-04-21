@@ -42,24 +42,6 @@ func (dtu *DeletedTaskUpdate) SetWorkspaceID(u ulid.ID) *DeletedTaskUpdate {
 	return dtu
 }
 
-// SetTaskSectionID sets the "task_section_id" field.
-func (dtu *DeletedTaskUpdate) SetTaskSectionID(u ulid.ID) *DeletedTaskUpdate {
-	dtu.mutation.SetTaskSectionID(u)
-	return dtu
-}
-
-// SetTaskJoinID sets the "task_join_id" field.
-func (dtu *DeletedTaskUpdate) SetTaskJoinID(u ulid.ID) *DeletedTaskUpdate {
-	dtu.mutation.SetTaskJoinID(u)
-	return dtu
-}
-
-// SetTaskType sets the "task_type" field.
-func (dtu *DeletedTaskUpdate) SetTaskType(dt deletedtask.TaskType) *DeletedTaskUpdate {
-	dtu.mutation.SetTaskType(dt)
-	return dtu
-}
-
 // SetTask sets the "task" edge to the Task entity.
 func (dtu *DeletedTaskUpdate) SetTask(t *Task) *DeletedTaskUpdate {
 	return dtu.SetTaskID(t.ID)
@@ -149,11 +131,6 @@ func (dtu *DeletedTaskUpdate) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (dtu *DeletedTaskUpdate) check() error {
-	if v, ok := dtu.mutation.TaskType(); ok {
-		if err := deletedtask.TaskTypeValidator(v); err != nil {
-			return &ValidationError{Name: "task_type", err: fmt.Errorf(`ent: validator failed for field "DeletedTask.task_type": %w`, err)}
-		}
-	}
 	if _, ok := dtu.mutation.TaskID(); dtu.mutation.TaskCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "DeletedTask.task"`)
 	}
@@ -180,27 +157,6 @@ func (dtu *DeletedTaskUpdate) sqlSave(ctx context.Context) (n int, err error) {
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := dtu.mutation.TaskSectionID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: deletedtask.FieldTaskSectionID,
-		})
-	}
-	if value, ok := dtu.mutation.TaskJoinID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: deletedtask.FieldTaskJoinID,
-		})
-	}
-	if value, ok := dtu.mutation.TaskType(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeEnum,
-			Value:  value,
-			Column: deletedtask.FieldTaskType,
-		})
 	}
 	if dtu.mutation.TaskCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -303,24 +259,6 @@ func (dtuo *DeletedTaskUpdateOne) SetWorkspaceID(u ulid.ID) *DeletedTaskUpdateOn
 	return dtuo
 }
 
-// SetTaskSectionID sets the "task_section_id" field.
-func (dtuo *DeletedTaskUpdateOne) SetTaskSectionID(u ulid.ID) *DeletedTaskUpdateOne {
-	dtuo.mutation.SetTaskSectionID(u)
-	return dtuo
-}
-
-// SetTaskJoinID sets the "task_join_id" field.
-func (dtuo *DeletedTaskUpdateOne) SetTaskJoinID(u ulid.ID) *DeletedTaskUpdateOne {
-	dtuo.mutation.SetTaskJoinID(u)
-	return dtuo
-}
-
-// SetTaskType sets the "task_type" field.
-func (dtuo *DeletedTaskUpdateOne) SetTaskType(dt deletedtask.TaskType) *DeletedTaskUpdateOne {
-	dtuo.mutation.SetTaskType(dt)
-	return dtuo
-}
-
 // SetTask sets the "task" edge to the Task entity.
 func (dtuo *DeletedTaskUpdateOne) SetTask(t *Task) *DeletedTaskUpdateOne {
 	return dtuo.SetTaskID(t.ID)
@@ -417,11 +355,6 @@ func (dtuo *DeletedTaskUpdateOne) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (dtuo *DeletedTaskUpdateOne) check() error {
-	if v, ok := dtuo.mutation.TaskType(); ok {
-		if err := deletedtask.TaskTypeValidator(v); err != nil {
-			return &ValidationError{Name: "task_type", err: fmt.Errorf(`ent: validator failed for field "DeletedTask.task_type": %w`, err)}
-		}
-	}
 	if _, ok := dtuo.mutation.TaskID(); dtuo.mutation.TaskCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "DeletedTask.task"`)
 	}
@@ -465,27 +398,6 @@ func (dtuo *DeletedTaskUpdateOne) sqlSave(ctx context.Context) (_node *DeletedTa
 				ps[i](selector)
 			}
 		}
-	}
-	if value, ok := dtuo.mutation.TaskSectionID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: deletedtask.FieldTaskSectionID,
-		})
-	}
-	if value, ok := dtuo.mutation.TaskJoinID(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: deletedtask.FieldTaskJoinID,
-		})
-	}
-	if value, ok := dtuo.mutation.TaskType(); ok {
-		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
-			Type:   field.TypeEnum,
-			Value:  value,
-			Column: deletedtask.FieldTaskType,
-		})
 	}
 	if dtuo.mutation.TaskCleared() {
 		edge := &sqlgraph.EdgeSpec{

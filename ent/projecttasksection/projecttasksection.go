@@ -24,8 +24,6 @@ const (
 	EdgeProject = "project"
 	// EdgeProjectTasks holds the string denoting the projecttasks edge name in mutations.
 	EdgeProjectTasks = "projectTasks"
-	// EdgeDeletedProjectTasks holds the string denoting the deletedprojecttasks edge name in mutations.
-	EdgeDeletedProjectTasks = "deletedProjectTasks"
 	// Table holds the table name of the projecttasksection in the database.
 	Table = "project_task_sections"
 	// ProjectTable is the table that holds the project relation/edge.
@@ -42,13 +40,6 @@ const (
 	ProjectTasksInverseTable = "project_tasks"
 	// ProjectTasksColumn is the table column denoting the projectTasks relation/edge.
 	ProjectTasksColumn = "project_task_section_id"
-	// DeletedProjectTasksTable is the table that holds the deletedProjectTasks relation/edge.
-	DeletedProjectTasksTable = "deleted_project_tasks"
-	// DeletedProjectTasksInverseTable is the table name for the DeletedProjectTask entity.
-	// It exists in this package in order to avoid circular dependency with the "deletedprojecttask" package.
-	DeletedProjectTasksInverseTable = "deleted_project_tasks"
-	// DeletedProjectTasksColumn is the table column denoting the deletedProjectTasks relation/edge.
-	DeletedProjectTasksColumn = "project_task_section_id"
 )
 
 // Columns holds all SQL columns for projecttasksection fields.

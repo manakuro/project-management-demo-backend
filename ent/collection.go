@@ -203,10 +203,6 @@ func (dpt *DeletedProjectTaskQuery) collectField(ctx *graphql.OperationContext, 
 			dpt = dpt.WithProject(func(query *ProjectQuery) {
 				query.collectField(ctx, field)
 			})
-		case "projectTaskSection":
-			dpt = dpt.WithProjectTaskSection(func(query *ProjectTaskSectionQuery) {
-				query.collectField(ctx, field)
-			})
 		case "task":
 			dpt = dpt.WithTask(func(query *TaskQuery) {
 				query.collectField(ctx, field)
@@ -257,10 +253,6 @@ func (dtt *DeletedTeammateTaskQuery) collectField(ctx *graphql.OperationContext,
 			})
 		case "teammate":
 			dtt = dtt.WithTeammate(func(query *TeammateQuery) {
-				query.collectField(ctx, field)
-			})
-		case "teammateTaskSection":
-			dtt = dtt.WithTeammateTaskSection(func(query *TeammateTaskSectionQuery) {
 				query.collectField(ctx, field)
 			})
 		case "workspace":
@@ -599,10 +591,6 @@ func (pts *ProjectTaskSectionQuery) CollectFields(ctx context.Context, satisfies
 func (pts *ProjectTaskSectionQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *ProjectTaskSectionQuery {
 	for _, field := range graphql.CollectFields(ctx, field.Selections, satisfies) {
 		switch field.Name {
-		case "deletedProjectTasks":
-			pts = pts.WithDeletedProjectTasks(func(query *DeletedProjectTaskQuery) {
-				query.collectField(ctx, field)
-			})
 		case "project":
 			pts = pts.WithProject(func(query *ProjectQuery) {
 				query.collectField(ctx, field)
@@ -1295,10 +1283,6 @@ func (tts *TeammateTaskSectionQuery) CollectFields(ctx context.Context, satisfie
 func (tts *TeammateTaskSectionQuery) collectField(ctx *graphql.OperationContext, field graphql.CollectedField, satisfies ...string) *TeammateTaskSectionQuery {
 	for _, field := range graphql.CollectFields(ctx, field.Selections, satisfies) {
 		switch field.Name {
-		case "deletedTeammateTasks":
-			tts = tts.WithDeletedTeammateTasks(func(query *DeletedTeammateTaskQuery) {
-				query.collectField(ctx, field)
-			})
 		case "teammate":
 			tts = tts.WithTeammate(func(query *TeammateQuery) {
 				query.collectField(ctx, field)

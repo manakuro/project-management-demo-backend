@@ -155,7 +155,10 @@ func (r *projectTaskSectionRepository) DeleteAndKeepTasks(ctx context.Context, i
 		return nil, model.NewDBError(err)
 	}
 
-	projectTasks, err := client.ProjectTask.Query().Where(projecttask.ProjectTaskSectionIDEQ(deleted.ID)).All(ctx)
+	projectTasks, err := client.ProjectTask.
+		Query().
+		Where(projecttask.ProjectTaskSectionIDEQ(deleted.ID)).
+		All(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
 			return nil, model.NewNotFoundError(err, deleted.ID)
@@ -337,15 +340,12 @@ func (r *projectTaskSectionRepository) UndeleteAndDeleteTasks(ctx context.Contex
 
 	deletedTasks, err := client.DeletedTask.
 		Query().
-		Where(
-			deletedtask.TaskIDIn(input.DeletedTaskIDs...),
-			deletedtask.TaskTypeEQ(deletedtask.TaskTypeProject),
-		).
+		Where(deletedtask.TaskIDIn(input.DeletedTaskIDs...)).
 		All(ctx)
 	if err != nil {
 		return nil, model.NewDBError(err)
 	}
-	if deletedTasks == nil {
+	if len(deletedTasks) == 0 {
 		return nil, model.NewNotFoundError(err, input)
 	}
 

@@ -144,31 +144,6 @@ func (r *deletedTaskRepository) Undelete(ctx context.Context, input model.Undele
 		return nil, model.NewDBError(err)
 	}
 
-	// The task to be undeleted will be limited up to two records.
-	for _, t := range deletedTasks {
-		if t.TaskType == deletedtask.TaskTypeTeammate {
-			_, err = client.TeammateTask.Create().
-				SetWorkspaceID(t.WorkspaceID).
-				SetTaskID(t.TaskID).
-				SetTeammateID(t.TaskJoinID).
-				SetTeammateTaskSectionID(t.TaskSectionID).
-				Save(ctx)
-			if err != nil {
-				return nil, model.NewDBError(err)
-			}
-		}
-		if t.TaskType == deletedtask.TaskTypeProject {
-			_, err = client.ProjectTask.Create().
-				SetProjectID(t.TaskJoinID).
-				SetTaskID(t.TaskID).
-				SetProjectTaskSectionID(t.TaskSectionID).
-				Save(ctx)
-			if err != nil {
-				return nil, model.NewDBError(err)
-			}
-		}
-	}
-
 	deletedIds := make([]model.ID, len(deletedTasks))
 	for i, t := range deletedTasks {
 		deletedIds[i] = t.ID

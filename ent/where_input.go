@@ -2483,6 +2483,21 @@ type DeletedProjectTaskWhereInput struct {
 	ProjectTaskSectionIDEqualFold    *ulid.ID  `json:"projectTaskSectionIDEqualFold,omitempty"`
 	ProjectTaskSectionIDContainsFold *ulid.ID  `json:"projectTaskSectionIDContainsFold,omitempty"`
 
+	// "project_task_id" field predicates.
+	ProjectTaskID             *ulid.ID  `json:"projectTaskID,omitempty"`
+	ProjectTaskIDNEQ          *ulid.ID  `json:"projectTaskIDNEQ,omitempty"`
+	ProjectTaskIDIn           []ulid.ID `json:"projectTaskIDIn,omitempty"`
+	ProjectTaskIDNotIn        []ulid.ID `json:"projectTaskIDNotIn,omitempty"`
+	ProjectTaskIDGT           *ulid.ID  `json:"projectTaskIDGT,omitempty"`
+	ProjectTaskIDGTE          *ulid.ID  `json:"projectTaskIDGTE,omitempty"`
+	ProjectTaskIDLT           *ulid.ID  `json:"projectTaskIDLT,omitempty"`
+	ProjectTaskIDLTE          *ulid.ID  `json:"projectTaskIDLTE,omitempty"`
+	ProjectTaskIDContains     *ulid.ID  `json:"projectTaskIDContains,omitempty"`
+	ProjectTaskIDHasPrefix    *ulid.ID  `json:"projectTaskIDHasPrefix,omitempty"`
+	ProjectTaskIDHasSuffix    *ulid.ID  `json:"projectTaskIDHasSuffix,omitempty"`
+	ProjectTaskIDEqualFold    *ulid.ID  `json:"projectTaskIDEqualFold,omitempty"`
+	ProjectTaskIDContainsFold *ulid.ID  `json:"projectTaskIDContainsFold,omitempty"`
+
 	// "project_task_created_at" field predicates.
 	ProjectTaskCreatedAt      *time.Time  `json:"projectTaskCreatedAt,omitempty"`
 	ProjectTaskCreatedAtNEQ   *time.Time  `json:"projectTaskCreatedAtNEQ,omitempty"`
@@ -2530,10 +2545,6 @@ type DeletedProjectTaskWhereInput struct {
 	// "task" edge predicates.
 	HasTask     *bool             `json:"hasTask,omitempty"`
 	HasTaskWith []*TaskWhereInput `json:"hasTaskWith,omitempty"`
-
-	// "projectTaskSection" edge predicates.
-	HasProjectTaskSection     *bool                           `json:"hasProjectTaskSection,omitempty"`
-	HasProjectTaskSectionWith []*ProjectTaskSectionWhereInput `json:"hasProjectTaskSectionWith,omitempty"`
 }
 
 // Filter applies the DeletedProjectTaskWhereInput filter on the DeletedProjectTaskQuery builder.
@@ -2736,6 +2747,45 @@ func (i *DeletedProjectTaskWhereInput) P() (predicate.DeletedProjectTask, error)
 	if i.ProjectTaskSectionIDContainsFold != nil {
 		predicates = append(predicates, deletedprojecttask.ProjectTaskSectionIDContainsFold(*i.ProjectTaskSectionIDContainsFold))
 	}
+	if i.ProjectTaskID != nil {
+		predicates = append(predicates, deletedprojecttask.ProjectTaskIDEQ(*i.ProjectTaskID))
+	}
+	if i.ProjectTaskIDNEQ != nil {
+		predicates = append(predicates, deletedprojecttask.ProjectTaskIDNEQ(*i.ProjectTaskIDNEQ))
+	}
+	if len(i.ProjectTaskIDIn) > 0 {
+		predicates = append(predicates, deletedprojecttask.ProjectTaskIDIn(i.ProjectTaskIDIn...))
+	}
+	if len(i.ProjectTaskIDNotIn) > 0 {
+		predicates = append(predicates, deletedprojecttask.ProjectTaskIDNotIn(i.ProjectTaskIDNotIn...))
+	}
+	if i.ProjectTaskIDGT != nil {
+		predicates = append(predicates, deletedprojecttask.ProjectTaskIDGT(*i.ProjectTaskIDGT))
+	}
+	if i.ProjectTaskIDGTE != nil {
+		predicates = append(predicates, deletedprojecttask.ProjectTaskIDGTE(*i.ProjectTaskIDGTE))
+	}
+	if i.ProjectTaskIDLT != nil {
+		predicates = append(predicates, deletedprojecttask.ProjectTaskIDLT(*i.ProjectTaskIDLT))
+	}
+	if i.ProjectTaskIDLTE != nil {
+		predicates = append(predicates, deletedprojecttask.ProjectTaskIDLTE(*i.ProjectTaskIDLTE))
+	}
+	if i.ProjectTaskIDContains != nil {
+		predicates = append(predicates, deletedprojecttask.ProjectTaskIDContains(*i.ProjectTaskIDContains))
+	}
+	if i.ProjectTaskIDHasPrefix != nil {
+		predicates = append(predicates, deletedprojecttask.ProjectTaskIDHasPrefix(*i.ProjectTaskIDHasPrefix))
+	}
+	if i.ProjectTaskIDHasSuffix != nil {
+		predicates = append(predicates, deletedprojecttask.ProjectTaskIDHasSuffix(*i.ProjectTaskIDHasSuffix))
+	}
+	if i.ProjectTaskIDEqualFold != nil {
+		predicates = append(predicates, deletedprojecttask.ProjectTaskIDEqualFold(*i.ProjectTaskIDEqualFold))
+	}
+	if i.ProjectTaskIDContainsFold != nil {
+		predicates = append(predicates, deletedprojecttask.ProjectTaskIDContainsFold(*i.ProjectTaskIDContainsFold))
+	}
 	if i.ProjectTaskCreatedAt != nil {
 		predicates = append(predicates, deletedprojecttask.ProjectTaskCreatedAtEQ(*i.ProjectTaskCreatedAt))
 	}
@@ -2869,24 +2919,6 @@ func (i *DeletedProjectTaskWhereInput) P() (predicate.DeletedProjectTask, error)
 		}
 		predicates = append(predicates, deletedprojecttask.HasTaskWith(with...))
 	}
-	if i.HasProjectTaskSection != nil {
-		p := deletedprojecttask.HasProjectTaskSection()
-		if !*i.HasProjectTaskSection {
-			p = deletedprojecttask.Not(p)
-		}
-		predicates = append(predicates, p)
-	}
-	if len(i.HasProjectTaskSectionWith) > 0 {
-		with := make([]predicate.ProjectTaskSection, 0, len(i.HasProjectTaskSectionWith))
-		for _, w := range i.HasProjectTaskSectionWith {
-			p, err := w.P()
-			if err != nil {
-				return nil, err
-			}
-			with = append(with, p)
-		}
-		predicates = append(predicates, deletedprojecttask.HasProjectTaskSectionWith(with...))
-	}
 	switch len(predicates) {
 	case 0:
 		return nil, fmt.Errorf("project-management-demo-backend/ent: empty predicate DeletedProjectTaskWhereInput")
@@ -2942,42 +2974,6 @@ type DeletedTaskWhereInput struct {
 	WorkspaceIDHasSuffix    *ulid.ID  `json:"workspaceIDHasSuffix,omitempty"`
 	WorkspaceIDEqualFold    *ulid.ID  `json:"workspaceIDEqualFold,omitempty"`
 	WorkspaceIDContainsFold *ulid.ID  `json:"workspaceIDContainsFold,omitempty"`
-
-	// "task_section_id" field predicates.
-	TaskSectionID             *ulid.ID  `json:"taskSectionID,omitempty"`
-	TaskSectionIDNEQ          *ulid.ID  `json:"taskSectionIDNEQ,omitempty"`
-	TaskSectionIDIn           []ulid.ID `json:"taskSectionIDIn,omitempty"`
-	TaskSectionIDNotIn        []ulid.ID `json:"taskSectionIDNotIn,omitempty"`
-	TaskSectionIDGT           *ulid.ID  `json:"taskSectionIDGT,omitempty"`
-	TaskSectionIDGTE          *ulid.ID  `json:"taskSectionIDGTE,omitempty"`
-	TaskSectionIDLT           *ulid.ID  `json:"taskSectionIDLT,omitempty"`
-	TaskSectionIDLTE          *ulid.ID  `json:"taskSectionIDLTE,omitempty"`
-	TaskSectionIDContains     *ulid.ID  `json:"taskSectionIDContains,omitempty"`
-	TaskSectionIDHasPrefix    *ulid.ID  `json:"taskSectionIDHasPrefix,omitempty"`
-	TaskSectionIDHasSuffix    *ulid.ID  `json:"taskSectionIDHasSuffix,omitempty"`
-	TaskSectionIDEqualFold    *ulid.ID  `json:"taskSectionIDEqualFold,omitempty"`
-	TaskSectionIDContainsFold *ulid.ID  `json:"taskSectionIDContainsFold,omitempty"`
-
-	// "task_join_id" field predicates.
-	TaskJoinID             *ulid.ID  `json:"taskJoinID,omitempty"`
-	TaskJoinIDNEQ          *ulid.ID  `json:"taskJoinIDNEQ,omitempty"`
-	TaskJoinIDIn           []ulid.ID `json:"taskJoinIDIn,omitempty"`
-	TaskJoinIDNotIn        []ulid.ID `json:"taskJoinIDNotIn,omitempty"`
-	TaskJoinIDGT           *ulid.ID  `json:"taskJoinIDGT,omitempty"`
-	TaskJoinIDGTE          *ulid.ID  `json:"taskJoinIDGTE,omitempty"`
-	TaskJoinIDLT           *ulid.ID  `json:"taskJoinIDLT,omitempty"`
-	TaskJoinIDLTE          *ulid.ID  `json:"taskJoinIDLTE,omitempty"`
-	TaskJoinIDContains     *ulid.ID  `json:"taskJoinIDContains,omitempty"`
-	TaskJoinIDHasPrefix    *ulid.ID  `json:"taskJoinIDHasPrefix,omitempty"`
-	TaskJoinIDHasSuffix    *ulid.ID  `json:"taskJoinIDHasSuffix,omitempty"`
-	TaskJoinIDEqualFold    *ulid.ID  `json:"taskJoinIDEqualFold,omitempty"`
-	TaskJoinIDContainsFold *ulid.ID  `json:"taskJoinIDContainsFold,omitempty"`
-
-	// "task_type" field predicates.
-	TaskType      *deletedtask.TaskType  `json:"taskType,omitempty"`
-	TaskTypeNEQ   *deletedtask.TaskType  `json:"taskTypeNEQ,omitempty"`
-	TaskTypeIn    []deletedtask.TaskType `json:"taskTypeIn,omitempty"`
-	TaskTypeNotIn []deletedtask.TaskType `json:"taskTypeNotIn,omitempty"`
 
 	// "created_at" field predicates.
 	CreatedAt      *time.Time  `json:"createdAt,omitempty"`
@@ -3169,96 +3165,6 @@ func (i *DeletedTaskWhereInput) P() (predicate.DeletedTask, error) {
 	if i.WorkspaceIDContainsFold != nil {
 		predicates = append(predicates, deletedtask.WorkspaceIDContainsFold(*i.WorkspaceIDContainsFold))
 	}
-	if i.TaskSectionID != nil {
-		predicates = append(predicates, deletedtask.TaskSectionIDEQ(*i.TaskSectionID))
-	}
-	if i.TaskSectionIDNEQ != nil {
-		predicates = append(predicates, deletedtask.TaskSectionIDNEQ(*i.TaskSectionIDNEQ))
-	}
-	if len(i.TaskSectionIDIn) > 0 {
-		predicates = append(predicates, deletedtask.TaskSectionIDIn(i.TaskSectionIDIn...))
-	}
-	if len(i.TaskSectionIDNotIn) > 0 {
-		predicates = append(predicates, deletedtask.TaskSectionIDNotIn(i.TaskSectionIDNotIn...))
-	}
-	if i.TaskSectionIDGT != nil {
-		predicates = append(predicates, deletedtask.TaskSectionIDGT(*i.TaskSectionIDGT))
-	}
-	if i.TaskSectionIDGTE != nil {
-		predicates = append(predicates, deletedtask.TaskSectionIDGTE(*i.TaskSectionIDGTE))
-	}
-	if i.TaskSectionIDLT != nil {
-		predicates = append(predicates, deletedtask.TaskSectionIDLT(*i.TaskSectionIDLT))
-	}
-	if i.TaskSectionIDLTE != nil {
-		predicates = append(predicates, deletedtask.TaskSectionIDLTE(*i.TaskSectionIDLTE))
-	}
-	if i.TaskSectionIDContains != nil {
-		predicates = append(predicates, deletedtask.TaskSectionIDContains(*i.TaskSectionIDContains))
-	}
-	if i.TaskSectionIDHasPrefix != nil {
-		predicates = append(predicates, deletedtask.TaskSectionIDHasPrefix(*i.TaskSectionIDHasPrefix))
-	}
-	if i.TaskSectionIDHasSuffix != nil {
-		predicates = append(predicates, deletedtask.TaskSectionIDHasSuffix(*i.TaskSectionIDHasSuffix))
-	}
-	if i.TaskSectionIDEqualFold != nil {
-		predicates = append(predicates, deletedtask.TaskSectionIDEqualFold(*i.TaskSectionIDEqualFold))
-	}
-	if i.TaskSectionIDContainsFold != nil {
-		predicates = append(predicates, deletedtask.TaskSectionIDContainsFold(*i.TaskSectionIDContainsFold))
-	}
-	if i.TaskJoinID != nil {
-		predicates = append(predicates, deletedtask.TaskJoinIDEQ(*i.TaskJoinID))
-	}
-	if i.TaskJoinIDNEQ != nil {
-		predicates = append(predicates, deletedtask.TaskJoinIDNEQ(*i.TaskJoinIDNEQ))
-	}
-	if len(i.TaskJoinIDIn) > 0 {
-		predicates = append(predicates, deletedtask.TaskJoinIDIn(i.TaskJoinIDIn...))
-	}
-	if len(i.TaskJoinIDNotIn) > 0 {
-		predicates = append(predicates, deletedtask.TaskJoinIDNotIn(i.TaskJoinIDNotIn...))
-	}
-	if i.TaskJoinIDGT != nil {
-		predicates = append(predicates, deletedtask.TaskJoinIDGT(*i.TaskJoinIDGT))
-	}
-	if i.TaskJoinIDGTE != nil {
-		predicates = append(predicates, deletedtask.TaskJoinIDGTE(*i.TaskJoinIDGTE))
-	}
-	if i.TaskJoinIDLT != nil {
-		predicates = append(predicates, deletedtask.TaskJoinIDLT(*i.TaskJoinIDLT))
-	}
-	if i.TaskJoinIDLTE != nil {
-		predicates = append(predicates, deletedtask.TaskJoinIDLTE(*i.TaskJoinIDLTE))
-	}
-	if i.TaskJoinIDContains != nil {
-		predicates = append(predicates, deletedtask.TaskJoinIDContains(*i.TaskJoinIDContains))
-	}
-	if i.TaskJoinIDHasPrefix != nil {
-		predicates = append(predicates, deletedtask.TaskJoinIDHasPrefix(*i.TaskJoinIDHasPrefix))
-	}
-	if i.TaskJoinIDHasSuffix != nil {
-		predicates = append(predicates, deletedtask.TaskJoinIDHasSuffix(*i.TaskJoinIDHasSuffix))
-	}
-	if i.TaskJoinIDEqualFold != nil {
-		predicates = append(predicates, deletedtask.TaskJoinIDEqualFold(*i.TaskJoinIDEqualFold))
-	}
-	if i.TaskJoinIDContainsFold != nil {
-		predicates = append(predicates, deletedtask.TaskJoinIDContainsFold(*i.TaskJoinIDContainsFold))
-	}
-	if i.TaskType != nil {
-		predicates = append(predicates, deletedtask.TaskTypeEQ(*i.TaskType))
-	}
-	if i.TaskTypeNEQ != nil {
-		predicates = append(predicates, deletedtask.TaskTypeNEQ(*i.TaskTypeNEQ))
-	}
-	if len(i.TaskTypeIn) > 0 {
-		predicates = append(predicates, deletedtask.TaskTypeIn(i.TaskTypeIn...))
-	}
-	if len(i.TaskTypeNotIn) > 0 {
-		predicates = append(predicates, deletedtask.TaskTypeNotIn(i.TaskTypeNotIn...))
-	}
 	if i.CreatedAt != nil {
 		predicates = append(predicates, deletedtask.CreatedAtEQ(*i.CreatedAt))
 	}
@@ -3430,6 +3336,21 @@ type DeletedTeammateTaskWhereInput struct {
 	WorkspaceIDEqualFold    *ulid.ID  `json:"workspaceIDEqualFold,omitempty"`
 	WorkspaceIDContainsFold *ulid.ID  `json:"workspaceIDContainsFold,omitempty"`
 
+	// "teammate_task_id" field predicates.
+	TeammateTaskID             *ulid.ID  `json:"teammateTaskID,omitempty"`
+	TeammateTaskIDNEQ          *ulid.ID  `json:"teammateTaskIDNEQ,omitempty"`
+	TeammateTaskIDIn           []ulid.ID `json:"teammateTaskIDIn,omitempty"`
+	TeammateTaskIDNotIn        []ulid.ID `json:"teammateTaskIDNotIn,omitempty"`
+	TeammateTaskIDGT           *ulid.ID  `json:"teammateTaskIDGT,omitempty"`
+	TeammateTaskIDGTE          *ulid.ID  `json:"teammateTaskIDGTE,omitempty"`
+	TeammateTaskIDLT           *ulid.ID  `json:"teammateTaskIDLT,omitempty"`
+	TeammateTaskIDLTE          *ulid.ID  `json:"teammateTaskIDLTE,omitempty"`
+	TeammateTaskIDContains     *ulid.ID  `json:"teammateTaskIDContains,omitempty"`
+	TeammateTaskIDHasPrefix    *ulid.ID  `json:"teammateTaskIDHasPrefix,omitempty"`
+	TeammateTaskIDHasSuffix    *ulid.ID  `json:"teammateTaskIDHasSuffix,omitempty"`
+	TeammateTaskIDEqualFold    *ulid.ID  `json:"teammateTaskIDEqualFold,omitempty"`
+	TeammateTaskIDContainsFold *ulid.ID  `json:"teammateTaskIDContainsFold,omitempty"`
+
 	// "teammate_task_created_at" field predicates.
 	TeammateTaskCreatedAt      *time.Time  `json:"teammateTaskCreatedAt,omitempty"`
 	TeammateTaskCreatedAtNEQ   *time.Time  `json:"teammateTaskCreatedAtNEQ,omitempty"`
@@ -3477,10 +3398,6 @@ type DeletedTeammateTaskWhereInput struct {
 	// "task" edge predicates.
 	HasTask     *bool             `json:"hasTask,omitempty"`
 	HasTaskWith []*TaskWhereInput `json:"hasTaskWith,omitempty"`
-
-	// "teammateTaskSection" edge predicates.
-	HasTeammateTaskSection     *bool                            `json:"hasTeammateTaskSection,omitempty"`
-	HasTeammateTaskSectionWith []*TeammateTaskSectionWhereInput `json:"hasTeammateTaskSectionWith,omitempty"`
 
 	// "workspace" edge predicates.
 	HasWorkspace     *bool                  `json:"hasWorkspace,omitempty"`
@@ -3726,6 +3643,45 @@ func (i *DeletedTeammateTaskWhereInput) P() (predicate.DeletedTeammateTask, erro
 	if i.WorkspaceIDContainsFold != nil {
 		predicates = append(predicates, deletedteammatetask.WorkspaceIDContainsFold(*i.WorkspaceIDContainsFold))
 	}
+	if i.TeammateTaskID != nil {
+		predicates = append(predicates, deletedteammatetask.TeammateTaskIDEQ(*i.TeammateTaskID))
+	}
+	if i.TeammateTaskIDNEQ != nil {
+		predicates = append(predicates, deletedteammatetask.TeammateTaskIDNEQ(*i.TeammateTaskIDNEQ))
+	}
+	if len(i.TeammateTaskIDIn) > 0 {
+		predicates = append(predicates, deletedteammatetask.TeammateTaskIDIn(i.TeammateTaskIDIn...))
+	}
+	if len(i.TeammateTaskIDNotIn) > 0 {
+		predicates = append(predicates, deletedteammatetask.TeammateTaskIDNotIn(i.TeammateTaskIDNotIn...))
+	}
+	if i.TeammateTaskIDGT != nil {
+		predicates = append(predicates, deletedteammatetask.TeammateTaskIDGT(*i.TeammateTaskIDGT))
+	}
+	if i.TeammateTaskIDGTE != nil {
+		predicates = append(predicates, deletedteammatetask.TeammateTaskIDGTE(*i.TeammateTaskIDGTE))
+	}
+	if i.TeammateTaskIDLT != nil {
+		predicates = append(predicates, deletedteammatetask.TeammateTaskIDLT(*i.TeammateTaskIDLT))
+	}
+	if i.TeammateTaskIDLTE != nil {
+		predicates = append(predicates, deletedteammatetask.TeammateTaskIDLTE(*i.TeammateTaskIDLTE))
+	}
+	if i.TeammateTaskIDContains != nil {
+		predicates = append(predicates, deletedteammatetask.TeammateTaskIDContains(*i.TeammateTaskIDContains))
+	}
+	if i.TeammateTaskIDHasPrefix != nil {
+		predicates = append(predicates, deletedteammatetask.TeammateTaskIDHasPrefix(*i.TeammateTaskIDHasPrefix))
+	}
+	if i.TeammateTaskIDHasSuffix != nil {
+		predicates = append(predicates, deletedteammatetask.TeammateTaskIDHasSuffix(*i.TeammateTaskIDHasSuffix))
+	}
+	if i.TeammateTaskIDEqualFold != nil {
+		predicates = append(predicates, deletedteammatetask.TeammateTaskIDEqualFold(*i.TeammateTaskIDEqualFold))
+	}
+	if i.TeammateTaskIDContainsFold != nil {
+		predicates = append(predicates, deletedteammatetask.TeammateTaskIDContainsFold(*i.TeammateTaskIDContainsFold))
+	}
 	if i.TeammateTaskCreatedAt != nil {
 		predicates = append(predicates, deletedteammatetask.TeammateTaskCreatedAtEQ(*i.TeammateTaskCreatedAt))
 	}
@@ -3858,24 +3814,6 @@ func (i *DeletedTeammateTaskWhereInput) P() (predicate.DeletedTeammateTask, erro
 			with = append(with, p)
 		}
 		predicates = append(predicates, deletedteammatetask.HasTaskWith(with...))
-	}
-	if i.HasTeammateTaskSection != nil {
-		p := deletedteammatetask.HasTeammateTaskSection()
-		if !*i.HasTeammateTaskSection {
-			p = deletedteammatetask.Not(p)
-		}
-		predicates = append(predicates, p)
-	}
-	if len(i.HasTeammateTaskSectionWith) > 0 {
-		with := make([]predicate.TeammateTaskSection, 0, len(i.HasTeammateTaskSectionWith))
-		for _, w := range i.HasTeammateTaskSectionWith {
-			p, err := w.P()
-			if err != nil {
-				return nil, err
-			}
-			with = append(with, p)
-		}
-		predicates = append(predicates, deletedteammatetask.HasTeammateTaskSectionWith(with...))
 	}
 	if i.HasWorkspace != nil {
 		p := deletedteammatetask.HasWorkspace()
@@ -8235,10 +8173,6 @@ type ProjectTaskSectionWhereInput struct {
 	// "projectTasks" edge predicates.
 	HasProjectTasks     *bool                    `json:"hasProjectTasks,omitempty"`
 	HasProjectTasksWith []*ProjectTaskWhereInput `json:"hasProjectTasksWith,omitempty"`
-
-	// "deletedProjectTasks" edge predicates.
-	HasDeletedProjectTasks     *bool                           `json:"hasDeletedProjectTasks,omitempty"`
-	HasDeletedProjectTasksWith []*DeletedProjectTaskWhereInput `json:"hasDeletedProjectTasksWith,omitempty"`
 }
 
 // Filter applies the ProjectTaskSectionWhereInput filter on the ProjectTaskSectionQuery builder.
@@ -8486,24 +8420,6 @@ func (i *ProjectTaskSectionWhereInput) P() (predicate.ProjectTaskSection, error)
 			with = append(with, p)
 		}
 		predicates = append(predicates, projecttasksection.HasProjectTasksWith(with...))
-	}
-	if i.HasDeletedProjectTasks != nil {
-		p := projecttasksection.HasDeletedProjectTasks()
-		if !*i.HasDeletedProjectTasks {
-			p = projecttasksection.Not(p)
-		}
-		predicates = append(predicates, p)
-	}
-	if len(i.HasDeletedProjectTasksWith) > 0 {
-		with := make([]predicate.DeletedProjectTask, 0, len(i.HasDeletedProjectTasksWith))
-		for _, w := range i.HasDeletedProjectTasksWith {
-			p, err := w.P()
-			if err != nil {
-				return nil, err
-			}
-			with = append(with, p)
-		}
-		predicates = append(predicates, projecttasksection.HasDeletedProjectTasksWith(with...))
 	}
 	switch len(predicates) {
 	case 0:
@@ -17433,10 +17349,6 @@ type TeammateTaskSectionWhereInput struct {
 	// "teammateTasks" edge predicates.
 	HasTeammateTasks     *bool                     `json:"hasTeammateTasks,omitempty"`
 	HasTeammateTasksWith []*TeammateTaskWhereInput `json:"hasTeammateTasksWith,omitempty"`
-
-	// "deletedTeammateTasks" edge predicates.
-	HasDeletedTeammateTasks     *bool                            `json:"hasDeletedTeammateTasks,omitempty"`
-	HasDeletedTeammateTasksWith []*DeletedTeammateTaskWhereInput `json:"hasDeletedTeammateTasksWith,omitempty"`
 }
 
 // Filter applies the TeammateTaskSectionWhereInput filter on the TeammateTaskSectionQuery builder.
@@ -17747,24 +17659,6 @@ func (i *TeammateTaskSectionWhereInput) P() (predicate.TeammateTaskSection, erro
 			with = append(with, p)
 		}
 		predicates = append(predicates, teammatetasksection.HasTeammateTasksWith(with...))
-	}
-	if i.HasDeletedTeammateTasks != nil {
-		p := teammatetasksection.HasDeletedTeammateTasks()
-		if !*i.HasDeletedTeammateTasks {
-			p = teammatetasksection.Not(p)
-		}
-		predicates = append(predicates, p)
-	}
-	if len(i.HasDeletedTeammateTasksWith) > 0 {
-		with := make([]predicate.DeletedTeammateTask, 0, len(i.HasDeletedTeammateTasksWith))
-		for _, w := range i.HasDeletedTeammateTasksWith {
-			p, err := w.P()
-			if err != nil {
-				return nil, err
-			}
-			with = append(with, p)
-		}
-		predicates = append(predicates, teammatetasksection.HasDeletedTeammateTasksWith(with...))
 	}
 	switch len(predicates) {
 	case 0:

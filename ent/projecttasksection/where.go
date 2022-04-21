@@ -557,34 +557,6 @@ func HasProjectTasksWith(preds ...predicate.ProjectTask) predicate.ProjectTaskSe
 	})
 }
 
-// HasDeletedProjectTasks applies the HasEdge predicate on the "deletedProjectTasks" edge.
-func HasDeletedProjectTasks() predicate.ProjectTaskSection {
-	return predicate.ProjectTaskSection(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(DeletedProjectTasksTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, DeletedProjectTasksTable, DeletedProjectTasksColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasDeletedProjectTasksWith applies the HasEdge predicate on the "deletedProjectTasks" edge with a given conditions (other predicates).
-func HasDeletedProjectTasksWith(preds ...predicate.DeletedProjectTask) predicate.ProjectTaskSection {
-	return predicate.ProjectTaskSection(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(DeletedProjectTasksInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, DeletedProjectTasksTable, DeletedProjectTasksColumn),
-		)
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.ProjectTaskSection) predicate.ProjectTaskSection {
 	return predicate.ProjectTaskSection(func(s *sql.Selector) {

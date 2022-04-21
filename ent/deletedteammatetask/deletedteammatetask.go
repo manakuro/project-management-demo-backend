@@ -20,6 +20,8 @@ const (
 	FieldTeammateTaskSectionID = "teammate_task_section_id"
 	// FieldWorkspaceID holds the string denoting the workspace_id field in the database.
 	FieldWorkspaceID = "workspace_id"
+	// FieldTeammateTaskID holds the string denoting the teammate_task_id field in the database.
+	FieldTeammateTaskID = "teammate_task_id"
 	// FieldTeammateTaskCreatedAt holds the string denoting the teammate_task_created_at field in the database.
 	FieldTeammateTaskCreatedAt = "teammate_task_created_at"
 	// FieldTeammateTaskUpdatedAt holds the string denoting the teammate_task_updated_at field in the database.
@@ -32,8 +34,6 @@ const (
 	EdgeTeammate = "teammate"
 	// EdgeTask holds the string denoting the task edge name in mutations.
 	EdgeTask = "task"
-	// EdgeTeammateTaskSection holds the string denoting the teammatetasksection edge name in mutations.
-	EdgeTeammateTaskSection = "teammateTaskSection"
 	// EdgeWorkspace holds the string denoting the workspace edge name in mutations.
 	EdgeWorkspace = "workspace"
 	// Table holds the table name of the deletedteammatetask in the database.
@@ -52,13 +52,6 @@ const (
 	TaskInverseTable = "tasks"
 	// TaskColumn is the table column denoting the task relation/edge.
 	TaskColumn = "task_id"
-	// TeammateTaskSectionTable is the table that holds the teammateTaskSection relation/edge.
-	TeammateTaskSectionTable = "deleted_teammate_tasks"
-	// TeammateTaskSectionInverseTable is the table name for the TeammateTaskSection entity.
-	// It exists in this package in order to avoid circular dependency with the "teammatetasksection" package.
-	TeammateTaskSectionInverseTable = "teammate_task_sections"
-	// TeammateTaskSectionColumn is the table column denoting the teammateTaskSection relation/edge.
-	TeammateTaskSectionColumn = "teammate_task_section_id"
 	// WorkspaceTable is the table that holds the workspace relation/edge.
 	WorkspaceTable = "deleted_teammate_tasks"
 	// WorkspaceInverseTable is the table name for the Workspace entity.
@@ -75,6 +68,7 @@ var Columns = []string{
 	FieldTaskID,
 	FieldTeammateTaskSectionID,
 	FieldWorkspaceID,
+	FieldTeammateTaskID,
 	FieldTeammateTaskCreatedAt,
 	FieldTeammateTaskUpdatedAt,
 	FieldCreatedAt,

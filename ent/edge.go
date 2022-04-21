@@ -188,14 +188,6 @@ func (dpt *DeletedProjectTask) Task(ctx context.Context) (*Task, error) {
 	return result, err
 }
 
-func (dpt *DeletedProjectTask) ProjectTaskSection(ctx context.Context) (*ProjectTaskSection, error) {
-	result, err := dpt.Edges.ProjectTaskSectionOrErr()
-	if IsNotLoaded(err) {
-		result, err = dpt.QueryProjectTaskSection().Only(ctx)
-	}
-	return result, err
-}
-
 func (dt *DeletedTask) Task(ctx context.Context) (*Task, error) {
 	result, err := dt.Edges.TaskOrErr()
 	if IsNotLoaded(err) {
@@ -224,14 +216,6 @@ func (dtt *DeletedTeammateTask) Task(ctx context.Context) (*Task, error) {
 	result, err := dtt.Edges.TaskOrErr()
 	if IsNotLoaded(err) {
 		result, err = dtt.QueryTask().Only(ctx)
-	}
-	return result, err
-}
-
-func (dtt *DeletedTeammateTask) TeammateTaskSection(ctx context.Context) (*TeammateTaskSection, error) {
-	result, err := dtt.Edges.TeammateTaskSectionOrErr()
-	if IsNotLoaded(err) {
-		result, err = dtt.QueryTeammateTaskSection().Only(ctx)
 	}
 	return result, err
 }
@@ -536,14 +520,6 @@ func (pts *ProjectTaskSection) ProjectTasks(ctx context.Context) ([]*ProjectTask
 	result, err := pts.Edges.ProjectTasksOrErr()
 	if IsNotLoaded(err) {
 		result, err = pts.QueryProjectTasks().All(ctx)
-	}
-	return result, err
-}
-
-func (pts *ProjectTaskSection) DeletedProjectTasks(ctx context.Context) ([]*DeletedProjectTask, error) {
-	result, err := pts.Edges.DeletedProjectTasksOrErr()
-	if IsNotLoaded(err) {
-		result, err = pts.QueryDeletedProjectTasks().All(ctx)
 	}
 	return result, err
 }
@@ -1272,14 +1248,6 @@ func (tts *TeammateTaskSection) TeammateTasks(ctx context.Context) ([]*TeammateT
 	result, err := tts.Edges.TeammateTasksOrErr()
 	if IsNotLoaded(err) {
 		result, err = tts.QueryTeammateTasks().All(ctx)
-	}
-	return result, err
-}
-
-func (tts *TeammateTaskSection) DeletedTeammateTasks(ctx context.Context) ([]*DeletedTeammateTask, error) {
-	result, err := tts.Edges.DeletedTeammateTasksOrErr()
-	if IsNotLoaded(err) {
-		result, err = tts.QueryDeletedTeammateTasks().All(ctx)
 	}
 	return result, err
 }

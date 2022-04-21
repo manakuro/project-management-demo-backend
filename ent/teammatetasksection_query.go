@@ -8,7 +8,6 @@ import (
 	"errors"
 	"fmt"
 	"math"
-	"project-management-demo-backend/ent/deletedteammatetask"
 	"project-management-demo-backend/ent/predicate"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/teammate"
@@ -31,10 +30,9 @@ type TeammateTaskSectionQuery struct {
 	fields     []string
 	predicates []predicate.TeammateTaskSection
 	// eager-loading edges.
-	withTeammate             *TeammateQuery
-	withWorkspace            *WorkspaceQuery
-	withTeammateTasks        *TeammateTaskQuery
-	withDeletedTeammateTasks *DeletedTeammateTaskQuery
+	withTeammate      *TeammateQuery
+	withWorkspace     *WorkspaceQuery
+	withTeammateTasks *TeammateTaskQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -130,28 +128,6 @@ func (ttsq *TeammateTaskSectionQuery) QueryTeammateTasks() *TeammateTaskQuery {
 			sqlgraph.From(teammatetasksection.Table, teammatetasksection.FieldID, selector),
 			sqlgraph.To(teammatetask.Table, teammatetask.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, teammatetasksection.TeammateTasksTable, teammatetasksection.TeammateTasksColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(ttsq.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryDeletedTeammateTasks chains the current query on the "deletedTeammateTasks" edge.
-func (ttsq *TeammateTaskSectionQuery) QueryDeletedTeammateTasks() *DeletedTeammateTaskQuery {
-	query := &DeletedTeammateTaskQuery{config: ttsq.config}
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := ttsq.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := ttsq.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(teammatetasksection.Table, teammatetasksection.FieldID, selector),
-			sqlgraph.To(deletedteammatetask.Table, deletedteammatetask.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, teammatetasksection.DeletedTeammateTasksTable, teammatetasksection.DeletedTeammateTasksColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(ttsq.driver.Dialect(), step)
 		return fromU, nil
@@ -335,15 +311,14 @@ func (ttsq *TeammateTaskSectionQuery) Clone() *TeammateTaskSectionQuery {
 		return nil
 	}
 	return &TeammateTaskSectionQuery{
-		config:                   ttsq.config,
-		limit:                    ttsq.limit,
-		offset:                   ttsq.offset,
-		order:                    append([]OrderFunc{}, ttsq.order...),
-		predicates:               append([]predicate.TeammateTaskSection{}, ttsq.predicates...),
-		withTeammate:             ttsq.withTeammate.Clone(),
-		withWorkspace:            ttsq.withWorkspace.Clone(),
-		withTeammateTasks:        ttsq.withTeammateTasks.Clone(),
-		withDeletedTeammateTasks: ttsq.withDeletedTeammateTasks.Clone(),
+		config:            ttsq.config,
+		limit:             ttsq.limit,
+		offset:            ttsq.offset,
+		order:             append([]OrderFunc{}, ttsq.order...),
+		predicates:        append([]predicate.TeammateTaskSection{}, ttsq.predicates...),
+		withTeammate:      ttsq.withTeammate.Clone(),
+		withWorkspace:     ttsq.withWorkspace.Clone(),
+		withTeammateTasks: ttsq.withTeammateTasks.Clone(),
 		// clone intermediate query.
 		sql:    ttsq.sql.Clone(),
 		path:   ttsq.path,
@@ -381,17 +356,6 @@ func (ttsq *TeammateTaskSectionQuery) WithTeammateTasks(opts ...func(*TeammateTa
 		opt(query)
 	}
 	ttsq.withTeammateTasks = query
-	return ttsq
-}
-
-// WithDeletedTeammateTasks tells the query-builder to eager-load the nodes that are connected to
-// the "deletedTeammateTasks" edge. The optional arguments are used to configure the query builder of the edge.
-func (ttsq *TeammateTaskSectionQuery) WithDeletedTeammateTasks(opts ...func(*DeletedTeammateTaskQuery)) *TeammateTaskSectionQuery {
-	query := &DeletedTeammateTaskQuery{config: ttsq.config}
-	for _, opt := range opts {
-		opt(query)
-	}
-	ttsq.withDeletedTeammateTasks = query
 	return ttsq
 }
 
@@ -460,11 +424,10 @@ func (ttsq *TeammateTaskSectionQuery) sqlAll(ctx context.Context) ([]*TeammateTa
 	var (
 		nodes       = []*TeammateTaskSection{}
 		_spec       = ttsq.querySpec()
-		loadedTypes = [4]bool{
+		loadedTypes = [3]bool{
 			ttsq.withTeammate != nil,
 			ttsq.withWorkspace != nil,
 			ttsq.withTeammateTasks != nil,
-			ttsq.withDeletedTeammateTasks != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]interface{}, error) {
@@ -561,31 +524,6 @@ func (ttsq *TeammateTaskSectionQuery) sqlAll(ctx context.Context) ([]*TeammateTa
 				return nil, fmt.Errorf(`unexpected foreign-key "teammate_task_section_id" returned %v for node %v`, fk, n.ID)
 			}
 			node.Edges.TeammateTasks = append(node.Edges.TeammateTasks, n)
-		}
-	}
-
-	if query := ttsq.withDeletedTeammateTasks; query != nil {
-		fks := make([]driver.Value, 0, len(nodes))
-		nodeids := make(map[ulid.ID]*TeammateTaskSection)
-		for i := range nodes {
-			fks = append(fks, nodes[i].ID)
-			nodeids[nodes[i].ID] = nodes[i]
-			nodes[i].Edges.DeletedTeammateTasks = []*DeletedTeammateTask{}
-		}
-		query.Where(predicate.DeletedTeammateTask(func(s *sql.Selector) {
-			s.Where(sql.InValues(teammatetasksection.DeletedTeammateTasksColumn, fks...))
-		}))
-		neighbors, err := query.All(ctx)
-		if err != nil {
-			return nil, err
-		}
-		for _, n := range neighbors {
-			fk := n.TeammateTaskSectionID
-			node, ok := nodeids[fk]
-			if !ok {
-				return nil, fmt.Errorf(`unexpected foreign-key "teammate_task_section_id" returned %v for node %v`, fk, n.ID)
-			}
-			node.Edges.DeletedTeammateTasks = append(node.Edges.DeletedTeammateTasks, n)
 		}
 	}
 

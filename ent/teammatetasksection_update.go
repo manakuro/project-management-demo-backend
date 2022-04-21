@@ -6,7 +6,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"project-management-demo-backend/ent/deletedteammatetask"
 	"project-management-demo-backend/ent/predicate"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/teammate"
@@ -81,21 +80,6 @@ func (ttsu *TeammateTaskSectionUpdate) AddTeammateTasks(t ...*TeammateTask) *Tea
 	return ttsu.AddTeammateTaskIDs(ids...)
 }
 
-// AddDeletedTeammateTaskIDs adds the "deletedTeammateTasks" edge to the DeletedTeammateTask entity by IDs.
-func (ttsu *TeammateTaskSectionUpdate) AddDeletedTeammateTaskIDs(ids ...ulid.ID) *TeammateTaskSectionUpdate {
-	ttsu.mutation.AddDeletedTeammateTaskIDs(ids...)
-	return ttsu
-}
-
-// AddDeletedTeammateTasks adds the "deletedTeammateTasks" edges to the DeletedTeammateTask entity.
-func (ttsu *TeammateTaskSectionUpdate) AddDeletedTeammateTasks(d ...*DeletedTeammateTask) *TeammateTaskSectionUpdate {
-	ids := make([]ulid.ID, len(d))
-	for i := range d {
-		ids[i] = d[i].ID
-	}
-	return ttsu.AddDeletedTeammateTaskIDs(ids...)
-}
-
 // Mutation returns the TeammateTaskSectionMutation object of the builder.
 func (ttsu *TeammateTaskSectionUpdate) Mutation() *TeammateTaskSectionMutation {
 	return ttsu.mutation
@@ -132,27 +116,6 @@ func (ttsu *TeammateTaskSectionUpdate) RemoveTeammateTasks(t ...*TeammateTask) *
 		ids[i] = t[i].ID
 	}
 	return ttsu.RemoveTeammateTaskIDs(ids...)
-}
-
-// ClearDeletedTeammateTasks clears all "deletedTeammateTasks" edges to the DeletedTeammateTask entity.
-func (ttsu *TeammateTaskSectionUpdate) ClearDeletedTeammateTasks() *TeammateTaskSectionUpdate {
-	ttsu.mutation.ClearDeletedTeammateTasks()
-	return ttsu
-}
-
-// RemoveDeletedTeammateTaskIDs removes the "deletedTeammateTasks" edge to DeletedTeammateTask entities by IDs.
-func (ttsu *TeammateTaskSectionUpdate) RemoveDeletedTeammateTaskIDs(ids ...ulid.ID) *TeammateTaskSectionUpdate {
-	ttsu.mutation.RemoveDeletedTeammateTaskIDs(ids...)
-	return ttsu
-}
-
-// RemoveDeletedTeammateTasks removes "deletedTeammateTasks" edges to DeletedTeammateTask entities.
-func (ttsu *TeammateTaskSectionUpdate) RemoveDeletedTeammateTasks(d ...*DeletedTeammateTask) *TeammateTaskSectionUpdate {
-	ids := make([]ulid.ID, len(d))
-	for i := range d {
-		ids[i] = d[i].ID
-	}
-	return ttsu.RemoveDeletedTeammateTaskIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -387,60 +350,6 @@ func (ttsu *TeammateTaskSectionUpdate) sqlSave(ctx context.Context) (n int, err 
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if ttsu.mutation.DeletedTeammateTasksCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   teammatetasksection.DeletedTeammateTasksTable,
-			Columns: []string{teammatetasksection.DeletedTeammateTasksColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: deletedteammatetask.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := ttsu.mutation.RemovedDeletedTeammateTasksIDs(); len(nodes) > 0 && !ttsu.mutation.DeletedTeammateTasksCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   teammatetasksection.DeletedTeammateTasksTable,
-			Columns: []string{teammatetasksection.DeletedTeammateTasksColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: deletedteammatetask.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := ttsu.mutation.DeletedTeammateTasksIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   teammatetasksection.DeletedTeammateTasksTable,
-			Columns: []string{teammatetasksection.DeletedTeammateTasksColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: deletedteammatetask.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
 	if n, err = sqlgraph.UpdateNodes(ctx, ttsu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{teammatetasksection.Label}
@@ -509,21 +418,6 @@ func (ttsuo *TeammateTaskSectionUpdateOne) AddTeammateTasks(t ...*TeammateTask) 
 	return ttsuo.AddTeammateTaskIDs(ids...)
 }
 
-// AddDeletedTeammateTaskIDs adds the "deletedTeammateTasks" edge to the DeletedTeammateTask entity by IDs.
-func (ttsuo *TeammateTaskSectionUpdateOne) AddDeletedTeammateTaskIDs(ids ...ulid.ID) *TeammateTaskSectionUpdateOne {
-	ttsuo.mutation.AddDeletedTeammateTaskIDs(ids...)
-	return ttsuo
-}
-
-// AddDeletedTeammateTasks adds the "deletedTeammateTasks" edges to the DeletedTeammateTask entity.
-func (ttsuo *TeammateTaskSectionUpdateOne) AddDeletedTeammateTasks(d ...*DeletedTeammateTask) *TeammateTaskSectionUpdateOne {
-	ids := make([]ulid.ID, len(d))
-	for i := range d {
-		ids[i] = d[i].ID
-	}
-	return ttsuo.AddDeletedTeammateTaskIDs(ids...)
-}
-
 // Mutation returns the TeammateTaskSectionMutation object of the builder.
 func (ttsuo *TeammateTaskSectionUpdateOne) Mutation() *TeammateTaskSectionMutation {
 	return ttsuo.mutation
@@ -560,27 +454,6 @@ func (ttsuo *TeammateTaskSectionUpdateOne) RemoveTeammateTasks(t ...*TeammateTas
 		ids[i] = t[i].ID
 	}
 	return ttsuo.RemoveTeammateTaskIDs(ids...)
-}
-
-// ClearDeletedTeammateTasks clears all "deletedTeammateTasks" edges to the DeletedTeammateTask entity.
-func (ttsuo *TeammateTaskSectionUpdateOne) ClearDeletedTeammateTasks() *TeammateTaskSectionUpdateOne {
-	ttsuo.mutation.ClearDeletedTeammateTasks()
-	return ttsuo
-}
-
-// RemoveDeletedTeammateTaskIDs removes the "deletedTeammateTasks" edge to DeletedTeammateTask entities by IDs.
-func (ttsuo *TeammateTaskSectionUpdateOne) RemoveDeletedTeammateTaskIDs(ids ...ulid.ID) *TeammateTaskSectionUpdateOne {
-	ttsuo.mutation.RemoveDeletedTeammateTaskIDs(ids...)
-	return ttsuo
-}
-
-// RemoveDeletedTeammateTasks removes "deletedTeammateTasks" edges to DeletedTeammateTask entities.
-func (ttsuo *TeammateTaskSectionUpdateOne) RemoveDeletedTeammateTasks(d ...*DeletedTeammateTask) *TeammateTaskSectionUpdateOne {
-	ids := make([]ulid.ID, len(d))
-	for i := range d {
-		ids[i] = d[i].ID
-	}
-	return ttsuo.RemoveDeletedTeammateTaskIDs(ids...)
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
@@ -831,60 +704,6 @@ func (ttsuo *TeammateTaskSectionUpdateOne) sqlSave(ctx context.Context) (_node *
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: teammatetask.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if ttsuo.mutation.DeletedTeammateTasksCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   teammatetasksection.DeletedTeammateTasksTable,
-			Columns: []string{teammatetasksection.DeletedTeammateTasksColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: deletedteammatetask.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := ttsuo.mutation.RemovedDeletedTeammateTasksIDs(); len(nodes) > 0 && !ttsuo.mutation.DeletedTeammateTasksCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   teammatetasksection.DeletedTeammateTasksTable,
-			Columns: []string{teammatetasksection.DeletedTeammateTasksColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: deletedteammatetask.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := ttsuo.mutation.DeletedTeammateTasksIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   teammatetasksection.DeletedTeammateTasksTable,
-			Columns: []string{teammatetasksection.DeletedTeammateTasksColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: deletedteammatetask.FieldID,
 				},
 			},
 		}

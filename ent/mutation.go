@@ -4602,23 +4602,23 @@ func (m *ColorMutation) ResetEdge(name string) error {
 // DeletedProjectTaskMutation represents an operation that mutates the DeletedProjectTask nodes in the graph.
 type DeletedProjectTaskMutation struct {
 	config
-	op                        Op
-	typ                       string
-	id                        *ulid.ID
-	project_task_created_at   *time.Time
-	project_task_updated_at   *time.Time
-	created_at                *time.Time
-	updated_at                *time.Time
-	clearedFields             map[string]struct{}
-	project                   *ulid.ID
-	clearedproject            bool
-	task                      *ulid.ID
-	clearedtask               bool
-	projectTaskSection        *ulid.ID
-	clearedprojectTaskSection bool
-	done                      bool
-	oldValue                  func(context.Context) (*DeletedProjectTask, error)
-	predicates                []predicate.DeletedProjectTask
+	op                      Op
+	typ                     string
+	id                      *ulid.ID
+	project_task_section_id *ulid.ID
+	project_task_id         *ulid.ID
+	project_task_created_at *time.Time
+	project_task_updated_at *time.Time
+	created_at              *time.Time
+	updated_at              *time.Time
+	clearedFields           map[string]struct{}
+	project                 *ulid.ID
+	clearedproject          bool
+	task                    *ulid.ID
+	clearedtask             bool
+	done                    bool
+	oldValue                func(context.Context) (*DeletedProjectTask, error)
+	predicates              []predicate.DeletedProjectTask
 }
 
 var _ ent.Mutation = (*DeletedProjectTaskMutation)(nil)
@@ -4799,12 +4799,12 @@ func (m *DeletedProjectTaskMutation) ResetTaskID() {
 
 // SetProjectTaskSectionID sets the "project_task_section_id" field.
 func (m *DeletedProjectTaskMutation) SetProjectTaskSectionID(u ulid.ID) {
-	m.projectTaskSection = &u
+	m.project_task_section_id = &u
 }
 
 // ProjectTaskSectionID returns the value of the "project_task_section_id" field in the mutation.
 func (m *DeletedProjectTaskMutation) ProjectTaskSectionID() (r ulid.ID, exists bool) {
-	v := m.projectTaskSection
+	v := m.project_task_section_id
 	if v == nil {
 		return
 	}
@@ -4830,7 +4830,43 @@ func (m *DeletedProjectTaskMutation) OldProjectTaskSectionID(ctx context.Context
 
 // ResetProjectTaskSectionID resets all changes to the "project_task_section_id" field.
 func (m *DeletedProjectTaskMutation) ResetProjectTaskSectionID() {
-	m.projectTaskSection = nil
+	m.project_task_section_id = nil
+}
+
+// SetProjectTaskID sets the "project_task_id" field.
+func (m *DeletedProjectTaskMutation) SetProjectTaskID(u ulid.ID) {
+	m.project_task_id = &u
+}
+
+// ProjectTaskID returns the value of the "project_task_id" field in the mutation.
+func (m *DeletedProjectTaskMutation) ProjectTaskID() (r ulid.ID, exists bool) {
+	v := m.project_task_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldProjectTaskID returns the old "project_task_id" field's value of the DeletedProjectTask entity.
+// If the DeletedProjectTask object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DeletedProjectTaskMutation) OldProjectTaskID(ctx context.Context) (v ulid.ID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldProjectTaskID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldProjectTaskID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldProjectTaskID: %w", err)
+	}
+	return oldValue.ProjectTaskID, nil
+}
+
+// ResetProjectTaskID resets all changes to the "project_task_id" field.
+func (m *DeletedProjectTaskMutation) ResetProjectTaskID() {
+	m.project_task_id = nil
 }
 
 // SetProjectTaskCreatedAt sets the "project_task_created_at" field.
@@ -5029,32 +5065,6 @@ func (m *DeletedProjectTaskMutation) ResetTask() {
 	m.clearedtask = false
 }
 
-// ClearProjectTaskSection clears the "projectTaskSection" edge to the ProjectTaskSection entity.
-func (m *DeletedProjectTaskMutation) ClearProjectTaskSection() {
-	m.clearedprojectTaskSection = true
-}
-
-// ProjectTaskSectionCleared reports if the "projectTaskSection" edge to the ProjectTaskSection entity was cleared.
-func (m *DeletedProjectTaskMutation) ProjectTaskSectionCleared() bool {
-	return m.clearedprojectTaskSection
-}
-
-// ProjectTaskSectionIDs returns the "projectTaskSection" edge IDs in the mutation.
-// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// ProjectTaskSectionID instead. It exists only for internal usage by the builders.
-func (m *DeletedProjectTaskMutation) ProjectTaskSectionIDs() (ids []ulid.ID) {
-	if id := m.projectTaskSection; id != nil {
-		ids = append(ids, *id)
-	}
-	return
-}
-
-// ResetProjectTaskSection resets all changes to the "projectTaskSection" edge.
-func (m *DeletedProjectTaskMutation) ResetProjectTaskSection() {
-	m.projectTaskSection = nil
-	m.clearedprojectTaskSection = false
-}
-
 // Where appends a list predicates to the DeletedProjectTaskMutation builder.
 func (m *DeletedProjectTaskMutation) Where(ps ...predicate.DeletedProjectTask) {
 	m.predicates = append(m.predicates, ps...)
@@ -5074,15 +5084,18 @@ func (m *DeletedProjectTaskMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *DeletedProjectTaskMutation) Fields() []string {
-	fields := make([]string, 0, 7)
+	fields := make([]string, 0, 8)
 	if m.project != nil {
 		fields = append(fields, deletedprojecttask.FieldProjectID)
 	}
 	if m.task != nil {
 		fields = append(fields, deletedprojecttask.FieldTaskID)
 	}
-	if m.projectTaskSection != nil {
+	if m.project_task_section_id != nil {
 		fields = append(fields, deletedprojecttask.FieldProjectTaskSectionID)
+	}
+	if m.project_task_id != nil {
+		fields = append(fields, deletedprojecttask.FieldProjectTaskID)
 	}
 	if m.project_task_created_at != nil {
 		fields = append(fields, deletedprojecttask.FieldProjectTaskCreatedAt)
@@ -5110,6 +5123,8 @@ func (m *DeletedProjectTaskMutation) Field(name string) (ent.Value, bool) {
 		return m.TaskID()
 	case deletedprojecttask.FieldProjectTaskSectionID:
 		return m.ProjectTaskSectionID()
+	case deletedprojecttask.FieldProjectTaskID:
+		return m.ProjectTaskID()
 	case deletedprojecttask.FieldProjectTaskCreatedAt:
 		return m.ProjectTaskCreatedAt()
 	case deletedprojecttask.FieldProjectTaskUpdatedAt:
@@ -5133,6 +5148,8 @@ func (m *DeletedProjectTaskMutation) OldField(ctx context.Context, name string) 
 		return m.OldTaskID(ctx)
 	case deletedprojecttask.FieldProjectTaskSectionID:
 		return m.OldProjectTaskSectionID(ctx)
+	case deletedprojecttask.FieldProjectTaskID:
+		return m.OldProjectTaskID(ctx)
 	case deletedprojecttask.FieldProjectTaskCreatedAt:
 		return m.OldProjectTaskCreatedAt(ctx)
 	case deletedprojecttask.FieldProjectTaskUpdatedAt:
@@ -5170,6 +5187,13 @@ func (m *DeletedProjectTaskMutation) SetField(name string, value ent.Value) erro
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetProjectTaskSectionID(v)
+		return nil
+	case deletedprojecttask.FieldProjectTaskID:
+		v, ok := value.(ulid.ID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetProjectTaskID(v)
 		return nil
 	case deletedprojecttask.FieldProjectTaskCreatedAt:
 		v, ok := value.(time.Time)
@@ -5257,6 +5281,9 @@ func (m *DeletedProjectTaskMutation) ResetField(name string) error {
 	case deletedprojecttask.FieldProjectTaskSectionID:
 		m.ResetProjectTaskSectionID()
 		return nil
+	case deletedprojecttask.FieldProjectTaskID:
+		m.ResetProjectTaskID()
+		return nil
 	case deletedprojecttask.FieldProjectTaskCreatedAt:
 		m.ResetProjectTaskCreatedAt()
 		return nil
@@ -5275,15 +5302,12 @@ func (m *DeletedProjectTaskMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *DeletedProjectTaskMutation) AddedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 2)
 	if m.project != nil {
 		edges = append(edges, deletedprojecttask.EdgeProject)
 	}
 	if m.task != nil {
 		edges = append(edges, deletedprojecttask.EdgeTask)
-	}
-	if m.projectTaskSection != nil {
-		edges = append(edges, deletedprojecttask.EdgeProjectTaskSection)
 	}
 	return edges
 }
@@ -5300,17 +5324,13 @@ func (m *DeletedProjectTaskMutation) AddedIDs(name string) []ent.Value {
 		if id := m.task; id != nil {
 			return []ent.Value{*id}
 		}
-	case deletedprojecttask.EdgeProjectTaskSection:
-		if id := m.projectTaskSection; id != nil {
-			return []ent.Value{*id}
-		}
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *DeletedProjectTaskMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 2)
 	return edges
 }
 
@@ -5324,15 +5344,12 @@ func (m *DeletedProjectTaskMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *DeletedProjectTaskMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 2)
 	if m.clearedproject {
 		edges = append(edges, deletedprojecttask.EdgeProject)
 	}
 	if m.clearedtask {
 		edges = append(edges, deletedprojecttask.EdgeTask)
-	}
-	if m.clearedprojectTaskSection {
-		edges = append(edges, deletedprojecttask.EdgeProjectTaskSection)
 	}
 	return edges
 }
@@ -5345,8 +5362,6 @@ func (m *DeletedProjectTaskMutation) EdgeCleared(name string) bool {
 		return m.clearedproject
 	case deletedprojecttask.EdgeTask:
 		return m.clearedtask
-	case deletedprojecttask.EdgeProjectTaskSection:
-		return m.clearedprojectTaskSection
 	}
 	return false
 }
@@ -5360,9 +5375,6 @@ func (m *DeletedProjectTaskMutation) ClearEdge(name string) error {
 		return nil
 	case deletedprojecttask.EdgeTask:
 		m.ClearTask()
-		return nil
-	case deletedprojecttask.EdgeProjectTaskSection:
-		m.ClearProjectTaskSection()
 		return nil
 	}
 	return fmt.Errorf("unknown DeletedProjectTask unique edge %s", name)
@@ -5378,9 +5390,6 @@ func (m *DeletedProjectTaskMutation) ResetEdge(name string) error {
 	case deletedprojecttask.EdgeTask:
 		m.ResetTask()
 		return nil
-	case deletedprojecttask.EdgeProjectTaskSection:
-		m.ResetProjectTaskSection()
-		return nil
 	}
 	return fmt.Errorf("unknown DeletedProjectTask edge %s", name)
 }
@@ -5391,9 +5400,6 @@ type DeletedTaskMutation struct {
 	op               Op
 	typ              string
 	id               *ulid.ID
-	task_section_id  *ulid.ID
-	task_join_id     *ulid.ID
-	task_type        *deletedtask.TaskType
 	created_at       *time.Time
 	updated_at       *time.Time
 	clearedFields    map[string]struct{}
@@ -5582,114 +5588,6 @@ func (m *DeletedTaskMutation) ResetWorkspaceID() {
 	m.workspace = nil
 }
 
-// SetTaskSectionID sets the "task_section_id" field.
-func (m *DeletedTaskMutation) SetTaskSectionID(u ulid.ID) {
-	m.task_section_id = &u
-}
-
-// TaskSectionID returns the value of the "task_section_id" field in the mutation.
-func (m *DeletedTaskMutation) TaskSectionID() (r ulid.ID, exists bool) {
-	v := m.task_section_id
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldTaskSectionID returns the old "task_section_id" field's value of the DeletedTask entity.
-// If the DeletedTask object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *DeletedTaskMutation) OldTaskSectionID(ctx context.Context) (v ulid.ID, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldTaskSectionID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldTaskSectionID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldTaskSectionID: %w", err)
-	}
-	return oldValue.TaskSectionID, nil
-}
-
-// ResetTaskSectionID resets all changes to the "task_section_id" field.
-func (m *DeletedTaskMutation) ResetTaskSectionID() {
-	m.task_section_id = nil
-}
-
-// SetTaskJoinID sets the "task_join_id" field.
-func (m *DeletedTaskMutation) SetTaskJoinID(u ulid.ID) {
-	m.task_join_id = &u
-}
-
-// TaskJoinID returns the value of the "task_join_id" field in the mutation.
-func (m *DeletedTaskMutation) TaskJoinID() (r ulid.ID, exists bool) {
-	v := m.task_join_id
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldTaskJoinID returns the old "task_join_id" field's value of the DeletedTask entity.
-// If the DeletedTask object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *DeletedTaskMutation) OldTaskJoinID(ctx context.Context) (v ulid.ID, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldTaskJoinID is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldTaskJoinID requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldTaskJoinID: %w", err)
-	}
-	return oldValue.TaskJoinID, nil
-}
-
-// ResetTaskJoinID resets all changes to the "task_join_id" field.
-func (m *DeletedTaskMutation) ResetTaskJoinID() {
-	m.task_join_id = nil
-}
-
-// SetTaskType sets the "task_type" field.
-func (m *DeletedTaskMutation) SetTaskType(dt deletedtask.TaskType) {
-	m.task_type = &dt
-}
-
-// TaskType returns the value of the "task_type" field in the mutation.
-func (m *DeletedTaskMutation) TaskType() (r deletedtask.TaskType, exists bool) {
-	v := m.task_type
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldTaskType returns the old "task_type" field's value of the DeletedTask entity.
-// If the DeletedTask object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *DeletedTaskMutation) OldTaskType(ctx context.Context) (v deletedtask.TaskType, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldTaskType is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldTaskType requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldTaskType: %w", err)
-	}
-	return oldValue.TaskType, nil
-}
-
-// ResetTaskType resets all changes to the "task_type" field.
-func (m *DeletedTaskMutation) ResetTaskType() {
-	m.task_type = nil
-}
-
 // SetCreatedAt sets the "created_at" field.
 func (m *DeletedTaskMutation) SetCreatedAt(t time.Time) {
 	m.created_at = &t
@@ -5833,21 +5731,12 @@ func (m *DeletedTaskMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *DeletedTaskMutation) Fields() []string {
-	fields := make([]string, 0, 7)
+	fields := make([]string, 0, 4)
 	if m.task != nil {
 		fields = append(fields, deletedtask.FieldTaskID)
 	}
 	if m.workspace != nil {
 		fields = append(fields, deletedtask.FieldWorkspaceID)
-	}
-	if m.task_section_id != nil {
-		fields = append(fields, deletedtask.FieldTaskSectionID)
-	}
-	if m.task_join_id != nil {
-		fields = append(fields, deletedtask.FieldTaskJoinID)
-	}
-	if m.task_type != nil {
-		fields = append(fields, deletedtask.FieldTaskType)
 	}
 	if m.created_at != nil {
 		fields = append(fields, deletedtask.FieldCreatedAt)
@@ -5867,12 +5756,6 @@ func (m *DeletedTaskMutation) Field(name string) (ent.Value, bool) {
 		return m.TaskID()
 	case deletedtask.FieldWorkspaceID:
 		return m.WorkspaceID()
-	case deletedtask.FieldTaskSectionID:
-		return m.TaskSectionID()
-	case deletedtask.FieldTaskJoinID:
-		return m.TaskJoinID()
-	case deletedtask.FieldTaskType:
-		return m.TaskType()
 	case deletedtask.FieldCreatedAt:
 		return m.CreatedAt()
 	case deletedtask.FieldUpdatedAt:
@@ -5890,12 +5773,6 @@ func (m *DeletedTaskMutation) OldField(ctx context.Context, name string) (ent.Va
 		return m.OldTaskID(ctx)
 	case deletedtask.FieldWorkspaceID:
 		return m.OldWorkspaceID(ctx)
-	case deletedtask.FieldTaskSectionID:
-		return m.OldTaskSectionID(ctx)
-	case deletedtask.FieldTaskJoinID:
-		return m.OldTaskJoinID(ctx)
-	case deletedtask.FieldTaskType:
-		return m.OldTaskType(ctx)
 	case deletedtask.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
 	case deletedtask.FieldUpdatedAt:
@@ -5922,27 +5799,6 @@ func (m *DeletedTaskMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetWorkspaceID(v)
-		return nil
-	case deletedtask.FieldTaskSectionID:
-		v, ok := value.(ulid.ID)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetTaskSectionID(v)
-		return nil
-	case deletedtask.FieldTaskJoinID:
-		v, ok := value.(ulid.ID)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetTaskJoinID(v)
-		return nil
-	case deletedtask.FieldTaskType:
-		v, ok := value.(deletedtask.TaskType)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetTaskType(v)
 		return nil
 	case deletedtask.FieldCreatedAt:
 		v, ok := value.(time.Time)
@@ -6012,15 +5868,6 @@ func (m *DeletedTaskMutation) ResetField(name string) error {
 		return nil
 	case deletedtask.FieldWorkspaceID:
 		m.ResetWorkspaceID()
-		return nil
-	case deletedtask.FieldTaskSectionID:
-		m.ResetTaskSectionID()
-		return nil
-	case deletedtask.FieldTaskJoinID:
-		m.ResetTaskJoinID()
-		return nil
-	case deletedtask.FieldTaskType:
-		m.ResetTaskType()
 		return nil
 	case deletedtask.FieldCreatedAt:
 		m.ResetCreatedAt()
@@ -6129,25 +5976,25 @@ func (m *DeletedTaskMutation) ResetEdge(name string) error {
 // DeletedTeammateTaskMutation represents an operation that mutates the DeletedTeammateTask nodes in the graph.
 type DeletedTeammateTaskMutation struct {
 	config
-	op                         Op
-	typ                        string
-	id                         *ulid.ID
-	teammate_task_created_at   *time.Time
-	teammate_task_updated_at   *time.Time
-	created_at                 *time.Time
-	updated_at                 *time.Time
-	clearedFields              map[string]struct{}
-	teammate                   *ulid.ID
-	clearedteammate            bool
-	task                       *ulid.ID
-	clearedtask                bool
-	teammateTaskSection        *ulid.ID
-	clearedteammateTaskSection bool
-	workspace                  *ulid.ID
-	clearedworkspace           bool
-	done                       bool
-	oldValue                   func(context.Context) (*DeletedTeammateTask, error)
-	predicates                 []predicate.DeletedTeammateTask
+	op                       Op
+	typ                      string
+	id                       *ulid.ID
+	teammate_task_section_id *ulid.ID
+	teammate_task_id         *ulid.ID
+	teammate_task_created_at *time.Time
+	teammate_task_updated_at *time.Time
+	created_at               *time.Time
+	updated_at               *time.Time
+	clearedFields            map[string]struct{}
+	teammate                 *ulid.ID
+	clearedteammate          bool
+	task                     *ulid.ID
+	clearedtask              bool
+	workspace                *ulid.ID
+	clearedworkspace         bool
+	done                     bool
+	oldValue                 func(context.Context) (*DeletedTeammateTask, error)
+	predicates               []predicate.DeletedTeammateTask
 }
 
 var _ ent.Mutation = (*DeletedTeammateTaskMutation)(nil)
@@ -6328,12 +6175,12 @@ func (m *DeletedTeammateTaskMutation) ResetTaskID() {
 
 // SetTeammateTaskSectionID sets the "teammate_task_section_id" field.
 func (m *DeletedTeammateTaskMutation) SetTeammateTaskSectionID(u ulid.ID) {
-	m.teammateTaskSection = &u
+	m.teammate_task_section_id = &u
 }
 
 // TeammateTaskSectionID returns the value of the "teammate_task_section_id" field in the mutation.
 func (m *DeletedTeammateTaskMutation) TeammateTaskSectionID() (r ulid.ID, exists bool) {
-	v := m.teammateTaskSection
+	v := m.teammate_task_section_id
 	if v == nil {
 		return
 	}
@@ -6359,7 +6206,7 @@ func (m *DeletedTeammateTaskMutation) OldTeammateTaskSectionID(ctx context.Conte
 
 // ResetTeammateTaskSectionID resets all changes to the "teammate_task_section_id" field.
 func (m *DeletedTeammateTaskMutation) ResetTeammateTaskSectionID() {
-	m.teammateTaskSection = nil
+	m.teammate_task_section_id = nil
 }
 
 // SetWorkspaceID sets the "workspace_id" field.
@@ -6396,6 +6243,42 @@ func (m *DeletedTeammateTaskMutation) OldWorkspaceID(ctx context.Context) (v uli
 // ResetWorkspaceID resets all changes to the "workspace_id" field.
 func (m *DeletedTeammateTaskMutation) ResetWorkspaceID() {
 	m.workspace = nil
+}
+
+// SetTeammateTaskID sets the "teammate_task_id" field.
+func (m *DeletedTeammateTaskMutation) SetTeammateTaskID(u ulid.ID) {
+	m.teammate_task_id = &u
+}
+
+// TeammateTaskID returns the value of the "teammate_task_id" field in the mutation.
+func (m *DeletedTeammateTaskMutation) TeammateTaskID() (r ulid.ID, exists bool) {
+	v := m.teammate_task_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTeammateTaskID returns the old "teammate_task_id" field's value of the DeletedTeammateTask entity.
+// If the DeletedTeammateTask object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DeletedTeammateTaskMutation) OldTeammateTaskID(ctx context.Context) (v ulid.ID, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTeammateTaskID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTeammateTaskID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTeammateTaskID: %w", err)
+	}
+	return oldValue.TeammateTaskID, nil
+}
+
+// ResetTeammateTaskID resets all changes to the "teammate_task_id" field.
+func (m *DeletedTeammateTaskMutation) ResetTeammateTaskID() {
+	m.teammate_task_id = nil
 }
 
 // SetTeammateTaskCreatedAt sets the "teammate_task_created_at" field.
@@ -6594,32 +6477,6 @@ func (m *DeletedTeammateTaskMutation) ResetTask() {
 	m.clearedtask = false
 }
 
-// ClearTeammateTaskSection clears the "teammateTaskSection" edge to the TeammateTaskSection entity.
-func (m *DeletedTeammateTaskMutation) ClearTeammateTaskSection() {
-	m.clearedteammateTaskSection = true
-}
-
-// TeammateTaskSectionCleared reports if the "teammateTaskSection" edge to the TeammateTaskSection entity was cleared.
-func (m *DeletedTeammateTaskMutation) TeammateTaskSectionCleared() bool {
-	return m.clearedteammateTaskSection
-}
-
-// TeammateTaskSectionIDs returns the "teammateTaskSection" edge IDs in the mutation.
-// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
-// TeammateTaskSectionID instead. It exists only for internal usage by the builders.
-func (m *DeletedTeammateTaskMutation) TeammateTaskSectionIDs() (ids []ulid.ID) {
-	if id := m.teammateTaskSection; id != nil {
-		ids = append(ids, *id)
-	}
-	return
-}
-
-// ResetTeammateTaskSection resets all changes to the "teammateTaskSection" edge.
-func (m *DeletedTeammateTaskMutation) ResetTeammateTaskSection() {
-	m.teammateTaskSection = nil
-	m.clearedteammateTaskSection = false
-}
-
 // ClearWorkspace clears the "workspace" edge to the Workspace entity.
 func (m *DeletedTeammateTaskMutation) ClearWorkspace() {
 	m.clearedworkspace = true
@@ -6665,18 +6522,21 @@ func (m *DeletedTeammateTaskMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *DeletedTeammateTaskMutation) Fields() []string {
-	fields := make([]string, 0, 8)
+	fields := make([]string, 0, 9)
 	if m.teammate != nil {
 		fields = append(fields, deletedteammatetask.FieldTeammateID)
 	}
 	if m.task != nil {
 		fields = append(fields, deletedteammatetask.FieldTaskID)
 	}
-	if m.teammateTaskSection != nil {
+	if m.teammate_task_section_id != nil {
 		fields = append(fields, deletedteammatetask.FieldTeammateTaskSectionID)
 	}
 	if m.workspace != nil {
 		fields = append(fields, deletedteammatetask.FieldWorkspaceID)
+	}
+	if m.teammate_task_id != nil {
+		fields = append(fields, deletedteammatetask.FieldTeammateTaskID)
 	}
 	if m.teammate_task_created_at != nil {
 		fields = append(fields, deletedteammatetask.FieldTeammateTaskCreatedAt)
@@ -6706,6 +6566,8 @@ func (m *DeletedTeammateTaskMutation) Field(name string) (ent.Value, bool) {
 		return m.TeammateTaskSectionID()
 	case deletedteammatetask.FieldWorkspaceID:
 		return m.WorkspaceID()
+	case deletedteammatetask.FieldTeammateTaskID:
+		return m.TeammateTaskID()
 	case deletedteammatetask.FieldTeammateTaskCreatedAt:
 		return m.TeammateTaskCreatedAt()
 	case deletedteammatetask.FieldTeammateTaskUpdatedAt:
@@ -6731,6 +6593,8 @@ func (m *DeletedTeammateTaskMutation) OldField(ctx context.Context, name string)
 		return m.OldTeammateTaskSectionID(ctx)
 	case deletedteammatetask.FieldWorkspaceID:
 		return m.OldWorkspaceID(ctx)
+	case deletedteammatetask.FieldTeammateTaskID:
+		return m.OldTeammateTaskID(ctx)
 	case deletedteammatetask.FieldTeammateTaskCreatedAt:
 		return m.OldTeammateTaskCreatedAt(ctx)
 	case deletedteammatetask.FieldTeammateTaskUpdatedAt:
@@ -6775,6 +6639,13 @@ func (m *DeletedTeammateTaskMutation) SetField(name string, value ent.Value) err
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetWorkspaceID(v)
+		return nil
+	case deletedteammatetask.FieldTeammateTaskID:
+		v, ok := value.(ulid.ID)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTeammateTaskID(v)
 		return nil
 	case deletedteammatetask.FieldTeammateTaskCreatedAt:
 		v, ok := value.(time.Time)
@@ -6865,6 +6736,9 @@ func (m *DeletedTeammateTaskMutation) ResetField(name string) error {
 	case deletedteammatetask.FieldWorkspaceID:
 		m.ResetWorkspaceID()
 		return nil
+	case deletedteammatetask.FieldTeammateTaskID:
+		m.ResetTeammateTaskID()
+		return nil
 	case deletedteammatetask.FieldTeammateTaskCreatedAt:
 		m.ResetTeammateTaskCreatedAt()
 		return nil
@@ -6883,15 +6757,12 @@ func (m *DeletedTeammateTaskMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *DeletedTeammateTaskMutation) AddedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 3)
 	if m.teammate != nil {
 		edges = append(edges, deletedteammatetask.EdgeTeammate)
 	}
 	if m.task != nil {
 		edges = append(edges, deletedteammatetask.EdgeTask)
-	}
-	if m.teammateTaskSection != nil {
-		edges = append(edges, deletedteammatetask.EdgeTeammateTaskSection)
 	}
 	if m.workspace != nil {
 		edges = append(edges, deletedteammatetask.EdgeWorkspace)
@@ -6911,10 +6782,6 @@ func (m *DeletedTeammateTaskMutation) AddedIDs(name string) []ent.Value {
 		if id := m.task; id != nil {
 			return []ent.Value{*id}
 		}
-	case deletedteammatetask.EdgeTeammateTaskSection:
-		if id := m.teammateTaskSection; id != nil {
-			return []ent.Value{*id}
-		}
 	case deletedteammatetask.EdgeWorkspace:
 		if id := m.workspace; id != nil {
 			return []ent.Value{*id}
@@ -6925,7 +6792,7 @@ func (m *DeletedTeammateTaskMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *DeletedTeammateTaskMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 3)
 	return edges
 }
 
@@ -6939,15 +6806,12 @@ func (m *DeletedTeammateTaskMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *DeletedTeammateTaskMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 3)
 	if m.clearedteammate {
 		edges = append(edges, deletedteammatetask.EdgeTeammate)
 	}
 	if m.clearedtask {
 		edges = append(edges, deletedteammatetask.EdgeTask)
-	}
-	if m.clearedteammateTaskSection {
-		edges = append(edges, deletedteammatetask.EdgeTeammateTaskSection)
 	}
 	if m.clearedworkspace {
 		edges = append(edges, deletedteammatetask.EdgeWorkspace)
@@ -6963,8 +6827,6 @@ func (m *DeletedTeammateTaskMutation) EdgeCleared(name string) bool {
 		return m.clearedteammate
 	case deletedteammatetask.EdgeTask:
 		return m.clearedtask
-	case deletedteammatetask.EdgeTeammateTaskSection:
-		return m.clearedteammateTaskSection
 	case deletedteammatetask.EdgeWorkspace:
 		return m.clearedworkspace
 	}
@@ -6980,9 +6842,6 @@ func (m *DeletedTeammateTaskMutation) ClearEdge(name string) error {
 		return nil
 	case deletedteammatetask.EdgeTask:
 		m.ClearTask()
-		return nil
-	case deletedteammatetask.EdgeTeammateTaskSection:
-		m.ClearTeammateTaskSection()
 		return nil
 	case deletedteammatetask.EdgeWorkspace:
 		m.ClearWorkspace()
@@ -7000,9 +6859,6 @@ func (m *DeletedTeammateTaskMutation) ResetEdge(name string) error {
 		return nil
 	case deletedteammatetask.EdgeTask:
 		m.ResetTask()
-		return nil
-	case deletedteammatetask.EdgeTeammateTaskSection:
-		m.ResetTeammateTaskSection()
 		return nil
 	case deletedteammatetask.EdgeWorkspace:
 		m.ResetWorkspace()
@@ -15149,24 +15005,21 @@ func (m *ProjectTaskListStatusMutation) ResetEdge(name string) error {
 // ProjectTaskSectionMutation represents an operation that mutates the ProjectTaskSection nodes in the graph.
 type ProjectTaskSectionMutation struct {
 	config
-	op                         Op
-	typ                        string
-	id                         *ulid.ID
-	name                       *string
-	created_at                 *time.Time
-	updated_at                 *time.Time
-	clearedFields              map[string]struct{}
-	project                    *ulid.ID
-	clearedproject             bool
-	projectTasks               map[ulid.ID]struct{}
-	removedprojectTasks        map[ulid.ID]struct{}
-	clearedprojectTasks        bool
-	deletedProjectTasks        map[ulid.ID]struct{}
-	removeddeletedProjectTasks map[ulid.ID]struct{}
-	cleareddeletedProjectTasks bool
-	done                       bool
-	oldValue                   func(context.Context) (*ProjectTaskSection, error)
-	predicates                 []predicate.ProjectTaskSection
+	op                  Op
+	typ                 string
+	id                  *ulid.ID
+	name                *string
+	created_at          *time.Time
+	updated_at          *time.Time
+	clearedFields       map[string]struct{}
+	project             *ulid.ID
+	clearedproject      bool
+	projectTasks        map[ulid.ID]struct{}
+	removedprojectTasks map[ulid.ID]struct{}
+	clearedprojectTasks bool
+	done                bool
+	oldValue            func(context.Context) (*ProjectTaskSection, error)
+	predicates          []predicate.ProjectTaskSection
 }
 
 var _ ent.Mutation = (*ProjectTaskSectionMutation)(nil)
@@ -15497,60 +15350,6 @@ func (m *ProjectTaskSectionMutation) ResetProjectTasks() {
 	m.removedprojectTasks = nil
 }
 
-// AddDeletedProjectTaskIDs adds the "deletedProjectTasks" edge to the DeletedProjectTask entity by ids.
-func (m *ProjectTaskSectionMutation) AddDeletedProjectTaskIDs(ids ...ulid.ID) {
-	if m.deletedProjectTasks == nil {
-		m.deletedProjectTasks = make(map[ulid.ID]struct{})
-	}
-	for i := range ids {
-		m.deletedProjectTasks[ids[i]] = struct{}{}
-	}
-}
-
-// ClearDeletedProjectTasks clears the "deletedProjectTasks" edge to the DeletedProjectTask entity.
-func (m *ProjectTaskSectionMutation) ClearDeletedProjectTasks() {
-	m.cleareddeletedProjectTasks = true
-}
-
-// DeletedProjectTasksCleared reports if the "deletedProjectTasks" edge to the DeletedProjectTask entity was cleared.
-func (m *ProjectTaskSectionMutation) DeletedProjectTasksCleared() bool {
-	return m.cleareddeletedProjectTasks
-}
-
-// RemoveDeletedProjectTaskIDs removes the "deletedProjectTasks" edge to the DeletedProjectTask entity by IDs.
-func (m *ProjectTaskSectionMutation) RemoveDeletedProjectTaskIDs(ids ...ulid.ID) {
-	if m.removeddeletedProjectTasks == nil {
-		m.removeddeletedProjectTasks = make(map[ulid.ID]struct{})
-	}
-	for i := range ids {
-		delete(m.deletedProjectTasks, ids[i])
-		m.removeddeletedProjectTasks[ids[i]] = struct{}{}
-	}
-}
-
-// RemovedDeletedProjectTasks returns the removed IDs of the "deletedProjectTasks" edge to the DeletedProjectTask entity.
-func (m *ProjectTaskSectionMutation) RemovedDeletedProjectTasksIDs() (ids []ulid.ID) {
-	for id := range m.removeddeletedProjectTasks {
-		ids = append(ids, id)
-	}
-	return
-}
-
-// DeletedProjectTasksIDs returns the "deletedProjectTasks" edge IDs in the mutation.
-func (m *ProjectTaskSectionMutation) DeletedProjectTasksIDs() (ids []ulid.ID) {
-	for id := range m.deletedProjectTasks {
-		ids = append(ids, id)
-	}
-	return
-}
-
-// ResetDeletedProjectTasks resets all changes to the "deletedProjectTasks" edge.
-func (m *ProjectTaskSectionMutation) ResetDeletedProjectTasks() {
-	m.deletedProjectTasks = nil
-	m.cleareddeletedProjectTasks = false
-	m.removeddeletedProjectTasks = nil
-}
-
 // Where appends a list predicates to the ProjectTaskSectionMutation builder.
 func (m *ProjectTaskSectionMutation) Where(ps ...predicate.ProjectTaskSection) {
 	m.predicates = append(m.predicates, ps...)
@@ -15720,15 +15519,12 @@ func (m *ProjectTaskSectionMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *ProjectTaskSectionMutation) AddedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 2)
 	if m.project != nil {
 		edges = append(edges, projecttasksection.EdgeProject)
 	}
 	if m.projectTasks != nil {
 		edges = append(edges, projecttasksection.EdgeProjectTasks)
-	}
-	if m.deletedProjectTasks != nil {
-		edges = append(edges, projecttasksection.EdgeDeletedProjectTasks)
 	}
 	return edges
 }
@@ -15747,24 +15543,15 @@ func (m *ProjectTaskSectionMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
-	case projecttasksection.EdgeDeletedProjectTasks:
-		ids := make([]ent.Value, 0, len(m.deletedProjectTasks))
-		for id := range m.deletedProjectTasks {
-			ids = append(ids, id)
-		}
-		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *ProjectTaskSectionMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 2)
 	if m.removedprojectTasks != nil {
 		edges = append(edges, projecttasksection.EdgeProjectTasks)
-	}
-	if m.removeddeletedProjectTasks != nil {
-		edges = append(edges, projecttasksection.EdgeDeletedProjectTasks)
 	}
 	return edges
 }
@@ -15779,27 +15566,18 @@ func (m *ProjectTaskSectionMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
-	case projecttasksection.EdgeDeletedProjectTasks:
-		ids := make([]ent.Value, 0, len(m.removeddeletedProjectTasks))
-		for id := range m.removeddeletedProjectTasks {
-			ids = append(ids, id)
-		}
-		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *ProjectTaskSectionMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 2)
 	if m.clearedproject {
 		edges = append(edges, projecttasksection.EdgeProject)
 	}
 	if m.clearedprojectTasks {
 		edges = append(edges, projecttasksection.EdgeProjectTasks)
-	}
-	if m.cleareddeletedProjectTasks {
-		edges = append(edges, projecttasksection.EdgeDeletedProjectTasks)
 	}
 	return edges
 }
@@ -15812,8 +15590,6 @@ func (m *ProjectTaskSectionMutation) EdgeCleared(name string) bool {
 		return m.clearedproject
 	case projecttasksection.EdgeProjectTasks:
 		return m.clearedprojectTasks
-	case projecttasksection.EdgeDeletedProjectTasks:
-		return m.cleareddeletedProjectTasks
 	}
 	return false
 }
@@ -15838,9 +15614,6 @@ func (m *ProjectTaskSectionMutation) ResetEdge(name string) error {
 		return nil
 	case projecttasksection.EdgeProjectTasks:
 		m.ResetProjectTasks()
-		return nil
-	case projecttasksection.EdgeDeletedProjectTasks:
-		m.ResetDeletedProjectTasks()
 		return nil
 	}
 	return fmt.Errorf("unknown ProjectTaskSection edge %s", name)
@@ -33377,27 +33150,24 @@ func (m *TeammateTaskListStatusMutation) ResetEdge(name string) error {
 // TeammateTaskSectionMutation represents an operation that mutates the TeammateTaskSection nodes in the graph.
 type TeammateTaskSectionMutation struct {
 	config
-	op                          Op
-	typ                         string
-	id                          *ulid.ID
-	name                        *string
-	assigned                    *bool
-	created_at                  *time.Time
-	updated_at                  *time.Time
-	clearedFields               map[string]struct{}
-	teammate                    *ulid.ID
-	clearedteammate             bool
-	workspace                   *ulid.ID
-	clearedworkspace            bool
-	teammateTasks               map[ulid.ID]struct{}
-	removedteammateTasks        map[ulid.ID]struct{}
-	clearedteammateTasks        bool
-	deletedTeammateTasks        map[ulid.ID]struct{}
-	removeddeletedTeammateTasks map[ulid.ID]struct{}
-	cleareddeletedTeammateTasks bool
-	done                        bool
-	oldValue                    func(context.Context) (*TeammateTaskSection, error)
-	predicates                  []predicate.TeammateTaskSection
+	op                   Op
+	typ                  string
+	id                   *ulid.ID
+	name                 *string
+	assigned             *bool
+	created_at           *time.Time
+	updated_at           *time.Time
+	clearedFields        map[string]struct{}
+	teammate             *ulid.ID
+	clearedteammate      bool
+	workspace            *ulid.ID
+	clearedworkspace     bool
+	teammateTasks        map[ulid.ID]struct{}
+	removedteammateTasks map[ulid.ID]struct{}
+	clearedteammateTasks bool
+	done                 bool
+	oldValue             func(context.Context) (*TeammateTaskSection, error)
+	predicates           []predicate.TeammateTaskSection
 }
 
 var _ ent.Mutation = (*TeammateTaskSectionMutation)(nil)
@@ -33826,60 +33596,6 @@ func (m *TeammateTaskSectionMutation) ResetTeammateTasks() {
 	m.removedteammateTasks = nil
 }
 
-// AddDeletedTeammateTaskIDs adds the "deletedTeammateTasks" edge to the DeletedTeammateTask entity by ids.
-func (m *TeammateTaskSectionMutation) AddDeletedTeammateTaskIDs(ids ...ulid.ID) {
-	if m.deletedTeammateTasks == nil {
-		m.deletedTeammateTasks = make(map[ulid.ID]struct{})
-	}
-	for i := range ids {
-		m.deletedTeammateTasks[ids[i]] = struct{}{}
-	}
-}
-
-// ClearDeletedTeammateTasks clears the "deletedTeammateTasks" edge to the DeletedTeammateTask entity.
-func (m *TeammateTaskSectionMutation) ClearDeletedTeammateTasks() {
-	m.cleareddeletedTeammateTasks = true
-}
-
-// DeletedTeammateTasksCleared reports if the "deletedTeammateTasks" edge to the DeletedTeammateTask entity was cleared.
-func (m *TeammateTaskSectionMutation) DeletedTeammateTasksCleared() bool {
-	return m.cleareddeletedTeammateTasks
-}
-
-// RemoveDeletedTeammateTaskIDs removes the "deletedTeammateTasks" edge to the DeletedTeammateTask entity by IDs.
-func (m *TeammateTaskSectionMutation) RemoveDeletedTeammateTaskIDs(ids ...ulid.ID) {
-	if m.removeddeletedTeammateTasks == nil {
-		m.removeddeletedTeammateTasks = make(map[ulid.ID]struct{})
-	}
-	for i := range ids {
-		delete(m.deletedTeammateTasks, ids[i])
-		m.removeddeletedTeammateTasks[ids[i]] = struct{}{}
-	}
-}
-
-// RemovedDeletedTeammateTasks returns the removed IDs of the "deletedTeammateTasks" edge to the DeletedTeammateTask entity.
-func (m *TeammateTaskSectionMutation) RemovedDeletedTeammateTasksIDs() (ids []ulid.ID) {
-	for id := range m.removeddeletedTeammateTasks {
-		ids = append(ids, id)
-	}
-	return
-}
-
-// DeletedTeammateTasksIDs returns the "deletedTeammateTasks" edge IDs in the mutation.
-func (m *TeammateTaskSectionMutation) DeletedTeammateTasksIDs() (ids []ulid.ID) {
-	for id := range m.deletedTeammateTasks {
-		ids = append(ids, id)
-	}
-	return
-}
-
-// ResetDeletedTeammateTasks resets all changes to the "deletedTeammateTasks" edge.
-func (m *TeammateTaskSectionMutation) ResetDeletedTeammateTasks() {
-	m.deletedTeammateTasks = nil
-	m.cleareddeletedTeammateTasks = false
-	m.removeddeletedTeammateTasks = nil
-}
-
 // Where appends a list predicates to the TeammateTaskSectionMutation builder.
 func (m *TeammateTaskSectionMutation) Where(ps ...predicate.TeammateTaskSection) {
 	m.predicates = append(m.predicates, ps...)
@@ -34083,7 +33799,7 @@ func (m *TeammateTaskSectionMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *TeammateTaskSectionMutation) AddedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 3)
 	if m.teammate != nil {
 		edges = append(edges, teammatetasksection.EdgeTeammate)
 	}
@@ -34092,9 +33808,6 @@ func (m *TeammateTaskSectionMutation) AddedEdges() []string {
 	}
 	if m.teammateTasks != nil {
 		edges = append(edges, teammatetasksection.EdgeTeammateTasks)
-	}
-	if m.deletedTeammateTasks != nil {
-		edges = append(edges, teammatetasksection.EdgeDeletedTeammateTasks)
 	}
 	return edges
 }
@@ -34117,24 +33830,15 @@ func (m *TeammateTaskSectionMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
-	case teammatetasksection.EdgeDeletedTeammateTasks:
-		ids := make([]ent.Value, 0, len(m.deletedTeammateTasks))
-		for id := range m.deletedTeammateTasks {
-			ids = append(ids, id)
-		}
-		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *TeammateTaskSectionMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 3)
 	if m.removedteammateTasks != nil {
 		edges = append(edges, teammatetasksection.EdgeTeammateTasks)
-	}
-	if m.removeddeletedTeammateTasks != nil {
-		edges = append(edges, teammatetasksection.EdgeDeletedTeammateTasks)
 	}
 	return edges
 }
@@ -34149,19 +33853,13 @@ func (m *TeammateTaskSectionMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
-	case teammatetasksection.EdgeDeletedTeammateTasks:
-		ids := make([]ent.Value, 0, len(m.removeddeletedTeammateTasks))
-		for id := range m.removeddeletedTeammateTasks {
-			ids = append(ids, id)
-		}
-		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *TeammateTaskSectionMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 4)
+	edges := make([]string, 0, 3)
 	if m.clearedteammate {
 		edges = append(edges, teammatetasksection.EdgeTeammate)
 	}
@@ -34170,9 +33868,6 @@ func (m *TeammateTaskSectionMutation) ClearedEdges() []string {
 	}
 	if m.clearedteammateTasks {
 		edges = append(edges, teammatetasksection.EdgeTeammateTasks)
-	}
-	if m.cleareddeletedTeammateTasks {
-		edges = append(edges, teammatetasksection.EdgeDeletedTeammateTasks)
 	}
 	return edges
 }
@@ -34187,8 +33882,6 @@ func (m *TeammateTaskSectionMutation) EdgeCleared(name string) bool {
 		return m.clearedworkspace
 	case teammatetasksection.EdgeTeammateTasks:
 		return m.clearedteammateTasks
-	case teammatetasksection.EdgeDeletedTeammateTasks:
-		return m.cleareddeletedTeammateTasks
 	}
 	return false
 }
@@ -34219,9 +33912,6 @@ func (m *TeammateTaskSectionMutation) ResetEdge(name string) error {
 		return nil
 	case teammatetasksection.EdgeTeammateTasks:
 		m.ResetTeammateTasks()
-		return nil
-	case teammatetasksection.EdgeDeletedTeammateTasks:
-		m.ResetDeletedTeammateTasks()
 		return nil
 	}
 	return fmt.Errorf("unknown TeammateTaskSection edge %s", name)

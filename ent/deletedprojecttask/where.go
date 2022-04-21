@@ -115,6 +115,13 @@ func ProjectTaskSectionID(v ulid.ID) predicate.DeletedProjectTask {
 	})
 }
 
+// ProjectTaskID applies equality check predicate on the "project_task_id" field. It's identical to ProjectTaskIDEQ.
+func ProjectTaskID(v ulid.ID) predicate.DeletedProjectTask {
+	return predicate.DeletedProjectTask(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldProjectTaskID), v))
+	})
+}
+
 // ProjectTaskCreatedAt applies equality check predicate on the "project_task_created_at" field. It's identical to ProjectTaskCreatedAtEQ.
 func ProjectTaskCreatedAt(v time.Time) predicate.DeletedProjectTask {
 	return predicate.DeletedProjectTask(func(s *sql.Selector) {
@@ -491,6 +498,122 @@ func ProjectTaskSectionIDContainsFold(v ulid.ID) predicate.DeletedProjectTask {
 	})
 }
 
+// ProjectTaskIDEQ applies the EQ predicate on the "project_task_id" field.
+func ProjectTaskIDEQ(v ulid.ID) predicate.DeletedProjectTask {
+	return predicate.DeletedProjectTask(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldProjectTaskID), v))
+	})
+}
+
+// ProjectTaskIDNEQ applies the NEQ predicate on the "project_task_id" field.
+func ProjectTaskIDNEQ(v ulid.ID) predicate.DeletedProjectTask {
+	return predicate.DeletedProjectTask(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldProjectTaskID), v))
+	})
+}
+
+// ProjectTaskIDIn applies the In predicate on the "project_task_id" field.
+func ProjectTaskIDIn(vs ...ulid.ID) predicate.DeletedProjectTask {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.DeletedProjectTask(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldProjectTaskID), v...))
+	})
+}
+
+// ProjectTaskIDNotIn applies the NotIn predicate on the "project_task_id" field.
+func ProjectTaskIDNotIn(vs ...ulid.ID) predicate.DeletedProjectTask {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.DeletedProjectTask(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldProjectTaskID), v...))
+	})
+}
+
+// ProjectTaskIDGT applies the GT predicate on the "project_task_id" field.
+func ProjectTaskIDGT(v ulid.ID) predicate.DeletedProjectTask {
+	return predicate.DeletedProjectTask(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldProjectTaskID), v))
+	})
+}
+
+// ProjectTaskIDGTE applies the GTE predicate on the "project_task_id" field.
+func ProjectTaskIDGTE(v ulid.ID) predicate.DeletedProjectTask {
+	return predicate.DeletedProjectTask(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldProjectTaskID), v))
+	})
+}
+
+// ProjectTaskIDLT applies the LT predicate on the "project_task_id" field.
+func ProjectTaskIDLT(v ulid.ID) predicate.DeletedProjectTask {
+	return predicate.DeletedProjectTask(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldProjectTaskID), v))
+	})
+}
+
+// ProjectTaskIDLTE applies the LTE predicate on the "project_task_id" field.
+func ProjectTaskIDLTE(v ulid.ID) predicate.DeletedProjectTask {
+	return predicate.DeletedProjectTask(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldProjectTaskID), v))
+	})
+}
+
+// ProjectTaskIDContains applies the Contains predicate on the "project_task_id" field.
+func ProjectTaskIDContains(v ulid.ID) predicate.DeletedProjectTask {
+	vc := string(v)
+	return predicate.DeletedProjectTask(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldProjectTaskID), vc))
+	})
+}
+
+// ProjectTaskIDHasPrefix applies the HasPrefix predicate on the "project_task_id" field.
+func ProjectTaskIDHasPrefix(v ulid.ID) predicate.DeletedProjectTask {
+	vc := string(v)
+	return predicate.DeletedProjectTask(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldProjectTaskID), vc))
+	})
+}
+
+// ProjectTaskIDHasSuffix applies the HasSuffix predicate on the "project_task_id" field.
+func ProjectTaskIDHasSuffix(v ulid.ID) predicate.DeletedProjectTask {
+	vc := string(v)
+	return predicate.DeletedProjectTask(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldProjectTaskID), vc))
+	})
+}
+
+// ProjectTaskIDEqualFold applies the EqualFold predicate on the "project_task_id" field.
+func ProjectTaskIDEqualFold(v ulid.ID) predicate.DeletedProjectTask {
+	vc := string(v)
+	return predicate.DeletedProjectTask(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldProjectTaskID), vc))
+	})
+}
+
+// ProjectTaskIDContainsFold applies the ContainsFold predicate on the "project_task_id" field.
+func ProjectTaskIDContainsFold(v ulid.ID) predicate.DeletedProjectTask {
+	vc := string(v)
+	return predicate.DeletedProjectTask(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldProjectTaskID), vc))
+	})
+}
+
 // ProjectTaskCreatedAtEQ applies the EQ predicate on the "project_task_created_at" field.
 func ProjectTaskCreatedAtEQ(v time.Time) predicate.DeletedProjectTask {
 	return predicate.DeletedProjectTask(func(s *sql.Selector) {
@@ -842,34 +965,6 @@ func HasTaskWith(preds ...predicate.Task) predicate.DeletedProjectTask {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(TaskInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, TaskTable, TaskColumn),
-		)
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
-// HasProjectTaskSection applies the HasEdge predicate on the "projectTaskSection" edge.
-func HasProjectTaskSection() predicate.DeletedProjectTask {
-	return predicate.DeletedProjectTask(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(ProjectTaskSectionTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, ProjectTaskSectionTable, ProjectTaskSectionColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasProjectTaskSectionWith applies the HasEdge predicate on the "projectTaskSection" edge with a given conditions (other predicates).
-func HasProjectTaskSectionWith(preds ...predicate.ProjectTaskSection) predicate.DeletedProjectTask {
-	return predicate.DeletedProjectTask(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(ProjectTaskSectionInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, ProjectTaskSectionTable, ProjectTaskSectionColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

@@ -38,24 +38,6 @@ func (dtc *DeletedTaskCreate) SetWorkspaceID(u ulid.ID) *DeletedTaskCreate {
 	return dtc
 }
 
-// SetTaskSectionID sets the "task_section_id" field.
-func (dtc *DeletedTaskCreate) SetTaskSectionID(u ulid.ID) *DeletedTaskCreate {
-	dtc.mutation.SetTaskSectionID(u)
-	return dtc
-}
-
-// SetTaskJoinID sets the "task_join_id" field.
-func (dtc *DeletedTaskCreate) SetTaskJoinID(u ulid.ID) *DeletedTaskCreate {
-	dtc.mutation.SetTaskJoinID(u)
-	return dtc
-}
-
-// SetTaskType sets the "task_type" field.
-func (dtc *DeletedTaskCreate) SetTaskType(dt deletedtask.TaskType) *DeletedTaskCreate {
-	dtc.mutation.SetTaskType(dt)
-	return dtc
-}
-
 // SetCreatedAt sets the "created_at" field.
 func (dtc *DeletedTaskCreate) SetCreatedAt(t time.Time) *DeletedTaskCreate {
 	dtc.mutation.SetCreatedAt(t)
@@ -201,20 +183,6 @@ func (dtc *DeletedTaskCreate) check() error {
 	if _, ok := dtc.mutation.WorkspaceID(); !ok {
 		return &ValidationError{Name: "workspace_id", err: errors.New(`ent: missing required field "DeletedTask.workspace_id"`)}
 	}
-	if _, ok := dtc.mutation.TaskSectionID(); !ok {
-		return &ValidationError{Name: "task_section_id", err: errors.New(`ent: missing required field "DeletedTask.task_section_id"`)}
-	}
-	if _, ok := dtc.mutation.TaskJoinID(); !ok {
-		return &ValidationError{Name: "task_join_id", err: errors.New(`ent: missing required field "DeletedTask.task_join_id"`)}
-	}
-	if _, ok := dtc.mutation.TaskType(); !ok {
-		return &ValidationError{Name: "task_type", err: errors.New(`ent: missing required field "DeletedTask.task_type"`)}
-	}
-	if v, ok := dtc.mutation.TaskType(); ok {
-		if err := deletedtask.TaskTypeValidator(v); err != nil {
-			return &ValidationError{Name: "task_type", err: fmt.Errorf(`ent: validator failed for field "DeletedTask.task_type": %w`, err)}
-		}
-	}
 	if _, ok := dtc.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "DeletedTask.created_at"`)}
 	}
@@ -263,30 +231,6 @@ func (dtc *DeletedTaskCreate) createSpec() (*DeletedTask, *sqlgraph.CreateSpec) 
 	if id, ok := dtc.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = &id
-	}
-	if value, ok := dtc.mutation.TaskSectionID(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: deletedtask.FieldTaskSectionID,
-		})
-		_node.TaskSectionID = value
-	}
-	if value, ok := dtc.mutation.TaskJoinID(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeString,
-			Value:  value,
-			Column: deletedtask.FieldTaskJoinID,
-		})
-		_node.TaskJoinID = value
-	}
-	if value, ok := dtc.mutation.TaskType(); ok {
-		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
-			Type:   field.TypeEnum,
-			Value:  value,
-			Column: deletedtask.FieldTaskType,
-		})
-		_node.TaskType = value
 	}
 	if value, ok := dtc.mutation.CreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -422,42 +366,6 @@ func (u *DeletedTaskUpsert) UpdateWorkspaceID() *DeletedTaskUpsert {
 	return u
 }
 
-// SetTaskSectionID sets the "task_section_id" field.
-func (u *DeletedTaskUpsert) SetTaskSectionID(v ulid.ID) *DeletedTaskUpsert {
-	u.Set(deletedtask.FieldTaskSectionID, v)
-	return u
-}
-
-// UpdateTaskSectionID sets the "task_section_id" field to the value that was provided on create.
-func (u *DeletedTaskUpsert) UpdateTaskSectionID() *DeletedTaskUpsert {
-	u.SetExcluded(deletedtask.FieldTaskSectionID)
-	return u
-}
-
-// SetTaskJoinID sets the "task_join_id" field.
-func (u *DeletedTaskUpsert) SetTaskJoinID(v ulid.ID) *DeletedTaskUpsert {
-	u.Set(deletedtask.FieldTaskJoinID, v)
-	return u
-}
-
-// UpdateTaskJoinID sets the "task_join_id" field to the value that was provided on create.
-func (u *DeletedTaskUpsert) UpdateTaskJoinID() *DeletedTaskUpsert {
-	u.SetExcluded(deletedtask.FieldTaskJoinID)
-	return u
-}
-
-// SetTaskType sets the "task_type" field.
-func (u *DeletedTaskUpsert) SetTaskType(v deletedtask.TaskType) *DeletedTaskUpsert {
-	u.Set(deletedtask.FieldTaskType, v)
-	return u
-}
-
-// UpdateTaskType sets the "task_type" field to the value that was provided on create.
-func (u *DeletedTaskUpsert) UpdateTaskType() *DeletedTaskUpsert {
-	u.SetExcluded(deletedtask.FieldTaskType)
-	return u
-}
-
 // SetCreatedAt sets the "created_at" field.
 func (u *DeletedTaskUpsert) SetCreatedAt(v time.Time) *DeletedTaskUpsert {
 	u.Set(deletedtask.FieldCreatedAt, v)
@@ -563,48 +471,6 @@ func (u *DeletedTaskUpsertOne) SetWorkspaceID(v ulid.ID) *DeletedTaskUpsertOne {
 func (u *DeletedTaskUpsertOne) UpdateWorkspaceID() *DeletedTaskUpsertOne {
 	return u.Update(func(s *DeletedTaskUpsert) {
 		s.UpdateWorkspaceID()
-	})
-}
-
-// SetTaskSectionID sets the "task_section_id" field.
-func (u *DeletedTaskUpsertOne) SetTaskSectionID(v ulid.ID) *DeletedTaskUpsertOne {
-	return u.Update(func(s *DeletedTaskUpsert) {
-		s.SetTaskSectionID(v)
-	})
-}
-
-// UpdateTaskSectionID sets the "task_section_id" field to the value that was provided on create.
-func (u *DeletedTaskUpsertOne) UpdateTaskSectionID() *DeletedTaskUpsertOne {
-	return u.Update(func(s *DeletedTaskUpsert) {
-		s.UpdateTaskSectionID()
-	})
-}
-
-// SetTaskJoinID sets the "task_join_id" field.
-func (u *DeletedTaskUpsertOne) SetTaskJoinID(v ulid.ID) *DeletedTaskUpsertOne {
-	return u.Update(func(s *DeletedTaskUpsert) {
-		s.SetTaskJoinID(v)
-	})
-}
-
-// UpdateTaskJoinID sets the "task_join_id" field to the value that was provided on create.
-func (u *DeletedTaskUpsertOne) UpdateTaskJoinID() *DeletedTaskUpsertOne {
-	return u.Update(func(s *DeletedTaskUpsert) {
-		s.UpdateTaskJoinID()
-	})
-}
-
-// SetTaskType sets the "task_type" field.
-func (u *DeletedTaskUpsertOne) SetTaskType(v deletedtask.TaskType) *DeletedTaskUpsertOne {
-	return u.Update(func(s *DeletedTaskUpsert) {
-		s.SetTaskType(v)
-	})
-}
-
-// UpdateTaskType sets the "task_type" field to the value that was provided on create.
-func (u *DeletedTaskUpsertOne) UpdateTaskType() *DeletedTaskUpsertOne {
-	return u.Update(func(s *DeletedTaskUpsert) {
-		s.UpdateTaskType()
 	})
 }
 
@@ -883,48 +749,6 @@ func (u *DeletedTaskUpsertBulk) SetWorkspaceID(v ulid.ID) *DeletedTaskUpsertBulk
 func (u *DeletedTaskUpsertBulk) UpdateWorkspaceID() *DeletedTaskUpsertBulk {
 	return u.Update(func(s *DeletedTaskUpsert) {
 		s.UpdateWorkspaceID()
-	})
-}
-
-// SetTaskSectionID sets the "task_section_id" field.
-func (u *DeletedTaskUpsertBulk) SetTaskSectionID(v ulid.ID) *DeletedTaskUpsertBulk {
-	return u.Update(func(s *DeletedTaskUpsert) {
-		s.SetTaskSectionID(v)
-	})
-}
-
-// UpdateTaskSectionID sets the "task_section_id" field to the value that was provided on create.
-func (u *DeletedTaskUpsertBulk) UpdateTaskSectionID() *DeletedTaskUpsertBulk {
-	return u.Update(func(s *DeletedTaskUpsert) {
-		s.UpdateTaskSectionID()
-	})
-}
-
-// SetTaskJoinID sets the "task_join_id" field.
-func (u *DeletedTaskUpsertBulk) SetTaskJoinID(v ulid.ID) *DeletedTaskUpsertBulk {
-	return u.Update(func(s *DeletedTaskUpsert) {
-		s.SetTaskJoinID(v)
-	})
-}
-
-// UpdateTaskJoinID sets the "task_join_id" field to the value that was provided on create.
-func (u *DeletedTaskUpsertBulk) UpdateTaskJoinID() *DeletedTaskUpsertBulk {
-	return u.Update(func(s *DeletedTaskUpsert) {
-		s.UpdateTaskJoinID()
-	})
-}
-
-// SetTaskType sets the "task_type" field.
-func (u *DeletedTaskUpsertBulk) SetTaskType(v deletedtask.TaskType) *DeletedTaskUpsertBulk {
-	return u.Update(func(s *DeletedTaskUpsert) {
-		s.SetTaskType(v)
-	})
-}
-
-// UpdateTaskType sets the "task_type" field to the value that was provided on create.
-func (u *DeletedTaskUpsertBulk) UpdateTaskType() *DeletedTaskUpsertBulk {
-	return u.Update(func(s *DeletedTaskUpsert) {
-		s.UpdateTaskType()
 	})
 }
 

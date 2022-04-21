@@ -10,7 +10,6 @@ import (
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/task"
 	"project-management-demo-backend/ent/teammate"
-	"project-management-demo-backend/ent/teammatetasksection"
 	"project-management-demo-backend/ent/workspace"
 	"time"
 
@@ -49,6 +48,12 @@ func (dttc *DeletedTeammateTaskCreate) SetTeammateTaskSectionID(u ulid.ID) *Dele
 // SetWorkspaceID sets the "workspace_id" field.
 func (dttc *DeletedTeammateTaskCreate) SetWorkspaceID(u ulid.ID) *DeletedTeammateTaskCreate {
 	dttc.mutation.SetWorkspaceID(u)
+	return dttc
+}
+
+// SetTeammateTaskID sets the "teammate_task_id" field.
+func (dttc *DeletedTeammateTaskCreate) SetTeammateTaskID(u ulid.ID) *DeletedTeammateTaskCreate {
+	dttc.mutation.SetTeammateTaskID(u)
 	return dttc
 }
 
@@ -114,11 +119,6 @@ func (dttc *DeletedTeammateTaskCreate) SetTeammate(t *Teammate) *DeletedTeammate
 // SetTask sets the "task" edge to the Task entity.
 func (dttc *DeletedTeammateTaskCreate) SetTask(t *Task) *DeletedTeammateTaskCreate {
 	return dttc.SetTaskID(t.ID)
-}
-
-// SetTeammateTaskSection sets the "teammateTaskSection" edge to the TeammateTaskSection entity.
-func (dttc *DeletedTeammateTaskCreate) SetTeammateTaskSection(t *TeammateTaskSection) *DeletedTeammateTaskCreate {
-	return dttc.SetTeammateTaskSectionID(t.ID)
 }
 
 // SetWorkspace sets the "workspace" edge to the Workspace entity.
@@ -225,6 +225,9 @@ func (dttc *DeletedTeammateTaskCreate) check() error {
 	if _, ok := dttc.mutation.WorkspaceID(); !ok {
 		return &ValidationError{Name: "workspace_id", err: errors.New(`ent: missing required field "DeletedTeammateTask.workspace_id"`)}
 	}
+	if _, ok := dttc.mutation.TeammateTaskID(); !ok {
+		return &ValidationError{Name: "teammate_task_id", err: errors.New(`ent: missing required field "DeletedTeammateTask.teammate_task_id"`)}
+	}
 	if _, ok := dttc.mutation.TeammateTaskCreatedAt(); !ok {
 		return &ValidationError{Name: "teammate_task_created_at", err: errors.New(`ent: missing required field "DeletedTeammateTask.teammate_task_created_at"`)}
 	}
@@ -242,9 +245,6 @@ func (dttc *DeletedTeammateTaskCreate) check() error {
 	}
 	if _, ok := dttc.mutation.TaskID(); !ok {
 		return &ValidationError{Name: "task", err: errors.New(`ent: missing required edge "DeletedTeammateTask.task"`)}
-	}
-	if _, ok := dttc.mutation.TeammateTaskSectionID(); !ok {
-		return &ValidationError{Name: "teammateTaskSection", err: errors.New(`ent: missing required edge "DeletedTeammateTask.teammateTaskSection"`)}
 	}
 	if _, ok := dttc.mutation.WorkspaceID(); !ok {
 		return &ValidationError{Name: "workspace", err: errors.New(`ent: missing required edge "DeletedTeammateTask.workspace"`)}
@@ -285,6 +285,22 @@ func (dttc *DeletedTeammateTaskCreate) createSpec() (*DeletedTeammateTask, *sqlg
 	if id, ok := dttc.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = &id
+	}
+	if value, ok := dttc.mutation.TeammateTaskSectionID(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: deletedteammatetask.FieldTeammateTaskSectionID,
+		})
+		_node.TeammateTaskSectionID = value
+	}
+	if value, ok := dttc.mutation.TeammateTaskID(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: deletedteammatetask.FieldTeammateTaskID,
+		})
+		_node.TeammateTaskID = value
 	}
 	if value, ok := dttc.mutation.TeammateTaskCreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -356,26 +372,6 @@ func (dttc *DeletedTeammateTaskCreate) createSpec() (*DeletedTeammateTask, *sqlg
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.TaskID = nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := dttc.mutation.TeammateTaskSectionIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   deletedteammatetask.TeammateTaskSectionTable,
-			Columns: []string{deletedteammatetask.TeammateTaskSectionColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: teammatetasksection.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_node.TeammateTaskSectionID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	if nodes := dttc.mutation.WorkspaceIDs(); len(nodes) > 0 {
@@ -497,6 +493,18 @@ func (u *DeletedTeammateTaskUpsert) SetWorkspaceID(v ulid.ID) *DeletedTeammateTa
 // UpdateWorkspaceID sets the "workspace_id" field to the value that was provided on create.
 func (u *DeletedTeammateTaskUpsert) UpdateWorkspaceID() *DeletedTeammateTaskUpsert {
 	u.SetExcluded(deletedteammatetask.FieldWorkspaceID)
+	return u
+}
+
+// SetTeammateTaskID sets the "teammate_task_id" field.
+func (u *DeletedTeammateTaskUpsert) SetTeammateTaskID(v ulid.ID) *DeletedTeammateTaskUpsert {
+	u.Set(deletedteammatetask.FieldTeammateTaskID, v)
+	return u
+}
+
+// UpdateTeammateTaskID sets the "teammate_task_id" field to the value that was provided on create.
+func (u *DeletedTeammateTaskUpsert) UpdateTeammateTaskID() *DeletedTeammateTaskUpsert {
+	u.SetExcluded(deletedteammatetask.FieldTeammateTaskID)
 	return u
 }
 
@@ -657,6 +665,20 @@ func (u *DeletedTeammateTaskUpsertOne) SetWorkspaceID(v ulid.ID) *DeletedTeammat
 func (u *DeletedTeammateTaskUpsertOne) UpdateWorkspaceID() *DeletedTeammateTaskUpsertOne {
 	return u.Update(func(s *DeletedTeammateTaskUpsert) {
 		s.UpdateWorkspaceID()
+	})
+}
+
+// SetTeammateTaskID sets the "teammate_task_id" field.
+func (u *DeletedTeammateTaskUpsertOne) SetTeammateTaskID(v ulid.ID) *DeletedTeammateTaskUpsertOne {
+	return u.Update(func(s *DeletedTeammateTaskUpsert) {
+		s.SetTeammateTaskID(v)
+	})
+}
+
+// UpdateTeammateTaskID sets the "teammate_task_id" field to the value that was provided on create.
+func (u *DeletedTeammateTaskUpsertOne) UpdateTeammateTaskID() *DeletedTeammateTaskUpsertOne {
+	return u.Update(func(s *DeletedTeammateTaskUpsert) {
+		s.UpdateTeammateTaskID()
 	})
 }
 
@@ -991,6 +1013,20 @@ func (u *DeletedTeammateTaskUpsertBulk) SetWorkspaceID(v ulid.ID) *DeletedTeamma
 func (u *DeletedTeammateTaskUpsertBulk) UpdateWorkspaceID() *DeletedTeammateTaskUpsertBulk {
 	return u.Update(func(s *DeletedTeammateTaskUpsert) {
 		s.UpdateWorkspaceID()
+	})
+}
+
+// SetTeammateTaskID sets the "teammate_task_id" field.
+func (u *DeletedTeammateTaskUpsertBulk) SetTeammateTaskID(v ulid.ID) *DeletedTeammateTaskUpsertBulk {
+	return u.Update(func(s *DeletedTeammateTaskUpsert) {
+		s.SetTeammateTaskID(v)
+	})
+}
+
+// UpdateTeammateTaskID sets the "teammate_task_id" field to the value that was provided on create.
+func (u *DeletedTeammateTaskUpsertBulk) UpdateTeammateTaskID() *DeletedTeammateTaskUpsertBulk {
+	return u.Update(func(s *DeletedTeammateTaskUpsert) {
+		s.UpdateTeammateTaskID()
 	})
 }
 

@@ -74,13 +74,6 @@ func (TeammateTaskSection) Edges() []ent.Edge {
 					annotation.Edge{FieldName: "teammate_task_id"},
 				),
 			),
-		edge.To(deletedTeammateTasksRef, DeletedTeammateTask.Type).
-			Annotations(
-				entgql.Bind(),
-				schema.Annotation(
-					annotation.Edge{FieldName: "deleted_teammate_task_id"},
-				),
-			),
 	}
 }
 

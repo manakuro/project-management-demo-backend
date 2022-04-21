@@ -122,6 +122,13 @@ func WorkspaceID(v ulid.ID) predicate.DeletedTeammateTask {
 	})
 }
 
+// TeammateTaskID applies equality check predicate on the "teammate_task_id" field. It's identical to TeammateTaskIDEQ.
+func TeammateTaskID(v ulid.ID) predicate.DeletedTeammateTask {
+	return predicate.DeletedTeammateTask(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldTeammateTaskID), v))
+	})
+}
+
 // TeammateTaskCreatedAt applies equality check predicate on the "teammate_task_created_at" field. It's identical to TeammateTaskCreatedAtEQ.
 func TeammateTaskCreatedAt(v time.Time) predicate.DeletedTeammateTask {
 	return predicate.DeletedTeammateTask(func(s *sql.Selector) {
@@ -614,6 +621,122 @@ func WorkspaceIDContainsFold(v ulid.ID) predicate.DeletedTeammateTask {
 	})
 }
 
+// TeammateTaskIDEQ applies the EQ predicate on the "teammate_task_id" field.
+func TeammateTaskIDEQ(v ulid.ID) predicate.DeletedTeammateTask {
+	return predicate.DeletedTeammateTask(func(s *sql.Selector) {
+		s.Where(sql.EQ(s.C(FieldTeammateTaskID), v))
+	})
+}
+
+// TeammateTaskIDNEQ applies the NEQ predicate on the "teammate_task_id" field.
+func TeammateTaskIDNEQ(v ulid.ID) predicate.DeletedTeammateTask {
+	return predicate.DeletedTeammateTask(func(s *sql.Selector) {
+		s.Where(sql.NEQ(s.C(FieldTeammateTaskID), v))
+	})
+}
+
+// TeammateTaskIDIn applies the In predicate on the "teammate_task_id" field.
+func TeammateTaskIDIn(vs ...ulid.ID) predicate.DeletedTeammateTask {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.DeletedTeammateTask(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.In(s.C(FieldTeammateTaskID), v...))
+	})
+}
+
+// TeammateTaskIDNotIn applies the NotIn predicate on the "teammate_task_id" field.
+func TeammateTaskIDNotIn(vs ...ulid.ID) predicate.DeletedTeammateTask {
+	v := make([]interface{}, len(vs))
+	for i := range v {
+		v[i] = vs[i]
+	}
+	return predicate.DeletedTeammateTask(func(s *sql.Selector) {
+		// if not arguments were provided, append the FALSE constants,
+		// since we can't apply "IN ()". This will make this predicate falsy.
+		if len(v) == 0 {
+			s.Where(sql.False())
+			return
+		}
+		s.Where(sql.NotIn(s.C(FieldTeammateTaskID), v...))
+	})
+}
+
+// TeammateTaskIDGT applies the GT predicate on the "teammate_task_id" field.
+func TeammateTaskIDGT(v ulid.ID) predicate.DeletedTeammateTask {
+	return predicate.DeletedTeammateTask(func(s *sql.Selector) {
+		s.Where(sql.GT(s.C(FieldTeammateTaskID), v))
+	})
+}
+
+// TeammateTaskIDGTE applies the GTE predicate on the "teammate_task_id" field.
+func TeammateTaskIDGTE(v ulid.ID) predicate.DeletedTeammateTask {
+	return predicate.DeletedTeammateTask(func(s *sql.Selector) {
+		s.Where(sql.GTE(s.C(FieldTeammateTaskID), v))
+	})
+}
+
+// TeammateTaskIDLT applies the LT predicate on the "teammate_task_id" field.
+func TeammateTaskIDLT(v ulid.ID) predicate.DeletedTeammateTask {
+	return predicate.DeletedTeammateTask(func(s *sql.Selector) {
+		s.Where(sql.LT(s.C(FieldTeammateTaskID), v))
+	})
+}
+
+// TeammateTaskIDLTE applies the LTE predicate on the "teammate_task_id" field.
+func TeammateTaskIDLTE(v ulid.ID) predicate.DeletedTeammateTask {
+	return predicate.DeletedTeammateTask(func(s *sql.Selector) {
+		s.Where(sql.LTE(s.C(FieldTeammateTaskID), v))
+	})
+}
+
+// TeammateTaskIDContains applies the Contains predicate on the "teammate_task_id" field.
+func TeammateTaskIDContains(v ulid.ID) predicate.DeletedTeammateTask {
+	vc := string(v)
+	return predicate.DeletedTeammateTask(func(s *sql.Selector) {
+		s.Where(sql.Contains(s.C(FieldTeammateTaskID), vc))
+	})
+}
+
+// TeammateTaskIDHasPrefix applies the HasPrefix predicate on the "teammate_task_id" field.
+func TeammateTaskIDHasPrefix(v ulid.ID) predicate.DeletedTeammateTask {
+	vc := string(v)
+	return predicate.DeletedTeammateTask(func(s *sql.Selector) {
+		s.Where(sql.HasPrefix(s.C(FieldTeammateTaskID), vc))
+	})
+}
+
+// TeammateTaskIDHasSuffix applies the HasSuffix predicate on the "teammate_task_id" field.
+func TeammateTaskIDHasSuffix(v ulid.ID) predicate.DeletedTeammateTask {
+	vc := string(v)
+	return predicate.DeletedTeammateTask(func(s *sql.Selector) {
+		s.Where(sql.HasSuffix(s.C(FieldTeammateTaskID), vc))
+	})
+}
+
+// TeammateTaskIDEqualFold applies the EqualFold predicate on the "teammate_task_id" field.
+func TeammateTaskIDEqualFold(v ulid.ID) predicate.DeletedTeammateTask {
+	vc := string(v)
+	return predicate.DeletedTeammateTask(func(s *sql.Selector) {
+		s.Where(sql.EqualFold(s.C(FieldTeammateTaskID), vc))
+	})
+}
+
+// TeammateTaskIDContainsFold applies the ContainsFold predicate on the "teammate_task_id" field.
+func TeammateTaskIDContainsFold(v ulid.ID) predicate.DeletedTeammateTask {
+	vc := string(v)
+	return predicate.DeletedTeammateTask(func(s *sql.Selector) {
+		s.Where(sql.ContainsFold(s.C(FieldTeammateTaskID), vc))
+	})
+}
+
 // TeammateTaskCreatedAtEQ applies the EQ predicate on the "teammate_task_created_at" field.
 func TeammateTaskCreatedAtEQ(v time.Time) predicate.DeletedTeammateTask {
 	return predicate.DeletedTeammateTask(func(s *sql.Selector) {
@@ -965,34 +1088,6 @@ func HasTaskWith(preds ...predicate.Task) predicate.DeletedTeammateTask {
 			sqlgraph.From(Table, FieldID),
 			sqlgraph.To(TaskInverseTable, FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, TaskTable, TaskColumn),
-		)
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
-// HasTeammateTaskSection applies the HasEdge predicate on the "teammateTaskSection" edge.
-func HasTeammateTaskSection() predicate.DeletedTeammateTask {
-	return predicate.DeletedTeammateTask(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(TeammateTaskSectionTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, TeammateTaskSectionTable, TeammateTaskSectionColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasTeammateTaskSectionWith applies the HasEdge predicate on the "teammateTaskSection" edge with a given conditions (other predicates).
-func HasTeammateTaskSectionWith(preds ...predicate.TeammateTaskSection) predicate.DeletedTeammateTask {
-	return predicate.DeletedTeammateTask(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.To(TeammateTaskSectionInverseTable, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, TeammateTaskSectionTable, TeammateTaskSectionColumn),
 		)
 		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
 			for _, p := range preds {

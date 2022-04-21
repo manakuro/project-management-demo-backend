@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"project-management-demo-backend/ent/deletedprojecttask"
 	"project-management-demo-backend/ent/project"
-	"project-management-demo-backend/ent/projecttasksection"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/task"
 	"time"
@@ -42,6 +41,12 @@ func (dptc *DeletedProjectTaskCreate) SetTaskID(u ulid.ID) *DeletedProjectTaskCr
 // SetProjectTaskSectionID sets the "project_task_section_id" field.
 func (dptc *DeletedProjectTaskCreate) SetProjectTaskSectionID(u ulid.ID) *DeletedProjectTaskCreate {
 	dptc.mutation.SetProjectTaskSectionID(u)
+	return dptc
+}
+
+// SetProjectTaskID sets the "project_task_id" field.
+func (dptc *DeletedProjectTaskCreate) SetProjectTaskID(u ulid.ID) *DeletedProjectTaskCreate {
+	dptc.mutation.SetProjectTaskID(u)
 	return dptc
 }
 
@@ -107,11 +112,6 @@ func (dptc *DeletedProjectTaskCreate) SetProject(p *Project) *DeletedProjectTask
 // SetTask sets the "task" edge to the Task entity.
 func (dptc *DeletedProjectTaskCreate) SetTask(t *Task) *DeletedProjectTaskCreate {
 	return dptc.SetTaskID(t.ID)
-}
-
-// SetProjectTaskSection sets the "projectTaskSection" edge to the ProjectTaskSection entity.
-func (dptc *DeletedProjectTaskCreate) SetProjectTaskSection(p *ProjectTaskSection) *DeletedProjectTaskCreate {
-	return dptc.SetProjectTaskSectionID(p.ID)
 }
 
 // Mutation returns the DeletedProjectTaskMutation object of the builder.
@@ -210,6 +210,9 @@ func (dptc *DeletedProjectTaskCreate) check() error {
 	if _, ok := dptc.mutation.ProjectTaskSectionID(); !ok {
 		return &ValidationError{Name: "project_task_section_id", err: errors.New(`ent: missing required field "DeletedProjectTask.project_task_section_id"`)}
 	}
+	if _, ok := dptc.mutation.ProjectTaskID(); !ok {
+		return &ValidationError{Name: "project_task_id", err: errors.New(`ent: missing required field "DeletedProjectTask.project_task_id"`)}
+	}
 	if _, ok := dptc.mutation.ProjectTaskCreatedAt(); !ok {
 		return &ValidationError{Name: "project_task_created_at", err: errors.New(`ent: missing required field "DeletedProjectTask.project_task_created_at"`)}
 	}
@@ -227,9 +230,6 @@ func (dptc *DeletedProjectTaskCreate) check() error {
 	}
 	if _, ok := dptc.mutation.TaskID(); !ok {
 		return &ValidationError{Name: "task", err: errors.New(`ent: missing required edge "DeletedProjectTask.task"`)}
-	}
-	if _, ok := dptc.mutation.ProjectTaskSectionID(); !ok {
-		return &ValidationError{Name: "projectTaskSection", err: errors.New(`ent: missing required edge "DeletedProjectTask.projectTaskSection"`)}
 	}
 	return nil
 }
@@ -267,6 +267,22 @@ func (dptc *DeletedProjectTaskCreate) createSpec() (*DeletedProjectTask, *sqlgra
 	if id, ok := dptc.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = &id
+	}
+	if value, ok := dptc.mutation.ProjectTaskSectionID(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: deletedprojecttask.FieldProjectTaskSectionID,
+		})
+		_node.ProjectTaskSectionID = value
+	}
+	if value, ok := dptc.mutation.ProjectTaskID(); ok {
+		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: deletedprojecttask.FieldProjectTaskID,
+		})
+		_node.ProjectTaskID = value
 	}
 	if value, ok := dptc.mutation.ProjectTaskCreatedAt(); ok {
 		_spec.Fields = append(_spec.Fields, &sqlgraph.FieldSpec{
@@ -338,26 +354,6 @@ func (dptc *DeletedProjectTaskCreate) createSpec() (*DeletedProjectTask, *sqlgra
 			edge.Target.Nodes = append(edge.Target.Nodes, k)
 		}
 		_node.TaskID = nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := dptc.mutation.ProjectTaskSectionIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   deletedprojecttask.ProjectTaskSectionTable,
-			Columns: []string{deletedprojecttask.ProjectTaskSectionColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: projecttasksection.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_node.ProjectTaskSectionID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
@@ -447,6 +443,18 @@ func (u *DeletedProjectTaskUpsert) SetProjectTaskSectionID(v ulid.ID) *DeletedPr
 // UpdateProjectTaskSectionID sets the "project_task_section_id" field to the value that was provided on create.
 func (u *DeletedProjectTaskUpsert) UpdateProjectTaskSectionID() *DeletedProjectTaskUpsert {
 	u.SetExcluded(deletedprojecttask.FieldProjectTaskSectionID)
+	return u
+}
+
+// SetProjectTaskID sets the "project_task_id" field.
+func (u *DeletedProjectTaskUpsert) SetProjectTaskID(v ulid.ID) *DeletedProjectTaskUpsert {
+	u.Set(deletedprojecttask.FieldProjectTaskID, v)
+	return u
+}
+
+// UpdateProjectTaskID sets the "project_task_id" field to the value that was provided on create.
+func (u *DeletedProjectTaskUpsert) UpdateProjectTaskID() *DeletedProjectTaskUpsert {
+	u.SetExcluded(deletedprojecttask.FieldProjectTaskID)
 	return u
 }
 
@@ -593,6 +601,20 @@ func (u *DeletedProjectTaskUpsertOne) SetProjectTaskSectionID(v ulid.ID) *Delete
 func (u *DeletedProjectTaskUpsertOne) UpdateProjectTaskSectionID() *DeletedProjectTaskUpsertOne {
 	return u.Update(func(s *DeletedProjectTaskUpsert) {
 		s.UpdateProjectTaskSectionID()
+	})
+}
+
+// SetProjectTaskID sets the "project_task_id" field.
+func (u *DeletedProjectTaskUpsertOne) SetProjectTaskID(v ulid.ID) *DeletedProjectTaskUpsertOne {
+	return u.Update(func(s *DeletedProjectTaskUpsert) {
+		s.SetProjectTaskID(v)
+	})
+}
+
+// UpdateProjectTaskID sets the "project_task_id" field to the value that was provided on create.
+func (u *DeletedProjectTaskUpsertOne) UpdateProjectTaskID() *DeletedProjectTaskUpsertOne {
+	return u.Update(func(s *DeletedProjectTaskUpsert) {
+		s.UpdateProjectTaskID()
 	})
 }
 
@@ -913,6 +935,20 @@ func (u *DeletedProjectTaskUpsertBulk) SetProjectTaskSectionID(v ulid.ID) *Delet
 func (u *DeletedProjectTaskUpsertBulk) UpdateProjectTaskSectionID() *DeletedProjectTaskUpsertBulk {
 	return u.Update(func(s *DeletedProjectTaskUpsert) {
 		s.UpdateProjectTaskSectionID()
+	})
+}
+
+// SetProjectTaskID sets the "project_task_id" field.
+func (u *DeletedProjectTaskUpsertBulk) SetProjectTaskID(v ulid.ID) *DeletedProjectTaskUpsertBulk {
+	return u.Update(func(s *DeletedProjectTaskUpsert) {
+		s.SetProjectTaskID(v)
+	})
+}
+
+// UpdateProjectTaskID sets the "project_task_id" field to the value that was provided on create.
+func (u *DeletedProjectTaskUpsertBulk) UpdateProjectTaskID() *DeletedProjectTaskUpsertBulk {
+	return u.Update(func(s *DeletedProjectTaskUpsert) {
+		s.UpdateProjectTaskID()
 	})
 }
 

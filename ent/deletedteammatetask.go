@@ -8,7 +8,6 @@ import (
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/task"
 	"project-management-demo-backend/ent/teammate"
-	"project-management-demo-backend/ent/teammatetasksection"
 	"project-management-demo-backend/ent/workspace"
 	"strings"
 	"time"
@@ -29,6 +28,8 @@ type DeletedTeammateTask struct {
 	TeammateTaskSectionID ulid.ID `json:"teammate_task_section_id,omitempty"`
 	// WorkspaceID holds the value of the "workspace_id" field.
 	WorkspaceID ulid.ID `json:"workspace_id,omitempty"`
+	// TeammateTaskID holds the value of the "teammate_task_id" field.
+	TeammateTaskID ulid.ID `json:"teammate_task_id,omitempty"`
 	// TeammateTaskCreatedAt holds the value of the "teammate_task_created_at" field.
 	TeammateTaskCreatedAt time.Time `json:"teammate_task_created_at,omitempty"`
 	// TeammateTaskUpdatedAt holds the value of the "teammate_task_updated_at" field.
@@ -48,13 +49,11 @@ type DeletedTeammateTaskEdges struct {
 	Teammate *Teammate `json:"teammate,omitempty"`
 	// Task holds the value of the task edge.
 	Task *Task `json:"task,omitempty"`
-	// TeammateTaskSection holds the value of the teammateTaskSection edge.
-	TeammateTaskSection *TeammateTaskSection `json:"teammateTaskSection,omitempty"`
 	// Workspace holds the value of the workspace edge.
 	Workspace *Workspace `json:"workspace,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [4]bool
+	loadedTypes [3]bool
 }
 
 // TeammateOrErr returns the Teammate value or an error if the edge
@@ -85,24 +84,10 @@ func (e DeletedTeammateTaskEdges) TaskOrErr() (*Task, error) {
 	return nil, &NotLoadedError{edge: "task"}
 }
 
-// TeammateTaskSectionOrErr returns the TeammateTaskSection value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e DeletedTeammateTaskEdges) TeammateTaskSectionOrErr() (*TeammateTaskSection, error) {
-	if e.loadedTypes[2] {
-		if e.TeammateTaskSection == nil {
-			// The edge teammateTaskSection was loaded in eager-loading,
-			// but was not found.
-			return nil, &NotFoundError{label: teammatetasksection.Label}
-		}
-		return e.TeammateTaskSection, nil
-	}
-	return nil, &NotLoadedError{edge: "teammateTaskSection"}
-}
-
 // WorkspaceOrErr returns the Workspace value or an error if the edge
 // was not loaded in eager-loading, or loaded but was not found.
 func (e DeletedTeammateTaskEdges) WorkspaceOrErr() (*Workspace, error) {
-	if e.loadedTypes[3] {
+	if e.loadedTypes[2] {
 		if e.Workspace == nil {
 			// The edge workspace was loaded in eager-loading,
 			// but was not found.
@@ -120,7 +105,7 @@ func (*DeletedTeammateTask) scanValues(columns []string) ([]interface{}, error) 
 		switch columns[i] {
 		case deletedteammatetask.FieldTeammateTaskCreatedAt, deletedteammatetask.FieldTeammateTaskUpdatedAt, deletedteammatetask.FieldCreatedAt, deletedteammatetask.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
-		case deletedteammatetask.FieldID, deletedteammatetask.FieldTeammateID, deletedteammatetask.FieldTaskID, deletedteammatetask.FieldTeammateTaskSectionID, deletedteammatetask.FieldWorkspaceID:
+		case deletedteammatetask.FieldID, deletedteammatetask.FieldTeammateID, deletedteammatetask.FieldTaskID, deletedteammatetask.FieldTeammateTaskSectionID, deletedteammatetask.FieldWorkspaceID, deletedteammatetask.FieldTeammateTaskID:
 			values[i] = new(ulid.ID)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type DeletedTeammateTask", columns[i])
@@ -167,6 +152,12 @@ func (dtt *DeletedTeammateTask) assignValues(columns []string, values []interfac
 			} else if value != nil {
 				dtt.WorkspaceID = *value
 			}
+		case deletedteammatetask.FieldTeammateTaskID:
+			if value, ok := values[i].(*ulid.ID); !ok {
+				return fmt.Errorf("unexpected type %T for field teammate_task_id", values[i])
+			} else if value != nil {
+				dtt.TeammateTaskID = *value
+			}
 		case deletedteammatetask.FieldTeammateTaskCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field teammate_task_created_at", values[i])
@@ -206,11 +197,6 @@ func (dtt *DeletedTeammateTask) QueryTask() *TaskQuery {
 	return (&DeletedTeammateTaskClient{config: dtt.config}).QueryTask(dtt)
 }
 
-// QueryTeammateTaskSection queries the "teammateTaskSection" edge of the DeletedTeammateTask entity.
-func (dtt *DeletedTeammateTask) QueryTeammateTaskSection() *TeammateTaskSectionQuery {
-	return (&DeletedTeammateTaskClient{config: dtt.config}).QueryTeammateTaskSection(dtt)
-}
-
 // QueryWorkspace queries the "workspace" edge of the DeletedTeammateTask entity.
 func (dtt *DeletedTeammateTask) QueryWorkspace() *WorkspaceQuery {
 	return (&DeletedTeammateTaskClient{config: dtt.config}).QueryWorkspace(dtt)
@@ -247,6 +233,8 @@ func (dtt *DeletedTeammateTask) String() string {
 	builder.WriteString(fmt.Sprintf("%v", dtt.TeammateTaskSectionID))
 	builder.WriteString(", workspace_id=")
 	builder.WriteString(fmt.Sprintf("%v", dtt.WorkspaceID))
+	builder.WriteString(", teammate_task_id=")
+	builder.WriteString(fmt.Sprintf("%v", dtt.TeammateTaskID))
 	builder.WriteString(", teammate_task_created_at=")
 	builder.WriteString(dtt.TeammateTaskCreatedAt.Format(time.ANSIC))
 	builder.WriteString(", teammate_task_updated_at=")

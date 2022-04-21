@@ -1453,22 +1453,6 @@ func (c *DeletedProjectTaskClient) QueryTask(dpt *DeletedProjectTask) *TaskQuery
 	return query
 }
 
-// QueryProjectTaskSection queries the projectTaskSection edge of a DeletedProjectTask.
-func (c *DeletedProjectTaskClient) QueryProjectTaskSection(dpt *DeletedProjectTask) *ProjectTaskSectionQuery {
-	query := &ProjectTaskSectionQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := dpt.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(deletedprojecttask.Table, deletedprojecttask.FieldID, id),
-			sqlgraph.To(projecttasksection.Table, projecttasksection.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, deletedprojecttask.ProjectTaskSectionTable, deletedprojecttask.ProjectTaskSectionColumn),
-		)
-		fromV = sqlgraph.Neighbors(dpt.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
 // Hooks returns the client hooks.
 func (c *DeletedProjectTaskClient) Hooks() []Hook {
 	return c.hooks.DeletedProjectTask
@@ -1706,22 +1690,6 @@ func (c *DeletedTeammateTaskClient) QueryTask(dtt *DeletedTeammateTask) *TaskQue
 			sqlgraph.From(deletedteammatetask.Table, deletedteammatetask.FieldID, id),
 			sqlgraph.To(task.Table, task.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, deletedteammatetask.TaskTable, deletedteammatetask.TaskColumn),
-		)
-		fromV = sqlgraph.Neighbors(dtt.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryTeammateTaskSection queries the teammateTaskSection edge of a DeletedTeammateTask.
-func (c *DeletedTeammateTaskClient) QueryTeammateTaskSection(dtt *DeletedTeammateTask) *TeammateTaskSectionQuery {
-	query := &TeammateTaskSectionQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := dtt.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(deletedteammatetask.Table, deletedteammatetask.FieldID, id),
-			sqlgraph.To(teammatetasksection.Table, teammatetasksection.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, deletedteammatetask.TeammateTaskSectionTable, deletedteammatetask.TeammateTaskSectionColumn),
 		)
 		fromV = sqlgraph.Neighbors(dtt.driver.Dialect(), step)
 		return fromV, nil
@@ -3410,22 +3378,6 @@ func (c *ProjectTaskSectionClient) QueryProjectTasks(pts *ProjectTaskSection) *P
 			sqlgraph.From(projecttasksection.Table, projecttasksection.FieldID, id),
 			sqlgraph.To(projecttask.Table, projecttask.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, projecttasksection.ProjectTasksTable, projecttasksection.ProjectTasksColumn),
-		)
-		fromV = sqlgraph.Neighbors(pts.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryDeletedProjectTasks queries the deletedProjectTasks edge of a ProjectTaskSection.
-func (c *ProjectTaskSectionClient) QueryDeletedProjectTasks(pts *ProjectTaskSection) *DeletedProjectTaskQuery {
-	query := &DeletedProjectTaskQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := pts.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(projecttasksection.Table, projecttasksection.FieldID, id),
-			sqlgraph.To(deletedprojecttask.Table, deletedprojecttask.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, projecttasksection.DeletedProjectTasksTable, projecttasksection.DeletedProjectTasksColumn),
 		)
 		fromV = sqlgraph.Neighbors(pts.driver.Dialect(), step)
 		return fromV, nil
@@ -6772,22 +6724,6 @@ func (c *TeammateTaskSectionClient) QueryTeammateTasks(tts *TeammateTaskSection)
 			sqlgraph.From(teammatetasksection.Table, teammatetasksection.FieldID, id),
 			sqlgraph.To(teammatetask.Table, teammatetask.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, teammatetasksection.TeammateTasksTable, teammatetasksection.TeammateTasksColumn),
-		)
-		fromV = sqlgraph.Neighbors(tts.driver.Dialect(), step)
-		return fromV, nil
-	}
-	return query
-}
-
-// QueryDeletedTeammateTasks queries the deletedTeammateTasks edge of a TeammateTaskSection.
-func (c *TeammateTaskSectionClient) QueryDeletedTeammateTasks(tts *TeammateTaskSection) *DeletedTeammateTaskQuery {
-	query := &DeletedTeammateTaskQuery{config: c.config}
-	query.path = func(ctx context.Context) (fromV *sql.Selector, _ error) {
-		id := tts.ID
-		step := sqlgraph.NewStep(
-			sqlgraph.From(teammatetasksection.Table, teammatetasksection.FieldID, id),
-			sqlgraph.To(deletedteammatetask.Table, deletedteammatetask.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, teammatetasksection.DeletedTeammateTasksTable, teammatetasksection.DeletedTeammateTasksColumn),
 		)
 		fromV = sqlgraph.Neighbors(tts.driver.Dialect(), step)
 		return fromV, nil

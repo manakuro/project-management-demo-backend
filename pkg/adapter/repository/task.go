@@ -3,7 +3,9 @@ package repository
 import (
 	"context"
 	"project-management-demo-backend/ent"
+	"project-management-demo-backend/ent/deletedprojecttask"
 	"project-management-demo-backend/ent/deletedtask"
+	"project-management-demo-backend/ent/deletedteammatetask"
 	"project-management-demo-backend/ent/projecttask"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/task"
@@ -196,10 +198,10 @@ func (r *taskRepository) Delete(ctx context.Context, input model.DeleteTaskInput
 	payload := &model.DeleteTaskPayload{
 		ProjectTasks: []*model.ProjectTask{},
 		TeammateTask: &model.TeammateTask{},
-		DeletedTasks: []*model.DeletedTask{},
+		DeletedTask:  &model.DeletedTask{},
 	}
 
-	deletedTask, err := client.Task.Query().Where(task.ID(input.TaskID)).Only(ctx)
+	taskRes, err := client.Task.Query().Where(task.ID(input.TaskID)).Only(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
 			return nil, model.NewNotFoundError(err, input)
@@ -207,7 +209,7 @@ func (r *taskRepository) Delete(ctx context.Context, input model.DeleteTaskInput
 		return nil, model.NewDBError(err)
 	}
 
-	deletedTeammateTask, err := client.
+	teammateTask, err := client.
 		TeammateTask.Query().
 		WithTask().
 		Where(teammatetask.TaskID(input.TaskID)).
@@ -217,36 +219,29 @@ func (r *taskRepository) Delete(ctx context.Context, input model.DeleteTaskInput
 		return nil, model.NewDBError(err)
 	}
 
-	var deletedTeammateTaskDeletedTask *model.DeletedTask
-	if deletedTeammateTask != nil {
-		err = client.TeammateTask.DeleteOneID(deletedTeammateTask.ID).Exec(ctx)
+	if teammateTask != nil {
+		err = client.TeammateTask.DeleteOneID(teammateTask.ID).Exec(ctx)
 		if err != nil {
 			return nil, model.NewDBError(err)
 		}
-		if !deletedTask.IsNew {
-			d, derr := client.DeletedTask.
-				Create().
-				SetTaskID(input.TaskID).
-				SetWorkspaceID(input.WorkspaceID).
-				SetTaskType(deletedtask.TaskTypeTeammate).
-				SetTaskJoinID(deletedTeammateTask.TeammateID).
-				SetTaskSectionID(deletedTeammateTask.TeammateTaskSectionID).
+		if !taskRes.IsNew {
+			_, derr := client.DeletedTeammateTask.Create().
+				SetTeammateTaskID(teammateTask.ID).
+				SetTaskID(teammateTask.TaskID).
+				SetTeammateID(teammateTask.TeammateID).
+				SetWorkspaceID(teammateTask.WorkspaceID).
+				SetTeammateTaskSectionID(teammateTask.TeammateTaskSectionID).
+				SetTeammateTaskCreatedAt(teammateTask.CreatedAt).
+				SetTeammateTaskUpdatedAt(teammateTask.UpdatedAt).
 				Save(ctx)
+
 			if derr != nil {
 				return nil, model.NewDBError(derr)
 			}
-			// Restore the state in order to get an entity after a successful transaction.
-			d, derr = client.DeletedTask.Query().WithTask(func(tq *ent.TaskQuery) {
-				WithTask(tq)
-			}).Where(deletedtask.ID(d.ID)).Only(ctx)
-			if derr != nil {
-				return nil, model.NewDBError(derr)
-			}
-			deletedTeammateTaskDeletedTask = d.Unwrap()
 		}
 	}
 
-	deletedProjectTasks, err := client.ProjectTask.
+	projectTasks, err := client.ProjectTask.
 		Query().
 		WithTask().
 		Where(projecttask.TaskID(input.TaskID)).
@@ -255,10 +250,9 @@ func (r *taskRepository) Delete(ctx context.Context, input model.DeleteTaskInput
 		return nil, model.NewDBError(err)
 	}
 
-	var deletedProjectTaskDeletedTasks []*model.DeletedTask
-	if len(deletedProjectTasks) > 0 {
-		deletedProjectTaskIDs := make([]model.ID, len(deletedProjectTasks))
-		for i, p := range deletedProjectTasks {
+	if len(projectTasks) > 0 {
+		deletedProjectTaskIDs := make([]model.ID, len(projectTasks))
+		for i, p := range projectTasks {
 			deletedProjectTaskIDs[i] = p.ID
 		}
 
@@ -266,50 +260,43 @@ func (r *taskRepository) Delete(ctx context.Context, input model.DeleteTaskInput
 		if err != nil {
 			return nil, model.NewDBError(err)
 		}
-		if !deletedTask.IsNew {
-			bulk := make([]*ent.DeletedTaskCreate, len(deletedProjectTasks))
-			for i, p := range deletedProjectTasks {
-				bulk[i] = client.DeletedTask.Create().
-					SetTaskID(input.TaskID).
-					SetWorkspaceID(input.WorkspaceID).
-					SetTaskType(deletedtask.TaskTypeProject).
-					SetTaskJoinID(p.ProjectID).
-					SetTaskSectionID(p.ProjectTaskSectionID)
+		if !taskRes.IsNew {
+			bulk := make([]*ent.DeletedProjectTaskCreate, len(projectTasks))
+			for i, p := range projectTasks {
+				bulk[i] = client.DeletedProjectTask.Create().
+					SetProjectTaskID(p.ID).
+					SetProjectID(p.ProjectID).
+					SetTaskID(p.TaskID).
+					SetProjectTaskSectionID(p.ProjectTaskSectionID).
+					SetProjectTaskCreatedAt(p.CreatedAt).
+					SetProjectTaskUpdatedAt(p.UpdatedAt)
 			}
-			derr := client.DeletedTask.CreateBulk(bulk...).Exec(ctx)
+			derr := client.DeletedProjectTask.CreateBulk(bulk...).Exec(ctx)
 			if derr != nil {
 				return nil, model.NewDBError(derr)
-			}
-
-			// Restore the state in order to get an entity after a successful transaction.
-			ds, derr := client.DeletedTask.Query().WithTask(func(tq *ent.TaskQuery) {
-				WithTask(tq)
-			}).Where(
-				deletedtask.TaskID(deletedTask.ID),
-				deletedtask.TaskTypeEQ(deletedtask.TaskTypeProject),
-			).All(ctx)
-
-			if derr != nil {
-				return nil, model.NewDBError(derr)
-			}
-			for _, d := range ds {
-				deletedProjectTaskDeletedTasks = append(deletedProjectTaskDeletedTasks, d.Unwrap())
 			}
 		}
 	}
 
-	if deletedTeammateTask != nil {
-		payload.TeammateTask = deletedTeammateTask
+	d, err := client.DeletedTask.Create().SetTaskID(taskRes.ID).SetWorkspaceID(input.WorkspaceID).Save(ctx)
+	if err != nil {
+		return nil, model.NewDBError(err)
 	}
-	if len(deletedProjectTasks) > 0 {
-		payload.ProjectTasks = deletedProjectTasks
+	deletedTask, err := client.DeletedTask.Query().WithTask(func(q *ent.TaskQuery) {
+		WithTask(q)
+	}).Where(deletedtask.ID(d.ID)).Only(ctx)
+	if err != nil {
+		return nil, model.NewDBError(err)
 	}
-	if deletedTeammateTaskDeletedTask != nil {
-		payload.DeletedTasks = append(payload.DeletedTasks, deletedTeammateTaskDeletedTask)
+
+	if teammateTask != nil {
+		payload.TeammateTask = teammateTask
 	}
-	if deletedProjectTaskDeletedTasks != nil {
-		payload.DeletedTasks = append(payload.DeletedTasks, deletedProjectTaskDeletedTasks...)
+	if len(projectTasks) > 0 {
+		payload.ProjectTasks = projectTasks
 	}
+
+	payload.DeletedTask = deletedTask
 
 	return payload, nil
 }
@@ -320,14 +307,14 @@ func (r *taskRepository) Undelete(ctx context.Context, input model.UndeleteTaskI
 	payload := &model.UndeleteTaskPayload{
 		TeammateTask: nil,
 		ProjectTasks: []*model.ProjectTask{},
-		DeletedTasks: []*model.DeletedTask{},
+		DeletedTask:  &model.DeletedTask{},
 	}
 
-	deletedTasks, err := client.DeletedTask.
+	deletedTask, err := client.DeletedTask.
 		Query().
 		WithTask().
 		Where(deletedtask.TaskID(input.TaskID)).
-		All(ctx)
+		Only(ctx)
 
 	if err != nil {
 		if ent.IsNotFound(err) {
@@ -337,40 +324,74 @@ func (r *taskRepository) Undelete(ctx context.Context, input model.UndeleteTaskI
 	}
 
 	var undeletedTeammateTask *model.TeammateTask
-	var undeletedProjectTasks []*model.ProjectTask
-	for _, t := range deletedTasks {
-		if t.TaskType == deletedtask.TaskTypeTeammate {
-			undeletedTeammateTask, err = client.TeammateTask.Create().
-				SetWorkspaceID(t.WorkspaceID).
-				SetTaskID(t.TaskID).
-				SetTeammateID(t.TaskJoinID).
-				SetTeammateTaskSectionID(t.TaskSectionID).
-				Save(ctx)
-			if err != nil {
-				return nil, model.NewDBError(err)
-			}
+	deletedTeammateTask, err := client.DeletedTeammateTask.
+		Query().
+		Where(deletedteammatetask.TaskID(input.TaskID)).
+		Only(ctx)
+	if err != nil && !ent.IsNotFound(err) {
+		return nil, model.NewDBError(err)
+	}
+	if deletedTeammateTask != nil {
+		t, terr := client.TeammateTask.Create().
+			SetID(deletedTeammateTask.TeammateTaskID).
+			SetWorkspaceID(deletedTeammateTask.WorkspaceID).
+			SetTaskID(deletedTeammateTask.TaskID).
+			SetTeammateID(deletedTeammateTask.TeammateID).
+			SetTeammateTaskSectionID(deletedTeammateTask.TeammateTaskSectionID).
+			SetCreatedAt(deletedTeammateTask.TeammateTaskCreatedAt).
+			SetUpdatedAt(deletedTeammateTask.TeammateTaskUpdatedAt).
+			Save(ctx)
+		if terr != nil {
+			return nil, model.NewDBError(terr)
 		}
-		if t.TaskType == deletedtask.TaskTypeProject {
-			p, perr := client.ProjectTask.Create().
-				SetProjectID(t.TaskJoinID).
-				SetTaskID(t.TaskID).
-				SetProjectTaskSectionID(t.TaskSectionID).
-				Save(ctx)
-			if perr != nil {
-				return nil, model.NewDBError(perr)
-			}
-			undeletedProjectTasks = append(undeletedProjectTasks, p)
+
+		terr = client.DeletedTeammateTask.DeleteOneID(deletedTeammateTask.ID).Exec(ctx)
+		if terr != nil {
+			return nil, model.NewDBError(terr)
 		}
+
+		undeletedTeammateTask = t
 	}
 
-	deletedIds := make([]model.ID, len(deletedTasks))
-	for i, t := range deletedTasks {
-		deletedIds[i] = t.ID
+	var undeletedProjectTasks []*model.ProjectTask
+	deletedProjectTasks, err := client.DeletedProjectTask.
+		Query().
+		Where(deletedprojecttask.TaskID(input.TaskID)).
+		All(ctx)
+	if err != nil && !ent.IsNotFound(err) {
+		return nil, model.NewDBError(err)
+	}
+	if len(deletedProjectTasks) > 0 {
+		bulk := make([]*ent.ProjectTaskCreate, len(deletedProjectTasks))
+		for i, d := range deletedProjectTasks {
+			bulk[i] = client.ProjectTask.Create().
+				SetID(d.ProjectTaskID).
+				SetProjectID(d.ProjectID).
+				SetTaskID(d.TaskID).
+				SetProjectTaskSectionID(d.ProjectTaskSectionID).
+				SetCreatedAt(d.ProjectTaskCreatedAt).
+				SetUpdatedAt(d.ProjectTaskUpdatedAt)
+		}
+		ps, derr := client.ProjectTask.CreateBulk(bulk...).Save(ctx)
+		if derr != nil {
+			return nil, model.NewDBError(derr)
+		}
+
+		ids := make([]model.ID, len(deletedProjectTasks))
+		for i, d := range deletedProjectTasks {
+			ids[i] = d.ID
+		}
+		_, derr = client.DeletedProjectTask.Delete().Where(deletedprojecttask.IDIn(ids...)).Exec(ctx)
+		if derr != nil {
+			return nil, model.NewDBError(derr)
+		}
+
+		undeletedProjectTasks = append(undeletedProjectTasks, ps...)
 	}
 
 	_, err = client.DeletedTask.
 		Delete().
-		Where(deletedtask.IDIn(deletedIds...)).
+		Where(deletedtask.TaskID(input.TaskID)).
 		Exec(ctx)
 
 	if err != nil {
@@ -415,7 +436,7 @@ func (r *taskRepository) Undelete(ctx context.Context, input model.UndeleteTaskI
 		}
 	}
 
-	payload.DeletedTasks = deletedTasks
+	payload.DeletedTask = deletedTask
 
 	return payload, nil
 }
@@ -429,78 +450,62 @@ func (r *taskRepository) DeleteAll(ctx context.Context, input model.DeleteAllTas
 		DeletedTasks:  []*model.DeletedTask{},
 	}
 
-	deletedTasks, err := client.Task.Query().Where(task.IDIn(input.TaskIDs...)).All(ctx)
+	tasks, err := client.Task.Query().Where(task.IDIn(input.TaskIDs...)).All(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
 			return nil, model.NewNotFoundError(err, input)
 		}
 	}
-	deletedTaskIDs := make([]ulid.ID, len(deletedTasks))
-	for i, t := range deletedTasks {
-		deletedTaskIDs[i] = t.ID
+	taskIDs := make([]ulid.ID, len(tasks))
+	for i, t := range tasks {
+		taskIDs[i] = t.ID
 	}
 
-	deletedTeammateTasks, err := client.
+	teammateTasks, err := client.
 		TeammateTask.Query().
 		WithTask().
-		Where(teammatetask.TaskIDIn(deletedTaskIDs...)).
+		Where(teammatetask.TaskIDIn(taskIDs...)).
 		All(ctx)
 	if err != nil && !ent.IsNotFound(err) {
 		return nil, model.NewDBError(err)
 	}
 
-	var deletedTeammateTaskDeletedTask []*model.DeletedTask
-	if deletedTeammateTasks != nil {
-		deletedTeammateTaskDeletedTaskIDs := make([]ulid.ID, len(deletedTeammateTasks))
-		for i, t := range deletedTeammateTasks {
-			deletedTeammateTaskDeletedTaskIDs[i] = t.ID
+	if len(teammateTasks) > 0 {
+		teammateTaskDeletedTaskIDs := make([]ulid.ID, len(teammateTasks))
+		for i, t := range teammateTasks {
+			teammateTaskDeletedTaskIDs[i] = t.ID
 		}
-		_, err = client.TeammateTask.Delete().Where(teammatetask.IDIn(deletedTeammateTaskDeletedTaskIDs...)).Exec(ctx)
+		_, err = client.TeammateTask.Delete().Where(teammatetask.IDIn(teammateTaskDeletedTaskIDs...)).Exec(ctx)
 		if err != nil {
 			return nil, model.NewDBError(err)
 		}
 
-		bulk := make([]*ent.DeletedTaskCreate, len(deletedTeammateTasks))
-		for i, t := range deletedTeammateTasks {
-			bulk[i] = client.DeletedTask.Create().
+		bulk := make([]*ent.DeletedTeammateTaskCreate, len(teammateTasks))
+		for i, t := range teammateTasks {
+			bulk[i] = client.DeletedTeammateTask.Create().
+				SetTeammateTaskID(t.ID).
 				SetTaskID(t.TaskID).
+				SetTeammateID(t.TeammateID).
 				SetWorkspaceID(t.WorkspaceID).
-				SetTaskType(deletedtask.TaskTypeTeammate).
-				SetTaskJoinID(t.TeammateID).
-				SetTaskSectionID(t.TeammateTaskSectionID)
+				SetTeammateTaskSectionID(t.TeammateTaskSectionID).
+				SetTeammateTaskCreatedAt(t.CreatedAt).
+				SetTeammateTaskUpdatedAt(t.UpdatedAt)
 		}
-		derr := client.DeletedTask.CreateBulk(bulk...).Exec(ctx)
+		derr := client.DeletedTeammateTask.CreateBulk(bulk...).Exec(ctx)
 		if derr != nil {
 			return nil, model.NewDBError(derr)
-		}
-
-		ds, derr := client.DeletedTask.Query().
-			WithTask(func(tq *ent.TaskQuery) {
-				WithTask(tq)
-			}).
-			Where(
-				deletedtask.TaskIDIn(deletedTaskIDs...),
-				deletedtask.TaskTypeEQ(deletedtask.TaskTypeTeammate),
-			).All(ctx)
-		if derr != nil {
-			return nil, model.NewDBError(err)
-		}
-
-		for _, d := range ds {
-			deletedTeammateTaskDeletedTask = append(deletedTeammateTaskDeletedTask, d.Unwrap())
 		}
 	}
 
 	deletedProjectTasks, err := client.
 		ProjectTask.Query().
 		WithTask().
-		Where(projecttask.TaskIDIn(deletedTaskIDs...)).
+		Where(projecttask.TaskIDIn(taskIDs...)).
 		All(ctx)
 	if err != nil && !ent.IsNotFound(err) {
 		return nil, model.NewDBError(err)
 	}
 
-	var deletedProjectTaskDeletedTask []*model.DeletedTask
 	if deletedProjectTasks != nil {
 		deletedProjectTaskDeletedTaskIDs := make([]ulid.ID, len(deletedProjectTasks))
 		for i, t := range deletedProjectTasks {
@@ -511,50 +516,40 @@ func (r *taskRepository) DeleteAll(ctx context.Context, input model.DeleteAllTas
 			return nil, model.NewDBError(err)
 		}
 
-		bulk := make([]*ent.DeletedTaskCreate, len(deletedProjectTasks))
-		for i, t := range deletedProjectTasks {
-			bulk[i] = client.DeletedTask.Create().
-				SetTaskID(t.TaskID).
-				SetWorkspaceID(input.WorkspaceID).
-				SetTaskType(deletedtask.TaskTypeProject).
-				SetTaskJoinID(t.ProjectID).
-				SetTaskSectionID(t.ProjectTaskSectionID)
+		bulk := make([]*ent.DeletedProjectTaskCreate, len(deletedProjectTasks))
+		for i, d := range deletedProjectTasks {
+			bulk[i] = client.DeletedProjectTask.Create().
+				SetProjectTaskID(d.ID).
+				SetProjectID(d.ProjectID).
+				SetTaskID(d.TaskID).
+				SetProjectTaskSectionID(d.ProjectTaskSectionID).
+				SetProjectTaskCreatedAt(d.CreatedAt).
+				SetProjectTaskUpdatedAt(d.UpdatedAt)
 		}
-		derr := client.DeletedTask.CreateBulk(bulk...).Exec(ctx)
+		derr := client.DeletedProjectTask.CreateBulk(bulk...).Exec(ctx)
 		if derr != nil {
 			return nil, model.NewDBError(derr)
 		}
-
-		ds, derr := client.DeletedTask.Query().
-			WithTask(func(tq *ent.TaskQuery) {
-				WithTask(tq)
-			}).
-			Where(
-				deletedtask.IDIn(deletedTaskIDs...),
-				deletedtask.TaskTypeEQ(deletedtask.TaskTypeProject),
-			).
-			All(ctx)
-		if derr != nil {
-			return nil, model.NewDBError(err)
-		}
-
-		for _, d := range ds {
-			deletedProjectTaskDeletedTask = append(deletedProjectTaskDeletedTask, d.Unwrap())
-		}
 	}
 
-	if deletedTeammateTasks != nil {
-		payload.TeammateTasks = deletedTeammateTasks
+	bulk := make([]*ent.DeletedTaskCreate, len(taskIDs))
+	for i, id := range taskIDs {
+		bulk[i] = client.DeletedTask.Create().
+			SetTaskID(id).
+			SetWorkspaceID(input.WorkspaceID)
+	}
+	createdDeletedTasks, err := client.DeletedTask.CreateBulk(bulk...).Save(ctx)
+	if err != nil {
+		return nil, model.NewDBError(err)
+	}
+
+	if teammateTasks != nil {
+		payload.TeammateTasks = teammateTasks
 	}
 	if deletedProjectTasks != nil {
 		payload.ProjectTasks = deletedProjectTasks
 	}
-	if deletedTeammateTaskDeletedTask != nil {
-		payload.DeletedTasks = append(payload.DeletedTasks, deletedTeammateTaskDeletedTask...)
-	}
-	if deletedProjectTaskDeletedTask != nil {
-		payload.DeletedTasks = append(payload.DeletedTasks, deletedProjectTaskDeletedTask...)
-	}
+	payload.DeletedTasks = createdDeletedTasks
 
 	return payload, nil
 }
@@ -568,96 +563,103 @@ func (r *taskRepository) UndeleteAll(ctx context.Context, input model.UndeleteAl
 		DeletedTasks:  []*model.DeletedTask{},
 	}
 
-	taskIds := input.TaskIDs
-
-	deletedTasks, err := client.DeletedTask.
-		Query().
-		Where(deletedtask.TaskIDIn(taskIds...)).
-		All(ctx)
-
-	if err != nil {
-		if ent.IsNotFound(err) {
-			return nil, model.NewNotFoundError(err, taskIds)
-		}
-		return nil, model.NewDBError(err)
-	}
-
-	var teammateTaskCreates []*ent.TeammateTaskCreate
-	var projectTaskCreates []*ent.ProjectTaskCreate
-	for _, t := range deletedTasks {
-		if t.TaskType == deletedtask.TaskTypeTeammate {
-			c := client.TeammateTask.Create().
-				SetWorkspaceID(t.WorkspaceID).
-				SetTaskID(t.TaskID).
-				SetTeammateID(t.TaskJoinID)
-
-			if input.TeammateTaskSectionID != nil {
-				c.SetTeammateTaskSectionID(*input.TeammateTaskSectionID)
-			} else {
-				c.SetTeammateTaskSectionID(t.TaskSectionID)
-			}
-
-			teammateTaskCreates = append(teammateTaskCreates, c)
-		}
-		if t.TaskType == deletedtask.TaskTypeProject {
-			c := client.ProjectTask.Create().
-				SetProjectID(t.TaskJoinID).
-				SetTaskID(t.TaskID)
-			if input.ProjectTaskSectionID != nil {
-				c.SetProjectTaskSectionID(*input.ProjectTaskSectionID)
-			} else {
-				c.SetProjectTaskSectionID(t.TaskSectionID)
-			}
-
-			projectTaskCreates = append(projectTaskCreates, c)
-		}
-	}
+	taskIDs := input.TaskIDs
 
 	var createdTeammateTasks []*model.TeammateTask
-	if teammateTaskCreates != nil {
-		ts, terr := client.TeammateTask.CreateBulk(teammateTaskCreates...).Save(ctx)
-		if terr != nil {
-			return nil, model.NewDBError(terr)
-		}
+	deletedTeammateTasks, err := client.DeletedTeammateTask.
+		Query().
+		Where(deletedteammatetask.TaskIDIn(taskIDs...)).
+		All(ctx)
+	if err != nil && !ent.IsNotFound(err) {
+		return nil, model.NewDBError(err)
+	}
+	if len(deletedTeammateTasks) > 0 {
+		bulk := make([]*ent.TeammateTaskCreate, len(deletedTeammateTasks))
+		for i, d := range deletedTeammateTasks {
+			bulk[i] = client.TeammateTask.Create().
+				SetID(d.TeammateTaskID).
+				SetTaskID(d.TaskID).
+				SetTeammateID(d.TeammateID).
+				SetWorkspaceID(d.WorkspaceID).
+				SetCreatedAt(d.TeammateTaskCreatedAt).
+				SetUpdatedAt(d.TeammateTaskUpdatedAt)
 
-		if terr != nil {
-			if ent.IsNotFound(terr) {
-				return nil, model.NewNotFoundError(terr, map[string]interface{}{
-					"TaskIDs": taskIds,
-				})
+			if input.TeammateTaskSectionID != nil {
+				bulk[i].SetTeammateTaskSectionID(*input.TeammateTaskSectionID)
+			} else {
+				bulk[i].SetTeammateTaskSectionID(d.TeammateTaskSectionID)
 			}
+		}
+		ts, terr := client.TeammateTask.CreateBulk(bulk...).Save(ctx)
+		if terr != nil {
 			return nil, model.NewDBError(terr)
 		}
-
 		for _, t := range ts {
 			createdTeammateTasks = append(createdTeammateTasks, t.Unwrap())
+		}
+
+		ids := make([]model.ID, len(deletedTeammateTasks))
+		for i, d := range deletedTeammateTasks {
+			ids[i] = d.ID
+		}
+		_, terr = client.DeletedTeammateTask.Delete().Where(deletedteammatetask.IDIn(ids...)).Exec(ctx)
+		if terr != nil {
+			return nil, model.NewDBError(terr)
 		}
 	}
 
 	var createdProjectTasks []*model.ProjectTask
-	if projectTaskCreates != nil {
-		perr := client.ProjectTask.CreateBulk(projectTaskCreates...).Exec(ctx)
+	deletedProjectTasks, err := client.DeletedProjectTask.
+		Query().
+		Where(deletedprojecttask.TaskIDIn(taskIDs...)).
+		All(ctx)
+	if err != nil && !ent.IsNotFound(err) {
+		return nil, model.NewDBError(err)
+	}
+	if len(deletedProjectTasks) > 0 {
+		bulk := make([]*ent.ProjectTaskCreate, len(deletedProjectTasks))
+		for i, d := range deletedProjectTasks {
+			bulk[i] = client.ProjectTask.Create().
+				SetID(d.ProjectTaskID).
+				SetTaskID(d.TaskID).
+				SetProjectID(d.ProjectID).
+				SetCreatedAt(d.ProjectTaskCreatedAt).
+				SetUpdatedAt(d.ProjectTaskUpdatedAt)
+
+			if input.ProjectTaskSectionID != nil {
+				bulk[i].SetProjectTaskSectionID(*input.ProjectTaskSectionID)
+			} else {
+				bulk[i].SetProjectTaskSectionID(d.ProjectTaskSectionID)
+			}
+		}
+		ps, perr := client.ProjectTask.CreateBulk(bulk...).Save(ctx)
 		if perr != nil {
 			return nil, model.NewDBError(perr)
 		}
-		ts, terr := client.ProjectTask.
-			Query().
-			WithTask(func(tq *ent.TaskQuery) {
-				WithTask(tq)
-			}).
-			Where(projecttask.TaskIDIn(taskIds...)).
-			All(ctx)
-		if terr != nil {
-			if ent.IsNotFound(terr) {
-				return nil, model.NewNotFoundError(terr, map[string]interface{}{
-					"TaskIDs": taskIds,
-				})
-			}
-			return nil, model.NewDBError(terr)
-		}
-		for _, t := range ts {
+		for _, t := range ps {
 			createdProjectTasks = append(createdProjectTasks, t.Unwrap())
 		}
+
+		ids := make([]model.ID, len(deletedProjectTasks))
+		for i, d := range deletedProjectTasks {
+			ids[i] = d.ID
+		}
+		_, perr = client.DeletedProjectTask.Delete().Where(deletedprojecttask.IDIn(ids...)).Exec(ctx)
+		if perr != nil {
+			return nil, model.NewDBError(perr)
+		}
+	}
+
+	deletedTasks, err := client.DeletedTask.
+		Query().
+		Where(deletedtask.TaskIDIn(taskIDs...)).
+		All(ctx)
+
+	if err != nil {
+		if ent.IsNotFound(err) {
+			return nil, model.NewNotFoundError(err, taskIDs)
+		}
+		return nil, model.NewDBError(err)
 	}
 
 	deletedTaskIds := make([]model.ID, len(deletedTasks))

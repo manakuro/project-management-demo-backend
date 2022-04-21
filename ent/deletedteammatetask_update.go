@@ -11,7 +11,6 @@ import (
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/task"
 	"project-management-demo-backend/ent/teammate"
-	"project-management-demo-backend/ent/teammatetasksection"
 	"project-management-demo-backend/ent/workspace"
 	"time"
 
@@ -57,6 +56,12 @@ func (dttu *DeletedTeammateTaskUpdate) SetWorkspaceID(u ulid.ID) *DeletedTeammat
 	return dttu
 }
 
+// SetTeammateTaskID sets the "teammate_task_id" field.
+func (dttu *DeletedTeammateTaskUpdate) SetTeammateTaskID(u ulid.ID) *DeletedTeammateTaskUpdate {
+	dttu.mutation.SetTeammateTaskID(u)
+	return dttu
+}
+
 // SetTeammateTaskCreatedAt sets the "teammate_task_created_at" field.
 func (dttu *DeletedTeammateTaskUpdate) SetTeammateTaskCreatedAt(t time.Time) *DeletedTeammateTaskUpdate {
 	dttu.mutation.SetTeammateTaskCreatedAt(t)
@@ -79,11 +84,6 @@ func (dttu *DeletedTeammateTaskUpdate) SetTask(t *Task) *DeletedTeammateTaskUpda
 	return dttu.SetTaskID(t.ID)
 }
 
-// SetTeammateTaskSection sets the "teammateTaskSection" edge to the TeammateTaskSection entity.
-func (dttu *DeletedTeammateTaskUpdate) SetTeammateTaskSection(t *TeammateTaskSection) *DeletedTeammateTaskUpdate {
-	return dttu.SetTeammateTaskSectionID(t.ID)
-}
-
 // SetWorkspace sets the "workspace" edge to the Workspace entity.
 func (dttu *DeletedTeammateTaskUpdate) SetWorkspace(w *Workspace) *DeletedTeammateTaskUpdate {
 	return dttu.SetWorkspaceID(w.ID)
@@ -103,12 +103,6 @@ func (dttu *DeletedTeammateTaskUpdate) ClearTeammate() *DeletedTeammateTaskUpdat
 // ClearTask clears the "task" edge to the Task entity.
 func (dttu *DeletedTeammateTaskUpdate) ClearTask() *DeletedTeammateTaskUpdate {
 	dttu.mutation.ClearTask()
-	return dttu
-}
-
-// ClearTeammateTaskSection clears the "teammateTaskSection" edge to the TeammateTaskSection entity.
-func (dttu *DeletedTeammateTaskUpdate) ClearTeammateTaskSection() *DeletedTeammateTaskUpdate {
-	dttu.mutation.ClearTeammateTaskSection()
 	return dttu
 }
 
@@ -186,9 +180,6 @@ func (dttu *DeletedTeammateTaskUpdate) check() error {
 	if _, ok := dttu.mutation.TaskID(); dttu.mutation.TaskCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "DeletedTeammateTask.task"`)
 	}
-	if _, ok := dttu.mutation.TeammateTaskSectionID(); dttu.mutation.TeammateTaskSectionCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "DeletedTeammateTask.teammateTaskSection"`)
-	}
 	if _, ok := dttu.mutation.WorkspaceID(); dttu.mutation.WorkspaceCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "DeletedTeammateTask.workspace"`)
 	}
@@ -212,6 +203,20 @@ func (dttu *DeletedTeammateTaskUpdate) sqlSave(ctx context.Context) (n int, err 
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := dttu.mutation.TeammateTaskSectionID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: deletedteammatetask.FieldTeammateTaskSectionID,
+		})
+	}
+	if value, ok := dttu.mutation.TeammateTaskID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: deletedteammatetask.FieldTeammateTaskID,
+		})
 	}
 	if value, ok := dttu.mutation.TeammateTaskCreatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
@@ -289,41 +294,6 @@ func (dttu *DeletedTeammateTaskUpdate) sqlSave(ctx context.Context) (n int, err 
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: task.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if dttu.mutation.TeammateTaskSectionCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   deletedteammatetask.TeammateTaskSectionTable,
-			Columns: []string{deletedteammatetask.TeammateTaskSectionColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: teammatetasksection.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := dttu.mutation.TeammateTaskSectionIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   deletedteammatetask.TeammateTaskSectionTable,
-			Columns: []string{deletedteammatetask.TeammateTaskSectionColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: teammatetasksection.FieldID,
 				},
 			},
 		}
@@ -410,6 +380,12 @@ func (dttuo *DeletedTeammateTaskUpdateOne) SetWorkspaceID(u ulid.ID) *DeletedTea
 	return dttuo
 }
 
+// SetTeammateTaskID sets the "teammate_task_id" field.
+func (dttuo *DeletedTeammateTaskUpdateOne) SetTeammateTaskID(u ulid.ID) *DeletedTeammateTaskUpdateOne {
+	dttuo.mutation.SetTeammateTaskID(u)
+	return dttuo
+}
+
 // SetTeammateTaskCreatedAt sets the "teammate_task_created_at" field.
 func (dttuo *DeletedTeammateTaskUpdateOne) SetTeammateTaskCreatedAt(t time.Time) *DeletedTeammateTaskUpdateOne {
 	dttuo.mutation.SetTeammateTaskCreatedAt(t)
@@ -432,11 +408,6 @@ func (dttuo *DeletedTeammateTaskUpdateOne) SetTask(t *Task) *DeletedTeammateTask
 	return dttuo.SetTaskID(t.ID)
 }
 
-// SetTeammateTaskSection sets the "teammateTaskSection" edge to the TeammateTaskSection entity.
-func (dttuo *DeletedTeammateTaskUpdateOne) SetTeammateTaskSection(t *TeammateTaskSection) *DeletedTeammateTaskUpdateOne {
-	return dttuo.SetTeammateTaskSectionID(t.ID)
-}
-
 // SetWorkspace sets the "workspace" edge to the Workspace entity.
 func (dttuo *DeletedTeammateTaskUpdateOne) SetWorkspace(w *Workspace) *DeletedTeammateTaskUpdateOne {
 	return dttuo.SetWorkspaceID(w.ID)
@@ -456,12 +427,6 @@ func (dttuo *DeletedTeammateTaskUpdateOne) ClearTeammate() *DeletedTeammateTaskU
 // ClearTask clears the "task" edge to the Task entity.
 func (dttuo *DeletedTeammateTaskUpdateOne) ClearTask() *DeletedTeammateTaskUpdateOne {
 	dttuo.mutation.ClearTask()
-	return dttuo
-}
-
-// ClearTeammateTaskSection clears the "teammateTaskSection" edge to the TeammateTaskSection entity.
-func (dttuo *DeletedTeammateTaskUpdateOne) ClearTeammateTaskSection() *DeletedTeammateTaskUpdateOne {
-	dttuo.mutation.ClearTeammateTaskSection()
 	return dttuo
 }
 
@@ -546,9 +511,6 @@ func (dttuo *DeletedTeammateTaskUpdateOne) check() error {
 	if _, ok := dttuo.mutation.TaskID(); dttuo.mutation.TaskCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "DeletedTeammateTask.task"`)
 	}
-	if _, ok := dttuo.mutation.TeammateTaskSectionID(); dttuo.mutation.TeammateTaskSectionCleared() && !ok {
-		return errors.New(`ent: clearing a required unique edge "DeletedTeammateTask.teammateTaskSection"`)
-	}
 	if _, ok := dttuo.mutation.WorkspaceID(); dttuo.mutation.WorkspaceCleared() && !ok {
 		return errors.New(`ent: clearing a required unique edge "DeletedTeammateTask.workspace"`)
 	}
@@ -589,6 +551,20 @@ func (dttuo *DeletedTeammateTaskUpdateOne) sqlSave(ctx context.Context) (_node *
 				ps[i](selector)
 			}
 		}
+	}
+	if value, ok := dttuo.mutation.TeammateTaskSectionID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: deletedteammatetask.FieldTeammateTaskSectionID,
+		})
+	}
+	if value, ok := dttuo.mutation.TeammateTaskID(); ok {
+		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
+			Type:   field.TypeString,
+			Value:  value,
+			Column: deletedteammatetask.FieldTeammateTaskID,
+		})
 	}
 	if value, ok := dttuo.mutation.TeammateTaskCreatedAt(); ok {
 		_spec.Fields.Set = append(_spec.Fields.Set, &sqlgraph.FieldSpec{
@@ -666,41 +642,6 @@ func (dttuo *DeletedTeammateTaskUpdateOne) sqlSave(ctx context.Context) (_node *
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: task.FieldID,
-				},
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if dttuo.mutation.TeammateTaskSectionCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   deletedteammatetask.TeammateTaskSectionTable,
-			Columns: []string{deletedteammatetask.TeammateTaskSectionColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: teammatetasksection.FieldID,
-				},
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := dttuo.mutation.TeammateTaskSectionIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   deletedteammatetask.TeammateTaskSectionTable,
-			Columns: []string{deletedteammatetask.TeammateTaskSectionColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: &sqlgraph.FieldSpec{
-					Type:   field.TypeString,
-					Column: teammatetasksection.FieldID,
 				},
 			},
 		}

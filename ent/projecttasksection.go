@@ -37,11 +37,9 @@ type ProjectTaskSectionEdges struct {
 	Project *Project `json:"project,omitempty"`
 	// ProjectTasks holds the value of the projectTasks edge.
 	ProjectTasks []*ProjectTask `json:"projectTasks,omitempty"`
-	// DeletedProjectTasks holds the value of the deletedProjectTasks edge.
-	DeletedProjectTasks []*DeletedProjectTask `json:"deletedProjectTasks,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [3]bool
+	loadedTypes [2]bool
 }
 
 // ProjectOrErr returns the Project value or an error if the edge
@@ -65,15 +63,6 @@ func (e ProjectTaskSectionEdges) ProjectTasksOrErr() ([]*ProjectTask, error) {
 		return e.ProjectTasks, nil
 	}
 	return nil, &NotLoadedError{edge: "projectTasks"}
-}
-
-// DeletedProjectTasksOrErr returns the DeletedProjectTasks value or an error if the edge
-// was not loaded in eager-loading.
-func (e ProjectTaskSectionEdges) DeletedProjectTasksOrErr() ([]*DeletedProjectTask, error) {
-	if e.loadedTypes[2] {
-		return e.DeletedProjectTasks, nil
-	}
-	return nil, &NotLoadedError{edge: "deletedProjectTasks"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -145,11 +134,6 @@ func (pts *ProjectTaskSection) QueryProject() *ProjectQuery {
 // QueryProjectTasks queries the "projectTasks" edge of the ProjectTaskSection entity.
 func (pts *ProjectTaskSection) QueryProjectTasks() *ProjectTaskQuery {
 	return (&ProjectTaskSectionClient{config: pts.config}).QueryProjectTasks(pts)
-}
-
-// QueryDeletedProjectTasks queries the "deletedProjectTasks" edge of the ProjectTaskSection entity.
-func (pts *ProjectTaskSection) QueryDeletedProjectTasks() *DeletedProjectTaskQuery {
-	return (&ProjectTaskSectionClient{config: pts.config}).QueryDeletedProjectTasks(pts)
 }
 
 // Update returns a builder for updating this ProjectTaskSection.
