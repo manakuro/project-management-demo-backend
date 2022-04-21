@@ -31,28 +31,11 @@ type DeletedTaskMixin struct {
 
 // Fields of the DeletedTask.
 func (DeletedTaskMixin) Fields() []ent.Field {
-	// TODO: DeletedTask can be split into DeletedTeammateTask and DeletedProjectTask.
 	return []ent.Field{
 		field.String("task_id").
 			GoType(ulid.ID("")),
 		field.String("workspace_id").
 			GoType(ulid.ID("")),
-		field.String("task_section_id").
-			GoType(ulid.ID("")).
-			Annotations(
-				annotation.WhereInput{Type: "ID"},
-			),
-		field.String("task_join_id").
-			GoType(ulid.ID("")).
-			Annotations(
-				annotation.WhereInput{Type: "ID"},
-			).
-			Comment("teammate_tasks.id | project_tasks.id"),
-		field.Enum("task_type").
-			NamedValues(
-				"Teammate", "TEAMMATE",
-				"Project", "PROJECT",
-			),
 	}
 }
 

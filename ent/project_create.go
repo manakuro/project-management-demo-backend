@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"project-management-demo-backend/ent/archivedworkspaceactivity"
+	"project-management-demo-backend/ent/deletedprojecttask"
 	"project-management-demo-backend/ent/favoriteproject"
 	"project-management-demo-backend/ent/project"
 	"project-management-demo-backend/ent/projectbasecolor"
@@ -306,6 +307,21 @@ func (pc *ProjectCreate) AddArchivedWorkspaceActivities(a ...*ArchivedWorkspaceA
 		ids[i] = a[i].ID
 	}
 	return pc.AddArchivedWorkspaceActivityIDs(ids...)
+}
+
+// AddDeletedProjectTaskIDs adds the "deletedProjectTasks" edge to the DeletedProjectTask entity by IDs.
+func (pc *ProjectCreate) AddDeletedProjectTaskIDs(ids ...ulid.ID) *ProjectCreate {
+	pc.mutation.AddDeletedProjectTaskIDs(ids...)
+	return pc
+}
+
+// AddDeletedProjectTasks adds the "deletedProjectTasks" edges to the DeletedProjectTask entity.
+func (pc *ProjectCreate) AddDeletedProjectTasks(d ...*DeletedProjectTask) *ProjectCreate {
+	ids := make([]ulid.ID, len(d))
+	for i := range d {
+		ids[i] = d[i].ID
+	}
+	return pc.AddDeletedProjectTaskIDs(ids...)
 }
 
 // Mutation returns the ProjectMutation object of the builder.
@@ -798,6 +814,25 @@ func (pc *ProjectCreate) createSpec() (*Project, *sqlgraph.CreateSpec) {
 				IDSpec: &sqlgraph.FieldSpec{
 					Type:   field.TypeString,
 					Column: archivedworkspaceactivity.FieldID,
+				},
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := pc.mutation.DeletedProjectTasksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   project.DeletedProjectTasksTable,
+			Columns: []string{project.DeletedProjectTasksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: &sqlgraph.FieldSpec{
+					Type:   field.TypeString,
+					Column: deletedprojecttask.FieldID,
 				},
 			},
 		}

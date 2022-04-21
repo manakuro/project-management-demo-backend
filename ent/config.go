@@ -30,7 +30,9 @@ type hooks struct {
 	ArchivedWorkspaceActivity     []ent.Hook
 	ArchivedWorkspaceActivityTask []ent.Hook
 	Color                         []ent.Hook
+	DeletedProjectTask            []ent.Hook
 	DeletedTask                   []ent.Hook
+	DeletedTeammateTask           []ent.Hook
 	FavoriteProject               []ent.Hook
 	FavoriteWorkspace             []ent.Hook
 	FileType                      []ent.Hook

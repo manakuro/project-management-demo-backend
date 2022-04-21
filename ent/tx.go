@@ -24,8 +24,12 @@ type Tx struct {
 	ArchivedWorkspaceActivityTask *ArchivedWorkspaceActivityTaskClient
 	// Color is the client for interacting with the Color builders.
 	Color *ColorClient
+	// DeletedProjectTask is the client for interacting with the DeletedProjectTask builders.
+	DeletedProjectTask *DeletedProjectTaskClient
 	// DeletedTask is the client for interacting with the DeletedTask builders.
 	DeletedTask *DeletedTaskClient
+	// DeletedTeammateTask is the client for interacting with the DeletedTeammateTask builders.
+	DeletedTeammateTask *DeletedTeammateTaskClient
 	// FavoriteProject is the client for interacting with the FavoriteProject builders.
 	FavoriteProject *FavoriteProjectClient
 	// FavoriteWorkspace is the client for interacting with the FavoriteWorkspace builders.
@@ -247,7 +251,9 @@ func (tx *Tx) init() {
 	tx.ArchivedWorkspaceActivity = NewArchivedWorkspaceActivityClient(tx.config)
 	tx.ArchivedWorkspaceActivityTask = NewArchivedWorkspaceActivityTaskClient(tx.config)
 	tx.Color = NewColorClient(tx.config)
+	tx.DeletedProjectTask = NewDeletedProjectTaskClient(tx.config)
 	tx.DeletedTask = NewDeletedTaskClient(tx.config)
+	tx.DeletedTeammateTask = NewDeletedTeammateTaskClient(tx.config)
 	tx.FavoriteProject = NewFavoriteProjectClient(tx.config)
 	tx.FavoriteWorkspace = NewFavoriteWorkspaceClient(tx.config)
 	tx.FileType = NewFileTypeClient(tx.config)

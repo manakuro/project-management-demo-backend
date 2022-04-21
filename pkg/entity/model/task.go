@@ -30,7 +30,7 @@ type DeleteTaskInput struct {
 type DeleteTaskPayload struct {
 	TeammateTask *TeammateTask
 	ProjectTasks []*ProjectTask
-	DeletedTasks []*DeletedTask
+	DeletedTask  *DeletedTask
 }
 
 // UndeleteTaskInput represents a mutation input.
@@ -44,7 +44,7 @@ type UndeleteTaskInput struct {
 type UndeleteTaskPayload struct {
 	TeammateTask *TeammateTask
 	ProjectTasks []*ProjectTask
-	DeletedTasks []*DeletedTask
+	DeletedTask  *DeletedTask
 }
 
 // DeleteAllTaskInput represents a mutation input.

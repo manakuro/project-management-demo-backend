@@ -62,6 +62,8 @@ const (
 	EdgeArchivedTaskActivities = "archivedTaskActivities"
 	// EdgeArchivedWorkspaceActivities holds the string denoting the archivedworkspaceactivities edge name in mutations.
 	EdgeArchivedWorkspaceActivities = "archivedWorkspaceActivities"
+	// EdgeDeletedTeammateTasks holds the string denoting the deletedteammatetasks edge name in mutations.
+	EdgeDeletedTeammateTasks = "deletedTeammateTasks"
 	// Table holds the table name of the teammate in the database.
 	Table = "teammates"
 	// WorkspacesTable is the table that holds the workspaces relation/edge.
@@ -204,6 +206,13 @@ const (
 	ArchivedWorkspaceActivitiesInverseTable = "archived_workspace_activities"
 	// ArchivedWorkspaceActivitiesColumn is the table column denoting the archivedWorkspaceActivities relation/edge.
 	ArchivedWorkspaceActivitiesColumn = "teammate_id"
+	// DeletedTeammateTasksTable is the table that holds the deletedTeammateTasks relation/edge.
+	DeletedTeammateTasksTable = "deleted_teammate_tasks"
+	// DeletedTeammateTasksInverseTable is the table name for the DeletedTeammateTask entity.
+	// It exists in this package in order to avoid circular dependency with the "deletedteammatetask" package.
+	DeletedTeammateTasksInverseTable = "deleted_teammate_tasks"
+	// DeletedTeammateTasksColumn is the table column denoting the deletedTeammateTasks relation/edge.
+	DeletedTeammateTasksColumn = "teammate_id"
 )
 
 // Columns holds all SQL columns for teammate fields.

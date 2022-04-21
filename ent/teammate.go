@@ -74,9 +74,11 @@ type TeammateEdges struct {
 	ArchivedTaskActivities []*ArchivedTaskActivity `json:"archivedTaskActivities,omitempty"`
 	// ArchivedWorkspaceActivities holds the value of the archivedWorkspaceActivities edge.
 	ArchivedWorkspaceActivities []*ArchivedWorkspaceActivity `json:"archivedWorkspaceActivities,omitempty"`
+	// DeletedTeammateTasks holds the value of the deletedTeammateTasks edge.
+	DeletedTeammateTasks []*DeletedTeammateTask `json:"deletedTeammateTasks,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [20]bool
+	loadedTypes [21]bool
 }
 
 // WorkspacesOrErr returns the Workspaces value or an error if the edge
@@ -259,6 +261,15 @@ func (e TeammateEdges) ArchivedWorkspaceActivitiesOrErr() ([]*ArchivedWorkspaceA
 	return nil, &NotLoadedError{edge: "archivedWorkspaceActivities"}
 }
 
+// DeletedTeammateTasksOrErr returns the DeletedTeammateTasks value or an error if the edge
+// was not loaded in eager-loading.
+func (e TeammateEdges) DeletedTeammateTasksOrErr() ([]*DeletedTeammateTask, error) {
+	if e.loadedTypes[20] {
+		return e.DeletedTeammateTasks, nil
+	}
+	return nil, &NotLoadedError{edge: "deletedTeammateTasks"}
+}
+
 // scanValues returns the types for scanning values from sql.Rows.
 func (*Teammate) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
@@ -424,6 +435,11 @@ func (t *Teammate) QueryArchivedTaskActivities() *ArchivedTaskActivityQuery {
 // QueryArchivedWorkspaceActivities queries the "archivedWorkspaceActivities" edge of the Teammate entity.
 func (t *Teammate) QueryArchivedWorkspaceActivities() *ArchivedWorkspaceActivityQuery {
 	return (&TeammateClient{config: t.config}).QueryArchivedWorkspaceActivities(t)
+}
+
+// QueryDeletedTeammateTasks queries the "deletedTeammateTasks" edge of the Teammate entity.
+func (t *Teammate) QueryDeletedTeammateTasks() *DeletedTeammateTaskQuery {
+	return (&TeammateClient{config: t.config}).QueryDeletedTeammateTasks(t)
 }
 
 // Update returns a builder for updating this Teammate.

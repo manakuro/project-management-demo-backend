@@ -3,10 +3,7 @@
 package deletedtask
 
 import (
-	"fmt"
-	"io"
 	"project-management-demo-backend/ent/schema/ulid"
-	"strconv"
 	"time"
 )
 
@@ -19,12 +16,6 @@ const (
 	FieldTaskID = "task_id"
 	// FieldWorkspaceID holds the string denoting the workspace_id field in the database.
 	FieldWorkspaceID = "workspace_id"
-	// FieldTaskSectionID holds the string denoting the task_section_id field in the database.
-	FieldTaskSectionID = "task_section_id"
-	// FieldTaskJoinID holds the string denoting the task_join_id field in the database.
-	FieldTaskJoinID = "task_join_id"
-	// FieldTaskType holds the string denoting the task_type field in the database.
-	FieldTaskType = "task_type"
 	// FieldCreatedAt holds the string denoting the created_at field in the database.
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
@@ -56,9 +47,6 @@ var Columns = []string{
 	FieldID,
 	FieldTaskID,
 	FieldWorkspaceID,
-	FieldTaskSectionID,
-	FieldTaskJoinID,
-	FieldTaskType,
 	FieldCreatedAt,
 	FieldUpdatedAt,
 }
@@ -81,44 +69,3 @@ var (
 	// DefaultID holds the default value on creation for the "id" field.
 	DefaultID func() ulid.ID
 )
-
-// TaskType defines the type for the "task_type" enum field.
-type TaskType string
-
-// TaskType values.
-const (
-	TaskTypeTeammate TaskType = "TEAMMATE"
-	TaskTypeProject  TaskType = "PROJECT"
-)
-
-func (tt TaskType) String() string {
-	return string(tt)
-}
-
-// TaskTypeValidator is a validator for the "task_type" field enum values. It is called by the builders before save.
-func TaskTypeValidator(tt TaskType) error {
-	switch tt {
-	case TaskTypeTeammate, TaskTypeProject:
-		return nil
-	default:
-		return fmt.Errorf("deletedtask: invalid enum value for task_type field: %q", tt)
-	}
-}
-
-// MarshalGQL implements graphql.Marshaler interface.
-func (tt TaskType) MarshalGQL(w io.Writer) {
-	io.WriteString(w, strconv.Quote(tt.String()))
-}
-
-// UnmarshalGQL implements graphql.Unmarshaler interface.
-func (tt *TaskType) UnmarshalGQL(val interface{}) error {
-	str, ok := val.(string)
-	if !ok {
-		return fmt.Errorf("enum %T must be a string", val)
-	}
-	*tt = TaskType(str)
-	if err := TaskTypeValidator(*tt); err != nil {
-		return fmt.Errorf("%s is not a valid TaskType", str)
-	}
-	return nil
-}

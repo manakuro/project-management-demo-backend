@@ -86,6 +86,19 @@ func (f ColorFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error
 	return f(ctx, mv)
 }
 
+// The DeletedProjectTaskFunc type is an adapter to allow the use of ordinary
+// function as DeletedProjectTask mutator.
+type DeletedProjectTaskFunc func(context.Context, *ent.DeletedProjectTaskMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f DeletedProjectTaskFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.DeletedProjectTaskMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.DeletedProjectTaskMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The DeletedTaskFunc type is an adapter to allow the use of ordinary
 // function as DeletedTask mutator.
 type DeletedTaskFunc func(context.Context, *ent.DeletedTaskMutation) (ent.Value, error)
@@ -95,6 +108,19 @@ func (f DeletedTaskFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value,
 	mv, ok := m.(*ent.DeletedTaskMutation)
 	if !ok {
 		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.DeletedTaskMutation", m)
+	}
+	return f(ctx, mv)
+}
+
+// The DeletedTeammateTaskFunc type is an adapter to allow the use of ordinary
+// function as DeletedTeammateTask mutator.
+type DeletedTeammateTaskFunc func(context.Context, *ent.DeletedTeammateTaskMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f DeletedTeammateTaskFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.DeletedTeammateTaskMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.DeletedTeammateTaskMutation", m)
 	}
 	return f(ctx, mv)
 }

@@ -23,13 +23,6 @@ type DeletedTask struct {
 	TaskID ulid.ID `json:"task_id,omitempty"`
 	// WorkspaceID holds the value of the "workspace_id" field.
 	WorkspaceID ulid.ID `json:"workspace_id,omitempty"`
-	// TaskSectionID holds the value of the "task_section_id" field.
-	TaskSectionID ulid.ID `json:"task_section_id,omitempty"`
-	// TaskJoinID holds the value of the "task_join_id" field.
-	// teammate_tasks.id | project_tasks.id
-	TaskJoinID ulid.ID `json:"task_join_id,omitempty"`
-	// TaskType holds the value of the "task_type" field.
-	TaskType deletedtask.TaskType `json:"task_type,omitempty"`
 	// CreatedAt holds the value of the "created_at" field.
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
@@ -83,11 +76,9 @@ func (*DeletedTask) scanValues(columns []string) ([]interface{}, error) {
 	values := make([]interface{}, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case deletedtask.FieldTaskType:
-			values[i] = new(sql.NullString)
 		case deletedtask.FieldCreatedAt, deletedtask.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
-		case deletedtask.FieldID, deletedtask.FieldTaskID, deletedtask.FieldWorkspaceID, deletedtask.FieldTaskSectionID, deletedtask.FieldTaskJoinID:
+		case deletedtask.FieldID, deletedtask.FieldTaskID, deletedtask.FieldWorkspaceID:
 			values[i] = new(ulid.ID)
 		default:
 			return nil, fmt.Errorf("unexpected column %q for type DeletedTask", columns[i])
@@ -121,24 +112,6 @@ func (dt *DeletedTask) assignValues(columns []string, values []interface{}) erro
 				return fmt.Errorf("unexpected type %T for field workspace_id", values[i])
 			} else if value != nil {
 				dt.WorkspaceID = *value
-			}
-		case deletedtask.FieldTaskSectionID:
-			if value, ok := values[i].(*ulid.ID); !ok {
-				return fmt.Errorf("unexpected type %T for field task_section_id", values[i])
-			} else if value != nil {
-				dt.TaskSectionID = *value
-			}
-		case deletedtask.FieldTaskJoinID:
-			if value, ok := values[i].(*ulid.ID); !ok {
-				return fmt.Errorf("unexpected type %T for field task_join_id", values[i])
-			} else if value != nil {
-				dt.TaskJoinID = *value
-			}
-		case deletedtask.FieldTaskType:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field task_type", values[i])
-			} else if value.Valid {
-				dt.TaskType = deletedtask.TaskType(value.String)
 			}
 		case deletedtask.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -194,12 +167,6 @@ func (dt *DeletedTask) String() string {
 	builder.WriteString(fmt.Sprintf("%v", dt.TaskID))
 	builder.WriteString(", workspace_id=")
 	builder.WriteString(fmt.Sprintf("%v", dt.WorkspaceID))
-	builder.WriteString(", task_section_id=")
-	builder.WriteString(fmt.Sprintf("%v", dt.TaskSectionID))
-	builder.WriteString(", task_join_id=")
-	builder.WriteString(fmt.Sprintf("%v", dt.TaskJoinID))
-	builder.WriteString(", task_type=")
-	builder.WriteString(fmt.Sprintf("%v", dt.TaskType))
 	builder.WriteString(", created_at=")
 	builder.WriteString(dt.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", updated_at=")

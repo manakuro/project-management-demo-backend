@@ -318,15 +318,12 @@ func (r *teammateTaskSectionRepository) UndeleteAndDeleteTasks(ctx context.Conte
 
 	deletedTasks, err := client.DeletedTask.
 		Query().
-		Where(
-			deletedtask.TaskIDIn(input.DeletedTaskIDs...),
-			deletedtask.TaskTypeEQ(deletedtask.TaskTypeTeammate),
-		).
+		Where(deletedtask.TaskIDIn(input.DeletedTaskIDs...)).
 		All(ctx)
 	if err != nil {
 		return nil, model.NewDBError(err)
 	}
-	if deletedTasks == nil {
+	if len(deletedTasks) == 0 {
 		return nil, model.NewNotFoundError(err, input)
 	}
 

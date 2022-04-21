@@ -170,12 +170,41 @@ var (
 		Columns:    ColorsColumns,
 		PrimaryKey: []*schema.Column{ColorsColumns[0]},
 	}
+	// DeletedProjectTasksColumns holds the columns for the "deleted_project_tasks" table.
+	DeletedProjectTasksColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+		{Name: "project_task_section_id", Type: field.TypeString},
+		{Name: "project_task_id", Type: field.TypeString},
+		{Name: "project_task_created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime"}},
+		{Name: "project_task_updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime"}},
+		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
+		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
+		{Name: "project_id", Type: field.TypeString},
+		{Name: "task_id", Type: field.TypeString},
+	}
+	// DeletedProjectTasksTable holds the schema information for the "deleted_project_tasks" table.
+	DeletedProjectTasksTable = &schema.Table{
+		Name:       "deleted_project_tasks",
+		Columns:    DeletedProjectTasksColumns,
+		PrimaryKey: []*schema.Column{DeletedProjectTasksColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "deleted_project_tasks_projects_deletedProjectTasks",
+				Columns:    []*schema.Column{DeletedProjectTasksColumns[7]},
+				RefColumns: []*schema.Column{ProjectsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "deleted_project_tasks_tasks_deletedProjectTasks",
+				Columns:    []*schema.Column{DeletedProjectTasksColumns[8]},
+				RefColumns: []*schema.Column{TasksColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
 	// DeletedTasksColumns holds the columns for the "deleted_tasks" table.
 	DeletedTasksColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeString},
-		{Name: "task_section_id", Type: field.TypeString},
-		{Name: "task_join_id", Type: field.TypeString},
-		{Name: "task_type", Type: field.TypeEnum, Enums: []string{"TEAMMATE", "PROJECT"}},
 		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
 		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
 		{Name: "task_id", Type: field.TypeString},
@@ -189,13 +218,52 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "deleted_tasks_tasks_deletedTasksRef",
-				Columns:    []*schema.Column{DeletedTasksColumns[6]},
+				Columns:    []*schema.Column{DeletedTasksColumns[3]},
 				RefColumns: []*schema.Column{TasksColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "deleted_tasks_workspaces_deletedTasksRef",
-				Columns:    []*schema.Column{DeletedTasksColumns[7]},
+				Columns:    []*schema.Column{DeletedTasksColumns[4]},
+				RefColumns: []*schema.Column{WorkspacesColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+	}
+	// DeletedTeammateTasksColumns holds the columns for the "deleted_teammate_tasks" table.
+	DeletedTeammateTasksColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeString},
+		{Name: "teammate_task_section_id", Type: field.TypeString},
+		{Name: "teammate_task_id", Type: field.TypeString},
+		{Name: "teammate_task_created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime"}},
+		{Name: "teammate_task_updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime"}},
+		{Name: "created_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP"}},
+		{Name: "updated_at", Type: field.TypeTime, SchemaType: map[string]string{"mysql": "datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP"}},
+		{Name: "task_id", Type: field.TypeString},
+		{Name: "teammate_id", Type: field.TypeString},
+		{Name: "workspace_id", Type: field.TypeString},
+	}
+	// DeletedTeammateTasksTable holds the schema information for the "deleted_teammate_tasks" table.
+	DeletedTeammateTasksTable = &schema.Table{
+		Name:       "deleted_teammate_tasks",
+		Columns:    DeletedTeammateTasksColumns,
+		PrimaryKey: []*schema.Column{DeletedTeammateTasksColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "deleted_teammate_tasks_tasks_deletedTeammateTasks",
+				Columns:    []*schema.Column{DeletedTeammateTasksColumns[7]},
+				RefColumns: []*schema.Column{TasksColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "deleted_teammate_tasks_teammates_deletedTeammateTasks",
+				Columns:    []*schema.Column{DeletedTeammateTasksColumns[8]},
+				RefColumns: []*schema.Column{TeammatesColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "deleted_teammate_tasks_workspaces_deletedTeammateTasks",
+				Columns:    []*schema.Column{DeletedTeammateTasksColumns[9]},
 				RefColumns: []*schema.Column{WorkspacesColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -1354,7 +1422,9 @@ var (
 		ArchivedWorkspaceActivitiesTable,
 		ArchivedWorkspaceActivityTasksTable,
 		ColorsTable,
+		DeletedProjectTasksTable,
 		DeletedTasksTable,
+		DeletedTeammateTasksTable,
 		FavoriteProjectsTable,
 		FavoriteWorkspacesTable,
 		FileTypesTable,
@@ -1410,8 +1480,13 @@ func init() {
 	ArchivedWorkspaceActivitiesTable.ForeignKeys[3].RefTable = WorkspacesTable
 	ArchivedWorkspaceActivityTasksTable.ForeignKeys[0].RefTable = ArchivedWorkspaceActivitiesTable
 	ArchivedWorkspaceActivityTasksTable.ForeignKeys[1].RefTable = TasksTable
+	DeletedProjectTasksTable.ForeignKeys[0].RefTable = ProjectsTable
+	DeletedProjectTasksTable.ForeignKeys[1].RefTable = TasksTable
 	DeletedTasksTable.ForeignKeys[0].RefTable = TasksTable
 	DeletedTasksTable.ForeignKeys[1].RefTable = WorkspacesTable
+	DeletedTeammateTasksTable.ForeignKeys[0].RefTable = TasksTable
+	DeletedTeammateTasksTable.ForeignKeys[1].RefTable = TeammatesTable
+	DeletedTeammateTasksTable.ForeignKeys[2].RefTable = WorkspacesTable
 	FavoriteProjectsTable.ForeignKeys[0].RefTable = ProjectsTable
 	FavoriteProjectsTable.ForeignKeys[1].RefTable = TeammatesTable
 	FavoriteWorkspacesTable.ForeignKeys[0].RefTable = TeammatesTable
