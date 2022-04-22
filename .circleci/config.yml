@@ -41,7 +41,7 @@ commands:
       - run:
           name: Create database
           command: |
-            echo << parameters.config >> > ./config/config.${APP_ENV}.yml
+            echo << parameters.config >> | base64 --decode > ./config/config.${APP_ENV}.yml
             cat ./config/config.${APP_ENV}.yml
             
             go get golang.org/dl/go1.16.9
