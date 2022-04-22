@@ -119,7 +119,6 @@ jobs:
       - setup_create_database
       - setup_env_variables_create_database:
           app_env: << parameters.app_env >>
-      - go/install
       - go/load-cache
       - go/mod-download
       - go/save-cache
