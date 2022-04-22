@@ -20,6 +20,8 @@ setup_db:
 # Migrate scheme in ent to database
 migrate_schema:
 	go1.16.9 run ./cmd/migration/main.go
+migrate_schema_staging:
+	AppEnv=staging go1.16.9 run ./cmd/migration/main.go
 
 migrate_up:
 	migrate -path $$(yq e '.development.path' db/config.yaml) -database $$(yq e '.development.database' db/config.yaml) up
@@ -30,6 +32,8 @@ migrate_down:
 # Seed data
 seed:
 	go1.16.9 run ./cmd/seed/main.go
+seed_staging:
+	AppEnv=staging go1.16.9 run ./cmd/seed/main.go
 
 ent_generate:
 	go1.16.9 generate ./ent --feature sql/upsert --idtype string
@@ -54,4 +58,4 @@ setup_e2e_db:
 e2e:
 	go1.16.9 test ./test/e2e/...
 
-.PHONY: install setup_db migrate_up migrate_down start migrate_schema schema_description ent_generate setup_test_db setup_e2e_db e2e test_repository seed
+.PHONY: install setup_db migrate_up migrate_down start migrate_schema schema_description ent_generate setup_test_db setup_e2e_db e2e test_repository seed migrate_schema_staging seed_staging
