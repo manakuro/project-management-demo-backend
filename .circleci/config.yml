@@ -47,13 +47,6 @@ commands:
             sleep 5
             make seed
 
-  setup_create_database:
-    steps:
-      - run:
-          name: Setup
-          command: |
-            apk add --update --no-cache gcc gettext libc-dev mysql-client sudo
-
   setup_env_variables_create_database:
     parameters:
       app_env:
@@ -117,7 +110,6 @@ jobs:
       tag: '1.16.9'
     steps:
       - checkout
-      - setup_create_database
       - setup_env_variables_create_database:
           app_env: << parameters.app_env >>
       - go/load-cache
