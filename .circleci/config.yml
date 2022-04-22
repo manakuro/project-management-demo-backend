@@ -100,6 +100,7 @@ jobs:
           deploy_options: << parameters.deploy_options >>
 
   create_database:
+    working_directory: ~/go/src/github.com/manakuro/project-management-demo-backend
     parameters:
       app_env:
         type: string
