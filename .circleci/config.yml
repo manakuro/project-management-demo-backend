@@ -2,7 +2,7 @@ version: 2.1
 
 orbs:
   gcp-cli: circleci/gcp-cli@2.4.0
-  go: circleci/go@1.6.0
+  go: circleci/go@1.7.1
 
 executors:
   default:
@@ -119,8 +119,10 @@ jobs:
       - setup_create_database
       - setup_env_variables_create_database:
           app_env: << parameters.app_env >>
-      - go/install:
-          version: 1.16.9
+      - go/install
+      - go/load-cache
+      - go/mod-download
+      - go/save-cache
       - create_database:
           config: << parameters.config >>
 
