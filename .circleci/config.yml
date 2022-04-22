@@ -119,8 +119,6 @@ jobs:
       - setup_create_database
       - setup_env_variables_create_database:
           app_env: << parameters.app_env >>
-      - gcp-cli/initialize
-      - gcp-cli/install
       - go/install:
           version: 1.16.9
       - create_database:
@@ -159,7 +157,7 @@ workflows:
           name: create_database
 
           app_env: staging
-          config: $CONFIG
+          config: $STG_CONFIG
 
           requires:
             - request_create_database
