@@ -1,0 +1,193 @@
+version: 2.1
+
+orbs:
+  gcp-cli: circleci/gcp-cli@2.4.0
+  go: circleci/go@1.6.0
+
+executors:
+  default:
+    docker:
+      - image: google/cloud-sdk:alpine
+        environment:
+          GOROOT: /usr/local/go
+          GOPATH: /go
+          TZ: Asia/Tokyo
+    working_directory: ~/go/src/github.com/manakuro/project-management-demo-backend
+
+commands:
+  setup_deploy:
+    steps:
+      - run:
+          name: Set up deploy
+          command: |
+            apk add --update --no-cache gettext
+
+  setup_env_variables_deploy:
+    parameters:
+      app_env:
+        type: string
+    steps:
+      - run:
+          name: Set up environment variables for deploy
+          command: |
+            echo 'export APP_ENV=<< parameters.app_env >>' >> $BASH_ENV
+            source $BASH_ENV
+
+  create_database:
+    parameters:
+      config:
+        type: string
+    steps:
+      - run:
+          name: Create database
+          command: |
+            echo << parameters.config >> > ~/go/src/github.com/manakuro/project-management-demo-backend/config/config.${APP_ENV}.yml
+            cat ~/go/src/github.com/manakuro/project-management-demo-backend/config/config.${APP_ENV}.yml
+            make migrate_schema
+            sleep 5
+            make seed
+
+  setup_create_database:
+    steps:
+      - run:
+          name: Setup
+          command: |
+            apk add --update --no-cache gcc gettext libc-dev mysql-client sudo
+
+  setup_env_variables_create_database:
+    parameters:
+      app_env:
+        type: string
+    steps:
+      - run:
+          name: Set up environment variables for create database
+          command: |
+            echo 'export GO111MODULE=on' >> $BASH_ENV
+            echo 'export APP_ENV=<< parameters.app_env >>' >> $BASH_ENV
+            echo 'export PATH=$PATH:$GOPATH/bin' >> $BASH_ENV
+            source $BASH_ENV
+
+  deploy:
+    parameters:
+      deploy_version:
+        type: string
+      deploy_options:
+        type: string
+    steps:
+      - run:
+          name: Deploy app
+          command: |
+            envsubst < ./config/config.yml.tpl > ./config/config.yml
+            envsubst < ./app.yaml.tpl > ./app.yaml
+
+            GO111MODULE=on gcloud -q app deploy --version << parameters.deploy_version >> << parameters.deploy_options >>
+
+jobs:
+  deploy:
+    executor:
+      name: default
+    parameters:
+      app_env:
+        type: string
+      deploy_version:
+        type: string
+      deploy_options:
+        type: string
+    steps:
+      - checkout
+      - setup_remote_docker:
+          version: 18.06.0-ce
+      - setup_env_variables_deploy:
+          app_env: << parameters.app_env >>
+      - setup_deploy
+      - gcp-cli/initialize
+      - gcp-cli/install
+      - deploy:
+          deploy_version: << parameters.deploy_version >>
+          deploy_options: << parameters.deploy_options >>
+
+  create_database:
+    parameters:
+      app_env:
+        type: string
+      config:
+        type: string
+    executor:
+      name: default
+    steps:
+      - checkout
+      - setup_create_database
+      - setup_env_variables_create_database:
+          app_env: << parameters.app_env >>
+      - gcp-cli/initialize
+      - gcp-cli/install
+      - go/install:
+          version: 1.16.9
+      - create_database:
+          config: << parameters.config >>
+
+
+workflows:
+  ####################################################
+  # staging
+  ####################################################
+  build_and_deploy_staging:
+    jobs:
+      - deploy:
+          name: deploy_staging
+
+          app_env: staging
+          deploy_version: ${CIRCLE_BRANCH%%-*}
+          deploy_options: --no-promote
+
+          requires:
+            - request_deploy
+
+          filters:
+            branches:
+              only: /.*/
+            tags:
+              ignore: /.*/
+
+      - request_deploy:
+          type: approval
+
+      - request_create_database:
+          type: approval
+
+      - create_database:
+          name: create_database
+
+          app_env: staging
+          config: $CONFIG
+
+          requires:
+            - request_create_database
+
+          filters:
+            branches:
+              only: /.*/
+            tags:
+              ignore: /.*/
+
+  ####################################################
+  # production
+  ####################################################
+  build_and_deploy_production:
+    jobs:
+      - deploy:
+          name: deploy_production
+
+          app_env: production
+          database_user: $PROD_DATABASE_USER
+          database_password: $PROD_DATABASE_PASSWORD
+          database_host: $PROD_DATABASE_HOST
+          database_name: $PROD_DATABASE_NAME
+          deploy_version: ${CIRCLE_TAG//./-}
+          deploy_options: ""
+
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v.+$/

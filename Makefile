@@ -21,7 +21,7 @@ setup_db:
 migrate_schema:
 	go1.16.9 run ./cmd/migration/main.go
 migrate_schema_staging:
-	AppEnv=staging go1.16.9 run ./cmd/migration/main.go
+	APP_ENV=staging go1.16.9 run ./cmd/migration/main.go
 
 migrate_up:
 	migrate -path $$(yq e '.development.path' db/config.yaml) -database $$(yq e '.development.database' db/config.yaml) up

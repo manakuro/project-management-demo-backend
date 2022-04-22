@@ -90,13 +90,13 @@ func ReadConfig(option ReadConfigOption) {
 }
 
 func appEnv(option ReadConfigOption) string {
-	fmt.Println("os.Getenv(\"AppEnv\"): ", os.Getenv("AppEnv"))
+	fmt.Println("os.Getenv(\"APP_ENV\"): ", os.Getenv("APP_ENV"))
 
 	if option.AppEnv != "" {
 		return option.AppEnv
 	}
-	if os.Getenv("AppEnv") != "" {
-		return os.Getenv("AppEnv")
+	if os.Getenv("APP_ENV") != "" {
+		return os.Getenv("APP_ENV")
 	}
 
 	return Development
