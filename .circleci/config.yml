@@ -113,7 +113,8 @@ jobs:
       config:
         type: string
     executor:
-      name: default
+      name: go/default
+      tag: '1.16.9'
     steps:
       - checkout
       - setup_create_database
