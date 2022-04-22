@@ -179,10 +179,6 @@ workflows:
           name: deploy_production
 
           app_env: production
-          database_user: $PROD_DATABASE_USER
-          database_password: $PROD_DATABASE_PASSWORD
-          database_host: $PROD_DATABASE_HOST
-          database_name: $PROD_DATABASE_NAME
           deploy_version: ${CIRCLE_TAG//./-}
           deploy_options: ""
 
