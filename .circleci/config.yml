@@ -42,7 +42,7 @@ commands:
           name: Create database
           command: |
             echo << parameters.config >> > ./config/config.${APP_ENV}.yml
-            cat ~/go/src/github.com/manakuro/project-management-demo-backend/config/config.${APP_ENV}.yml
+            cat ./config/config.${APP_ENV}.yml
             
             go get golang.org/dl/go1.16.9
             go1.16.9 download
