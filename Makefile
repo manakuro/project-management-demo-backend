@@ -29,6 +29,10 @@ migrate_up:
 migrate_down:
 	migrate -path $$(yq e '.development.path' db/config.yaml) -database $$(yq e '.development.database' db/config.yaml) down
 
+# Connect database through proxy.
+connect_db_staging:
+	pscale connect project_management_demo staging
+
 # Seed data
 seed:
 	go1.16.9 run ./cmd/seed/main.go
