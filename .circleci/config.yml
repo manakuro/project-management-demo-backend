@@ -85,11 +85,11 @@ commands:
             echo << parameters.firebase_service_key >> > ./.keys/firebase-service-key.json
             cat ./.keys/firebase-service-key.json
             
-            cat << parameters.deploy_version >>
+            echo "<< parameters.deploy_version >>"
             
             envsubst < ./app.yaml.tpl > ./app.yaml
 
-#            GO111MODULE=on gcloud -q app deploy --version << parameters.deploy_version >> << parameters.deploy_options >>
+            GO111MODULE=on gcloud -q app deploy --version << parameters.deploy_version >> << parameters.deploy_options >>
 
 jobs:
   deploy:
@@ -152,7 +152,8 @@ workflows:
           name: deploy_staging
 
           app_env: staging
-          deploy_version: ${CIRCLE_BRANCH%%-*}
+          #deploy_version: ${CIRCLE_BRANCH%%-*}
+          deploy_version: staging
           deploy_options: --no-promote
           firebase_service_key: $STG_FIREBASE_SERVICE_KEY
           config: $STG_CONFIG
