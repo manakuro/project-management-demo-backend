@@ -71,11 +71,19 @@ commands:
         type: string
       deploy_options:
         type: string
+      firebase_service_key:
+        type: string
+      config:
+        type: string
     steps:
       - run:
           name: Deploy app
           command: |
-            envsubst < ./config/config.yml.tpl > ./config/config.yml
+            echo << parameters.config >> | base64 --decode > ./config/config.${APP_ENV}.yml
+            echo << parameters.firebase_service_key >> > .keys/firebase-service-key.json
+            
+            cat .keys/firebase-service-key.json
+            
             envsubst < ./app.yaml.tpl > ./app.yaml
 
             GO111MODULE=on gcloud -q app deploy --version << parameters.deploy_version >> << parameters.deploy_options >>
@@ -91,6 +99,10 @@ jobs:
         type: string
       deploy_options:
         type: string
+      firebase_service_key:
+        type: string
+      config:
+        type: string
     steps:
       - checkout
       - setup_remote_docker:
@@ -103,6 +115,8 @@ jobs:
       - deploy:
           deploy_version: << parameters.deploy_version >>
           deploy_options: << parameters.deploy_options >>
+          firebase_service_key: << parameters.firebase_service_key >>
+          config: << parameters.config >>
 
   create_database:
     working_directory: ~/go/src/github.com/manakuro/project-management-demo-backend
@@ -137,6 +151,8 @@ workflows:
           app_env: staging
           deploy_version: ${CIRCLE_BRANCH%%-*}
           deploy_options: --no-promote
+          firebase_service_key: $STG_FIREBASE_SERVICE_KEY
+          config: $STG_CONFIG
 
           requires:
             - request_deploy
@@ -179,6 +195,8 @@ workflows:
           app_env: production
           deploy_version: ${CIRCLE_TAG//./-}
           deploy_options: ""
+          firebase_service_key: $PROD_FIREBASE_SERVICE_KEY
+          config: $PROD_CONFIG
 
           filters:
             branches:
