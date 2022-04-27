@@ -80,9 +80,9 @@ commands:
           name: Deploy app
           command: |
             echo << parameters.config >> | base64 -d > ./config/config.${APP_ENV}.yml
-            echo << parameters.firebase_service_key >> > .keys/firebase-service-key.json
+            echo << parameters.firebase_service_key >> > ./.keys/firebase-service-key.json
             
-            cat .keys/firebase-service-key.json
+            cat ./.keys/firebase-service-key.json
             cat << parameters.deploy_version >>
             
             envsubst < ./app.yaml.tpl > ./app.yaml
