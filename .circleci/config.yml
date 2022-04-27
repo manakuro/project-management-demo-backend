@@ -79,14 +79,15 @@ commands:
       - run:
           name: Deploy app
           command: |
-            echo << parameters.config >> | base64 --decode > ./config/config.${APP_ENV}.yml
+            echo << parameters.config >> | base64 -d > ./config/config.${APP_ENV}.yml
             echo << parameters.firebase_service_key >> > .keys/firebase-service-key.json
             
             cat .keys/firebase-service-key.json
+            cat << parameters.deploy_version >>
             
             envsubst < ./app.yaml.tpl > ./app.yaml
 
-            GO111MODULE=on gcloud -q app deploy --version << parameters.deploy_version >> << parameters.deploy_options >>
+#            GO111MODULE=on gcloud -q app deploy --version << parameters.deploy_version >> << parameters.deploy_options >>
 
 jobs:
   deploy:
