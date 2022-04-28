@@ -9,3 +9,4 @@ tmp
 .keys
 config/config.staging.yml
 config/config.production.yml
+app.yaml

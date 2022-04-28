@@ -1,4 +1,5 @@
 runtime: go116
+main: ./cmd/app
 
 handlers:
   - url: /.*

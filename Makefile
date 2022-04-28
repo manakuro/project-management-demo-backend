@@ -37,7 +37,7 @@ connect_db_staging:
 seed:
 	go1.16.9 run ./cmd/seed/main.go
 seed_staging:
-	AppEnv=staging go1.16.9 run ./cmd/seed/main.go
+	APP_ENV=staging go1.16.9 run ./cmd/seed/main.go
 
 ent_generate:
 	go1.16.9 generate ./ent --feature sql/upsert --idtype string
@@ -62,4 +62,8 @@ setup_e2e_db:
 e2e:
 	go1.16.9 test ./test/e2e/...
 
-.PHONY: install setup_db migrate_up migrate_down start migrate_schema schema_description ent_generate setup_test_db setup_e2e_db e2e test_repository seed migrate_schema_staging seed_staging
+# Deployment
+deploy_staging:
+	gcloud -q app deploy --version staging --no-promote
+
+.PHONY: install setup_db migrate_up migrate_down start migrate_schema schema_description ent_generate setup_test_db setup_e2e_db e2e test_repository seed migrate_schema_staging seed_staging deploy_staging
