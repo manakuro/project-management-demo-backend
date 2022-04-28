@@ -26,3 +26,8 @@
 
 test
 testutil
+docker
+db
+bin
+.idea
+.circleci

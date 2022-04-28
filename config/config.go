@@ -124,11 +124,11 @@ func setE2E() {
 }
 
 func setStaging() {
-	viper.AddConfigPath(filepath.Join(rootDir(), "config"))
+	viper.AddConfigPath(filepath.Join("/srv", "config"))
 	viper.SetConfigName("config.staging")
 }
 
 func setProd() {
 	viper.AddConfigPath(filepath.Join("/srv", "config"))
-	viper.SetConfigName("config")
+	viper.SetConfigName("config.production")
 }
