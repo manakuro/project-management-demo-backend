@@ -41,6 +41,8 @@ func New(srv *handler.Server, ctrl controller.Controller, options Options) *echo
 		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderXRequestedWith, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderAuthorization},
 	}))
 
+	e.File("/favicon.ico", "favicon.ico")
+
 	g := e.Group(apiPath)
 	{
 		g.POST(revokeRefreshTokensPath, func(c echo.Context) error { return ctrl.Auth.RevokeRefreshTokens(c) })
