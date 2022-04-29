@@ -8,5 +8,6 @@ tmp
 ## credential
 .keys
 config/config.staging.yml
+config/config.staging.us.yml
 config/config.production.yml
 app.yaml
