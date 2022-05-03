@@ -72,10 +72,7 @@ deploy:
 	cat ./container.json | jq
 	aws lightsail create-container-service-deployment --service-name project-management-demo --cli-input-json file://$$(pwd)/container.json
 
-deploy_staging:
-	gcloud -q app deploy --version staging --no-promote
-
-.PHONY: install setup_db migrate_up migrate_down start migrate_schema schema_description ent_generate setup_test_db setup_e2e_db e2e test_repository seed migrate_schema_staging seed_staging deploy_staging deploy build push
+.PHONY: install setup_db migrate_up migrate_down start migrate_schema schema_description ent_generate setup_test_db setup_e2e_db e2e test_repository seed migrate_schema_staging seed_staging deploy build push
 
 
 #migrate_up:
