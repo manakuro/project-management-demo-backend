@@ -10,3 +10,4 @@ tmp
 config/config.staging.yml
 config/config.staging.us.yml
 config/config.production.yml
+container.json
