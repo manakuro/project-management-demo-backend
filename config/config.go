@@ -25,6 +25,7 @@ type config struct {
 			ParseTime string
 			Charset   string
 			Loc       string
+			TLS       string
 		}
 	}
 	Server struct {
@@ -43,6 +44,8 @@ const (
 	Development = "development"
 	Test        = "test"
 	E2E         = "e2e"
+	Staging     = "staging"
+	Production  = "production"
 )
 
 // ReadConfigOption is a config option
@@ -54,11 +57,15 @@ type ReadConfigOption struct {
 func ReadConfig(option ReadConfigOption) {
 	Config := &C
 
-	if option.AppEnv == Test {
+	e := appEnv(option)
+
+	if e == Test {
 		setTest()
-	} else if option.AppEnv == E2E {
+	} else if e == E2E {
 		setE2E()
-	} else if option.AppEnv == Development || option.AppEnv == "" {
+	} else if e == Staging {
+		setStaging()
+	} else if e == Development {
 		setDev()
 	} else {
 		setProd()
@@ -77,9 +84,22 @@ func ReadConfig(option ReadConfigOption) {
 		os.Exit(1)
 	}
 
-	if Config.AppEnv == Development {
+	if Config.AppEnv != Production {
 		spew.Dump(C)
 	}
+}
+
+func appEnv(option ReadConfigOption) string {
+	fmt.Println("os.Getenv(\"APP_ENV\"): ", os.Getenv("APP_ENV"))
+
+	if option.AppEnv != "" {
+		return option.AppEnv
+	}
+	if os.Getenv("APP_ENV") != "" {
+		return os.Getenv("APP_ENV")
+	}
+
+	return Development
 }
 
 func rootDir() string {
@@ -103,7 +123,12 @@ func setE2E() {
 	viper.SetConfigName("config.e2e")
 }
 
+func setStaging() {
+	viper.AddConfigPath(filepath.Join(rootDir(), "config"))
+	viper.SetConfigName("config.staging")
+}
+
 func setProd() {
-	viper.AddConfigPath(filepath.Join("/srv", "config"))
-	viper.SetConfigName("config")
+	viper.AddConfigPath(filepath.Join(rootDir(), "config"))
+	viper.SetConfigName("config.production")
 }

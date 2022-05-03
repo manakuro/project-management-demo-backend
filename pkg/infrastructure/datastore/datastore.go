@@ -11,6 +11,15 @@ import (
 
 // New returns data source name
 func New() string {
+	params := map[string]string{
+		"parseTime": config.C.Database.Params.ParseTime,
+		"charset":   config.C.Database.Params.Charset,
+		"loc":       config.C.Database.Params.Loc,
+	}
+	if config.C.Database.Params.TLS != "" {
+		params["tls"] = config.C.Database.Params.TLS
+	}
+
 	mc := mysql.Config{
 		User:                 config.C.Database.User,
 		Passwd:               config.C.Database.Password,
@@ -18,11 +27,7 @@ func New() string {
 		Addr:                 config.C.Database.Addr,
 		DBName:               config.C.Database.DBName,
 		AllowNativePasswords: config.C.Database.AllowNativePasswords,
-		Params: map[string]string{
-			"parseTime": config.C.Database.Params.ParseTime,
-			"charset":   config.C.Database.Params.Charset,
-			"loc":       config.C.Database.Params.Loc,
-		},
+		Params:               params,
 	}
 
 	return mc.FormatDSN()
