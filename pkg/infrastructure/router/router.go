@@ -43,6 +43,10 @@ func New(srv *handler.Server, ctrl controller.Controller, options Options) *echo
 
 	e.File("/favicon.ico", "favicon.ico")
 
+	e.GET("/readiness_check", func(c echo.Context) error {
+		return c.String(http.StatusOK, "ok")
+	})
+
 	g := e.Group(apiPath)
 	{
 		g.POST(revokeRefreshTokensPath, func(c echo.Context) error { return ctrl.Auth.RevokeRefreshTokens(c) })
