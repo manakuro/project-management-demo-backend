@@ -35,6 +35,9 @@ seed:
 seed_staging:
 	APP_ENV=staging go1.16.9 run ./cmd/seed/main.go
 
+seed_production:
+	APP_ENV=production go1.16.9 run ./cmd/seed/main.go
+
 ent_generate:
 	go1.16.9 generate ./ent --feature sql/upsert --idtype string
 
