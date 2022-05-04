@@ -2,6 +2,7 @@ package teammatetaskrepository
 
 import (
 	"context"
+	"fmt"
 	"project-management-demo-backend/ent"
 	"project-management-demo-backend/ent/task"
 	"project-management-demo-backend/ent/teammatetask"
@@ -51,6 +52,8 @@ func (r *teammateTaskRepository) List(ctx context.Context) ([]*model.TeammateTas
 }
 
 func (r *teammateTaskRepository) TasksDueSoon(ctx context.Context, workspaceID model.ID, teammateID model.ID) ([]*model.TeammateTask, error) {
+	start := time.Now()
+
 	q := r.client.TeammateTask.Query()
 
 	q.Where(teammatetask.TeammateIDEQ(teammateID))
@@ -61,6 +64,11 @@ func (r *teammateTaskRepository) TasksDueSoon(ctx context.Context, workspaceID m
 	q.Where(teammatetask.HasTeammateTaskSectionWith(
 		teammatetasksection.WorkspaceIDEQ(workspaceID),
 	))
+	q.WithTask(func(q *ent.TaskQuery) {
+		q.WithProjectTasks(func(ptq *ent.ProjectTaskQuery) {
+			respositoryutil.WithProjectTask(ptq)
+		})
+	})
 
 	res, err := q.All(ctx)
 	if err != nil {
@@ -70,6 +78,9 @@ func (r *teammateTaskRepository) TasksDueSoon(ctx context.Context, workspaceID m
 		return nil, model.NewDBError(err)
 	}
 
+	fmt.Println("\n\n========================================================================")
+	fmt.Println("duration: ", time.Since(start).String())
+	fmt.Print("========================================================================\n\n")
 	return res, err
 }
 

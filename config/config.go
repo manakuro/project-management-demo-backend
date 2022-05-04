@@ -9,6 +9,7 @@ import (
 	"runtime"
 
 	"github.com/davecgh/go-spew/spew"
+
 	"github.com/spf13/viper"
 )
 
@@ -84,9 +85,7 @@ func ReadConfig(option ReadConfigOption) {
 		os.Exit(1)
 	}
 
-	if Config.AppEnv != Production {
-		spew.Dump(C)
-	}
+	spew.Dump(C)
 }
 
 func appEnv(option ReadConfigOption) string {
