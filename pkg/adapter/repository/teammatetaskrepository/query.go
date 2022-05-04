@@ -43,10 +43,15 @@ func (r *teammateTaskRepository) Get(ctx context.Context, where *model.TeammateT
 }
 
 func (r *teammateTaskRepository) List(ctx context.Context) ([]*model.TeammateTask, error) {
+	start := time.Now()
 	res, err := r.client.TeammateTask.Query().All(ctx)
 	if err != nil {
 		return nil, model.NewDBError(err)
 	}
+
+	fmt.Println("\n\n========================================================================")
+	fmt.Println("duration: ", time.Since(start).String())
+	fmt.Print("========================================================================\n\n")
 
 	return res, nil
 }
@@ -66,7 +71,7 @@ func (r *teammateTaskRepository) TasksDueSoon(ctx context.Context, workspaceID m
 	))
 	q.WithTask(func(q *ent.TaskQuery) {
 		q.WithProjectTasks(func(ptq *ent.ProjectTaskQuery) {
-			respositoryutil.WithProjectTask(ptq)
+			respositoryutil.WithProjectTasks(ptq)
 		})
 	})
 
