@@ -6,13 +6,13 @@ import (
 	"project-management-demo-backend/ent/deletedtask"
 	"project-management-demo-backend/ent/projecttask"
 	"project-management-demo-backend/ent/projecttasksection"
-	"project-management-demo-backend/pkg/adapter/repository/respositoryutil"
+	"project-management-demo-backend/pkg/adapter/repository/repositoryutil"
 	"project-management-demo-backend/pkg/adapter/repository/taskrepository"
 	"project-management-demo-backend/pkg/entity/model"
 )
 
 func (r *projectTaskSectionRepository) UndeleteAndDeleteTasks(ctx context.Context, input model.UndeleteProjectTaskSectionAndDeleteTasksInput) (*model.UndeleteProjectTaskSectionAndDeleteTasksPayload, error) {
-	client := respositoryutil.WithTransactionalMutation(ctx)
+	client := repositoryutil.WithTransactionalMutation(ctx)
 
 	createdProjectTaskSection, err := client.ProjectTaskSection.
 		Create().
@@ -92,7 +92,7 @@ func (r *projectTaskSectionRepository) UndeleteAndDeleteTasks(ctx context.Contex
 	// Eager-loads associations with task.
 	projectTaskSection, err := client.ProjectTaskSection.Query().
 		WithProjectTasks(func(ptq *ent.ProjectTaskQuery) {
-			respositoryutil.WithProjectTask(ptq)
+			repositoryutil.WithProjectTask(ptq)
 		}).
 		Where(projecttasksection.ID(createdProjectTaskSection.ID)).
 		Only(ctx)

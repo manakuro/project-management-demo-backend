@@ -5,7 +5,7 @@ import (
 	"project-management-demo-backend/ent"
 	"project-management-demo-backend/ent/projecttask"
 	"project-management-demo-backend/ent/projecttasksection"
-	"project-management-demo-backend/pkg/adapter/repository/respositoryutil"
+	"project-management-demo-backend/pkg/adapter/repository/repositoryutil"
 	"project-management-demo-backend/pkg/entity/model"
 )
 
@@ -69,7 +69,7 @@ func (r *projectTaskSectionRepository) ListByTaskID(ctx context.Context, taskID 
 	}
 
 	q.WithProject(func(pq *ent.ProjectQuery) {
-		respositoryutil.WithProject(pq)
+		repositoryutil.WithProject(pq)
 	})
 
 	projectTaskSections, err := q.All(ctx)

@@ -4,7 +4,7 @@ import (
 	"context"
 	"project-management-demo-backend/ent"
 	"project-management-demo-backend/ent/projectteammate"
-	"project-management-demo-backend/pkg/adapter/repository/respositoryutil"
+	"project-management-demo-backend/pkg/adapter/repository/repositoryutil"
 	"project-management-demo-backend/pkg/entity/model"
 )
 
@@ -26,7 +26,7 @@ func (r *projectTeammateRepository) Update(ctx context.Context, input model.Upda
 }
 
 func (r *projectTeammateRepository) UpdateOwner(ctx context.Context, input model.UpdateProjectTeammateOwnerInput) (*model.ProjectTeammate, error) {
-	client := respositoryutil.WithTransactionalMutation(ctx)
+	client := repositoryutil.WithTransactionalMutation(ctx)
 
 	_, err := client.ProjectTeammate.
 		Update().
@@ -44,7 +44,7 @@ func (r *projectTeammateRepository) UpdateOwner(ctx context.Context, input model
 			projectteammate.ProjectID(input.ProjectID),
 		)
 
-	respositoryutil.WithProjectTeammate(q)
+	repositoryutil.WithProjectTeammate(q)
 
 	projectTeammate, err := q.Only(ctx)
 

@@ -5,7 +5,7 @@ import (
 	"project-management-demo-backend/ent"
 	"project-management-demo-backend/ent/projecttask"
 	"project-management-demo-backend/ent/projecttasksection"
-	"project-management-demo-backend/pkg/adapter/repository/respositoryutil"
+	"project-management-demo-backend/pkg/adapter/repository/repositoryutil"
 	"project-management-demo-backend/pkg/entity/model"
 )
 
@@ -53,7 +53,7 @@ func (r *projectTaskRepository) Create(ctx context.Context, input model.CreatePr
 }
 
 func (r *projectTaskRepository) CreateByTaskID(ctx context.Context, input model.CreateProjectTaskByTaskIDInput) (*model.ProjectTask, error) {
-	client := respositoryutil.WithTransactionalMutation(ctx)
+	client := repositoryutil.WithTransactionalMutation(ctx)
 
 	ps, err := client.ProjectTaskSection.
 		Query().
@@ -83,7 +83,7 @@ func (r *projectTaskRepository) CreateByTaskID(ctx context.Context, input model.
 		Query().
 		Where(projecttask.IDEQ(p.ID))
 
-	respositoryutil.WithProjectTask(pq)
+	repositoryutil.WithProjectTask(pq)
 
 	projectTask, err := pq.Only(ctx)
 	if err != nil {

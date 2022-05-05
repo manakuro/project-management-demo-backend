@@ -3,12 +3,12 @@ package taskfeedrepository
 import (
 	"context"
 	"project-management-demo-backend/ent"
-	"project-management-demo-backend/pkg/adapter/repository/respositoryutil"
+	"project-management-demo-backend/pkg/adapter/repository/repositoryutil"
 	"project-management-demo-backend/pkg/entity/model"
 )
 
 func (r *taskFeedRepository) Undelete(ctx context.Context, input model.UndeleteTaskFeedInput) (*model.UndeleteTaskFeedInputPayload, error) {
-	client := respositoryutil.WithTransactionalMutation(ctx)
+	client := repositoryutil.WithTransactionalMutation(ctx)
 
 	payload := &model.UndeleteTaskFeedInputPayload{
 		TaskFeed:      nil,

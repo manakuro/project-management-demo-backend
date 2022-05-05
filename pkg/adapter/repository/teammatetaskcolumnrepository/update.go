@@ -5,7 +5,7 @@ import (
 	"project-management-demo-backend/ent"
 	"project-management-demo-backend/ent/schema/ulid"
 	"project-management-demo-backend/ent/teammatetaskcolumn"
-	"project-management-demo-backend/pkg/adapter/repository/respositoryutil"
+	"project-management-demo-backend/pkg/adapter/repository/repositoryutil"
 	"project-management-demo-backend/pkg/entity/model"
 )
 
@@ -27,7 +27,7 @@ func (r *teammateTaskColumnRepository) Update(ctx context.Context, input model.U
 }
 
 func (r *teammateTaskColumnRepository) UpdateOrder(ctx context.Context, input model.UpdateTeammateTaskColumnOrderInput) ([]*model.TeammateTaskColumn, error) {
-	client := respositoryutil.WithTransactionalMutation(ctx)
+	client := repositoryutil.WithTransactionalMutation(ctx)
 	if len(input.IDs) == 0 {
 		return nil, model.NewInvalidParamError(input.IDs)
 	}

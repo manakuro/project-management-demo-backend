@@ -9,12 +9,12 @@ import (
 	"project-management-demo-backend/ent/taskactivitytask"
 	"project-management-demo-backend/ent/teammatetask"
 	"project-management-demo-backend/ent/workspaceactivitytask"
-	"project-management-demo-backend/pkg/adapter/repository/respositoryutil"
+	"project-management-demo-backend/pkg/adapter/repository/repositoryutil"
 	"project-management-demo-backend/pkg/entity/model"
 )
 
 func (r *taskRepository) DeleteAll(ctx context.Context, input model.DeleteAllTaskInput) (*model.DeleteAllTaskPayload, error) {
-	client := respositoryutil.WithTransactionalMutation(ctx)
+	client := repositoryutil.WithTransactionalMutation(ctx)
 
 	payload := &model.DeleteAllTaskPayload{
 		TeammateTasks: []*model.TeammateTask{},

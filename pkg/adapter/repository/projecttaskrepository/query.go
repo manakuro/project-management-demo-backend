@@ -3,7 +3,7 @@ package projecttaskrepository
 import (
 	"context"
 	"project-management-demo-backend/ent"
-	"project-management-demo-backend/pkg/adapter/repository/respositoryutil"
+	"project-management-demo-backend/pkg/adapter/repository/repositoryutil"
 	"project-management-demo-backend/pkg/entity/model"
 )
 
@@ -11,7 +11,7 @@ func (r *projectTaskRepository) Get(ctx context.Context, where *model.ProjectTas
 	q := r.client.ProjectTask.Query()
 
 	// Eager-loading with task explicitly.
-	respositoryutil.WithProjectTask(q)
+	repositoryutil.WithProjectTask(q)
 
 	q, err := where.Filter(q)
 	if err != nil {

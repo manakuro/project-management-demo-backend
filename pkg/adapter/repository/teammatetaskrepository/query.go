@@ -7,20 +7,24 @@ import (
 	"project-management-demo-backend/ent/task"
 	"project-management-demo-backend/ent/teammatetask"
 	"project-management-demo-backend/ent/teammatetasksection"
-	"project-management-demo-backend/pkg/adapter/repository/respositoryutil"
+	"project-management-demo-backend/pkg/adapter/repository/repositoryutil"
 	"project-management-demo-backend/pkg/entity/model"
 	"project-management-demo-backend/pkg/util/datetime"
 	"time"
 )
 
 func (r *teammateTaskRepository) Get(ctx context.Context, where *model.TeammateTaskWhereInput) (*model.TeammateTask, error) {
+	start := time.Now()
 	q := r.client.TeammateTask.Query()
 
 	q, err := where.Filter(q)
 
 	// Eager-loading with task explicitly.
-	q.WithTask(func(tq *ent.TaskQuery) {
-		respositoryutil.WithTask(tq)
+	//q.WithTaskAll(func(tq *ent.TaskQuery) {
+	//	respositoryutil.WithTaskAll(tq)
+	//})
+	q.WithTask(func(query *ent.TaskQuery) {
+		repositoryutil.WithTask(query)
 	})
 
 	if err != nil {
@@ -39,19 +43,18 @@ func (r *teammateTaskRepository) Get(ctx context.Context, where *model.TeammateT
 		return nil, model.NewDBError(err)
 	}
 
+	fmt.Println("\n\n========================================================================")
+	fmt.Println("duration: ", time.Since(start).String())
+	fmt.Print("========================================================================\n\n")
+
 	return res, nil
 }
 
 func (r *teammateTaskRepository) List(ctx context.Context) ([]*model.TeammateTask, error) {
-	start := time.Now()
 	res, err := r.client.TeammateTask.Query().All(ctx)
 	if err != nil {
 		return nil, model.NewDBError(err)
 	}
-
-	fmt.Println("\n\n========================================================================")
-	fmt.Println("duration: ", time.Since(start).String())
-	fmt.Print("========================================================================\n\n")
 
 	return res, nil
 }
@@ -71,7 +74,7 @@ func (r *teammateTaskRepository) TasksDueSoon(ctx context.Context, workspaceID m
 	))
 	q.WithTask(func(q *ent.TaskQuery) {
 		q.WithProjectTasks(func(ptq *ent.ProjectTaskQuery) {
-			respositoryutil.WithProjectTasks(ptq)
+			repositoryutil.WithProjectTasks(ptq)
 		})
 	})
 

@@ -2,7 +2,7 @@ package testuserrepository
 
 import (
 	"context"
-	"project-management-demo-backend/pkg/adapter/repository/respositoryutil"
+	"project-management-demo-backend/pkg/adapter/repository/repositoryutil"
 	"project-management-demo-backend/pkg/entity/model"
 )
 
@@ -21,7 +21,7 @@ func (r *testUserRepository) Create(ctx context.Context, input model.CreateTestU
 }
 
 func (r *testUserRepository) CreateWithTodo(ctx context.Context, input model.CreateTestUserInput) (*model.TestUser, error) {
-	client := respositoryutil.WithTransactionalMutation(ctx)
+	client := repositoryutil.WithTransactionalMutation(ctx)
 
 	todo, err := client.
 		TestTodo.

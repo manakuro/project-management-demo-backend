@@ -6,13 +6,13 @@ import (
 	"project-management-demo-backend/ent/deletedtask"
 	"project-management-demo-backend/ent/teammatetask"
 	"project-management-demo-backend/ent/teammatetasksection"
-	"project-management-demo-backend/pkg/adapter/repository/respositoryutil"
+	"project-management-demo-backend/pkg/adapter/repository/repositoryutil"
 	"project-management-demo-backend/pkg/adapter/repository/taskrepository"
 	"project-management-demo-backend/pkg/entity/model"
 )
 
 func (r *teammateTaskSectionRepository) UndeleteAndDeleteTasks(ctx context.Context, input model.UndeleteTeammateTaskSectionAndDeleteTasksInput) (*model.UndeleteTeammateTaskSectionAndDeleteTasksPayload, error) {
-	client := respositoryutil.WithTransactionalMutation(ctx)
+	client := repositoryutil.WithTransactionalMutation(ctx)
 
 	createdTeammateTaskSection, err := client.TeammateTaskSection.
 		Create().
@@ -97,7 +97,7 @@ func (r *teammateTaskSectionRepository) UndeleteAndDeleteTasks(ctx context.Conte
 		Query().
 		WithTeammateTasks(func(ttq *ent.TeammateTaskQuery) {
 			ttq.WithTask(func(tq *ent.TaskQuery) {
-				respositoryutil.WithTask(tq)
+				repositoryutil.WithTaskAll(tq)
 			})
 		}).
 		Where(teammatetasksection.ID(createdTeammateTaskSection.ID)).

@@ -4,12 +4,12 @@ import (
 	"context"
 	"project-management-demo-backend/ent"
 	"project-management-demo-backend/ent/taskcollaborator"
-	"project-management-demo-backend/pkg/adapter/repository/respositoryutil"
+	"project-management-demo-backend/pkg/adapter/repository/repositoryutil"
 	"project-management-demo-backend/pkg/entity/model"
 )
 
 func (r *taskCollaboratorRepository) Delete(ctx context.Context, input model.DeleteTaskCollaboratorInput) (*model.TaskCollaborator, error) {
-	client := respositoryutil.WithTransactionalMutation(ctx)
+	client := repositoryutil.WithTransactionalMutation(ctx)
 
 	deleted, err := client.TaskCollaborator.
 		Query().

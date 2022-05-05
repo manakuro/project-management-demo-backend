@@ -5,12 +5,12 @@ import (
 	"project-management-demo-backend/ent"
 	"project-management-demo-backend/ent/teammatetask"
 	"project-management-demo-backend/ent/teammatetasksection"
-	"project-management-demo-backend/pkg/adapter/repository/respositoryutil"
+	"project-management-demo-backend/pkg/adapter/repository/repositoryutil"
 	"project-management-demo-backend/pkg/entity/model"
 )
 
 func (r *taskRepository) Assign(ctx context.Context, input model.AssignTaskInput) (*model.AssignTaskPayload, error) {
-	client := respositoryutil.WithTransactionalMutation(ctx)
+	client := repositoryutil.WithTransactionalMutation(ctx)
 
 	updatedTask, err := client.Task.UpdateOneID(input.ID).SetAssigneeID(input.AssigneeID).Save(ctx)
 	if err != nil {
@@ -56,7 +56,7 @@ func (r *taskRepository) Assign(ctx context.Context, input model.AssignTaskInput
 	teammateTask, err := client.TeammateTask.
 		Query().
 		WithTask(func(tq *ent.TaskQuery) {
-			respositoryutil.WithTask(tq)
+			repositoryutil.WithTaskAll(tq)
 		}).
 		Where(teammatetask.ID(t.ID)).
 		Only(ctx)

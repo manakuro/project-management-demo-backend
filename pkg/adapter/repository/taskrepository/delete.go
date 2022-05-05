@@ -9,12 +9,12 @@ import (
 	"project-management-demo-backend/ent/taskactivitytask"
 	"project-management-demo-backend/ent/teammatetask"
 	"project-management-demo-backend/ent/workspaceactivitytask"
-	"project-management-demo-backend/pkg/adapter/repository/respositoryutil"
+	"project-management-demo-backend/pkg/adapter/repository/repositoryutil"
 	"project-management-demo-backend/pkg/entity/model"
 )
 
 func (r *taskRepository) Delete(ctx context.Context, input model.DeleteTaskInput) (*model.DeleteTaskPayload, error) {
-	client := respositoryutil.WithTransactionalMutation(ctx)
+	client := repositoryutil.WithTransactionalMutation(ctx)
 
 	payload := &model.DeleteTaskPayload{
 		ProjectTasks: []*model.ProjectTask{},
@@ -55,7 +55,7 @@ func (r *taskRepository) Delete(ctx context.Context, input model.DeleteTaskInput
 		return nil, model.NewDBError(err)
 	}
 	deletedTask, err := client.DeletedTask.Query().WithTask(func(q *ent.TaskQuery) {
-		respositoryutil.WithTask(q)
+		repositoryutil.WithTaskAll(q)
 	}).Where(deletedtask.ID(d.ID)).Only(ctx)
 	if err != nil {
 		return nil, model.NewDBError(err)

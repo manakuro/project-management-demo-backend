@@ -10,12 +10,12 @@ import (
 	"project-management-demo-backend/ent/deletedworkspaceactivitytask"
 	"project-management-demo-backend/ent/projecttask"
 	"project-management-demo-backend/ent/teammatetask"
-	"project-management-demo-backend/pkg/adapter/repository/respositoryutil"
+	"project-management-demo-backend/pkg/adapter/repository/repositoryutil"
 	"project-management-demo-backend/pkg/entity/model"
 )
 
 func (r *taskRepository) Undelete(ctx context.Context, input model.UndeleteTaskInput) (*model.UndeleteTaskPayload, error) {
-	client := respositoryutil.WithTransactionalMutation(ctx)
+	client := repositoryutil.WithTransactionalMutation(ctx)
 
 	payload := &model.UndeleteTaskPayload{
 		TeammateTask: nil,
@@ -70,7 +70,7 @@ func (r *taskRepository) Undelete(ctx context.Context, input model.UndeleteTaskI
 		t, terr := client.TeammateTask.
 			Query().
 			WithTask(func(tq *ent.TaskQuery) {
-				respositoryutil.WithTask(tq)
+				repositoryutil.WithTaskAll(tq)
 			}).
 			Where(teammatetask.ID(undeletedTeammateTask.ID)).Only(ctx)
 
@@ -89,10 +89,10 @@ func (r *taskRepository) Undelete(ctx context.Context, input model.UndeleteTaskI
 		q := client.ProjectTask.
 			Query().
 			WithTask(func(tq *ent.TaskQuery) {
-				respositoryutil.WithTask(tq)
+				repositoryutil.WithTaskAll(tq)
 			})
 
-		respositoryutil.WithProjectTask(q)
+		repositoryutil.WithProjectTask(q)
 
 		ps, terr := q.Where(projecttask.IDIn(ids...)).All(ctx)
 		if terr != nil {

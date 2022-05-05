@@ -1,11 +1,11 @@
-package respositoryutil
+package repositoryutil
 
 import (
 	"project-management-demo-backend/ent"
 )
 
-// WithTask eager-loads associations with task entity.
-func WithTask(query *ent.TaskQuery) {
+// WithTaskAll eager-loads associations with task entity.
+func WithTaskAll(query *ent.TaskQuery) {
 	query.WithTaskFeeds()
 	query.WithTaskFiles(func(tfq *ent.TaskFileQuery) {
 		WithTaskFiles(tfq)
@@ -31,6 +31,30 @@ func WithTask(query *ent.TaskQuery) {
 	})
 	query.WithParentTask(func(parentTaskQuery *ent.TaskQuery) {
 		WithParentTask(parentTaskQuery)
+	})
+}
+
+// WithTask eager-loads associations with task entity.
+func WithTask(query *ent.TaskQuery) {
+	query.WithTaskFeeds()
+	query.WithTaskFiles(func(tfq *ent.TaskFileQuery) {
+		WithTaskFiles(tfq)
+	})
+	query.WithTaskFeedLikes()
+	query.WithTaskPriority(func(tpq *ent.TaskPriorityQuery) {
+		WithTaskPriority(tpq)
+	})
+	query.WithProjectTasks(func(ptq *ent.ProjectTaskQuery) {
+		ptq.WithProject(func(pq *ent.ProjectQuery) {
+			WithProject(pq)
+		})
+	})
+	query.WithTaskTags(func(ttq *ent.TaskTagQuery) {
+		WithTaskTag(ttq)
+	})
+	query.WithTaskLikes()
+	query.WithTaskCollaborators(func(tcq *ent.TaskCollaboratorQuery) {
+		WithTaskCollaborator(tcq)
 	})
 }
 
@@ -119,7 +143,7 @@ func WithTag(query *ent.TagQuery) {
 // WithProjectTask eager-loads association with project task.
 func WithProjectTask(query *ent.ProjectTaskQuery) {
 	query.WithTask(func(tq *ent.TaskQuery) {
-		WithTask(tq)
+		WithTaskAll(tq)
 	})
 	query.WithProject(func(pq *ent.ProjectQuery) {
 		WithProject(pq)

@@ -4,12 +4,12 @@ import (
 	"context"
 	"project-management-demo-backend/ent"
 	"project-management-demo-backend/ent/teammatetask"
-	"project-management-demo-backend/pkg/adapter/repository/respositoryutil"
+	"project-management-demo-backend/pkg/adapter/repository/repositoryutil"
 	"project-management-demo-backend/pkg/entity/model"
 )
 
 func (r *teammateTaskSectionRepository) UndeleteAndKeepTasks(ctx context.Context, input model.UndeleteTeammateTaskSectionAndKeepTasksInput) (*model.UndeleteTeammateTaskSectionAndKeepTasksPayload, error) {
-	client := respositoryutil.WithTransactionalMutation(ctx)
+	client := repositoryutil.WithTransactionalMutation(ctx)
 
 	createdTeammateTaskSection, err := client.TeammateTaskSection.
 		Create().

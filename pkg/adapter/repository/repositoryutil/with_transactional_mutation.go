@@ -1,4 +1,4 @@
-package respositoryutil
+package repositoryutil
 
 import (
 	"context"
