@@ -20,9 +20,6 @@ func (r *teammateTaskRepository) Get(ctx context.Context, where *model.TeammateT
 	q, err := where.Filter(q)
 
 	// Eager-loading with task explicitly.
-	//q.WithTaskAll(func(tq *ent.TaskQuery) {
-	//	respositoryutil.WithTaskAll(tq)
-	//})
 	q.WithTask(func(query *ent.TaskQuery) {
 		repositoryutil.WithTask(query)
 	})

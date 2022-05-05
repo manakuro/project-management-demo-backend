@@ -56,6 +56,8 @@ func WithTask(query *ent.TaskQuery) {
 	query.WithTaskCollaborators(func(tcq *ent.TaskCollaboratorQuery) {
 		WithTaskCollaborator(tcq)
 	})
+	query.WithSubTasks()
+	query.WithParentTask()
 }
 
 // WithParentTask eager-loads associations with task parent entity.
@@ -85,9 +87,6 @@ func WithParentTask(query *ent.TaskQuery) {
 // WithSubTask eager-loads associations with subtask entity.
 func WithSubTask(query *ent.TaskQuery) {
 	query.WithTaskFeeds()
-	query.WithTaskFiles(func(tfq *ent.TaskFileQuery) {
-		WithTaskFiles(tfq)
-	})
 	query.WithTaskFeedLikes()
 	query.WithTaskPriority(func(tpq *ent.TaskPriorityQuery) {
 		WithTaskPriority(tpq)
@@ -101,9 +100,6 @@ func WithSubTask(query *ent.TaskQuery) {
 		WithTaskTag(ttq)
 	})
 	query.WithTaskLikes()
-	query.WithTaskCollaborators(func(tcq *ent.TaskCollaboratorQuery) {
-		WithTaskCollaborator(tcq)
-	})
 }
 
 // WithTaskFiles eager-loads association with task files collaborators.
@@ -143,7 +139,7 @@ func WithTag(query *ent.TagQuery) {
 // WithProjectTask eager-loads association with project task.
 func WithProjectTask(query *ent.ProjectTaskQuery) {
 	query.WithTask(func(tq *ent.TaskQuery) {
-		WithTaskAll(tq)
+		WithTask(tq)
 	})
 	query.WithProject(func(pq *ent.ProjectQuery) {
 		WithProject(pq)

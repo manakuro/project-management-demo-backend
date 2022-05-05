@@ -2,12 +2,15 @@ package projecttaskrepository
 
 import (
 	"context"
+	"fmt"
 	"project-management-demo-backend/ent"
 	"project-management-demo-backend/pkg/adapter/repository/repositoryutil"
 	"project-management-demo-backend/pkg/entity/model"
+	"time"
 )
 
 func (r *projectTaskRepository) Get(ctx context.Context, where *model.ProjectTaskWhereInput) (*model.ProjectTask, error) {
+	start := time.Now()
 	q := r.client.ProjectTask.Query()
 
 	// Eager-loading with task explicitly.
@@ -29,6 +32,10 @@ func (r *projectTaskRepository) Get(ctx context.Context, where *model.ProjectTas
 		}
 		return nil, model.NewDBError(err)
 	}
+
+	fmt.Println("\n\n========================================================================")
+	fmt.Println("duration: ", time.Since(start).String())
+	fmt.Print("========================================================================\n\n")
 
 	return res, nil
 }

@@ -56,7 +56,7 @@ func (r *taskRepository) Assign(ctx context.Context, input model.AssignTaskInput
 	teammateTask, err := client.TeammateTask.
 		Query().
 		WithTask(func(tq *ent.TaskQuery) {
-			repositoryutil.WithTaskAll(tq)
+			repositoryutil.WithTask(tq)
 		}).
 		Where(teammatetask.ID(t.ID)).
 		Only(ctx)
