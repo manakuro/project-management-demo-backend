@@ -65,10 +65,19 @@ e2e:
 export image := `aws lightsail get-container-images --service-name project-management-demo | jq -r '.containerImages[0].image'`
 
 build:
+	docker rmi app
 	docker build . -t app
 
 push:
 	aws lightsail push-container-image --service-name project-management-demo --label app --image app
+
+run_staging:
+	docker rm app
+	docker run --name app -it -p 8082:8080 -e APP_ENV=staging app
+
+run_production:
+	docker rm app
+	docker run --name app -it -p 8082:8080 -e APP_ENV=production app
 
 deploy:
 	jq --arg image $(image) '.containers.app.image = $$image' container.tpl.json > ./container.json
