@@ -11,6 +11,7 @@ type Controller struct {
 	ArchivedWorkspaceActivityTask interface{ ArchivedWorkspaceActivityTask }
 	Auth                          interface{ Auth }
 	Color                         interface{ Color }
+	Database                      interface{ Database }
 	DeletedTask                   interface{ DeletedTask }
 	FavoriteProject               interface{ FavoriteProject }
 	FavoriteWorkspace             interface{ FavoriteWorkspace }

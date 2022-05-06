@@ -18,6 +18,7 @@ const (
 	subscriptionPath        = "/subscription"
 	playgroundPath          = "/playground"
 	revokeRefreshTokensPath = "/revoke_refresh_tokens"
+	seedTable               = "/seedTable"
 )
 
 // GraphQLPath is an endpoint of graphql server.
@@ -50,6 +51,10 @@ func New(srv *handler.Server, ctrl controller.Controller, options Options) *echo
 	g := e.Group(apiPath)
 	{
 		g.POST(revokeRefreshTokensPath, func(c echo.Context) error { return ctrl.Auth.RevokeRefreshTokens(c) })
+	}
+
+	{
+		g.GET(seedTable, func(c echo.Context) error { return ctrl.Database.SeedTable(c) })
 	}
 
 	{

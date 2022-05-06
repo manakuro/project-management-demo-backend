@@ -32,6 +32,7 @@ func (r *registry) NewController() controller.Controller {
 		ArchivedWorkspaceActivityTask: r.NewArchivedWorkspaceActivityTaskController(),
 		Auth:                          r.NewAuthController(),
 		Color:                         r.NewColorController(),
+		Database:                      r.NewDatabaseController(),
 		DeletedTask:                   r.NewDeletedTaskController(),
 		FavoriteProject:               r.NewFavoriteProjectController(),
 		FavoriteWorkspace:             r.NewFavoriteWorkspaceController(),
