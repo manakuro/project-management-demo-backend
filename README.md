@@ -25,7 +25,7 @@ $ make migrate_schema
 ```
 
 ```
-$ make feed
+$ make seed
 ```
 
 ## Start server
