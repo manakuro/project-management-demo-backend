@@ -5,7 +5,6 @@ install:
 	pre-commit --version
 	pre-commit install
 	go1.16.9 install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.45.2
-	go1.16.9 install -tags 'mysql' github.com/golang-migrate/migrate/v4/cmd/migrate@v4.15.1
 	go1.16.9 install golang.org/x/tools/cmd/goimports@latest
 	go1.16.9 install github.com/cosmtrek/air@v1.27.3
 
@@ -85,10 +84,3 @@ deploy:
 	aws lightsail create-container-service-deployment --service-name project-management-demo --cli-input-json file://$$(pwd)/container.json
 
 .PHONY: install setup_db migrate_up migrate_down start migrate_schema schema_description ent_generate setup_test_db setup_e2e_db e2e test_repository seed migrate_schema_staging seed_staging deploy build push
-
-
-#migrate_up:
-#	migrate -path $$(yq e '.development.path' db/config.yaml) -database $$(yq e '.development.database' db/config.yaml) up
-#
-#migrate_down:
-#	migrate -path $$(yq e '.development.path' db/config.yaml) -database $$(yq e '.development.database' db/config.yaml) down
