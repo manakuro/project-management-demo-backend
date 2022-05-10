@@ -3,6 +3,7 @@ package workspacerepository
 import (
 	"context"
 	"project-management-demo-backend/ent"
+	"project-management-demo-backend/pkg/adapter/repository/repositoryutil"
 	"project-management-demo-backend/pkg/entity/model"
 )
 
@@ -13,6 +14,13 @@ func (r *workspaceRepository) Get(ctx context.Context, where *model.WorkspaceWhe
 	if err != nil {
 		return nil, model.NewInvalidParamError(nil)
 	}
+
+	q.WithWorkspaceTeammates(func(query *ent.WorkspaceTeammateQuery) {
+		query.WithTeammate()
+	})
+	q.WithProjects(func(query *ent.ProjectQuery) {
+		repositoryutil.WithProject(query)
+	})
 
 	res, err := q.Only(ctx)
 
