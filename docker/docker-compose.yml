@@ -26,14 +26,3 @@ volumes:
     driver: local
   redis-data:
     driver: local
-
-#  cloudsql_proxy:
-#    image: gcr.io/cloudsql-docker/gce-proxy
-#    command:
-#      ["/cloud_sql_proxy",
-#       "-instances=freesume:asia-northeast1:freesume=tcp:0.0.0.0:3306",
-#       "-credential_file=/config"]
-#    volumes:
-#      - ~/.keys/freesume.json:/config
-#    ports:
-#      - 3308:3306

@@ -30,6 +30,7 @@ import (
 	"project-management-demo-backend/ent/testuser"
 	"project-management-demo-backend/ent/workspace"
 	"project-management-demo-backend/ent/workspaceactivity"
+	"project-management-demo-backend/pkg/util/datetime"
 	"time"
 )
 
@@ -267,7 +268,7 @@ func GetActivityType(ctx context.Context, client *ent.Client, val string) *ent.A
 
 // AddDate adds time.
 func AddDate(date int) *time.Time {
-	t := time.Now()
+	t := datetime.Now()
 	t = t.AddDate(0, 0, date)
 
 	return &t
