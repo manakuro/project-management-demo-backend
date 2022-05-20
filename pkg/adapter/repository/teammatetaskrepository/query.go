@@ -63,7 +63,7 @@ func (r *teammateTaskRepository) TasksDueSoon(ctx context.Context, workspaceID m
 
 	q.Where(teammatetask.TeammateIDEQ(teammateID))
 	q.Where(teammatetask.HasTaskWith(
-		task.DueDateGTE(datetime.StartOfDay(time.Now())),
+		task.DueDateGTE(datetime.StartOfDay(datetime.Now())),
 		task.DueDateLTE(datetime.EndOfDay(datetime.AddDate(5))),
 	))
 	q.Where(teammatetask.HasTeammateTaskSectionWith(

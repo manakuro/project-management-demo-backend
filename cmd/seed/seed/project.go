@@ -5,6 +5,7 @@ import (
 	"log"
 	"project-management-demo-backend/cmd/seed/seedutil"
 	"project-management-demo-backend/ent"
+	"project-management-demo-backend/pkg/util/datetime"
 	"time"
 )
 
@@ -76,7 +77,7 @@ func Project(ctx context.Context, client *ent.Client) {
 }
 
 func getDueDate(date int) *time.Time {
-	t := time.Now()
+	t := datetime.Now()
 	t.AddDate(0, 0, date)
 
 	return &t
