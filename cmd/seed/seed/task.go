@@ -22,11 +22,11 @@ var taskAssignedFeed = struct {
 	task2Subtask2 ent.CreateTaskInput
 	task2Subtask3 ent.CreateTaskInput
 }{
-	task1:         ent.CreateTaskInput{Name: "Implement new card design", DueDate: seedutil.AddDate(10)},
-	task2:         ent.CreateTaskInput{Name: "User bug report", DueDate: seedutil.AddDate(5)},
-	task2Subtask1: ent.CreateTaskInput{Name: "User getting sent duplicate notifications", DueDate: seedutil.AddDate(2)},
-	task2Subtask2: ent.CreateTaskInput{Name: "User can't invite teammate via modal page", DueDate: seedutil.AddDate(2)},
-	task2Subtask3: ent.CreateTaskInput{Name: "Broken links on my page", DueDate: seedutil.AddDate(2)},
+	task1:         ent.CreateTaskInput{Name: "Implement new card design"},
+	task2:         ent.CreateTaskInput{Name: "User bug report"},
+	task2Subtask1: ent.CreateTaskInput{Name: "User getting sent duplicate notifications"},
+	task2Subtask2: ent.CreateTaskInput{Name: "User can't invite teammate via modal page"},
+	task2Subtask3: ent.CreateTaskInput{Name: "Broken links on my page"},
 	task3:         ent.CreateTaskInput{Name: "Design iOS prototype"},
 	task4:         ent.CreateTaskInput{Name: "Scope performance improvements"},
 	task5:         ent.CreateTaskInput{Name: "Implement mobile menu"},
@@ -58,17 +58,17 @@ var taskNoAssignedFeed = struct {
 	mTask13       ent.CreateTaskInput
 	mTask14       ent.CreateTaskInput
 }{
-	task1:         ent.CreateTaskInput{Name: "Launch updated task list", DueDate: seedutil.AddDate(10)},
-	task2:         ent.CreateTaskInput{Name: "Finalize workspace design", DueDate: seedutil.AddDate(5)},
-	task2Subtask1: ent.CreateTaskInput{Name: "Prep for review", DueDate: seedutil.AddDate(2)},
-	task2Subtask2: ent.CreateTaskInput{Name: "Tweak project card design", DueDate: seedutil.AddDate(2)},
-	task2Subtask3: ent.CreateTaskInput{Name: "Usability testing for top bar", DueDate: seedutil.AddDate(2)},
+	task1:         ent.CreateTaskInput{Name: "Launch updated task list"},
+	task2:         ent.CreateTaskInput{Name: "Finalize workspace design"},
+	task2Subtask1: ent.CreateTaskInput{Name: "Prep for review"},
+	task2Subtask2: ent.CreateTaskInput{Name: "Tweak project card design"},
+	task2Subtask3: ent.CreateTaskInput{Name: "Usability testing for top bar"},
 
 	// Marketing - Planning
-	mTask1: ent.CreateTaskInput{Name: "Weekly Analytics report", DueDate: seedutil.AddDate(5)},
-	mTask2: ent.CreateTaskInput{Name: "Finalize campaign brief", DueDate: seedutil.AddDate(5)},
-	mTask3: ent.CreateTaskInput{Name: "Kickoff new project", DueDate: seedutil.AddDate(2)},
-	mTask4: ent.CreateTaskInput{Name: "Brainstorming", DueDate: seedutil.AddDate(3)},
+	mTask1: ent.CreateTaskInput{Name: "Weekly Analytics report"},
+	mTask2: ent.CreateTaskInput{Name: "Finalize campaign brief"},
+	mTask3: ent.CreateTaskInput{Name: "Kickoff new project"},
+	mTask4: ent.CreateTaskInput{Name: "Brainstorming"},
 
 	// Marketing - Upcoming
 	mTask5: ent.CreateTaskInput{Name: "Brief for Black Friday campaign"},
@@ -110,7 +110,7 @@ func Task(ctx context.Context, client *ent.Client) {
 
 	noAssignedTask2, err := client.Task.Create().SetInput(ent.CreateTaskInput{
 		Name:           taskNoAssignedFeed.task2.Name,
-		DueDate:        taskNoAssignedFeed.task2.DueDate,
+		DueDate:        seedutil.AddDate(5),
 		CreatedBy:      teammate.ID,
 		TaskPriorityID: &seedutil.GetTaskPriorityByName(ctx, client, taskPriorityFeed.high.Name).ID,
 		Description:    seedutil.ParseDescription([]byte(`{"type": "doc", "content": [{ "type": "paragraph", "content": null }]}`)),
@@ -126,7 +126,7 @@ func Task(ctx context.Context, client *ent.Client) {
 	inputs := []ent.CreateTaskInput{
 		{
 			Name:           taskAssignedFeed.task1.Name,
-			DueDate:        taskAssignedFeed.task1.DueDate,
+			DueDate:        seedutil.AddDate(10),
 			AssigneeID:     &teammate.ID,
 			CreatedBy:      teammate.ID,
 			TaskPriorityID: taskPriorityMediumID,
@@ -135,7 +135,7 @@ func Task(ctx context.Context, client *ent.Client) {
 
 		{
 			Name:           taskAssignedFeed.task2Subtask1.Name,
-			DueDate:        taskAssignedFeed.task2Subtask1.DueDate,
+			DueDate:        seedutil.AddDate(5),
 			AssigneeID:     &teammate.ID,
 			CreatedBy:      teammate.ID,
 			TaskParentID:   &assignedTask2.ID,
@@ -144,7 +144,7 @@ func Task(ctx context.Context, client *ent.Client) {
 		},
 		{
 			Name:           taskAssignedFeed.task2Subtask2.Name,
-			DueDate:        taskAssignedFeed.task2Subtask2.DueDate,
+			DueDate:        seedutil.AddDate(2),
 			AssigneeID:     &teammate.ID,
 			CreatedBy:      teammate.ID,
 			TaskParentID:   &assignedTask2.ID,
@@ -153,7 +153,7 @@ func Task(ctx context.Context, client *ent.Client) {
 		},
 		{
 			Name:           taskAssignedFeed.task2Subtask3.Name,
-			DueDate:        taskAssignedFeed.task2Subtask3.DueDate,
+			DueDate:        seedutil.AddDate(2),
 			AssigneeID:     &teammate.ID,
 			CreatedBy:      teammate.ID,
 			TaskParentID:   &assignedTask2.ID,
@@ -163,7 +163,7 @@ func Task(ctx context.Context, client *ent.Client) {
 
 		{
 			Name:           taskAssignedFeed.task3.Name,
-			DueDate:        taskAssignedFeed.task3.DueDate,
+			DueDate:        seedutil.AddDate(2),
 			AssigneeID:     &teammate.ID,
 			CreatedBy:      teammate.ID,
 			TaskPriorityID: taskPriorityMediumID,
@@ -171,7 +171,6 @@ func Task(ctx context.Context, client *ent.Client) {
 		},
 		{
 			Name:           taskAssignedFeed.task4.Name,
-			DueDate:        taskAssignedFeed.task4.DueDate,
 			AssigneeID:     &teammate.ID,
 			CreatedBy:      teammate.ID,
 			TaskPriorityID: taskPriorityMediumID,
@@ -179,7 +178,6 @@ func Task(ctx context.Context, client *ent.Client) {
 		},
 		{
 			Name:           taskAssignedFeed.task5.Name,
-			DueDate:        taskAssignedFeed.task5.DueDate,
 			AssigneeID:     &teammate.ID,
 			CreatedBy:      teammate.ID,
 			TaskPriorityID: taskPriorityLowID,
@@ -187,7 +185,6 @@ func Task(ctx context.Context, client *ent.Client) {
 		},
 		{
 			Name:           taskAssignedFeed.task6.Name,
-			DueDate:        taskAssignedFeed.task6.DueDate,
 			AssigneeID:     &teammate.ID,
 			CreatedBy:      teammate.ID,
 			TaskPriorityID: taskPriorityLowID,
@@ -195,7 +192,6 @@ func Task(ctx context.Context, client *ent.Client) {
 		},
 		{
 			Name:           taskAssignedFeed.task7.Name,
-			DueDate:        taskAssignedFeed.task7.DueDate,
 			AssigneeID:     &teammate.ID,
 			CreatedBy:      teammate.ID,
 			TaskPriorityID: taskPriorityLowID,
@@ -203,7 +199,6 @@ func Task(ctx context.Context, client *ent.Client) {
 		},
 		{
 			Name:           taskAssignedFeed.task8.Name,
-			DueDate:        taskAssignedFeed.task8.DueDate,
 			AssigneeID:     &teammate.ID,
 			Completed:      &completed,
 			CompletedAt:    seedutil.AddDate(-2),
@@ -213,7 +208,6 @@ func Task(ctx context.Context, client *ent.Client) {
 		},
 		{
 			Name:           taskAssignedFeed.task9.Name,
-			DueDate:        taskAssignedFeed.task9.DueDate,
 			AssigneeID:     &teammate.ID,
 			Completed:      &completed,
 			CompletedAt:    seedutil.AddDate(-10),
@@ -223,7 +217,6 @@ func Task(ctx context.Context, client *ent.Client) {
 		},
 		{
 			Name:           taskAssignedFeed.task10.Name,
-			DueDate:        taskAssignedFeed.task10.DueDate,
 			AssigneeID:     &teammate.ID,
 			Completed:      &completed,
 			CompletedAt:    seedutil.AddDate(-7),
@@ -235,14 +228,14 @@ func Task(ctx context.Context, client *ent.Client) {
 		// No assigned seed
 		{
 			Name:           taskNoAssignedFeed.task1.Name,
-			DueDate:        taskAssignedFeed.task2Subtask1.DueDate,
+			DueDate:        seedutil.AddDate(2),
 			CreatedBy:      teammate.ID,
 			TaskPriorityID: taskPriorityMediumID,
 			Description:    seedutil.ParseDescription([]byte(`{"type": "doc", "content": [{ "type": "paragraph", "content": null }]}`)),
 		},
 		{
 			Name:           taskNoAssignedFeed.task2Subtask1.Name,
-			DueDate:        taskAssignedFeed.task2Subtask1.DueDate,
+			DueDate:        seedutil.AddDate(2),
 			CreatedBy:      teammate.ID,
 			TaskParentID:   &noAssignedTask2.ID,
 			TaskPriorityID: taskPriorityMediumID,
@@ -250,7 +243,7 @@ func Task(ctx context.Context, client *ent.Client) {
 		},
 		{
 			Name:           taskNoAssignedFeed.task2Subtask2.Name,
-			DueDate:        taskAssignedFeed.task2Subtask2.DueDate,
+			DueDate:        seedutil.AddDate(2),
 			CreatedBy:      teammate.ID,
 			TaskParentID:   &noAssignedTask2.ID,
 			TaskPriorityID: taskPriorityMediumID,
@@ -258,7 +251,7 @@ func Task(ctx context.Context, client *ent.Client) {
 		},
 		{
 			Name:           taskNoAssignedFeed.task2Subtask3.Name,
-			DueDate:        taskAssignedFeed.task2Subtask3.DueDate,
+			DueDate:        seedutil.AddDate(2),
 			CreatedBy:      teammate.ID,
 			TaskParentID:   &noAssignedTask2.ID,
 			TaskPriorityID: taskPriorityMediumID,
@@ -268,93 +261,83 @@ func Task(ctx context.Context, client *ent.Client) {
 		// Marketing - Planning
 		{
 			Name:           taskNoAssignedFeed.mTask1.Name,
-			DueDate:        taskNoAssignedFeed.mTask1.DueDate,
+			DueDate:        seedutil.AddDate(5),
 			CreatedBy:      teammate.ID,
 			TaskPriorityID: taskPriorityMediumID,
 			Description:    seedutil.ParseDescription([]byte(`{"type": "doc", "content": [{ "type": "paragraph", "content": null }]}`)),
 		},
 		{
 			Name:           taskNoAssignedFeed.mTask2.Name,
-			DueDate:        taskNoAssignedFeed.mTask2.DueDate,
+			DueDate:        seedutil.AddDate(5),
 			CreatedBy:      teammate.ID,
 			TaskPriorityID: taskPriorityHighID,
 			Description:    seedutil.ParseDescription([]byte(`{"type": "doc", "content": [{ "type": "paragraph", "content": null }]}`)),
 		},
 		{
 			Name:           taskNoAssignedFeed.mTask3.Name,
-			DueDate:        taskNoAssignedFeed.mTask3.DueDate,
+			DueDate:        seedutil.AddDate(2),
 			CreatedBy:      teammate.ID,
 			TaskPriorityID: taskPriorityHighID,
 			Description:    seedutil.ParseDescription([]byte(`{"type": "doc", "content": [{ "type": "paragraph", "content": null }]}`)),
 		},
 		{
 			Name:        taskNoAssignedFeed.mTask4.Name,
-			DueDate:     taskNoAssignedFeed.mTask4.DueDate,
+			DueDate:     seedutil.AddDate(3),
 			CreatedBy:   teammate.ID,
 			Description: seedutil.ParseDescription([]byte(`{"type": "doc", "content": [{ "type": "paragraph", "content": null }]}`)),
 		},
 		// Marketing - Upcoming
 		{
 			Name:        taskNoAssignedFeed.mTask5.Name,
-			DueDate:     taskNoAssignedFeed.mTask5.DueDate,
 			CreatedBy:   teammate.ID,
 			Description: seedutil.ParseDescription([]byte(`{"type": "doc", "content": [{ "type": "paragraph", "content": null }]}`)),
 		},
 		{
 			Name:        taskNoAssignedFeed.mTask6.Name,
-			DueDate:     taskNoAssignedFeed.mTask6.DueDate,
 			CreatedBy:   teammate.ID,
 			Description: seedutil.ParseDescription([]byte(`{"type": "doc", "content": [{ "type": "paragraph", "content": null }]}`)),
 		},
 		{
 			Name:        taskNoAssignedFeed.mTask7.Name,
-			DueDate:     taskNoAssignedFeed.mTask7.DueDate,
 			CreatedBy:   teammate.ID,
 			Description: seedutil.ParseDescription([]byte(`{"type": "doc", "content": [{ "type": "paragraph", "content": null }]}`)),
 		},
 		{
 			Name:        taskNoAssignedFeed.mTask8.Name,
-			DueDate:     taskNoAssignedFeed.mTask8.DueDate,
 			CreatedBy:   teammate.ID,
 			Description: seedutil.ParseDescription([]byte(`{"type": "doc", "content": [{ "type": "paragraph", "content": null }]}`)),
 		},
 		// Marketing - Content Development
 		{
 			Name:           taskNoAssignedFeed.mTask9.Name,
-			DueDate:        taskNoAssignedFeed.mTask9.DueDate,
 			CreatedBy:      teammate.ID,
 			TaskPriorityID: taskPriorityHighID,
 			Description:    seedutil.ParseDescription([]byte(`{"type": "doc", "content": [{ "type": "paragraph", "content": null }]}`)),
 		},
 		{
 			Name:        taskNoAssignedFeed.mTask10.Name,
-			DueDate:     taskNoAssignedFeed.mTask10.DueDate,
 			CreatedBy:   teammate.ID,
 			Description: seedutil.ParseDescription([]byte(`{"type": "doc", "content": [{ "type": "paragraph", "content": null }]}`)),
 		},
 		{
 			Name:        taskNoAssignedFeed.mTask11.Name,
-			DueDate:     taskNoAssignedFeed.mTask11.DueDate,
 			CreatedBy:   teammate.ID,
 			Description: seedutil.ParseDescription([]byte(`{"type": "doc", "content": [{ "type": "paragraph", "content": null }]}`)),
 		},
 		// Marketing - Campaign Promotion
 		{
 			Name:           taskNoAssignedFeed.mTask12.Name,
-			DueDate:        taskNoAssignedFeed.mTask12.DueDate,
 			CreatedBy:      teammate.ID,
 			TaskPriorityID: taskPriorityHighID,
 			Description:    seedutil.ParseDescription([]byte(`{"type": "doc", "content": [{ "type": "paragraph", "content": null }]}`)),
 		},
 		{
 			Name:        taskNoAssignedFeed.mTask13.Name,
-			DueDate:     taskNoAssignedFeed.mTask13.DueDate,
 			CreatedBy:   teammate.ID,
 			Description: seedutil.ParseDescription([]byte(`{"type": "doc", "content": [{ "type": "paragraph", "content": null }]}`)),
 		},
 		{
 			Name:        taskNoAssignedFeed.mTask14.Name,
-			DueDate:     taskNoAssignedFeed.mTask14.DueDate,
 			CreatedBy:   teammate.ID,
 			Description: seedutil.ParseDescription([]byte(`{"type": "doc", "content": [{ "type": "paragraph", "content": null }]}`)),
 		},
