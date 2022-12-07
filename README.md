@@ -5,7 +5,7 @@ Project management demo backend
 
 ```
 $ cd docker
-$ docker comopse up
+$ docker compose up
 ```
 
 ## Installation
