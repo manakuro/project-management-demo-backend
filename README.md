@@ -5,6 +5,13 @@ An Asana clone application for portfolio apps, built with real-time communicatio
 - [GraphQL Playground](https://project-management-demo.ebad78r3fqm9m.ap-northeast-1.cs.amazonlightsail.com/playground)
 - [View front-end](https://github.com/manakuro/project-management-demo-frontend)
 
+## Tech Stack
+- Go
+- GraphQL
+- [ent](https://github.com/ent/ent)
+- [gqlgen](https://github.com/99designs/gqlgen)
+- WebSockets
+
 ## Run Docker
 
 ```
