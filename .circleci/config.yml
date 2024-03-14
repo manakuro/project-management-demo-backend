@@ -44,9 +44,9 @@ commands:
             echo << parameters.config >> | base64 --decode > ./config/config.${APP_ENV}.yml
             cat ./config/config.${APP_ENV}.yml
             
-            go get golang.org/dl/go1.16.9
-            go1.16.9 download
-            go1.16.9 version 
+            go get golang.org/dl/go1.22.1
+            go1.22.1 download
+            go1.22.1 version 
             
             make migrate_schema
             sleep 5
