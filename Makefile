@@ -6,7 +6,7 @@ install:
 	pre-commit install
 	go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.56.2
 	go install golang.org/x/tools/cmd/goimports@latest
-	go install github.com/cosmtrek/air@v1.27.3
+	go install github.com/cosmtrek/air@v1.51.0
 
 # Start dev server.
 start:
