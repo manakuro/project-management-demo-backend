@@ -4,9 +4,9 @@ install:
 	brew install pre-commit
 	pre-commit --version
 	pre-commit install
-	go1.16.9 install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.45.2
-	go1.16.9 install golang.org/x/tools/cmd/goimports@latest
-	go1.16.9 install github.com/cosmtrek/air@v1.27.3
+	go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.56.2
+	go install golang.org/x/tools/cmd/goimports@latest
+	go install github.com/cosmtrek/air@v1.27.3
 
 # Start dev server.
 start:

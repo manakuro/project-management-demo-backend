@@ -1,6 +1,9 @@
 package datastore
 
 import (
+	"crypto/tls"
+	"fmt"
+	"log"
 	"project-management-demo-backend/config"
 	"project-management-demo-backend/ent"
 
@@ -16,6 +19,15 @@ func New() string {
 		"charset":   config.C.Database.Params.Charset,
 		"loc":       config.C.Database.Params.Loc,
 	}
+	if config.C.Database.Params.TLS != "" && config.C.Database.Params.TLS != "true" {
+		err := mysql.RegisterTLSConfig(config.C.Database.Params.TLS, &tls.Config{
+			MinVersion: tls.VersionTLS12,
+			ServerName: config.C.Database.Addr,
+		})
+		if err != nil {
+			log.Fatalln("failed to create TLS config: ", err)
+		}
+	}
 	if config.C.Database.Params.TLS != "" {
 		params["tls"] = config.C.Database.Params.TLS
 	}
@@ -29,6 +41,7 @@ func New() string {
 		AllowNativePasswords: config.C.Database.AllowNativePasswords,
 		Params:               params,
 	}
+	fmt.Println("DSN: ", mc.FormatDSN())
 
 	return mc.FormatDSN()
 }
