@@ -12,6 +12,11 @@ An Asana clone application for portfolio apps, built with real-time communicatio
 - [gqlgen](https://github.com/99designs/gqlgen)
 - WebSockets
 
+## Pre-requisite
+Follow the provided documentation to configure the Firebase project.
+
+[docs/setup.md](docs/setup.md)
+
 ## Run Docker
 
 ```
