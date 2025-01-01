@@ -6,7 +6,7 @@ An Asana clone application for portfolio apps, built with real-time communicatio
 - [View front-end](https://github.com/manakuro/project-management-demo-frontend)
 
 ## Tech Stack
-- Go
+- Go / 1.22.1
 - GraphQL
 - [ent](https://github.com/ent/ent)
 - [gqlgen](https://github.com/99designs/gqlgen)
@@ -17,35 +17,49 @@ Follow the provided documentation to configure the Firebase project.
 
 [docs/setup.md](docs/setup.md)
 
+## Install Go
+
+Install `go@1.22.1`
+```
+go install golang.org/dl/go1.22.1@latest
+go1.22.1 download
+```
+
+```
+go1.22.1 version
+
+go version go1.22.1 darwin/arm64
+```
+
 ## Run Docker
 
 ```
-$ cd docker
-$ docker compose up
+cd docker
+docker compose up
 ```
 
 ## Installation
 
 ```
-$ make install
+make install
 ```
 
 ## Set up database
 
 ```
-$ make setup_db
+make setup_db
 ```
 
 ```
-$ make migrate_schema
+make migrate_schema
 ```
 
 ```
-$ make seed
+make seed
 ```
 
 ## Start server
 
 ```
-$ make start
+make start
 ```
